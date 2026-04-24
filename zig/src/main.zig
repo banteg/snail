@@ -6,6 +6,7 @@ const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
 const level_loader = @import("app/level_loader.zig");
+const math_random = @import("app/math_random.zig");
 const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
@@ -2455,7 +2456,7 @@ const AppState = struct {
     }
 
     fn nextMathRandomInt15(self: *AppState) u32 {
-        return track_build_seed.nextInt15(&self.math_random_state);
+        return math_random.nextInt15(&self.math_random_state);
     }
 
     fn trackBuildSeedForCurrentLoad(self: *AppState) u32 {

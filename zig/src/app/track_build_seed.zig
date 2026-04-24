@@ -1,6 +1,7 @@
 const root_app = @import("../app.zig");
 const frontend = @import("../frontend.zig");
 const frontend_bridge = @import("../frontend/bridge.zig");
+const math_random = @import("math_random.zig");
 
 const FrontendLevelMode = frontend.FrontendLevelMode;
 
@@ -15,11 +16,6 @@ pub const Context = struct {
     current_runtime_build_seed_level_index: *?usize,
     current_runtime_build_seed_mode: *?FrontendLevelMode,
 };
-
-pub fn nextInt15(random_state: *u32) u32 {
-    random_state.* = (random_state.* *% 0x343fd) +% 0x269ec3;
-    return (random_state.* >> 16) & 0x7fff;
-}
 
 pub fn seedForCurrentLoad(context: Context) u32 {
     if (context.command != .game) return 0;
@@ -41,7 +37,7 @@ pub fn seedForCurrentLoad(context: Context) u32 {
 
     const seed: u32 = switch (mode orelse return 0) {
         .tutorial, .time_trial => 0,
-        .postal, .challenge => nextInt15(context.math_random_state),
+        .postal, .challenge => math_random.nextInt15(context.math_random_state),
     };
     context.current_runtime_build_seed.* = seed;
     context.current_runtime_build_seed_level_index.* = context.level_index;

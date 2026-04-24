@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("../app.zig");
 const assets = @import("../assets.zig");
 const attachment_builders = @import("../attachment_builders.zig");
+const math_random = @import("math_random.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_assets = @import("../gameplay/assets.zig");
 const gameplay_audio_catalog = @import("../gameplay/audio_catalog.zig");
@@ -495,8 +496,7 @@ fn pickNativeMovementSoundVariant(state: anytype, comptime count: usize, variant
 }
 
 fn nextMathRandomInt15(state: anytype) u32 {
-    state.math_random_state = (state.math_random_state *% 0x343fd) +% 0x269ec3;
-    return (state.math_random_state >> 16) & 0x7fff;
+    return math_random.nextInt15(&state.math_random_state);
 }
 
 fn takePreloadedMusic(state: anytype, path: []const u8) ?assets.LoadedMusic {
