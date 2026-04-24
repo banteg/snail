@@ -1,9 +1,9 @@
 const std = @import("std");
 
-const audio = @import("audio.zig");
 const audio_volume = @import("audio_volume.zig");
 const run_tuning = @import("run_tuning.zig");
 const track_build_seed = @import("track_build_seed.zig");
+const voice_audio = @import("voice_audio.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_resources = @import("../gameplay/resources.zig");
 const level = @import("../level.zig");
@@ -75,7 +75,7 @@ pub fn dispatchCurrentRunnerRowMessage(
         queueLevelSegmentPrompt(state, segment_entry);
     }
     if (segment_changed or token_changed or replay_sample_on_match) {
-        try audio.playLevelSegmentSample(state, segment_entry);
+        try voice_audio.playLevelSegmentSample(voice_audio.context(state), segment_entry);
     }
 }
 
@@ -139,7 +139,7 @@ pub fn reloadLevel(state: anytype) !void {
     state.gameplay_jetpack_visual_state = .{};
     state.gameplay_weapon_visual_state = .{};
     state.gameplay_effects.clear();
-    audio.stopVoicePlayback(state);
+    voice_audio.stopPlayback(voice_audio.context(state));
     state.gameplay_voice_manager.clear();
     state.native_gameplay_voice_manager.clear();
     state.announced_slug_voice_cell_count = 0;

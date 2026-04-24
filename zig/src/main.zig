@@ -19,6 +19,7 @@ const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
 const subgame_camera = @import("app/subgame_camera.zig");
 const track_build_seed = @import("app/track_build_seed.zig");
+const voice_audio = @import("app/voice_audio.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -555,7 +556,7 @@ const AppState = struct {
             self.current_text_script = null;
         }
 
-        audio.stopVoicePlayback(self);
+        voice_audio.stopPlayback(voice_audio.context(self));
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
@@ -944,7 +945,7 @@ const AppState = struct {
                         }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
                         audio.playGameplayRunnerAudio(self, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
-                        audio.updateGameplayAmbientVoices(self, runner.*, loaded_track_preview);
+                        voice_audio.updateAmbient(voice_audio.context(self), runner.*, loaded_track_preview);
                         self.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
                         self.refreshRunnerForStartupBlock(
@@ -2153,7 +2154,7 @@ const AppState = struct {
     pub fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .level, .pause_menu => {},
-            else => audio.stopVoicePlayback(self),
+            else => voice_audio.stopPlayback(voice_audio.context(self)),
         }
         switch (self.game_phase) {
             .boot => {
