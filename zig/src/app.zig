@@ -86,6 +86,7 @@ pub const Options = struct {
     fullscreen: bool = false,
     hidden_window: bool = false,
     credits_with_remake: bool = true,
+    debug_mode: ?[]const u8 = null,
     command: AppCommand = .game,
 };
 
@@ -183,6 +184,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
         }
         if (std.mem.eql(u8, arg, "--vanilla-credits")) {
             options.credits_with_remake = false;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--debug-mode")) {
+            index += 1;
+            if (index >= args.len) return error.MissingDebugMode;
+            options.debug_mode = args[index];
             continue;
         }
         if (std.mem.eql(u8, arg, "game")) {
@@ -310,10 +317,11 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(false, options.fullscreen);
     try std.testing.expectEqual(false, options.hidden_window);
     try std.testing.expectEqual(true, options.credits_with_remake);
+    try std.testing.expectEqual(@as(?[]const u8, null), options.debug_mode);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen", "--hidden-window", "--timeout-seconds", "5", "--vanilla-credits" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen", "--hidden-window", "--timeout-seconds", "5", "--vanilla-credits", "--debug-mode", "models" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
     try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
@@ -326,6 +334,7 @@ test "parse args handles debug and smoke subcommands" {
     try std.testing.expectEqual(true, options.fullscreen);
     try std.testing.expectEqual(true, options.hidden_window);
     try std.testing.expectEqual(false, options.credits_with_remake);
+    try std.testing.expectEqualStrings("models", options.debug_mode.?);
 
     options = try parseArgsFromSlice(&.{"smoke"});
     try std.testing.expectEqual(AppCommand.smoke, options.command);

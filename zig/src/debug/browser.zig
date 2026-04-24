@@ -6,6 +6,7 @@ const music_audio = @import("../app/music_audio.zig");
 const ui = @import("../ui.zig");
 const background = @import("../background.zig");
 const debug_levels = @import("levels.zig");
+const toon_outline_lab = @import("toon_outline_lab.zig");
 const object = @import("../object.zig");
 const track = @import("../track.zig");
 const track_render = @import("../track_render.zig");
@@ -20,7 +21,17 @@ pub const Mode = enum {
     levels,
     segments,
     streaks,
+    toon_lab,
 };
+
+pub fn modeFromName(name: []const u8) ?Mode {
+    inline for (std.meta.fields(Mode)) |field| {
+        if (std.ascii.eqlIgnoreCase(name, field.name)) {
+            return @field(Mode, field.name);
+        }
+    }
+    return null;
+}
 
 pub const SegmentRenderMode = enum {
     game,
@@ -90,7 +101,8 @@ pub fn nextMode(mode: Mode) Mode {
         .objects => .levels,
         .levels => .segments,
         .segments => .streaks,
-        .streaks => .textures,
+        .streaks => .toon_lab,
+        .toon_lab => .textures,
     };
 }
 
@@ -134,6 +146,9 @@ pub fn handleInput(state: anytype) !void {
     }
     if (rl.isKeyPressed(.seven)) {
         try setMode(state, .streaks);
+    }
+    if (rl.isKeyPressed(.eight)) {
+        try setMode(state, .toon_lab);
     }
 
     if (state.mode == .levels) {
@@ -339,6 +354,7 @@ fn stepSelection(state: anytype, delta: isize) !void {
             try reloadStandaloneSegment(state);
         },
         .streaks => {},
+        .toon_lab => {},
     }
 }
 
@@ -399,11 +415,12 @@ fn reloadModel(state: anytype) !void {
                 state.model_flip_v,
                 xanim.frameNumberFromPath(entry.path),
             );
+            try state.current_animation.?.rendered.enableToonOutline();
             return;
         }
     }
 
-    state.current_model = try state.resources.model(entry.path, .{ .flip_v = state.model_flip_v });
+    state.current_model = try state.resources.model(entry.path, .{ .flip_v = state.model_flip_v, .toon_outline = true });
 }
 
 fn reloadObject(state: anytype) !void {
@@ -456,20 +473,25 @@ fn reloadStandaloneSegmentScene(state: anytype) !void {
 pub fn drawUi(state: anytype, archive_path: []const u8) !void {
     if (state.mode == .models) {
         drawModelViewport(state);
+        if (state.pending_screenshot != null) return;
     } else if (state.mode == .objects) {
         drawObjectViewport(state);
     } else if (state.mode == .levels) {
         debug_levels.drawLevelViewport(state);
     } else if (state.mode == .segments) {
         debug_levels.drawSegmentViewport(state);
+    } else if (state.mode == .toon_lab) {
+        toon_outline_lab.draw(state);
+        return;
     }
 
     drawAppText(state, "snail debug browser", 24, 18, 24, .ray_white);
-    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments  7 streaks", 24, 48, 16, .light_gray);
+    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments  7 streaks  8 toon lab", 24, 48, 16, .light_gray);
     const controls_text: []const u8 = switch (state.mode) {
         .levels => "tab mode  arrows browse  levels: left/right level up/down segment  gameplay: a/d lane w/s speed space pause r reset",
         .segments => "tab mode  arrows browse  segments: v render o overlay g grid a attachments t track",
         .streaks => "streaks: space pause  n step  r reset  h fade  t texture  l lines  q/e alpha  z/x size  c/v stretch  a/d yaw  w/s pitch  f/g fov",
+        .toon_lab => "toon lab: isolated render-state probes",
         else => "tab mode  arrows browse",
     };
     drawAppText(state, controls_text, 24, 70, 16, .light_gray);
@@ -489,6 +511,7 @@ pub fn drawUi(state: anytype, archive_path: []const u8) !void {
     drawModeBadge(state, .levels, state.mode, "Levels", 472, 114);
     drawModeBadge(state, .segments, state.mode, "Segments", 584, 114);
     drawModeBadge(state, .streaks, state.mode, "Streaks", 696, 114);
+    drawModeBadge(state, .toon_lab, state.mode, "Toon", 808, 114);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
@@ -498,6 +521,7 @@ pub fn drawUi(state: anytype, archive_path: []const u8) !void {
         .levels => try debug_levels.drawLevelPanel(state),
         .segments => try debug_levels.drawSegmentPanel(state),
         .streaks => try drawLightStreakDebugPanel(state),
+        .toon_lab => {},
     }
 }
 
@@ -819,14 +843,25 @@ fn drawModelPanel(state: anytype) !void {
 
 fn drawModelViewport(state: anytype) void {
     const model = state.activeModel() orelse return;
+    rl.clearBackground(.ray_white);
     const camera = model.previewCamera(@floatCast(state.render_time_seconds));
+    const outline_stats = model.toonOutlineDrawStats(rl.Matrix.identity(), camera);
     camera.begin();
-    defer rl.endMode3D();
 
     const grid_slices: i32 = @intFromFloat(@min(@max(model.bounds.radius * 6.0, 10.0), 80.0));
     const grid_spacing = @max(model.bounds.radius / 2.0, 0.5);
     rl.drawGrid(grid_slices, grid_spacing);
     model.draw();
+    model.drawToonOutlineEx(rl.Matrix.identity(), camera, .black);
+    rl.endMode3D();
+
+    var outline_buffer: [128]u8 = undefined;
+    const outline_text = std.fmt.bufPrintZ(
+        &outline_buffer,
+        "toon outline edges {d} visible {d} drawable {d}",
+        .{ outline_stats.edges, outline_stats.visible_edges, outline_stats.drawable_segments },
+    ) catch "toon outline stats unavailable";
+    drawAppText(state, outline_text, 24, rl.getScreenHeight() - 34, 18, .black);
 }
 
 fn drawObjectPanel(state: anytype) !void {
@@ -971,7 +1006,8 @@ fn dotVector3(a: rl.Vector3, b: rl.Vector3) f32 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-test "next mode cycles through streak debug browser" {
+test "next mode cycles through isolated toon outline lab" {
     try std.testing.expectEqual(Mode.streaks, nextMode(.segments));
-    try std.testing.expectEqual(Mode.textures, nextMode(.streaks));
+    try std.testing.expectEqual(Mode.toon_lab, nextMode(.streaks));
+    try std.testing.expectEqual(Mode.textures, nextMode(.toon_lab));
 }

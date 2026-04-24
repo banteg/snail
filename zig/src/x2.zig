@@ -115,6 +115,12 @@ const ToonOutlineData = struct {
     }
 };
 
+pub const ToonOutlineDrawStats = struct {
+    edges: usize = 0,
+    visible_edges: usize = 0,
+    drawable_segments: usize = 0,
+};
+
 const PendingToonOutlineEdge = struct {
     vertex_indices: [2]u16,
     face_a: usize,
@@ -288,17 +294,13 @@ pub const Uploaded = struct {
         // Native G0RenderToon chooses the silhouette edges. The port draws those selected
         // edges as shader-softened strips so the 640px-authored art keeps its intended
         // line weight in larger windows without stacking aliased GL line samples.
+        rl.gl.rlDrawRenderBatchActive();
         rl.beginBlendMode(.alpha);
-        defer rl.endBlendMode();
         rl.beginShaderMode(toon_shader);
-        defer rl.endShaderMode();
         rl.gl.rlDisableDepthMask();
-        defer rl.gl.rlEnableDepthMask();
         rl.gl.rlDisableBackfaceCulling();
-        defer rl.gl.rlEnableBackfaceCulling();
-        rl.gl.rlSetTexture(0);
-        rl.gl.rlBegin(rl.gl.rl_quads);
-        defer rl.gl.rlEnd();
+        rl.gl.rlSetTexture(rl.gl.rlGetTextureIdDefault());
+        rl.gl.rlBegin(rl.gl.rl_triangles);
 
         for (toon_outline.edges) |edge| {
             if (!toonOutlineEdgeVisible(self.doc.vertices, toon_outline.faces, edge, camera_local)) continue;
@@ -312,6 +314,38 @@ pub const Uploaded = struct {
 
             drawToonOutlineSegment(world_a, world_b, camera, color, core_width_pixels);
         }
+
+        rl.gl.rlEnd();
+        rl.gl.rlDrawRenderBatchActive();
+        rl.gl.rlSetTexture(0);
+        rl.gl.rlEnableBackfaceCulling();
+        rl.gl.rlEnableDepthMask();
+        rl.endShaderMode();
+        rl.endBlendMode();
+    }
+
+    pub fn toonOutlineDrawStats(
+        self: *const Uploaded,
+        transform: rl.Matrix,
+        camera: rl.Camera3D,
+    ) ToonOutlineDrawStats {
+        const toon_outline = self.toon_outline orelse return .{};
+        const inverse_transform = rl.math.matrixInvert(transform);
+        const camera_local = vec3FromVector3(transformPointByMatrix(inverse_transform, camera.position));
+        var stats = ToonOutlineDrawStats{ .edges = toon_outline.edges.len };
+        for (toon_outline.edges) |edge| {
+            if (!toonOutlineEdgeVisible(self.doc.vertices, toon_outline.faces, edge, camera_local)) continue;
+            stats.visible_edges += 1;
+
+            const local_a = vertexAt(self.doc.vertices, edge.vertex_indices[0]) catch continue;
+            const local_b = vertexAt(self.doc.vertices, edge.vertex_indices[1]) catch continue;
+            const world_a = transformPointByMatrix(transform, vector3FromVec3(local_a));
+            const world_b = transformPointByMatrix(transform, vector3FromVec3(local_b));
+            if (toonOutlineSegmentSide(world_a, world_b, camera) != null) {
+                stats.drawable_segments += 1;
+            }
+        }
+        return stats;
     }
 
     pub fn applyBlend(
@@ -1360,6 +1394,10 @@ fn emitToonOutlineStrip(
     rl.gl.rlVertex3f(a0.x, a0.y, a0.z);
     rl.gl.rlTexCoord2f(core_half_pixels, start_distance_pixels);
     rl.gl.rlVertex3f(b0.x, b0.y, b0.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, end_distance_pixels);
+    rl.gl.rlVertex3f(b1.x, b1.y, b1.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, start_distance_pixels);
+    rl.gl.rlVertex3f(a0.x, a0.y, a0.z);
     rl.gl.rlTexCoord2f(core_half_pixels, end_distance_pixels);
     rl.gl.rlVertex3f(b1.x, b1.y, b1.z);
     rl.gl.rlTexCoord2f(core_half_pixels, end_distance_pixels);

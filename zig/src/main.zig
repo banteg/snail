@@ -441,6 +441,7 @@ const AppState = struct {
             .runtime_config = runtime_config_result.blob,
             .runtime_config_loaded_from_file = runtime_config_result.loaded_from_file,
             .command = options.command,
+            .mode = if (options.debug_mode) |mode_name| debug_browser.modeFromName(mode_name) orelse return error.InvalidDebugMode else .textures,
             .window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command),
             .audio_ready = audio_ready,
             .audio_muted = options.hidden_window,
@@ -644,6 +645,7 @@ const AppState = struct {
         switch (self.command) {
             .game => try self.simulateGameTick(runner_input),
             .debug, .smoke => {
+                self.game_phase_ticks += 1;
                 if (self.mode == .streaks) {
                     self.debug_light_streak_view.step();
                 }
@@ -2086,16 +2088,18 @@ pub fn main(init: std.process.Init) !void {
             frames_left -= 1;
         }
 
-        try state.flushQueuedScreenshot();
         try state.handleInput();
         try state.update(frame_delta_seconds);
         try state.maybeQueueAutoScreenshot();
 
-        rl.beginDrawing();
-        defer rl.endDrawing();
+        {
+            rl.beginDrawing();
+            defer rl.endDrawing();
+            rl.clearBackground(.black);
+            try drawUi(&state, options.archive_path);
+        }
 
-        rl.clearBackground(.black);
-        try drawUi(&state, options.archive_path);
+        try state.flushQueuedScreenshot();
     }
 }
 

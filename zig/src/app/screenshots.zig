@@ -53,16 +53,15 @@ pub fn flushQueued(state: anytype) !void {
     defer request.deinit(state.allocator);
 
     const use_frontend_canvas = state.command == .game and render_phase.frontendUsesCanvas(state) and state.frontend_canvas != null;
-    var screenshot = if (use_frontend_canvas)
-        try rl.loadImageFromTexture(state.frontend_canvas.?.texture)
-    else
-        try rl.loadImageFromScreen();
-    defer screenshot.unload();
     if (use_frontend_canvas) {
+        var screenshot = try rl.loadImageFromTexture(state.frontend_canvas.?.texture);
+        defer screenshot.unload();
         screenshot.flipVertical();
-    }
-    if (!rl.exportImage(screenshot, request.relative_path_z)) {
-        return error.ScreenshotExportFailed;
+        if (!rl.exportImage(screenshot, request.relative_path_z)) {
+            return error.ScreenshotExportFailed;
+        }
+    } else {
+        rl.takeScreenshot(request.relative_path_z);
     }
     std.log.info("captured screenshot {s}", .{request.relative_path_z});
 
