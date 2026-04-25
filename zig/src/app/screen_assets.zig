@@ -46,6 +46,10 @@ pub fn viewContext(state: anytype) ViewContext {
 }
 
 pub fn loadGameBackground(screen: Context, script_path: []const u8) !void {
+    if (loadedGameBackgroundMatches(screen.current_game_background, screen.current_game_background_runtime, script_path)) {
+        return;
+    }
+
     unloadGameBackground(screen);
     var loaded = if (boot_assets.takeBackground(screen.boot, script_path)) |preloaded|
         preloaded
@@ -61,6 +65,16 @@ pub fn unloadGameBackground(screen: Context) void {
         screen.current_game_background.* = null;
     }
     screen.current_game_background_runtime.* = null;
+}
+
+fn loadedGameBackgroundMatches(
+    current_background: *const ?background.Loaded,
+    current_runtime: *const ?background.Runtime,
+    script_path: []const u8,
+) bool {
+    const loaded = if (current_background.*) |*loaded| loaded else return false;
+    if (current_runtime.* == null) return false;
+    return std.ascii.eqlIgnoreCase(loaded.definition.source_path, script_path);
 }
 
 pub fn loadLoadingScreen(screen: Context) !void {
@@ -117,4 +131,29 @@ pub fn currentTextScript(screen: ViewContext) ?*const intro.Loaded {
         return script;
     }
     return null;
+}
+
+test "loaded game background match requires same path and active runtime" {
+    var loaded: ?background.Loaded = .{
+        .definition = .{
+            .arena = undefined,
+            .source_path = "DATA/BACKGRND/SPACE.TXT",
+            .id = 0,
+            .fog = .{ .r = 0, .g = 0, .b = 0 },
+            .picture = "",
+            .landscape = null,
+            .distort = 0.0,
+        },
+        .primary_texture = undefined,
+    };
+    var runtime: ?background.Runtime = std.mem.zeroes(background.Runtime);
+
+    try std.testing.expect(loadedGameBackgroundMatches(&loaded, &runtime, "data/backgrnd/space.txt"));
+    try std.testing.expect(!loadedGameBackgroundMatches(&loaded, &runtime, "DATA/BACKGRND/OTHER.TXT"));
+
+    runtime = null;
+    try std.testing.expect(!loadedGameBackgroundMatches(&loaded, &runtime, "DATA/BACKGRND/SPACE.TXT"));
+
+    loaded = null;
+    try std.testing.expect(!loadedGameBackgroundMatches(&loaded, &runtime, "DATA/BACKGRND/SPACE.TXT"));
 }
