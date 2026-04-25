@@ -21,9 +21,7 @@ pub fn sync(state: anytype) !void {
     switch (state.game_phase) {
         .boot => {
             music_audio.stopPreview(music_audio.context(state));
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
+            clearLevelSelectionState(state);
             state.boot_task_index = 0;
             boot_assets.unload(boot_assets.context(state));
             state.unloadTextScript();
@@ -31,98 +29,55 @@ pub fn sync(state: anytype) !void {
             try state.loadLoadingScreen();
         },
         .intro => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(intro_background_path);
-            try music_audio.playByPath(music_audio.context(state), intro_music_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, intro_background_path, intro_music_path);
             try state.loadTextScript(intro_script_path);
         },
         .main_menu, .new_game_menu, .high_scores_menu => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(main_menu_background_path);
-            try music_audio.playByPath(music_audio.context(state), default_audio_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, main_menu_background_path, default_audio_path);
         },
         .challenge_setup_menu => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
+            clearLevelSelectionState(state);
             state.challenge_setup_speed_display_value = @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01;
             state.challenge_setup_difficulty_display_value = @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(main_menu_background_path);
-            try music_audio.playByPath(music_audio.context(state), default_audio_path);
+            try loadBackgroundMusicPhase(state, main_menu_background_path, default_audio_path);
         },
         .options_menu => {
             state.options_sound_display_value = state.runtime_config.soundVolume();
             state.options_music_display_value = state.runtime_config.musicVolume();
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
             if (state.options_return_phase == .pause_menu) {
-                try state.loadCurrentLevelBackground();
+                try loadCurrentGameplayBackdrop(state);
             } else {
-                state.active_level_segment_index = null;
-                state.clearLevelPromptQueue();
-                state.mouse_level_lane_target = null;
-                try state.loadGameBackground(main_menu_background_path);
-                try music_audio.playByPath(music_audio.context(state), default_audio_path);
+                clearLevelSelectionState(state);
+                try loadBackgroundMusicPhase(state, main_menu_background_path, default_audio_path);
             }
         },
         .pause_menu => {
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadCurrentLevelBackground();
+            try loadCurrentGameplayBackdrop(state);
         },
         .route_map_menu => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(route_map_background_path);
-            try music_audio.playByPath(music_audio.context(state), default_audio_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, route_map_background_path, default_audio_path);
         },
         .credits => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(intro_background_path);
-            try music_audio.playByPath(music_audio.context(state), intro_music_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, intro_background_path, intro_music_path);
             try state.loadTextScript(credits_script_path);
         },
         .help => {
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(help_background_path);
-            try music_audio.playByPath(music_audio.context(state), default_audio_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, help_background_path, default_audio_path);
         },
         .exit_prompt => {
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
             if (state.exit_prompt_return_phase == .pause_menu) {
-                try state.loadCurrentLevelBackground();
+                try loadCurrentGameplayBackdrop(state);
             } else if (state.exit_prompt_return_phase == .route_map_menu) {
-                state.active_level_segment_index = null;
-                state.clearLevelPromptQueue();
-                state.mouse_level_lane_target = null;
-                try state.loadGameBackground(route_map_background_path);
-                try music_audio.playByPath(music_audio.context(state), default_audio_path);
+                clearLevelSelectionState(state);
+                try loadBackgroundMusicPhase(state, route_map_background_path, default_audio_path);
             } else {
-                state.active_level_segment_index = null;
-                state.clearLevelPromptQueue();
-                state.mouse_level_lane_target = null;
-                try state.loadGameBackground(main_menu_background_path);
-                try music_audio.playByPath(music_audio.context(state), default_audio_path);
+                clearLevelSelectionState(state);
+                try loadBackgroundMusicPhase(state, main_menu_background_path, default_audio_path);
             }
         },
         .completion_screen => {
@@ -131,32 +86,47 @@ pub fn sync(state: anytype) !void {
             } else {
                 state.resetCompletionScreenReveal();
             }
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadCurrentLevelBackground();
+            clearLevelTransientUi(state);
+            try loadCurrentGameplayBackdrop(state);
         },
         .thanks_screen => {
             state.thanks_screen_controller.reset();
-            state.active_level_segment_index = null;
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadGameBackground(thanks_screen_background_path);
-            try music_audio.playByPath(music_audio.context(state), intro_music_path);
+            clearLevelSelectionState(state);
+            try loadBackgroundMusicPhase(state, thanks_screen_background_path, intro_music_path);
         },
         .level => {
             music_audio.stopPreview(music_audio.context(state));
-            state.clearLevelPromptQueue();
-            state.mouse_level_lane_target = null;
-            state.unloadTextScript();
-            state.unloadLoadingScreen();
-            try state.loadCurrentLevelBackground();
+            clearLevelTransientUi(state);
+            try loadCurrentGameplayBackdrop(state);
             const previous_active_level_segment_index = state.active_level_segment_index;
             try state.syncActiveLevelSegment();
             try state.dispatchCurrentRunnerRowMessage(previous_active_level_segment_index, null, true);
         },
     }
+}
+
+fn clearLevelSelectionState(state: anytype) void {
+    state.active_level_segment_index = null;
+    clearLevelTransientUi(state);
+}
+
+fn clearLevelTransientUi(state: anytype) void {
+    state.clearLevelPromptQueue();
+    state.mouse_level_lane_target = null;
+}
+
+fn unloadFrontendScreens(state: anytype) void {
+    state.unloadTextScript();
+    state.unloadLoadingScreen();
+}
+
+fn loadBackgroundMusicPhase(state: anytype, background_path: []const u8, music_path: []const u8) !void {
+    unloadFrontendScreens(state);
+    try state.loadGameBackground(background_path);
+    try music_audio.playByPath(music_audio.context(state), music_path);
+}
+
+fn loadCurrentGameplayBackdrop(state: anytype) !void {
+    unloadFrontendScreens(state);
+    try state.loadCurrentLevelBackground();
 }
