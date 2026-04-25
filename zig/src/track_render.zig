@@ -17,6 +17,7 @@ const skirt_depth: f32 = 0.65;
 const back_plane_margin: f32 = 4.0;
 const back_plane_y: f32 = -0.66;
 const track_skirt_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 102 };
+const attachment_fringe_outset: f32 = 0.4;
 
 pub const Scene = struct {
     allocator: std.mem.Allocator,
@@ -346,9 +347,56 @@ fn drawAllAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLe
 }
 
 fn drawBuiltAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+    drawAttachmentFringe(scene, built);
     switch (built.template.spec.family) {
         .nonlinear_42 => drawNonlinear42Attachment(scene, built),
         else => drawOrdinaryAttachment(scene, built),
+    }
+}
+
+fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+    const template = &built.template;
+    if (template.samples.len < 2 or template.width_cells == 0) return;
+
+    const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
+    const left_edge_offset = -half_width;
+    const left_inner_offset = @min(left_edge_offset + 1.0, half_width);
+    const right_edge_offset = half_width;
+    const right_inner_offset = @max(right_edge_offset - 1.0, -half_width);
+    const uv = QuadUv{ .left = 0.5, .right = 0.5, .top = 0.0, .bottom = 1.0 };
+
+    for (0..template.samples.len - 1) |sample_index| {
+        const front_progress: f32 = @floatFromInt(sample_index);
+        const back_progress: f32 = @floatFromInt(sample_index + 1);
+
+        const front_left_edge = attachmentPathVertex(built, front_progress, left_edge_offset);
+        const back_left_edge = attachmentPathVertex(built, back_progress, left_edge_offset);
+        const front_left_outer = extendAttachmentEdge(front_left_edge, attachmentPathVertex(built, front_progress, left_inner_offset));
+        const back_left_outer = extendAttachmentEdge(back_left_edge, attachmentPathVertex(built, back_progress, left_inner_offset));
+
+        const front_right_edge = attachmentPathVertex(built, front_progress, right_edge_offset);
+        const back_right_edge = attachmentPathVertex(built, back_progress, right_edge_offset);
+        const front_right_outer = extendAttachmentEdge(front_right_edge, attachmentPathVertex(built, front_progress, right_inner_offset));
+        const back_right_outer = extendAttachmentEdge(back_right_edge, attachmentPathVertex(built, back_progress, right_inner_offset));
+
+        drawDoubleSidedTintedTexturedQuad(
+            scene.textures.fringe.texture,
+            front_left_outer,
+            back_left_outer,
+            back_left_edge,
+            front_left_edge,
+            uv,
+            track_skirt_tint,
+        );
+        drawDoubleSidedTintedTexturedQuad(
+            scene.textures.fringe.texture,
+            front_right_edge,
+            back_right_edge,
+            back_right_outer,
+            front_right_outer,
+            uv,
+            track_skirt_tint,
+        );
     }
 }
 
@@ -356,6 +404,7 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     const template = &built.template;
     if (template.samples.len < 2) return;
 
+    const surface_texture = attachmentSurfaceTexture(scene, template);
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
     const base_row = @as(f32, @floatFromInt(built.row.global_row));
@@ -371,8 +420,8 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
             const right_offset = left_offset + 1.0;
 
             drawDoubleSidedTexturedQuad(
-                scene.textures.track.texture,
-                scene.textures.track.texture,
+                surface_texture,
+                surface_texture,
                 attachmentVertex(front_pose, left_offset, base_row),
                 attachmentVertex(back_pose, left_offset, base_row),
                 attachmentVertex(back_pose, right_offset, base_row),
@@ -387,6 +436,7 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
     const template = &built.template;
     if (template.samples.len < 2) return;
 
+    const surface_texture = attachmentSurfaceTexture(scene, template);
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
 
@@ -403,8 +453,8 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
             const right_offset = left_offset + 1.0;
 
             drawDoubleSidedTexturedQuad(
-                scene.textures.track.texture,
-                scene.textures.track.texture,
+                surface_texture,
+                surface_texture,
                 nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, left_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
@@ -413,6 +463,14 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
             );
         }
     }
+}
+
+fn attachmentSurfaceTexture(scene: *const Scene, template: *const attachment_builders.Template) rl.Texture2D {
+    return switch (template.spec.family) {
+        // START's native template receives Objects/World00/Slide0.tga as the visible strip.
+        .start => scene.textures.slide.texture,
+        else => scene.textures.track.texture,
+    };
 }
 
 fn attachmentVertex(
@@ -446,6 +504,45 @@ fn nonlinear42AttachmentVertex(
         .y = world.y,
         .z = world.z,
     };
+}
+
+fn attachmentPathVertex(
+    built: *const attachment_builders.BuiltAttachment,
+    progress: f32,
+    lateral_offset: f32,
+) rl.Vector3 {
+    if (built.template.spec.family == .nonlinear_42) {
+        return nonlinear42AttachmentVertex(&built.template, built.row.global_row, progress, lateral_offset);
+    }
+
+    return attachmentVertex(
+        attachment_builders.samplePoseAtProgress(&built.template, progress),
+        lateral_offset,
+        @floatFromInt(built.row.global_row),
+    );
+}
+
+fn extendAttachmentEdge(edge: rl.Vector3, inner: rl.Vector3) rl.Vector3 {
+    const delta = vector3Sub(edge, inner);
+    const len = vector3Length(delta);
+    if (len <= 0.0001) return edge;
+    return vector3Add(edge, vector3Scale(delta, attachment_fringe_outset / len));
+}
+
+fn vector3Add(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{ .x = a.x + b.x, .y = a.y + b.y, .z = a.z + b.z };
+}
+
+fn vector3Sub(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{ .x = a.x - b.x, .y = a.y - b.y, .z = a.z - b.z };
+}
+
+fn vector3Scale(v: rl.Vector3, scalar: f32) rl.Vector3 {
+    return .{ .x = v.x * scalar, .y = v.y * scalar, .z = v.z * scalar };
+}
+
+fn vector3Length(v: rl.Vector3) f32 {
+    return std.math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
 fn textureForRenderCacheFamily(scene: *const Scene, family: RenderCacheFamily) rl.Texture2D {
@@ -550,6 +647,16 @@ test "track skirt tint follows the recovered shared skirt alpha" {
     try std.testing.expectEqual(@as(u8, 102), track_skirt_tint.a);
 }
 
+test "attachment fringe extends beyond the path edge by the native outset" {
+    const edge = rl.Vector3{ .x = -4.0, .y = 2.0, .z = 6.0 };
+    const inner = rl.Vector3{ .x = -3.0, .y = 2.0, .z = 6.0 };
+    const extended = extendAttachmentEdge(edge, inner);
+
+    try std.testing.expectApproxEqAbs(@as(f32, -4.4), extended.x, 0.0001);
+    try std.testing.expectApproxEqAbs(edge.y, extended.y, 0.0001);
+    try std.testing.expectApproxEqAbs(edge.z, extended.z, 0.0001);
+}
+
 fn renderCacheSurfaceUv(family: RenderCacheFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
     if (family == .ramp) {
         return .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 };
@@ -603,6 +710,19 @@ fn drawDoubleSidedTexturedQuad(
 ) void {
     drawTexturedQuad(front_texture, top_left, bottom_left, bottom_right, top_right, uv, .white);
     drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv, .white);
+}
+
+fn drawDoubleSidedTintedTexturedQuad(
+    texture: rl.Texture2D,
+    top_left: rl.Vector3,
+    bottom_left: rl.Vector3,
+    bottom_right: rl.Vector3,
+    top_right: rl.Vector3,
+    uv: QuadUv,
+    tint: rl.Color,
+) void {
+    drawTexturedQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, tint);
+    drawTexturedQuad(texture, top_right, bottom_right, bottom_left, top_left, uv, tint);
 }
 
 test "resolve track set index rejects unresolved windows values" {
