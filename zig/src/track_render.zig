@@ -136,7 +136,8 @@ fn setSceneTextureWrap(textures: *Textures) void {
     rl.setTextureWrap(textures.slide.texture, .repeat);
     rl.setTextureWrap(textures.warn.texture, .repeat);
     rl.setTextureWrap(textures.ramp.texture, .repeat);
-    rl.setTextureWrap(textures.fringe.texture, .repeat);
+    // FRINGE.TGA is a tiny edge alpha ramp; repeating wraps the opposite edge into the falloff.
+    rl.setTextureWrap(textures.fringe.texture, .clamp);
     rl.setTextureWrap(textures.back.texture, .repeat);
 }
 
