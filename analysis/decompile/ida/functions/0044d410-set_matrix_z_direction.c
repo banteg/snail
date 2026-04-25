@@ -2,7 +2,7 @@
 /* function: set_matrix_z_direction @ 0x44d410 */
 /* selector: set_matrix_z_direction */
 
-void __thiscall set_matrix_z_direction(TransformMatrix *transform, Vec3 *direction)
+void __thiscall set_matrix_z_direction(TransformMatrix *transform, const Vec3 *direction)
 {
   bool v3; // c3
   float x; // ecx

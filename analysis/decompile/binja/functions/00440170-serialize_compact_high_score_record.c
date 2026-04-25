@@ -10,7 +10,7 @@
 0044018d        arg2[0xc] = arg1[0xb]
 00440194        arg2[0x12] = arg1[0x12]
 004401a3        arg2[0x15] = arg1[0xd]
-004401a6        sub_44e5b0(&arg2[0x17], &arg1[0x15])
+004401a6        rstrcpy_checked_ascii(&arg2[0x17], &arg1[0x15])
 004401b9        __builtin_memcpy(&arg2[2], &arg1[2], 0x18)
 004401be        arg2[8] = arg1[8]
 004401c4        arg2[0x13] = arg1[0x13]

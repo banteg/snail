@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: destroy_wall2_ambient_hazard @ 0x439bc0 */
-/* selector: destroy_wall2_ambient_hazard */
+/* function: destroy_sub_lazer_projectile @ 0x439bc0 */
+/* selector: destroy_sub_lazer_projectile */
 
-// Unlinks one live `Wall2` ambient-hazard actor and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool.
+// Unlinks one live SubLazer projectile (`cRSubLazerManager` slot) and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool. Historically labelled a `Wall2 ambient hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
 _DWORD *__thiscall sub_439BC0(int this)
 {
   int v2; // eax

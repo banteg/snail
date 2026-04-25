@@ -31,7 +31,7 @@
 0041205b        float ecx_1 = data_5031d4
 00412061        data_50316c = fconvert.s(fconvert.t(out) / fconvert.t(var_c4))
 0041206f        float var_80[0x10]
-0041206f        sub_450314(&var_80, ecx_1, data_50316c, 0.300000012f, 52f)
+0041206f        build_perspective_projection_matrix(&var_80, ecx_1, data_50316c, 0.300000012f, 52f)
 00412074        int32_t* eax_6 = data_502fec
 00412083        (*(*eax_6 + 0x94))(eax_6, 3, &var_80)
 00412097        data_503260 = arg9
@@ -52,7 +52,7 @@
 004120e0        int32_t var_a8 = eax_9
 004120f5        float var_b4 = fconvert.s(fconvert.t(*(arg6 + 0x28)) + fconvert.t(*(arg6 + 0x38)))
 004120fb        float var_40[0x10]
-004120fb        sub_451ad9(&var_40, &var_a4, &var_bc, &var_b0)
+004120fb        build_camera_view_matrix(&var_40, &var_a4, &var_bc, &var_b0)
 00412100        int32_t* eax_10 = data_502fec
 00412112        (*(*eax_10 + 0x94))(eax_10, 2, &var_40)
 00412118        int32_t* eax_11 = data_502fec

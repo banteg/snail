@@ -93,13 +93,13 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     v9 = nullptr;
   }
   v46 = find_case_insensitive_substring(asc_4A1568, v9);
-  sub_44E710(&v46);
-  LOWORD(v10) = sub_44E710(&v46);
-  v41 = sub_44E710(&v47);
+  parse_next_signed_int(&v46);
+  LOWORD(v10) = parse_next_signed_int(&v46);
+  v41 = parse_next_signed_int(&v47);
   v11 = (__int16)v41;
-  if ( v11 != sub_44E710(&v40) )
+  if ( v11 != parse_next_signed_int(&v40) )
     report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s", Buffer);
-  sub_44E710(&v47);
+  parse_next_signed_int(&v47);
   v12 = find_case_insensitive_substring(aMeshtexturecoo, v5);
   v44 = v12;
   if ( !v12 )
@@ -108,7 +108,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     v12 = v44;
   }
   v44 = find_case_insensitive_substring(asc_4A1568, v12);
-  if ( v11 != sub_44E710(&v44) )
+  if ( v11 != parse_next_signed_int(&v44) )
     report_errorf("Mesh texture coords number does not match mesh vertext count in %s", Buffer);
   v10 = (__int16)v10;
   v48 = (__int16)v10;
@@ -144,7 +144,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     while ( v11 );
     v10 = v48;
   }
-  if ( v10 != sub_44E710(&v40) )
+  if ( v10 != parse_next_signed_int(&v40) )
     report_errorf("Mesh face count does not match material face count in %s", Buffer);
   if ( v10 > 0 )
   {
@@ -153,14 +153,14 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     do
     {
       mesh->facequads[v17].flags = 0;
-      v18 = sub_44E710(&v40);
-      v50 = sub_44E710(&v40);
-      v43 = sub_44E710(&v40);
-      v19 = sub_44E710(&v40);
+      v18 = parse_next_signed_int(&v40);
+      v50 = parse_next_signed_int(&v40);
+      v43 = parse_next_signed_int(&v40);
+      v19 = parse_next_signed_int(&v40);
       v45 = (_BYTE *)v19;
       if ( v18 == 4 )
       {
-        v20 = sub_44E710(&v40);
+        v20 = parse_next_signed_int(&v40);
         v19 = (int)v45;
       }
       else
@@ -203,9 +203,9 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
   if ( !v24 )
     return report_errorf("No MeshMaterialList { in %s", Buffer);
   v42 = find_case_insensitive_substring(asc_4A1568, v24);
-  v25 = sub_44E710(&v42);
+  v25 = parse_next_signed_int(&v42);
   v41 = v25;
-  v49 = (char *)sub_44E710(&v42);
+  v49 = (char *)parse_next_signed_int(&v42);
   if ( v49 != (char *)v10 )
     return report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s", Buffer);
   v26 = allocate_tracked_memory(4 * v25, (int)aDirectXMateria);
@@ -265,7 +265,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     v38 = 0;
     do
     {
-      v39 = sub_44E710(&v42);
+      v39 = parse_next_signed_int(&v42);
       ++v38;
       --v37;
       mesh->facequads[v38 - 1].texture_ref = *(TextureRef **)&v45[4 * v39];

@@ -227,7 +227,7 @@ int __thiscall load_segment_definitions(int *this)
                     {
                       v22[547] |= 1u;
                       v60 = find_case_insensitive_substring(asc_4A2094, v40) + 1;
-                      v41 = sub_44E710(&v60);
+                      v41 = parse_next_signed_int(&v60);
                       v42 = v60;
                       v22[548] = v41;
                       v60 = find_case_insensitive_substring(asc_4AC438, v42) + 1;

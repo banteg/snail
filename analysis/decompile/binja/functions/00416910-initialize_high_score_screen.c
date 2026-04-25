@@ -40,7 +40,7 @@
 00416aa5        var_c4 = 27f
 00416aad        eax_8.b = *(arg1 + 0x10)
 00416ab2        if (eax_8.b != 0)
-00416ac2        sub_44e5b0(*(arg1 + 0x18) + 0x2cc, "Enter your name here!")
+00416ac2        rstrcpy_checked_ascii(*(arg1 + 0x18) + 0x2cc, "Enter your name here!")
 00416acd        layout_frontend_widget(*(arg1 + 0x18))
 00416ad3        int32_t ebx = 0
 00416ad5        int32_t i = 0
@@ -151,11 +151,11 @@
 0041709a        *(arg1 + 0x24) = allocate_border(data_4df904 + 0xb4c)
 0041709d        struct Color4f* color_25 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 004170b9        initialize_frontend_widget(*(arg1 + 0x24), 0x20000014, "Cancel", 0x17, 0f, y_3, color_25, 2, -110f)
-004170c3        sub_402790(*(arg1 + 0x24), 0xb)
+004170c3        set_frontend_widget_shortcut_key(*(arg1 + 0x24), 0xb)
 004170f8        *(arg1 + 0x28) = allocate_border(data_4df904 + 0xb4c)
 004170fb        struct Color4f* color_26 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00417113        initialize_frontend_widget(*(arg1 + 0x28), 0x20000014, "Submit", 0x17, 0f, y_3, color_26, 2, 55f)
-0041712a        return sub_402790(*(arg1 + 0x28), 5)
+0041712a        return set_frontend_widget_shortcut_key(*(arg1 + 0x28), 5)
 0041715c        *(arg1 + 0x1c) = allocate_border(data_4df904 + 0xb4c)
 0041715f        struct Color4f* color_27 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 0041717b        initialize_frontend_widget(*(arg1 + 0x1c), 0x20000014, "Back", 0x17, 0f, y_3, color_27, 2, -132f)

@@ -2,7 +2,7 @@
 /* function: update_player_movement_flags @ 0x43a1a0 */
 /* selector: update_player_movement_flags */
 
-// Maps the player movement-flag selector at +0x308 onto movement_flags and a per-state rate scalar at +0x2734, then refreshes the 0x2984 state machine when the mask changes.
+// Maps the player movement-flag selector at +0x308 onto movement_flags and the movement-fire progress step at +0x2734, then refreshes the 0x2984 state machine when the mask changes.
 int __thiscall sub_43A1A0(int *this)
 {
   int v2; // eax

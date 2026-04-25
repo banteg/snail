@@ -54,7 +54,7 @@
 00424cce        i += 1
 00424ccf        edi_1 += 0x30
 00424cf6        float var_20_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(vector.y) * fconvert.t(0.400000006f))) + fconvert.t((edi_1 - 0x14)->__offset(0xfffffffffffffff8).d))
-00424cfe        long double x87_r7_30 = fconvert.t(fconvert.s(fconvert.t(vector.z) * fconvert.t(0.400000006f))) + fconvert.t((edi_1 - 0x14)->__offset(0xfffffffffffffffc).d)
+00424cfe        long double x87_r7_30 = fconvert.t(fconvert.s(fconvert.t(vector.z) * fconvert.t(0.400000006f))) + fconvert.t((edi_1 - 0x14)->x:-4.d)
 00424d05        (edi_1 - 0x14)->__offset(0xffffffffffffffe8).d = fconvert.s(fconvert.t(vector.x) * fconvert.t(0.400000006f) + fconvert.t((edi_1 - 0x14)->__offset(0xfffffffffffffff4).d))
 00424d08        (edi_1 - 0x14)->__offset(0xffffffffffffffec).d = var_20_1
 00424d13        (edi_1 - 0x14)->__offset(0xfffffffffffffff0).d = fconvert.s(x87_r7_30)

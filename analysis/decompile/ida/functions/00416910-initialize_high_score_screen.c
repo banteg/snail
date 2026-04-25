@@ -88,7 +88,7 @@ LABEL_8:
   }
   if ( *(_BYTE *)(this + 16) )
   {
-    sub_44E5B0((char *)(*(_DWORD *)(this + 24) + 716), aEnterYourNameH);
+    rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 24) + 716), aEnterYourNameH);
     layout_frontend_widget(*(_DWORD *)(this + 24));
   }
   v8 = 0;

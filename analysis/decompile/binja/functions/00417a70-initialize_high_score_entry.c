@@ -9,7 +9,7 @@
 00417a86        zero_timer_counters()
 00417a93        arg1[0xa] = arg3
 00417a96        arg1[0x12] = arg4
-00417aa8        sub_44e5b0(&arg1[0x15], data_4df904 + 0x1a4)
+00417aa8        rstrcpy_checked_ascii(&arg1[0x15], data_4df904 + 0x1a4)
 00417ab9        arg1[0xf] = arg6
 00417abc        arg1[0x10] = arg7
 00417ac2        *arg1 = 0

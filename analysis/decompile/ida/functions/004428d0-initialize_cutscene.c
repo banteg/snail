@@ -84,18 +84,14 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.y = pad_00[1];
     presentation->live_matrix.position.z = pad_00[2];
     qmemcpy(&v36, &presentation->live_matrix, sizeof(v36));
-    linear_interpolate_matrix(
-      &presentation->live_matrix,
-      &v36,
-      (const TransformMatrix *)presentation->_pad_c0,
-      0.69999999);
+    linear_interpolate_matrix(&presentation->live_matrix, &v36, &presentation->cached_cutscene_matrix, 0.69999999);
     y = presentation->live_matrix.basis_up.y;
     presentation->live_matrix.position.x = v36.position.x;
     presentation->live_matrix.position.y = v36.position.y;
     presentation->live_matrix.position.z = v36.position.z;
     if ( y > 0.0 )
     {
-      v26 = (presentation->live_matrix.position.x - *(float *)&presentation->_pad_c0[48]) * 0.80000001;
+      v26 = (presentation->live_matrix.position.x - presentation->cached_cutscene_matrix.position.x) * 0.80000001;
       rotate_matrix_world_y(&presentation->live_matrix, v26);
     }
     v11 = presentation->wobble.roll_phase_step + presentation->wobble.roll_phase;
@@ -128,7 +124,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.y = v35 + presentation->live_matrix.position.y;
     presentation->live_matrix.position.z = v21 * 0.029999999 + presentation->live_matrix.position.z;
     v22 = *(float *)&presentation->invincible_shell._pad_90[4];
-    qmemcpy(presentation->_pad_c0, v8, sizeof(presentation->_pad_c0));
+    qmemcpy(&presentation->cached_cutscene_matrix, v8, sizeof(presentation->cached_cutscene_matrix));
     if ( v22 > 0.0 )
     {
       v30 = *(float *)&presentation->invincible_shell._pad_90[4] * -2.0943952;

@@ -40,7 +40,7 @@
 00405e89        char* cursor_5 = &find_case_insensitive_substring("-", mesh_path)[1]
 00405e90        cursor = cursor_5
 00405e9a        cursor = &find_case_insensitive_substring("-", cursor_5)[1]
-00405eab        *edi_1 = sub_44e710(&cursor)
+00405eab        *edi_1 = parse_next_signed_int(&cursor)
 00405ead        ecx_3 = var_188
 00405eb1        ebp += 1
 00405eb2        mesh_path = &mesh_path[0x80]

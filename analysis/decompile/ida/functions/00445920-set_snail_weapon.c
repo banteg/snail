@@ -15,6 +15,9 @@ void __thiscall set_snail_weapon(PlayerPresentationController *presentation, int
   int32_t v10; // eax
   int v11; // eax
   int32_t v12; // [esp+10h] [ebp-4h]
+  uint8_t movement_flagsa; // [esp+18h] [ebp+4h]
+  uint8_t movement_flagsb; // [esp+18h] [ebp+4h]
+  uint8_t movement_flagsc; // [esp+18h] [ebp+4h]
 
   v3 = 0;
   switch ( movement_flags )
@@ -58,7 +61,7 @@ void __thiscall set_snail_weapon(PlayerPresentationController *presentation, int
       break;
   }
   selected_state = presentation->weapon_channels[0].selected_state;
-  LOBYTE(movement_flags) = 1;
+  movement_flagsa = 1;
   if ( selected_state != v4 )
   {
     v7 = selected_state - 1;
@@ -71,12 +74,12 @@ LABEL_15:
         {
           if ( v4 == 1 )
           {
-            set_weapon_animation(presentation->weapon_channels, 1, movement_flags, 4);
+            set_weapon_animation(presentation->weapon_channels, 1, movement_flagsa, 4);
             set_weapon_animation(presentation->weapon_channels, 0, 0, -1);
           }
           else if ( v4 == 2 )
           {
-            set_weapon_animation(presentation->weapon_channels, 4, movement_flags, 4);
+            set_weapon_animation(presentation->weapon_channels, 4, movement_flagsa, 4);
             set_weapon_animation(presentation->weapon_channels, 3, 0, -1);
           }
         }
@@ -88,42 +91,42 @@ LABEL_15:
         v3 = 1;
         goto LABEL_22;
       }
-      set_weapon_animation(presentation->weapon_channels, 4, 1, 8);
+      set_weapon_animation(presentation->weapon_channels, 4, 1u, 8);
     }
     else
     {
-      set_weapon_animation(presentation->weapon_channels, 1, 1, 8);
+      set_weapon_animation(presentation->weapon_channels, 1, 1u, 8);
     }
-    LOBYTE(movement_flags) = 0;
+    movement_flagsa = 0;
     goto LABEL_15;
   }
 LABEL_22:
   v8 = presentation->weapon_channels[1].selected_state;
-  LOBYTE(movement_flags) = 1;
+  movement_flagsb = 1;
   if ( v8 == v5 )
     goto LABEL_35;
   v9 = v8 - 1;
   if ( !v9 )
   {
-    set_weapon_animation(&presentation->weapon_channels[1], 1, 1, 8);
+    set_weapon_animation(&presentation->weapon_channels[1], 1, 1u, 8);
     goto LABEL_27;
   }
   if ( v9 == 1 )
   {
-    set_weapon_animation(&presentation->weapon_channels[1], 4, 1, 8);
+    set_weapon_animation(&presentation->weapon_channels[1], 4, 1u, 8);
 LABEL_27:
-    LOBYTE(movement_flags) = 0;
+    movement_flagsb = 0;
   }
   if ( v5 )
   {
     if ( v5 == 1 )
     {
-      set_weapon_animation(&presentation->weapon_channels[1], 1, movement_flags, 4);
+      set_weapon_animation(&presentation->weapon_channels[1], 1, movement_flagsb, 4);
       set_weapon_animation(&presentation->weapon_channels[1], 0, 0, -1);
     }
     else if ( v5 == 2 )
     {
-      set_weapon_animation(&presentation->weapon_channels[1], 4, movement_flags, 4);
+      set_weapon_animation(&presentation->weapon_channels[1], 4, movement_flagsb, 4);
       set_weapon_animation(&presentation->weapon_channels[1], 3, 0, -1);
     }
   }
@@ -135,7 +138,7 @@ LABEL_27:
   v3 = 1;
 LABEL_35:
   v10 = presentation->weapon_channels[2].selected_state;
-  LOBYTE(movement_flags) = 1;
+  movement_flagsc = 1;
   if ( v10 == v12 )
   {
     if ( v3 )
@@ -145,20 +148,20 @@ LABEL_35:
   v11 = v10 - 1;
   if ( !v11 )
   {
-    set_weapon_animation(&presentation->weapon_channels[2], 1, 1, 8);
+    set_weapon_animation(&presentation->weapon_channels[2], 1, 1u, 8);
     goto LABEL_40;
   }
   if ( v11 == 2 )
   {
-    set_weapon_animation(&presentation->weapon_channels[2], 4, 1, 8);
+    set_weapon_animation(&presentation->weapon_channels[2], 4, 1u, 8);
 LABEL_40:
-    LOBYTE(movement_flags) = 0;
+    movement_flagsc = 0;
   }
   if ( v12 )
   {
     if ( v12 == 1 )
     {
-      set_weapon_animation(&presentation->weapon_channels[2], 1, movement_flags, 4);
+      set_weapon_animation(&presentation->weapon_channels[2], 1, movement_flagsc, 4);
       set_weapon_animation(&presentation->weapon_channels[2], 0, 0, -1);
       presentation->weapon_channels[2].selected_state = 1;
       play_sound_effect(25);
@@ -166,7 +169,7 @@ LABEL_40:
     }
     if ( v12 == 3 )
     {
-      set_weapon_animation(&presentation->weapon_channels[2], 4, movement_flags, 4);
+      set_weapon_animation(&presentation->weapon_channels[2], 4, movement_flagsc, 4);
       set_weapon_animation(&presentation->weapon_channels[2], 3, 0, -1);
       presentation->weapon_channels[2].selected_state = 3;
       play_sound_effect(25);

@@ -149,7 +149,7 @@
 00438ed0        int32_t var_50_11 = 0
 00438ed6        game->_pad_00[9] = 0
 00438eda        game->_pad_00[8] = 0
-00438ede        sub_44e540(&data_790f30, 0)
+00438ede        set_sprite_manager_paused(&data_790f30, 0)
 00438ede        esp_1 = &__saved_edi
 00438ee3        int16_t eax_8
 00438ee3        eax_8.b = game->selected_level_record_active
@@ -170,7 +170,7 @@
 00438f4a        game->_pad_3c[1] = 0
 00438f4a        game->_pad_3c[2] = 0
 00438f4a        game->_pad_3c[3] = 0
-00438f4d        sub_44e540(&data_790f30, 1)
+00438f4d        set_sprite_manager_paused(&data_790f30, 1)
 00438f4d        esp_1 = &__saved_edi
 00438f58        if (game->__offset(0x3bb884).d != 2)
 00438f58        goto label_4398ff
@@ -563,7 +563,7 @@
 0043989e        int32_t ecx_81 = game->__offset(0x35bb88).d
 004398a4        *(esp_1 - 4) = 0x751478
 004398ab        *(esp_1 - 8) = ecx_81 + 0x2cc
-004398ac        sub_44e5b0()
+004398ac        rstrcpy_checked_ascii()
 004398ca        void* eax_81 = &game->_pad_00[game->level_mode_arg * 0x1fac0]
 004398d3        if (*(eax_81 + 0x944150) != 1)
 0043990d        hide_border_init(game->__offset(0x35bb8c).d)
@@ -578,7 +578,7 @@
 004398e2        int32_t ecx_85 = game->__offset(0x35bb8c).d
 004398e8        *(esp_1 - 4) = 0x751478
 004398ef        *(esp_1 - 8) = ecx_85 + 0x2cc
-004398f0        sub_44e5b0()
+004398f0        rstrcpy_checked_ascii()
 00438fb0        goto label_4398fa
 00439984        eax_8.b = game->selected_level_record_persistent
 0043998c        if (eax_8.b == 0)

@@ -2,7 +2,7 @@
 /* function: update_star_field @ 0x4346f0 */
 /* selector: update_star_field */
 
-// Runs the star-field controller state machine, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update.
+// Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update.
 void __thiscall update_star_field(int this)
 {
   double v2; // st7

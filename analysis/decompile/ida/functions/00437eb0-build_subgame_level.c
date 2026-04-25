@@ -80,7 +80,7 @@ void __thiscall sub_437EB0(int this, int a2)
   initialize_enemy_manager((#94 *)(this + 19337172));
   initialize_damage_gauge((_DWORD *)(this + 3914536));
   noop_runtime_ai(this + 3914580);
-  initialize_wall2_ambient_hazard_pool((_DWORD *)(this + 3500800));
+  initialize_sub_lazer_pool((_DWORD *)(this + 3500800));
   initialize_salt_hazard_pool((_DWORD *)(this + 3504320));
   reset_voice_manager(unk_751498);
   load_frontend_level_by_mode_and_index((char *)(this + 43124), *(_DWORD *)(this + 64), a2);

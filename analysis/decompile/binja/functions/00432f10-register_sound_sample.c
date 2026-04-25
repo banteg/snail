@@ -10,7 +10,7 @@
 00432f20        esi = arg1
 00432f2b        load_file_bytes_from_archive_or_fs(esi, data_53c7e8, &arg1)
 00432f4f        load_registered_sound_sample_from_bytes(data_53c7e8, arg1, data_5108b0, arg2)
-00432f82        sub_44e5b0((data_5108b0 << 7) + &data_5088b0, esi)
+00432f82        rstrcpy_checked_ascii((data_5108b0 << 7) + &data_5088b0, esi)
 00432f8f        int32_t eax_3 = data_5108b0 + 1
 00432f95        data_5108b0 = eax_3
 00432f9b        if (eax_3 == 0x100)

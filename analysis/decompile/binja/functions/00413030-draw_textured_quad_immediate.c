@@ -5,7 +5,7 @@
 
 00413030        int32_t* eax_36 = data_502fec
 00413041        (*(*eax_36 + 0xc8))(eax_36, 0x16, 1)
-0041304c        sub_414500(arg1)
+0041304c        bind_texture_ref(arg1)
 00413056        sub_412e50(arg17)
 00413070        struct ColorBGRA8 out
 00413070        pack_color_rgba_u8(&out, arg16)

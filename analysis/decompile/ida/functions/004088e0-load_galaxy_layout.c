@@ -80,7 +80,7 @@ int __thiscall sub_4088E0(_DWORD *this)
     *v13 = 0;
     v18 = find_case_insensitive_substring(aStarnumber, v12);
     v18 = find_case_insensitive_substring(asc_4A2094, v18) + 1;
-    *(v9 - 1) = sub_44E710(&v18);
+    *(v9 - 1) = parse_next_signed_int(&v18);
     *v9 = 1065353216;
     v9[1] = 1065353216;
     v9[2] = 1065353216;
@@ -98,8 +98,8 @@ int __thiscall sub_4088E0(_DWORD *this)
         *(this + 168 * *(this + 3) + 8) = dword_4A1D20[2 * v20 + 2 * (v15 / *(v9 - 1))];
         *(this + 168 * *(this + 3) + 9) = 0;
         sprintf(ArgList, "LEVEL %i MISSING", *(this + 3));
-        sub_44E5B0((char *)this + 672 * *(this + 3) + 48, ArgList);
-        sub_44E5B0((char *)this + 672 * *(this + 3) + 176, ArgList);
+        rstrcpy_checked_ascii((char *)this + 672 * *(this + 3) + 48, ArgList);
+        rstrcpy_checked_ascii((char *)this + 672 * *(this + 3) + 176, ArgList);
         ++v6;
         ++*(this + 3);
         v15 += 10;

@@ -11,5 +11,5 @@
 004084fc        slot->_pad_00[0] = 0x18
 004084fc        slot->_pad_00[1] = 0x73
 004084fc        slot->_pad_00[2] = 0x49
-004084fc        slot->_pad_00[3] = nullptr
+004084fc        slot->_pad_00[3] = 0
 00408506        return slot

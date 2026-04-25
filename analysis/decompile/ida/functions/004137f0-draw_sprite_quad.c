@@ -41,7 +41,7 @@ int __cdecl sub_4137F0(int a1, float a2)
   v15 = *(_DWORD *)(LODWORD(a2) + 28);
   a2 = (1.0 - *(float *)(LODWORD(a2) + 104)) * *(float *)(LODWORD(a2) + 96)
      + *(float *)(LODWORD(a2) + 100) * *(float *)(LODWORD(a2) + 104);
-  sub_414500(v15);
+  bind_texture_ref(v15);
   configure_sprite_render_state(v2);
   if ( (*(_DWORD *)(v2 + 4) & 0x1000) != 0 )
     v19 = 1.0;

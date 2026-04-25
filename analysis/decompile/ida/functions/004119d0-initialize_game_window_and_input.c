@@ -148,7 +148,7 @@ LABEL_16:
   if ( (int)initialize_mouse_input(MEMORY[0x4DFAF0]) < 0 )
     abort_startup_with_3d_error();
   ((void (__stdcall *)(_DWORD))SetFocus)(MEMORY[0x4DFAF0]);
-  sub_4129F0(1);
+  set_cull_mode(1);
   return 1;
 }
 

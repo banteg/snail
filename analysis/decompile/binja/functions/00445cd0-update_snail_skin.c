@@ -16,10 +16,14 @@
 00445d1e        void var_60
 00445d1e        __builtin_memcpy(&var_60, esi_1, 0x40)
 00445d24        multiply_vector_by_matrix(&var_c)
+00445d29        int32_t edx_3 = var_c
 00445d31        struct Vec3 (* ecx_1)[0x13] = ebp
 00445d33        ebx += 1
 00445d34        ebp = &(*ebp)[1]
-00445d3a        (ecx_1 - 0x17b0)->snail_hotspots_world[0].x = var_c
+00445d3a        (ecx_1 - 0x17b0)->:0x17b0.b = edx_3.b
+00445d3a        (ecx_1 - 0x17b0)->:0x17b1.b = edx_3:1.b
+00445d3a        (ecx_1 - 0x17b0)->:0x17b2.b = edx_3:2.b
+00445d3a        (ecx_1 - 0x17b0)->:0x17b3.b = edx_3:3.b
 00445d40        (ecx_1 - 0x17b0)->snail_hotspots_world[0].y = edx_2
 00445d43        (ecx_1 - 0x17b0)->snail_hotspots_world[0].z = x
 00445d46        if (ebx s>= 0x13)

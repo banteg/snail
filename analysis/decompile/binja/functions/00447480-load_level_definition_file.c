@@ -38,7 +38,7 @@
 00447583        if (cursor_4 != 0)
 0044759a        cursor = &find_case_insensitive_substring("e", cursor_4)[1]
 004475b2        char* var_730_2 = &arg1[0x69637]
-004475bb        int32_t edi_2 = sub_44e710(&cursor) * 0x2a0
+004475bb        int32_t edi_2 = parse_next_signed_int(&cursor) * 0x2a0
 004475c6        sub_48b32c(edi_2 + data_4df904 + 0x12d4668, "%s")
 004475d5        char* cursor_5 = find_case_insensitive_substring("GalaxyText:", 0x74ec78)
 004475dd        cursor = cursor_5
@@ -68,13 +68,13 @@
 004476da        *edx_4 = 0
 0044766c        char* var_724_10 = arg2
 00447672        report_warningf("Cannot find } for GalaxyText: in %s")
-0044768a        sub_44e5b0(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR } MISSING")
+0044768a        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR } MISSING")
 00447626        char* var_724_8 = arg2
 0044762c        report_warningf("Cannot find { for GalaxyText: in %s")
-00447643        sub_44e5b0(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR { MISSING")
+00447643        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR { MISSING")
 004475e5        char* var_724_6 = arg2
 004475eb        report_warningf("Cannot find GalaxyText: in %s")
-00447603        sub_44e5b0(edi_2 + data_4df904 + 0x12d46e8, "TEXT MISSING")
+00447603        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT MISSING")
 004476e7        char* cursor_8 = find_case_insensitive_substring("Random:yes", 0x74ec78)
 004476f3        cursor = cursor_8
 004476fc        if (cursor_8 == 0)
@@ -131,9 +131,9 @@
 00447850        cursor = cursor_13
 00447854        if (cursor_13 != 0)
 0044789a        cursor = &find_case_insensitive_substring(":", cursor_13)[1]
-004478b6        arg1[0x69633] = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
-004478d4        arg1[0x69634] = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
-004478f0        arg1[0x69635] = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
+004478b6        arg1[0x69633] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
+004478d4        arg1[0x69634] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
+004478f0        arg1[0x69635] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 0044785a        char (* var_724_16)[0x200] = &var_700
 00447860        report_errorf("No Fringe: in %s using white")
 00447882        store_color4f(&arg1[0x69633], 1f, 1f, 1f, 1f)
@@ -164,7 +164,7 @@
 004479af        report_errorf("No Parcel: in %s")
 004479c1        return 0
 004479cf        cursor = find_case_insensitive_substring(":", cursor_16)
-004479e7        arg1[0x6965b] = sub_44e710(&cursor)
+004479e7        arg1[0x6965b] = parse_next_signed_int(&cursor)
 004479ed        char* cursor_17 = find_case_insensitive_substring("Quota:", 0x74ec78)
 004479f7        cursor = cursor_17
 004479fb        if (cursor_17 == 0)
@@ -173,7 +173,7 @@
 00447a0d        report_errorf("No Quota: in %s")
 00447a1f        return 0
 00447a31        cursor = find_case_insensitive_substring(":", cursor_17)
-00447a45        arg1[0x6965d] = sub_44e710(&cursor)
+00447a45        arg1[0x6965d] = parse_next_signed_int(&cursor)
 00447a4b        char* cursor_18 = find_case_insensitive_substring("Speed:select", 0x74ec78)
 00447a55        cursor = cursor_18
 00447a5e        if (cursor_18 == 0)
@@ -254,7 +254,7 @@
 00447c62        if (cursor_24 == 0)
 00447cb9        arg1[*arg1 * 0x1088 + 0x1006] = 0
 00447c73        cursor_1 = find_case_insensitive_substring("=", cursor_24)
-00447c7d        int32_t var_708_4 = sub_44e710(&cursor_1)
+00447c7d        int32_t var_708_4 = parse_next_signed_int(&cursor_1)
 00447c83        unimplemented  {fild st0, dword [esp+0x24]}
 00447c8f        unimplemented  {fmul st0, dword [0x4973b8]}
 00447c9f        arg1[*arg1 * 0x1088 + 0x1006] = fconvert.s(unimplemented  {fstp dword [edx+esi+0x4018], st0})

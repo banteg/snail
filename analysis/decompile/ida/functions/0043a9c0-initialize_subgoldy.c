@@ -145,7 +145,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   initialize_cutscene_ai((CutsceneAI *)&player->presentation.snail_skin_transition.progress_step);
   if ( !player->game->_pad_ff25e0[496] )
     player->presentation.cutscene_ai.unresolved_08 = 1;
-  *(_DWORD *)&player->presentation._pad_c0[60] = player;
+  LODWORD(player->presentation.cached_cutscene_matrix.position.w) = player;
   set_matrix_identity((TransformMatrix *)&player->presentation._pad_28[12]);
   set_matrix_identity((TransformMatrix *)&player->presentation.previous_live_matrix.position.w);
   set_matrix_identity((TransformMatrix *)&player->presentation._pad_78[4]);

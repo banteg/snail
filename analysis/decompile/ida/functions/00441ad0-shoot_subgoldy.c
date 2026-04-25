@@ -2,7 +2,7 @@
 /* function: shoot_subgoldy @ 0x441ad0 */
 /* selector: shoot_subgoldy */
 
-// Finds a free slot in the shared 20-shot pool, routes the request through `spawn_wall2_ambient_hazard`, and plays the positional player-fire cue from the supplied world position.
+// Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position.
 void __thiscall sub_441AD0(_DWORD *this, float *a2, _DWORD *a3)
 {
   int v4; // eax
@@ -22,7 +22,7 @@ void __thiscall sub_441AD0(_DWORD *this, float *a2, _DWORD *a3)
   v6 = (double)v4 * -0.0099999998 + a2[1];
   *(float *)&v8[1] = v6;
   v8[2] = v7;
-  spawn_wall2_ambient_hazard((int)(this + 44 * v4), v8, a3);
+  spawn_sub_lazer_projectile((int)(this + 44 * v4), v8, a3);
   play_sound_effect_at_position(15, a2);
 }
 

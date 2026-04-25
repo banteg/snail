@@ -181,7 +181,7 @@
 004072a0        sub_48ba34(data_4df904)
 004072a5        uninitialize_game_data_archive()
 004072b9        save_config_file("SnailMail.cfg", &data_4df918, 0xc4)
-004072c1        sub_411d80()
+004072c1        uninitialize_input_devices()
 004072c6        data_4df90c = 1
 004072cd        data_4df864 = 0
 004072d3        restore_desktop_display_mode()

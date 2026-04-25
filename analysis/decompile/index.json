@@ -1,46 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 664,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 664,
+  "ida_exported": 664,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": true,
   "health_check_ran": false,
-  "strict": false,
-  "selected_functions": [
-    {
-      "name": "request_object_facequad_normals",
-      "address": "0x42f800"
-    },
-    {
-      "name": "apply_object_toon",
-      "address": "0x42fa80"
-    },
-    {
-      "name": "calc_object_facequad_normals",
-      "address": "0x42fcb0"
-    },
-    {
-      "name": "calc_object_facequad_normals_simple",
-      "address": "0x430230"
-    },
-    {
-      "name": "request_object_edges",
-      "address": "0x430570"
-    },
-    {
-      "name": "add_object_edge",
-      "address": "0x4305a0"
-    },
-    {
-      "name": "calc_object_edges",
-      "address": "0x4308b0"
-    }
-  ]
+  "strict": false
 }

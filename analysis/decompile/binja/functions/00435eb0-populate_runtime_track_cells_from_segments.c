@@ -611,7 +611,7 @@
 00436fd3        int32_t var_60_5 = eax_112[1]
 00436fdc        int32_t var_5c_6 = eax_112[2]
 00436fdf        int32_t var_58_38 = eax_112[3]
-00436fe9        eax_74, x87control_1 = sub_4141d0(*(ebx_5 + 0x5ccb9c))
+00436fe9        eax_74, x87control_1 = set_object_color(*(ebx_5 + 0x5ccb9c))
 00436f12        unimplemented  {fild st0, dword [esp+0x24]}
 00436f16        unimplemented  {fsub st0, dword [0x497210]}
 00436f1c        unimplemented  {fadd dword [0x497228]}

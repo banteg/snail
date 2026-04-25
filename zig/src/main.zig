@@ -3721,8 +3721,10 @@ test "blocked click-start refresh path primes the tutorial start attachment came
     subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
 
     const camera = subgame_camera.levelCamera(&camera_state, &loaded_track_preview, camera_state.fov_degrees);
+    const primed_world_position = runner.worldPosition(&loaded_track_preview, 0.0);
+    const expected_raw_top_height = (@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0;
     try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.worldPosition(&loaded_track_preview, 0.0).y >= 7.9);
+    try std.testing.expectApproxEqAbs(expected_raw_top_height, primed_world_position.y, 0.001);
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(camera_state.source == .live);

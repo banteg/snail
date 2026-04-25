@@ -54,9 +54,13 @@
 00401eb7        widget->hot_text_color.a = eax_6->a
 00401eba        struct Color4f color_10
 00401eba        struct Color4f* eax_7 = set_color_rgba(&color_10, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+00401ebf        float r = eax_7->r
 00401ec7        int32_t var_118_1 = 0x3f800000
 00401ecc        int32_t var_11c_1 = 0x3f31b1b2
-00401ed1        widget->idle_fill_color.r = eax_7->r
+00401ed1        widget->idle_fill_color.r.b = r.b
+00401ed1        widget->idle_fill_color.r:1.b = r:1.b
+00401ed1        widget->idle_fill_color.r:2.b = r:2.b
+00401ed1        widget->idle_fill_color.r:3.b = r:3.b
 00401ed6        int32_t var_120_1 = 0x3e9e9e9f
 00401edb        int32_t var_124_1 = 0x3f1b9b9c
 00401ee0        widget->idle_fill_color.g = eax_7->g
@@ -72,7 +76,11 @@
 00402132        widget->stack_gap = 26f
 0040213c        struct Color4f color_7
 0040213c        struct Color4f* eax_19 = set_color_rgba(&color_7, 1f, 0.521568656f, 0f, 0.699999988f)
-00402153        widget->idle_text_color.r = eax_19->r
+00402141        float r_5 = eax_19->r
+00402153        widget->idle_text_color.r.b = r_5.b
+00402153        widget->idle_text_color.r:1.b = r_5:1.b
+00402153        widget->idle_text_color.r:2.b = r_5:2.b
+00402153        widget->idle_text_color.r:3.b = r_5:3.b
 00402162        widget->idle_text_color.g = eax_19->g
 00402168        widget->idle_text_color.b = eax_19->b
 0040216e        widget->idle_text_color.a = eax_19->a
@@ -84,9 +92,13 @@
 004021ab        widget->hot_text_color.a = eax_21->a
 004021ae        struct Color4f color_11
 004021ae        struct Color4f* eax_22 = set_color_rgba(&color_11, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+004021b3        float r_6 = eax_22->r
 004021bb        int32_t var_118_4 = 0x3f800000
 004021c0        int32_t var_11c_4 = 0x3f31b1b2
-004021c5        widget->idle_fill_color.r = eax_22->r
+004021c5        widget->idle_fill_color.r.b = r_6.b
+004021c5        widget->idle_fill_color.r:1.b = r_6:1.b
+004021c5        widget->idle_fill_color.r:2.b = r_6:2.b
+004021c5        widget->idle_fill_color.r:3.b = r_6:3.b
 004021ca        int32_t var_120_4 = 0x3e9e9e9f
 004021cf        int32_t var_124_4 = 0x3f1b9b9c
 004021d4        widget->idle_fill_color.g = eax_22->g
@@ -103,7 +115,11 @@
 00401f47        widget->render_inset_dynamic = 1
 00401f4e        struct Color4f color_8
 00401f4e        struct Color4f* eax_9 = set_color_rgba(&color_8, 1f, 0.521568656f, 0f, 0.699999988f)
-00401f65        widget->idle_text_color.r = eax_9->r
+00401f53        float r_1 = eax_9->r
+00401f65        widget->idle_text_color.r.b = r_1.b
+00401f65        widget->idle_text_color.r:1.b = r_1:1.b
+00401f65        widget->idle_text_color.r:2.b = r_1:2.b
+00401f65        widget->idle_text_color.r:3.b = r_1:3.b
 00401f74        widget->idle_text_color.g = eax_9->g
 00401f7a        widget->idle_text_color.b = eax_9->b
 00401f80        widget->idle_text_color.a = eax_9->a
@@ -115,9 +131,13 @@
 00401fbd        widget->hot_text_color.a = eax_11->a
 00401fc0        struct Color4f color_12
 00401fc0        struct Color4f* eax_12 = set_color_rgba(&color_12, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+00401fc5        float r_2 = eax_12->r
 00401fcd        int32_t var_118_2 = 0x3f800000
 00401fd2        int32_t var_11c_2 = 0x3f31b1b2
-00401fd7        widget->idle_fill_color.r = eax_12->r
+00401fd7        widget->idle_fill_color.r.b = r_2.b
+00401fd7        widget->idle_fill_color.r:1.b = r_2:1.b
+00401fd7        widget->idle_fill_color.r:2.b = r_2:2.b
+00401fd7        widget->idle_fill_color.r:3.b = r_2:3.b
 00401fdc        int32_t var_120_2 = 0x3e9e9e9f
 00401fe1        int32_t var_124_2 = 0x3f1b9b9c
 00401fe6        widget->idle_fill_color.g = eax_12->g
@@ -134,21 +154,29 @@
 00402040        widget->render_inset_base = 20f
 0040204a        struct Color4f color_2
 0040204a        struct Color4f* eax_14 = set_color_rgba(&color_2, 1f, 0.521568656f, 0f, 0.699999988f)
-00402061        widget->idle_text_color.r = eax_14->r
+0040204f        float r_3 = eax_14->r
+00402061        widget->idle_text_color.r.b = r_3.b
+00402061        widget->idle_text_color.r:1.b = r_3:1.b
+00402061        widget->idle_text_color.r:2.b = r_3:2.b
+00402061        widget->idle_text_color.r:3.b = r_3:3.b
 00402070        widget->idle_text_color.g = eax_14->g
 00402076        widget->idle_text_color.b = eax_14->b
 0040207c        widget->idle_text_color.a = eax_14->a
 00402083        struct Color4f color_3
-00402083        int32_t* eax_16 = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
-0040208f        widget->hot_text_color.r = *eax_16
-0040209e        widget->hot_text_color.g = eax_16[1]
-004020a9        widget->hot_text_color.b = eax_16[2]
-004020b3        widget->hot_text_color.a = eax_16[3]
+00402083        struct Color4f* eax_16 = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
+0040208f        widget->hot_text_color.r = eax_16->r
+0040209e        widget->hot_text_color.g = eax_16->g
+004020a9        widget->hot_text_color.b = eax_16->b
+004020b3        widget->hot_text_color.a = eax_16->a
 004020b6        struct Color4f color_4
 004020b6        struct Color4f* eax_17 = set_color_rgba(&color_4, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+004020bb        float r_4 = eax_17->r
 004020c3        int32_t var_118_3 = 0x3f800000
 004020c8        int32_t var_11c_3 = 0x3f31b1b2
-004020cd        widget->idle_fill_color.r = eax_17->r
+004020cd        widget->idle_fill_color.r.b = r_4.b
+004020cd        widget->idle_fill_color.r:1.b = r_4:1.b
+004020cd        widget->idle_fill_color.r:2.b = r_4:2.b
+004020cd        widget->idle_fill_color.r:3.b = r_4:3.b
 004020d2        int32_t var_120_3 = 0x3e9e9e9f
 004020d7        int32_t var_124_3 = 0x3f1b9b9c
 004020dc        widget->idle_fill_color.g = eax_17->g
@@ -168,7 +196,7 @@
 0040222a        widget->_pad_10[0x2a] = 0
 0040222a        widget->_pad_10[0x2b] = 0
 0040222d        unhide_border_init(widget)
-00402241        sub_44e5b0(&widget->text_buffer, text)
+00402241        rstrcpy_checked_ascii(&widget->text_buffer, text)
 00402254        widget->layout_anchor_y = y
 0040225a        float eax_26
 0040225a        eax_26.b = widget->widget_flags.b

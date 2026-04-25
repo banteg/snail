@@ -14,7 +14,7 @@ int32_t __thiscall initialize_tip(TipSlot *slot, TipMessageDefinition *definitio
   void *widget_main; // ecx
   TipMessageDefinition *v11; // ecx
   int32_t result; // eax
-  int v13; // [esp-8h] [ebp-24h]
+  int32_t v13; // [esp-8h] [ebp-24h]
   float layout_y; // [esp-4h] [ebp-20h]
   float v15; // [esp+0h] [ebp-1Ch]
   float v16; // [esp+0h] [ebp-1Ch]
@@ -32,13 +32,13 @@ int32_t __thiscall initialize_tip(TipSlot *slot, TipMessageDefinition *definitio
   v13 = (unsigned __int8)(~(unsigned __int8)v4->flags & 4) >> 1;
   v5 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    (int)slot->widget_main,
-    2,
+    (FrontendWidget *)slot->widget_main,
+    2u,
     v4->text,
     20,
-    LODWORD(v4->layout_y),
+    v4->layout_y,
     v4->text_scale,
-    (int)v5,
+    v5,
     v13,
     layout_y);
   v6 = slot->definition;
@@ -54,7 +54,7 @@ int32_t __thiscall initialize_tip(TipSlot *slot, TipMessageDefinition *definitio
     {
       v17 = slot->definition->layout_y;
       v9 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget((int)slot->widget_ok, 20, aOk, 20, 0, 0.0, (int)v9, 2, v17);
+      initialize_frontend_widget((FrontendWidget *)slot->widget_ok, 0x14u, aOk, 20, 0.0, 0.0, v9, 2, v17);
       widget_main = slot->widget_main;
       slot->widget_disable = nullptr;
       stack_widget_below((int)slot->widget_ok, (int)widget_main);
@@ -63,11 +63,11 @@ int32_t __thiscall initialize_tip(TipSlot *slot, TipMessageDefinition *definitio
     {
       v15 = slot->definition->layout_y + 40.0;
       v7 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget((int)slot->widget_ok, 20, aOk, 20, 0, 0.0, (int)v7, 2, v15);
+      initialize_frontend_widget((FrontendWidget *)slot->widget_ok, 0x14u, aOk, 20, 0.0, 0.0, v7, 2, v15);
       slot->widget_disable = (void *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
       v16 = slot->definition->layout_y - 60.0;
       v8 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget((int)slot->widget_disable, 20, aDisable, 20, 0, 0.0, (int)v8, 2, v16);
+      initialize_frontend_widget((FrontendWidget *)slot->widget_disable, 0x14u, aDisable, 20, 0.0, 0.0, v8, 2, v16);
       stack_widget_below((int)slot->widget_disable, (int)slot->widget_main);
       stack_widget_below((int)slot->widget_ok, (int)slot->widget_main);
     }

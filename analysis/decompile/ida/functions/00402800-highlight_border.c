@@ -3,13 +3,13 @@
 /* selector: highlight_border */
 
 // Sets the active highlight state on one frontend border/widget so hover/selection visuals render in the highlighted style.
-int __thiscall sub_402800(_DWORD *this)
+int32_t __thiscall highlight_border(FrontendWidget *widget)
 {
-  int result; // eax
+  int32_t result; // eax
 
-  result = *(this + 134);
-  *(this + 131) = 1065353216;
-  *(this + 135) = result;
+  result = LODWORD(widget->hot_padding);
+  widget->hover_blend_target = 1.0;
+  LODWORD(widget->target_padding) = result;
   return result;
 }
 

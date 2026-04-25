@@ -72,7 +72,7 @@ int __cdecl enumerate_matching_archive_or_fs_entries(char *a1, int lpFileName, f
           }
           if ( !v9[v10] )
           {
-            sub_44E5B0((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), v9);
+            rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), v9);
             ++LODWORD(flt_4DFAFC[36361]);
           }
         }
@@ -97,10 +97,10 @@ int __cdecl enumerate_matching_archive_or_fs_entries(char *a1, int lpFileName, f
       v14 = _findfirst(lpFileName, v18);
       if ( v14 != -1 )
       {
-        sub_44E5B0((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
+        rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
         ++LODWORD(flt_4DFAFC[36361]);
         for ( ; _findnext(v14, v18) != -1; ++LODWORD(flt_4DFAFC[36361]) )
-          sub_44E5B0((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
+          rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
       }
       *a3 = flt_4DFAFC[36361];
       return _chdir(Path);

@@ -2,7 +2,7 @@
 /* function: exit_high_score_screen @ 0x417b50 */
 /* selector: exit_high_score_screen */
 
-// Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table. Cross-port Android symbols match this helper to `cRHighScore::Exit()`.
+// Leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Cross-port Android symbols match this helper to `cRHighScore::Exit()`.
 _DWORD *sub_417B50()
 {
   _DWORD *result; // eax

@@ -35,11 +35,13 @@ int __thiscall sub_417260(int this)
       *(_DWORD *)(v2 + 416) = v3;
       destroy_high_score_screen((_DWORD *)this);
       kill_game_sprites();
-      sub_44E5B0(
+      rstrcpy_checked_ascii(
         (char *)(*(int *)((char *)&byte_6FFAE0 + (_DWORD)MEMORY[0x4DF904]) + 129728 * *(_DWORD *)(this + 20) + 84),
         (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
-      sub_44E5B0((char *)MEMORY[0x4DF904] + 420, (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
-      sub_44E5B0(&unk_4DF978, (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
+      rstrcpy_checked_ascii(
+        (char *)MEMORY[0x4DF904] + 420,
+        (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
+      rstrcpy_checked_ascii(&unk_4DF978, (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
       return (int)exit_high_score_screen();
     }
     else

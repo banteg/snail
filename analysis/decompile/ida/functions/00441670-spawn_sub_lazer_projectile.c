@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: spawn_wall2_ambient_hazard @ 0x441670 */
-/* selector: spawn_wall2_ambient_hazard */
+/* function: spawn_sub_lazer_projectile @ 0x441670 */
+/* selector: spawn_sub_lazer_projectile */
 
-// Activates one slot from the 20-slot `Wall2` ambient-hazard pool: stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object.
+// Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object. Historically labelled `spawn_wall2_ambient_hazard`.
 void __thiscall sub_441670(int this, _DWORD *a2, _DWORD *a3)
 {
   int v4; // edi

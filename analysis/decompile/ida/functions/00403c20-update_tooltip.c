@@ -72,10 +72,10 @@ int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
     LOWORD(result) = v6;
     if ( v5 <= 1.0 )
       return result;
-    if ( LODWORD(owner_widget->anchor_x) )
-      aux_progress = owner_widget->aux_progress;
+    if ( LODWORD(owner_widget->text_alignment) )
+      aux_progress = owner_widget->anchor_x;
     else
-      aux_progress = owner_widget->layout_height * 0.5 + owner_widget->layout_anchor_y - 320.0;
+      aux_progress = owner_widget->layout_width * 0.5 + owner_widget->layout_anchor_x - 320.0;
     v10 = tooltip->tooltip_widget;
     tooltip->state = 3;
     if ( v10 )
@@ -99,8 +99,8 @@ int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
         aux_progress);
 LABEL_27:
       v19 = tooltip->tooltip_widget;
-      if ( v19->layout_top - v19->target_padding - *(float *)&v19->texture_id_270 < 0.0 )
-        LODWORD(v19->layout_anchor_y) = v19->texture_id_270;
+      if ( v19->layout_left - v19->hot_padding - *(float *)&v19->stack_gap < 0.0 )
+        LODWORD(v19->layout_anchor_x) = v19->stack_gap;
       pad_00 = (float *)tooltip->tooltip_widget->_pad_00;
       v21 = pad_00[155] + pad_00[146] + pad_00[142] + pad_00[134];
       if ( v21 > 640.0 )

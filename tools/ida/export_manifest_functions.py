@@ -225,7 +225,9 @@ def main() -> int:
 
     manifest = load_function_symbol_manifest(manifest_path)
     selected_functions = _select_functions(manifest.functions, list(args.only))
-    selectors = [function.name for function in selected_functions]
+    selectors = [
+        f"{function.address_hex}@@{function.name}" for function in selected_functions
+    ]
     if not selectors:
         raise RuntimeError(f"no named functions found in manifest: {manifest_path}")
 

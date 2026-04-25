@@ -11,7 +11,7 @@
 00449832        i -= 1
 00449832        if (not(cond:0_1))
 00449832        break
-0044983e        sub_44e5b0(&data_7516a0, arg2)
+0044983e        rstrcpy_checked_ascii(&data_7516a0, arg2)
 0044984d        if (data_753c20 != 0)
 00449851        stop_music_stream(arg1)
 00449859        data_753c20 = 0

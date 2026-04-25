@@ -14,7 +14,7 @@
 0044005a        arg1[0xb] = *(arg2 + 0x30)
 00440060        arg1[0x12] = *(arg2 + 0x48)
 0044006f        arg1[0xd] = *(arg2 + 0x54)
-00440072        sub_44e5b0(&arg1[0x15], arg2 + 0x5c)
+00440072        rstrcpy_checked_ascii(&arg1[0x15], arg2 + 0x5c)
 00440085        arg1[1] = *(arg2 + 4)
 0044008b        __builtin_memcpy(&arg1[2], arg2 + 8, 0x18)
 00440090        arg1[8] = *(arg2 + 0x20)

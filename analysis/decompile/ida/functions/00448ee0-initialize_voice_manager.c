@@ -36,7 +36,7 @@ _DWORD *__thiscall sub_448EE0(_DWORD *this)
   v1 = 0.0;
   for ( i = 0.0; ; v1 = i )
   {
-    sub_44E5B0(ArgList, aSet);
+    rstrcpy_checked_ascii(ArgList, aSet);
     switch ( LODWORD(v1) )
     {
       case 0:
@@ -108,7 +108,7 @@ LABEL_20:
     {
       while ( *j == 9 || *j == 32 )
         ++j;
-      sub_44E5B0(v24, aVoice);
+      rstrcpy_checked_ascii(v24, aVoice);
       v9 = j;
       v10 = &v25;
       for ( m = *j; *v9 != 46; m = *v9 )
@@ -131,15 +131,15 @@ LABEL_20:
       v13 = (char *)LODWORD(v19);
       v14 = find_case_insensitive_substring(aNormalizemusic, (char *)LODWORD(v19));
       j = find_case_insensitive_substring(asc_4A1644, v14);
-      v19 = COERCE_FLOAT(sub_44E710(&j));
+      v19 = COERCE_FLOAT(parse_next_signed_int(&j));
       *(float *)&v22 = (double)SLODWORD(v19) * 0.0099999998;
       j = find_case_insensitive_substring(aNormalizesfx, v13);
       j = find_case_insensitive_substring(asc_4A1644, j);
-      v19 = COERCE_FLOAT(sub_44E710(&j));
+      v19 = COERCE_FLOAT(parse_next_signed_int(&j));
       i = (double)SLODWORD(v19) * 0.0099999998;
       j = find_case_insensitive_substring(aNormalizevoice, v13);
       j = find_case_insensitive_substring(asc_4A1644, j);
-      v19 = (double)sub_44E710(&j) * 0.0099999998;
+      v19 = (double)parse_next_signed_int(&j) * 0.0099999998;
       set_audio_normalization_scales(unk_753C58, v22, SLODWORD(i), SLODWORD(v19));
       j = find_case_insensitive_substring(aFrequency, v13);
       j = find_case_insensitive_substring(asc_4A1644, j);

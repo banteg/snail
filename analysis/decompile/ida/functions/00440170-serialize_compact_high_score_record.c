@@ -27,7 +27,7 @@ int __thiscall sub_440170(char *this, int a2)
   *(_DWORD *)(a2 + 48) = *((_DWORD *)this + 11);
   *(_DWORD *)(a2 + 72) = *((_DWORD *)this + 18);
   *(_DWORD *)(a2 + 84) = *((_DWORD *)this + 13);
-  sub_44E5B0((char *)(a2 + 92), this + 84);
+  rstrcpy_checked_ascii((char *)(a2 + 92), this + 84);
   qmemcpy((void *)(a2 + 8), this + 8, 0x1Cu);
   *(_DWORD *)(a2 + 76) = *((_DWORD *)this + 19);
   *(_DWORD *)(a2 + 80) = *((_DWORD *)this + 20);

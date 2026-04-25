@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: maybe_spawn_wall2_ambient_hazard @ 0x439d50 */
-/* selector: maybe_spawn_wall2_ambient_hazard */
+/* function: wall2_emitter_maybe_fire_sub_lazer @ 0x439d50 */
+/* selector: wall2_emitter_maybe_fire_sub_lazer */
 
-// Runs the current best static `Wall2` ambient-hazard spawn gate from one runtime row cell: checks the row or tile conditions, rolls the random gate, derives a spawn point and velocity, and routes the request into the 20-slot pool at `game + 0x356b00`.
+// Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, rolls the random gate (`< 4/100`) against the cadence timer `game+0x74668 > game+0x42fdec`, derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`.
 void __thiscall sub_439D50(int this)
 {
   void *v2; // ecx
@@ -73,7 +73,7 @@ void __thiscall sub_439D50(int this)
           v2 = MEMORY[0x4DF904];
 LABEL_9:
           if ( *(float *)(this + 24) < (double)*((float *)v2 + 1100223) )
-            destroy_wall2_ambient_hazard(this);
+            destroy_sub_lazer_projectile(this);
           return;
         case 22:
           if ( *(float *)(this + 24) >= (double)*((float *)MEMORY[0x4DF904] + 1100223) )
@@ -96,14 +96,14 @@ LABEL_9:
           v12[2] = v11[2];
           v12[3] = v11[3];
           if ( *((float *)MEMORY[0x4DF904] + 1100223) - ((double)*(int *)(*(_DWORD *)(this + 56) + 72) + 5.0) > *(float *)(this + 24) )
-            destroy_wall2_ambient_hazard(this);
+            destroy_sub_lazer_projectile(this);
           break;
         default:
           if ( *(float *)(this + 24) < (double)*((float *)MEMORY[0x4DF904] + 1100223)
             && (double)(*((_DWORD *)MEMORY[0x4DF904] + 119196) - 5) > *(float *)(this + 24) )
           {
 LABEL_13:
-            destroy_wall2_ambient_hazard(this);
+            destroy_sub_lazer_projectile(this);
           }
           break;
       }

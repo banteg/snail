@@ -2665,7 +2665,7 @@ char __thiscall sub_40ACF0(int this)
   }
   else
   {
-    sub_44E5B0(ArgList, aTurboBase000X);
+    rstrcpy_checked_ascii(ArgList, aTurboBase000X);
   }
   load_x_animation_clip(this + 298496, ArgList, *(int **)((char *)&loc_432870 + this));
   v239 = add_object_to_list(unk_4B7648);
@@ -3023,7 +3023,7 @@ char __thiscall sub_40ACF0(int this)
       *(_DWORD *)(this + 440) = 12;
     *(_BYTE *)(v327 + 781) = 0;
     *(_DWORD *)(v327 + 784) = 0;
-    sub_44E5B0((char *)(v327 + 420), &unk_4DF978);
+    rstrcpy_checked_ascii((char *)(v327 + 420), &unk_4DF978);
   }
   initialize_high_score_tables((char *)&byte_6FFAE0 + this);
   load_high_scores_from_file((char *)&byte_6FFAE0 + this, aScoreaDat);

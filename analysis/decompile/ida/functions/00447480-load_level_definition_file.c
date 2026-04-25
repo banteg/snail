@@ -105,7 +105,7 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
     if ( v7 )
     {
       v62 = find_case_insensitive_substring(aE, v7) + 1;
-      v8 = 672 * sub_44E710(&v62);
+      v8 = 672 * parse_next_signed_int(&v62);
       sprintf((char *const)MEMORY[0x4DF904] + v8 + 19744360, "%s", this + 1726684);
       v9 = find_case_insensitive_substring(aGalaxytext, unk_74EC78);
       v62 = v9;
@@ -143,19 +143,19 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
           else
           {
             report_warningf("Cannot find } for GalaxyText: in %s", a2);
-            sub_44E5B0((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextErrorMissi_0);
+            rstrcpy_checked_ascii((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextErrorMissi_0);
           }
         }
         else
         {
           report_warningf("Cannot find { for GalaxyText: in %s", a2);
-          sub_44E5B0((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextErrorMissi);
+          rstrcpy_checked_ascii((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextErrorMissi);
         }
       }
       else
       {
         report_warningf("Cannot find GalaxyText: in %s", a2);
-        sub_44E5B0((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextMissing);
+        rstrcpy_checked_ascii((char *)MEMORY[0x4DF904] + v8 + 19744488, aTextMissing);
       }
     }
   }
@@ -216,11 +216,11 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
   if ( v26 )
   {
     v62 = find_case_insensitive_substring(asc_4A1644, v26) + 1;
-    v64 = sub_44E710(&v62);
+    v64 = parse_next_signed_int(&v62);
     *((float *)this + 431667) = (double)v64 * 0.0039215689;
-    v64 = sub_44E710(&v62);
+    v64 = parse_next_signed_int(&v62);
     *((float *)this + 431668) = (double)v64 * 0.0039215689;
-    v64 = sub_44E710(&v62);
+    v64 = parse_next_signed_int(&v62);
     *((float *)this + 431669) = (double)v64 * 0.0039215689;
   }
   else
@@ -270,7 +270,7 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
     return (_DWORD *)report_errorf("No Parcel: in %s", Buffer);
   }
   v62 = find_case_insensitive_substring(asc_4A1644, v29);
-  *((_DWORD *)this + 431707) = sub_44E710(&v62);
+  *((_DWORD *)this + 431707) = parse_next_signed_int(&v62);
   v30 = find_case_insensitive_substring(aQuota, unk_74EC78);
   v62 = v30;
   if ( !v30 )
@@ -279,7 +279,7 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
     return (_DWORD *)report_errorf("No Quota: in %s", Buffer);
   }
   v62 = find_case_insensitive_substring(asc_4A1644, v30);
-  *((_DWORD *)this + 431709) = sub_44E710(&v62);
+  *((_DWORD *)this + 431709) = parse_next_signed_int(&v62);
   v62 = find_case_insensitive_substring(aSpeedSelect, unk_74EC78);
   if ( v62 )
   {
@@ -407,7 +407,7 @@ LABEL_94:
     if ( v41 )
     {
       v63 = find_case_insensitive_substring(asc_4A2094, v41);
-      v64 = sub_44E710(&v63);
+      v64 = parse_next_signed_int(&v63);
       *((float *)this + 4232 * *(_DWORD *)this + 4102) = (double)v64 * 0.017453292;
     }
     else

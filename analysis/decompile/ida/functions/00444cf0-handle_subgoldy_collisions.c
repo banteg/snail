@@ -32,7 +32,7 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
   float *v26; // eax
   double v27; // st7
   Game *v28; // eax
-  float v29; // ebx
+  int v29; // ebx
   int ii; // edi
   float *v31; // eax
   double v32; // st7
@@ -192,7 +192,7 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
               player->velocity.z = v72;
               begin_post_follow_carryover((int)player);
               v19 = player->game;
-              player->presentation.cutscene_ai.player = (Player *)10;
+              player->presentation.cutscene_ai.unresolved_08 = 10;
               v19->_pad_a878[m + 3456001] = 1;
               v20 = (__int64)((double)next_math_random_value() * -0.000061035156);
               play_slug_voice((int)&player->game->_pad_a878[m + 3455784], 34 - v20);
@@ -232,8 +232,8 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
           play_sound_effect(27);
           *(_DWORD *)&player->game->_pad_ff25e0[n + 2539736] = 4;
           v28 = player->game;
-          LODWORD(v29) = LODWORD(player->presentation.cutscene_ai.progress_step) + 1;
-          player->presentation.cutscene_ai.progress_step = v29;
+          v29 = *(_DWORD *)&player->presentation.cutscene_ai.unresolved_58 + 1;
+          *(_DWORD *)&player->presentation.cutscene_ai.unresolved_58 = v29;
           if ( !v28->level_mode )
             sprintf(
               (char *const)(*(_DWORD *)&v28->_pad_a878[3478300] + 716),

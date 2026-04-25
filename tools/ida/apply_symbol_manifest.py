@@ -37,6 +37,26 @@ def _load_manifest(path):
     return entries
 
 
+def _get_or_create_exact_function(address):
+    func = ida_funcs.get_func(address)
+    if func is not None and func.start_ea != address:
+        if not ida_funcs.remove_func_tail(func, address):
+            return None, "remove_tail_failed"
+        func = ida_funcs.get_func(address)
+
+    if func is None:
+        flags = ida_bytes.get_flags(address)
+        if ida_bytes.is_code(flags) and ida_funcs.add_func(address):
+            func = ida_funcs.get_func(address)
+        if func is None:
+            return None, "missing_function"
+
+    if func.start_ea != address:
+        return None, "wrong_function_start"
+
+    return func, None
+
+
 def _sync_manifest(manifest_path):
     renamed = 0
     comments_updated = 0
@@ -46,15 +66,16 @@ def _sync_manifest(manifest_path):
     failed = []
 
     for address, name, description in _load_manifest(manifest_path):
-        func = ida_funcs.get_func(address)
+        existing_func = ida_funcs.get_func(address)
+        func, reason = _get_or_create_exact_function(address)
         if func is None:
-            flags = ida_bytes.get_flags(address)
-            if ida_bytes.is_code(flags) and ida_funcs.add_func(address):
-                func = ida_funcs.get_func(address)
-                functions_created += 1
-            if func is None:
+            if reason == "missing_function":
                 missing.append((address, name))
-                continue
+            else:
+                failed.append((address, name, reason))
+            continue
+        if existing_func is None or existing_func.start_ea != address:
+            functions_created += 1
 
         current_name = idc.get_func_name(address)
         if current_name != name:

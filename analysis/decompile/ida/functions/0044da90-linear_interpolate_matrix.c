@@ -5,8 +5,8 @@
 // Interpolates one transform toward another by blending rotation in matrix space and linearly blending translation. Android symbols match this helper to `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)`.
 void __thiscall linear_interpolate_matrix(
         TransformMatrix *out,
-        TransformMatrix *from,
-        TransformMatrix *to,
+        const TransformMatrix *from,
+        const TransformMatrix *to,
         float alpha)
 {
   TransformMatrix *v4; // edx
@@ -23,9 +23,9 @@ void __thiscall linear_interpolate_matrix(
 
   v5 = out;
   invert_matrix_from_source(out, v4);
-  multiply_matrix_in_place(v5, to);
+  multiply_matrix_in_place(v5, (TransformMatrix *)to);
   interpolate_matrix_rotation(v5, alpha);
-  premultiply_matrix_in_place(v5, from);
+  premultiply_matrix_in_place(v5, (TransformMatrix *)from);
   orthogonalize_matrix(v5);
   v5 = (TransformMatrix *)((char *)v5 + 48);
   v13 = alpha * to->position.y;

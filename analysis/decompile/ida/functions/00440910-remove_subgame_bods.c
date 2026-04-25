@@ -108,7 +108,7 @@ void __thiscall sub_440910(int this)
     v8 = 8;
     do
     {
-      destroy_wall2_ambient_hazard(v1);
+      destroy_sub_lazer_projectile(v1);
       v1 += 84;
       --v8;
     }

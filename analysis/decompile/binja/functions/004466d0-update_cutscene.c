@@ -109,7 +109,7 @@
 00446cf9        long double x87_r7_49 = sine(fconvert.s(fconvert.t(cutscene_ai->progress) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)
 00446d14        transform.position.x = fconvert.s(fconvert.t(transform.position.x) - x87_r7_49)
 00446d1b        look_at_point(&transform, &cutscene_ai->presentation->live_matrix.position)
-00446d43        int32_t var_fc_16 = __builtin_memcpy(&var_c0, &cutscene_ai->presentation->owner_player->_pad_14d[0xb3], 0x40)
+00446d43        int32_t var_fc_16 = __builtin_memcpy(&var_c0, &cutscene_ai->presentation->owner_player->cameraman, 0x40)
 00446d4c        float alpha_2 = fconvert.s(sine(fconvert.s(fconvert.t(cutscene_ai->progress) * fconvert.t(1.57079637f))))
 00446d57        var_100 = &transform
 00446d5c        linear_interpolate_matrix(&cutscene_ai->live_matrix, &var_c0, var_100, alpha_2)
@@ -151,7 +151,7 @@
 004467ed        long double st0_1 = sine(fconvert.s(fconvert.t(cutscene_ai->progress) * fconvert.t(3.14159274f)))
 00446806        var_c0.position.x = fconvert.s(st0_1 + st0_1 + fconvert.t(var_c0.position.x))
 0044680a        look_at_point(&var_c0, &cutscene_ai->presentation->live_matrix.position)
-00446832        int32_t var_fc_4 = __builtin_memcpy(&transform, &cutscene_ai->presentation->owner_player->_pad_14d[0xb3], 0x40)
+00446832        int32_t var_fc_4 = __builtin_memcpy(&transform, &cutscene_ai->presentation->owner_player->cameraman, 0x40)
 0044683b        float alpha = fconvert.s(sine(fconvert.s(fconvert.t(cutscene_ai->progress) * fconvert.t(1.57079637f))))
 00446846        var_100 = &transform
 0044684b        linear_interpolate_matrix(&cutscene_ai->live_matrix, &var_c0, var_100, alpha)
@@ -180,7 +180,7 @@
 00446900        cutscene_ai->progress = 0f
 00446907        cutscene_ai->progress_step = 0.00833333377f
 00446929        case 8
-0044692f        __builtin_memcpy(&cutscene_ai->live_matrix, &cutscene_ai->presentation->owner_player->_pad_14d[0xb3], 0x40)
+0044692f        __builtin_memcpy(&cutscene_ai->live_matrix, &cutscene_ai->presentation->owner_player->cameraman, 0x40)
 00446932        cutscene_ai->state = 0
 00446943        case 9
 00446943        struct PlayerPresentationController* presentation_9 = cutscene_ai->presentation
@@ -215,7 +215,7 @@
 00446a03        transform.position.y = 0
 00446a19        look_at_point(&transform, &cutscene_ai->presentation->live_matrix.position.x)
 00446a25        long double x87_r7_30 = fconvert.t(cutscene_ai->progress)
-00446a41        int32_t var_fc_8 = __builtin_memcpy(&var_c0, &cutscene_ai->presentation->owner_player->_pad_14d[0xb3], 0x40)
+00446a41        int32_t var_fc_8 = __builtin_memcpy(&var_c0, &cutscene_ai->presentation->owner_player->cameraman, 0x40)
 00446a4a        float alpha_1 = fconvert.s(sine(fconvert.s(x87_r7_30 * fconvert.t(1.57079637f))))
 00446a55        var_100 = &transform
 00446a5a        linear_interpolate_matrix(&cutscene_ai->live_matrix, &var_c0, var_100, alpha_1)
@@ -247,7 +247,7 @@
 00446ae1        cutscene_ai->live_matrix.position.y = 0f
 00446aee        look_at_point(&cutscene_ai->live_matrix, &presentation_10->live_matrix.position.x)
 00446af3        struct Player* player = cutscene_ai->player
-00446af6        eax.b = player->_pad_78[0xc]
+00446af6        eax.b = player->flag84.b
 00446afe        if (eax.b == 0)
 00446b04        initialize_subgoldy_death(player)
 00446b09        eax = cutscene_ai->player

@@ -43,13 +43,13 @@ LABEL_5:
     file_bytes = load_file_bytes(Buffer, nullptr);
     if ( file_bytes )
     {
-      sub_44E5B0(this + 292 * *((_DWORD *)this + 360) + 1448, ArgList);
+      rstrcpy_checked_ascii(this + 292 * *((_DWORD *)this + 360) + 1448, ArgList);
       case_insensitive_substring = find_case_insensitive_substring(aId, file_bytes);
       v26 = case_insensitive_substring;
       if ( case_insensitive_substring )
       {
         v26 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
-        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = sub_44E710(&v26);
+        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = parse_next_signed_int(&v26);
       }
       else
       {
@@ -61,11 +61,11 @@ LABEL_5:
       if ( v8 )
       {
         v26 = find_case_insensitive_substring(asc_4A1644, v8);
-        v27 = sub_44E710(&v26);
+        v27 = parse_next_signed_int(&v26);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 429) = (double)v27 * 0.0039215689;
-        v27 = sub_44E710(&v26);
+        v27 = parse_next_signed_int(&v26);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 430) = (double)v27 * 0.0039215689;
-        v27 = sub_44E710(&v26);
+        v27 = parse_next_signed_int(&v26);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 431) = (double)v27 * 0.0039215689;
       }
       else
@@ -94,8 +94,8 @@ LABEL_5:
         if ( v14 )
         {
           *(this + 292 * v15 + 1580) = 1;
-          sub_44E5B0(v29, this + 292 * *((_DWORD *)this + 360) + 1581);
-          sub_44E5B0(v28, this + 292 * *((_DWORD *)this + 360) + 1581);
+          rstrcpy_checked_ascii(v29, this + 292 * *((_DWORD *)this + 360) + 1581);
+          rstrcpy_checked_ascii(v28, this + 292 * *((_DWORD *)this + 360) + 1581);
           v16 = v29;
           if ( v29[0] != 46 )
           {

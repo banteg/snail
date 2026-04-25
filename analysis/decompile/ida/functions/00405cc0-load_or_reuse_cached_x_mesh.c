@@ -14,7 +14,7 @@ int __thiscall load_or_reuse_cached_x_mesh(char *this, char *ArgList)
   if ( *((int *)this + 1) <= 0 )
   {
 LABEL_5:
-    sub_44E5B0(this + 188 * *((_DWORD *)this + 1) + 68, ArgList);
+    rstrcpy_checked_ascii(this + 188 * *((_DWORD *)this + 1) + 68, ArgList);
     v5 = add_object_to_list(unk_4B7648);
     set_bod_object((_DWORD *)this + 47 * *((_DWORD *)this + 1) + 2, (int)v5);
     load_x_mesh(ArgList, *((int **)this + 47 * v3 + 11), 1);

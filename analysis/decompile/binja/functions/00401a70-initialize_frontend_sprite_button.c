@@ -56,7 +56,11 @@
 00401bbd        arg1->hot_fill_color.a = arg6[3]
 00401bc0        struct Color4f color
 00401bc0        struct Color4f* eax_6 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00401bd7        arg1->idle_text_color.r = eax_6->r
+00401bc5        float r = eax_6->r
+00401bd7        arg1->idle_text_color.r.b = r.b
+00401bd7        arg1->idle_text_color.r:1.b = r:1.b
+00401bd7        arg1->idle_text_color.r:2.b = r:2.b
+00401bd7        arg1->idle_text_color.r:3.b = r:3.b
 00401be6        arg1->idle_text_color.g = eax_6->g
 00401bec        arg1->idle_text_color.b = eax_6->b
 00401bf2        arg1->idle_text_color.a = eax_6->a

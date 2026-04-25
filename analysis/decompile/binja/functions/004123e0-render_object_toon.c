@@ -10,7 +10,7 @@
 00412408        int32_t __saved_ebp_1 = __saved_ebp_7
 00412421        int32_t __saved_ebp_8 = __saved_ebp_7
 0041242e        float var_80[0x10]
-0041242e        sub_450314(&var_80, data_5031d4, data_50316c, fconvert.s(fconvert.t(data_5031cc) + fconvert.t(0.00400000019f)), fconvert.s(fconvert.t(data_5031d0) + fconvert.t(30f)))
+0041242e        build_perspective_projection_matrix(&var_80, data_5031d4, data_50316c, fconvert.s(fconvert.t(data_5031cc) + fconvert.t(0.00400000019f)), fconvert.s(fconvert.t(data_5031d0) + fconvert.t(30f)))
 00412433        int32_t* eax_1 = data_502fec
 00412442        (*(*eax_1 + 0x94))(eax_1, 3, &var_80)
 00412448        void* eax_2 = data_5031b8
@@ -80,6 +80,6 @@
 00412661        cond:0_1 = var_a0_1 + 1 s< *(arg1 + 0x70)
 00412663        var_a0_1 += 1
 00412667        do while (cond:0_1)
-0041268d        sub_450314(&var_80, data_5031d4, data_50316c, data_5031cc, data_5031d0)
+0041268d        build_perspective_projection_matrix(&var_80, data_5031d4, data_50316c, data_5031cc, data_5031d0)
 00412692        int32_t* eax_32 = data_502fec
 004126a1        return (*(*eax_32 + 0x94))(eax_32, 3, &var_80)

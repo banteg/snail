@@ -105,11 +105,11 @@
 00437830        border_add_text_number(game->__offset(0x35bb88).d, 0)
 0043781e        zero_timer_counters()
 004377f0        format_time_trial_string(&color)
-00437802        sub_44e5b0(game->__offset(0x35bb88).d + 0x2cc, 0x751478)
+00437802        rstrcpy_checked_ascii(game->__offset(0x35bb88).d + 0x2cc, 0x751478)
 004377e1        if (level_mode_1 != 4)
 00437830        border_add_text_number(game->__offset(0x35bb88).d, game->__offset(0xf93594).d)
 004377f0        format_time_trial_string(&game->__offset(0xf93598).d)
-00437802        sub_44e5b0(game->__offset(0x35bb88).d + 0x2cc, 0x751478)
+00437802        rstrcpy_checked_ascii(game->__offset(0x35bb88).d + 0x2cc, 0x751478)
 00437865        game->__offset(0x35bb8c).d = allocate_border(data_4df904 + 0xb4c)
 0043786b        struct Color4f* color_3 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 0043788d        initialize_frontend_widget(game->__offset(0x35bb8c).d, &__dos_header.e_cblp, "0", 0x14, 40f, 14f, color_3, 3, -71f)
@@ -126,7 +126,7 @@
 0043792c        hide_border_init(game->__offset(0x35bb88).d)
 004378fe        case 4
 004378fe        format_time_trial_string(&game->__offset(0x355d98).d)
-00437911        sub_44e5b0(game->__offset(0x35bb8c).d + 0x2cc, 0x751478)
+00437911        rstrcpy_checked_ascii(game->__offset(0x35bb8c).d + 0x2cc, 0x751478)
 00437931        void* eax_24 = data_4df904
 00437941        if (*(eax_24 + 0x4f2e0) != 0 || game->level_mode == 7)
 00437949        hide_border_init(game->__offset(0x35bb8c).d)

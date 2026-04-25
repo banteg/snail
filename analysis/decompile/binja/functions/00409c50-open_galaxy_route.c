@@ -8,7 +8,7 @@
 00409c60        *(arg1 + 8) = 1
 00409c67        *(arg1 + 0x10f80) = eax_32
 00409c6d        unhide_border_init(ecx)
-00409ca6        sub_44e5b0(*(arg1 + 0x10f90) + 0x2cc, *(*(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x14) * 0xa0 + arg1 + 0x10930)
+00409ca6        rstrcpy_checked_ascii(*(arg1 + 0x10f90) + 0x2cc, *(*(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x14) * 0xa0 + arg1 + 0x10930)
 00409cd3        *(*(arg1 + 0x10f90) + 0x6f4) = fconvert.s(fconvert.t(*(*(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x1c)) + fconvert.t(60f))
 00409cfe        *(*(arg1 + 0x10f90) + 0x6f8) = fconvert.s(fconvert.t(*(*(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x20)) - fconvert.t(130f))
 00409d0a        float var_c
@@ -17,10 +17,10 @@
 00409d0a        while (true)
 00409d0a        layout_frontend_widget(*(arg1 + 0x10f90))
 00409d15        unhide_border_init(*(arg1 + 0x10f94))
-00409d41        sub_44e5b0(*(arg1 + 0x10f94) + 0x2cc, *(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x30)
+00409d41        rstrcpy_checked_ascii(*(arg1 + 0x10f94) + 0x2cc, *(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x30)
 00409d56        stack_widget_below(*(arg1 + 0x10f94), *(arg1 + 0x10f90))
 00409d61        unhide_border_init(*(arg1 + 0x10f98))
-00409d8f        sub_44e5b0(*(arg1 + 0x10f98) + 0x2cc, *(arg1 + 0x10f80) * 0x2a0 + arg1 + 0xb0)
+00409d8f        rstrcpy_checked_ascii(*(arg1 + 0x10f98) + 0x2cc, *(arg1 + 0x10f80) * 0x2a0 + arg1 + 0xb0)
 00409da4        stack_widget_below(*(arg1 + 0x10f98), *(arg1 + 0x10f94))
 00409daf        unhide_border_init(*(arg1 + 0x10f9c))
 00409db4        void* eax_18 = *(arg1 + 0x10f90)

@@ -4275,14 +4275,7 @@ pub const Runner = struct {
             self.attachment.follow.lateral_offset,
             self.attachment.follow.vertical_offset,
         );
-        const position: attachment_builders.Vec3 = switch (built.template.spec.family) {
-            .nonlinear_42 => raw_position,
-            else => .{
-                .x = raw_position.x,
-                .y = raw_position.y + attachment_entry_rider_height,
-                .z = raw_position.z,
-            },
-        };
+        const position = raw_position;
         return .{
             .x = std.math.clamp(position.x, -4.0, 4.0),
             .y = position.y,
@@ -5450,7 +5443,7 @@ test "attachment follow clamps negative vertical offset after live update" {
         runner.attachment.follow.lateral_offset,
         0.0,
     );
-    try std.testing.expectApproxEqAbs(expected_world.y + attachment_entry_rider_height, runner.attachment.follow.cached_output_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_world.y, runner.attachment.follow.cached_output_position.y, 0.0001);
 }
 
 test "attachment follow clamps output x to gameplay bounds" {
@@ -8091,7 +8084,7 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
 
     runner.refreshBlockedStartupState(&fixture.preview);
 
-    const expected_top_height = ((@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0) + attachment_entry_rider_height;
+    const expected_top_height = (@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0;
 
     try std.testing.expectEqual(@as(f32, 0.0), runner.track_step_rows);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);

@@ -18,7 +18,7 @@ int __cdecl sub_432F10(char *ArgList, int a2)
   {
     load_registered_sound_sample_from_path((int)ArgList, MEMORY[0x5108B0], a2);
   }
-  sub_44E5B0(&MEMORY[0x5088B0][128 * MEMORY[0x5108B0]], v2);
+  rstrcpy_checked_ascii(&MEMORY[0x5088B0][128 * MEMORY[0x5108B0]], v2);
   v3 = ++MEMORY[0x5108B0];
   if ( MEMORY[0x5108B0] == 256 )
   {

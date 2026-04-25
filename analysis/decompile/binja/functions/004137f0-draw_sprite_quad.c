@@ -28,8 +28,8 @@
 0041389d        (*(*eax_2 + 0x94))(eax_2, 2, &var_40)
 004138a3        float esi = arg2
 004138bf        arg2 = fconvert.s((fconvert.t(1f) - fconvert.t(*(esi i+ 0x68))) * fconvert.t(*(esi i+ 0x60)) + fconvert.t(*(esi i+ 0x64)) * fconvert.t(*(esi i+ 0x68)))
-004138c3        sub_414500(*(esi i+ 0x1c))
-004138c9        sub_413670(esi)
+004138c3        bind_texture_ref(*(esi i+ 0x1c))
+004138c9        configure_sprite_render_state(esi)
 004138d7        float var_44
 004138d7        if (((*(esi i+ 4)).w:1.b & 0x10) == 0)
 004138ef        var_44 = fconvert.s((fconvert.t(1f) - fconvert.t(*(esi i+ 0x68))) * fconvert.t(*(esi i+ 0x38)))

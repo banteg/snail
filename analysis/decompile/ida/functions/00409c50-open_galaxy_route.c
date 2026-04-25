@@ -19,7 +19,7 @@ int __thiscall sub_409C50(int this, float a2)
   *(_DWORD *)(this + 8) = 1;
   *(float *)(this + 69504) = v2;
   unhide_border_init(v4);
-  sub_44E5B0(
+  rstrcpy_checked_ascii(
     (char *)(*(_DWORD *)(this + 69520) + 716),
     (char *)(160 * *(_DWORD *)(672 * *(_DWORD *)(this + 69504) + this + 20) + this + 67888));
   *(float *)(*(_DWORD *)(this + 69520) + 1780) = *(float *)(672 * *(_DWORD *)(this + 69504) + this + 28) + 60.0;
@@ -28,10 +28,14 @@ int __thiscall sub_409C50(int this, float a2)
   {
     layout_frontend_widget(*(_DWORD *)(this + 69520));
     unhide_border_init(*(_DWORD **)(this + 69524));
-    sub_44E5B0((char *)(*(_DWORD *)(this + 69524) + 716), (char *)(672 * *(_DWORD *)(this + 69504) + this + 48));
+    rstrcpy_checked_ascii(
+      (char *)(*(_DWORD *)(this + 69524) + 716),
+      (char *)(672 * *(_DWORD *)(this + 69504) + this + 48));
     stack_widget_below(*(_DWORD *)(this + 69524), *(_DWORD *)(this + 69520));
     unhide_border_init(*(_DWORD **)(this + 69528));
-    sub_44E5B0((char *)(*(_DWORD *)(this + 69528) + 716), (char *)(672 * *(_DWORD *)(this + 69504) + this + 176));
+    rstrcpy_checked_ascii(
+      (char *)(*(_DWORD *)(this + 69528) + 716),
+      (char *)(672 * *(_DWORD *)(this + 69504) + this + 176));
     stack_widget_below(*(_DWORD *)(this + 69528), *(_DWORD *)(this + 69524));
     unhide_border_init(*(_DWORD **)(this + 69532));
     *(float *)(*(_DWORD *)(this + 69532) + 608) = *(float *)(*(_DWORD *)(this + 69520) + 584) * 0.5

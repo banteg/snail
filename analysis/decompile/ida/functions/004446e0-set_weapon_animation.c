@@ -5,7 +5,7 @@
 int32_t __thiscall set_weapon_animation(
         PresentationAnimationChannel *channel,
         int32_t animation_id,
-        int32_t immediate,
+        uint8_t immediate,
         int32_t initial_frame)
 {
   _WORD *v4; // eax
@@ -20,7 +20,7 @@ int32_t __thiscall set_weapon_animation(
   _DWORD *self_ref; // ecx
   int32_t result; // eax
 
-  if ( (_BYTE)immediate )
+  if ( immediate )
   {
     v4 = *(_WORD **)(*(_DWORD *)&channel->animation_slot_table[128 * animation_id] + 188);
     channel->anim_manager.active_keyframe = v4;

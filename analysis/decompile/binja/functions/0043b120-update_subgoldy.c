@@ -1794,7 +1794,7 @@
 0043d057        initialize_cutscene(&player_1->presentation)
 0043d05e        update_player_movement_flags(player_1)
 0043d06f        if (*(data_4df904 + 0x1066bf4) s< 0xa)
-0043d077        player_1->movement_progress = player_1->movement_rate_scalar
+0043d077        player_1->movement_fire_progress = player_1->movement_fire_progress_step
 0043d07d        struct Game* game_54 = player_1->game
 0043d08a        if ((game_54->runtime_flags & &__dos_header) != 0)
 0043d090        void* eax_89
@@ -1834,14 +1834,14 @@
 0043d14b        update_movement_flag_emitters(y, entry_movement_source)
 0043d150        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d156        unimplemented  {fadd dword [0x4973d8]}
-0043d15c        player_1->movement_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
+0043d15c        player_1->movement_fire_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
 0043d15c        unimplemented  {fstp dword [ebp+0x2730], st0}
 0043d130        if (selected_level_record_active == 0)
 0043d130        goto label_43d138
 0043d168        label_43d168:
 0043d17c        if ((game_54->selected_level_record->replay_samples[game_54->runtime_track_index].flags & 2) != 0)
 0043d198        label_43d198:
-0043d198        player_1->movement_progress = player_1->movement_rate_scalar
+0043d198        player_1->movement_fire_progress = player_1->movement_fire_progress_step
 0043d19e        play_movement_state_sound(player_1)
 0043d1a3        y = player_1
 0043d1a3        esp = &y
@@ -1850,7 +1850,7 @@
 0043d180        goto label_43d18b
 0043d0d2        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d0d8        unimplemented  {fadd dword [ebp+0x2730]}
-0043d0de        player_1->movement_progress = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
+0043d0de        player_1->movement_fire_progress = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
 0043d0e4        long double temp71_1 = fconvert.t(1f)
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]} f- temp71_1
 0043d0e4        bool c0_74 = unimplemented  {fcomp st0, dword [0x497220]} f< temp71_1
@@ -1859,7 +1859,7 @@
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]}
 0043d0ea        movement_state.w = (c0_74 ? 1 : 0) << 8 | (c2_74 ? 1 : 0) << 0xa | (c3_74 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
 0043d0ef        if ((movement_state:1.b & 0x41) == 0)
-0043d0f5        player_1->movement_progress = 0f
+0043d0f5        player_1->movement_fire_progress = 0f
 0043d1b7        update_row_event_display(&player_1->game->row_event_display)
 0043d1bc        struct Game* game_8 = player_1->game
 0043d1c9        game_8->__offset(0xfd2b7c).d += 1

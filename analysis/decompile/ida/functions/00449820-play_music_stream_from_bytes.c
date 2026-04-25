@@ -10,7 +10,7 @@ int __thiscall sub_449820(_BYTE *this, char *ArgList, int a3, int a4, char a5)
   int result; // eax
 
   v6 = strlen(ArgList) + 1;
-  sub_44E5B0(&byte_7516A0, ArgList);
+  rstrcpy_checked_ascii(&byte_7516A0, ArgList);
   if ( unk_753C20 )
     stop_music_stream(this);
   unk_753C20 = 0;

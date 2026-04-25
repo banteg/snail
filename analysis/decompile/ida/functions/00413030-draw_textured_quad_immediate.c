@@ -41,7 +41,7 @@ int __cdecl sub_413030(
   float v35; // [esp+60h] [ebp+2Ch]
 
   (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 22, 1);
-  sub_414500(a1);
+  bind_texture_ref(a1);
   sub_412E50(a17);
   Iostream_init::Iostream_init((#93 *)&v30);
   pack_color_rgba_u8(&v30, a16);

@@ -56,7 +56,7 @@ int __thiscall load_x_animation_clip(int this, const char *ArgList, int *a3)
       v20 = v10;
       v20 = find_case_insensitive_substring(asc_4A16A0, v10) + 1;
       v20 = find_case_insensitive_substring(asc_4A16A0, v20) + 1;
-      *v11 = sub_44E710(&v20);
+      *v11 = parse_next_signed_int(&v20);
       v7 = v23;
       ++v8;
       v10 += 128;

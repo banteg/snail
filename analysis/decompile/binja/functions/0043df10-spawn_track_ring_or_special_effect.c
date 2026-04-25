@@ -129,7 +129,10 @@
 0043e30b        long double x87_r7_61 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
 0043e311        int32_t edx_16 = *(arg2 + 0x10)
 0043e314        int32_t eax_23 = *(arg2 + 0x18)
-0043e31b        *(esi + 0x35b7f4) = edx_16
+0043e31b        *(esi + 0x35b7f4) = edx_16.b
+0043e31b        *(esi + 0x35b7f5) = edx_16:1.b
+0043e31b        *(esi + 0x35b7f6) = edx_16:2.b
+0043e31b        *(esi + 0x35b7f7) = edx_16:3.b
 0043e31d        int32_t var_c_9 = edx_16
 0043e32d        *(esi + 0x35b7f8) = fconvert.s(x87_r7_61)
 0043e330        *(esi + 0x35b7fc) = eax_23
@@ -140,7 +143,10 @@
 0043e293        long double x87_r7_57 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
 0043e299        int32_t edx_12 = *(arg2 + 0x10)
 0043e29c        int32_t eax_18 = *(arg2 + 0x18)
-0043e2a3        *(esi + 0x35b7f4) = edx_12
+0043e2a3        *(esi + 0x35b7f4) = edx_12.b
+0043e2a3        *(esi + 0x35b7f5) = edx_12:1.b
+0043e2a3        *(esi + 0x35b7f6) = edx_12:2.b
+0043e2a3        *(esi + 0x35b7f7) = edx_12:3.b
 0043e2a5        int32_t var_c_7 = edx_12
 0043e2b5        *(esi + 0x35b7f8) = fconvert.s(x87_r7_57)
 0043e2b8        *(esi + 0x35b7fc) = eax_18

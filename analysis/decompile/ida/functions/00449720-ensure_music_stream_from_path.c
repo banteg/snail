@@ -17,7 +17,7 @@ int __thiscall ensure_music_stream_from_path(_BYTE *this, char *ArgList, char a3
     stop_music_stream(this);
   }
   v5 = strlen(ArgList) + 1;
-  sub_44E5B0(byte_7516A0, ArgList);
+  rstrcpy_checked_ascii(byte_7516A0, ArgList);
   if ( unk_753C20 )
     stop_music_stream(this);
   unk_753C20 = 0;

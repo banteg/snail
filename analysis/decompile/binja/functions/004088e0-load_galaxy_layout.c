@@ -52,7 +52,7 @@
 00408a21        char* eax_9 = find_case_insensitive_substring("StarNumber=", eax_8)
 00408a2c        var_d4 = eax_9
 00408a3b        var_d4 = &find_case_insensitive_substring("=", eax_9)[1]
-00408a44        edi[-1] = sub_44e710(&var_d4)
+00408a44        edi[-1] = parse_next_signed_int(&var_d4)
 00408a4c        *edi = 0x3f800000
 00408a4e        edi[1] = 0x3f800000
 00408a51        edi[2] = 0x3f800000
@@ -69,8 +69,8 @@
 00408b09        int32_t var_e8_4 = *(arg1 + 0xc)
 00408b10        void var_80
 00408b10        sub_48b32c(&var_80, "LEVEL %i MISSING")
-00408b31        sub_44e5b0(&arg1[*(arg1 + 0xc) * 0x2a0 + 0x30], &var_80)
-00408b55        sub_44e5b0(&arg1[*(arg1 + 0xc) * 0x2a0 + 0xb0], &var_80)
+00408b31        rstrcpy_checked_ascii(&arg1[*(arg1 + 0xc) * 0x2a0 + 0x30], &var_80)
+00408b55        rstrcpy_checked_ascii(&arg1[*(arg1 + 0xc) * 0x2a0 + 0xb0], &var_80)
 00408b61        j_1 += 1
 00408b62        *(arg1 + 0xc) += 1
 00408b68        ebp += 0xa

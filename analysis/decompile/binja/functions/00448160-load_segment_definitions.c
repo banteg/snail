@@ -168,7 +168,7 @@
 004484fc        if (__return_addr_4 != 0)
 0044850d        *(esi_4 + 0x88c) |= 1
 00448519        __return_addr = &find_case_insensitive_substring("=", __return_addr_4)[1]
-00448522        int32_t eax_24 = sub_44e710(&__return_addr)
+00448522        int32_t eax_24 = parse_next_signed_int(&__return_addr)
 00448527        char* __return_addr_15 = __return_addr
 0044852b        *(esi_4 + 0x890) = eax_24
 00448542        __return_addr = &find_case_insensitive_substring("(", __return_addr_15)[1]

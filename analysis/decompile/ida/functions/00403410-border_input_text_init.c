@@ -8,7 +8,7 @@ float *__thiscall sub_403410(int this, int a2, char *ArgList, int a4)
   float *result; // eax
 
   *(_DWORD *)(this + 1804) = a4;
-  sub_44E5B0((char *)(this + 1740), ArgList);
+  rstrcpy_checked_ascii((char *)(this + 1740), ArgList);
   v5 = (_BYTE *)(this + 716);
   *(_DWORD *)(this + 1788) = 0;
   for ( *(_DWORD *)(this + 1808) = 0; *v5; ++*(_DWORD *)(this + 1788) )

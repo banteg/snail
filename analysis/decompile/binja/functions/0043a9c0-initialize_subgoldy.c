@@ -170,7 +170,7 @@
 0043ae1d        eax_11 = nullptr
 0043ae07        eax_11 = eax_10 + 0x7c
 0043ae25        player->control_source = eax_11
-0043ae2b        player->movement_progress = 0f
+0043ae2b        player->movement_fire_progress = 0f
 0043ae31        player->completion_handoff_active.b = 0
 0043ae37        player->_pad_2738[0] = 0
 0043ae37        player->_pad_2738[1] = 0

@@ -16,11 +16,11 @@
 004318d4        HANDLE eax_10 = sub_48c211(arg2, &var_318)
 004318e1        if (eax_10 != 0xffffffff)
 004318fb        void var_304
-004318fb        sub_44e5b0((data_503320 << 7) + arg4, &var_304)
+004318fb        rstrcpy_checked_ascii((data_503320 << 7) + arg4, &var_304)
 0043190c        data_503320 += 1
 0043191c        if (sub_48c2db(eax_10, &var_318) != 0xffffffff)
 00431950        int32_t i
-0043192f        sub_44e5b0((data_503320 << 7) + arg4, &var_304)
+0043192f        rstrcpy_checked_ascii((data_503320 << 7) + arg4, &var_304)
 00431940        data_503320 += 1
 00431945        i = sub_48c2db(eax_10, &var_318)
 00431950        do while (i != 0xffffffff)
@@ -73,7 +73,7 @@
 00431819        esi_2 = &esi_2[1]
 0043181e        do while (*(edi_1 + ebp_1) != 0)
 00431824        if (*(edi_1 + ebp_1) == 0)
-00431839        sub_44e5b0((data_503320 << 7) + arg4, ebp_1)
+00431839        rstrcpy_checked_ascii((data_503320 << 7) + arg4, ebp_1)
 00431847        data_503320 += 1
 0043184c        eax = data_53c7f8
 0043185f        cond:1_1 = var_31c + 1 s< *eax

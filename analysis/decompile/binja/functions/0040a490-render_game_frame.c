@@ -200,8 +200,8 @@
 0040a8c8        if (j_1 != 0)
 0040a8ca        void* ecx_26 = j_1[5]
 0040a8d1        if ((*(ecx_26 + 4) & 2) != 0)
-0040a8e0        sub_44e410(ecx_26, *(ebp_2 + 0x5d4) + 0x80)
-0040a8ed        sub_4137f0(&j_1[1], j_1[5])
+0040a8e0        update_sprite_facing_angle(ecx_26, *(ebp_2 + 0x5d4) + 0x80)
+0040a8ed        draw_sprite_quad(&j_1[1], j_1[5])
 0040a8f2        j_1 = *j_1
 0040a8f9        do while (j_1 != 0)
 0040a8fb        *i_4 = j_1

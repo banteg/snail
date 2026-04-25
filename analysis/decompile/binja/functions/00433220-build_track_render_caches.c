@@ -41,7 +41,7 @@
 00433319        int32_t var_60_1 = 0
 00433349        int32_t var_18
 00433349        int32_t var_4
-00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->clear_color.b.d)
+00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->clear_color)
 00433373        *(&manager->slots[4].render_object)[esi_1 * 0x4b]->texture_group_texture_refs = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
 00433378        *(manager->track_render_grid + ebp_1) = 0
 00433383        ebp_1 += 4

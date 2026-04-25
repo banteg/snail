@@ -3,13 +3,13 @@
 /* selector: unhighlight_border */
 
 // Clears the active highlight state on one frontend border/widget and restores its non-highlighted visual bits.
-int __thiscall sub_4027E0(_DWORD *this)
+int32_t __thiscall unhighlight_border(FrontendWidget *widget)
 {
-  int result; // eax
+  int32_t result; // eax
 
-  result = *(this + 133);
-  *(this + 131) = 0;
-  *(this + 135) = result;
+  result = LODWORD(widget->idle_padding);
+  widget->hover_blend_target = 0.0;
+  LODWORD(widget->target_padding) = result;
   return result;
 }
 

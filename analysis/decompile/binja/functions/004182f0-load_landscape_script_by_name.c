@@ -20,12 +20,12 @@
 00418369        char (* var_71c_2)[0x200] = &var_600
 0041836f        report_errorf("Landscape.Cannot load %s")
 00418383        return 0
-004183aa        sub_44e5b0(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a8, ebx)
+004183aa        rstrcpy_checked_ascii(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a8, ebx)
 004183b5        char* cursor_1 = find_case_insensitive_substring("ID:", eax_3)
 004183bd        char* cursor = cursor_1
 004183c3        if (cursor_1 != 0)
 00418402        cursor = find_case_insensitive_substring(":", cursor_1)
-0041841b        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a4) = sub_44e710(&cursor)
+0041841b        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a4) = parse_next_signed_int(&cursor)
 004183cc        char (* var_71c_4)[0x200] = &var_600
 004183d2        report_errorf("Landscape. Cannot find ID: %s")
 004183e6        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a4) = 0
@@ -33,9 +33,9 @@
 00418430        cursor = cursor_2
 00418436        if (cursor_2 != 0)
 00418475        cursor = find_case_insensitive_substring(":", cursor_2)
-004184a2        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b4) = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
-004184cd        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b8) = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
-004184f6        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6bc) = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00392156886f))
+004184a2        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b4) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
+004184cd        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b8) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
+004184f6        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6bc) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 0041843f        char (* var_71c_7)[0x200] = &var_600
 00418445        report_errorf("Landscape. Cannot find Fog: %s")
 00418460        set_color_black()
@@ -64,9 +64,9 @@
 004185c6        if (cond:0_1)
 00418601        *(arg1 + (edx_11 << 2) + 0x62c) = 1
 00418625        char var_680
-00418625        sub_44e5b0(&var_680, arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62d)
+00418625        rstrcpy_checked_ascii(&var_680, arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62d)
 00418643        char var_700
-00418643        sub_44e5b0(&var_700, arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62d)
+00418643        rstrcpy_checked_ascii(&var_700, arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62d)
 00418655        char* eax_37 = &var_680
 0041865c        if (var_680 != 0x2e)
 00418665        char i_2

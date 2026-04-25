@@ -2,7 +2,7 @@
 /* function: open_star_field @ 0x4342c0 */
 /* selector: open_star_field */
 
-// Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes one sprite-based streak entry per requested slot.
+// Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count.
 char __thiscall sub_4342C0(_DWORD *this, int a2)
 {
   char result; // al

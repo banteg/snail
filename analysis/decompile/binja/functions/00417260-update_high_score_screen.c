@@ -71,9 +71,9 @@
 00417292        destroy_high_score_screen(arg1)
 0041729c        kill_game_sprites()
 004172a1        int32_t eax_3 = arg1[5]
-004172d3        sub_44e5b0(*(data_4df904 + 0x6ffae0) + eax_3 * 0x1fac0 + 0x54, arg1[eax_3 + 0x1f] + 0x2cc)
-004172f1        sub_44e5b0(data_4df904 + 0x1a4, arg1[arg1[5] + 0x1f] + 0x2cc)
-00417309        sub_44e5b0(&data_4df978, arg1[arg1[5] + 0x1f] + 0x2cc)
+004172d3        rstrcpy_checked_ascii(*(data_4df904 + 0x6ffae0) + eax_3 * 0x1fac0 + 0x54, arg1[eax_3 + 0x1f] + 0x2cc)
+004172f1        rstrcpy_checked_ascii(data_4df904 + 0x1a4, arg1[arg1[5] + 0x1f] + 0x2cc)
+00417309        rstrcpy_checked_ascii(&data_4df978, arg1[arg1[5] + 0x1f] + 0x2cc)
 0041731c        return exit_high_score_screen()
 0041731d        void* ecx_11 = arg1[0xa]
 00417320        int32_t eax_10 = *(ecx_11 + 0x1a0)

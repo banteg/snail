@@ -10,7 +10,7 @@
 00448f0e        int32_t var_20c = 0
 00448f22        char* cursor
 00448f22        while (true)
-00448f22        sub_44e5b0(&var_200, "Set:")
+00448f22        rstrcpy_checked_ascii(&var_200, "Set:")
 00448f2d        if (ebp u<= 0xf)
 00448f33        char* edi_1
 00448f33        switch (ebp)
@@ -90,7 +90,7 @@
 00449099        eax_4.b = *cursor
 004490a1        if (eax_4.b != 9 && eax_4.b != 0x20)
 004490b6        char var_100
-004490b6        sub_44e5b0(&var_100, "Voice/")
+004490b6        rstrcpy_checked_ascii(&var_100, "Voice/")
 004490bb        char* cursor_7 = cursor
 004490c2        void var_fa
 004490c2        char* eax_5 = &var_fa
@@ -121,15 +121,15 @@
 00449138        char* cursor_3 = find_case_insensitive_substring("NormalizeMusic:", eax)
 00449143        cursor = cursor_3
 00449150        cursor = find_case_insensitive_substring(":", cursor_3)
-0044916e        float var_204 = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00999999978f))
+0044916e        float var_204 = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f))
 00449172        char* cursor_4 = find_case_insensitive_substring("NormalizeSfx:", eax)
 0044917d        cursor = cursor_4
 0044918a        cursor = find_case_insensitive_substring(":", cursor_4)
-004491a8        float var_20c_1 = fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00999999978f))
+004491a8        float var_20c_1 = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f))
 004491ac        char* cursor_5 = find_case_insensitive_substring("NormalizeVoice:", eax)
 004491b7        cursor = cursor_5
 004491c0        cursor = find_case_insensitive_substring(":", cursor_5)
-004491f7        set_audio_normalization_scales(0x753c58, var_204, var_20c_1, fconvert.s(float.t(sub_44e710(&cursor)) * fconvert.t(0.00999999978f)))
+004491f7        set_audio_normalization_scales(0x753c58, var_204, var_20c_1, fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00999999978f)))
 00449202        char* cursor_6 = find_case_insensitive_substring("Frequency:", eax)
 0044920d        cursor = cursor_6
 0044921a        cursor = find_case_insensitive_substring(":", cursor_6)

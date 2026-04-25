@@ -139,7 +139,7 @@ LABEL_16:
       v18 = (_DWORD *)(this + 16332184);
 LABEL_24:
       v19 = format_time_trial_string((int)v18);
-      sub_44E5B0((char *)(*(_DWORD *)(this + 3521416) + 716), v19);
+      rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521416) + 716), v19);
       goto LABEL_29;
     }
     border_add_text_number(*(_BYTE **)(this + 3521416), *(_DWORD *)(this + 16332180));
@@ -174,7 +174,7 @@ LABEL_29:
       break;
     case 4:
       v21 = format_time_trial_string(this + 3497368);
-      sub_44E5B0((char *)(*(_DWORD *)(this + 3521420) + 716), v21);
+      rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521420) + 716), v21);
       break;
     default:
       break;

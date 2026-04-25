@@ -29,7 +29,7 @@
 004341a4        char* edx_3 = *(arg1 + 4) + 0x2cc
 004341aa        *(arg1 + 8) = 2
 004341b1        *(arg1 + 0x10) = 0x3b888889
-00434226        sub_44e5b0(edx_3, "Test your reflexes in Challenge Mode!")
+00434226        rstrcpy_checked_ascii(edx_3, "Test your reflexes in Challenge Mode!")
 00434237        return unhide_border_init(*(arg1 + 4))
 004341bb        case 2
 004341bb        void* ecx_6 = *(arg1 + 4)
@@ -40,7 +40,7 @@
 004341db        char* eax_4 = *(arg1 + 4) + 0x2cc
 004341e0        *(arg1 + 8) = 4
 004341e7        *(arg1 + 0x10) = 0x3b888889
-00434226        sub_44e5b0(eax_4, "Improve your skills in Time Trial!")
+00434226        rstrcpy_checked_ascii(eax_4, "Improve your skills in Time Trial!")
 00434237        return unhide_border_init(*(arg1 + 4))
 004341f1        case 4
 004341f1        void* ecx_7 = *(arg1 + 4)
@@ -51,7 +51,7 @@
 00434211        char* ecx_9 = *(arg1 + 4) + 0x2cc
 00434217        *(arg1 + 8) = 6
 0043421e        *(arg1 + 0x10) = 0x3b888889
-00434226        sub_44e5b0(ecx_9, "Click to Continue")
+00434226        rstrcpy_checked_ascii(ecx_9, "Click to Continue")
 00434237        return unhide_border_init(*(arg1 + 4))
 00434238        case 6
 00434238        *(arg1 + 8) = 7

@@ -11,7 +11,7 @@
 00405ce7        i += 1
 00405ce8        ebx_1 = &ebx_1[0xbc]
 00405cf0        do while (i s< *(arg1 + 4))
-00405d03        sub_44e5b0(arg1 + *(arg1 + 4) * 0xbc + 0x44, arg2)
+00405d03        rstrcpy_checked_ascii(arg1 + *(arg1 + 4) * 0xbc + 0x44, arg2)
 00405d10        void* eax_4 = add_object_to_list(0x4b7648)
 00405d25        set_bod_object(arg1 + *(arg1 + 4) * 0xbc + 8, eax_4)
 00405d3c        load_x_mesh(arg2, *(arg1 + i * 0xbc + 0x2c), 1)

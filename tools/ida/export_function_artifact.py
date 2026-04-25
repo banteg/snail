@@ -11,6 +11,7 @@ import idc
 
 
 SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9_.-]+")
+SELECTOR_DISPLAY_SEPARATOR = "@@"
 
 
 def _safe_name(name):
@@ -29,8 +30,10 @@ def _prune_same_address_artifacts(out_dir, start, keep_path):
 
 
 def _resolve_selector(selector):
+    resolved_from_address = False
     try:
         address = int(selector, 0)
+        resolved_from_address = True
     except ValueError:
         address = ida_name.get_name_ea(idc.BADADDR, selector)
         if address == idc.BADADDR:
@@ -39,11 +42,26 @@ def _resolve_selector(selector):
     func = ida_funcs.get_func(address)
     if func is None:
         raise ValueError(f"no function found for selector: {selector}")
+    if resolved_from_address and func.start_ea != address:
+        raise ValueError(
+            f"selector {selector} resolved inside {idc.get_func_name(func.start_ea)} "
+            f"at {hex(func.start_ea)}; run the IDA symbol sync to repair function chunks"
+        )
     return func.start_ea
 
 
+def _split_selector(selector):
+    if SELECTOR_DISPLAY_SEPARATOR not in selector:
+        return selector, selector
+    resolve_selector, display_selector = selector.split(SELECTOR_DISPLAY_SEPARATOR, 1)
+    if not resolve_selector or not display_selector:
+        raise ValueError(f"invalid selector/display pair: {selector}")
+    return resolve_selector, display_selector
+
+
 def _export_function(out_dir, selector):
-    start = _resolve_selector(selector)
+    resolve_selector, display_selector = _split_selector(selector)
+    start = _resolve_selector(resolve_selector)
     name = idc.get_func_name(start)
     try:
         pseudocode = str(ida_hexrays.decompile(start))
@@ -56,13 +74,13 @@ def _export_function(out_dir, selector):
         (
             f"/* database: {idc.get_idb_path()} */\n"
             f"/* function: {name} @ {hex(start)} */\n"
-            f"/* selector: {selector} */\n\n"
+            f"/* selector: {display_selector} */\n\n"
             f"{pseudocode}\n"
         ),
         encoding="utf-8",
     )
     return {
-        "selector": selector,
+        "selector": display_selector,
         "address": hex(start),
         "name": name,
         "artifact": str(out_path),

@@ -295,7 +295,7 @@ LABEL_11:
     follow_state->orientation_b = (v73 + (double)SLODWORD(progress))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( player->jetpack_gauge.state == 1 )
+    if ( LODWORD(player->jetpack_gauge.cycle_phase_step) == 1 )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )

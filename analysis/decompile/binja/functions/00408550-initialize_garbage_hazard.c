@@ -7,5 +7,5 @@
 00408558        self->_pad_00[0] = 0x28
 00408558        self->_pad_00[1] = 0x73
 00408558        self->_pad_00[2] = 0x49
-00408558        self->_pad_00[3] = nullptr
+00408558        self->_pad_00[3] = 0
 00408561        return self

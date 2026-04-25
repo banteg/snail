@@ -14,7 +14,7 @@
 0041afa8        var_c = arg1[5] + 0x2cc
 0041af8c        var_8 = "Full-screen On"
 0041af97        var_c = arg1[5] + 0x2cc
-0041afa9        sub_44e5b0(var_c, var_8)
+0041afa9        rstrcpy_checked_ascii(var_c, var_8)
 0041afae        void* ecx_3 = arg1[5]
 0041afb4        int32_t eax_2 = *(ecx_3 + 0x1a0)
 0041afbc        if ((eax_2.b & 0x20) != 0)

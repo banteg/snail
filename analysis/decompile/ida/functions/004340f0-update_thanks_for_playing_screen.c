@@ -41,7 +41,7 @@ void __thiscall sub_4340F0(int this)
         v5 = *(_DWORD *)(this + 4);
         *(_DWORD *)(this + 8) = 2;
         *(_DWORD *)(this + 16) = 998803593;
-        sub_44E5B0((char *)(v5 + 716), aTestYourReflex);
+        rstrcpy_checked_ascii((char *)(v5 + 716), aTestYourReflex);
         goto LABEL_16;
       case 2:
         v6 = *(_DWORD **)(this + 4);
@@ -53,7 +53,7 @@ void __thiscall sub_4340F0(int this)
         v7 = *(_DWORD *)(this + 4);
         *(_DWORD *)(this + 8) = 4;
         *(_DWORD *)(this + 16) = 998803593;
-        sub_44E5B0((char *)(v7 + 716), aImproveYourSki);
+        rstrcpy_checked_ascii((char *)(v7 + 716), aImproveYourSki);
         goto LABEL_16;
       case 4:
         v8 = *(_DWORD **)(this + 4);
@@ -65,7 +65,7 @@ void __thiscall sub_4340F0(int this)
         v9 = *(_DWORD *)(this + 4);
         *(_DWORD *)(this + 8) = 6;
         *(_DWORD *)(this + 16) = 998803593;
-        sub_44E5B0((char *)(v9 + 716), aClickToContinu);
+        rstrcpy_checked_ascii((char *)(v9 + 716), aClickToContinu);
 LABEL_16:
         unhide_border_init(*(_DWORD **)(this + 4));
         return;

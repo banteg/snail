@@ -1,7 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_wall2_ambient_hazard @ 0x43efb0 */
-/* selector: update_wall2_ambient_hazard */
+/* function: update_sub_lazer_projectile @ 0x43efb0 */
+/* selector: update_sub_lazer_projectile */
 
+// Advances one live SubLazer projectile slot: integrates motion, handles state 1→2→cleanup via list-remove and `kill_sprite`, and modulates the sprite y by `sin(phase*2π)*0.3`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
 void __thiscall update_wall2_ambient_hazard(int this)
 {
   int v2; // eax

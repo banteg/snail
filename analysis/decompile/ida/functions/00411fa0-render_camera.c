@@ -50,7 +50,7 @@ int __usercall sub_411FA0@<eax>(
   MEMORY[0x5031D0] = 52.0;
   MEMORY[0x5031D4] = a7 * 0.017453292;
   MEMORY[0x50316C] = v23 / v24;
-  sub_450314((int)v30, MEMORY[0x5031D4], MEMORY[0x50316C], 0.30000001, 52.0);
+  build_perspective_projection_matrix((int)v30, MEMORY[0x5031D4], MEMORY[0x50316C], 0.30000001, 52.0);
   (*(void (__stdcall **)(int, int, int *))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC], 3, v30);
   MEMORY[0x503260] = a11;
   v12 = *(float *)(a8 + 32) + *(float *)(a8 + 48);
@@ -70,7 +70,7 @@ int __usercall sub_411FA0@<eax>(
   v19 = *(float *)(a8 + 40) + *(float *)(a8 + 56);
   v27[2] = v18;
   v26[2] = v19;
-  sub_451AD9(v31, v28, v26, v27);
+  build_camera_view_matrix(v31, v28, v26, v27);
   (*(void (__stdcall **)(int, int, float *))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC], 2, v31);
   (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 7, 1);
   (*(void (__stdcall **)(int, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 200))(MEMORY[0x502FEC], 14, 1);

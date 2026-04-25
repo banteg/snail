@@ -128,7 +128,7 @@
 00411d02        HRESULT var_f8_16 = eax_17
 00411d0e        if (initialize_mouse_input(data_4dfaf0) s>= 0)
 00411d37        SetFocus(data_4dfaf0)
-00411d3b        sub_4129f0(1)
+00411d3b        set_cull_mode(1)
 00411d52        return 1
 00411d10        abort_startup_with_3d_error()
 00411d1e        EndDialog(data_4dfaf0, 0)

@@ -14,7 +14,7 @@ _WORD *__thiscall sub_417A70(char *this, int a2, int a3, int a4, int a5, int a6,
   zero_timer_counters((_DWORD *)this + 2);
   *((_DWORD *)this + 10) = a3;
   *((_DWORD *)this + 18) = a4;
-  sub_44E5B0(this + 84, (char *)MEMORY[0x4DF904] + 420);
+  rstrcpy_checked_ascii(this + 84, (char *)MEMORY[0x4DF904] + 420);
   *((_DWORD *)this + 15) = a6;
   *((_DWORD *)this + 16) = a7;
   *(_DWORD *)this = 0;

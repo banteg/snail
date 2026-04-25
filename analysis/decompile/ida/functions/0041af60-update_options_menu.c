@@ -15,9 +15,9 @@ void __usercall sub_41AF60(int a1@<ecx>, int a2@<edi>)
   unk_4DF91C = *(float *)(*(_DWORD *)(a1 + 28) + 380);
   unk_4DF918 = *(float *)(*(_DWORD *)(a1 + 24) + 380);
   if ( byte_4DF920 )
-    sub_44E5B0((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOn);
+    rstrcpy_checked_ascii((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOn);
   else
-    sub_44E5B0((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOff);
+    rstrcpy_checked_ascii((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOff);
   v3 = *(_DWORD *)(a1 + 20);
   v4 = *(_DWORD *)(v3 + 416);
   if ( (v4 & 0x20) != 0 )

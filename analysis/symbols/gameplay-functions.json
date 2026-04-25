@@ -3044,9 +3044,19 @@
       "name": "ascii_upper_if_lowercase"
     },
     {
+      "address": "0x44e5b0",
+      "name": "rstrcpy_checked_ascii",
+      "description": "Copies a null-terminated resource string to a destination buffer while reporting high-bit bytes through the engine's `Dodgy Rstrcpy` diagnostic. This helper is hot across path, text, and script setup code."
+    },
+    {
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
       "description": "Parser-side metadata matcher used for case-insensitive, prefix-friendly tag probes."
+    },
+    {
+      "address": "0x44e710",
+      "name": "parse_next_signed_int",
+      "description": "Advances a text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers."
     },
     {
       "address": "0x44e800",
@@ -3060,6 +3070,16 @@
       "address": "0x44fd90",
       "name": "initialize_translation_matrix",
       "description": "Builds a 4x4 identity matrix with the supplied xyz translation in slots `+0x30/+0x34/+0x38`. `draw_sprite_quad` uses this helper to place one sprite quad in world space before submission."
+    },
+    {
+      "address": "0x450314",
+      "name": "build_perspective_projection_matrix",
+      "description": "Builds the renderer's D3D-style perspective projection matrix from vertical FOV in radians, viewport aspect ratio, near plane, and far plane. Called by both `render_camera` and toon-outline setup."
+    },
+    {
+      "address": "0x451ad9",
+      "name": "build_camera_view_matrix",
+      "description": "Builds the view matrix from camera eye, target, and up vectors by normalizing the look, right, and up axes and storing translated dot products. Called by `render_camera`."
     }
   ]
 }

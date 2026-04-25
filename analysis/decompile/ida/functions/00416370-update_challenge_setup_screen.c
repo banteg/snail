@@ -51,10 +51,10 @@ int __thiscall sub_416370(_DWORD **this)
           LOBYTE(v5) = v5 & 0xDF;
           *(_DWORD *)(v4 + 416) = v5;
           load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], ++(*this)[17]);
-          sub_44E5B0((char *)*(this + 3) + 716, (char *)*this + 1769808);
+          rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
           layout_frontend_widget((int)*(this + 3));
           v6 = format_time_trial_string((int)&(*this)[32432 * (*this)[17] + 2429014]);
-          sub_44E5B0((char *)((*this)[880355] + 716), v6);
+          rstrcpy_checked_ascii((char *)((*this)[880355] + 716), v6);
         }
         v7 = (int)*(this + 2);
         v8 = *(_DWORD *)(v7 + 416);
@@ -63,10 +63,10 @@ int __thiscall sub_416370(_DWORD **this)
           LOBYTE(v8) = v8 & 0xDF;
           *(_DWORD *)(v7 + 416) = v8;
           load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], --(*this)[17]);
-          sub_44E5B0((char *)*(this + 3) + 716, (char *)*this + 1769808);
+          rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
           layout_frontend_widget((int)*(this + 3));
           v9 = format_time_trial_string((int)&(*this)[32432 * (*this)[17] + 2429014]);
-          sub_44E5B0((char *)((*this)[880355] + 716), v9);
+          rstrcpy_checked_ascii((char *)((*this)[880355] + 716), v9);
         }
         v10 = (int)*(this + 2);
         v11 = *(_DWORD *)(v10 + 416);
@@ -152,7 +152,7 @@ LABEL_38:
       LOBYTE(v25) = v25 & 0xDF;
       *(_DWORD *)(v24 + 416) = v25;
       load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], ++(*this)[17]);
-      sub_44E5B0((char *)*(this + 3) + 716, (char *)*this + 1769808);
+      rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
       layout_frontend_widget((int)*(this + 3));
     }
     v26 = (int)*(this + 2);
@@ -162,7 +162,7 @@ LABEL_38:
       LOBYTE(v27) = v27 & 0xDF;
       *(_DWORD *)(v26 + 416) = v27;
       load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], --(*this)[17]);
-      sub_44E5B0((char *)*(this + 3) + 716, (char *)*this + 1769808);
+      rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
       layout_frontend_widget((int)*(this + 3));
     }
     v28 = (int)*(this + 2);

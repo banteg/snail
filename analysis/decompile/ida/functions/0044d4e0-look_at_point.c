@@ -2,7 +2,7 @@
 /* function: look_at_point @ 0x44d4e0 */
 /* selector: look_at_point */
 
-void __thiscall look_at_point(TransformMatrix *transform, Vec3 *target)
+void __thiscall look_at_point(TransformMatrix *transform, const Vec3 *target)
 {
   Vec3 v2; // [esp+Ch] [ebp-Ch] BYREF
   Vec3 v3; // 0:^4.12

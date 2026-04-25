@@ -15,7 +15,7 @@
 004166da        *(eax_50 + 0x44) += 1
 004166dd        void* eax_51 = *arg1
 004166ed        load_frontend_level_by_mode_and_index(eax_51 + 0xa874, *(eax_51 + 0x40), *(eax_51 + 0x44))
-00416704        sub_44e5b0(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
+00416704        rstrcpy_checked_ascii(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
 0041670f        layout_frontend_widget(arg1[3])
 00416714        void* ecx_49 = arg1[2]
 00416717        int32_t eax_54 = *(ecx_49 + 0x1a0)
@@ -26,7 +26,7 @@
 0041672f        *(eax_55 + 0x44) -= 1
 00416732        void* eax_56 = *arg1
 00416742        load_frontend_level_by_mode_and_index(eax_56 + 0xa874, *(eax_56 + 0x40), *(eax_56 + 0x44))
-00416759        sub_44e5b0(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
+00416759        rstrcpy_checked_ascii(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
 00416764        layout_frontend_widget(arg1[3])
 00416778        void* eax_60 = arg1[2]
 0041677d        int32_t edi_8 = *(eax_60 + 0x1a0)
@@ -94,11 +94,11 @@
 004163b8        *(eax_6 + 0x44) += 1
 004163bb        void* eax_7 = *arg1
 004163cb        load_frontend_level_by_mode_and_index(eax_7 + 0xa874, *(eax_7 + 0x40), *(eax_7 + 0x44))
-004163e2        sub_44e5b0(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
+004163e2        rstrcpy_checked_ascii(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
 004163ed        layout_frontend_widget(arg1[3])
 004163f2        void* ecx_9 = *arg1
 00416418        format_time_trial_string(*(ecx_9 + 0x44) * 0x1fac0 + ecx_9 + 0x944158)
-0041642d        sub_44e5b0(*(*arg1 + 0x35bb8c) + 0x2cc, 0x751478)
+0041642d        rstrcpy_checked_ascii(*(*arg1 + 0x35bb8c) + 0x2cc, 0x751478)
 00416435        void* ecx_13 = arg1[2]
 00416438        int32_t eax_14 = *(ecx_13 + 0x1a0)
 00416440        if ((eax_14.b & 0x20) != 0)
@@ -108,11 +108,11 @@
 00416454        *(eax_15 + 0x44) -= 1
 00416457        void* eax_16 = *arg1
 00416467        load_frontend_level_by_mode_and_index(eax_16 + 0xa874, *(eax_16 + 0x40), *(eax_16 + 0x44))
-0041647e        sub_44e5b0(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
+0041647e        rstrcpy_checked_ascii(arg1[3] + 0x2cc, *arg1 + 0x1b0150)
 00416489        layout_frontend_widget(arg1[3])
 0041648e        void* ecx_17 = *arg1
 004164b4        format_time_trial_string(*(ecx_17 + 0x44) * 0x1fac0 + ecx_17 + 0x944158)
-004164c9        sub_44e5b0(*(*arg1 + 0x35bb8c) + 0x2cc, 0x751478)
+004164c9        rstrcpy_checked_ascii(*(*arg1 + 0x35bb8c) + 0x2cc, 0x751478)
 004164e0        void* eax_24 = arg1[2]
 004164e5        int32_t edi_2 = *(eax_24 + 0x1a0)
 004164eb        int32_t edi_3

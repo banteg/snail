@@ -7,7 +7,11 @@
 00443746        if (result == 0)
 00443851        return 0
 00443757        result->state = 1
-00443766        result->world_position.x = world_position->x
+00443762        float x = world_position->x
+00443766        result->world_position.x.b = x.b
+00443766        result->world_position.x:1.b = x:1.b
+00443766        result->world_position.x:2.b = x:2.b
+00443766        result->world_position.x:3.b = x:3.b
 0044376d        result->world_position.y = world_position->y
 00443773        result->world_position.z = world_position->z
 0044377c        result->owner = &game->__offset(0x3bb764).d
@@ -21,14 +25,18 @@
 004437c5        *(result->sprite + 0x78) = 0
 004437c8        struct Color4f color
 004437c8        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-004437d2        float* ecx_7 = result->sprite + 0x2c
-004437d5        *ecx_7 = eax_4->r
-004437da        ecx_7[1] = eax_4->g
-004437e0        ecx_7[2] = eax_4->b
-004437e6        ecx_7[3] = eax_4->a
+004437d0        float r = eax_4->r
+004437d2        char* ecx_7 = result->sprite + 0x2c
+004437d5        *ecx_7 = r.b
+004437d5        ecx_7[1] = r:1.b
+004437d5        ecx_7[2] = r:2.b
+004437d5        ecx_7[3] = r:3.b
+004437da        *(ecx_7 + 4) = eax_4->g
+004437e0        *(ecx_7 + 8) = eax_4->b
+004437e6        *(ecx_7 + 0xc) = eax_4->a
 004437f1        *(result->sprite + 0x60) = 0x3f800000
 004437f7        *(result->sprite + 0x64) = 0x3f800000
-004437ff        int32_t* eax_7 = result->sprite + 0x48
+004437ff        float* eax_7 = result->sprite + 0x48
 00443802        *eax_7 = result->world_position.x
 00443807        eax_7[1] = result->world_position.y
 0044380d        eax_7[2] = result->world_position.z

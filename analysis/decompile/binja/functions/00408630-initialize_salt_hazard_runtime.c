@@ -7,5 +7,5 @@
 00408638        slot->_pad_00[0] = 0x40
 00408638        slot->_pad_00[1] = 0x73
 00408638        slot->_pad_00[2] = 0x49
-00408638        slot->_pad_00[3] = nullptr
+00408638        slot->_pad_00[3] = 0
 00408641        return slot

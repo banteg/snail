@@ -610,12 +610,12 @@ LABEL_209:
       if ( *(_DWORD *)(this + 64) == 4 )
       {
         v48 = format_time_trial_string(this + 3914316);
-        sub_44E5B0((char *)(*(_DWORD *)(this + 3521416) + 716), v48);
+        rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521416) + 716), v48);
         v49 = this + 129728 * *(_DWORD *)(this + 68);
         if ( *(_DWORD *)(v49 + 9716048) == 1 )
         {
           v50 = format_time_trial_string(v49 + 9716056);
-          sub_44E5B0((char *)(*(_DWORD *)(this + 3521420) + 716), v50);
+          rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521420) + 716), v50);
           goto LABEL_214;
         }
         hide_border_init(*(_DWORD **)(this + 3521420));

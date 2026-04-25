@@ -55,14 +55,14 @@
 00405781        report_errorf("No 'MeshMaterialList 'Data in %s")
 00405786        eax_7 = var_21c
 0040579c        var_21c = find_case_insensitive_substring("{", eax_7)
-004057a1        sub_44e710(&var_21c)
-004057ab        int16_t facequad_count_3 = sub_44e710(&var_21c)
-004057b7        int16_t vertex_count_2 = sub_44e710(&var_218)
+004057a1        parse_next_signed_int(&var_21c)
+004057ab        int16_t facequad_count_3 = parse_next_signed_int(&var_21c)
+004057b7        int16_t vertex_count_2 = parse_next_signed_int(&var_218)
 004057c5        int32_t vertex_count = sx.d(vertex_count_2)
-004057d2        if (vertex_count != sub_44e710(&cursor))
+004057d2        if (vertex_count != parse_next_signed_int(&cursor))
 004057d8        char (* var_248_9)[0x100] = &var_200
 004057de        report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s")
-004057eb        sub_44e710(&var_218)
+004057eb        parse_next_signed_int(&var_218)
 004057f6        char* cursor_3 = find_case_insensitive_substring("MeshTextureCoords ", eax_3)
 004057fe        char* cursor_1 = cursor_3
 00405804        if (cursor_3 == 0)
@@ -70,7 +70,7 @@
 00405810        report_errorf("No 'Mesh 'Data in %s")
 00405815        cursor_3 = cursor_1
 00405827        cursor_1 = find_case_insensitive_substring("{", cursor_3)
-0040583a        if (vertex_count != sub_44e710(&cursor_1))
+0040583a        if (vertex_count != parse_next_signed_int(&cursor_1))
 00405840        char (* var_248_13)[0x100] = &var_200
 00405846        report_errorf("Mesh texture coords number does not match mesh vertext count in %s")
 00405855        int32_t facequad_count = sx.d(facequad_count_3)
@@ -101,7 +101,7 @@
 00405913        vertex_count -= 1
 00405914        do while (i_1 != 1)
 00405916        facequad_count = facequad_count_2
-00405929        if (facequad_count != sub_44e710(&cursor))
+00405929        if (facequad_count != parse_next_signed_int(&cursor))
 0040592f        char (* var_248_19)[0x100] = &var_200
 00405935        report_errorf("Mesh face count does not match material face count in %s")
 0040593f        if (facequad_count s> 0)
@@ -109,17 +109,17 @@
 00405947        int32_t facequad_count_1 = facequad_count
 00405a7e        bool cond:6_1
 00405953        *(esi_1 + mesh->facequads) = 0
-00405959        int32_t eax_19 = sub_44e710(&cursor)
-00405965        int32_t eax_20 = sub_44e710(&cursor)
-00405973        int32_t eax_21 = sub_44e710(&cursor)
-00405981        int32_t eax_22 = sub_44e710(&cursor)
+00405959        int32_t eax_19 = parse_next_signed_int(&cursor)
+00405965        int32_t eax_20 = parse_next_signed_int(&cursor)
+00405973        int32_t eax_21 = parse_next_signed_int(&cursor)
+00405981        int32_t eax_22 = parse_next_signed_int(&cursor)
 0040598c        int32_t var_220_1 = eax_22
 00405990        int32_t ebx_4
 00405990        if (eax_19 != 4)
 004059a7        struct ObjectFaceQuad* facequads = mesh->facequads
 004059aa        ebx_4 = 0
 004059ac        *(esi_1 + facequads) |= 0x80
-0040599c        ebx_4 = sub_44e710(&cursor)
+0040599c        ebx_4 = parse_next_signed_int(&cursor)
 0040599e        eax_22 = var_220_1
 004059c7        *(&mesh->facequads->u2 + esi_1) = eax_14[eax_20 * 2]
 004059d6        *(&mesh->facequads->v2 + esi_1) = eax_14[eax_20 * 2 + 1]
@@ -159,8 +159,8 @@
 00405ac8        report_errorf("No MeshMaterialList { in %s")
 00405ada        return 0
 00405aec        var_22c = find_case_insensitive_substring("{", eax_32)
-00405af1        int32_t eax_34 = sub_44e710(&var_22c)
-00405b01        int32_t i_5 = sub_44e710(&var_22c)
+00405af1        int32_t eax_34 = parse_next_signed_int(&var_22c)
+00405b01        int32_t i_5 = parse_next_signed_int(&var_22c)
 00405b0f        if (i_5 != facequad_count)
 00405b15        char (* var_248_25)[0x100] = &var_200
 00405b1b        report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s")
@@ -215,6 +215,6 @@
 00405c5c        esi_5 += 0x30
 00405c62        i_3 = i_4
 00405c62        i_4 -= 1
-00405c63        *(esi_5 + mesh->facequads - 0x24) = eax_35[sx.d(sub_44e710(&var_22c))]
+00405c63        *(esi_5 + mesh->facequads - 0x24) = eax_35[sx.d(parse_next_signed_int(&var_22c))]
 00405c67        do while (i_3 != 1)
 00405c80        return free_tracked_memory(eax_35)

@@ -46,7 +46,7 @@ int __usercall sub_4123E0@<eax>(int a1@<ebp>, int a2@<edi>, int a3@<esi>, int a4
   {
     v29 = MEMORY[0x5031D0] + 30.0;
     v28 = MEMORY[0x5031CC] + 0.0040000002;
-    sub_450314((int)v41, MEMORY[0x5031D4], MEMORY[0x50316C], v28, v29);
+    build_perspective_projection_matrix((int)v41, MEMORY[0x5031D4], MEMORY[0x50316C], v28, v29);
     (*(void (__stdcall **)(int, int, int *, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 148))(
       MEMORY[0x502FEC],
       3,
@@ -146,7 +146,12 @@ LABEL_8:
       goto LABEL_9;
     }
 LABEL_12:
-    sub_450314((int)v42, MEMORY[0x5031D4], MEMORY[0x50316C], MEMORY[0x5031CC], MEMORY[0x5031D0]);
+    build_perspective_projection_matrix(
+      (int)v42,
+      MEMORY[0x5031D4],
+      MEMORY[0x50316C],
+      MEMORY[0x5031CC],
+      MEMORY[0x5031D0]);
     return (*(int (__stdcall **)(int))(*(_DWORD *)MEMORY[0x502FEC] + 148))(MEMORY[0x502FEC]);
   }
   return result;

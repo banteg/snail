@@ -7,7 +7,7 @@
 00403423        arg1->_pad_6fc[0x11] = arg4:1.b
 00403423        arg1->_pad_6fc[0x12] = arg4:2.b
 00403423        arg1->_pad_6fc[0x13] = arg4:3.b
-0040342a        sub_44e5b0(&arg1->text_buffer.raw[0x400], arg3)
+0040342a        rstrcpy_checked_ascii(&arg1->text_buffer.raw[0x400], arg3)
 00403431        char* eax = &arg1->text_buffer
 00403437        arg1->_pad_6fc[0] = 0
 00403437        arg1->_pad_6fc[1] = 0

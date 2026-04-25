@@ -872,7 +872,7 @@ LABEL_174:
                 v99[1] = v98[1];
                 v99[2] = v98[2];
                 v99[3] = v98[3];
-                sub_4141D0(*(_DWORD **)((char *)&unk_5CCB9C + (_DWORD)v42), *v98, v98[1], v98[2], v98[3]);
+                set_object_color(*(_DWORD **)((char *)&unk_5CCB9C + (_DWORD)v42), *v98, v98[1], v98[2], v98[3]);
               }
               else
               {
