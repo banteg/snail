@@ -1,6 +1,5 @@
 const std = @import("std");
 const rl = @import("raylib");
-const render_phase = @import("render_phase.zig");
 
 pub const Request = struct {
     relative_path_z: [:0]u8,
@@ -52,17 +51,7 @@ pub fn flushQueued(state: anytype) !void {
     state.pending_screenshot = null;
     defer request.deinit(state.allocator);
 
-    const use_frontend_canvas = state.command == .game and render_phase.frontendUsesCanvas(state) and state.frontend_canvas != null;
-    if (use_frontend_canvas) {
-        var screenshot = try rl.loadImageFromTexture(state.frontend_canvas.?.texture);
-        defer screenshot.unload();
-        screenshot.flipVertical();
-        if (!rl.exportImage(screenshot, request.relative_path_z)) {
-            return error.ScreenshotExportFailed;
-        }
-    } else {
-        rl.takeScreenshot(request.relative_path_z);
-    }
+    rl.takeScreenshot(request.relative_path_z);
     std.log.info("captured screenshot {s}", .{request.relative_path_z});
 
     if (request.exit_after_capture) {

@@ -209,9 +209,6 @@ const StandalonePostLevelHighScoreEntry = run_result.StandalonePostLevelHighScor
 const CompletionFlowOwner = run_result.CompletionFlowOwner;
 
 const pause_menu_button_count = frontend_pause_menu.items.len;
-const frontend_canvas_width: i32 = 640;
-const frontend_canvas_height: i32 = 480;
-
 const SubgameCameraState = subgame_camera.State;
 
 const AppState = struct {
@@ -335,7 +332,6 @@ const AppState = struct {
     segment_track_set_index: u8 = 0,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
-    frontend_canvas: ?rl.RenderTexture2D = null,
     frontend_cursor_texture: ?assets.LoadedTexture = null,
     frontend_widget_art: FrontendWidgetArt = .{},
     frontend_sound_fx: FrontendSoundFx = .{},
@@ -394,13 +390,6 @@ const AppState = struct {
         errdefer animation_catalog.deinit();
         var ui_font = try game_font.Loaded.load(allocator, &resources.catalog);
         errdefer ui_font.deinit();
-        const frontend_canvas = if (options.command == .game) blk: {
-            const canvas = try rl.loadRenderTexture(frontend_canvas_width, frontend_canvas_height);
-            rl.setTextureWrap(canvas.texture, .clamp);
-            rl.setTextureFilter(canvas.texture, .bilinear);
-            break :blk canvas;
-        } else null;
-        errdefer if (frontend_canvas) |canvas| canvas.unload();
         var frontend_cursor_texture = try resources.texture(frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
         var frontend_widget_art = try frontend_art.loadFrontendWidgetArt(&resources);
@@ -460,7 +449,6 @@ const AppState = struct {
             .object_index = object_index,
             .level_index = level_index,
             .segment_index = segment_index,
-            .frontend_canvas = frontend_canvas,
             .frontend_cursor_texture = frontend_cursor_texture,
             .frontend_widget_art = frontend_widget_art,
             .frontend_sound_fx = frontend_sound_fx,
@@ -558,10 +546,6 @@ const AppState = struct {
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
-        }
-        if (self.frontend_canvas) |canvas| {
-            canvas.unload();
-            self.frontend_canvas = null;
         }
         if (self.frontend_cursor_texture) |*texture| {
             texture.unload();
@@ -2183,45 +2167,8 @@ fn drawGameUi(state: *const AppState) !void {
         return;
     }
 
-    if (render_phase.frontendUsesCanvas(state)) {
-        if (state.frontend_canvas) |canvas| {
-            const authored_bounds: rl.Rectangle = .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = ui.authored_width,
-                .height = ui.authored_height,
-            };
-            const authored_layout = ui.virtualLayout(authored_bounds);
-
-            {
-                canvas.begin();
-                defer canvas.end();
-                rl.clearBackground(.black);
-                try drawGamePhaseContents(state, authored_bounds, authored_layout);
-                frontend_render.drawCursorOverlay(state, authored_layout);
-            }
-
-            rl.drawTexturePro(
-                canvas.texture,
-                .{
-                    .x = 0.0,
-                    .y = 0.0,
-                    .width = @floatFromInt(canvas.texture.width),
-                    .height = -@as(f32, @floatFromInt(canvas.texture.height)),
-                },
-                full_bounds,
-                .{ .x = 0.0, .y = 0.0 },
-                0.0,
-                .white,
-            );
-        } else {
-            try drawGamePhaseContents(state, full_bounds, ui_layout);
-            frontend_render.drawCursorOverlay(state, ui_layout);
-        }
-    } else {
-        try drawGamePhaseContents(state, full_bounds, ui_layout);
-        frontend_render.drawCursorOverlay(state, ui_layout);
-    }
+    try drawGamePhaseContents(state, full_bounds, ui_layout);
+    frontend_render.drawCursorOverlay(state, ui_layout);
 
     state.frontend_transition.draw(full_bounds);
 }

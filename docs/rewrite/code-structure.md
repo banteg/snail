@@ -60,7 +60,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/frontend_input.zig` | Frontend input and activation state: hover target updates, queued activation dispatch, pending fade/activation handoff, widget shortcut code mapping, shortcut activation handling, frontend keyboard navigation/value stepping, and widget animation/snap state. |
 | `app/frontend_mouse.zig` | Frontend mouse hit-testing: menu row hover selection, slider arrow hit regions, route-map card/back/replay hit regions, high-score replay/footer actions, completion/exit/help buttons, and mouse-driven activation queueing. |
 | `app/route_map_state.zig` | Route-map card state: open/close gating, active route index tracking, route action index sync, and route highlight target/animation stepping. |
-| `app/render_phase.zig` | Shared render phase policy: frontend canvas eligibility, gameplay-backdrop detection, light-streak visibility, and live subgame camera handoff for background streaks. |
+| `app/render_phase.zig` | Shared render phase policy: gameplay-backdrop detection, light-streak visibility, and live subgame camera handoff for background streaks. |
 | `app/subgame_camera.zig` | Shared subgame camera state: live/cutscene source handoff, snap/blend policy, Raylib camera conversion, and mouse-to-lane steering target mapping. |
 | `app/outer_bridge.zig` | Outer bridge owner/opcode policy: abandon/respawn/pending-run owner selection and selected-replay context clearing rules. |
 | `app/return_flow.zig` | Outer bridge execution: bridge teardown, respawn resume, and owner-state dispatch back into frontend/gameplay entry points. |
@@ -89,7 +89,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `frontend/art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
 | `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
 | `gameplay/resources.zig` | Gameplay resource state and static gameplay asset lifetime helpers: Turbo animation/model selection, barrier/lazer/salt/actor model loading, sprite/sound-fx ownership, and explicit tutorial animation sync context. |
-| `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
+| `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, and window capture/export. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `gameplay/barrier_render.zig` | Gameplay barrier renderer: recovered tutorial/NoFall visibility, native additive blend state, depth-mask/culling policy, and object-space barrier placement. |
 | `gameplay/billboard.zig` | Gameplay billboard quad renderer: camera-facing textured quads, optional roll, alpha-cutout shader scope, depth-mask handling, and texture UV mapping. |

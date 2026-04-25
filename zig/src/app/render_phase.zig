@@ -39,21 +39,3 @@ pub fn lightStreakCamera(state: anytype) background.LightStreakCamera {
     }
     return default_light_streak_camera;
 }
-
-pub fn frontendUsesCanvas(state: anytype) bool {
-    if (usesGameplayBackdrop(state)) return false;
-    return switch (state.game_phase) {
-        .main_menu,
-        .new_game_menu,
-        .challenge_setup_menu,
-        .options_menu,
-        .route_map_menu,
-        .high_scores_menu,
-        .exit_prompt,
-        .completion_screen,
-        .thanks_screen,
-        .help,
-        => true,
-        .boot, .intro, .credits, .pause_menu, .level => false,
-    };
-}

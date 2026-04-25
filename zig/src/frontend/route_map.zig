@@ -41,9 +41,10 @@ pub const HoverState = enum(u8) {
 pub const title_x: f32 = 15.0;
 pub const title_y: f32 = 15.0;
 pub const title_scale: f32 = 0.83;
-// PORT(verified): `initialize_galaxy` seeds sprite `138` at `(300,10)`. The shipped
-// `SPACEMAPLOGO.TGA` art is `256x64`, and the Windows sprite path uses that authored size.
-pub const logo_x: f32 = 300.0;
+// PORT(verified): `initialize_galaxy` seeds sprite `138` at `(370,10)`. The generic
+// widget layout then clamps it by the 15px sprite hot padding to authored x=369 because
+// `SPACEMAPLOGO.TGA` is `256x64`.
+pub const logo_x: f32 = 369.0;
 pub const logo_y: f32 = 10.0;
 pub const logo_width: f32 = 256.0;
 pub const logo_height: f32 = 64.0;
@@ -267,9 +268,9 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
+    drawStars(state, layout, mode);
     drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, .ray_white);
     drawLogo(state, layout);
-    drawStars(state, layout, mode);
     if (state.currentRouteMapOpenIndex()) |route_index| {
         const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontend.frontendRouteModeLabel(mode);
         const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
