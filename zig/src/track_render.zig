@@ -13,11 +13,13 @@ const back_texture_path = "OBJECTS/WORLD00/BACK.TGA";
 const ramp_texture_path = "OBJECTS/UNIVERSE/RAMP.TGA";
 const fringe_texture_path = "OBJECTS/UNIVERSE/FRINGE.TGA";
 
-const skirt_depth: f32 = 0.65;
 const back_plane_margin: f32 = 4.0;
 const back_plane_y: f32 = -0.66;
 const track_skirt_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 102 };
 const attachment_fringe_outset: f32 = 0.4;
+const fringe_texture_u: f32 = 0.5;
+const fringe_edge_v: f32 = 1.0;
+const fringe_outset_v: f32 = 0.0;
 
 pub const Scene = struct {
     allocator: std.mem.Allocator,
@@ -221,53 +223,59 @@ fn drawFringeSides(
     back_height: f32,
     edge_mask: u8,
 ) void {
-    const bottom_front = @min(front_height, back_height) - skirt_depth;
-    const bottom_back = bottom_front;
-
     if ((edge_mask & 0x08) != 0) {
-        drawTexturedQuad(
-            scene.textures.fringe.texture,
-            .{ .x = left, .y = bottom_front, .z = front },
-            .{ .x = left, .y = bottom_back, .z = back },
+        drawFringeRamp(
+            scene,
             .{ .x = left, .y = back_height, .z = back },
+            .{ .x = left - attachment_fringe_outset, .y = back_height, .z = back },
+            .{ .x = left - attachment_fringe_outset, .y = front_height, .z = front },
             .{ .x = left, .y = front_height, .z = front },
-            .{ .left = 0.0, .right = 1.0, .top = 1.0, .bottom = 0.0 },
-            track_skirt_tint,
         );
     }
     if ((edge_mask & 0x04) != 0) {
-        drawTexturedQuad(
-            scene.textures.fringe.texture,
+        drawFringeRamp(
+            scene,
             .{ .x = right, .y = front_height, .z = front },
+            .{ .x = right + attachment_fringe_outset, .y = front_height, .z = front },
+            .{ .x = right + attachment_fringe_outset, .y = back_height, .z = back },
             .{ .x = right, .y = back_height, .z = back },
-            .{ .x = right, .y = bottom_back, .z = back },
-            .{ .x = right, .y = bottom_front, .z = front },
-            .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
-            track_skirt_tint,
         );
     }
     if ((edge_mask & 0x01) != 0) {
-        drawTexturedQuad(
-            scene.textures.fringe.texture,
-            .{ .x = left, .y = bottom_front, .z = front },
-            .{ .x = right, .y = bottom_front, .z = front },
-            .{ .x = right, .y = front_height, .z = front },
+        drawFringeRamp(
+            scene,
             .{ .x = left, .y = front_height, .z = front },
-            .{ .left = 0.0, .right = 1.0, .top = 1.0, .bottom = 0.0 },
-            track_skirt_tint,
+            .{ .x = left, .y = front_height, .z = front - attachment_fringe_outset },
+            .{ .x = right, .y = front_height, .z = front - attachment_fringe_outset },
+            .{ .x = right, .y = front_height, .z = front },
         );
     }
     if ((edge_mask & 0x02) != 0) {
-        drawTexturedQuad(
-            scene.textures.fringe.texture,
-            .{ .x = left, .y = back_height, .z = back },
+        drawFringeRamp(
+            scene,
             .{ .x = right, .y = back_height, .z = back },
-            .{ .x = right, .y = bottom_back, .z = back },
-            .{ .x = left, .y = bottom_back, .z = back },
-            .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
-            track_skirt_tint,
+            .{ .x = right, .y = back_height, .z = back + attachment_fringe_outset },
+            .{ .x = left, .y = back_height, .z = back + attachment_fringe_outset },
+            .{ .x = left, .y = back_height, .z = back },
         );
     }
+}
+
+fn drawFringeRamp(
+    scene: *const Scene,
+    edge_a: rl.Vector3,
+    outer_a: rl.Vector3,
+    outer_b: rl.Vector3,
+    edge_b: rl.Vector3,
+) void {
+    drawDoubleSidedTexturedVertexQuad(
+        scene.textures.fringe.texture,
+        .{ .position = edge_a, .u = fringe_texture_u, .v = fringe_edge_v },
+        .{ .position = outer_a, .u = fringe_texture_u, .v = fringe_outset_v },
+        .{ .position = outer_b, .u = fringe_texture_u, .v = fringe_outset_v },
+        .{ .position = edge_b, .u = fringe_texture_u, .v = fringe_edge_v },
+        track_skirt_tint,
+    );
 }
 
 fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
@@ -385,22 +393,9 @@ fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.B
         const back_right_outer = extendAttachmentEdge(back_right_edge, attachmentPathVertex(built, back_progress, right_inner_offset));
 
         // Native keeps U pinned at the middle of FRINGE.TGA and uses V across the edge/outset span.
-        drawDoubleSidedTexturedVertexQuad(
-            scene.textures.fringe.texture,
-            .{ .position = back_left_edge, .u = 0.5, .v = 0.0 },
-            .{ .position = back_left_outer, .u = 0.5, .v = 1.0 },
-            .{ .position = front_left_outer, .u = 0.5, .v = 1.0 },
-            .{ .position = front_left_edge, .u = 0.5, .v = 0.0 },
-            track_skirt_tint,
-        );
-        drawDoubleSidedTexturedVertexQuad(
-            scene.textures.fringe.texture,
-            .{ .position = back_right_outer, .u = 0.5, .v = 1.0 },
-            .{ .position = back_right_edge, .u = 0.5, .v = 0.0 },
-            .{ .position = front_right_edge, .u = 0.5, .v = 0.0 },
-            .{ .position = front_right_outer, .u = 0.5, .v = 1.0 },
-            track_skirt_tint,
-        );
+        // The raylib upload path samples V inverted relative to the recovered object facequads.
+        drawFringeRamp(scene, back_left_edge, back_left_outer, front_left_outer, front_left_edge);
+        drawFringeRamp(scene, back_right_edge, back_right_outer, front_right_outer, front_right_edge);
     }
 }
 
@@ -659,6 +654,12 @@ test "attachment fringe extends beyond the path edge by the native outset" {
     try std.testing.expectApproxEqAbs(@as(f32, -4.4), extended.x, 0.0001);
     try std.testing.expectApproxEqAbs(edge.y, extended.y, 0.0001);
     try std.testing.expectApproxEqAbs(edge.z, extended.z, 0.0001);
+}
+
+test "fringe uv keeps native mid-u and flips v for raylib sampling" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), fringe_texture_u, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), fringe_edge_v, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), fringe_outset_v, 0.0001);
 }
 
 fn renderCacheSurfaceUv(family: RenderCacheFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
