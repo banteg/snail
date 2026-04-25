@@ -51,9 +51,9 @@ pub const Scene = struct {
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
 
-    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
+    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview) void {
         drawRenderCacheCells(self, preview);
-        drawAttachmentGeometry(self, preview, selected_segment_index);
+        drawAllAttachmentGeometry(self, preview);
         preview.drawPlacedModelsOnly();
     }
 };
@@ -333,10 +333,22 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
 
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
-        switch (built.template.spec.family) {
-            .nonlinear_42 => drawNonlinear42Attachment(scene, built),
-            else => drawOrdinaryAttachment(scene, built),
-        }
+        drawBuiltAttachment(scene, built);
+    }
+}
+
+fn drawAllAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
+    if (preview.attachment_scaffold.built_attachments.len == 0) return;
+
+    for (preview.attachment_scaffold.built_attachments) |*built| {
+        drawBuiltAttachment(scene, built);
+    }
+}
+
+fn drawBuiltAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+    switch (built.template.spec.family) {
+        .nonlinear_42 => drawNonlinear42Attachment(scene, built),
+        else => drawOrdinaryAttachment(scene, built),
     }
 }
 
