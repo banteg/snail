@@ -21,6 +21,9 @@ pub const continue_y_with_bonus: f32 = 400.0;
 pub const reveal_step: f32 = 1.0 / 24.0;
 pub const reveal_bonus_threshold: f32 = 1.0;
 pub const reveal_continue_threshold: f32 = 2.0;
+// PORT(verified): completion is initialized from subgame without resetting the front-end
+// center justify, so it inherits the `25` authored-pixel center offset.
+pub const center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
 
 pub const Action = enum {
     continue_flow,
@@ -114,19 +117,19 @@ pub fn continueAnchorY(summary: Summary) f32 {
 }
 
 pub fn titleTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.menuButtonTextRect(font, text, title_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, title_y, center_offset_x);
 }
 
 pub fn packageTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.menuButtonTextRect(font, text, package_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, package_y, center_offset_x);
 }
 
 pub fn bonusTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.menuButtonTextRect(font, text, bonus_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, bonus_y, center_offset_x);
 }
 
 pub fn continueTextRect(font: *const game_font.Loaded, summary: Summary) frontend_widget.Rect {
-    return frontend_widget.menuButtonTextRect(font, "Click to Continue", continueAnchorY(summary), 0.0);
+    return frontend_widget.menuButtonTextRect(font, "Click to Continue", continueAnchorY(summary), center_offset_x);
 }
 
 pub fn drawCompleted(

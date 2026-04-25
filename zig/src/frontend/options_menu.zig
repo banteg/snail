@@ -17,10 +17,11 @@ pub const music_button_index: usize = 2;
 pub const back_button_index: usize = 3;
 pub const slider_adjust_step: f32 = 0.2;
 pub const slider_display_lerp: f32 = 0.8;
-// PORT(verified): `initialize_options_menu` keeps the options rows on the centered shell-font path.
+// PORT(verified): `initialize_options_menu` hides existing borders but does not reset the
+// center-justify field. Options is entered from main/subgame screens where that field is `25`.
 // The constructor's `90.0` seed is only the left-measure start fed into `sub_44abe0`; the final
-// centered X comes from `arg13 + 320 - width*0.5`, and `arg13` stays `0.0` for this screen.
-pub const button_center_offset_x: f32 = 0.0;
+// centered X comes from `arg13 + 320 - width*0.5`.
+pub const button_center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
 
 pub const LayoutState = struct {
     fullscreen_enabled: bool,

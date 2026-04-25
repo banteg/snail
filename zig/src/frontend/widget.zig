@@ -48,10 +48,12 @@ pub const menu_button_hot_padding: f32 = 13.0;
 // shell-font menu widget, and `sub_4027B0` chains the next button by adding that recovered
 // gap to the previous widget's measured text height.
 pub const menu_button_stack_gap: f32 = 26.0;
-// PORT(verified): the standard centered shell-font menu constructors pass `x = 20.0`
-// with alignment `2`, matching the authored-space offset used by the Windows main/new game
-// menu button stack.
-pub const menu_button_center_offset_x: f32 = 20.0;
+// PORT(verified): main/new-game/high-score/subgame screens call
+// `set_border_justify_centre(..., 25.0)`. `initialize_frontend_widget` adds that global
+// value to each widget's per-widget `anchor_x`, and the text layout centers from the sum.
+// The constructor still seeds `layout_anchor_x = 20.0` for stack bookkeeping, but our rects
+// represent the post-layout text/frame position.
+pub const menu_button_center_offset_x: f32 = 25.0;
 // PORT(verified): `sub_401130` renders the standard shell border with a fixed authored
 // corner size of `+560 = 20.0`. Compact score rows use the smaller 4px edge path.
 pub const menu_button_border_edge: f32 = 20.0;
@@ -348,10 +350,11 @@ pub fn sliderBarRect(text_rect: Rect) Rect {
 }
 
 pub fn sliderArrowRect(text_rect: Rect, direction: SliderDirection) Rect {
+    const center_offset_x = text_rect.centerX() - 320.0;
     return .{
         .left = switch (direction) {
-            .less => slider_left_arrow_left,
-            .more => slider_right_arrow_left,
+            .less => center_offset_x + slider_left_arrow_left,
+            .more => center_offset_x + slider_right_arrow_left,
         },
         .top = text_rect.top + slider_arrow_y_offset,
         .width = slider_arrow_size,
@@ -360,7 +363,7 @@ pub fn sliderArrowRect(text_rect: Rect, direction: SliderDirection) Rect {
 }
 
 pub fn sliderValueTextRect(font: *const game_font.Loaded, text_rect: Rect, text: []const u8) Rect {
-    return widgetTextRect(font, .slider_value, .center, text, text_rect.top + slider_value_y_offset, 0.0);
+    return widgetTextRect(font, .slider_value, .center, text, text_rect.top + slider_value_y_offset, text_rect.centerX() - 320.0);
 }
 
 pub fn sliderFrameRect(
@@ -745,7 +748,7 @@ fn hasFlag(flags: u32, needle: WidgetFlags) bool {
 
 test "menu button text rect is centered around 320 plus offset" {
     const rect = alignedTextRect(80.0, 44.2, 90.0, .center, menu_button_center_offset_x);
-    try std.testing.expectEqual(@as(f32, 300.0), rect.left);
+    try std.testing.expectEqual(@as(f32, 305.0), rect.left);
     try std.testing.expectEqual(@as(f32, 90.0), rect.top);
     try std.testing.expectEqual(@as(f32, 80.0), rect.width);
     try std.testing.expectApproxEqAbs(@as(f32, 44.2), rect.height, 0.001);
@@ -776,12 +779,12 @@ test "footer widgets keep the standard shell edge" {
     try std.testing.expectApproxEqAbs(menu_button_border_edge / 128.0, metrics.source_edge_fraction, 0.0001);
 }
 
-test "slider arrow rect uses the recovered authored offsets" {
-    const text_rect = Rect{ .left = 260.0, .top = 153.0, .width = 120.0, .height = 44.2 };
+test "slider arrow rect inherits the parent row center offset" {
+    const text_rect = Rect{ .left = 285.0, .top = 153.0, .width = 120.0, .height = 44.2 };
     const less_rect = sliderArrowRect(text_rect, .less);
     const more_rect = sliderArrowRect(text_rect, .more);
-    try std.testing.expectEqual(@as(f32, 118.0), less_rect.left);
-    try std.testing.expectEqual(@as(f32, 458.0), more_rect.left);
+    try std.testing.expectEqual(@as(f32, 143.0), less_rect.left);
+    try std.testing.expectEqual(@as(f32, 483.0), more_rect.left);
     try std.testing.expectEqual(@as(f32, 186.0), less_rect.top);
     try std.testing.expectEqual(@as(f32, 186.0), more_rect.top);
 }

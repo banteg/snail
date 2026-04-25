@@ -7,25 +7,25 @@ const high_score = @import("../high_score.zig");
 
 const VirtualLayout = ui.VirtualLayout;
 
-// PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
-// row pitch `27`, and footer row `111 + 10*27 = 381`. Each visible row is a separate
-// compact-score-row widget bundle anchored at `x = -228/-222/-180/+160/+125` for postal or
-// `x = -228/-222/-180/+125/+170` for challenge, rather than a single freehand text strip.
+// PORT(verified): `initialize_high_score_screen` sets center justify to `25`, uses title
+// `y = 64`, row start `111`, row pitch `27`, and footer row `111 + 10*27 = 381`. Each
+// visible row is a separate compact-score-row widget bundle whose per-widget anchors are
+// added to that global center justify.
 pub const title_y: f32 = 64.0;
 pub const row_start_y: f32 = 111.0;
 pub const row_pitch: f32 = 27.0;
 pub const footer_y: f32 = 381.0;
-pub const rank_marker_x: f32 = -228.0;
-pub const rank_number_x: f32 = -222.0;
-pub const name_x: f32 = -180.0;
-pub const postal_score_x: f32 = 160.0;
-pub const postal_replay_x: f32 = 125.0;
-pub const challenge_score_x: f32 = 125.0;
-pub const challenge_replay_x: f32 = 170.0;
-pub const entry_cancel_x: f32 = -110.0;
-pub const entry_submit_x: f32 = 55.0;
-pub const back_x: f32 = -132.0;
-pub const toggle_x: f32 = 33.0;
+pub const rank_marker_x: f32 = frontend_widget.menu_button_center_offset_x - 228.0;
+pub const rank_number_x: f32 = frontend_widget.menu_button_center_offset_x - 222.0;
+pub const name_x: f32 = frontend_widget.menu_button_center_offset_x - 180.0;
+pub const postal_score_x: f32 = frontend_widget.menu_button_center_offset_x + 160.0;
+pub const postal_replay_x: f32 = frontend_widget.menu_button_center_offset_x + 125.0;
+pub const challenge_score_x: f32 = frontend_widget.menu_button_center_offset_x + 125.0;
+pub const challenge_replay_x: f32 = frontend_widget.menu_button_center_offset_x + 170.0;
+pub const entry_cancel_x: f32 = frontend_widget.menu_button_center_offset_x - 110.0;
+pub const entry_submit_x: f32 = frontend_widget.menu_button_center_offset_x + 55.0;
+pub const back_x: f32 = frontend_widget.menu_button_center_offset_x - 132.0;
+pub const toggle_x: f32 = frontend_widget.menu_button_center_offset_x + 33.0;
 pub const button_count: usize = 2;
 pub const replay_button_count: usize = high_score.visible_entry_count;
 
@@ -205,7 +205,14 @@ pub fn drawMenuUi(
         &state.ui_font,
         .footer_button,
         title_text,
-        frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, title_text, title_y, 0.0),
+        frontend_widget.widgetTextRect(
+            &state.ui_font,
+            .footer_button,
+            .center,
+            title_text,
+            title_y,
+            frontend_widget.menu_button_center_offset_x,
+        ),
         title_state,
         false,
     );

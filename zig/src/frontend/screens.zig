@@ -161,11 +161,21 @@ pub fn drawHighScoresMenu(state: anytype, layout: anytype) !void {
 }
 
 pub fn drawExitPrompt(state: anytype, layout: anytype) void {
-    render.drawHeading(state, layout, 320.0, exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
+    render.drawHeading(
+        state,
+        layout,
+        exit_prompt.titleCenterX(state.exit_prompt_mode),
+        exit_prompt.title_y,
+        "Do you really want to quit?",
+        26,
+        .center,
+        .ray_white,
+    );
     exit_prompt.drawMenuUi(.{
         .font = &state.ui_font,
         .widget_art = widgetArt(state),
         .button_states = &state.exit_prompt_button_states,
+        .mode = state.exit_prompt_mode,
     }, layout);
 }
 

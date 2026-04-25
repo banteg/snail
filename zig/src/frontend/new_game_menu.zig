@@ -1,3 +1,4 @@
+const std = @import("std");
 const ui = @import("../ui.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
@@ -5,14 +6,14 @@ const game_font = @import("../game_font.zig");
 
 const VirtualLayout = ui.VirtualLayout;
 
-// PORT(verified): `initialize_new_game_menu` seeds Tutorial at `y = 80`, chains Postal,
-// Time Trial, and Challenge Mode with `stack_widget_below`, places Help explicitly at
-// `(center - 220, y = 350)`, then seeds Back at `y = 350` but immediately stacks it below
-// Challenge Mode. The explicit `350` for Back is only a constructor seed.
+// PORT(verified): `initialize_new_game_menu` sets the global center justify to `25`, seeds
+// Tutorial at `y = 80`, chains Postal, Time Trial, and Challenge Mode with
+// `stack_widget_below`, places Help at `(center + 25 - 220, y = 350)`, then seeds Back at
+// `y = 350` but immediately stacks it below Challenge Mode.
 pub const start_y: f32 = 80.0;
 pub const help_anchor_y: f32 = 350.0;
-pub const help_center_offset_x: f32 = -220.0;
-pub const back_center_offset_x: f32 = 0.0;
+pub const help_center_offset_x: f32 = frontend_widget.menu_button_center_offset_x - 220.0;
+pub const back_center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
 
 pub fn textRect(font: *const game_font.Loaded, item: frontend.NewGameMenuItem) frontend_widget.Rect {
     return switch (item) {
@@ -75,4 +76,9 @@ pub fn drawMenuUi(context: Context, layout: VirtualLayout, visible_items: [4]boo
         context.button_states[5],
         false,
     );
+}
+
+test "new game help/back anchors include native center justify" {
+    try std.testing.expectApproxEqAbs(frontend_widget.menu_button_center_offset_x - 220.0, help_center_offset_x, 0.001);
+    try std.testing.expectApproxEqAbs(frontend_widget.menu_button_center_offset_x, back_center_offset_x, 0.001);
 }

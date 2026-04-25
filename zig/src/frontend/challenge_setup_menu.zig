@@ -36,9 +36,11 @@ pub const play_button_index: usize = 2;
 pub const watch_replay_button_index: usize = 3;
 pub const back_button_index: usize = 4;
 pub const difficulty_anchor_y: f32 = 80.0;
-pub const center_offset_x: f32 = 0.0;
-pub const play_offset_with_replay_x: f32 = 100.0;
-pub const watch_replay_offset_x: f32 = -100.0;
+// PORT(verified): `initialize_subgame` sets the front-end center justify to `25` before the
+// challenge setup widgets are constructed. Per-widget offsets are added on top of that value.
+pub const center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
+pub const play_offset_with_replay_x: f32 = center_offset_x + 100.0;
+pub const watch_replay_offset_x: f32 = center_offset_x - 100.0;
 pub const slider_adjust_step: i32 = 1;
 
 pub fn measurementLabel(item: Item) []const u8 {

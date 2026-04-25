@@ -35,14 +35,26 @@ pub const title_y: f32 = 200.0;
 pub const yes_x: f32 = -80.0;
 pub const no_x: f32 = 80.0;
 
-pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
+pub fn centerOffset(mode: Mode) f32 {
+    return switch (mode) {
+        .quit_app, .abandon_run => frontend_widget.menu_button_center_offset_x,
+        // Route-map prompts are entered from screens that reset center justify to zero.
+        .leave_route_map => 0.0,
+    };
+}
+
+pub fn titleCenterX(mode: Mode) f32 {
+    return 320.0 + centerOffset(mode);
+}
+
+pub fn textRect(font: *const game_font.Loaded, mode: Mode, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     const title_rect = frontend_widget.widgetTextRect(
         font,
         .menu_button,
         .center,
         "Do you really want to quit?",
         title_y,
-        0.0,
+        centerOffset(mode),
     );
     return frontend_widget.widgetTextRect(
         font,
@@ -50,7 +62,7 @@ pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x
         .center,
         text,
         frontend_widget.stackBelow(title_rect),
-        center_offset_x,
+        centerOffset(mode) + center_offset_x,
     );
 }
 
@@ -58,6 +70,7 @@ pub const Context = struct {
     font: *const game_font.Loaded,
     widget_art: frontend_widget.Art,
     button_states: *const [button_count]frontend_widget.TextButtonState,
+    mode: Mode,
 };
 
 pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
@@ -66,7 +79,7 @@ pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
         context.widget_art,
         context.font,
         choices[0].label(),
-        textRect(context.font, choices[0].label(), yes_x),
+        textRect(context.font, context.mode, choices[0].label(), yes_x),
         context.button_states[0],
         false,
     );
@@ -75,7 +88,7 @@ pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
         context.widget_art,
         context.font,
         choices[1].label(),
-        textRect(context.font, choices[1].label(), no_x),
+        textRect(context.font, context.mode, choices[1].label(), no_x),
         context.button_states[1],
         false,
     );

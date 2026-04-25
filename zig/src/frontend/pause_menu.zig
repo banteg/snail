@@ -7,9 +7,9 @@ const VirtualLayout = ui.VirtualLayout;
 
 // PORT(verified): `cRSubPause::Init()` creates the centered pause stack with `End Game`
 // at `y = 145`, then chains `Options` and `Resume` below it with the shared shell-font
-// widget stack helper.
+// widget stack helper. Pause is constructed while subgame center justify is `25`.
 pub const start_y: f32 = 145.0;
-pub const center_offset_x: f32 = 0.0;
+pub const center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
 pub const items = frontend.pause_menu_items;
 
 pub fn textRect(font: *const game_font.Loaded, item: frontend.PauseMenuItem) frontend_widget.Rect {

@@ -480,7 +480,12 @@ pub fn updateExitPromptSelection(state: anytype) !void {
         return;
     };
 
-    const yes_rect = frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
+    const yes_rect = frontend_exit_prompt.textRect(
+        &state.ui_font,
+        state.exit_prompt_mode,
+        frontend_exit_prompt.choices[0].label(),
+        frontend_exit_prompt.yes_x,
+    );
     if (frontend_widget.hitRect(yes_rect, state.exit_prompt_button_states[0]).contains(local_mouse)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForExitPrompt(0));
         state.exit_prompt_choice_index = 0;
@@ -490,7 +495,12 @@ pub fn updateExitPromptSelection(state: anytype) !void {
         return;
     }
 
-    const no_rect = frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
+    const no_rect = frontend_exit_prompt.textRect(
+        &state.ui_font,
+        state.exit_prompt_mode,
+        frontend_exit_prompt.choices[1].label(),
+        frontend_exit_prompt.no_x,
+    );
     if (frontend_widget.hitRect(no_rect, state.exit_prompt_button_states[1]).contains(local_mouse)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForExitPrompt(1));
         state.exit_prompt_choice_index = 1;
