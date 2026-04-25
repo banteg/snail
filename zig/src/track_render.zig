@@ -107,6 +107,12 @@ const QuadUv = struct {
     bottom: f32,
 };
 
+const TexturedVertex = struct {
+    position: rl.Vector3,
+    u: f32,
+    v: f32,
+};
+
 const LaneBounds = struct {
     min: usize,
     max: usize,
@@ -363,7 +369,6 @@ fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.B
     const left_inner_offset = @min(left_edge_offset + 1.0, half_width);
     const right_edge_offset = half_width;
     const right_inner_offset = @max(right_edge_offset - 1.0, -half_width);
-    const uv = QuadUv{ .left = 0.5, .right = 0.5, .top = 0.0, .bottom = 1.0 };
 
     for (0..template.samples.len - 1) |sample_index| {
         const front_progress: f32 = @floatFromInt(sample_index);
@@ -379,22 +384,21 @@ fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.B
         const front_right_outer = extendAttachmentEdge(front_right_edge, attachmentPathVertex(built, front_progress, right_inner_offset));
         const back_right_outer = extendAttachmentEdge(back_right_edge, attachmentPathVertex(built, back_progress, right_inner_offset));
 
-        drawDoubleSidedTintedTexturedQuad(
+        // Native keeps U pinned at the middle of FRINGE.TGA and uses V across the edge/outset span.
+        drawDoubleSidedTexturedVertexQuad(
             scene.textures.fringe.texture,
-            front_left_outer,
-            back_left_outer,
-            back_left_edge,
-            front_left_edge,
-            uv,
+            .{ .position = back_left_edge, .u = 0.5, .v = 0.0 },
+            .{ .position = back_left_outer, .u = 0.5, .v = 1.0 },
+            .{ .position = front_left_outer, .u = 0.5, .v = 1.0 },
+            .{ .position = front_left_edge, .u = 0.5, .v = 0.0 },
             track_skirt_tint,
         );
-        drawDoubleSidedTintedTexturedQuad(
+        drawDoubleSidedTexturedVertexQuad(
             scene.textures.fringe.texture,
-            front_right_edge,
-            back_right_edge,
-            back_right_outer,
-            front_right_outer,
-            uv,
+            .{ .position = back_right_outer, .u = 0.5, .v = 1.0 },
+            .{ .position = back_right_edge, .u = 0.5, .v = 0.0 },
+            .{ .position = front_right_edge, .u = 0.5, .v = 0.0 },
+            .{ .position = front_right_outer, .u = 0.5, .v = 1.0 },
             track_skirt_tint,
         );
     }
@@ -712,17 +716,42 @@ fn drawDoubleSidedTexturedQuad(
     drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv, .white);
 }
 
-fn drawDoubleSidedTintedTexturedQuad(
+fn drawDoubleSidedTexturedVertexQuad(
     texture: rl.Texture2D,
-    top_left: rl.Vector3,
-    bottom_left: rl.Vector3,
-    bottom_right: rl.Vector3,
-    top_right: rl.Vector3,
-    uv: QuadUv,
+    a: TexturedVertex,
+    b: TexturedVertex,
+    c: TexturedVertex,
+    d: TexturedVertex,
     tint: rl.Color,
 ) void {
-    drawTexturedQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, tint);
-    drawTexturedQuad(texture, top_right, bottom_right, bottom_left, top_left, uv, tint);
+    drawTexturedVertexQuad(texture, a, b, c, d, tint);
+    drawTexturedVertexQuad(texture, d, c, b, a, tint);
+}
+
+fn drawTexturedVertexQuad(
+    texture: rl.Texture2D,
+    a: TexturedVertex,
+    b: TexturedVertex,
+    c: TexturedVertex,
+    d: TexturedVertex,
+    tint: rl.Color,
+) void {
+    rlgl.rlSetTexture(texture.id);
+    defer rlgl.rlSetTexture(0);
+
+    rlgl.rlBegin(rlgl.rl_quads);
+    defer rlgl.rlEnd();
+    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    drawTexturedVertex(a);
+    drawTexturedVertex(b);
+    drawTexturedVertex(c);
+    drawTexturedVertex(d);
+}
+
+fn drawTexturedVertex(vertex: TexturedVertex) void {
+    rlgl.rlTexCoord2f(vertex.u, vertex.v);
+    rlgl.rlVertex3f(vertex.position.x, vertex.position.y, vertex.position.z);
 }
 
 test "resolve track set index rejects unresolved windows values" {
