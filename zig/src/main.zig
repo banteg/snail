@@ -1949,6 +1949,7 @@ const AppState = struct {
     pub fn availableFrontendRouteLimit(self: *const AppState, mode: FrontendLevelMode) usize {
         const highest_available = self.highestAvailableFrontendRouteIndex(mode);
         if (highest_available == 0) return 0;
+        if (mode == .time_trial) return highest_available;
         const saved_limit: usize = @intCast(self.runtime_config.routeUnlockLimit());
         return std.math.clamp(saved_limit, @as(usize, 1), highest_available);
     }
@@ -2514,6 +2515,21 @@ test "route map screen modes follow windows route-map entry paths" {
     try std.testing.expectEqualStrings("Back", frontend_bridge.routeMapBackLabelForScreenMode(.normal));
     try std.testing.expectEqualStrings("Back", frontend_bridge.routeMapBackLabelForScreenMode(.replay));
     try std.testing.expectEqualStrings("Exit", frontend_bridge.routeMapBackLabelForScreenMode(.post_completion_exit));
+}
+
+test "time-trial route map is not clamped by postal unlock progress" {
+    var resources = try resource_store.Store.init(std.testing.allocator, default_archive_path, false);
+    defer resources.deinit();
+
+    var state: AppState = undefined;
+    state.resources = resources;
+    state.runtime_config = config.Blob.initDefault();
+    state.runtime_config.setRouteUnlockLimit(1);
+    state.runtime_config.setRouteSelectionIndex(0x32);
+
+    try std.testing.expectEqual(@as(usize, 1), state.availableFrontendRouteLimit(.postal));
+    try std.testing.expect(state.availableFrontendRouteLimit(.time_trial) > 1);
+    try std.testing.expectEqual(@as(usize, 0x32), state.initialFrontendRouteIndex(.time_trial));
 }
 
 test "route map body text stays empty without route script copy" {
