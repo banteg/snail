@@ -79,6 +79,7 @@ pub const Options = struct {
     auto_screenshot: ?AutoScreenshot = null,
     mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
+    start_mode: ?frontend.FrontendLevelMode = null,
     start_level_intro: bool = false,
     auto_dismiss_click_start: bool = false,
     start_route_index: ?usize = null,
@@ -155,6 +156,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             index += 1;
             if (index >= args.len) return error.MissingStartPhase;
             options.start_phase = parseGamePhase(args[index]) orelse return error.InvalidStartPhase;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--start-mode")) {
+            index += 1;
+            if (index >= args.len) return error.MissingStartMode;
+            options.start_mode = parseFrontendLevelMode(args[index]) orelse return error.InvalidStartMode;
             continue;
         }
         if (std.mem.eql(u8, arg, "--start-level-intro")) {
@@ -283,6 +290,29 @@ fn parseGamePhase(name: []const u8) ?frontend.GamePhase {
     return null;
 }
 
+fn parseFrontendLevelMode(name: []const u8) ?frontend.FrontendLevelMode {
+    if (std.ascii.eqlIgnoreCase(name, "postal") or
+        std.ascii.eqlIgnoreCase(name, "postal_mode") or
+        std.ascii.eqlIgnoreCase(name, "postal-mode"))
+    {
+        return .postal;
+    }
+    if (std.ascii.eqlIgnoreCase(name, "time_trial") or
+        std.ascii.eqlIgnoreCase(name, "time-trial") or
+        std.ascii.eqlIgnoreCase(name, "timetrial"))
+    {
+        return .time_trial;
+    }
+    if (std.ascii.eqlIgnoreCase(name, "challenge") or
+        std.ascii.eqlIgnoreCase(name, "challenge_mode") or
+        std.ascii.eqlIgnoreCase(name, "challenge-mode"))
+    {
+        return .challenge;
+    }
+    if (std.ascii.eqlIgnoreCase(name, "tutorial")) return .tutorial;
+    return null;
+}
+
 fn parseWindowSize(spec: []const u8) !WindowSize {
     const sep_index = std.mem.indexOfScalar(u8, spec, 'x') orelse
         std.mem.indexOfScalar(u8, spec, 'X') orelse
@@ -350,6 +380,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
     try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
+    try std.testing.expectEqual(@as(?frontend.FrontendLevelMode, null), options.start_mode);
     try std.testing.expectEqual(false, options.start_level_intro);
     try std.testing.expectEqual(false, options.auto_dismiss_click_start);
     try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
@@ -388,6 +419,20 @@ test "parse args handles debug and smoke subcommands" {
 test "parse args accepts start phase override" {
     const options = try parseArgsFromSlice(&.{ "--start-phase", "main_menu" });
     try std.testing.expectEqual(frontend.GamePhase.main_menu, options.start_phase.?);
+}
+
+test "parse args accepts frontend mode override" {
+    var options = try parseArgsFromSlice(&.{ "--start-mode", "postal" });
+    try std.testing.expectEqual(frontend.FrontendLevelMode.postal, options.start_mode.?);
+
+    options = try parseArgsFromSlice(&.{ "--start-mode", "time-trial" });
+    try std.testing.expectEqual(frontend.FrontendLevelMode.time_trial, options.start_mode.?);
+
+    options = try parseArgsFromSlice(&.{ "--start-mode", "challenge_mode" });
+    try std.testing.expectEqual(frontend.FrontendLevelMode.challenge, options.start_mode.?);
+
+    options = try parseArgsFromSlice(&.{ "--start-mode", "tutorial" });
+    try std.testing.expectEqual(frontend.FrontendLevelMode.tutorial, options.start_mode.?);
 }
 
 test "parse args accepts level intro override" {
@@ -452,6 +497,11 @@ test "parse args accepts mouse local override" {
 test "parse args validates start phase" {
     try std.testing.expectError(error.MissingStartPhase, parseArgsFromSlice(&.{"--start-phase"}));
     try std.testing.expectError(error.InvalidStartPhase, parseArgsFromSlice(&.{ "--start-phase", "weird" }));
+}
+
+test "parse args validates frontend mode override" {
+    try std.testing.expectError(error.MissingStartMode, parseArgsFromSlice(&.{"--start-mode"}));
+    try std.testing.expectError(error.InvalidStartMode, parseArgsFromSlice(&.{ "--start-mode", "weird" }));
 }
 
 test "parse args validates start route index" {

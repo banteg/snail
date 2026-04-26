@@ -483,6 +483,8 @@ const AppState = struct {
                 try state.enterDebugLevelAt(options.debug_start_level_path orelse default_level_path, row, options.debug_start_lane)
             else if (options.start_level_intro)
                 try state.beginFrontendLevelPath(.tutorial, 0, null, null)
+            else if (options.start_mode) |start_mode|
+                try state.enterStartMode(start_mode)
             else if (options.start_phase) |start_phase|
                 try state.enterStartPhase(start_phase)
             else
@@ -902,6 +904,10 @@ const AppState = struct {
 
     fn enterStartPhase(self: *AppState, phase: GamePhase) !void {
         try frontend_flow.enterStartPhase(self, phase);
+    }
+
+    fn enterStartMode(self: *AppState, mode: FrontendLevelMode) !void {
+        try frontend_flow.enterStartMode(self, mode);
     }
 
     fn performMainMenuItem(self: *AppState, item: MainMenuItem) !void {

@@ -108,6 +108,11 @@ pub fn enterStartPhase(state: anytype, phase: GamePhase) !void {
     }
 }
 
+pub fn enterStartMode(state: anytype, mode: FrontendLevelMode) !void {
+    try state.high_score_tables.loadFromRuntimeRoot(state.allocator, state.runtime_root_path);
+    try enterFrontendLevelMode(state, mode);
+}
+
 pub fn performMainMenuItem(state: anytype, item: MainMenuItem) !void {
     switch (item) {
         .new_game => try enterGamePhase(state, .new_game_menu),

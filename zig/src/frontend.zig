@@ -143,8 +143,8 @@ pub const FrontendTransition = struct {
 };
 
 // PORT(partial): these top-level labels match the recovered front-end constructor at
-// `initialize_main_menu`.
-// Actions for `Options` and deeper score routing are still scaffolded until their handlers are ported.
+// `initialize_main_menu`. The menu handlers are ported, but some lower-level widget
+// polish remains incomplete.
 pub const MainMenuItem = enum {
     new_game,
     high_scores,
@@ -166,8 +166,7 @@ pub const MainMenuItem = enum {
 pub const main_menu_items = [_]MainMenuItem{ .new_game, .high_scores, .options, .credits, .exit };
 
 // PORT(partial): these labels and mode actions match the recovered `initialize_new_game_menu`
-// and `update_new_game_menu` new-game flow.
-// `Help` is still only a partial screen port, and later progression beyond the first level remains unresolved.
+// and `update_new_game_menu` new-game flow. `Help` is still only a partial screen port.
 pub const NewGameMenuItem = enum {
     tutorial,
     postal_mode,
@@ -373,7 +372,7 @@ pub fn routeMenuHint(mode: FrontendLevelMode, action: RouteMenuAction) ?[]const 
             "Launch the selected delivery route using the recovered front-end route index."
         else
             "Launch the selected route using the recovered front-end route index.",
-        .watch_best_trial => "Launch the saved replay-backed course setup. Recorded input playback is still not ported.",
+        .watch_best_trial => "Launch the selected route's saved best-trial replay.",
         .back => "Return to the main menu.",
     };
 }
@@ -421,6 +420,7 @@ test "route menu labels follow recovered postal wording" {
     try std.testing.expectEqualStrings("Back", routeMenuActionLabel(.postal, .back));
     try std.testing.expectEqualStrings("Play", routeMenuActionLabel(.time_trial, .play));
     try std.testing.expectEqualStrings("Back", routeMenuActionLabel(.time_trial, .back));
+    try std.testing.expectEqualStrings("Launch the selected route's saved best-trial replay.", routeMenuHint(.time_trial, .watch_best_trial).?);
 }
 
 test "frontend fade-in reaches idle after 18 ticks" {

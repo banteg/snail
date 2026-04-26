@@ -145,6 +145,7 @@ Command behavior:
 - windowed mode is still the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
 - `--start-phase main_menu` jumps directly into a game-path frontend screen for faster iteration
+- `--start-mode postal|time-trial|challenge|tutorial [--start-route-index N]` enters a recovered mode-owned flow directly for visual and gameplay probes
 - `--start-level-intro` launches the default tutorial through the frontend level-entry path, including the click-start intro state
 - `--auto-dismiss-click-start` pairs with `--start-level-intro` to advance the click-start gate for automated captures
 - `--debug-start-level LEVELS/TUTORIAL.TXT --debug-start-row 320.5 [--debug-start-lane 5.5]` loads a level shell directly at an arbitrary runtime row/lane for gameplay probes and screenshots
