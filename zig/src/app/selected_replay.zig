@@ -51,7 +51,6 @@ pub fn directiveForDecodedReplay(replay: *const high_score.DecodedReplay, runtim
     return .{
         .active = true,
         .lateral_world_x = replayMathType16To32(sample.lateral, 16.0),
-        .secondary_lane = sample.secondary_lane,
         .raw_flag_bits = sample.flags,
     };
 }

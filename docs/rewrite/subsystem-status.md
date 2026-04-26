@@ -55,7 +55,7 @@ Implemented now:
 - preserve the recovered compact-record replay-mode (`0x30`), runtime-build-flags (`0x38`), challenge-speed raw/scalar (`0x4c/0x48`), challenge-difficulty raw/scalar (`0x50/0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
-- expose the recovered 5-byte replay payload lanes (`lateral`, neutral secondary lane, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
+- expose the recovered 5-byte replay payload lanes (`lateral`, ghost Z delta, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
 - inline name-entry flow inside the shared high-score screen
 
 Still missing or approximate:
@@ -420,9 +420,10 @@ Implemented now:
 - selected replay actions now launch the recovered selected-record families instead of one source-derived return path: route-map best-trial stays transient, while persistent replay launches carry their own saved return owner
 - high-score replay rows are available for both native score banks: postal replay labels use the recovered `+125` x anchor and challenge replay labels use `+170`
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
-- selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
+- selected replay runs now preserve the exact saved score entry as a live replay source and feed the recovered lateral/flag replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
+- the former "secondary lane" interpretation has been corrected: expanded-record `+0x72 + i*6` is a ghost Z delta accumulator consumed by the non-selected Time Trial replay path, not a selected-playback steering lane
 - selected replay sessions no longer feed completion or failure back into live high-score persistence; result exits still route through the recovered launch-surface bridge split instead of mutating score state in place
 - replay bridge payloads now preserve explicit launch context (`source`, persistent lane, return owner) across destroy/rebuild returns instead of reconstructing that state from the source enum alone
 - replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
@@ -431,7 +432,7 @@ Implemented now:
 Still missing or approximate:
 
 - the New Game replay attract launcher is now exposed in Zig for bank probe/launch/saved-owner return ownership, but it remains dormant because the shipped menu-local attract step is zero and no static writer has been recovered
-- the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
+- Time Trial ghost Z reconstruction from the recovered `+0x72` delta lane is still not rendered
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity
 

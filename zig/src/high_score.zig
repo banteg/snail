@@ -76,11 +76,11 @@ pub const Entry = struct {
         if (record.len < required_len) return null;
 
         const lateral_offset = compact_record_header_size + (index * 2);
-        const secondary_lane_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
+        const secondary_z_delta_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
         const flags_offset = compact_record_header_size + (sample_count * 4) + index;
         return .{
             .lateral = readI16(record, lateral_offset),
-            .secondary_lane_raw = readI16(record, secondary_lane_offset),
+            .secondary_z_delta_raw = readI16(record, secondary_z_delta_offset),
             .flags = record[flags_offset],
         };
     }
@@ -113,18 +113,18 @@ pub const Entry = struct {
         const decoded_samples = try allocator.alloc(DecodedReplaySample, sample_count);
         errdefer allocator.free(decoded_samples);
 
-        var secondary_lane: i32 = 0;
+        var ghost_z_accum_raw: i32 = 0;
         for (decoded_samples, 0..) |*decoded, index| {
             const sample = self.replaySampleAt(index) orelse return error.InvalidReplayRecord;
             if (index == 0) {
-                secondary_lane = @as(i32, sample.secondary_lane_raw);
+                ghost_z_accum_raw = @as(i32, sample.secondary_z_delta_raw);
             } else {
-                secondary_lane += @as(i32, sample.secondary_lane_raw);
+                ghost_z_accum_raw += @as(i32, sample.secondary_z_delta_raw);
             }
 
             decoded.* = .{
                 .lateral = sample.lateral,
-                .secondary_lane = secondary_lane,
+                .ghost_z_accum_raw = ghost_z_accum_raw,
                 .flags = sample.flags,
             };
         }
@@ -138,13 +138,13 @@ pub const Entry = struct {
 
 pub const ReplaySample = struct {
     lateral: i16,
-    secondary_lane_raw: i16,
+    secondary_z_delta_raw: i16,
     flags: u8,
 };
 
 pub const DecodedReplaySample = struct {
     lateral: i16,
-    secondary_lane: i32,
+    ghost_z_accum_raw: i32,
     flags: u8,
 };
 
@@ -596,23 +596,23 @@ test "compact high-score record exposes replay payload lanes" {
     try std.testing.expectEqual(@as(usize, 3), entry.replaySampleCount());
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = -12,
-        .secondary_lane_raw = 100,
+        .secondary_z_delta_raw = 100,
         .flags = 0x01,
     }, entry.replaySampleAt(0).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 7,
-        .secondary_lane_raw = 200,
+        .secondary_z_delta_raw = 200,
         .flags = 0x04,
     }, entry.replaySampleAt(1).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 25,
-        .secondary_lane_raw = 300,
+        .secondary_z_delta_raw = 300,
         .flags = 0x0a,
     }, entry.replaySampleAt(2).?);
     try std.testing.expect(entry.replaySampleAt(3) == null);
 }
 
-test "decoded replay accumulates the secondary lane after the first sample" {
+test "decoded replay accumulates the ghost z delta lane after the first sample" {
     var entry = Entry{};
     const raw_record = try std.testing.allocator.alloc(u8, compact_record_header_size + (3 * 5));
     defer std.testing.allocator.free(raw_record);
@@ -632,9 +632,9 @@ test "decoded replay accumulates the secondary lane after the first sample" {
     var decoded = try entry.decodeReplay(std.testing.allocator);
     defer decoded.deinit();
 
-    try std.testing.expectEqual(@as(i32, 100), decoded.sampleAt(0).?.secondary_lane);
-    try std.testing.expectEqual(@as(i32, 125), decoded.sampleAt(1).?.secondary_lane);
-    try std.testing.expectEqual(@as(i32, 120), decoded.sampleAt(2).?.secondary_lane);
+    try std.testing.expectEqual(@as(i32, 100), decoded.sampleAt(0).?.ghost_z_accum_raw);
+    try std.testing.expectEqual(@as(i32, 125), decoded.sampleAt(1).?.ghost_z_accum_raw);
+    try std.testing.expectEqual(@as(i32, 120), decoded.sampleAt(2).?.ghost_z_accum_raw);
 }
 
 test "replay payload access rejects truncated compact records" {

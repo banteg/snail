@@ -22,7 +22,6 @@ pub const RunnerInput = struct {
 pub const ReplayDirective = struct {
     active: bool = false,
     lateral_world_x: ?f32 = null,
-    secondary_lane: ?i32 = null,
     raw_flag_bits: u8 = 0,
 };
 

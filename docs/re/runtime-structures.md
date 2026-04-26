@@ -412,8 +412,12 @@ The current high-confidence `Game` fields are:
     - `+0x68`: `runtime_build_seed`
     - `+0x6c`: `replay_sample_count`
     - `+0x70 + i*6`: replay sample `lateral_x`
-    - `+0x72 + i*6`: replay sample `secondary_lane_raw`
+    - `+0x72 + i*6`: replay sample `ghost_z_delta_raw`
     - `+0x74 + i*6`: replay sample `flags`
+
+The `+0x72` sample lane is not a steering lane. `update_subgoldy` uses it on the non-selected
+Time Trial replay/ghost path by accumulating `convert_math_type16_to_32(sample, 32.0)` into
+`data_643190`; selected replay playback reads `+0x70` lateral X and `+0x74` flags directly.
 - `+0xff25d8`: `selected_level_record_saved_return_owner`
 - `+0xff25dc`: `runtime_track_index`
 

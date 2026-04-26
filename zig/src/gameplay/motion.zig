@@ -4,7 +4,6 @@ const track = @import("../track.zig");
 
 pub const ReplayState = struct {
     world_x_override: ?f32 = null,
-    secondary_lane: ?i32 = null,
     raw_flag_bits: u8 = 0,
     track_state_latch: bool = false,
     fade_requested: bool = false,

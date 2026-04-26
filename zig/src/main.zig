@@ -3229,7 +3229,7 @@ test "parity: transient time-trial replay abandon stays on the rebuild route-map
     state.selected_level_record_outer_return_target = null;
 
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
-    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    samples[0] = .{ .lateral = 0, .ghost_z_accum_raw = 0, .flags = 0 };
     state.selected_replay_cache = .{
         .allocator = std.testing.allocator,
         .samples = samples,
@@ -3436,7 +3436,7 @@ test "selected level record override rejects unresolved mode ids" {
     try std.testing.expect(frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
 }
 
-test "selected replay directive decodes compact lateral x and the secondary lane" {
+test "selected replay directive decodes compact lateral x and flags" {
     var tables = high_score.Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
 
@@ -3456,7 +3456,6 @@ test "selected replay directive decodes compact lateral x and the secondary lane
     const first = selected_replay.directiveForDecodedReplay(&replay, 0);
     try std.testing.expect(first.active);
     try std.testing.expectApproxEqAbs(@as(f32, 1.5), first.lateral_world_x.?, 0.0001);
-    try std.testing.expectEqual(@as(?i32, 0), first.secondary_lane);
     try std.testing.expectEqual(@as(u8, 0x0c), first.raw_flag_bits);
 
     const tail = selected_replay.directiveForDecodedReplay(&replay, 1);
@@ -3520,7 +3519,7 @@ test "transient postal replay failure stays off the post-level high-score lane" 
     state.selected_level_record_outer_return_target = null;
 
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
-    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    samples[0] = .{ .lateral = 0, .ghost_z_accum_raw = 0, .flags = 0 };
     state.selected_replay_cache = .{
         .allocator = std.testing.allocator,
         .samples = samples,

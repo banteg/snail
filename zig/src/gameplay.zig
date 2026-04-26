@@ -898,10 +898,6 @@ pub const Runner = struct {
         return self.replay_state.raw_flag_bits;
     }
 
-    pub fn replaySecondaryLane(self: *const Runner) ?i32 {
-        return self.replay_state.secondary_lane;
-    }
-
     pub fn replayFadeRequested(self: *const Runner) bool {
         return self.replay_state.fade_requested;
     }
@@ -1377,7 +1373,6 @@ pub const Runner = struct {
             self.resolved_lane_index = lane_index;
         }
 
-        self.replay_state.secondary_lane = replay.secondary_lane;
         self.replay_state.raw_flag_bits = replay.raw_flag_bits;
         self.replay_state.track_state_latch = (replay.raw_flag_bits & 0x04) != 0;
         if ((replay.raw_flag_bits & 0x08) != 0) {
@@ -9571,7 +9566,6 @@ test "replay directive overrides world x and latches replay flags" {
         .{
             .active = true,
             .lateral_world_x = -3.25,
-            .secondary_lane = 321,
             .raw_flag_bits = 0x0c,
         },
         1.0 / 60.0,
@@ -9580,7 +9574,6 @@ test "replay directive overrides world x and latches replay flags" {
     const world = runner.worldPosition(&fixture.preview, 0.82);
     try std.testing.expectApproxEqAbs(@as(f32, -3.25), world.x, 0.0001);
     try std.testing.expectEqual(@as(usize, 1), runner.resolved_lane_index);
-    try std.testing.expectEqual(@as(?i32, 321), runner.replaySecondaryLane());
     try std.testing.expectEqual(@as(u8, 0x0c), runner.replayRawFlagBits());
     try std.testing.expect(runner.replayTrackStateLatched());
     try std.testing.expect(runner.replayFadeRequested());
