@@ -1,3 +1,5 @@
+const std = @import("std");
+
 const rl = @import("raylib");
 const ui = @import("../ui.zig");
 const frontend_art = @import("../frontend/art.zig");
@@ -10,6 +12,9 @@ const VirtualLayout = ui.VirtualLayout;
 const gameplay_prompt_anchor_y: f32 = 330.0;
 const tutorial_prompt_anchor_y: f32 = 116.0;
 const tutorial_prompt_interactive_anchor_y: f32 = 176.0;
+pub const click_start_anchor_y: f32 = 200.0;
+
+const click_start_text = "Click to Start";
 
 const ActiveLayout = struct {
     lines: [frontend_widget.multiline_prompt_max_lines][]const u8 = [_][]const u8{""} ** frontend_widget.multiline_prompt_max_lines,
@@ -37,9 +42,9 @@ pub fn drawGameplayStack(context: Context, layout: VirtualLayout, queue: *const 
     try drawWidget(context, layout, queue, false);
 }
 
-pub fn drawStaticWidget(context: Context, layout: VirtualLayout, text: []const u8, tutorial: bool) void {
-    const prompt_layout = layoutForText(context, text, tutorial, false);
-    drawMessageLines(context, layout, prompt_layout);
+pub fn drawClickStartWidget(context: Context, layout: VirtualLayout) void {
+    // PORT(verified): `initialize_click_start` creates one centered menu_button widget at authored y=200.
+    drawInvisibleMenuText(context, layout, click_start_text, click_start_anchor_y);
 }
 
 pub fn drawTutorialStack(context: Context, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
@@ -108,6 +113,22 @@ fn drawMessageLines(context: Context, layout: VirtualLayout, prompt_layout: Acti
     }
 }
 
+fn drawInvisibleMenuText(context: Context, layout: VirtualLayout, text: []const u8, anchor_y: f32) void {
+    var text_state = frontend_widget.TextButtonState{};
+    text_state.snapFor(.menu_button, true);
+    frontend_widget.drawTextButtonWithOptions(
+        layout,
+        .{ .border = context.widget_art.border.?.texture },
+        context.font,
+        .menu_button,
+        text,
+        frontend_widget.menuButtonTextRect(context.font, text, anchor_y, 0.0),
+        text_state,
+        false,
+        .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
+    );
+}
+
 fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_prompt.Queue, tutorial: bool) !void {
     const prompt = queue.active() orelse return;
     const prompt_layout = activeLayout(context, prompt, tutorial);
@@ -145,4 +166,8 @@ fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_promp
             false,
         );
     }
+}
+
+test "click-start prompt uses native authored y" {
+    try std.testing.expectEqual(@as(f32, 200.0), click_start_anchor_y);
 }

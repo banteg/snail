@@ -2272,7 +2272,7 @@ fn drawTutorialGameplayUi(state: *const AppState, hud_context: gameplay_hud.Cont
     gameplay_hud.drawDamageGauge(hud_context, layout, runner);
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
-            gameplay_prompt_overlay.drawStaticWidget(state.gameplayPromptContext(), layout, "Click to Start", true);
+            gameplay_prompt_overlay.drawClickStartWidget(state.gameplayPromptContext(), layout);
         }
         return;
     }

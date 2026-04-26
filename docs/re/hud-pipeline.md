@@ -134,14 +134,13 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 | 7 | Running timer | none in Postal; Time Trial only | **FIXED** (fed52e9): mode-gated to `.time_trial`, shown in widget D slot |
 | 8 | Parcel icon | separate sprite 0x7a at (0, 58) + number at (47, 80) | **FIXED** (fed52e9, a1158e7): native sprite path + separate count text |
 | 9 | Jetpack gauge bar | does not exist (particles only) | **REMOVED** (8571a2d): port invention deleted |
-| 10 | "Click to Start" prompt text | menu_button widget at (0, 200) centered | uses `menu_button` at anchor_y=116 (tutorial) / 330 (standard); anchor_y differs from native 200 (see gameplay/prompt_overlay.zig:8-10) |
+| 10 | "Click to Start" prompt text | menu_button widget at (0, 200) centered | **FIXED**: dedicated standalone draw uses native authored y=200 instead of tutorial prompt-stack anchors |
 | 11 | `update_row_event_display` | native draws through 5 allocated borders per frame | port uses custom NineSliceFrame + icon + text (drawRowEventWidget); same data, different shell |
 | 12 | `update_times_up` | at stop-track marker | not wired |
 | 13 | `update_warning` | flash WARNING.TGA on crit | **FIXED** (8571a2d): drawn from inside drawDamageGauge with correct authored (288, 64, 64, 64) |
 
 ### Remaining
 
-- (10) `drawStaticWidget` prompt anchor_y — re-check against native `initialize_click_start` (y=200).
 - (11) `drawRowEventWidget` could be ported to the native 5-widget allocated-border approach with `allocate_border` / `kill_border` lifecycle. Current implementation produces the same content but bypasses the widget system.
 - (12) `update_times_up` / `show_times_up_message` — wire "Time's Up" prompt for the stop-track marker (trigger: `runtime_track_index == 0x5208` per `update_subgoldy` 0x43d1f2).
 
