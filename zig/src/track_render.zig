@@ -173,15 +173,16 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
-            if (!preview.renderCacheHeadAt(global_row, lane_index)) continue;
+            if (!preview.renderCacheHeadAt(global_row, lane_index) and track.renderBackingSurfaceTileForRuntimeTile(tile_type) == null) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
             const right = left + @as(f32, @floatFromInt(run_length));
             const front = @as(f32, @floatFromInt(global_row));
             const back = front + 1.0;
-            const front_height = surfaceHeightAtTileFraction(tile_type, front, 0.0);
-            const back_height = surfaceHeightAtTileFraction(tile_type, front, 0.999);
+            const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
+            const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
+            const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
 
             drawTexturedQuad(
                 textureForRenderCacheFamily(scene, family),
@@ -285,6 +286,7 @@ fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
 }
 
 fn runtimeTileIsFringeSolid(tile_type: u8) bool {
+    if (track.renderBackingSurfaceTileForRuntimeTile(tile_type) != null) return true;
     return !track.isOpenNeighborRuntimeTileFamily(tile_type) and tile_type != 0x16;
 }
 
@@ -555,10 +557,11 @@ fn textureForRenderCacheFamily(scene: *const Scene, family: RenderCacheFamily) r
 }
 
 fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
-    if (track.isFloorCacheRuntimeTileFamily(tile_type)) return .floor;
-    if (track.isSlideRuntimeTileFamily(tile_type)) return .slide;
-    if (track.isRampRuntimeTileFamily(tile_type)) return .ramp;
-    return switch (tile_type) {
+    const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
+    if (track.isFloorCacheRuntimeTileFamily(surface_tile)) return .floor;
+    if (track.isSlideRuntimeTileFamily(surface_tile)) return .slide;
+    if (track.isRampRuntimeTileFamily(surface_tile)) return .ramp;
+    return switch (surface_tile) {
         0x20 => .warn,
         else => null,
     };
@@ -630,11 +633,13 @@ test "fringe objects follow the recovered row and tile suppression rules" {
     try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
 }
 
-test "fringe edge mask follows the native solid-neighbor helper" {
+test "fringe edge mask keeps render-backed object cells solid" {
     const tiles = [_]u8{
         0x01, 0x16,
         0x00, 0x01,
     };
+    try std.testing.expect(runtimeTileIsFringeSolid(0x1d));
+    try std.testing.expect(runtimeTileIsFringeSolid(0x23));
     try std.testing.expect(!runtimeTileIsFringeSolid(0x16));
     try std.testing.expectEqual(@as(u8, 0x0f), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 0, false));
     try std.testing.expectEqual(@as(u8, 0x00), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 1, false));
@@ -767,7 +772,9 @@ test "surface family maps recovered runtime tile families" {
     try std.testing.expectEqual(@as(?RenderCacheFamily, .floor), renderCacheFamilyForTile(0x0f));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x15));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .ramp), renderCacheFamilyForTile(0x03));
-    try std.testing.expectEqual(@as(?RenderCacheFamily, null), renderCacheFamilyForTile(0x1d));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1d));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1e));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x23));
 }
 
 test "top surface uv follows recovered world mapping" {

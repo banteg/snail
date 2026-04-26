@@ -109,6 +109,24 @@ pub fn isOpenNeighborRuntimeTileFamily(tile_type: u8) bool {
     };
 }
 
+pub fn renderBackingSurfaceTileForRuntimeTile(tile_type: u8) ?u8 {
+    return switch (tile_type) {
+        // Attachment markers and explicit ring markers are gameplay/object cells in
+        // the native runtime grid, but the port still needs a flat visual surface
+        // beneath them when the object pass does not fully cover the lane cell.
+        0x1d, 0x1e, 0x23 => 0x01,
+        else => null,
+    };
+}
+
+pub fn renderSurfaceTileForRuntimeTile(tile_type: u8) u8 {
+    return renderBackingSurfaceTileForRuntimeTile(tile_type) orelse tile_type;
+}
+
+fn isOpenNeighborForRenderSurface(tile_type: u8) bool {
+    return renderBackingSurfaceTileForRuntimeTile(tile_type) == null and isOpenNeighborRuntimeTileFamily(tile_type);
+}
+
 pub fn sampleFloorHeightForRuntimeTile(tile_type: u8, world_z: f32, special_floor_height: ?f32) ?f32 {
     const row_fraction = world_z - @floor(world_z);
     return switch (tile_type) {
@@ -2239,7 +2257,7 @@ fn buildRenderCacheWarnSurfaceGrid(
             const below_tile = runtime_tiles[below_index];
             flag_grid[current_index] =
                 renderCacheWarnSurfaceEligibleTile(current_tile) and
-                isOpenNeighborRuntimeTileFamily(below_tile);
+                isOpenNeighborForRenderSurface(below_tile);
         }
     }
 
@@ -3102,6 +3120,20 @@ test "render cache warn surface grid promotes open-below floor and slide cells" 
     try std.testing.expect(!flags[5]);
 }
 
+test "render cache warn surface grid treats render-backed object cells as solid" {
+    const runtime_tiles = [_]u8{
+        0x01, 0x01, 0x01, 0x01,
+        0x1d, 0x1e, 0x23, 0x00,
+    };
+    const flags = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 4);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(!flags[0]);
+    try std.testing.expect(!flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(flags[3]);
+}
+
 test "runtime warning zone grid matches recovered backward footprint" {
     const runtime_tiles = [_]u8{
         0x00, 0x00, 0x00, 0x00,
@@ -3614,6 +3646,11 @@ test "runtime tile family helpers match recovered cache predicates" {
     try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x1d));
     try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x23));
     try std.testing.expect(!isOpenNeighborRuntimeTileFamily(0x1e));
+
+    try std.testing.expectEqual(@as(?u8, 0x01), renderBackingSurfaceTileForRuntimeTile(0x1d));
+    try std.testing.expectEqual(@as(?u8, 0x01), renderBackingSurfaceTileForRuntimeTile(0x1e));
+    try std.testing.expectEqual(@as(?u8, 0x01), renderBackingSurfaceTileForRuntimeTile(0x23));
+    try std.testing.expectEqual(@as(?u8, null), renderBackingSurfaceTileForRuntimeTile(0x16));
 }
 
 test "runtime open edge mask follows open-neighbor family boundaries" {
