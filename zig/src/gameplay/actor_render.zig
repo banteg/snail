@@ -20,6 +20,17 @@ const start_banner_visible_rows: f32 = 40.0;
 const banner_bob_amplitude: f32 = 0.26;
 const banner_bob_cycle_seconds: f32 = 144.0 / 60.0;
 const tau: f32 = 6.2831855;
+const native_runtime_ring_particle_count: usize = 10;
+const native_runtime_ring_particle_radius: f32 = 1.2;
+const native_runtime_ring_particle_size: f32 = 0.72;
+const native_runtime_ring_particle_alpha: u8 = 204;
+const native_runtime_ring_particle_phase_step: f32 = tau / @as(f32, @floatFromInt(native_runtime_ring_particle_count));
+
+const RuntimeRingParticleSpriteFamily = enum {
+    ring,
+    explode,
+    slow,
+};
 
 pub const Context = struct {
     resources: *const gameplay_resources.State,
@@ -367,6 +378,11 @@ fn drawGameplayRuntimeRingEffectActor(
     camera: rl.Camera3D,
     effect: gameplay_runtime_entities.RingEffect,
 ) void {
+    if (runtimeRingParticleSpriteFamily(effect.kind)) |family| {
+        drawRuntimeRingParticleHalo(render, camera, effect, family);
+        return;
+    }
+
     const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
     const position = effect.presentation_position;
     const scale = effect.presentation_scale;
@@ -385,6 +401,65 @@ fn drawGameplayRuntimeRingEffectActor(
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, render.billboard_shader, .white);
         },
     }
+}
+
+fn drawRuntimeRingParticleHalo(
+    render: Context,
+    camera: rl.Camera3D,
+    effect: gameplay_runtime_entities.RingEffect,
+    family: RuntimeRingParticleSpriteFamily,
+) void {
+    const texture = runtimeRingParticleTexture(render, family) orelse return;
+    const sprite_size = native_runtime_ring_particle_size * effect.presentation_scale;
+    const radius = native_runtime_ring_particle_radius * effect.presentation_scale;
+    for (0..native_runtime_ring_particle_count) |child_index| {
+        gameplay_billboard.drawTexture(
+            texture,
+            runtimeRingParticlePosition(effect.presentation_position, effect.active_phase, child_index, radius),
+            sprite_size,
+            sprite_size,
+            camera,
+            render.billboard_shader,
+            .{ .r = 255, .g = 255, .b = 255, .a = native_runtime_ring_particle_alpha },
+        );
+    }
+}
+
+fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFamily {
+    return switch (effect_kind) {
+        4, 5, 8 => .ring,
+        2, 6 => .explode,
+        3, 7 => .slow,
+        else => null,
+    };
+}
+
+fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) ?rl.Texture2D {
+    switch (family) {
+        .ring => {
+            if (render.resources.sprites.ring_big) |loaded_texture| return loaded_texture.texture;
+            if (render.resources.sprites.ring) |loaded_texture| return loaded_texture.texture;
+            return null;
+        },
+        .explode => {
+            if (render.resources.sprites.explode_big) |loaded_texture| return loaded_texture.texture;
+            if (render.resources.sprites.explode_small) |loaded_texture| return loaded_texture.texture;
+            return null;
+        },
+        .slow => {
+            if (render.resources.sprites.slow_ring) |loaded_texture| return loaded_texture.texture;
+            return null;
+        },
+    }
+}
+
+fn runtimeRingParticlePosition(base: rl.Vector3, phase: f32, child_index: usize, radius: f32) rl.Vector3 {
+    const child_phase = phase + @as(f32, @floatFromInt(child_index)) * native_runtime_ring_particle_phase_step;
+    return .{
+        .x = base.x + std.math.sin(child_phase) * radius,
+        .y = base.y + std.math.cos(child_phase) * radius,
+        .z = base.z,
+    };
 }
 
 fn drawGameplayTrackParcelActor(
@@ -626,4 +701,24 @@ fn drawGameplayTurboAttachments(
             );
         }
     }
+}
+
+test "runtime powerup rings use the native particle-ring sprite family" {
+    try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.ring, runtimeRingParticleSpriteFamily(8).?);
+    try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.ring, runtimeRingParticleSpriteFamily(5).?);
+    try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.explode, runtimeRingParticleSpriteFamily(6).?);
+    try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.slow, runtimeRingParticleSpriteFamily(7).?);
+}
+
+test "native runtime ring halo positions ten sprites around the parent" {
+    const base = rl.Vector3{ .x = 2.0, .y = 3.0, .z = 4.0 };
+    const first = runtimeRingParticlePosition(base, 0.0, 0, native_runtime_ring_particle_radius);
+    try std.testing.expectApproxEqAbs(base.x, first.x, 0.0001);
+    try std.testing.expectApproxEqAbs(base.y + native_runtime_ring_particle_radius, first.y, 0.0001);
+    try std.testing.expectApproxEqAbs(base.z, first.z, 0.0001);
+
+    const opposite = runtimeRingParticlePosition(base, 0.0, 5, native_runtime_ring_particle_radius);
+    try std.testing.expectApproxEqAbs(base.x, opposite.x, 0.0001);
+    try std.testing.expectApproxEqAbs(base.y - native_runtime_ring_particle_radius, opposite.y, 0.0001);
+    try std.testing.expectApproxEqAbs(base.z, opposite.z, 0.0001);
 }

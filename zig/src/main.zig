@@ -128,6 +128,11 @@ const FrontendSoundFx = frontend_art.FrontendSoundFx;
 const FrontendWidgetArt = frontend_art.FrontendWidgetArt;
 const RouteMapArt = frontend_art.RouteMapArt;
 const SliderArt = frontend_art.SliderArt;
+
+fn debugFrontendModeForLevelPath(level_path: []const u8) ?FrontendLevelMode {
+    if (std.mem.eql(u8, level_path, "LEVELS/TUTORIAL.TXT")) return .tutorial;
+    return .postal;
+}
 const ScreenshotRequest = screenshots.Request;
 
 const GameplayJetpackVisualState = gameplay_presentation.JetpackVisualState;
@@ -475,7 +480,9 @@ const AppState = struct {
             .debug, .smoke => {
                 try debug_browser.initialize(&state);
             },
-            .game => if (options.start_level_intro)
+            .game => if (options.debug_start_row) |row|
+                try state.enterDebugLevelAt(options.debug_start_level_path orelse default_level_path, row, options.debug_start_lane)
+            else if (options.start_level_intro)
                 try state.beginFrontendLevelPath(.tutorial, 0, null, null)
             else if (options.start_phase) |start_phase|
                 try state.enterStartPhase(start_phase)
@@ -1170,6 +1177,29 @@ const AppState = struct {
 
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         try frontend_flow.enterGameplayShell(self, level_path);
+    }
+
+    fn enterDebugLevelAt(self: *AppState, level_path: []const u8, row_position: f32, lane_center: ?f32) !void {
+        self.active_frontend_mode = debugFrontendModeForLevelPath(level_path);
+        self.active_frontend_level_index = 0;
+        self.current_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
+        self.saved_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
+        try self.setSelectedLevelRecordContext(null, null);
+        try self.loadGameLevel(level_path);
+
+        if (self.current_track_preview) |*loaded_track_preview| {
+            if (self.level_runner) |*runner| {
+                runner.debugWarpToTrackRow(loaded_track_preview, row_position, lane_center);
+                self.gameplay_click_start_active = false;
+                self.updateSubgameCamera(runner);
+                self.active_level_segment_index = runner.currentRowMessageLogicalSegmentIndex();
+            }
+        }
+        try self.enterGamePhase(.level);
+        self.clearLevelPromptQueue();
+        voice_audio.stopPlayback(voice_audio.context(self));
+        self.gameplay_voice_manager.clear();
+        self.native_gameplay_voice_manager.clear();
     }
 
     fn enterFrontendLevelPath(self: *AppState, mode: FrontendLevelMode, level_index: usize) !void {

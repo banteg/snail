@@ -82,6 +82,9 @@ pub const Options = struct {
     start_level_intro: bool = false,
     auto_dismiss_click_start: bool = false,
     start_route_index: ?usize = null,
+    debug_start_level_path: ?[]const u8 = null,
+    debug_start_row: ?f32 = null,
+    debug_start_lane: ?f32 = null,
     pause_context: bool = false,
     timeout_seconds: ?u32 = null,
     window_size_override: ?WindowSize = null,
@@ -168,6 +171,24 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.start_route_index = try parseRouteIndex(args[index]);
             continue;
         }
+        if (std.mem.eql(u8, arg, "--debug-start-level")) {
+            index += 1;
+            if (index >= args.len) return error.MissingDebugStartLevel;
+            options.debug_start_level_path = args[index];
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--debug-start-row")) {
+            index += 1;
+            if (index >= args.len) return error.MissingDebugStartRow;
+            options.debug_start_row = try parseDebugStartFloat(args[index], error.InvalidDebugStartRow);
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--debug-start-lane")) {
+            index += 1;
+            if (index >= args.len) return error.MissingDebugStartLane;
+            options.debug_start_lane = try parseDebugStartFloat(args[index], error.InvalidDebugStartLane);
+            continue;
+        }
         if (std.mem.eql(u8, arg, "--pause-context")) {
             options.pause_context = true;
             continue;
@@ -223,6 +244,9 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
 
     if (options.hidden_window and options.timeout_seconds == null) {
         return error.HiddenWindowRequiresTimeout;
+    }
+    if (options.debug_start_level_path != null and options.debug_start_row == null) {
+        return error.MissingDebugStartRow;
     }
 
     return options;
@@ -287,6 +311,12 @@ fn parseRouteIndex(spec: []const u8) !usize {
     return route_index;
 }
 
+fn parseDebugStartFloat(spec: []const u8, invalid_error: anyerror) !f32 {
+    const value = std.fmt.parseFloat(f32, spec) catch return invalid_error;
+    if (!std.math.isFinite(value)) return invalid_error;
+    return value;
+}
+
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: initialize_game_window_and_input.
@@ -323,6 +353,9 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(false, options.start_level_intro);
     try std.testing.expectEqual(false, options.auto_dismiss_click_start);
     try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
+    try std.testing.expectEqual(@as(?[]const u8, null), options.debug_start_level_path);
+    try std.testing.expectEqual(@as(?f32, null), options.debug_start_row);
+    try std.testing.expectEqual(@as(?f32, null), options.debug_start_lane);
     try std.testing.expectEqual(false, options.pause_context);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
@@ -368,6 +401,20 @@ test "parse args accepts start route index override" {
     try std.testing.expectEqual(@as(usize, 3), options.start_route_index.?);
 }
 
+test "parse args accepts debug level row start override" {
+    const options = try parseArgsFromSlice(&.{
+        "--debug-start-level",
+        "LEVELS/TUTORIAL.TXT",
+        "--debug-start-row",
+        "320.5",
+        "--debug-start-lane",
+        "5.5",
+    });
+    try std.testing.expectEqualStrings("LEVELS/TUTORIAL.TXT", options.debug_start_level_path.?);
+    try std.testing.expectApproxEqAbs(@as(f32, 320.5), options.debug_start_row.?, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.5), options.debug_start_lane.?, 0.001);
+}
+
 test "parse args accepts pause context override" {
     const options = try parseArgsFromSlice(&.{
         "--pause-context",
@@ -410,6 +457,15 @@ test "parse args validates start phase" {
 test "parse args validates start route index" {
     try std.testing.expectError(error.MissingStartRouteIndex, parseArgsFromSlice(&.{"--start-route-index"}));
     try std.testing.expectError(error.InvalidStartRouteIndex, parseArgsFromSlice(&.{ "--start-route-index", "0" }));
+}
+
+test "parse args validates debug level row start" {
+    try std.testing.expectError(error.MissingDebugStartRow, parseArgsFromSlice(&.{ "--debug-start-level", "LEVELS/TUTORIAL.TXT" }));
+    try std.testing.expectError(error.MissingDebugStartLevel, parseArgsFromSlice(&.{"--debug-start-level"}));
+    try std.testing.expectError(error.MissingDebugStartRow, parseArgsFromSlice(&.{"--debug-start-row"}));
+    try std.testing.expectError(error.InvalidDebugStartRow, parseArgsFromSlice(&.{ "--debug-start-row", "nan" }));
+    try std.testing.expectError(error.MissingDebugStartLane, parseArgsFromSlice(&.{"--debug-start-lane"}));
+    try std.testing.expectError(error.InvalidDebugStartLane, parseArgsFromSlice(&.{ "--debug-start-row", "10", "--debug-start-lane", "inf" }));
 }
 
 test "parse args validates timeout seconds" {

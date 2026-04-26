@@ -184,12 +184,29 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
             const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
             const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
 
+            const top_left = rl.Vector3{ .x = left, .y = front_height, .z = front };
+            const bottom_left = rl.Vector3{ .x = left, .y = back_height, .z = back };
+            const bottom_right = rl.Vector3{ .x = right, .y = back_height, .z = back };
+            const top_right = rl.Vector3{ .x = right, .y = front_height, .z = front };
+
+            if (family == .ramp) {
+                drawTexturedQuad(
+                    scene.textures.track.texture,
+                    top_left,
+                    bottom_left,
+                    bottom_right,
+                    top_right,
+                    renderCacheSurfaceUv(.floor, left, right, front, back),
+                    .white,
+                );
+            }
+
             drawTexturedQuad(
                 textureForRenderCacheFamily(scene, family),
-                .{ .x = left, .y = front_height, .z = front },
-                .{ .x = left, .y = back_height, .z = back },
-                .{ .x = right, .y = back_height, .z = back },
-                .{ .x = right, .y = front_height, .z = front },
+                top_left,
+                bottom_left,
+                bottom_right,
+                top_right,
                 renderCacheSurfaceUv(family, left, right, front, back),
                 .white,
             );

@@ -255,6 +255,12 @@ const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
+const native_start_block_velocity_z_delta_per_tick: f32 =
+    native_track_center_x * native_track_center_x * 0.0040000002;
+const native_floor_cache_velocity_z_delta_per_tick: f32 =
+    native_start_block_velocity_z_delta_per_tick * 2.0;
+const native_start_block_velocity_z_max_per_tick: f32 = 1.0;
+const native_attachment_exit_z_damping_per_tick: f32 = 1.0 - (native_track_center_x * 0.2);
 const slow_ring_duration_ticks: u16 = 240;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
@@ -529,6 +535,54 @@ pub const Runner = struct {
         self.refreshCameraState(preview);
     }
 
+    pub fn debugWarpToTrackRow(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        requested_row_position: f32,
+        lane_center_override: ?f32,
+    ) void {
+        if (preview.total_rows == 0) {
+            self.reset(preview);
+            return;
+        }
+
+        self.paused = false;
+        self.finished = false;
+        self.phase = .active;
+        self.clearCutscene();
+        self.handoff = .{};
+        self.movement_mode = .track;
+        self.replay_state = .{};
+        self.attachment = .{};
+        self.runtime = .{};
+        self.combat = .{};
+        self.native_velocity_x_per_tick = 0.0;
+        self.native_velocity_z_override_per_tick = null;
+        self.track_step_rows = 0.0;
+        self.position_y = native_grounded_rider_height;
+        self.velocity_y = 0.0;
+        self.post_trampoline_airborne = false;
+
+        const max_row_position = @as(f32, @floatFromInt(preview.total_rows - 1));
+        self.row_position = std.math.clamp(requested_row_position, 0.0, max_row_position);
+        self.runtime_track_index = currentRowIndex(preview, self.row_position);
+        self.track_row_progress = self.row_position - @floor(self.row_position);
+        if (lane_center_override) |lane_center| {
+            self.lane_center = lane_center;
+        }
+        self.syncRowPosition(preview);
+        self.refreshSample(preview);
+        self.previous_row_position = self.row_position;
+        self.previous_lane_center = self.lane_center;
+        self.last_processed_row = self.current_global_row;
+        self.syncCurrentRowMessageSegment(preview, false);
+        self.refreshLiveTrackParcels(preview);
+        self.refreshLiveRuntimePickups(preview);
+        self.refreshLiveRuntimeHazards(preview);
+        self.refreshLiveRuntimeRingEffects(preview);
+        self.refreshCameraState(preview);
+    }
+
     pub fn step(self: *Runner, preview: *const track.LoadedLevelPreview, input: RunnerInput, delta_seconds: f32) void {
         self.stepWithReplay(preview, input, .{}, delta_seconds);
     }
@@ -582,7 +636,7 @@ pub const Runner = struct {
                 self.presentation.movement_fire_cooldown = self.presentation.movement_fire_cooldown_step;
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
-            self.updateNativeVelocityZOverride(delta_seconds);
+            self.updateNativeVelocityZOverride(preview, delta_seconds);
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             self.stepNativeVelocityX(preview);
@@ -1567,8 +1621,9 @@ pub const Runner = struct {
     // PORT(verified): `handle_subgoldy_collisions` writes `-0.1` directly into
     // `player->velocity.z` for native ring kinds `3/7`, and `update_subgoldy` then recovers
     // that negative lane by `track_center_x^2 * 0.004 * 0.25` each tick until it crosses 0.
-    // The broader positive-speed controller is still scaffolding here, so once the recovered
-    // shove reaches zero the port hands motion back to `speed_rows_per_second`.
+    // Positive `velocity.z` carry now shares this lane for first-block and floor-cache
+    // acceleration; the fixed rows-per-second scalar remains the lower bound until the
+    // remaining native speed owner is fully retired.
     fn applyNativeNegativeVelocityRing(self: *Runner) void {
         self.counters.ring_slow += 1;
         self.native_velocity_z_override_per_tick = native_negative_ring_velocity_z_per_tick;
@@ -1840,8 +1895,7 @@ pub const Runner = struct {
     // the slot immediately. The current evidence-capped split is deliberate: presentation
     // now follows the native slot spawn anchor from `spawn_track_ring_or_special_effect`,
     // while collisions still use the earlier lower proxy anchor until the player-height
-    // parity gap closes. The remaining runtime gap is the writer for the active x-oscillation
-    // gate byte at slot `+0x1dc`.
+    // parity gap closes.
     fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         var index: usize = 0;
@@ -1880,8 +1934,8 @@ pub const Runner = struct {
     // The contact branch uses the normalized hazard-to-player vector, seeds
     // `velocity.x -= contact.x * velocity.z * 0.18`, and then lets `update_subgoldy`
     // apply and damp that lane once per grounded track tick. The port now mirrors that
-    // lateral owner in track mode, while the broader positive `velocity.z` controller is
-    // still routed through `speed_rows_per_second`.
+    // lateral owner in track mode and reads the current fixed scalar as the velocity-z
+    // floor while the recovered native positive lane is still being widened.
     fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, impact_position: rl.Vector3) void {
         const player_position = self.worldPosition(preview, 0.4);
         const delta_x = impact_position.x - player_position.x;
@@ -1962,26 +2016,79 @@ pub const Runner = struct {
 
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
         if (self.native_velocity_z_override_per_tick) |velocity_z| {
-            return velocity_z * native_ticks_per_second;
+            const native_rows_per_second = velocity_z * native_ticks_per_second;
+            if (native_rows_per_second < 0.0) return native_rows_per_second;
+            return @max(self.baseEffectiveSpeedRowsPerSecond(), native_rows_per_second);
         }
+        return self.baseEffectiveSpeedRowsPerSecond();
+    }
+
+    fn baseEffectiveSpeedRowsPerSecond(self: *const Runner) f32 {
         if (self.presentation.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
         return self.speed_rows_per_second;
     }
 
-    fn updateNativeVelocityZOverride(self: *Runner, delta_seconds: f32) void {
-        const velocity_z = self.native_velocity_z_override_per_tick orelse return;
+    fn updateNativeVelocityZOverride(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
+        const had_velocity = self.native_velocity_z_override_per_tick != null;
+        const started_negative = velocity_z < 0.0;
+        var accelerated = false;
+
+        const tick_scale = delta_seconds * native_ticks_per_second;
+
+        if (velocity_z < 0.0) {
+            velocity_z += native_negative_ring_velocity_recovery_z_per_tick * tick_scale;
+            if (velocity_z >= 0.0) velocity_z = 0.0;
+        }
+
+        if (!started_negative and self.phase == .active and self.movement_mode == .track) {
+            if (self.row_position < @as(f32, @floatFromInt(preview.runtime_active_row_start))) {
+                velocity_z += native_start_block_velocity_z_delta_per_tick * tick_scale;
+                if (velocity_z > native_start_block_velocity_z_max_per_tick) {
+                    velocity_z = native_start_block_velocity_z_max_per_tick;
+                }
+                accelerated = true;
+            }
+
+            if (self.currentTileAddsNativeForwardVelocity(preview) or self.jetpack.active) {
+                velocity_z += native_floor_cache_velocity_z_delta_per_tick * tick_scale;
+                accelerated = true;
+            }
+        }
+
         if (velocity_z >= 0.0) {
-            self.native_velocity_z_override_per_tick = null;
+            if (velocity_z > 0.0 and self.attachment.exit.pending and !self.currentRowHasRuntimeFlag(preview, track.runtime_row_flag_no_fall) and !self.jetpack.active) {
+                velocity_z *= native_attachment_exit_z_damping_per_tick;
+            }
+            if (velocity_z > 0.0 and !self.post_trampoline_airborne) {
+                velocity_z *= native_velocity_yz_decay_per_tick;
+            }
+            const native_rows_per_second = velocity_z * native_ticks_per_second;
+            if (velocity_z <= 0.000001 or (!accelerated and !self.attachment.exit.pending and native_rows_per_second <= self.baseEffectiveSpeedRowsPerSecond())) {
+                self.native_velocity_z_override_per_tick = null;
+                return;
+            }
+            self.native_velocity_z_override_per_tick = velocity_z;
             return;
         }
 
-        const tick_scale = delta_seconds * native_ticks_per_second;
-        const next_velocity_z = velocity_z + (native_negative_ring_velocity_recovery_z_per_tick * tick_scale);
-        if (next_velocity_z >= 0.0) {
+        if (!had_velocity and !accelerated) {
             self.native_velocity_z_override_per_tick = null;
             return;
         }
-        self.native_velocity_z_override_per_tick = next_velocity_z;
+        self.native_velocity_z_override_per_tick = velocity_z;
+    }
+
+    fn currentTileAddsNativeForwardVelocity(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        const tile = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index) orelse return false;
+        return switch (tile) {
+            0x0f, 0x10, 0x12, 0x13 => true,
+            else => false,
+        };
+    }
+
+    fn currentRowHasRuntimeFlag(self: *const Runner, preview: *const track.LoadedLevelPreview, flag: u32) bool {
+        return (preview.runtimeRowFlagsAt(self.current_global_row) & flag) != 0;
     }
 
     fn stepNativeVelocityX(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3245,6 +3352,7 @@ pub const Runner = struct {
             .presentation_position = world_position,
             .presentation_scale = 1.0,
             .movement_flag_selector_snapshot = self.presentation.movement_flag_selector,
+            .active_x_oscillation_enabled = runtimeRingKindUsesRandomizedSpawnX(kind),
             .active_phase = active_phase,
             .active_phase_step = active_phase_step,
         };
@@ -3368,9 +3476,11 @@ pub const Runner = struct {
             .active => {
                 effect.child_update_cadence +%= 1;
                 if (effect.child_update_cadence == 3) effect.child_update_cadence = 0;
-                if (effect.active_x_oscillation_enabled) {
+                if (effect.kind != 3) {
                     effect.active_phase = @mod(effect.active_phase + effect.active_phase_step, std.math.tau);
                     if (effect.active_phase < 0.0) effect.active_phase += std.math.tau;
+                }
+                if (effect.active_x_oscillation_enabled) {
                     effect.world_position.x = @sin(effect.active_phase) * runtime_ring_spawn_random_x_amplitude;
                 }
                 effect.presentation_position = effect.world_position;
@@ -4843,6 +4953,30 @@ const SweptInstalledEntrySetup = struct {
     lane_center: f32,
 };
 
+test "debug warp starts a runner at an arbitrary level row" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.setCutscene(cutscene_intro_id);
+    runner.debugWarpToTrackRow(&fixture.preview, 320.5, 99.0);
+
+    try std.testing.expect(switch (runner.phase) {
+        .active => true,
+        else => false,
+    });
+    try std.testing.expect(!runner.finished);
+    try std.testing.expect(!runner.introCutsceneBlocksGameplay());
+    try std.testing.expectApproxEqAbs(@as(f32, 320.5), runner.row_position, 0.001);
+    try std.testing.expectEqual(@as(usize, 320), runner.current_global_row);
+    try std.testing.expectEqual(runner.current_global_row, runner.last_processed_row.?);
+    try std.testing.expect(runner.lane_center <= @as(f32, @floatFromInt(runner.traversable_bounds.max)) + 0.5);
+    try std.testing.expect(runner.currentRowMessageLogicalSegmentIndex() != null);
+
+    runner.debugWarpToTrackRow(&fixture.preview, -10.0, null);
+    try std.testing.expectEqual(@as(usize, 0), runner.current_global_row);
+}
+
 fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.GameplayCellKind) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -5976,7 +6110,7 @@ test "native negative-velocity ring recovery moves backward before handing back 
 
     var runner = Runner.init(&fixture.preview);
     runner.speed_rows_per_second = 12.0;
-    runner.runtime_track_index = 20;
+    runner.runtime_track_index = 40;
     runner.track_row_progress = 0.0;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
@@ -5985,7 +6119,7 @@ test "native negative-velocity ring recovery moves backward before handing back 
     runner.recordNativeRingEffect(&fixture.preview, 3);
     runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
     try std.testing.expect(runner.row_position < row_before);
-    try std.testing.expectApproxEqAbs(@as(f32, 19.916), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 39.916), runner.row_position, 0.0001);
 
     for (0..6) |_| {
         runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
@@ -6114,6 +6248,7 @@ test "runtime ring effect keeps source row and native presentation anchor" {
     const effect = runner.activeRuntimeRingEffects()[0];
     try std.testing.expectEqual(@as(usize, 51), effect.source_row);
     try std.testing.expectEqual(@as(usize, 51), effect.row);
+    try std.testing.expect(!effect.active_x_oscillation_enabled);
     try std.testing.expectApproxEqAbs(
         Runner.runtimeCellWorldPosition(&fixture.preview, 51, 1, runtime_ring_spawn_y_offset_default).y,
         effect.presentation_position.y,
@@ -6161,6 +6296,7 @@ test "default ramp ring keeps proxy collision anchor while using native presenta
                 effect.collision_position.y,
                 0.0001,
             );
+            try std.testing.expect(effect.active_x_oscillation_enabled);
             try std.testing.expect(effect.presentation_position.x != effect.collision_position.x);
             return;
         }
@@ -6202,6 +6338,10 @@ test "default ramp ring seeds native phase step from base subgame rate" {
                 native_track_center_x *
                 std.math.tau;
             try std.testing.expectApproxEqAbs(expected, @abs(effect.active_phase_step), 0.0001);
+            const x_before = effect.world_position.x;
+            runner.updateRuntimeRingEffects(&preview);
+            const updated = runner.activeRuntimeRingEffects()[0];
+            try std.testing.expect(updated.world_position.x != x_before);
             return;
         }
     }
@@ -9177,6 +9317,84 @@ test "runner descends through an authored gap row instead of halting at the edge
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
     try std.testing.expect(runner.velocity_y < 0.0);
     try std.testing.expectApproxEqAbs(starting_position_y, runner.position_y, 0.0001);
+}
+
+test "floor-cache launch rows preserve enough native forward carry for trampoline gaps" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const segment_entry = catalog.segment_entries[catalog.findSegmentIndex("SEGMENTS/TRAMPOLINES.TXT").?];
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        segment_entry,
+        .{
+            .load_models = false,
+            .runtime_active_row_start = 0,
+        },
+    );
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.lane_index = 2;
+    runner.lane_center = 2.5;
+    runner.runtime_track_index = 2;
+    runner.track_row_progress = 0.0;
+    runner.syncRowPosition(&preview);
+    runner.refreshSample(&preview);
+    runner.last_processed_row = 2;
+
+    var saw_trampoline_bounce = false;
+    var ticks: u32 = 0;
+    while (ticks < 90) : (ticks += 1) {
+        runner.step(&preview, .{}, 1.0 / 60.0);
+        if (runner.post_trampoline_airborne) {
+            saw_trampoline_bounce = true;
+            break;
+        }
+        if (runner.phase != .active) break;
+    }
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(saw_trampoline_bounce);
+    try std.testing.expect(runner.current_global_row >= 24);
+}
+
+test "tutorial powerup ramps preserve enough native carry to cross the authored gap" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const segment_entry = catalog.segment_entries[catalog.findSegmentIndex("SEGMENTS/TUTORIAL 4.TXT").?];
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        segment_entry,
+        .{
+            .load_models = false,
+            .runtime_active_row_start = 0,
+        },
+    );
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.speed_rows_per_second = 10.0;
+    runner.lane_index = 4;
+    runner.lane_center = 4.5;
+    runner.runtime_track_index = 2;
+    runner.track_row_progress = 0.0;
+    runner.syncRowPosition(&preview);
+    runner.refreshSample(&preview);
+    runner.last_processed_row = 2;
+
+    var ticks: u32 = 0;
+    while (ticks < 120 and runner.current_global_row < 20) : (ticks += 1) {
+        runner.step(&preview, .{}, 1.0 / 60.0);
+        if (runner.phase != .active) break;
+    }
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(runner.current_global_row >= 20);
+    try std.testing.expect(runner.position_y > native_position_y_death_threshold);
 }
 
 test "active jetpack suppresses fall entry over a floor gap" {
