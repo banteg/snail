@@ -135,11 +135,12 @@ const damage_gauge_pulse_step = damage_module.gauge_pulse_step;
 const damage_gauge_hit_flash_step = damage_module.gauge_hit_flash_step;
 const jetpack_warning_threshold = jetpack_module.warning_threshold;
 const jetpack_auto_shutoff_margin_rows = jetpack_module.auto_shutoff_margin_rows;
-const runtime_track_parcel_spawn_ahead_rows: usize = 46;
+const native_runtime_row_scan_ahead_rows: usize = 46;
+const runtime_track_parcel_spawn_ahead_rows: usize = native_runtime_row_scan_ahead_rows;
 const runtime_track_parcel_expiry_margin_rows: f32 = 10.0;
 const jetpack_warning_phase_scale = jetpack_module.warning_phase_scale;
-const runtime_pickup_live_window_rows: usize = 72;
-const runtime_hazard_live_window_rows: usize = 8;
+const runtime_pickup_live_window_rows: usize = native_runtime_row_scan_ahead_rows;
+const runtime_hazard_live_window_rows: usize = native_runtime_row_scan_ahead_rows;
 const runtime_wall2_emitter_window_rows: usize = 32;
 const runtime_ring_live_window_rows: usize = 47;
 const runtime_ring_spacing_rows: f32 = 10.0;
@@ -173,6 +174,10 @@ const intro_cutscene_blend_ticks: u16 = gameplay_camera.intro_cutscene_blend_tic
 const completion_cutscene_blend_ticks: u16 = gameplay_camera.completion_cutscene_blend_ticks;
 const death_cutscene_blend_ticks: u16 = gameplay_camera.death_cutscene_blend_ticks;
 const fall_gravity: f32 = 10.0;
+// PORT(verified): native `initialize_subgoldy_resurrect` seeds progress at 0
+// with a 1/120 step, and `update_subgoldy_resurrect` waits for progress >= 1
+// before starting the respawn/final-loss handoff.
+const fall_resurrect_delay_ticks: u16 = 120;
 // PORT(verified): identical to `native_position_y_death_threshold` above. Native
 // `update_subgoldy` at `artifacts/ida/functions/0043b120-update_subgoldy.c:504`
 // calls `initialize_subgoldy_death` once `live_matrix.position.y < -7.0`; the
@@ -3006,23 +3011,30 @@ pub const Runner = struct {
 
     fn scanRuntimeHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const row_location = preview.locateRow(global_row) orelse return;
+        const row_inside_native_spawn_window = runtimeRowInsideNativeSpawnWindow(preview, global_row);
 
         for (row_location.row.cells, 0..) |_, lane| {
             if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
                 switch (sample.kind) {
                     .garbage => self.addRuntimeHazard(preview, global_row, lane, .garbage),
-                    .salt => self.spawnSaltFromAuthoredCell(preview, global_row, lane),
+                    .salt => if (row_inside_native_spawn_window) {
+                        self.spawnSaltFromAuthoredCell(preview, global_row, lane);
+                    },
                     else => {},
                 }
             }
 
-            if (preview.hasGarbageSpawnHintAt(global_row, lane) and
+            if (row_inside_native_spawn_window and
+                preview.hasGarbageSpawnHintAt(global_row, lane) and
                 preview.garbageFallbackNeighborsAllowedAt(global_row, lane) and
-                shouldSpawnAmbientHazard(global_row, lane, preview.garbage_scalar, .garbage))
+                shouldSpawnAmbientHazard(self, preview.garbage_scalar, .garbage))
             {
                 self.addRuntimeHazard(preview, global_row, lane, .garbage);
             }
-            if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {
+            if (row_inside_native_spawn_window and
+                preview.hasSaltSpawnHintAt(global_row, lane) and
+                shouldSpawnAmbientHazard(self, preview.salt_scalar, .salt))
+            {
                 self.spawnSaltFromAmbientHint(preview, global_row, lane);
             }
         }
@@ -3074,6 +3086,7 @@ pub const Runner = struct {
 
     fn scanRuntimePickupRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const row_location = preview.locateRow(global_row) orelse return;
+        if (!runtimeRowInsideNativeSpawnWindow(preview, global_row)) return;
 
         for (row_location.row.cells, 0..) |_, lane| {
             if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
@@ -3893,6 +3906,9 @@ pub const Runner = struct {
                             self.attachment.exit.gate_b = true;
                         }
                         if (next_state.world_y > fall_world_y_threshold) return;
+                        next_state.resurrect_ticks = @min(next_state.resurrect_ticks + 1, fall_resurrect_delay_ticks);
+                        self.phase = .{ .fall = next_state };
+                        if (next_state.resurrect_ticks < fall_resurrect_delay_ticks) return;
                     },
                     .hazard, .damage => {
                         if (!cutscene_finished) return;
@@ -4724,10 +4740,16 @@ fn attachmentVec3ToVector3(vector: attachment_builders.Vec3) rl.Vector3 {
 
 const AmbientHazardSource = enum { garbage, salt };
 
-fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, source: AmbientHazardSource) bool {
+fn runtimeRowInsideNativeSpawnWindow(preview: *const track.LoadedLevelPreview, global_row: usize) bool {
+    if (global_row < preview.runtime_active_row_start) return false;
+    if (global_row >= preview.runtime_active_row_end) return false;
+    return @as(f32, @floatFromInt(global_row)) < preview.course_end_threshold;
+}
+
+fn shouldSpawnAmbientHazard(self: *Runner, scalar: f32, source: AmbientHazardSource) bool {
     if (scalar <= 0.0) return false;
 
-    const roll = deterministicRuntimeSpawnRoll(global_row, lane, source);
+    const roll = self.nextMathRandomFloatBelow(1.0);
     // PORT(verified): thresholds come from `update_subgame`
     // (`artifacts/ida/functions/00438b90-update_subgame.c`): garbage uses
     // `(1 - scalar) * 0.2 + 0.8` (lines 432-439) and salt uses
@@ -4737,21 +4759,6 @@ fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, source:
         .salt => 0.98 + (0.02 * (1.0 - scalar)),
     };
     return roll > threshold;
-}
-
-fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, source: AmbientHazardSource) f32 {
-    const source_bias: u64 = switch (source) {
-        .garbage => 0x9e3779b97f4a7c15,
-        .salt => 0xc2b2ae3d27d4eb4f,
-    };
-    var value = (@as(u64, global_row) << 32) ^ (@as(u64, lane) * 0x9e3779b1) ^ source_bias;
-    value ^= value >> 33;
-    value *%= 0xff51afd7ed558ccd;
-    value ^= value >> 33;
-    value *%= 0xc4ceb9fe1a85ec53;
-    value ^= value >> 33;
-    const bucket: u32 = @truncate(value & 0xffff);
-    return @as(f32, @floatFromInt(bucket)) / 65535.0;
 }
 
 fn isProjectileBlockingCell(cell: u8) bool {
@@ -6718,6 +6725,57 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
 }
 
+test "tutorial asteroids spawn from the native runtime row scan window" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    try std.testing.expect(garbage.row >= native_runtime_row_scan_ahead_rows);
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = garbage.row - (native_runtime_row_scan_ahead_rows - 1);
+    runner.track_row_progress = 0.0;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshLiveRuntimeHazards(&fixture.preview);
+
+    var found = false;
+    for (runner.activeRuntimeHazards()) |hazard| {
+        if (hazard.kind == .garbage and hazard.row == garbage.row and hazard.lane == garbage.lane) {
+            found = true;
+            break;
+        }
+    }
+    try std.testing.expect(found);
+}
+
+test "runtime pickups and salt respect the native first-block spawn gate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    const active_row = fixture.preview.runtime_active_row_start;
+    try std.testing.expect(active_row > 0);
+    const blocked_row = active_row - 1;
+    const lane = @min(@as(usize, 4), fixture.preview.max_width - 1);
+
+    var pickup_runner = Runner.init(&fixture.preview);
+    fixture.preview.runtime_tiles[(blocked_row * fixture.preview.max_width) + lane] = 0x17;
+    pickup_runner.scanRuntimePickupRow(&fixture.preview, blocked_row);
+    try std.testing.expectEqual(@as(usize, 0), pickup_runner.activeRuntimePickups().len);
+
+    fixture.preview.runtime_tiles[(active_row * fixture.preview.max_width) + lane] = 0x17;
+    pickup_runner.scanRuntimePickupRow(&fixture.preview, active_row);
+    try std.testing.expectEqual(@as(usize, 1), pickup_runner.activeRuntimePickups().len);
+
+    var salt_runner = Runner.init(&fixture.preview);
+    fixture.preview.runtime_tiles[(blocked_row * fixture.preview.max_width) + lane] = 0x22;
+    salt_runner.scanRuntimeHazardRow(&fixture.preview, blocked_row);
+    try std.testing.expect(!salt_runner.runtime.salts.contains(blocked_row, lane));
+
+    fixture.preview.runtime_tiles[(active_row * fixture.preview.max_width) + lane] = 0x22;
+    salt_runner.scanRuntimeHazardRow(&fixture.preview, active_row);
+    try std.testing.expect(salt_runner.runtime.salts.contains(active_row, lane));
+}
+
 test "steady gameplay animation id 2 resolves to shipped turbo move" {
     try std.testing.expectEqual(@as(u8, 2), @intFromEnum(AnimClipId.move));
     try std.testing.expectEqualStrings("TURBO-MOVE", AnimClipId.move.familyKey().?);
@@ -7539,6 +7597,27 @@ test "fall state keeps Z anchored and preserves carried follow roll" {
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment.exit.post_follow_value_a, 0.0001);
+}
+
+test "floor fall waits for the native resurrect controller before respawn" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
+    runner.phase.fall.world_y = fall_world_y_threshold - 0.25;
+    runner.phase.fall.vertical_velocity = 0.0;
+
+    var step_count: u16 = 0;
+    while (step_count + 1 < fall_resurrect_delay_ticks) : (step_count += 1) {
+        runner.updatePhaseController(&fixture.preview, 0.0);
+        try std.testing.expectEqual(RunnerHandoff.none, runner.handoff.pending);
+    }
+
+    runner.updatePhaseController(&fixture.preview, 0.0);
+    const handoff = runner.consumeHandoff();
+    try std.testing.expectEqual(DeathCause.fall, handoff.respawn);
+    try std.testing.expectEqual(fall_resurrect_delay_ticks, runner.phase.fall.resurrect_ticks);
 }
 
 test "active jetpack retires attachment exit before the late progress gates" {

@@ -314,6 +314,7 @@ pub const FallState = struct {
     world_y: f32,
     world_z: f32,
     vertical_velocity: f32 = 0.0,
+    resurrect_ticks: u16 = 0,
     basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
