@@ -145,6 +145,7 @@ Command behavior:
 - windowed mode is still the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
 - `--start-phase main_menu` jumps directly into a game-path frontend screen for faster iteration
+- `--start-level-intro` launches the default tutorial through the frontend level-entry path, including the click-start intro state
 - `--screenshot-at intro:120` auto-captures a game-path frame into `artifacts/screenshots`; `F12` queues a manual screenshot during runtime
 - `--hidden-window --timeout-seconds 10` runs raylib hidden and silent for offscreen capture or smoke work; hidden runs now require an explicit timeout so they cannot linger indefinitely
 - the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now uses the runtime root for those mutable files, loads and saves the raw `SnailMail.cfg` blob there, applies the recovered sound/music/fullscreen fields, and already loads compact score overlays from `ScoreA/B/C.dat`

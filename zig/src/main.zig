@@ -473,7 +473,9 @@ const AppState = struct {
             .debug, .smoke => {
                 try debug_browser.initialize(&state);
             },
-            .game => if (options.start_phase) |start_phase|
+            .game => if (options.start_level_intro)
+                try state.beginFrontendLevelPath(.tutorial, 0, null, null)
+            else if (options.start_phase) |start_phase|
                 try state.enterStartPhase(start_phase)
             else
                 try state.enterGamePhase(.boot),

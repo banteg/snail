@@ -79,6 +79,7 @@ pub const Options = struct {
     auto_screenshot: ?AutoScreenshot = null,
     mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
+    start_level_intro: bool = false,
     start_route_index: ?usize = null,
     pause_context: bool = false,
     timeout_seconds: ?u32 = null,
@@ -150,6 +151,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             index += 1;
             if (index >= args.len) return error.MissingStartPhase;
             options.start_phase = parseGamePhase(args[index]) orelse return error.InvalidStartPhase;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--start-level-intro")) {
+            options.start_level_intro = true;
             continue;
         }
         if (std.mem.eql(u8, arg, "--start-route-index")) {
@@ -310,6 +315,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
     try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
+    try std.testing.expectEqual(false, options.start_level_intro);
     try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
     try std.testing.expectEqual(false, options.pause_context);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
@@ -343,6 +349,11 @@ test "parse args handles debug and smoke subcommands" {
 test "parse args accepts start phase override" {
     const options = try parseArgsFromSlice(&.{ "--start-phase", "main_menu" });
     try std.testing.expectEqual(frontend.GamePhase.main_menu, options.start_phase.?);
+}
+
+test "parse args accepts level intro override" {
+    const options = try parseArgsFromSlice(&.{"--start-level-intro"});
+    try std.testing.expectEqual(true, options.start_level_intro);
 }
 
 test "parse args accepts start route index override" {

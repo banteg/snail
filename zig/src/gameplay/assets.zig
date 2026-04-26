@@ -59,6 +59,7 @@ pub const gameplay_rocket_launcher_draw_model_paths = [_][]const u8{
     "X/ROCKETLAUNCHER-DRAW-002.X2",
 };
 pub const gameplay_rocket_model_path = "X/ROCKET-BASE-000.X2";
+pub const gameplay_post_office_stop_model_path = "X/POSTOFFICESTOP.X2";
 pub const gameplay_jetpack_thrust_model_paths = [_][]const u8{
     "X/JETPACKTHRUST-BASE-000.X2",
     "X/JETPACKTHRUST-BASE-001.X2",

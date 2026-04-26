@@ -16,6 +16,14 @@ const gameplay_runtime_entities = @import("runtime_entities.zig");
 const segment = @import("../segment.zig");
 const track = @import("../track.zig");
 
+const start_banner_visible_rows: f32 = 40.0;
+const start_banner_world_x: f32 = 2.0;
+const start_banner_world_y: f32 = 20.0;
+const start_banner_world_z: f32 = 18.0;
+const banner_bob_amplitude: f32 = 0.26;
+const banner_bob_cycle_seconds: f32 = 144.0 / 60.0;
+const tau: f32 = 6.2831855;
+
 pub const Context = struct {
     resources: *const gameplay_resources.State,
     ui_font: *const game_font.Loaded,
@@ -126,6 +134,22 @@ pub fn drawRuntimeActors(
     }
 
     drawGameplayEffects(render, camera);
+}
+
+pub fn drawPostOfficeStopBanners(
+    render: Context,
+    runner: gameplay.Runner,
+) void {
+    if (runner.row_position >= start_banner_visible_rows) return;
+    const model = render.resources.post_office_stop_model orelse return;
+
+    const phase = @as(f32, @floatCast(render.render_time_seconds)) * (tau / banner_bob_cycle_seconds);
+    const y = std.math.sin(phase) * banner_bob_amplitude;
+    // PORT(verified): native creates two cRBanner slots from postofficestop.x.
+    // Mode 0 is visible while player z < 40 and only applies a sine bob to y.
+    // The port's track renderer uses row-space z, so place the native origin over
+    // the START segment's first empty-row span instead of the direct model origin.
+    model.drawEx(rl.Matrix.translate(start_banner_world_x, start_banner_world_y + y, start_banner_world_z));
 }
 
 fn drawGameplaySlugActor(

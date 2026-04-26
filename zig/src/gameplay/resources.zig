@@ -30,6 +30,7 @@ pub const State = struct {
     rocket_launcher_models: gameplay_art.WeaponModelSet = .{},
     jetpack_thrust_models: gameplay_art.JetpackModelSet = .{},
     rocket_model: ?x2.Uploaded = null,
+    post_office_stop_model: ?x2.Uploaded = null,
     invincible_models: gameplay_art.InvincibleModelSet = .{},
     sprites: gameplay_art.SpriteArt = .{},
     sound_fx: gameplay_art.SoundFx = .{},
@@ -104,6 +105,10 @@ pub fn unloadActorModels(state: *State) void {
     if (state.rocket_model) |*model| {
         model.deinit();
         state.rocket_model = null;
+    }
+    if (state.post_office_stop_model) |*model| {
+        model.deinit();
+        state.post_office_stop_model = null;
     }
     state.invincible_models.unload();
 }
@@ -289,6 +294,9 @@ pub fn loadActorModels(state: *State, store: *resource_store.Store) !void {
     }
     if (store.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path) != null) {
         state.rocket_model = try store.model(gameplay_assets.gameplay_rocket_model_path, .{});
+    }
+    if (store.catalog.findModelIndex(gameplay_assets.gameplay_post_office_stop_model_path) != null) {
+        state.post_office_stop_model = try store.model(gameplay_assets.gameplay_post_office_stop_model_path, .{});
     }
     for (gameplay_assets.gameplay_invincible_model_paths, 0..) |path, index| {
         if (store.catalog.findModelIndex(path) != null) {
