@@ -290,7 +290,6 @@ const AppState = struct {
     announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
-    mouse_level_lane_target: ?f32 = null,
     frontend_route_mode: ?FrontendLevelMode = null,
     route_map_screen_mode: frontend_bridge.RouteMapScreenMode = .normal,
     frontend_route_index: usize = 0,
@@ -868,20 +867,11 @@ const AppState = struct {
                 if (self.completionScreenOverlayActive()) return;
                 const accepts_runner_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
                 const accepts_live_replay_controls = accepts_runner_input and !selected_replay.playbackActive(self);
-                self.mouse_level_lane_target = null;
                 if (accepts_live_replay_controls and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
-                    self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
                 }
                 if (accepts_live_replay_controls and (rl.isKeyPressed(.right) or rl.isKeyPressed(.d))) {
-                    self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta += 1;
-                }
-                if (accepts_live_replay_controls and (rl.isKeyPressed(.up) or rl.isKeyPressed(.w))) {
-                    self.pending_level_input.speed_delta_rows_per_second += 2.0;
-                }
-                if (accepts_live_replay_controls and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
-                    self.pending_level_input.speed_delta_rows_per_second -= 2.0;
                 }
                 if (accepts_live_replay_controls and rl.isMouseButtonPressed(.left)) {
                     self.pending_level_input.fire_pressed = true;
@@ -894,23 +884,13 @@ const AppState = struct {
                     return;
                 }
                 if (rl.isKeyPressed(.r)) {
-                    self.mouse_level_lane_target = null;
                     self.pending_level_input.reset = true;
                 }
                 if (accepts_live_replay_controls) {
-                    if (self.current_track_preview) |loaded_track_preview| {
-                        if (self.level_runner) |runner| {
-                            self.mouse_level_lane_target = subgame_camera.laneCenterTargetForRunnerMouse(
-                                loaded_track_preview,
-                                runner,
-                                @floatFromInt(rl.getMouseX()),
-                                @floatFromInt(window_state.screenWidth()),
-                            );
-                            if (self.mouse_level_lane_target) |lane_target| {
-                                self.pending_level_input.target_lane_center = lane_target;
-                            }
-                        }
-                    }
+                    self.pending_level_input.steering_authored_x = subgame_camera.authoredMouseXForScreen(
+                        @floatFromInt(rl.getMouseX()),
+                        @floatFromInt(window_state.screenWidth()),
+                    );
                 }
             },
         }
@@ -1452,7 +1432,6 @@ const AppState = struct {
     fn activateGameplayClickStart(self: *AppState) !void {
         if (!self.gameplay_click_start_active) return;
         self.gameplay_click_start_active = false;
-        self.mouse_level_lane_target = null;
         self.pending_level_input = .{};
         if (self.audio_ready) {
             if (self.frontend_sound_fx.select) |loaded| {

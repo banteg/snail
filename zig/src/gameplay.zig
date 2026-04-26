@@ -194,6 +194,9 @@ const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
 // Native `update_subgoldy` corrects X by `track_center_x * 0.2` each 60 Hz tick.
 const mouse_steer_lerp_scale: f32 = 48.0;
+const native_steering_center_x: f32 = 320.0;
+const native_steering_max_x: f32 = 639.0;
+const native_steering_world_scale: f32 = 0.0125;
 const lane_lean_progress_step_scale: f32 = 1.0 / 27.0;
 const lane_lean_grounded_max_y: f32 = 0.98000002;
 const track_parcel_bob_amplitude: f32 = 0.3;
@@ -422,6 +425,9 @@ pub const Runner = struct {
     speed_rows_per_second: f32 = 12.0,
     native_velocity_x_per_tick: f32 = 0.0,
     native_velocity_z_override_per_tick: ?f32 = null,
+    steering_initialized: bool = false,
+    steering_anchor_authored_x: f32 = 0.0,
+    steering_offset_authored_x: f32 = 0.0,
     paused: bool = false,
     finished: bool = false,
     phase: RunnerPhase = .active,
@@ -531,6 +537,9 @@ pub const Runner = struct {
         }
         self.previous_row_position = self.row_position;
         self.previous_lane_center = self.lane_center;
+        self.steering_initialized = false;
+        self.steering_anchor_authored_x = 0.0;
+        self.steering_offset_authored_x = 0.0;
         self.last_processed_row = self.current_global_row;
         self.syncCurrentRowMessageSegment(preview, false);
         self.refreshCameraState(preview);
@@ -559,6 +568,9 @@ pub const Runner = struct {
         self.combat = .{};
         self.native_velocity_x_per_tick = 0.0;
         self.native_velocity_z_override_per_tick = null;
+        self.steering_initialized = false;
+        self.steering_anchor_authored_x = 0.0;
+        self.steering_offset_authored_x = 0.0;
         self.track_step_rows = 0.0;
         self.position_y = native_grounded_rider_height;
         self.velocity_y = 0.0;
@@ -625,7 +637,9 @@ pub const Runner = struct {
                 self.stepNativeVelocityX(preview);
             }
             self.applyLaneDelta(input.lane_delta);
-            if (input.target_lane_center) |target_lane_center| {
+            if (input.steering_authored_x) |steering_authored_x| {
+                self.applyMouseSteeringAuthoredX(preview, steering_authored_x, delta_seconds);
+            } else if (input.target_lane_center) |target_lane_center| {
                 self.applyTargetLaneCenter(preview, target_lane_center, delta_seconds);
             }
         }
@@ -1253,6 +1267,32 @@ pub const Runner = struct {
 
         self.lane_center += (target_lane_center - self.lane_center) * alpha;
         self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
+    }
+
+    fn applyMouseSteeringAuthoredX(self: *Runner, preview: *const track.LoadedLevelPreview, authored_x: f32, delta_seconds: f32) void {
+        if (!self.steering_initialized) {
+            // Native click-start recenters the input pointer to `(320, 240)`.
+            // Seed the relative accumulator so an off-center OS cursor does not
+            // produce an artificial first-frame lane jump in the port.
+            self.steering_initialized = true;
+            self.steering_anchor_authored_x = authored_x;
+            self.steering_offset_authored_x = native_steering_center_x;
+        } else {
+            const next_offset = authored_x - self.steering_anchor_authored_x + self.steering_offset_authored_x;
+            self.steering_offset_authored_x = std.math.clamp(next_offset, 0.0, native_steering_max_x);
+            self.steering_anchor_authored_x = authored_x;
+        }
+
+        // PORT(verified): native default steering mode accumulates authored mouse
+        // deltas into `track_z_offset`, then steers toward
+        // `(320 - track_z_offset) * 0.0125`. Selector 1 is the absolute cursor path.
+        const target_world_x = std.math.clamp(
+            (native_steering_center_x - self.steering_offset_authored_x) * native_steering_world_scale,
+            -3.7,
+            3.7,
+        );
+        const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
+        self.applyTargetLaneCenter(preview, width_offset + target_world_x, delta_seconds);
     }
 
     fn refreshSample(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -9040,6 +9080,38 @@ test "continuous target lane center preserves fractional track steering" {
     try std.testing.expect(runner.lane_center > 4.5);
     try std.testing.expect(runner.lane_center < 5.5);
     try std.testing.expect(@abs(runner.lane_center - (@floor(runner.lane_center) + 0.5)) > 0.05);
+}
+
+test "relative mouse steering starts centered after click-start" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.debugWarpToTrackRow(&fixture.preview, @as(f32, @floatFromInt(fixture.preview.runtime_active_row_start + 8)), 5.0);
+    runner.lane_center = 5.0;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+
+    runner.step(&fixture.preview, .{ .steering_authored_x = 500.0 }, 1.0 / native_ticks_per_second);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.0001);
+    try std.testing.expectApproxEqAbs(native_steering_center_x, runner.steering_offset_authored_x, 0.0001);
+}
+
+test "relative mouse steering follows pointer deltas rather than absolute position" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.debugWarpToTrackRow(&fixture.preview, @as(f32, @floatFromInt(fixture.preview.runtime_active_row_start + 8)), 5.0);
+    runner.lane_center = 5.0;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+
+    runner.step(&fixture.preview, .{ .steering_authored_x = 500.0 }, 1.0 / native_ticks_per_second);
+    runner.step(&fixture.preview, .{ .steering_authored_x = 540.0 }, 1.0 / native_ticks_per_second);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 360.0), runner.steering_offset_authored_x, 0.0001);
+    try std.testing.expect(runner.lane_center < 5.0);
+    try std.testing.expect(runner.lane_center > 4.0);
 }
 
 test "continuous target lane center steers attachment lateral offset" {

@@ -11,6 +11,7 @@ const segment = @import("../segment.zig");
 pub const RunnerInput = struct {
     lane_delta: i8 = 0,
     target_lane_center: ?f32 = null,
+    steering_authored_x: ?f32 = null,
     speed_delta_rows_per_second: f32 = 0.0,
     fire_pressed: bool = false,
     fire_down: bool = false,

@@ -112,7 +112,6 @@ fn clearLevelSelectionState(state: anytype) void {
 
 fn clearLevelTransientUi(state: anytype) void {
     state.clearLevelPromptQueue();
-    state.mouse_level_lane_target = null;
 }
 
 fn unloadFrontendScreens(state: anytype) void {

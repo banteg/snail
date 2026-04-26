@@ -137,28 +137,6 @@ pub fn levelCamera(state: *const State, loaded_track_preview: *const track.Loade
     return camera3DFromMatrix(state.shared_matrix, fov_degrees);
 }
 
-pub fn laneCenterTargetForRunnerMouse(
-    loaded_track_preview: track.LoadedLevelPreview,
-    runner: gameplay.Runner,
-    mouse_x: f32,
-    screen_width: f32,
-) ?f32 {
-    const probe_row_position = std.math.clamp(
-        runner.row_position + 6.0,
-        0.0,
-        @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.001, 0.0),
-    );
-    const probe_global_row = loaded_track_preview.rowIndexAtWorldZ(probe_row_position);
-    const row_location = loaded_track_preview.locateRow(probe_global_row) orelse return null;
-    const bounds = loaded_track_preview.laneBoundsForRow(row_location);
-    return laneCenterTargetForMouseX(
-        loaded_track_preview,
-        mouse_x,
-        screen_width,
-        bounds,
-    );
-}
-
 pub fn laneCenterTargetForMouseX(
     loaded_track_preview: track.LoadedLevelPreview,
     mouse_x: f32,
@@ -166,10 +144,7 @@ pub fn laneCenterTargetForMouseX(
     bounds: track.LaneBounds,
 ) f32 {
     const width_offset = @as(f32, @floatFromInt(loaded_track_preview.max_width)) * 0.5;
-    const authored_mouse_x = if (screen_width <= 1.0)
-        320.0
-    else
-        (std.math.clamp(mouse_x, 0.0, screen_width - 1.0) / (screen_width - 1.0)) * 639.0;
+    const authored_mouse_x = authoredMouseXForScreen(mouse_x, screen_width);
     // PORT(verified): native `update_subgoldy` steers toward
     // `clamp((320.0 - mouse_x) * 0.0125, -3.7, 3.7)` in authored mouse space.
     const target_world_x = std.math.clamp((320.0 - authored_mouse_x) * (8.0 / 640.0), -3.7, 3.7);
@@ -179,6 +154,11 @@ pub fn laneCenterTargetForMouseX(
         @as(f32, @floatFromInt(bounds.min)) + 0.5,
         @as(f32, @floatFromInt(bounds.max)) + 0.5,
     );
+}
+
+pub fn authoredMouseXForScreen(mouse_x: f32, screen_width: f32) f32 {
+    if (screen_width <= 1.0) return 320.0;
+    return (std.math.clamp(mouse_x, 0.0, screen_width - 1.0) / (screen_width - 1.0)) * 639.0;
 }
 
 fn vectorLength(v: rl.Vector3) f32 {
