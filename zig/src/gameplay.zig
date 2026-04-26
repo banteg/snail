@@ -192,7 +192,8 @@ const attachment_entry_rider_height = attachment_module.entry_rider_height;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
-const mouse_steer_lerp_scale: f32 = 12.0;
+// Native `update_subgoldy` corrects X by `track_center_x * 0.2` each 60 Hz tick.
+const mouse_steer_lerp_scale: f32 = 48.0;
 const lane_lean_progress_step_scale: f32 = 1.0 / 27.0;
 const lane_lean_grounded_max_y: f32 = 0.98000002;
 const track_parcel_bob_amplitude: f32 = 0.3;
@@ -620,6 +621,9 @@ pub const Runner = struct {
         if (self.acceptsGameplayInput()) {
             self.previous_row_position = self.row_position;
             self.previous_lane_center = self.lane_center;
+            if (!self.paused) {
+                self.stepNativeVelocityX(preview);
+            }
             self.applyLaneDelta(input.lane_delta);
             if (input.target_lane_center) |target_lane_center| {
                 self.applyTargetLaneCenter(preview, target_lane_center, delta_seconds);
@@ -639,7 +643,6 @@ pub const Runner = struct {
             self.updateNativeVelocityZOverride(preview, delta_seconds);
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
-            self.stepNativeVelocityX(preview);
             if (replay.active) {
                 self.applyReplayDirective(preview, replay);
             }
@@ -5893,6 +5896,24 @@ test "oblique garbage collisions push the runner sideways" {
     const velocity_after_first_tick = runner.native_velocity_x_per_tick;
     runner.stepNativeVelocityX(&fixture.preview);
     try std.testing.expect(runner.native_velocity_x_per_tick < velocity_after_first_tick);
+}
+
+test "mouse steering damps carried native lateral velocity in native order" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.reset(&fixture.preview);
+    runner.lane_center = 4.5;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+    runner.refreshSample(&fixture.preview);
+    runner.native_velocity_x_per_tick = 0.5;
+
+    runner.step(&fixture.preview, .{ .target_lane_center = 4.5 }, 1.0 / native_ticks_per_second);
+
+    try std.testing.expect(runner.lane_center > 4.5);
+    try std.testing.expect(runner.lane_center < 4.75);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), runner.native_velocity_x_per_tick, 0.0001);
 }
 
 test "garbage impact follows the recovered direction-vector formulas" {
