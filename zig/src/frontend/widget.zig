@@ -38,6 +38,11 @@ pub const SliderTextures = struct {
     bar_full: ?rl.Texture2D = null,
 };
 
+const slider_endpoint_epsilon: f32 = 0.001;
+// PORT(verified): endpoint slider arrows receive native widget flag `0x8000`;
+// `update_frontend_widget_interaction` then halves both color and alpha lanes.
+const slider_disabled_tint = rl.Color{ .r = 128, .g = 128, .b = 128, .a = 128 };
+
 pub const multiline_prompt_max_lines: usize = 8;
 
 pub const menu_button_idle_padding: f32 = 9.0;
@@ -362,6 +367,14 @@ pub fn sliderArrowRect(text_rect: Rect, direction: SliderDirection) Rect {
     };
 }
 
+pub fn sliderArrowEnabled(value: f32, direction: SliderDirection) bool {
+    const clamped_value = std.math.clamp(value, 0.0, 1.0);
+    return switch (direction) {
+        .less => clamped_value > slider_endpoint_epsilon,
+        .more => clamped_value < 1.0 - slider_endpoint_epsilon,
+    };
+}
+
 pub fn sliderValueTextRect(font: *const game_font.Loaded, text_rect: Rect, text: []const u8) Rect {
     return widgetTextRect(font, .slider_value, .center, text, text_rect.top + slider_value_y_offset, text_rect.centerX() - 320.0);
 }
@@ -555,21 +568,21 @@ pub fn drawSliderMenuRow(
         );
     }
 
-    const less_disabled = clamped_value <= 0.001;
-    const more_disabled = clamped_value >= 0.999;
-    const less_texture = if (less_hovered and !less_disabled)
+    const less_enabled = sliderArrowEnabled(clamped_value, .less);
+    const more_enabled = sliderArrowEnabled(clamped_value, .more);
+    const less_texture = if (less_hovered and less_enabled)
         slider_textures.less_hover orelse slider_textures.less
     else
         slider_textures.less;
-    const more_texture = if (more_hovered and !more_disabled)
+    const more_texture = if (more_hovered and more_enabled)
         slider_textures.more_hover orelse slider_textures.more
     else
         slider_textures.more;
     if (less_texture) |texture| {
-        drawTextureLocalRect(layout, texture, slider_layout.less_rect.left, slider_layout.less_rect.top, slider_layout.less_rect.width, slider_layout.less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+        drawTextureLocalRect(layout, texture, slider_layout.less_rect.left, slider_layout.less_rect.top, slider_layout.less_rect.width, slider_layout.less_rect.height, if (less_enabled) .white else slider_disabled_tint);
     }
     if (more_texture) |texture| {
-        drawTextureLocalRect(layout, texture, slider_layout.more_rect.left, slider_layout.more_rect.top, slider_layout.more_rect.width, slider_layout.more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+        drawTextureLocalRect(layout, texture, slider_layout.more_rect.left, slider_layout.more_rect.top, slider_layout.more_rect.width, slider_layout.more_rect.height, if (more_enabled) .white else slider_disabled_tint);
     }
 
     drawTextButtonWithOptions(
@@ -814,6 +827,15 @@ test "slider arrow rect inherits the parent row center offset" {
     try std.testing.expectEqual(@as(f32, 483.0), more_rect.left);
     try std.testing.expectEqual(@as(f32, 186.0), less_rect.top);
     try std.testing.expectEqual(@as(f32, 186.0), more_rect.top);
+}
+
+test "slider arrow enabled state follows native endpoint disabled flag" {
+    try std.testing.expect(!sliderArrowEnabled(0.0, .less));
+    try std.testing.expect(!sliderArrowEnabled(0.001, .less));
+    try std.testing.expect(sliderArrowEnabled(0.002, .less));
+    try std.testing.expect(sliderArrowEnabled(0.998, .more));
+    try std.testing.expect(!sliderArrowEnabled(0.999, .more));
+    try std.testing.expect(!sliderArrowEnabled(1.0, .more));
 }
 
 test "menu prompt layout stacks an ok button below the frame" {

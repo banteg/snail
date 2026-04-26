@@ -87,7 +87,7 @@ pub fn updateChallengeSetupSelection(state: anytype) void {
     };
 
     const difficulty_slider = challengeSetupSliderLayout(state, .difficulty);
-    if (difficulty_slider.less_rect.contains(local_mouse)) {
+    if (difficulty_slider.less_rect.contains(local_mouse) and challengeSetupSliderArrowEnabled(state, .difficulty, .less)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
         state.challenge_setup_index = 0;
         if (rl.isMouseButtonPressed(.left)) {
@@ -95,7 +95,7 @@ pub fn updateChallengeSetupSelection(state: anytype) void {
         }
         return;
     }
-    if (difficulty_slider.more_rect.contains(local_mouse)) {
+    if (difficulty_slider.more_rect.contains(local_mouse) and challengeSetupSliderArrowEnabled(state, .difficulty, .more)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
         state.challenge_setup_index = 0;
         if (rl.isMouseButtonPressed(.left)) {
@@ -110,7 +110,7 @@ pub fn updateChallengeSetupSelection(state: anytype) void {
     }
 
     const speed_slider = challengeSetupSliderLayout(state, .speed);
-    if (speed_slider.less_rect.contains(local_mouse)) {
+    if (speed_slider.less_rect.contains(local_mouse) and challengeSetupSliderArrowEnabled(state, .speed, .less)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .less));
         state.challenge_setup_index = 1;
         if (rl.isMouseButtonPressed(.left)) {
@@ -118,7 +118,7 @@ pub fn updateChallengeSetupSelection(state: anytype) void {
         }
         return;
     }
-    if (speed_slider.more_rect.contains(local_mouse)) {
+    if (speed_slider.more_rect.contains(local_mouse) and challengeSetupSliderArrowEnabled(state, .speed, .more)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .more));
         state.challenge_setup_index = 1;
         if (rl.isMouseButtonPressed(.left)) {
@@ -177,7 +177,7 @@ pub fn updateOptionsSelection(state: anytype) !void {
     }
 
     const sound_slider = frontend_options_menu.sliderLayout(&state.ui_font, layout_state, .sound_volume);
-    if (sound_slider.less_rect.contains(local_mouse)) {
+    if (sound_slider.less_rect.contains(local_mouse) and optionsSliderArrowEnabled(layout_state, .sound_volume, .less)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .less));
         state.options_menu_index = 1;
         if (rl.isMouseButtonPressed(.left)) {
@@ -185,7 +185,7 @@ pub fn updateOptionsSelection(state: anytype) !void {
         }
         return;
     }
-    if (sound_slider.more_rect.contains(local_mouse)) {
+    if (sound_slider.more_rect.contains(local_mouse) and optionsSliderArrowEnabled(layout_state, .sound_volume, .more)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .more));
         state.options_menu_index = 1;
         if (rl.isMouseButtonPressed(.left)) {
@@ -200,7 +200,7 @@ pub fn updateOptionsSelection(state: anytype) !void {
     }
 
     const music_slider = frontend_options_menu.sliderLayout(&state.ui_font, layout_state, .music_volume);
-    if (music_slider.less_rect.contains(local_mouse)) {
+    if (music_slider.less_rect.contains(local_mouse) and optionsSliderArrowEnabled(layout_state, .music_volume, .less)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .less));
         state.options_menu_index = 2;
         if (rl.isMouseButtonPressed(.left)) {
@@ -208,7 +208,7 @@ pub fn updateOptionsSelection(state: anytype) !void {
         }
         return;
     }
-    if (music_slider.more_rect.contains(local_mouse)) {
+    if (music_slider.more_rect.contains(local_mouse) and optionsSliderArrowEnabled(layout_state, .music_volume, .more)) {
         frontend_input.setHoverTarget(state, frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .more));
         state.options_menu_index = 2;
         if (rl.isMouseButtonPressed(.left)) {
@@ -554,6 +554,24 @@ fn challengeSetupSliderLayout(state: anytype, item: frontend_challenge_setup_men
         challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
         item,
     );
+}
+
+fn challengeSetupSliderArrowEnabled(state: anytype, item: frontend_challenge_setup_menu.Item, direction: frontend_widget.SliderDirection) bool {
+    const value = switch (item) {
+        .difficulty => @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01,
+        .speed => @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01,
+        .play, .watch_replay, .back => unreachable,
+    };
+    return frontend_widget.sliderArrowEnabled(value, direction);
+}
+
+fn optionsSliderArrowEnabled(layout_state: frontend_options_menu.LayoutState, item: frontend.OptionsMenuItem, direction: frontend_widget.SliderDirection) bool {
+    const value = switch (item) {
+        .sound_volume => layout_state.sound_value,
+        .music_volume => layout_state.music_value,
+        .fullscreen, .back => unreachable,
+    };
+    return frontend_widget.sliderArrowEnabled(value, direction);
 }
 
 fn challengeSetupTextRect(state: anytype, item: frontend_challenge_setup_menu.Item) frontend_widget.Rect {
