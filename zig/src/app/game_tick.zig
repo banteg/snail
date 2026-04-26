@@ -62,6 +62,9 @@ pub fn simulate(state: anytype, runner_input: gameplay.RunnerInput) !void {
     }
 
     state.updateFrontendWidgetAnimations();
+    if (state.game_phase == .new_game_menu and !state.frontend_transition.blocksInput()) {
+        if (try state.tryLaunchNewGameReplayAttract()) return;
+    }
     state.stepCompletionScreenReveal();
     if (state.game_phase == .thanks_screen) {
         state.thanks_screen_controller.step();

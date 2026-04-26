@@ -13,6 +13,7 @@ const frontend_high_score_screen = @import("../frontend/high_score_screen.zig");
 const frontend_route_map = @import("../frontend/route_map.zig");
 const high_score = @import("../high_score.zig");
 const level_loader = @import("level_loader.zig");
+const new_game_replay_attract = @import("new_game_replay_attract.zig");
 const selected_replay = @import("selected_replay.zig");
 
 const default_level_path = app.default_level_path;
@@ -170,6 +171,7 @@ pub fn enterPostLevelHighScoreScreenWithReturn(
 }
 
 pub fn performNewGameMenuItem(state: anytype, item: NewGameMenuItem) !void {
+    state.new_game_replay_attract.noteInput();
     switch (item) {
         .tutorial => {
             state.runtime_config.setNewGameExtraModesVisible(true);
@@ -216,6 +218,25 @@ pub fn stepNewGameMenuSelection(state: anytype, delta: isize) void {
 
 pub fn challengeSetupReplayAvailable(state: anytype) bool {
     return state.high_score_tables.challenge[0].has_replay;
+}
+
+pub fn tryLaunchNewGameReplayAttract(state: anytype) !bool {
+    if (!state.new_game_replay_attract.stepLaunchTimer()) return false;
+
+    defer state.new_game_replay_attract.resetReleaseTimer();
+    const source = new_game_replay_attract.probeSource(
+        &state.new_game_replay_attract,
+        &state.high_score_tables,
+        &state.math_random_state,
+    ) orelse return false;
+
+    state.new_game_replay_attract.hide_latch = true;
+    try enterSelectedLevelRecordSource(state, .{
+        .source = source,
+        .persistent = true,
+        .outer_return_target = .new_game_menu,
+    });
+    return true;
 }
 
 pub fn challengeSetupVisibleItems(state: anytype) []const frontend_challenge_setup_menu.Item {

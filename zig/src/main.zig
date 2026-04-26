@@ -12,6 +12,7 @@ const game_tick = @import("app/game_tick.zig");
 const level_loader = @import("app/level_loader.zig");
 const math_random = @import("app/math_random.zig");
 const music_audio = @import("app/music_audio.zig");
+const new_game_replay_attract = @import("app/new_game_replay_attract.zig");
 const phase_resources = @import("app/phase_resources.zig");
 const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
@@ -247,6 +248,7 @@ const AppState = struct {
     menu_index: usize = 0,
     main_menu_button_states: [main_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** main_menu_items.len,
     new_game_menu_index: usize = 0,
+    new_game_replay_attract: new_game_replay_attract.Controller = .{},
     new_game_button_states: [new_game_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** new_game_menu_items.len,
     challenge_setup_index: usize = 0,
     challenge_setup_button_states: [frontend_challenge_setup_menu.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_challenge_setup_menu.button_count,
@@ -945,6 +947,10 @@ const AppState = struct {
 
     fn performNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
         try frontend_flow.performNewGameMenuItem(self, item);
+    }
+
+    pub fn tryLaunchNewGameReplayAttract(self: *AppState) !bool {
+        return frontend_flow.tryLaunchNewGameReplayAttract(self);
     }
 
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
