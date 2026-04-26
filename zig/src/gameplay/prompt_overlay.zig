@@ -9,9 +9,7 @@ const level_prompt = @import("../level_prompt.zig");
 
 const VirtualLayout = ui.VirtualLayout;
 
-const gameplay_prompt_anchor_y: f32 = 330.0;
-const tutorial_prompt_anchor_y: f32 = 116.0;
-const tutorial_prompt_interactive_anchor_y: f32 = 176.0;
+const native_tip_anchor_y: f32 = 30.0;
 pub const click_start_anchor_y: f32 = 200.0;
 
 const click_start_text = "Click to Start";
@@ -70,8 +68,11 @@ fn promptLines(text: []const u8, lines: *[frontend_widget.multiline_prompt_max_l
 }
 
 fn anchorY(tutorial: bool, interactive: bool) f32 {
-    if (!tutorial) return gameplay_prompt_anchor_y;
-    return if (interactive) tutorial_prompt_interactive_anchor_y else tutorial_prompt_anchor_y;
+    _ = tutorial;
+    _ = interactive;
+    // PORT(verified): `update_subgoldy` builds segment tips with x=0 and y=30
+    // before `initialize_tip` passes them through the shell widget wrapper.
+    return native_tip_anchor_y;
 }
 
 fn activeLayout(context: Context, prompt: level_prompt.Entry, tutorial: bool) ActiveLayout {
@@ -134,6 +135,7 @@ fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_promp
     const prompt_layout = activeLayout(context, prompt, tutorial);
     var frame_state = frontend_widget.TextButtonState{};
     frame_state.snapFor(.menu_button, false);
+    frame_state.hot_blend = 1.0;
     const colors = frontend_widget.colorsForState(frame_state, false);
     frontend_widget.drawNineSliceFrame(
         layout,
@@ -170,4 +172,10 @@ fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_promp
 
 test "click-start prompt uses native authored y" {
     try std.testing.expectEqual(@as(f32, 200.0), click_start_anchor_y);
+}
+
+test "segment prompts use native tip anchor" {
+    try std.testing.expectEqual(@as(f32, 30.0), anchorY(false, false));
+    try std.testing.expectEqual(@as(f32, 30.0), anchorY(true, false));
+    try std.testing.expectEqual(@as(f32, 30.0), anchorY(true, true));
 }

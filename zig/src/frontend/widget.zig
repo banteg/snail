@@ -416,22 +416,34 @@ pub fn menuPromptLayout(
 ) MultilinePromptLayout {
     const metrics = metricsForType(.menu_button);
     const line_count = @max(lines.len, 1);
-    const line_height = metrics.textHeight(font) + 2.0;
+    const line_height = metrics.textHeight(font);
     var max_width: f32 = 0.0;
     for (lines) |line| {
         max_width = @max(max_width, font.measureText(line, metrics.fontSize(font)));
     }
 
-    const frame_width = std.math.clamp(max_width + 44.0, 240.0, 420.0);
-    const text_block_height = line_height * @as(f32, @floatFromInt(line_count));
-    const vertical_padding: f32 = if (interactive) 22.0 else 18.0;
-    const frame_rect = alignedTextRect(frame_width, text_block_height + vertical_padding, anchor_y, .center, 0.0);
+    // PORT(verified): `initialize_tip` uses the ordinary shell widget path for
+    // row messages. `layout_and_queue_wrapped_font_text` measures `>`-split lines
+    // as one wrapped text block, then `draw_frontend_widget` expands it by the
+    // widget's current padding.
+    var text_block_rect = alignedTextRect(
+        max_width,
+        line_height * @as(f32, @floatFromInt(line_count)),
+        anchor_y,
+        .center,
+        0.0,
+    );
+    text_block_rect = clampWrappedWidgetTextRect(text_block_rect, metrics.hot_padding);
+
+    var native_main_state = TextButtonState{};
+    native_main_state.snapFor(.menu_button, false);
+    const frame_rect = pillRect(text_block_rect, native_main_state);
     var prompt_layout = MultilinePromptLayout{
         .frame_rect = frame_rect,
         .line_count = @min(lines.len, multiline_prompt_max_lines),
     };
 
-    var line_y = frame_rect.top + ((frame_rect.height - text_block_height) * 0.5) - 1.0;
+    var line_y = text_block_rect.top;
     for (lines, 0..) |line, index| {
         if (index >= prompt_layout.line_rects.len) break;
         prompt_layout.line_rects[index] = widgetTextRect(
@@ -456,6 +468,21 @@ pub fn menuPromptLayout(
         );
     }
     return prompt_layout;
+}
+
+fn clampWrappedWidgetTextRect(text_rect: Rect, hot_padding: f32) Rect {
+    var clamped = text_rect;
+    if (clamped.left + hot_padding + clamped.width > 640.0) {
+        clamped.left = 640.0 - hot_padding - clamped.width;
+    } else if (clamped.left - hot_padding < 0.0) {
+        clamped.left = hot_padding;
+    }
+    if (clamped.top + clamped.height + hot_padding > 480.0) {
+        clamped.top = 480.0 - hot_padding - clamped.height;
+    } else if (clamped.top - hot_padding < 0.0) {
+        clamped.top = hot_padding;
+    }
+    return clamped;
 }
 
 pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
@@ -800,6 +827,46 @@ test "menu prompt layout stacks an ok button below the frame" {
     const layout = menuPromptLayout(&font, &lines, 176.0, true);
 
     try std.testing.expect(layout.ok_text_rect != null);
-    try std.testing.expect(layout.frame_rect.width >= 240.0);
     try std.testing.expectApproxEqAbs(stackBelow(layout.frame_rect), layout.ok_text_rect.?.top, 0.001);
+}
+
+test "menu prompt layout uses native tip widget bounds" {
+    var font: game_font.Loaded = undefined;
+    font.nominal_height = 20.0;
+    font.spacing_scale = 0.75;
+    font.slots = [_]game_font.GlyphSlot{.{
+        .source_x = 0.0,
+        .source_y = 0.0,
+        .source_width = 10.0,
+        .source_height = 20.0,
+        .advance_width = 10.0,
+    }} ** 95;
+
+    const lines = [_][]const u8{ "AB", "C" };
+    const layout = menuPromptLayout(&font, &lines, 30.0, false);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 21.0), layout.frame_rect.top, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 30.0), layout.line_rects[0].top, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 56.0), layout.line_rects[1].top, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 70.0), layout.frame_rect.height, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 47.25), layout.frame_rect.width, 0.001);
+}
+
+test "menu prompt clamp keeps the hot text block inside authored space" {
+    var font: game_font.Loaded = undefined;
+    font.nominal_height = 20.0;
+    font.spacing_scale = 0.75;
+    font.slots = [_]game_font.GlyphSlot{.{
+        .source_x = 0.0,
+        .source_y = 0.0,
+        .source_width = 10.0,
+        .source_height = 20.0,
+        .advance_width = 10.0,
+    }} ** 95;
+
+    const lines = [_][]const u8{"AB"};
+    const layout = menuPromptLayout(&font, &lines, 470.0, false);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 441.0), layout.line_rects[0].top, 0.001);
+    try std.testing.expect(layout.line_rects[0].top + layout.line_rects[0].height + menu_button_hot_padding <= 480.0);
 }

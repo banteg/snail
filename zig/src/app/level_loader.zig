@@ -71,7 +71,8 @@ pub fn dispatchCurrentRunnerRowMessage(
     if (!segment_changed and !token_changed and !replay_sample_on_match) return;
 
     const segment_entry = &loaded_level.segments[logical_segment_index];
-    if (segment_changed or token_changed) {
+    const forced_empty_prompt = replay_sample_on_match and state.level_prompt_queue.active() == null;
+    if (segment_changed or token_changed or forced_empty_prompt) {
         queueLevelSegmentPrompt(state, segment_entry);
     }
     if (segment_changed or token_changed or replay_sample_on_match) {

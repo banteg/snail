@@ -80,6 +80,7 @@ pub const Options = struct {
     mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
     start_level_intro: bool = false,
+    auto_dismiss_click_start: bool = false,
     start_route_index: ?usize = null,
     pause_context: bool = false,
     timeout_seconds: ?u32 = null,
@@ -155,6 +156,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
         }
         if (std.mem.eql(u8, arg, "--start-level-intro")) {
             options.start_level_intro = true;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--auto-dismiss-click-start")) {
+            options.auto_dismiss_click_start = true;
             continue;
         }
         if (std.mem.eql(u8, arg, "--start-route-index")) {
@@ -316,6 +321,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
     try std.testing.expectEqual(false, options.start_level_intro);
+    try std.testing.expectEqual(false, options.auto_dismiss_click_start);
     try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
     try std.testing.expectEqual(false, options.pause_context);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
@@ -352,8 +358,9 @@ test "parse args accepts start phase override" {
 }
 
 test "parse args accepts level intro override" {
-    const options = try parseArgsFromSlice(&.{"--start-level-intro"});
+    const options = try parseArgsFromSlice(&.{ "--start-level-intro", "--auto-dismiss-click-start" });
     try std.testing.expectEqual(true, options.start_level_intro);
+    try std.testing.expectEqual(true, options.auto_dismiss_click_start);
 }
 
 test "parse args accepts start route index override" {

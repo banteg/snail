@@ -271,6 +271,7 @@ const AppState = struct {
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
+    auto_dismiss_click_start: bool = false,
     seed_level_intro_cutscene: bool = false,
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
@@ -440,6 +441,7 @@ const AppState = struct {
             .options_music_display_value = runtime_config_result.blob.musicVolume(),
             .mouse_local_override = options.mouse_local_override,
             .auto_screenshot = options.auto_screenshot,
+            .auto_dismiss_click_start = options.auto_dismiss_click_start,
             .start_route_index_override = options.start_route_index,
             .start_pause_context = options.pause_context,
             .high_score_tables = high_score.Tables.initDefault(),
@@ -651,6 +653,10 @@ const AppState = struct {
         if (rl.isKeyPressed(.f12)) {
             try self.queueScreenshot(false);
         }
+        if (self.auto_dismiss_click_start and self.gameplayClickStartDismissible() and self.game_phase == .level) {
+            self.auto_dismiss_click_start = false;
+            try self.activateGameplayClickStart();
+        }
 
         switch (self.command) {
             .game => return self.handleGameInput(),
@@ -829,6 +835,7 @@ const AppState = struct {
             },
             .level => {
                 if (self.gameplay_click_start_active) {
+                    if (!self.gameplayClickStartDismissible()) return;
                     if (rl.isMouseButtonPressed(.left) or rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                         try self.activateGameplayClickStart();
                     }
@@ -1369,6 +1376,11 @@ const AppState = struct {
         if (!self.gameplay_click_start_active) return false;
         const runner = self.level_runner orelse return false;
         return runner.introCutsceneBlocksGameplay();
+    }
+
+    fn gameplayClickStartDismissible(self: *const AppState) bool {
+        if (!self.gameplay_click_start_active) return false;
+        return !self.tutorialClickStartCutsceneActive();
     }
 
     pub fn startupGameplayBlockActive(self: *const AppState) bool {
@@ -2566,6 +2578,52 @@ test "level segment prompt dispatch keys from the runner row message owner" {
     try std.testing.expectEqualStrings(expected_message, state.level_prompt_queue.active().?.message);
 }
 
+test "click-start prompt dispatch still queues a primed segment message" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    var target_logical_segment_index: ?usize = null;
+    for (0..loaded_track_preview.total_rows) |global_row| {
+        const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
+        const logical_segment_index = loaded_track_preview.segment_logical_indices[row_location.segment_index] orelse continue;
+        if (loaded_level.segments[logical_segment_index].message == null) continue;
+        target_logical_segment_index = logical_segment_index;
+        break;
+    }
+
+    const logical_segment_index = target_logical_segment_index orelse return error.TestExpectedSegmentMessage;
+    const expected_message = loaded_level.segments[logical_segment_index].message.?;
+    var tick: usize = 0;
+    while (tick < 4096 and runner.currentRowMessageLogicalSegmentIndex() != logical_segment_index) : (tick += 1) {
+        runner.step(&loaded_track_preview, .{}, 1.0 / 60.0);
+    }
+
+    var state: AppState = undefined;
+    state.current_level = loaded_level;
+    defer if (state.current_level) |*owned_level| owned_level.deinit();
+    state.level_runner = runner;
+    state.active_frontend_mode = .tutorial;
+    state.active_level_segment_index = logical_segment_index;
+    state.level_prompt_queue = .{};
+    state.gameplay_click_start_active = false;
+    state.audio_ready = false;
+
+    try state.dispatchCurrentRunnerRowMessage(logical_segment_index, null, true);
+    try std.testing.expectEqualStrings(expected_message, state.level_prompt_queue.active().?.message);
+}
+
 test "completion reveal stages the bonus line before continue" {
     const result = PendingRunResult{
         .level_name = "To Infinity!",
@@ -3705,6 +3763,34 @@ test "intro cutscene click-start path still primes the tutorial start attachment
     try std.testing.expect(runner.attachment.follow.active);
     try std.testing.expectEqual(subgame_camera.Source.override, camera_state.source);
     try std.testing.expect(runner.cutsceneCameraActive());
+}
+
+test "click-start remains latched until the intro handoff is visible" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var state: AppState = undefined;
+    state.gameplay_click_start_active = true;
+    state.level_runner = gameplay.Runner.init(&loaded_track_preview);
+    state.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
+
+    try std.testing.expect(!state.gameplayClickStartDismissible());
+
+    state.level_runner.?.clearCutscene();
+
+    try std.testing.expect(state.gameplayClickStartDismissible());
 }
 
 test "startup block after click-start dismissal resumes the live runner under intro camera" {
