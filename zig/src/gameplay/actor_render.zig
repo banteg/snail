@@ -17,9 +17,6 @@ const segment = @import("../segment.zig");
 const track = @import("../track.zig");
 
 const start_banner_visible_rows: f32 = 40.0;
-const start_banner_world_x: f32 = 2.0;
-const start_banner_world_y: f32 = 20.0;
-const start_banner_world_z: f32 = 18.0;
 const banner_bob_amplitude: f32 = 0.26;
 const banner_bob_cycle_seconds: f32 = 144.0 / 60.0;
 const tau: f32 = 6.2831855;
@@ -138,6 +135,7 @@ pub fn drawRuntimeActors(
 
 pub fn drawPostOfficeStopBanners(
     render: Context,
+    loaded_track_preview: *const track.LoadedLevelPreview,
     runner: gameplay.Runner,
 ) void {
     if (runner.row_position >= start_banner_visible_rows) return;
@@ -146,10 +144,27 @@ pub fn drawPostOfficeStopBanners(
     const phase = @as(f32, @floatCast(render.render_time_seconds)) * (tau / banner_bob_cycle_seconds);
     const y = std.math.sin(phase) * banner_bob_amplitude;
     // PORT(verified): native creates two cRBanner slots from postofficestop.x.
-    // Mode 0 is visible while player z < 40 and only applies a sine bob to y.
-    // The port's track renderer uses row-space z, so place the native origin over
-    // the START segment's first empty-row span instead of the direct model origin.
-    model.drawEx(rl.Matrix.translate(start_banner_world_x, start_banner_world_y + y, start_banner_world_z));
+    // Mode 0 is visible while player z < 40. Build-level setup zeros x/y, writes
+    // z from game+0x50 (`track_row_start`), then update_banner only applies this
+    // sine bob to y. The cRBod render path passes these fields straight through
+    // as the object matrix translation; it does not use annotation-style
+    // center/ground correction against the mesh bounds.
+    model.drawEx(startBannerNativeTransform(loaded_track_preview, y));
+}
+
+fn startBannerNativeTransform(loaded_track_preview: *const track.LoadedLevelPreview, bob_y: f32) rl.Matrix {
+    return startBannerNativeTransformForRow(loaded_track_preview.runtime_active_row_start, bob_y);
+}
+
+fn startBannerNativeTransformForRow(runtime_active_row_start: usize, bob_y: f32) rl.Matrix {
+    return rl.Matrix.translate(0.0, bob_y, @floatFromInt(runtime_active_row_start));
+}
+
+test "post office stop banner uses native bod origin transform" {
+    const transform = startBannerNativeTransformForRow(track.defaultRuntimeActiveRowStart, 0.25);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), transform.m12, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), transform.m13, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(track.defaultRuntimeActiveRowStart)), transform.m14, 0.001);
 }
 
 fn drawGameplaySlugActor(

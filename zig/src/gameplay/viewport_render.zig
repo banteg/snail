@@ -29,7 +29,7 @@ pub fn draw(state: anytype) void {
     }
     const live_runner = runner orelse return;
     const actor_render_context = actor_render.context(state);
-    actor_render.drawPostOfficeStopBanners(actor_render_context, live_runner);
+    actor_render.drawPostOfficeStopBanners(actor_render_context, &loaded_track_preview, live_runner);
     if (state.gameplay_click_start_active) {
         actor_render.drawTurbo(actor_render_context, &loaded_track_preview, live_runner, camera);
         return;
