@@ -110,6 +110,11 @@ pub fn simulate(state: anytype, runner_input: gameplay.RunnerInput) !void {
                         selected_replay.directiveForRunner(state, runner),
                         @floatCast(state.simulation_clock.step_seconds),
                     );
+                    if (state.selected_level_record_source == null and
+                        runner.replay_sample_index > previous_runner.replay_sample_index)
+                    {
+                        try state.captureReplayFrame(loaded_track_preview, runner.*, effective_runner_input);
+                    }
                     if (runner.consumeReplayFadeRequest()) {
                         state.selected_replay_fade_exit_pending = true;
                         if (state.frontend_transition.state == .idle) {

@@ -167,6 +167,71 @@ pub const ReplaySample = struct {
     flags: u8,
 };
 
+pub const ReplayCapture = struct {
+    samples: std.ArrayList(ReplaySample) = .empty,
+    previous_z: f32 = 0.0,
+    track_state_latch: bool = false,
+
+    pub fn deinit(self: *ReplayCapture, allocator: std.mem.Allocator) void {
+        self.samples.deinit(allocator);
+        self.* = .{};
+    }
+
+    pub fn reset(self: *ReplayCapture) void {
+        self.samples.clearRetainingCapacity();
+        self.previous_z = 0.0;
+        self.track_state_latch = false;
+    }
+
+    pub fn appendFrame(
+        self: *ReplayCapture,
+        allocator: std.mem.Allocator,
+        world_x: f32,
+        world_z: f32,
+        fire_pressed: bool,
+        fire_down: bool,
+    ) !void {
+        const lateral = mathType32To16(mathType16To32(mathType32To16(world_x, 16.0), 16.0), 16.0);
+        const secondary_z_delta_raw = if (self.samples.items.len == 0) blk: {
+            const absolute_z = mathType32To16(world_z, 32.0);
+            self.previous_z = mathType16To32(absolute_z, 32.0);
+            break :blk absolute_z;
+        } else blk: {
+            const delta = mathType32To16(world_z - self.previous_z, 32.0);
+            self.previous_z += mathType16To32(delta, 32.0);
+            break :blk delta;
+        };
+
+        var flags: u8 = 0;
+        if (self.track_state_latch) {
+            if (fire_pressed) flags |= 0x01;
+            if (fire_down) flags |= 0x02;
+        }
+        if (!fire_pressed and !fire_down) {
+            self.track_state_latch = true;
+        }
+        if (self.track_state_latch) {
+            flags |= 0x04;
+        }
+
+        try self.samples.append(allocator, .{
+            .lateral = lateral,
+            .secondary_z_delta_raw = secondary_z_delta_raw,
+            .flags = flags,
+        });
+    }
+
+    pub fn markReplayTail(self: *ReplayCapture) void {
+        if (self.samples.items.len == 0) return;
+        self.samples.items[self.samples.items.len - 1].flags |= 0x08;
+    }
+
+    pub fn attachToEntry(self: *const ReplayCapture, allocator: std.mem.Allocator, entry: *Entry) !void {
+        if (self.samples.items.len == 0) return;
+        try entry.setReplaySamples(allocator, self.samples.items);
+    }
+};
+
 pub const DecodedReplaySample = struct {
     lateral: i16,
     ghost_z_accum_raw: i32,
@@ -710,6 +775,29 @@ test "replay math helpers match recovered native fixed point scale" {
     const ghost_delta = mathType32To16(-1.25, 32.0);
     try std.testing.expectEqual(@as(i16, -0x0a00), ghost_delta);
     try std.testing.expectApproxEqAbs(@as(f32, -1.25), mathType16To32(ghost_delta, 32.0), 0.0001);
+}
+
+test "replay capture writes quantized x absolute z then z deltas" {
+    var capture = ReplayCapture{};
+    defer capture.deinit(std.testing.allocator);
+
+    try capture.appendFrame(std.testing.allocator, 1.25, 4.0, false, false);
+    try capture.appendFrame(std.testing.allocator, 1.75, 4.5, true, true);
+    capture.markReplayTail();
+
+    try std.testing.expectEqual(@as(usize, 2), capture.samples.items.len);
+    try std.testing.expectEqual(mathType32To16(1.25, 16.0), capture.samples.items[0].lateral);
+    try std.testing.expectEqual(mathType32To16(4.0, 32.0), capture.samples.items[0].secondary_z_delta_raw);
+    try std.testing.expectEqual(@as(u8, 0x04), capture.samples.items[0].flags);
+    try std.testing.expectEqual(mathType32To16(1.75, 16.0), capture.samples.items[1].lateral);
+    try std.testing.expectEqual(mathType32To16(0.5, 32.0), capture.samples.items[1].secondary_z_delta_raw);
+    try std.testing.expectEqual(@as(u8, 0x0f), capture.samples.items[1].flags);
+
+    var entry = Entry{};
+    defer entry.deinit(std.testing.allocator);
+    try capture.attachToEntry(std.testing.allocator, &entry);
+    try std.testing.expect(entry.has_replay);
+    try std.testing.expectEqualDeep(capture.samples.items[1], entry.replaySampleAt(1).?);
 }
 
 test "replay payload access rejects truncated compact records" {

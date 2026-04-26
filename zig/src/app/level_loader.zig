@@ -87,6 +87,7 @@ fn startupGameplayBlockActive(state: anytype) bool {
 }
 
 pub fn loadGameLevel(state: anytype, level_path: []const u8) !void {
+    state.replay_capture.reset();
     state.level_index = state.resources.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
     track_build_seed.invalidate(trackBuildSeedContext(state));
     try reloadLevel(state);

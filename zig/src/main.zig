@@ -310,6 +310,7 @@ const AppState = struct {
     high_score_screen_owner: frontend_high_score_screen.Owner = .{ .main_menu_browse = .postal },
     post_level_high_score_return_owner: ?frontend_bridge.OuterOwnerState = null,
     post_level_high_score_return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return,
+    replay_capture: high_score.ReplayCapture = .{},
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
@@ -501,6 +502,7 @@ const AppState = struct {
         self.unloadGameBackground();
         boot_assets.unload(boot_assets.context(self));
         self.clearSelectedReplayCache();
+        self.replay_capture.deinit(self.allocator);
         if (self.current_background_light_streak_texture) |*texture| {
             texture.unload();
             self.current_background_light_streak_texture = null;
@@ -1517,8 +1519,28 @@ const AppState = struct {
         return run_tuning.currentRunRuntimeBuildFlags(self.runTuningContext());
     }
 
-    pub fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
-        return run_tuning.currentRunHighScoreEntry(self.runTuningContext(), score);
+    pub fn currentRunHighScoreEntry(self: *AppState, score: u32) !high_score.Entry {
+        var entry = run_tuning.currentRunHighScoreEntry(self.runTuningContext(), score);
+        errdefer entry.deinit(self.allocator);
+        self.replay_capture.markReplayTail();
+        try self.replay_capture.attachToEntry(self.allocator, &entry);
+        return entry;
+    }
+
+    pub fn captureReplayFrame(
+        self: *AppState,
+        loaded_track_preview: *const track.LoadedLevelPreview,
+        runner: gameplay.Runner,
+        input: gameplay.RunnerInput,
+    ) !void {
+        const world = runner.worldPosition(loaded_track_preview, 0.0);
+        try self.replay_capture.appendFrame(
+            self.allocator,
+            world.x,
+            world.z,
+            input.fire_pressed,
+            input.fire_down,
+        );
     }
 
     pub fn saveHighScoreTables(self: *AppState) !void {
@@ -2916,6 +2938,8 @@ test "ordinary postal completion commits unlock progress without staging arcade 
     state.current_runtime_build_seed = 0;
     state.selected_level_record_override = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.high_score_screen_owner = .{ .main_menu_browse = .postal };
     state.pending_run_result = .{
         .level_name = "Route 1",
@@ -2968,6 +2992,8 @@ test "final postal completion stages postal score entry before thanks return" {
     state.current_runtime_build_seed = 0;
     state.selected_level_record_override = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.high_score_screen_owner = .{ .main_menu_browse = .postal };
     state.pending_run_result = .{
         .level_name = "Final Route",
@@ -3017,6 +3043,8 @@ test "postal failure only stages post-level score entry when the score qualifies
     state.current_runtime_build_seed = 0;
     state.selected_level_record_override = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.high_score_screen_owner = .{ .main_menu_browse = .postal };
 
     for (state.high_score_tables.postal[0..high_score.visible_entry_count], 0..) |*entry, index| {
@@ -3071,6 +3099,8 @@ test "postal abandon can stage standalone post-level score entry" {
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.saved_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
         .mode = .postal,
         .screen_mode = .normal,
@@ -3143,6 +3173,8 @@ test "standalone postal abandon skips score entry when the score does not qualif
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.saved_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
         .mode = .postal,
         .screen_mode = .normal,
@@ -3191,6 +3223,8 @@ test "challenge abandon keeps post-level score entry on the challenge return lan
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
     state.saved_outer_owner = frontend_bridge.outerOwnerStateChallengeSetupMenu();
 
     for (state.high_score_tables.challenge[0..high_score.visible_entry_count], 0..) |*entry, index| {
@@ -3346,8 +3380,10 @@ test "current run high-score entry carries replay mode and build settings" {
     state.current_runtime_build_seed = 321;
     state.selected_level_record_override = null;
     state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
 
-    const entry = state.currentRunHighScoreEntry(12_345);
+    const entry = try state.currentRunHighScoreEntry(12_345);
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
     try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
     try std.testing.expectEqual(@as(u32, 1), entry.replay_mode_id);

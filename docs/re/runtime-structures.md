@@ -418,6 +418,9 @@ The current high-confidence `Game` fields are:
 The `+0x72` sample lane is not a steering lane. `update_subgoldy` uses it on the non-selected
 Time Trial replay/ghost path by accumulating `convert_math_type16_to_32(sample, 32.0)` into
 `data_643190`; selected replay playback reads `+0x70` lateral X and `+0x74` flags directly.
+The same `update_subgoldy` slice also writes live replay samples: first sample stores absolute
+world `z` in the ghost-Z lane, later samples store decoded-relative `z` deltas, and flags use
+bits `0x1/0x2` for fire state, `0x4` for the replay latch, and `0x8` for the marked replay tail.
 - `+0xff25d8`: `selected_level_record_saved_return_owner`
 - `+0xff25dc`: `runtime_track_index`
 

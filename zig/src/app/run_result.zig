@@ -174,7 +174,7 @@ pub fn commitIfNeeded(state: anytype, result: Result) !Result {
                 updated.unlocked_next_route = try state.commitPostalRouteProgress();
             },
             .postal_final => {
-                const entry = state.currentRunHighScoreEntry(result.score);
+                const entry = try state.currentRunHighScoreEntry(result.score);
                 const insert = state.high_score_tables.addArcade(state.allocator, entry);
                 updated.high_score_mode = .postal;
                 updated.high_score_rank = insert.rank;
@@ -187,14 +187,14 @@ pub fn commitIfNeeded(state: anytype, result: Result) !Result {
             .tutorial_failure,
             => unreachable,
             .challenge_completion => {
-                const entry = state.currentRunHighScoreEntry(result.score);
+                const entry = try state.currentRunHighScoreEntry(result.score);
                 const insert = state.high_score_tables.addSurvival(state.allocator, entry);
                 updated.high_score_mode = .challenge;
                 updated.high_score_rank = insert.rank;
                 try state.saveHighScoreTables();
             },
             .time_trial_completion => {
-                const entry = state.currentRunHighScoreEntry(result.score);
+                const entry = try state.currentRunHighScoreEntry(result.score);
                 const insert = state.high_score_tables.addTimeTrial(
                     state.allocator,
                     state.active_frontend_level_index,
@@ -208,14 +208,14 @@ pub fn commitIfNeeded(state: anytype, result: Result) !Result {
         },
         .failed => switch (result.completion_owner) {
             .postal_failure => {
-                const entry = state.currentRunHighScoreEntry(result.score);
+                const entry = try state.currentRunHighScoreEntry(result.score);
                 const insert = state.high_score_tables.addArcade(state.allocator, entry);
                 updated.high_score_mode = .postal;
                 updated.high_score_rank = insert.rank;
                 try state.saveHighScoreTables();
             },
             .challenge_failure => {
-                const entry = state.currentRunHighScoreEntry(result.score);
+                const entry = try state.currentRunHighScoreEntry(result.score);
                 const insert = state.high_score_tables.addSurvival(state.allocator, entry);
                 updated.high_score_mode = .challenge;
                 updated.high_score_rank = insert.rank;

@@ -56,11 +56,12 @@ Implemented now:
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
 - expose the recovered 5-byte replay payload lanes (`lateral`, ghost Z delta, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
+- capture live run replay samples into that recovered lane order: lateral `x` uses the fixed-point quantization shape seen in `update_subgoldy`, the first ghost-Z sample stores absolute `z`, later samples store decoded-delta-relative `z`, and flags preserve the recovered fire/latch/tail bits
 - inline name-entry flow inside the shared high-score screen
 
 Still missing or approximate:
 
-- full replay payload synthesis for new or replaced score entries
+- exact full replay payload parity for new or replaced score entries beyond the now-hooked native-shaped sample writer
 - exact meanings of many compact-record fields
 - full runtime parity for replay-bearing score writes beyond the recovered build-seed lane
 
@@ -430,13 +431,14 @@ Implemented now:
 - replay bridge payloads now preserve explicit launch context (`source`, persistent lane, return owner) across destroy/rebuild returns instead of reconstructing that state from the source enum alone
 - replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
 - the recovered New Game replay attract bank split is now pinned in the port's bridge expectations too: postal, challenge, and completion-backed launches all map their persistent return owner back onto the matching `New Game` lane instead of reusing a source-derived high-score or route-map fallback
+- new score entries now get a live replay payload from the gameplay update path instead of header-only replay metadata; the writer follows the recovered sample layout and fixed-point scales from `update_subgoldy` and marks the tail bit before saveback
 
 Still missing or approximate:
 
 - the New Game replay attract launcher is now exposed in Zig for bank probe/launch/saved-owner return ownership, but it remains dormant because the shipped menu-local attract step is zero and no static writer has been recovered
 - Time Trial ghost Z reconstruction from the recovered `+0x72` delta lane is still not rendered
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
-- runtime replay capture/saveback is still not hooked to the recovered `update_subgoldy` write path
+- exact capture-side ownership is still partial: local-vs-world lateral source, failure/abandon tail semantics, Time Trial ghost rendering, and replay-side audio/effect parity need more native tracing
 
 Best next work:
 
