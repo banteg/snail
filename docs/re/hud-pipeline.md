@@ -14,18 +14,18 @@ Stored on `Game` at fixed offsets.
 
 | Storage | Ctor | Params | Mode gating | Semantics |
 |---|---|---|---|---|
-| `game+0x35bb88` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=400, y=14, align=right(3), anchor_x=300 | shown in Postal/Challenge/Time Trial, hidden in transitional modes 2/3 | **Current score** text, top-right |
-| `game+0x35bb8c` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=40, y=14, align=right(3), anchor_x=-71 | shown in Postal/Challenge/Time Trial with per-mode content, hidden in transitional modes 2/3 | **Reference best score** (Postal best / Time Trial best / Challenge best) — top-left |
+| `game+0x35bb88` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=400, y=14, align=right(3), anchor_x=300 | shown in Postal/Challenge/Time Trial; hidden in Tutorial and transitional modes 2/3 | **Current score** text, top-right |
+| `game+0x35bb8c` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=40, y=14, align=right(3), anchor_x=-71 | shown in Postal/Challenge/Time Trial with per-mode content; hidden in Tutorial and transitional modes 2/3 | **Reference best score** (Postal best / Time Trial best / Challenge best) — top-left |
 | `game+0x35bb90` | `initialize_frontend_sprite_button` | sprite=0x7a (`Sprites/ParcelIcon.tga`), x=0, y=58 | created only in Postal (`level_mode == 0`), initially hidden | **Parcel icon** (32×64 sprite) |
 | `game+0x35bb94` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=47, y=80, align=absolute(0) | created only in Postal, initially hidden | **Parcel count** number |
-| `game+0x35bb98 … +0x35bbbc` (9 slots) | `initialize_frontend_sprite_button` | sprite=0x7b (`Sprites/Life.tga`), x=13+i·24, y=430 | shown up to `visible_life_stock`, driven by `show_subgoldy_lives` | **Life eggs** (32×32 each) |
+| `game+0x35bb98 … +0x35bbbc` (9 slots) | `initialize_frontend_sprite_button` | sprite=0x7b (`Sprites/Life.tga`), x=13+i·24, y=430 | created only in Postal; shown up to `visible_life_stock`, driven by `show_subgoldy_lives` | **Life eggs** (32×32 each) |
 
 `widget_type=0x14` (20) is the menu_button shell. For Postal the score widget
 starts with `border_add_text_number(widget_A, 0)` (live score) and the
 reference widget starts with `border_add_text_number(widget_D, best_score)`.
 For Time Trial (`level_mode == 4`), widget D is fed by `format_time_trial_string`.
 
-`show_subgoldy_lives` (0x43af10) iterates the 9 life slots at
+`show_subgoldy_lives` (0x43af10) iterates the 9 Postal life slots at
 `game+0x35bb98..+0x35bbbc` and toggles the `0x10` hidden bit based on
 `player->visible_life_stock`. Gated to Postal (`level_mode == 0`) at
 `update_subgoldy` 0x43b239.
@@ -116,9 +116,9 @@ In short:
 HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 `update_subgoldy`:
 
-- Score (widget A) + reference (widget D): shown in Postal / Challenge / Time Trial (0/1/4); hidden in transitional modes 2/3.
+- Score (widget A) + reference (widget D): shown in Postal / Challenge / Time Trial (0/1/4); hidden in Tutorial (7) and transitional modes 2/3. `initialize_subgame` hides both widgets for Tutorial, and `build_subgame_level` repeats the Tutorial-only `hide_gameplay_scores` gate.
 - Parcel icon + count (widgets B/C): created only in Postal (`level_mode == 0`).
-- Life eggs: `show_subgoldy_lives` gated to Postal (`level_mode == 0`).
+- Life eggs: allocated only for Postal and `show_subgoldy_lives` is gated to Postal (`level_mode == 0`).
 - Stopwatch/elapsed text: Time Trial (`level_mode == 4`) uses `format_time_trial_string` for widget D; Challenge (`level_mode == 1`) and Postal don't run the stopwatch as HUD text.
 
 ## Zig port divergence summary
@@ -128,7 +128,7 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 | 1 | Progress bar sprite assignment | empty top, lit bottom | **FIXED** (fed52e9): drawProgressBar swaps lit/empty to match native 0x437d72 / 0x437ddc |
 | 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | **FIXED** (fed52e9): authored rect moved to native coords |
 | 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom | **FIXED** (fed52e9 + 8571a2d): three-layer draw implemented; programmatic fallback removed |
-| 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | **FIXED** (fed52e9) |
+| 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | **FIXED**: Postal-only allocation/update gate and native spacing |
 | 5 | Score position | widget-backed right-aligned near x=400 | **FIXED** (fed52e9, a1158e7): right-aligned at x=628 |
 | 6 | Reference best score (widget D) | top-left, mode-dependent content | **FIXED** (fed52e9, a1158e7) |
 | 7 | Running timer | none in Postal; Time Trial only | **FIXED** (fed52e9): mode-gated to `.time_trial`, shown in widget D slot |

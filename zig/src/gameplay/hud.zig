@@ -32,44 +32,51 @@ pub const Context = struct {
     tutorial_reference_score: u32,
 };
 
-pub fn drawTutorialHud(context: Context, layout: VirtualLayout, runner: gameplay.Runner) !void {
-    // Tutorial keeps the Postal-mode HUD layout: widget A (score) top-right,
-    // widget D (tutorial reference score) top-left, widget B (parcel sprite)
-    // at (0, 58), widget C (parcel count) at (47, 80). See docs/re/hud-pipeline.md.
+pub fn modeShowsGameplayScores(session_mode: gameplay.SessionMode) bool {
+    // PORT(verified): tutorial mode hides score widgets A/D in
+    // `initialize_subgame` (0x4374b0) and `build_subgame_level` (0x437eb0).
+    return session_mode != .tutorial;
+}
 
-    // Widget A: score, top-right.
-    var score_buffer: [32]u8 = undefined;
-    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
-    drawRightAlignedHudTextShadowed(context, layout, 628.0, 14.0, score_text, 22, .white);
+pub fn modeShowsParcelCounter(session_mode: gameplay.SessionMode) bool {
+    // PORT(verified): parcel widgets B/C are allocated only for native
+    // `level_mode == 0` (Postal) in `initialize_subgame` 0x437610..0x437733.
+    return session_mode == .postal;
+}
 
-    // Widget D: tutorial reference score, top-left.
-    if (context.tutorial_reference_score > 0) {
-        var best_buffer: [32]u8 = undefined;
-        const best_text = try formatScoreWithCommas(&best_buffer, context.tutorial_reference_score);
-        drawHudTextShadowed(context, layout, 12.0, 14.0, best_text, 22, .white);
-    }
+pub fn modeShowsLifeSlots(session_mode: gameplay.SessionMode) bool {
+    // PORT(verified): life slots are allocated only for native `level_mode == 0`,
+    // and `show_subgoldy_lives` is gated to that mode in `update_subgoldy`.
+    return session_mode == .postal;
+}
 
-    // Widgets B + C: parcel icon + count.
-    const parcel_target = currentParcelTarget(context);
-    const parcel_count = runner.counters.parcels;
-    if (context.frontend_widget_art.parcel_icon) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, 0.0, 58.0, 32.0, 64.0, .white);
-    }
-    var parcel_buffer: [32]u8 = undefined;
-    const parcel_text = if (parcel_target > 0)
-        try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target })
-    else
-        try std.fmt.bufPrint(&parcel_buffer, "{d}", .{parcel_count});
-    drawHudTextShadowed(context, layout, 47.0, 80.0, parcel_text, 22, .white);
+test "native gameplay widget hud visibility is mode gated" {
+    try std.testing.expect(modeShowsGameplayScores(.postal));
+    try std.testing.expect(modeShowsGameplayScores(.challenge));
+    try std.testing.expect(modeShowsGameplayScores(.time_trial));
+    try std.testing.expect(!modeShowsGameplayScores(.tutorial));
+
+    try std.testing.expect(modeShowsParcelCounter(.postal));
+    try std.testing.expect(!modeShowsParcelCounter(.challenge));
+    try std.testing.expect(!modeShowsParcelCounter(.time_trial));
+    try std.testing.expect(!modeShowsParcelCounter(.tutorial));
+
+    try std.testing.expect(modeShowsLifeSlots(.postal));
+    try std.testing.expect(!modeShowsLifeSlots(.challenge));
+    try std.testing.expect(!modeShowsLifeSlots(.time_trial));
+    try std.testing.expect(!modeShowsLifeSlots(.tutorial));
 }
 
 pub fn drawStandardHud(context: Context, layout: VirtualLayout, runner: gameplay.Runner) !void {
-    // PORT(verified): `initialize_subgame` (0x4374b0) allocates five widget-backed
-    // HUD elements. Widget A (`game+0x35bb88`) is the top-right score, widget D
+    // PORT(verified): `initialize_subgame` (0x4374b0) allocates the widget-backed
+    // gameplay HUD. Widget A (`game+0x35bb88`) is the top-right score, widget D
     // (`game+0x35bb8c`) the top-left reference best, widgets B/C the Postal
-    // parcel icon + count, and widgets 0..9 the life row. See docs/re/hud-pipeline.md.
+    // parcel icon + count, and widgets 0..9 the Postal life row. See
+    // docs/re/hud-pipeline.md.
 
-    // Widget A: current score, top-right.
+    if (!modeShowsGameplayScores(runner.session_mode)) return;
+
+    // Widget A: score, top-right.
     var score_buffer: [32]u8 = undefined;
     const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
     drawRightAlignedHudTextShadowed(context, layout, 628.0, 14.0, score_text, 22, .white);
@@ -93,7 +100,7 @@ pub fn drawStandardHud(context: Context, layout: VirtualLayout, runner: gameplay
     }
 
     // Widgets B + C: Postal parcel icon + count. Mode-gated to Postal.
-    if (runner.session_mode == .postal) {
+    if (modeShowsParcelCounter(runner.session_mode)) {
         const parcel_target = currentParcelTarget(context);
         const parcel_count = runner.counters.parcels;
         if (context.frontend_widget_art.parcel_icon) |loaded_texture| {
@@ -159,11 +166,12 @@ pub fn drawProgressBar(context: Context, layout: VirtualLayout, runner: gameplay
     }
 }
 
-pub fn drawTutorialLives(context: Context, layout: VirtualLayout, visible_life_stock: u32) void {
+pub fn drawLifeSlots(context: Context, layout: VirtualLayout, visible_life_stock: u32) void {
     // PORT(verified): `initialize_subgame` (0x4377ab) allocates nine life slots via
     // `initialize_frontend_sprite_button(..., sprite=0x7b /Sprites/Life.tga,
     // x=13 + i*24, y=430, ...)` and `show_subgoldy_lives` (0x43af10) toggles the
-    // hidden bit on the first `visible_life_stock` slots. See docs/re/hud-pipeline.md.
+    // hidden bit on the first `visible_life_stock` slots. The allocation and
+    // update gate are Postal-only. See docs/re/hud-pipeline.md.
     const count = @min(visible_life_stock, 9);
     const loaded_texture = context.sprites.life orelse return;
     for (0..count) |slot_index| {
@@ -181,8 +189,8 @@ pub fn drawTutorialLives(context: Context, layout: VirtualLayout, visible_life_s
 
 pub fn drawStatusWidgets(context: Context, layout: VirtualLayout, runner: gameplay.Runner) void {
     drawDamageGauge(context, layout, runner);
-    if (runner.session_mode == .postal) {
-        drawTutorialLives(context, layout, runner.visible_life_stock);
+    if (modeShowsLifeSlots(runner.session_mode)) {
+        drawLifeSlots(context, layout, runner.visible_life_stock);
     }
 }
 

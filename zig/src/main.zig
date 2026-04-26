@@ -2268,9 +2268,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawTutorialGameplayUi(state: *const AppState, hud_context: gameplay_hud.Context, layout: VirtualLayout, runner: gameplay.Runner) !void {
-    try gameplay_hud.drawTutorialHud(hud_context, layout, runner);
     gameplay_hud.drawProgressBar(hud_context, layout, runner);
-    gameplay_hud.drawTutorialLives(hud_context, layout, runner.visible_life_stock);
     gameplay_hud.drawDamageGauge(hud_context, layout, runner);
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
