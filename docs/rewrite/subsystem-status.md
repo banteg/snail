@@ -422,6 +422,7 @@ Implemented now:
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source and feed the recovered lateral/flag replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
+- selected replay playback now indexes samples with a separate per-update `replay_sample_index` instead of the port's row-indexed `runtime_track_index`, matching the native `update_subgoldy` cursor split
 - replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
 - the former "secondary lane" interpretation has been corrected: expanded-record `+0x72 + i*6` is a ghost Z delta accumulator consumed by the non-selected Time Trial replay path, not a selected-playback steering lane
 - compact replay payloads can now be synthesized through the same recovered lane order (`lateral[]`, ghost Z delta `[]`, `flags[]`) and native fixed-point scales used by `update_subgoldy`

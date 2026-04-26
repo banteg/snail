@@ -590,8 +590,10 @@ Current practical read:
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
-- `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
+- native `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-sample reads in that function
+- the Zig runner keeps this as `replay_sample_index` now because its older `runtime_track_index`
+  name is still the rendered row index used by track sampling
 - the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
   - current best read: it is the saved replay return owner seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
   - the Zig bridge now mirrors that lane more literally too: persistent selected-replay context stores the raw saved owner-state separately and only derives a higher-level target from it when it needs to rebuild an owner shell

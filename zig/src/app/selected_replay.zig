@@ -57,7 +57,7 @@ pub fn directiveForDecodedReplay(replay: *const high_score.DecodedReplay, runtim
 
 pub fn directiveForRunner(state: anytype, runner: *const gameplay.Runner) gameplay.ReplayDirective {
     const replay = state.selected_replay_cache orelse return .{};
-    return directiveForDecodedReplay(&replay, runner.runtime_track_index);
+    return directiveForDecodedReplay(&replay, runner.replay_sample_index);
 }
 
 pub fn launchOuterReturnTarget(state: anytype) ?frontend_bridge.OuterReturnTarget {

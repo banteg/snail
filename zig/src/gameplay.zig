@@ -418,6 +418,11 @@ pub const Runner = struct {
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
     runtime_track_index: usize = 0,
+    // PORT(verified): Windows `Game+0xff25dc` is the replay/update cursor incremented
+    // once at the tail of `update_subgoldy`, while the Zig `runtime_track_index`
+    // remains the current rendered row. Keep this separate so selected-record playback
+    // and future saveback consume the native per-tick stream instead of row indices.
+    replay_sample_index: usize = 0,
     track_row_progress: f32 = 0.0,
     track_step_rows: f32 = 0.0,
     row_position: f32 = 0.0,
@@ -571,6 +576,7 @@ pub const Runner = struct {
         self.steering_initialized = false;
         self.steering_anchor_authored_x = 0.0;
         self.steering_offset_authored_x = 0.0;
+        self.replay_sample_index = 0;
         self.track_step_rows = 0.0;
         self.position_y = native_grounded_rider_height;
         self.velocity_y = 0.0;
@@ -661,6 +667,7 @@ pub const Runner = struct {
                 self.applyReplayDirective(preview, replay);
             }
             self.tick_count += 1;
+            self.replay_sample_index += 1;
             self.stopwatch.advance(1.0);
         }
 
@@ -1305,6 +1312,7 @@ pub const Runner = struct {
             self.resolved_lane_index = 0;
             self.lane_center = 0.5;
             self.runtime_track_index = 0;
+            self.replay_sample_index = 0;
             self.track_row_progress = 0.0;
             self.row_position = 0.0;
             return;
@@ -9579,6 +9587,21 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expect(runner.replayFadeRequested());
     try std.testing.expect(runner.consumeReplayFadeRequest());
     try std.testing.expect(!runner.consumeReplayFadeRequest());
+}
+
+test "replay sample cursor advances per active update independent of row index" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    try std.testing.expectEqual(starting_runtime_track_index, runner.runtime_track_index);
+    try std.testing.expectEqual(@as(usize, 0), runner.replay_sample_index);
+
+    runner.stepWithReplay(&fixture.preview, .{}, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(starting_runtime_track_index, runner.runtime_track_index);
+    try std.testing.expectEqual(@as(usize, 1), runner.replay_sample_index);
+    try std.testing.expect(runner.track_row_progress > 0.0);
 }
 
 test "replay flag bit 0x1 seeds native movement fire progress" {
