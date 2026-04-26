@@ -169,12 +169,14 @@ pub const InsertResult = struct {
 };
 
 // PORT(partial): this matches the recovered startup table layout more closely:
-// 11-entry postal and challenge banks, a 51-entry completion bank, plus a scratch entry.
+// 11-entry postal and challenge banks, a 51-entry completion bank, the challenge-setup
+// replay mirror, plus the time-trial scratch entry.
 // We still do not port the full cRSubHighScore save/edit/runtime overlay yet.
 pub const Tables = struct {
     postal: [bank_entry_count]Entry,
     challenge: [bank_entry_count]Entry,
     completion: [completion_entry_count]Entry,
+    challenge_setup_replay: Entry,
     scratch: Entry,
 
     pub fn initDefault() Tables {
@@ -182,6 +184,7 @@ pub const Tables = struct {
             .postal = blankEntries(),
             .challenge = blankEntries(),
             .completion = blankCompletionEntries(),
+            .challenge_setup_replay = .{},
             .scratch = .{},
         };
     }
@@ -190,6 +193,7 @@ pub const Tables = struct {
         for (&self.postal) |*entry| entry.deinit(allocator);
         for (&self.challenge) |*entry| entry.deinit(allocator);
         for (&self.completion) |*entry| entry.deinit(allocator);
+        self.challenge_setup_replay.deinit(allocator);
         self.scratch.deinit(allocator);
     }
 
@@ -212,6 +216,8 @@ pub const Tables = struct {
     }
 
     pub fn addSurvival(self: *Tables, allocator: std.mem.Allocator, entry: Entry) InsertResult {
+        self.challenge_setup_replay.deinit(allocator);
+        self.challenge_setup_replay = cloneEntryForScratch(allocator, &entry);
         return .{
             .rank = insertDescending(self.challenge[0..], allocator, entry),
             .improved = false,
@@ -315,6 +321,30 @@ pub const Tables = struct {
         try saveBankFile(allocator, root_path, .score_c, self.completion[0..], 2);
     }
 };
+
+fn cloneEntryForScratch(allocator: std.mem.Allocator, source: *const Entry) Entry {
+    var clone = Entry{
+        .score = source.score,
+        .replay_level_index = source.replay_level_index,
+        .replay_mode_id = source.replay_mode_id,
+        .challenge_speed_value = source.challenge_speed_value,
+        .runtime_build_flags = source.runtime_build_flags,
+        .replay_speed_scalar = source.replay_speed_scalar,
+        .challenge_difficulty_value = source.challenge_difficulty_value,
+        .challenge_difficulty_scalar = source.challenge_difficulty_scalar,
+        .runtime_build_seed = source.runtime_build_seed,
+        .garbage_scalar = source.garbage_scalar,
+        .salt_scalar = source.salt_scalar,
+        .has_replay = source.has_replay,
+        .name_len = source.name_len,
+        .name_buf = source.name_buf,
+        .raw_record = null,
+    };
+    if (source.raw_record) |raw_record| {
+        clone.raw_record = allocator.dupe(u8, raw_record) catch null;
+    }
+    return clone;
+}
 
 fn blankEntries() [bank_entry_count]Entry {
     return [_]Entry{Entry{}} ** bank_entry_count;
@@ -495,6 +525,7 @@ test "default tables seed the recovered startup bank shape" {
     try std.testing.expectEqual(@as(u32, 0), tables.postal[0].score);
     try std.testing.expectEqual(@as(usize, 0), tables.challenge[bank_entry_count - 1].name().len);
     try std.testing.expectEqual(@as(usize, visible_entry_count), tables.visibleEntries(.postal).len);
+    try std.testing.expect(!tables.challenge_setup_replay.isActive());
     try std.testing.expectEqual(@as(usize, 0), tables.scratch.name().len);
 }
 
@@ -653,6 +684,33 @@ test "insert arcade score into visible top ten with overflow row" {
     try std.testing.expectEqual(@as(u32, 955), tables.postal[5].score);
     try std.testing.expectEqual(@as(u32, 950), tables.postal[6].score);
     try std.testing.expectEqual(@as(u32, 910), tables.postal[10].score);
+}
+
+test "survival insertion mirrors challenge setup replay record" {
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+    for (tables.challenge[0..visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(1000 - index * 10)) };
+    }
+
+    var expected_raw = [_]u8{0xcc} ** (compact_record_header_size + 5);
+    std.mem.writeInt(u32, expected_raw[compact_record_replay_sample_count_offset .. compact_record_replay_sample_count_offset + 4], 1, .little);
+    const owned_raw = try std.testing.allocator.dupe(u8, &expected_raw);
+
+    const result = tables.addSurvival(std.testing.allocator, .{
+        .score = 1,
+        .replay_level_index = 0,
+        .replay_mode_id = 1,
+        .has_replay = true,
+        .raw_record = owned_raw,
+    });
+
+    try std.testing.expect(result.rank == null);
+    try std.testing.expectEqual(@as(u32, 1), tables.challenge_setup_replay.score);
+    try std.testing.expect(tables.challenge_setup_replay.has_replay);
+    try std.testing.expectEqual(@as(usize, 1), tables.challenge_setup_replay.replaySampleCount());
+    try std.testing.expect(tables.challenge_setup_replay.raw_record != null);
+    try std.testing.expectEqualSlices(u8, &expected_raw, tables.challenge_setup_replay.raw_record.?);
 }
 
 test "time trial score only improves when the new route time is better" {

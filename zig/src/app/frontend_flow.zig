@@ -217,7 +217,8 @@ pub fn stepNewGameMenuSelection(state: anytype, delta: isize) void {
 }
 
 pub fn challengeSetupReplayAvailable(state: anytype) bool {
-    return state.high_score_tables.challenge[0].has_replay;
+    const entry = &state.high_score_tables.challenge_setup_replay;
+    return entry.has_replay and entry.replaySampleCount() != 0;
 }
 
 pub fn tryLaunchNewGameReplayAttract(state: anytype) !bool {

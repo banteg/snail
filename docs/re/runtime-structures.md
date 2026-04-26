@@ -508,7 +508,8 @@ Current practical read:
   - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
-  - the port now mirrors that split directly: challenge-setup `Watch Replay` launches stay on a transient selected-record source and rebuild back into the same challenge-setup owner on return
+  - the challenge setup `Watch Replay` pointer targets the game-local mirror at `game + 0xfb3050`, not the visible challenge score table
+  - the port now mirrors that split directly: challenge-setup `Watch Replay` launches stay on a transient selected-record source backed by that separate mirror and rebuild back into the same challenge-setup owner on return
 - a second replay-launch lane now has stronger static shape on the app side:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later saved replay return owner (`0x12` from high-score rows, `2` from the menu replay path)
   - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so those app offsets alias the subgame-local selected-record fields exactly:

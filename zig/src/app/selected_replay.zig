@@ -9,7 +9,7 @@ pub fn entryForSource(state: anytype, source: frontend_bridge.SelectedLevelRecor
     return switch (source) {
         .postal => |index| if (index < state.high_score_tables.postal.len) &state.high_score_tables.postal[index] else null,
         .challenge => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
-        .challenge_setup => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
+        .challenge_setup => &state.high_score_tables.challenge_setup_replay,
         .completion => |index| if (index < state.high_score_tables.completion.len) &state.high_score_tables.completion[index] else null,
     };
 }

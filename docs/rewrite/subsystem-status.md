@@ -371,6 +371,7 @@ Implemented now:
   - the open question is which other helper-driven producers, if any, seed different saved owners before `26/27/28` outside the now-confirmed gameplay-side writers
 - BN plus IDA now also sharpen the selected-record bridge inputs:
   - `update_galaxy` and `update_challenge_setup_screen` seed `selected_level_record_active = 1` and the selected-record pointer, but do not show a matching write to `selected_level_record_persistent`
+  - the challenge setup pointer is the game-local challenge setup replay mirror at `game + 0xfb3050`, not the visible challenge score table; the port mirrors that with a separate `challenge_setup_replay` slot populated by challenge score commits
   - `initialize_subgame`, `update_subgame`, `build_subgame_level`, and `destroy_subgame` all treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown
 - BN plus IDA also now expose a separate app-side replay-launch scratch lane that is not the same as the transient selected-record path:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec`, `+0x1066be8`, `+0x1066be9`, `+0x1066bf0`, and `+119190` before jumping to frontend state `10`
@@ -429,7 +430,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- the New Game random replay attract launcher is still not exposed in Zig even though BN plus IDA now pin its `0/1/3` bank rotation, persistent scratch writes, click-start suppression, `update_subgame` hide-latch consumer, and `return_state = 2`; the remaining native gap is the timer / trigger producer at the New Game menu object
+- the New Game replay attract launcher is now exposed in Zig for bank probe/launch/saved-owner return ownership, but it remains dormant until the native timer-step producer at the New Game menu object is recovered
 - the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity

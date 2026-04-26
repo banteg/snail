@@ -2412,6 +2412,23 @@ test "route map replay gate follows time-trial completion replays" {
     try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 1, &tables));
 }
 
+test "challenge setup replay gate uses the native setup mirror" {
+    var state: AppState = undefined;
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+
+    var raw_record = [_]u8{0} ** (0x88 + 5);
+    std.mem.writeInt(u32, raw_record[0x74..0x78], 1, .little);
+
+    state.high_score_tables.challenge[0].has_replay = true;
+    state.high_score_tables.challenge[0].raw_record = try std.testing.allocator.dupe(u8, &raw_record);
+    try std.testing.expect(!state.challengeSetupReplayAvailable());
+
+    state.high_score_tables.challenge_setup_replay.has_replay = true;
+    state.high_score_tables.challenge_setup_replay.raw_record = try std.testing.allocator.dupe(u8, &raw_record);
+    try std.testing.expect(state.challengeSetupReplayAvailable());
+}
+
 test "high-score row replay is available for score browse rows" {
     try std.testing.expect(frontend_high_score_screen.rowsShowReplay(.postal, false));
     try std.testing.expect(frontend_high_score_screen.rowsShowReplay(.challenge, false));
