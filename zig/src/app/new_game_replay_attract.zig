@@ -15,6 +15,9 @@ pub const Controller = struct {
     hide_release_accumulator: f32 = 0.0,
     hide_release_step: f32 = 0.0,
     launch_accumulator: f32 = 0.0,
+    // Native menu-local +0x14 is read by `update_new_game_menu`, but the shipped
+    // Windows image initializes it to 0 and static xrefs do not expose a writer.
+    // Keep the branch present but dormant rather than inventing an attract timer.
     launch_step: f32 = 0.0,
 
     pub fn noteInput(self: *Controller) void {
@@ -128,6 +131,13 @@ test "new game replay attract ignores active scores without replay payloads" {
 
     try std.testing.expectEqual(@as(?frontend_bridge.SelectedLevelRecordSource, null), probeSource(&controller, &tables, &random_state));
     try std.testing.expectEqual(@as(u8, 0), controller.cursor);
+}
+
+test "new game replay attract timer stays dormant without native launch step" {
+    var controller = Controller{ .launch_accumulator = 2.0 };
+
+    try std.testing.expect(!controller.stepLaunchTimer());
+    try std.testing.expectEqual(@as(f32, 2.0), controller.launch_accumulator);
 }
 
 test "new game replay attract launch uses persistent new-game return owner" {
