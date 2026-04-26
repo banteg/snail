@@ -255,6 +255,23 @@ pub const Uploaded = struct {
         }
     }
 
+    pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
+        rl.beginBlendMode(.alpha);
+        defer rl.endBlendMode();
+
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
+            const previous_tint = albedo_map.color;
+            albedo_map.color = tint;
+
+            var material = submesh.material;
+            material.shader = shader;
+            rl.drawMesh(submesh.mesh, material, transform);
+            albedo_map.color = previous_tint;
+        }
+    }
+
     pub fn previewCamera(self: *const Uploaded, seconds: f32) rl.Camera3D {
         const distance = @max(self.bounds.radius * 3.0, 3.0);
         return .{

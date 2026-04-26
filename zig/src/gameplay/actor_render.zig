@@ -252,10 +252,13 @@ fn drawGameplaySaltVisual(
         );
         const scale_value = 0.46;
         const scale = rl.Matrix.scale(scale_value, scale_value, scale_value);
-        model.drawTintedEx(
-            world_transform.multiply(local_offset).multiply(scale),
-            .{ .r = 255, .g = 255, .b = 255, .a = presentation_alpha },
-        );
+        const transform = world_transform.multiply(local_offset).multiply(scale);
+        const tint: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = presentation_alpha };
+        if (render.billboard_shader) |alpha_cutout_shader| {
+            model.drawTintedAlphaCutoutEx(transform, tint, alpha_cutout_shader);
+        } else {
+            model.drawTintedEx(transform, tint);
+        }
         return;
     }
 

@@ -148,6 +148,8 @@ fn drawQuad(
     shader: ?rl.Shader,
     tint: rl.Color,
 ) void {
+    rl.beginBlendMode(.alpha);
+    defer rl.endBlendMode();
     if (shader) |cutout_shader| {
         rl.beginShaderMode(cutout_shader);
         defer rl.endShaderMode();

@@ -75,11 +75,7 @@ pub fn uploadedModelTransform(
 }
 
 pub fn drawUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
-    for (model.submeshes) |submesh| {
-        var material = submesh.material;
-        material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = tint;
-        rl.drawMesh(submesh.mesh, material, transform);
-    }
+    model.drawTintedEx(transform, tint);
 }
 
 pub fn turboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) TurboPose {
