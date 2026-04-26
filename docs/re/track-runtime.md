@@ -99,6 +99,7 @@ Related shared color helper:
 High-confidence downstream behavior:
 
 - `Random:yes` and `Length:` feed `populate_runtime_track_cells_from_segments`
+- random levels choose a seeded middle segment strip at runtime; challenge mode scales both the target `Length:` and the candidate-pool upper bound from the normalized difficulty lane
 - that same runtime-population pass seeds Goldy's visible life stock to `3` before `initialize_subgoldy`
 - `Track:` feeds `select_level_track_texture_set`
 - `Track:r` randomizes across the non-random track sets and changes backdrop handling

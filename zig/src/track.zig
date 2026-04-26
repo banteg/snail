@@ -200,36 +200,42 @@ pub const LoadOptions = struct {
     salt_scalar_override: ?f32 = null,
 };
 
-fn appendLoadedLevelSegment(
+fn appendLoadedLevelSegmentToLists(
     allocator: std.mem.Allocator,
     catalog: *const assets.Catalog,
-    segments: []segment.Definition,
-    logical_segment_indices: []?usize,
-    row_offsets: []usize,
-    loaded_count: *usize,
+    segments: *std.ArrayList(segment.Definition),
+    logical_segment_indices: *std.ArrayList(?usize),
+    row_offsets: *std.ArrayList(usize),
+    random_middle_segment_picks: *std.ArrayList(bool),
     total_rows: *usize,
     max_width: *usize,
     segment_path: []const u8,
     logical_segment_index: ?usize,
+    consumes_random_middle_pick: bool,
     load_models: bool,
     model_assets_list: *std.ArrayList(LoadedModelAsset),
     model_asset_index_by_path: *archive.CaseInsensitiveStringHashMap(usize),
     placed_models_list: *std.ArrayList(PlacedModel),
 ) !void {
-    const index = loaded_count.*;
-    row_offsets[index] = total_rows.*;
-    logical_segment_indices[index] = logical_segment_index;
+    const index = segments.items.len;
 
     var path_buffer: [512]u8 = undefined;
     const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{segment_path});
     const entry = catalog.dat.entryByPath(archive_path) orelse return error.SegmentEntryMissing;
-    segments[index] = try segment.loadFromArchive(allocator, catalog, entry);
-    loaded_count.* = index + 1;
+    var loaded_segment = try segment.loadFromArchive(allocator, catalog, entry);
+    var owns_loaded_segment = true;
+    errdefer if (owns_loaded_segment) loaded_segment.deinit();
 
-    total_rows.* += segments[index].height;
-    max_width.* = @max(max_width.*, segments[index].width);
+    try segments.append(allocator, loaded_segment);
+    owns_loaded_segment = false;
+    try logical_segment_indices.append(allocator, logical_segment_index);
+    try row_offsets.append(allocator, total_rows.*);
+    try random_middle_segment_picks.append(allocator, consumes_random_middle_pick);
 
-    for (segments[index].rows, 0..) |row, row_index| {
+    total_rows.* += loaded_segment.height;
+    max_width.* = @max(max_width.*, loaded_segment.width);
+
+    for (loaded_segment.rows, 0..) |row, row_index| {
         if (!load_models) continue;
 
         const annotation = row.annotation orelse continue;
@@ -267,6 +273,19 @@ fn appendLoadedLevelSegment(
             .offset = model_annotation.offset,
         });
     }
+}
+
+fn segmentRowCountFromArchive(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    segment_path: []const u8,
+) !usize {
+    var path_buffer: [512]u8 = undefined;
+    const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{segment_path});
+    const entry = catalog.dat.entryByPath(archive_path) orelse return error.SegmentEntryMissing;
+    var loaded_segment = try segment.loadFromArchive(allocator, catalog, entry);
+    defer loaded_segment.deinit();
+    return loaded_segment.height;
 }
 
 pub const LoadedLevelRenderCachePreview = struct {
@@ -354,18 +373,22 @@ pub const LoadedLevelPreview = struct {
         level_definition: *const level.Definition,
         options: LoadOptions,
     ) !LoadedLevelPreview {
-        const segment_count =
-            level_definition.first_segments.len +
-            level_definition.segments.len +
-            level_definition.last_segments.len;
-        const segments = try allocator.alloc(segment.Definition, segment_count);
-        errdefer allocator.free(segments);
+        var segments_list: std.ArrayList(segment.Definition) = .empty;
+        defer segments_list.deinit(allocator);
+        errdefer {
+            for (segments_list.items) |*loaded_segment| {
+                loaded_segment.deinit();
+            }
+        }
 
-        const segment_logical_indices = try allocator.alloc(?usize, segment_count);
-        errdefer allocator.free(segment_logical_indices);
+        var segment_logical_indices_list: std.ArrayList(?usize) = .empty;
+        defer segment_logical_indices_list.deinit(allocator);
 
-        const row_offsets = try allocator.alloc(usize, segment_count);
-        errdefer allocator.free(row_offsets);
+        var row_offsets_list: std.ArrayList(usize) = .empty;
+        defer row_offsets_list.deinit(allocator);
+
+        var random_middle_segment_picks_list: std.ArrayList(bool) = .empty;
+        defer random_middle_segment_picks_list.deinit(allocator);
 
         var model_assets_list: std.ArrayList(LoadedModelAsset) = .empty;
         defer model_assets_list.deinit(allocator);
@@ -380,69 +403,121 @@ pub const LoadedLevelPreview = struct {
         var placed_models_list: std.ArrayList(PlacedModel) = .empty;
         defer placed_models_list.deinit(allocator);
 
-        var loaded_count: usize = 0;
-        errdefer {
-            for (segments[0..loaded_count]) |*loaded_segment| {
-                loaded_segment.deinit();
-            }
-        }
-
         var total_rows: usize = 0;
         var max_width: usize = 0;
         for (level_definition.first_segments) |segment_path| {
-            try appendLoadedLevelSegment(
+            try appendLoadedLevelSegmentToLists(
                 allocator,
                 catalog,
-                segments,
-                segment_logical_indices,
-                row_offsets,
-                &loaded_count,
+                &segments_list,
+                &segment_logical_indices_list,
+                &row_offsets_list,
+                &random_middle_segment_picks_list,
                 &total_rows,
                 &max_width,
                 segment_path,
                 null,
+                false,
                 options.load_models,
                 &model_assets_list,
                 &model_asset_index_by_path,
                 &placed_models_list,
             );
         }
-        for (level_definition.segments, 0..) |segment_entry, logical_index| {
-            try appendLoadedLevelSegment(
-                allocator,
-                catalog,
-                segments,
-                segment_logical_indices,
-                row_offsets,
-                &loaded_count,
-                &total_rows,
-                &max_width,
-                segment_entry.path,
-                logical_index,
-                options.load_models,
-                &model_assets_list,
-                &model_asset_index_by_path,
-                &placed_models_list,
-            );
+
+        if (level_definition.random and level_definition.segments.len != 0) {
+            var last_block_row_count: usize = 0;
+            for (level_definition.last_segments) |segment_path| {
+                last_block_row_count += try segmentRowCountFromArchive(allocator, catalog, segment_path);
+            }
+
+            var selection_random = MathRandom.init(options.runtime_build_seed);
+            for (level_definition.first_segments) |_| {
+                _ = selection_random.nextInt15();
+            }
+
+            var course_end_row = nativeRandomCourseEndRow(level_definition, last_block_row_count, options.random_length_scalar_override);
+            while (total_rows < course_end_row) {
+                const logical_index = nextNativeRandomMiddleSegmentIndex(
+                    &selection_random,
+                    level_definition.segments.len,
+                    options.random_length_scalar_override,
+                );
+                const segment_entry = level_definition.segments[logical_index];
+                try appendLoadedLevelSegmentToLists(
+                    allocator,
+                    catalog,
+                    &segments_list,
+                    &segment_logical_indices_list,
+                    &row_offsets_list,
+                    &random_middle_segment_picks_list,
+                    &total_rows,
+                    &max_width,
+                    segment_entry.path,
+                    logical_index,
+                    true,
+                    options.load_models,
+                    &model_assets_list,
+                    &model_asset_index_by_path,
+                    &placed_models_list,
+                );
+                _ = selection_random.nextInt15();
+                course_end_row = @max(course_end_row, total_rows);
+            }
+        } else {
+            for (level_definition.segments, 0..) |segment_entry, logical_index| {
+                try appendLoadedLevelSegmentToLists(
+                    allocator,
+                    catalog,
+                    &segments_list,
+                    &segment_logical_indices_list,
+                    &row_offsets_list,
+                    &random_middle_segment_picks_list,
+                    &total_rows,
+                    &max_width,
+                    segment_entry.path,
+                    logical_index,
+                    false,
+                    options.load_models,
+                    &model_assets_list,
+                    &model_asset_index_by_path,
+                    &placed_models_list,
+                );
+            }
         }
         for (level_definition.last_segments) |segment_path| {
-            try appendLoadedLevelSegment(
+            try appendLoadedLevelSegmentToLists(
                 allocator,
                 catalog,
-                segments,
-                segment_logical_indices,
-                row_offsets,
-                &loaded_count,
+                &segments_list,
+                &segment_logical_indices_list,
+                &row_offsets_list,
+                &random_middle_segment_picks_list,
                 &total_rows,
                 &max_width,
                 segment_path,
                 null,
+                false,
                 options.load_models,
                 &model_assets_list,
                 &model_asset_index_by_path,
                 &placed_models_list,
             );
         }
+
+        const segments = try segments_list.toOwnedSlice(allocator);
+        errdefer {
+            for (segments) |*loaded_segment| {
+                loaded_segment.deinit();
+            }
+            allocator.free(segments);
+        }
+        const segment_logical_indices = try segment_logical_indices_list.toOwnedSlice(allocator);
+        errdefer allocator.free(segment_logical_indices);
+        const row_offsets = try row_offsets_list.toOwnedSlice(allocator);
+        errdefer allocator.free(row_offsets);
+        const random_middle_segment_picks = try random_middle_segment_picks_list.toOwnedSlice(allocator);
+        defer allocator.free(random_middle_segment_picks);
 
         const runtime_build_flags = options.runtime_build_flags;
         const runtime_active_row_start = options.runtime_active_row_start;
@@ -454,6 +529,7 @@ pub const LoadedLevelPreview = struct {
             .build_seed = options.runtime_build_seed,
             .active_row_start = runtime_active_row_start,
             .active_row_end = runtime_active_row_end,
+            .random_middle_segment_picks = random_middle_segment_picks,
         };
         const runtime_tiles = try buildRuntimeTileGrid(
             allocator,
@@ -1299,20 +1375,46 @@ fn nativeCourseEndThresholdForLevel(
         return @floatFromInt(row_offsets[last_block_start]);
     }
 
-    if (level_definition.random) {
-        if (random_length_scalar_override) |random_length_scalar| {
-            if (level_definition.last_segments.len != 0 and level_definition.last_segments.len <= row_offsets.len) {
-                const last_block_start = row_offsets.len - level_definition.last_segments.len;
-                const last_block_row_count = total_rows - row_offsets[last_block_start];
-                const scaled_total_rows = @as(isize, @intFromFloat(@floor(
-                    @as(f32, @floatFromInt(level_definition.length)) * ((random_length_scalar * 0.65) + 0.35),
-                )));
-                return @floatFromInt(scaled_total_rows - @as(isize, @intCast(last_block_row_count)));
-            }
-        }
+    if (level_definition.random and level_definition.last_segments.len != 0 and level_definition.last_segments.len <= row_offsets.len) {
+        _ = random_length_scalar_override;
+        const last_block_start = row_offsets.len - level_definition.last_segments.len;
+        return @floatFromInt(row_offsets[last_block_start]);
     }
 
     return fallbackCourseEndThreshold(total_rows);
+}
+
+fn nativeRandomCourseEndRow(
+    level_definition: *const level.Definition,
+    last_block_row_count: usize,
+    random_length_scalar_override: ?f32,
+) usize {
+    const target_total_rows = if (random_length_scalar_override) |random_length_scalar|
+        @as(isize, @intFromFloat(@floor(
+            @as(f32, @floatFromInt(level_definition.length)) * ((random_length_scalar * 0.65) + 0.35),
+        )))
+    else
+        @as(isize, @intCast(level_definition.length));
+    const course_end_row = target_total_rows - @as(isize, @intCast(last_block_row_count));
+    return @intCast(@max(course_end_row, 0));
+}
+
+fn nextNativeRandomMiddleSegmentIndex(
+    random: *MathRandom,
+    middle_segment_count: usize,
+    random_length_scalar_override: ?f32,
+) usize {
+    if (middle_segment_count <= 1) {
+        _ = random.nextInt15();
+        return 0;
+    }
+    const candidate_upper = if (random_length_scalar_override) |random_length_scalar|
+        @as(f32, @floatFromInt(middle_segment_count)) * ((random_length_scalar * 0.9) + 0.1)
+    else
+        @as(f32, @floatFromInt(middle_segment_count));
+    const random_value = random.nextInt15();
+    const scaled = @as(f32, @floatFromInt(random_value)) * candidate_upper * 0.0000305175781;
+    return @min(@as(usize, @intFromFloat(scaled)), middle_segment_count - 1);
 }
 
 fn resolveSegmentModelArchivePath(allocator: std.mem.Allocator, model_name: []const u8) ![]const u8 {
@@ -1774,6 +1876,7 @@ const RuntimeBuildConfig = struct {
     build_seed: u32,
     active_row_start: usize,
     active_row_end: usize,
+    random_middle_segment_picks: []const bool = &.{},
 };
 
 const MathRandom = struct {
@@ -1824,12 +1927,19 @@ const RuntimeBuildState = struct {
     }
 };
 
-fn beginRuntimeBuildSegment(build_state: *RuntimeBuildState, loaded_segment: segment.Definition) void {
+fn beginRuntimeBuildSegment(build_state: *RuntimeBuildState, loaded_segment: segment.Definition, consume_random_middle_pick: bool) void {
     if (loaded_segment.rows.len == 0) return;
+    if (consume_random_middle_pick) {
+        _ = build_state.math_random.nextInt15();
+    }
     // Windows advances the mirror selector when the builder rolls onto the next installed
     // segment span. In the current sequential preview build, that boundary is the authored
     // segment start.
     _ = build_state.switchTrackMirror();
+}
+
+fn consumesRandomMiddlePick(config: RuntimeBuildConfig, segment_index: usize) bool {
+    return segment_index < config.random_middle_segment_picks.len and config.random_middle_segment_picks[segment_index];
 }
 
 const AttachmentSourceRowMirrorStateBuild = struct {
@@ -1850,7 +1960,7 @@ fn buildRuntimeTileGrid(
     var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
 
     for (segments, 0..) |loaded_segment, segment_index| {
-        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        beginRuntimeBuildSegment(&build_state, loaded_segment, consumesRandomMiddlePick(config, segment_index));
         const row_base = row_offsets[segment_index];
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
@@ -1899,7 +2009,7 @@ fn buildAttachmentSourceRowMirrorStates(
     var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
 
     for (segments, 0..) |loaded_segment, segment_index| {
-        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        beginRuntimeBuildSegment(&build_state, loaded_segment, consumesRandomMiddlePick(config, segment_index));
         const row_base = row_offsets[segment_index];
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
@@ -3532,7 +3642,7 @@ test "tutorial preview keeps authored start rows before the player spawn row" {
     try std.testing.expectEqual(@as(u8, 0x1e), preview.runtimeTileAt(4, 8).?);
 }
 
-test "random level preview keeps course-end threshold fallback without a native scalar override" {
+test "random level preview generates a seeded middle strip without a native scalar override" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -3550,10 +3660,26 @@ test "random level preview keeps course-end threshold fallback without a native 
     );
     defer preview.deinit();
 
-    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(preview.total_rows - 1)), preview.course_end_threshold, 0.0001);
+    const last_block_start_index = preview.segments.len - level_definition.last_segments.len;
+    const last_block_row_count = preview.total_rows - preview.row_offsets[last_block_start_index];
+    const native_target_threshold = level_definition.length - last_block_row_count;
+    try std.testing.expect(preview.row_offsets[last_block_start_index] >= native_target_threshold);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(preview.row_offsets[last_block_start_index])), preview.course_end_threshold, 0.0001);
+
+    var random_middle_count: usize = 0;
+    var saw_duplicate = false;
+    var seen_middle = std.StaticBitSet(128).initEmpty();
+    for (preview.segment_logical_indices) |maybe_logical_index| {
+        const logical_index = maybe_logical_index orelse continue;
+        random_middle_count += 1;
+        if (seen_middle.isSet(logical_index)) saw_duplicate = true;
+        seen_middle.set(logical_index);
+    }
+    try std.testing.expect(random_middle_count > 0);
+    try std.testing.expect(saw_duplicate or random_middle_count != level_definition.segments.len);
 }
 
-test "random level preview seeds course-end threshold from the native Length scalar when provided" {
+test "random level preview generates a difficulty-scaled middle strip" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -3580,8 +3706,17 @@ test "random level preview seeds course-end threshold from the native Length sca
     const expected_total_rows = @as(isize, @intFromFloat(@floor(
         @as(f32, @floatFromInt(level_definition.length)) * ((random_length_scalar * 0.65) + 0.35),
     )));
-    const expected_threshold = @as(f32, @floatFromInt(expected_total_rows - @as(isize, @intCast(last_block_row_count))));
-    try std.testing.expectApproxEqAbs(expected_threshold, preview.course_end_threshold, 0.0001);
+    const native_target_threshold = expected_total_rows - @as(isize, @intCast(last_block_row_count));
+    const actual_threshold: isize = @intCast(preview.row_offsets[last_block_start_index]);
+    try std.testing.expect(actual_threshold >= native_target_threshold);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(actual_threshold)), preview.course_end_threshold, 0.0001);
+
+    const native_candidate_upper = @as(f32, @floatFromInt(level_definition.segments.len)) * ((random_length_scalar * 0.9) + 0.1);
+    const max_allowed_index: usize = @intFromFloat(@ceil(native_candidate_upper));
+    for (preview.segment_logical_indices) |maybe_logical_index| {
+        const logical_index = maybe_logical_index orelse continue;
+        try std.testing.expect(logical_index < max_allowed_index);
+    }
 }
 
 test "level preview applies explicit runtime row window overrides" {

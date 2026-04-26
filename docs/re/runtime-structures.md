@@ -423,7 +423,7 @@ Current practical read:
 - the embedded level-definition slice is firmer now:
   - `load_level_definition_file` stores the middle-segment count at `game + 0xa874`, the authored `Length:` dword at `game + 0x1b0138`, and the `Random:yes` byte at `game + 0x1b013c`
   - `copy_segment_definition_to_level_slot` seeds each `0x4220` middle-segment slot from `game + 0xa878`, with the first slot's row count at `game + 0xa87c`
-  - `populate_runtime_track_cells_from_segments` consumes those lanes so non-random courses sum first + middle + last block rows, while the mode-1 random branch keeps the `Length:` lane and subtracts the final `Last:` block row count into `game + 0x58`
+  - `populate_runtime_track_cells_from_segments` consumes those lanes so non-random courses sum first + middle + last block rows, while random courses pick middle segments from the shared math RNG until the `Length:` target is filled; the mode-1 random branch scales that target by challenge difficulty before subtracting the final `Last:` block row count into `game + 0x58`
   - current best read: the scalar at `game + 0x34` is the normalized challenge-difficulty lane, because `build_subgame_level` restores it from selected-record compact field `+0x50`, which matches the recovered `challenge_difficulty_value` offset in the compact high-score record
   - `build_subgame_level` seeds `game + 0x48` from the live course mode or from selected-record compact field `+0x48`, and `calc_subgame_rate` uses that lane as the base rate before completion and damage modifiers
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs

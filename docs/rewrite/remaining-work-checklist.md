@@ -151,7 +151,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Confirm the exact failure selector and visible-life decrement commit point
 - [ ] Confirm the exact completion-screen init, voice gate, and late finalize timings
 - [ ] Replace any remaining handoff timers or anchor producers that still use Zig-side fallback values
-  - current narrowing: non-random `course_end_threshold` now comes from the recovered final-`Last:` block boundary in `populate_runtime_track_cells_from_segments`, and random challenge-style previews now use the recovered `Length` / challenge-difficulty threshold producer; the remaining gap is that the preview still concatenates every candidate middle segment instead of the native generated random strip
+  - current narrowing: non-random `course_end_threshold` now comes from the recovered final-`Last:` block boundary in `populate_runtime_track_cells_from_segments`; random challenge-style previews now generate a seeded middle strip with the recovered `Length` / challenge-difficulty threshold producer, candidate-pool scalar, and segment-overrun extension. Remaining gap: row-copy details and the unused per-segment "used" byte still need exact ownership if later evidence shows it affects selection.
 
 ### Phase 3. Finish attachment follow as a native runtime
 
