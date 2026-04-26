@@ -424,6 +424,7 @@ Implemented now:
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
 - the former "secondary lane" interpretation has been corrected: expanded-record `+0x72 + i*6` is a ghost Z delta accumulator consumed by the non-selected Time Trial replay path, not a selected-playback steering lane
+- compact replay payloads can now be synthesized through the same recovered lane order (`lateral[]`, ghost Z delta `[]`, `flags[]`) and native fixed-point scales used by `update_subgoldy`
 - selected replay sessions no longer feed completion or failure back into live high-score persistence; result exits still route through the recovered launch-surface bridge split instead of mutating score state in place
 - replay bridge payloads now preserve explicit launch context (`source`, persistent lane, return owner) across destroy/rebuild returns instead of reconstructing that state from the source enum alone
 - replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
@@ -434,7 +435,7 @@ Still missing or approximate:
 - the New Game replay attract launcher is now exposed in Zig for bank probe/launch/saved-owner return ownership, but it remains dormant because the shipped menu-local attract step is zero and no static writer has been recovered
 - Time Trial ghost Z reconstruction from the recovered `+0x72` delta lane is still not rendered
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
-- full replay payload read/write parity
+- runtime replay capture/saveback is still not hooked to the recovered `update_subgoldy` write path
 
 Best next work:
 

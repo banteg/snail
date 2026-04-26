@@ -108,6 +108,31 @@ pub const Entry = struct {
         self.raw_record = try allocator.dupe(u8, record);
     }
 
+    pub fn setReplaySamples(self: *Entry, allocator: std.mem.Allocator, samples: []const ReplaySample) !void {
+        self.deinit(allocator);
+
+        const sample_count: u32 = std.math.cast(u32, samples.len) orelse return error.ReplayTooLong;
+        const record_len = compact_record_header_size + (samples.len * 5);
+        const record = try allocator.alloc(u8, record_len);
+        errdefer allocator.free(record);
+
+        @memset(record, 0);
+        std.mem.writeInt(u32, record[0x00..0x04], @intCast(record_len), .little);
+        std.mem.writeInt(u32, record[compact_record_replay_sample_count_offset .. compact_record_replay_sample_count_offset + 4], sample_count, .little);
+
+        for (samples, 0..) |sample, index| {
+            const lateral_offset = compact_record_header_size + (index * 2);
+            const secondary_z_delta_offset = compact_record_header_size + (samples.len * 2) + (index * 2);
+            const flags_offset = compact_record_header_size + (samples.len * 4) + index;
+            writeI16(record, lateral_offset, sample.lateral);
+            writeI16(record, secondary_z_delta_offset, sample.secondary_z_delta_raw);
+            record[flags_offset] = sample.flags;
+        }
+
+        self.raw_record = record;
+        self.has_replay = samples.len != 0;
+    }
+
     pub fn decodeReplay(self: *const Entry, allocator: std.mem.Allocator) !DecodedReplay {
         const sample_count = self.replaySampleCount();
         const decoded_samples = try allocator.alloc(DecodedReplaySample, sample_count);
@@ -162,6 +187,16 @@ pub const DecodedReplay = struct {
         return self.samples[index];
     }
 };
+
+pub fn mathType16To32(value: i16, scale: f32) f32 {
+    return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
+}
+
+pub fn mathType32To16(value: f32, scale: f32) i16 {
+    const raw: i64 = @intFromFloat((65536.0 / scale) * value);
+    const bits: u64 = @bitCast(raw);
+    return @bitCast(@as(u16, @truncate(bits)));
+}
 
 pub const InsertResult = struct {
     rank: ?usize = null,
@@ -508,6 +543,10 @@ fn readI16(buffer: []const u8, offset: usize) i16 {
     return std.mem.readInt(i16, @as(*const [2]u8, @ptrCast(buffer[offset .. offset + 2].ptr)), .little);
 }
 
+fn writeI16(buffer: []u8, offset: usize, value: i16) void {
+    std.mem.writeInt(i16, @as(*[2]u8, @ptrCast(buffer[offset .. offset + 2].ptr)), value, .little);
+}
+
 fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
     var end = slice.len;
     while (end > 0) : (end -= 1) {
@@ -635,6 +674,42 @@ test "decoded replay accumulates the ghost z delta lane after the first sample" 
     try std.testing.expectEqual(@as(i32, 100), decoded.sampleAt(0).?.ghost_z_accum_raw);
     try std.testing.expectEqual(@as(i32, 125), decoded.sampleAt(1).?.ghost_z_accum_raw);
     try std.testing.expectEqual(@as(i32, 120), decoded.sampleAt(2).?.ghost_z_accum_raw);
+}
+
+test "compact high-score record writer stores native replay lane order" {
+    var entry = Entry{};
+    defer entry.deinit(std.testing.allocator);
+
+    const samples = [_]ReplaySample{
+        .{ .lateral = mathType32To16(-3.5, 16.0), .secondary_z_delta_raw = mathType32To16(12.25, 32.0), .flags = 0x01 },
+        .{ .lateral = mathType32To16(1.25, 16.0), .secondary_z_delta_raw = mathType32To16(-0.5, 32.0), .flags = 0x06 },
+    };
+    try entry.setReplaySamples(std.testing.allocator, &samples);
+
+    try std.testing.expect(entry.has_replay);
+    try std.testing.expectEqual(@as(usize, 2), entry.replaySampleCount());
+    try std.testing.expectEqual(@as(usize, compact_record_header_size + 10), entry.raw_record.?.len);
+    try std.testing.expectEqual(@as(u32, compact_record_header_size + 10), readU32(entry.raw_record.?, 0x00));
+    try std.testing.expectEqualDeep(samples[0], entry.replaySampleAt(0).?);
+    try std.testing.expectEqualDeep(samples[1], entry.replaySampleAt(1).?);
+
+    var decoded = try entry.decodeReplay(std.testing.allocator);
+    defer decoded.deinit();
+    try std.testing.expectEqual(@as(i32, samples[0].secondary_z_delta_raw), decoded.sampleAt(0).?.ghost_z_accum_raw);
+    try std.testing.expectEqual(
+        @as(i32, samples[0].secondary_z_delta_raw) + @as(i32, samples[1].secondary_z_delta_raw),
+        decoded.sampleAt(1).?.ghost_z_accum_raw,
+    );
+}
+
+test "replay math helpers match recovered native fixed point scale" {
+    const lateral = mathType32To16(3.5, 16.0);
+    try std.testing.expectEqual(@as(i16, 0x3800), lateral);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.5), mathType16To32(lateral, 16.0), 0.0001);
+
+    const ghost_delta = mathType32To16(-1.25, 32.0);
+    try std.testing.expectEqual(@as(i16, -0x0a00), ghost_delta);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.25), mathType16To32(ghost_delta, 32.0), 0.0001);
 }
 
 test "replay payload access rejects truncated compact records" {

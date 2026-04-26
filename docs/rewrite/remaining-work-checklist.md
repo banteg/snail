@@ -96,7 +96,7 @@ Skipping these keeps presentation noisier than the runtime logic deserves and ma
 
 ### 7. Replay
 
-Replay is partial rather than scaffolded now. The repo can preserve, browse, and launch selected postal/challenge/completion records through the recovered bridge lanes, and the challenge setup screen now uses the native transient challenge-setup replay mirror instead of the visible challenge score table. The New Game replay-attract probe/launch bridge is also modeled, but its native timer-step producer is still unknown/dormant; the recovered Time Trial ghost Z-delta lane, replay-side audio/effect parity, and full saveback parity are still not there.
+Replay is partial rather than scaffolded now. The repo can preserve, browse, and launch selected postal/challenge/completion records through the recovered bridge lanes, and the challenge setup screen now uses the native transient challenge-setup replay mirror instead of the visible challenge score table. The New Game replay-attract probe/launch bridge is also modeled, but its native timer-step producer is still unknown/dormant. Compact replay payloads can now be synthesized in the recovered lane order when supplied by a caller, but runtime capture is not hooked yet; the recovered Time Trial ghost Z-delta lane, replay-side audio/effect parity, and full saveback parity are still not there.
 
 ### 8. Repo-doc inconsistencies
 

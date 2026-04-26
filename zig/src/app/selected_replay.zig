@@ -50,7 +50,7 @@ pub fn directiveForDecodedReplay(replay: *const high_score.DecodedReplay, runtim
     const sample = replay.sampleAt(runtime_track_index) orelse return .{ .active = true };
     return .{
         .active = true,
-        .lateral_world_x = replayMathType16To32(sample.lateral, 16.0),
+        .lateral_world_x = high_score.mathType16To32(sample.lateral, 16.0),
         .raw_flag_bits = sample.flags,
     };
 }
@@ -122,8 +122,4 @@ pub fn outerOwnerForMarker(
             .outer_return_target = launchOuterReturnTarget(state) orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
         },
     });
-}
-
-fn replayMathType16To32(value: i16, scale: f32) f32 {
-    return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
 }
