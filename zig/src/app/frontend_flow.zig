@@ -224,7 +224,7 @@ pub fn challengeSetupReplayAvailable(state: anytype) bool {
 pub fn tryLaunchNewGameReplayAttract(state: anytype) !bool {
     if (!state.new_game_replay_attract.stepLaunchTimer()) return false;
 
-    defer state.new_game_replay_attract.resetReleaseTimer();
+    defer state.new_game_replay_attract.finishProbePass();
     const source = new_game_replay_attract.probeSource(
         &state.new_game_replay_attract,
         &state.high_score_tables,

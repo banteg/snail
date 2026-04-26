@@ -24,7 +24,7 @@ pub const Controller = struct {
         self.hide_latch = false;
     }
 
-    pub fn resetReleaseTimer(self: *Controller) void {
+    pub fn finishProbePass(self: *Controller) void {
         self.hide_release_accumulator = 0.0;
         self.hide_release_step = release_step_after_probe;
     }
@@ -133,11 +133,45 @@ test "new game replay attract ignores active scores without replay payloads" {
     try std.testing.expectEqual(@as(u8, 0), controller.cursor);
 }
 
-test "new game replay attract timer stays dormant without native launch step" {
+test "new game replay attract launch timer stays dormant without native launch step" {
     var controller = Controller{ .launch_accumulator = 2.0 };
 
     try std.testing.expect(!controller.stepLaunchTimer());
     try std.testing.expectEqual(@as(f32, 2.0), controller.launch_accumulator);
+}
+
+test "new game replay attract launch timer clears accumulator after threshold" {
+    var controller = Controller{
+        .launch_accumulator = 0.75,
+        .launch_step = 0.3,
+    };
+
+    try std.testing.expect(controller.stepLaunchTimer());
+    try std.testing.expectEqual(@as(f32, 0.0), controller.launch_accumulator);
+}
+
+test "new game replay attract probe pass resets native hide-release lane" {
+    var controller = Controller{
+        .hide_release_accumulator = 0.5,
+        .hide_release_step = 0.25,
+    };
+
+    controller.finishProbePass();
+
+    try std.testing.expectEqual(@as(f32, 0.0), controller.hide_release_accumulator);
+    try std.testing.expectEqual(@as(f32, release_step_after_probe), controller.hide_release_step);
+}
+
+test "new game replay attract hide latch releases through recovered timer lane" {
+    var controller = Controller{ .hide_latch = true };
+    controller.finishProbePass();
+
+    var tick: usize = 0;
+    while (tick < 3601) : (tick += 1) {
+        controller.tickReleaseTimer();
+    }
+
+    try std.testing.expect(!controller.hide_latch);
 }
 
 test "new game replay attract launch uses persistent new-game return owner" {
