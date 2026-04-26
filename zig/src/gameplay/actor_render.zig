@@ -25,6 +25,8 @@ const native_runtime_ring_particle_radius: f32 = 1.2;
 const native_runtime_ring_particle_size: f32 = 0.72;
 const native_runtime_ring_particle_alpha: u8 = 204;
 const native_runtime_ring_particle_phase_step: f32 = tau / @as(f32, @floatFromInt(native_runtime_ring_particle_count));
+const native_time_trial_ghost_sprite_world_size: f32 = 1.0;
+const native_time_trial_ghost_y: f32 = 1.0;
 
 const RuntimeRingParticleSpriteFamily = enum {
     ring,
@@ -137,11 +139,33 @@ pub fn drawRuntimeActors(
         drawGameplayRuntimeRingEffectActor(render, camera, effect);
     }
 
+    drawTimeTrialGhost(render, runner, camera);
+
     for (runner.activeProjectiles()) |projectile| {
         drawGameplayProjectileActor(render, projectile);
     }
 
     drawGameplayEffects(render, camera);
+}
+
+fn drawTimeTrialGhost(render: Context, runner: gameplay.Runner, camera: rl.Camera3D) void {
+    if (!runner.time_trial_ghost_active) return;
+    const loaded_texture = render.resources.sprites.ghost orelse return;
+    inline for (.{ -4.0, 4.0 }) |world_x| {
+        gameplay_billboard.drawTexture(
+            loaded_texture.texture,
+            .{
+                .x = world_x,
+                .y = native_time_trial_ghost_y,
+                .z = runner.time_trial_ghost_z,
+            },
+            native_time_trial_ghost_sprite_world_size,
+            native_time_trial_ghost_sprite_world_size,
+            camera,
+            render.billboard_shader,
+            .white,
+        );
+    }
 }
 
 pub fn drawPostOfficeStopBanners(

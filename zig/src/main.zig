@@ -311,6 +311,7 @@ const AppState = struct {
     post_level_high_score_return_owner: ?frontend_bridge.OuterOwnerState = null,
     post_level_high_score_return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return,
     replay_capture: high_score.ReplayCapture = .{},
+    time_trial_ghost_replay_cache: ?high_score.DecodedReplay = null,
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
@@ -559,6 +560,9 @@ const AppState = struct {
         }
 
         voice_audio.stopPlayback(voice_audio.context(self));
+        self.clearTimeTrialGhostReplayCache();
+        self.clearSelectedReplayCache();
+        self.replay_capture.deinit(self.allocator);
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
@@ -1803,6 +1807,40 @@ const AppState = struct {
             replay.deinit();
             self.selected_replay_cache = null;
         }
+    }
+
+    pub fn clearTimeTrialGhostReplayCache(self: *AppState) void {
+        if (self.time_trial_ghost_replay_cache) |*replay| {
+            replay.deinit();
+            self.time_trial_ghost_replay_cache = null;
+        }
+    }
+
+    pub fn configureTimeTrialGhostReplayCache(self: *AppState) !void {
+        self.clearTimeTrialGhostReplayCache();
+        if (self.active_frontend_mode != .time_trial) return;
+        if (self.selected_level_record_source != null) return;
+
+        const completion_index = high_score.completionIndexForRouteIndex(self.active_frontend_level_index) orelse return;
+        const entry = &self.high_score_tables.completion[completion_index];
+        if (entry.replaySampleCount() == 0) return;
+        self.time_trial_ghost_replay_cache = try entry.decodeReplay(self.allocator);
+    }
+
+    pub fn updateRunnerTimeTrialGhost(self: *const AppState, runner: *gameplay.Runner, replay_sample_index: usize) void {
+        if (self.active_frontend_mode != .time_trial or self.selected_level_record_source != null) {
+            runner.clearTimeTrialGhost();
+            return;
+        }
+        const replay = self.time_trial_ghost_replay_cache orelse {
+            runner.clearTimeTrialGhost();
+            return;
+        };
+        const sample = replay.sampleAt(replay_sample_index) orelse {
+            runner.clearTimeTrialGhost();
+            return;
+        };
+        runner.markTimeTrialGhost(sample.ghostWorldZ());
     }
 
     pub fn setSelectedLevelRecordContext(

@@ -7,6 +7,7 @@ const x2 = @import("x2.zig");
 
 pub const SpriteArt = struct {
     slug_frames: [gameplay_assets.gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_slug_sprite_paths.len,
+    ghost: ?assets.LoadedTexture = null,
     garbage_variants: [gameplay_assets.gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_garbage_sprite_paths.len,
     health: ?assets.LoadedTexture = null,
     life: ?assets.LoadedTexture = null,
@@ -34,6 +35,10 @@ pub const SpriteArt = struct {
                 loaded.unload();
                 texture.* = null;
             }
+        }
+        if (self.ghost) |*texture| {
+            texture.unload();
+            self.ghost = null;
         }
         for (&self.garbage_variants) |*texture| {
             if (texture.*) |*loaded| {
@@ -281,6 +286,7 @@ pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     for (gameplay_assets.gameplay_slug_sprite_paths, 0..) |path, index| {
         art.slug_frames[index] = try store.texture(path);
     }
+    art.ghost = try store.texture(gameplay_assets.gameplay_ghost_sprite_path);
     for (gameplay_assets.gameplay_garbage_sprite_paths, 0..) |path, index| {
         art.garbage_variants[index] = try store.texture(path);
     }

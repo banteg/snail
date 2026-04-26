@@ -145,6 +145,7 @@ pub fn reloadLevel(state: anytype) !void {
     state.gameplay_voice_manager.clear();
     state.native_gameplay_voice_manager.clear();
     state.announced_slug_voice_cell_count = 0;
+    state.clearTimeTrialGhostReplayCache();
     state.level_runner = null;
     state.gameplay_click_start_active = false;
     resetSubgameCamera(state);
@@ -196,6 +197,7 @@ pub fn reloadLevel(state: anytype) !void {
             );
             state.level_runner.?.configureSessionMode(run_tuning.runnerSessionModeForFrontendMode(state.active_frontend_mode));
             state.level_runner.?.configureBaseSubgameRate(run_tuning.currentRunReplaySpeedScalar(runTuningContext(state)));
+            try state.configureTimeTrialGhostReplayCache();
             state.gameplay_click_start_active = seed_intro_cutscene and isTutorialFlow(state);
             if (seed_intro_cutscene) {
                 state.level_runner.?.setCutscene(gameplay.cutscene_intro_id);

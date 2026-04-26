@@ -75,6 +75,7 @@ pub const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
     "SPRITES/SLUG001.TGA",
 };
+pub const gameplay_ghost_sprite_path = "SPRITES/GHOST.TGA";
 pub const gameplay_garbage_sprite_paths = [_][]const u8{
     "SPRITES/GARBAGEA.TGA",
     "SPRITES/GARBAGEB.TGA",

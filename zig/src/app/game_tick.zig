@@ -126,12 +126,14 @@ pub fn simulate(state: anytype, runner_input: gameplay.RunnerInput) !void {
                     audio.playGameplayRunnerAudio(state, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
                     voice_audio.updateAmbient(voice_audio.context(state), runner.*, loaded_track_preview);
                     state.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
+                    state.updateRunnerTimeTrialGhost(runner, previous_runner.replay_sample_index);
                 } else {
                     state.refreshRunnerForStartupBlock(
                         runner,
                         loaded_track_preview,
                         @floatCast(state.simulation_clock.step_seconds),
                     );
+                    state.updateRunnerTimeTrialGhost(runner, runner.replay_sample_index);
                 }
                 state.updateSubgameCamera(runner);
                 try state.syncActiveLevelSegment();

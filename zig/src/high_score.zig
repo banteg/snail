@@ -236,6 +236,10 @@ pub const DecodedReplaySample = struct {
     lateral: i16,
     ghost_z_accum_raw: i32,
     flags: u8,
+
+    pub fn ghostWorldZ(self: DecodedReplaySample) f32 {
+        return mathRawToWorldZ(self.ghost_z_accum_raw);
+    }
 };
 
 pub const DecodedReplay = struct {
@@ -261,6 +265,10 @@ pub fn mathType32To16(value: f32, scale: f32) i16 {
     const raw: i64 = @intFromFloat((65536.0 / scale) * value);
     const bits: u64 = @bitCast(raw);
     return @bitCast(@as(u16, @truncate(bits)));
+}
+
+pub fn mathRawToWorldZ(value: i32) f32 {
+    return @as(f32, @floatFromInt(value)) * 32.0 * (1.0 / 65536.0);
 }
 
 pub const InsertResult = struct {
@@ -775,6 +783,7 @@ test "replay math helpers match recovered native fixed point scale" {
     const ghost_delta = mathType32To16(-1.25, 32.0);
     try std.testing.expectEqual(@as(i16, -0x0a00), ghost_delta);
     try std.testing.expectApproxEqAbs(@as(f32, -1.25), mathType16To32(ghost_delta, 32.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.25), mathRawToWorldZ(@as(i32, ghost_delta)), 0.0001);
 }
 
 test "replay capture writes quantized x absolute z then z deltas" {

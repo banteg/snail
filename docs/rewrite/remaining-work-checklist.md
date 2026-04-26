@@ -96,7 +96,7 @@ Skipping these keeps presentation noisier than the runtime logic deserves and ma
 
 ### 7. Replay
 
-Replay is partial rather than scaffolded now. The repo can preserve, browse, and launch selected postal/challenge/completion records through the recovered bridge lanes, and the challenge setup screen now uses the native transient challenge-setup replay mirror instead of the visible challenge score table. The New Game replay-attract probe/launch bridge is also modeled, but its native timer-step producer is still unknown/dormant. Compact replay payloads can now be synthesized in the recovered lane order, and live runs now capture native-shaped samples through the gameplay update path; the recovered Time Trial ghost Z-delta renderer, replay-side audio/effect parity, exact capture owner fields, and full saveback parity are still not there.
+Replay is partial rather than scaffolded now. The repo can preserve, browse, and launch selected postal/challenge/completion records through the recovered bridge lanes, and the challenge setup screen now uses the native transient challenge-setup replay mirror instead of the visible challenge score table. The New Game replay-attract probe/launch bridge is also modeled, but its native timer-step producer is still unknown/dormant. Compact replay payloads can now be synthesized in the recovered lane order, live runs now capture native-shaped samples through the gameplay update path, and live non-selected Time Trial runs now render the recovered two-sprite ghost from the completion replay's Z-delta lane; replay-side audio/effect parity, exact capture owner fields, exact ghost cursor offset around rebuilds, and full saveback parity are still not there.
 
 ### 8. Repo-doc inconsistencies
 
@@ -198,7 +198,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 7. Finish replay only after the runtime consumers exist
 
 - [x] Hook initial runtime replay capture/saveback for new score entries using the recovered sample order and fixed-point scales
-- [ ] Port the recovered Time Trial ghost Z-delta consumer for saved completion records
+- [x] Port the recovered Time Trial ghost Z-delta consumer for saved completion records
 - [ ] Recover the remaining replay-flag gameplay/audio/effect consumers
 - [ ] Port full replay payload read/write parity
 - [ ] Only then widen replay saveback behavior for new entries

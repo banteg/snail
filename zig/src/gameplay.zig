@@ -476,6 +476,8 @@ pub const Runner = struct {
     last_processed_row: ?usize = null,
     runtime: hazards_module.Runtime = .{},
     combat: combat_module.Combat = .{},
+    time_trial_ghost_active: bool = false,
+    time_trial_ghost_z: f32 = 0.0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
     math_random_state: u32 = 0,
@@ -571,6 +573,8 @@ pub const Runner = struct {
         self.attachment = .{};
         self.runtime = .{};
         self.combat = .{};
+        self.time_trial_ghost_active = false;
+        self.time_trial_ghost_z = 0.0;
         self.native_velocity_x_per_tick = 0.0;
         self.native_velocity_z_override_per_tick = null;
         self.steering_initialized = false;
@@ -600,6 +604,16 @@ pub const Runner = struct {
         self.refreshLiveRuntimeHazards(preview);
         self.refreshLiveRuntimeRingEffects(preview);
         self.refreshCameraState(preview);
+    }
+
+    pub fn clearTimeTrialGhost(self: *Runner) void {
+        self.time_trial_ghost_active = false;
+        self.time_trial_ghost_z = 0.0;
+    }
+
+    pub fn markTimeTrialGhost(self: *Runner, ghost_z: f32) void {
+        self.time_trial_ghost_active = true;
+        self.time_trial_ghost_z = @min(ghost_z, self.row_position + 20.0);
     }
 
     pub fn step(self: *Runner, preview: *const track.LoadedLevelPreview, input: RunnerInput, delta_seconds: f32) void {
@@ -9602,6 +9616,24 @@ test "replay sample cursor advances per active update independent of row index" 
     try std.testing.expectEqual(starting_runtime_track_index, runner.runtime_track_index);
     try std.testing.expectEqual(@as(usize, 1), runner.replay_sample_index);
     try std.testing.expect(runner.track_row_progress > 0.0);
+}
+
+test "time-trial ghost marker clamps to twenty rows ahead of Turbo" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = 12.0;
+
+    runner.markTimeTrialGhost(40.0);
+    try std.testing.expect(runner.time_trial_ghost_active);
+    try std.testing.expectApproxEqAbs(@as(f32, 32.0), runner.time_trial_ghost_z, 0.0001);
+
+    runner.markTimeTrialGhost(20.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 20.0), runner.time_trial_ghost_z, 0.0001);
+
+    runner.clearTimeTrialGhost();
+    try std.testing.expect(!runner.time_trial_ghost_active);
 }
 
 test "replay flag bit 0x1 seeds native movement fire progress" {
