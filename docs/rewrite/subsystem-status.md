@@ -410,13 +410,14 @@ Best next work:
 
 ## Replay
 
-Status: `scaffold`
+Status: `partial`
 
 Implemented now:
 
 - enough score/config structure to preserve replay-bearing records
 - route-map and high-score UI have the right broad replay concepts in place
 - selected replay actions now launch the recovered selected-record families instead of one source-derived return path: route-map best-trial stays transient, while persistent replay launches carry their own saved return owner
+- high-score replay rows are available for both native score banks: postal replay labels use the recovered `+125` x anchor and challenge replay labels use `+170`
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active

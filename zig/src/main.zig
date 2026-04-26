@@ -2406,10 +2406,20 @@ test "route map replay gate follows time-trial completion replays" {
     try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 1, &tables));
 }
 
-test "high-score row replay is challenge-only" {
-    try std.testing.expect(!frontend_high_score_screen.rowsShowReplay(.postal, false));
+test "high-score row replay is available for score browse rows" {
+    try std.testing.expect(frontend_high_score_screen.rowsShowReplay(.postal, false));
     try std.testing.expect(frontend_high_score_screen.rowsShowReplay(.challenge, false));
+    try std.testing.expect(!frontend_high_score_screen.rowsShowReplay(.postal, true));
     try std.testing.expect(!frontend_high_score_screen.rowsShowReplay(.challenge, true));
+
+    try std.testing.expectEqualDeep(
+        frontend_bridge.SelectedLevelRecordSource{ .postal = 2 },
+        frontend_high_score_screen.replaySource(.{ .main_menu_browse = .postal }, 2).?,
+    );
+    try std.testing.expectEqualDeep(
+        frontend_bridge.SelectedLevelRecordSource{ .challenge = 3 },
+        frontend_high_score_screen.replaySource(.{ .main_menu_browse = .challenge }, 3).?,
+    );
 }
 
 test "route map screen modes follow windows route-map entry paths" {
@@ -2787,10 +2797,6 @@ test "high score controller helpers stay screen-local" {
     try std.testing.expectEqualStrings("Enter your name here!", frontend_high_score_screen.title(.{ .post_level_entry = .{ .mode = .postal, .rank = 0 } }));
     try std.testing.expectEqual(high_score.Mode.challenge, frontend_high_score_screen.nextBrowseMode(.{ .main_menu_browse = .postal }).?);
     try std.testing.expect(frontend_high_score_screen.nextBrowseMode(.{ .post_level_entry = .{ .mode = .postal, .rank = 0 } }) == null);
-    try std.testing.expectEqualDeep(
-        frontend_bridge.SelectedLevelRecordSource{ .challenge = 3 },
-        frontend_high_score_screen.replaySource(.{ .main_menu_browse = .challenge }, 3).?,
-    );
     try std.testing.expect(frontend_high_score_screen.replaySource(.{ .post_level_entry = .{ .mode = .challenge, .rank = 3 } }, 3) == null);
 }
 

@@ -28,8 +28,9 @@ pub const boot_tasks = [_]BootTask{
     .load_menu_music,
 };
 
-// PORT(scaffold): the default `snail` path is now a forward-pass boot and menu shell.
-// Replace this with the real menu flow once original assets, transitions, and actions are ported.
+// PORT(partial): the default `snail` path now uses the recovered front-end screen owners,
+// transitions, and mode actions. Some per-screen widget polish and lower-level runtime
+// parity is still tracked on the individual screen/gameplay modules.
 pub const GamePhase = enum {
     boot,
     intro,

@@ -129,9 +129,11 @@ pub fn displayName(entry: *const high_score.Entry) []const u8 {
 }
 
 pub fn rowsShowReplay(mode: high_score.Mode, in_name_entry: bool) bool {
-    // PORT(verified): `initialize_high_score_screen` only enables the row Replay widgets for the
-    // Challenge table, and `update_high_score_screen` suppresses them while inline name-entry is active.
-    return mode == .challenge and !in_name_entry;
+    // PORT(verified): `initialize_high_score_screen` allocates per-row Replay widgets for
+    // both postal and challenge score banks. Inline name entry uses the same row space for
+    // text input, so replay activation is suppressed while that owner is active.
+    _ = mode;
+    return !in_name_entry;
 }
 
 pub fn footerTextRect(font: *const game_font.Loaded, text: []const u8, center_offset_x: f32) frontend_widget.Rect {

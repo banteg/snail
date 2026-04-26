@@ -96,7 +96,7 @@ Skipping these keeps presentation noisier than the runtime logic deserves and ma
 
 ### 7. Replay
 
-Replay is still scaffolded. The repo can preserve and launch selected records, but the grounded gameplay consumer and full saveback parity are still not there.
+Replay is partial rather than scaffolded now. The repo can preserve, browse, and launch selected postal/challenge/completion records through the recovered bridge lanes, but the New Game random replay-attract trigger, grounded secondary-lane consumers, replay-side audio/effect parity, and full saveback parity are still not there.
 
 ### 8. Repo-doc inconsistencies
 
