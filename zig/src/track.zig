@@ -3463,6 +3463,43 @@ test "level preview seeds runtime row window from the native fallback" {
     try std.testing.expectEqual(preview.total_rows, preview.runtime_active_row_end);
 }
 
+test "tutorial preview keeps authored start rows before the player spawn row" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/TUTORIAL.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .runtime_build_flags = tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    // Native starts Goldy at z=4 and scans runtime rows from row 0, so the
+    // first four START rows are authored track, not hidden backfill.
+    try std.testing.expectEqual(@as(usize, 0), preview.row_offsets[0]);
+    try std.testing.expectEqualStrings("Start", preview.segments[0].name);
+    try std.testing.expectEqualStrings("@_._._._.@", preview.segments[0].rows[0].cells);
+    try std.testing.expectEqualStrings("@._._._._@", preview.segments[0].rows[1].cells);
+    try std.testing.expectEqualStrings("@_._._._.@", preview.segments[0].rows[2].cells);
+    try std.testing.expectEqualStrings("@._._._._@", preview.segments[0].rows[3].cells);
+    try std.testing.expectEqualStrings("@PPPPPPPP@", preview.segments[0].rows[4].cells);
+
+    try std.testing.expectEqual(@as(u8, 0x0f), preview.runtimeTileAt(0, 1).?);
+    try std.testing.expectEqual(@as(u8, 0x01), preview.runtimeTileAt(0, 2).?);
+    try std.testing.expectEqual(@as(u8, 0x01), preview.runtimeTileAt(1, 1).?);
+    try std.testing.expectEqual(@as(u8, 0x0f), preview.runtimeTileAt(1, 2).?);
+    try std.testing.expectEqual(@as(u8, 0x1e), preview.runtimeTileAt(4, 1).?);
+    try std.testing.expectEqual(@as(u8, 0x1e), preview.runtimeTileAt(4, 8).?);
+}
+
 test "random level preview keeps course-end threshold fallback without a native scalar override" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
