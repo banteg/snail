@@ -312,6 +312,8 @@ Current practical read:
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
 - the controller owns a separate warning actor through `start_warning` / `update_warning` / `stop_warning`
+- `apply_damage_gauge_delta` ignores unforced positive damage while `state == 2`;
+  the state-2 auto-drain path is the forced caller
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
   - salt contact `+0.02`

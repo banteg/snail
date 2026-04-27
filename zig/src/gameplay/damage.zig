@@ -18,6 +18,7 @@ pub const gauge_pulse_step: f32 = 0.020833334;
 pub const gauge_hit_flash_step: f32 = 0.033333335;
 pub const warning_transition_step: f32 = 0.16666667;
 pub const warning_drain_delta: f32 = -0.0016666667;
+pub const warning_accelerated_drain_delta: f32 = -0.0066666668;
 pub const warning_actor_step: f32 = 0.083333336;
 // PORT(verified): native `update_warning` writes `*(widget + 520) = 1.1f` on the
 // solid-state branch (`artifacts/ida/functions/00446f80-update_warning.c:14`,
@@ -124,11 +125,18 @@ pub const Controller = struct {
     /// and the ouch fallback takes over; the port wires that dispatch from
     /// `main.zig`'s voice handler which is the only layer that knows whether
     /// the voice actually played.
-    pub fn applyDelta(
+    pub fn applyDelta(self: *Controller, delta: f32, skin: *SnailSkinTransition) void {
+        self.applyDeltaNative(delta, skin, false);
+    }
+
+    pub fn applyDeltaNative(
         self: *Controller,
         delta: f32,
         skin: *SnailSkinTransition,
+        force: bool,
     ) void {
+        if (!force and self.warning_state == .draining and delta > 0.0) return;
+
         const damage_entry = self.gauge <= 0.0 and delta > 0.0;
         self.gauge = std.math.clamp(self.gauge + delta, 0.0, 1.0);
         if (damage_entry) {
@@ -180,7 +188,7 @@ pub const Controller = struct {
                 // 6x accelerated drain path remains a TODO (requires identifying
                 // the writer for `*(+0x4301bc)`).
                 skin.change(.damage, 0.2);
-                self.applyDelta(warning_drain_delta, skin);
+                self.applyDeltaNative(warning_drain_delta, skin, true);
                 self.runtime.skin_hold_ticks = 5;
             },
         }
@@ -231,3 +239,15 @@ pub const Controller = struct {
         return self.warning_state.label();
     }
 };
+
+test "damage delta gate mirrors native draining state" {
+    var controller = Controller{ .gauge = 0.5, .warning_state = .draining };
+    var skin = SnailSkinTransition{};
+
+    controller.applyDelta(0.15, &skin);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), controller.gauge, 0.0001);
+    try std.testing.expect(!skin.active);
+
+    controller.applyDeltaNative(warning_drain_delta, &skin, true);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5) + warning_drain_delta, controller.gauge, 0.0001);
+}
