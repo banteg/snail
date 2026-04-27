@@ -61,6 +61,10 @@ pub const DisplayController = struct {
         return self.delivered_parcel_count;
     }
 
+    pub fn deliveredCountText(self: DisplayController, buffer: *[2]u8) []const u8 {
+        return formatDeliveredCount(buffer, self.delivered_parcel_count);
+    }
+
     pub fn counterVisible(self: DisplayController, session_is_tutorial: bool) bool {
         return self.parcel_target_count != 0 and !session_is_tutorial;
     }
@@ -133,3 +137,23 @@ pub const DisplayController = struct {
         }
     }
 };
+
+pub fn formatDeliveredCount(buffer: *[2]u8, delivered_parcel_count: u32) []const u8 {
+    // PORT(verified): `update_row_event_display` (0x404cf0) writes exactly two
+    // ASCII bytes into widget B: a space-padded tens digit plus the ones digit.
+    buffer[0] = if (delivered_parcel_count >= 10)
+        @intCast(@divTrunc(delivered_parcel_count, 10) + '0')
+    else
+        ' ';
+    buffer[1] = @intCast(@mod(delivered_parcel_count, 10) + '0');
+    return buffer[0..];
+}
+
+test "row event delivered count text mirrors native widget bytes" {
+    var buffer: [2]u8 = undefined;
+
+    try std.testing.expectEqualStrings(" 0", formatDeliveredCount(&buffer, 0));
+    try std.testing.expectEqualStrings(" 9", formatDeliveredCount(&buffer, 9));
+    try std.testing.expectEqualStrings("10", formatDeliveredCount(&buffer, 10));
+    try std.testing.expectEqualStrings("12", formatDeliveredCount(&buffer, 12));
+}

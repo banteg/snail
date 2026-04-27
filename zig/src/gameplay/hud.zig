@@ -8,6 +8,7 @@ const game_font = @import("../game_font.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_art = @import("../gameplay_art.zig");
 const level = @import("../level.zig");
+const row_event = @import("row_event.zig");
 const track = @import("../track.zig");
 
 const VirtualLayout = ui.VirtualLayout;
@@ -16,10 +17,6 @@ const row_event_widget_frame_width: f32 = 88.0;
 const row_event_widget_frame_height: f32 = 30.0;
 const row_event_widget_frame_offset_x: f32 = -18.0;
 const row_event_widget_frame_offset_y: f32 = -15.0;
-const row_event_widget_icon_x: f32 = -12.0;
-const row_event_widget_icon_y: f32 = -10.0;
-const row_event_widget_icon_size: f32 = 20.0;
-const row_event_widget_text_x: f32 = 14.0;
 const row_event_widget_text_y: f32 = -9.0;
 const row_event_widget_bonus_y: f32 = 18.0;
 
@@ -231,25 +228,9 @@ pub fn drawRowEventWidget(
         .{ .r = colors.fill.r, .g = colors.fill.g, .b = colors.fill.b, .a = 176 },
     );
 
-    if (context.frontend_widget_art.parcel_icon) |loaded_texture| {
-        drawTextureLocalRect(
-            layout,
-            loaded_texture,
-            local_point.x + row_event_widget_icon_x,
-            local_point.y + row_event_widget_icon_y,
-            row_event_widget_icon_size,
-            row_event_widget_icon_size,
-            .white,
-        );
-    }
-
-    var counter_buffer: [32]u8 = undefined;
-    const counter_text = try std.fmt.bufPrint(
-        &counter_buffer,
-        "{d}/{d}",
-        .{ runner.registeredParcelCount(), runner.rowEventParcelTargetCount() },
-    );
-    drawHudTextShadowed(context, layout, local_point.x + row_event_widget_text_x, local_point.y + row_event_widget_text_y, counter_text, 16, .white);
+    var counter_buffer: [2]u8 = undefined;
+    const counter_text = row_event.formatDeliveredCount(&counter_buffer, runner.registeredParcelCount());
+    drawCenteredHudTextShadowed(context, layout, local_point.x + 26.0, local_point.y + row_event_widget_text_y, counter_text, 16, .white);
 
     if (runner.rowEventBonusVisible()) {
         var bonus_buffer: [32]u8 = undefined;

@@ -140,13 +140,13 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 | 8 | Parcel icon | separate sprite 0x7a at (0, 58) + number at (47, 80) | **FIXED** (fed52e9, a1158e7): native sprite path + separate count text |
 | 9 | Jetpack gauge bar | does not exist (particles only) | **REMOVED** (8571a2d): port invention deleted |
 | 10 | "Click to Start" prompt text | menu_button widget at (0, 200) centered | **FIXED**: dedicated standalone draw uses native authored y=200 instead of tutorial prompt-stack anchors |
-| 11 | `update_row_event_display` | native draws through 5 allocated borders per frame | port uses custom NineSliceFrame + icon + text (drawRowEventWidget); same data, different shell |
+| 11 | `update_row_event_display` | native draws through 5 allocated borders per frame; widget B text is a two-byte space-padded delivered count | port uses custom NineSliceFrame + native delivered-count text (drawRowEventWidget); same data, different shell |
 | 12 | `update_times_up` | at replay/update cursor 21000, then `kill_subgoldy` | **FIXED**: runner-owned controller draws `"Time's Up"` and feeds the native fall/death lane |
 | 13 | `update_warning` | flash WARNING.TGA on crit | **FIXED** (8571a2d): drawn from inside drawDamageGauge with correct authored (288, 64, 64, 64) |
 
 ### Remaining
 
-- (11) `drawRowEventWidget` could be ported to the native 5-widget allocated-border approach with `allocate_border` / `kill_border` lifecycle. Current implementation produces the same content but bypasses the widget system.
+- (11) `drawRowEventWidget` could be ported to the native 5-widget allocated-border approach with `allocate_border` / `kill_border` lifecycle. Current implementation mirrors the recovered delivered-count text bytes but bypasses the widget system.
 - (12) `update_times_up` / `show_times_up_message` — ported as a runner-owned controller keyed to replay/update cursor 21000, with the recovered `0.0055555557` progress step and `kill_subgoldy` y-lane handoff.
 
 ## Replay HUD
