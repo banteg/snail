@@ -233,7 +233,7 @@ pub fn drawFailed(
     const body_pos_y: i32 = @intFromFloat(body_point.y);
     const title_text = title(summary);
     var elapsed_buffer: [32]u8 = undefined;
-    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, summary.elapsed_millis);
+    const elapsed_text = try gameplay.formatTimeTrialString(&elapsed_buffer, summary.elapsed_millis);
 
     rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
     drawAppText(state, title_text, title_x, title_pos_y, layout.fontSize(28), .gold);
@@ -332,14 +332,6 @@ fn drawParcelIcon(state: anytype, layout: VirtualLayout) void {
         parcel_icon_height,
         .white,
     );
-}
-
-fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
-    const total_seconds = @divTrunc(elapsed_millis, 1000);
-    const minutes = @divTrunc(total_seconds, 60);
-    const seconds = @mod(total_seconds, 60);
-    const centiseconds = @divTrunc(@mod(elapsed_millis, 1000), 10);
-    return std.fmt.bufPrint(buffer, "{d:0>2}:{d:0>2}.{d:0>2}", .{ minutes, seconds, centiseconds });
 }
 
 fn drawAppText(state: anytype, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {

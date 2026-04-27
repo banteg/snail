@@ -92,7 +92,7 @@ pub fn drawStandardHud(context: Context, layout: VirtualLayout, runner: gameplay
         // Time Trial: widget D holds the running elapsed time (the native
         // `format_time_trial_string` output).
         var elapsed_buffer: [32]u8 = undefined;
-        const elapsed_text = try formatElapsedMillis(&elapsed_buffer, runner.stopwatch.elapsedMillis());
+        const elapsed_text = try gameplay.formatTimeTrialString(&elapsed_buffer, runner.stopwatch.elapsedMillis());
         drawHudTextShadowed(context, layout, 12.0, 14.0, elapsed_text, 22, .white);
     }
 
@@ -336,14 +336,6 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
 fn currentParcelTarget(context: Context) usize {
     if (context.current_track_preview) |preview| return preview.parcel_target_count;
     return if (context.current_level) |loaded_level| loaded_level.parcels orelse 0 else 0;
-}
-
-fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
-    const total_seconds = @divTrunc(elapsed_millis, 1000);
-    const minutes = @divTrunc(total_seconds, 60);
-    const seconds = @mod(total_seconds, 60);
-    const centiseconds = @divTrunc(@mod(elapsed_millis, 1000), 10);
-    return std.fmt.bufPrint(buffer, "{d:0>2}:{d:0>2}.{d:0>2}", .{ minutes, seconds, centiseconds });
 }
 
 fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {

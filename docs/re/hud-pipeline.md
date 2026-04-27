@@ -23,7 +23,9 @@ Stored on `Game` at fixed offsets.
 `widget_type=0x14` (20) is the menu_button shell. For Postal the score widget
 starts with `border_add_text_number(widget_A, 0)` (live score) and the
 reference widget starts with `border_add_text_number(widget_D, best_score)`.
-For Time Trial (`level_mode == 4`), widget D is fed by `format_time_trial_string`.
+For Time Trial (`level_mode == 4`), widget D is fed by `format_time_trial_string`:
+zero time is `-:--:--`, otherwise the helper emits `minutes:seconds:centiseconds`
+with unpadded minutes and two-digit seconds/centiseconds.
 
 `show_subgoldy_lives` (0x43af10) iterates the 9 Postal life slots at
 `game+0x35bb98..+0x35bbbc` and toggles the `0x10` hidden bit based on
@@ -124,7 +126,7 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 - Score (widget A) + reference (widget D): shown in Postal / Challenge / Time Trial (0/1/4); hidden in Tutorial (7) and transitional modes 2/3. `initialize_subgame` hides both widgets for Tutorial, and `build_subgame_level` repeats the Tutorial-only `hide_gameplay_scores` gate.
 - Parcel icon + count (widgets B/C): created only in Postal (`level_mode == 0`).
 - Life eggs: allocated only for Postal and `show_subgoldy_lives` is gated to Postal (`level_mode == 0`).
-- Stopwatch/elapsed text: Time Trial (`level_mode == 4`) uses `format_time_trial_string` for widget D; Challenge (`level_mode == 1`) and Postal don't run the stopwatch as HUD text.
+- Stopwatch/elapsed text: Time Trial (`level_mode == 4`) uses `format_time_trial_string` (`-:--:--` or `%1i:%02i:%02i`) for widget D; Challenge (`level_mode == 1`) and Postal don't run the stopwatch as HUD text.
 
 ## Zig port divergence summary
 

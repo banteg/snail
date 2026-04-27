@@ -4,6 +4,7 @@
 //! No function here may reference `gameplay.Runner` or any runtime entity
 //! module. Moving pure types only.
 
+const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
 const segment = @import("../segment.zig");
@@ -191,6 +192,27 @@ pub const Stopwatch = struct {
         return @intFromFloat(@round(self.total_seconds * 1000.0));
     }
 };
+
+pub fn formatTimeTrialString(buffer: []u8, elapsed_millis: u32) ![]const u8 {
+    // PORT(verified): `format_time_trial_string` (0x448960) returns the
+    // zero-time sentinel verbatim, otherwise formats the cRTime minutes,
+    // seconds, and centiseconds lanes as `%1i:%02i:%02i`.
+    if (elapsed_millis == 0) return std.fmt.bufPrint(buffer, "-:--:--", .{});
+
+    const total_seconds = @divTrunc(elapsed_millis, 1000);
+    const minutes = @divTrunc(total_seconds, 60);
+    const seconds = @mod(total_seconds, 60);
+    const centiseconds = @divTrunc(@mod(elapsed_millis, 1000), 10);
+    return std.fmt.bufPrint(buffer, "{d}:{d:0>2}:{d:0>2}", .{ minutes, seconds, centiseconds });
+}
+
+test "time trial string mirrors native format helper" {
+    var buffer: [32]u8 = undefined;
+
+    try std.testing.expectEqualStrings("-:--:--", try formatTimeTrialString(&buffer, 0));
+    try std.testing.expectEqualStrings("0:01:50", try formatTimeTrialString(&buffer, 1500));
+    try std.testing.expectEqualStrings("1:31:23", try formatTimeTrialString(&buffer, 91_230));
+}
 
 // Damage gauge / warning-actor types live in `gameplay/damage.zig`.
 // Snail skin and weapon-presentation types live in `gameplay/presentation.zig`.

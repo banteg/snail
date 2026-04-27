@@ -72,6 +72,7 @@ pub const ScoreTotals = score_module.Totals;
 const RowEventDisplayState = row_event_module.DisplayState;
 const RowEventDisplayController = row_event_module.DisplayController;
 pub const Stopwatch = runner_state.Stopwatch;
+pub const formatTimeTrialString = runner_state.formatTimeTrialString;
 pub const DamageWarningState = damage_module.WarningState;
 pub const DamageWarningActorState = damage_module.WarningActorState;
 pub const DamageGaugeRuntime = damage_module.Runtime;

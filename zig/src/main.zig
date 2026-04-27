@@ -2321,14 +2321,6 @@ fn routeMapHasReplayEntry(
     return tables.completion[completion_index].has_replay;
 }
 
-fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
-    const total_seconds = @divTrunc(elapsed_millis, 1000);
-    const minutes = @divTrunc(total_seconds, 60);
-    const seconds = @mod(total_seconds, 60);
-    const centiseconds = @divTrunc(@mod(elapsed_millis, 1000), 10);
-    return std.fmt.bufPrint(buffer, "{d:0>2}:{d:0>2}.{d:0>2}", .{ minutes, seconds, centiseconds });
-}
-
 // PORT(partial): this now follows the recovered Windows `cRSubGoldy::ScoreAdd` constants for the
 // score events the current runner actually models:
 // ring collect (+100 for the scoring ring families), parcel pickup (+100), parcel register (+10), and the
@@ -2877,10 +2869,10 @@ test "postal completion copy matches the recovered widget strings" {
     })));
 }
 
-test "elapsed millis format as mm:ss.cc" {
+test "time trial elapsed text uses native helper format" {
     var buffer: [32]u8 = undefined;
-    const text = try formatElapsedMillis(&buffer, 91_230);
-    try std.testing.expectEqualStrings("01:31.23", text);
+    const text = try gameplay.formatTimeTrialString(&buffer, 91_230);
+    try std.testing.expectEqualStrings("1:31:23", text);
 }
 
 test "tutorial score format uses commas" {
