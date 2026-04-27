@@ -64,11 +64,14 @@ Three quads on the right column at authored x=560:
 | empty | 0x59 | `Sprites/DamageGuage.tga` (64×512) | x=560, y=70, 64×`var_14` | top (not-yet-damaged) |
 | full | 0x5a | `Sprites/DamageGuageFull.tga` (64×512) | x=560, y=70+`var_14`, 64×(396−`var_14`) | bottom (damaged) |
 
-UV y offsets use `var_14 / 432` (factor `0x3f460000`=0.77345… suggests source
-scaling to 432 logical source pixels within the 512-tall texture).
+UV y offsets use raw sprite-source pixels inside the 512-tall texture:
+`var_14 / 512` for the split and `396 / 512` for the bottom/full-area bound.
+The split height is clamped from display fill as `396` below `0.01`, `0` above
+`0.999`, otherwise `351 - display_fill * 308`.
 
-**Port bug (gameplay/hud.zig:237-302):** Draws at authored `(586, 108, 28, 224)`
-— wrong origin and **roughly 2× too narrow / 1.8× too short**.
+The Zig renderer now uses the native authored rect and the recovered split/crop
+curve rather than deriving the source crop from the full 512-pixel texture
+height.
 
 ### Warning actor (`update_warning` @ 0x446f80)
 
@@ -134,7 +137,7 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 |---|---|---|---|
 | 1 | Progress bar sprite assignment | empty top, lit bottom | **FIXED** (fed52e9): drawProgressBar swaps lit/empty to match native 0x437d72 / 0x437ddc |
 | 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | **FIXED** (fed52e9): authored rect moved to native coords |
-| 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom | **FIXED** (fed52e9 + 8571a2d): three-layer draw implemented; programmatic fallback removed |
+| 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom; raw 0..396 source crop and native split curve | **FIXED** (fed52e9 + 8571a2d): three-layer draw implemented; programmatic fallback removed; native split/crop curve now mirrored |
 | 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | **FIXED**: Postal-only allocation/update gate and native spacing |
 | 5 | Score position | widget-backed right-aligned near x=400 | **FIXED** (fed52e9, a1158e7): right-aligned at x=628 |
 | 6 | Reference best score (widget D) | top-left, mode-dependent content | **FIXED** (fed52e9, a1158e7) |

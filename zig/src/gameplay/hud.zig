@@ -257,6 +257,10 @@ const damage_gauge_x: f32 = 560.0;
 const damage_gauge_y: f32 = 70.0;
 const damage_gauge_w: f32 = 64.0;
 const damage_gauge_h: f32 = 396.0;
+const damage_gauge_empty_height_base: f32 = 351.0;
+const damage_gauge_empty_height_scale: f32 = 308.0;
+const damage_gauge_empty_floor_threshold: f32 = 0.0099999998;
+const damage_gauge_full_threshold: f32 = 0.99900001;
 
 pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay.Runner) void {
     const empty_texture = context.sprites.damage_gauge orelse return;
@@ -267,17 +271,24 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
     const warning_actor_alpha = runner.damageWarningActorAlpha();
     const warning_alpha: u8 = @intFromFloat(std.math.clamp(warning_actor_alpha, 0.0, 1.0) * 255.0);
     const bright_alpha: u8 = @intFromFloat(std.math.clamp(bright_overlay_alpha, 0.0, 1.0) * 255.0);
-    // Native splits the gauge vertically: top `var_14` is the empty frame,
-    // bottom `damage_gauge_h - var_14` is the filled portion. `fill_ratio`
-    // grows with damage, so the filled portion grows from the top down as
-    // damage rises — anchor `var_14` to `(1 - fill_ratio) * damage_gauge_h`.
-    const empty_height = (1.0 - fill_ratio) * damage_gauge_h;
+    // PORT(verified): native computes `var_14` from display fill with
+    // thresholds, not a linear full-height split:
+    // `fill >= 0.999 -> 0`, `fill < 0.01 -> 396`, else
+    // `351 - fill * 308` (`update_damage_gauge` 0x4411b3..0x4411f6).
+    const empty_height = damageGaugeEmptyHeight(fill_ratio);
     const full_height = damage_gauge_h - empty_height;
+    const source_width = @as(f32, @floatFromInt(empty_texture.texture.width));
 
     if (bright_alpha > 0) {
-        drawTextureLocalRect(
+        drawTextureLocalRectSource(
             layout,
             bright_texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = source_width,
+                .height = damage_gauge_h,
+            },
             damage_gauge_x,
             damage_gauge_y,
             damage_gauge_w,
@@ -286,8 +297,6 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
         );
     }
     if (empty_height > 0.0) {
-        const source_height = @as(f32, @floatFromInt(empty_texture.texture.height));
-        const source_width = @as(f32, @floatFromInt(empty_texture.texture.width));
         drawTextureLocalRectSource(
             layout,
             empty_texture,
@@ -295,7 +304,7 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
                 .x = 0.0,
                 .y = 0.0,
                 .width = source_width,
-                .height = source_height * (empty_height / damage_gauge_h),
+                .height = empty_height,
             },
             damage_gauge_x,
             damage_gauge_y,
@@ -305,16 +314,14 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
         );
     }
     if (full_height > 0.0) {
-        const source_height = @as(f32, @floatFromInt(full_texture.texture.height));
-        const source_width = @as(f32, @floatFromInt(full_texture.texture.width));
         drawTextureLocalRectSource(
             layout,
             full_texture,
             .{
                 .x = 0.0,
-                .y = source_height * (empty_height / damage_gauge_h),
+                .y = empty_height,
                 .width = source_width,
-                .height = source_height * (full_height / damage_gauge_h),
+                .height = full_height,
             },
             damage_gauge_x,
             damage_gauge_y + empty_height,
@@ -331,6 +338,19 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
             drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
         }
     }
+}
+
+fn damageGaugeEmptyHeight(fill_ratio: f32) f32 {
+    if (fill_ratio > damage_gauge_full_threshold) return 0.0;
+    if (fill_ratio < damage_gauge_empty_floor_threshold) return damage_gauge_h;
+    return damage_gauge_empty_height_base - fill_ratio * damage_gauge_empty_height_scale;
+}
+
+test "damage gauge split follows native display-fill curve" {
+    try std.testing.expectEqual(@as(f32, damage_gauge_h), damageGaugeEmptyHeight(0.0));
+    try std.testing.expectEqual(@as(f32, 0.0), damageGaugeEmptyHeight(1.0));
+    try std.testing.expectApproxEqAbs(@as(f32, 197.0), damageGaugeEmptyHeight(0.5), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 73.8), damageGaugeEmptyHeight(0.9), 0.0001);
 }
 
 fn currentParcelTarget(context: Context) usize {
