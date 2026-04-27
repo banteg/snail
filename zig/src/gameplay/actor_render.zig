@@ -567,6 +567,21 @@ fn drawGameplaySubLazerSlotActor(render: Context, slot: gameplay_runtime_entitie
 }
 
 fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
+    if (render.resources.sprites.smoke) |loaded_texture| {
+        for (render.effects.jet_particles) |particle| {
+            if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
+            gameplay_billboard.drawTexture(
+                loaded_texture.texture,
+                particle.position,
+                particle.width,
+                particle.height,
+                camera,
+                render.billboard_shader,
+                particle.tint,
+            );
+        }
+    }
+
     for (0..render.effects.count) |index| {
         const effect = render.effects.items[index];
         if (!effect.active or effect.ticks_remaining == 0) continue;

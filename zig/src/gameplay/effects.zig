@@ -12,6 +12,12 @@ const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 
 pub const max_active = 64;
+pub const jet_particle_trail_count = 15;
+pub const jet_particle_side_count = 2;
+pub const jet_particle_count = jet_particle_trail_count * jet_particle_side_count;
+const jet_particle_trail_step: f32 = 0.071428575;
+const jet_particle_native_width_seed: f32 = 0.145;
+const jet_particle_native_back_seed: f32 = 0.425;
 
 pub const Kind = enum {
     explode_big,
@@ -32,8 +38,17 @@ pub const Effect = struct {
     ticks_remaining: u16 = 0,
 };
 
+pub const JetParticle = struct {
+    active: bool = false,
+    position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    width: f32 = 0.0,
+    height: f32 = 0.0,
+    tint: rl.Color = .white,
+};
+
 pub const Controller = struct {
     items: [max_active]Effect = [_]Effect{.{}} ** max_active,
+    jet_particles: [jet_particle_count]JetParticle = [_]JetParticle{.{}} ** jet_particle_count,
     count: usize = 0,
 
     pub fn clear(self: *Controller) void {
@@ -41,6 +56,21 @@ pub const Controller = struct {
         for (&self.items) |*effect| {
             effect.active = false;
         }
+        self.clearJetParticles();
+    }
+
+    pub fn clearJetParticles(self: *Controller) void {
+        for (&self.jet_particles) |*particle| {
+            particle.* = .{};
+        }
+    }
+
+    pub fn activeJetParticleCount(self: *const Controller) usize {
+        var active: usize = 0;
+        for (self.jet_particles) |particle| {
+            if (particle.active) active += 1;
+        }
+        return active;
     }
 
     pub fn update(self: *Controller) void {
@@ -159,7 +189,9 @@ pub const Controller = struct {
             self.spawnHealthPickupEffects(current, preview);
         }
         if (current.jetpack.jet_particles_active) {
-            self.spawnJetParticleEffects(current, preview);
+            self.updateJetParticleBank(current, preview);
+        } else if (previous.jetpack.jet_particles_active) {
+            self.clearJetParticles();
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
             const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
@@ -245,11 +277,11 @@ pub const Controller = struct {
         }
     }
 
-    // PORT(partial): native `update_jet_particles` drives a 15x2 persistent SMOKE.TGA
-    // sprite bank from the player's live matrix while the jet particle owner is armed.
-    // The port feeds the same lifecycle into the generic smoke effect system until the
-    // dedicated nozzle sprite owner is represented directly.
-    pub fn spawnJetParticleEffects(
+    // PORT(partial): native `update_jet_particles` drives a 15x2 persistent
+    // SMOKE.TGA sprite bank from the two jet nozzles. The port now models the
+    // persistent bank directly; native per-frame RNG jitter and the occasional
+    // detached puff from the trail tip are still pending.
+    pub fn updateJetParticleBank(
         self: *Controller,
         current: gameplay.Runner,
         preview: *const track.LoadedLevelPreview,
@@ -264,26 +296,29 @@ pub const Controller = struct {
         }
 
         const origin = current.worldPosition(preview, 0.18);
-        const alpha = std.math.clamp(current.jetpack.warning_intensity, 0.0, 1.0);
-        const size = std.math.lerp(@as(f32, 0.16), @as(f32, 0.42), alpha);
-        const tint_alpha: u8 = @intFromFloat(std.math.lerp(@as(f32, 96.0), @as(f32, 224.0), alpha));
-        const backward = -0.10 - (0.18 * alpha);
-        const upward = 0.03 + (0.05 * alpha);
+        const intensity = std.math.clamp(current.jetpack.warning_intensity, 0.0, 1.0);
 
-        for ([_]f32{ -0.16, 0.16 }) |side| {
-            self.spawnWithVelocity(
-                .smoke,
-                offsetPosition(origin, right, up, forward, side, -0.03, -0.24),
-                .{
-                    .x = (forward.x * backward) + (up.x * upward) + (right.x * side * 0.04),
-                    .y = (forward.y * backward) + (up.y * upward) + (right.y * side * 0.04),
-                    .z = (forward.z * backward) + (up.z * upward) + (right.z * side * 0.04),
-                },
-                size,
-                size,
-                10,
-                .{ .r = 255, .g = 255, .b = 255, .a = tint_alpha },
-            );
+        for (0..jet_particle_trail_count) |trail_index| {
+            const progress = @as(f32, @floatFromInt(trail_index)) * jet_particle_trail_step;
+            const size = (1.0 - progress) * jet_particle_native_width_seed * intensity;
+            const back_offset = -(progress * jet_particle_native_back_seed * intensity);
+
+            for (0..jet_particle_side_count) |side_index| {
+                const side: f32 = if (side_index == 0) -0.16 else 0.16;
+                const nozzle = offsetPosition(origin, right, up, forward, side, -0.03, -0.24);
+                const bank_index = (trail_index * jet_particle_side_count) + side_index;
+                self.jet_particles[bank_index] = .{
+                    .active = true,
+                    .position = .{
+                        .x = nozzle.x + (forward.x * back_offset),
+                        .y = nozzle.y + (forward.y * back_offset),
+                        .z = nozzle.z + (forward.z * back_offset),
+                    },
+                    .width = size,
+                    .height = size,
+                    .tint = .white,
+                };
+            }
         }
     }
 
@@ -429,7 +464,7 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     try std.testing.expectApproxEqAbs(effect.velocity.z, updated.velocity.z, 0.0001);
 }
 
-test "jetpack particles use recovered armed lifecycle smoke packets" {
+test "jetpack particles use recovered persistent nozzle bank" {
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
@@ -450,18 +485,32 @@ test "jetpack particles use recovered armed lifecycle smoke packets" {
     runner.jetpack.warning_intensity = 0.5;
 
     var controller = Controller{};
-    controller.spawnJetParticleEffects(runner, &loaded_track_preview);
+    controller.updateJetParticleBank(runner, &loaded_track_preview);
 
-    try std.testing.expectEqual(@as(usize, 2), controller.count);
-    const left = controller.items[0];
-    const right = controller.items[1];
+    try std.testing.expectEqual(@as(usize, 0), controller.count);
+    try std.testing.expectEqual(@as(usize, jet_particle_count), controller.activeJetParticleCount());
+    const left = controller.jet_particles[0];
+    const right = controller.jet_particles[1];
+    const trail_tip = controller.jet_particles[jet_particle_count - 1];
 
-    try std.testing.expectEqual(Kind.smoke, left.kind);
-    try std.testing.expectEqual(Kind.smoke, right.kind);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.29), left.width, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.29), left.height, 0.0001);
-    try std.testing.expectEqual(@as(u16, 10), left.ticks_remaining);
-    try std.testing.expectEqual(@as(u8, 160), left.tint.a);
+    try std.testing.expect(left.active);
+    try std.testing.expect(right.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0725), left.width, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0725), left.height, 0.0001);
+    try std.testing.expectEqual(@as(u8, 255), left.tint.a);
     try std.testing.expect(left.position.x != right.position.x or left.position.z != right.position.z);
-    try std.testing.expect(left.velocity.x != right.velocity.x or left.velocity.z != right.velocity.z);
+    try std.testing.expect(trail_tip.width < left.width);
+    try std.testing.expect(trail_tip.position.x != right.position.x or trail_tip.position.z != right.position.z);
+
+    runner.jetpack.jet_particles_active = false;
+    controller.spawnRunnerEffects(
+        blk: {
+            var previous = runner;
+            previous.jetpack.jet_particles_active = true;
+            break :blk previous;
+        },
+        runner,
+        &loaded_track_preview,
+    );
+    try std.testing.expectEqual(@as(usize, 0), controller.activeJetParticleCount());
 }
