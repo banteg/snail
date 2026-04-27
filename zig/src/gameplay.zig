@@ -695,17 +695,27 @@ pub const Runner = struct {
             return;
         }
 
+        const replay_controls_track_x = replay.active and replay.lateral_world_x != null;
+        if (!self.paused and self.acceptsGameplayInput() and replay.active) {
+            // PORT(verified): native selected-record playback writes the recorded
+            // lateral position and latch bits before steering, movement, and
+            // row/collision processing run for the frame.
+            self.applyReplayDirective(preview, replay);
+        }
+
         if (self.acceptsGameplayInput()) {
             self.previous_row_position = self.row_position;
             self.previous_lane_center = self.lane_center;
             if (!self.paused) {
                 self.stepNativeVelocityX(preview);
             }
-            self.applyLaneDelta(input.lane_delta);
-            if (input.steering_authored_x) |steering_authored_x| {
-                self.applyMouseSteeringAuthoredX(preview, steering_authored_x, delta_seconds);
-            } else if (input.target_lane_center) |target_lane_center| {
-                self.applyTargetLaneCenter(preview, target_lane_center, delta_seconds);
+            if (!replay_controls_track_x) {
+                self.applyLaneDelta(input.lane_delta);
+                if (input.steering_authored_x) |steering_authored_x| {
+                    self.applyMouseSteeringAuthoredX(preview, steering_authored_x, delta_seconds);
+                } else if (input.target_lane_center) |target_lane_center| {
+                    self.applyTargetLaneCenter(preview, target_lane_center, delta_seconds);
+                }
             }
         }
 
@@ -722,9 +732,6 @@ pub const Runner = struct {
             self.updateNativeVelocityZOverride(preview, delta_seconds);
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
-            if (replay.active) {
-                self.applyReplayDirective(preview, replay);
-            }
             self.tick_count += 1;
             self.replay_sample_index += 1;
             self.stopwatch.advance(1.0);
@@ -9723,6 +9730,33 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expect(runner.replayFadeRequested());
     try std.testing.expect(runner.consumeReplayFadeRequest());
     try std.testing.expect(!runner.consumeReplayFadeRequest());
+}
+
+test "replay directive seeds the tick before live steering and movement" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const replay_world_x: f32 = -3.25;
+    const replay_lane_center = Runner.laneCenterFromWorldX(&fixture.preview, replay_world_x);
+    runner.stepWithReplay(
+        &fixture.preview,
+        .{
+            .lane_delta = 1,
+            .target_lane_center = replay_lane_center + 4.0,
+            .steering_authored_x = native_steering_max_x,
+        },
+        .{
+            .active = true,
+            .lateral_world_x = replay_world_x,
+            .raw_flag_bits = 0x04,
+        },
+        1.0 / 60.0,
+    );
+
+    try std.testing.expectApproxEqAbs(replay_lane_center, runner.previous_lane_center, 0.0001);
+    try std.testing.expectApproxEqAbs(replay_lane_center, runner.lane_center, 0.0001);
+    try std.testing.expect(runner.replayTrackStateLatched());
 }
 
 test "replay sample cursor advances per active update independent of row index" {
