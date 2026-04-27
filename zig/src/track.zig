@@ -947,18 +947,21 @@ pub const LoadedLevelPreview = struct {
                 try parcel_rows.append(self.allocator, .{
                     .segment_index = segment_index,
                     .row_index = row_index,
+                    .annotation = annotation,
                 });
+                @constCast(self.segments[segment_index].rows)[row_index].annotation = null;
             }
         }
 
         const keep_count = @min(target_count, parcel_rows.items.len);
         var remaining = parcel_rows.items.len;
-        while (remaining > keep_count) {
-            const remove_index = nextMathRandomScaledIndex(random_state, remaining);
+        var kept: usize = 0;
+        while (kept < keep_count and remaining > 0) : (kept += 1) {
+            const keep_index = nextMathRandomScaledIndex(random_state, remaining);
             const last_index = remaining - 1;
-            const remove_row = parcel_rows.items[remove_index];
-            @constCast(self.segments[remove_row.segment_index].rows)[remove_row.row_index].annotation = null;
-            parcel_rows.items[remove_index] = parcel_rows.items[last_index];
+            const keep_row = parcel_rows.items[keep_index];
+            @constCast(self.segments[keep_row.segment_index].rows)[keep_row.row_index].annotation = keep_row.annotation;
+            parcel_rows.items[keep_index] = parcel_rows.items[last_index];
             remaining = last_index;
         }
 
@@ -2507,6 +2510,7 @@ fn buildRuntimeFlagB01Grid(
 const ParcelRowLocation = struct {
     segment_index: usize,
     row_index: usize,
+    annotation: segment.Annotation,
 };
 
 fn countActiveParcelAnnotations(segments: []const segment.Definition) usize {
@@ -2990,6 +2994,39 @@ test "challenge parcel trim reduces live parcel rows to the requested target" {
     try std.testing.expectEqual(@as(usize, 5), kept_count);
     try std.testing.expectEqual(@as(usize, 5), preview.parcel_target_count);
     try std.testing.expectEqual(@as(usize, 5), preview.activeParcelCount());
+}
+
+test "challenge parcel selection consumes one random draw per kept parcel" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/CHALLENGE000.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    const initial_count = preview.parcel_target_count;
+    const target_count: usize = 7;
+    var expected_random_state = preview.runtime_build_final_random_state;
+    var remaining = initial_count;
+    var kept: usize = 0;
+    while (kept < target_count) : (kept += 1) {
+        _ = nextMathRandomScaledIndex(&expected_random_state, remaining);
+        remaining -= 1;
+    }
+
+    var random_state = preview.runtime_build_final_random_state;
+    const kept_count = try preview.trimParcelAnnotationsToTarget(&random_state, target_count);
+
+    try std.testing.expectEqual(target_count, kept_count);
+    try std.testing.expectEqual(expected_random_state, random_state);
 }
 
 test "resolve segment x model path" {

@@ -787,6 +787,9 @@ Current practical read:
 - `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->track_parcels`, seeds the spawn position, installs the sprite, and stores the parcel-owner pointer
 - `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->game->row_event_display)` before killing the sprite and clearing the slot state
 - `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
+  - the challenge path first builds the full candidate list, then keeps `target_count`
+    entries with one random draw per kept parcel; it is not an `N - target`
+    random-removal pass
 - `handle_subgoldy_collisions` reads the same slots back, awards the parcel score tier, and flips collected slots from state `1` to state `4`
 - these slots are the gameplay parcel runtime behind `cRSubGame::AddParcel`, not a separate manager path from it
 
