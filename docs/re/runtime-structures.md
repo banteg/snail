@@ -328,7 +328,7 @@ Current practical read:
   the state-2 auto-drain path is the forced caller
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
-  - salt contact `+0.02`
+  - salt contact `+0.15`
   - garbage `+0.04`
   - slug `+1.0`
   - health pickup `-0.5`
