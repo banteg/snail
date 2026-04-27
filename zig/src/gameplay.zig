@@ -3916,10 +3916,10 @@ pub const Runner = struct {
                             self.position_y = cell_y + native_grounded_rider_height;
                             self.attachment.exit.pending = false;
                             self.post_trampoline_airborne = true;
-                            // Trampoline landing cue (`sfx 41`, `BOING`) and the
-                            // squidge burst at `0043b120-update_subgoldy.c:525`
-                            // land with the surrounding sfx/squidge port; the
-                            // motion snap is the load-bearing piece of this lane.
+                            self.counters.trampoline_bounces += 1;
+                            self.recent_event = .trampoline;
+                            // The squidge burst at `0043b120-update_subgoldy.c:525`
+                            // lands with the surrounding squidge-controller port.
                         }
                     }
                 }
@@ -9656,6 +9656,7 @@ test "floor-cache launch rows preserve enough native forward carry for trampolin
 
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expect(saw_trampoline_bounce);
+    try std.testing.expect(runner.counters.trampoline_bounces > 0);
     try std.testing.expect(runner.current_global_row >= 24);
 }
 

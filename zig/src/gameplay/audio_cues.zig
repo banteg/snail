@@ -58,7 +58,7 @@ pub fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runn
     return .{
         .completion_arm_cheers = !runnerInCompletionHandoff(previous) and runnerInCompletionHandoff(current),
         .extra_life = current.score.total > previous.score.total and current.visible_life_stock > previous.visible_life_stock,
-        .trampoline_bounce = current.counters.trampoline_rows > previous.counters.trampoline_rows,
+        .trampoline_bounce = current.counters.trampoline_bounces > previous.counters.trampoline_bounces,
         .wall_barrier_hit = previous.current_runtime_tile_hint != native_runtime_tile_wall and
             current.current_runtime_tile_hint == native_runtime_tile_wall,
         .parcel_pickup = current.counters.parcels > previous.counters.parcels,
@@ -220,7 +220,7 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{};
     current = previous;
-    current.counters.trampoline_rows = 1;
+    current.counters.trampoline_bounces = 1;
     try std.testing.expect(nativeGameplaySoundCues(previous, current).trampoline_bounce);
 
     previous = gameplay.Runner{};

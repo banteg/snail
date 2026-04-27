@@ -145,6 +145,7 @@ pub const EncounterCounters = struct {
     attachments_completed: u32 = 0,
     parcels: u32 = 0,
     trampoline_rows: u32 = 0,
+    trampoline_bounces: u32 = 0,
     health_pickups: u32 = 0,
     jetpack_pickups: u32 = 0,
     garbage_hits: u32 = 0,
