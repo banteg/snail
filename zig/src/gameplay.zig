@@ -306,6 +306,7 @@ const TimesUpController = struct {
 };
 
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
+const native_ring_effect_forward_velocity_z_per_tick: f32 = native_track_center_x * 0.5;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
 const native_start_block_velocity_z_delta_per_tick: f32 =
@@ -1746,19 +1747,24 @@ pub const Runner = struct {
             self.applyNativeNegativeVelocityRing();
             return;
         }
+        self.applyNativeForwardVelocityRing();
         self.applyRingEffect(preview, ring_kind, nativeRingEventScores(effect_kind));
     }
 
     // PORT(verified): `handle_subgoldy_collisions` writes `-0.1` directly into
     // `player->velocity.z` for native ring kinds `3/7`, and `update_subgoldy` then recovers
     // that negative lane by `track_center_x^2 * 0.004 * 0.25` each tick until it crosses 0.
-    // Positive `velocity.z` carry now shares this lane for first-block and floor-cache
-    // acceleration; the fixed rows-per-second scalar remains the lower bound until the
-    // remaining native speed owner is fully retired.
+    // Other live ring-effect kinds seed `track_center_x * 0.5` on that same
+    // velocity lane before running the score/weapon/nuke ladder.
     fn applyNativeNegativeVelocityRing(self: *Runner) void {
         self.counters.ring_slow += 1;
         self.native_velocity_z_override_per_tick = native_negative_ring_velocity_z_per_tick;
         self.recent_event = .{ .ring = .slow };
+    }
+
+    fn applyNativeForwardVelocityRing(self: *Runner) void {
+        if (self.phase == .completion_handoff) return;
+        self.native_velocity_z_override_per_tick = native_ring_effect_forward_velocity_z_per_tick;
     }
 
     fn applyRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind, award_score: bool) void {
@@ -6338,6 +6344,33 @@ test "native ring kind 3 seeds the recovered negative-velocity shove" {
     try std.testing.expectEqualStrings("ring_slow", runner.recentEventLabel());
 }
 
+test "native runtime rings seed forward velocity for non-slow effects" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner{};
+    runner.speed_rows_per_second = 18.0;
+
+    runner.recordNativeRingEffect(&fixture.preview, 1);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_normal);
+    try std.testing.expectApproxEqAbs(
+        native_ring_effect_forward_velocity_z_per_tick,
+        runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        native_ring_effect_forward_velocity_z_per_tick * native_ticks_per_second,
+        runner.effectiveSpeedRowsPerSecond(),
+        0.0001,
+    );
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+
+    runner.phase = .completion_handoff;
+    runner.native_velocity_z_override_per_tick = null;
+    runner.recordNativeRingEffect(&fixture.preview, 1);
+    try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
+}
+
 test "native negative-velocity ring recovery moves backward before handing back to base speed" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -6379,6 +6412,11 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     runner.row_position = 13.0;
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
+    try std.testing.expectApproxEqAbs(
+        native_ring_effect_forward_velocity_z_per_tick,
+        runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
     try std.testing.expectEqual(@as(u8, 1), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 2), runner.presentation.movement_flags);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
@@ -6398,6 +6436,11 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     powerup_runner.refreshLiveRuntimeRingEffects(&powerup_fixture.preview);
     powerup_runner.processRuntimeRingEffectCollisions(&powerup_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), powerup_runner.counters.ring_powerup);
+    try std.testing.expectApproxEqAbs(
+        native_ring_effect_forward_velocity_z_per_tick,
+        powerup_runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
     try std.testing.expectEqual(@as(u32, 0), powerup_runner.score.total);
 
     var slow_fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 7.TXT");

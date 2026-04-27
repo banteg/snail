@@ -887,7 +887,10 @@ Current practical read:
   - `3/7` -> negative motion-lane impulse + `SLOWRING`
   - `4/5` -> optional voice + weapon-selector increment + `PW1..PW7`
   - `8` -> weapon-selector increment + `PW1..PW7`
-- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, and seeds the post-hit progress step from `track_center_x` instead of from runner speed
+- the same pre-ladder collision block writes the live forward-motion lane:
+  - `3/7`: `velocity.z = -0.1`
+  - other live ring-effect kinds: `velocity.z = track_center_x * 0.5`
+- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, seeds the post-hit progress step from `track_center_x` instead of from runner speed, and writes both the negative and positive live-ring `velocity.z` impulses into the runner motion lane
 - the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative because its writer is still unresolved
 
 ## Garbage Hazard Runtime
