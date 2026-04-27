@@ -156,7 +156,7 @@ pub const Controller = struct {
             );
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
-            self.spawnHealthPickupEffects(previous, current, preview);
+            self.spawnHealthPickupEffects(current, preview);
         }
         if (current.jetpack.jet_particles_active) {
             self.spawnJetParticleEffects(current, preview);
@@ -287,35 +287,32 @@ pub const Controller = struct {
         }
     }
 
-    // PORT(partial): native `health_collect_particles` emits 8 `SMOKE.TGA` sprites from the
-    // picked-up runtime slot using world-axis radial velocity, the player's live motion
-    // packet, and a small downward acceleration. The port now matches that packet shape
-    // through the gameplay-effect system, while still approximating the native motion lanes
-    // from consecutive runner world transforms instead of the original inline fields.
+    // PORT(verified): native `health_collect_particles` emits 8 `SMOKE.TGA`
+    // sprites from the picked-up runtime slot. It offsets their spawn position
+    // by `Player.velocity * 3`, then gives them only the radial sin/cos burst
+    // plus `velocity.z * 0.4`.
     pub fn spawnHealthPickupEffects(
         self: *Controller,
-        previous: gameplay.Runner,
         current: gameplay.Runner,
         preview: *const track.LoadedLevelPreview,
     ) void {
         const pickup_origin = current.last_health_pickup_position orelse current.worldPosition(preview, 0.34);
-        const previous_position = previous.worldPosition(preview, 0.0);
-        const current_position = current.worldPosition(preview, 0.0);
-        const player_motion = rl.Vector3{
-            .x = current_position.x - previous_position.x,
-            .y = current_position.y - previous_position.y,
-            .z = current_position.z - previous_position.z,
+        const player_velocity = current.nativeVelocityPerTick();
+        const particle_origin = rl.Vector3{
+            .x = pickup_origin.x + (player_velocity.x * 3.0),
+            .y = pickup_origin.y + (player_velocity.y * 3.0),
+            .z = pickup_origin.z + (player_velocity.z * 3.0),
         };
         var particle_index: usize = 0;
         while (particle_index < 8) : (particle_index += 1) {
             const angle = @as(f32, @floatFromInt(particle_index)) * 0.78539819;
             self.spawnWithPhysics(
                 .smoke,
-                pickup_origin,
+                particle_origin,
                 .{
-                    .x = (std.math.sin(angle) * 0.015) + (player_motion.x * 3.0),
-                    .y = (std.math.cos(angle) * 0.015) + (player_motion.y * 3.0),
-                    .z = (player_motion.z * 0.4) + (player_motion.z * 3.0),
+                    .x = std.math.sin(angle) * 0.015,
+                    .y = std.math.cos(angle) * 0.015,
+                    .z = player_velocity.z * 0.4,
                 },
                 .{
                     .x = 0.0,
@@ -390,37 +387,34 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     );
     defer loaded_track_preview.deinit();
 
-    var previous = gameplay.Runner.init(&loaded_track_preview);
+    const previous = gameplay.Runner.init(&loaded_track_preview);
     var current = previous;
     current.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
     current.last_health_pickup_position = .{ .x = 1.25, .y = 2.5, .z = 3.75 };
+    current.native_velocity_x_per_tick = 0.025;
+    current.velocity_y = 0.05;
+    current.native_velocity_z_override_per_tick = -0.1;
 
     var controller = Controller{};
-    controller.spawnHealthPickupEffects(previous, current, &loaded_track_preview);
+    controller.spawnHealthPickupEffects(current, &loaded_track_preview);
 
     try std.testing.expectEqual(@as(usize, 8), controller.count);
     const effect = controller.items[0];
-    const previous_position = previous.worldPosition(&loaded_track_preview, 0.0);
-    const current_position = current.worldPosition(&loaded_track_preview, 0.0);
-    const player_motion = rl.Vector3{
-        .x = current_position.x - previous_position.x,
-        .y = current_position.y - previous_position.y,
-        .z = current_position.z - previous_position.z,
-    };
+    const player_velocity = current.nativeVelocityPerTick();
 
     try std.testing.expectEqual(Kind.smoke, effect.kind);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.25), effect.position.x, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 2.5), effect.position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 3.75), effect.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25) + (player_velocity.x * 3.0), effect.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5) + (player_velocity.y * 3.0), effect.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.75) + (player_velocity.z * 3.0), effect.position.z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.width, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.5), effect.height, 0.0001);
     try std.testing.expectEqual(@as(u8, 255), effect.tint.r);
     try std.testing.expectEqual(@as(u8, 191), effect.tint.g);
     try std.testing.expectEqual(@as(u8, 191), effect.tint.b);
     try std.testing.expectEqual(@as(u8, 255), effect.tint.a);
-    try std.testing.expectApproxEqAbs(player_motion.x * 3.0, effect.velocity.x, 0.0001);
-    try std.testing.expectApproxEqAbs(0.015 + (player_motion.y * 3.0), effect.velocity.y, 0.0001);
-    try std.testing.expectApproxEqAbs((player_motion.z * 0.4) + (player_motion.z * 3.0), effect.velocity.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), effect.velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.015), effect.velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs(player_velocity.z * 0.4, effect.velocity.z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), effect.acceleration.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, -0.0002), effect.acceleration.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), effect.acceleration.z, 0.0001);

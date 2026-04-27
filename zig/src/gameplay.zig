@@ -2141,6 +2141,14 @@ pub const Runner = struct {
         return self.damage.displayFill();
     }
 
+    pub fn nativeVelocityPerTick(self: *const Runner) rl.Vector3 {
+        return .{
+            .x = self.native_velocity_x_per_tick,
+            .y = self.velocity_y,
+            .z = self.native_velocity_z_override_per_tick orelse self.track_step_rows,
+        };
+    }
+
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
         if (self.native_velocity_z_override_per_tick) |velocity_z| {
             const native_rows_per_second = velocity_z * native_ticks_per_second;
