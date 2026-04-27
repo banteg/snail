@@ -258,6 +258,8 @@ const native_position_y_death_threshold: f32 = -7.0;
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
+const native_grounded_snap_squidge_velocity_bias: f32 = 0.029999999;
+const native_barrier_squidge_z_seed: f32 = -0.33000001;
 const native_barrier_hold_max_y: f32 = 6.5;
 
 const TimesUpState = enum {
@@ -694,6 +696,10 @@ pub const Runner = struct {
             self.finished = true;
             self.handoff.pending = .completion_finalize;
             return;
+        }
+
+        if (!self.paused) {
+            self.presentation.squidge.tick();
         }
 
         const replay_controls_track_x = replay.active and replay.lateral_world_x != null;
@@ -3880,6 +3886,9 @@ pub const Runner = struct {
             if (snap_tile_allows) {
                 self.post_trampoline_airborne = false;
                 if (self.velocity_y <= 0.0) {
+                    if (self.velocity_y < native_grounded_snap_velocity_y_squidge_threshold) {
+                        self.presentation.squidge.startY(self.velocity_y - native_grounded_snap_squidge_velocity_bias);
+                    }
                     self.position_y = native_grounded_rider_height;
                     self.velocity_y = 0.0;
                 }
@@ -3912,6 +3921,7 @@ pub const Runner = struct {
                         if (cell_y + envelope > self.position_y and
                             cell_y - envelope < self.position_y)
                         {
+                            self.presentation.squidge.startY(self.velocity_y);
                             self.velocity_y = native_track_center_x * 0.30000001;
                             self.position_y = cell_y + native_grounded_rider_height;
                             self.attachment.exit.pending = false;
@@ -3992,6 +4002,7 @@ pub const Runner = struct {
         self.native_velocity_z_override_per_tick = null;
         const snapped_row_position = @floor(self.row_position + native_grounded_rider_height) - 0.5;
         self.applyTrackPosition(motion_module.trackPositionFromWorldZ(preview, snapped_row_position));
+        self.presentation.squidge.startZ(native_barrier_squidge_z_seed);
 
         // PORT(verified): `update_subgoldy` advances `player + 0x328` by the
         // seeded `1/60` step while Turbo is held by runtime tile `0x0e`, then
@@ -9603,6 +9614,8 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
 
     try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
     try std.testing.expectApproxEqAbs(@as(f32, 12.5), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(native_barrier_squidge_z_seed, runner.presentation.squidge.z_phase, 0.0001);
+    try std.testing.expect(runner.presentation.squidge.z_velocity > 0.0);
     try std.testing.expectApproxEqAbs(runner.presentation.barrier_hold_step, runner.presentation.barrier_hold_progress, 0.0001);
     try std.testing.expect(!runner.attachment.exit.pending);
 
@@ -9657,6 +9670,7 @@ test "floor-cache launch rows preserve enough native forward carry for trampolin
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expect(saw_trampoline_bounce);
     try std.testing.expect(runner.counters.trampoline_bounces > 0);
+    try std.testing.expect(runner.presentation.squidge.y_velocity < 0.0);
     try std.testing.expect(runner.current_global_row >= 24);
 }
 

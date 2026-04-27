@@ -193,6 +193,8 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x0c`: `z_output`
   - `+0x10`: `z_velocity`
   - `+0x14`: `z_phase`
+  - helper constants recovered from `update_squidge`: phase spring `0.15000001`,
+    damping `0.81999999`, and terminal epsilon `0.001`
 - `player + 0x150` is an inline `NukeController`
   - `+0x00`: `state`
   - `+0x04`: `owner_player`

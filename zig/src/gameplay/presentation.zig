@@ -73,6 +73,41 @@ pub const SnailSkinTransition = struct {
     }
 };
 
+pub const SquidgeState = struct {
+    y_output: f32 = 0.0,
+    y_velocity: f32 = 0.0,
+    y_phase: f32 = 0.0,
+    z_output: f32 = 0.0,
+    z_velocity: f32 = 0.0,
+    z_phase: f32 = 0.0,
+
+    pub fn startY(self: *SquidgeState, value: f32) void {
+        self.y_phase = 0.0;
+        self.y_velocity = value * 0.5;
+    }
+
+    pub fn startZ(self: *SquidgeState, value: f32) void {
+        self.z_phase = value;
+        self.z_velocity = value * -0.003;
+    }
+
+    pub fn tick(self: *SquidgeState) void {
+        tickAxis(&self.y_output, &self.y_velocity, &self.y_phase);
+        tickAxis(&self.z_output, &self.z_velocity, &self.z_phase);
+    }
+
+    fn tickAxis(output: *f32, velocity: *f32, phase: *f32) void {
+        if (velocity.* == 0.0) return;
+        phase.* += velocity.*;
+        velocity.* = (velocity.* - (phase.* * 0.15000001)) * 0.81999999;
+        output.* = -phase.*;
+        if (@abs(velocity.*) < 0.001 and @abs(output.*) < 0.001) {
+            velocity.* = 0.0;
+            output.* = 0.0;
+        }
+    }
+};
+
 pub const WeaponChannelStates = struct {
     left: u8 = 0,
     right: u8 = 0,
@@ -96,6 +131,7 @@ pub const State = struct {
     movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
     shot_cooldown_ticks: u8 = 0,
     snail_skin: SnailSkinTransition = .{},
+    squidge: SquidgeState = .{},
 };
 
 pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
@@ -272,6 +308,28 @@ test "native jetpack visual presentation follows the recovered 0.94 shutoff edge
 
     gauge.disarm();
     try std.testing.expect(!nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
+}
+
+test "squidge y helper matches native seed and damping" {
+    var squidge = SquidgeState{};
+
+    squidge.startY(-0.16);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.08), squidge.y_velocity, 0.0001);
+
+    squidge.tick();
+    try std.testing.expectApproxEqAbs(@as(f32, 0.08), squidge.y_output, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.05576), squidge.y_velocity, 0.0001);
+}
+
+test "squidge z helper matches native seed and damping" {
+    var squidge = SquidgeState{};
+
+    squidge.startZ(-0.33000001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.33000001), squidge.z_phase, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.00099), squidge.z_velocity, 0.0001);
+
+    squidge.tick();
+    try std.testing.expect(squidge.z_output > 0.32);
 }
 
 test "jetpack visual state keeps native draw and hide legs around the shutoff edge" {
