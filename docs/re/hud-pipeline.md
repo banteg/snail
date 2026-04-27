@@ -80,8 +80,13 @@ Mid-track parcel counter widget. Called from `update_subgoldy` at
 
 ### Times up (`update_times_up` @ 0x445e20)
 
-"Times Up" message triggered when `runtime_track_index == 0x5208`. Called
-from `update_subgoldy` at 0x43d20b.
+`show_times_up_message` creates a centered `"Time's Up"` font-20 widget at
+authored y=200 when the native replay/update cursor (`Game+0xff25dc`, mirrored
+as `Runner.replay_sample_index`) reaches 21000. `update_times_up` advances the
+controller by `0.0055555557` per tick; once it reaches state 2, it uninitializes
+the widget and calls `kill_subgoldy`, which arms `begin_post_follow_carryover`
+and forces `live_matrix.position.y = -8.0` so the next `update_subgoldy` tick
+enters the shared `y < -7` death path.
 
 ## Sprite registry entries (from `initialize_game_assets_and_world`)
 
@@ -136,13 +141,13 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 | 9 | Jetpack gauge bar | does not exist (particles only) | **REMOVED** (8571a2d): port invention deleted |
 | 10 | "Click to Start" prompt text | menu_button widget at (0, 200) centered | **FIXED**: dedicated standalone draw uses native authored y=200 instead of tutorial prompt-stack anchors |
 | 11 | `update_row_event_display` | native draws through 5 allocated borders per frame | port uses custom NineSliceFrame + icon + text (drawRowEventWidget); same data, different shell |
-| 12 | `update_times_up` | at stop-track marker | not wired |
+| 12 | `update_times_up` | at replay/update cursor 21000, then `kill_subgoldy` | **FIXED**: runner-owned controller draws `"Time's Up"` and feeds the native fall/death lane |
 | 13 | `update_warning` | flash WARNING.TGA on crit | **FIXED** (8571a2d): drawn from inside drawDamageGauge with correct authored (288, 64, 64, 64) |
 
 ### Remaining
 
 - (11) `drawRowEventWidget` could be ported to the native 5-widget allocated-border approach with `allocate_border` / `kill_border` lifecycle. Current implementation produces the same content but bypasses the widget system.
-- (12) `update_times_up` / `show_times_up_message` — wire "Time's Up" prompt for the stop-track marker (trigger: `runtime_track_index == 0x5208` per `update_subgoldy` 0x43d1f2).
+- (12) `update_times_up` / `show_times_up_message` — ported as a runner-owned controller keyed to replay/update cursor 21000, with the recovered `0.0055555557` progress step and `kill_subgoldy` y-lane handoff.
 
 ## Replay HUD
 

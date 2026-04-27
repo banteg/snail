@@ -2355,6 +2355,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 try gameplay_hud.drawRowEventWidget(hud_context, layout, runner, camera);
             }
             try gameplay_prompt_overlay.drawGameplayStack(state.gameplayPromptContext(), layout, &state.level_prompt_queue);
+            gameplay_hud.drawTimesUpWidget(hud_context, layout, runner);
         }
     }
 
@@ -2370,9 +2371,11 @@ fn drawTutorialGameplayUi(state: *const AppState, hud_context: gameplay_hud.Cont
         if (!state.tutorialClickStartCutsceneActive()) {
             gameplay_prompt_overlay.drawClickStartWidget(state.gameplayPromptContext(), layout);
         }
+        gameplay_hud.drawTimesUpWidget(hud_context, layout, runner);
         return;
     }
     try gameplay_prompt_overlay.drawTutorialStack(state.gameplayPromptContext(), layout, &state.level_prompt_queue);
+    gameplay_hud.drawTimesUpWidget(hud_context, layout, runner);
 }
 
 fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {

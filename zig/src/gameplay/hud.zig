@@ -194,6 +194,13 @@ pub fn drawStatusWidgets(context: Context, layout: VirtualLayout, runner: gamepl
     }
 }
 
+pub fn drawTimesUpWidget(context: Context, layout: VirtualLayout, runner: gameplay.Runner) void {
+    if (!runner.timesUpVisible()) return;
+    // PORT(verified): `show_times_up_message` creates a centered font-20
+    // frontend text widget with authored y=200.
+    drawCenteredHudTextShadowed(context, layout, 320.0, 200.0, "Time's Up", 20, .white);
+}
+
 pub fn drawRowEventWidget(
     context: Context,
     layout: VirtualLayout,

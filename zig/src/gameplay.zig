@@ -166,6 +166,8 @@ const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
 const starting_visible_life_stock = score_module.starting_visible_life_stock;
 const starting_runtime_track_index: usize = 4;
+const times_up_trigger_sample_index: usize = 21_000;
+const times_up_progress_step: f32 = 0.0055555557;
 pub const intro_cutscene_duration_ticks: u16 = gameplay_camera.intro_cutscene_duration_ticks;
 pub const completion_cutscene_duration_ticks: u16 = gameplay_camera.completion_cutscene_duration_ticks;
 pub const death_cutscene_duration_ticks: u16 = gameplay_camera.death_cutscene_duration_ticks;
@@ -256,6 +258,47 @@ const native_position_y_death_threshold: f32 = -7.0;
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
+
+const TimesUpState = enum {
+    inactive,
+    message,
+    kill_pending,
+};
+
+const TimesUpController = struct {
+    state: TimesUpState = .inactive,
+    progress: f32 = 0.0,
+    progress_step: f32 = times_up_progress_step,
+
+    fn show(self: *TimesUpController) void {
+        if (self.state != .inactive) return;
+        self.progress = 0.0;
+        self.progress_step = times_up_progress_step;
+        self.state = .message;
+    }
+
+    fn update(self: *TimesUpController) bool {
+        switch (self.state) {
+            .inactive => return false,
+            .message => {
+                self.progress += self.progress_step;
+                if (self.progress > 1.0) {
+                    self.state = .kill_pending;
+                }
+                return false;
+            },
+            .kill_pending => {
+                self.* = .{};
+                return true;
+            },
+        }
+    }
+
+    fn visible(self: TimesUpController) bool {
+        return self.state == .message;
+    }
+};
+
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
@@ -476,6 +519,7 @@ pub const Runner = struct {
     last_processed_row: ?usize = null,
     runtime: hazards_module.Runtime = .{},
     combat: combat_module.Combat = .{},
+    times_up: TimesUpController = .{},
     time_trial_ghost_active: bool = false,
     time_trial_ghost_z: f32 = 0.0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
@@ -573,6 +617,7 @@ pub const Runner = struct {
         self.attachment = .{};
         self.runtime = .{};
         self.combat = .{};
+        self.times_up = .{};
         self.time_trial_ghost_active = false;
         self.time_trial_ghost_z = 0.0;
         self.native_velocity_x_per_tick = 0.0;
@@ -730,6 +775,9 @@ pub const Runner = struct {
         }
         if (!self.paused and self.phase == .active) {
             self.stepActivePhaseVerticalMotion(preview);
+        }
+        if (!self.paused and self.phase == .active) {
+            self.updateTimesUpController(preview);
         }
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment.ticks += 1;
@@ -1144,6 +1192,10 @@ pub const Runner = struct {
 
     pub fn rowEventCounterVisible(self: *const Runner) bool {
         return self.row_event_display.counterVisible(self.session_mode == .tutorial);
+    }
+
+    pub fn timesUpVisible(self: *const Runner) bool {
+        return self.times_up.visible();
     }
 
     pub fn rowEventParcelTargetCount(self: *const Runner) u32 {
@@ -4115,6 +4167,27 @@ pub const Runner = struct {
             .challenge, .time_trial => true,
             .tutorial, .debug => false,
         };
+    }
+
+    fn updateTimesUpController(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        // PORT(verified): `update_subgoldy` increments the replay/update cursor
+        // once per live tick and calls `show_times_up_message` exactly when it
+        // reaches 21000. `update_times_up` then advances a tiny controller by
+        // 0.0055555557 each tick; once it enters state 2, it uninitializes the
+        // widget and calls `kill_subgoldy`.
+        if (self.replay_sample_index == times_up_trigger_sample_index) {
+            self.times_up.show();
+        }
+        if (!self.times_up.update()) return;
+
+        // `kill_subgoldy` is not a separate death cause: it first runs
+        // `begin_post_follow_carryover` (which clears the active follow byte),
+        // then writes `live_matrix.position.y = -8.0`. The existing native
+        // vertical-motion port sees the same `y < -7` condition on the following
+        // tick and enters the shared fall/death path.
+        self.seedAttachmentExitStateFromCarryover(preview, self.row_position);
+        self.clearAttachmentFollow();
+        self.position_y = -8.0;
     }
 
     fn currentAttachmentBuilt(self: *const Runner, preview: *const track.LoadedLevelPreview) ?*const attachment_builders.BuiltAttachment {
@@ -7628,6 +7701,55 @@ test "stopwatch advances minutes seconds and subsecond counters at 60fps" {
     try std.testing.expectEqual(@as(u32, 50), stopwatch.centiseconds);
     try std.testing.expectEqual(@as(u32, 500), stopwatch.milliseconds);
     try std.testing.expectEqual(@as(u32, 1500), stopwatch.elapsedMillis());
+}
+
+test "times up message arms at the native replay cursor threshold" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.speed_rows_per_second = 0.0;
+    fixture.preview.runtime_tiles[runner.current_global_row * fixture.preview.max_width + runner.resolved_lane_index] = 1;
+    runner.replay_sample_index = times_up_trigger_sample_index - 1;
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expect(runner.timesUpVisible());
+    try std.testing.expectEqual(TimesUpState.message, runner.times_up.state);
+    try std.testing.expectApproxEqAbs(times_up_progress_step, runner.times_up.progress, 0.0001);
+    try std.testing.expectEqual(times_up_trigger_sample_index, runner.replay_sample_index);
+}
+
+test "times up mirrors kill_subgoldy by forcing the live y lane before fall death" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.time_trial);
+    runner.speed_rows_per_second = 0.0;
+    fixture.preview.runtime_tiles[runner.current_global_row * fixture.preview.max_width + runner.resolved_lane_index] = 1;
+    runner.replay_sample_index = times_up_trigger_sample_index - 1;
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    var steps: usize = 0;
+    while (runner.position_y > native_position_y_death_threshold and steps < 220) : (steps += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expect(steps < 220);
+    try std.testing.expect(!runner.timesUpVisible());
+    try std.testing.expectEqual(TimesUpState.inactive, runner.times_up.state);
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expectApproxEqAbs(@as(f32, -8.0), runner.position_y, 0.0001);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+
+    steps = 0;
+    while (runner.phase == .active and steps < 64) : (steps += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+    try std.testing.expect(steps < 64);
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
 }
 
 test "postal death hands off respawn after the death controller finishes with runner-owned life consumption" {
