@@ -2321,12 +2321,11 @@ fn routeMapHasReplayEntry(
     return tables.completion[completion_index].has_replay;
 }
 
-// PORT(partial): this now follows the recovered Windows `cRSubGoldy::ScoreAdd` constants for the
-// score events the current runner actually models:
-// ring collect (+100 for the scoring ring families), parcel pickup (+100), parcel register (+10), and the
-// postal-only completion bonus (+50,000). Health pickup no longer scores in the Windows-targeted path.
-// Slug kills (+500), garbage-side score events (+10),
-// jetpack/speed-up scoring, and the rest of the original `cRSubGoldy::AI()` path remain unported.
+// PORT(partial): gameplay score awards now route through the recovered Windows
+// `cRSubGoldy::ScoreAdd` table: garbage +10, slug +500, ring +100,
+// parcel collect +100, parcel deliver +100, and variable completion bonus.
+// The remaining scoring gap is deeper `cRSubGoldy::AI()` ownership and any
+// unmodeled callers, not the point table.
 fn bootPhaseProgress(state: *const AppState) f32 {
     return boot_assets.progress(state.boot_task_index);
 }
@@ -2752,7 +2751,7 @@ test "completion reveal stages the bonus line before continue" {
         .parcel_target = 7,
         .score = 50_000,
         .score_is_partial = false,
-        .score_totals = .{ .completion_bonus = 50_000 },
+        .score_totals = .{ .bonus = 50_000 },
         .outer_return_target = .postal_route_map,
     };
 
@@ -2822,7 +2821,7 @@ test "completion reveal advances while the early overlay is active in level phas
         .parcel_target = 7,
         .score = 50_000,
         .score_is_partial = false,
-        .score_totals = .{ .completion_bonus = 50_000 },
+        .score_totals = .{ .bonus = 50_000 },
         .outer_return_target = .postal_route_map,
     };
     state.game_phase = .level;

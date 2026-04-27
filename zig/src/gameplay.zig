@@ -107,7 +107,7 @@ const garbage_damage_delta: f32 = 0.04;
 // delta when the Wall2 AI fires a sublazer via `shoot_subgoldy`.
 const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
-const garbage_collision_distance_threshold: f32 = 0.98;
+const garbage_distance_threshold: f32 = 0.98;
 // PORT(verified): `cRSalt` collision uses the `0.98f` distance gate for
 // authored tile-0x22 salt contact, not the `0.49f` gate that the SubLazer
 // projectile pool uses. Aligning to the `cRSalt` side of the split.
@@ -316,8 +316,8 @@ const slow_ring_duration_ticks: u16 = 240;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level = presentation_module.max_weapon_level;
-const slug_projectile_kill_score: u32 = 100;
-const parcel_delivery_register_score: u32 = 10;
+const slug_projectile_kill_score: u32 = score_module.nativeEventPoints(.slug, 0);
+const parcel_delivery_register_score: u32 = score_module.nativeEventPoints(.parcel_deliver, 0);
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
 const CameraHotspotWorldState = gameplay_camera.CameraHotspotWorldState;
 const CutsceneCameraState = gameplay_camera.CutsceneCameraState;
@@ -1775,7 +1775,7 @@ pub const Runner = struct {
             },
         }
         if (award_score) {
-            self.recordScore(&self.score.ring_collect, 100);
+            self.recordScore(.ring, 0);
         }
         if (ring_kind != .none) {
             self.recent_event = .{ .ring = ring_kind };
@@ -1799,9 +1799,9 @@ pub const Runner = struct {
         self.parcel.home_anchor = .{};
     }
 
-    fn recordScore(self: *Runner, slot: *u32, points: u32) void {
+    fn recordScore(self: *Runner, event: score_module.Event, bonus_points: u32) void {
         const previous_total = self.score.total;
-        score_module.add(&self.score, slot, points);
+        const points = score_module.add(&self.score, event, bonus_points);
         self.recent_score_award = points;
         self.recent_score_award_ticks = 45;
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
@@ -1811,7 +1811,7 @@ pub const Runner = struct {
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) return;
         self.row_event_display.delivered_parcel_count += 1;
         self.row_event_display.display_token +%= 1;
-        self.recordScore(&self.score.parcel_register, parcel_delivery_register_score);
+        self.recordScore(.parcel_deliver, 0);
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) {
             self.maybeAwardRowEventCompletionBonus();
             self.row_event_display.staged_parcel_count = self.row_event_display.delivered_parcel_count;
@@ -1848,7 +1848,7 @@ pub const Runner = struct {
             }
 
             self.counters.parcels += 1;
-            self.recordScore(&self.score.parcel_pickup, 100);
+            self.recordScore(.parcel_collect, 0);
             self.recent_event = .{ .parcel = parcel.parcel_id };
             self.parcel.home_anchor = .{
                 .active = true,
@@ -1951,13 +1951,13 @@ pub const Runner = struct {
                 continue;
             }
             const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
-            if (distance > garbage_collision_distance_threshold) {
+            if (distance > garbage_distance_threshold) {
                 index += 1;
                 continue;
             }
             self.counters.garbage_hits += 1;
             self.last_garbage_hit_position = hazard_position;
-            self.recordScore(&self.score.garbage_collision, 10);
+            self.recordScore(.garbage, 0);
             self.applyGarbageImpact(preview, hazard_position);
             self.applyDamageGaugeDelta(garbage_damage_delta);
             self.recent_event = .garbage_hit;
@@ -2102,11 +2102,11 @@ pub const Runner = struct {
     }
 
     fn maybeAwardRowEventCompletionBonus(self: *Runner) void {
-        if (self.score.completion_bonus != 0 or !self.row_event_display.bonus_enabled) return;
+        if (self.score.bonus != 0 or !self.row_event_display.bonus_enabled) return;
         if (self.row_event_display.parcel_target_count == 0 or
             self.row_event_display.delivered_parcel_count < self.row_event_display.parcel_target_count) return;
 
-        self.recordScore(&self.score.completion_bonus, postal_completion_bonus_score);
+        self.recordScore(.bonus, postal_completion_bonus_score);
     }
 
     fn startDamageWarningActor(self: *Runner) void {
@@ -2726,7 +2726,7 @@ pub const Runner = struct {
             self.defeated_slug_cell_count += 1;
         }
         if (award_score) {
-            self.recordScore(&self.score.garbage_collision, slug_projectile_kill_score);
+            self.recordScore(.slug, 0);
         }
     }
 
@@ -5898,7 +5898,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 0), runner.score.health_collect);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.slug);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage.gauge, 0.0001);
     try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
 
@@ -5932,7 +5932,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqual(@as(u32, 10), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
+    try std.testing.expectEqual(@as(u32, 10), runner.score.garbage);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage.gauge, 0.0001);
     try std.testing.expect(runner.speed_rows_per_second != speed_before_garbage);
     try std.testing.expect(runner.last_garbage_hit_position != null);
@@ -6277,7 +6277,7 @@ test "slow rings reduce effective speed while active" {
     runner.recordRing(&fixture.preview, .slow);
     try std.testing.expectEqual(slow_ring_duration_ticks, runner.presentation.slow_ticks);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 0), runner.score.ring_collect);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.ring);
     try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
 
     runner.stepTemporaryStates();
@@ -6418,9 +6418,9 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     runner.processRuntimeRingEffectCollisions(&preview);
 
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_explode);
-    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.ring_collect);
-    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
+    try std.testing.expectEqual(@as(u32, 600), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.ring);
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
     try std.testing.expectEqual(@as(usize, 1), runner.defeated_slug_cell_count);
     try std.testing.expectEqualStrings("ring_explode", runner.recentEventLabel());
     var found_collect_setup = false;
@@ -6664,7 +6664,7 @@ test "projectile fire defeats slug after powerup" {
 
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
-    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
 }
 
 test "movement flags spawn the recovered projectile channel layouts" {
@@ -7246,15 +7246,15 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
 
     runner.recordRing(&arcade_fixture.preview, .normal);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.ring_collect);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.ring);
 
     runner = Runner.init(&arcade_fixture.preview);
     const parcel = findFirstAnnotationTag(&arcade_fixture.preview, .parcel).?;
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     try std.testing.expect(stepUntilParcelPickup(&runner, &arcade_fixture.preview, 32) < 32);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
-    try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_collect);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_deliver);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
@@ -7263,12 +7263,12 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     try std.testing.expect(stepUntilParcelPickup(&runner, &arcade_fixture.preview, 32) < 32);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 0), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.bonus);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     runner.flushPendingParcelDeliveries();
-    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
-    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_register);
-    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_deliver);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.bonus);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
 }
 
@@ -7580,7 +7580,7 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     const register_steps = stepUntilParcelRegistered(&runner, &fixture.preview, 256);
     try std.testing.expect(register_steps < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
-    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_register);
+    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_deliver);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
@@ -7717,7 +7717,7 @@ test "runner applies the completion bonus once" {
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.bonus);
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
@@ -7726,15 +7726,15 @@ test "runner applies the completion bonus once" {
 test "runner seeds visible life stock at 3 and caps score-side awards at 9" {
     var runner = Runner{};
 
-    runner.recordScore(&runner.score.ring_collect, 49_900);
+    runner.recordScore(.bonus, 49_900);
     try std.testing.expectEqual(@as(u32, 49_900), runner.score.total);
     try std.testing.expectEqual(@as(u32, 3), runner.visible_life_stock);
 
-    runner.recordScore(&runner.score.health_collect, 100);
+    runner.recordScore(.ring, 0);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
     try std.testing.expectEqual(@as(u32, 4), runner.visible_life_stock);
 
-    runner.recordScore(&runner.score.health_collect, 400_000);
+    runner.recordScore(.bonus, 400_000);
     try std.testing.expectEqual(@as(u32, 450_000), runner.score.total);
     try std.testing.expectEqual(@as(u32, 9), runner.visible_life_stock);
 }
@@ -7806,7 +7806,8 @@ test "postal death hands off respawn after the death controller finishes with ru
 
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.postal);
-    runner.recordScore(&runner.score.ring_collect, 200);
+    runner.recordScore(.ring, 0);
+    runner.recordScore(.ring, 0);
     runner.runtime_track_index = 24;
     runner.track_row_progress = 0.5;
     runner.syncRowPosition(&fixture.preview);
@@ -7850,7 +7851,8 @@ test "applyRespawn preserves score timer and remaining lives while resetting mov
 
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.postal);
-    runner.recordScore(&runner.score.ring_collect, 200);
+    runner.recordScore(.ring, 0);
+    runner.recordScore(.ring, 0);
     runner.visible_life_stock = 2;
     runner.tick_count = 90;
     runner.stopwatch.advance(90.0);
@@ -7890,14 +7892,14 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
-    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
-    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.bonus);
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
     try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
 }
 
 test "challenge death hands off final loss" {
@@ -9745,7 +9747,7 @@ test "score awards update transient tutorial hud state" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.recordScore(&runner.score.ring_collect, 100);
+    runner.recordScore(.ring, 0);
     try std.testing.expectEqual(@as(u32, 100), runner.recent_score_award);
     try std.testing.expectEqual(@as(u8, 45), runner.recent_score_award_ticks);
 

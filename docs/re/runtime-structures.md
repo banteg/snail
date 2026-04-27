@@ -83,6 +83,18 @@ The current high-confidence `Player` fields are:
   - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
   - decremented by `update_subgoldy_resurrect` on the respawn branch
 
+`add_subgoldy_score` writes six per-event score buckets at `+0x310..+0x324`
+before updating total score at `+0x2e4`:
+
+| Event | Offset | Native label | Points |
+| --- | --- | --- | --- |
+| `0` | `+0x310` | `Garbage` | `10` |
+| `1` | `+0x314` | `Slug` | `500` |
+| `2` | `+0x318` | `Ring` | `100` |
+| `3` | `+0x31c` | `Parcel Collect` | `100` |
+| `4` | `+0x320` | `Parcel Deliver` | `100` |
+| `5` | `+0x324` | `Bonus` | caller-supplied |
+
 Current practical read for the hotspot bank:
 
 - `build_snail_hotspots` seeds `snail_hotspots_local` from the snail model's named hotpoint textures

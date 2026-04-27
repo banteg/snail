@@ -75,7 +75,7 @@ pub fn title(summary: Summary) []const u8 {
 }
 
 pub fn hasBonusLine(summary: Summary) bool {
-    return summary.outcome == .completed and summary.score_totals.completion_bonus > 0;
+    return summary.outcome == .completed and summary.score_totals.bonus > 0;
 }
 
 pub fn revealTarget(summary: Summary) f32 {
@@ -106,10 +106,10 @@ pub fn packageLine(buffer: []u8, summary: Summary) ![]const u8 {
 
 pub fn bonusLine(buffer: []u8, summary: Summary) !?[]const u8 {
     if (!hasBonusLine(summary)) return null;
-    if (summary.score_totals.completion_bonus == 50_000 and summary.parcel_count == summary.parcel_target) {
+    if (summary.score_totals.bonus == 50_000 and summary.parcel_count == summary.parcel_target) {
         return try std.fmt.bufPrint(buffer, "Perfect Score! 50,000 Bonus Points!", .{});
     }
-    return try std.fmt.bufPrint(buffer, "{d} Bonus Points!", .{summary.score_totals.completion_bonus});
+    return try std.fmt.bufPrint(buffer, "{d} Bonus Points!", .{summary.score_totals.bonus});
 }
 
 pub fn continueAnchorY(summary: Summary) f32 {
@@ -272,17 +272,17 @@ pub fn drawFailed(
         });
         drawAppText(state, score_text, body_x, score_y, layout.fontSize(18), .sky_blue);
 
-        var breakdown_buffer: [224]u8 = undefined;
+        var breakdown_buffer: [256]u8 = undefined;
         const breakdown_text = try std.fmt.bufPrint(
             &breakdown_buffer,
-            "Rings {d}  Garbage {d}  Health {d}  Pickup {d}  Register {d}  Bonus {d}  Lives {d}  Damage {d:.2}",
+            "Ring {d}  Garbage {d}  Slug {d}  Parcel Collect {d}  Parcel Deliver {d}  Bonus {d}  Lives {d}  Damage {d:.2}",
             .{
-                summary.score_totals.ring_collect,
-                summary.score_totals.garbage_collision,
-                summary.score_totals.health_collect,
-                summary.score_totals.parcel_pickup,
-                summary.score_totals.parcel_register,
-                summary.score_totals.completion_bonus,
+                summary.score_totals.ring,
+                summary.score_totals.garbage,
+                summary.score_totals.slug,
+                summary.score_totals.parcel_collect,
+                summary.score_totals.parcel_deliver,
+                summary.score_totals.bonus,
                 summary.visible_life_stock,
                 summary.damage_gauge,
             },
