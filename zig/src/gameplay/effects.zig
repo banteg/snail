@@ -15,6 +15,7 @@ pub const max_active = 64;
 pub const jet_particle_trail_count = 15;
 pub const jet_particle_side_count = 2;
 pub const jet_particle_count = jet_particle_trail_count * jet_particle_side_count;
+pub const nuke_particle_count = gameplay.native_nuke_sprite_count;
 const jet_particle_trail_step: f32 = 0.071428575;
 const jet_particle_native_width_seed: f32 = 0.145;
 const jet_particle_native_back_seed: f32 = 0.425;
@@ -46,9 +47,18 @@ pub const JetParticle = struct {
     tint: rl.Color = .white,
 };
 
+pub const NukeParticle = struct {
+    active: bool = false,
+    position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    width: f32 = 0.0,
+    height: f32 = 0.0,
+    tint: rl.Color = .white,
+};
+
 pub const Controller = struct {
     items: [max_active]Effect = [_]Effect{.{}} ** max_active,
     jet_particles: [jet_particle_count]JetParticle = [_]JetParticle{.{}} ** jet_particle_count,
+    nuke_particles: [nuke_particle_count]NukeParticle = [_]NukeParticle{.{}} ** nuke_particle_count,
     count: usize = 0,
 
     pub fn clear(self: *Controller) void {
@@ -57,6 +67,7 @@ pub const Controller = struct {
             effect.active = false;
         }
         self.clearJetParticles();
+        self.clearNukeParticles();
     }
 
     pub fn clearJetParticles(self: *Controller) void {
@@ -65,9 +76,23 @@ pub const Controller = struct {
         }
     }
 
+    pub fn clearNukeParticles(self: *Controller) void {
+        for (&self.nuke_particles) |*particle| {
+            particle.* = .{};
+        }
+    }
+
     pub fn activeJetParticleCount(self: *const Controller) usize {
         var active: usize = 0;
         for (self.jet_particles) |particle| {
+            if (particle.active) active += 1;
+        }
+        return active;
+    }
+
+    pub fn activeNukeParticleCount(self: *const Controller) usize {
+        var active: usize = 0;
+        for (self.nuke_particles) |particle| {
             if (particle.active) active += 1;
         }
         return active;
@@ -175,15 +200,10 @@ pub const Controller = struct {
         preview: *const track.LoadedLevelPreview,
     ) void {
         const forward = current.worldForward(preview);
-        if (current.counters.ring_explode > previous.counters.ring_explode) {
-            self.spawn(
-                .explode_big,
-                current.worldPosition(preview, 0.52),
-                1.8,
-                1.8,
-                28,
-                .{ .r = 255, .g = 228, .b = 168, .a = 244 },
-            );
+        if (current.nuke.active) {
+            self.updateNukeParticleBank(current, preview);
+        } else if (previous.nuke.active) {
+            self.clearNukeParticles();
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
             self.spawnHealthPickupEffects(current, preview);
@@ -240,6 +260,37 @@ pub const Controller = struct {
                     .white,
                 );
             }
+        }
+    }
+
+    // PORT(verified): native `initialize_nuke` allocates 25 sprites, sets each
+    // size lane to 3.0, and `update_nuke` places them at
+    // `(sin(i * 0.04 * tau + phase) * 7, cos(...) * 7, orbit_axis)` while the
+    // player-side controller remains active.
+    pub fn updateNukeParticleBank(
+        self: *Controller,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+    ) void {
+        if (!current.nuke.active) {
+            self.clearNukeParticles();
+            return;
+        }
+
+        const origin = current.worldPosition(preview, 0.52);
+        for (0..nuke_particle_count) |index| {
+            const phase = (@as(f32, @floatFromInt(index)) * 0.039999999 * std.math.tau) + current.nuke.phase;
+            self.nuke_particles[index] = .{
+                .active = true,
+                .position = .{
+                    .x = origin.x + (@sin(phase) * gameplay.native_nuke_orbit_radius),
+                    .y = origin.y + (@cos(phase) * gameplay.native_nuke_orbit_radius),
+                    .z = current.nuke.orbit_axis,
+                },
+                .width = 3.0,
+                .height = 3.0,
+                .tint = .white,
+            };
         }
     }
 
@@ -495,4 +546,55 @@ test "jetpack particles use recovered persistent nozzle bank" {
         &loaded_track_preview,
     );
     try std.testing.expectEqual(@as(usize, 0), controller.activeJetParticleCount());
+}
+
+test "explode ring nuke uses native 25 sprite orbit bank" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.nuke = .{
+        .active = true,
+        .orbit_axis = 12.0,
+        .phase = 0.0,
+    };
+
+    var controller = Controller{};
+    controller.updateNukeParticleBank(runner, &loaded_track_preview);
+
+    try std.testing.expectEqual(@as(usize, nuke_particle_count), controller.activeNukeParticleCount());
+    const origin = runner.worldPosition(&loaded_track_preview, 0.52);
+    const first = controller.nuke_particles[0];
+    const opposite = controller.nuke_particles[nuke_particle_count / 2];
+    try std.testing.expect(first.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), first.width, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), first.height, 0.0001);
+    try std.testing.expectApproxEqAbs(origin.x, first.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(origin.y + gameplay.native_nuke_orbit_radius, first.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), first.position.z, 0.0001);
+    try std.testing.expect(opposite.position.y < origin.y);
+
+    runner.nuke.active = false;
+    controller.spawnRunnerEffects(
+        blk: {
+            var previous = runner;
+            previous.nuke.active = true;
+            break :blk previous;
+        },
+        runner,
+        &loaded_track_preview,
+    );
+    try std.testing.expectEqual(@as(usize, 0), controller.activeNukeParticleCount());
 }

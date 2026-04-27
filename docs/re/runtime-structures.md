@@ -217,7 +217,9 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x18`: `sprite_slots[25]`
   - `handle_subgoldy_collisions` arms it through `initialize_nuke`
   - `update_subgoldy` either advances it through `update_nuke` or tears it down through `uninit_nuke`
-  - the axis itself is still intentionally neutral; `initialize_nuke` seeds it from `owner_player->position` and `update_nuke` writes it back into the sprite slot transform, but the world-axis interpretation is not pinned down in this pass
+  - `initialize_nuke` seeds `orbit_axis = owner_player->position.z - 5.0`, `orbit_axis_step = track_center_x * 2`, `phase = 0`, and `phase_step = 0.10471976`
+  - `update_nuke` advances 25 sprites around the active axis with `sin/cos(index * 0.04 * tau + phase) * 7.0`; each sprite uses the native `3.0 x 3.0` size lanes
+  - `update_subgoldy` owns the lifetime gate through `player + 0x374/+0x378`, refreshing the step as `track_center_x * 0.022222223` and tearing the controller down once progress exceeds `1.0`
 - `player + 0x14c` is the one-shot `row_event_cutscene_started` latch
   - `initialize_subgoldy` clears it on run start
   - `update_subgoldy` flips it the first time the row-event tip path dispatches the one-shot cutscene animation

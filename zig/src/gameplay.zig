@@ -316,6 +316,11 @@ const native_floor_cache_velocity_z_delta_per_tick: f32 =
 const native_start_block_velocity_z_max_per_tick: f32 = 1.0;
 const native_attachment_exit_z_damping_per_tick: f32 = 1.0 - (native_track_center_x * 0.2);
 const slow_ring_duration_ticks: u16 = 240;
+pub const native_nuke_sprite_count: usize = 25;
+pub const native_nuke_orbit_radius: f32 = 7.0;
+pub const native_nuke_phase_step: f32 = 0.10471976;
+const native_nuke_orbit_axis_step: f32 = native_track_center_x * 2.0;
+const native_nuke_effect_progress_step: f32 = native_track_center_x * 0.022222223;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level = presentation_module.max_weapon_level;
@@ -461,6 +466,16 @@ fn offsetPosition(
 
 const AttachmentCameraProgress = runner_state.AttachmentCameraProgress;
 
+pub const NukeController = struct {
+    active: bool = false,
+    effect_progress: f32 = 0.0,
+    effect_progress_step: f32 = 0.0,
+    orbit_axis: f32 = 0.0,
+    orbit_axis_step: f32 = 0.0,
+    phase: f32 = 0.0,
+    phase_step: f32 = 0.0,
+};
+
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
     base_subgame_rate: f32 = 1.1,
@@ -511,6 +526,7 @@ pub const Runner = struct {
     row_message_token: u32 = 0,
     last_native_ring_effect_kind: ?u8 = null,
     native_ring_effect_token: u32 = 0,
+    nuke: NukeController = .{},
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
@@ -774,6 +790,7 @@ pub const Runner = struct {
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
+            self.updateNukeController();
             self.stepTemporaryStates();
             self.updateSlowCommentaryTimer();
         } else if (!self.paused) {
@@ -2405,6 +2422,8 @@ pub const Runner = struct {
     }
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        self.initializeNukeController(preview);
+
         var write_index: usize = 0;
         for (0..self.runtime.hazards.count) |read_index| {
             const hazard = self.runtime.hazards.slots[read_index];
@@ -2429,6 +2448,50 @@ pub const Runner = struct {
                     }
                 }
             }
+        }
+    }
+
+    // PORT(verified): `initialize_nuke` @ 0x447110 arms the inline
+    // `Player+0x150` controller once, seeds the orbit axis from the player z
+    // minus 5.0, uses `phase_step = 0.10471976`, `orbit_axis_step =
+    // track_center_x * 2`, and immediately dispatches one `update_nuke`.
+    // `handle_subgoldy_collisions` seeds `player+0x374` from the current
+    // `player+0x378` progress step before the init call, so the port starts
+    // the visible lifetime on that same first-step value.
+    fn initializeNukeController(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.nuke.active) return;
+        self.nuke = .{
+            .active = true,
+            .effect_progress = native_nuke_effect_progress_step,
+            .effect_progress_step = native_nuke_effect_progress_step,
+            .orbit_axis = self.worldPosition(preview, 0.0).z - 5.0,
+            .orbit_axis_step = native_nuke_orbit_axis_step,
+            .phase = 0.0,
+            .phase_step = native_nuke_phase_step,
+        };
+        self.advanceNukeOrbit();
+    }
+
+    // PORT(verified): `update_subgoldy` @ 0x43b120 refreshes the progress
+    // step as `track_center_x * 0.022222223`, advances `player+0x374`, calls
+    // `update_nuke` while the progress stays <= 1.0, and otherwise calls
+    // `uninit_nuke`.
+    fn updateNukeController(self: *Runner) void {
+        if (!self.nuke.active) return;
+        self.nuke.effect_progress_step = native_nuke_effect_progress_step;
+        self.nuke.effect_progress += self.nuke.effect_progress_step;
+        if (self.nuke.effect_progress > 1.0) {
+            self.nuke = .{};
+            return;
+        }
+        self.advanceNukeOrbit();
+    }
+
+    fn advanceNukeOrbit(self: *Runner) void {
+        self.nuke.orbit_axis += self.nuke.orbit_axis_step;
+        self.nuke.phase += self.nuke.phase_step;
+        if (self.nuke.phase > std.math.tau) {
+            self.nuke.phase -= std.math.tau;
         }
     }
 
@@ -6999,9 +7062,18 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
 
     runner.triggerExplodeRing(&fixture.preview);
 
+    try std.testing.expect(runner.nuke.active);
+    try std.testing.expectApproxEqAbs(native_nuke_effect_progress_step, runner.nuke.effect_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(native_nuke_phase_step, runner.nuke.phase, 0.0001);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
     try std.testing.expect(runner.runtime.salts.contains(slug.row, slug.lane));
+
+    var ticks: usize = 0;
+    while (runner.nuke.active and ticks < 32) : (ticks += 1) {
+        runner.updateNukeController();
+    }
+    try std.testing.expect(!runner.nuke.active);
 }
 
 test "explode rings still reach right-edge authored lanes" {

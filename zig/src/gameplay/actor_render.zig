@@ -582,6 +582,22 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         }
     }
 
+    const nuke_texture = render.resources.sprites.explode_big orelse render.resources.sprites.explode_small;
+    if (nuke_texture) |loaded_texture| {
+        for (render.effects.nuke_particles) |particle| {
+            if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
+            gameplay_billboard.drawTexture(
+                loaded_texture.texture,
+                particle.position,
+                particle.width,
+                particle.height,
+                camera,
+                render.billboard_shader,
+                particle.tint,
+            );
+        }
+    }
+
     for (0..render.effects.count) |index| {
         const effect = render.effects.items[index];
         if (!effect.active or effect.ticks_remaining == 0) continue;
