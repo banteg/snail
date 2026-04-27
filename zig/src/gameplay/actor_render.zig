@@ -126,6 +126,11 @@ pub fn drawRuntimeActors(
         drawGameplaySaltSlotActor(render, camera, slot);
     }
 
+    for (runner.activeRuntimeSubLazers()) |slot| {
+        if (!gameplay_render_policy.subLazerVisible(runner, slot)) continue;
+        drawGameplaySubLazerSlotActor(render, slot);
+    }
+
     for (runner.activeRuntimePickups()) |pickup| {
         if (!gameplay_render_policy.pickupVisible(runner, pickup)) continue;
         switch (pickup.kind) {
@@ -544,6 +549,21 @@ fn drawGameplayProjectileActor(render: Context, projectile: gameplay.Projectile)
         .vapour_lazer_object = vapour_lazer_object,
         .rocket_model = rocket_model,
     }, projectile);
+}
+
+fn drawGameplaySubLazerSlotActor(render: Context, slot: gameplay_runtime_entities.SubLazerSlot) void {
+    // Native `cRSubLazerManager` slots render through the same LAZER/VAPOURLAZER
+    // asset family as projectile shots; the Wall2 tile is only the emitter.
+    drawGameplayProjectileActor(render, .{
+        .active = true,
+        .kind = .enemy_laser,
+        .world_x = slot.world_position.x,
+        .world_y = slot.world_position.y,
+        .world_z = slot.world_position.z,
+        .dir_x = slot.velocity.x,
+        .dir_y = slot.velocity.y,
+        .dir_z = slot.velocity.z,
+    });
 }
 
 fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {

@@ -36,6 +36,12 @@ pub fn saltSlotVisible(runner: gameplay.Runner, slot: runtime_entities.SaltSlot)
         slot.world_position.z <= runner.row_position + 72.0;
 }
 
+pub fn subLazerVisible(runner: gameplay.Runner, slot: runtime_entities.SubLazerSlot) bool {
+    return slot.state == .active and
+        slot.world_position.z + 8.0 >= runner.row_position and
+        slot.world_position.z <= runner.row_position + 72.0;
+}
+
 pub fn staticRingVisible(
     preview: *const track.LoadedLevelPreview,
     row_location: track.RowLocation,
