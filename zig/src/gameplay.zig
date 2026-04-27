@@ -258,6 +258,7 @@ const native_position_y_death_threshold: f32 = -7.0;
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
+const native_barrier_hold_max_y: f32 = 6.5;
 
 const TimesUpState = enum {
     inactive,
@@ -3960,6 +3961,8 @@ pub const Runner = struct {
             self.velocity_y += native_gravity_velocity_y_delta;
         }
 
+        self.stepNativeBarrierHoldController(preview, tile_at_position);
+
         // Post-follow carryover arm at the tail of the else branch
         // (`artifacts/ida/functions/0043b120-update_subgoldy.c:581-583`): once
         // `position.y` has dipped below `0.0` with non-positive velocity, native
@@ -3973,6 +3976,32 @@ pub const Runner = struct {
             self.velocity_y <= 0.0)
         {
             self.seedAttachmentExitStateZeroed(self.row_position);
+        }
+    }
+
+    fn stepNativeBarrierHoldController(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        tile_opt: ?u8,
+    ) void {
+        if (tile_opt != native_wall2_tile_id or self.position_y >= native_barrier_hold_max_y) {
+            self.presentation.barrier_hold_progress = 0.0;
+            return;
+        }
+
+        self.native_velocity_z_override_per_tick = null;
+        const snapped_row_position = @floor(self.row_position + native_grounded_rider_height) - 0.5;
+        self.applyTrackPosition(motion_module.trackPositionFromWorldZ(preview, snapped_row_position));
+
+        // PORT(verified): `update_subgoldy` advances `player + 0x328` by the
+        // seeded `1/60` step while Turbo is held by runtime tile `0x0e`, then
+        // calls `begin_post_follow_carryover` once the timer crosses one second.
+        self.presentation.barrier_hold_progress += self.presentation.barrier_hold_step;
+        if (self.presentation.barrier_hold_progress > 1.0) {
+            self.presentation.barrier_hold_progress = 0.0;
+            if (!self.attachment.exit.pending) {
+                self.seedAttachmentExitStateZeroed(self.row_position);
+            }
         }
     }
 
@@ -9556,6 +9585,37 @@ test "runner descends through an authored gap row instead of halting at the edge
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
     try std.testing.expect(runner.velocity_y < 0.0);
     try std.testing.expectApproxEqAbs(starting_position_y, runner.position_y, 0.0001);
+}
+
+test "barrier hold tile snaps z and arms post-follow exit after the native timer" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = 12;
+    runner.track_row_progress = 0.73;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.resolved_lane_index] = native_wall2_tile_id;
+    runner.native_velocity_z_override_per_tick = 0.8;
+
+    runner.stepActivePhaseVerticalMotion(&fixture.preview);
+
+    try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.5), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.presentation.barrier_hold_step, runner.presentation.barrier_hold_progress, 0.0001);
+    try std.testing.expect(!runner.attachment.exit.pending);
+
+    var ticks: usize = 0;
+    while (ticks < 61 and !runner.attachment.exit.pending) : (ticks += 1) {
+        runner.refreshSample(&fixture.preview);
+        fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.resolved_lane_index] = native_wall2_tile_id;
+        runner.stepActivePhaseVerticalMotion(&fixture.preview);
+    }
+
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expectApproxEqAbs(runner.row_position, runner.attachment.exit.anchor_z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.presentation.barrier_hold_progress, 0.0001);
 }
 
 test "floor-cache launch rows preserve enough native forward carry for trampoline gaps" {

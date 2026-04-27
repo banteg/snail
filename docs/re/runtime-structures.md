@@ -236,6 +236,10 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `barrier_hold_progress`
   - `barrier_hold_step`
   - `initialize_subgoldy` seeds the step to `1/60`
+  - `update_subgoldy` advances it only while the sampled runtime tile is `0x0e`
+    and `live_matrix.position.y < 6.5`; that branch zeroes forward velocity,
+    snaps z to `floor(z + 0.49) - 0.5`, and calls `begin_post_follow_carryover`
+    once progress crosses `1.0`
 - `player + 0x330/+0x334` is the current safe startup-voice timer pair
   - `startup_voice_timer`
   - `startup_voice_step`
