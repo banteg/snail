@@ -76,7 +76,10 @@ height.
 ### Warning actor (`update_warning` @ 0x446f80)
 
 Fires `WARNING.TGA` flash when damage hits critical. Called from
-`update_subgoldy` at 0x43b165. Position TODO (need to decode).
+`update_subgoldy` at 0x43b165. `initialize_warning` allocates sprite `0x5e` at
+authored `(288, 64)` with alpha `0.999000013`; `start_warning` begins in
+state 2 with progress `1.0`, and `update_warning` alternates fade-cycle and
+solid states with step `1/12`.
 
 ### Row event display (`update_row_event_display` @ 0x404cf0)
 
