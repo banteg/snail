@@ -127,6 +127,8 @@ const garbage_burst_side_bias_scale: f32 = 0.2;
 const garbage_burst_gravity_scale: f32 = -0.01;
 const garbage_burst_teardown_y: f32 = -10.0;
 const garbage_burst_trailing_rows: f32 = 2.0;
+const garbage_smoke_velocity_scale: f32 = 0.2;
+const garbage_smoke_progress_step_factor: f32 = 0.27777779;
 const damage_warning_transition_step = damage_module.warning_transition_step;
 const damage_warning_drain_delta = damage_module.warning_drain_delta;
 const damage_warning_actor_step = damage_module.warning_actor_step;
@@ -516,6 +518,8 @@ pub const Runner = struct {
     row_event_display: RowEventDisplayController = .{},
     last_health_pickup_position: ?rl.Vector3 = null,
     last_garbage_hit_position: ?rl.Vector3 = null,
+    last_garbage_smoke_position: ?rl.Vector3 = null,
+    last_garbage_smoke_velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
     presentation: presentation_module.State = .{},
@@ -2095,6 +2099,7 @@ pub const Runner = struct {
         if (hazard.kind != .garbage or hazard.state != .active) return;
         hazard.state = .burst_setup;
         hazard.collision_side = if (hazard.world_position.x >= player_position.x) 1 else -1;
+        hazard.smoke_progress = 0.0;
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
@@ -3167,6 +3172,7 @@ pub const Runner = struct {
                     hazard.velocity.x = -@abs(hazard.velocity.x);
                 }
                 hazard.velocity.x += @as(f32, @floatFromInt(hazard.collision_side)) * speed * garbage_burst_side_bias_scale;
+                hazard.smoke_progress = 0.0;
             },
             .burst => {},
         }
@@ -3178,7 +3184,23 @@ pub const Runner = struct {
         hazard.velocity.y += (speed * speed) * garbage_burst_gravity_scale;
         if (hazard.world_position.y < garbage_burst_teardown_y) return false;
         if (hazard.world_position.z < self.row_position - garbage_burst_trailing_rows) return false;
+
+        hazard.smoke_progress += native_track_center_x * garbage_smoke_progress_step_factor;
+        if (hazard.smoke_progress > 1.0) {
+            hazard.smoke_progress = 0.0;
+            self.emitGarbageSmokeParticle(hazard.world_position, hazard.velocity);
+        }
         return true;
+    }
+
+    fn emitGarbageSmokeParticle(self: *Runner, position: rl.Vector3, velocity: rl.Vector3) void {
+        self.counters.garbage_smoke_particles += 1;
+        self.last_garbage_smoke_position = position;
+        self.last_garbage_smoke_velocity = .{
+            .x = velocity.x * garbage_smoke_velocity_scale,
+            .y = velocity.y * garbage_smoke_velocity_scale,
+            .z = velocity.z * garbage_smoke_velocity_scale,
+        };
     }
 
     fn refreshLiveRuntimeRingEffects(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6179,6 +6201,11 @@ test "garbage burst hazards keep live world motion after contact" {
 
     try std.testing.expectEqual(RuntimeHazardState.burst, runner.activeRuntimeHazards()[0].state);
     try std.testing.expect(after.x != before.x or after.y != before.y or after.z != before.z);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_smoke_particles);
+    try std.testing.expect(runner.last_garbage_smoke_position != null);
+    try std.testing.expect(runner.last_garbage_smoke_velocity.x != 0.0 or
+        runner.last_garbage_smoke_velocity.y != 0.0 or
+        runner.last_garbage_smoke_velocity.z != 0.0);
 }
 
 test "slug hit latches the shared fall path" {

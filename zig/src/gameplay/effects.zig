@@ -204,42 +204,8 @@ pub const Controller = struct {
                 .{ .r = 255, .g = 220, .b = 180, .a = 236 },
             );
         }
-        if (current.counters.garbage_hits > previous.counters.garbage_hits) {
-            const smoke_origin = current.last_garbage_hit_position orelse current.worldPosition(preview, 0.34);
-            self.spawnWithVelocity(
-                .smoke,
-                .{
-                    .x = smoke_origin.x - 0.18,
-                    .y = smoke_origin.y + 0.22,
-                    .z = smoke_origin.z,
-                },
-                .{
-                    .x = forward.x * 0.02,
-                    .y = 0.012,
-                    .z = forward.z * 0.02,
-                },
-                0.56,
-                0.56,
-                22,
-                .{ .r = 255, .g = 255, .b = 255, .a = 208 },
-            );
-            self.spawnWithVelocity(
-                .smoke,
-                .{
-                    .x = smoke_origin.x + 0.14,
-                    .y = smoke_origin.y + 0.36,
-                    .z = smoke_origin.z - 0.08,
-                },
-                .{
-                    .x = forward.x * 0.014,
-                    .y = 0.018,
-                    .z = (forward.z * 0.014) - 0.004,
-                },
-                0.72,
-                0.72,
-                28,
-                .{ .r = 255, .g = 255, .b = 255, .a = 176 },
-            );
+        if (current.counters.garbage_smoke_particles > previous.counters.garbage_smoke_particles) {
+            self.spawnGarbageSmokeParticle(current);
         }
         if (current.counters.salt_hits > previous.counters.salt_hits) {
             const smoke_origin = current.last_salt_hit_position orelse current.worldPosition(preview, 0.52);
@@ -275,6 +241,22 @@ pub const Controller = struct {
                 );
             }
         }
+    }
+
+    // PORT(verified): native `spawn_garbage_smoke_particle` allocates one
+    // `SMOKE.TGA` sprite from the live garbage object's current position,
+    // copies `garbage.velocity * 0.2`, and seeds size lanes to `0.3 x 1.3`.
+    pub fn spawnGarbageSmokeParticle(self: *Controller, current: gameplay.Runner) void {
+        const smoke_origin = current.last_garbage_smoke_position orelse current.last_garbage_hit_position orelse return;
+        self.spawnWithVelocity(
+            .smoke,
+            smoke_origin,
+            current.last_garbage_smoke_velocity,
+            0.3,
+            1.3,
+            8,
+            .white,
+        );
     }
 
     // PORT(partial): native `update_jet_particles` drives a 15x2 persistent

@@ -150,6 +150,7 @@ pub const EncounterCounters = struct {
     health_pickups: u32 = 0,
     jetpack_pickups: u32 = 0,
     garbage_hits: u32 = 0,
+    garbage_smoke_particles: u32 = 0,
     salt_hits: u32 = 0,
     slug_hits: u32 = 0,
     turret_hits: u32 = 0,

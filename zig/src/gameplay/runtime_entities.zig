@@ -34,6 +34,7 @@ pub const Hazard = struct {
     arming_progress: f32 = 1.0,
     arming_step: f32 = 0.0,
     collision_side: i8 = 0,
+    smoke_progress: f32 = 0.0,
 };
 
 // PORT(verified): per-slot layout mirrors the `cRSalt` projectile slot at
