@@ -836,8 +836,8 @@ Current practical read:
   - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
 - health collection also triggers `health_collect_particles`, which allocates `8` `SMOKE.TGA` sprites (`sprite id 128`) with:
   - radial world-axis velocity `sin/cos(i * pi / 4) * 0.015`
-  - forward carry `player_motion_z * 0.4`
-  - full motion carry `player_motion_xyz * 3.0`
+  - forward velocity `player->velocity.z * 0.4`
+  - spawn-position carry `player->velocity.xyz * 3.0`
   - sprite size `0.1 x 0.5`, tint `(1.0, 0.75, 0.75, 1.0)`, and a small downward acceleration `-0.0002`
 - Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
 
