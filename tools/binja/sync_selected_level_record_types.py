@@ -41,7 +41,8 @@ GAME_FIELD_UPDATES = (
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
-    ("0xff25dc", "runtime_track_index", "int32_t"),
+    ("0xff25dc", "replay_update_cursor", "int32_t"),
+    ("0xff25e4", "runtime_track_index", "int32_t"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (

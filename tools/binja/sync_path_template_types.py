@@ -16,12 +16,13 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackRowCell",
     "PathTemplate",
     "Player",
+    "TutorialController",
 )
 
 PLAYER_FIELD_UPDATES = (
     ("0x38", "live_matrix", "TransformMatrix"),
     ("0x80", "resurrect_final_loss", "int32_t"),
-    ("0x84", "flag84", "int32_t"),
+    ("0x84", "resurrect_active", "int32_t"),
     ("0x8c", "resurrect_progress", "float"),
     ("0x90", "resurrect_progress_step", "float"),
     ("0x98", "cached_track_pair_cell_a", "TrackRowCell*"),
@@ -102,6 +103,7 @@ GAME_FIELD_UPDATES = (
     ("0x58", "completion_row_start", "int32_t"),
     ("0x74621", "pause_gate", "uint8_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
+    ("0xa858", "tutorial", "TutorialController"),
     ("0xa874", "level_segment_count", "int32_t"),
     ("0x356b00", "sub_lazer_pool", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_pool", "SaltHazardSlot[0x28]"),
@@ -112,7 +114,8 @@ GAME_FIELD_UPDATES = (
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
-    ("0xff25dc", "runtime_track_index", "int32_t"),
+    ("0xff25dc", "replay_update_cursor", "int32_t"),
+    ("0xff25e4", "runtime_track_index", "int32_t"),
     ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "row_event_display", "RowEventDisplayController"),
@@ -271,6 +274,24 @@ PROTO_UPDATES = (
         "initialize_subgoldy_resurrect",
         "int32_t __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
     ),
+    (
+        "initialize_tutorial",
+        "void __fastcall initialize_tutorial(TutorialController* controller)",
+    ),
+    (
+        "update_tutorial",
+        "TrackRowCell* __fastcall update_tutorial(TutorialController* controller)",
+    ),
+    (
+        "enqueue_tip_message",
+        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button)",
+    ),
+    (
+        "initialize_tip",
+        "void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button)",
+    ),
+    ("update_tip", "void* __fastcall update_tip(TipSlot* slot)"),
+    ("update_tip_manager", "void __fastcall update_tip_manager(TipManager* manager)"),
     (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(InvincibleShellController* shell)",

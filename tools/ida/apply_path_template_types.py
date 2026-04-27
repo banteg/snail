@@ -220,11 +220,27 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "enqueue_tip_message",
-        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_only_ok);",
+        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button);",
     ),
     (
         "initialize_tip",
-        "int32_t __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_only_ok);",
+        "void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button);",
+    ),
+    (
+        "update_tip",
+        "void* __fastcall update_tip(TipSlot* slot);",
+    ),
+    (
+        "update_tip_manager",
+        "void __fastcall update_tip_manager(TipManager* manager);",
+    ),
+    (
+        "initialize_tutorial",
+        "void __fastcall initialize_tutorial(TutorialController* controller);",
+    ),
+    (
+        "update_tutorial",
+        "TrackRowCell* __fastcall update_tutorial(TutorialController* controller);",
     ),
     (
         "flush_row_event_display",

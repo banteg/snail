@@ -20,6 +20,7 @@ struct PathTemplate;
 struct TrackRowCell;
 struct PlayerControlSource;
 struct PlayerPresentationController;
+struct Game;
 typedef struct RowEventDisplayController RowEventDisplayController;
 
 typedef struct Vec3 {
@@ -67,6 +68,13 @@ typedef struct SelectedLevelRecord {
     SelectedLevelReplaySample replay_samples[1];
 } SelectedLevelRecord;
 
+typedef struct TutorialController {
+    int32_t state;
+    int32_t _pad_04;
+    int32_t _pad_08;
+    void* game;
+} TutorialController;
+
 typedef struct RowEventDisplayController {
     void* widget_a;
     void* widget_b;
@@ -103,16 +111,24 @@ typedef struct Game {
     int32_t first_block_row_count;
     int32_t runtime_row_count;
     int32_t completion_row_start;
-    uint8_t _pad_54[0xa800];
+    uint8_t _pad_5c[0x745c5];
+    uint8_t pause_gate;
+    uint8_t _pad_74622[0x36232];
     uint8_t track_state_latch;
-    uint8_t _pad_a855[0xfe7d7b];
+    uint8_t _pad_a855[0x3];
+    TutorialController tutorial;
+    uint8_t _pad_a868[0xc];
+    int32_t level_segment_count;
+    uint8_t _pad_a878[0xfe7d58];
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
     SelectedLevelRecord* selected_level_record;
     int32_t selected_level_record_saved_return_owner;
+    int32_t replay_update_cursor;
+    uint8_t _pad_ff25e0[0x4];
     int32_t runtime_track_index;
-    uint8_t _pad_ff25e0[0x2801f8];
+    uint8_t _pad_ff25e8[0x2801f0];
     RowEventDisplayController row_event_display;
 } Game;
 
@@ -247,6 +263,22 @@ typedef struct TipMessageDefinition {
     char* text;
 } TipMessageDefinition;
 
+typedef struct TipSlot {
+    int32_t active;
+    int32_t previous_outer_owner;
+    TipMessageDefinition* definition;
+    void* widget_main;
+    void* widget_ok;
+    void* widget_disable;
+    float dismiss_progress;
+    float dismiss_step;
+} TipSlot;
+
+typedef struct TipManager {
+    uint8_t _pad_00[0x38];
+    TipSlot slots[3];
+} TipManager;
+
 typedef struct PlayerRowEventState {
     int32_t id;
     TipMessageDefinition tip_definition;
@@ -341,7 +373,7 @@ typedef struct Player {
     TransformMatrix live_matrix;
     uint8_t _pad_78[0x8];
     int32_t resurrect_final_loss;
-    int32_t flag84;
+    int32_t resurrect_active;
     uint8_t _pad_88[0x4];
     float resurrect_progress;
     float resurrect_progress_step;

@@ -115,7 +115,7 @@ In short:
 | 0 | Postal | `update_subgame` 0x438ce3 → `update_galaxy`; `update_subgoldy` 0x43b239 gates Postal life row |
 | 1 | Challenge | `update_subgame` 0x438d9b → `update_challenge_setup_screen` |
 | 4 | Time Trial | `update_subgame` 0x438d3e → `update_galaxy` with selector=2 (watch-best) |
-| 7 | Tutorial | `update_subgame` 0x438eb2 → `update_tutorial`; `initialize_tutorial` 0x448da0 sets `runtime_flags \|= 0x600000` |
+| 7 | Tutorial | `update_subgame` 0x438eb2 → `update_tutorial(&game->tutorial)`; `initialize_tutorial` 0x448da0 sets `runtime_flags \|= 0x600000` and stores the `Game` back-pointer |
 | 2, 3, 5, 6 | transitional engine states | fall through in `update_subgame` switch; 0x40ad2e writes `level_mode=2` at process init; mode 3 gets a slightly different hourglass tint at 0x438e33 |
 
 HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and

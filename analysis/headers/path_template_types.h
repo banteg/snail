@@ -609,6 +609,13 @@ typedef struct PlayerRowEventState {
     TipMessageDefinition tip_definition;
 } PlayerRowEventState;
 
+typedef struct TutorialController {
+    int32_t state;
+    int32_t _pad_04;
+    int32_t _pad_08;
+    void* game;
+} TutorialController;
+
 typedef struct RowEventDisplayController {
     void* widget_a;
     void* widget_b;
@@ -670,18 +677,24 @@ typedef struct Game {
     int32_t first_block_row_count;
     int32_t runtime_row_count;
     int32_t completion_row_start;
-    uint8_t _pad_5c[0xa7f8];
+    uint8_t _pad_5c[0x745c5];
+    uint8_t pause_gate;
+    uint8_t _pad_74622[0x36232];
     uint8_t track_state_latch;
-    uint8_t _pad_a855[0x1f];
+    uint8_t _pad_a855[0x3];
+    TutorialController tutorial;
+    uint8_t _pad_a868[0xc];
     int32_t level_segment_count;
-    uint8_t _pad_a878[0xfe7b58];
+    uint8_t _pad_a878[0xfe7d58];
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
     SelectedLevelRecord* selected_level_record;
     int32_t selected_level_record_saved_return_owner;
+    int32_t replay_update_cursor;
+    uint8_t _pad_ff25e0[0x4];
     int32_t runtime_track_index;
-    uint8_t _pad_ff25e0[0x2801f8];
+    uint8_t _pad_ff25e8[0x2801f0];
     RowEventDisplayController row_event_display;
 } Game;
 
@@ -746,7 +759,13 @@ typedef struct FollowState {
 typedef struct Player {
     uint8_t _pad_00[0x38];
     TransformMatrix live_matrix;
-    uint8_t _pad_78[0x20];
+    uint8_t _pad_78[0x8];
+    int32_t resurrect_final_loss;
+    int32_t resurrect_active;
+    uint8_t _pad_88[0x4];
+    float resurrect_progress;
+    float resurrect_progress_step;
+    uint8_t _pad_94[0x4];
     TrackRowCell* cached_track_pair_cell_a;
     TrackRowCell* cached_track_pair_cell_b;
     uint8_t _pad_a0[0x80];
@@ -902,8 +921,12 @@ int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, i
 void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
-TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_only_ok);
-int32_t __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_only_ok);
+TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button);
+void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button);
+void* __fastcall update_tip(TipSlot* slot);
+void __fastcall update_tip_manager(TipManager* manager);
+void __fastcall initialize_tutorial(TutorialController* controller);
+TrackRowCell* __fastcall update_tutorial(TutorialController* controller);
 int32_t __fastcall flush_row_event_display(RowEventDisplayController* controller);
 int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controller);
 void __fastcall update_row_event_display(RowEventDisplayController* controller);

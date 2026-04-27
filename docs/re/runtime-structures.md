@@ -10,6 +10,10 @@ The current high-confidence `Player` fields are:
 
 - `+0x38`: `live_matrix`
   - `+0x68`: `live_matrix.position`
+- `+0x80`: `resurrect_final_loss`
+- `+0x84`: `resurrect_active`
+- `+0x8c`: `resurrect_progress`
+- `+0x90`: `resurrect_progress_step`
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
@@ -383,6 +387,8 @@ The current high-confidence `Game` fields are:
 - `+0x48`: `base_subgame_rate`
 - `+0x4c`: `runtime_flags`
 - `+0xa854`: `track_state_latch`
+- `+0xa858`: `tutorial`
+  - inline `TutorialController`
 - `+0xa874`: `level_segment_count`
 - `+0x1b0138`: `level_length`
 - `+0x1b013c`: `level_random`
@@ -431,6 +437,12 @@ bits `0x1/0x2` for fire state, `0x4` for the replay latch, and `0x8` for the mar
 Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
+- `initialize_tutorial` owns only the small `Game + 0xa858` tutorial controller:
+  - `+0x00`: `state`
+  - `+0x0c`: stored `Game` back-pointer
+  - it sets runtime flags `0x600000` and clears the low `0x02` runtime bit while wiring that back-pointer
+- `update_tutorial` is not a hidden tutorial event runner; it dereferences the stored `Game` pointer and returns the current row cell from `get_track_grid_cell_at_world_position`
+- row-message/tutorial text dispatch continues through the normal `PlayerRowEventState -> TipMessageDefinition -> enqueue_tip_message -> TipManager` path
 - the embedded level-definition slice is firmer now:
   - `load_level_definition_file` stores the middle-segment count at `game + 0xa874`, the authored `Length:` dword at `game + 0x1b0138`, and the `Random:yes` byte at `game + 0x1b013c`
   - `copy_segment_definition_to_level_slot` seeds each `0x4220` middle-segment slot from `game + 0xa878`, with the first slot's row count at `game + 0xa87c`
@@ -484,6 +496,8 @@ Current practical read:
     - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1a` when `selected_level_record_persistent != 0`
     - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1b`
 - `update_subgoldy_resurrect` now has one stronger bridge-side read:
+  - `player + 0x84` is the `resurrect_active` gate checked by `update_subgoldy` before it either advances `update_subgoldy_resurrect` or allows a fresh `initialize_subgoldy_death` dispatch
+  - `initialize_subgoldy_resurrect` sets `resurrect_active`, stores `resurrect_final_loss`, and seeds the `resurrect_progress` pair; its apparent integer return is dead at both `initialize_subgoldy_death` call sites
   - the respawn branch copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c`
   - respawn therefore uses a direct outer owner selector (`0x1c`) rather than the saved-owner `26/27/28` bridge family
   - the final-loss branch first writes `game + 0x1270fc8 = 2`, then calls `complete_subgame(game, 1)`
