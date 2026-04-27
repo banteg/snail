@@ -425,7 +425,8 @@ The same `update_subgoldy` slice also writes live replay samples: first sample s
 world `z` in the ghost-Z lane, later samples store decoded-relative `z` deltas, and flags use
 bits `0x1/0x2` for fire state, `0x4` for the replay latch, and `0x8` for the marked replay tail.
 - `+0xff25d8`: `selected_level_record_saved_return_owner`
-- `+0xff25dc`: `runtime_track_index`
+- `+0xff25dc`: `replay_update_cursor`
+- `+0xff25e4`: `runtime_track_index`
 
 Current practical read:
 
@@ -563,9 +564,9 @@ Current practical read:
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`
   - `update_subgame` seeds `game + 0x1270fc8 = 2` on the route-map best-trial launch path, and `initialize_subgame` later uses that nonzero continuation selector plus `level_mode == 4` to rebuild the galaxy owner through `initialize_galaxy` / `reset_subgame`
   - transient route-map replay pause abandon therefore uses the non-clear rebuild lane (`0x1b` / opcode `27`-shaped semantics), not the respawn-only clear-replay lane (`0x1c` / opcode `28`)
-  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `runtime_track_index < record->replay_sample_count`, and `movement_state != 2`:
-    - `record->replay_samples[runtime_track_index].lateral_x` becomes live replay `x`
-    - `record->replay_samples[runtime_track_index].flags & 0x4` feeds `track_state_latch`
+  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `replay_update_cursor < record->replay_sample_count`, and `movement_state != 2`:
+    - `record->replay_samples[replay_update_cursor].lateral_x` becomes live replay `x`
+    - `record->replay_samples[replay_update_cursor].flags & 0x4` feeds `track_state_latch`
     - that same `flags` byte bit `0x8` writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and calls `begin_frontend_fade_in(app + 0x24)`
   - selected replay marker bit `0x8` therefore loops back through frontend state `10 -> initialize_subgame -> update_subgame`, not directly to the route-map or high-score launch surface
   - `update_frontend_state_machine` state `0x1c` also clears app dword `+0x12e55e0` before the rebuild handoff
@@ -595,11 +596,12 @@ Current practical read:
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
-- native `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
-- the same cursor also drives the replay-sample reads in that function
-- the Zig runner keeps this as `replay_sample_index` now because its older `runtime_track_index`
-  name is still the rendered row index used by track sampling
-- the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
+- native `replay_update_cursor` is the per-update cursor advanced by `update_subgoldy`
+- the same cursor also drives selected replay-sample reads and the Time Trial terminal threshold
+- native `runtime_track_index` at `+0xff25e4` is separate and still names the rendered/current row index
+- the Zig runner keeps the replay lane as `replay_sample_index` because its `runtime_track_index`
+  name is already used for the rendered row index consumed by track sampling
+- the dword at `+0xff25d8` remains separate from `selected_level_record`, `replay_update_cursor`, and `runtime_track_index`
   - current best read: it is the saved replay return owner seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
   - the Zig bridge now mirrors that lane more literally too: persistent selected-replay context stores the raw saved owner-state separately and only derives a higher-level target from it when it needs to rebuild an owner shell
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
