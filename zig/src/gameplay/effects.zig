@@ -222,7 +222,7 @@ pub const Controller = struct {
         } else if (previous.jetpack.jet_particles_active) {
             self.clearJetParticles();
         }
-        if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
+        if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits) {
             const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
             self.spawn(
                 .explode_small,

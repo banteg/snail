@@ -96,8 +96,8 @@ pub fn drawRuntimeActors(
                 },
                 .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
-            if (row_location.row.cells[lane_index] == '=') {
-                drawGameplayTurretActor(render, loaded_track_preview, runner, global_row, lane_index);
+            if ((loaded_track_preview.runtimeTileAt(global_row, lane_index) orelse 0) == 0x0e) {
+                drawGameplayWall2PillarActor(render, loaded_track_preview, global_row, lane_index);
             }
         }
     }
@@ -320,35 +320,25 @@ fn drawGameplaySaltVisual(
     );
 }
 
-fn drawGameplayTurretActor(
+fn drawGameplayWall2PillarActor(
     render: Context,
     preview: *const track.LoadedLevelPreview,
-    runner: gameplay.Runner,
     global_row: usize,
     lane_index: usize,
 ) void {
-    const flash_ticks = runner.turretFlashTicksAt(global_row, lane_index);
-    const model = blk: {
-        if (flash_ticks > 0) {
-            if (render.resources.blaster_top_models.fire) |*fire_model| break :blk fire_model.*;
-        }
-        break :blk render.resources.turret_model orelse return;
-    };
+    const model = render.resources.wall2_pillar_model orelse return;
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     const position = preview.worldPositionForLane(
         @as(f32, @floatFromInt(lane_index)) + 0.5,
         @as(f32, @floatFromInt(global_row)),
-        floor_height + 0.18,
+        floor_height,
     );
-    gameplay_model_render.drawUploadedModel(
-        model,
-        position,
-        .{ .x = 1.0, .y = 0.0, .z = 0.0 },
-        .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-        .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-        .{ .x = 0.34, .y = 0.34, .z = 0.34 },
-        null,
+    const transform = rl.Matrix.translate(
+        position.x - model.bounds.center.x,
+        position.y - model.bounds.min.y,
+        position.z - model.bounds.center.z,
     );
+    model.drawEx(transform);
 }
 
 fn drawGameplayHealthPickupActor(
@@ -556,7 +546,7 @@ fn drawGameplaySubLazerSlotActor(render: Context, slot: gameplay_runtime_entitie
     // asset family as projectile shots; the Wall2 tile is only the emitter.
     drawGameplayProjectileActor(render, .{
         .active = true,
-        .kind = .enemy_laser,
+        .kind = .sub_lazer,
         .world_x = slot.world_position.x,
         .world_y = slot.world_position.y,
         .world_z = slot.world_position.z,

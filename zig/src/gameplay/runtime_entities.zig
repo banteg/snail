@@ -194,10 +194,3 @@ pub const TrackParcelHomeAnchor = struct {
     active: bool = false,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
-
-pub const TurretState = struct {
-    row: usize,
-    lane: usize,
-    seconds: f32 = 0.0,
-    flash_ticks: u8 = 0,
-};

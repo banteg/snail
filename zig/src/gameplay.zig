@@ -30,7 +30,6 @@ const RuntimeRingEffectState = gameplay_runtime_entities.RingEffectState;
 const RuntimeRingEffect = gameplay_runtime_entities.RingEffect;
 const TrackParcelRuntime = gameplay_runtime_entities.TrackParcel;
 const TrackParcelHomeAnchor = gameplay_runtime_entities.TrackParcelHomeAnchor;
-const TurretState = gameplay_runtime_entities.TurretState;
 
 pub const RunnerInput = runner_state.RunnerInput;
 
@@ -221,13 +220,6 @@ const death_cutscene_x_offset: f32 = gameplay_camera.death_cutscene_x_offset;
 const death_cutscene_y_floor: f32 = gameplay_camera.death_cutscene_y_floor;
 const base_fire_cooldown_ticks: u8 = 10;
 const projectile_speed_rows_per_second: f32 = 48.0;
-const turret_projectile_speed_rows_per_second: f32 = 20.0;
-const turret_fire_interval_seconds: f32 = 1.0;
-const turret_projectile_spawn_rows_ahead: usize = 24;
-const turret_projectile_hit_z_tolerance: f32 = 0.5;
-const turret_projectile_hit_x_tolerance: f32 = 0.6;
-const turret_flash_duration_ticks: u8 = 6;
-const max_active_turret_states = combat_module.max_active_turret_states;
 const native_ticks_per_second: f32 = 60.0;
 // Windows quantizes runtime gameplay world X with `floor(x + 4.0)` and clamps the player
 // between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
@@ -369,7 +361,7 @@ fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
         .turbo => projectile_speed_rows_per_second,
         .laser => projectile_speed_rows_per_second * 2.0,
         .rocket => projectile_speed_rows_per_second * 0.48,
-        .enemy_laser => turret_projectile_speed_rows_per_second,
+        .sub_lazer => native_sub_lazer_speed,
     };
 }
 
@@ -792,7 +784,6 @@ pub const Runner = struct {
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
             self.refreshLiveRuntimePickups(preview);
-            self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
@@ -1691,13 +1682,6 @@ pub const Runner = struct {
         // remaining local-frame collision ownership is ported, do not consume floor-level
         // gameplay cells beneath the rider while attached or airborne off an attachment.
         if (self.movement_mode == .attachment or self.attachment.launch.active) return;
-
-        if (sample.cell == '=') {
-            self.counters.turret_hits += 1;
-            self.recent_event = .turret_hit;
-            self.beginFallState(preview, .hazard, cutscene_death_id);
-            return;
-        }
 
         const gameplay_cell = sample.gameplay_cell orelse return;
         switch (gameplay_cell) {
@@ -2692,9 +2676,7 @@ pub const Runner = struct {
             projectile.world_y += projectile.dir_y * projectile.speed_rows_per_second * delta_seconds;
             projectile.world_z += projectile.dir_z * projectile.speed_rows_per_second * delta_seconds;
             if (self.resolveProjectileHit(preview, &projectile)) continue;
-            if (projectile.kind == .enemy_laser) {
-                if (projectile.world_z < self.row_position - 8.0) continue;
-            } else if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
+            if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
             projectile.appendTrailPoint();
             self.combat.projectiles.slots[write_index] = projectile;
             write_index += 1;
@@ -2707,17 +2689,6 @@ pub const Runner = struct {
 
     fn resolveProjectileHit(self: *Runner, preview: *const track.LoadedLevelPreview, projectile: *Projectile) bool {
         if (preview.total_rows == 0) return true;
-        if (projectile.kind == .enemy_laser) {
-            const player_position = self.worldPosition(preview, 0.4);
-            if (@abs(projectile.world_z - player_position.z) <= turret_projectile_hit_z_tolerance and
-                @abs(projectile.world_x - player_position.x) <= turret_projectile_hit_x_tolerance)
-            {
-                self.counters.turret_hits += 1;
-                self.recent_event = .turret_hit;
-                self.beginFallState(preview, .hazard, cutscene_death_id);
-                return true;
-            }
-        }
         const global_row = preview.rowIndexAtWorldZ(projectile.world_z);
         const lane_index = preview.laneIndexAtWorldX(projectile.world_x);
         if (global_row >= preview.total_rows or lane_index >= preview.max_width) return false;
@@ -2748,65 +2719,6 @@ pub const Runner = struct {
             else => {},
         };
         return false;
-    }
-
-    fn updateTurretFire(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
-        if (preview.total_rows == 0) return;
-        const start_row = currentRowIndex(preview, self.row_position);
-        const end_row = @min(start_row + turret_projectile_spawn_rows_ahead, preview.total_rows);
-        var next_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states;
-        var next_state_count: usize = 0;
-
-        var global_row = start_row;
-        while (global_row < end_row) : (global_row += 1) {
-            const row_location = preview.locateRow(global_row) orelse continue;
-            const width = @min(row_location.row.cells.len, preview.max_width);
-            for (0..width) |lane_index| {
-                if (row_location.row.cells[lane_index] != '=') continue;
-                if (next_state_count >= max_active_turret_states) continue;
-                var state = self.findTurretState(global_row, lane_index) orelse TurretState{
-                    .row = global_row,
-                    .lane = lane_index,
-                };
-                if (state.flash_ticks > 0) state.flash_ticks -= 1;
-                state.seconds += delta_seconds;
-                while (state.seconds >= turret_fire_interval_seconds) {
-                    state.seconds -= turret_fire_interval_seconds;
-                    state.flash_ticks = turret_flash_duration_ticks;
-                    const world_x = preview.worldPositionForLane(
-                        @as(f32, @floatFromInt(lane_index)) + 0.5,
-                        @as(f32, @floatFromInt(global_row)),
-                        0.0,
-                    ).x;
-                    self.spawnProjectile(
-                        .enemy_laser,
-                        world_x,
-                        0.4,
-                        @as(f32, @floatFromInt(global_row)),
-                        0.0,
-                        0.0,
-                        -1.0,
-                    );
-                }
-                next_states[next_state_count] = state;
-                next_state_count += 1;
-            }
-        }
-        self.combat.turrets.slots = next_states;
-        self.combat.turrets.count = next_state_count;
-    }
-
-    fn findTurretState(self: *const Runner, row: usize, lane: usize) ?TurretState {
-        for (0..self.combat.turrets.count) |index| {
-            const state = self.combat.turrets.slots[index];
-            if (state.row == row and state.lane == lane) return state;
-        }
-        return null;
-    }
-
-    pub fn turretFlashTicksAt(self: *const Runner, row: usize, lane: usize) u8 {
-        if (self.findTurretState(row, lane)) |state| return state.flash_ticks;
-        return 0;
     }
 
     fn gameplayCellAt(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) ?track.GameplayCellKind {
@@ -7339,83 +7251,17 @@ test "explode rings still reach right-edge authored lanes" {
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
 }
 
-test "turret contact enters the shared fall state with the hazard cutscene id" {
+test "Wall2 marker rows no longer direct-kill the rider" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    const turret = findFirstRawCell(&fixture.preview, '=').?;
-    primeRunnerBeforeRow(&runner, &fixture.preview, turret);
+    const wall2 = findFirstRawCell(&fixture.preview, '=').?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, wall2);
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
-    try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
-    try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
-    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
-}
-
-test "turret rows spawn enemy laser projectiles" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    const turret = findFirstRawCell(&fixture.preview, '=').?;
-    primeRunnerBeforeRow(&runner, &fixture.preview, turret);
-    runner.updateTurretFire(&fixture.preview, turret_fire_interval_seconds);
-
-    try std.testing.expect(runner.combat.projectiles.count > 0);
-    try std.testing.expectEqual(Projectile.Kind.enemy_laser, runner.combat.projectiles.slots[0].kind);
-    try std.testing.expect(runner.combat.turrets.count > 0);
-    try std.testing.expect(runner.turretFlashTicksAt(turret.row, turret.lane) > 0);
-}
-
-test "multiple visible turrets keep independent controller state" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.row_position = 20.0;
-    runner.refreshSample(&fixture.preview);
-    runner.previous_row_position = runner.row_position;
-    runner.previous_lane_center = runner.lane_center;
-
-    runner.updateTurretFire(&fixture.preview, 0.5);
-    try std.testing.expect(runner.combat.turrets.count >= 2);
-    for (0..runner.combat.turrets.count) |index| {
-        try std.testing.expectEqual(@as(u8, 0), runner.combat.turrets.slots[index].flash_ticks);
-    }
-
-    runner.updateTurretFire(&fixture.preview, 0.5);
-    var flashing_count: usize = 0;
-    for (0..runner.combat.turrets.count) |index| {
-        if (runner.combat.turrets.slots[index].flash_ticks > 0) flashing_count += 1;
-    }
-    try std.testing.expect(flashing_count >= 2);
-}
-
-test "enemy laser projectile hits player and enters the shared fall state" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    const player_position = runner.worldPosition(&fixture.preview, 0.4);
-    var projectile: Projectile = .{
-        .active = true,
-        .kind = .enemy_laser,
-        .world_x = player_position.x,
-        .world_y = player_position.y,
-        .world_z = player_position.z,
-        .dir_x = 0.0,
-        .dir_y = 0.0,
-        .dir_z = -1.0,
-        .speed_rows_per_second = projectileSpeedForKind(.enemy_laser),
-    };
-
-    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
-    try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
-    try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
-    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
 }
 
 test "runtime hazards preserve recovered presentation scalars" {

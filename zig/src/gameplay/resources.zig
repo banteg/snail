@@ -21,7 +21,7 @@ pub const State = struct {
     lazer_object: ?object.LoadedObject = null,
     vapour_lazer_object: ?object.LoadedObject = null,
     salt_model: ?x2.Uploaded = null,
-    turret_model: ?x2.Uploaded = null,
+    wall2_pillar_model: ?x2.Uploaded = null,
     blaster_top_models: gameplay_art.WeaponModelSet = .{},
     blaster_left_models: gameplay_art.WeaponModelSet = .{},
     blaster_right_models: gameplay_art.WeaponModelSet = .{},
@@ -91,9 +91,9 @@ pub fn unloadSalt(state: *State) void {
 }
 
 pub fn unloadActorModels(state: *State) void {
-    if (state.turret_model) |*model| {
+    if (state.wall2_pillar_model) |*model| {
         model.deinit();
-        state.turret_model = null;
+        state.wall2_pillar_model = null;
     }
     state.blaster_top_models.unload();
     state.blaster_left_models.unload();
@@ -241,8 +241,8 @@ pub fn loadSalt(state: *State, store: *resource_store.Store) !void {
 pub fn loadActorModels(state: *State, store: *resource_store.Store) !void {
     unloadActorModels(state);
 
-    if (store.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) != null) {
-        state.turret_model = try store.model(gameplay_assets.gameplay_turret_model_path, .{});
+    if (store.catalog.findModelIndex(gameplay_assets.gameplay_wall2_pillar_model_path) != null) {
+        state.wall2_pillar_model = try store.model(gameplay_assets.gameplay_wall2_pillar_model_path, .{});
     }
 
     try gameplay_art.loadWeaponModelSet(

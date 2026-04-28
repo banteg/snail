@@ -655,6 +655,7 @@ test "fringe edge mask keeps render-backed object cells solid" {
         0x01, 0x16,
         0x00, 0x01,
     };
+    try std.testing.expect(runtimeTileIsFringeSolid(0x0e));
     try std.testing.expect(runtimeTileIsFringeSolid(0x1d));
     try std.testing.expect(runtimeTileIsFringeSolid(0x23));
     try std.testing.expect(!runtimeTileIsFringeSolid(0x16));
@@ -789,6 +790,7 @@ test "surface family maps recovered runtime tile families" {
     try std.testing.expectEqual(@as(?RenderCacheFamily, .floor), renderCacheFamilyForTile(0x0f));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x15));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .ramp), renderCacheFamilyForTile(0x03));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x0e));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1d));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1e));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x23));

@@ -109,7 +109,6 @@ pub const RecentEvent = union(enum) {
     garbage_hit,
     salt_hit,
     slug_hit,
-    turret_hit,
     no_fall,
     jetpack_off,
     ring: segment.RingKind,
@@ -127,7 +126,6 @@ pub const RecentEvent = union(enum) {
             .garbage_hit => "garbage_hit",
             .salt_hit => "salt_hit",
             .slug_hit => "slug_hit",
-            .turret_hit => "turret_hit",
             .no_fall => "no_fall",
             .jetpack_off => "jetpack_off",
             .ring => |ring_kind| switch (ring_kind) {
@@ -153,7 +151,6 @@ pub const EncounterCounters = struct {
     garbage_smoke_particles: u32 = 0,
     salt_hits: u32 = 0,
     slug_hits: u32 = 0,
-    turret_hits: u32 = 0,
     no_fall_rows: u32 = 0,
     jetpack_off_rows: u32 = 0,
     ring_normal: u32 = 0,

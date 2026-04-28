@@ -60,7 +60,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
                 .{ .r = 180, .g = 255, .b = 255, .a = 236 },
             );
         },
-        .enemy_laser => {
+        .sub_lazer => {
             if (drawVapourTrail(resources, projectile, right)) return;
             const loaded_object = resources.lazer_object orelse return;
             drawObjectProjectile(

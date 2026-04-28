@@ -9,7 +9,7 @@ pub const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 pub const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 pub const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
 pub const gameplay_salt_model_path = "X/SALT.X2";
-pub const gameplay_turret_model_path = "X/BLASTERTOP-BASE-000.X2";
+pub const gameplay_wall2_pillar_model_path = "X/PILLAR1.X2";
 pub const gameplay_blaster_top_model_path = "X/BLASTERTOP-BASE-000.X2";
 pub const gameplay_blaster_top_draw_model_paths = [_][]const u8{
     "X/BLASTERTOP-DRAW-000.X2",

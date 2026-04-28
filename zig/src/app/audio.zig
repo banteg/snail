@@ -168,9 +168,6 @@ pub fn playGameplayRunnerAudio(
             playGameplayEffect(state, fired_sound);
         }
     }
-    if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
-        playGameplayEffect(state, state.gameplay_resources.sound_fx.enemy_fire);
-    }
     if (native_sound_cues.sub_lazer_fire_position) |fire_position| {
         const camera_position = rl.Vector3{
             .x = state.subgame_camera.shared_matrix.m12,
@@ -198,9 +195,6 @@ pub fn playGameplayRunnerAudio(
     }
     if (gameplay_audio_cues.nativeGarbageImpactSoundIndex(previous, current)) |sound_index| {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.asteroid_impact[sound_index]);
-    }
-    if (current.counters.turret_hits > previous.counters.turret_hits) {
-        playGameplayEffect(state, state.gameplay_resources.sound_fx.wall_hit);
     }
     if (gameplay_audio_cues.nativeSlugHitVoiceIndex(previous, current)) |voice_index| {
         voice_audio.tryPlayVariantIndex(
