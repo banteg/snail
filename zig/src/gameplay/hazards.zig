@@ -287,6 +287,7 @@ pub const SubLazerPool = struct {
     slots: [max_active_sub_lazer_slots]SubLazerSlot =
         [_]SubLazerSlot{.{}} ** max_active_sub_lazer_slots,
     fire_generation: u32 = 0,
+    last_fire_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 
     pub fn reset(self: *SubLazerPool) void {
         self.* = .{};
@@ -346,7 +347,9 @@ pub const SubLazerPool = struct {
     // `-0.01 * slot_index` so stacked shots don't co-locate vertically,
     // then delegates to `spawn`. The native `sfx 15` call lives after the
     // successful spawn, so the port increments `fire_generation` only on
-    // successful allocation. Returns null when the pool is exhausted.
+    // successful allocation and preserves the original unstacked spawn
+    // position for `play_sound_effect_at_position(15, a2)`. Returns null when
+    // the pool is exhausted.
     pub fn shoot(
         self: *SubLazerPool,
         emitter_row: usize,
@@ -372,6 +375,7 @@ pub const SubLazerPool = struct {
             .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
         };
         self.fire_generation +%= 1;
+        self.last_fire_position = world_position;
         return allocation.slot;
     }
 

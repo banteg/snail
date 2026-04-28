@@ -16,7 +16,7 @@ pub const NativeGameplaySoundCues = struct {
     parcel_delivery: bool = false,
     parcel_bonus: bool = false,
     row_event_confirm: bool = false,
-    sub_lazer_fire: bool = false,
+    sub_lazer_fire_position: ?rl.Vector3 = null,
 };
 
 pub const NativeJetpackSoundCues = struct {
@@ -69,7 +69,10 @@ pub fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runn
             previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
             current.registeredParcelCount() == current.row_event_display.parcel_target_count,
         .row_event_confirm = previous.row_event_display.gate_18 == 0 and current.row_event_display.gate_18 != 0,
-        .sub_lazer_fire = previous.runtime.sub_lazers.fire_generation != current.runtime.sub_lazers.fire_generation,
+        .sub_lazer_fire_position = if (previous.runtime.sub_lazers.fire_generation != current.runtime.sub_lazers.fire_generation)
+            current.runtime.sub_lazers.last_fire_position
+        else
+            null,
     };
 }
 
@@ -134,6 +137,17 @@ pub fn nativeMovementStateAttachmentExitGain(
         .z = camera_position.z - player_position.z,
     };
     return std.math.clamp(1.0 - (vectorLength(delta) * (1.0 / 60.0)), 0.0, 1.0);
+}
+
+pub fn nativePositionalSoundGain(camera_position: rl.Vector3, sound_position: rl.Vector3) ?f32 {
+    const delta = rl.Vector3{
+        .x = sound_position.x - camera_position.x,
+        .y = sound_position.y - camera_position.y,
+        .z = sound_position.z - camera_position.z,
+    };
+    const distance = vectorLength(delta);
+    if (distance > 25.0) return null;
+    return 1.0 - distance * 0.039999999;
 }
 
 pub fn nativeMovementSoundVariantIndexForSample(sample: u32, comptime count: usize) usize {
@@ -264,10 +278,13 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
         .{ .x = 0.0, .y = 0.0, .z = -0.40000001 },
         0.0,
     ).?;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).sub_lazer_fire);
+    try std.testing.expectEqualDeep(
+        @as(?rl.Vector3, .{ .x = 0.0, .y = 8.0, .z = 24.0 }),
+        nativeGameplaySoundCues(previous, current).sub_lazer_fire_position,
+    );
 
     previous = current;
-    try std.testing.expect(!nativeGameplaySoundCues(previous, current).sub_lazer_fire);
+    try std.testing.expectEqual(@as(?rl.Vector3, null), nativeGameplaySoundCues(previous, current).sub_lazer_fire_position);
 
     current.runtime.sub_lazers.destroy(&current.runtime.sub_lazers.slots[0]);
     _ = current.runtime.sub_lazers.shoot(
@@ -279,7 +296,42 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     ).?;
     try std.testing.expectEqual(@as(usize, 1), previous.runtime.sub_lazers.countActive());
     try std.testing.expectEqual(@as(usize, 1), current.runtime.sub_lazers.countActive());
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).sub_lazer_fire);
+    try std.testing.expectEqualDeep(
+        @as(?rl.Vector3, .{ .x = 1.0, .y = 8.0, .z = 28.0 }),
+        nativeGameplaySoundCues(previous, current).sub_lazer_fire_position,
+    );
+
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 1.0),
+        nativePositionalSoundGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        ).?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.5),
+        nativePositionalSoundGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 12.5, .y = 0.0, .z = 0.0 },
+        ).?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.0),
+        nativePositionalSoundGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 25.0, .y = 0.0, .z = 0.0 },
+        ).?,
+        0.0001,
+    );
+    try std.testing.expectEqual(
+        @as(?f32, null),
+        nativePositionalSoundGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 25.1, .y = 0.0, .z = 0.0 },
+        ),
+    );
 
     previous = gameplay.Runner{};
     current = previous;
