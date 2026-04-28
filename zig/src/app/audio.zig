@@ -86,6 +86,9 @@ pub fn playGameplayRunnerAudio(
     if (native_voice_cues.damage_escalation) {
         voice_audio.tryPlayNativeSet(voices, .postal, .wait_for_idle) catch {};
     }
+    if (native_voice_cues.slug_engagement) {
+        voice_audio.tryPlayNativeSet(voices, .enemies, .wait_for_frequency) catch {};
+    }
     if (native_voice_cues.slow) {
         voice_audio.tryPlayNativeSet(voices, .slow, .wait_for_frequency) catch {};
     }

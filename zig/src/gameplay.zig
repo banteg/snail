@@ -166,6 +166,7 @@ const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_e
 const max_active_projectiles = combat_module.max_active_projectiles;
 const max_defeated_slug_cells: usize = 64;
 const max_slug_voice_alert_cells: usize = 64;
+const max_slug_engagement_voice_cells: usize = 64;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
 const starting_visible_life_stock = score_module.starting_visible_life_stock;
@@ -552,6 +553,9 @@ pub const Runner = struct {
     defeated_slug_cell_count: usize = 0,
     slug_voice_alert_cells: [max_slug_voice_alert_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_slug_voice_alert_cells,
     slug_voice_alert_cell_count: usize = 0,
+    slug_engagement_voice_cells: [max_slug_engagement_voice_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_slug_engagement_voice_cells,
+    slug_engagement_voice_cell_count: usize = 0,
+    slug_engagement_voice_token: u32 = 0,
     slug_ambient_voice_token: u32 = 0,
     slug_ambient_voice_variant: usize = 0,
     slug_hit_voice_token: u32 = 0,
@@ -790,7 +794,7 @@ pub const Runner = struct {
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
-            self.updateSlugVoiceAlerts(preview);
+            self.updateSlugHazardVoiceAi(preview);
             self.refreshLiveRuntimeRingEffects(preview);
             self.updateRuntimeRingEffects(preview);
             self.updateRuntimePickups();
@@ -2822,6 +2826,21 @@ pub const Runner = struct {
         self.slug_voice_alert_cell_count += 1;
     }
 
+    fn isSlugEngagementVoiceChecked(self: *const Runner, global_row: usize, lane_index: usize) bool {
+        for (0..self.slug_engagement_voice_cell_count) |index| {
+            const checked = self.slug_engagement_voice_cells[index];
+            if (checked.row == global_row and checked.lane == lane_index) return true;
+        }
+        return false;
+    }
+
+    fn markSlugEngagementVoiceChecked(self: *Runner, global_row: usize, lane_index: usize) void {
+        if (self.isSlugEngagementVoiceChecked(global_row, lane_index)) return;
+        if (self.slug_engagement_voice_cell_count >= max_slug_engagement_voice_cells) return;
+        self.slug_engagement_voice_cells[self.slug_engagement_voice_cell_count] = .{ .row = global_row, .lane = lane_index };
+        self.slug_engagement_voice_cell_count += 1;
+    }
+
     pub fn isParcelCollected(self: *const Runner, global_row: usize) bool {
         return self.parcel.isCollected(global_row);
     }
@@ -2867,38 +2886,43 @@ pub const Runner = struct {
         self.slug_death_voice_token +%= 1;
     }
 
-    fn updateSlugVoiceAlerts(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    fn updateSlugHazardVoiceAi(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) return;
 
-        const trigger_z = self.row_position + 1.0;
+        const ambient_trigger_z = self.row_position + 1.0;
+        const engagement_trigger_z = self.row_position + 16.0;
         const trigger_row_limit = @min(
             preview.total_rows,
-            @as(usize, @intFromFloat(@floor(@max(trigger_z, 0.0)))) + 1,
+            @as(usize, @intFromFloat(@floor(@max(engagement_trigger_z, 0.0)))) + 1,
         );
         const current_row = currentRowIndex(preview, self.row_position);
         var row = current_row;
         while (row < trigger_row_limit) : (row += 1) {
             const row_z = @as(f32, @floatFromInt(row));
-            if (!(trigger_z > row_z)) continue;
             for (0..preview.max_width) |lane| {
                 if (self.isSlugDefeated(row, lane)) continue;
-                if (self.isSlugVoiceAlertChecked(row, lane)) continue;
                 const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
                 if (sample.kind != .slug) continue;
 
-                // PORT(verified): native `update_slug_hazard_ai` state 1 checks
-                // `player->live_matrix.position.z + 1.0 > slot->world_position.z`,
-                // latches `SlugHazardRuntime+0xd9`,
-                // and only calls `play_slug_voice` when the first CRT sample is
-                // above 0.6. The port keeps that per-run one-shot gate with the
-                // runner's native RNG instead of the older deterministic preview
-                // scan.
-                self.markSlugVoiceAlertChecked(row, lane);
-                if (self.nextMathRandomFloatBelow(1.0) > 0.60000002) {
-                    self.slug_ambient_voice_variant = nativeSlugAmbientVoiceVariant(self.nextMathRandomInt15());
-                    self.slug_ambient_voice_token +%= 1;
+                if (ambient_trigger_z > row_z and !self.isSlugVoiceAlertChecked(row, lane)) {
+                    // PORT(verified): native `update_slug_hazard_ai` state 1 checks
+                    // `player->live_matrix.position.z + 1.0 > slot->world_position.z`,
+                    // latches `SlugHazardRuntime+0xd9`, and only calls `play_slug_voice`
+                    // when the first CRT sample is above 0.6.
+                    self.markSlugVoiceAlertChecked(row, lane);
+                    if (self.nextMathRandomFloatBelow(1.0) > 0.60000002) {
+                        self.slug_ambient_voice_variant = nativeSlugAmbientVoiceVariant(self.nextMathRandomInt15());
+                        self.slug_ambient_voice_token +%= 1;
+                    }
                 }
-                return;
+
+                if (engagement_trigger_z > row_z and !self.isSlugEngagementVoiceChecked(row, lane)) {
+                    // PORT(verified): the same native state has a separate
+                    // `engagement_voice_gate`; once `player.z + 16 > slot.z`, it clears
+                    // the gate and calls `play_voice_manager(..., voice 2, mode 1, -1)`.
+                    self.markSlugEngagementVoiceChecked(row, lane);
+                    self.slug_engagement_voice_token +%= 1;
+                }
             }
         }
     }
@@ -6412,15 +6436,38 @@ test "slug ambient voice alert follows native one-shot proximity gate" {
     runner.row_position = @as(f32, @floatFromInt(slug.row)) - 0.25;
     runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
 
-    runner.updateSlugVoiceAlerts(&fixture.preview);
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.slug_ambient_voice_token);
     try std.testing.expectEqual(@as(usize, 1), runner.slug_voice_alert_cell_count);
     try std.testing.expect(runner.slug_ambient_voice_variant < gameplay_assets.gameplay_slug_ambient_voice_paths.len);
+    const engagement_voice_token = runner.slug_engagement_voice_token;
+    const engagement_voice_cell_count = runner.slug_engagement_voice_cell_count;
 
     runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
-    runner.updateSlugVoiceAlerts(&fixture.preview);
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.slug_ambient_voice_token);
     try std.testing.expectEqual(@as(usize, 1), runner.slug_voice_alert_cell_count);
+    try std.testing.expectEqual(engagement_voice_token, runner.slug_engagement_voice_token);
+    try std.testing.expectEqual(engagement_voice_cell_count, runner.slug_engagement_voice_cell_count);
+}
+
+test "slug engagement voice follows native wider proximity gate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    runner.row_position = @as(f32, @floatFromInt(slug.row)) - 15.25;
+
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
+    try std.testing.expectEqual(@as(u32, 0), runner.slug_ambient_voice_token);
+    try std.testing.expectEqual(@as(usize, 0), runner.slug_voice_alert_cell_count);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_engagement_voice_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.slug_engagement_voice_cell_count);
+
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_engagement_voice_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.slug_engagement_voice_cell_count);
 }
 
 test "defeated slugs do not arm ambient voice alerts" {
@@ -6433,9 +6480,10 @@ test "defeated slugs do not arm ambient voice alerts" {
     runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
     runner.defeatSlug(slug.row, slug.lane);
 
-    runner.updateSlugVoiceAlerts(&fixture.preview);
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 0), runner.slug_ambient_voice_token);
     try std.testing.expectEqual(@as(usize, 0), runner.slug_voice_alert_cell_count);
+    try std.testing.expect(!runner.isSlugEngagementVoiceChecked(slug.row, slug.lane));
 }
 
 test "slug defeat queues the native death voice variant once" {

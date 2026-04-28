@@ -31,6 +31,7 @@ pub const NativeGameplayVoiceCues = struct {
     weapon_upgrade: bool = false,
     damage_entry: bool = false,
     damage_escalation: bool = false,
+    slug_engagement: bool = false,
 };
 
 pub const NativeMovementStateSoundFamily = enum {
@@ -189,6 +190,7 @@ pub fn nativeGameplayVoiceCues(
         .damage_entry = previous.damage.gauge <= 0.0 and current.damage.gauge > 0.0,
         .damage_escalation = previous.damage.warning_state != .draining and
             current.damage.warning_state == .draining,
+        .slug_engagement = previous.slug_engagement_voice_token != current.slug_engagement_voice_token,
     };
 }
 
@@ -520,6 +522,11 @@ test "native gameplay voice cues fire on the recovered startup timer" {
     current = previous;
     current.damage.warning_state = .draining;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_escalation);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.slug_engagement_voice_token = 1;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).slug_engagement);
 
     previous = current;
     try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
