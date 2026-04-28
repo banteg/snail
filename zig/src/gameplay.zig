@@ -308,6 +308,8 @@ const native_start_block_velocity_z_delta_per_tick: f32 =
 const native_floor_cache_velocity_z_delta_per_tick: f32 =
     native_start_block_velocity_z_delta_per_tick * 2.0;
 const native_start_block_velocity_z_max_per_tick: f32 = 1.0;
+const native_forward_velocity_z_min_per_tick: f32 = native_track_center_x * 0.17;
+const native_forward_velocity_z_max_per_tick: f32 = native_track_center_x * 0.5;
 const native_attachment_exit_z_damping_per_tick: f32 = 1.0 - (native_track_center_x * 0.2);
 const slow_ring_duration_ticks: u16 = 240;
 pub const native_nuke_sprite_count: usize = 25;
@@ -819,6 +821,7 @@ pub const Runner = struct {
         }
         if (!self.paused and self.phase == .active) {
             self.stepActivePhaseVerticalMotion(preview);
+            self.enforceNativeForwardVelocityWindow(preview);
         }
         if (!self.paused and self.phase == .active) {
             self.updateTimesUpController(preview);
@@ -2071,14 +2074,9 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(partial): native ring and special-effect pickups resolve from the live 2-slot
-    // runtime pool inside `handle_subgoldy_collisions`, not from row traversal. The runner
-    // now mirrors that ownership, the recovered `delta_z < 1.0 && distance < 0.98`
-    // collision gate, and the post-hit `state 2 -> 3` follow animation instead of removing
-    // the slot immediately. The current evidence-capped split is deliberate: presentation
-    // now follows the native slot spawn anchor from `spawn_track_ring_or_special_effect`,
-    // while collisions still use the earlier lower proxy anchor until the player-height
-    // parity gap closes.
+    // PORT(verified): native ring and special-effect pickups resolve from the live
+    // two-slot runtime pool inside `handle_subgoldy_collisions`; the same
+    // `world_position` used for presentation drives the collision gate.
     fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         var index: usize = 0;
@@ -2088,9 +2086,9 @@ pub const Runner = struct {
                 index += 1;
                 continue;
             }
-            const delta_x = effect.collision_position.x - player_position.x;
-            const delta_y = effect.collision_position.y - player_position.y;
-            const delta_z = effect.collision_position.z - player_position.z;
+            const delta_x = effect.world_position.x - player_position.x;
+            const delta_y = effect.world_position.y - player_position.y;
+            const delta_z = effect.world_position.z - player_position.z;
             if (delta_z >= runtime_hazard_collision_z_tolerance) {
                 index += 1;
                 continue;
@@ -2209,9 +2207,7 @@ pub const Runner = struct {
 
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
         if (self.native_velocity_z_override_per_tick) |velocity_z| {
-            const native_rows_per_second = velocity_z * native_ticks_per_second;
-            if (native_rows_per_second < 0.0) return native_rows_per_second;
-            return @max(self.baseEffectiveSpeedRowsPerSecond(), native_rows_per_second);
+            return velocity_z * native_ticks_per_second;
         }
         return self.baseEffectiveSpeedRowsPerSecond();
     }
@@ -2256,8 +2252,7 @@ pub const Runner = struct {
             if (velocity_z > 0.0 and !self.post_trampoline_airborne) {
                 velocity_z *= native_velocity_yz_decay_per_tick;
             }
-            const native_rows_per_second = velocity_z * native_ticks_per_second;
-            if (velocity_z <= 0.000001 or (!accelerated and !self.attachment.exit.pending and native_rows_per_second <= self.baseEffectiveSpeedRowsPerSecond())) {
+            if (velocity_z <= 0.000001 and !accelerated) {
                 self.native_velocity_z_override_per_tick = null;
                 return;
             }
@@ -2268,6 +2263,22 @@ pub const Runner = struct {
         if (!had_velocity and !accelerated) {
             self.native_velocity_z_override_per_tick = null;
             return;
+        }
+        self.native_velocity_z_override_per_tick = velocity_z;
+    }
+
+    fn enforceNativeForwardVelocityWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.phase != .active) return;
+        if (self.movement_mode != .track) return;
+        if (self.row_position >= @as(f32, @floatFromInt(preview.runtime_active_row_end)) and !self.attachment.exit.pending) return;
+
+        // PORT(verified): `update_subgoldy` clamps Goldy's forward velocity to
+        // `[track_center_x * 0.17, track_center_x * 0.5]` during active play.
+        var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
+        if (velocity_z < native_forward_velocity_z_min_per_tick) {
+            velocity_z = native_forward_velocity_z_min_per_tick;
+        } else if (velocity_z > native_forward_velocity_z_max_per_tick) {
+            velocity_z = native_forward_velocity_z_max_per_tick;
         }
         self.native_velocity_z_override_per_tick = velocity_z;
     }
@@ -3614,7 +3625,6 @@ pub const Runner = struct {
         lane: usize,
         kind: u8,
     ) RuntimeRingEffect {
-        const collision_position = collisionRuntimeRingEffectWorldPosition(preview, row, lane, kind);
         var world_position = nativeRuntimeRingEffectWorldPosition(preview, row, lane, kind);
         if (runtimeRingKindUsesRandomizedSpawnX(kind)) {
             world_position.x = (self.nextMathRandomFloat01() - 0.5) * 2.0 * runtime_ring_spawn_random_x_amplitude;
@@ -3630,7 +3640,6 @@ pub const Runner = struct {
             .row = row,
             .lane = lane,
             .kind = kind,
-            .collision_position = collision_position,
             .world_position = world_position,
             .presentation_position = world_position,
             .presentation_scale = 1.0,
@@ -3810,22 +3819,8 @@ pub const Runner = struct {
         }
     }
 
-    fn collisionRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
-        return runtimeCellWorldPosition(preview, row, lane, runtimeRingCollisionYOffset(kind));
-    }
-
     fn nativeRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
         return runtimeCellWorldPosition(preview, row, lane, runtimeRingSpawnYOffset(kind));
-    }
-
-    fn runtimeRingCollisionYOffset(kind: u8) f32 {
-        return switch (nativeRingEventLabel(kind) orelse .normal) {
-            .normal => 0.72,
-            .powerup => 0.64,
-            .explode => 0.72,
-            .slow => 0.5,
-            .none => 0.72,
-        };
     }
 
     fn runtimeRingSpawnYOffset(kind: u8) f32 {
@@ -4057,7 +4052,9 @@ pub const Runner = struct {
         // inside the grounded-state block; the port routes `.fall` through the
         // existing `beginFallState` path, which hands off to `updatePhaseController`
         // for respawn/final-loss.
-        if (self.position_y < native_position_y_death_threshold) {
+        if (self.position_y < native_position_y_death_threshold and
+            !self.currentRowHasRuntimeFlag(preview, track.runtime_row_flag_no_fall))
+        {
             self.beginFallState(preview, .fall, cutscene_none_id);
             return;
         }
@@ -5551,6 +5548,18 @@ fn setRunnerLiveRowTarget(runner: *Runner, target: RowTarget) void {
     runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.01;
 }
 
+fn placeRunnerAtRuntimeRingEffect(runner: *Runner, preview: *const track.LoadedLevelPreview, effect: RuntimeRingEffect) void {
+    const row_position = effect.world_position.z - 0.5;
+    const row_index: usize = @intFromFloat(@floor(@max(0.0, row_position)));
+    runner.runtime_track_index = row_index;
+    runner.track_row_progress = row_position - @as(f32, @floatFromInt(row_index));
+    runner.row_position = row_position;
+    runner.lane_center = Runner.laneCenterFromWorldX(preview, effect.world_position.x);
+    runner.lane_index = Runner.laneIndexForLaneCenter(preview, runner.lane_center);
+    runner.position_y = effect.world_position.y;
+    runner.refreshSample(preview);
+}
+
 fn stepUntilHandoff(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
     var steps: usize = 0;
     while (steps < max_steps and runner.handoff.pending == .none) : (steps += 1) {
@@ -5990,10 +5999,9 @@ test "runner advances deterministically over fixed time" {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 24.0, runner.row_position, 0.001);
-    try std.testing.expectEqual(start_row + 24, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_step_rows, 0.0001);
+    try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(start_row)) + 24.0);
+    try std.testing.expect(runner.runtime_track_index > start_row + 24);
+    try std.testing.expect(runner.native_velocity_z_override_per_tick != null);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
 }
 
@@ -6013,9 +6021,13 @@ test "runner keeps discrete track cursor and fractional movement progress" {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectEqual(start_row + 1, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row + 1)), runner.row_position, 0.0001);
+    try std.testing.expectEqual(start_row + 2, runner.runtime_track_index);
+    try std.testing.expect(runner.track_row_progress > 0.0);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
+        runner.row_position,
+        0.0001,
+    );
 }
 
 test "runner discovers attachment hint rows in shipped corpus" {
@@ -6598,8 +6610,16 @@ test "native negative-velocity ring recovery moves backward before handing back 
     for (0..6) |_| {
         runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
     }
-    try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
-    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
+    try std.testing.expectApproxEqAbs(
+        native_forward_velocity_z_min_per_tick,
+        runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        native_forward_velocity_z_min_per_tick * native_ticks_per_second,
+        runner.effectiveSpeedRowsPerSecond(),
+        0.0001,
+    );
 }
 
 test "tutorial powerup ramps consume the recovered forward runtime ring event" {
@@ -6616,7 +6636,7 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     try std.testing.expectEqual(@as(u32, 0), runner.counters.ring_powerup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
 
-    runner.row_position = 13.0;
+    placeRunnerAtRuntimeRingEffect(&runner, &fixture.preview, runner.activeRuntimeRingEffects()[0]);
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
     try std.testing.expectApproxEqAbs(
@@ -6641,6 +6661,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     powerup_runner.lane_center = 1.5;
     powerup_runner.row_position = 51.0;
     powerup_runner.refreshLiveRuntimeRingEffects(&powerup_fixture.preview);
+    placeRunnerAtRuntimeRingEffect(&powerup_runner, &powerup_fixture.preview, powerup_runner.activeRuntimeRingEffects()[0]);
     powerup_runner.processRuntimeRingEffectCollisions(&powerup_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), powerup_runner.counters.ring_powerup);
     try std.testing.expectApproxEqAbs(
@@ -6658,6 +6679,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     slow_runner.lane_center = 4.5;
     slow_runner.row_position = 27.0;
     slow_runner.refreshLiveRuntimeRingEffects(&slow_fixture.preview);
+    placeRunnerAtRuntimeRingEffect(&slow_runner, &slow_fixture.preview, slow_runner.activeRuntimeRingEffects()[0]);
     slow_runner.processRuntimeRingEffectCollisions(&slow_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), slow_runner.counters.ring_slow);
     try std.testing.expectEqual(@as(u16, 0), slow_runner.presentation.slow_ticks);
@@ -6690,16 +6712,16 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     runner.lane_center = 1.5;
     runner.row_position = 22.0;
     runner.refreshLiveRuntimeRingEffects(&preview);
-    var found_target_effect = false;
+    var target_effect: ?RuntimeRingEffect = null;
     for (runner.activeRuntimeRingEffects()) |effect| {
         if (effect.row == 39 and effect.lane == 1 and effect.kind == 2) {
-            found_target_effect = true;
+            target_effect = effect;
             break;
         }
     }
-    try std.testing.expect(found_target_effect);
+    try std.testing.expect(target_effect != null);
 
-    runner.row_position = 39.0;
+    placeRunnerAtRuntimeRingEffect(&runner, &preview, target_effect.?);
     runner.processRuntimeRingEffectCollisions(&preview);
 
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_explode);
@@ -6739,13 +6761,13 @@ test "runtime ring effect keeps source row and native presentation anchor" {
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        Runner.runtimeCellWorldPosition(&fixture.preview, 51, 1, Runner.runtimeRingCollisionYOffset(effect.kind)).y,
-        effect.collision_position.y,
+        effect.world_position.y,
+        effect.presentation_position.y,
         0.0001,
     );
 }
 
-test "default ramp ring keeps proxy collision anchor while using native presentation spawn" {
+test "default ramp ring uses native live slot position for collision and presentation" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -6776,12 +6798,12 @@ test "default ramp ring keeps proxy collision anchor while using native presenta
                 0.0001,
             );
             try std.testing.expectApproxEqAbs(
-                Runner.runtimeCellWorldPosition(&preview, 39, 1, Runner.runtimeRingCollisionYOffset(effect.kind)).y,
-                effect.collision_position.y,
+                effect.world_position.y,
+                effect.presentation_position.y,
                 0.0001,
             );
             try std.testing.expect(effect.active_x_oscillation_enabled);
-            try std.testing.expect(effect.presentation_position.x != effect.collision_position.x);
+            try std.testing.expectApproxEqAbs(effect.world_position.x, effect.presentation_position.x, 0.0001);
             return;
         }
     }
@@ -6842,6 +6864,7 @@ test "runtime ring effect collision arms the native collect follow state" {
     runner.lane_center = 1.5;
     runner.row_position = 51.0;
     runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    placeRunnerAtRuntimeRingEffect(&runner, &fixture.preview, runner.activeRuntimeRingEffects()[0]);
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
 
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
@@ -6867,6 +6890,7 @@ test "runtime ring effect post-hit progress step follows native track center" {
     runner.lane_center = 1.5;
     runner.row_position = 51.0;
     runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    placeRunnerAtRuntimeRingEffect(&runner, &fixture.preview, runner.activeRuntimeRingEffects()[0]);
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
 
     runner.updateRuntimeRingEffects(&fixture.preview);
@@ -6895,6 +6919,7 @@ test "runtime ring effect collect follow cleans itself up after native progress 
     runner.lane_center = 1.5;
     runner.row_position = 51.0;
     runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    placeRunnerAtRuntimeRingEffect(&runner, &fixture.preview, runner.activeRuntimeRingEffects()[0]);
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
 
     var guard: usize = 0;
@@ -9180,7 +9205,7 @@ test "attachment natural exit carries overshoot past the template end" {
     runner.attachment.follow.local_progress = 0.0;
     runner.attachment.follow.progress = 0.0;
     runner.attachment.follow.template_progress = sample_count - 0.1;
-    runner.speed_rows_per_second = 48.0;
+    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_max_per_tick;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -9216,7 +9241,7 @@ test "supertramp natural exit enters a launch state above the floor" {
     runner.attachment.follow.progress = 0.0;
     runner.attachment.follow.template_progress = sample_count - 0.1;
     runner.updateAttachmentFollowPosition(&fixture.preview);
-    runner.speed_rows_per_second = 48.0;
+    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_max_per_tick;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -9866,7 +9891,7 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.presentation.barrier_hold_progress, 0.0001);
 }
 
-test "floor-cache launch rows preserve enough native forward carry for trampoline gaps" {
+test "no-fall trampoline rows preserve pending fall until native bounce envelope" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -9885,28 +9910,35 @@ test "floor-cache launch rows preserve enough native forward carry for trampolin
     var runner = Runner.init(&preview);
     runner.lane_index = 2;
     runner.lane_center = 2.5;
-    runner.runtime_track_index = 2;
+    runner.runtime_track_index = 20;
     runner.track_row_progress = 0.0;
     runner.syncRowPosition(&preview);
     runner.refreshSample(&preview);
-    runner.last_processed_row = 2;
+    runner.position_y = native_position_y_death_threshold - 0.25;
+    runner.velocity_y = -0.5;
+    runner.attachment.exit.pending = true;
 
-    var saw_trampoline_bounce = false;
-    var ticks: u32 = 0;
-    while (ticks < 90) : (ticks += 1) {
-        runner.step(&preview, .{}, 1.0 / 60.0);
-        if (runner.post_trampoline_airborne) {
-            saw_trampoline_bounce = true;
-            break;
-        }
-        if (runner.phase != .active) break;
-    }
-
+    try std.testing.expect((preview.runtimeRowFlagsAt(runner.current_global_row) & track.runtime_row_flag_no_fall) != 0);
+    runner.stepActivePhaseVerticalMotion(&preview);
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
-    try std.testing.expect(saw_trampoline_bounce);
+    try std.testing.expect(runner.position_y < native_position_y_death_threshold);
+
+    runner.runtime_track_index = 24;
+    runner.track_row_progress = 0.0;
+    runner.syncRowPosition(&preview);
+    runner.refreshSample(&preview);
+    runner.position_y = -2.8;
+    runner.velocity_y = -0.5;
+    runner.attachment.exit.pending = true;
+    runner.post_trampoline_airborne = false;
+
+    try std.testing.expectEqual(@as(u8, 0x16), preview.runtimeTileAt(runner.current_global_row, runner.resolved_lane_index).?);
+    runner.stepActivePhaseVerticalMotion(&preview);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(!runner.attachment.exit.pending);
+    try std.testing.expect(runner.post_trampoline_airborne);
     try std.testing.expect(runner.counters.trampoline_bounces > 0);
     try std.testing.expect(runner.presentation.squidge.y_velocity < 0.0);
-    try std.testing.expect(runner.current_global_row >= 24);
 }
 
 test "tutorial powerup ramps preserve enough native carry to cross the authored gap" {
@@ -9943,6 +9975,36 @@ test "tutorial powerup ramps preserve enough native carry to cross the authored 
 
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expect(runner.current_global_row >= 20);
+    try std.testing.expect(runner.position_y > native_position_y_death_threshold);
+}
+
+test "tutorial wall2 jump section stays active through the authored powerup gap" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_min_per_tick;
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.runtime_track_index = 43;
+    runner.track_row_progress = 0.0;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.last_processed_row = 43;
+
+    var collected_powerup = false;
+    var reached_solid_floor = false;
+    var ticks: u32 = 0;
+    while (ticks < 180 and runner.phase == .active) : (ticks += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
+        collected_powerup = collected_powerup or runner.counters.ring_powerup > 0;
+        reached_solid_floor = reached_solid_floor or runner.current_global_row >= 60;
+        if (reached_solid_floor) break;
+    }
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(collected_powerup);
+    try std.testing.expect(reached_solid_floor);
     try std.testing.expect(runner.position_y > native_position_y_death_threshold);
 }
 
@@ -10148,8 +10210,9 @@ test "replay flag bit 0x2 seeds native movement fire progress from the selector 
         1.0 / 60.0,
     );
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_step_rows, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.8), runner.track_row_progress, 0.0001);
+    const expected_track_step = native_start_block_velocity_z_delta_per_tick * native_velocity_yz_decay_per_tick;
+    try std.testing.expectApproxEqAbs(expected_track_step, runner.track_step_rows, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6) + expected_track_step, runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,

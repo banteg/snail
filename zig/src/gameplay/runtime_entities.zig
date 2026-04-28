@@ -137,7 +137,6 @@ pub const RingEffect = struct {
     lane: usize,
     kind: u8,
     state: RingEffectState = .active,
-    collision_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
