@@ -74,8 +74,8 @@ pub const SaltSlot = struct {
 
 // PORT(verified): per-slot layout mirrors the `cRSubLazerManager` projectile
 // slot at `game + 0x356b00` in
-// `artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c` and
-// `artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`. The
+// `analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c` and
+// `analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`. The
 // 20-slot native pool's per-slot state layout is:
 //
 //   - `+0x80` state (0 inactive, 1 active, 2 queued for removal)

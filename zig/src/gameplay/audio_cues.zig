@@ -16,6 +16,7 @@ pub const NativeGameplaySoundCues = struct {
     parcel_delivery: bool = false,
     parcel_bonus: bool = false,
     row_event_confirm: bool = false,
+    sub_lazer_fire: bool = false,
 };
 
 pub const NativeJetpackSoundCues = struct {
@@ -68,6 +69,7 @@ pub fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runn
             previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
             current.registeredParcelCount() == current.row_event_display.parcel_target_count,
         .row_event_confirm = previous.row_event_display.gate_18 == 0 and current.row_event_display.gate_18 != 0,
+        .sub_lazer_fire = previous.runtime.sub_lazers.countActive() < current.runtime.sub_lazers.countActive(),
     };
 }
 
@@ -252,6 +254,20 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     current = previous;
     current.row_event_display.gate_18 = 1;
     try std.testing.expect(nativeGameplaySoundCues(previous, current).row_event_confirm);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    _ = current.runtime.sub_lazers.shoot(
+        8,
+        3,
+        .{ .x = 0.0, .y = 8.0, .z = 24.0 },
+        .{ .x = 0.0, .y = 0.0, .z = -0.40000001 },
+        0.0,
+    ).?;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).sub_lazer_fire);
+
+    previous = current;
+    try std.testing.expect(!nativeGameplaySoundCues(previous, current).sub_lazer_fire);
 
     previous = gameplay.Runner{};
     current = previous;

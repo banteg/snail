@@ -3143,8 +3143,8 @@ pub const Runner = struct {
         // `processRuntimeHazardCollisions` against the damage gauge).
         self.runtime.salts.tickActiveSlots();
 
-        // PORT(verified): `update_wall2_ambient_hazard`
-        // (`artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`)
+        // PORT(verified): `update_sub_lazer_projectile`
+        // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`)
         // advances each SubLazer slot's phase + position, then retires the
         // slot when the emitter cell passes behind the player
         // (`get_track_runtime_cell_at_world_z` comparison at native line 47)
@@ -3205,7 +3205,7 @@ pub const Runner = struct {
     fn retireSubLazersBehindPlayer(self: *Runner) void {
         for (&self.runtime.sub_lazers.slots) |*slot| {
             if (slot.state != .active) continue;
-            // Native native line 47 reads the emitter's runtime cell z and
+            // Native line 47 reads the emitter's runtime cell z and
             // compares to the slot's world position. When the emitter has
             // scrolled off-screen (`emitter_row + trailing_window <
             // row_position`), the slot is destroyed.

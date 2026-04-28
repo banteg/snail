@@ -160,6 +160,9 @@ pub fn playGameplayRunnerAudio(
     if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.enemy_fire);
     }
+    if (native_sound_cues.sub_lazer_fire) {
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.enemy_fire);
+    }
     if (gameplay_audio_cues.nativeWeaponPresentationChanged(previous, current)) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.weapon_change);
     }
