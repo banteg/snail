@@ -47,7 +47,7 @@ Notes:
 | `0x445bca` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) | `sfx 25` | third visual-state channel enters state `3` | weapon visual-state controller | ported; the cue fires when the recovered center channel enters the rocket state |
 | `0x445be2` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) | `sfx 25` | fallback weapon visual-state change branch after channel `2` assignment | weapon visual-state controller | ported; same-presentation selector changes such as rocket-family `32 -> 64 -> 192` no longer produce an invented servo cue |
 | `0x446c0a` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) | `sfx 46` | completion cutscene state `6` when it initializes the completion screen | completion cutscene | ported; the recovered sound-bank table maps this to `SFX2/SKIDSTOP.OGG`, and the app now plays it on the early completion-screen handoff |
-| `0x447000` | [`update_warning`](../../artifacts/ida/functions/00446f80-update_warning.c) | `sfx 50` | warning controller loops from fade-out state `2` back to state `1` once per cycle | damage-warning overlay | ported approximately; current port plays the postal warning loop once per second while active |
+| `0x447000` | [`update_warning`](../../artifacts/ida/functions/00446f80-update_warning.c) | `sfx 50` | warning controller loops from fade-out state `2` back to state `1` once per cycle | damage-warning overlay | ported; the cue is now keyed from the warning actor's recovered fade-cycle to solid-state transition rather than from a generic active timer |
 
 ## `play_voice_manager`
 
