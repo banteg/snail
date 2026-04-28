@@ -589,5 +589,12 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
 }
 
 fn stepSliderDisplay(current: f32, target: f32) f32 {
-    return current + (target - current) * 0.35;
+    // PORT(verified): `update_frontend_widget_interaction` advances slider
+    // `+384` toward target `+380` with a fixed 0.8 blend each frame.
+    return current + (target - current) * frontend_options_menu.slider_display_lerp;
+}
+
+test "frontend slider display follows native widget blend" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.8), stepSliderDisplay(0.0, 1.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.24), stepSliderDisplay(1.0, 0.05), 0.0001);
 }
