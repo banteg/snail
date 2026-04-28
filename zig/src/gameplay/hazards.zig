@@ -286,6 +286,7 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
 pub const SubLazerPool = struct {
     slots: [max_active_sub_lazer_slots]SubLazerSlot =
         [_]SubLazerSlot{.{}} ** max_active_sub_lazer_slots,
+    fire_generation: u32 = 0,
 
     pub fn reset(self: *SubLazerPool) void {
         self.* = .{};
@@ -343,7 +344,9 @@ pub const SubLazerPool = struct {
     // (`artifacts/ida/functions/00441ad0-shoot_subgoldy.c`). Walks the pool
     // for the first inactive slot, adjusts spawn Y by
     // `-0.01 * slot_index` so stacked shots don't co-locate vertically,
-    // then delegates to `spawn`. Returns null when the pool is exhausted.
+    // then delegates to `spawn`. The native `sfx 15` call lives after the
+    // successful spawn, so the port increments `fire_generation` only on
+    // successful allocation. Returns null when the pool is exhausted.
     pub fn shoot(
         self: *SubLazerPool,
         emitter_row: usize,
@@ -368,6 +371,7 @@ pub const SubLazerPool = struct {
             .phase = 0.0,
             .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
         };
+        self.fire_generation +%= 1;
         return allocation.slot;
     }
 
