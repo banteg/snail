@@ -117,7 +117,11 @@ pub fn nativeExplodeRingSoundTriggered(previous: gameplay.Runner, current: gamep
 }
 
 pub fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return current.presentation.movement_flags != previous.presentation.movement_flags;
+    const previous_channels = gameplay.nativeWeaponChannelStates(previous.presentation.movement_flags);
+    const current_channels = gameplay.nativeWeaponChannelStates(current.presentation.movement_flags);
+    return previous_channels.left != current_channels.left or
+        previous_channels.right != current_channels.right or
+        previous_channels.center != current_channels.center;
 }
 
 pub fn nativeMovementStateSoundFamily(current: gameplay.Runner) NativeMovementStateSoundFamily {
@@ -452,6 +456,20 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
         gameplay.nativeWeaponChannelStates(current.presentation.movement_flags),
     );
     try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
+
+    previous = gameplay.Runner{};
+    previous.presentation.movement_flags = 32;
+    current = previous;
+    current.presentation.movement_flags = 64;
+    try std.testing.expectEqualDeep(
+        gameplay.WeaponChannelStates{ .center = 3 },
+        gameplay.nativeWeaponChannelStates(previous.presentation.movement_flags),
+    );
+    try std.testing.expectEqualDeep(
+        gameplay.WeaponChannelStates{ .center = 3 },
+        gameplay.nativeWeaponChannelStates(current.presentation.movement_flags),
+    );
+    try std.testing.expect(!nativeWeaponPresentationChanged(previous, current));
 
     previous = gameplay.Runner{};
     current = previous;
