@@ -3123,6 +3123,52 @@ test "postal failure only stages post-level score entry when the score qualifies
     try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.new_game_menu, updated.outer_return_target);
 }
 
+test "failed time trial commit updates scratch without replacing route record" {
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.active_frontend_mode = .time_trial;
+    state.active_frontend_level_index = 3;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0x1234;
+    state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
+    state.replay_capture = .{};
+    defer state.replay_capture.deinit(std.testing.allocator);
+
+    state.high_score_tables.completion[2] = .{ .score = 42_000, .replay_level_index = 3 };
+    try state.replay_capture.appendFrame(std.testing.allocator, 1.0, 2.0, false, false);
+    state.pending_run_result = .{
+        .outcome = .failed,
+        .level_name = "Route 3",
+        .mode = .time_trial,
+        .elapsed_millis = 2_000,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 2_000,
+        .score_is_partial = true,
+        .completion_owner = .time_trial_failure,
+        .persistence = .failed,
+        .outer_return_target = .time_trial_route_map,
+    };
+
+    try state.commitPendingRunResultIfNeeded();
+
+    const updated = state.pending_run_result.?;
+    try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
+    try std.testing.expectEqual(@as(u32, 42_000), state.high_score_tables.completion[2].score);
+    try std.testing.expectEqual(@as(u32, 2_000), state.high_score_tables.scratch.score);
+    try std.testing.expectEqual(@as(u32, 3), state.high_score_tables.scratch.replay_level_index);
+    try std.testing.expectEqual(@as(u32, @intFromEnum(FrontendLevelMode.time_trial)), state.high_score_tables.scratch.replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 0x1234), state.high_score_tables.scratch.runtime_build_seed);
+    try std.testing.expect(state.high_score_tables.scratch.has_replay);
+    try std.testing.expect(state.high_score_tables.scratch.raw_record != null);
+}
+
 test "postal abandon can stage standalone post-level score entry" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();

@@ -227,7 +227,16 @@ pub fn commitIfNeeded(state: anytype, result: Result) !Result {
             .time_trial_completion,
             .tutorial_completion,
             => unreachable,
-            .time_trial_failure, .tutorial_failure => {},
+            .time_trial_failure => {
+                const entry = try state.currentRunHighScoreEntry(result.score);
+                _ = state.high_score_tables.addTimeTrial(
+                    state.allocator,
+                    state.active_frontend_level_index,
+                    entry,
+                    false,
+                );
+            },
+            .tutorial_failure => {},
         },
     }
     updated.persistence = .none;
