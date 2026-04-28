@@ -3295,16 +3295,24 @@ pub const Runner = struct {
     // PORT(partial): mirrors the recovered Wall2 tile branch inside
     // `wall2_emitter_maybe_fire_sub_lazer` @ 0x439d50. Native runs this from
     // each live runtime row-cell object. The port still discovers candidate
-    // emitters from the preview window, but the gate, RNG source, origin,
-    // target-z scramble, `delta_z < -4`, and normalized `0.4` velocity now
-    // follow the decompile instead of the previous row/lane hash shortcut.
-    // The native `cell->flags & 0x2000` owner bit is not exposed in the preview;
-    // candidate `0x0e` Wall2 cells stand in for that object-local gate.
+    // emitters from the preview window, but the active-start gate
+    // (`game+0x74668 < game+0x42fdec`), RNG source, origin, target-z scramble,
+    // `delta_z < -4`, and normalized `0.4` velocity now follow the decompile
+    // instead of the previous row/lane hash shortcut. The native
+    // `cell->flags & 0x2000` owner bit is not exposed in the preview; candidate
+    // `0x0e` Wall2 cells stand in for that object-local gate.
     fn maybeFireWall2SubLazersInWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or preview.max_width == 0) return;
 
-        const window_start = currentRowIndex(preview, self.row_position);
-        const window_end = @min(window_start + runtime_wall2_emitter_window_rows, preview.total_rows);
+        if (@as(f32, @floatFromInt(preview.runtime_active_row_start)) >= self.row_position) return;
+
+        const window_start = @max(
+            currentRowIndex(preview, self.row_position),
+            preview.runtime_active_row_start,
+        );
+        const preview_end = @min(preview.total_rows, preview.runtime_active_row_end);
+        const window_end = @min(window_start + runtime_wall2_emitter_window_rows, preview_end);
+        if (window_start >= window_end) return;
 
         for (window_start..window_end) |global_row| {
             for (0..preview.max_width) |lane_index| {
@@ -7497,10 +7505,16 @@ test "steady gameplay animation id 2 resolves to shipped turbo move" {
 }
 
 test "Wall2 emitter fires SubLazer with native player-relative z gate" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/CAGE.TXT");
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
-    const wall = findFirstRuntimeTileAtOrAfter(&fixture.preview, native_wall2_tile_id, 20) orelse return error.TestUnexpectedResult;
+    const wall: RowTarget = .{
+        .row = fixture.preview.runtime_active_row_start + 21,
+        .lane = @min(@as(usize, 3), fixture.preview.max_width - 1),
+    };
+    try std.testing.expect(wall.row < fixture.preview.total_rows);
+    fixture.preview.runtime_tiles[(wall.row * fixture.preview.max_width) + wall.lane] = native_wall2_tile_id;
+
     var runner = Runner.init(&fixture.preview);
     runner.row_position = if (wall.row > 20) @floatFromInt(wall.row - 20) else 0.0;
     runner.math_random_state = 0;
@@ -7514,6 +7528,19 @@ test "Wall2 emitter fires SubLazer with native player-relative z gate" {
     const speed = @sqrt((slot.velocity.x * slot.velocity.x) + (slot.velocity.y * slot.velocity.y) + (slot.velocity.z * slot.velocity.z));
     try std.testing.expectApproxEqAbs(native_sub_lazer_speed, speed, 0.0001);
     try std.testing.expect(slot.world_position.y > 7.0);
+}
+
+test "Wall2 emitter waits for native active-row start gate" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/CAGE.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = @floatFromInt(fixture.preview.runtime_active_row_start);
+    runner.math_random_state = 0;
+
+    runner.maybeFireWall2SubLazersInWindow(&fixture.preview);
+
+    try std.testing.expectEqual(@as(usize, 0), runner.runtime.sub_lazers.countActive());
 }
 
 test "invincible slug contact defeats slug through native kill helper" {
