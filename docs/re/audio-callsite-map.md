@@ -16,7 +16,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 | `sfx 8` | [`update_galaxy`](../../artifacts/ida/functions/004092f0-update_galaxy.c) at `0x409ae4` | galaxy route confirmation | galaxy route UI | low priority; not a gameplay-system gap |
 | `sfx 8` | [`update_options_menu`](../../artifacts/ida/functions/0041af60-update_options_menu.c) at `0x41b05c` | options sound-volume change cue | options UI | low priority; not a gameplay-system gap |
 | `sfx 8` | [`update_thanks_for_playing_screen`](../../artifacts/ida/functions/004340f0-update_thanks_for_playing_screen.c) at `0x434129` | thanks-screen continue cue | thanks-screen continue flow | low priority; not a gameplay-system gap |
-| `sfx 8` | [`update_click_start`](../../artifacts/ida/functions/00442290-update_click_start.c) at `0x4423ed` | tutorial click-start handoff cue after pointer recenter | tutorial click-start flow in `main.zig` | the click-start flow is ported, but this exact native cue and its ownership are still secondary |
+| `sfx 8` | [`update_click_start`](../../artifacts/ida/functions/00442290-update_click_start.c) at `0x4423ed` | tutorial click-start handoff cue after pointer recenter | tutorial click-start flow in `main.zig` | ported; click-start dismissal now uses the gameplay `SFX2/SELECT.OGG` slot for native sound id `8` |
 
 ### Row events and parcels
 

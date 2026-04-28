@@ -1449,11 +1449,9 @@ const AppState = struct {
         if (!self.gameplay_click_start_active) return;
         self.gameplay_click_start_active = false;
         self.pending_level_input = .{};
-        if (self.audio_ready) {
-            if (self.frontend_sound_fx.select) |loaded| {
-                rl.playSound(loaded.sound);
-            }
-        }
+        // PORT(verified): `update_click_start` state `2 -> 3` recenters both
+        // controller pointers and then calls `play_sound_effect(8)`.
+        audio.playGameplayEffect(self, self.gameplay_resources.sound_fx.row_event_confirm);
         rl.setMousePosition(@divTrunc(rl.getScreenWidth(), 2), @divTrunc(rl.getScreenHeight(), 2));
         const previous_active_level_segment_index = self.active_level_segment_index;
         try self.syncActiveLevelSegment();
