@@ -626,7 +626,7 @@ Current practical read:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
-  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate, but its one recovered gameplay read is now narrower: when it is `1` and the current runtime cell carries flag `0x40`, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
+  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate, but its one recovered gameplay read is now narrower: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
@@ -757,7 +757,7 @@ High-confidence current fields:
 - `+0x0c`: `widget_d`
 - `+0x10`: `widget_e`
 - `+0x14`: `state`
-- `+0x18`: `gate_18`
+- `+0x18`: `completion_fast_forward_gate`
 - `+0x1c`: `parcel_target_count`
 - `+0x20`: `bonus_enabled`
 - `+0x24`: `staged_parcel_count`
@@ -774,10 +774,10 @@ High-confidence current fields:
 
 Current practical read:
 
-- `update_row_event_display` drives the controller state machine and the staged parcel-widget reveal path
+- `update_row_event_display` drives the controller state machine and the staged parcel-widget reveal path; its accept branch sets `state = 5` directly
 - `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and sets `state = 3`
 - `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and clears `state`
-- the byte at `+0x18` still contains the old `game + 0x12727f0` gate; it is now tracked as `gate_18` but should stay semantically unresolved until its exact gameplay meaning is recovered
+- the byte at `+0x18` still contains the old `game + 0x12727f0` gate; it is now tracked as `completion_fast_forward_gate` because one recovered completion-handoff read uses it, but the nonzero writer is still unresolved
 
 ## Track Parcel Runtime
 

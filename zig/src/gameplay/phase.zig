@@ -72,6 +72,7 @@ pub fn maybeBeginCompletionCutscene(runner: anytype, preview: *const track.Loade
 }
 
 pub fn updateCompletionHandoff(runner: anytype, preview: *const track.LoadedLevelPreview) void {
+    _ = preview;
     _ = advanceCutsceneTicks(runner);
     runner.handoff.completion_timer += runner.handoff.completion_timer_step;
     if (!runner.handoff.completion_voice_gate and
@@ -85,14 +86,6 @@ pub fn updateCompletionHandoff(runner: anytype, preview: *const track.LoadedLeve
     {
         runner.handoff.completion_screen_init_sent = true;
         runner.handoff.pending = .completion_screen_init;
-    }
-    if (runner.row_event_display.gate_18 != 0 and
-        runner.currentRowEventCompletionCellActive(preview))
-    {
-        runner.handoff.completion_timer = @max(
-            runner.handoff.completion_timer,
-            completion_handoff_release_force_seconds,
-        );
     }
     if (runner.row_event_display.state == .complete) {
         runner.handoff.completion_timer = @max(

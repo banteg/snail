@@ -68,7 +68,8 @@ pub fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runn
             current.row_event_display.parcel_target_count != 0 and
             previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
             current.registeredParcelCount() == current.row_event_display.parcel_target_count,
-        .row_event_confirm = previous.row_event_display.gate_18 == 0 and current.row_event_display.gate_18 != 0,
+        .row_event_confirm = previous.row_event_display.state != .complete and
+            current.row_event_display.state == .complete,
         .sub_lazer_fire_position = if (previous.runtime.sub_lazers.fire_generation != current.runtime.sub_lazers.fire_generation)
             current.runtime.sub_lazers.last_fire_position
         else
@@ -266,7 +267,8 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{};
     current = previous;
-    current.row_event_display.gate_18 = 1;
+    previous.row_event_display.state = .bonus_prompt;
+    current.row_event_display.state = .complete;
     try std.testing.expect(nativeGameplaySoundCues(previous, current).row_event_confirm);
 
     previous = gameplay.Runner{};

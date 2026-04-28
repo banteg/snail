@@ -23,7 +23,7 @@ pub const DisplayState = enum(u32) {
 
 pub const DisplayController = struct {
     state: DisplayState = .inactive,
-    gate_18: u8 = 0,
+    completion_fast_forward_gate: u8 = 0,
     parcel_target_count: u32 = 0,
     bonus_enabled: bool = false,
     staged_parcel_count: u32 = 0,
@@ -95,7 +95,7 @@ pub const DisplayController = struct {
         self.state = .inactive;
         self.progress = 0.0;
         self.progress_step = 0.0;
-        self.gate_18 = 0;
+        self.completion_fast_forward_gate = 0;
         self.display_token = 0;
         self.bonus_blink_progress = 0.0;
     }
@@ -115,7 +115,7 @@ pub const DisplayController = struct {
 
     pub fn armPromptGate(self: *DisplayController, accept_pressed: bool) void {
         if (!accept_pressed) return;
-        self.gate_18 = 1;
+        self.completion_fast_forward_gate = 1;
     }
 
     pub fn stepProgress(self: *DisplayController) bool {
@@ -127,13 +127,10 @@ pub const DisplayController = struct {
         return self.progress >= 1.0;
     }
 
-    pub fn stepBonusPrompt(self: *DisplayController, completion_cell_active: bool) void {
+    pub fn stepBonusPrompt(self: *DisplayController) void {
         self.bonus_blink_progress += self.bonus_blink_step;
         if (self.bonus_blink_progress > 1.0) {
             self.bonus_blink_progress = 0.0;
-        }
-        if (completion_cell_active) {
-            self.state = .complete;
         }
     }
 };
