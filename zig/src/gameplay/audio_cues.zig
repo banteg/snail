@@ -156,6 +156,14 @@ pub fn nativeMovementSoundVariantIndexForSample(sample: u32, comptime count: usi
     return @min(count - 1, @as(usize, @intCast((@as(u64, sample) * count) / 0x8000)));
 }
 
+pub fn nativeGarbageImpactSoundIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (previous.garbage_impact_sound_token == current.garbage_impact_sound_token) return null;
+    return @min(
+        gameplay_assets.gameplay_asteroid_impact_sound_paths.len - 1,
+        current.garbage_impact_sound_variant,
+    );
+}
+
 pub fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeJetpackSoundCues {
     return .{
         .activate = !previous.jetpack.thrust_visual_active and current.jetpack.thrust_visual_active,
@@ -418,6 +426,15 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expectEqual(@as(usize, 0), nativeMovementSoundVariantIndexForSample(16383, 2));
     try std.testing.expectEqual(@as(usize, 1), nativeMovementSoundVariantIndexForSample(16384, 2));
     try std.testing.expectEqual(@as(usize, 2), nativeMovementSoundVariantIndexForSample(32767, 3));
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.garbage_impact_sound_token = 1;
+    current.garbage_impact_sound_variant = 1;
+    try std.testing.expectEqual(@as(?usize, 1), nativeGarbageImpactSoundIndex(previous, current));
+    previous = current;
+    try std.testing.expectEqual(@as(?usize, null), nativeGarbageImpactSoundIndex(previous, current));
+
     previous = gameplay.Runner{};
     current = previous;
     current.presentation.movement_flags = 8;

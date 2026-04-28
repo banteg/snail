@@ -562,6 +562,8 @@ pub const Runner = struct {
     slug_hit_voice_variant: usize = 0,
     slug_death_voice_token: u32 = 0,
     slug_death_voice_variant: usize = 0,
+    garbage_impact_sound_token: u32 = 0,
+    garbage_impact_sound_variant: usize = 0,
     math_random_state: u32 = 0,
     // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
     // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
@@ -1167,6 +1169,13 @@ pub const Runner = struct {
         return @min(
             gameplay_assets.gameplay_slug_death_voice_paths.len - 1,
             @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_slug_death_voice_paths.len) / 0x8000)),
+        );
+    }
+
+    fn nativeGarbageImpactSoundVariant(sample: u32) usize {
+        return @min(
+            gameplay_assets.gameplay_asteroid_impact_sound_paths.len - 1,
+            @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_asteroid_impact_sound_paths.len) / 0x8000)),
         );
     }
 
@@ -2022,6 +2031,7 @@ pub const Runner = struct {
             self.recordScore(.garbage, 0);
             self.applyGarbageImpact(preview, hazard_position);
             self.applyDamageGaugeDelta(garbage_damage_delta);
+            self.queueGarbageImpactSound();
             self.recent_event = .garbage_hit;
             self.beginGarbageBurst(hazard, player_position);
             return;
@@ -2884,6 +2894,14 @@ pub const Runner = struct {
         // slug voice families.
         self.slug_death_voice_variant = nativeSlugDeathVoiceVariant(self.nextMathRandomInt15());
         self.slug_death_voice_token +%= 1;
+    }
+
+    fn queueGarbageImpactSound(self: *Runner) void {
+        // PORT(verified): garbage collision in `handle_subgoldy_collisions` calls
+        // `play_sound_effect(39 - scaled_random)`, selecting the shipped
+        // `ASTEROIDIMPACT1..2` pair from the same native 15-bit RNG family.
+        self.garbage_impact_sound_variant = nativeGarbageImpactSoundVariant(self.nextMathRandomInt15());
+        self.garbage_impact_sound_token +%= 1;
     }
 
     fn updateSlugHazardVoiceAi(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6145,9 +6163,12 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
+    runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
     const speed_before_garbage = runner.speed_rows_per_second;
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectEqual(@as(u32, 1), runner.garbage_impact_sound_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.garbage_impact_sound_variant);
     try std.testing.expectEqual(@as(u32, 10), runner.score.total);
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage.gauge, 0.0001);
@@ -6256,12 +6277,15 @@ test "runtime garbage hazards collide by distance before exact row crossing" {
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
+    runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
 
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
     runner.processRuntimeHazardCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
     try std.testing.expectEqual(RuntimeHazardState.burst_setup, runner.activeRuntimeHazards()[0].state);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectEqual(@as(u32, 1), runner.garbage_impact_sound_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.garbage_impact_sound_variant);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
 

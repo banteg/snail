@@ -196,19 +196,8 @@ pub fn playGameplayRunnerAudio(
     if (gameplay_audio_cues.nativeExplodeRingSoundTriggered(previous, current)) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.explode_ring);
     }
-    if (current.counters.garbage_hits > previous.counters.garbage_hits) {
-        playGameplayEffect(state, pickGameplaySoundVariant(
-            state,
-            gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.gameplay_resources.sound_fx.asteroid_impact,
-        ));
-    }
-    if (current.counters.salt_hits > previous.counters.salt_hits) {
-        playGameplayEffect(state, pickGameplaySoundVariant(
-            state,
-            gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.gameplay_resources.sound_fx.asteroid_impact,
-        ));
+    if (gameplay_audio_cues.nativeGarbageImpactSoundIndex(previous, current)) |sound_index| {
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.asteroid_impact[sound_index]);
     }
     if (current.counters.turret_hits > previous.counters.turret_hits) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.wall_hit);
@@ -220,13 +209,6 @@ pub fn playGameplayRunnerAudio(
             gameplay_assets.gameplay_slug_hit_voice_paths,
             voice_index,
         ) catch {};
-    }
-    if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
-        playGameplayEffect(state, pickGameplaySoundVariant(
-            state,
-            gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.gameplay_resources.sound_fx.asteroid_impact,
-        ));
     }
     if (gameplay_audio_cues.nativeSlugDeathVoiceIndex(previous, current)) |voice_index| {
         voice_audio.tryPlayVariantIndex(
@@ -252,22 +234,6 @@ pub fn playGameplayEffectScaled(state: anytype, sound: ?assets.LoadedSound, gain
     rl.setSoundVolume(loaded.sound, scaled_volume);
     rl.playSound(loaded.sound);
     rl.setSoundVolume(loaded.sound, base_volume);
-}
-
-fn pickGameplaySoundVariant(state: anytype, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
-    var start = nextGameplaySoundVariantIndex(state, count);
-    var remaining = count;
-    while (remaining > 0) : (remaining -= 1) {
-        if (variants[start]) |loaded| return loaded;
-        start = (start + 1) % count;
-    }
-    return null;
-}
-
-fn nextGameplaySoundVariantIndex(state: anytype, comptime count: usize) usize {
-    const index = @as(usize, @intCast(state.gameplay_audio_variant_counter % count));
-    state.gameplay_audio_variant_counter +%= 1;
-    return index;
 }
 
 fn countGameplayProjectiles(runner: gameplay.Runner, kind: gameplay.Projectile.Kind) usize {
