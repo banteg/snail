@@ -2175,10 +2175,11 @@ pub const Runner = struct {
     }
 
     fn maybeAwardRowEventCompletionBonus(self: *Runner) void {
-        if (self.score.bonus != 0 or !self.row_event_display.bonus_enabled) return;
+        if (self.row_event_display.completion_bonus_awarded or !self.row_event_display.bonus_enabled) return;
         if (self.row_event_display.parcel_target_count == 0 or
             self.row_event_display.delivered_parcel_count < self.row_event_display.parcel_target_count) return;
 
+        self.row_event_display.completion_bonus_awarded = true;
         self.recordScore(.bonus, postal_completion_bonus_score);
     }
 
@@ -8116,6 +8117,25 @@ test "runner applies the completion bonus once" {
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
+}
+
+test "completion bonus guard is owned by the row-event controller" {
+    var runner = Runner{};
+    runner.score.bonus = 50_000;
+    runner.row_event_display.parcel_target_count = 1;
+    runner.row_event_display.delivered_parcel_count = 1;
+    runner.row_event_display.bonus_enabled = true;
+    runner.row_event_display.completion_bonus_awarded = false;
+
+    runner.maybeAwardRowEventCompletionBonus();
+
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100_000), runner.score.bonus);
+    try std.testing.expect(runner.row_event_display.completion_bonus_awarded);
+
+    runner.maybeAwardRowEventCompletionBonus();
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100_000), runner.score.bonus);
 }
 
 test "runner seeds visible life stock at 3 and caps score-side awards at 9" {

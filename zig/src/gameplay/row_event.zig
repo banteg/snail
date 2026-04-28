@@ -36,6 +36,7 @@ pub const DisplayController = struct {
     bonus_blink_progress: f32 = 0.0,
     bonus_blink_step: f32 = 0.0,
     bonus_score: u32 = postal_completion_bonus_score,
+    completion_bonus_awarded: bool = false,
     display_token: u32 = 0,
 
     pub fn configureForRun(self: *DisplayController, parcel_target: usize, bonus_enabled: bool) void {
@@ -47,6 +48,7 @@ pub const DisplayController = struct {
             .staged_parcel_count = staged_parcel_count,
             .delivered_parcel_count = delivered_parcel_count,
             .bonus_score = postal_completion_bonus_score,
+            .completion_bonus_awarded = false,
             .bonus_blink_step = 1.0,
         };
     }
