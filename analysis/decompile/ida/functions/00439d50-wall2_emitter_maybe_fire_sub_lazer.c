@@ -2,7 +2,7 @@
 /* function: wall2_emitter_maybe_fire_sub_lazer @ 0x439d50 */
 /* selector: wall2_emitter_maybe_fire_sub_lazer */
 
-// Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, rolls the random gate (`< 4/100`) against the cadence timer `game+0x74668 > game+0x42fdec`, derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`.
+// Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, requires the active runtime row start at `game+0x74668` to be behind Goldy's live row position at `game+0x42fdec`, rolls the random gate (`< 4/100`), derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`.
 void __thiscall sub_439D50(int this)
 {
   void *v2; // ecx
@@ -110,4 +110,3 @@ LABEL_13:
     }
   }
 }
-
