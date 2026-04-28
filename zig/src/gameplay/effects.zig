@@ -17,8 +17,9 @@ pub const jet_particle_side_count = 2;
 pub const jet_particle_count = jet_particle_trail_count * jet_particle_side_count;
 pub const nuke_particle_count = gameplay.native_nuke_sprite_count;
 const jet_particle_trail_step: f32 = 0.071428575;
-const jet_particle_native_width_seed: f32 = 0.145;
-const jet_particle_native_back_seed: f32 = 0.425;
+const jet_particle_width_random_base: f32 = 0.12;
+const jet_particle_back_random_base: f32 = 0.40000001;
+const jet_particle_random_scale: f32 = 0.0000015258789;
 
 pub const Kind = enum {
     explode_big,
@@ -60,6 +61,7 @@ pub const Controller = struct {
     jet_particles: [jet_particle_count]JetParticle = [_]JetParticle{.{}} ** jet_particle_count,
     nuke_particles: [nuke_particle_count]NukeParticle = [_]NukeParticle{.{}} ** nuke_particle_count,
     count: usize = 0,
+    visual_random_state: u32 = 0x4df904,
 
     pub fn clear(self: *Controller) void {
         self.count = 0;
@@ -330,11 +332,13 @@ pub const Controller = struct {
 
         const origin = current.worldPosition(preview, 0.18);
         const intensity = std.math.clamp(current.jetpack.warning_intensity, 0.0, 1.0);
+        const back_seed = self.nextJetParticleRandomSeed(jet_particle_back_random_base);
+        const width_seed = self.nextJetParticleRandomSeed(jet_particle_width_random_base);
 
         for (0..jet_particle_trail_count) |trail_index| {
             const progress = @as(f32, @floatFromInt(trail_index)) * jet_particle_trail_step;
-            const size = (1.0 - progress) * jet_particle_native_width_seed * intensity;
-            const back_offset = -(progress * jet_particle_native_back_seed * intensity);
+            const size = (1.0 - progress) * width_seed * intensity;
+            const back_offset = -(progress * back_seed * intensity);
 
             for (0..jet_particle_side_count) |side_index| {
                 const side: f32 = if (side_index == 0) -0.16 else 0.16;
@@ -353,6 +357,12 @@ pub const Controller = struct {
                 };
             }
         }
+    }
+
+    fn nextJetParticleRandomSeed(self: *Controller, base: f32) f32 {
+        self.visual_random_state = self.visual_random_state *% 1103515245 +% 12345;
+        const raw: u32 = (self.visual_random_state >> 16) & 0x7FFF;
+        return (@as(f32, @floatFromInt(raw)) * jet_particle_random_scale) + base;
     }
 
     // PORT(verified): native `health_collect_particles` emits 8 `SMOKE.TGA`
@@ -518,18 +528,21 @@ test "jetpack particles use recovered persistent nozzle bank" {
     runner.jetpack.warning_intensity = 0.5;
 
     var controller = Controller{};
+    const initial_visual_random_state = controller.visual_random_state;
     controller.updateJetParticleBank(runner, &loaded_track_preview);
 
     try std.testing.expectEqual(@as(usize, 0), controller.count);
     try std.testing.expectEqual(@as(usize, jet_particle_count), controller.activeJetParticleCount());
+    try std.testing.expect(controller.visual_random_state != initial_visual_random_state);
     const left = controller.jet_particles[0];
     const right = controller.jet_particles[1];
     const trail_tip = controller.jet_particles[jet_particle_count - 1];
 
     try std.testing.expect(left.active);
     try std.testing.expect(right.active);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0725), left.width, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0725), left.height, 0.0001);
+    try std.testing.expect(left.width >= 0.06);
+    try std.testing.expect(left.width <= 0.085);
+    try std.testing.expectApproxEqAbs(left.width, left.height, 0.0001);
     try std.testing.expectEqual(@as(u8, 255), left.tint.a);
     try std.testing.expect(left.position.x != right.position.x or left.position.z != right.position.z);
     try std.testing.expect(trail_tip.width < left.width);

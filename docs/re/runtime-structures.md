@@ -361,7 +361,8 @@ Current practical read:
 - `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
 - `initialize_jet_particles`, `update_jet_particles`, and `uninit_jet_particles` operate on the same controller; the `+0x20` block is a fixed `30`-entry sprite-slot bank used by the hover thrust particles
   - the Zig port now mirrors this as a persistent `15 x 2` nozzle bank instead of respawning generic smoke every frame
-  - still pending: native per-frame random width/back-offset jitter and the occasional detached puff allocated from the trail tip
+  - `update_jet_particles` rolls `random_back_seed = next_math_random_value() * 0.0000015258789 + 0.40000001` and `random_width_seed = next_math_random_value() * 0.0000015258789 + 0.12` once per bank update
+  - still pending: the occasional detached puff allocated from the trail tip
 - `update_subgoldy` also reads `state` from `player + 0x275c`; when that lane is `1`, the late `0x43ce23 -> 0x43ce75` branch retires `attachment_exit_pending` before the `attachment_exit_progress` / gate-A block
 - `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
 
@@ -398,7 +399,7 @@ Practical interpretation:
   - `4` = active thrust presentation
   - activation uses `set_weapon_animation(..., 1, ..., 4)` followed by a queued `0`
   - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
-- the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, with the exact native RNG jitter/puff branch still unresolved
+- the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, including native-scaled width/back-offset jitter; the detached trail-tip puff branch is still unresolved
 
 ## Game
 
