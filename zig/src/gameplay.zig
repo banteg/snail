@@ -556,6 +556,8 @@ pub const Runner = struct {
     slug_ambient_voice_variant: usize = 0,
     slug_hit_voice_token: u32 = 0,
     slug_hit_voice_variant: usize = 0,
+    slug_death_voice_token: u32 = 0,
+    slug_death_voice_variant: usize = 0,
     math_random_state: u32 = 0,
     // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
     // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
@@ -1157,6 +1159,13 @@ pub const Runner = struct {
         );
     }
 
+    fn nativeSlugDeathVoiceVariant(sample: u32) usize {
+        return @min(
+            gameplay_assets.gameplay_slug_death_voice_paths.len - 1,
+            @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_slug_death_voice_paths.len) / 0x8000)),
+        );
+    }
+
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
         return self.combat.projectiles.slots[0..self.combat.projectiles.count];
     }
@@ -1697,11 +1706,10 @@ pub const Runner = struct {
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
                 if (self.presentation.invincible_ticks > 0) {
-                    // PORT(verified):
-                    // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:179-182`
-                    // takes the invincible-path slug contact through `kill_slug_hazard`
-                    // without `add_subgoldy_score`.
-                    self.defeatSlugSilent(global_row, sample.resolved_lane_index);
+                    // PORT(verified): the invincible contact branch in
+                    // `handle_subgoldy_collisions` calls `kill_slug_hazard`; that helper
+                    // owns both the death voice and the normal slug score award.
+                    self.defeatSlug(global_row, sample.resolved_lane_index);
                     return;
                 }
                 self.counters.slug_hits += 1;
@@ -2828,26 +2836,17 @@ pub const Runner = struct {
     }
 
     fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
-        self.markSlugDefeated(global_row, lane_index, true);
+        self.markSlugDefeated(global_row, lane_index);
     }
 
-    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a takes an invincible
-    // slug contact through `kill_slug_hazard` without calling `add_subgoldy_score`. The
-    // score-awarding `defeatSlug` is only used by projectile kills and explosive-ring
-    // shockwaves; the invincible contact lane marks the slug defeated without score.
-    fn defeatSlugSilent(self: *Runner, global_row: usize, lane_index: usize) void {
-        self.markSlugDefeated(global_row, lane_index, false);
-    }
-
-    fn markSlugDefeated(self: *Runner, global_row: usize, lane_index: usize, award_score: bool) void {
+    fn markSlugDefeated(self: *Runner, global_row: usize, lane_index: usize) void {
         if (self.isSlugDefeated(global_row, lane_index)) return;
+        self.queueSlugDeathVoice();
         if (self.defeated_slug_cell_count < max_defeated_slug_cells) {
             self.defeated_slug_cells[self.defeated_slug_cell_count] = .{ .row = global_row, .lane = lane_index };
             self.defeated_slug_cell_count += 1;
         }
-        if (award_score) {
-            self.recordScore(.slug, 0);
-        }
+        self.recordScore(.slug, 0);
     }
 
     fn queueSlugHitVoice(self: *Runner) void {
@@ -2857,6 +2856,15 @@ pub const Runner = struct {
         // native variant families.
         self.slug_hit_voice_variant = nativeSlugHitVoiceVariant(self.nextMathRandomInt15());
         self.slug_hit_voice_token +%= 1;
+    }
+
+    fn queueSlugDeathVoice(self: *Runner) void {
+        // PORT(verified): `kill_slug_hazard` plays `play_slug_voice(slot, 28 - scaled_random)`
+        // before entering the explosion state, mapping to global samples 28..29
+        // (`SLUG-DEATH1..2`) with the same CRT 15-bit sample scaling used by other
+        // slug voice families.
+        self.slug_death_voice_variant = nativeSlugDeathVoiceVariant(self.nextMathRandomInt15());
+        self.slug_death_voice_token +%= 1;
     }
 
     fn updateSlugVoiceAlerts(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6423,11 +6431,30 @@ test "defeated slugs do not arm ambient voice alerts" {
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     runner.row_position = @as(f32, @floatFromInt(slug.row)) - 0.25;
     runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
-    runner.defeatSlugSilent(slug.row, slug.lane);
+    runner.defeatSlug(slug.row, slug.lane);
 
     runner.updateSlugVoiceAlerts(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 0), runner.slug_ambient_voice_token);
     try std.testing.expectEqual(@as(usize, 0), runner.slug_voice_alert_cell_count);
+}
+
+test "slug defeat queues the native death voice variant once" {
+    var runner = Runner{};
+
+    runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
+    runner.defeatSlug(12, 1);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_death_voice_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.slug_death_voice_variant);
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
+
+    runner.defeatSlug(12, 1);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_death_voice_token);
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
+
+    runner.defeatSlug(13, 1);
+    try std.testing.expectEqual(@as(u32, 2), runner.slug_death_voice_token);
+    try std.testing.expect(runner.slug_death_voice_variant < gameplay_assets.gameplay_slug_death_voice_paths.len);
+    try std.testing.expectEqual(slug_projectile_kill_score * 2, runner.score.slug);
 }
 
 test "repeat slug hit applies the native velocity.z knockback and damage delta" {
@@ -7417,7 +7444,7 @@ test "Wall2 emitter fires SubLazer with native player-relative z gate" {
     try std.testing.expect(slot.world_position.y > 7.0);
 }
 
-test "invincible slug contact defeats slug without score award" {
+test "invincible slug contact defeats slug through native kill helper" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -7429,10 +7456,9 @@ test "invincible slug contact defeats slug without score award" {
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
-    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a goes through
-    // `kill_slug_hazard` without `add_subgoldy_score`; the score only applies when the
-    // slug is killed by a projectile or explosive-ring shockwave.
-    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_death_voice_token);
+    try std.testing.expect(runner.slug_death_voice_variant < gameplay_assets.gameplay_slug_death_voice_paths.len);
 }
 
 test "snail skin transition follows native change + tick timing" {

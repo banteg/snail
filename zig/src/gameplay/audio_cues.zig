@@ -206,6 +206,11 @@ pub fn nativeSlugHitVoiceIndex(previous: gameplay.Runner, current: gameplay.Runn
     return @min(current.slug_hit_voice_variant, gameplay_assets.gameplay_slug_hit_voice_paths.len - 1);
 }
 
+pub fn nativeSlugDeathVoiceIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (previous.slug_death_voice_token == current.slug_death_voice_token) return null;
+    return @min(current.slug_death_voice_variant, gameplay_assets.gameplay_slug_death_voice_paths.len - 1);
+}
+
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
     if (previous_attachment_template_kind != attachment_builders.template_kind_supertramp) return false;
     if (current.movement_mode == .attachment or current.attachment.follow.active) return false;
@@ -527,6 +532,34 @@ test "native gameplay warning loop keys from the warning actor cadence" {
 
     current.damage.warning_actor.sample_generation = 1;
     try std.testing.expect(nativeGameplayWarningLoopTriggered(previous, current));
+}
+
+test "slug direct voice cue indices are runner-owned" {
+    var previous = gameplay.Runner{};
+    var current = previous;
+
+    current.slug_ambient_voice_token = 1;
+    current.slug_ambient_voice_variant = gameplay_assets.gameplay_slug_ambient_voice_paths.len - 1;
+    try std.testing.expectEqual(
+        current.slug_ambient_voice_variant,
+        nativeSlugAmbientVoiceIndex(previous, current).?,
+    );
+
+    previous = current;
+    current.slug_hit_voice_token = 1;
+    current.slug_hit_voice_variant = gameplay_assets.gameplay_slug_hit_voice_paths.len - 1;
+    try std.testing.expectEqual(
+        current.slug_hit_voice_variant,
+        nativeSlugHitVoiceIndex(previous, current).?,
+    );
+
+    previous = current;
+    current.slug_death_voice_token = 1;
+    current.slug_death_voice_variant = gameplay_assets.gameplay_slug_death_voice_paths.len - 1;
+    try std.testing.expectEqual(
+        current.slug_death_voice_variant,
+        nativeSlugDeathVoiceIndex(previous, current).?,
+    );
 }
 
 test "native supertramp exit voice keys from the launch handoff" {

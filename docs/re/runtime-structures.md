@@ -936,6 +936,8 @@ High-confidence current fields:
 
 - `+0x68`: `world_position`
 - `+0x80`: `state`
+- `+0x84`: `death_toss_direction`
+- `+0x88`: `game`
 - `+0x8c`: `velocity`
 - `+0xac`: `sprite`
 - `+0xb0`: `source_cell`
@@ -962,6 +964,7 @@ Current practical read:
 - `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `ambient_alert_checked`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows
 - `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
+- `kill_slug_hazard` only acts on live state `1`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to explosion state `2`, records the left/right toss selector from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 

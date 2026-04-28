@@ -224,10 +224,13 @@ pub fn playGameplayRunnerAudio(
             gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
             state.gameplay_resources.sound_fx.asteroid_impact,
         ));
-        voice_audio.tryPlayVariant(
+    }
+    if (gameplay_audio_cues.nativeSlugDeathVoiceIndex(previous, current)) |voice_index| {
+        voice_audio.tryPlayVariantIndex(
             voices,
             gameplay_assets.gameplay_slug_death_voice_paths.len,
             gameplay_assets.gameplay_slug_death_voice_paths,
+            voice_index,
         ) catch {};
     }
 }
