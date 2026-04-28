@@ -198,8 +198,6 @@ const attachment_entry_rider_height = attachment_module.entry_rider_height;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
-// Native `update_subgoldy` corrects X by `track_center_x * 0.2` each 60 Hz tick.
-const mouse_steer_lerp_scale: f32 = 48.0;
 const native_steering_center_x: f32 = 320.0;
 const native_steering_max_x: f32 = 639.0;
 const native_steering_world_scale: f32 = 0.0125;
@@ -222,8 +220,9 @@ const base_fire_cooldown_ticks: u8 = 10;
 const projectile_speed_rows_per_second: f32 = 48.0;
 const native_ticks_per_second: f32 = 60.0;
 // Windows quantizes runtime gameplay world X with `floor(x + 4.0)` and clamps the player
-// between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
-const native_track_center_x: f32 = 4.0;
+// between `-4.0` and `4.0`; keep this separate from the native `Game+0x30`
+// run-rate scalar that is loaded from `Speed:` and drives movement physics.
+const native_track_half_width: f32 = 4.0;
 const native_wall2_tile_id: u8 = 0x0e;
 const native_wall2_spawn_gate_threshold: f32 = 4.0;
 const native_wall2_spawn_y_offset: f32 = 8.0;
@@ -231,19 +230,10 @@ const native_wall2_target_z_offset: f32 = 8.0;
 const native_wall2_target_random_z_span: f32 = 3.0;
 const native_wall2_fire_delta_z_threshold: f32 = -4.0;
 const native_sub_lazer_speed: f32 = 0.40000001;
-const native_velocity_x_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.100000001);
 // PORT(verified): native `update_subgoldy` snaps `live_matrix.position.y` to
 // `sample_track_floor_height_at_position(...) + 0.49` when grounded
 // (`artifacts/ida/functions/0043b120-update_subgoldy.c:535`).
 const native_grounded_rider_height: f32 = 0.49000001;
-// PORT(verified): native damping factors from `update_subgoldy` (0x43bac4). `velocity.y`
-// and `velocity.z` decay by `1 - track_center_x * 0.003` per tick; `velocity.x` decays by
-// `1 - track_center_x * 0.1` (matches `native_velocity_x_decay_per_tick`).
-const native_velocity_yz_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.003);
-// PORT(verified): native gravity coupling `velocity.y += -0.01 * track_center_x^2` per tick
-// (`artifacts/ida/functions/0043b120-update_subgoldy.c:332,517,539`). With
-// `track_center_x = 4.0`, this is `-0.16` per tick.
-const native_gravity_velocity_y_delta: f32 = -0.0099999998 * native_track_center_x * native_track_center_x;
 // PORT(verified): `update_subgoldy` at
 // `artifacts/ida/functions/0043b120-update_subgoldy.c:504` calls
 // `initialize_subgoldy_death` once `live_matrix.position.y < -7.0` and the death
@@ -300,23 +290,11 @@ const TimesUpController = struct {
 };
 
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
-const native_ring_effect_forward_velocity_z_per_tick: f32 = native_track_center_x * 0.5;
-const native_negative_ring_velocity_recovery_z_per_tick: f32 =
-    native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
-const native_start_block_velocity_z_delta_per_tick: f32 =
-    native_track_center_x * native_track_center_x * 0.0040000002;
-const native_floor_cache_velocity_z_delta_per_tick: f32 =
-    native_start_block_velocity_z_delta_per_tick * 2.0;
 const native_start_block_velocity_z_max_per_tick: f32 = 1.0;
-const native_forward_velocity_z_min_per_tick: f32 = native_track_center_x * 0.17;
-const native_forward_velocity_z_max_per_tick: f32 = native_track_center_x * 0.5;
-const native_attachment_exit_z_damping_per_tick: f32 = 1.0 - (native_track_center_x * 0.2);
 const slow_ring_duration_ticks: u16 = 240;
 pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
 pub const native_nuke_phase_step: f32 = 0.10471976;
-const native_nuke_orbit_axis_step: f32 = native_track_center_x * 2.0;
-const native_nuke_effect_progress_step: f32 = native_track_center_x * 0.022222223;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level = presentation_module.max_weapon_level;
@@ -474,7 +452,10 @@ pub const NukeController = struct {
 
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
-    base_subgame_rate: f32 = 1.1,
+    // The app overwrites this from the native run-tuning lane before gameplay starts.
+    // Unit tests that instantiate `Runner` directly keep the historical fast trace
+    // rate unless they configure a specific level/replay speed.
+    base_subgame_rate: f32 = native_track_half_width,
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -561,7 +542,7 @@ pub const Runner = struct {
     math_random_state: u32 = 0,
     // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
     // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
-    // state is `position_y = floor_y + 0.49`, with gravity `velocity.y += -0.01 * track_center_x^2`
+    // state is `position_y = floor_y + 0.49`, with gravity `velocity.y += -0.01 * run_rate^2`
     // each tick. Tile-family reactions at ramps (2..7) and slides (8..13) seed distinct
     // velocity.y values; `position.y < -7.0` triggers `initialize_subgoldy_death`.
     position_y: f32 = native_grounded_rider_height,
@@ -1261,6 +1242,94 @@ pub const Runner = struct {
         self.base_subgame_rate = base_subgame_rate;
     }
 
+    fn nativeRunRate(self: *const Runner) f32 {
+        return self.base_subgame_rate;
+    }
+
+    fn nativeVelocityXDecayPerTick(self: *const Runner) f32 {
+        return 1.0 - (self.nativeRunRate() * 0.100000001);
+    }
+
+    fn nativeVelocityYzDecayPerTick(self: *const Runner) f32 {
+        return 1.0 - (self.nativeRunRate() * 0.003);
+    }
+
+    fn nativeGravityVelocityYDelta(self: *const Runner) f32 {
+        const rate = self.nativeRunRate();
+        return -0.0099999998 * rate * rate;
+    }
+
+    fn nativeForwardVelocityZMinPerTick(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.17;
+    }
+
+    fn nativeForwardVelocityZMaxPerTick(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.5;
+    }
+
+    fn nativeRingEffectForwardVelocityZPerTick(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.5;
+    }
+
+    fn nativeNegativeRingVelocityRecoveryZPerTick(self: *const Runner) f32 {
+        const rate = self.nativeRunRate();
+        return rate * rate * 0.00400000019 * 0.25;
+    }
+
+    fn nativeStartBlockVelocityZDeltaPerTick(self: *const Runner) f32 {
+        const rate = self.nativeRunRate();
+        return rate * rate * 0.0040000002;
+    }
+
+    fn nativeFloorCacheVelocityZDeltaPerTick(self: *const Runner) f32 {
+        return self.nativeStartBlockVelocityZDeltaPerTick() * 2.0;
+    }
+
+    fn nativeAttachmentExitZDampingPerTick(self: *const Runner) f32 {
+        return 1.0 - (self.nativeRunRate() * 0.2);
+    }
+
+    fn nativeTrampolineBounceVelocityY(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.30000001;
+    }
+
+    fn nativeSlopeLiftVelocityY(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.30000001;
+    }
+
+    fn nativeRampDownVelocityY(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.2;
+    }
+
+    fn nativeSlugKnockbackVelocityY(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.2;
+    }
+
+    fn nativeSlugKnockbackVelocityZ(self: *const Runner) f32 {
+        return self.nativeRunRate() * -0.2;
+    }
+
+    fn nativeRepeatSlugKnockbackVelocityZ(self: *const Runner) f32 {
+        const rate = self.nativeRunRate();
+        return rate * rate * 0.0040000002 * -8.0;
+    }
+
+    fn nativeNukeOrbitAxisStep(self: *const Runner) f32 {
+        return self.nativeRunRate() * 2.0;
+    }
+
+    fn nativeNukeEffectProgressStep(self: *const Runner) f32 {
+        return self.nativeRunRate() * 0.022222223;
+    }
+
+    fn runtimeRingEffectProgressStep(self: *const Runner) f32 {
+        return self.nativeRunRate() * runtime_ring_effect_progress_scale;
+    }
+
+    fn nativeSteeringLerpScalePerSecond(self: *const Runner) f32 {
+        return native_ticks_per_second * self.nativeRunRate() * 0.2;
+    }
+
     pub fn registeredParcelCount(self: *const Runner) u32 {
         return self.row_event_display.registeredParcelCount();
     }
@@ -1383,7 +1452,7 @@ pub const Runner = struct {
     fn applyTargetLaneCenter(self: *Runner, preview: *const track.LoadedLevelPreview, raw_target_lane_center: f32, delta_seconds: f32) void {
         if (preview.total_rows == 0 or self.attachment.launch.active) return;
 
-        const alpha = std.math.clamp(delta_seconds * mouse_steer_lerp_scale, 0.0, 1.0);
+        const alpha = std.math.clamp(delta_seconds * self.nativeSteeringLerpScalePerSecond(), 0.0, 1.0);
         const min_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.min)) + 0.5;
         const max_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.max)) + 0.5;
         const target_lane_center = std.math.clamp(raw_target_lane_center, min_lane_center, max_lane_center);
@@ -1717,14 +1786,13 @@ pub const Runner = struct {
                 if (self.damage.slug_hit_active) {
                     // PORT(verified): repeat-hit branch at
                     // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:183-188`.
-                    // Native writes `velocity.z = track_center_x^2 * 0.004 * -8` into the
-                    // player's `+0x418` lane (`-0.512` with the fixed `track_center_x = 4`)
+                    // Native writes `velocity.z = run_rate^2 * 0.004 * -8` into the
+                    // player's `+0x418` lane
                     // and immediately calls `apply_damage_gauge_delta(+1.0, 0)`. The
                     // port folds `velocity.z` into the one-shot
                     // `native_velocity_z_override_per_tick` lane that the existing
                     // ring-hit knockback already uses.
-                    self.native_velocity_z_override_per_tick =
-                        native_track_center_x * native_track_center_x * 0.0040000002 * -8.0;
+                    self.native_velocity_z_override_per_tick = self.nativeRepeatSlugKnockbackVelocityZ();
                     self.queueSlugHitVoice();
                     self.applyDamageGaugeDelta(1.0);
                     return;
@@ -1734,8 +1802,8 @@ pub const Runner = struct {
                 // Native stamps the player velocity triplet before arming
                 // `begin_post_follow_carryover` and entering cutscene state `10`:
                 //   velocity.x = 0 (player + 0x410)
-                //   velocity.y = track_center_x * 0.2 (player + 0x414, = 0.8)
-                //   velocity.z = track_center_x * -0.2 (player + 0x418, = -0.8)
+                //   velocity.y = run_rate * 0.2 (player + 0x414)
+                //   velocity.z = run_rate * -0.2 (player + 0x418)
                 // and clears `follow_state.active`. `clearAttachmentFollow` inside
                 // `beginFallState` mirrors the follow clear; the velocity writes
                 // need to happen before that transition so the fall phase picks up
@@ -1745,8 +1813,8 @@ pub const Runner = struct {
                 // land with the slug pool and firework/sfx ports.
                 self.queueSlugHitVoice();
                 self.native_velocity_x_per_tick = 0.0;
-                self.velocity_y = native_track_center_x * 0.2;
-                self.native_velocity_z_override_per_tick = native_track_center_x * -0.2;
+                self.velocity_y = self.nativeSlugKnockbackVelocityY();
+                self.native_velocity_z_override_per_tick = self.nativeSlugKnockbackVelocityZ();
                 self.damage.slug_hit_active = true;
                 self.beginFallState(preview, .hazard, cutscene_death_id);
             },
@@ -1801,8 +1869,8 @@ pub const Runner = struct {
 
     // PORT(verified): `handle_subgoldy_collisions` writes `-0.1` directly into
     // `player->velocity.z` for native ring kinds `3/7`, and `update_subgoldy` then recovers
-    // that negative lane by `track_center_x^2 * 0.004 * 0.25` each tick until it crosses 0.
-    // Other live ring-effect kinds seed `track_center_x * 0.5` on that same
+    // that negative lane by `run_rate^2 * 0.004 * 0.25` each tick until it crosses 0.
+    // Other live ring-effect kinds seed `run_rate * 0.5` on that same
     // velocity lane before running the score/weapon/nuke ladder.
     fn applyNativeNegativeVelocityRing(self: *Runner) void {
         self.counters.ring_slow += 1;
@@ -1812,7 +1880,7 @@ pub const Runner = struct {
 
     fn applyNativeForwardVelocityRing(self: *Runner) void {
         if (self.phase == .completion_handoff) return;
-        self.native_velocity_z_override_per_tick = native_ring_effect_forward_velocity_z_per_tick;
+        self.native_velocity_z_override_per_tick = self.nativeRingEffectForwardVelocityZPerTick();
     }
 
     fn applyRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind, award_score: bool) void {
@@ -2226,13 +2294,13 @@ pub const Runner = struct {
         const tick_scale = delta_seconds * native_ticks_per_second;
 
         if (velocity_z < 0.0) {
-            velocity_z += native_negative_ring_velocity_recovery_z_per_tick * tick_scale;
+            velocity_z += self.nativeNegativeRingVelocityRecoveryZPerTick() * tick_scale;
             if (velocity_z >= 0.0) velocity_z = 0.0;
         }
 
         if (!started_negative and self.phase == .active and self.movement_mode == .track) {
             if (self.row_position < @as(f32, @floatFromInt(preview.runtime_active_row_start))) {
-                velocity_z += native_start_block_velocity_z_delta_per_tick * tick_scale;
+                velocity_z += self.nativeStartBlockVelocityZDeltaPerTick() * tick_scale;
                 if (velocity_z > native_start_block_velocity_z_max_per_tick) {
                     velocity_z = native_start_block_velocity_z_max_per_tick;
                 }
@@ -2240,17 +2308,17 @@ pub const Runner = struct {
             }
 
             if (self.currentTileAddsNativeForwardVelocity(preview) or self.jetpack.active) {
-                velocity_z += native_floor_cache_velocity_z_delta_per_tick * tick_scale;
+                velocity_z += self.nativeFloorCacheVelocityZDeltaPerTick() * tick_scale;
                 accelerated = true;
             }
         }
 
         if (velocity_z >= 0.0) {
             if (velocity_z > 0.0 and self.attachment.exit.pending and !self.currentRowHasRuntimeFlag(preview, track.runtime_row_flag_no_fall) and !self.jetpack.active) {
-                velocity_z *= native_attachment_exit_z_damping_per_tick;
+                velocity_z *= self.nativeAttachmentExitZDampingPerTick();
             }
             if (velocity_z > 0.0 and !self.post_trampoline_airborne) {
-                velocity_z *= native_velocity_yz_decay_per_tick;
+                velocity_z *= self.nativeVelocityYzDecayPerTick();
             }
             if (velocity_z <= 0.000001 and !accelerated) {
                 self.native_velocity_z_override_per_tick = null;
@@ -2273,12 +2341,14 @@ pub const Runner = struct {
         if (self.row_position >= @as(f32, @floatFromInt(preview.runtime_active_row_end)) and !self.attachment.exit.pending) return;
 
         // PORT(verified): `update_subgoldy` clamps Goldy's forward velocity to
-        // `[track_center_x * 0.17, track_center_x * 0.5]` during active play.
+        // `[run_rate * 0.17, run_rate * 0.5]` during active play.
         var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
-        if (velocity_z < native_forward_velocity_z_min_per_tick) {
-            velocity_z = native_forward_velocity_z_min_per_tick;
-        } else if (velocity_z > native_forward_velocity_z_max_per_tick) {
-            velocity_z = native_forward_velocity_z_max_per_tick;
+        const min_velocity = self.nativeForwardVelocityZMinPerTick();
+        const max_velocity = self.nativeForwardVelocityZMaxPerTick();
+        if (velocity_z < min_velocity) {
+            velocity_z = min_velocity;
+        } else if (velocity_z > max_velocity) {
+            velocity_z = max_velocity;
         }
         self.native_velocity_z_override_per_tick = velocity_z;
     }
@@ -2315,7 +2385,7 @@ pub const Runner = struct {
             }
         }
 
-        self.native_velocity_x_per_tick *= native_velocity_x_decay_per_tick;
+        self.native_velocity_x_per_tick *= self.nativeVelocityXDecayPerTick();
         if (@abs(self.native_velocity_x_per_tick) < 0.0001) {
             self.native_velocity_x_per_tick = 0.0;
         }
@@ -2495,18 +2565,19 @@ pub const Runner = struct {
     // PORT(verified): `initialize_nuke` @ 0x447110 arms the inline
     // `Player+0x150` controller once, seeds the orbit axis from the player z
     // minus 5.0, uses `phase_step = 0.10471976`, `orbit_axis_step =
-    // track_center_x * 2`, and immediately dispatches one `update_nuke`.
+    // run_rate * 2`, and immediately dispatches one `update_nuke`.
     // `handle_subgoldy_collisions` seeds `player+0x374` from the current
     // `player+0x378` progress step before the init call, so the port starts
     // the visible lifetime on that same first-step value.
     fn initializeNukeController(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.nuke.active) return;
+        const progress_step = self.nativeNukeEffectProgressStep();
         self.nuke = .{
             .active = true,
-            .effect_progress = native_nuke_effect_progress_step,
-            .effect_progress_step = native_nuke_effect_progress_step,
+            .effect_progress = progress_step,
+            .effect_progress_step = progress_step,
             .orbit_axis = self.worldPosition(preview, 0.0).z - 5.0,
-            .orbit_axis_step = native_nuke_orbit_axis_step,
+            .orbit_axis_step = self.nativeNukeOrbitAxisStep(),
             .phase = 0.0,
             .phase_step = native_nuke_phase_step,
         };
@@ -2514,12 +2585,12 @@ pub const Runner = struct {
     }
 
     // PORT(verified): `update_subgoldy` @ 0x43b120 refreshes the progress
-    // step as `track_center_x * 0.022222223`, advances `player+0x374`, calls
+    // step as `run_rate * 0.022222223`, advances `player+0x374`, calls
     // `update_nuke` while the progress stays <= 1.0, and otherwise calls
     // `uninit_nuke`.
     fn updateNukeController(self: *Runner) void {
         if (!self.nuke.active) return;
-        self.nuke.effect_progress_step = native_nuke_effect_progress_step;
+        self.nuke.effect_progress_step = self.nativeNukeEffectProgressStep();
         self.nuke.effect_progress += self.nuke.effect_progress_step;
         if (self.nuke.effect_progress > 1.0) {
             self.nuke = .{};
@@ -3265,7 +3336,7 @@ pub const Runner = struct {
                     .y = delta_y * inv,
                     .z = delta_z * inv,
                 };
-                _ = self.runtime.sub_lazers.shoot(global_row, lane_index, spawn_position, velocity, native_track_center_x);
+                _ = self.runtime.sub_lazers.shoot(global_row, lane_index, spawn_position, velocity, self.nativeRunRate());
             }
         }
     }
@@ -3322,7 +3393,7 @@ pub const Runner = struct {
         if (hazard.world_position.y < garbage_burst_teardown_y) return false;
         if (hazard.world_position.z < self.row_position - garbage_burst_trailing_rows) return false;
 
-        hazard.smoke_progress += native_track_center_x * garbage_smoke_progress_step_factor;
+        hazard.smoke_progress += self.nativeRunRate() * garbage_smoke_progress_step_factor;
         if (hazard.smoke_progress > 1.0) {
             hazard.smoke_progress = 0.0;
             self.emitGarbageSmokeParticle(hazard.world_position, hazard.velocity);
@@ -3480,7 +3551,7 @@ pub const Runner = struct {
             lane,
             position,
             .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            native_track_center_x,
+            self.nativeRunRate(),
             &self.math_random_state,
         );
     }
@@ -3790,7 +3861,7 @@ pub const Runner = struct {
             .collect_setup => {
                 effect.state = .collect_follow;
                 effect.effect_progress = 0.0;
-                effect.effect_progress_step = runtimeRingEffectProgressStep();
+                effect.effect_progress_step = self.runtimeRingEffectProgressStep();
                 return true;
             },
             .collect_follow => {
@@ -3807,7 +3878,7 @@ pub const Runner = struct {
             .miss_setup => {
                 effect.state = .miss_expand;
                 effect.effect_progress = 0.0;
-                effect.effect_progress_step = runtimeRingEffectProgressStep();
+                effect.effect_progress_step = self.runtimeRingEffectProgressStep();
                 return true;
             },
             .miss_expand => {
@@ -3843,7 +3914,7 @@ pub const Runner = struct {
             5, 6, 7, 8 => {
                 const ring_speed = preview.runtimeRowRingSpeedAt(source_row);
                 if (ring_speed > 0.0) {
-                    return (1.0 / (ring_speed * native_ticks_per_second)) * native_track_center_x * std.math.tau;
+                    return (1.0 / (ring_speed * native_ticks_per_second)) * self.nativeRunRate() * std.math.tau;
                 }
             },
             0, 1, 2, 3, 4 => {
@@ -3851,17 +3922,13 @@ pub const Runner = struct {
                 if (cycle_seconds > 0.0) {
                     return (1.0 / cycle_seconds) *
                         (@as(f32, @floatFromInt(self.presentation.movement_flag_selector)) * 0.125) *
-                        native_track_center_x *
+                        self.nativeRunRate() *
                         std.math.tau;
                 }
             },
             else => {},
         }
         return 0.0;
-    }
-
-    fn runtimeRingEffectProgressStep() f32 {
-        return native_track_center_x * runtime_ring_effect_progress_scale;
     }
 
     fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
@@ -4012,9 +4079,9 @@ pub const Runner = struct {
         // non-follow branch.
         self.position_y += self.velocity_y;
 
-        // Damping (`0043b120-update_subgoldy.c:390`). `velocity.y *= 1 - track_center_x * 0.003`
+        // Damping (`0043b120-update_subgoldy.c:390`). `velocity.y *= 1 - run_rate * 0.003`
         // each tick.
-        self.velocity_y *= native_velocity_yz_decay_per_tick;
+        self.velocity_y *= self.nativeVelocityYzDecayPerTick();
 
         const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
 
@@ -4067,7 +4134,7 @@ pub const Runner = struct {
             // Other tiles do not feed the floor-sample path while pending, so the
             // rider keeps falling until either the grounded-snap lane above
             // clears the gate or `position.y < -7` triggers death.
-            self.velocity_y += native_gravity_velocity_y_delta;
+            self.velocity_y += self.nativeGravityVelocityYDelta();
             if (tile_at_position) |tile| {
                 if (tile == 0x16) {
                     if (track.specialFloorHeightForShippedRuntimeTile(tile)) |cell_y| {
@@ -4076,7 +4143,7 @@ pub const Runner = struct {
                             cell_y - envelope < self.position_y)
                         {
                             self.presentation.squidge.startY(self.velocity_y);
-                            self.velocity_y = native_track_center_x * 0.30000001;
+                            self.velocity_y = self.nativeTrampolineBounceVelocityY();
                             self.position_y = cell_y + native_grounded_rider_height;
                             self.attachment.exit.pending = false;
                             self.post_trampoline_airborne = true;
@@ -4105,7 +4172,7 @@ pub const Runner = struct {
             if (floor_plus_rider <= self.position_y) {
                 // Airborne above floor (`0043b120-update_subgoldy.c:538-539`):
                 // keep applying gravity.
-                self.velocity_y += native_gravity_velocity_y_delta;
+                self.velocity_y += self.nativeGravityVelocityYDelta();
             } else {
                 // At or below floor (`0043b120-update_subgoldy.c:541-579`): snap
                 // when the velocity is non-positive, then apply the tile-family
@@ -4122,7 +4189,7 @@ pub const Runner = struct {
             // (`artifacts/ida/functions/0043d4d0-sample_track_floor_height_at_position.c:36`),
             // so `v51 < position.y` stays true every tick and gravity keeps pulling
             // the rider down.
-            self.velocity_y += native_gravity_velocity_y_delta;
+            self.velocity_y += self.nativeGravityVelocityYDelta();
         }
 
         self.stepNativeBarrierHoldController(preview, tile_at_position);
@@ -4191,10 +4258,10 @@ pub const Runner = struct {
         const tile = tile_opt orelse return;
         switch (tile) {
             0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d => {
-                self.velocity_y = native_track_center_x * 0.30000001;
+                self.velocity_y = self.nativeSlopeLiftVelocityY();
             },
             0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
-                self.velocity_y = native_track_center_x * 0.2;
+                self.velocity_y = self.nativeRampDownVelocityY();
                 // PORT(verified): down-ramp reaction dispatches a lookback
                 // animation based on lateral sign, then queues the base clip
                 // (`0043b120-update_subgoldy.c:564-571`). Native tests
@@ -4256,7 +4323,7 @@ pub const Runner = struct {
         const frame = self.captureWorldFrame(preview);
         // PORT(verified): the slug first-hit path
         // (`artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:197-200`)
-        // stamps `velocity.y = track_center_x * 0.2` before entering cutscene
+        // stamps `velocity.y = run_rate * 0.2` before entering cutscene
         // state 10. The port reads that same lane as the fall phase's initial
         // vertical velocity so the rider's knockback arc picks up the hit
         // impulse instead of starting from rest. The launch branch still wins
@@ -6370,14 +6437,14 @@ test "slug hit latches the shared fall path" {
     // PORT(verified): first-hit velocity triplet from
     // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:197-200`.
     // The fall state captures `velocity_y` before `beginFallState` clears it,
-    // so the initial knockback velocity should equal `track_center_x * 0.2`.
+    // so the initial knockback velocity should equal `run_rate * 0.2`.
     try std.testing.expectApproxEqAbs(
-        native_track_center_x * 0.2,
+        runner.nativeSlugKnockbackVelocityY(),
         runner.phase.fall.vertical_velocity,
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        native_track_center_x * -0.2,
+        runner.nativeSlugKnockbackVelocityZ(),
         runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
@@ -6480,7 +6547,7 @@ test "repeat slug hit applies the native velocity.z knockback and damage delta" 
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage.gauge, 0.0001);
     try std.testing.expectEqual(@as(u32, 1), runner.slug_hit_voice_token);
     try std.testing.expectApproxEqAbs(
-        native_track_center_x * native_track_center_x * 0.0040000002 * -8.0,
+        runner.nativeRepeatSlugKnockbackVelocityZ(),
         runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
@@ -6573,12 +6640,12 @@ test "native runtime rings seed forward velocity for non-slow effects" {
     runner.recordNativeRingEffect(&fixture.preview, 1);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_normal);
     try std.testing.expectApproxEqAbs(
-        native_ring_effect_forward_velocity_z_per_tick,
+        runner.nativeRingEffectForwardVelocityZPerTick(),
         runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        native_ring_effect_forward_velocity_z_per_tick * native_ticks_per_second,
+        runner.nativeRingEffectForwardVelocityZPerTick() * native_ticks_per_second,
         runner.effectiveSpeedRowsPerSecond(),
         0.0001,
     );
@@ -6588,6 +6655,29 @@ test "native runtime rings seed forward velocity for non-slow effects" {
     runner.native_velocity_z_override_per_tick = null;
     runner.recordNativeRingEffect(&fixture.preview, 1);
     try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
+}
+
+test "configured tutorial run rate drives native movement lanes" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.29);
+
+    runner.recordNativeRingEffect(&fixture.preview, 1);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.145), runner.native_velocity_z_override_per_tick.?, 0.0001);
+
+    runner.native_velocity_z_override_per_tick = 0.0;
+    runner.enforceNativeForwardVelocityWindow(&fixture.preview);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0493), runner.native_velocity_z_override_per_tick.?, 0.0001);
+
+    runner.native_velocity_x_per_tick = 0.5;
+    runner.stepNativeVelocityX(&fixture.preview);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4855), runner.native_velocity_x_per_tick, 0.0001);
+
+    runner.lane_center = 1.5;
+    runner.applyTargetLaneCenter(&fixture.preview, 4.5, 1.0 / native_ticks_per_second);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.674), runner.lane_center, 0.0001);
 }
 
 test "native negative-velocity ring recovery moves backward before handing back to base speed" {
@@ -6605,18 +6695,23 @@ test "native negative-velocity ring recovery moves backward before handing back 
     runner.recordNativeRingEffect(&fixture.preview, 3);
     runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
     try std.testing.expect(runner.row_position < row_before);
-    try std.testing.expectApproxEqAbs(@as(f32, 39.916), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(
+        row_before + native_negative_ring_velocity_z_per_tick + runner.nativeNegativeRingVelocityRecoveryZPerTick(),
+        runner.row_position,
+        0.0001,
+    );
 
-    for (0..6) |_| {
+    for (0..90) |_| {
         runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
+        if (runner.native_velocity_z_override_per_tick.? >= 0.0) break;
     }
     try std.testing.expectApproxEqAbs(
-        native_forward_velocity_z_min_per_tick,
+        runner.nativeForwardVelocityZMinPerTick(),
         runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        native_forward_velocity_z_min_per_tick * native_ticks_per_second,
+        runner.nativeForwardVelocityZMinPerTick() * native_ticks_per_second,
         runner.effectiveSpeedRowsPerSecond(),
         0.0001,
     );
@@ -6640,7 +6735,7 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
     try std.testing.expectApproxEqAbs(
-        native_ring_effect_forward_velocity_z_per_tick,
+        runner.nativeRingEffectForwardVelocityZPerTick(),
         runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
@@ -6665,7 +6760,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     powerup_runner.processRuntimeRingEffectCollisions(&powerup_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), powerup_runner.counters.ring_powerup);
     try std.testing.expectApproxEqAbs(
-        native_ring_effect_forward_velocity_z_per_tick,
+        powerup_runner.nativeRingEffectForwardVelocityZPerTick(),
         powerup_runner.native_velocity_z_override_per_tick.?,
         0.0001,
     );
@@ -6841,7 +6936,7 @@ test "default ramp ring seeds native phase step from base subgame rate" {
             const expected =
                 (1.0 / ((2.0 - (runner.base_subgame_rate * 0.3)) * native_ticks_per_second)) *
                 (@as(f32, @floatFromInt(runner.presentation.movement_flag_selector)) * 0.125) *
-                native_track_center_x *
+                runner.nativeRunRate() *
                 std.math.tau;
             try std.testing.expectApproxEqAbs(expected, @abs(effect.active_phase_step), 0.0001);
             const x_before = effect.world_position.x;
@@ -6880,7 +6975,7 @@ test "runtime ring effect collision arms the native collect follow state" {
     try std.testing.expect(post_follow.presentation_position.z > pre_follow_position.z);
 }
 
-test "runtime ring effect post-hit progress step follows native track center" {
+test "runtime ring effect post-hit progress step follows native run rate" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
     defer fixture.deinit();
 
@@ -6895,7 +6990,7 @@ test "runtime ring effect post-hit progress step follows native track center" {
 
     runner.updateRuntimeRingEffects(&fixture.preview);
     try std.testing.expectApproxEqAbs(
-        Runner.runtimeRingEffectProgressStep(),
+        runner.runtimeRingEffectProgressStep(),
         runner.activeRuntimeRingEffects()[0].effect_progress_step,
         0.0001,
     );
@@ -6904,7 +6999,7 @@ test "runtime ring effect post-hit progress step follows native track center" {
     runner.runtime.rings.slots[0].effect_progress_step = 0.0;
     runner.updateRuntimeRingEffects(&fixture.preview);
     try std.testing.expectApproxEqAbs(
-        Runner.runtimeRingEffectProgressStep(),
+        runner.runtimeRingEffectProgressStep(),
         runner.activeRuntimeRingEffects()[0].effect_progress_step,
         0.0001,
     );
@@ -7232,7 +7327,7 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     runner.triggerExplodeRing(&fixture.preview);
 
     try std.testing.expect(runner.nuke.active);
-    try std.testing.expectApproxEqAbs(native_nuke_effect_progress_step, runner.nuke.effect_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.nativeNukeEffectProgressStep(), runner.nuke.effect_progress, 0.0001);
     try std.testing.expectApproxEqAbs(native_nuke_phase_step, runner.nuke.phase, 0.0001);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
@@ -9205,7 +9300,7 @@ test "attachment natural exit carries overshoot past the template end" {
     runner.attachment.follow.local_progress = 0.0;
     runner.attachment.follow.progress = 0.0;
     runner.attachment.follow.template_progress = sample_count - 0.1;
-    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_max_per_tick;
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMaxPerTick();
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -9241,7 +9336,7 @@ test "supertramp natural exit enters a launch state above the floor" {
     runner.attachment.follow.progress = 0.0;
     runner.attachment.follow.template_progress = sample_count - 0.1;
     runner.updateAttachmentFollowPosition(&fixture.preview);
-    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_max_per_tick;
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMaxPerTick();
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -9824,7 +9919,7 @@ test "fatal floor gaps enter the shared fall state without a cutscene override" 
     var runner = Runner.init(&fixture.preview);
     const gap = findFirstFloorGap(&fixture.preview, false).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, gap);
-    // Native gravity `-0.01 * track_center_x^2 = -0.16` per tick pulls the grounded
+    // Native gravity `-0.01 * run_rate^2` per tick pulls the grounded
     // `0.49` start below the `-7` death threshold inside ~15 ticks. Step a generous
     // window so the test covers speed variance without being flaky.
     var ticks: u32 = 0;
@@ -9983,7 +10078,7 @@ test "tutorial wall2 jump section stays active through the authored powerup gap"
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.native_velocity_z_override_per_tick = native_forward_velocity_z_min_per_tick;
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMinPerTick();
     runner.lane_index = 1;
     runner.lane_center = 1.5;
     runner.runtime_track_index = 43;
@@ -10210,7 +10305,7 @@ test "replay flag bit 0x2 seeds native movement fire progress from the selector 
         1.0 / 60.0,
     );
 
-    const expected_track_step = native_start_block_velocity_z_delta_per_tick * native_velocity_yz_decay_per_tick;
+    const expected_track_step = runner.nativeStartBlockVelocityZDeltaPerTick() * runner.nativeVelocityYzDecayPerTick();
     try std.testing.expectApproxEqAbs(expected_track_step, runner.track_step_rows, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.6) + expected_track_step, runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
