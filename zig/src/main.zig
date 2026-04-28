@@ -187,6 +187,8 @@ test "native global audio sample ids resolve from shipped paths" {
     try std.testing.expectEqual(@as(?usize, 16), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/JETPACK.OGG"));
     try std.testing.expectEqual(@as(?usize, 25), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("sfx2/servo1.ogg"));
     try std.testing.expectEqual(@as(?usize, 26), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/SERVO2.OGG"));
+    try std.testing.expectEqual(@as(?usize, 30), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/SLUG-DESTROY.OGG"));
+    try std.testing.expectEqual(@as(?usize, 36), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/SLUG-HIT1.OGG"));
     try std.testing.expectEqual(@as(?usize, 46), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/SKIDSTOP.OGG"));
     try std.testing.expectEqual(@as(?usize, 133), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/TUT1.OGG"));
     try std.testing.expectEqual(@as(?usize, 150), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("Voice/tut18.ogg"));

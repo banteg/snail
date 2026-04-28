@@ -153,10 +153,10 @@ pub const gameplay_slug_hit_voice_paths = [_][]const u8{
     "VOICE/SLUG-HIT3.OGG",
 };
 pub const gameplay_slug_ambient_voice_paths = [_][]const u8{
-    "VOICE/BACKOFFSLUGS.OGG",
-    "VOICE/SLUG-SNAILALERT.OGG",
-    "VOICE/SLUG-HESTOOFAST.OGG",
+    "VOICE/SLUG-DESTROY.OGG",
     "VOICE/SLUG-GOTHIM.OGG",
+    "VOICE/SLUG-HESTOOFAST.OGG",
+    "VOICE/SLUG-SNAILALERT.OGG",
 };
 pub const gameplay_slug_death_voice_paths = [_][]const u8{
     "VOICE/SLUG-DEATH1.OGG",

@@ -554,6 +554,8 @@ pub const Runner = struct {
     slug_voice_alert_cell_count: usize = 0,
     slug_ambient_voice_token: u32 = 0,
     slug_ambient_voice_variant: usize = 0,
+    slug_hit_voice_token: u32 = 0,
+    slug_hit_voice_variant: usize = 0,
     math_random_state: u32 = 0,
     // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
     // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
@@ -1148,6 +1150,13 @@ pub const Runner = struct {
         );
     }
 
+    fn nativeSlugHitVoiceVariant(sample: u32) usize {
+        return @min(
+            gameplay_assets.gameplay_slug_hit_voice_paths.len - 1,
+            @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_slug_hit_voice_paths.len) / 0x8000)),
+        );
+    }
+
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
         return self.combat.projectiles.slots[0..self.combat.projectiles.count];
     }
@@ -1708,6 +1717,7 @@ pub const Runner = struct {
                     // ring-hit knockback already uses.
                     self.native_velocity_z_override_per_tick =
                         native_track_center_x * native_track_center_x * 0.0040000002 * -8.0;
+                    self.queueSlugHitVoice();
                     self.applyDamageGaugeDelta(1.0);
                     return;
                 }
@@ -1723,9 +1733,9 @@ pub const Runner = struct {
                 // need to happen before that transition so the fall phase picks up
                 // a non-zero vertical velocity as its initial knockback impulse.
                 // Side effects not yet ported: the slug slot's hit-flash flag at
-                // `SlugHazardRuntime+0xcc`, the randomized hit voice
-                // `play_slug_voice(34 - rand())`, and the `firework_shoot(...)`
-                // burst land with the slug pool and firework/sfx ports.
+                // `SlugHazardRuntime+0xcc` and the `firework_shoot(...)` burst
+                // land with the slug pool and firework/sfx ports.
+                self.queueSlugHitVoice();
                 self.native_velocity_x_per_tick = 0.0;
                 self.velocity_y = native_track_center_x * 0.2;
                 self.native_velocity_z_override_per_tick = native_track_center_x * -0.2;
@@ -2838,6 +2848,15 @@ pub const Runner = struct {
         if (award_score) {
             self.recordScore(.slug, 0);
         }
+    }
+
+    fn queueSlugHitVoice(self: *Runner) void {
+        // PORT(verified): `hit_slug_hazard` plays `play_slug_voice(slot, 36 - scaled_random)`
+        // after latching `hit_flash_pending`, which maps to global samples 36..38
+        // (`SLUG-HIT1..3`) with the same CRT 15-bit sample scaling used by other
+        // native variant families.
+        self.slug_hit_voice_variant = nativeSlugHitVoiceVariant(self.nextMathRandomInt15());
+        self.slug_hit_voice_token +%= 1;
     }
 
     fn updateSlugVoiceAlerts(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6357,6 +6376,8 @@ test "slug hit latches the shared fall path" {
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage.gauge, 0.0001);
     try std.testing.expect(runner.damage.slug_hit_active);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_hit_voice_token);
+    try std.testing.expect(runner.slug_hit_voice_variant < gameplay_assets.gameplay_slug_hit_voice_paths.len);
     // PORT(verified): first-hit velocity triplet from
     // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:197-200`.
     // The fall state captures `velocity_y` before `beginFallState` clears it,
@@ -6425,6 +6446,7 @@ test "repeat slug hit applies the native velocity.z knockback and damage delta" 
 
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage.gauge, 0.0001);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_hit_voice_token);
     try std.testing.expectApproxEqAbs(
         native_track_center_x * native_track_center_x * 0.0040000002 * -8.0,
         runner.native_velocity_z_override_per_tick.?,

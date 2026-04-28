@@ -210,11 +210,12 @@ pub fn playGameplayRunnerAudio(
     if (current.counters.turret_hits > previous.counters.turret_hits) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.wall_hit);
     }
-    if (current.counters.slug_hits > previous.counters.slug_hits) {
-        voice_audio.tryPlayVariant(
+    if (gameplay_audio_cues.nativeSlugHitVoiceIndex(previous, current)) |voice_index| {
+        voice_audio.tryPlayVariantIndex(
             voices,
             gameplay_assets.gameplay_slug_hit_voice_paths.len,
             gameplay_assets.gameplay_slug_hit_voice_paths,
+            voice_index,
         ) catch {};
     }
     if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {

@@ -201,6 +201,11 @@ pub fn nativeSlugAmbientVoiceIndex(previous: gameplay.Runner, current: gameplay.
     return @min(current.slug_ambient_voice_variant, gameplay_assets.gameplay_slug_ambient_voice_paths.len - 1);
 }
 
+pub fn nativeSlugHitVoiceIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (previous.slug_hit_voice_token == current.slug_hit_voice_token) return null;
+    return @min(current.slug_hit_voice_variant, gameplay_assets.gameplay_slug_hit_voice_paths.len - 1);
+}
+
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
     if (previous_attachment_template_kind != attachment_builders.template_kind_supertramp) return false;
     if (current.movement_mode == .attachment or current.attachment.follow.active) return false;

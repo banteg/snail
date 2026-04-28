@@ -961,6 +961,7 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same slots back through the `slug_hazards` array
 - `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `ambient_alert_checked`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows
+- `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 
