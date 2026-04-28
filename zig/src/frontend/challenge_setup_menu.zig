@@ -41,7 +41,9 @@ pub const difficulty_anchor_y: f32 = 80.0;
 pub const center_offset_x: f32 = frontend_widget.menu_button_center_offset_x;
 pub const play_offset_with_replay_x: f32 = center_offset_x + 100.0;
 pub const watch_replay_offset_x: f32 = center_offset_x - 100.0;
-pub const slider_adjust_step: i32 = 1;
+// PORT(verified): challenge setup uses the shared front-end slider widget; one arrow
+// activation moves the normalized target by 0.2, then the setup screen stores `% * 100`.
+pub const slider_adjust_step: i32 = 20;
 
 pub fn measurementLabel(item: Item) []const u8 {
     return switch (item) {

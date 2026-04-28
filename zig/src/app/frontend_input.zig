@@ -142,14 +142,14 @@ pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delt
         },
         .sound_volume => {
             const previous = state.runtime_config.soundVolume();
-            state.runtime_config.setSoundVolume(state.runtime_config.soundVolume() + delta);
+            state.runtime_config.setSoundVolume(stepNativeSliderTarget(state.runtime_config.soundVolume(), delta));
             audio_volume.applyConfigVolumes(audio_volume.context(state));
             if (state.runtime_config.soundVolume() != previous) {
                 frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .music_volume => {
-            state.runtime_config.setMusicVolume(state.runtime_config.musicVolume() + delta);
+            state.runtime_config.setMusicVolume(stepNativeSliderTarget(state.runtime_config.musicVolume(), delta));
             audio_volume.applyConfigVolumes(audio_volume.context(state));
         },
         .back => if (delta != 0.0) {
@@ -165,24 +165,16 @@ pub fn stepChallengeSetupMenuValue(state: anytype, item: frontend_challenge_setu
     switch (item) {
         .difficulty => {
             const previous = state.runtime_config.challengeReplayDifficultyValue();
-            const next = std.math.clamp(
-                @as(i32, @intCast(previous)) + delta_raw,
-                0,
-                100,
-            );
-            state.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
+            const next = stepNativePercentSliderTarget(previous, delta_raw);
+            state.runtime_config.setChallengeReplayDifficultyValue(next);
             if (state.runtime_config.challengeReplayDifficultyValue() != previous) {
                 frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .speed => {
             const previous = state.runtime_config.challengeReplaySpeedValue();
-            const next = std.math.clamp(
-                @as(i32, @intCast(previous)) + delta_raw,
-                0,
-                100,
-            );
-            state.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
+            const next = stepNativePercentSliderTarget(previous, delta_raw);
+            state.runtime_config.setChallengeReplaySpeedValue(next);
             if (state.runtime_config.challengeReplaySpeedValue() != previous) {
                 frontend_audio.playSelectSound(frontend_audio.context(state));
             }
@@ -594,7 +586,31 @@ fn stepSliderDisplay(current: f32, target: f32) f32 {
     return current + (target - current) * frontend_options_menu.slider_display_lerp;
 }
 
+fn stepNativeSliderTarget(current: f32, delta: f32) f32 {
+    // PORT(verified): slider arrow widgets change target `+380` by 0.2 and snap
+    // near the endpoints before child arrow disable state and `%02i%%` text refresh.
+    const next = current + delta;
+    if (next >= 0.89999998) return 1.0;
+    if (next <= 0.1) return 0.0;
+    return std.math.clamp(next, 0.0, 1.0);
+}
+
+fn stepNativePercentSliderTarget(current_percent: u32, delta_percent: i32) u32 {
+    const current = std.math.clamp(@as(f32, @floatFromInt(current_percent)) * 0.01, 0.0, 1.0);
+    const delta = @as(f32, @floatFromInt(delta_percent)) * 0.01;
+    return @intFromFloat(stepNativeSliderTarget(current, delta) * 100.0 + 0.1);
+}
+
 test "frontend slider display follows native widget blend" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.8), stepSliderDisplay(0.0, 1.0), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.24), stepSliderDisplay(1.0, 0.05), 0.0001);
+}
+
+test "frontend slider target follows native arrow stepping" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), stepNativeSliderTarget(0.2, 0.2), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), stepNativeSliderTarget(0.75, 0.2), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), stepNativeSliderTarget(0.2, -0.2), 0.0001);
+    try std.testing.expectEqual(@as(u32, 75), stepNativePercentSliderTarget(55, 20));
+    try std.testing.expectEqual(@as(u32, 100), stepNativePercentSliderTarget(75, 20));
+    try std.testing.expectEqual(@as(u32, 0), stepNativePercentSliderTarget(20, -20));
 }
