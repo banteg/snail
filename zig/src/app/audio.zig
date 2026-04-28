@@ -123,6 +123,14 @@ pub fn playGameplayRunnerAudio(
     if (gameplay_audio_cues.nativeGameplayWarningLoopTriggered(previous, current)) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.postal_warning);
     }
+    if (gameplay_audio_cues.nativeSlugAmbientVoiceIndex(previous, current)) |voice_index| {
+        voice_audio.tryPlayVariantIndex(
+            voices,
+            gameplay_assets.gameplay_slug_ambient_voice_paths.len,
+            gameplay_assets.gameplay_slug_ambient_voice_paths,
+            voice_index,
+        ) catch {};
+    }
 
     if (previous.presentation.shot_cooldown_ticks == 0 and current.presentation.shot_cooldown_ticks > 0) {
         const fired_sound = switch (gameplay_audio_cues.nativeMovementStateSoundFamily(current)) {

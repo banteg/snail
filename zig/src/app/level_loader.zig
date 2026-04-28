@@ -144,7 +144,6 @@ pub fn reloadLevel(state: anytype) !void {
     voice_audio.stopPlayback(voice_audio.context(state));
     state.gameplay_voice_manager.clear();
     state.native_gameplay_voice_manager.clear();
-    state.announced_slug_voice_cell_count = 0;
     state.clearTimeTrialGhostReplayCache();
     state.level_runner = null;
     state.gameplay_click_start_active = false;

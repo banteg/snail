@@ -165,6 +165,7 @@ const max_active_runtime_hazards = hazards_module.max_active_runtime_hazards;
 const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_effects;
 const max_active_projectiles = combat_module.max_active_projectiles;
 const max_defeated_slug_cells: usize = 64;
+const max_slug_voice_alert_cells: usize = 64;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
 const starting_visible_life_stock = score_module.starting_visible_life_stock;
@@ -549,6 +550,10 @@ pub const Runner = struct {
     time_trial_ghost_z: f32 = 0.0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
+    slug_voice_alert_cells: [max_slug_voice_alert_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_slug_voice_alert_cells,
+    slug_voice_alert_cell_count: usize = 0,
+    slug_ambient_voice_token: u32 = 0,
+    slug_ambient_voice_variant: usize = 0,
     math_random_state: u32 = 0,
     // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
     // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
@@ -781,6 +786,7 @@ pub const Runner = struct {
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
+            self.updateSlugVoiceAlerts(preview);
             self.refreshLiveRuntimeRingEffects(preview);
             self.updateRuntimeRingEffects(preview);
             self.updateRuntimePickups();
@@ -1133,6 +1139,13 @@ pub const Runner = struct {
 
     fn nextMathRandomSignedFloatBelow(self: *Runner, scale: f32) f32 {
         return (@as(f32, @floatFromInt(self.nextMathRandomInt15())) - 16384.0) * scale * 0.000061035156;
+    }
+
+    fn nativeSlugAmbientVoiceVariant(sample: u32) usize {
+        return @min(
+            gameplay_assets.gameplay_slug_ambient_voice_paths.len - 1,
+            @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_slug_ambient_voice_paths.len) / 0x8000)),
+        );
     }
 
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
@@ -1709,10 +1722,10 @@ pub const Runner = struct {
                 // `beginFallState` mirrors the follow clear; the velocity writes
                 // need to happen before that transition so the fall phase picks up
                 // a non-zero vertical velocity as its initial knockback impulse.
-                // Side effects not yet ported: the slug slot's `+0x85 = 1` flag, the
-                // randomized `play_slug_voice(34 - rand())` call, and the
-                // `firework_shoot(...)` burst land with the slug pool and
-                // firework/sfx ports.
+                // Side effects not yet ported: the slug slot's hit-flash flag at
+                // `SlugHazardRuntime+0xcc`, the randomized hit voice
+                // `play_slug_voice(34 - rand())`, and the `firework_shoot(...)`
+                // burst land with the slug pool and firework/sfx ports.
                 self.native_velocity_x_per_tick = 0.0;
                 self.velocity_y = native_track_center_x * 0.2;
                 self.native_velocity_z_override_per_tick = native_track_center_x * -0.2;
@@ -2776,6 +2789,21 @@ pub const Runner = struct {
         return false;
     }
 
+    fn isSlugVoiceAlertChecked(self: *const Runner, global_row: usize, lane_index: usize) bool {
+        for (0..self.slug_voice_alert_cell_count) |index| {
+            const checked = self.slug_voice_alert_cells[index];
+            if (checked.row == global_row and checked.lane == lane_index) return true;
+        }
+        return false;
+    }
+
+    fn markSlugVoiceAlertChecked(self: *Runner, global_row: usize, lane_index: usize) void {
+        if (self.isSlugVoiceAlertChecked(global_row, lane_index)) return;
+        if (self.slug_voice_alert_cell_count >= max_slug_voice_alert_cells) return;
+        self.slug_voice_alert_cells[self.slug_voice_alert_cell_count] = .{ .row = global_row, .lane = lane_index };
+        self.slug_voice_alert_cell_count += 1;
+    }
+
     pub fn isParcelCollected(self: *const Runner, global_row: usize) bool {
         return self.parcel.isCollected(global_row);
     }
@@ -2809,6 +2837,42 @@ pub const Runner = struct {
         }
         if (award_score) {
             self.recordScore(.slug, 0);
+        }
+    }
+
+    fn updateSlugVoiceAlerts(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) return;
+
+        const trigger_z = self.row_position + 1.0;
+        const trigger_row_limit = @min(
+            preview.total_rows,
+            @as(usize, @intFromFloat(@floor(@max(trigger_z, 0.0)))) + 1,
+        );
+        const current_row = currentRowIndex(preview, self.row_position);
+        var row = current_row;
+        while (row < trigger_row_limit) : (row += 1) {
+            const row_z = @as(f32, @floatFromInt(row));
+            if (!(trigger_z > row_z)) continue;
+            for (0..preview.max_width) |lane| {
+                if (self.isSlugDefeated(row, lane)) continue;
+                if (self.isSlugVoiceAlertChecked(row, lane)) continue;
+                const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
+                if (sample.kind != .slug) continue;
+
+                // PORT(verified): native `update_slug_hazard_ai` state 1 checks
+                // `player->live_matrix.position.z + 1.0 > slot->world_position.z`,
+                // latches `SlugHazardRuntime+0xd9`,
+                // and only calls `play_slug_voice` when the first CRT sample is
+                // above 0.6. The port keeps that per-run one-shot gate with the
+                // runner's native RNG instead of the older deterministic preview
+                // scan.
+                self.markSlugVoiceAlertChecked(row, lane);
+                if (self.nextMathRandomFloatBelow(1.0) > 0.60000002) {
+                    self.slug_ambient_voice_variant = nativeSlugAmbientVoiceVariant(self.nextMathRandomInt15());
+                    self.slug_ambient_voice_token +%= 1;
+                }
+                return;
+            }
         }
     }
 
@@ -5277,6 +5341,19 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
     return null;
 }
 
+fn mathRandomNextSample(seed: u32) u32 {
+    const next_state = (seed *% 0x343fd) +% 0x269ec3;
+    return (next_state >> 16) & 0x7fff;
+}
+
+fn seedForNextMathRandomSampleAbove(threshold: u32) u32 {
+    var seed: u32 = 0;
+    while (seed < std.math.maxInt(u32)) : (seed += 1) {
+        if (mathRandomNextSample(seed) > threshold) return seed;
+    }
+    return 0;
+}
+
 fn findFirstRuntimeTile(preview: *const track.LoadedLevelPreview, tile_type: u8) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         for (0..preview.max_width) |lane| {
@@ -6295,6 +6372,41 @@ test "slug hit latches the shared fall path" {
         0.0001,
     );
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.native_velocity_x_per_tick, 0.0001);
+}
+
+test "slug ambient voice alert follows native one-shot proximity gate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    runner.row_position = @as(f32, @floatFromInt(slug.row)) - 0.25;
+    runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
+
+    runner.updateSlugVoiceAlerts(&fixture.preview);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_ambient_voice_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.slug_voice_alert_cell_count);
+    try std.testing.expect(runner.slug_ambient_voice_variant < gameplay_assets.gameplay_slug_ambient_voice_paths.len);
+
+    runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
+    runner.updateSlugVoiceAlerts(&fixture.preview);
+    try std.testing.expectEqual(@as(u32, 1), runner.slug_ambient_voice_token);
+    try std.testing.expectEqual(@as(usize, 1), runner.slug_voice_alert_cell_count);
+}
+
+test "defeated slugs do not arm ambient voice alerts" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    runner.row_position = @as(f32, @floatFromInt(slug.row)) - 0.25;
+    runner.math_random_state = seedForNextMathRandomSampleAbove(19661);
+    runner.defeatSlugSilent(slug.row, slug.lane);
+
+    runner.updateSlugVoiceAlerts(&fixture.preview);
+    try std.testing.expectEqual(@as(u32, 0), runner.slug_ambient_voice_token);
+    try std.testing.expectEqual(@as(usize, 0), runner.slug_voice_alert_cell_count);
 }
 
 test "repeat slug hit applies the native velocity.z knockback and damage delta" {

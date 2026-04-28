@@ -101,7 +101,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 | --- | --- | --- | --- | --- |
 | `voice 10` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452ef` | parcel pickup voice before the parcel begins its home-flight states | parcel pickup runtime | ported; the app now routes this through the native `Package` voice set and manager gate |
 | `voice 5` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4457d4` | weapon-upgrade voice when ring kinds `4/5` land, the local weapon tier actually increases, the runtime `0x10` flag is set, and mode is not time trial | live runtime ring-slot collision handling plus the recovered ring-kind `4/5` path and runtime-mode gate | partial; the slot owner and gate are now ported, but the deeper movement/presentation owner is still flatter in Zig |
-| `voice 2` `mode 1` | [`update_slug_hazard_ai`](../../artifacts/ida/functions/0043f930-update_slug_hazard_ai.c) at `0x43fbd5` | slug engagement voice when the player enters the local alert window | ambient slug voice cooldowns in `main.zig` | partial; current port has nearby slug barks, but the native owner and gate are different enough to matter |
+| `voice 2` `mode 1` | [`update_slug_hazard_ai`](../../artifacts/ida/functions/0043f930-update_slug_hazard_ai.c) at `0x43fbd5` | slug engagement voice when the player enters the local alert window | slug hazard alert state in `Runner` | partial; ambient `play_slug_voice` now uses a per-run one-shot slug alert and native RNG gate, but the separate `engagement_voice_gate` voice-manager branch is still not modeled literally |
 
 ### Death and cutscene voices
 

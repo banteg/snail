@@ -196,8 +196,6 @@ test "native global audio sample ids resolve from shipped paths" {
     try std.testing.expectEqual(@as(?usize, null), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/DOES-NOT-EXIST.OGG"));
 }
 
-const max_announced_slug_voice_cells: usize = 64;
-
 const RespawnBridgeState = run_result.RespawnBridgeState;
 const RunOutcome = run_result.Outcome;
 
@@ -288,8 +286,6 @@ const AppState = struct {
     // `apply_damage_gauge_delta` before dispatching animation id 6. No writer
     // has been recovered yet; the clear default matches normal damage entry.
     native_damage_entry_animation_blocked: bool = false,
-    announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
-    announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
     frontend_route_mode: ?FrontendLevelMode = null,

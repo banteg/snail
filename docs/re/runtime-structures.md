@@ -939,11 +939,29 @@ High-confidence current fields:
 - `+0x8c`: `velocity`
 - `+0xac`: `sprite`
 - `+0xb0`: `source_cell`
+- `+0xb4`: `passed_player`
+- `+0xb8`: `lateral_phase`
+- `+0xbc`: `lateral_phase_step`
+- `+0xc0`: `player`
+- `+0xc4`: `engagement_voice_gate`
+- `+0xc8`: `hit_points`
+- `+0xcc`: `hit_flash_pending`
+- `+0xd0`: `hit_flash_progress`
+- `+0xd4`: `hit_flash_progress_step`
+- `+0xd8`: `voice_active`
+- `+0xd9`: `ambient_alert_checked`
+- `+0xdc`: `voice_progress`
+- `+0xe0`: `voice_progress_step`
+- `+0xe4`: `blink_progress`
+- `+0xe8`: `blink_step`
 
 Current practical read:
 
 - `spawn_slug_hazard` allocates from the `8`-slot Windows pool, projects the spawn onto attachments, and seeds forward velocity from `track_center_x`
 - `handle_subgoldy_collisions` reads the same slots back through the `slug_hazards` array
+- `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `ambient_alert_checked`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
+- the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows
+- `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 
 ## Attachment Template Samples

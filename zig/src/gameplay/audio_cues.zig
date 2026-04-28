@@ -196,6 +196,11 @@ pub fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: ga
     return previous.damage.warning_actor.sample_generation != current.damage.warning_actor.sample_generation;
 }
 
+pub fn nativeSlugAmbientVoiceIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (previous.slug_ambient_voice_token == current.slug_ambient_voice_token) return null;
+    return @min(current.slug_ambient_voice_variant, gameplay_assets.gameplay_slug_ambient_voice_paths.len - 1);
+}
+
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
     if (previous_attachment_template_kind != attachment_builders.template_kind_supertramp) return false;
     if (current.movement_mode == .attachment or current.attachment.follow.active) return false;

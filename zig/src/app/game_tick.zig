@@ -2,7 +2,6 @@ const audio = @import("audio.zig");
 const boot_assets = @import("boot_assets.zig");
 const render_phase = @import("render_phase.zig");
 const selected_replay = @import("selected_replay.zig");
-const voice_audio = @import("voice_audio.zig");
 
 const gameplay = @import("../gameplay.zig");
 const gameplay_presentation = @import("../gameplay/presentation.zig");
@@ -124,7 +123,6 @@ pub fn simulate(state: anytype, runner_input: gameplay.RunnerInput) !void {
                     }
                     updateGameplayRunnerPresentation(state, previous_runner, runner.*);
                     audio.playGameplayRunnerAudio(state, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
-                    voice_audio.updateAmbient(voice_audio.context(state), runner.*, loaded_track_preview);
                     state.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     state.updateRunnerTimeTrialGhost(runner, previous_runner.replay_sample_index);
                 } else {
