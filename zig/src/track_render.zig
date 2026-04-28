@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rlgl = rl.gl;
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
+const level = @import("level.zig");
 const resource_store = @import("resource_store.zig");
 const track = @import("track.zig");
 
@@ -173,14 +174,15 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
-            if (!preview.renderCacheHeadAt(global_row, lane_index) and track.renderBackingSurfaceTileForRuntimeTile(tile_type) == null) continue;
+            const backing_surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+            if (!preview.renderCacheHeadAt(global_row, lane_index) and backing_surface_tile == null) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
             const right = left + @as(f32, @floatFromInt(run_length));
             const front = @as(f32, @floatFromInt(global_row));
             const back = front + 1.0;
-            const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
+            const surface_tile = renderSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
             const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
             const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
 
@@ -438,17 +440,52 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
             const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
             const right_offset = left_offset + 1.0;
 
-            drawDoubleSidedTexturedQuad(
-                surface_texture,
-                surface_texture,
-                attachmentVertex(front_pose, left_offset, base_row),
-                attachmentVertex(back_pose, left_offset, base_row),
-                attachmentVertex(back_pose, right_offset, base_row),
-                attachmentVertex(front_pose, right_offset, base_row),
-                renderCacheSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
-            );
+            const front_left = attachmentVertex(front_pose, left_offset, base_row);
+            const back_left = attachmentVertex(back_pose, left_offset, base_row);
+            const back_right = attachmentVertex(back_pose, right_offset, base_row);
+            const front_right = attachmentVertex(front_pose, right_offset, base_row);
+            const uv = attachmentSurfaceUv(template, sample_index, subdivision, left_offset, right_offset, front_world_z, back_world_z);
+            if (template.spec.family == .start) {
+                drawStartAttachmentQuad(surface_texture, front_left, back_left, back_right, front_right, uv);
+            } else {
+                drawDoubleSidedTexturedQuad(
+                    surface_texture,
+                    surface_texture,
+                    front_left,
+                    back_left,
+                    back_right,
+                    front_right,
+                    uv,
+                );
+            }
         }
     }
+}
+
+fn drawStartAttachmentQuad(
+    texture: rl.Texture2D,
+    front_left: rl.Vector3,
+    back_left: rl.Vector3,
+    back_right: rl.Vector3,
+    front_right: rl.Vector3,
+    uv: QuadUv,
+) void {
+    drawTexturedVertexQuad(
+        texture,
+        .{ .position = front_left, .u = uv.left, .v = uv.top },
+        .{ .position = front_right, .u = uv.right, .v = uv.top },
+        .{ .position = back_right, .u = uv.right, .v = uv.bottom },
+        .{ .position = back_left, .u = uv.left, .v = uv.bottom },
+        .white,
+    );
+    drawTexturedVertexQuad(
+        texture,
+        .{ .position = front_right, .u = uv.right, .v = uv.top },
+        .{ .position = front_left, .u = uv.left, .v = uv.top },
+        .{ .position = back_left, .u = uv.left, .v = uv.bottom },
+        .{ .position = back_right, .u = uv.right, .v = uv.bottom },
+        .white,
+    );
 }
 
 fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
@@ -490,6 +527,28 @@ fn attachmentSurfaceTexture(scene: *const Scene, template: *const attachment_bui
         .start => scene.textures.slide.texture,
         else => scene.textures.track.texture,
     };
+}
+
+fn attachmentSurfaceUv(
+    template: *const attachment_builders.Template,
+    sample_index: usize,
+    subdivision: usize,
+    left_offset: f32,
+    right_offset: f32,
+    front_world_z: f32,
+    back_world_z: f32,
+) QuadUv {
+    if (template.spec.family == .start) {
+        const row_phase = @as(f32, @floatFromInt(sample_index & 7)) * 0.125;
+        return .{
+            .left = @as(f32, @floatFromInt(subdivision)) * 0.125,
+            .right = @as(f32, @floatFromInt(subdivision + 1)) * 0.125,
+            .top = row_phase,
+            .bottom = row_phase + 0.125,
+        };
+    }
+
+    return renderCacheSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z);
 }
 
 fn attachmentVertex(
@@ -584,6 +643,36 @@ fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
     };
 }
 
+fn renderBackingSurfaceTileForRuntimeCell(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    lane_index: usize,
+    tile_type: u8,
+) ?u8 {
+    if (track.renderBackingSurfaceTileForRuntimeTile(tile_type)) |surface_tile| return surface_tile;
+    if (tile_type != 0x00) return null;
+
+    if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
+        if (built.template.spec.family == .start) {
+            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+            const lane_center = @as(f32, @floatFromInt(lane_index)) + 0.5 -
+                (@as(f32, @floatFromInt(preview.max_width)) * 0.5);
+            if (lane_center >= -half_width and lane_center <= half_width) return 0x01;
+        }
+    }
+
+    return null;
+}
+
+fn renderSurfaceTileForRuntimeCell(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    lane_index: usize,
+    tile_type: u8,
+) u8 {
+    return renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse tile_type;
+}
+
 fn renderCacheFamilyForRuntimeCell(
     preview: *const track.LoadedLevelPreview,
     global_row: usize,
@@ -592,7 +681,8 @@ fn renderCacheFamilyForRuntimeCell(
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
     if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
-    var family = renderCacheFamilyForTile(tile_type) orelse return null;
+    const surface_tile = renderSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+    var family = renderCacheFamilyForTile(surface_tile) orelse return null;
     if (preview.renderCacheSurfaceSwapAt(global_row, lane_index)) {
         family = switch (family) {
             .floor => .slide,
@@ -794,6 +884,64 @@ test "surface family maps recovered runtime tile families" {
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1d));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x1e));
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x23));
+}
+
+test "start attachment span backfills authored empty rows" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/TUTORIAL.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    for (5..30) |empty_start_row| {
+        for (1..9) |start_lane| {
+            try std.testing.expectEqual(@as(u8, 0x00), preview.runtimeTileAt(empty_start_row, start_lane).?);
+            try std.testing.expectEqual(
+                @as(?u8, 0x01),
+                renderBackingSurfaceTileForRuntimeCell(
+                    &preview,
+                    empty_start_row,
+                    start_lane,
+                    preview.runtimeTileAt(empty_start_row, start_lane).?,
+                ),
+            );
+            try std.testing.expectEqual(
+                @as(?RenderCacheFamily, .slide),
+                renderCacheFamilyForRuntimeCell(&preview, empty_start_row, start_lane),
+            );
+        }
+    }
+}
+
+test "start attachment uv follows recovered facequad tiling" {
+    const template = attachment_builders.Template{
+        .spec = attachment_builders.specForPublicPath(.start),
+        .width_cells = 8,
+    };
+
+    const first = attachmentSurfaceUv(&template, 0, 0, -4.0, -3.0, 4.0, 5.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), first.left, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.125), first.right, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), first.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.125), first.bottom, 0.0001);
+
+    const wrapped = attachmentSurfaceUv(&template, 9, 7, 3.0, 4.0, 13.0, 14.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.875), wrapped.left, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), wrapped.right, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.125), wrapped.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), wrapped.bottom, 0.0001);
 }
 
 test "top surface uv follows recovered world mapping" {
