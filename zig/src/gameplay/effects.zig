@@ -20,6 +20,13 @@ const jet_particle_trail_step: f32 = 0.071428575;
 const jet_particle_width_random_base: f32 = 0.12;
 const jet_particle_back_random_base: f32 = 0.40000001;
 const jet_particle_random_scale: f32 = 0.0000015258789;
+const jet_particle_detached_random_scale: f32 = 0.000030517578;
+const jet_particle_detached_chance_threshold: f32 = 0.89999998;
+const jet_particle_detached_velocity_scale: f32 = 0.85000002;
+const jet_particle_detached_width: f32 = 0.100000001;
+const jet_particle_detached_height: f32 = 0.300000012;
+const jet_particle_detached_acceleration_y: f32 = 0.00100000005;
+const jet_particle_detached_ticks: u16 = 18;
 
 pub const Kind = enum {
     explode_big,
@@ -313,9 +320,10 @@ pub const Controller = struct {
     }
 
     // PORT(partial): native `update_jet_particles` drives a 15x2 persistent
-    // SMOKE.TGA sprite bank from the two jet nozzles. The port now models the
-    // persistent bank directly; native per-frame RNG jitter and the occasional
-    // detached puff from the trail tip are still pending.
+    // SMOKE.TGA sprite bank from the two jet nozzles, then occasionally
+    // allocates one detached smoke sprite from the trail tip. The native sprite
+    // manager's owner-side retirement is represented here by the generic effect
+    // lifetime.
     pub fn updateJetParticleBank(
         self: *Controller,
         current: gameplay.Runner,
@@ -344,17 +352,22 @@ pub const Controller = struct {
                 const side: f32 = if (side_index == 0) -0.16 else 0.16;
                 const nozzle = offsetPosition(origin, right, up, forward, side, -0.03, -0.24);
                 const bank_index = (trail_index * jet_particle_side_count) + side_index;
+                const particle_position = rl.Vector3{
+                    .x = nozzle.x + (forward.x * back_offset),
+                    .y = nozzle.y + (forward.y * back_offset),
+                    .z = nozzle.z + (forward.z * back_offset),
+                };
                 self.jet_particles[bank_index] = .{
                     .active = true,
-                    .position = .{
-                        .x = nozzle.x + (forward.x * back_offset),
-                        .y = nozzle.y + (forward.y * back_offset),
-                        .z = nozzle.z + (forward.z * back_offset),
-                    },
+                    .position = particle_position,
                     .width = size,
                     .height = size,
                     .tint = .white,
                 };
+
+                if (trail_index + 1 == jet_particle_trail_count and self.nextJetParticleRandom01() > jet_particle_detached_chance_threshold) {
+                    self.spawnJetParticleDetachedPuff(particle_position, current);
+                }
             }
         }
     }
@@ -363,6 +376,34 @@ pub const Controller = struct {
         self.visual_random_state = self.visual_random_state *% 1103515245 +% 12345;
         const raw: u32 = (self.visual_random_state >> 16) & 0x7FFF;
         return (@as(f32, @floatFromInt(raw)) * jet_particle_random_scale) + base;
+    }
+
+    fn nextJetParticleRandom01(self: *Controller) f32 {
+        self.visual_random_state = self.visual_random_state *% 1103515245 +% 12345;
+        const raw: u32 = (self.visual_random_state >> 16) & 0x7FFF;
+        return @as(f32, @floatFromInt(raw)) * jet_particle_detached_random_scale;
+    }
+
+    fn spawnJetParticleDetachedPuff(self: *Controller, position: rl.Vector3, current: gameplay.Runner) void {
+        const player_velocity = current.nativeVelocityPerTick();
+        self.spawnWithPhysics(
+            .smoke,
+            position,
+            .{
+                .x = player_velocity.x * jet_particle_detached_velocity_scale,
+                .y = player_velocity.y * jet_particle_detached_velocity_scale,
+                .z = player_velocity.z * jet_particle_detached_velocity_scale,
+            },
+            .{
+                .x = 0.0,
+                .y = jet_particle_detached_acceleration_y,
+                .z = 0.0,
+            },
+            jet_particle_detached_width,
+            jet_particle_detached_height,
+            jet_particle_detached_ticks,
+            .white,
+        );
     }
 
     // PORT(verified): native `health_collect_particles` emits 8 `SMOKE.TGA`
@@ -559,6 +600,51 @@ test "jetpack particles use recovered persistent nozzle bank" {
         &loaded_track_preview,
     );
     try std.testing.expectEqual(@as(usize, 0), controller.activeJetParticleCount());
+}
+
+test "jetpack trail tip can emit recovered detached smoke puff" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.jetpack.arm();
+    runner.jetpack.warning_intensity = 1.0;
+    runner.native_velocity_x_per_tick = 0.02;
+    runner.velocity_y = 0.03;
+    runner.native_velocity_z_override_per_tick = -0.04;
+
+    var controller = Controller{};
+    controller.visual_random_state = 5;
+    controller.updateJetParticleBank(runner, &loaded_track_preview);
+
+    try std.testing.expectEqual(@as(usize, jet_particle_count), controller.activeJetParticleCount());
+    try std.testing.expectEqual(@as(usize, 1), controller.count);
+    const effect = controller.items[0];
+    const right_tip = controller.jet_particles[jet_particle_count - 1];
+
+    try std.testing.expectEqual(Kind.smoke, effect.kind);
+    try std.testing.expectApproxEqAbs(right_tip.position.x, effect.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(right_tip.position.y, effect.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(right_tip.position.z, effect.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(jet_particle_detached_width, effect.width, 0.0001);
+    try std.testing.expectApproxEqAbs(jet_particle_detached_height, effect.height, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().x * jet_particle_detached_velocity_scale, effect.velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().y * jet_particle_detached_velocity_scale, effect.velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().z * jet_particle_detached_velocity_scale, effect.velocity.z, 0.0001);
+    try std.testing.expectApproxEqAbs(jet_particle_detached_acceleration_y, effect.acceleration.y, 0.0001);
+    try std.testing.expectEqual(jet_particle_detached_ticks, effect.ticks_remaining);
 }
 
 test "explode ring nuke uses native 25 sprite orbit bank" {
