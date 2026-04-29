@@ -167,7 +167,7 @@ pub const runtime_row_flag_ring_slow: u32 = 0x0000_1000;
 pub const runtime_row_flag_ring_powerup: u32 = 0x0000_2000;
 pub const runtime_row_flag_jetpack_off: u32 = 0x0000_8000;
 pub const runtime_build_flag_movement_fire: u32 = 0x0040_0000;
-pub const ramp_special_ring_forward_row_offset: usize = 6;
+pub const ramp_special_ring_forward_row_offset: usize = 48;
 pub const ramp_default_ring_forward_row_offset: usize = 6;
 pub const ramp_explode_ring_forward_row_offset: usize = 17;
 // PORT(verified): Windows runtime traces consistently report `track_row_start = 31`
@@ -3420,7 +3420,7 @@ test "runtime row flags preserve recovered shipped ring bits" {
     try std.testing.expectEqual(runtime_row_flag_ring_slow, tutorial7.runtimeRowFlagsAt(27) & runtime_row_flag_ring_slow);
 }
 
-test "runtime ring effect grid matches recovered tutorial offset and explicit-row cases" {
+test "runtime ring effect grid matches recovered ramp offsets and explicit-row cases" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -3434,7 +3434,34 @@ test "runtime ring effect grid matches recovered tutorial offset and explicit-ro
     defer tutorial4.deinit();
 
     try std.testing.expectEqual(@as(u8, 0), tutorial4.nativeRingEffectKindAt(7, 1));
-    try std.testing.expectEqual(@as(u8, 8), tutorial4.nativeRingEffectKindAt(13, 1));
+    try std.testing.expectEqual(@as(u8, 0), tutorial4.nativeRingEffectKindAt(13, 1));
+    try std.testing.expectEqual(@as(usize, 48), ramp_special_ring_forward_row_offset);
+
+    const tutorial_entry = catalog.dat.entryByPath("LEVELS/TUTORIAL.TXT") orelse return error.EntryNotFound;
+    var tutorial_level = try level.loadFromArchive(std.testing.allocator, &catalog, tutorial_entry);
+    defer tutorial_level.deinit();
+    var tutorial = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &tutorial_level,
+        .{ .load_models = false },
+    );
+    defer tutorial.deinit();
+
+    var found_powerup_ramp = false;
+    for (0..tutorial.total_rows) |global_row| {
+        if ((tutorial.runtimeRowFlagsAt(global_row) & runtime_row_flag_ring_powerup) == 0) continue;
+        for (0..tutorial.max_width) |lane| {
+            const tile_type = tutorial.runtimeTileAt(global_row, lane) orelse continue;
+            if (tile_type < 0x02 or tile_type > 0x07) continue;
+            found_powerup_ramp = true;
+            try std.testing.expectEqual(@as(u8, 0), tutorial.nativeRingEffectKindAt(global_row + ramp_default_ring_forward_row_offset, lane));
+            try std.testing.expectEqual(@as(u8, 8), tutorial.nativeRingEffectKindAt(global_row + ramp_special_ring_forward_row_offset, lane));
+            break;
+        }
+        if (found_powerup_ramp) break;
+    }
+    try std.testing.expect(found_powerup_ramp);
 
     const tutorial7_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 7.TXT") orelse return error.EntryNotFound;
     var tutorial7 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(

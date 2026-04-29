@@ -204,6 +204,10 @@ High-confidence findings:
 - `Ring=Normal` and `Ring=PowerUp` land on the ring particle family
 - `Ring=Explode` lands on the explode particle family
 - `Ring=Slow` lands on the slow particle family
+- ramp-tile ring placement is split:
+  - default kind-4 ramp rings are spawned from the current cell and receive the native `+6` row z offset inside `spawn_track_ring_or_special_effect`
+  - ramp `Ring=PowerUp`/`Ring=Explode`/`Ring=Slow` calls pass the cell `48` rows ahead (`0xfc0 / 0x54`) and use that target cell directly
+  - explosive ramp tiles `0x08..0x0a` still use the current cell and receive the native `+17` row z offset in the kind-2 spawn branch
 
 Recovered salt-slot lifecycle:
 

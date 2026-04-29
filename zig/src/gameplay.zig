@@ -6786,14 +6786,38 @@ test "native negative-velocity ring recovery moves backward before handing back 
 }
 
 test "tutorial powerup ramps consume the recovered forward runtime ring event" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
+    var source_row: usize = 0;
+    var source_lane: usize = 0;
+    var found_source = false;
+    for (0..fixture.preview.total_rows) |global_row| {
+        if ((fixture.preview.runtimeRowFlagsAt(global_row) & track.runtime_row_flag_ring_powerup) == 0) continue;
+        const row_location = fixture.preview.locateRow(global_row) orelse continue;
+        for (row_location.row.cells, 0..) |_, lane| {
+            const tile_type = fixture.preview.runtimeTileAt(global_row, lane) orelse continue;
+            if (tile_type < 0x02 or tile_type > 0x07) continue;
+            source_row = global_row;
+            source_lane = lane;
+            found_source = true;
+            break;
+        }
+        if (found_source) break;
+    }
+    try std.testing.expect(found_source);
+
     var runner = Runner.init(&fixture.preview);
-    runner.lane_index = 1;
-    runner.lane_center = 1.5;
-    runner.row_position = 7.0;
+    runner.lane_index = source_lane;
+    runner.lane_center = @as(f32, @floatFromInt(source_lane)) + 0.5;
+    runner.row_position = @floatFromInt(source_row);
     runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, @floatFromInt(source_row + track.ramp_special_ring_forward_row_offset)) + 0.5,
+        runner.activeRuntimeRingEffects()[0].world_position.z,
+        0.001,
+    );
 
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.ring_powerup);
