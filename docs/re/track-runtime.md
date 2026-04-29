@@ -178,16 +178,13 @@ Recovered row-wise ramp and connector rewrites:
 
 - `>`:
   - first row in a run becomes runtime tile `0x03`
-  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0c`
-  - subsequent linked rows in the same lane become `0x09`
+  - when the previous row in the same lane is runtime tile `0x03`, the current row becomes `0x09` and that previous row is backpatched to `0x0c`
 - `{`:
   - first row in a run becomes runtime tile `0x02`
-  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0b`
-  - subsequent linked rows in the same lane become `0x08`
+  - when the previous row in the same lane is runtime tile `0x03`, the current row becomes `0x08` and that previous row is backpatched to `0x0b`
 - `}`:
   - first row in a run becomes runtime tile `0x04`
-  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0d`
-  - subsequent linked rows in the same lane become `0x0a`
+  - when the previous row in the same lane is runtime tile `0x03`, the current row becomes `0x0a` and that previous row is backpatched to `0x0d`
 
 ## Salt, Slug, and Ring Dispatch
 

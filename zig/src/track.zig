@@ -2682,9 +2682,9 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
         '<' => .{ .current = 0x06 },
         '=' => .{ .current = 0x0e },
         '>' => if (previous_tile == 0x03)
-            .{ .current = 0x09 }
+            .{ .current = 0x09, .previous_override = 0x0c }
         else
-            .{ .current = 0x03, .previous_override = if (previous_tile != null) 0x0c else null },
+            .{ .current = 0x03 },
         'J' => .{ .current = 0x19 },
         'M' => .{ .current = 0x12 },
         'o' => .{ .current = 0x10 },
@@ -2695,14 +2695,14 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
         'p' => .{ .current = 0x1d },
         's' => .{ .current = 0x21 },
         '{' => if (previous_tile == 0x03)
-            .{ .current = 0x08 }
+            .{ .current = 0x08, .previous_override = 0x0b }
         else
-            .{ .current = 0x02, .previous_override = if (previous_tile != null) 0x0b else null },
+            .{ .current = 0x02 },
         '|' => .{ .current = 0x0e },
         '}' => if (previous_tile == 0x03)
-            .{ .current = 0x0a }
+            .{ .current = 0x0a, .previous_override = 0x0d }
         else
-            .{ .current = 0x04, .previous_override = if (previous_tile != null) 0x0d else null },
+            .{ .current = 0x04 },
         else => null,
     };
 }
@@ -3000,27 +3000,27 @@ test "confirmed runtime tile hints match recovered gameplay tiles" {
 
 test "runtime tile transitions match recovered shipped glyph mapping" {
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x03, .previous_override = 0x0c },
+        RuntimeTileTransition{ .current = 0x03 },
         runtimeTileTransitionForShippedGlyph('>', 0x00).?,
     );
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x09 },
+        RuntimeTileTransition{ .current = 0x09, .previous_override = 0x0c },
         runtimeTileTransitionForShippedGlyph('>', 0x03).?,
     );
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x02, .previous_override = 0x0b },
+        RuntimeTileTransition{ .current = 0x02 },
         runtimeTileTransitionForShippedGlyph('{', 0x00).?,
     );
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x08 },
+        RuntimeTileTransition{ .current = 0x08, .previous_override = 0x0b },
         runtimeTileTransitionForShippedGlyph('{', 0x03).?,
     );
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x04, .previous_override = 0x0d },
+        RuntimeTileTransition{ .current = 0x04 },
         runtimeTileTransitionForShippedGlyph('}', 0x00).?,
     );
     try std.testing.expectEqualDeep(
-        RuntimeTileTransition{ .current = 0x0a },
+        RuntimeTileTransition{ .current = 0x0a, .previous_override = 0x0d },
         runtimeTileTransitionForShippedGlyph('}', 0x03).?,
     );
     try std.testing.expectEqualDeep(
