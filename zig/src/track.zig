@@ -2605,7 +2605,7 @@ fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: 
             if ((build_flags & 0x40) != 0) '_' else '.'
         else
             cell,
-        '-' => if ((build_flags & 0x40) == 0) '.' else cell,
+        '-' => if ((build_flags & 0x4000) == 0) '.' else cell,
         '<', '>' => if ((build_flags & 0x200) == 0) '.' else cell,
         '=' => if ((build_flags & 0x100) != 0)
             cell
@@ -3148,6 +3148,8 @@ test "normalize segment glyph for track flags matches recovered helper cases" {
     try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags(']', defaultRuntimeBuildFlags, true, false));
     try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('_', 0, false, true));
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
+    try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('-', 0x40, false, false));
+    try std.testing.expectEqual(@as(u8, '-'), normalizeSegmentGlyphForTrackFlags('-', 0x4000, false, false));
 }
 
 test "runtime flag b40 clears followers across recovered slide-strip runs" {

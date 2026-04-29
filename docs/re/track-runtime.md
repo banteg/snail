@@ -147,7 +147,7 @@ Recovered normalized glyph classes used by the shipped segment corpus:
 - `{` -> class `0x19`
 - `}` -> class `0x1a`
 
-For the common gameplay build preset `0x00f5cfff` used by postal and challenge play, the shipped punctuation glyphs are effectively already in their enabled forms. The main remaining builder work is not the flag rewrite itself, but the row-to-row backpatching for the ramp families.
+For the common gameplay build preset `0x00f5cfff` used by postal and challenge play, the shipped punctuation glyphs are effectively already in their enabled forms. One easy-to-misread split is `-`: native gates it on build flag `0x4000`, not on the nearby floor-family bit `0x40`. The main remaining builder work is not the flag rewrite itself, but the row-to-row backpatching for the ramp families.
 
 Recovered flat gameplay and hazard anchors:
 
