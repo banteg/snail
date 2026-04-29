@@ -278,7 +278,7 @@ Implemented now:
 - ring and collision pickup audio now uses the recovered native ring-kind ladder for `1`, `2/6`, `3/7`, and `4/5/8`, so `PW1`, `PW1..PW7`, `SLOWRING`, `EXPLODERING`, and the `Powerup` voice no longer all key from generic pickup progression
 - native runtime ring kinds `3/7` no longer reuse the long authored slow-timer status; collision now seeds the recovered backward `velocity.z = -0.1` shove and short zero-crossing recovery from `update_subgoldy` before handing motion back to the current forward-speed scaffold
 - weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
-- explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
+- explosive rings now arm the native nuke controller instead of directly clearing a local radius; live garbage/slug AI reacts to `Player.nuke_effect_progress > 0` and routes through the same burst/kill owners as the original
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles with per-row fire state and short `BLASTERTOP-FIRE` flashes instead of invisible debug-only tiles or one shared timer
 - garbage collisions now apply the recovered hazard-to-player direction vector, the native invincible motion guard, and a decaying track-mode `velocity.x` shove instead of only incrementing damage/score, and the garbage slot now survives into a visible burst state after contact

@@ -2235,6 +2235,14 @@ pub const Runner = struct {
         hazard.smoke_progress = 0.0;
     }
 
+    fn beginGarbageNukeBurst(self: *Runner, hazard: *RuntimeHazard) void {
+        _ = self;
+        if (hazard.kind != .garbage or hazard.state != .active) return;
+        hazard.state = .burst_setup;
+        hazard.collision_side = if (hazard.world_position.x > 0.0) 1 else -1;
+        hazard.smoke_progress = 0.0;
+    }
+
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
         self.damage.applyDelta(delta, &self.presentation.snail_skin);
     }
@@ -2564,32 +2572,6 @@ pub const Runner = struct {
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.initializeNukeController(preview);
-
-        var write_index: usize = 0;
-        for (0..self.runtime.hazards.count) |read_index| {
-            const hazard = self.runtime.hazards.slots[read_index];
-            const row_delta = @abs(@as(i32, @intCast(hazard.row)) - @as(i32, @intCast(self.current_global_row)));
-            const lane_delta = @abs(@as(i32, @intCast(hazard.lane)) - @as(i32, @intCast(self.resolved_lane_index)));
-            if (hazard.kind == .garbage and row_delta <= 6 and lane_delta <= 2) continue;
-            self.runtime.hazards.slots[write_index] = hazard;
-            write_index += 1;
-        }
-        self.runtime.hazards.count = write_index;
-
-        const start_row = self.current_global_row -| 6;
-        const end_row = @min(preview.total_rows, self.current_global_row + 7);
-        const gameplay_width = preview.max_width;
-        const start_lane = self.resolved_lane_index -| 2;
-        const end_lane = @min(gameplay_width, self.resolved_lane_index + 3);
-        for (start_row..end_row) |global_row| {
-            for (start_lane..end_lane) |lane_index| {
-                if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| {
-                    if (kind == .slug) {
-                        self.defeatSlug(global_row, lane_index);
-                    }
-                }
-            }
-        }
     }
 
     // PORT(verified): `initialize_nuke` @ 0x447110 arms the inline
@@ -2635,6 +2617,10 @@ pub const Runner = struct {
         if (self.nuke.phase > std.math.tau) {
             self.nuke.phase -= std.math.tau;
         }
+    }
+
+    fn nukeEffectActive(self: *const Runner) bool {
+        return self.nuke.active and self.nuke.effect_progress > 0.0;
     }
 
     fn stepMovementFireCooldown(self: *Runner) void {
@@ -2946,6 +2932,14 @@ pub const Runner = struct {
                 if (self.isSlugDefeated(row, lane)) continue;
                 const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
                 if (sample.kind != .slug) continue;
+
+                if (self.nukeEffectActive() and row_z >= self.row_position) {
+                    // PORT(verified): `update_slug_hazard_ai` checks
+                    // `player->nuke_effect_progress > 0.0` while the slot has not
+                    // fallen behind the player and routes through `kill_slug_hazard`.
+                    self.defeatSlug(row, lane);
+                    continue;
+                }
 
                 if (ambient_trigger_z > row_z and !self.isSlugVoiceAlertChecked(row, lane)) {
                     // PORT(verified): native `update_slug_hazard_ai` state 1 checks
@@ -3397,7 +3391,12 @@ pub const Runner = struct {
         _ = preview;
         switch (hazard.state) {
             .inactive => return false,
-            .active => return true,
+            .active => {
+                if (!self.nukeEffectActive()) return true;
+                self.recordScore(.garbage, 0);
+                self.beginGarbageNukeBurst(hazard);
+                return true;
+            },
             .burst_setup => {
                 const speed = @max(self.speed_rows_per_second, 0.0001);
                 hazard.state = .burst;
@@ -6889,10 +6888,11 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     runner.processRuntimeRingEffectCollisions(&preview);
 
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_explode);
-    try std.testing.expectEqual(@as(u32, 600), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.ring);
-    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
-    try std.testing.expectEqual(@as(usize, 1), runner.defeated_slug_cell_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.slug);
+    try std.testing.expectEqual(@as(usize, 0), runner.defeated_slug_cell_count);
+    try std.testing.expect(runner.nuke.active);
     try std.testing.expectEqualStrings("ring_explode", runner.recentEventLabel());
     var found_collect_setup = false;
     for (runner.activeRuntimeRingEffects()) |effect| {
@@ -7382,15 +7382,17 @@ test "projectiles stop on salt without consuming the hazard" {
     try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
 }
 
-test "explode rings defeat nearby slugs and clear nearby garbage only" {
+test "explode rings arm native nuke AI instead of clearing local hazards" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 11.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    runner.row_position = @as(f32, @floatFromInt(slug.row)) - 1.0;
     runner.current_global_row = slug.row;
     runner.resolved_lane_index = slug.lane;
-    runner.addRuntimeHazard(&fixture.preview, slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage);
+    const garbage_lane = @min(slug.lane + 1, fixture.preview.max_width - 1);
+    runner.addRuntimeHazard(&fixture.preview, slug.row, garbage_lane, .garbage);
     runner.spawnSaltFromAuthoredCell(&fixture.preview, slug.row, slug.lane);
 
     runner.triggerExplodeRing(&fixture.preview);
@@ -7398,9 +7400,22 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     try std.testing.expect(runner.nuke.active);
     try std.testing.expectApproxEqAbs(runner.nativeNukeEffectProgressStep(), runner.nuke.effect_progress, 0.0001);
     try std.testing.expectApproxEqAbs(native_nuke_phase_step, runner.nuke.phase, 0.0001);
-    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
-    try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
+    try std.testing.expect(!runner.isSlugDefeated(slug.row, slug.lane));
+    try std.testing.expect(runner.hasRuntimeHazard(slug.row, garbage_lane, .garbage));
     try std.testing.expect(runner.runtime.salts.contains(slug.row, slug.lane));
+
+    runner.updateRuntimeHazards(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(RuntimeHazardState.burst_setup, runner.activeRuntimeHazards()[0].state);
+    try std.testing.expectEqual(@as(u32, score_module.nativeEventPoints(.garbage, 0)), runner.score.garbage);
+
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
+    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
+    try std.testing.expect(runner.defeated_slug_cell_count >= 1);
+    try std.testing.expectEqual(
+        slug_projectile_kill_score * @as(u32, @intCast(runner.defeated_slug_cell_count)),
+        runner.score.slug,
+    );
 
     var ticks: usize = 0;
     while (runner.nuke.active and ticks < 32) : (ticks += 1) {
@@ -7409,7 +7424,7 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     try std.testing.expect(!runner.nuke.active);
 }
 
-test "explode rings still reach right-edge authored lanes" {
+test "nuke slug AI still reaches right-edge authored lanes" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TIGHT ROPES 2.TXT");
     defer fixture.deinit();
 
@@ -7433,9 +7448,11 @@ test "explode rings still reach right-edge authored lanes" {
     try std.testing.expectEqual(@as(usize, 8), slug.lane);
 
     var runner = Runner.init(&fixture.preview);
+    runner.row_position = @as(f32, @floatFromInt(slug.row)) - 1.0;
     runner.current_global_row = slug.row;
     runner.resolved_lane_index = slug.lane;
     runner.triggerExplodeRing(&fixture.preview);
+    runner.updateSlugHazardVoiceAi(&fixture.preview);
 
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
 }
