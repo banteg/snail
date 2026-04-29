@@ -116,7 +116,9 @@ High-confidence normalized-glyph-to-runtime cases:
 - `&` -> salt hazard
 - `M` -> slug hazard
 - `P` and `p` -> path attachment tiles
-- `+` dispatches, but the current target is a nullsub and no shipped extracted segment currently uses it
+- `+` dispatches to runtime tile `0x18` with the same floor-family BOD as the pickup/slug floor rows
+- `F` dispatches to runtime tile `0x13` with the same floor-family BOD
+- `G` dispatches to runtime tile `0x11` with the same floor-family BOD, even though that tile id is outside the recovered floor-cache predicate
 
 Useful follow-on facts:
 
@@ -156,6 +158,9 @@ Recovered flat gameplay and hazard anchors:
 - `|` -> runtime tile `0x0e`
 - `(` -> runtime tile `0x16`
 - `-` -> runtime tile `0x15`
+- `+` -> runtime tile `0x18`
+- `F` -> runtime tile `0x13`
+- `G` -> runtime tile `0x11`
 - `P` / `p` participate in the attachment-install path, but the exact glyph-to-runtime-tile mapping is still not settled from the current Windows package
 - `$` -> runtime tile `0x17`
 - `J` -> runtime tile `0x19`

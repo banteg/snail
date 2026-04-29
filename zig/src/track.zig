@@ -69,9 +69,12 @@ pub fn confirmedRuntimeTileHint(cell: u8) ?u8 {
         '|' => 0x0e,
         '=' => 0x0e,
         '(' => 0x16,
+        '+' => 0x18,
         '-' => 0x15,
         'p' => 0x1d,
         'P' => 0x1e,
+        'F' => 0x13,
+        'G' => 0x11,
         '$' => 0x17,
         '&' => 0x22,
         'J' => 0x19,
@@ -2679,6 +2682,7 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
         '$' => .{ .current = 0x17 },
         '&' => .{ .current = 0x22 },
         '(' => .{ .current = 0x16 },
+        '+' => .{ .current = 0x18 },
         '-' => .{ .current = 0x15 },
         '.' => .{ .current = 0x01 },
         '0', '1', '2', '3' => .{ .current = 0x0f },
@@ -2688,6 +2692,8 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
             .{ .current = 0x09, .previous_override = 0x0c }
         else
             .{ .current = 0x03 },
+        'F' => .{ .current = 0x13 },
+        'G' => .{ .current = 0x11 },
         'J' => .{ .current = 0x19 },
         'M' => .{ .current = 0x12 },
         'o' => .{ .current = 0x10 },
@@ -2989,9 +2995,12 @@ test "confirmed runtime tile hints match recovered gameplay tiles" {
     try std.testing.expectEqual(@as(?u8, 0x0e), confirmedRuntimeTileHint('|'));
     try std.testing.expectEqual(@as(?u8, 0x0e), confirmedRuntimeTileHint('='));
     try std.testing.expectEqual(@as(?u8, 0x16), confirmedRuntimeTileHint('('));
+    try std.testing.expectEqual(@as(?u8, 0x18), confirmedRuntimeTileHint('+'));
     try std.testing.expectEqual(@as(?u8, 0x15), confirmedRuntimeTileHint('-'));
     try std.testing.expectEqual(@as(?u8, 0x1e), confirmedRuntimeTileHint('P'));
     try std.testing.expectEqual(@as(?u8, 0x1d), confirmedRuntimeTileHint('p'));
+    try std.testing.expectEqual(@as(?u8, 0x13), confirmedRuntimeTileHint('F'));
+    try std.testing.expectEqual(@as(?u8, 0x11), confirmedRuntimeTileHint('G'));
     try std.testing.expectEqual(@as(?u8, 0x17), confirmedRuntimeTileHint('$'));
     try std.testing.expectEqual(@as(?u8, 0x19), confirmedRuntimeTileHint('J'));
     try std.testing.expectEqual(@as(?u8, 0x12), confirmedRuntimeTileHint('M'));
@@ -3033,6 +3042,18 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x16 },
         runtimeTileTransitionForShippedGlyph('(', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x18 },
+        runtimeTileTransitionForNormalizedGlyph('+', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x13 },
+        runtimeTileTransitionForNormalizedGlyph('F', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x11 },
+        runtimeTileTransitionForNormalizedGlyph('G', null).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x05 },
