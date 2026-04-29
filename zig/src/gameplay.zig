@@ -93,9 +93,8 @@ pub const JetpackGauge = jetpack_module.Gauge;
 // PORT(partial): Windows spawns garbage/salt from a forward row scan over an 8-row
 // live strip rather than treating matching runtime tiles as immediate contacts. The
 // runner now mirrors that with a spawned-hazard window and the recovered scalar-based
-// ambient thresholds / postal-time-trial generated-garbage gates, but still omits the
-// original `Game+0x3bb884 != 2` suppressor because the owning live runtime object is not
-// represented in preview data yet.
+// ambient thresholds, postal/time-trial generated-garbage gates, and the player-owned
+// `movement_state != 2` generated-hazard suppressor.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 // PORT(verified): native `cRSalt` / `handle_subgoldy_collisions` feeds
@@ -715,15 +714,16 @@ pub const Runner = struct {
             self.presentation.squidge.tick();
         }
 
+        const drive_active = self.nativeMovementDriveActive();
         const replay_controls_track_x = replay.active and replay.lateral_world_x != null;
-        if (!self.paused and self.acceptsGameplayInput() and replay.active) {
+        if (!self.paused and drive_active and replay.active) {
             // PORT(verified): native selected-record playback writes the recorded
             // lateral position and latch bits before steering, movement, and
             // row/collision processing run for the frame.
             self.applyReplayDirective(preview, replay);
         }
 
-        if (self.acceptsGameplayInput()) {
+        if (drive_active) {
             self.previous_row_position = self.row_position;
             self.previous_lane_center = self.lane_center;
             if (!self.paused) {
@@ -739,7 +739,7 @@ pub const Runner = struct {
             }
         }
 
-        if (!self.paused and self.acceptsGameplayInput()) {
+        if (!self.paused and drive_active) {
             self.stepMovementFireCooldown();
             // PORT(verified): native `update_subgoldy` reseeds the movement-fire cooldown
             // lane from `presentation.movement_fire_cooldown_step` for the first 10 gameplay ticks
@@ -818,6 +818,7 @@ pub const Runner = struct {
     fn inNativeSlowCommentaryBand(self: *const Runner) bool {
         if (self.phase != .active) return false;
         if (self.movement_mode != .track) return false;
+        if (self.nativeMovementStateBlocksDrive()) return false;
         if (self.attachment.exit.pending) return false;
         if (self.track_step_rows <= 0.0001) return false;
 
@@ -1222,6 +1223,20 @@ pub const Runner = struct {
 
     pub fn acceptsGameplayInput(self: *const Runner) bool {
         return self.phase == .active and !self.finished;
+    }
+
+    fn nativeMovementStateBlocksDrive(self: *const Runner) bool {
+        // PORT(verified): native `Player+0x120 == 2` is the player-owned
+        // suspended-drive state observed in `update_subgoldy` and `update_subgame`.
+        // It suppresses replay sample application, lateral steering, forward
+        // velocity, movement-fire, slow-commentary, timer advance, and generated
+        // garbage/salt while the actor remains otherwise active. The current port
+        // reaches that shape during the post-attachment launch envelope.
+        return self.attachment.launch.active;
+    }
+
+    fn nativeMovementDriveActive(self: *const Runner) bool {
+        return self.acceptsGameplayInput() and !self.nativeMovementStateBlocksDrive();
     }
 
     pub fn consumeHandoff(self: *Runner) RunnerHandoff {
@@ -2341,6 +2356,7 @@ pub const Runner = struct {
     fn enforceNativeForwardVelocityWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) return;
         if (self.movement_mode != .track) return;
+        if (self.nativeMovementStateBlocksDrive()) return;
         if (self.row_position >= @as(f32, @floatFromInt(preview.runtime_active_row_end)) and !self.attachment.exit.pending) return;
 
         // PORT(verified): `update_subgoldy` clamps Goldy's forward velocity to
@@ -5272,6 +5288,7 @@ fn runtimeRowInsideNativeSpawnWindow(preview: *const track.LoadedLevelPreview, g
 
 fn shouldSpawnAmbientHazard(self: *Runner, scalar: f32, source: AmbientHazardSource) bool {
     if (scalar <= 0.0) return false;
+    if (self.nativeMovementStateBlocksDrive()) return false;
 
     const roll = self.nextMathRandomFloatBelow(1.0);
     // PORT(verified): thresholds come from `update_subgame`
@@ -7476,6 +7493,44 @@ test "tutorial asteroids spawn from the native runtime row scan window" {
         }
     }
     try std.testing.expect(found);
+}
+
+test "native suspended movement state blocks drive and generated hazards" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.runtime_active_row_start;
+    runner.track_row_progress = 0.25;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.attachment.launch = .{
+        .active = true,
+        .world_x = runner.worldPosition(&fixture.preview, 0.0).x,
+        .height = 1.0,
+        .vertical_velocity = 0.5,
+    };
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMaxPerTick();
+
+    const row_position = runner.row_position;
+    const lane_center = runner.lane_center;
+    const random_state = seedForNextMathRandomSampleAbove(32760);
+    runner.math_random_state = random_state;
+
+    try std.testing.expect(!shouldSpawnAmbientHazard(&runner, 1.0, .garbage));
+    try std.testing.expectEqual(random_state, runner.math_random_state);
+
+    runner.step(&fixture.preview, .{
+        .lane_delta = 1,
+        .fire_pressed = true,
+        .fire_down = true,
+        .speed_delta_rows_per_second = 10.0,
+    }, 1.0 / native_ticks_per_second);
+
+    try std.testing.expectApproxEqAbs(row_position, runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(lane_center, runner.lane_center, 0.0001);
+    try std.testing.expectEqual(@as(u64, 0), runner.tick_count);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.stopwatch.total_seconds, 0.0001);
 }
 
 test "runtime pickups and salt respect the native first-block spawn gate" {

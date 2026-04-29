@@ -17,6 +17,8 @@ The current high-confidence `Player` fields are:
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
+  - state `2` is the suspended-drive state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
+  - the current Zig port maps this shape to the post-attachment launch envelope (`LaunchState.active`) rather than treating it as a standalone hazard flag
 - `+0x124..+0x14b`: `unresolved_pre_row_event`
   - kept as an explicit unresolved gap in the shared header; no safe controller-level name yet
 - `+0x14c`: `row_event_cutscene_started`
