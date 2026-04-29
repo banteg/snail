@@ -83,6 +83,7 @@ Current Zig port status for this slice:
 - the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, slide condensation uses the native subset (`0x01/0x15/0x1b/0x21/0x22`, excluding slide-family tile `0x14`), and warn-promoted or corner-marked heads no longer collapse into a single quad
 - the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
 - the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
+- the simple fringe renderer now uses the recovered `is_neighbor_cell_solid` predicate directly for fringe-neighbour solidity; render-backed marker cells like `0x0e`, `0x1d`, and `0x23` remain open, while attachment-entry tile `0x1e` is solid as a neighbour but does not emit its own fringe because `select_track_tile_edge_variants` excludes it from edge-mask assignment
 - the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
 - the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
 - the warning-footprint lane now also feeds one recovered gameplay consumer: it suppresses generic ambient garbage/salt fallback spawns on `0x01/0x15/0x0f` cells, matching the native `update_subgame` gate

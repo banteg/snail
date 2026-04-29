@@ -301,11 +301,14 @@ fn drawFringeRamp(
 
 fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
     if (row_marked) return false;
-    return tile_type != 0x20;
+    return tile_type != 0x20 and tile_type != 0x1e;
 }
 
 fn runtimeTileIsFringeSolid(tile_type: u8) bool {
-    if (track.renderBackingSurfaceTileForRuntimeTile(tile_type) != null) return true;
+    // PORT(verified): `is_neighbor_cell_solid` works from the native runtime
+    // tile family, not from our render-backing floor substitution. Ring/open
+    // marker cells stay open for fringe objects even when the port draws floor
+    // underneath them in the main surface pass.
     return !track.isOpenNeighborRuntimeTileFamily(tile_type) and tile_type != 0x16;
 }
 
@@ -707,20 +710,23 @@ fn mergedRenderCacheRunLength(
 test "fringe objects follow the recovered row and tile suppression rules" {
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(true, 0x01));
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x20));
+    try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x1e));
     try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
 }
 
-test "fringe edge mask keeps render-backed object cells solid" {
+test "fringe edge mask follows native solid-neighbor tile family" {
     const tiles = [_]u8{
         0x01, 0x16,
         0x00, 0x01,
     };
-    try std.testing.expect(runtimeTileIsFringeSolid(0x0e));
-    try std.testing.expect(runtimeTileIsFringeSolid(0x1d));
-    try std.testing.expect(runtimeTileIsFringeSolid(0x23));
+    try std.testing.expect(!runtimeTileIsFringeSolid(0x0e));
+    try std.testing.expect(!runtimeTileIsFringeSolid(0x1d));
+    try std.testing.expect(runtimeTileIsFringeSolid(0x1e));
+    try std.testing.expect(!runtimeTileIsFringeSolid(0x23));
     try std.testing.expect(!runtimeTileIsFringeSolid(0x16));
     try std.testing.expectEqual(@as(u8, 0x0f), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 0, false));
     try std.testing.expectEqual(@as(u8, 0x00), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 1, false));
+    try std.testing.expectEqual(@as(u8, 0x00), fringeEdgeMaskForRuntimeTiles(&[_]u8{0x1e}, 1, 1, 0, 0, false));
 }
 
 test "track skirt tint follows the recovered shared skirt alpha" {
