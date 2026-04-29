@@ -108,7 +108,7 @@ Implemented now:
 - ramp UVs kept off the flat world-UV rule
 - fixed 8-lane-style strip rendering instead of path-only top-surface trimming
 - run-aware top-surface ownership for the recovered floor and slide families
-  - the merge lane now follows the native family split more closely: real floor-family runs condense, while warn-promoted and corner-marked heads stay separate
+  - the merge lane now follows the native family split more closely: real floor-family runs condense, slide-family tile `0x14` stays out of the slide-condense subset, while warn-promoted and corner-marked heads stay separate
 - the runtime edge-mask lane now carries the native corner bit on `5/6/9/10` masks, so later passes can distinguish corner heads from plain open edges
 - warn-surface promotion through the recovered `TRACKWARN` replacement tables
   - static asset-init recovery confirms both recovered replacement tables route into the shared `TRACKWARN` asset family, but native requires exact BOD-object matching; the port no longer treats every open-below floor or slide cell as promoted

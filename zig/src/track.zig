@@ -2057,7 +2057,10 @@ fn isRuntimeFlagB40FloorCondenseTile(tile_type: u8) bool {
 }
 
 fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
-    return isSlideRuntimeTileFamily(tile_type);
+    return switch (tile_type) {
+        0x01, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
 }
 
 fn runtimeEdgeMaskGetsCornerVariantBit(edge_mask: u8) bool {
@@ -3165,7 +3168,7 @@ test "runtime flag b40 clears followers across recovered slide-strip runs" {
     try std.testing.expect(!flags[4]);
 }
 
-test "runtime flag b40 keeps separate heads across floor and slide strip families" {
+test "runtime flag b40 keeps separate heads across floor and non-condensing slide tiles" {
     const runtime_tiles = [_]u8{ 0x0f, 0x14, 0x15, 0x00 };
     const warn_surface = [_]bool{ false, false, false, false };
     const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, &warn_surface, 1, runtime_tiles.len);
@@ -3173,7 +3176,7 @@ test "runtime flag b40 keeps separate heads across floor and slide strip familie
 
     try std.testing.expect(flags[0]);
     try std.testing.expect(flags[1]);
-    try std.testing.expect(!flags[2]);
+    try std.testing.expect(flags[2]);
     try std.testing.expect(!flags[3]);
 }
 

@@ -80,7 +80,7 @@ Current Zig port status for this slice:
 
 - static asset-init recovery confirms the promoted floor and promoted slide replacement tables both route into the shared `TRACKWARN` asset family, but native only promotes after matching the current BOD object against those tables; the port no longer guesses from open-below runtime tiles alone
 - `harmonize_center_lane_floor_slide_variants` is likewise table-driven: row phase and neighbour families are only candidate filters, so the port no longer guesses center-seam floor/slide flips from tile ids alone
-- the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, but warn-promoted and corner-marked heads no longer collapse into a single quad
+- the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, slide condensation uses the native subset (`0x01/0x15/0x1b/0x21/0x22`, excluding slide-family tile `0x14`), and warn-promoted or corner-marked heads no longer collapse into a single quad
 - the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
 - the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
 - the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
