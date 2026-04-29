@@ -1950,12 +1950,12 @@
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. The accelerated drain branch reads `Game+0x4301bc`; current xrefs show only reads in this function, so its writer is still unresolved."
+      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved."
     },
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path."
+      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path."
     },
     {
       "address": "0x441540",

@@ -131,7 +131,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 3. Recover the native damage-warning owner instead of only mirroring its visible fill and warning loop.
    Audio evidence: `sfx 50`, `voice 0`, `voice 9`, `voice 14`.
    Native implication: the damage gauge has its own voice escalation and fallback logic, while the warning overlay is a separate actor with its own loop cadence.
-   Current Zig status: the runner now owns the warning actor cadence, display-fill smoothing, and `sfx 50` loop edge. The remaining open part is the broader damage-gauge exit path: the accelerated drain/global flag writers and the exact `stop_warning_sample` handle behavior are still unresolved.
+   Current Zig status: the runner now owns the warning actor cadence, display-fill smoothing, `sfx 50` loop edge, and explicit context gates for native warning startup, accelerated drain, and state-2 exits. The remaining open part is identifying the writers for those game-global gates and the exact `stop_warning_sample` handle behavior.
    Next trace boundary: `apply_damage_gauge_delta`, `update_damage_gauge`, `stop_warning_sample`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) damage and warning controllers, plus [`zig/src/main.zig`](../../zig/src/main.zig) audio routing.
 

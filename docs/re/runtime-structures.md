@@ -330,6 +330,15 @@ Current practical read:
 - the controller owns a separate warning actor through `start_warning` / `update_warning` / `stop_warning`
 - `apply_damage_gauge_delta` ignores unforced positive damage while `state == 2`;
   the state-2 auto-drain path is the forced caller
+- `apply_damage_gauge_delta` also ignores all unforced deltas while the sign bit
+  of `Game+0x4300b4` is set, and ignores unforced negative state-2 deltas while
+  `Game+0x42ff60 == 1`
+- `update_damage_gauge` reads several game-global gates:
+  - `Game+0x74621` suspends controller math and `update_warning`
+  - `Game+0x430199` and `Game+0x4301bc` block fresh state-0 full-gauge warning startup
+  - `Game+0x4301bc` also fast-forwards state 1 and applies an extra unforced `-0.0066666668` drain in state 2
+  - `Game+0x42fde8 == 0.49f` gates state-1 entry into state 2 and the fill-zero state-2 exit
+  - `Game+0x4301c0 > 0`, `Game+0x42fe08 > 0`, or `Game+0x434064 != 0` also exit state 2
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
   - salt contact `+0.15`
