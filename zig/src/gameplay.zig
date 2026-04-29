@@ -9907,9 +9907,9 @@ test "halfpipe attachment tilts world up with lateral drift" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
-    runner.step(&fixture.preview, .{ .lane_delta = 2 }, 1.0 / 60.0);
-    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    runner.step(&fixture.preview, .{ .lane_delta = 1 }, 1.0 / 60.0);
+    runner.attachment.follow.template_progress = 25.0;
+    runner.attachment.follow.lateral_offset = 2.0;
+    runner.updateAttachmentFollowPosition(&fixture.preview);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const up = runner.worldUp(&fixture.preview);

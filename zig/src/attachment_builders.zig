@@ -1443,16 +1443,25 @@ fn halfpipeRadiusForPoint(point_index: usize, sample_count: usize) f32 {
     const exit_start = sample_count - edge_count;
 
     if (point_index < middle_start) {
-        return halfpipeEdgeRadius((edge_count - 1) - point_index);
+        return halfpipeEntryScalar(point_index);
     }
     if (point_index >= exit_start) {
-        return halfpipeEdgeRadius(@min(point_index - exit_start, edge_count - 1));
+        return halfpipeExitScalar(@min(point_index - exit_start, edge_count - 1));
     }
     return 4.0;
 }
 
-fn halfpipeEdgeRadius(step_index: usize) f32 {
-    const phase = (@as(f32, @floatFromInt(step_index)) * 0.0625) - 0.2;
+fn halfpipeEntryScalar(step_index: usize) f32 {
+    const phase = (@as(f32, @floatFromInt(step_index)) * 0.0625 * std.math.pi) + (0.5 * std.math.pi);
+    return halfpipeScalarFromPhase(phase);
+}
+
+fn halfpipeExitScalar(step_index: usize) f32 {
+    const phase = ((1.0 - (@as(f32, @floatFromInt(step_index)) * 0.0625)) * std.math.pi) + (0.5 * std.math.pi);
+    return halfpipeScalarFromPhase(phase);
+}
+
+fn halfpipeScalarFromPhase(phase: f32) f32 {
     const local_depth = (((std.math.sin(phase) * -0.5) + 0.5) * 0.95 + 0.05) * 4.0;
     return ((local_depth * local_depth) + 16.0) / (local_depth * 2.0);
 }
@@ -1886,9 +1895,9 @@ test "build halfpipe template with tapered halfpipe radius" {
     const exit_start_radius = template.samples[50].special_scalar;
     const end_radius = template.samples[66].special_scalar;
 
-    try std.testing.expect(start_radius > middle_radius);
-    try std.testing.expect(edge_radius > middle_radius);
-    try std.testing.expect(exit_start_radius > middle_radius);
+    try std.testing.expectApproxEqAbs(@as(f32, 40.1), start_radius, 0.0001);
+    try std.testing.expectApproxEqAbs(halfpipeEntryScalar(15), edge_radius, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), exit_start_radius, 0.0001);
     try std.testing.expect(end_radius > middle_radius);
     try std.testing.expectApproxEqAbs(@as(f32, 4.0), middle_radius, 0.0001);
 }
