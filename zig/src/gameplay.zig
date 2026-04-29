@@ -93,8 +93,9 @@ pub const JetpackGauge = jetpack_module.Gauge;
 // PORT(partial): Windows spawns garbage/salt from a forward row scan over an 8-row
 // live strip rather than treating matching runtime tiles as immediate contacts. The
 // runner now mirrors that with a spawned-hazard window and the recovered scalar-based
-// ambient thresholds, but still omits the original suppressor bits and some mode gates
-// because the preview does not expose those flags yet.
+// ambient thresholds / postal-time-trial generated-garbage gates, but still omits the
+// original `Game+0x3bb884 != 2` suppressor because the owning live runtime object is not
+// represented in preview data yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 // PORT(verified): native `cRSalt` / `handle_subgoldy_collisions` feeds
@@ -5281,7 +5282,27 @@ fn shouldSpawnAmbientHazard(self: *Runner, scalar: f32, source: AmbientHazardSou
         .garbage => 0.8 + (0.2 * (1.0 - scalar)),
         .salt => 0.98 + (0.02 * (1.0 - scalar)),
     };
-    return roll > threshold;
+    if (roll <= threshold) return false;
+    if (source == .garbage and !generatedGarbageModeGate(self)) return false;
+    return true;
+}
+
+fn generatedGarbageModeGateThreshold(session_mode: SessionMode, base_subgame_rate: f32) ?f32 {
+    return switch (session_mode) {
+        .time_trial => (base_subgame_rate * 0.30000001) + 0.69999999,
+        .postal => (base_subgame_rate * 0.60000002) + 0.40000001,
+        .debug, .challenge, .tutorial => null,
+    };
+}
+
+fn generatedGarbageModeGatePasses(session_mode: SessionMode, base_subgame_rate: f32, roll: f32) bool {
+    const threshold = generatedGarbageModeGateThreshold(session_mode, base_subgame_rate) orelse return true;
+    return threshold >= roll;
+}
+
+fn generatedGarbageModeGate(self: *Runner) bool {
+    const threshold = generatedGarbageModeGateThreshold(self.session_mode, self.base_subgame_rate) orelse return true;
+    return threshold >= self.nextMathRandomFloatBelow(1.0);
 }
 
 fn isProjectileBlockingCell(cell: u8) bool {
@@ -7422,6 +7443,16 @@ test "runtime hazards preserve recovered presentation scalars" {
     }
     try std.testing.expect(salt_slot != null);
     try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
+}
+
+test "generated garbage applies native mode gates after scalar pass" {
+    try std.testing.expect(generatedGarbageModeGatePasses(.challenge, 0.0, 0.999));
+    try std.testing.expect(generatedGarbageModeGatePasses(.tutorial, 0.0, 0.999));
+
+    try std.testing.expect(generatedGarbageModeGatePasses(.postal, 0.5, 0.7));
+    try std.testing.expect(!generatedGarbageModeGatePasses(.postal, 0.5, 0.701));
+    try std.testing.expect(generatedGarbageModeGatePasses(.time_trial, 0.5, 0.85));
+    try std.testing.expect(!generatedGarbageModeGatePasses(.time_trial, 0.5, 0.851));
 }
 
 test "tutorial asteroids spawn from the native runtime row scan window" {

@@ -347,9 +347,10 @@ pub const RunnerPhase = union(enum) {
 };
 
 // PORT(partial): Windows attachment-follow is driven by installed runtime attachment
-// records plus sampled template geometry. The current port now uses built templates,
-// a preview-side installed-row map, and a first geometric entry test, but this state
-// is still a Zig-side implementation shape rather than the recovered Windows layout.
+// records plus sampled template geometry. The current port uses built templates and
+// the recovered swept-entry/local-distance lanes, but this struct remains the Zig-side
+// owner for values Windows stores across the player follow block and installed
+// runtime row-cell record.
 pub const AttachmentFollowState = struct {
     active: bool = false,
     source_cell_row: usize = 0,

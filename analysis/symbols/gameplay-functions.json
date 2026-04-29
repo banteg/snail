@@ -1650,7 +1650,7 @@
     {
       "address": "0x438b90",
       "name": "update_subgame",
-      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, and the active gameplay tick. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
+      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",
@@ -1950,7 +1950,7 @@
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, and rendering the sprite-backed gauge widget each gameplay tick."
+      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. The accelerated drain branch reads `Game+0x4301bc`; current xrefs show only reads in this function, so its writer is still unresolved."
     },
     {
       "address": "0x4413f0",

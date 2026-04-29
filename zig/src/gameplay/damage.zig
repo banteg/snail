@@ -183,9 +183,13 @@ pub const Controller = struct {
             },
             .draining => {
                 // PORT(partial): native @ 0x441054 calls `change_snail_skin(1, 0.2f)`
-                // each state-2 tick before applying the drain delta. The missing
-                // 6x accelerated drain path remains a TODO (requires identifying
-                // the writer for `*(+0x4301bc)`).
+                // each state-2 tick before applying the drain delta. A second
+                // `apply_damage_gauge_delta(-0.0066666668, force = 0)` fires when
+                // `Game+0x4301bc` is set; the current Windows xref pass found only
+                // reads of that byte in `update_damage_gauge`, so keep the
+                // accelerated drain unported until an indirect writer or struct
+                // copy is recovered. The same function also exits drain on
+                // `Game+0x4301c0 > 0`, `Game+0x42fe08 > 0`, or `Game+0x434064`.
                 skin.change(.damage, 0.2);
                 self.applyDeltaNative(warning_drain_delta, skin, true);
                 self.runtime.skin_hold_ticks = 5;
