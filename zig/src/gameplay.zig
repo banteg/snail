@@ -3305,8 +3305,10 @@ pub const Runner = struct {
 
         // PORT(verified): `update_sub_lazer_projectile`
         // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`)
-        // advances each SubLazer slot's phase + position, then retires the
-        // slot when the emitter cell passes behind the player
+        // advances each SubLazer slot's nested-sprite bob phase. The port-side
+        // pool also integrates body position by launch velocity until the
+        // native renderable-body/list owner is modeled literally, then retires
+        // the slot when the emitter cell passes behind the player
         // (`get_track_runtime_cell_at_world_z` comparison at native line 47)
         // or the projectile exits the track window. The per-slot physics
         // tick lives on the pool; the emitter-gate retirement fires here

@@ -233,17 +233,18 @@ typedef struct SaltHazardSlot {
  */
 typedef struct SubLazerSlot {
     uint8_t _pad_00[0x14];
-    float base_y;
-    uint8_t _pad_18[0x4c];
+    float sprite_bob_base_y;
+    uint8_t _pad_18[0x20];
+    uint8_t live_matrix_basis[0x2c];
     void* sprite;
-    Vec3 world_position;
+    Vec3 live_position;
     uint8_t _pad_74[0xc];
     uint32_t state;
     uint8_t _pad_84[0x4];
-    void* emitter;
+    struct Game* owner_game;
     Vec3 velocity;
-    float lifetime_driver;
-    float lifetime;
+    float sprite_bob_phase;
+    float sprite_bob_phase_step;
     uint8_t _pad_a0[0x10];
 } SubLazerSlot;
 

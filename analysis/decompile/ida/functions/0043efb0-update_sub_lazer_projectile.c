@@ -2,7 +2,7 @@
 /* function: update_sub_lazer_projectile @ 0x43efb0 */
 /* selector: update_sub_lazer_projectile */
 
-// Advances one live SubLazer projectile slot: integrates motion, handles state 1→2→cleanup via list-remove and `kill_sprite`, and modulates the sprite y by `sin(phase*2π)*0.3`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
+// Updates one live SubLazer projectile slot: handles state 1→2→cleanup via list-remove and `kill_sprite`, advances the nested-sprite bob phase (`+0x98 += +0x9c`), and writes sprite-local y as `sin(phase*2π)*0.3 + +0x14`. Body motion is set up by the renderable-body/list owner linked during spawn; the sine bob is not the collision body position sampled by `handle_subgoldy_collisions`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
 void __thiscall update_wall2_ambient_hazard(int this)
 {
   int v2; // eax
@@ -99,4 +99,3 @@ LABEL_20:
     }
   }
 }
-

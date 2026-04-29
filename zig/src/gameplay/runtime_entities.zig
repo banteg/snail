@@ -72,25 +72,20 @@ pub const SaltSlot = struct {
     yaw_radians: f32 = 0.0,
 };
 
-// PORT(verified): per-slot layout mirrors the `cRSubLazerManager` projectile
-// slot at `game + 0x356b00` in
-// `analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c` and
-// `analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`. The
-// 20-slot native pool's per-slot state layout is:
+// PORT(partial): per-slot state for the `cRSubLazerManager` projectile pool at
+// `game + 0x356b00`. The native slot is a renderable-body object; the port keeps
+// only the body position, velocity, and the nested sprite Y bob needed by the
+// current gameplay/render paths. Recovered native offsets used by the port:
 //
 //   - `+0x80` state (0 inactive, 1 active, 2 queued for removal)
-//   - `+0x14` spawn-position Y anchor (the y-oscillation base)
-//   - `+0x68..+0x73` world position (Vec3)
-//   - `+0x8c..+0x97` velocity (Vec3)
-//   - `+0x6c` phase (accumulates toward the sine oscillation driver)
-//   - `+0x70` phase_step (seeded from `track_center_x * 0.0055555557`)
-//   - `+0x44` back-pointer to emitter cell
-//   - `+0x64` nested render/body object pointer (sprite)
+//   - `+0x68..+0x70` live body position sampled by `handle_subgoldy_collisions`
+//   - `+0x8c..+0x94` launch direction/velocity from `spawn_sub_lazer_projectile`
+//   - `+0x98` phase accumulator, reset by spawn
+//   - `+0x9c` phase step, seeded from `track_center_x * 0.0055555557`
 //
-// Native uses the Y-position as the sine-wave rest point; the sprite bobs
-// around `anchor_y + sin(phase*2*pi) * 0.3` each tick. The emitter cell
-// back-pointer gates the slot cleanup — once the emitter is past the
-// player, the slot is destroyed.
+// `update_sub_lazer_projectile` writes the sine bob to a nested sprite field,
+// not to the body position sampled for damage. `visual_y` models that nested
+// sprite offset for drawing while `world_position` remains the collision body.
 pub const SubLazerSlotState = enum(u8) {
     inactive = 0,
     active = 1,
@@ -102,8 +97,8 @@ pub const SubLazerSlot = struct {
     emitter_row: usize = 0,
     emitter_lane: usize = 0,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    visual_y: f32 = 0.0,
     velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    anchor_y: f32 = 0.0,
     phase: f32 = 0.0,
     phase_step: f32 = 0.0,
 };

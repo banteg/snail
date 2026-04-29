@@ -548,7 +548,7 @@ fn drawGameplaySubLazerSlotActor(render: Context, slot: gameplay_runtime_entitie
         .active = true,
         .kind = .sub_lazer,
         .world_x = slot.world_position.x,
-        .world_y = slot.world_position.y,
+        .world_y = slot.visual_y,
         .world_z = slot.world_position.z,
         .dir_x = slot.velocity.x,
         .dir_y = slot.velocity.y,

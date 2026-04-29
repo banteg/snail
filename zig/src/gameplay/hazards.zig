@@ -38,15 +38,17 @@ pub const native_salt_lifetime_step_factor: f32 = 0.033333335;
 // scale but advances a runner-local RNG so salt spawn does not perturb the
 // broader gameplay random stream.
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
-// PORT(verified): `spawn_sub_lazer_projectile` seeds phase step as
+// PORT(verified): `spawn_sub_lazer_projectile` seeds the nested-sprite bob
+// phase step as
 // `track_center_x * 0.0055555557`
 // (`analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c:29`). At
 // the port's fixed `track_center_x = 4.0`, this is `0.0222` per tick, so one
 // full sine cycle takes ~45 ticks (~0.75s).
 pub const native_sub_lazer_phase_step_factor: f32 = 0.0055555557;
-// PORT(verified): `update_sub_lazer_projectile` reads sprite offset as
-// `sin(phase * 2*pi) * 0.3 + anchor_y`
-// (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c:97`).
+// PORT(verified): `update_sub_lazer_projectile` writes the nested sprite Y
+// offset as `sin(phase * 2*pi) * 0.3 + base_y`
+// (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c:93-98`).
+// It is not the live body position sampled by `handle_subgoldy_collisions`.
 pub const native_sub_lazer_bob_amplitude: f32 = 0.30000001;
 // PORT(verified): `shoot_subgoldy` adjusts each successive slot's spawn Y by
 // `-0.01 * slot_index` so stacked lazers vertically separate
@@ -275,8 +277,8 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
 
 /// PORT(partial): 20-slot `cRSubLazerManager` projectile pool. Keeps the
 /// recovered slot count and the fields the port uses from `game + 0x356b00`
-/// (phase + step for sprite bob, world position, velocity, and Y anchor), but
-/// omits the native intrusive list, object-body, and sprite-owner subobjects.
+/// (body position, velocity, and nested-sprite bob phase), but omits the native
+/// intrusive list, full renderable-body, and sprite-owner subobjects.
 /// `initialize_sub_lazer_pool`
 /// (`analysis/decompile/ida/functions/00441650-initialize_sub_lazer_pool.c`)
 /// zeros the state byte on every slot; `spawn_sub_lazer_projectile` at
@@ -314,11 +316,9 @@ pub const SubLazerPool = struct {
 
     // PORT(partial): mirror of `spawn_sub_lazer_projectile`
     // (`analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c`).
-    // Allocates the first inactive slot, stores emitter cell back-ref,
-    // position, velocity, Y anchor (native reads this from matrix +0x14 —
-    // the port derives it from the incoming world position's y), and
-    // seeds the phase step from `track_center_x * 0.0055555557`. The Y
-    // oscillation starts at phase 0 so the slot begins at its anchor.
+    // Allocates the first inactive slot, stores the port-side emitter cell
+    // back-ref, body position, launch velocity, and nested-sprite bob step.
+    // The visual bob starts at phase 0 so the slot draws at the spawn height.
     pub fn spawn(
         self: *SubLazerPool,
         emitter_row: usize,
@@ -333,8 +333,8 @@ pub const SubLazerPool = struct {
             .emitter_row = emitter_row,
             .emitter_lane = emitter_lane,
             .world_position = world_position,
+            .visual_y = world_position.y,
             .velocity = velocity,
-            .anchor_y = world_position.y,
             .phase = 0.0,
             .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
         };
@@ -369,8 +369,8 @@ pub const SubLazerPool = struct {
             .emitter_row = emitter_row,
             .emitter_lane = emitter_lane,
             .world_position = stacked_position,
+            .visual_y = stacked_position.y,
             .velocity = velocity,
-            .anchor_y = stacked_position.y,
             .phase = 0.0,
             .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
         };
@@ -381,11 +381,11 @@ pub const SubLazerPool = struct {
 
     // PORT(partial): mirror of `update_sub_lazer_projectile`
     // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`).
-    // Each active slot integrates position by velocity, advances phase,
-    // and samples a sine-wave Y offset around `anchor_y`. The emitter /
-    // route-end cleanup gates at native lines 45-91 live on the Runner
-    // side where the preview is available; this pool method only runs
-    // the per-slot physics + oscillation.
+    // Native body motion is owned by the renderable-body/list machinery that
+    // `spawn_sub_lazer_projectile` links into; the port approximates that by
+    // integrating the explicit launch velocity on the body position. The sine
+    // phase drives only the nested-sprite draw Y, matching the native write to
+    // `slot->sprite + 0x4c` instead of moving the collision body.
     pub fn tickActiveSlots(self: *SubLazerPool) void {
         for (&self.slots) |*slot| {
             switch (slot.state) {
@@ -394,8 +394,9 @@ pub const SubLazerPool = struct {
                     slot.phase += slot.phase_step;
                     if (slot.phase > 1.0) slot.phase -= 1.0;
                     slot.world_position.x += slot.velocity.x;
+                    slot.world_position.y += slot.velocity.y;
                     slot.world_position.z += slot.velocity.z;
-                    slot.world_position.y = slot.anchor_y +
+                    slot.visual_y = slot.world_position.y +
                         std.math.sin(slot.phase * std.math.tau) * native_sub_lazer_bob_amplitude;
                 },
                 .removing => {
@@ -418,6 +419,24 @@ pub const SubLazerPool = struct {
         slot.state = .inactive;
     }
 };
+
+test "SubLazer tick keeps collision body separate from sprite bob" {
+    var pool = SubLazerPool{};
+    const slot = pool.spawn(
+        12,
+        2,
+        .{ .x = 1.0, .y = 9.0, .z = 30.0 },
+        .{ .x = 0.1, .y = -0.25, .z = -0.35 },
+        4.0,
+    ).?;
+
+    pool.tickActiveSlots();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.1), slot.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 8.75), slot.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 29.65), slot.world_position.z, 0.0001);
+    try std.testing.expect(slot.visual_y > slot.world_position.y);
+}
 
 /// All hazard-family pools grouped. Mirrors the native subgame memory layout:
 /// separate garbage, salt, sub-lazer, pickup, and ring pools.

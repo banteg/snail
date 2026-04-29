@@ -2,7 +2,7 @@
 /* function: spawn_sub_lazer_projectile @ 0x441670 */
 /* selector: spawn_sub_lazer_projectile */
 
-// Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object. Historically labelled `spawn_wall2_ambient_hazard`.
+// Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`.
 void __thiscall sub_441670(int this, _DWORD *a2, _DWORD *a3)
 {
   int v4; // edi
@@ -46,4 +46,3 @@ void __thiscall sub_441670(int this, _DWORD *a2, _DWORD *a3)
     set_matrix_z_direction(v4, v8, (_DWORD *)(this + 140));
   }
 }
-

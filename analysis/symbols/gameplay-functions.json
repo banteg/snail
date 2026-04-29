@@ -1839,7 +1839,7 @@
     {
       "address": "0x43efb0",
       "name": "update_sub_lazer_projectile",
-      "description": "Advances one live SubLazer projectile slot: integrates motion, handles state 1→2→cleanup via list-remove and `kill_sprite`, and modulates the sprite y by `sin(phase*2π)*0.3`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile."
+      "description": "Updates one live SubLazer projectile slot: handles state 1→2→cleanup via list-remove and `kill_sprite`, advances the nested-sprite bob phase (`+0x98 += +0x9c`), and writes sprite-local y as `sin(phase*2π)*0.3 + +0x14`. Body motion is set up by the renderable-body/list owner linked during spawn; the sine bob is not the collision body position sampled by `handle_subgoldy_collisions`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile."
     },
     {
       "address": "0x43f130",
@@ -1974,7 +1974,7 @@
     {
       "address": "0x441670",
       "name": "spawn_sub_lazer_projectile",
-      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object. Historically labelled `spawn_wall2_ambient_hazard`."
+      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`."
     },
     {
       "address": "0x441740",
