@@ -13,9 +13,10 @@ pub fn draw(
     const loaded_object = maybe_loaded_object orelse return;
     // Native barrier visibility follows `Game.level_mode == FrontendLevelMode.tutorial`
     // (= 7): `initialize_tutorial` (0x448da0) sets `runtime_flags |= 0x600000` and
-    // `set_subgame_features` (0x435df0) maps the tutorial mode to runtime_flags
-    // 0xe4cfff which also includes those bits. NoFall segments additionally expose
-    // the barrier in non-tutorial modes via the per-row annotation.
+    // `set_subgame_features` (0x435df0) maps the tutorial mode to 0xe4cfff;
+    // `initialize_tutorial` then clears the low garbage-fallback bit but keeps
+    // the barrier bits. NoFall segments additionally expose the barrier in
+    // non-tutorial modes via the per-row annotation.
     const tutorial_active = runner.session_mode == .tutorial or is_tutorial_level;
     const barrier_active = tutorial_active or runner.current_annotation == .no_fall;
     if (!barrier_active) return;

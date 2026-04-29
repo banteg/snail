@@ -148,11 +148,13 @@ pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
     };
 }
 
-// PORT(verified): `set_subgame_features` picks distinct runtime-flag presets by mode:
-// postal/challenge `0x00f5cfff`, time-trial `0x0075cfff`, tutorial `0x00e4cfff`.
+// PORT(verified): `set_subgame_features` picks distinct runtime-flag presets by mode.
+// Tutorial then runs `initialize_tutorial`, which keeps the `0x600000` barrier
+// bits and clears the low `0x2` garbage-fallback bit.
 pub const postalChallengeRuntimeBuildFlags: u32 = 0x00f5cfff;
 pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
-pub const tutorialRuntimeBuildFlags: u32 = 0x00e4cfff;
+pub const tutorialSetSubgameRuntimeBuildFlags: u32 = 0x00e4cfff;
+pub const tutorialRuntimeBuildFlags: u32 = tutorialSetSubgameRuntimeBuildFlags & ~@as(u32, 0x2);
 pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
 pub const runtime_row_flag_no_fall: u32 = 0x0000_0100;
 pub const runtime_row_flag_ring_none: u32 = 0x0000_0200;
@@ -3148,6 +3150,23 @@ test "runtime fallback spawn hint mask follows recovered tile families" {
         runtimeFallbackSpawnHintMask(0x0f, defaultRuntimeBuildFlags),
     );
     try std.testing.expectEqual(@as(u8, 0), runtimeFallbackSpawnHintMask(0x22, defaultRuntimeBuildFlags));
+}
+
+test "tutorial runtime flags include barrier bits but disable garbage fallback" {
+    try std.testing.expectEqual(@as(u32, 0x00e4cfff), tutorialSetSubgameRuntimeBuildFlags);
+    try std.testing.expectEqual(@as(u32, 0x00e4cffd), tutorialRuntimeBuildFlags);
+    try std.testing.expect((tutorialRuntimeBuildFlags & 0x0060_0000) == 0x0060_0000);
+    try std.testing.expect((tutorialRuntimeBuildFlags & 0x2) == 0);
+    try std.testing.expect((tutorialRuntimeBuildFlags & 0x1_0000) == 0);
+
+    try std.testing.expectEqual(
+        @as(u8, 0),
+        runtimeFallbackSpawnHintMask(0x15, tutorialRuntimeBuildFlags) & runtime_spawn_hint_garbage_fallback,
+    );
+    try std.testing.expectEqual(
+        @as(u8, 0),
+        runtimeFallbackSpawnHintMask(0x0f, tutorialRuntimeBuildFlags),
+    );
 }
 
 test "runtime spawn hint grid suppresses fallback hazards inside warning zones" {

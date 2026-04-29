@@ -216,7 +216,7 @@ pub const new_game_menu_items = [_]NewGameMenuItem{
 // set_subgame_features runtime_flags masks per mode (when no replay is active):
 //   modes 0/1    -> 0xf5cfff  (Postal / Challenge full gameplay)
 //   mode 4       -> 0x75cfff  (Time Trial — bit 0x800000 cleared)
-//   mode 7       -> 0xe4cfff  (Tutorial   — includes 0x600000 barrier bits)
+//   mode 7       -> 0xe4cfff  (Tutorial   — `initialize_tutorial` then clears 0x2)
 //   other modes  -> 0x600484  (engine startup default, unused in shipped flow)
 //
 // Values 2/3/5/6 appear in `update_subgame`'s switch as fall-through gameplay
