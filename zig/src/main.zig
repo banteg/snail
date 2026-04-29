@@ -1422,7 +1422,7 @@ const AppState = struct {
         delta_seconds: f32,
     ) void {
         if (self.gameplay_click_start_active) {
-            runner.refreshBlockedStartupState(loaded_track_preview);
+            runner.stepIntroStartupBlock(loaded_track_preview, delta_seconds);
             return;
         }
         if (runner.introCutsceneBlocksGameplay()) {

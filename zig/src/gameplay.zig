@@ -1041,10 +1041,9 @@ pub const Runner = struct {
         if (self.tryBeginCurrentRowInstalledAttachmentFollow(preview, current_row)) return;
     }
 
-    // PORT(verified): before the tutorial click-start dismissal, native keeps Goldy
-    // pinned on the START attachment crest and only refreshes the live camera from that
-    // zero-progress state. Once click-start is dismissed, Windows returns to the normal
-    // runner step even while the intro cutscene still owns the shared camera.
+    // PORT(verified): this is only an initialization helper for startup camera probes.
+    // Native `update_click_start` does not freeze Goldy; while the click-start prompt is
+    // visible, `update_subgoldy` continues to run and advances the START attachment.
     pub fn refreshBlockedStartupState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.track_step_rows = 0.0;
         if (!self.paused) {
@@ -2298,7 +2297,7 @@ pub const Runner = struct {
             if (velocity_z >= 0.0) velocity_z = 0.0;
         }
 
-        if (!started_negative and self.phase == .active and self.movement_mode == .track) {
+        if (!started_negative and self.phase == .active) {
             if (self.row_position < @as(f32, @floatFromInt(preview.runtime_active_row_start))) {
                 velocity_z += self.nativeStartBlockVelocityZDeltaPerTick() * tick_scale;
                 if (velocity_z > native_start_block_velocity_z_max_per_tick) {
@@ -2307,7 +2306,10 @@ pub const Runner = struct {
                 accelerated = true;
             }
 
-            if (self.currentTileAddsNativeForwardVelocity(preview) or self.jetpack.active) {
+            if (self.movement_mode == .attachment and self.currentAttachmentFollowAddsNativeVelocity(preview)) {
+                velocity_z += self.nativeFloorCacheVelocityZDeltaPerTick() * tick_scale;
+                accelerated = true;
+            } else if (self.movement_mode == .track and (self.currentTileAddsNativeForwardVelocity(preview) or self.jetpack.active)) {
                 velocity_z += self.nativeFloorCacheVelocityZDeltaPerTick() * tick_scale;
                 accelerated = true;
             }
@@ -2359,6 +2361,16 @@ pub const Runner = struct {
             0x0f, 0x10, 0x12, 0x13 => true,
             else => false,
         };
+    }
+
+    fn currentAttachmentFollowAddsNativeVelocity(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        if (!self.attachment.follow.active) return false;
+        const built = self.currentAttachmentBuilt(preview) orelse return false;
+        // PORT(verified): `update_subgoldy` adds the follow-state boost after
+        // `update_track_attachment_follow_state` returns case 0, except for the
+        // DETOUR template used by CAGE2.
+        const template_kind = built.template.spec.template_kind orelse return true;
+        return template_kind != attachment_builders.template_kind_cage2_detour;
     }
 
     fn currentRowHasRuntimeFlag(self: *const Runner, preview: *const track.LoadedLevelPreview, flag: u32) bool {
@@ -8155,7 +8167,9 @@ test "times up mirrors kill_subgoldy by forcing the live y lane before fall deat
 
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.time_trial);
+    runner.configureBaseSubgameRate(0.0);
     runner.speed_rows_per_second = 0.0;
+    runner.debugWarpToTrackRow(&fixture.preview, @floatFromInt(fixture.preview.runtime_active_row_start + 40), null);
     fixture.preview.runtime_tiles[runner.current_global_row * fixture.preview.max_width + runner.resolved_lane_index] = 1;
     runner.replay_sample_index = times_up_trigger_sample_index - 1;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
@@ -8936,6 +8950,24 @@ test "blocked startup start attachment keeps the live cameraman basis unmirrored
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.orientation_b, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.heading_roll, 0.0001);
     try std.testing.expect(cameraman.right.x > 0.0);
+}
+
+test "click-start startup advances along the native start attachment" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.29);
+    runner.refreshBlockedStartupState(&fixture.preview);
+    const starting_row_position = runner.row_position;
+
+    var tick: usize = 0;
+    while (tick < 120) : (tick += 1) {
+        runner.stepIntroStartupBlock(&fixture.preview, 1.0 / 60.0);
+    }
+
+    try std.testing.expect(runner.row_position > starting_row_position + 0.5);
+    try std.testing.expect(runner.track_step_rows > 0.0);
 }
 
 test "tutorial intro startup exits the start attachment on the authored track center" {

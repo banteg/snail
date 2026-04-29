@@ -194,6 +194,7 @@ pub const TemplateSpec = struct {
 };
 
 pub const template_kind_worm: u8 = 24;
+pub const template_kind_cage2_detour: u8 = 15;
 pub const template_kind_supertramp: u8 = 31;
 pub const template_kind_nonlinear_42: u8 = 42;
 pub const template_kind_start: u8 = 36;

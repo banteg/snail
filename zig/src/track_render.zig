@@ -174,7 +174,7 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
-            const backing_surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+            const backing_surface_tile = track.renderBackingSurfaceTileForRuntimeTile(tile_type);
             if (!preview.renderCacheHeadAt(global_row, lane_index) and backing_surface_tile == null) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
@@ -182,7 +182,7 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
             const right = left + @as(f32, @floatFromInt(run_length));
             const front = @as(f32, @floatFromInt(global_row));
             const back = front + 1.0;
-            const surface_tile = renderSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+            const surface_tile = backing_surface_tile orelse tile_type;
             const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
             const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
 
@@ -643,36 +643,6 @@ fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
     };
 }
 
-fn renderBackingSurfaceTileForRuntimeCell(
-    preview: *const track.LoadedLevelPreview,
-    global_row: usize,
-    lane_index: usize,
-    tile_type: u8,
-) ?u8 {
-    if (track.renderBackingSurfaceTileForRuntimeTile(tile_type)) |surface_tile| return surface_tile;
-    if (tile_type != 0x00) return null;
-
-    if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-        if (built.template.spec.family == .start) {
-            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-            const lane_center = @as(f32, @floatFromInt(lane_index)) + 0.5 -
-                (@as(f32, @floatFromInt(preview.max_width)) * 0.5);
-            if (lane_center >= -half_width and lane_center <= half_width) return 0x01;
-        }
-    }
-
-    return null;
-}
-
-fn renderSurfaceTileForRuntimeCell(
-    preview: *const track.LoadedLevelPreview,
-    global_row: usize,
-    lane_index: usize,
-    tile_type: u8,
-) u8 {
-    return renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse tile_type;
-}
-
 fn renderCacheFamilyForRuntimeCell(
     preview: *const track.LoadedLevelPreview,
     global_row: usize,
@@ -681,7 +651,7 @@ fn renderCacheFamilyForRuntimeCell(
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
     if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
-    const surface_tile = renderSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+    const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
     var family = renderCacheFamilyForTile(surface_tile) orelse return null;
     if (preview.renderCacheSurfaceSwapAt(global_row, lane_index)) {
         family = switch (family) {
@@ -886,7 +856,7 @@ test "surface family maps recovered runtime tile families" {
     try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x23));
 }
 
-test "start attachment span backfills authored empty rows" {
+test "start attachment span leaves authored empty rows out of the render cache" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -909,16 +879,7 @@ test "start attachment span backfills authored empty rows" {
         for (1..9) |start_lane| {
             try std.testing.expectEqual(@as(u8, 0x00), preview.runtimeTileAt(empty_start_row, start_lane).?);
             try std.testing.expectEqual(
-                @as(?u8, 0x01),
-                renderBackingSurfaceTileForRuntimeCell(
-                    &preview,
-                    empty_start_row,
-                    start_lane,
-                    preview.runtimeTileAt(empty_start_row, start_lane).?,
-                ),
-            );
-            try std.testing.expectEqual(
-                @as(?RenderCacheFamily, .slide),
+                @as(?RenderCacheFamily, null),
                 renderCacheFamilyForRuntimeCell(&preview, empty_start_row, start_lane),
             );
         }
