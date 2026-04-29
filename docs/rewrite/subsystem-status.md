@@ -110,9 +110,10 @@ Implemented now:
 - run-aware top-surface ownership for the recovered floor and slide families
   - the merge lane now follows the native family split more closely: real floor-family runs condense, while warn-promoted and corner-marked heads stay separate
 - the runtime edge-mask lane now carries the native corner bit on `5/6/9/10` masks, so later passes can distinguish corner heads from plain open edges
-- native-shaped warn-surface promotion for open-below floor and slide cells
-  - static asset-init recovery now confirms both recovered replacement tables route into the shared `TRACKWARN` asset family, so the remaining gap is exact BOD-object matching rather than a missing texture-family split
-- native-shaped center-seam floor/slide family swaps on the recovered seam lanes
+- warn-surface promotion through the recovered `TRACKWARN` replacement tables
+  - static asset-init recovery confirms both recovered replacement tables route into the shared `TRACKWARN` asset family, but native requires exact BOD-object matching; the port no longer treats every open-below floor or slide cell as promoted
+- center-seam floor/slide family swaps are identified, but not guessed from tile ids
+  - native `harmonize_center_lane_floor_slide_variants` first filters by row phase and neighbour families, then requires the current BOD object to match the recovered replacement tables; the port now leaves this lane empty until that object predicate is represented
 - recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
   - that warning-footprint lane now also drives one recovered gameplay consumer: it suppresses generic ambient garbage/salt fallback spawns in `update_subgame`
 - simple fringe skirts and back plane
@@ -123,7 +124,7 @@ Implemented now:
 Still missing or approximate:
 
 - `select_track_tile_edge_variants`
-- exact BOD-table matching inside `promote_track_tiles_to_fringe_variants`
+- exact BOD-table matching inside `promote_track_tiles_to_fringe_variants` and `harmonize_center_lane_floor_slide_variants`
 - `merge_track_tile_runs` beyond the currently ported ownership slice
   - marked-row suppression and the remaining low-bit flag semantics are still unresolved
 - the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint beyond the now-ported fallback-hazard suppressor

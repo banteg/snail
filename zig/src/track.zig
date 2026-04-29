@@ -2345,10 +2345,6 @@ fn buildRuntimeWarningZoneGrid(
     return flag_grid;
 }
 
-fn renderCacheWarnSurfaceEligibleTile(tile_type: u8) bool {
-    return isFloorCacheRuntimeTileFamily(tile_type) or isSlideRuntimeTileFamily(tile_type);
-}
-
 fn buildRenderCacheWarnSurfaceGrid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
@@ -2358,56 +2354,14 @@ fn buildRenderCacheWarnSurfaceGrid(
     const flag_grid = try allocator.alloc(bool, total_rows * max_width);
     @memset(flag_grid, false);
 
-    if (total_rows <= 1 or max_width == 0) return flag_grid;
-
-    // PORT(partial): `promote_track_tiles_to_fringe_variants` swaps selected floor/slide
-    // meshes into a warn-surface family when the runtime cell directly below is open.
-    // Static asset-init recovery now confirms both replacement tables route into the shared
-    // TRACKWARN asset family; the remaining gap is exact BOD-object eligibility, not whether
-    // promoted floor vs slide cells use different texture families.
-    for (0..total_rows - 1) |global_row| {
-        for (0..max_width) |lane_index| {
-            const current_index = runtimeTileIndex(max_width, global_row, lane_index);
-            const below_index = runtimeTileIndex(max_width, global_row + 1, lane_index);
-            const current_tile = runtime_tiles[current_index];
-            const below_tile = runtime_tiles[below_index];
-            flag_grid[current_index] =
-                renderCacheWarnSurfaceEligibleTile(current_tile) and
-                isOpenNeighborForRenderSurface(below_tile);
-        }
-    }
-
+    // PORT(partial): native `promote_track_tiles_to_fringe_variants` first checks
+    // for an open neighbor, but it only promotes cells whose current BOD object
+    // matches one of two recovered replacement tables. Runtime tile ids are not
+    // enough to reproduce that match, and the older open-below heuristic drew
+    // TRACKWARN quads over ordinary floor near gaps. Keep the promotion lane empty
+    // until the BOD-table eligibility is modeled explicitly.
+    _ = runtime_tiles;
     return flag_grid;
-}
-
-fn maybeMarkRuntimeSurfaceSwap(
-    swap_grid: []bool,
-    runtime_tiles: []const u8,
-    warn_surface_grid: []const bool,
-    max_width: usize,
-    current_row: usize,
-    lane_index: usize,
-    neighbor_row: usize,
-    special_floor_tile: ?u8,
-) void {
-    const current_index = runtimeTileIndex(max_width, current_row, lane_index);
-    const neighbor_index = runtimeTileIndex(max_width, neighbor_row, lane_index);
-    if (warn_surface_grid[current_index] or warn_surface_grid[neighbor_index]) return;
-
-    const current_tile = runtime_tiles[current_index];
-    const neighbor_tile = runtime_tiles[neighbor_index];
-
-    if (isSlideRuntimeTileFamily(current_tile) and
-        (isFloorCacheRuntimeTileFamily(neighbor_tile) or
-            (special_floor_tile != null and neighbor_tile == special_floor_tile.?)))
-    {
-        swap_grid[current_index] = true;
-        return;
-    }
-
-    if (isFloorCacheRuntimeTileFamily(current_tile) and isSlideRuntimeTileFamily(neighbor_tile)) {
-        swap_grid[current_index] = true;
-    }
 }
 
 fn buildRenderCacheSurfaceSwapGrid(
@@ -2420,41 +2374,14 @@ fn buildRenderCacheSurfaceSwapGrid(
     const swap_grid = try allocator.alloc(bool, total_rows * max_width);
     @memset(swap_grid, false);
 
-    if (max_width <= 3 or total_rows == 0) return swap_grid;
-
-    // PORT(partial): `harmonize_center_lane_floor_slide_variants` only touches two
-    // center-seam lanes. Native keys the swap from promoted warn-surface bits plus a
-    // small pair of special neighbor tile ids; the port mirrors that recovered layout.
-    if (max_width > 3 and total_rows > 1) {
-        for (0..total_rows - 1) |global_row| {
-            maybeMarkRuntimeSurfaceSwap(
-                swap_grid,
-                runtime_tiles,
-                warn_surface_grid,
-                max_width,
-                global_row,
-                3,
-                global_row + 1,
-                0x1e,
-            );
-        }
-    }
-
-    if (max_width > 5 and total_rows > 1) {
-        for (1..total_rows) |global_row| {
-            maybeMarkRuntimeSurfaceSwap(
-                swap_grid,
-                runtime_tiles,
-                warn_surface_grid,
-                max_width,
-                global_row,
-                5,
-                global_row - 1,
-                0x20,
-            );
-        }
-    }
-
+    // PORT(partial): native `harmonize_center_lane_floor_slide_variants`
+    // (`cRSubGame::SlideSmoothTrack`) only considers two center-seam lanes,
+    // but the actual flip is guarded by the current BOD object matching the
+    // recovered floor/slide replacement tables. Tile-only seam checks draw
+    // SLIDE0's arrow-shadow strip on ordinary floor, so leave this lane empty
+    // until the object-table predicate is represented in the port.
+    _ = runtime_tiles;
+    _ = warn_surface_grid;
     return swap_grid;
 }
 
@@ -3272,7 +3199,7 @@ test "runtime flag b40 preserves non-condensed populated tiles" {
     try std.testing.expect(!flags[3]);
 }
 
-test "render cache warn surface grid promotes open-below floor and slide cells" {
+test "render cache warn surface grid does not guess from open-below floor and slide cells" {
     const runtime_tiles = [_]u8{
         0x0f, 0x01, 0x02, 0x00,
         0x00, 0x0e, 0x0f, 0x00,
@@ -3280,7 +3207,7 @@ test "render cache warn surface grid promotes open-below floor and slide cells" 
     const flags = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 4);
     defer std.testing.allocator.free(flags);
 
-    try std.testing.expect(flags[0]);
+    try std.testing.expect(!flags[0]);
     try std.testing.expect(!flags[1]);
     try std.testing.expect(!flags[2]);
     try std.testing.expect(!flags[3]);
@@ -3288,7 +3215,7 @@ test "render cache warn surface grid promotes open-below floor and slide cells" 
     try std.testing.expect(!flags[5]);
 }
 
-test "render cache warn surface grid treats render-backed object cells as solid" {
+test "render cache warn surface grid waits for recovered bod table eligibility" {
     const runtime_tiles = [_]u8{
         0x01, 0x01, 0x01, 0x01, 0x01,
         0x0e, 0x1d, 0x1e, 0x23, 0x00,
@@ -3300,7 +3227,7 @@ test "render cache warn surface grid treats render-backed object cells as solid"
     try std.testing.expect(!flags[1]);
     try std.testing.expect(!flags[2]);
     try std.testing.expect(!flags[3]);
-    try std.testing.expect(flags[4]);
+    try std.testing.expect(!flags[4]);
 }
 
 test "runtime warning zone grid matches recovered backward footprint" {
@@ -3340,7 +3267,7 @@ test "runtime warning zone grid clamps the left edge and terminal row" {
     try std.testing.expect(!flags[runtimeTileIndex(4, 2, 0)]);
 }
 
-test "render cache surface swap grid follows recovered center seam rules" {
+test "render cache surface swap grid does not guess from center seam tile families" {
     const runtime_tiles = [_]u8{
         0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f, 0x0f, 0x0f,
         0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f,
@@ -3350,24 +3277,48 @@ test "render cache surface swap grid follows recovered center seam rules" {
     const swaps = try buildRenderCacheSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
     defer std.testing.allocator.free(swaps);
 
-    try std.testing.expect(swaps[runtimeTileIndex(8, 0, 3)]);
-    try std.testing.expect(swaps[runtimeTileIndex(8, 1, 5)]);
+    try std.testing.expect(!swaps[runtimeTileIndex(8, 0, 3)]);
+    try std.testing.expect(!swaps[runtimeTileIndex(8, 1, 5)]);
     try std.testing.expect(!swaps[runtimeTileIndex(8, 0, 2)]);
     try std.testing.expect(!swaps[runtimeTileIndex(8, 1, 4)]);
 }
 
-test "render cache surface swap grid preserves warn-promoted center seam cells" {
+test "render cache surface swap grid waits for recovered bod table eligibility" {
     const runtime_tiles = [_]u8{
         0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f,
         0x0f, 0x0f, 0x0f, 0x00, 0x0f, 0x01, 0x0f, 0x0f,
     };
-    const warn_surface = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
-    defer std.testing.allocator.free(warn_surface);
-    const swaps = try buildRenderCacheSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
+    const warn_surface = [_]bool{
+        false, false, false, true,  false, false, false, false,
+        false, false, false, false, false, false, false, false,
+    };
+    const swaps = try buildRenderCacheSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, &warn_surface, 2, 8);
     defer std.testing.allocator.free(swaps);
 
     try std.testing.expect(warn_surface[runtimeTileIndex(8, 0, 3)]);
     try std.testing.expect(!swaps[runtimeTileIndex(8, 0, 3)]);
+}
+
+test "arcade one preview does not infer center seam surface swaps near obstacle rows" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.dat.entryByPath("LEVELS/ARCADE001.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    for (150..171) |global_row| {
+        try std.testing.expect(!preview.renderCacheSurfaceSwapAt(global_row, 3));
+        try std.testing.expect(!preview.renderCacheSurfaceSwapAt(global_row, 5));
+    }
 }
 
 test "runtime flag b80 follows JetPack=Off annotations" {
