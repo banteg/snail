@@ -2374,6 +2374,7 @@ pub const Runner = struct {
 
     fn currentTileAddsNativeForwardVelocity(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
         const tile = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index) orelse return false;
+        if (self.damage.warning_state == .draining and track.isSlideRuntimeTileFamily(tile)) return true;
         return switch (tile) {
             0x0f, 0x10, 0x12, 0x13 => true,
             else => false,
@@ -6730,6 +6731,22 @@ test "configured tutorial run rate drives native movement lanes" {
     runner.lane_center = 1.5;
     runner.applyTargetLaneCenter(&fixture.preview, 4.5, 1.0 / native_ticks_per_second);
     try std.testing.expectApproxEqAbs(@as(f32, 1.674), runner.lane_center, 0.0001);
+}
+
+test "damage drain drives native forward velocity on slide tiles" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    const slide_tile = findFirstRuntimeTileAtOrAfter(&fixture.preview, 0x01, fixture.preview.runtime_active_row_start).?;
+
+    var runner = Runner.init(&fixture.preview);
+    runner.current_global_row = slide_tile.row;
+    runner.resolved_lane_index = slide_tile.lane;
+
+    try std.testing.expect(!runner.currentTileAddsNativeForwardVelocity(&fixture.preview));
+
+    runner.damage.warning_state = .draining;
+    try std.testing.expect(runner.currentTileAddsNativeForwardVelocity(&fixture.preview));
 }
 
 test "native negative-velocity ring recovery moves backward before handing back to base speed" {
