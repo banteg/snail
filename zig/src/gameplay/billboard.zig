@@ -20,6 +20,11 @@ const alpha_cutout_fragment_shader: [:0]const u8 =
 pub const default_alpha_cutoff: f32 = 0.05;
 pub const hard_alpha_cutoff: f32 = 0.5;
 
+pub const BlendMode = enum {
+    alpha,
+    additive,
+};
+
 pub fn loadAlphaCutoutShader() !rl.Shader {
     const shader = try rl.loadShaderFromMemory(null, alpha_cutout_fragment_shader);
     setAlphaCutoff(shader, default_alpha_cutoff);
@@ -42,7 +47,20 @@ pub fn drawTexture(
     shader: ?rl.Shader,
     tint: rl.Color,
 ) void {
-    drawTextureRect(
+    drawTextureBlended(texture, position, width, height, camera, shader, tint, .alpha);
+}
+
+pub fn drawTextureBlended(
+    texture: rl.Texture2D,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    shader: ?rl.Shader,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+) void {
+    drawTextureRectBlended(
         texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
         position,
@@ -51,6 +69,7 @@ pub fn drawTexture(
         camera,
         shader,
         tint,
+        blend_mode,
     );
 }
 
@@ -65,7 +84,7 @@ pub fn drawTextureRectRolled(
     roll_radians: f32,
     tint: rl.Color,
 ) void {
-    drawTextureRectRolledAlphaCutoff(texture, source, position, width, height, camera, shader, roll_radians, tint, default_alpha_cutoff);
+    drawTextureRectRolledBlendedAlphaCutoff(texture, source, position, width, height, camera, shader, roll_radians, tint, .alpha, default_alpha_cutoff);
 }
 
 pub fn drawTextureRectRolledAlphaCutoff(
@@ -78,6 +97,37 @@ pub fn drawTextureRectRolledAlphaCutoff(
     shader: ?rl.Shader,
     roll_radians: f32,
     tint: rl.Color,
+    alpha_cutoff: f32,
+) void {
+    drawTextureRectRolledBlendedAlphaCutoff(texture, source, position, width, height, camera, shader, roll_radians, tint, .alpha, alpha_cutoff);
+}
+
+pub fn drawTextureRectRolledBlended(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    shader: ?rl.Shader,
+    roll_radians: f32,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+) void {
+    drawTextureRectRolledBlendedAlphaCutoff(texture, source, position, width, height, camera, shader, roll_radians, tint, blend_mode, default_alpha_cutoff);
+}
+
+pub fn drawTextureRectRolledBlendedAlphaCutoff(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    shader: ?rl.Shader,
+    roll_radians: f32,
+    tint: rl.Color,
+    blend_mode: BlendMode,
     alpha_cutoff: f32,
 ) void {
     const forward = normalizeVector3(.{
@@ -115,7 +165,7 @@ pub fn drawTextureRectRolledAlphaCutoff(
         up = rotated_up;
     }
 
-    drawTextureRectBasisAlphaCutoff(texture, source, position, width, height, right, up, shader, tint, alpha_cutoff);
+    drawTextureRectBasisBlendedAlphaCutoff(texture, source, position, width, height, right, up, shader, tint, blend_mode, alpha_cutoff);
 }
 
 pub fn drawTextureRectBasis(
@@ -129,7 +179,7 @@ pub fn drawTextureRectBasis(
     shader: ?rl.Shader,
     tint: rl.Color,
 ) void {
-    drawTextureRectBasisAlphaCutoff(texture, source, position, width, height, right, up, shader, tint, default_alpha_cutoff);
+    drawTextureRectBasisBlendedAlphaCutoff(texture, source, position, width, height, right, up, shader, tint, .alpha, default_alpha_cutoff);
 }
 
 pub fn drawTextureRectBasisAlphaCutoff(
@@ -142,6 +192,22 @@ pub fn drawTextureRectBasisAlphaCutoff(
     basis_up: rl.Vector3,
     shader: ?rl.Shader,
     tint: rl.Color,
+    alpha_cutoff: f32,
+) void {
+    drawTextureRectBasisBlendedAlphaCutoff(texture, source, position, width, height, basis_right, basis_up, shader, tint, .alpha, alpha_cutoff);
+}
+
+pub fn drawTextureRectBasisBlendedAlphaCutoff(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    basis_right: rl.Vector3,
+    basis_up: rl.Vector3,
+    shader: ?rl.Shader,
+    tint: rl.Color,
+    blend_mode: BlendMode,
     alpha_cutoff: f32,
 ) void {
     const right = normalizeVector3(basis_right);
@@ -174,7 +240,7 @@ pub fn drawTextureRectBasisAlphaCutoff(
         .right = (source.x + source.width) / @as(f32, @floatFromInt(texture.width)),
         .bottom = (source.y + source.height) / @as(f32, @floatFromInt(texture.height)),
     };
-    drawQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, shader, tint, alpha_cutoff);
+    drawQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, shader, tint, blend_mode, alpha_cutoff);
 }
 
 pub fn drawTextureRect(
@@ -187,7 +253,21 @@ pub fn drawTextureRect(
     shader: ?rl.Shader,
     tint: rl.Color,
 ) void {
-    drawTextureRectRolled(texture, source, position, width, height, camera, shader, 0.0, tint);
+    drawTextureRectRolledBlended(texture, source, position, width, height, camera, shader, 0.0, tint, .alpha);
+}
+
+pub fn drawTextureRectBlended(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    shader: ?rl.Shader,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+) void {
+    drawTextureRectRolledBlended(texture, source, position, width, height, camera, shader, 0.0, tint, blend_mode);
 }
 
 fn drawQuad(
@@ -199,9 +279,13 @@ fn drawQuad(
     uv: Uv,
     shader: ?rl.Shader,
     tint: rl.Color,
+    blend_mode: BlendMode,
     alpha_cutoff: f32,
 ) void {
-    rl.beginBlendMode(.alpha);
+    rl.beginBlendMode(switch (blend_mode) {
+        .alpha => .alpha,
+        .additive => .additive,
+    });
     defer rl.endBlendMode();
     if (shader) |cutout_shader| {
         setAlphaCutoff(cutout_shader, alpha_cutoff);
