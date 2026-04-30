@@ -1981,7 +1981,7 @@ fn buildRuntimeTileGrid(
                     build_state.mirror_state,
                     outside_active_rows,
                 );
-                if (normalized_cell == '@') {
+                if (normalized_cell == '@' and lane_index > 0 and lane_index + 1 < row.cells.len) {
                     _ = build_state.switchTrackMirror();
                 }
                 const previous_tile = if (global_row > 0 and lane_index < max_width)
@@ -2031,7 +2031,7 @@ fn buildAttachmentSourceRowMirrorStates(
                     build_state.mirror_state,
                     outside_active_rows,
                 );
-                if (normalized_cell == '@') {
+                if (normalized_cell == '@' and lane_index > 0 and lane_index + 1 < row.cells.len) {
                     _ = build_state.switchTrackMirror();
                 }
                 if (lane_index == 0) {
@@ -3543,6 +3543,56 @@ test "runtime build mirror latch matches recovered threshold logic" {
     try std.testing.expect(state.applyMirrorDecision(true));
     try std.testing.expect(state.applyMirrorDecision(false));
     try std.testing.expect(!state.applyMirrorDecision(false));
+}
+
+test "runtime build ignores parser side guards for mirror decisions" {
+    const rows = [_]segment.Row{
+        .{ .cells = "@{.......@" },
+    };
+    const segments = [_]segment.Definition{
+        .{
+            .arena = undefined,
+            .source_path = "SEGMENTS/MIRROR-GUARD-TEST.TXT",
+            .segment_id = 0,
+            .name = "Mirror Guard Test",
+            .width = rows[0].cells.len,
+            .height = rows.len,
+            .rows = &rows,
+        },
+    };
+    const row_offsets = [_]usize{0};
+    const config = RuntimeBuildConfig{
+        .build_flags = defaultRuntimeBuildFlags,
+        .build_seed = 1,
+        .active_row_start = 0,
+        .active_row_end = rows.len,
+    };
+
+    const runtime_tiles = try buildRuntimeTileGrid(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        rows.len,
+        rows[0].cells.len,
+        config,
+    );
+    defer std.testing.allocator.free(runtime_tiles);
+
+    const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        rows.len,
+        config,
+    );
+    defer std.testing.allocator.free(mirror_state_build.states);
+
+    // The Windows segment loader consumes 8 playable cells; the leading and
+    // trailing guard `@` columns are a Zig parser artifact. With seed 1 the
+    // first side guard would otherwise flip `{` into the mirrored `}` family.
+    try std.testing.expectEqual(@as(u8, 0x00), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 0)]);
+    try std.testing.expectEqual(@as(u8, 0x02), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 1)]);
+    try std.testing.expect(!mirror_state_build.states[0]);
 }
 
 test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {

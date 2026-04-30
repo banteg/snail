@@ -7306,11 +7306,11 @@ test "default ramp rings advance native spacing cursor after startup modes" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
-    const big_jump_entry = catalog.dat.entryByPath("SEGMENTS/BIG JUMP.TXT") orelse return error.EntryNotFound;
+    const needle_entry = catalog.dat.entryByPath("SEGMENTS/NEEDLE.TXT") orelse return error.EntryNotFound;
     var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
         std.testing.allocator,
         &catalog,
-        big_jump_entry,
+        needle_entry,
         .{
             .load_models = false,
             .runtime_build_flags = track.tutorialRuntimeBuildFlags,

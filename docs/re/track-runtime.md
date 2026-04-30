@@ -9,6 +9,9 @@ Verified parser behavior:
 - segment files are enumerated from `SEGMENTS/*.TXT`
 - hard cap: `150` segment files
 - each row keeps `8` interior cell characters between the leading and trailing `@` guards
+- the Zig text parser currently retains the two guard columns for editor/debug
+  visibility, but the runtime builder mirrors native by treating them as parser
+  fences: they map to empty cells and do not advance `switch_track_mirror`
 - a literal `*` immediately after the row body is stored as a real per-row flag
 - metadata matching is case-insensitive and prefix-friendly rather than exact
 - recognized metadata includes `Path`, `Ring`, `RingSpeed`, `Parcel`, `3DModel`, `Velocity`, `JetPack=Off`, and `NoFall`
