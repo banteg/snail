@@ -3,12 +3,12 @@
 //! Native references:
 //! - Subgoldy weapon lanes fire projectiles from `movement_flags` selectors
 //!   (`update_player_movement_flags` / `play_movement_state_sound`).
-//! The manager here holds the active weapon-shot pool; Runner still owns the
-//! spawn + step methods because they cross-read motion / attachment state.
+//! The manager here holds the 12 native Golb emitter slots; Runner still owns
+//! the spawn + step methods because they cross-read motion / attachment state.
 
 const std = @import("std");
 
-pub const max_active_projectiles: usize = 16;
+pub const max_active_projectiles: usize = 12;
 
 pub const Projectile = struct {
     pub const Kind = enum {
