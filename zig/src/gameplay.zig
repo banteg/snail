@@ -3321,8 +3321,9 @@ pub const Runner = struct {
     // (`game+0x74668 < game+0x42fdec`), RNG source, origin, target-z scramble,
     // `delta_z < -4`, and normalized `0.4` velocity now follow the decompile
     // instead of the previous row/lane hash shortcut. The native
-    // `cell->flags & 0x2000` owner bit is not exposed in the preview; candidate
-    // `0x0e` Wall2 cells stand in for that object-local gate.
+    // `cell->render_flags & 0x2000` owner bit is only approximated in the
+    // preview; the first `0x0e` cell in each merged Wall2 run stands in for
+    // that object-local gate.
     fn maybeFireWall2SubLazersInWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or preview.max_width == 0) return;
 
@@ -4083,7 +4084,13 @@ pub const Runner = struct {
             if ((preview.runtimeTileAt(global_row, lane_index + run_len) orelse 0) != native_wall2_tile_id) break;
         }
         const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
-        const lane_center = @as(f32, @floatFromInt(lane_index)) + (@as(f32, @floatFromInt(run_len)) * 0.5);
+        // PORT(verified): `merge_track_tile_runs` writes the merged Wall2 run
+        // width into `TrackRowCell.render_flags >> 8`, and
+        // `wall2_emitter_maybe_fire_sub_lazer` computes `origin.x` from the
+        // first cell anchor plus `width * 0.5`. The first cell anchor is the
+        // authored cell center, so this intentionally lands half a cell to the
+        // right of the geometric strip center.
+        const lane_center = @as(f32, @floatFromInt(lane_index)) + 0.5 + (@as(f32, @floatFromInt(run_len)) * 0.5);
         return preview.worldPositionForLane(
             lane_center,
             @as(f32, @floatFromInt(global_row)),
@@ -7734,6 +7741,41 @@ test "Wall2 emitter waits for native active-row start gate" {
     runner.maybeFireWall2SubLazersInWindow(&fixture.preview);
 
     try std.testing.expectEqual(@as(usize, 0), runner.runtime.sub_lazers.countActive());
+}
+
+test "Wall2 emitter origin uses native first-cell anchor plus merged width" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/CAGE.TXT");
+    defer fixture.deinit();
+
+    try std.testing.expect(fixture.preview.max_width >= 8);
+    const row = @min(fixture.preview.runtime_active_row_start + 4, fixture.preview.total_rows - 1);
+    const lane: usize = 2;
+    const run_len: usize = 4;
+
+    const row_offset = row * fixture.preview.max_width;
+    for (0..fixture.preview.max_width) |index| {
+        fixture.preview.runtime_tiles[row_offset + index] = 0x01;
+    }
+    for (0..run_len) |index| {
+        fixture.preview.runtime_tiles[row_offset + lane + index] = native_wall2_tile_id;
+    }
+
+    const origin = Runner.wall2EmitterSubLazerOrigin(&fixture.preview, row, lane);
+    const expected_x =
+        @as(f32, @floatFromInt(lane)) +
+        0.5 +
+        (@as(f32, @floatFromInt(run_len)) * 0.5) -
+        (@as(f32, @floatFromInt(fixture.preview.max_width)) * 0.5);
+    const geometric_center_x =
+        @as(f32, @floatFromInt(lane)) +
+        (@as(f32, @floatFromInt(run_len)) * 0.5) -
+        (@as(f32, @floatFromInt(fixture.preview.max_width)) * 0.5);
+    const floor_height = fixture.preview.floorHeightAtCellCenter(row, lane).?;
+
+    try std.testing.expectApproxEqAbs(expected_x, origin.x, 0.0001);
+    try std.testing.expectApproxEqAbs(floor_height + native_wall2_spawn_y_offset, origin.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(row)) + 0.5, origin.z, 0.0001);
+    try std.testing.expect(origin.x > geometric_center_x);
 }
 
 test "invincible slug contact defeats slug through native kill helper" {

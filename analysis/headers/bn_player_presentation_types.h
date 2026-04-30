@@ -159,6 +159,12 @@ typedef struct TrackRowCell {
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
+    uint8_t _pad_3e[0x2];
+    uint32_t render_flags;
+    void* fringe_object_0;
+    void* fringe_object_1;
+    void* fringe_object_2;
+    void* fringe_object_3;
 } TrackRowCell;
 
 typedef struct PlayerControlSource {
