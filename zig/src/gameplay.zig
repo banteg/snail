@@ -3410,9 +3410,24 @@ pub const Runner = struct {
 
         var global_row = scan_start;
         while (global_row < window_end) : (global_row += 1) {
-            self.scanRuntimeHazardRow(preview, global_row);
+            self.scanRuntimePersistentHazardRow(preview, global_row);
         }
         self.runtime.hazards.last_scan_end = window_end;
+
+        self.refreshLiveRuntimeSaltHazards(preview, window_start, window_end);
+    }
+
+    fn refreshLiveRuntimeSaltHazards(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        window_start: usize,
+        window_end: usize,
+    ) void {
+        var global_row = @max(window_start, preview.runtime_active_row_start);
+        const salt_window_end = @min(window_end, preview.runtime_active_row_end);
+        while (global_row < salt_window_end) : (global_row += 1) {
+            self.scanRuntimeSaltHazardRow(preview, global_row);
+        }
     }
 
     fn refreshLiveRuntimePickups(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3663,7 +3678,7 @@ pub const Runner = struct {
         self.runtime.rings.count = write_index;
     }
 
-    fn scanRuntimeHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
+    fn scanRuntimePersistentHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const row_location = preview.locateRow(global_row) orelse return;
         const row_inside_native_spawn_window = runtimeRowInsideNativeSpawnWindow(preview, global_row);
 
@@ -3671,9 +3686,6 @@ pub const Runner = struct {
             if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
                 switch (sample.kind) {
                     .garbage => self.addRuntimeHazard(preview, global_row, lane, .garbage),
-                    .salt => if (row_inside_native_spawn_window) {
-                        self.spawnSaltFromAuthoredCell(preview, global_row, lane);
-                    },
                     else => {},
                 }
             }
@@ -3685,26 +3697,29 @@ pub const Runner = struct {
             {
                 self.addRuntimeHazard(preview, global_row, lane, .garbage);
             }
-            if (row_inside_native_spawn_window and
-                preview.hasSaltSpawnHintAt(global_row, lane) and
+        }
+    }
+
+    fn scanRuntimeSaltHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
+        const row_location = preview.locateRow(global_row) orelse return;
+        if (!runtimeRowInsideNativeSpawnWindow(preview, global_row)) return;
+
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
+                if (sample.kind == .salt) {
+                    self.spawnSaltSlot(preview, global_row, lane);
+                }
+            }
+
+            if (preview.hasSaltSpawnHintAt(global_row, lane) and
                 shouldSpawnAmbientHazard(self, preview.salt_scalar, .salt))
             {
-                self.spawnSaltFromAmbientHint(preview, global_row, lane);
+                self.spawnSaltSlot(preview, global_row, lane);
             }
         }
     }
 
     fn spawnSaltFromAuthoredCell(
-        self: *Runner,
-        preview: *const track.LoadedLevelPreview,
-        global_row: usize,
-        lane: usize,
-    ) void {
-        if (self.runtime.salts.contains(global_row, lane)) return;
-        self.spawnSaltSlot(preview, global_row, lane);
-    }
-
-    fn spawnSaltFromAmbientHint(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
         global_row: usize,
@@ -3725,8 +3740,8 @@ pub const Runner = struct {
         // spawn anchor; the port mirrors that via `runtimeCellWorldPosition`.
         // Native does not seed velocity at the call site (the slot velocity is
         // whatever the pool init left at 0); authored salt in the shipped
-        // tutorial is stationary after spawn apart from the Y oscillation
-        // that the renderer samples from `yaw_radians`.
+        // tutorial is stationary after spawn apart from the random Y rotation
+        // installed in `spawn_salt_hazard`.
         const position = runtimeCellWorldPosition(preview, global_row, lane, 0.18);
         _ = self.runtime.salts.spawn(
             global_row,
@@ -8120,12 +8135,37 @@ test "runtime pickups and salt respect the native first-block spawn gate" {
 
     var salt_runner = Runner.init(&fixture.preview);
     fixture.preview.runtime_tiles[(blocked_row * fixture.preview.max_width) + lane] = 0x22;
-    salt_runner.scanRuntimeHazardRow(&fixture.preview, blocked_row);
+    salt_runner.scanRuntimeSaltHazardRow(&fixture.preview, blocked_row);
     try std.testing.expect(!salt_runner.runtime.salts.contains(blocked_row, lane));
 
     fixture.preview.runtime_tiles[(active_row * fixture.preview.max_width) + lane] = 0x22;
-    salt_runner.scanRuntimeHazardRow(&fixture.preview, active_row);
+    salt_runner.scanRuntimeSaltHazardRow(&fixture.preview, active_row);
     try std.testing.expect(salt_runner.runtime.salts.contains(active_row, lane));
+}
+
+test "salt hazards respawn while row remains in native scan window" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
+    var runner = Runner.init(&fixture.preview);
+    const row_position = if (salt.row >= native_runtime_row_scan_ahead_rows - 1)
+        salt.row - (native_runtime_row_scan_ahead_rows - 1)
+    else
+        fixture.preview.runtime_active_row_start;
+    runner.debugWarpToTrackRow(&fixture.preview, @floatFromInt(row_position), null);
+
+    // Native `update_subgame` revisits active rows every frame and calls
+    // `spawn_salt_hazard` directly for tile 0x22; the slot lifetime is much
+    // shorter than the row's visible window, so salt must be refreshed instead
+    // of one-shot-scanned like persistent garbage.
+    for (0..12) |_| {
+        runner.refreshLiveRuntimeHazards(&fixture.preview);
+        runner.updateRuntimeHazards(&fixture.preview);
+    }
+
+    try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
+    try std.testing.expect(runner.runtime.salts.countActive() > 0);
 }
 
 test "steady gameplay animation id 2 resolves to shipped turbo move" {

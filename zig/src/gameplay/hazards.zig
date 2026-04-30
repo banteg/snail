@@ -190,7 +190,7 @@ pub const SaltHazardPool = struct {
     // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`). Allocates
     // the first inactive slot, marks it active, seeds position from the
     // caller's Vec3 input, initializes the lifetime step from
-    // `track_center_x * 0.033333335`, and rolls a random Y-rotation on the
+    // the native run-rate field times `0.033333335`, and rolls a random Y-rotation on the
     // spawn frame. Velocity is caller-supplied until the native velocity
     // ownership path is ported.
     pub fn spawn(
@@ -199,7 +199,7 @@ pub const SaltHazardPool = struct {
         lane: usize,
         world_position: rl.Vector3,
         velocity: rl.Vector3,
-        track_center_x: f32,
+        run_rate: f32,
         random_state: *u32,
     ) ?*SaltSlot {
         const slot = self.allocate() orelse return null;
@@ -210,7 +210,7 @@ pub const SaltHazardPool = struct {
             .world_position = world_position,
             .velocity = velocity,
             .lifetime_progress = 0.0,
-            .lifetime_step = track_center_x * native_salt_lifetime_step_factor,
+            .lifetime_step = run_rate * native_salt_lifetime_step_factor,
             .yaw_radians = nextSaltYawRadians(random_state),
         };
         return slot;

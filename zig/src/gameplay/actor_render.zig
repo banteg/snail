@@ -295,15 +295,7 @@ fn drawGameplaySaltVisual(
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
         const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
         const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
-        const world_transform = gameplay_model_render.transformFromBasis(world_position, right, up, forward);
-        const local_offset = rl.Matrix.translate(
-            -model.bounds.center.x,
-            -model.bounds.center.y,
-            -model.bounds.center.z,
-        );
-        const scale_value = 0.46;
-        const scale = rl.Matrix.scale(scale_value, scale_value, scale_value);
-        const transform = world_transform.multiply(local_offset).multiply(scale);
+        const transform = gameplay_model_render.transformFromBasis(world_position, right, up, forward);
         const tint: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = presentation_alpha };
         if (render.billboard_shader) |alpha_cutout_shader| {
             model.drawTintedAlphaCutoutEx(transform, tint, alpha_cutout_shader);
