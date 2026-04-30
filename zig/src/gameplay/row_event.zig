@@ -7,7 +7,7 @@ pub const display_stage_progress_step: f32 = 1.0 / 24.0;
 pub const display_hold_progress_step: f32 = 1.0 / 60.0;
 // PORT(verified): state 6 is the native zero-target delay path inside
 // `update_row_event_display`, not the normal final parcel registration path.
-pub const display_final_delay_progress_step: f32 = 1.0 / 60.0;
+pub const display_final_delay_progress_step: f32 = 1.0 / 120.0;
 
 pub const widget_local_x: f32 = 7.30000019;
 pub const widget_local_y: f32 = 2.0;
@@ -157,4 +157,8 @@ test "row event delivered count text mirrors native widget bytes" {
     try std.testing.expectEqualStrings(" 9", formatDeliveredCount(&buffer, 9));
     try std.testing.expectEqualStrings("10", formatDeliveredCount(&buffer, 10));
     try std.testing.expectEqualStrings("12", formatDeliveredCount(&buffer, 12));
+}
+
+test "row event zero-target delay uses native progress step" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0083333338), display_final_delay_progress_step, 0.000001);
 }
