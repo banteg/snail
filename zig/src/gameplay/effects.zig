@@ -11,11 +11,27 @@ const default_archive_path = app.default_archive_path;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 
-pub const max_active = 64;
+pub const max_active = 128;
 pub const jet_particle_trail_count = 15;
 pub const jet_particle_side_count = 2;
 pub const jet_particle_count = jet_particle_trail_count * jet_particle_side_count;
 pub const nuke_particle_count = gameplay.native_nuke_sprite_count;
+const slug_goo_particle_count: usize = 70;
+const slug_goo_width_scale: f32 = 0.30000001;
+const slug_goo_height_scale: f32 = 1.2;
+const slug_goo_gravity_scale: f32 = -0.0099999998 * 2.2;
+const slug_goo_lifetime_base: f32 = 0.60000002;
+const slug_goo_lifetime_random_scale: f32 = 0.000015258789;
+const slug_goo_spread_base: f32 = 0.2;
+const slug_goo_spread_random_scale: f32 = 0.0000061035157;
+const slug_goo_size_base: f32 = 0.25;
+const slug_goo_size_random_scale: f32 = 0.000030517578 * 0.75;
+const slug_goo_vertical_random_base: f32 = 0.30000001;
+const slug_goo_signed_velocity_scale: f32 = 0.000061035156;
+const slug_goo_positive_velocity_scale: f32 = 0.000030517578;
+const slug_goo_spawn_velocity_offset_scale: f32 = 0.00030517578;
+const slug_goo_tint_base: f32 = 0.69999999;
+const slug_goo_tint_random_scale: f32 = 0.0000091552738;
 const jet_particle_trail_step: f32 = 0.071428575;
 const jet_particle_width_random_base: f32 = 0.12;
 const jet_particle_back_random_base: f32 = 0.40000001;
@@ -265,15 +281,7 @@ pub const Controller = struct {
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
             for (previous.defeated_slug_cell_count..current.defeated_slug_cell_count) |index| {
                 const defeated = current.defeated_slug_cells[index];
-                const position = laneWorldPosition(preview, defeated.row, defeated.lane, 0.38);
-                self.spawn(
-                    .slug_goo,
-                    position,
-                    0.82,
-                    0.82,
-                    24,
-                    .white,
-                );
+                self.spawnSlugGooBurst(current, preview, defeated);
             }
         }
     }
@@ -343,6 +351,52 @@ pub const Controller = struct {
         }
     }
 
+    // PORT(verified): native `explode_slug_hazard` allocates 70 SLUGGOO
+    // sprites from the live slug center, randomizes each size/color/velocity,
+    // and applies a shared downward acceleration of `run_rate^2 * -0.022`.
+    pub fn spawnSlugGooBurst(
+        self: *Controller,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+        defeated: gameplay.RowTarget,
+    ) void {
+        const origin = laneWorldPosition(preview, defeated.row, defeated.lane, 1.7);
+        const run_rate = @max(current.track_center_x, 0.001);
+        for (0..slug_goo_particle_count) |_| {
+            const spread = self.nextNativeVisualRandomFloatScaled(slug_goo_spread_random_scale) + slug_goo_spread_base;
+            const size_seed = self.nextNativeVisualRandomFloatScaled(slug_goo_size_random_scale) + slug_goo_size_base;
+            const lifetime_factor = self.nextNativeVisualRandomFloatScaled(slug_goo_lifetime_random_scale) + slug_goo_lifetime_base;
+            const tint_factor = self.nextNativeVisualRandomFloatScaled(slug_goo_tint_random_scale) + slug_goo_tint_base;
+            const velocity = rl.Vector3{
+                .x = self.nextNativeVisualRandomSignedFloatScaled(spread * slug_goo_signed_velocity_scale) * run_rate,
+                .y = self.nextNativeVisualRandomFloatScaled((spread + slug_goo_vertical_random_base) * slug_goo_positive_velocity_scale) * run_rate,
+                .z = self.nextNativeVisualRandomFloatScaled(spread * slug_goo_positive_velocity_scale) * run_rate,
+            };
+            const spawn_fraction = self.nextNativeVisualRandomFloatScaled(slug_goo_spawn_velocity_offset_scale);
+            const position = rl.Vector3{
+                .x = origin.x + (velocity.x * spawn_fraction),
+                .y = origin.y + (velocity.y * spawn_fraction),
+                .z = origin.z + (velocity.z * spawn_fraction),
+            };
+            const lifetime_ticks: u16 = @intFromFloat(@max(1.0, @ceil((lifetime_factor * 60.0) / run_rate)));
+            const tint_channel: u8 = @intFromFloat(@min(255.0, @max(0.0, tint_factor * 255.0)));
+            self.spawnWithPhysics(
+                .slug_goo,
+                position,
+                velocity,
+                .{
+                    .x = 0.0,
+                    .y = (run_rate * run_rate) * slug_goo_gravity_scale,
+                    .z = 0.0,
+                },
+                size_seed * slug_goo_width_scale,
+                size_seed * slug_goo_height_scale,
+                lifetime_ticks,
+                .{ .r = tint_channel, .g = tint_channel, .b = tint_channel, .a = 255 },
+            );
+        }
+    }
+
     // PORT(partial): native `update_jet_particles` drives a 15x2 persistent
     // SMOKE.TGA sprite bank from the two jet nozzles, then occasionally
     // allocates one detached smoke sprite from the trail tip. The native sprite
@@ -406,6 +460,19 @@ pub const Controller = struct {
         self.visual_random_state = self.visual_random_state *% 1103515245 +% 12345;
         const raw: u32 = (self.visual_random_state >> 16) & 0x7FFF;
         return @as(f32, @floatFromInt(raw)) * jet_particle_detached_random_scale;
+    }
+
+    fn nextNativeVisualRandomInt15(self: *Controller) u32 {
+        self.visual_random_state = (self.visual_random_state *% 0x343fd) +% 0x269ec3;
+        return (self.visual_random_state >> 16) & 0x7fff;
+    }
+
+    fn nextNativeVisualRandomFloatScaled(self: *Controller, scale: f32) f32 {
+        return @as(f32, @floatFromInt(self.nextNativeVisualRandomInt15())) * scale;
+    }
+
+    fn nextNativeVisualRandomSignedFloatScaled(self: *Controller, scale: f32) f32 {
+        return (@as(f32, @floatFromInt(self.nextNativeVisualRandomInt15())) - 16384.0) * scale;
     }
 
     fn spawnJetParticleDetachedPuff(self: *Controller, position: rl.Vector3, current: gameplay.Runner) void {
@@ -597,6 +664,46 @@ test "rocket smoke uses recovered golb smoke packet" {
         try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.z, effect.velocity.z, 0.0001);
         try std.testing.expectEqual(rocket_smoke_ticks, effect.ticks_remaining);
     }
+}
+
+test "slug death spawns the native goo burst instead of one static sprite" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var controller = Controller{};
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.track_center_x = 1.0;
+    controller.spawnSlugGooBurst(runner, &loaded_track_preview, .{ .row = 12, .lane = 1 });
+
+    try std.testing.expectEqual(slug_goo_particle_count, controller.count);
+
+    const origin = laneWorldPosition(&loaded_track_preview, 12, 1, 1.7);
+    const first = controller.items[0];
+    try std.testing.expectEqual(Kind.slug_goo, first.kind);
+    try std.testing.expect(first.position.y >= origin.y);
+    try std.testing.expect(first.width >= slug_goo_size_base * slug_goo_width_scale);
+    try std.testing.expect(first.width <= (slug_goo_size_base + 0.75) * slug_goo_width_scale);
+    try std.testing.expect(first.height >= slug_goo_size_base * slug_goo_height_scale);
+    try std.testing.expect(first.height <= (slug_goo_size_base + 0.75) * slug_goo_height_scale);
+    try std.testing.expectApproxEqAbs(slug_goo_gravity_scale, first.acceleration.y, 0.0001);
+    try std.testing.expect(first.ticks_remaining >= 36);
+    try std.testing.expect(first.ticks_remaining <= 66);
+    try std.testing.expect(first.tint.r >= 178);
+    try std.testing.expectEqual(first.tint.r, first.tint.g);
+    try std.testing.expectEqual(first.tint.r, first.tint.b);
+    try std.testing.expectEqual(@as(u8, 255), first.tint.a);
 }
 
 test "jetpack particles use recovered persistent nozzle bank" {
