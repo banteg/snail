@@ -93,6 +93,9 @@ Current Zig port status for this slice:
 - the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
 - the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
 - the warning-footprint lane now also feeds one recovered gameplay consumer: it suppresses generic ambient garbage/salt fallback spawns on `0x01/0x15/0x0f` cells, matching the native `update_subgame` gate
+- `mark_track_warning_zones` operates on the native 8 playable lanes. In Zig's
+  retained 10-column parser grid, the first and last `@` guard columns are not
+  eligible warning seed or footprint lanes.
 - the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants` and `harmonize_center_lane_floor_slide_variants`, the final render/cache consumer for `mark_track_warning_zones` beyond that fallback-hazard suppressor, directional fringe objects, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
 
 Related shared color helper:

@@ -159,6 +159,7 @@ pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
 pub const tutorialSetSubgameRuntimeBuildFlags: u32 = 0x00e4cfff;
 pub const tutorialRuntimeBuildFlags: u32 = tutorialSetSubgameRuntimeBuildFlags & ~@as(u32, 0x2);
 pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
+const native_playable_lane_count: usize = 8;
 pub const runtime_row_flag_no_fall: u32 = 0x0000_0100;
 pub const runtime_row_flag_ring_none: u32 = 0x0000_0200;
 pub const runtime_row_flag_ring_normal: u32 = 0x0000_0400;
@@ -2332,15 +2333,18 @@ fn buildRuntimeWarningZoneGrid(
 
     // PORT(verified): `mark_track_warning_zones` marks a 6-row by 2-lane footprint
     // behind each recovered warning seed tile. The footprint includes the seed lane and
-    // its left neighbor, and it never writes into the terminal runtime row.
+    // its left playable neighbor, and it never writes into parser guard lanes or the
+    // terminal runtime row.
+    const playable_lane_start = runtimePlayableLaneStart(max_width);
+    const playable_lane_end = runtimePlayableLaneEnd(max_width);
     for (0..total_rows - 1) |global_row| {
-        for (0..max_width) |lane_index| {
+        for (playable_lane_start..playable_lane_end) |lane_index| {
             const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
             if (!seedsRuntimeWarningZone(tile_type)) continue;
 
             const min_row = global_row + 1 -| 6;
             for (min_row..global_row + 1) |marked_row| {
-                if (lane_index > 0) {
+                if (lane_index > playable_lane_start) {
                     flag_grid[runtimeTileIndex(max_width, marked_row, lane_index - 1)] = true;
                 }
                 flag_grid[runtimeTileIndex(max_width, marked_row, lane_index)] = true;
@@ -2530,6 +2534,18 @@ fn buildRuntimeSpawnHintGrid(
 
 fn runtimeTileIndex(max_width: usize, global_row: usize, lane_index: usize) usize {
     return (global_row * max_width) + lane_index;
+}
+
+fn runtimePlayableLaneStart(max_width: usize) usize {
+    return if (max_width > native_playable_lane_count) 1 else 0;
+}
+
+fn runtimePlayableLaneEnd(max_width: usize) usize {
+    if (max_width == 0) return 0;
+    return if (max_width > native_playable_lane_count)
+        @min(max_width - 1, runtimePlayableLaneStart(max_width) + native_playable_lane_count)
+    else
+        max_width;
 }
 
 fn runtimeOpenEdgeMask(
@@ -3295,6 +3311,22 @@ test "runtime warning zone grid clamps the left edge and terminal row" {
     try std.testing.expect(flags[runtimeTileIndex(4, 1, 0)]);
     try std.testing.expect(!flags[runtimeTileIndex(4, 0, 1)]);
     try std.testing.expect(!flags[runtimeTileIndex(4, 2, 0)]);
+}
+
+test "runtime warning zone grid ignores parser guard columns" {
+    const runtime_tiles = [_]u8{
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
+    const flags = try buildRuntimeWarningZoneGrid(std.testing.allocator, &runtime_tiles, 3, 10);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(!flags[runtimeTileIndex(10, 0, 0)]);
+    try std.testing.expect(flags[runtimeTileIndex(10, 0, 1)]);
+    try std.testing.expect(flags[runtimeTileIndex(10, 0, 7)]);
+    try std.testing.expect(flags[runtimeTileIndex(10, 0, 8)]);
+    try std.testing.expect(!flags[runtimeTileIndex(10, 0, 9)]);
 }
 
 test "render cache surface swap grid does not guess from center seam tile families" {
