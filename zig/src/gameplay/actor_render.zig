@@ -337,10 +337,11 @@ fn drawGameplayWall2PillarActor(
     global_row: usize,
     lane_index: usize,
 ) void {
-    const model = render.resources.wall2_pillar_model orelse return;
+    const model_info = wall2PillarModelInfo(preview, global_row, lane_index) orelse return;
+    const model = render.resources.wall2_pillar_models[model_info.model_index] orelse return;
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     const position = preview.worldPositionForLane(
-        @as(f32, @floatFromInt(lane_index)) + 0.5,
+        @as(f32, @floatFromInt(lane_index)) + @as(f32, @floatFromInt(model_info.run_length)) * 0.5,
         @as(f32, @floatFromInt(global_row)),
         floor_height,
     );
@@ -350,6 +351,25 @@ fn drawGameplayWall2PillarActor(
         position.z - model.bounds.center.z,
     );
     model.drawEx(transform);
+}
+
+const Wall2PillarModelInfo = struct {
+    model_index: usize,
+    run_length: usize,
+};
+
+fn wall2PillarModelInfo(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) ?Wall2PillarModelInfo {
+    if (!wall2PillarActorVisible(preview, global_row, lane_index)) return null;
+
+    var run_length: usize = 1;
+    while (lane_index + run_length < preview.max_width) : (run_length += 1) {
+        if ((preview.runtimeTileAt(global_row, lane_index + run_length) orelse 0) != 0x0e) break;
+    }
+    run_length = @min(run_length, gameplay_assets.gameplay_wall2_pillar_model_paths.len);
+    return .{
+        .model_index = run_length - 1,
+        .run_length = run_length,
+    };
 }
 
 fn drawGameplayHealthPickupActor(
@@ -821,4 +841,25 @@ test "Wall2 render only draws the native merged object owner" {
     try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 2));
     try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 3));
     try std.testing.expectEqual(@as(?track.GameplayCellKind, null), track.gameplayCellKindForRuntimeTile(0x0e));
+}
+
+test "Wall2 render selects native pillar model by merged strip width" {
+    var runtime_tiles = [_]u8{ 0x0e, 0x0e, 0x0e, 0x23 };
+    var warn_surface = [_]bool{ false, false, false, false };
+    var surface_swap = [_]bool{ false, false, false, false };
+    var flag_b40 = [_]bool{ true, false, false, false };
+    var edge_masks = [_]u8{ 0, 0, 0, 0 };
+    var preview: track.LoadedLevelPreview = undefined;
+    preview.total_rows = 1;
+    preview.max_width = runtime_tiles.len;
+    preview.runtime_tiles = &runtime_tiles;
+    preview.render_cache = .{
+        .warn_surface_grid = &warn_surface,
+        .surface_swap_grid = &surface_swap,
+        .flag_b40_grid = &flag_b40,
+        .edge_masks = &edge_masks,
+    };
+
+    try std.testing.expectEqual(Wall2PillarModelInfo{ .model_index = 2, .run_length = 3 }, wall2PillarModelInfo(&preview, 0, 0).?);
+    try std.testing.expectEqual(@as(?Wall2PillarModelInfo, null), wall2PillarModelInfo(&preview, 0, 1));
 }
