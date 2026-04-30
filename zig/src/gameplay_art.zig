@@ -16,6 +16,7 @@ pub const SpriteArt = struct {
     ring: ?assets.LoadedTexture = null,
     ring_big: ?assets.LoadedTexture = null,
     slow_ring: ?assets.LoadedTexture = null,
+    slow_ring_big: ?assets.LoadedTexture = null,
     powerup: ?assets.LoadedTexture = null,
     progress_bar: ?assets.LoadedTexture = null,
     progress_bar_lit: ?assets.LoadedTexture = null,
@@ -75,6 +76,10 @@ pub const SpriteArt = struct {
         if (self.slow_ring) |*texture| {
             texture.unload();
             self.slow_ring = null;
+        }
+        if (self.slow_ring_big) |*texture| {
+            texture.unload();
+            self.slow_ring_big = null;
         }
         if (self.powerup) |*texture| {
             texture.unload();
@@ -299,6 +304,7 @@ pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     art.ring = try store.texture(gameplay_assets.gameplay_ring_sprite_path);
     art.ring_big = try store.texture(gameplay_assets.gameplay_ring_big_sprite_path);
     art.slow_ring = try store.texture(gameplay_assets.gameplay_slow_ring_sprite_path);
+    art.slow_ring_big = try store.texture(gameplay_assets.gameplay_slow_ring_big_sprite_path);
     art.powerup = try store.texture(gameplay_assets.gameplay_powerup_sprite_path);
     art.progress_bar = try store.texture(gameplay_assets.gameplay_progress_bar_sprite_path);
     art.progress_bar_lit = try store.texture(gameplay_assets.gameplay_progress_bar_lit_sprite_path);

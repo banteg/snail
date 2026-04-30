@@ -414,12 +414,8 @@ fn drawGameplayStaticRingActor(
         .powerup => if (render.resources.sprites.powerup) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64, 0.64, camera, render.billboard_shader, .white);
         },
-        .explode => if (render.resources.sprites.ring_big) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72, 0.72, camera, render.billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
-        },
-        .slow => if (render.resources.sprites.slow_ring) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5, 0.5, camera, render.billboard_shader, .white);
-        },
+        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
+        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
     }
 }
 
@@ -444,12 +440,8 @@ fn drawGameplayRuntimeRingEffectActor(
         .powerup => if (render.resources.sprites.powerup) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, render.billboard_shader, .white);
         },
-        .explode => if (render.resources.sprites.ring_big) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
-        },
-        .slow => if (render.resources.sprites.slow_ring) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, render.billboard_shader, .white);
-        },
+        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
 }
 
@@ -459,7 +451,7 @@ fn drawRuntimeRingParticleHalo(
     effect: gameplay_runtime_entities.RingEffect,
     family: RuntimeRingParticleSpriteFamily,
 ) void {
-    const texture = runtimeRingParticleTexture(render, family) orelse return;
+    const texture = runtimeRingParticleTexture(render, family);
     const sprite_size = native_runtime_ring_particle_size * effect.presentation_scale;
     const radius = native_runtime_ring_particle_radius * effect.presentation_scale;
     for (0..native_runtime_ring_particle_count) |child_index| {
@@ -484,22 +476,11 @@ fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFa
     };
 }
 
-fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) ?rl.Texture2D {
+fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) rl.Texture2D {
     switch (family) {
-        .ring => {
-            if (render.resources.sprites.ring_big) |loaded_texture| return loaded_texture.texture;
-            if (render.resources.sprites.ring) |loaded_texture| return loaded_texture.texture;
-            return null;
-        },
-        .explode => {
-            if (render.resources.sprites.explode_big) |loaded_texture| return loaded_texture.texture;
-            if (render.resources.sprites.explode_small) |loaded_texture| return loaded_texture.texture;
-            return null;
-        },
-        .slow => {
-            if (render.resources.sprites.slow_ring) |loaded_texture| return loaded_texture.texture;
-            return null;
-        },
+        .ring => return render.resources.sprites.ring_big.?.texture,
+        .explode => return render.resources.sprites.explode_big.?.texture,
+        .slow => return render.resources.sprites.slow_ring_big.?.texture,
     }
 }
 
