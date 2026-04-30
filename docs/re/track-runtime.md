@@ -135,7 +135,7 @@ Recovered normalized glyph classes used by the shipped segment corpus:
 - `&` -> class `0x03`
 - `-` -> class `0x07`
 - `.` -> class `0x08`
-- `0..3` -> classes `0x09` and `0x0a`
+- `0..9` -> classes `0x09` and `0x0a` (`0..3` are the only decimal bodies used by the shipped segment corpus)
 - `<` -> class `0x0b`
 - `=` and `|` -> class `0x0c`
 - `>` -> class `0x0d`
@@ -162,7 +162,8 @@ Recovered flat gameplay and hazard anchors:
 - `+` -> runtime tile `0x18`
 - `F` -> runtime tile `0x13`
 - `G` -> runtime tile `0x11`
-- `P` / `p` participate in the attachment-install path, but the exact glyph-to-runtime-tile mapping is still not settled from the current Windows package
+- `P` participates in the attachment-install path as runtime tile `0x1e`
+- `p` participates in the attachment-install path as runtime tile `0x1d`
 - `$` -> runtime tile `0x17`
 - `J` -> runtime tile `0x19`
 - `M` -> runtime tile `0x12`
@@ -171,7 +172,7 @@ Recovered flat gameplay and hazard anchors:
 - explicit `&` rows land on runtime tile `0x22`
 - `#` rows land on runtime tile `0x20`
 - `@` guard rows normalize to runtime tile `0x00`
-- parcel digits `0..3` normalize into the parcel floor tile family rooted at runtime tile `0x0f`
+- parcel digits `0..9` normalize into the parcel floor tile family rooted at runtime tile `0x0f`; the native case table accepts the full decimal range even though the shipped rows only use `0..3`
 
 Recovered special floor-height slot use:
 

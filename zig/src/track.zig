@@ -2685,7 +2685,7 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
         '+' => .{ .current = 0x18 },
         '-' => .{ .current = 0x15 },
         '.' => .{ .current = 0x01 },
-        '0', '1', '2', '3' => .{ .current = 0x0f },
+        '0'...'9' => .{ .current = 0x0f },
         '<' => .{ .current = 0x06 },
         '=' => .{ .current = 0x0e },
         '>' => if (previous_tile == 0x03)
@@ -3042,6 +3042,10 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x16 },
         runtimeTileTransitionForShippedGlyph('(', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x0f },
+        runtimeTileTransitionForNormalizedGlyph('9', null).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x18 },
