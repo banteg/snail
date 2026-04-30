@@ -1915,18 +1915,18 @@ const RuntimeBuildState = struct {
     }
 
     fn applyMirrorDecision(self: *RuntimeBuildState, decision: bool) bool {
-        const previous_state = self.mirror_state;
-        if (decision != previous_state) {
+        if (decision == self.mirror_state) {
             self.mirror_counter += 1;
         } else {
             self.mirror_counter = 0;
         }
-        if (self.mirror_counter < 4) {
-            self.mirror_state = decision;
-            return decision;
+        var resolved = decision;
+        if (self.mirror_counter >= 4) {
+            self.mirror_counter = 0;
+            resolved = !decision;
         }
-        self.mirror_counter = 0;
-        self.mirror_state = !decision;
+
+        self.mirror_state = resolved;
         return self.mirror_state;
     }
 
@@ -3539,9 +3539,10 @@ test "tutorial runtime ring effect grid publishes default ramp families without 
 test "runtime build mirror latch matches recovered threshold logic" {
     var state = RuntimeBuildState.init(defaultRuntimeBuildFlags, 0);
     try std.testing.expect(state.applyMirrorDecision(true));
-    try std.testing.expect(!state.applyMirrorDecision(false));
     try std.testing.expect(state.applyMirrorDecision(true));
-    try std.testing.expect(state.applyMirrorDecision(false));
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(!state.applyMirrorDecision(true));
     try std.testing.expect(!state.applyMirrorDecision(false));
 }
 

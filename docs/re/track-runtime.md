@@ -12,6 +12,9 @@ Verified parser behavior:
 - the Zig text parser currently retains the two guard columns for editor/debug
   visibility, but the runtime builder mirrors native by treating them as parser
   fences: they map to empty cells and do not advance `switch_track_mirror`
+- `switch_track_mirror` increments its latch counter when the random mirror
+  decision repeats the current state; the fourth repeat flips the decision and
+  clears the counter
 - a literal `*` immediately after the row body is stored as a real per-row flag
 - metadata matching is case-insensitive and prefix-friendly rather than exact
 - recognized metadata includes `Path`, `Ring`, `RingSpeed`, `Parcel`, `3DModel`, `Velocity`, `JetPack=Off`, and `NoFall`
