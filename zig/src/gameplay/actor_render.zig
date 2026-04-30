@@ -86,15 +86,16 @@ pub fn drawRuntimeActors(
         if (!gameplay_render_policy.actorRowVisible(runner, global_row)) continue;
         const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
         for (0..row_location.row.cells.len) |lane_index| {
-            const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
-            switch (sample.kind) {
-                .slug => drawGameplaySlugActor(render, loaded_track_preview, runner, camera, global_row, lane_index),
-                .ring => {
-                    if (gameplay_render_policy.staticRingVisible(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
-                        drawGameplayStaticRingActor(render, loaded_track_preview, camera, row_location, lane_index);
-                    }
-                },
-                .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
+            if (loaded_track_preview.gameplayCellSampleAt(global_row, lane_index)) |sample| {
+                switch (sample.kind) {
+                    .slug => drawGameplaySlugActor(render, loaded_track_preview, runner, camera, global_row, lane_index),
+                    .ring => {
+                        if (gameplay_render_policy.staticRingVisible(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
+                            drawGameplayStaticRingActor(render, loaded_track_preview, camera, row_location, lane_index);
+                        }
+                    },
+                    .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
+                }
             }
             if (wall2PillarActorVisible(loaded_track_preview, global_row, lane_index)) {
                 drawGameplayWall2PillarActor(render, loaded_track_preview, global_row, lane_index);
@@ -819,4 +820,5 @@ test "Wall2 render only draws the native merged object owner" {
     try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 1));
     try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 2));
     try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 3));
+    try std.testing.expectEqual(@as(?track.GameplayCellKind, null), track.gameplayCellKindForRuntimeTile(0x0e));
 }
