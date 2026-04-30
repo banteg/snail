@@ -166,7 +166,7 @@ fn wall2PillarActorVisible(preview: *const track.LoadedLevelPreview, global_row:
 
 fn drawTimeTrialGhost(render: Context, runner: gameplay.Runner, camera: rl.Camera3D) void {
     if (!runner.time_trial_ghost_active) return;
-    const loaded_texture = render.resources.sprites.ghost orelse return;
+    const loaded_texture = render.resources.sprites.ghost.?;
     inline for (.{ -4.0, 4.0 }) |world_x| {
         gameplay_billboard.drawTexture(
             loaded_texture.texture,
@@ -236,7 +236,7 @@ fn drawGameplaySlugActor(
     // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`), and
     // `update_slug_hazard_ai` only switches to 119/120 during non-default state-machine branches.
     // So authored live slugs should not free-run a local blink in the port.
-    const loaded_texture = render.resources.sprites.slug_frames[0] orelse return;
+    const loaded_texture = render.resources.sprites.slug_frames[0].?;
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
     gameplay_billboard.drawTextureRect(
         loaded_texture.texture,
@@ -259,7 +259,7 @@ fn drawGameplayGarbageActor(
     _ = preview;
     if (hazard.state == .inactive) return;
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
-    const loaded_texture = render.resources.sprites.garbage_variants[variant_index] orelse return;
+    const loaded_texture = render.resources.sprites.garbage_variants[variant_index].?;
     gameplay_billboard.drawTextureRectRolled(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
@@ -377,7 +377,7 @@ fn drawGameplayHealthPickupActor(
     camera: rl.Camera3D,
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
-    const loaded_texture = render.resources.sprites.health orelse return;
+    const loaded_texture = render.resources.sprites.health.?;
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, render.billboard_shader, .white);
 }
 
@@ -387,7 +387,7 @@ fn drawGameplayJetpackPickupActor(
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(render.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_assets.gameplay_jetpack_sprite_paths.len))));
-    const loaded_texture = render.resources.sprites.jetpack_frames[frame_index] orelse return;
+    const loaded_texture = render.resources.sprites.jetpack_frames[frame_index].?;
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, render.billboard_shader, .white);
 }
 
@@ -490,7 +490,7 @@ fn drawGameplayTrackParcelActor(
     camera: rl.Camera3D,
     parcel: gameplay_runtime_entities.TrackParcel,
 ) void {
-    const loaded_texture = render.resources.sprites.parcel orelse return;
+    const loaded_texture = render.resources.sprites.parcel.?;
     const position = parcel.presentationPosition();
     const scale = parcel.presentationScale();
     gameplay_billboard.drawTexture(
@@ -639,46 +639,43 @@ fn drawGameplaySubLazerSlotActor(render: Context, camera: rl.Camera3D, slot: gam
 }
 
 fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
-    if (render.resources.sprites.smoke) |loaded_texture| {
-        for (render.effects.jet_particles) |particle| {
-            if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
-            gameplay_billboard.drawTexture(
-                loaded_texture.texture,
-                particle.position,
-                particle.width,
-                particle.height,
-                camera,
-                render.billboard_shader,
-                particle.tint,
-            );
-        }
+    const smoke_texture = render.resources.sprites.smoke.?;
+    for (render.effects.jet_particles) |particle| {
+        if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
+        gameplay_billboard.drawTexture(
+            smoke_texture.texture,
+            particle.position,
+            particle.width,
+            particle.height,
+            camera,
+            render.billboard_shader,
+            particle.tint,
+        );
     }
 
-    const nuke_texture = render.resources.sprites.explode_big orelse render.resources.sprites.explode_small;
-    if (nuke_texture) |loaded_texture| {
-        for (render.effects.nuke_particles) |particle| {
-            if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
-            gameplay_billboard.drawTexture(
-                loaded_texture.texture,
-                particle.position,
-                particle.width,
-                particle.height,
-                camera,
-                render.billboard_shader,
-                particle.tint,
-            );
-        }
+    const nuke_texture = render.resources.sprites.explode_big.?;
+    for (render.effects.nuke_particles) |particle| {
+        if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
+        gameplay_billboard.drawTexture(
+            nuke_texture.texture,
+            particle.position,
+            particle.width,
+            particle.height,
+            camera,
+            render.billboard_shader,
+            particle.tint,
+        );
     }
 
     for (0..render.effects.count) |index| {
         const effect = render.effects.items[index];
         if (!effect.active or effect.ticks_remaining == 0) continue;
         const loaded_texture = switch (effect.kind) {
-            .explode_big => render.resources.sprites.explode_big,
-            .explode_small => render.resources.sprites.explode_small,
-            .slug_goo => render.resources.sprites.slug_goo,
-            .smoke => render.resources.sprites.smoke,
-        } orelse continue;
+            .explode_big => render.resources.sprites.explode_big.?,
+            .explode_small => render.resources.sprites.explode_small.?,
+            .slug_goo => render.resources.sprites.slug_goo.?,
+            .smoke => render.resources.sprites.smoke.?,
+        };
         gameplay_billboard.drawTexture(
             loaded_texture.texture,
             effect.position,

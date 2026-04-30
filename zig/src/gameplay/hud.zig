@@ -128,43 +128,39 @@ pub fn drawProgressBar(context: Context, layout: VirtualLayout, runner: gameplay
         preview.runtime_active_row_start,
         preview.runtime_active_row_end,
     );
-    if (context.sprites.progress_bar) |loaded_texture| {
-        drawTextureLocalRectSource(
-            layout,
-            loaded_texture,
-            .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = @floatFromInt(loaded_texture.texture.width),
-                .height = remaining_height,
-            },
-            13.0,
-            150.0,
-            64.0,
-            remaining_height,
-            .white,
-        );
-    }
-    if (context.sprites.progress_bar_lit) |loaded_texture| {
-        drawTextureLocalRectSource(
-            layout,
-            loaded_texture,
-            .{
-                .x = 0.0,
-                .y = remaining_height,
-                .width = @floatFromInt(loaded_texture.texture.width),
-                .height = 256.0 - remaining_height,
-            },
-            13.0,
-            150.0 + remaining_height,
-            64.0,
-            256.0 - remaining_height,
-            .white,
-        );
-    }
-    if (context.sprites.progress_cursor) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, 12.0, remaining_height + 111.0, 64.0, 64.0, .white);
-    }
+    const progress_bar_texture = context.sprites.progress_bar.?;
+    drawTextureLocalRectSource(
+        layout,
+        progress_bar_texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @floatFromInt(progress_bar_texture.texture.width),
+            .height = remaining_height,
+        },
+        13.0,
+        150.0,
+        64.0,
+        remaining_height,
+        .white,
+    );
+    const progress_bar_lit_texture = context.sprites.progress_bar_lit.?;
+    drawTextureLocalRectSource(
+        layout,
+        progress_bar_lit_texture,
+        .{
+            .x = 0.0,
+            .y = remaining_height,
+            .width = @floatFromInt(progress_bar_lit_texture.texture.width),
+            .height = 256.0 - remaining_height,
+        },
+        13.0,
+        150.0 + remaining_height,
+        64.0,
+        256.0 - remaining_height,
+        .white,
+    );
+    drawTextureLocalRect(layout, context.sprites.progress_cursor.?, 12.0, remaining_height + 111.0, 64.0, 64.0, .white);
 }
 
 fn progressBarProgress(row_position: f32, active_row_start: usize, active_row_end: usize) f32 {
@@ -192,7 +188,7 @@ pub fn drawLifeSlots(context: Context, layout: VirtualLayout, visible_life_stock
     // hidden bit on the first `visible_life_stock` slots. The allocation and
     // update gate are Postal-only. See docs/re/hud-pipeline.md.
     const count = @min(visible_life_stock, 9);
-    const loaded_texture = context.sprites.life orelse return;
+    const loaded_texture = context.sprites.life.?;
     for (0..count) |slot_index| {
         drawTextureLocalRect(
             layout,
@@ -285,9 +281,9 @@ const damage_gauge_empty_floor_threshold: f32 = 0.0099999998;
 const damage_gauge_full_threshold: f32 = 0.99900001;
 
 pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay.Runner) void {
-    const empty_texture = context.sprites.damage_gauge orelse return;
-    const full_texture = context.sprites.damage_gauge_full orelse return;
-    const bright_texture = context.sprites.damage_gauge_bright orelse return;
+    const empty_texture = context.sprites.damage_gauge.?;
+    const full_texture = context.sprites.damage_gauge_full.?;
+    const bright_texture = context.sprites.damage_gauge_bright.?;
     const fill_ratio = runner.damageGaugeDisplayFill();
     const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
     const warning_actor_alpha = runner.damageWarningActorAlpha();
@@ -356,9 +352,7 @@ pub fn drawDamageGauge(context: Context, layout: VirtualLayout, runner: gameplay
     // `Sprites/Warning.tga` at authored (288, 64, 64, 64); `update_warning`
     // (0x446f80) modulates alpha.
     if (warning_alpha > 0) {
-        if (context.sprites.warning) |loaded_texture| {
-            drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
-        }
+        drawTextureLocalRect(layout, context.sprites.warning.?, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
     }
 }
 
