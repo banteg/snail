@@ -57,6 +57,10 @@ pub const card_body_scale: f32 = 0.7;
 // left/right and bottom edges only. The top edge stays anchored to the title widget.
 pub const card_horizontal_padding: f32 = 8.0;
 pub const card_bottom_padding: f32 = 8.0;
+// PORT(verified): `open_galaxy_route` stores text-derived bounds on the card widget; the
+// native sprite-frame renderer then draws the shell around those bounds instead of eating
+// into the first text row. Keep layout math native and expand only the rendered frame.
+pub const card_frame_outset: f32 = 8.0;
 pub const card_horizontal_pointer_gap: f32 = 6.0;
 pub const card_star_gap: f32 = 16.0;
 pub const card_right_limit: f32 = 631.0;
@@ -269,7 +273,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
         .border = state.frontend_widget_art.border.?.texture,
     };
     drawStars(state, layout, mode);
-    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, .ray_white);
+    drawUiFontTextWithButtonColors(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, .{}, false);
     drawLogo(state, layout);
     if (state.currentRouteMapOpenIndex()) |route_index| {
         const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontend.frontendRouteModeLabel(mode);
@@ -338,6 +342,24 @@ fn drawUiFontTextAbsolute(
 ) void {
     const point = layout.mapPoint(left, top);
     state.ui_font.drawText(text, point.x, point.y, layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale)), color);
+}
+
+fn drawUiFontTextWithButtonColors(
+    state: anytype,
+    layout: VirtualLayout,
+    text: []const u8,
+    left: f32,
+    top: f32,
+    text_scale: f32,
+    button_state: frontend_widget.TextButtonState,
+    disabled: bool,
+) void {
+    const colors = frontend_widget.colorsForState(button_state, disabled);
+    const scaled_font_size = layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale));
+    const shadow_point = layout.mapPoint(left + 2.0, top + 2.0);
+    const text_point = layout.mapPoint(left, top);
+    state.ui_font.drawText(text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
+    state.ui_font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }
 
 fn drawUiFontTextRect(
@@ -553,10 +575,16 @@ fn drawCard(
     replay_action: ?[]const u8,
 ) void {
     if (state.route_map_art.border) |loaded_texture| {
+        const frame_rect = frontend_widget.Rect{
+            .left = layout_state.card_rect.left - card_frame_outset,
+            .top = layout_state.card_rect.top - card_frame_outset,
+            .width = layout_state.card_rect.width + card_frame_outset * 2.0,
+            .height = layout_state.card_rect.height + card_frame_outset * 2.0,
+        };
         frontend_widget.drawNineSliceFrame(
             layout,
             loaded_texture.texture,
-            layout_state.card_rect,
+            frame_rect,
             card_frame_edge,
             card_frame_edge / 128.0,
             .white,
