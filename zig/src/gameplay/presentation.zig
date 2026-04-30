@@ -7,7 +7,6 @@ pub fn nativeJetpackVisualPresentationActive(thrust_visual_active: bool) bool {
     return thrust_visual_active;
 }
 
-pub const max_weapon_level: u8 = 2;
 pub const native_barrier_hold_step: f32 = 1.0 / 60.0;
 pub const native_startup_voice_step: f32 = 0.055555552;
 
@@ -34,6 +33,10 @@ pub fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
         6, 7 => 0.13333334,
         else => 0.0666666701,
     };
+}
+
+pub fn movementFlagsInvincible(movement_flags: u32) bool {
+    return (movement_flags & 0x80) != 0;
 }
 
 // PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
@@ -115,7 +118,6 @@ pub const WeaponChannelStates = struct {
 };
 
 pub const State = struct {
-    weapon_level: u8 = 0,
     movement_flag_selector: u8 = 0,
     movement_flags: u32 = 1,
     barrier_hold_progress: f32 = 0.0,
@@ -123,7 +125,6 @@ pub const State = struct {
     startup_voice_timer: f32 = native_startup_voice_step,
     startup_voice_step: f32 = native_startup_voice_step,
     slow_ticks: u16 = 0,
-    invincible_ticks: u16 = 0,
     slow_commentary_timer: f32 = 0.0,
     slow_commentary_step: f32 = gameplay_assets.native_gameplay_slow_voice_timer_step,
     slow_commentary_voice_token: u32 = 0,

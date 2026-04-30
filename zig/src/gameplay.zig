@@ -299,8 +299,6 @@ pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
 pub const native_nuke_phase_step: f32 = 0.10471976;
 const turbo_projectile_spread_lateral: f32 = 0.1;
-const invincible_duration_ticks: u16 = 480;
-const max_weapon_level = presentation_module.max_weapon_level;
 const slug_projectile_kill_score: u32 = score_module.nativeEventPoints(.slug, 0);
 const parcel_delivery_register_score: u32 = score_module.nativeEventPoints(.parcel_deliver, 0);
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
@@ -332,6 +330,7 @@ pub const WeaponChannelStates = presentation_module.WeaponChannelStates;
 pub const nativeWeaponChannelStates = presentation_module.nativeWeaponChannelStates;
 const movementFlagsForSelector = presentation_module.movementFlagsForSelector;
 const movementFireCooldownStepForSelector = presentation_module.movementFireCooldownStepForSelector;
+pub const movementFlagsInvincible = presentation_module.movementFlagsInvincible;
 
 const MovementFireInputState = enum {
     none,
@@ -1857,7 +1856,7 @@ pub const Runner = struct {
             .salt => {},
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
-                if (self.presentation.invincible_ticks > 0) {
+                if (self.isMovementFlagInvincible()) {
                     // PORT(verified): the invincible contact branch in
                     // `handle_subgoldy_collisions` calls `kill_slug_hazard`; that helper
                     // owns both the death voice and the normal slug score award.
@@ -2280,7 +2279,7 @@ pub const Runner = struct {
         const delta_z_normalized = delta_z / distance;
         const velocity_z_per_tick = self.effectiveVelocityZPerTick();
 
-        if (self.presentation.invincible_ticks > 0) return;
+        if (self.isMovementFlagInvincible()) return;
 
         const next_velocity_z = velocity_z_per_tick - (delta_z_normalized * velocity_z_per_tick * 0.10);
 
@@ -2607,16 +2606,13 @@ pub const Runner = struct {
 
     fn stepTemporaryStates(self: *Runner) void {
         if (self.presentation.slow_ticks > 0) self.presentation.slow_ticks -= 1;
-        if (self.presentation.invincible_ticks > 0) {
-            self.presentation.invincible_ticks -= 1;
-            // PORT(verified): native `update_invincible_shell` @ 0x444b70 re-selects
-            // `change_snail_skin(..+0x434038, 2, 0f)` every active tick (instant swap to
-            // the invincible material slot). The transition snaps to slot 0 on the
-            // frame the shell expires.
+        if (self.isMovementFlagInvincible()) {
+            // PORT(verified): native `update_invincible_shell` watches the
+            // high bit of `movement_flags` and re-selects
+            // `change_snail_skin(..+0x434038, 2, 0f)` while that bit is set.
             self.presentation.snail_skin.change(.invincible, 0.0);
-            if (self.presentation.invincible_ticks == 0) {
-                self.presentation.snail_skin.change(.default, 0.0);
-            }
+        } else if (self.presentation.snail_skin.selected_slot == .invincible) {
+            self.presentation.snail_skin.change(.default, 0.0);
         }
         if (self.presentation.shot_cooldown_ticks > 0) self.presentation.shot_cooldown_ticks -= 1;
         if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
@@ -2656,11 +2652,10 @@ pub const Runner = struct {
 
     fn recordPowerupRing(self: *Runner) void {
         self.advanceMovementFlagSelector();
-        if (self.presentation.weapon_level < max_weapon_level) {
-            self.presentation.weapon_level += 1;
-            return;
-        }
-        self.presentation.invincible_ticks = invincible_duration_ticks;
+    }
+
+    fn isMovementFlagInvincible(self: *const Runner) bool {
+        return movementFlagsInvincible(self.presentation.movement_flags);
     }
 
     fn advanceMovementFlagSelector(self: *Runner) void {
@@ -2908,7 +2903,7 @@ pub const Runner = struct {
 
         if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| switch (kind) {
             .slug => {
-                if (!self.isSlugDefeated(global_row, lane_index) and self.presentation.weapon_level > 0) {
+                if (!self.isSlugDefeated(global_row, lane_index)) {
                     self.defeatSlug(global_row, lane_index);
                     return true;
                 }
@@ -6554,7 +6549,8 @@ test "invincible garbage collisions skip native motion writes but still resolve 
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.8;
     runner.runtime_track_index = garbage.row - 1;
     runner.track_row_progress = 0.6;
-    runner.presentation.invincible_ticks = 30;
+    runner.presentation.movement_flag_selector = 7;
+    runner.presentation.movement_flags = movementFlagsForSelector(runner.presentation.movement_flag_selector);
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
@@ -6758,29 +6754,26 @@ test "repeat slug hit applies the native velocity.z knockback and damage delta" 
     );
 }
 
-test "powerup rings upgrade weapon level then grant invincible state" {
+test "powerup rings advance the native movement-flag weapon ladder" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner{};
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 1), runner.presentation.weapon_level);
     try std.testing.expectEqual(@as(u8, 1), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 2), runner.presentation.movement_flags);
-    try std.testing.expectEqual(@as(u16, 0), runner.presentation.invincible_ticks);
+    try std.testing.expect(!runner.isMovementFlagInvincible());
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 2), runner.presentation.weapon_level);
     try std.testing.expectEqual(@as(u8, 2), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 4), runner.presentation.movement_flags);
-    try std.testing.expectEqual(@as(u16, 0), runner.presentation.invincible_ticks);
+    try std.testing.expect(!runner.isMovementFlagInvincible());
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 2), runner.presentation.weapon_level);
     try std.testing.expectEqual(@as(u8, 3), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 8), runner.presentation.movement_flags);
-    try std.testing.expectEqual(invincible_duration_ticks, runner.presentation.invincible_ticks);
+    try std.testing.expect(!runner.isMovementFlagInvincible());
 }
 
 test "powerup ladder bounces between native top selector states" {
@@ -6793,10 +6786,12 @@ test "powerup ladder bounces between native top selector states" {
     }
     try std.testing.expectEqual(@as(u8, 8), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 144), runner.presentation.movement_flags);
+    try std.testing.expect(runner.isMovementFlagInvincible());
 
     runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 7), runner.presentation.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 192), runner.presentation.movement_flags);
+    try std.testing.expect(runner.isMovementFlagInvincible());
 }
 
 test "slow rings reduce effective speed while active" {
@@ -7404,7 +7399,6 @@ test "projectile fire defeats slug after powerup" {
     var runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
-    runner.presentation.weapon_level = 1;
     const lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
     var projectile: Projectile = .{
         .active = true,
@@ -8078,7 +8072,8 @@ test "invincible slug contact defeats slug through native kill helper" {
     var runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
-    runner.presentation.invincible_ticks = 30;
+    runner.presentation.movement_flag_selector = 7;
+    runner.presentation.movement_flags = movementFlagsForSelector(runner.presentation.movement_flag_selector);
 
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));

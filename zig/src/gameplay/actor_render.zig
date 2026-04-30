@@ -783,7 +783,7 @@ fn drawGameplayTurboAttachments(
         }
     }
 
-    if (runner.presentation.invincible_ticks > 0) {
+    if (gameplay.movementFlagsInvincible(runner.presentation.movement_flags)) {
         if (render.resources.invincible_models.currentModel(render.render_time_seconds)) |model| {
             gameplay_model_render.drawUploadedModel(
                 model.*,

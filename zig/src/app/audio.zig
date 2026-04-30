@@ -184,7 +184,9 @@ pub fn playGameplayRunnerAudio(
     if (current.counters.health_pickups > previous.counters.health_pickups) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.heart);
     }
-    if (current.presentation.invincible_ticks > previous.presentation.invincible_ticks) {
+    if (!gameplay.movementFlagsInvincible(previous.presentation.movement_flags) and
+        gameplay.movementFlagsInvincible(current.presentation.movement_flags))
+    {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.invincible);
     }
     if (gameplay_audio_cues.nativeSlowRingSoundTriggered(previous, current)) {

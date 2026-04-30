@@ -185,7 +185,7 @@ fn nativeGameplayWeaponUpgradeVoiceCue(
             (runtime_build_flags & 0x10) != 0 and
             current.session_mode != .time_trial;
     }
-    return current.presentation.weapon_level > previous.presentation.weapon_level;
+    return current.presentation.movement_flag_selector > previous.presentation.movement_flag_selector;
 }
 
 pub fn nativeGameplayVoiceCues(
@@ -476,7 +476,6 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expect(!nativeWeaponPresentationChanged(previous, current));
     try std.testing.expectEqual(NativeMovementStateSoundFamily.turbo, nativeMovementStateSoundFamily(current));
 
-    current.presentation.weapon_level = 2;
     current.presentation.movement_flags = 144;
     try std.testing.expectEqual(NativeMovementStateSoundFamily.laser, nativeMovementStateSoundFamily(current));
 
