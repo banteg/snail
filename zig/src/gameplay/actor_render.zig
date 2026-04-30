@@ -408,12 +408,8 @@ fn drawGameplayStaticRingActor(
     const position = gameplayLaneWorldPosition(preview, row_location.global_row, lane_index, 0.72);
     switch (ring_kind) {
         .none => {},
-        .normal => if (render.resources.sprites.ring) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46, 0.46, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
-        },
-        .powerup => if (render.resources.sprites.powerup) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64, 0.64, camera, render.billboard_shader, .white);
-        },
+        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46, 0.46, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.powerup.?.texture, position, 0.64, 0.64, camera, render.billboard_shader, .white),
         .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
         .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
     }
@@ -434,12 +430,8 @@ fn drawGameplayRuntimeRingEffectActor(
     const scale = effect.presentation_scale;
     switch (ring_kind) {
         .none => {},
-        .normal => if (render.resources.sprites.ring) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
-        },
-        .powerup => if (render.resources.sprites.powerup) |loaded_texture| {
-            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, render.billboard_shader, .white);
-        },
+        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.powerup.?.texture, position, 0.64 * scale, 0.64 * scale, camera, render.billboard_shader, .white),
         .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
         .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
