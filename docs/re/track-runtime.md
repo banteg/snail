@@ -244,6 +244,7 @@ Wall2 / runtime tile `0x0e` render ownership:
 - `merge_track_tile_runs` condenses horizontal `0x0e` runs into a single BOD owner on the first cell
 - the merged run width is stored in that owner cell as `TrackRowCell.render_flags >> 8`
 - follower cells have their object-owner bits cleared and should not independently draw `PILLAR1.X2`
+- `update_golb_ai` only uses runtime tile `0x0e` for the fallback track-grid projectile stop after live-object collision checks; authored floor and parcel digit cells are not projectile blockers
 
 ## Runtime Flags
 

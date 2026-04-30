@@ -2893,10 +2893,6 @@ pub const Runner = struct {
         const lane_index = preview.laneIndexAtWorldX(projectile.world_x);
         if (global_row >= preview.total_rows or lane_index >= preview.max_width) return false;
 
-        const row_location = preview.locateRow(global_row) orelse return false;
-        const cell = if (lane_index < row_location.row.cells.len) row_location.row.cells[lane_index] else ' ';
-        if (isProjectileBlockingCell(cell)) return true;
-
         // PORT(verified): native `cRSalt` slots block projectiles without
         // being consumed — the port now resolves that against the dedicated
         // `SaltHazardPool` instead of the shared hazard pool.
@@ -2918,6 +2914,14 @@ pub const Runner = struct {
             },
             else => {},
         };
+
+        // PORT(verified): `update_golb_ai` only falls back to a track-grid
+        // projectile stop on runtime tile `0x0e` (Wall2) after live object
+        // collision checks. Authored floor/parcel digits are not blockers.
+        if ((preview.runtimeTileAt(global_row, lane_index) orelse 0) == native_wall2_tile_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -5441,13 +5445,6 @@ fn generatedGarbageModeGate(self: *Runner) bool {
     return threshold >= self.nextMathRandomFloatBelow(1.0);
 }
 
-fn isProjectileBlockingCell(cell: u8) bool {
-    return switch (cell) {
-        '@', '0', '1', '2', '=' => true,
-        else => false,
-    };
-}
-
 const TestFixture = struct {
     catalog: assets.Catalog,
     level_definition: ?level.Definition,
@@ -7426,6 +7423,57 @@ test "projectile fire defeats slug after powerup" {
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
+}
+
+test "projectiles pass over parcel digit floor cells" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const digit_floor = findFirstRawCell(&fixture.preview, '0').?;
+    const lane_center = @as(f32, @floatFromInt(digit_floor.lane)) + 0.5;
+    var projectile: Projectile = .{
+        .active = true,
+        .world_x = fixture.preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(digit_floor.row)),
+            0.0,
+        ).x,
+        .world_y = 0.5,
+        .world_z = @as(f32, @floatFromInt(digit_floor.row)) + 0.25,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expectEqual(@as(u8, 0x0f), fixture.preview.runtimeTileAt(digit_floor.row, digit_floor.lane).?);
+    try std.testing.expect(!runner.resolveProjectileHit(&fixture.preview, &projectile));
+}
+
+test "projectiles stop on native Wall2 runtime tiles" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const wall2 = findFirstRuntimeTile(&fixture.preview, native_wall2_tile_id).?;
+    const lane_center = @as(f32, @floatFromInt(wall2.lane)) + 0.5;
+    var projectile: Projectile = .{
+        .active = true,
+        .world_x = fixture.preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(wall2.row)),
+            0.0,
+        ).x,
+        .world_y = 0.5,
+        .world_z = @as(f32, @floatFromInt(wall2.row)) + 0.25,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
 }
 
 test "movement flags spawn the recovered projectile channel layouts" {
