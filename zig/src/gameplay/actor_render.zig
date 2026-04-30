@@ -1,8 +1,10 @@
 const std = @import("std");
 const rl = @import("raylib");
 
+const attachment_builders = @import("../attachment_builders.zig");
 const game_font = @import("../game_font.zig");
 const gameplay = @import("../gameplay.zig");
+const gameplay_attachment = @import("attachment.zig");
 const gameplay_assets = @import("assets.zig");
 const gameplay_barrier_render = @import("barrier_render.zig");
 const gameplay_billboard = @import("billboard.zig");
@@ -240,17 +242,113 @@ fn drawGameplaySlugActor(
         render.resources.sprites.slug_mask orelse render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?
     else
         render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?;
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
-    gameplay_billboard.drawTextureRect(
+    const frame = slugSpriteFrame(preview, global_row, lane_index, slug_sprite_y_offset);
+    gameplay_billboard.drawTextureRectBasis(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
-        position,
+        frame.position,
         slug_sprite_world_size,
         slug_sprite_world_size,
-        camera,
+        frame.right,
+        frame.up,
         render.billboard_shader,
         visual.tint,
     );
+    _ = camera;
+}
+
+const SlugSpriteFrame = struct {
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+};
+
+fn slugSpriteFrame(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) SlugSpriteFrame {
+    const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+    const lane_center = @as(f32, @floatFromInt(lane_index)) + 0.5;
+    const flat_surface = preview.worldPositionForLane(lane_center, @as(f32, @floatFromInt(global_row)), floor_height);
+    if (preview.activeBuiltAttachmentAtRow(global_row)) |built| {
+        return slugSpriteFrameForAttachment(built, global_row, flat_surface, y_offset);
+    }
+
+    return .{
+        .position = .{
+            .x = flat_surface.x,
+            .y = flat_surface.y + y_offset,
+            .z = flat_surface.z,
+        },
+        .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+        .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    };
+}
+
+fn slugSpriteFrameForAttachment(
+    built: *const attachment_builders.BuiltAttachment,
+    global_row: usize,
+    flat_surface: rl.Vector3,
+    y_offset: f32,
+) SlugSpriteFrame {
+    const progress: f32 = @floatFromInt(global_row -| built.row.global_row);
+    const pose = attachment_builders.worldPoseForTemplate(&built.template, progress, built.row.global_row, 0.0, 0.0);
+    const local_surface = gameplay_attachment.localPosition(pose, .{
+        .x = flat_surface.x,
+        .y = flat_surface.y,
+        .z = flat_surface.z,
+    });
+    const projected_position = gameplay_attachment.worldPositionFromLocal(pose, .{
+        .x = local_surface.x,
+        .y = y_offset,
+        .z = local_surface.z,
+    });
+    return .{
+        .position = vec3ToRl(projected_position),
+        .right = vec3ToRl(pose.basis_right),
+        .up = vec3ToRl(pose.basis_up),
+    };
+}
+
+fn vec3ToRl(v: attachment_builders.Vec3) rl.Vector3 {
+    return .{ .x = v.x, .y = v.y, .z = v.z };
+}
+
+test "slug sprite frame uses active attachment basis" {
+    var samples = [_]attachment_builders.TemplateSample{.{
+        .basis_right = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .basis_up = .{ .x = -1.0, .y = 0.0, .z = 0.0 },
+        .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .center_x = 0.0,
+        .lateral_scale = 1.0,
+    }};
+    const built = attachment_builders.BuiltAttachment{
+        .row = .{
+            .global_row = 10,
+            .segment_index = 0,
+            .row_index = 10,
+            .raw_name = "TEST",
+            .public_path = null,
+        },
+        .template = .{
+            .spec = .{
+                .public_path = .start,
+                .family = .start,
+                .status = .partial,
+            },
+            .sample_count = samples.len,
+            .samples = samples[0..],
+        },
+    };
+
+    const frame = slugSpriteFrameForAttachment(&built, 10, .{ .x = 2.0, .y = 3.0, .z = 10.5 }, 1.7);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), frame.right.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), frame.right.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), frame.right.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.0), frame.up.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), frame.up.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), frame.up.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.7), frame.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), frame.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.5), frame.position.z, 0.0001);
 }
 
 fn drawGameplayGarbageActor(
