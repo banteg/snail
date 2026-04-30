@@ -226,17 +226,20 @@ fn drawGameplaySlugActor(
     global_row: usize,
     lane_index: usize,
 ) void {
-    if (runner.isSlugDefeated(global_row, lane_index)) return;
+    const visual = runner.slugVisualState(global_row, lane_index);
+    if (!visual.visible) return;
 
     // Native slug hazards spawn a world sprite with size lanes +0x60/+0x64 both seeded to 2.0,
     // and `draw_sprite_quad` treats that blended value as the quad half-extent.
     const slug_sprite_half_extent: f32 = 2.0;
     const slug_sprite_world_size: f32 = slug_sprite_half_extent * 2.0;
     const slug_sprite_y_offset: f32 = 1.7;
-    // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`), and
-    // `update_slug_hazard_ai` only switches to 119/120 during non-default state-machine branches.
-    // So authored live slugs should not free-run a local blink in the port.
-    const loaded_texture = render.resources.sprites.slug_frames[0].?;
+    // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`).
+    // Projectile hits drive the recovered state-machine branches that switch to 119/120.
+    const loaded_texture = if (visual.use_mask)
+        render.resources.sprites.slug_mask orelse render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?
+    else
+        render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?;
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
     gameplay_billboard.drawTextureRect(
         loaded_texture.texture,
@@ -246,7 +249,7 @@ fn drawGameplaySlugActor(
         slug_sprite_world_size,
         camera,
         render.billboard_shader,
-        .white,
+        visual.tint,
     );
 }
 

@@ -35,6 +35,7 @@ pub const Projectile = struct {
     dir_y: f32 = 0.0,
     dir_z: f32 = 1.0,
     speed_rows_per_second: f32 = 0.0,
+    bounced_off_slug: bool = false,
     trail_points: [max_trail_points]TrailPoint = [_]TrailPoint{.{}} ** max_trail_points,
     trail_count: u8 = 0,
 
