@@ -689,11 +689,7 @@ fn renderCacheFamilyForRuntimeCell(
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
     if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
-    const surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse
-        switch (tile_type) {
-            0x21, 0x22 => return null,
-            else => tile_type,
-        };
+    const surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse tile_type;
     var family = renderCacheFamilyForSurfaceTile(surface_tile) orelse return null;
     if (preview.renderCacheSurfaceSwapAt(global_row, lane_index)) {
         family = switch (family) {
@@ -711,26 +707,10 @@ fn renderBackingSurfaceTileForRuntimeCell(
     lane_index: usize,
     tile_type: u8,
 ) ?u8 {
-    return switch (tile_type) {
-        0x21, 0x22 => if (authoredObjectCellHasHorizontalSurfaceNeighbor(preview, global_row, lane_index)) 0x01 else null,
-        else => track.renderBackingSurfaceTileForRuntimeTile(tile_type),
-    };
-}
-
-fn authoredObjectCellHasHorizontalSurfaceNeighbor(
-    preview: *const track.LoadedLevelPreview,
-    global_row: usize,
-    lane_index: usize,
-) bool {
-    if (lane_index > 0 and authoredCellProvidesSurface(preview.cellAt(global_row, lane_index - 1))) return true;
-    return authoredCellProvidesSurface(preview.cellAt(global_row, lane_index + 1));
-}
-
-fn authoredCellProvidesSurface(cell: ?u8) bool {
-    return switch (cell orelse return false) {
-        '@', ' ', '\t' => false,
-        else => true,
-    };
+    _ = preview;
+    _ = global_row;
+    _ = lane_index;
+    return track.renderBackingSurfaceTileForRuntimeTile(tile_type);
 }
 
 fn surfaceHeightAtTileFraction(tile_type: u8, row_origin: f32, row_fraction: f32) f32 {
@@ -783,10 +763,9 @@ test "fringe objects follow the recovered row and tile suppression rules" {
     try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
 }
 
-test "isolated object glyphs do not provide render-cache backing" {
-    try std.testing.expect(!authoredCellProvidesSurface(' '));
-    try std.testing.expect(!authoredCellProvidesSurface('@'));
-    try std.testing.expect(authoredCellProvidesSurface('s'));
+test "object runtime tiles keep their native slide-cache surface" {
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x21));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x22));
 }
 
 test "fringe edge mask follows native solid-neighbor tile family" {
