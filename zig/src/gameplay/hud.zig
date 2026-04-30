@@ -119,11 +119,15 @@ pub fn drawProgressBar(context: Context, layout: VirtualLayout, runner: gameplay
     // left column at authored x=13 with `var_1c = (1 - progress) * 232 + 12`.
     // Empty bar (0x9b `Progress-Bar.tga`) fills the top `var_1c` rows, lit bar
     // (0x9c `Progress-Bar-lit.tga`) fills the remaining `256 - var_1c` below,
-    // and the cursor (0x9d) sits at y = var_1c + 111. See docs/re/hud-pipeline.md.
+    // and the cursor (0x9d) sits at y = var_1c + 111. Native progress is
+    // `(current_row - track_row_start) / (track_row_end - track_row_start)`,
+    // not absolute row / total rows. See docs/re/hud-pipeline.md.
     const preview = context.current_track_preview orelse return;
-    const total_rows = @max(preview.total_rows, 1);
-    const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
-    const remaining_height = (1.0 - progress) * 232.0 + 12.0;
+    const remaining_height = progressBarRemainingHeight(
+        runner.row_position,
+        preview.runtime_active_row_start,
+        preview.runtime_active_row_end,
+    );
     if (context.sprites.progress_bar) |loaded_texture| {
         drawTextureLocalRectSource(
             layout,
@@ -161,6 +165,24 @@ pub fn drawProgressBar(context: Context, layout: VirtualLayout, runner: gameplay
     if (context.sprites.progress_cursor) |loaded_texture| {
         drawTextureLocalRect(layout, loaded_texture, 12.0, remaining_height + 111.0, 64.0, 64.0, .white);
     }
+}
+
+fn progressBarProgress(row_position: f32, active_row_start: usize, active_row_end: usize) f32 {
+    const start: f32 = @floatFromInt(active_row_start);
+    const end: f32 = @floatFromInt(@max(active_row_end, active_row_start + 1));
+    return std.math.clamp((row_position - start) / (end - start), 0.0, 1.0);
+}
+
+fn progressBarRemainingHeight(row_position: f32, active_row_start: usize, active_row_end: usize) f32 {
+    return (1.0 - progressBarProgress(row_position, active_row_start, active_row_end)) * 232.0 + 12.0;
+}
+
+test "progress bar follows native active row window" {
+    try std.testing.expectApproxEqAbs(@as(f32, 244.0), progressBarRemainingHeight(0.0, 31, 131), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 244.0), progressBarRemainingHeight(31.0, 31, 131), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 128.0), progressBarRemainingHeight(81.0, 31, 131), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), progressBarRemainingHeight(131.0, 31, 131), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), progressBarRemainingHeight(200.0, 31, 131), 0.0001);
 }
 
 pub fn drawLifeSlots(context: Context, layout: VirtualLayout, visible_life_stock: u32) void {

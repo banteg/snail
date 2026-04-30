@@ -48,11 +48,8 @@ Three quads on the left column at authored x=13:
 | lit bar | 0x9c | `Sprites/Progress-Bar-lit.tga` (64×256) | x=13, y=150+`var_1c`, 64×(256−`var_1c`) | bottom (256−`var_1c`)/256 of source | bottom (traversed) portion |
 
 `var_1c = (1 − progress) · 232 + 12` where `progress = (current − min)/(max − min)`.
-
-**Port bug (gameplay/hud.zig:68-104):** The sprite assignment is swapped.
-Our code puts `progress_bar_lit` on top and `progress_bar` on bottom; the
-native draw puts the empty bar (`progress_bar`) on top and the lit bar
-(`progress_bar_lit`) on bottom.
+The native `min`/`max` values are the gameplay active-row window at
+`Game+0x74668` / `Game+0x74670`, not `0..total_rows`.
 
 ### Damage gauge (`update_damage_gauge` @ 0x440fd0)
 
@@ -139,6 +136,7 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 | # | Element | Native | Port status |
 |---|---|---|---|
 | 1 | Progress bar sprite assignment | empty top, lit bottom | **FIXED** (fed52e9): drawProgressBar swaps lit/empty to match native 0x437d72 / 0x437ddc |
+| 1a | Progress bar normalization | `(current - active_row_start) / (active_row_end - active_row_start)` | **FIXED**: drawProgressBar uses the native active-row window instead of absolute row / total rows |
 | 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | **FIXED** (fed52e9): authored rect moved to native coords |
 | 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom; raw 0..396 source crop and native split curve | **FIXED** (fed52e9 + 8571a2d): three-layer draw implemented; programmatic fallback removed; native split/crop curve now mirrored |
 | 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | **FIXED**: Postal-only allocation/update gate and native spacing |
@@ -169,10 +167,7 @@ layer. Widget D's content is still driven by mode.
 
 ## Next work
 
-1. Fix concrete divergences 1–4 (authored coords and sprite assignments) in
-   `gameplay/hud.zig`. Each fix cites this doc.
-2. Add widgets D, parcel-icon sprite, reference best-score, and mode-gated
-   running timer.
-3. Remove the port-invented jetpack gauge bar or relabel it as non-canonical.
-4. Decode remaining helpers (`update_warning`, `update_row_event_display`,
-   `update_times_up`) and port.
+1. Port `drawRowEventWidget` to the native 5-widget allocated-border lifecycle
+   instead of the current custom frame.
+2. Keep checking replay HUD state against native watch-best/high-score replay
+   paths as more replay fields are recovered.
