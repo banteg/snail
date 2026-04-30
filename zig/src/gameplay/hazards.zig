@@ -392,7 +392,7 @@ pub const SubLazerPool = struct {
                 .inactive => {},
                 .active => {
                     slot.phase += slot.phase_step;
-                    if (slot.phase > 1.0) slot.phase -= 1.0;
+                    if (slot.phase >= 1.0) slot.phase -= 1.0;
                     slot.world_position.x += slot.velocity.x;
                     slot.world_position.y += slot.velocity.y;
                     slot.world_position.z += slot.velocity.z;
@@ -436,6 +436,24 @@ test "SubLazer tick keeps collision body separate from sprite bob" {
     try std.testing.expectApproxEqAbs(@as(f32, 8.75), slot.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 29.65), slot.world_position.z, 0.0001);
     try std.testing.expect(slot.visual_y > slot.world_position.y);
+}
+
+test "SubLazer bob phase wraps at native unit boundary" {
+    var pool = SubLazerPool{};
+    const slot = pool.spawn(
+        4,
+        1,
+        .{ .x = 0.0, .y = 8.0, .z = 16.0 },
+        .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        4.0,
+    ).?;
+    slot.phase = 0.99;
+    slot.phase_step = 0.01;
+
+    pool.tickActiveSlots();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.phase, 0.0001);
+    try std.testing.expectApproxEqAbs(slot.world_position.y, slot.visual_y, 0.0001);
 }
 
 /// All hazard-family pools grouped. Mirrors the native subgame memory layout:

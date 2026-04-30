@@ -232,6 +232,7 @@ const native_wall2_target_z_offset: f32 = 8.0;
 const native_wall2_target_random_z_span: f32 = 3.0;
 const native_wall2_fire_delta_z_threshold: f32 = -4.0;
 const native_sub_lazer_speed: f32 = 0.40000001;
+const native_sub_lazer_trailing_rows: f32 = 8.0;
 // PORT(verified): native `update_subgoldy` snaps `live_matrix.position.y` to
 // `sample_track_floor_height_at_position(...) + 0.49` when grounded
 // (`artifacts/ida/functions/0043b120-update_subgoldy.c:535`).
@@ -3403,14 +3404,9 @@ pub const Runner = struct {
         // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`)
         // advances each SubLazer slot's nested-sprite bob phase. The port-side
         // pool also integrates body position by launch velocity until the
-        // native renderable-body/list owner is modeled literally, then retires
-        // the slot when the emitter cell passes behind the player
-        // (`get_track_runtime_cell_at_world_z` comparison at native line 47)
-        // or the projectile exits the track window. The per-slot physics
-        // tick lives on the pool; the emitter-gate retirement fires here
-        // where the current runtime row is known.
+        // native renderable-body/list owner is modeled literally.
         self.runtime.sub_lazers.tickActiveSlots();
-        self.retireSubLazersBehindPlayer();
+        self.retireSubLazersPastTrailingWindow();
         self.maybeFireWall2SubLazersInWindow(preview);
     }
 
@@ -3469,15 +3465,16 @@ pub const Runner = struct {
         }
     }
 
-    fn retireSubLazersBehindPlayer(self: *Runner) void {
+    fn retireSubLazersPastTrailingWindow(self: *Runner) void {
         for (&self.runtime.sub_lazers.slots) |*slot| {
             if (slot.state != .active) continue;
-            // Native line 47 reads the emitter's runtime cell z and
-            // compares to the slot's world position. When the emitter has
-            // scrolled off-screen (`emitter_row + trailing_window <
-            // row_position`), the slot is destroyed.
-            const trailing_window: f32 = 8.0;
-            if (@as(f32, @floatFromInt(slot.emitter_row)) + trailing_window < self.row_position) {
+            // PORT(verified): `update_sub_lazer_projectile` removes a live
+            // slot when its body z falls behind the subgame trailing
+            // threshold (`slot->body.z < game + 0x2980`), not when the
+            // emitter cell's authored row scrolls past. The port does not
+            // carry that native scalar separately, so use the same 8-row
+            // trailing window that gates SubLazer visibility.
+            if (slot.world_position.z + native_sub_lazer_trailing_rows < self.row_position) {
                 self.runtime.sub_lazers.destroy(slot);
             }
         }
@@ -7958,6 +7955,36 @@ test "Wall2 emitter waits for native active-row start gate" {
     runner.maybeFireWall2SubLazersInWindow(&fixture.preview);
 
     try std.testing.expectEqual(@as(usize, 0), runner.runtime.sub_lazers.countActive());
+}
+
+test "SubLazer retirement follows projectile body z not emitter row" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = @floatFromInt(fixture.preview.runtime_active_row_start + 24);
+
+    const emitter_row = fixture.preview.runtime_active_row_start;
+    const still_visible = runner.runtime.sub_lazers.spawn(
+        emitter_row,
+        2,
+        .{
+            .x = 0.0,
+            .y = 8.0,
+            .z = runner.row_position - native_sub_lazer_trailing_rows + 0.25,
+        },
+        .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        runner.nativeRunRate(),
+    ).?;
+
+    runner.retireSubLazersPastTrailingWindow();
+
+    try std.testing.expectEqual(gameplay_runtime_entities.SubLazerSlotState.active, still_visible.state);
+
+    still_visible.world_position.z = runner.row_position - native_sub_lazer_trailing_rows - 0.25;
+    runner.retireSubLazersPastTrailingWindow();
+
+    try std.testing.expectEqual(gameplay_runtime_entities.SubLazerSlotState.inactive, still_visible.state);
 }
 
 test "Wall2 emitter origin uses native first-cell anchor plus merged width" {
