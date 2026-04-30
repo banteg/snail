@@ -134,6 +134,7 @@ const damage_warning_actor_solid_alpha = damage_module.warning_actor_solid_alpha
 const damage_gauge_display_lerp = damage_module.gauge_display_lerp;
 const damage_gauge_pulse_step = damage_module.gauge_pulse_step;
 const damage_gauge_hit_flash_step = damage_module.gauge_hit_flash_step;
+const native_damage_retrigger_step: f32 = 0.05050505;
 const jetpack_warning_threshold = jetpack_module.warning_threshold;
 const jetpack_auto_shutoff_margin_rows = jetpack_module.auto_shutoff_margin_rows;
 const native_runtime_row_scan_ahead_rows: usize = 46;
@@ -515,6 +516,10 @@ pub const Runner = struct {
     last_garbage_smoke_position: ?rl.Vector3 = null,
     last_garbage_smoke_velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     last_salt_hit_position: ?rl.Vector3 = null,
+    // PORT(verified): native player+0x1d4/+0x1d8 is a salt-contact retrigger
+    // cadence owned by `handle_subgoldy_collisions` and advanced by `update_subgoldy`.
+    damage_retrigger_timer: f32 = 0.0,
+    damage_retrigger_step: f32 = native_damage_retrigger_step,
     visible_life_stock: u32 = starting_visible_life_stock,
     presentation: presentation_module.State = .{},
     damage: DamageController = .{},
@@ -2051,6 +2056,7 @@ pub const Runner = struct {
 
             self.counters.salt_hits += 1;
             self.last_salt_hit_position = slot.world_position;
+            self.armDamageRetriggerTimer();
             self.applyDamageGaugeDelta(salt_damage_delta);
             self.recent_event = .salt_hit;
             self.runtime.salts.deactivate(slot);
@@ -2550,7 +2556,22 @@ pub const Runner = struct {
         if (self.presentation.shot_cooldown_ticks > 0) self.presentation.shot_cooldown_ticks -= 1;
         if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
         if (self.damage.runtime.skin_hold_ticks > 0) self.damage.runtime.skin_hold_ticks -= 1;
+        self.stepDamageRetriggerTimer();
         self.presentation.snail_skin.tick();
+    }
+
+    fn armDamageRetriggerTimer(self: *Runner) void {
+        if (self.damage_retrigger_timer == 0.0) {
+            self.damage_retrigger_timer = self.damage_retrigger_step;
+        }
+    }
+
+    fn stepDamageRetriggerTimer(self: *Runner) void {
+        if (self.damage_retrigger_timer == 0.0) return;
+        self.damage_retrigger_timer += self.damage_retrigger_step;
+        if (self.damage_retrigger_timer > 1.0) {
+            self.damage_retrigger_timer = 0.0;
+        }
     }
 
     fn recordPowerupRing(self: *Runner) void {
@@ -7480,6 +7501,32 @@ test "projectiles stop on salt without consuming the hazard" {
 
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
+}
+
+test "salt contact arms native damage retrigger cadence" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 13.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, salt);
+    runner.spawnSaltFromAuthoredCell(&fixture.preview, salt.row, salt.lane);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_retrigger_timer, 0.0001);
+
+    runner.processRuntimeHazardCollisions(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.salt_hits);
+    try std.testing.expectApproxEqAbs(native_damage_retrigger_step, runner.damage_retrigger_timer, 0.0001);
+
+    runner.stepDamageRetriggerTimer();
+    try std.testing.expectApproxEqAbs(native_damage_retrigger_step * 2.0, runner.damage_retrigger_timer, 0.0001);
+
+    var ticks: u8 = 0;
+    while (runner.damage_retrigger_timer != 0.0 and ticks < 32) : (ticks += 1) {
+        runner.stepDamageRetriggerTimer();
+    }
+    try std.testing.expectEqual(@as(f32, 0.0), runner.damage_retrigger_timer);
 }
 
 test "explode rings arm native nuke AI instead of clearing local hazards" {
