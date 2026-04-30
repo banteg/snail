@@ -458,6 +458,12 @@ pub const Runner = struct {
     // Unit tests that instantiate `Runner` directly keep the historical fast trace
     // rate unless they configure a specific level/replay speed.
     base_subgame_rate: f32 = native_track_half_width,
+    // PORT(verified): native keeps `Game+0x48` (`base_subgame_rate`) separate
+    // from the live `Game+0x38` (`track_center_x`) recomputed by
+    // `calc_subgame_rate` each subgame update. Movement, hazards, and
+    // presentation use this live lane; spawn gates and default ring timing use
+    // the base lane directly.
+    track_center_x: f32 = native_track_half_width,
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -584,6 +590,7 @@ pub const Runner = struct {
         self.* = .{
             .session_mode = session_mode,
             .base_subgame_rate = base_subgame_rate,
+            .track_center_x = base_subgame_rate,
             .speed_rows_per_second = 12.0,
             .row_event_display = .{
                 .parcel_target_count = row_event_config.parcel_target_count,
@@ -719,6 +726,8 @@ pub const Runner = struct {
             self.handoff.pending = .completion_finalize;
             return;
         }
+
+        self.updateNativeTrackCenterRate(preview);
 
         if (!self.paused) {
             self.presentation.squidge.tick();
@@ -1265,10 +1274,55 @@ pub const Runner = struct {
 
     pub fn configureBaseSubgameRate(self: *Runner, base_subgame_rate: f32) void {
         self.base_subgame_rate = base_subgame_rate;
+        self.track_center_x = base_subgame_rate;
+    }
+
+    fn nativeBaseSubgameRate(self: *const Runner) f32 {
+        return self.base_subgame_rate;
     }
 
     fn nativeRunRate(self: *const Runner) f32 {
-        return self.base_subgame_rate;
+        return self.track_center_x;
+    }
+
+    fn updateNativeTrackCenterRate(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.phase != .active) {
+            self.track_center_x = self.nativeBaseSubgameRate();
+            return;
+        }
+        if (self.paused) return;
+
+        const denominator = if (preview.course_end_threshold > 0.0)
+            preview.course_end_threshold
+        else
+            @as(f32, @floatFromInt(@max(preview.runtime_active_row_end, 1)));
+        const progress = if (denominator > 0.0)
+            std.math.clamp(self.row_position / denominator, 0.0, 1.0)
+        else
+            0.0;
+
+        var rate = switch (self.session_mode) {
+            .challenge => self.nativeBaseSubgameRate() + (progress * 0.55000001),
+            .time_trial => self.nativeBaseSubgameRate() + 0.2 + (progress * 0.40000001),
+            .postal, .tutorial => self.nativeBaseSubgameRate() + (progress * 0.2),
+            .debug => self.nativeBaseSubgameRate(),
+        };
+
+        if (self.damage.warning_state == .draining) {
+            const damage_boost = switch (self.session_mode) {
+                .challenge, .time_trial => @as(f32, 0.40000001),
+                else => @as(f32, 0.60000002),
+            };
+            const warning_progress = self.damage.runtime.warning_transition_progress;
+            if (warning_progress < 0.25 or warning_progress > 0.75) {
+                const phase = (warning_progress * std.math.tau * 2.0) + (std.math.pi * 0.5);
+                rate += (1.0 - @sin(phase)) * 0.5 * damage_boost;
+            } else {
+                rate += damage_boost;
+            }
+        }
+
+        self.track_center_x = rate;
     }
 
     fn nativeVelocityXDecayPerTick(self: *const Runner) f32 {
@@ -6792,6 +6846,54 @@ test "configured tutorial run rate drives native movement lanes" {
     runner.lane_center = 1.5;
     runner.applyTargetLaneCenter(&fixture.preview, 4.5, 1.0 / native_ticks_per_second);
     try std.testing.expectApproxEqAbs(@as(f32, 1.674), runner.lane_center, 0.0001);
+}
+
+test "native live track rate is recomputed separately from base subgame rate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.configureBaseSubgameRate(0.2);
+    runner.row_position = fixture.preview.course_end_threshold * 0.5;
+
+    runner.updateNativeTrackCenterRate(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.base_subgame_rate, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), runner.nativeRunRate(), 0.0001);
+}
+
+test "paused active run preserves native live track rate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.configureBaseSubgameRate(0.2);
+    runner.row_position = fixture.preview.course_end_threshold * 0.5;
+    runner.updateNativeTrackCenterRate(&fixture.preview);
+
+    runner.paused = true;
+    runner.row_position = fixture.preview.course_end_threshold;
+    runner.updateNativeTrackCenterRate(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), runner.nativeRunRate(), 0.0001);
+}
+
+test "native draining damage state adds the recovered track-rate boost envelope" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.postal);
+    runner.configureBaseSubgameRate(0.2);
+    runner.row_position = 0.0;
+    runner.damage.warning_state = .draining;
+    runner.damage.runtime.warning_transition_progress = 0.5;
+
+    runner.updateNativeTrackCenterRate(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.80000002), runner.nativeRunRate(), 0.0001);
 }
 
 test "damage drain drives native forward velocity on slide tiles" {
