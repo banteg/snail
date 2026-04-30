@@ -3492,29 +3492,29 @@ pub const Runner = struct {
                 return true;
             },
             .burst_setup => {
-                const speed = @max(self.speed_rows_per_second, 0.0001);
+                const run_rate = @max(self.nativeRunRate(), 0.0001);
                 hazard.state = .burst;
                 hazard.velocity = .{
-                    .x = ((self.nextMathRandomFloat01() * 0.2) - 0.1) * speed,
-                    .y = (0.1 + (self.nextMathRandomFloat01() * 0.2)) * speed,
-                    .z = self.nextMathRandomFloat01() * 0.3 * speed,
+                    .x = ((self.nextMathRandomFloat01() * 0.2) - 0.1) * run_rate,
+                    .y = (0.1 + (self.nextMathRandomFloat01() * 0.2)) * run_rate,
+                    .z = self.nextMathRandomFloat01() * 0.3 * run_rate,
                 };
                 if (hazard.collision_side > 0) {
                     hazard.velocity.x = @abs(hazard.velocity.x);
                 } else if (hazard.collision_side < 0) {
                     hazard.velocity.x = -@abs(hazard.velocity.x);
                 }
-                hazard.velocity.x += @as(f32, @floatFromInt(hazard.collision_side)) * speed * garbage_burst_side_bias_scale;
+                hazard.velocity.x += @as(f32, @floatFromInt(hazard.collision_side)) * run_rate * garbage_burst_side_bias_scale;
                 hazard.smoke_progress = 0.0;
             },
             .burst => {},
         }
 
-        const speed = @max(self.speed_rows_per_second, 0.0001);
+        const run_rate = @max(self.nativeRunRate(), 0.0001);
         hazard.world_position.x += hazard.velocity.x;
         hazard.world_position.y += hazard.velocity.y;
         hazard.world_position.z += hazard.velocity.z;
-        hazard.velocity.y += (speed * speed) * garbage_burst_gravity_scale;
+        hazard.velocity.y += (run_rate * run_rate) * garbage_burst_gravity_scale;
         if (hazard.world_position.y < garbage_burst_teardown_y) return false;
         if (hazard.world_position.z < self.row_position - garbage_burst_trailing_rows) return false;
 
@@ -6592,6 +6592,32 @@ test "garbage burst hazards keep live world motion after contact" {
     try std.testing.expect(runner.last_garbage_smoke_velocity.x != 0.0 or
         runner.last_garbage_smoke_velocity.y != 0.0 or
         runner.last_garbage_smoke_velocity.z != 0.0);
+}
+
+test "garbage burst ai uses native run rate instead of debug speed scalar" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.2);
+    runner.speed_rows_per_second = 48.0;
+
+    var hazard = RuntimeHazard{
+        .kind = .garbage,
+        .state = .burst_setup,
+        .row = 0,
+        .lane = 0,
+        .world_position = .{ .x = 0.0, .y = 0.0, .z = runner.row_position },
+        .velocity = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .collision_side = 1,
+    };
+
+    try std.testing.expect(runner.updateGarbageHazard(&fixture.preview, &hazard));
+
+    try std.testing.expectEqual(RuntimeHazardState.burst, hazard.state);
+    try std.testing.expect(@abs(hazard.velocity.x) < 0.1);
+    try std.testing.expect(hazard.velocity.y < 0.1);
+    try std.testing.expect(hazard.velocity.z < 0.1);
 }
 
 test "slug hit latches the shared fall path" {
