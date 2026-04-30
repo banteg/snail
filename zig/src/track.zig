@@ -115,9 +115,8 @@ pub fn isOpenNeighborRuntimeTileFamily(tile_type: u8) bool {
 
 pub fn renderBackingSurfaceTileForRuntimeTile(tile_type: u8) ?u8 {
     return switch (tile_type) {
-        // Attachment markers and explicit ring markers are gameplay/object cells in
-        // the native runtime grid, but the port still needs a flat visual surface
-        // beneath them when the object pass does not fully cover the lane cell.
+        // Gameplay/object cells stay intact in the runtime grid, but these
+        // open/entry cells still need a flat visible surface.
         0x0e, 0x1d, 0x1e, 0x23 => 0x01,
         else => null,
     };
@@ -3026,6 +3025,13 @@ test "confirmed runtime tile hints match recovered gameplay tiles" {
     try std.testing.expectEqual(@as(?u8, 0x23), confirmedRuntimeTileHint('R'));
     try std.testing.expectEqual(@as(?u8, 0x21), confirmedRuntimeTileHint('s'));
     try std.testing.expectEqual(@as(?u8, null), confirmedRuntimeTileHint('#'));
+}
+
+test "open runtime object tiles render with a flat backing surface" {
+    try std.testing.expectEqual(@as(u8, 0x01), renderSurfaceTileForRuntimeTile(0x0e));
+    try std.testing.expectEqual(@as(u8, 0x01), renderSurfaceTileForRuntimeTile(0x1d));
+    try std.testing.expectEqual(@as(u8, 0x01), renderSurfaceTileForRuntimeTile(0x1e));
+    try std.testing.expectEqual(@as(u8, 0x01), renderSurfaceTileForRuntimeTile(0x23));
 }
 
 test "runtime tile transitions match recovered shipped glyph mapping" {

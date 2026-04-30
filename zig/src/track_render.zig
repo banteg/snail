@@ -174,7 +174,7 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
-            const backing_surface_tile = track.renderBackingSurfaceTileForRuntimeTile(tile_type);
+            const backing_surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
             if (!preview.renderCacheHeadAt(global_row, lane_index) and backing_surface_tile == null) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
@@ -301,7 +301,7 @@ fn drawFringeRamp(
 
 fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
     if (row_marked) return false;
-    return tile_type != 0x20 and tile_type != 0x1e;
+    return tile_type != 0x20 and tile_type != 0x1e and tile_type != 0x21 and tile_type != 0x22;
 }
 
 fn runtimeTileIsFringeSolid(tile_type: u8) bool {
@@ -635,8 +635,7 @@ fn textureForRenderCacheFamily(scene: *const Scene, family: RenderCacheFamily) r
     };
 }
 
-fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
-    const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
+fn renderCacheFamilyForSurfaceTile(surface_tile: u8) ?RenderCacheFamily {
     if (track.isFloorCacheRuntimeTileFamily(surface_tile)) return .floor;
     if (track.isSlideRuntimeTileFamily(surface_tile)) return .slide;
     if (track.isRampRuntimeTileFamily(surface_tile)) return .ramp;
@@ -644,6 +643,10 @@ fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
         0x20 => .warn,
         else => null,
     };
+}
+
+fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
+    return renderCacheFamilyForSurfaceTile(track.renderSurfaceTileForRuntimeTile(tile_type));
 }
 
 fn renderCacheFamilyForRuntimeCell(
@@ -654,8 +657,12 @@ fn renderCacheFamilyForRuntimeCell(
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
     if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
-    const surface_tile = track.renderSurfaceTileForRuntimeTile(tile_type);
-    var family = renderCacheFamilyForTile(surface_tile) orelse return null;
+    const surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse
+        switch (tile_type) {
+            0x21, 0x22 => return null,
+            else => tile_type,
+        };
+    var family = renderCacheFamilyForSurfaceTile(surface_tile) orelse return null;
     if (preview.renderCacheSurfaceSwapAt(global_row, lane_index)) {
         family = switch (family) {
             .floor => .slide,
@@ -664,6 +671,34 @@ fn renderCacheFamilyForRuntimeCell(
         };
     }
     return family;
+}
+
+fn renderBackingSurfaceTileForRuntimeCell(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    lane_index: usize,
+    tile_type: u8,
+) ?u8 {
+    return switch (tile_type) {
+        0x21, 0x22 => if (authoredObjectCellHasHorizontalSurfaceNeighbor(preview, global_row, lane_index)) 0x01 else null,
+        else => track.renderBackingSurfaceTileForRuntimeTile(tile_type),
+    };
+}
+
+fn authoredObjectCellHasHorizontalSurfaceNeighbor(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    lane_index: usize,
+) bool {
+    if (lane_index > 0 and authoredCellProvidesSurface(preview.cellAt(global_row, lane_index - 1))) return true;
+    return authoredCellProvidesSurface(preview.cellAt(global_row, lane_index + 1));
+}
+
+fn authoredCellProvidesSurface(cell: ?u8) bool {
+    return switch (cell orelse return false) {
+        '@', ' ', '\t' => false,
+        else => true,
+    };
 }
 
 fn surfaceHeightAtTileFraction(tile_type: u8, row_origin: f32, row_fraction: f32) f32 {
@@ -711,7 +746,15 @@ test "fringe objects follow the recovered row and tile suppression rules" {
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(true, 0x01));
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x20));
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x1e));
+    try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x21));
+    try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x22));
     try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
+}
+
+test "isolated object glyphs do not provide render-cache backing" {
+    try std.testing.expect(!authoredCellProvidesSurface(' '));
+    try std.testing.expect(!authoredCellProvidesSurface('@'));
+    try std.testing.expect(authoredCellProvidesSurface('s'));
 }
 
 test "fringe edge mask follows native solid-neighbor tile family" {

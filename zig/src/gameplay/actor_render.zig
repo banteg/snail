@@ -269,7 +269,7 @@ fn drawGameplayGarbageActor(
         camera,
         render.billboard_shader,
         hazard.presentation_phase + (@as(f32, @floatCast(render.render_time_seconds)) * 1.75),
-        .{ .r = 255, .g = 255, .b = 255, .a = if (hazard.state == .active) 232 else 255 },
+        .white,
     );
 }
 
