@@ -263,7 +263,7 @@ fn drawGameplayGarbageActor(
     if (hazard.state == .inactive) return;
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
     const loaded_texture = render.resources.sprites.garbage_variants[variant_index].?;
-    gameplay_billboard.drawTextureRectRolled(
+    gameplay_billboard.drawTextureRectRolledAlphaCutoff(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         hazard.world_position,
@@ -273,6 +273,7 @@ fn drawGameplayGarbageActor(
         render.billboard_shader,
         hazard.presentation_phase + (@as(f32, @floatCast(render.render_time_seconds)) * 1.75),
         .white,
+        gameplay_billboard.hard_alpha_cutoff,
     );
 }
 
