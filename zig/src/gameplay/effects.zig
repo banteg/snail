@@ -27,6 +27,9 @@ const jet_particle_detached_width: f32 = 0.100000001;
 const jet_particle_detached_height: f32 = 0.300000012;
 const jet_particle_detached_acceleration_y: f32 = 0.00100000005;
 const jet_particle_detached_ticks: u16 = 18;
+const rocket_smoke_width: f32 = 0.1;
+const rocket_smoke_height: f32 = 0.5;
+const rocket_smoke_ticks: u16 = 12;
 
 pub const Kind = enum {
     explode_big,
@@ -236,6 +239,9 @@ pub const Controller = struct {
         if (current.counters.garbage_smoke_particles > previous.counters.garbage_smoke_particles) {
             self.spawnGarbageSmokeParticle(current);
         }
+        if (current.counters.rocket_smoke_particles > previous.counters.rocket_smoke_particles) {
+            self.spawnRocketSmokeParticles(current);
+        }
         if (current.counters.salt_hits > previous.counters.salt_hits) {
             const smoke_origin = current.last_salt_hit_position orelse current.worldPosition(preview, 0.52);
             self.spawnWithVelocity(
@@ -317,6 +323,24 @@ pub const Controller = struct {
             8,
             .white,
         );
+    }
+
+    // PORT(verified): native `spawn_golb_smoke` emits `SMOKE.TGA` from a
+    // rocket-family Golb shot at the current body position and a half-step
+    // trailing position, with sprite size lanes seeded to 0.1 x 0.5 and
+    // velocity copied from `projectile_velocity * 0.4`.
+    pub fn spawnRocketSmokeParticles(self: *Controller, current: gameplay.Runner) void {
+        for (current.last_rocket_smoke_positions) |position| {
+            self.spawnWithVelocity(
+                .smoke,
+                position,
+                current.last_rocket_smoke_velocity,
+                rocket_smoke_width,
+                rocket_smoke_height,
+                rocket_smoke_ticks,
+                .white,
+            );
+        }
     }
 
     // PORT(partial): native `update_jet_particles` drives a 15x2 persistent
@@ -546,6 +570,33 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     try std.testing.expectApproxEqAbs(effect.velocity.x, updated.velocity.x, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.y - 0.0002, updated.velocity.y, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.z, updated.velocity.z, 0.0001);
+}
+
+test "rocket smoke uses recovered golb smoke packet" {
+    var controller = Controller{};
+    var current = gameplay.Runner{};
+    current.counters.rocket_smoke_particles = 2;
+    current.last_rocket_smoke_positions = .{
+        .{ .x = 1.0, .y = 2.0, .z = 3.0 },
+        .{ .x = 1.0, .y = 2.0, .z = 2.8 },
+    };
+    current.last_rocket_smoke_velocity = .{ .x = 0.01, .y = 0.02, .z = 0.03 };
+
+    controller.spawnRocketSmokeParticles(current);
+
+    try std.testing.expectEqual(@as(usize, 2), controller.count);
+    for (controller.items[0..2], current.last_rocket_smoke_positions) |effect, position| {
+        try std.testing.expectEqual(Kind.smoke, effect.kind);
+        try std.testing.expectApproxEqAbs(position.x, effect.position.x, 0.0001);
+        try std.testing.expectApproxEqAbs(position.y, effect.position.y, 0.0001);
+        try std.testing.expectApproxEqAbs(position.z, effect.position.z, 0.0001);
+        try std.testing.expectApproxEqAbs(rocket_smoke_width, effect.width, 0.0001);
+        try std.testing.expectApproxEqAbs(rocket_smoke_height, effect.height, 0.0001);
+        try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.x, effect.velocity.x, 0.0001);
+        try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.y, effect.velocity.y, 0.0001);
+        try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.z, effect.velocity.z, 0.0001);
+        try std.testing.expectEqual(rocket_smoke_ticks, effect.ticks_remaining);
+    }
 }
 
 test "jetpack particles use recovered persistent nozzle bank" {

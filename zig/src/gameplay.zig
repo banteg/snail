@@ -63,6 +63,7 @@ const row_event_display_hold_progress_step = row_event_module.display_hold_progr
 const row_event_widget_local_x = row_event_module.widget_local_x;
 const row_event_widget_local_y = row_event_module.widget_local_y;
 const row_event_widget_local_z = row_event_module.widget_local_z;
+const simulation_step_seconds: f32 = 1.0 / 60.0;
 
 pub const RecentEvent = runner_state.RecentEvent;
 pub const EncounterCounters = runner_state.EncounterCounters;
@@ -127,6 +128,7 @@ const garbage_burst_teardown_y: f32 = -10.0;
 const garbage_burst_trailing_rows: f32 = 2.0;
 const garbage_smoke_velocity_scale: f32 = 0.2;
 const garbage_smoke_progress_step_factor: f32 = 0.27777779;
+const rocket_smoke_velocity_scale: f32 = 0.40000001;
 const damage_warning_transition_step = damage_module.warning_transition_step;
 const damage_warning_drain_delta = damage_module.warning_drain_delta;
 const damage_warning_actor_step = damage_module.warning_actor_step;
@@ -524,6 +526,8 @@ pub const Runner = struct {
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_garbage_smoke_position: ?rl.Vector3 = null,
     last_garbage_smoke_velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    last_rocket_smoke_positions: [2]rl.Vector3 = [_]rl.Vector3{.{ .x = 0.0, .y = 0.0, .z = 0.0 }} ** 2,
+    last_rocket_smoke_velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     last_salt_hit_position: ?rl.Vector3 = null,
     // PORT(verified): native player+0x1d4/+0x1d8 is a salt-contact retrigger
     // cadence owned by `handle_subgoldy_collisions` and advanced by `update_subgoldy`.
@@ -2868,9 +2872,17 @@ pub const Runner = struct {
         for (0..self.combat.projectiles.count) |read_index| {
             var projectile = self.combat.projectiles.slots[read_index];
             if (!projectile.active) continue;
-            projectile.world_x += projectile.dir_x * projectile.speed_rows_per_second * delta_seconds;
-            projectile.world_y += projectile.dir_y * projectile.speed_rows_per_second * delta_seconds;
-            projectile.world_z += projectile.dir_z * projectile.speed_rows_per_second * delta_seconds;
+            const movement_delta = rl.Vector3{
+                .x = projectile.dir_x * projectile.speed_rows_per_second * delta_seconds,
+                .y = projectile.dir_y * projectile.speed_rows_per_second * delta_seconds,
+                .z = projectile.dir_z * projectile.speed_rows_per_second * delta_seconds,
+            };
+            projectile.world_x += movement_delta.x;
+            projectile.world_y += movement_delta.y;
+            projectile.world_z += movement_delta.z;
+            if (projectile.kind == .rocket) {
+                self.recordRocketProjectileSmoke(projectile, movement_delta);
+            }
             if (self.resolveProjectileHit(preview, &projectile)) continue;
             if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
             projectile.appendTrailPoint();
@@ -2881,6 +2893,28 @@ pub const Runner = struct {
         for (write_index..max_active_projectiles) |index| {
             self.combat.projectiles.slots[index].active = false;
         }
+    }
+
+    fn recordRocketProjectileSmoke(self: *Runner, projectile: Projectile, movement_delta: rl.Vector3) void {
+        const current_position = rl.Vector3{
+            .x = projectile.world_x,
+            .y = projectile.world_y,
+            .z = projectile.world_z,
+        };
+        self.last_rocket_smoke_positions = .{
+            current_position,
+            .{
+                .x = current_position.x - (movement_delta.x * 0.5),
+                .y = current_position.y - (movement_delta.y * 0.5),
+                .z = current_position.z - (movement_delta.z * 0.5),
+            },
+        };
+        self.last_rocket_smoke_velocity = .{
+            .x = movement_delta.x * rocket_smoke_velocity_scale,
+            .y = movement_delta.y * rocket_smoke_velocity_scale,
+            .z = movement_delta.z * rocket_smoke_velocity_scale,
+        };
+        self.counters.rocket_smoke_particles += 2;
     }
 
     fn resolveProjectileHit(self: *Runner, preview: *const track.LoadedLevelPreview, projectile: *Projectile) bool {
@@ -7541,6 +7575,30 @@ test "movement flags spawn the recovered projectile channel layouts" {
         runner.combat.projectiles.slots[0].speed_rows_per_second,
         0.0001,
     );
+}
+
+test "rocket projectiles seed native smoke particle events" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.spawnProjectile(.rocket, 0.0, 0.5, 16.0, 0.0, 0.0, 1.0);
+
+    runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+
+    try std.testing.expectEqual(@as(u32, 2), runner.counters.rocket_smoke_particles);
+    try std.testing.expectApproxEqAbs(
+        projectile_speed_rows_per_second * 0.48 * simulation_step_seconds,
+        runner.last_rocket_smoke_positions[0].z - 16.0,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        projectile_speed_rows_per_second * 0.48 * simulation_step_seconds * 0.5,
+        runner.last_rocket_smoke_positions[1].z - 16.0,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.last_rocket_smoke_velocity.x, 0.0001);
+    try std.testing.expect(runner.last_rocket_smoke_velocity.z > 0.0);
 }
 
 test "movement fire cadence follows the native selector-owned cooldown lane" {
