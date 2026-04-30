@@ -41,15 +41,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
     const world_transform = model_render.transformFromBasis(position, right, corrected_up, forward);
 
     switch (projectile.kind) {
-        .turbo => {
-            const loaded_object = resources.lazer_object orelse return;
-            drawObjectProjectile(
-                loaded_object,
-                world_transform,
-                0.18,
-                .{ .r = 170, .g = 220, .b = 255, .a = 232 },
-            );
-        },
+        .turbo => return,
         .laser => {
             if (drawVapourTrail(resources, projectile, right)) return;
             const loaded_object = resources.lazer_object orelse return;

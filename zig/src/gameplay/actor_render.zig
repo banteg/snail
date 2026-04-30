@@ -129,7 +129,7 @@ pub fn drawRuntimeActors(
 
     for (runner.activeRuntimeSubLazers()) |slot| {
         if (!gameplay_render_policy.subLazerVisible(runner, slot)) continue;
-        drawGameplaySubLazerSlotActor(render, slot);
+        drawGameplaySubLazerSlotActor(render, camera, slot);
     }
 
     for (runner.activeRuntimePickups()) |pickup| {
@@ -148,7 +148,7 @@ pub fn drawRuntimeActors(
     drawTimeTrialGhost(render, runner, camera);
 
     for (runner.activeProjectiles()) |projectile| {
-        drawGameplayProjectileActor(render, projectile);
+        drawGameplayProjectileActor(render, camera, projectile);
     }
 
     drawGameplayEffects(render, camera);
@@ -409,7 +409,7 @@ fn drawGameplayStaticRingActor(
     switch (ring_kind) {
         .none => {},
         .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46, 0.46, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
-        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.powerup.?.texture, position, 0.64, 0.64, camera, render.billboard_shader, .white),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
         .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
         .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
     }
@@ -431,7 +431,7 @@ fn drawGameplayRuntimeRingEffectActor(
     switch (ring_kind) {
         .none => {},
         .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
-        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.powerup.?.texture, position, 0.64 * scale, 0.64 * scale, camera, render.billboard_shader, .white),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
         .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
         .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
@@ -525,7 +525,12 @@ pub fn drawBarrier(render: Context, loaded_track_preview: *const track.LoadedLev
     );
 }
 
-fn drawGameplayProjectileActor(render: Context, projectile: gameplay.Projectile) void {
+fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
+    if (projectile.kind == .turbo) {
+        drawGameplayBlasterProjectileActor(render, camera, projectile);
+        return;
+    }
+
     const lazer_object = if (render.resources.lazer_object) |*loaded_object|
         loaded_object
     else
@@ -545,10 +550,31 @@ fn drawGameplayProjectileActor(render: Context, projectile: gameplay.Projectile)
     }, projectile);
 }
 
-fn drawGameplaySubLazerSlotActor(render: Context, slot: gameplay_runtime_entities.SubLazerSlot) void {
+fn drawGameplayBlasterProjectileActor(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
+    const texture = render.resources.sprites.blaster_projectile.?.texture;
+    const position: rl.Vector3 = .{
+        .x = projectile.world_x,
+        .y = projectile.world_y,
+        .z = projectile.world_z,
+    };
+    const roll = @as(f32, @floatCast(render.render_time_seconds)) * 4.0 + projectile.world_z * 0.19 + projectile.world_x;
+    gameplay_billboard.drawTextureRectRolled(
+        texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
+        position,
+        0.49,
+        0.49,
+        camera,
+        render.billboard_shader,
+        roll,
+        .white,
+    );
+}
+
+fn drawGameplaySubLazerSlotActor(render: Context, camera: rl.Camera3D, slot: gameplay_runtime_entities.SubLazerSlot) void {
     // Native `cRSubLazerManager` slots render through the same LAZER/VAPOURLAZER
     // asset family as projectile shots; the Wall2 tile is only the emitter.
-    drawGameplayProjectileActor(render, .{
+    drawGameplayProjectileActor(render, camera, .{
         .active = true,
         .kind = .sub_lazer,
         .world_x = slot.world_position.x,
