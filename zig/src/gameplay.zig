@@ -2261,12 +2261,11 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(partial): Windows only writes garbage-hit motion when Goldy is not invincible.
-    // The contact branch uses the normalized hazard-to-player vector, seeds
-    // `velocity.x -= contact.x * velocity.z * 0.18`, and then lets `update_subgoldy`
-    // apply and damp that lane once per grounded track tick. The port now mirrors that
-    // lateral owner in track mode and reads the current fixed scalar as the velocity-z
-    // floor while the recovered native positive lane is still being widened.
+    // PORT(verified): Windows only writes garbage-hit motion when Goldy is not
+    // invincible. The contact branch uses the normalized hazard-to-player
+    // vector, then updates the live `Player.velocity` lanes:
+    // `velocity.x -= contact.x * velocity.z * 0.18` and
+    // `velocity.z -= contact.z * velocity.z * 0.1`.
     fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, impact_position: rl.Vector3) void {
         const player_position = self.worldPosition(preview, 0.4);
         const delta_x = impact_position.x - player_position.x;
@@ -2275,23 +2274,20 @@ pub const Runner = struct {
         const distance = @max(@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)), 0.0001);
         const delta_x_normalized = delta_x / distance;
         const delta_z_normalized = delta_z / distance;
-        const speed_before = self.speed_rows_per_second;
+        const velocity_z_per_tick = self.native_velocity_z_override_per_tick orelse self.track_step_rows;
 
         if (self.presentation.invincible_ticks > 0) return;
 
-        self.speed_rows_per_second = std.math.clamp(
-            speed_before - (delta_z_normalized * speed_before * 0.10),
-            2.0,
-            48.0,
-        );
+        const next_velocity_z = velocity_z_per_tick - (delta_z_normalized * velocity_z_per_tick * 0.10);
 
         if (self.movement_mode == .attachment and self.attachment.follow.active) {
-            self.attachment.follow.lateral_offset -= delta_x_normalized * speed_before * 0.18;
+            self.attachment.follow.lateral_offset -= delta_x_normalized * velocity_z_per_tick * 0.18;
+            self.native_velocity_z_override_per_tick = next_velocity_z;
             return;
         }
 
-        const velocity_z_per_tick = speed_before / native_ticks_per_second;
         self.native_velocity_x_per_tick -= delta_x_normalized * velocity_z_per_tick * 0.18;
+        self.native_velocity_z_override_per_tick = next_velocity_z;
     }
 
     fn beginGarbageBurst(self: *Runner, hazard: *RuntimeHazard, player_position: rl.Vector3) void {
@@ -6333,6 +6329,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
     runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
     const speed_before_garbage = runner.speed_rows_per_second;
+    const velocity_z_before_garbage = runner.native_velocity_z_override_per_tick orelse runner.track_step_rows;
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqual(@as(u32, 1), runner.garbage_impact_sound_token);
@@ -6340,7 +6337,8 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 10), runner.score.total);
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage.gauge, 0.0001);
-    try std.testing.expect(runner.speed_rows_per_second != speed_before_garbage);
+    try std.testing.expectApproxEqAbs(speed_before_garbage, runner.speed_rows_per_second, 0.0001);
+    try std.testing.expect((runner.native_velocity_z_override_per_tick orelse runner.track_step_rows) != velocity_z_before_garbage);
     try std.testing.expect(runner.last_garbage_hit_position != null);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
@@ -6444,6 +6442,7 @@ test "runtime garbage hazards collide by distance before exact row crossing" {
     runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMinPerTick();
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
     runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
 
@@ -6470,15 +6469,21 @@ test "oblique garbage collisions push the runner sideways" {
     runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
+    runner.native_velocity_z_override_per_tick = runner.nativeForwardVelocityZMinPerTick();
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
 
     const lane_before = runner.lane_center;
     runner.processRuntimeHazardCollisions(&fixture.preview);
     try std.testing.expectApproxEqAbs(lane_before, runner.lane_center, 0.0001);
-    try std.testing.expect(runner.native_velocity_x_per_tick > 0.0);
+    try std.testing.expect(@abs(runner.native_velocity_x_per_tick) > 0.0);
+    const velocity_x_after_hit = runner.native_velocity_x_per_tick;
 
     runner.stepNativeVelocityX(&fixture.preview);
-    try std.testing.expect(runner.lane_center > lane_before);
+    if (velocity_x_after_hit > 0.0) {
+        try std.testing.expect(runner.lane_center > lane_before);
+    } else {
+        try std.testing.expect(runner.lane_center < lane_before);
+    }
 
     const velocity_after_first_tick = runner.native_velocity_x_per_tick;
     runner.stepNativeVelocityX(&fixture.preview);
@@ -6510,6 +6515,7 @@ test "garbage impact follows the recovered direction-vector formulas" {
     var runner = Runner.init(&fixture.preview);
     runner.reset(&fixture.preview);
     runner.speed_rows_per_second = 12.0;
+    runner.native_velocity_z_override_per_tick = 0.2;
     runner.lane_center = 4.5;
     runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
     runner.refreshSample(&fixture.preview);
@@ -6521,13 +6527,14 @@ test "garbage impact follows the recovered direction-vector formulas" {
         .z = player_position.z + 0.8,
     };
     const distance = @sqrt(0.68);
-    const expected_speed = 12.0 - (((impact_position.z - player_position.z) / distance) * 12.0 * 0.10);
+    const expected_velocity_z = 0.2 - (((impact_position.z - player_position.z) / distance) * 0.2 * 0.10);
     const expected_velocity_x =
-        -(((impact_position.x - player_position.x) / distance) * (12.0 / native_ticks_per_second) * 0.18);
+        -(((impact_position.x - player_position.x) / distance) * 0.2 * 0.18);
 
     runner.applyGarbageImpact(&fixture.preview, impact_position);
 
-    try std.testing.expectApproxEqAbs(expected_speed, runner.speed_rows_per_second, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.speed_rows_per_second, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_velocity_z, runner.native_velocity_z_override_per_tick.?, 0.0001);
     try std.testing.expectApproxEqAbs(expected_velocity_x, runner.native_velocity_x_per_tick, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 4.5), runner.lane_center, 0.0001);
 }
