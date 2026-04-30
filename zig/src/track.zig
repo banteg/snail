@@ -2512,8 +2512,10 @@ fn buildRuntimeSpawnHintGrid(
     const spawn_hints = try allocator.alloc(u8, total_rows * max_width);
     @memset(spawn_hints, 0);
 
+    const playable_lane_start = runtimePlayableLaneStart(max_width);
+    const playable_lane_end = runtimePlayableLaneEnd(max_width);
     for (0..total_rows) |global_row| {
-        for (0..max_width) |lane_index| {
+        for (playable_lane_start..playable_lane_end) |lane_index| {
             const index = runtimeTileIndex(max_width, global_row, lane_index);
             const tile_type = runtime_tiles[index];
             var mask = runtimeFallbackSpawnHintMask(tile_type, build_flags);
@@ -3162,6 +3164,34 @@ test "runtime spawn hint grid suppresses fallback hazards inside warning zones" 
     try std.testing.expectEqual(@as(u8, runtime_spawn_hint_garbage_fallback), hints[1]);
     try std.testing.expectEqual(@as(u8, 0), hints[2]);
     try std.testing.expectEqual(@as(u8, 0), hints[3]);
+}
+
+test "runtime spawn hint grid ignores parser guard columns" {
+    const runtime_tiles = [_]u8{
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+    };
+    const runtime_warning_zone_grid = [_]bool{
+        false, false, false, false, false, false, false, false, false, false,
+    };
+
+    const hints = try buildRuntimeSpawnHintGrid(
+        std.testing.allocator,
+        &runtime_tiles,
+        &runtime_warning_zone_grid,
+        1,
+        runtime_tiles.len,
+        defaultRuntimeBuildFlags,
+    );
+    defer std.testing.allocator.free(hints);
+
+    try std.testing.expectEqual(@as(u8, 0), hints[0]);
+    try std.testing.expectEqual(@as(u8, 0), hints[9]);
+    for (hints[1..9]) |hint| {
+        try std.testing.expectEqual(
+            runtime_spawn_hint_garbage_fallback | runtime_spawn_hint_salt_fallback,
+            hint,
+        );
+    }
 }
 
 test "garbage fallback neighbor gate follows recovered horizontal tile set" {

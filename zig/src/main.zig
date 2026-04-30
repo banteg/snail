@@ -1422,7 +1422,7 @@ const AppState = struct {
         delta_seconds: f32,
     ) void {
         if (self.gameplay_click_start_active) {
-            runner.stepIntroStartupBlock(loaded_track_preview, delta_seconds);
+            runner.refreshBlockedStartupState(loaded_track_preview);
             return;
         }
         if (runner.introCutsceneBlocksGameplay()) {
@@ -3960,6 +3960,44 @@ test "click-start remains latched until the intro handoff is visible" {
     state.level_runner.?.clearCutscene();
 
     try std.testing.expect(state.gameplayClickStartDismissible());
+}
+
+test "click-start prompt refresh keeps the runner parked" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var state: AppState = undefined;
+    state.gameplay_click_start_active = true;
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.setCutscene(gameplay.cutscene_intro_id);
+    const starting_row_position = runner.row_position;
+
+    var tick: usize = 0;
+    while (tick < 8) : (tick += 1) {
+        state.refreshRunnerForStartupBlock(
+            &runner,
+            &loaded_track_preview,
+            @floatCast(simulation_step_seconds),
+        );
+    }
+
+    try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment.follow.active);
+    try std.testing.expect(runner.cutsceneCameraActive());
+    try std.testing.expectApproxEqAbs(starting_row_position, runner.row_position, 0.001);
+    try std.testing.expectEqual(@as(f32, 0.0), runner.track_step_rows);
 }
 
 test "startup block after click-start dismissal resumes the live runner under intro camera" {

@@ -1066,8 +1066,9 @@ pub const Runner = struct {
     }
 
     // PORT(verified): this is only an initialization helper for startup camera probes.
-    // Native `update_click_start` does not freeze Goldy; while the click-start prompt is
-    // visible, `update_subgoldy` continues to run and advances the START attachment.
+    // Native `update_click_start` owns the prompt and start transition, but does not
+    // advance the player before the prompt is dismissed. Keep the current START
+    // attachment and camera basis primed without moving through the track.
     pub fn refreshBlockedStartupState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.track_step_rows = 0.0;
         if (!self.paused) {
