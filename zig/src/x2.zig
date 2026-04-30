@@ -258,6 +258,8 @@ pub const Uploaded = struct {
     pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
         rl.beginBlendMode(.alpha);
         defer rl.endBlendMode();
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
 
         const submeshes = @constCast(self.submeshes);
         for (submeshes) |*submesh| {
