@@ -2949,9 +2949,8 @@ pub const Runner = struct {
             return true;
         }
 
-        if (self.consumeRuntimeHazard(global_row, lane_index, .garbage)) {
-            self.last_garbage_hit_position = runtimeCellWorldPosition(preview, global_row, lane_index, 0.28);
-            return true;
+        if (self.hitRuntimeGarbageWithProjectile(global_row, lane_index, projectile.*)) |projectile_consumed| {
+            return projectile_consumed;
         }
 
         if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| switch (kind) {
@@ -4146,23 +4145,55 @@ pub const Runner = struct {
         return false;
     }
 
-    fn consumeRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
+    fn hitRuntimeGarbageWithProjectile(
+        self: *Runner,
+        projectile_row: usize,
+        projectile_lane: usize,
+        projectile: Projectile,
+    ) ?bool {
         for (0..self.runtime.hazards.count) |index| {
-            const hazard = self.runtime.hazards.slots[index];
-            if (hazard.row != row or hazard.lane != lane or hazard.kind != kind) continue;
+            const hazard = &self.runtime.hazards.slots[index];
+            if (hazard.kind != .garbage or hazard.state != .active) continue;
+            if (hazard.row != projectile_row or hazard.lane != projectile_lane) continue;
 
-            self.removeRuntimeHazardAt(index);
-            return true;
+            self.beginGarbageProjectileBurst(hazard, projectile.world_x);
+
+            if (projectile.kind == .rocket) {
+                self.burstNearbyGarbageFromRocket(projectile);
+            }
+
+            // PORT(verified): `update_golb_ai` sets `cRSubGarbage.state = 2`
+            // and scores the hit. Weapon kind 1 (laser) continues through
+            // garbage; blaster and rocket kill the Golb shot and spawn the
+            // shot-impact sprite.
+            return projectile.kind != .laser;
         }
-        return false;
+        return null;
     }
 
-    fn removeRuntimeHazardAt(self: *Runner, index: usize) void {
-        var shift_index = index;
-        while (shift_index + 1 < self.runtime.hazards.count) : (shift_index += 1) {
-            self.runtime.hazards.slots[shift_index] = self.runtime.hazards.slots[shift_index + 1];
+    fn beginGarbageProjectileBurst(self: *Runner, hazard: *RuntimeHazard, projectile_world_x: f32) void {
+        self.last_garbage_hit_position = hazard.world_position;
+        self.recordScore(.garbage, 0);
+        hazard.state = .burst_setup;
+        hazard.collision_side = if (hazard.world_position.x >= projectile_world_x) 1 else -1;
+        hazard.smoke_progress = 0.0;
+    }
+
+    fn burstNearbyGarbageFromRocket(self: *Runner, projectile: Projectile) void {
+        const projectile_position = rl.Vector3{
+            .x = projectile.world_x,
+            .y = projectile.world_y,
+            .z = projectile.world_z,
+        };
+        for (0..self.runtime.hazards.count) |index| {
+            const hazard = &self.runtime.hazards.slots[index];
+            if (hazard.kind != .garbage or hazard.state != .active) continue;
+            const delta_x = hazard.world_position.x - projectile_position.x;
+            const delta_y = hazard.world_position.y - projectile_position.y;
+            const delta_z = hazard.world_position.z - projectile_position.z;
+            if (@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)) >= 3.0) continue;
+            self.beginGarbageProjectileBurst(hazard, projectile.world_x);
         }
-        self.runtime.hazards.count -= 1;
     }
 
     fn removeRuntimePickupAt(self: *Runner, index: usize) void {
@@ -7522,6 +7553,63 @@ test "projectiles stop on native Wall2 runtime tiles" {
     };
 
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
+}
+
+test "projectile hits put garbage into native burst ai" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
+
+    const hazard_before = runner.activeRuntimeHazards()[0];
+    var projectile: Projectile = .{
+        .active = true,
+        .kind = .turbo,
+        .world_x = hazard_before.world_position.x,
+        .world_y = hazard_before.world_position.y,
+        .world_z = hazard_before.world_position.z,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(RuntimeHazardState.burst_setup, runner.activeRuntimeHazards()[0].state);
+    try std.testing.expectEqual(@as(u32, score_module.nativeEventPoints(.garbage, 0)), runner.score.garbage);
+    try std.testing.expect(runner.last_garbage_hit_position != null);
+
+    runner.updateRuntimeHazards(&fixture.preview);
+    try std.testing.expectEqual(RuntimeHazardState.burst, runner.activeRuntimeHazards()[0].state);
+}
+
+test "laser projectile continues after bursting garbage" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
+
+    const hazard_before = runner.activeRuntimeHazards()[0];
+    var projectile: Projectile = .{
+        .active = true,
+        .kind = .laser,
+        .world_x = hazard_before.world_position.x,
+        .world_y = hazard_before.world_position.y,
+        .world_z = hazard_before.world_position.z,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expect(!runner.resolveProjectileHit(&fixture.preview, &projectile));
+    try std.testing.expectEqual(RuntimeHazardState.burst_setup, runner.activeRuntimeHazards()[0].state);
+    try std.testing.expectEqual(@as(u32, score_module.nativeEventPoints(.garbage, 0)), runner.score.garbage);
 }
 
 test "movement flags spawn the recovered projectile channel layouts" {
