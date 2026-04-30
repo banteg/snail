@@ -28,10 +28,15 @@ const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 
 // PORT(verified): `spawn_salt_hazard`
 // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c:29`) seeds the
-// lifetime step as `track_center_x * 0.033333335`. With the port's fixed
-// `track_center_x = 4.0` this gives `0.133333` per tick, matching the ~7.5
-// tick (~0.125s) lifetime ceiling native's `update_salt_hazard` expects.
-pub const native_salt_lifetime_step_factor: f32 = 0.033333335;
+// salt slot's Y velocity (`+0x90`) as `track_center_x * 0.033333335`.
+// `+0x9c`, the lifetime-step field consumed by `update_salt_hazard`, is not
+// initialized by spawn and remains zero in the reset pool. Salt therefore
+// rises from its anchor instead of timing out after a few frames.
+pub const native_salt_vertical_velocity_factor: f32 = 0.033333335;
+// PORT(verified): native writes only byte `1` at `+0x94`, even though
+// `update_salt_hazard` later reads the same address as the z-velocity float.
+// Preserve that odd lane exactly: it is effectively stationary in z.
+pub const native_salt_z_velocity_bit_pattern: u32 = 1;
 // PORT(partial): native `spawn_salt_hazard` draws from shared
 // `next_math_random_value`, which returns `[-16384, 16384]`, then multiplies
 // by `0.0001917476` for the initial Y-rotation angle. The port keeps the same
@@ -139,16 +144,15 @@ pub const RingPool = struct {
 
 /// PORT(partial): 40-slot `cRSalt` projectile pool. Matches the recovered slot
 /// count and runtime fields the port consumes (`game + 0x3578c0`: lifetime
-/// progress + step, world position, velocity, and yaw), but keeps those fields
+/// progress + step, world position, motion lane, and yaw), but keeps those fields
 /// in a plain Zig slot instead of the native body/list object graph.
 /// `initialize_salt_hazard_pool` at
 /// `artifacts/ida/functions/00441540-initialize_salt_hazard_pool.c` zeros the
 /// state byte on every slot; `spawn_salt_hazard`
 /// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`) allocates the
-/// first inactive slot, seeds position, lifetime step from
-/// `track_center_x * 0.033333335`, and a randomized Y rotation. Velocity is
-/// stored and integrated here, but the current caller supplies it because the
-/// native velocity writer is outside this recovered slice.
+/// first inactive slot, seeds position, writes `0` to x velocity, writes
+/// `track_center_x * 0.033333335` to y velocity, writes byte `1` at the
+/// z-velocity address, and installs a randomized Y rotation.
 pub const SaltHazardPool = struct {
     slots: [max_active_salt_slots]SaltSlot = [_]SaltSlot{.{}} ** max_active_salt_slots,
     last_scan_end: usize = 0,
@@ -189,17 +193,14 @@ pub const SaltHazardPool = struct {
     // PORT(partial): mirror of `spawn_salt_hazard`
     // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`). Allocates
     // the first inactive slot, marks it active, seeds position from the
-    // caller's Vec3 input, initializes the lifetime step from
-    // the native run-rate field times `0.033333335`, and rolls a random Y-rotation on the
-    // spawn frame. Velocity is caller-supplied until the native velocity
-    // ownership path is ported.
+    // caller's Vec3 input, seeds the native motion lane, and rolls a random
+    // Y-rotation on the spawn frame.
     pub fn spawn(
         self: *SaltHazardPool,
         row: usize,
         lane: usize,
         world_position: rl.Vector3,
-        velocity: rl.Vector3,
-        run_rate: f32,
+        track_center_x: f32,
         random_state: *u32,
     ) ?*SaltSlot {
         const slot = self.allocate() orelse return null;
@@ -208,9 +209,13 @@ pub const SaltHazardPool = struct {
             .row = row,
             .lane = lane,
             .world_position = world_position,
-            .velocity = velocity,
+            .velocity = .{
+                .x = 0.0,
+                .y = track_center_x * native_salt_vertical_velocity_factor,
+                .z = @as(f32, @bitCast(native_salt_z_velocity_bit_pattern)),
+            },
             .lifetime_progress = 0.0,
-            .lifetime_step = run_rate * native_salt_lifetime_step_factor,
+            .lifetime_step = 0.0,
             .yaw_radians = nextSaltYawRadians(random_state),
         };
         return slot;
@@ -273,6 +278,36 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
     const raw: u32 = (random_state.* >> 16) & 0x7FFF;
     const centered = @as(f32, @floatFromInt(@as(i32, @intCast(raw)))) - 16384.0;
     return centered * native_salt_yaw_random_scale;
+}
+
+test "salt spawn seeds native lift velocity instead of lifetime expiry" {
+    var pool = SaltHazardPool{};
+    var random_state: u32 = 0;
+    const track_center_x: f32 = 4.0;
+    const slot = pool.spawn(
+        12,
+        3,
+        .{ .x = 2.5, .y = 0.18, .z = 12.0 },
+        track_center_x,
+        &random_state,
+    ).?;
+
+    try std.testing.expectApproxEqAbs(
+        track_center_x * native_salt_vertical_velocity_factor,
+        slot.velocity.y,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_step, 0.0001);
+
+    pool.tickActiveSlots();
+
+    try std.testing.expectEqual(SaltSlotState.active, slot.state);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.18) + (track_center_x * native_salt_vertical_velocity_factor),
+        slot.world_position.y,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_progress, 0.0001);
 }
 
 /// PORT(partial): 20-slot `cRSubLazerManager` projectile pool. Keeps the

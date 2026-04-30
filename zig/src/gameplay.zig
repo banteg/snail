@@ -3616,11 +3616,13 @@ pub const Runner = struct {
         // PORT(verified): `update_salt_hazard`
         // (`artifacts/ida/functions/004417d0-update_salt_hazard.c`) runs per
         // active slot each tick, advancing lifetime progress and integrating
-        // position by velocity. The pool-side `tickActiveSlots` handles that;
+        // position by the spawn-owned motion lane. The pool-side
+        // `tickActiveSlots` handles that;
         // the attachment-collision/off-track check at native lines 45-91 is
         // not yet wired here (the port already resolves salt contact in
         // `processRuntimeHazardCollisions` against the damage gauge).
         self.runtime.salts.tickActiveSlots();
+        self.retireSaltHazardsPastTrailingWindow();
 
         // PORT(verified): `update_sub_lazer_projectile`
         // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`)
@@ -3698,6 +3700,15 @@ pub const Runner = struct {
             // trailing window that gates SubLazer visibility.
             if (slot.world_position.z + native_sub_lazer_trailing_rows < self.row_position) {
                 self.runtime.sub_lazers.destroy(slot);
+            }
+        }
+    }
+
+    fn retireSaltHazardsPastTrailingWindow(self: *Runner) void {
+        for (&self.runtime.salts.slots) |*slot| {
+            if (slot.state != .active) continue;
+            if (slot.world_position.z + 48.0 < self.row_position) {
+                self.runtime.salts.deactivate(slot);
             }
         }
     }
@@ -3893,17 +3904,15 @@ pub const Runner = struct {
         // PORT(verified): `spawn_salt_hazard` takes only a Vec3 position.
         // Native reads the cell's anchor position (`cell + 0x10..0x18`) as the
         // spawn anchor; the port mirrors that via `runtimeCellWorldPosition`.
-        // Native does not seed velocity at the call site (the slot velocity is
-        // whatever the pool init left at 0); authored salt in the shipped
-        // tutorial is stationary after spawn apart from the random Y rotation
-        // installed in `spawn_salt_hazard`.
+        // `spawn_salt_hazard` itself seeds x velocity 0, y lift from
+        // `track_center_x * 0.033333335`, and the odd byte write at the
+        // z-velocity address.
         const position = runtimeCellWorldPosition(preview, global_row, lane, 0.18);
         _ = self.runtime.salts.spawn(
             global_row,
             lane,
             position,
-            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            self.nativeRunRate(),
+            self.track_center_x,
             &self.math_random_state,
         );
     }
@@ -8244,8 +8253,9 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expect(garbage.presentation_scale <= 0.84);
     try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
 
-    // Salt spawns into its dedicated `SaltHazardPool` and carries the native
-    // `runtimeCellWorldPosition(..., 0.18)` Y anchor directly on the slot.
+    // Salt spawns into its dedicated `SaltHazardPool`, carries the native
+    // `runtimeCellWorldPosition(..., 0.18)` Y anchor directly on the slot,
+    // and receives the recovered native upward velocity from `track_center_x`.
     try std.testing.expect(runner.runtime.salts.contains(48, 1));
     var salt_slot: ?gameplay_runtime_entities.SaltSlot = null;
     for (runner.runtime.salts.slots) |slot| {
@@ -8256,6 +8266,12 @@ test "runtime hazards preserve recovered presentation scalars" {
     }
     try std.testing.expect(salt_slot != null);
     try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
+    try std.testing.expectApproxEqAbs(
+        runner.track_center_x * hazards_module.native_salt_vertical_velocity_factor,
+        salt_slot.?.velocity.y,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), salt_slot.?.lifetime_step, 0.0001);
 }
 
 test "generated garbage applies native mode gates after scalar pass" {

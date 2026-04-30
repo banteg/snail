@@ -44,9 +44,11 @@ pub const Hazard = struct {
 //
 //   - `+0x80` state (0 = inactive, 1 = active, 2 = queued for removal)
 //   - `+0x68..+0x73` world position (Vec3)
-//   - `+0x8c..+0x97` world velocity (Vec3)
+//   - `+0x8c..+0x94` motion lane (`x` velocity, `y` lift velocity, and a
+//     native one-byte write at the z-velocity address)
 //   - `+0x98` lifetime progress (f32)
-//   - `+0x9c` lifetime step (f32, seeded from `track_center_x * 0.033333335`)
+//   - `+0x9c` lifetime step (f32; left at constructor/reset zero by the salt
+//     spawn path)
 //   - `+0x38..+0x68` 4x4 transform matrix seeded on spawn via identity +
 //     random Y rotation (`rotate_matrix_world_y` with a signed random angle)
 //
