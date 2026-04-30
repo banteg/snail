@@ -238,6 +238,12 @@ Recovered deactivation conditions:
 - runtime tile `0x0e` with `y < 7`
 - entering an attachment corridor carried by runtime flags `0x40` or `0x80`
 
+Wall2 / runtime tile `0x0e` render ownership:
+
+- `merge_track_tile_runs` condenses horizontal `0x0e` runs into a single BOD owner on the first cell
+- the merged run width is stored in that owner cell as `TrackRowCell.render_flags >> 8`
+- follower cells have their object-owner bits cleared and should not independently draw `PILLAR1.X2`
+
 ## Runtime Flags
 
 Confirmed authored-to-runtime lanes:

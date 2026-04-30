@@ -96,7 +96,7 @@ pub fn drawRuntimeActors(
                 },
                 .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
-            if ((loaded_track_preview.runtimeTileAt(global_row, lane_index) orelse 0) == 0x0e) {
+            if (wall2PillarActorVisible(loaded_track_preview, global_row, lane_index)) {
                 drawGameplayWall2PillarActor(render, loaded_track_preview, global_row, lane_index);
             }
         }
@@ -151,6 +151,16 @@ pub fn drawRuntimeActors(
     }
 
     drawGameplayEffects(render, camera);
+}
+
+fn wall2PillarActorVisible(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+    if ((preview.runtimeTileAt(global_row, lane_index) orelse 0) != 0x0e) return false;
+    // PORT(verified): native `merge_track_tile_runs` keeps the merged Wall2
+    // BOD object on the first `0x0e` cell only, stores the run width in that
+    // owner's `TrackRowCell.render_flags >> 8`, and clears the object-owner
+    // bits on the follower cells. The preview's B40 grid mirrors that owner
+    // head bit for render consumers.
+    return preview.runtimeFlagB40At(global_row, lane_index);
 }
 
 fn drawTimeTrialGhost(render: Context, runner: gameplay.Runner, camera: rl.Camera3D) void {
@@ -786,4 +796,27 @@ test "native runtime ring halo positions ten sprites around the parent" {
     try std.testing.expectApproxEqAbs(base.x, opposite.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y - native_runtime_ring_particle_radius, opposite.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, opposite.z, 0.0001);
+}
+
+test "Wall2 render only draws the native merged object owner" {
+    var runtime_tiles = [_]u8{ 0x0e, 0x0e, 0x0e, 0x23 };
+    var warn_surface = [_]bool{ false, false, false, false };
+    var surface_swap = [_]bool{ false, false, false, false };
+    var flag_b40 = [_]bool{ true, false, false, false };
+    var edge_masks = [_]u8{ 0, 0, 0, 0 };
+    var preview: track.LoadedLevelPreview = undefined;
+    preview.total_rows = 1;
+    preview.max_width = runtime_tiles.len;
+    preview.runtime_tiles = &runtime_tiles;
+    preview.render_cache = .{
+        .warn_surface_grid = &warn_surface,
+        .surface_swap_grid = &surface_swap,
+        .flag_b40_grid = &flag_b40,
+        .edge_masks = &edge_masks,
+    };
+
+    try std.testing.expect(wall2PillarActorVisible(&preview, 0, 0));
+    try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 1));
+    try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 2));
+    try std.testing.expect(!wall2PillarActorVisible(&preview, 0, 3));
 }
