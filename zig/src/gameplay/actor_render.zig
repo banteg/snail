@@ -565,9 +565,9 @@ fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFa
 
 fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) rl.Texture2D {
     switch (family) {
-        .ring => return render.resources.sprites.ring_big.?.texture,
-        .explode => return render.resources.sprites.explode_big.?.texture,
-        .slow => return render.resources.sprites.slow_ring_big.?.texture,
+        .ring => return render.resources.sprites.ring.?.texture,
+        .explode => return render.resources.sprites.explode_small.?.texture,
+        .slow => return render.resources.sprites.slow_ring.?.texture,
     }
 }
 
