@@ -10,9 +10,9 @@ const io = std.Options.debug_io;
 const native_vapour_trail_width = 0.16;
 
 pub const Resources = struct {
-    lazer_object: ?*const object.LoadedObject,
-    vapour_lazer_object: ?*const object.LoadedObject,
-    rocket_model: ?*const x2.Uploaded,
+    lazer_object: *const object.LoadedObject,
+    vapour_lazer_object: *const object.LoadedObject,
+    rocket_model: *const x2.Uploaded,
 };
 
 pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
@@ -44,9 +44,8 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
         .turbo => return,
         .laser => {
             if (drawVapourTrail(resources, projectile, right)) return;
-            const loaded_object = resources.lazer_object orelse return;
             drawObjectProjectile(
-                loaded_object,
+                resources.lazer_object,
                 world_transform,
                 0.22,
                 .{ .r = 180, .g = 255, .b = 255, .a = 236 },
@@ -54,27 +53,16 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
         },
         .sub_lazer => {
             if (drawVapourTrail(resources, projectile, right)) return;
-            const loaded_object = resources.lazer_object orelse return;
             drawObjectProjectile(
-                loaded_object,
+                resources.lazer_object,
                 world_transform,
                 0.18,
                 .{ .r = 255, .g = 136, .b = 96, .a = 236 },
             );
         },
         .rocket => {
-            const model = resources.rocket_model orelse {
-                const loaded_object = resources.lazer_object orelse return;
-                drawObjectProjectile(
-                    loaded_object,
-                    world_transform,
-                    0.22,
-                    .{ .r = 255, .g = 224, .b = 164, .a = 236 },
-                );
-                return;
-            };
             model_render.drawUploadedModel(
-                model.*,
+                resources.rocket_model.*,
                 position,
                 right,
                 corrected_up,
@@ -86,8 +74,8 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
     }
 }
 
-fn activeLaserProjectileObject(resources: Resources) ?*const object.LoadedObject {
-    return resources.vapour_lazer_object orelse resources.lazer_object;
+fn activeLaserProjectileObject(resources: Resources) *const object.LoadedObject {
+    return resources.vapour_lazer_object;
 }
 
 fn drawObjectProjectile(
@@ -132,7 +120,7 @@ fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right:
 }
 
 fn vapourTrailTexture(resources: Resources) ?rl.Texture2D {
-    const loaded_object = activeLaserProjectileObject(resources) orelse return null;
+    const loaded_object = activeLaserProjectileObject(resources);
     for (loaded_object.submeshes) |submesh| {
         if (submesh.texture) |loaded_texture| return loaded_texture.texture;
     }
@@ -178,16 +166,12 @@ fn emitTrailSegment(
 test "laser projectile rendering prefers the dynamic vapour object" {
     var lazer_object: object.LoadedObject = undefined;
     var vapour_lazer_object: object.LoadedObject = undefined;
+    var rocket_model: x2.Uploaded = undefined;
 
     try std.testing.expect(activeLaserProjectileObject(.{
         .lazer_object = &lazer_object,
         .vapour_lazer_object = &vapour_lazer_object,
-        .rocket_model = null,
-    }) == &vapour_lazer_object);
-    try std.testing.expect(activeLaserProjectileObject(.{
-        .lazer_object = null,
-        .vapour_lazer_object = &vapour_lazer_object,
-        .rocket_model = null,
+        .rocket_model = &rocket_model,
     }) == &vapour_lazer_object);
 }
 

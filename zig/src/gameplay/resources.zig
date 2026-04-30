@@ -224,13 +224,8 @@ pub fn loadBarrier(state: *State, store: *resource_store.Store) !void {
 pub fn loadLazer(state: *State, store: *resource_store.Store) !void {
     unloadLazer(state);
 
-    if (store.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) != null) {
-        state.lazer_object = try store.object(gameplay_assets.gameplay_lazer_object_path, .{});
-    }
-
-    if (store.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path) != null) {
-        state.vapour_lazer_object = try store.object(gameplay_assets.gameplay_vapour_lazer_object_path, .{});
-    }
+    state.lazer_object = try store.object(gameplay_assets.gameplay_lazer_object_path, .{});
+    state.vapour_lazer_object = try store.object(gameplay_assets.gameplay_vapour_lazer_object_path, .{});
 }
 
 pub fn loadSalt(state: *State, store: *resource_store.Store) !void {
@@ -297,9 +292,7 @@ pub fn loadActorModels(state: *State, store: *resource_store.Store) !void {
             state.jetpack_thrust_models.frames[index] = try store.model(path, .{ .toon_outline = true });
         }
     }
-    if (store.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path) != null) {
-        state.rocket_model = try store.model(gameplay_assets.gameplay_rocket_model_path, .{});
-    }
+    state.rocket_model = try store.model(gameplay_assets.gameplay_rocket_model_path, .{});
     if (store.catalog.findModelIndex(gameplay_assets.gameplay_post_office_stop_model_path) != null) {
         state.post_office_stop_model = try store.model(gameplay_assets.gameplay_post_office_stop_model_path, .{});
     }

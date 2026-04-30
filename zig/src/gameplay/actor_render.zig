@@ -531,22 +531,10 @@ fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile:
         return;
     }
 
-    const lazer_object = if (render.resources.lazer_object) |*loaded_object|
-        loaded_object
-    else
-        null;
-    const vapour_lazer_object = if (render.resources.vapour_lazer_object) |*loaded_object|
-        loaded_object
-    else
-        null;
-    const rocket_model = if (render.resources.rocket_model) |*model|
-        model
-    else
-        null;
     gameplay_projectile_render.draw(.{
-        .lazer_object = lazer_object,
-        .vapour_lazer_object = vapour_lazer_object,
-        .rocket_model = rocket_model,
+        .lazer_object = &render.resources.lazer_object.?,
+        .vapour_lazer_object = &render.resources.vapour_lazer_object.?,
+        .rocket_model = &render.resources.rocket_model.?,
     }, projectile);
 }
 
