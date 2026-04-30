@@ -3572,11 +3572,17 @@ pub const Runner = struct {
         window_start: usize,
         window_end: usize,
     ) void {
-        var global_row = @max(window_start, preview.runtime_active_row_start);
+        const salt_window_start = @max(window_start, preview.runtime_active_row_start);
         const salt_window_end = @min(window_end, preview.runtime_active_row_end);
+
+        var scan_start = @max(salt_window_start, self.runtime.salts.last_scan_end);
+        if (scan_start > salt_window_end) scan_start = salt_window_end;
+
+        var global_row = scan_start;
         while (global_row < salt_window_end) : (global_row += 1) {
             self.scanRuntimeSaltHazardRow(preview, global_row);
         }
+        self.runtime.salts.last_scan_end = salt_window_end;
     }
 
     fn refreshLiveRuntimePickups(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -8351,7 +8357,7 @@ test "runtime pickups and salt respect the native first-block spawn gate" {
     try std.testing.expect(salt_runner.runtime.salts.contains(active_row, lane));
 }
 
-test "salt hazards respawn while row remains in native scan window" {
+test "salt hazards use the native one-way row scan cursor" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -8363,17 +8369,18 @@ test "salt hazards respawn while row remains in native scan window" {
         fixture.preview.runtime_active_row_start;
     runner.debugWarpToTrackRow(&fixture.preview, @floatFromInt(row_position), null);
 
-    // Native `update_subgame` revisits active rows every frame and calls
-    // `spawn_salt_hazard` directly for tile 0x22; the slot lifetime is much
-    // shorter than the row's visible window, so salt must be refreshed instead
-    // of one-shot-scanned like persistent garbage.
-    for (0..12) |_| {
-        runner.refreshLiveRuntimeHazards(&fixture.preview);
-        runner.updateRuntimeHazards(&fixture.preview);
+    runner.refreshLiveRuntimeHazards(&fixture.preview);
+    try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
+    try std.testing.expect(runner.runtime.salts.last_scan_end > salt.row);
+
+    for (&runner.runtime.salts.slots) |*slot| {
+        if (slot.row == salt.row and slot.lane == salt.lane) {
+            runner.runtime.salts.deactivate(slot);
+        }
     }
 
-    try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
-    try std.testing.expect(runner.runtime.salts.countActive() > 0);
+    runner.refreshLiveRuntimeHazards(&fixture.preview);
+    try std.testing.expect(!runner.runtime.salts.contains(salt.row, salt.lane));
 }
 
 test "steady gameplay animation id 2 resolves to shipped turbo move" {
