@@ -300,7 +300,7 @@ const slow_ring_duration_ticks: u16 = 240;
 pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
 pub const native_nuke_phase_step: f32 = 0.10471976;
-const turbo_projectile_spread_lateral: f32 = 0.1;
+const native_turbo_projectile_spread_x_per_tick: f32 = 0.1;
 const slug_projectile_kill_score: u32 = score_module.nativeEventPoints(.slug, 0);
 const parcel_delivery_register_score: u32 = score_module.nativeEventPoints(.parcel_deliver, 0);
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
@@ -339,15 +339,6 @@ const MovementFireInputState = enum {
     fresh,
     repeat,
 };
-
-fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
-    return switch (kind) {
-        .turbo => projectile_speed_rows_per_second,
-        .laser => projectile_speed_rows_per_second * 2.0,
-        .rocket => projectile_speed_rows_per_second * 0.48,
-        .sub_lazer => native_sub_lazer_speed,
-    };
-}
 
 const RowSample = struct {
     global_row: usize,
@@ -2778,8 +2769,8 @@ pub const Runner = struct {
                 self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.24, 0.11, 0.08, 0.0);
             },
             4 => {
-                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, -0.24, 0.11, 0.08, -turbo_projectile_spread_lateral);
-                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.24, 0.11, 0.08, turbo_projectile_spread_lateral);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, -0.24, 0.11, 0.08, -native_turbo_projectile_spread_x_per_tick);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.24, 0.11, 0.08, native_turbo_projectile_spread_x_per_tick);
                 self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.0, 0.23, 0.12, 0.0);
             },
             8 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .laser, 0.24, 0.11, 0.08, 0.0),
@@ -2825,11 +2816,7 @@ pub const Runner = struct {
         direction_lateral: f32,
     ) void {
         const spawn_position = offsetPosition(origin, right, up, forward, local_x, local_y, local_z);
-        const direction = rl.Vector3{
-            .x = forward.x + (right.x * direction_lateral),
-            .y = forward.y + (right.y * direction_lateral),
-            .z = forward.z + (right.z * direction_lateral),
-        };
+        const direction = self.nativeProjectileVelocityPerTick(kind, right, forward, direction_lateral);
         self.spawnProjectile(
             kind,
             spawn_position.x,
@@ -2838,10 +2825,42 @@ pub const Runner = struct {
             direction.x,
             direction.y,
             direction.z,
+            native_ticks_per_second,
         );
     }
 
-    fn spawnProjectile(self: *Runner, kind: Projectile.Kind, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
+    fn nativeProjectileVelocityPerTick(
+        self: *const Runner,
+        kind: Projectile.Kind,
+        right: rl.Vector3,
+        forward: rl.Vector3,
+        lateral_x_per_tick: f32,
+    ) rl.Vector3 {
+        const run_rate = self.nativeRunRate();
+        const forward_z_per_tick = switch (kind) {
+            .turbo => run_rate + 1.0,
+            .laser => (run_rate + 1.0) * 2.0,
+            .rocket => (run_rate + 0.60000002) * 0.80000001,
+            .sub_lazer => native_sub_lazer_speed,
+        };
+        return .{
+            .x = (forward.x * forward_z_per_tick) + (right.x * lateral_x_per_tick),
+            .y = (forward.y * forward_z_per_tick) + (right.y * lateral_x_per_tick),
+            .z = (forward.z * forward_z_per_tick) + (right.z * lateral_x_per_tick),
+        };
+    }
+
+    fn spawnProjectile(
+        self: *Runner,
+        kind: Projectile.Kind,
+        world_x: f32,
+        world_y: f32,
+        world_z: f32,
+        dir_x: f32,
+        dir_y: f32,
+        dir_z: f32,
+        speed_rows_per_second: f32,
+    ) void {
         var slot_index: ?usize = null;
         for (0..max_active_projectiles) |index| {
             if (!self.combat.projectiles.slots[index].active) {
@@ -2859,7 +2878,7 @@ pub const Runner = struct {
             .dir_x = dir_x,
             .dir_y = dir_y,
             .dir_z = dir_z,
-            .speed_rows_per_second = projectileSpeedForKind(kind),
+            .speed_rows_per_second = speed_rows_per_second,
         };
         self.combat.projectiles.slots[index].resetTrail();
         if (index >= self.combat.projectiles.count) {
@@ -7543,8 +7562,13 @@ test "movement flags spawn the recovered projectile channel layouts" {
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
     try std.testing.expectApproxEqAbs(
-        projectile_speed_rows_per_second * 2.0,
+        native_ticks_per_second,
         runner.combat.projectiles.slots[0].speed_rows_per_second,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        (runner.nativeRunRate() + 1.0) * 2.0,
+        runner.combat.projectiles.slots[0].dir_z,
         0.0001,
     );
 
@@ -7571,8 +7595,13 @@ test "movement flags spawn the recovered projectile channel layouts" {
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.rocket, runner.combat.projectiles.slots[0].kind);
     try std.testing.expectApproxEqAbs(
-        projectile_speed_rows_per_second * 0.48,
+        native_ticks_per_second,
         runner.combat.projectiles.slots[0].speed_rows_per_second,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        (runner.nativeRunRate() + 0.60000002) * 0.80000001,
+        runner.combat.projectiles.slots[0].dir_z,
         0.0001,
     );
 }
@@ -7582,18 +7611,18 @@ test "rocket projectiles seed native smoke particle events" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.spawnProjectile(.rocket, 0.0, 0.5, 16.0, 0.0, 0.0, 1.0);
+    runner.spawnProjectile(.rocket, 0.0, 0.5, 16.0, 0.0, 0.0, 1.0, native_ticks_per_second);
 
     runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
 
     try std.testing.expectEqual(@as(u32, 2), runner.counters.rocket_smoke_particles);
     try std.testing.expectApproxEqAbs(
-        projectile_speed_rows_per_second * 0.48 * simulation_step_seconds,
+        native_ticks_per_second * simulation_step_seconds,
         runner.last_rocket_smoke_positions[0].z - 16.0,
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        projectile_speed_rows_per_second * 0.48 * simulation_step_seconds * 0.5,
+        native_ticks_per_second * simulation_step_seconds * 0.5,
         runner.last_rocket_smoke_positions[1].z - 16.0,
         0.0001,
     );
