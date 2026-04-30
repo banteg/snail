@@ -398,12 +398,22 @@ fn drawGameplayStaticRingActor(
     else
         segment.RingKind.normal;
     const position = gameplayLaneWorldPosition(preview, row_location.global_row, lane_index, 0.72);
+    drawGameplayRingSprite(render, camera, position, 1.0, ring_kind);
+}
+
+fn drawGameplayRingSprite(
+    render: Context,
+    camera: rl.Camera3D,
+    position: rl.Vector3,
+    scale: f32,
+    ring_kind: segment.RingKind,
+) void {
     switch (ring_kind) {
         .none => {},
-        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46, 0.46, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
-        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
-        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
-        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72, 0.72, camera, render.billboard_shader, .white),
+        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
 }
 
@@ -412,20 +422,11 @@ fn drawGameplayRuntimeRingEffectActor(
     camera: rl.Camera3D,
     effect: gameplay_runtime_entities.RingEffect,
 ) void {
+    const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
+    drawGameplayRingSprite(render, camera, effect.presentation_position, effect.presentation_scale, ring_kind);
+
     if (runtimeRingParticleSpriteFamily(effect.kind)) |family| {
         drawRuntimeRingParticleHalo(render, camera, effect, family);
-        return;
-    }
-
-    const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
-    const position = effect.presentation_position;
-    const scale = effect.presentation_scale;
-    switch (ring_kind) {
-        .none => {},
-        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
-        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
-        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
-        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
 }
 
