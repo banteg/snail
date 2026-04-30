@@ -18,6 +18,7 @@ pub const SpriteArt = struct {
     slow_ring: ?assets.LoadedTexture = null,
     slow_ring_big: ?assets.LoadedTexture = null,
     blaster_projectile: ?assets.LoadedTexture = null,
+    blaster_trail: ?assets.LoadedTexture = null,
     progress_bar: ?assets.LoadedTexture = null,
     progress_bar_lit: ?assets.LoadedTexture = null,
     progress_cursor: ?assets.LoadedTexture = null,
@@ -84,6 +85,10 @@ pub const SpriteArt = struct {
         if (self.blaster_projectile) |*texture| {
             texture.unload();
             self.blaster_projectile = null;
+        }
+        if (self.blaster_trail) |*texture| {
+            texture.unload();
+            self.blaster_trail = null;
         }
         if (self.progress_bar) |*texture| {
             texture.unload();
@@ -306,6 +311,7 @@ pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     art.slow_ring = try store.texture(gameplay_assets.gameplay_slow_ring_sprite_path);
     art.slow_ring_big = try store.texture(gameplay_assets.gameplay_slow_ring_big_sprite_path);
     art.blaster_projectile = try store.texture(gameplay_assets.gameplay_blaster_projectile_sprite_path);
+    art.blaster_trail = try store.texture(gameplay_assets.gameplay_blaster_trail_sprite_path);
     art.progress_bar = try store.texture(gameplay_assets.gameplay_progress_bar_sprite_path);
     art.progress_bar_lit = try store.texture(gameplay_assets.gameplay_progress_bar_lit_sprite_path);
     art.progress_cursor = try store.texture(gameplay_assets.gameplay_progress_cursor_sprite_path);

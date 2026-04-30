@@ -551,6 +551,7 @@ fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile:
 }
 
 fn drawGameplayBlasterProjectileActor(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
+    drawGameplayBlasterProjectileTrail(render, camera, projectile);
     const texture = render.resources.sprites.blaster_projectile.?.texture;
     const position: rl.Vector3 = .{
         .x = projectile.world_x,
@@ -569,6 +570,57 @@ fn drawGameplayBlasterProjectileActor(render: Context, camera: rl.Camera3D, proj
         roll,
         .white,
     );
+}
+
+fn drawGameplayBlasterProjectileTrail(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
+    const texture = render.resources.sprites.blaster_trail.?.texture;
+    const source: rl.Rectangle = .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) };
+    const offsets = [_]f32{ 0.0, 0.3, 0.6 };
+    const tints = [_]rl.Color{
+        .{ .r = 255, .g = 255, .b = 255, .a = 220 },
+        .{ .r = 255, .g = 255, .b = 255, .a = 170 },
+        .{ .r = 255, .g = 255, .b = 255, .a = 120 },
+    };
+    for (offsets, tints) |offset, tint| {
+        gameplay_billboard.drawTextureRectRolled(
+            texture,
+            source,
+            blasterTrailPosition(projectile, offset),
+            0.2,
+            0.2,
+            camera,
+            render.billboard_shader,
+            projectile.world_z * 0.31 + offset * 2.4,
+            tint,
+        );
+    }
+}
+
+fn blasterTrailPosition(projectile: gameplay.Projectile, movement_delta_factor: f32) rl.Vector3 {
+    const current: rl.Vector3 = .{
+        .x = projectile.world_x,
+        .y = projectile.world_y,
+        .z = projectile.world_z,
+    };
+    if (projectile.trail_count < 2) {
+        return .{
+            .x = current.x - projectile.dir_x * movement_delta_factor,
+            .y = current.y - projectile.dir_y * movement_delta_factor,
+            .z = current.z - projectile.dir_z * movement_delta_factor,
+        };
+    }
+
+    const previous = projectile.trail_points[projectile.trail_count - 2];
+    const delta: rl.Vector3 = .{
+        .x = current.x - previous.x,
+        .y = current.y - previous.y,
+        .z = current.z - previous.z,
+    };
+    return .{
+        .x = current.x - delta.x * movement_delta_factor,
+        .y = current.y - delta.y * movement_delta_factor,
+        .z = current.z - delta.z * movement_delta_factor,
+    };
 }
 
 fn drawGameplaySubLazerSlotActor(render: Context, camera: rl.Camera3D, slot: gameplay_runtime_entities.SubLazerSlot) void {
@@ -816,6 +868,33 @@ test "native runtime ring halo positions ten sprites around the parent" {
     try std.testing.expectApproxEqAbs(base.x, opposite.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y - native_runtime_ring_particle_radius, opposite.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, opposite.z, 0.0001);
+}
+
+test "native blaster trail points use recovered movement-delta offsets" {
+    const projectile = gameplay.Projectile{
+        .world_x = 12.0,
+        .world_y = 1.0,
+        .world_z = 24.0,
+        .trail_points = .{
+            .{ .x = 10.0, .y = 1.0, .z = 20.0 },
+            .{},
+            .{},
+            .{},
+        },
+        .trail_count = 2,
+    };
+
+    const current = blasterTrailPosition(projectile, 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), current.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 24.0), current.z, 0.0001);
+
+    const mid = blasterTrailPosition(projectile, 0.3);
+    try std.testing.expectApproxEqAbs(@as(f32, 11.4), mid.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 22.8), mid.z, 0.0001);
+
+    const tail = blasterTrailPosition(projectile, 0.6);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.8), tail.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 21.6), tail.z, 0.0001);
 }
 
 test "Wall2 render only draws the native merged object owner" {
