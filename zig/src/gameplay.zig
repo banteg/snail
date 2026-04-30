@@ -477,6 +477,8 @@ pub const Runner = struct {
     track_step_rows: f32 = 0.0,
     row_position: f32 = 0.0,
     previous_row_position: f32 = 0.0,
+    // Debug-only scalar retained for manual speed nudges and legacy test setup.
+    // Native track motion advances from Player.velocity.z instead.
     speed_rows_per_second: f32 = 12.0,
     native_velocity_x_per_tick: f32 = 0.0,
     native_velocity_z_override_per_tick: ?f32 = null,
@@ -2274,7 +2276,7 @@ pub const Runner = struct {
         const distance = @max(@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)), 0.0001);
         const delta_x_normalized = delta_x / distance;
         const delta_z_normalized = delta_z / distance;
-        const velocity_z_per_tick = self.native_velocity_z_override_per_tick orelse self.track_step_rows;
+        const velocity_z_per_tick = self.effectiveVelocityZPerTick();
 
         if (self.presentation.invincible_ticks > 0) return;
 
@@ -2355,20 +2357,26 @@ pub const Runner = struct {
         return .{
             .x = self.native_velocity_x_per_tick,
             .y = self.velocity_y,
-            .z = self.native_velocity_z_override_per_tick orelse self.track_step_rows,
+            .z = self.effectiveVelocityZPerTick(),
         };
     }
 
+    fn effectiveVelocityZPerTick(self: *const Runner) f32 {
+        return self.native_velocity_z_override_per_tick orelse self.baseForwardVelocityZPerTick();
+    }
+
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
-        if (self.native_velocity_z_override_per_tick) |velocity_z| {
-            return velocity_z * native_ticks_per_second;
-        }
-        return self.baseEffectiveSpeedRowsPerSecond();
+        return self.effectiveVelocityZPerTick() * native_ticks_per_second;
     }
 
     fn baseEffectiveSpeedRowsPerSecond(self: *const Runner) f32 {
-        if (self.presentation.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
-        return self.speed_rows_per_second;
+        return self.baseForwardVelocityZPerTick() * native_ticks_per_second;
+    }
+
+    fn baseForwardVelocityZPerTick(self: *const Runner) f32 {
+        var velocity_z = self.nativeForwardVelocityZMinPerTick();
+        if (self.presentation.slow_ticks > 0) velocity_z *= 0.5;
+        return velocity_z;
     }
 
     fn updateNativeVelocityZOverride(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
@@ -6243,16 +6251,17 @@ test "runner keeps discrete track cursor and fractional movement progress" {
     var runner = Runner.init(&fixture.preview);
     primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
     const start_row = runner.runtime_track_index;
+    const expected_step = runner.baseForwardVelocityZPerTick();
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(start_row, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 0.2, runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_step, runner.track_row_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + expected_step, runner.row_position, 0.0001);
 
     for (0..4) |_| {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectEqual(start_row + 2, runner.runtime_track_index);
+    try std.testing.expectEqual(currentRowIndex(&fixture.preview, runner.row_position), runner.runtime_track_index);
     try std.testing.expect(runner.track_row_progress > 0.0);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
@@ -6806,7 +6815,11 @@ test "slow rings reduce effective speed while active" {
     try std.testing.expectEqual(slow_ring_duration_ticks, runner.presentation.slow_ticks);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
     try std.testing.expectEqual(@as(u32, 0), runner.score.ring);
-    try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
+    try std.testing.expectApproxEqAbs(
+        runner.nativeForwardVelocityZMinPerTick() * 0.5 * native_ticks_per_second,
+        runner.effectiveSpeedRowsPerSecond(),
+        0.0001,
+    );
 
     runner.stepTemporaryStates();
     try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.presentation.slow_ticks);
@@ -9321,6 +9334,7 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     const entry_lateral_sign: f32 = if (entry_lane_center < target.path_center_lane) -1.0 else 1.0;
 
     var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.2 / 0.17);
     primeRunnerBeforeRow(
         &runner,
         &fixture.preview,
@@ -10790,6 +10804,7 @@ test "replay flag bit 0x1 seeds native movement fire progress" {
     var runner = Runner.init(&fixture.preview);
     primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
     runner.tick_count = 10;
+    const expected_track_step = runner.baseForwardVelocityZPerTick();
     runner.stepWithReplay(
         &fixture.preview,
         .{},
@@ -10800,7 +10815,7 @@ test "replay flag bit 0x1 seeds native movement fire progress" {
         1.0 / 60.0,
     );
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_track_step, runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.presentation.movement_fire_cooldown, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
