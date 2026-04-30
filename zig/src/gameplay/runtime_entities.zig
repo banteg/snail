@@ -30,6 +30,7 @@ pub const Hazard = struct {
     velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
     presentation_phase: f32 = 0.0,
+    sprite_variant_index: u8 = 0,
     yaw_radians: f32 = 0.0,
     arming_progress: f32 = 1.0,
     arming_step: f32 = 0.0,

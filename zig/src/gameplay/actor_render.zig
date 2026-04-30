@@ -359,7 +359,10 @@ fn drawGameplayGarbageActor(
 ) void {
     _ = preview;
     if (hazard.state == .inactive) return;
-    const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
+    const variant_index = @min(
+        @as(usize, hazard.sprite_variant_index),
+        gameplay_assets.gameplay_garbage_sprite_paths.len - 1,
+    );
     const loaded_texture = render.resources.sprites.garbage_variants[variant_index].?;
     gameplay_billboard.drawTextureRectRolledAlphaCutoff(
         loaded_texture.texture,
@@ -369,7 +372,7 @@ fn drawGameplayGarbageActor(
         hazard.presentation_scale,
         camera,
         render.billboard_shader,
-        hazard.presentation_phase + (@as(f32, @floatCast(render.render_time_seconds)) * 1.75),
+        hazard.presentation_phase,
         .white,
         gameplay_billboard.hard_alpha_cutoff,
     );

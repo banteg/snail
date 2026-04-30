@@ -1195,6 +1195,21 @@ pub const Runner = struct {
         );
     }
 
+    fn nativeRandomFloatBelowSample(sample: u32, upper_bound: f32) f32 {
+        return @as(f32, @floatFromInt(sample)) * upper_bound * 0.000030517578;
+    }
+
+    fn nativeGarbagePresentationScale(sample: u32) f32 {
+        return (1.0 + nativeRandomFloatBelowSample(sample, 0.4)) * 0.6;
+    }
+
+    fn nativeGarbageSpriteVariant(sample: u32) usize {
+        return @min(
+            gameplay_assets.gameplay_garbage_sprite_paths.len - 1,
+            @as(usize, @intCast((@as(u64, sample) * gameplay_assets.gameplay_garbage_sprite_paths.len) / 0x8000)),
+        );
+    }
+
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
         return self.combat.projectiles.slots[0..self.combat.projectiles.count];
     }
@@ -3993,16 +4008,29 @@ pub const Runner = struct {
         }
         if (self.runtime.hazards.count >= self.runtime.hazards.slots.len) return;
 
+        const presentation_scale = switch (kind) {
+            // PORT(verified): `spawn_track_garbage_hazard` seeds the sprite
+            // scale with `(RAND(0.4) + 1.0) * 0.6`; the prior row/lane hash was
+            // deterministic scaffolding.
+            .garbage => nativeGarbagePresentationScale(self.nextMathRandomInt15()),
+        };
+        const sprite_variant_index = switch (kind) {
+            // PORT(verified): native chooses texture refs `0x72..0x75` from a
+            // second math-random sample at garbage spawn time.
+            .garbage => nativeGarbageSpriteVariant(self.nextMathRandomInt15()),
+        };
+
         self.runtime.hazards.slots[self.runtime.hazards.count] = .{
             .row = row,
             .lane = lane,
             .kind = kind,
             .state = .active,
-            .world_position = initialRuntimeHazardWorldPosition(preview, row, lane, kind),
+            .world_position = initialRuntimeHazardWorldPosition(preview, row, lane, kind, presentation_scale),
             .velocity = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            .presentation_scale = runtimeHazardPresentationScale(row, lane, kind),
-            .presentation_phase = runtimeHazardPresentationPhase(row, lane, kind),
-            .yaw_radians = runtimeHazardYawRadians(row, lane, kind),
+            .presentation_scale = presentation_scale,
+            .presentation_phase = 0.0,
+            .sprite_variant_index = @intCast(sprite_variant_index),
+            .yaw_radians = 0.0,
             .arming_progress = 1.0,
             .arming_step = 0.0,
             .collision_side = 0,
@@ -4082,28 +4110,9 @@ pub const Runner = struct {
         };
     }
 
-    fn runtimeHazardPresentationScale(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
-        const seed = runtimeHazardSeed(row, lane, kind);
-        const normalized = @as(f32, @floatFromInt(@as(u16, @truncate(seed >> 16)))) / 65535.0;
+    fn initialRuntimeHazardWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind, presentation_scale: f32) rl.Vector3 {
         return switch (kind) {
-            // Android `cRSubGame::AddGarbage` scales garbage with `(RAND(0.4) + 1.0) * 0.6`.
-            .garbage => (1.0 + normalized * 0.4) * 0.6,
-        };
-    }
-
-    fn runtimeHazardPresentationPhase(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
-        const seed = runtimeHazardSeed(row, lane, kind);
-        const normalized = @as(f32, @floatFromInt(@as(u16, @truncate(seed)))) / 65535.0;
-        return normalized * std.math.tau;
-    }
-
-    fn runtimeHazardYawRadians(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
-        return runtimeHazardPresentationPhase(row, lane, kind) - std.math.pi;
-    }
-
-    fn initialRuntimeHazardWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind) rl.Vector3 {
-        return switch (kind) {
-            .garbage => runtimeCellWorldPosition(preview, row, lane, runtimeHazardPresentationScale(row, lane, kind)),
+            .garbage => runtimeCellWorldPosition(preview, row, lane, presentation_scale),
         };
     }
 
@@ -4290,14 +4299,6 @@ pub const Runner = struct {
             else => {},
         }
         return 0.0;
-    }
-
-    fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
-        var seed: u64 = 0x517cc1b727220a95;
-        seed ^= @as(u64, @intCast(row + 1)) *% 0x9e3779b97f4a7c15;
-        seed ^= @as(u64, @intCast(lane + 3)) *% 0xbf58476d1ce4e5b9;
-        seed ^= (@as(u64, @intFromEnum(kind)) + 1) *% 0x94d049bb133111eb;
-        return seed;
     }
 
     fn hasRuntimeHazard(self: *const Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
@@ -8244,13 +8245,18 @@ test "runtime hazards preserve recovered presentation scalars" {
     var preview = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer preview.deinit();
 
+    var expected_rng = Runner{};
+    const expected_garbage_scale = Runner.nativeGarbagePresentationScale(expected_rng.nextMathRandomInt15());
+    const expected_garbage_variant = Runner.nativeGarbageSpriteVariant(expected_rng.nextMathRandomInt15());
+
     runner.addRuntimeHazard(&preview.preview, 32, 4, .garbage);
     runner.spawnSaltFromAuthoredCell(&preview.preview, 48, 1);
 
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
     const garbage = runner.activeRuntimeHazards()[0];
-    try std.testing.expect(garbage.presentation_scale >= 0.6);
-    try std.testing.expect(garbage.presentation_scale <= 0.84);
+    try std.testing.expectApproxEqAbs(expected_garbage_scale, garbage.presentation_scale, 0.0001);
+    try std.testing.expectEqual(@as(u8, @intCast(expected_garbage_variant)), garbage.sprite_variant_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), garbage.presentation_phase, 0.0001);
     try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
 
     // Salt spawns into its dedicated `SaltHazardPool`, carries the native
