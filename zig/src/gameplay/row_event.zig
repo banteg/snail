@@ -5,6 +5,8 @@ pub const postal_completion_bonus_score: u32 = 50_000;
 
 pub const display_stage_progress_step: f32 = 1.0 / 24.0;
 pub const display_hold_progress_step: f32 = 1.0 / 60.0;
+// PORT(verified): state 6 is the native zero-target delay path inside
+// `update_row_event_display`, not the normal final parcel registration path.
 pub const display_final_delay_progress_step: f32 = 1.0 / 60.0;
 
 pub const widget_local_x: f32 = 7.30000019;

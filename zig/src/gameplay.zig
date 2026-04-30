@@ -60,7 +60,6 @@ const replay_world_x_min: f32 = -4.0;
 const replay_world_x_max: f32 = 4.0;
 const row_event_display_stage_progress_step = row_event_module.display_stage_progress_step;
 const row_event_display_hold_progress_step = row_event_module.display_hold_progress_step;
-const row_event_display_final_delay_progress_step = row_event_module.display_final_delay_progress_step;
 const row_event_widget_local_x = row_event_module.widget_local_x;
 const row_event_widget_local_y = row_event_module.widget_local_y;
 const row_event_widget_local_z = row_event_module.widget_local_z;
@@ -1957,9 +1956,11 @@ pub const Runner = struct {
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) {
             self.maybeAwardRowEventCompletionBonus();
             self.row_event_display.staged_parcel_count = self.row_event_display.delivered_parcel_count;
-            self.row_event_display.state = .final_delivery_delay;
-            self.row_event_display.progress = 0.0;
-            self.row_event_display.progress_step = row_event_display_final_delay_progress_step;
+            // PORT(verified): native `register_parcel_delivery` (0x405040)
+            // jumps directly to row-event display state 3 once the last parcel
+            // is registered. The separate state-6 delay belongs to the
+            // zero-target staging path in `update_row_event_display`.
+            self.row_event_display.state = .final_delivery;
             return;
         }
 
@@ -8219,7 +8220,17 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
 
-test "final parcel delivery enters the delayed row event controller path" {
+test "final parcel delivery enters the native final delivery path" {
+    var runner = Runner{};
+    runner.configureCompletionBonus(1, false);
+
+    runner.registerParcelDelivery();
+
+    try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
+    try std.testing.expectEqual(RowEventDisplayState.final_delivery, runner.row_event_display.state);
+}
+
+test "final parcel delivery reaches the bonus prompt by the end of the gameplay tick" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
@@ -8231,7 +8242,7 @@ test "final parcel delivery enters the delayed row event controller path" {
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(stepUntilParcelRegistered(&runner, &fixture.preview, 256) < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
-    try std.testing.expectEqual(RowEventDisplayState.final_delivery_delay, runner.row_event_display.state);
+    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
 }
 
 test "row event staging promotes delivered parcels into the hold state" {
