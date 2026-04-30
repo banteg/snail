@@ -162,6 +162,12 @@ fn drawBackPlane(scene: *const Scene, preview: *const track.LoadedLevelPreview) 
 
 fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
     if (preview.max_width == 0) return;
+
+    drawRenderCacheSurfaces(scene, preview);
+    drawRenderCacheFringe(scene, preview);
+}
+
+fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
     const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
 
     for (0..preview.total_rows) |global_row| {
@@ -213,23 +219,49 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
                 .white,
             );
 
-            for (lane_index..lane_index + run_length) |edge_lane_index| {
-                const edge_left = @as(f32, @floatFromInt(edge_lane_index)) - width_offset;
-                const edge_right = edge_left + 1.0;
-                const fringe_edge_mask = fringeEdgeMaskForRuntimeTiles(
-                    preview.runtime_tiles,
-                    preview.total_rows,
-                    preview.max_width,
-                    global_row,
-                    edge_lane_index,
-                    row_location.row.marked,
-                );
-                if (fringe_edge_mask != 0) {
-                    drawFringeSides(scene, edge_left, edge_right, front, back, front_height, back_height, fringe_edge_mask);
-                }
-            }
-
             lane_index += run_length - 1;
+        }
+    }
+}
+
+fn drawRenderCacheFringe(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
+    const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
+
+    rl.beginBlendMode(.alpha);
+    defer rl.endBlendMode();
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
+
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const lane_bounds = renderLaneBounds(row_location.row.cells) orelse continue;
+        const max_lane_index = @min(lane_bounds.max, preview.max_width - 1);
+        if (lane_bounds.min > max_lane_index) continue;
+
+        for (lane_bounds.min..max_lane_index + 1) |lane_index| {
+            const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
+            _ = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
+
+            const fringe_edge_mask = fringeEdgeMaskForRuntimeTiles(
+                preview.runtime_tiles,
+                preview.total_rows,
+                preview.max_width,
+                global_row,
+                lane_index,
+                row_location.row.marked,
+            );
+            if (fringe_edge_mask == 0) continue;
+
+            const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
+            const right = left + 1.0;
+            const front = @as(f32, @floatFromInt(global_row));
+            const back = front + 1.0;
+            const backing_surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
+            const surface_tile = backing_surface_tile orelse tile_type;
+            const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
+            const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
+
+            drawFringeSides(scene, left, right, front, back, front_height, back_height, fringe_edge_mask);
         }
     }
 }
