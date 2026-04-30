@@ -146,6 +146,7 @@ const runtime_hazard_live_window_rows: usize = native_runtime_row_scan_ahead_row
 const runtime_wall2_emitter_window_rows: usize = 32;
 const runtime_ring_live_window_rows: usize = 47;
 const runtime_ring_spacing_rows: f32 = 10.0;
+const runtime_default_ramp_ring_non_startup_spacing_advance_rows: f32 = 35.0;
 const runtime_ring_default_gate_threshold: f32 = 0.7;
 const runtime_ring_kind4_to3_threshold: f32 = 0.93;
 const runtime_ring_time_trial_kind3_threshold: f32 = 0.5;
@@ -3636,7 +3637,7 @@ pub const Runner = struct {
                     const target_row = global_row + track.ramp_default_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
                     self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, self.spawnedRuntimeRingKind(4));
-                    self.runtime.rings.last_spawn_z = source_z;
+                    self.runtime.rings.last_spawn_z = self.defaultRampRingSpacingCursor(source_z);
                 },
                 0x08, 0x09, 0x0a => {
                     if (global_row >= preview.runtime_active_row_end) continue;
@@ -4033,6 +4034,17 @@ pub const Runner = struct {
         if ((runtime_build_flags & 0x08) == 0) return false;
         if (runtime_build_flags == track.tutorialRuntimeBuildFlags) return true;
         return self.nextMathRandomFloat01() > runtime_ring_default_gate_threshold;
+    }
+
+    fn defaultRampRingSpacingCursor(self: *const Runner, source_z: f32) f32 {
+        _ = self;
+        // PORT(verified): `update_subgame` compares the ring spacing cursor
+        // against the current row z, but after default kind-4 ramp spawns it
+        // writes either the source row or `source + 35` depending on
+        // `Player.movement_mode_selector < 10`. The Zig runtime scanner only
+        // runs during live gameplay, after the click-start/startup modes, so
+        // it uses the non-startup branch.
+        return source_z + runtime_default_ramp_ring_non_startup_spacing_advance_rows;
     }
 
     fn runtimePickupCapacity(kind: RuntimePickupKind) usize {
@@ -7096,6 +7108,62 @@ test "runtime ring effect post-hit progress step follows native run rate" {
         runner.activeRuntimeRingEffects()[0].effect_progress_step,
         0.0001,
     );
+}
+
+test "default ramp rings advance native spacing cursor after startup modes" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const big_jump_entry = catalog.dat.entryByPath("SEGMENTS/BIG JUMP.TXT") orelse return error.EntryNotFound;
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        big_jump_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    var source_row: usize = 0;
+    var source_lane: usize = 0;
+    var found_source = false;
+    for (0..preview.total_rows) |global_row| {
+        const row_flags = preview.runtimeRowFlagsAt(global_row);
+        if ((row_flags & track.runtime_row_flag_ring_none) != 0) continue;
+        if (requestedRampSpecialRuntimeRingKind(row_flags) != null) continue;
+        const row_location = preview.locateRow(global_row) orelse continue;
+        for (row_location.row.cells, 0..) |_, lane| {
+            const tile_type = preview.runtimeTileAt(global_row, lane) orelse continue;
+            if (!runtimeRingDefaultKind4Eligible(tile_type, preview.runtime_build_flags)) continue;
+            source_row = global_row;
+            source_lane = lane;
+            found_source = true;
+            break;
+        }
+        if (found_source) break;
+    }
+    try std.testing.expect(found_source);
+
+    var runner = Runner.init(&preview);
+    runner.runtime.rings.last_spawn_z = -100.0;
+    runner.scanRuntimeRingEffectRow(&preview, source_row);
+
+    try std.testing.expect(runner.activeRuntimeRingEffects().len != 0);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, @floatFromInt(source_row)) + runtime_default_ramp_ring_non_startup_spacing_advance_rows,
+        runner.runtime.rings.last_spawn_z,
+        0.0001,
+    );
+    var spawned_on_source_lane = false;
+    for (runner.activeRuntimeRingEffects()) |effect| {
+        if (effect.source_row == source_row and effect.lane == source_lane and effect.kind == 4) {
+            spawned_on_source_lane = true;
+            break;
+        }
+    }
+    try std.testing.expect(spawned_on_source_lane);
 }
 
 test "runtime ring effect collect follow cleans itself up after native progress window" {

@@ -887,6 +887,7 @@ Current practical read:
     - `phase_step = 1 / (ring_speed * 60) * track_center_x * tau`
   - default ramp-generated kinds (`0/1/2/3/4`) use the shared base-rate path instead:
     - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * movement_flag_selector * 0.125 * track_center_x * tau`
+  - after a default kind-`4` ramp spawn, `update_subgame` advances the spacing cursor to the source row during early startup movement modes, otherwise to `source + 35`; the live Zig scanner mirrors the non-startup `source + 35` branch
   - the active slot position is the mutable vector at `+0x68/+0x6c/+0x70`
   - default ramp families `0/1/2/3/4` randomize `x` directly into that live slot vector at spawn
   - child particles orbit around the same live slot vector instead of around an independent hidden anchor
