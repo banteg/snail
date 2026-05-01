@@ -23,7 +23,12 @@ pub const hard_alpha_cutoff: f32 = 0.5;
 pub const BlendMode = enum {
     alpha,
     additive,
+    src_alpha_src_color,
 };
+
+const gl_src_color = 0x0300;
+const gl_src_alpha = 0x0302;
+const gl_func_add = 0x8006;
 
 pub fn loadAlphaCutoutShader() !rl.Shader {
     const shader = try rl.loadShaderFromMemory(null, alpha_cutout_fragment_shader);
@@ -282,10 +287,16 @@ fn drawQuad(
     blend_mode: BlendMode,
     alpha_cutoff: f32,
 ) void {
-    rl.beginBlendMode(switch (blend_mode) {
-        .alpha => .alpha,
-        .additive => .additive,
-    });
+    switch (blend_mode) {
+        .alpha => rl.beginBlendMode(.alpha),
+        .additive => rl.beginBlendMode(.additive),
+        .src_alpha_src_color => {
+            // Native sprite render state 5 maps D3DBLEND_SRCALPHA over
+            // D3DBLEND_SRCCOLOR. Slug hit masks use this lane.
+            rl.gl.rlSetBlendFactors(gl_src_alpha, gl_src_color, gl_func_add);
+            rl.beginBlendMode(.custom);
+        },
+    }
     defer rl.endBlendMode();
     if (shader) |cutout_shader| {
         setAlphaCutoff(cutout_shader, alpha_cutoff);

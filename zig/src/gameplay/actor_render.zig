@@ -243,7 +243,7 @@ fn drawGameplaySlugActor(
     else
         render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?;
     const frame = slugSpriteFrame(preview, global_row, lane_index, slug_sprite_y_offset);
-    gameplay_billboard.drawTextureRectBasis(
+    gameplay_billboard.drawTextureRectBasisBlendedAlphaCutoff(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         frame.position,
@@ -253,8 +253,19 @@ fn drawGameplaySlugActor(
         frame.up,
         render.billboard_shader,
         visual.tint,
+        slugVisualBlendMode(visual),
+        gameplay_billboard.default_alpha_cutoff,
     );
     _ = camera;
+}
+
+fn slugVisualBlendMode(visual: gameplay.SlugVisualState) gameplay_billboard.BlendMode {
+    return if (visual.use_mask) .src_alpha_src_color else .alpha;
+}
+
+test "slug hit mask uses native sprite render state five blend" {
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, slugVisualBlendMode(.{}));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, slugVisualBlendMode(.{ .use_mask = true }));
 }
 
 const SlugSpriteFrame = struct {
