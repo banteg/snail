@@ -57,10 +57,11 @@ pub const card_body_scale: f32 = 0.7;
 // left/right and bottom edges only. The top edge stays anchored to the title widget.
 pub const card_horizontal_padding: f32 = 8.0;
 pub const card_bottom_padding: f32 = 8.0;
-// PORT(verified): `open_galaxy_route` stores text-derived bounds on the card widget; the
-// native sprite-frame renderer then draws the shell around those bounds instead of eating
-// into the first text row. Keep layout math native and expand only the rendered frame.
-pub const card_frame_outset: f32 = 8.0;
+// PORT(verified): `open_galaxy_route` stores text-derived bounds on the card widget, and
+// `initialize_galaxy` seeds that frame with widget flag bit 2. `initialize_frontend_widget`
+// therefore runs the native highlighted-border path immediately, so the shell is rendered
+// at the menu button hot padding instead of the 8px card-bound expansion.
+pub const card_frame_outset: f32 = frontend_widget.menu_button_hot_padding;
 pub const card_horizontal_pointer_gap: f32 = 6.0;
 pub const card_star_gap: f32 = 16.0;
 pub const card_right_limit: f32 = 631.0;
@@ -102,6 +103,12 @@ pub fn bodyText(maybe_text: ?[]const u8) []const u8 {
     // once when the card opens. `update_galaxy` does not swap that body text based on
     // hover state or selected action.
     return maybe_text orelse "";
+}
+
+pub fn titleTextColor() rl.Color {
+    // PORT(verified): `initialize_galaxy` creates the "Intergalactic Delivery Route"
+    // label with fixed white RGBA, not the menu-button idle orange/hot blend.
+    return .ray_white;
 }
 
 pub fn pointForRouteIndex(maybe_names: ?*const galaxy.Definition, route_index: usize) ?galaxy.Point {
@@ -273,7 +280,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
         .border = state.frontend_widget_art.border.?.texture,
     };
     drawStars(state, layout, mode);
-    drawUiFontTextWithButtonColors(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, .{}, false);
+    drawUiFontTextWithColorAndShadow(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, titleTextColor());
     drawLogo(state, layout);
     if (state.currentRouteMapOpenIndex()) |route_index| {
         const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontend.frontendRouteModeLabel(mode);
@@ -360,6 +367,23 @@ fn drawUiFontTextWithButtonColors(
     const text_point = layout.mapPoint(left, top);
     state.ui_font.drawText(text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
     state.ui_font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
+}
+
+fn drawUiFontTextWithColorAndShadow(
+    state: anytype,
+    layout: VirtualLayout,
+    text: []const u8,
+    left: f32,
+    top: f32,
+    text_scale: f32,
+    color: rl.Color,
+) void {
+    const colors = frontend_widget.colorsForState(.{}, false);
+    const scaled_font_size = layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale));
+    const shadow_point = layout.mapPoint(left + 2.0, top + 2.0);
+    const text_point = layout.mapPoint(left, top);
+    state.ui_font.drawText(text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
+    state.ui_font.drawText(text, text_point.x, text_point.y, scaled_font_size, color);
 }
 
 fn drawUiFontTextRect(
@@ -634,4 +658,13 @@ fn drawLogo(state: anytype, layout: VirtualLayout) void {
         logo_height,
         .white,
     );
+}
+
+test "route map heading uses fixed native white title color" {
+    const color = titleTextColor();
+    try std.testing.expectEqual(rl.Color.ray_white, color);
+}
+
+test "route card frame uses highlighted widget padding" {
+    try std.testing.expectEqual(frontend_widget.menu_button_hot_padding, card_frame_outset);
 }
