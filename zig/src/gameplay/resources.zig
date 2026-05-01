@@ -231,9 +231,7 @@ pub fn loadLazer(state: *State, store: *resource_store.Store) !void {
 pub fn loadSalt(state: *State, store: *resource_store.Store) !void {
     unloadSalt(state);
 
-    if (store.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) != null) {
-        state.salt_model = try store.model(gameplay_assets.gameplay_salt_model_path, .{});
-    }
+    state.salt_model = try store.model(gameplay_assets.gameplay_salt_model_path, .{});
 }
 
 pub fn loadActorModels(state: *State, store: *resource_store.Store) !void {

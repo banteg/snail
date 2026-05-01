@@ -596,9 +596,17 @@ fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFa
 fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) rl.Texture2D {
     switch (family) {
         .ring => return render.resources.sprites.ring.?.texture,
-        .explode => return render.resources.sprites.explode_small.?.texture,
-        .slow => return render.resources.sprites.slow_ring.?.texture,
+        .explode => return render.resources.sprites.explode_big.?.texture,
+        .slow => return render.resources.sprites.slow_ring_big.?.texture,
     }
+}
+
+fn runtimeRingParticleNativeSpriteRef(family: RuntimeRingParticleSpriteFamily) u16 {
+    return switch (family) {
+        .ring => 0x87,
+        .explode => 0x83,
+        .slow => 0x85,
+    };
 }
 
 fn runtimeRingParticlePosition(base: rl.Vector3, phase: f32, child_index: usize, radius: f32) rl.Vector3 {
@@ -987,6 +995,15 @@ test "runtime ring particles use recovered native sprite blend lanes" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, runtimeRingParticleBlendMode(.ring));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.explode));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.slow));
+}
+
+test "runtime ring halo uses recovered native sprite refs" {
+    // `initialize_ring_or_special_effect_particles` allocates sprite refs 0x87,
+    // 0x83, and 0x85 for the live halo; the following star-shower path uses the
+    // adjacent small refs.
+    try std.testing.expectEqual(@as(u16, 0x87), runtimeRingParticleNativeSpriteRef(.ring));
+    try std.testing.expectEqual(@as(u16, 0x83), runtimeRingParticleNativeSpriteRef(.explode));
+    try std.testing.expectEqual(@as(u16, 0x85), runtimeRingParticleNativeSpriteRef(.slow));
 }
 
 test "garbage sprites keep the native soft alpha lane" {
