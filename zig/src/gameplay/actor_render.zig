@@ -24,7 +24,7 @@ const banner_bob_cycle_seconds: f32 = 144.0 / 60.0;
 const tau: f32 = 6.2831855;
 const native_runtime_ring_particle_count: usize = 10;
 const native_runtime_ring_particle_radius: f32 = 1.2;
-const native_runtime_ring_particle_size: f32 = 0.72;
+const native_runtime_ring_particle_half_extent: f32 = 0.72;
 const native_runtime_ring_particle_alpha: u8 = 204;
 const native_runtime_ring_particle_phase_step: f32 = tau / @as(f32, @floatFromInt(native_runtime_ring_particle_count));
 const native_time_trial_ghost_sprite_world_size: f32 = 1.0;
@@ -562,20 +562,26 @@ fn drawRuntimeRingParticleHalo(
     effect: gameplay_runtime_entities.RingEffect,
     family: RuntimeRingParticleSpriteFamily,
 ) void {
+    _ = camera;
     const texture = runtimeRingParticleTexture(render, family);
-    const sprite_size = native_runtime_ring_particle_size * effect.presentation_scale;
+    const sprite_size = runtimeRingParticleWorldSize(effect.presentation_scale);
     const radius = native_runtime_ring_particle_radius * effect.presentation_scale;
     const blend_mode = runtimeRingParticleBlendMode(family);
     for (0..native_runtime_ring_particle_count) |child_index| {
-        gameplay_billboard.drawTextureRectRolledBlendedAlphaCutoff(
+        const child_phase = runtimeRingParticlePhase(effect.active_phase, child_index);
+        const basis = runtimeRingParticleBasis(child_phase);
+        // Native sprite quads are translated in world space and remain in the
+        // XY plane. The sprite `angle` lane then rotates each arc child by its
+        // ring phase, forming one continuous halo instead of ten flat copies.
+        gameplay_billboard.drawTextureRectBasisBlendedAlphaCutoff(
             texture,
             .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
-            runtimeRingParticlePosition(effect.presentation_position, effect.active_phase, child_index, radius),
+            runtimeRingParticlePosition(effect.presentation_position, child_phase, radius),
             sprite_size,
             sprite_size,
-            camera,
+            basis.right,
+            basis.up,
             render.billboard_shader,
-            0.0,
             .{ .r = 255, .g = 255, .b = 255, .a = native_runtime_ring_particle_alpha },
             blend_mode,
             gameplay_billboard.soft_alpha_cutoff,
@@ -623,12 +629,34 @@ fn runtimeRingParticleNativeSpriteRef(family: RuntimeRingParticleSpriteFamily) u
     };
 }
 
-fn runtimeRingParticlePosition(base: rl.Vector3, phase: f32, child_index: usize, radius: f32) rl.Vector3 {
-    const child_phase = phase + @as(f32, @floatFromInt(child_index)) * native_runtime_ring_particle_phase_step;
+fn runtimeRingParticleWorldSize(scale: f32) f32 {
+    // Native `draw_sprite_quad` treats the sprite size lane as a half-extent.
+    return native_runtime_ring_particle_half_extent * 2.0 * scale;
+}
+
+fn runtimeRingParticlePhase(active_phase: f32, child_index: usize) f32 {
+    return active_phase + @as(f32, @floatFromInt(child_index)) * native_runtime_ring_particle_phase_step;
+}
+
+fn runtimeRingParticlePosition(base: rl.Vector3, child_phase: f32, radius: f32) rl.Vector3 {
     return .{
         .x = base.x + std.math.sin(child_phase) * radius,
         .y = base.y + std.math.cos(child_phase) * radius,
         .z = base.z,
+    };
+}
+
+const RuntimeRingParticleBasis = struct {
+    right: rl.Vector3,
+    up: rl.Vector3,
+};
+
+fn runtimeRingParticleBasis(child_phase: f32) RuntimeRingParticleBasis {
+    const c = std.math.cos(child_phase);
+    const s = std.math.sin(child_phase);
+    return .{
+        .right = .{ .x = c, .y = s, .z = 0.0 },
+        .up = .{ .x = -s, .y = c, .z = 0.0 },
     };
 }
 
@@ -1032,15 +1060,26 @@ test "garbage sprites keep the native soft alpha lane" {
 
 test "native runtime ring halo positions ten sprites around the parent" {
     const base = rl.Vector3{ .x = 2.0, .y = 3.0, .z = 4.0 };
-    const first = runtimeRingParticlePosition(base, 0.0, 0, native_runtime_ring_particle_radius);
+    const first = runtimeRingParticlePosition(base, runtimeRingParticlePhase(0.0, 0), native_runtime_ring_particle_radius);
     try std.testing.expectApproxEqAbs(base.x, first.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y + native_runtime_ring_particle_radius, first.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, first.z, 0.0001);
 
-    const opposite = runtimeRingParticlePosition(base, 0.0, 5, native_runtime_ring_particle_radius);
+    const opposite = runtimeRingParticlePosition(base, runtimeRingParticlePhase(0.0, 5), native_runtime_ring_particle_radius);
     try std.testing.expectApproxEqAbs(base.x, opposite.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y - native_runtime_ring_particle_radius, opposite.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, opposite.z, 0.0001);
+}
+
+test "runtime ring halo uses native sprite half extent and phase rotation" {
+    try std.testing.expectApproxEqAbs(@as(f32, 1.44), runtimeRingParticleWorldSize(1.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.72), runtimeRingParticleWorldSize(0.5), 0.0001);
+
+    const basis = runtimeRingParticleBasis(std.math.pi / 2.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), basis.right.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), basis.right.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.0), basis.up.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), basis.up.y, 0.0001);
 }
 
 test "native blaster trail points use recovered movement-delta offsets" {
