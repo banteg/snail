@@ -128,12 +128,28 @@ pub const Catalog = struct {
         return self.dat.readEntryBytes(entry);
     }
 
+    pub const TextureRgbBleedMode = enum {
+        transparent_pixels,
+        alpha_fringe_pixels,
+    };
+
+    pub const TextureLoadOptions = struct {
+        rgb_bleed_mode: TextureRgbBleedMode = .transparent_pixels,
+    };
+
     pub fn loadTexture(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedTexture {
+        return self.loadTextureEx(allocator, entry, .{});
+    }
+
+    pub fn loadTextureEx(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry, options: TextureLoadOptions) !LoadedTexture {
         const decoded = try self.readEntryBytes(entry);
 
         var image = try rl.loadImageFromMemory(".tga", decoded);
         defer rl.unloadImage(image);
-        try bleedTransparentRgb(allocator, &image);
+        switch (options.rgb_bleed_mode) {
+            .transparent_pixels => try bleedTransparentRgb(allocator, &image),
+            .alpha_fringe_pixels => try bleedAlphaFringeRgb(allocator, &image),
+        }
 
         const texture = try rl.loadTextureFromImage(image);
         rl.setTextureWrap(texture, .clamp);
@@ -191,6 +207,14 @@ pub const Catalog = struct {
 };
 
 fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
+    try bleedImageRgb(allocator, image, .transparent_pixels);
+}
+
+fn bleedAlphaFringeRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
+    try bleedImageRgb(allocator, image, .alpha_fringe_pixels);
+}
+
+fn bleedImageRgb(allocator: std.mem.Allocator, image: *rl.Image, mode: Catalog.TextureRgbBleedMode) !void {
     rl.imageFormat(image, .uncompressed_r8g8b8a8);
 
     const width: usize = @intCast(image.width);
@@ -198,7 +222,7 @@ fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
     if (width == 0 or height == 0) return;
 
     const pixels = @as([*]u8, @ptrCast(image.data))[0 .. width * height * 4];
-    try bleedTransparentRgbPixels(allocator, pixels, width, height);
+    try bleedRgbPixels(allocator, pixels, width, height, mode);
 }
 
 fn bleedTransparentRgbPixels(
@@ -206,6 +230,25 @@ fn bleedTransparentRgbPixels(
     pixels: []u8,
     width: usize,
     height: usize,
+) !void {
+    try bleedRgbPixels(allocator, pixels, width, height, .transparent_pixels);
+}
+
+fn bleedAlphaFringeRgbPixels(
+    allocator: std.mem.Allocator,
+    pixels: []u8,
+    width: usize,
+    height: usize,
+) !void {
+    try bleedRgbPixels(allocator, pixels, width, height, .alpha_fringe_pixels);
+}
+
+fn bleedRgbPixels(
+    allocator: std.mem.Allocator,
+    pixels: []u8,
+    width: usize,
+    height: usize,
+    mode: Catalog.TextureRgbBleedMode,
 ) !void {
     std.debug.assert(pixels.len == width * height * 4);
 
@@ -215,7 +258,11 @@ fn bleedTransparentRgbPixels(
     for (0..height) |y| {
         for (0..width) |x| {
             const offset = ((y * width) + x) * 4;
-            if (source[offset + 3] != 0) continue;
+            const alpha = source[offset + 3];
+            switch (mode) {
+                .transparent_pixels => if (alpha != 0) continue,
+                .alpha_fringe_pixels => if (alpha == 255) continue,
+            }
 
             var red_sum: u16 = 0;
             var green_sum: u16 = 0;
@@ -418,6 +465,20 @@ test "transparent texture pixels average all opaque neighbors" {
     try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
 
     try std.testing.expectEqualSlices(u8, &.{ 25, 35, 45, 0 }, pixels[4..8]);
+}
+
+test "alpha fringe texture pixels keep alpha and borrow neighboring color" {
+    var pixels = [_]u8{
+        70,  90,  110, 255,
+        0,   0,   0,   192,
+        120, 140, 160, 255,
+    };
+
+    try bleedAlphaFringeRgbPixels(std.testing.allocator, &pixels, 3, 1);
+
+    try std.testing.expectEqualSlices(u8, &.{ 70, 90, 110, 255 }, pixels[0..4]);
+    try std.testing.expectEqualSlices(u8, &.{ 95, 115, 135, 192 }, pixels[4..8]);
+    try std.testing.expectEqualSlices(u8, &.{ 120, 140, 160, 255 }, pixels[8..12]);
 }
 
 test "catalog groups archive entries by asset type" {

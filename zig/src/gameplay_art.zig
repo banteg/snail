@@ -304,7 +304,7 @@ pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     art.slug_mask = try store.texture(gameplay_assets.gameplay_slug_mask_sprite_path);
     art.ghost = try store.texture(gameplay_assets.gameplay_ghost_sprite_path);
     for (gameplay_assets.gameplay_garbage_sprite_paths, 0..) |path, index| {
-        art.garbage_variants[index] = try store.texture(path);
+        art.garbage_variants[index] = try store.textureAlphaFringe(path);
     }
     art.health = try store.texture(gameplay_assets.gameplay_health_sprite_path);
     art.life = try store.texture(gameplay_assets.gameplay_life_sprite_path);
