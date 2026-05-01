@@ -259,6 +259,8 @@ pub const Uploaded = struct {
     pub fn drawAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, shader: rl.Shader) void {
         rl.beginBlendMode(.alpha);
         defer rl.endBlendMode();
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
 
         setAlphaCutoff(shader, default_alpha_cutoff);
         const submeshes = @constCast(self.submeshes);
