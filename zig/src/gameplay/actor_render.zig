@@ -260,12 +260,15 @@ fn drawGameplaySlugActor(
 }
 
 fn slugVisualBlendMode(visual: gameplay.SlugVisualState) gameplay_billboard.BlendMode {
-    return if (visual.use_mask) .src_alpha_src_color else .alpha;
+    _ = visual;
+    return .alpha;
 }
 
-test "slug hit mask uses native sprite render state five blend" {
+test "slug hit mask keeps the stable native alpha blend equivalent" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, slugVisualBlendMode(.{}));
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, slugVisualBlendMode(.{ .use_mask = true }));
+    // Native sprite state 5 is a configure no-op; the port uses explicit alpha
+    // instead of inheriting whichever sprite state happened to precede it.
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, slugVisualBlendMode(.{ .use_mask = true }));
 }
 
 const SlugSpriteFrame = struct {
@@ -555,17 +558,29 @@ fn drawRuntimeRingParticleHalo(
     const texture = runtimeRingParticleTexture(render, family);
     const sprite_size = native_runtime_ring_particle_size * effect.presentation_scale;
     const radius = native_runtime_ring_particle_radius * effect.presentation_scale;
+    const blend_mode = runtimeRingParticleBlendMode(family);
     for (0..native_runtime_ring_particle_count) |child_index| {
-        gameplay_billboard.drawTexture(
+        gameplay_billboard.drawTextureRectRolledBlendedAlphaCutoff(
             texture,
+            .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
             runtimeRingParticlePosition(effect.presentation_position, effect.active_phase, child_index, radius),
             sprite_size,
             sprite_size,
             camera,
             render.billboard_shader,
+            0.0,
             .{ .r = 255, .g = 255, .b = 255, .a = native_runtime_ring_particle_alpha },
+            blend_mode,
+            gameplay_billboard.soft_alpha_cutoff,
         );
     }
+}
+
+fn runtimeRingParticleBlendMode(family: RuntimeRingParticleSpriteFamily) gameplay_billboard.BlendMode {
+    return switch (family) {
+        .ring => .additive,
+        .explode, .slow => .src_alpha_src_color,
+    };
 }
 
 fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFamily {
@@ -965,6 +980,12 @@ test "runtime powerup rings use the native particle-ring sprite family" {
     try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.ring, runtimeRingParticleSpriteFamily(5).?);
     try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.explode, runtimeRingParticleSpriteFamily(6).?);
     try std.testing.expectEqual(RuntimeRingParticleSpriteFamily.slow, runtimeRingParticleSpriteFamily(7).?);
+}
+
+test "runtime ring particles use recovered native sprite blend lanes" {
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, runtimeRingParticleBlendMode(.ring));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.explode));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.slow));
 }
 
 test "native runtime ring halo positions ten sprites around the parent" {

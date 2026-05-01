@@ -18,6 +18,7 @@ const alpha_cutout_fragment_shader: [:0]const u8 =
 ;
 
 pub const default_alpha_cutoff: f32 = 0.05;
+pub const soft_alpha_cutoff: f32 = 0.0;
 pub const hard_alpha_cutoff: f32 = 0.5;
 
 pub const BlendMode = enum {
@@ -291,8 +292,8 @@ fn drawQuad(
         .alpha => rl.beginBlendMode(.alpha),
         .additive => rl.beginBlendMode(.additive),
         .src_alpha_src_color => {
-            // Native sprite render state 5 maps D3DBLEND_SRCALPHA over
-            // D3DBLEND_SRCCOLOR. Slug hit masks use this lane.
+            // Native sprite render state 13 maps D3DBLEND_SRCALPHA over
+            // D3DBLEND_SRCCOLOR. Explode/slow ring particles use this lane.
             rl.gl.rlSetBlendFactors(gl_src_alpha, gl_src_color, gl_func_add);
             rl.beginBlendMode(.custom);
         },
