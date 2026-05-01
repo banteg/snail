@@ -388,8 +388,12 @@ fn drawGameplayGarbageActor(
         render.billboard_shader,
         hazard.presentation_phase,
         .white,
-        gameplay_billboard.hard_alpha_cutoff,
+        garbageAlphaCutoff(),
     );
+}
+
+fn garbageAlphaCutoff() f32 {
+    return gameplay_billboard.default_alpha_cutoff;
 }
 
 fn drawGameplaySaltSlotActor(
@@ -983,6 +987,10 @@ test "runtime ring particles use recovered native sprite blend lanes" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, runtimeRingParticleBlendMode(.ring));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.explode));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.slow));
+}
+
+test "garbage sprites keep the native soft alpha lane" {
+    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, garbageAlphaCutoff());
 }
 
 test "native runtime ring halo positions ten sprites around the parent" {
