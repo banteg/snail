@@ -141,7 +141,7 @@ pub fn drawCompleted(
     continue_visible: bool,
 ) !void {
     const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
     var idle_state = frontend_widget.TextButtonState{};
     idle_state.snapFor(.menu_button, false);
@@ -311,7 +311,7 @@ pub fn drawFailed(
     frontend_widget.drawMenuButton(
         layout,
         .{
-            .border = state.frontend_widget_art.border.?.texture,
+            .border = state.frontend_widget_art.border.texture,
         },
         &state.ui_font,
         "Click to Continue",
@@ -322,10 +322,9 @@ pub fn drawFailed(
 }
 
 fn drawParcelIcon(state: anytype, layout: VirtualLayout) void {
-    const loaded_texture = state.frontend_widget_art.parcel_icon orelse return;
     drawTextureLocalRect(
         layout,
-        loaded_texture,
+        state.frontend_widget_art.parcel_icon,
         parcel_icon_x,
         parcel_icon_y,
         parcel_icon_width,

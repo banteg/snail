@@ -277,7 +277,7 @@ pub fn cardLayout(
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
     const mode = state.frontend_route_mode orelse return;
     const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
     drawStars(state, layout, mode);
     drawUiFontTextWithColorAndShadow(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, titleTextColor());
@@ -468,7 +468,7 @@ fn drawConnection(
     layout: VirtualLayout,
     start_point: galaxy.Point,
     end_point: galaxy.Point,
-    line_texture: ?assets.LoadedTexture,
+    line_texture: assets.LoadedTexture,
     authored_width: f32,
     tint: rl.Color,
 ) void {
@@ -479,29 +479,25 @@ fn drawConnection(
     const length = std.math.sqrt(dx * dx + dy * dy);
     if (length <= 0.01) return;
 
-    if (line_texture) |loaded_texture| {
-        const scaled_width = layout.scaleFloat(authored_width);
-        rl.drawTexturePro(
-            loaded_texture.texture,
-            .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
-                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
-            },
-            .{
-                .x = start.x,
-                .y = start.y,
-                .width = length,
-                .height = scaled_width,
-            },
-            .{ .x = 0.0, .y = scaled_width * 0.5 },
-            @as(f32, @floatCast(std.math.atan2(dy, dx) * 180.0 / std.math.pi)),
-            tint,
-        );
-    } else {
-        rl.drawLineEx(start, end, layout.scaleFloat(authored_width), tint);
-    }
+    const scaled_width = layout.scaleFloat(authored_width);
+    rl.drawTexturePro(
+        line_texture.texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(line_texture.texture.width)),
+            .height = @as(f32, @floatFromInt(line_texture.texture.height)),
+        },
+        .{
+            .x = start.x,
+            .y = start.y,
+            .width = length,
+            .height = scaled_width,
+        },
+        .{ .x = 0.0, .y = scaled_width * 0.5 },
+        @as(f32, @floatCast(std.math.atan2(dy, dx) * 180.0 / std.math.pi)),
+        tint,
+    );
 }
 
 fn drawStars(state: anytype, layout: VirtualLayout, mode: frontend.FrontendLevelMode) void {
@@ -513,9 +509,7 @@ fn drawStars(state: anytype, layout: VirtualLayout, mode: frontend.FrontendLevel
         null;
     for (0..galaxy.map_galaxy_count) |galaxy_index| {
         const center = galaxy.galaxyCenter(galaxy_index);
-        if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
-            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, galaxy_size, galaxy_size, .white);
-        }
+        drawTextureCenteredLocal(layout, state.route_map_art.galaxies[galaxy_index], center.x, center.y, galaxy_size, galaxy_size, .white);
     }
 
     if (state.galaxy_names) |names| {
@@ -556,9 +550,7 @@ fn drawStars(state: anytype, layout: VirtualLayout, mode: frontend.FrontendLevel
             for (0..visible_star_count) |local_index| {
                 const route_index = route_cursor + local_index + 1;
                 const point = names.routePointForRouteIndex(route_index).?;
-                if (state.route_map_art.level_star) |loaded_texture| {
-                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, .white);
-                }
+                drawTextureCenteredLocal(layout, state.route_map_art.level_star, point.x, point.y, 32.0, 32.0, .white);
             }
         }
     }
@@ -568,22 +560,20 @@ fn drawStars(state: anytype, layout: VirtualLayout, mode: frontend.FrontendLevel
         if (highlight_alpha <= 0.001) continue;
         const maybe_names = if (state.galaxy_names) |*names| names else null;
         if (pointForRouteIndex(maybe_names, route_index)) |selected_point| {
-            if (state.route_map_art.level_select) |loaded_texture| {
-                drawTextureCenteredLocal(
-                    layout,
-                    loaded_texture,
-                    selected_point.x,
-                    selected_point.y,
-                    64.0,
-                    64.0,
-                    .{
-                        .r = 255,
-                        .g = 255,
-                        .b = 255,
-                        .a = @intFromFloat(std.math.clamp(highlight_alpha * 255.0, 0.0, 255.0)),
-                    },
-                );
-            }
+            drawTextureCenteredLocal(
+                layout,
+                state.route_map_art.level_select,
+                selected_point.x,
+                selected_point.y,
+                64.0,
+                64.0,
+                .{
+                    .r = 255,
+                    .g = 255,
+                    .b = 255,
+                    .a = @intFromFloat(std.math.clamp(highlight_alpha * 255.0, 0.0, 255.0)),
+                },
+            );
         }
     }
 }
@@ -598,29 +588,27 @@ fn drawCard(
     primary_action: []const u8,
     replay_action: ?[]const u8,
 ) void {
-    if (state.route_map_art.border) |loaded_texture| {
-        const frame_rect = frontend_widget.Rect{
-            .left = layout_state.card_rect.left - card_frame_outset,
-            .top = layout_state.card_rect.top - card_frame_outset,
-            .width = layout_state.card_rect.width + card_frame_outset * 2.0,
-            .height = layout_state.card_rect.height + card_frame_outset * 2.0,
-        };
-        frontend_widget.drawNineSliceFrame(
-            layout,
-            loaded_texture.texture,
-            frame_rect,
-            card_frame_edge,
-            card_frame_edge / 128.0,
-            .white,
-        );
-    }
+    const frame_rect = frontend_widget.Rect{
+        .left = layout_state.card_rect.left - card_frame_outset,
+        .top = layout_state.card_rect.top - card_frame_outset,
+        .width = layout_state.card_rect.width + card_frame_outset * 2.0,
+        .height = layout_state.card_rect.height + card_frame_outset * 2.0,
+    };
+    frontend_widget.drawNineSliceFrame(
+        layout,
+        state.route_map_art.border.texture,
+        frame_rect,
+        card_frame_edge,
+        card_frame_edge / 128.0,
+        .white,
+    );
 
     drawUiFontTextRect(state, layout, route_galaxy_name, layout_state.title_rect, card_title_scale, .ray_white);
     drawUiFontTextRect(state, layout, route_level_name, layout_state.subtitle_rect, card_subtitle_scale, .ray_white);
     drawUiFontTextRect(state, layout, route_body, layout_state.body_rect, card_body_scale, .ray_white);
 
     const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
     frontend_widget.drawMenuButton(
         layout,
@@ -648,10 +636,9 @@ fn drawCard(
 }
 
 fn drawLogo(state: anytype, layout: VirtualLayout) void {
-    const loaded_texture = state.route_map_art.logo orelse return;
     drawTextureLocalRect(
         layout,
-        loaded_texture,
+        state.route_map_art.logo,
         logo_x,
         logo_y,
         logo_width,

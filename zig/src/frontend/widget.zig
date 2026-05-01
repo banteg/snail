@@ -30,12 +30,12 @@ pub const SliderDirection = enum {
 };
 
 pub const SliderTextures = struct {
-    less: ?rl.Texture2D = null,
-    less_hover: ?rl.Texture2D = null,
-    more: ?rl.Texture2D = null,
-    more_hover: ?rl.Texture2D = null,
-    bar: ?rl.Texture2D = null,
-    bar_full: ?rl.Texture2D = null,
+    less: rl.Texture2D,
+    less_hover: rl.Texture2D,
+    more: rl.Texture2D,
+    more_hover: rl.Texture2D,
+    bar: rl.Texture2D,
+    bar_full: rl.Texture2D,
 };
 
 const slider_endpoint_epsilon: f32 = 0.001;
@@ -543,57 +543,35 @@ pub fn drawSliderMenuRow(
     font.drawText(title_text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
     font.drawText(title_text, text_point.x, text_point.y, scaled_font_size, colors.text);
 
-    if (slider_textures.bar) |texture| {
-        drawTextureLocalRect(layout, texture, slider_layout.bar_rect.left, slider_layout.bar_rect.top, slider_layout.bar_rect.width, slider_layout.bar_rect.height, .white);
-    } else {
-        rl.drawRectangleRounded(layout.mapRect(slider_layout.bar_rect.left, slider_layout.bar_rect.top, slider_layout.bar_rect.width, slider_layout.bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
-    }
-    if (slider_textures.bar_full) |texture| {
-        drawTextureLocalRectSource(
-            layout,
-            texture,
-            .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = @as(f32, @floatFromInt(texture.width)) * displayed_clamped_value,
-                .height = @as(f32, @floatFromInt(texture.height)),
-            },
-            slider_layout.bar_rect.left,
-            slider_layout.bar_rect.top,
-            slider_layout.bar_rect.width * displayed_clamped_value,
-            slider_layout.bar_rect.height,
-            .white,
-        );
-    } else {
-        rl.drawRectangleRounded(
-            .{
-                .x = layout.mapPoint(slider_layout.bar_rect.left, slider_layout.bar_rect.top).x,
-                .y = layout.mapPoint(slider_layout.bar_rect.left, slider_layout.bar_rect.top).y,
-                .width = layout.scaleFloat(slider_layout.bar_rect.width * displayed_clamped_value),
-                .height = layout.scaleFloat(slider_layout.bar_rect.height),
-            },
-            0.45,
-            8,
-            .{ .r = 252, .g = 198, .b = 40, .a = 255 },
-        );
-    }
+    drawTextureLocalRect(layout, slider_textures.bar, slider_layout.bar_rect.left, slider_layout.bar_rect.top, slider_layout.bar_rect.width, slider_layout.bar_rect.height, .white);
+    drawTextureLocalRectSource(
+        layout,
+        slider_textures.bar_full,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(slider_textures.bar_full.width)) * displayed_clamped_value,
+            .height = @as(f32, @floatFromInt(slider_textures.bar_full.height)),
+        },
+        slider_layout.bar_rect.left,
+        slider_layout.bar_rect.top,
+        slider_layout.bar_rect.width * displayed_clamped_value,
+        slider_layout.bar_rect.height,
+        .white,
+    );
 
     const less_enabled = sliderArrowEnabled(clamped_value, .less);
     const more_enabled = sliderArrowEnabled(clamped_value, .more);
     const less_texture = if (less_hovered and less_enabled)
-        slider_textures.less_hover orelse slider_textures.less
+        slider_textures.less_hover
     else
         slider_textures.less;
     const more_texture = if (more_hovered and more_enabled)
-        slider_textures.more_hover orelse slider_textures.more
+        slider_textures.more_hover
     else
         slider_textures.more;
-    if (less_texture) |texture| {
-        drawTextureLocalRect(layout, texture, slider_layout.less_rect.left, slider_layout.less_rect.top, slider_layout.less_rect.width, slider_layout.less_rect.height, if (less_enabled) .white else slider_disabled_tint);
-    }
-    if (more_texture) |texture| {
-        drawTextureLocalRect(layout, texture, slider_layout.more_rect.left, slider_layout.more_rect.top, slider_layout.more_rect.width, slider_layout.more_rect.height, if (more_enabled) .white else slider_disabled_tint);
-    }
+    drawTextureLocalRect(layout, less_texture, slider_layout.less_rect.left, slider_layout.less_rect.top, slider_layout.less_rect.width, slider_layout.less_rect.height, if (less_enabled) .white else slider_disabled_tint);
+    drawTextureLocalRect(layout, more_texture, slider_layout.more_rect.left, slider_layout.more_rect.top, slider_layout.more_rect.width, slider_layout.more_rect.height, if (more_enabled) .white else slider_disabled_tint);
 
     drawTextButtonWithOptions(
         layout,

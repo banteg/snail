@@ -94,7 +94,7 @@ fn layoutForText(context: Context, text: []const u8, tutorial: bool, interactive
 
 fn drawMessageLines(context: Context, layout: VirtualLayout, prompt_layout: ActiveLayout) void {
     const widget_art: frontend_widget.Art = .{
-        .border = context.widget_art.border.?.texture,
+        .border = context.widget_art.border.texture,
     };
     for (0..prompt_layout.line_count) |index| {
         const line = prompt_layout.lines[index];
@@ -119,7 +119,7 @@ fn drawInvisibleMenuText(context: Context, layout: VirtualLayout, text: []const 
     text_state.snapFor(.menu_button, true);
     frontend_widget.drawTextButtonWithOptions(
         layout,
-        .{ .border = context.widget_art.border.?.texture },
+        .{ .border = context.widget_art.border.texture },
         context.font,
         .menu_button,
         text,
@@ -139,7 +139,7 @@ fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_promp
     const colors = frontend_widget.colorsForState(frame_state, false);
     frontend_widget.drawNineSliceFrame(
         layout,
-        context.widget_art.border.?.texture,
+        context.widget_art.border.texture,
         prompt_layout.widget_layout.frame_rect,
         frontend_widget.menu_button_border_edge,
         frontend_widget.menu_button_border_edge / 128.0,
@@ -159,7 +159,7 @@ fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_promp
         ok_state.snapFor(.menu_button, hovered);
         frontend_widget.drawTextButton(
             layout,
-            .{ .border = context.widget_art.border.?.texture },
+            .{ .border = context.widget_art.border.texture },
             context.font,
             .menu_button,
             "OK",

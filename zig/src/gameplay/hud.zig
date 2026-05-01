@@ -100,10 +100,8 @@ pub fn drawStandardHud(context: Context, layout: VirtualLayout, runner: gameplay
     if (modeShowsParcelCounter(runner.session_mode)) {
         const parcel_target = currentParcelTarget(context);
         const parcel_count = runner.counters.parcels;
-        if (context.frontend_widget_art.parcel_icon) |loaded_texture| {
-            // PORT(verified): `initialize_subgame` 0x4376bb: sprite 0x7a at (0, 58).
-            drawTextureLocalRect(layout, loaded_texture, 0.0, 58.0, 32.0, 64.0, .white);
-        }
+        // PORT(verified): `initialize_subgame` 0x4376bb: sprite 0x7a at (0, 58).
+        drawTextureLocalRect(layout, context.frontend_widget_art.parcel_icon, 0.0, 58.0, 32.0, 64.0, .white);
         var parcel_buffer: [32]u8 = undefined;
         const parcel_text = if (parcel_target > 0)
             try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target })
@@ -234,7 +232,7 @@ pub fn drawRowEventWidget(
     const colors = frontend_widget.colorsForState(frame_state, false);
     frontend_widget.drawNineSliceFrame(
         layout,
-        context.frontend_widget_art.border.?.texture,
+        context.frontend_widget_art.border.texture,
         .{
             .left = local_point.x + row_event_widget_frame_offset_x,
             .top = local_point.y + row_event_widget_frame_offset_y,

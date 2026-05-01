@@ -7,65 +7,41 @@ const galaxy = @import("../galaxy.zig");
 const resource_store = @import("../resource_store.zig");
 
 pub const SliderArt = struct {
-    less: ?assets.LoadedTexture = null,
-    less_hover: ?assets.LoadedTexture = null,
-    more: ?assets.LoadedTexture = null,
-    more_hover: ?assets.LoadedTexture = null,
-    bar: ?assets.LoadedTexture = null,
-    bar_full: ?assets.LoadedTexture = null,
+    less: assets.LoadedTexture,
+    less_hover: assets.LoadedTexture,
+    more: assets.LoadedTexture,
+    more_hover: assets.LoadedTexture,
+    bar: assets.LoadedTexture,
+    bar_full: assets.LoadedTexture,
 
     pub fn unload(self: *SliderArt) void {
-        if (self.less) |*texture| {
-            texture.unload();
-            self.less = null;
-        }
-        if (self.less_hover) |*texture| {
-            texture.unload();
-            self.less_hover = null;
-        }
-        if (self.more) |*texture| {
-            texture.unload();
-            self.more = null;
-        }
-        if (self.more_hover) |*texture| {
-            texture.unload();
-            self.more_hover = null;
-        }
-        if (self.bar) |*texture| {
-            texture.unload();
-            self.bar = null;
-        }
-        if (self.bar_full) |*texture| {
-            texture.unload();
-            self.bar_full = null;
-        }
+        self.less.unload();
+        self.less_hover.unload();
+        self.more.unload();
+        self.more_hover.unload();
+        self.bar.unload();
+        self.bar_full.unload();
     }
 
     pub fn textures(self: SliderArt) frontend_widget.SliderTextures {
         return .{
-            .less = if (self.less) |texture| texture.texture else null,
-            .less_hover = if (self.less_hover) |texture| texture.texture else null,
-            .more = if (self.more) |texture| texture.texture else null,
-            .more_hover = if (self.more_hover) |texture| texture.texture else null,
-            .bar = if (self.bar) |texture| texture.texture else null,
-            .bar_full = if (self.bar_full) |texture| texture.texture else null,
+            .less = self.less.texture,
+            .less_hover = self.less_hover.texture,
+            .more = self.more.texture,
+            .more_hover = self.more_hover.texture,
+            .bar = self.bar.texture,
+            .bar_full = self.bar_full.texture,
         };
     }
 };
 
 pub const FrontendWidgetArt = struct {
-    border: ?assets.LoadedTexture = null,
-    parcel_icon: ?assets.LoadedTexture = null,
+    border: assets.LoadedTexture,
+    parcel_icon: assets.LoadedTexture,
 
     pub fn unload(self: *FrontendWidgetArt) void {
-        if (self.border) |*texture| {
-            texture.unload();
-            self.border = null;
-        }
-        if (self.parcel_icon) |*texture| {
-            texture.unload();
-            self.parcel_icon = null;
-        }
+        self.border.unload();
+        self.parcel_icon.unload();
     }
 };
 
@@ -86,61 +62,39 @@ pub const FrontendSoundFx = struct {
 };
 
 pub const RouteMapArt = struct {
-    logo: ?assets.LoadedTexture = null,
-    border: ?assets.LoadedTexture = null,
-    galaxy_select: ?assets.LoadedTexture = null,
-    level_select: ?assets.LoadedTexture = null,
-    level_star: ?assets.LoadedTexture = null,
-    line: ?assets.LoadedTexture = null,
-    line_star: ?assets.LoadedTexture = null,
-    galaxies: [galaxy.map_galaxy_count]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** galaxy.map_galaxy_count,
+    logo: assets.LoadedTexture,
+    border: assets.LoadedTexture,
+    galaxy_select: assets.LoadedTexture,
+    level_select: assets.LoadedTexture,
+    level_star: assets.LoadedTexture,
+    line: assets.LoadedTexture,
+    line_star: assets.LoadedTexture,
+    galaxies: [galaxy.map_galaxy_count]assets.LoadedTexture,
 
     pub fn unload(self: *RouteMapArt) void {
-        if (self.logo) |*texture| {
-            texture.unload();
-            self.logo = null;
-        }
-        if (self.border) |*texture| {
-            texture.unload();
-            self.border = null;
-        }
-        if (self.galaxy_select) |*texture| {
-            texture.unload();
-            self.galaxy_select = null;
-        }
-        if (self.level_select) |*texture| {
-            texture.unload();
-            self.level_select = null;
-        }
-        if (self.level_star) |*texture| {
-            texture.unload();
-            self.level_star = null;
-        }
-        if (self.line) |*texture| {
-            texture.unload();
-            self.line = null;
-        }
-        if (self.line_star) |*texture| {
-            texture.unload();
-            self.line_star = null;
-        }
+        self.logo.unload();
+        self.border.unload();
+        self.galaxy_select.unload();
+        self.level_select.unload();
+        self.level_star.unload();
+        self.line.unload();
+        self.line_star.unload();
         for (&self.galaxies) |*texture| {
-            if (texture.*) |*loaded| {
-                loaded.unload();
-                texture.* = null;
-            }
+            texture.unload();
         }
     }
 };
 
 pub fn loadFrontendWidgetArt(store: *resource_store.Store) !FrontendWidgetArt {
-    var art = FrontendWidgetArt{};
-    errdefer art.unload();
+    var border = try store.texture(app.widget_border_texture_path);
+    errdefer border.unload();
+    var parcel_icon = try store.texture(app.completion_parcel_icon_texture_path);
+    errdefer parcel_icon.unload();
 
-    art.border = try store.texture(app.widget_border_texture_path);
-    art.parcel_icon = try store.texture(app.completion_parcel_icon_texture_path);
-
-    return art;
+    return .{
+        .border = border,
+        .parcel_icon = parcel_icon,
+    };
 }
 
 pub fn loadFrontendSoundFx(store: *resource_store.Store) !FrontendSoundFx {
@@ -154,33 +108,65 @@ pub fn loadFrontendSoundFx(store: *resource_store.Store) !FrontendSoundFx {
 }
 
 pub fn loadSliderArt(store: *resource_store.Store) !SliderArt {
-    var art = SliderArt{};
-    errdefer art.unload();
+    var less = try store.texture(app.slider_less_texture_path);
+    errdefer less.unload();
+    var less_hover = try store.texture(app.slider_less_hover_texture_path);
+    errdefer less_hover.unload();
+    var more = try store.texture(app.slider_more_texture_path);
+    errdefer more.unload();
+    var more_hover = try store.texture(app.slider_more_hover_texture_path);
+    errdefer more_hover.unload();
+    var bar = try store.texture(app.slider_bar_texture_path);
+    errdefer bar.unload();
+    var bar_full = try store.texture(app.slider_bar_full_texture_path);
+    errdefer bar_full.unload();
 
-    art.less = try store.texture(app.slider_less_texture_path);
-    art.less_hover = try store.texture(app.slider_less_hover_texture_path);
-    art.more = try store.texture(app.slider_more_texture_path);
-    art.more_hover = try store.texture(app.slider_more_hover_texture_path);
-    art.bar = try store.texture(app.slider_bar_texture_path);
-    art.bar_full = try store.texture(app.slider_bar_full_texture_path);
-
-    return art;
+    return .{
+        .less = less,
+        .less_hover = less_hover,
+        .more = more,
+        .more_hover = more_hover,
+        .bar = bar,
+        .bar_full = bar_full,
+    };
 }
 
 pub fn loadRouteMapArt(store: *resource_store.Store) !RouteMapArt {
-    var art = RouteMapArt{};
-    errdefer art.unload();
+    var logo = try store.texture(app.route_map_logo_texture_path);
+    errdefer logo.unload();
+    var border = try store.texture(app.route_map_border_texture_path);
+    errdefer border.unload();
+    var galaxy_select = try store.texture(app.route_map_galaxy_select_texture_path);
+    errdefer galaxy_select.unload();
+    var level_select = try store.texture(app.route_map_level_select_texture_path);
+    errdefer level_select.unload();
+    var level_star = try store.texture(app.route_map_level_star_texture_path);
+    errdefer level_star.unload();
+    var line = try store.texture(app.route_map_line_texture_path);
+    errdefer line.unload();
+    var line_star = try store.texture(app.route_map_line_star_texture_path);
+    errdefer line_star.unload();
 
-    art.logo = try store.texture(app.route_map_logo_texture_path);
-    art.border = try store.texture(app.route_map_border_texture_path);
-    art.galaxy_select = try store.texture(app.route_map_galaxy_select_texture_path);
-    art.level_select = try store.texture(app.route_map_level_select_texture_path);
-    art.level_star = try store.texture(app.route_map_level_star_texture_path);
-    art.line = try store.texture(app.route_map_line_texture_path);
-    art.line_star = try store.texture(app.route_map_line_star_texture_path);
+    var galaxies: [galaxy.map_galaxy_count]assets.LoadedTexture = undefined;
+    var loaded_galaxy_count: usize = 0;
+    errdefer {
+        for (galaxies[0..loaded_galaxy_count]) |*loaded| {
+            loaded.unload();
+        }
+    }
     for (app.route_map_galaxy_texture_paths, 0..) |path, index| {
-        art.galaxies[index] = try store.texture(path);
+        galaxies[index] = try store.texture(path);
+        loaded_galaxy_count += 1;
     }
 
-    return art;
+    return .{
+        .logo = logo,
+        .border = border,
+        .galaxy_select = galaxy_select,
+        .level_select = level_select,
+        .level_star = level_star,
+        .line = line,
+        .line_star = line_star,
+        .galaxies = galaxies,
+    };
 }

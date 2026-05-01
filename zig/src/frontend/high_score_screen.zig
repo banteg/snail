@@ -196,7 +196,7 @@ pub fn drawMenuUi(
     pending_draft_name: ?[]const u8,
 ) !void {
     const art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
     var title_state = frontend_widget.TextButtonState{};
     title_state.snapFor(.footer_button, false);
@@ -278,7 +278,7 @@ fn drawTable(
 ) void {
     const entries = state.high_score_tables.visibleEntries(mode);
     const art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
     const row_background_text = rowBackgroundText(mode);
     const text_only_score_cell: frontend_widget.DrawOptions = .{

@@ -112,7 +112,7 @@ pub fn drawMenuUi(
     frontend_widget.drawMenuButton(
         layout,
         .{
-            .border = state.frontend_widget_art.border.?.texture,
+            .border = state.frontend_widget_art.border.texture,
         },
         &state.ui_font,
         visibleLabel(menu_layout, .fullscreen),
@@ -147,7 +147,7 @@ pub fn drawMenuUi(
     frontend_widget.drawMenuButton(
         layout,
         .{
-            .border = state.frontend_widget_art.border.?.texture,
+            .border = state.frontend_widget_art.border.texture,
         },
         &state.ui_font,
         "Back",
@@ -173,7 +173,7 @@ fn drawSliderRow(
     frontend_widget.drawSliderMenuRow(
         layout,
         .{
-            .border = state.frontend_widget_art.border.?.texture,
+            .border = state.frontend_widget_art.border.texture,
         },
         slider_textures,
         &state.ui_font,

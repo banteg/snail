@@ -16,7 +16,7 @@ const thanks = @import("thanks.zig");
 
 fn widgetArt(state: anytype) frontend_widget.Art {
     return .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = state.frontend_widget_art.border.texture,
     };
 }
 
