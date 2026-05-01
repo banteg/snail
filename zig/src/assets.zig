@@ -190,6 +190,8 @@ pub const Catalog = struct {
     }
 };
 
+const rgb_bleed_alpha_cutoff: u8 = 15;
+
 fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
     rl.imageFormat(image, .uncompressed_r8g8b8a8);
 
@@ -209,40 +211,78 @@ fn bleedTransparentRgbPixels(
 ) !void {
     std.debug.assert(pixels.len == width * height * 4);
 
-    const source = try allocator.dupe(u8, pixels);
-    defer allocator.free(source);
+    const pixel_count = width * height;
+    const has_bleed_rgb = try allocator.alloc(bool, pixel_count);
+    defer allocator.free(has_bleed_rgb);
+    for (0..pixel_count) |index| {
+        has_bleed_rgb[index] = pixels[index * 4 + 3] > rgb_bleed_alpha_cutoff;
+    }
 
-    for (0..height) |y| {
-        for (0..width) |x| {
-            const offset = ((y * width) + x) * 4;
-            const alpha = source[offset + 3];
-            if (alpha != 0) continue;
+    var repaired_any = true;
+    while (repaired_any) {
+        repaired_any = false;
 
-            var red_sum: u16 = 0;
-            var green_sum: u16 = 0;
-            var blue_sum: u16 = 0;
-            var count: u16 = 0;
+        for (0..height) |y| {
+            for (0..width) |x| {
+                const pixel_index = (y * width) + x;
+                if (has_bleed_rgb[pixel_index]) continue;
 
-            const y_min = if (y == 0) y else y - 1;
-            const y_max = @min(y + 1, height - 1);
-            const x_min = if (x == 0) x else x - 1;
-            const x_max = @min(x + 1, width - 1);
-            for (y_min..y_max + 1) |ny| {
-                for (x_min..x_max + 1) |nx| {
-                    if (nx == x and ny == y) continue;
-                    const neighbor_offset = ((ny * width) + nx) * 4;
-                    if (source[neighbor_offset + 3] == 0) continue;
-                    red_sum += source[neighbor_offset + 0];
-                    green_sum += source[neighbor_offset + 1];
-                    blue_sum += source[neighbor_offset + 2];
-                    count += 1;
-                }
+                var red_sum: u16 = 0;
+                var green_sum: u16 = 0;
+                var blue_sum: u16 = 0;
+                var count: u16 = 0;
+
+                accumulateBleedNeighborRgb(
+                    pixels,
+                    has_bleed_rgb,
+                    width,
+                    height,
+                    x,
+                    y,
+                    &red_sum,
+                    &green_sum,
+                    &blue_sum,
+                    &count,
+                );
+                if (count == 0) continue;
+
+                const offset = pixel_index * 4;
+                pixels[offset + 0] = @intCast(red_sum / count);
+                pixels[offset + 1] = @intCast(green_sum / count);
+                pixels[offset + 2] = @intCast(blue_sum / count);
+                has_bleed_rgb[pixel_index] = true;
+                repaired_any = true;
             }
-            if (count == 0) continue;
+        }
+    }
+}
 
-            pixels[offset + 0] = @intCast(red_sum / count);
-            pixels[offset + 1] = @intCast(green_sum / count);
-            pixels[offset + 2] = @intCast(blue_sum / count);
+fn accumulateBleedNeighborRgb(
+    pixels: []const u8,
+    has_bleed_rgb: []const bool,
+    width: usize,
+    height: usize,
+    x: usize,
+    y: usize,
+    red_sum: *u16,
+    green_sum: *u16,
+    blue_sum: *u16,
+    count: *u16,
+) void {
+    const y_min = if (y == 0) y else y - 1;
+    const y_max = @min(y + 1, height - 1);
+    const x_min = if (x == 0) x else x - 1;
+    const x_max = @min(x + 1, width - 1);
+    for (y_min..y_max + 1) |ny| {
+        for (x_min..x_max + 1) |nx| {
+            if (nx == x and ny == y) continue;
+            const neighbor_index = (ny * width) + nx;
+            if (!has_bleed_rgb[neighbor_index]) continue;
+            const neighbor_offset = neighbor_index * 4;
+            red_sum.* += pixels[neighbor_offset + 0];
+            green_sum.* += pixels[neighbor_offset + 1];
+            blue_sum.* += pixels[neighbor_offset + 2];
+            count.* += 1;
         }
     }
 }
@@ -419,6 +459,31 @@ test "transparent texture pixels average all opaque neighbors" {
     try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
 
     try std.testing.expectEqualSlices(u8, &.{ 25, 35, 45, 0 }, pixels[4..8]);
+}
+
+test "low-alpha texture pixels borrow visible neighbor color for filtered sprite edges" {
+    var pixels = [_]u8{
+        0,  0,   0,   6,
+        80, 120, 160, 255,
+    };
+
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1);
+
+    try std.testing.expectEqualSlices(u8, &.{ 80, 120, 160, 6 }, pixels[0..4]);
+    try std.testing.expectEqualSlices(u8, &.{ 80, 120, 160, 255 }, pixels[4..8]);
+}
+
+test "low-alpha texture bleed propagates visible edge color outward" {
+    var pixels = [_]u8{
+        0,  0,  0,  4,
+        0,  0,  0,  6,
+        40, 60, 80, 255,
+    };
+
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
+
+    try std.testing.expectEqualSlices(u8, &.{ 40, 60, 80, 4 }, pixels[0..4]);
+    try std.testing.expectEqualSlices(u8, &.{ 40, 60, 80, 6 }, pixels[4..8]);
 }
 
 test "catalog groups archive entries by asset type" {
