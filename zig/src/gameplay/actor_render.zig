@@ -388,8 +388,8 @@ fn drawGameplayGarbageActor(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         hazard.world_position,
-        hazard.presentation_scale,
-        hazard.presentation_scale,
+        nativeSpriteHalfExtentWorldSize(hazard.presentation_scale),
+        nativeSpriteHalfExtentWorldSize(hazard.presentation_scale),
         camera,
         render.billboard_shader,
         hazard.presentation_phase,
@@ -630,7 +630,11 @@ fn runtimeRingParticleNativeSpriteRef(family: RuntimeRingParticleSpriteFamily) u
 
 fn runtimeRingParticleWorldSize(scale: f32) f32 {
     // Native `draw_sprite_quad` treats the sprite size lane as a half-extent.
-    return native_runtime_ring_particle_half_extent * 2.0 * scale;
+    return nativeSpriteHalfExtentWorldSize(native_runtime_ring_particle_half_extent) * scale;
+}
+
+fn nativeSpriteHalfExtentWorldSize(half_extent: f32) f32 {
+    return half_extent * 2.0;
 }
 
 fn runtimeRingParticlePhase(active_phase: f32, child_index: usize) f32 {
@@ -797,8 +801,8 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         gameplay_billboard.drawTextureBlended(
             smoke_texture.texture,
             particle.position,
-            particle.width,
-            particle.height,
+            nativeSpriteHalfExtentWorldSize(particle.width),
+            nativeSpriteHalfExtentWorldSize(particle.height),
             camera,
             render.billboard_shader,
             particle.tint,
@@ -812,8 +816,8 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         gameplay_billboard.drawTexture(
             nuke_texture.texture,
             particle.position,
-            particle.width,
-            particle.height,
+            nativeSpriteHalfExtentWorldSize(particle.width),
+            nativeSpriteHalfExtentWorldSize(particle.height),
             camera,
             render.billboard_shader,
             particle.tint,
@@ -833,14 +837,28 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         gameplay_billboard.drawTextureBlended(
             loaded_texture.texture,
             effect.position,
-            effect.width,
-            effect.height,
+            effectWorldWidth(effect),
+            effectWorldHeight(effect),
             camera,
             render.billboard_shader,
             effect.tint,
             effectBlendMode(effect.kind),
         );
     }
+}
+
+fn effectWorldWidth(effect: gameplay_effects.Effect) f32 {
+    return switch (effect.kind) {
+        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effect.width),
+        .explode_big, .explode_small => effect.width,
+    };
+}
+
+fn effectWorldHeight(effect: gameplay_effects.Effect) f32 {
+    return switch (effect.kind) {
+        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effect.height),
+        .explode_big, .explode_small => effect.height,
+    };
 }
 
 fn effectBlendMode(kind: gameplay_effects.Kind) gameplay_billboard.BlendMode {
@@ -854,6 +872,22 @@ test "runtime sprite effects use native alpha blend lane" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.slug_goo));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.garbage_smoke));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.smoke));
+}
+
+test "native sprite effect size lanes render as half extents" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), nativeSpriteHalfExtentWorldSize(0.3), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.6), effectWorldHeight(.{
+        .kind = .garbage_smoke,
+        .height = 1.3,
+    }), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.4), effectWorldHeight(.{
+        .kind = .slug_goo,
+        .height = 1.2,
+    }), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.9), effectWorldWidth(.{
+        .kind = .explode_small,
+        .width = 0.9,
+    }), 0.0001);
 }
 
 pub fn drawTurbo(
