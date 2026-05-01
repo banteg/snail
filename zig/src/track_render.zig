@@ -277,20 +277,24 @@ fn drawFringeSides(
     edge_mask: u8,
 ) void {
     if ((edge_mask & 0x08) != 0) {
+        const outer_front_z = fringeSideOuterFrontZ(edge_mask, front);
+        const outer_back_z = fringeSideOuterBackZ(edge_mask, back);
         drawFringeRamp(
             scene,
             .{ .x = left, .y = back_height, .z = back },
-            .{ .x = left - attachment_fringe_outset, .y = back_height, .z = back },
-            .{ .x = left - attachment_fringe_outset, .y = front_height, .z = front },
+            .{ .x = left - attachment_fringe_outset, .y = back_height, .z = outer_back_z },
+            .{ .x = left - attachment_fringe_outset, .y = front_height, .z = outer_front_z },
             .{ .x = left, .y = front_height, .z = front },
         );
     }
     if ((edge_mask & 0x04) != 0) {
+        const outer_front_z = fringeSideOuterFrontZ(edge_mask, front);
+        const outer_back_z = fringeSideOuterBackZ(edge_mask, back);
         drawFringeRamp(
             scene,
             .{ .x = right, .y = front_height, .z = front },
-            .{ .x = right + attachment_fringe_outset, .y = front_height, .z = front },
-            .{ .x = right + attachment_fringe_outset, .y = back_height, .z = back },
+            .{ .x = right + attachment_fringe_outset, .y = front_height, .z = outer_front_z },
+            .{ .x = right + attachment_fringe_outset, .y = back_height, .z = outer_back_z },
             .{ .x = right, .y = back_height, .z = back },
         );
     }
@@ -312,6 +316,14 @@ fn drawFringeSides(
             .{ .x = left, .y = back_height, .z = back },
         );
     }
+}
+
+fn fringeSideOuterFrontZ(edge_mask: u8, front: f32) f32 {
+    return if ((edge_mask & 0x01) != 0) front - attachment_fringe_outset else front;
+}
+
+fn fringeSideOuterBackZ(edge_mask: u8, back: f32) f32 {
+    return if ((edge_mask & 0x02) != 0) back + attachment_fringe_outset else back;
 }
 
 fn drawFringeRamp(
@@ -788,6 +800,16 @@ test "track skirt tint follows the recovered shared skirt alpha" {
     try std.testing.expectEqual(@as(u8, 255), track_skirt_tint.g);
     try std.testing.expectEqual(@as(u8, 255), track_skirt_tint.b);
     try std.testing.expectEqual(@as(u8, 102), track_skirt_tint.a);
+}
+
+test "fringe side ramps miter exposed row corners" {
+    const front: f32 = 12.0;
+    const back: f32 = 13.0;
+
+    try std.testing.expectApproxEqAbs(front - attachment_fringe_outset, fringeSideOuterFrontZ(0x08 | 0x01, front), 0.0001);
+    try std.testing.expectApproxEqAbs(front, fringeSideOuterFrontZ(0x08, front), 0.0001);
+    try std.testing.expectApproxEqAbs(back + attachment_fringe_outset, fringeSideOuterBackZ(0x04 | 0x02, back), 0.0001);
+    try std.testing.expectApproxEqAbs(back, fringeSideOuterBackZ(0x04, back), 0.0001);
 }
 
 test "attachment fringe extends beyond the path edge by the native outset" {
