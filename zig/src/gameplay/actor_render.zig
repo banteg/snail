@@ -761,6 +761,7 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
             .explode_big => render.resources.sprites.explode_big.?,
             .explode_small => render.resources.sprites.explode_small.?,
             .slug_goo => render.resources.sprites.slug_goo.?,
+            .garbage_smoke => render.resources.sprites.blaster_trail.?,
             .smoke => render.resources.sprites.smoke.?,
         };
         gameplay_billboard.drawTextureBlended(
@@ -777,17 +778,16 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
 }
 
 fn effectBlendMode(kind: gameplay_effects.Kind) gameplay_billboard.BlendMode {
-    return switch (kind) {
-        .smoke => .additive,
-        else => .alpha,
-    };
+    _ = kind;
+    return .alpha;
 }
 
-test "smoke effects use native additive sprite blend lane" {
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, effectBlendMode(.smoke));
+test "runtime sprite effects use native alpha blend lane" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.explode_big));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.explode_small));
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.slug_goo));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.garbage_smoke));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.smoke));
 }
 
 pub fn drawTurbo(

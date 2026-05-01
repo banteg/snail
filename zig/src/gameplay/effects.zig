@@ -51,6 +51,7 @@ pub const Kind = enum {
     explode_big,
     explode_small,
     slug_goo,
+    garbage_smoke,
     smoke,
 };
 
@@ -317,13 +318,14 @@ pub const Controller = struct {
         }
     }
 
-    // PORT(verified): native `spawn_garbage_smoke_particle` allocates one
-    // `SMOKE.TGA` sprite from the live garbage object's current position,
-    // copies `garbage.velocity * 0.2`, and seeds size lanes to `0.3 x 1.3`.
+    // PORT(verified): native `spawn_garbage_smoke_particle` allocates sprite
+    // ref 33 (`SPRITES/JET.TGA`) from the live garbage object's current
+    // position, copies `garbage.velocity * 0.2`, and seeds size lanes to
+    // `0.3 x 1.3`.
     pub fn spawnGarbageSmokeParticle(self: *Controller, current: gameplay.Runner) void {
         const smoke_origin = current.last_garbage_smoke_position orelse current.last_garbage_hit_position orelse return;
         self.spawnWithVelocity(
-            .smoke,
+            .garbage_smoke,
             smoke_origin,
             current.last_garbage_smoke_velocity,
             0.3,
@@ -637,6 +639,28 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     try std.testing.expectApproxEqAbs(effect.velocity.x, updated.velocity.x, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.y - 0.0002, updated.velocity.y, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.z, updated.velocity.z, 0.0001);
+}
+
+test "garbage smoke uses native jet sprite packet" {
+    var controller = Controller{};
+    var current = gameplay.Runner{};
+    current.last_garbage_smoke_position = .{ .x = 1.25, .y = 2.5, .z = 3.75 };
+    current.last_garbage_smoke_velocity = .{ .x = 0.1, .y = 0.2, .z = 0.3 };
+
+    controller.spawnGarbageSmokeParticle(current);
+
+    try std.testing.expectEqual(@as(usize, 1), controller.count);
+    const effect = controller.items[0];
+    try std.testing.expectEqual(Kind.garbage_smoke, effect.kind);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25), effect.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), effect.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.75), effect.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), effect.velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), effect.velocity.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), effect.width, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.3), effect.height, 0.0001);
+    try std.testing.expectEqual(@as(u16, 8), effect.ticks_remaining);
 }
 
 test "rocket smoke uses recovered golb smoke packet" {
