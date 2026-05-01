@@ -135,6 +135,8 @@ pub const Art = struct {
 
 pub const DrawOptions = struct {
     flags: u32 = 0,
+    text_color: ?rl.Color = null,
+    shadow_color: ?rl.Color = null,
 };
 
 pub const Metrics = struct {
@@ -338,7 +340,7 @@ pub fn drawTextButtonWithOptions(
     options: DrawOptions,
 ) void {
     const metrics = metricsForType(widget_type);
-    const colors = colorsForState(state, disabled);
+    const colors = colorsForOptions(colorsForState(state, disabled), options);
     const pill_rect = pillRect(text_rect, state);
     if (!hasFlag(options.flags, .invisible_background)) {
         drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, metrics.source_edge_fraction, colors.fill);
@@ -766,6 +768,14 @@ fn halfColor(color: rl.Color) rl.Color {
     };
 }
 
+fn colorsForOptions(base: ButtonColors, options: DrawOptions) ButtonColors {
+    return .{
+        .fill = base.fill,
+        .text = options.text_color orelse base.text,
+        .shadow = options.shadow_color orelse base.shadow,
+    };
+}
+
 fn colorFromBytes(r: u8, g: u8, b: u8, a: u8) rl.Color {
     return .{ .r = r, .g = g, .b = b, .a = a };
 }
@@ -818,6 +828,18 @@ test "text buttons prime with native hot-state pulse" {
     try std.testing.expect(state.hot_blend < 1.0);
     try std.testing.expect(state.current_padding < menu_button_hot_padding);
     try std.testing.expect(state.current_padding > menu_button_idle_padding);
+}
+
+test "draw options can override widget text color without changing fill" {
+    var state = TextButtonState{};
+    state.snapFor(.menu_button, false);
+
+    const base = colorsForState(state, false);
+    const with_override = colorsForOptions(base, .{ .text_color = .ray_white });
+
+    try std.testing.expectEqual(base.fill, with_override.fill);
+    try std.testing.expectEqual(rl.Color.ray_white, with_override.text);
+    try std.testing.expectEqual(base.shadow, with_override.shadow);
 }
 
 test "slider arrow rect inherits the parent row center offset" {

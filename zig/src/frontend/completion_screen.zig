@@ -149,8 +149,10 @@ pub fn drawCompleted(
         // PORT(verified): `initialize_completion_screen` builds the title,
         // package line, bonus line, and continue prompt with flags
         // `0x20400002`, which suppress the pill background while keeping the
-        // menu-button shell-font metrics.
+        // menu-button shell-font metrics. It also passes a fixed white RGBA
+        // color to each widget instead of using the idle menu orange.
         .flags = 0x20400002,
+        .text_color = .ray_white,
     };
 
     const title_text = title(summary);
