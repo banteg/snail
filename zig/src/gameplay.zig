@@ -140,6 +140,13 @@ const garbage_burst_trailing_rows: f32 = 2.0;
 const garbage_smoke_velocity_scale: f32 = 0.2;
 const garbage_smoke_progress_step_factor: f32 = 0.27777779;
 const rocket_smoke_velocity_scale: f32 = 0.40000001;
+
+fn garbageBurstVelocitySign(velocity_x: f32) f32 {
+    if (velocity_x > 0.0) return 1.0;
+    if (velocity_x < 0.0) return -1.0;
+    return 0.0;
+}
+
 const damage_warning_transition_step = damage_module.warning_transition_step;
 const damage_warning_drain_delta = damage_module.warning_drain_delta;
 const damage_warning_actor_step = damage_module.warning_actor_step;
@@ -3781,7 +3788,7 @@ pub const Runner = struct {
                 } else if (hazard.collision_side < 0) {
                     hazard.velocity.x = -@abs(hazard.velocity.x);
                 }
-                hazard.velocity.x += @as(f32, @floatFromInt(hazard.collision_side)) * run_rate * garbage_burst_side_bias_scale;
+                hazard.velocity.x += garbageBurstVelocitySign(hazard.velocity.x) * run_rate * garbage_burst_side_bias_scale;
                 hazard.smoke_progress = 0.0;
             },
             .burst => {},
@@ -6910,6 +6917,34 @@ test "garbage burst ai uses native run rate instead of debug speed scalar" {
     try std.testing.expect(@abs(hazard.velocity.x) < 0.1);
     try std.testing.expect(hazard.velocity.y < 0.1);
     try std.testing.expect(hazard.velocity.z < 0.1);
+}
+
+test "garbage burst ai applies native velocity-sign side bias" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.2);
+    runner.math_random_state = seedForNextMathRandomSampleAbove(16383);
+
+    const run_rate = runner.nativeRunRate();
+    const raw_sample = mathRandomNextSample(runner.math_random_state);
+    const raw_velocity_x = ((@as(f32, @floatFromInt(raw_sample)) / 32767.0) * 0.2 - 0.1) * run_rate;
+
+    var hazard = RuntimeHazard{
+        .kind = .garbage,
+        .state = .burst_setup,
+        .row = 0,
+        .lane = 0,
+        .world_position = .{ .x = 0.0, .y = 0.0, .z = runner.row_position },
+        .velocity = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .collision_side = 0,
+    };
+
+    try std.testing.expect(runner.updateGarbageHazard(&fixture.preview, &hazard));
+
+    try std.testing.expect(raw_velocity_x > 0.0);
+    try std.testing.expectApproxEqAbs(raw_velocity_x + run_rate * garbage_burst_side_bias_scale, hazard.velocity.x, 0.0001);
 }
 
 test "slug hit latches the shared fall path" {
