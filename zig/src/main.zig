@@ -740,6 +740,10 @@ const AppState = struct {
         frontend_input.snapWidgetStates(self);
     }
 
+    pub fn primeFrontendWidgetStatesForNativeInit(self: *AppState) void {
+        frontend_input.primeWidgetStatesForNativeInit(self);
+    }
+
     pub fn optionsMenuLayoutState(self: *const AppState) frontend_options_menu.LayoutState {
         return frontend_mouse.optionsMenuLayoutState(self);
     }

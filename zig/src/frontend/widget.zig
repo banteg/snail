@@ -157,6 +157,16 @@ pub const TextButtonState = struct {
     hot_blend: f32 = 0.0,
     current_padding: f32 = menu_button_idle_padding,
 
+    pub fn primeForNativeInit(self: *TextButtonState, widget_type: WidgetType) void {
+        const metrics = metricsForType(widget_type);
+        // PORT(verified): `initialize_frontend_widget` seeds the rendered blend and
+        // padding from the hot state. The target is set separately by
+        // `update_frontend_widget_interaction`, so idle widgets visibly ease down
+        // instead of appearing in their final state immediately.
+        self.hot_blend = 1.0;
+        self.current_padding = metrics.hot_padding;
+    }
+
     pub fn snapFor(self: *TextButtonState, widget_type: WidgetType, hot: bool) void {
         const metrics = metricsForType(widget_type);
         self.hot_blend = if (hot) 1.0 else 0.0;
@@ -817,6 +827,19 @@ test "footer widgets keep the standard shell edge" {
     const metrics = metricsForType(.footer_button);
     try std.testing.expectApproxEqAbs(menu_button_border_edge, metrics.border_edge, 0.001);
     try std.testing.expectApproxEqAbs(menu_button_border_edge / 128.0, metrics.source_edge_fraction, 0.0001);
+}
+
+test "text buttons prime with native hot-state pulse" {
+    var state = TextButtonState{};
+    state.primeForNativeInit(.menu_button);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), state.hot_blend, 0.001);
+    try std.testing.expectApproxEqAbs(menu_button_hot_padding, state.current_padding, 0.001);
+
+    state.stepFor(.menu_button, false);
+    try std.testing.expect(state.hot_blend < 1.0);
+    try std.testing.expect(state.current_padding < menu_button_hot_padding);
+    try std.testing.expect(state.current_padding > menu_button_idle_padding);
 }
 
 test "slider arrow rect inherits the parent row center offset" {

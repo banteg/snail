@@ -41,7 +41,7 @@ pub fn enterGamePhase(state: anytype, phase: GamePhase) !void {
         else => {},
     }
     try state.syncGamePhaseResources();
-    state.snapFrontendWidgetStates();
+    state.primeFrontendWidgetStatesForNativeInit();
 }
 
 pub fn enterStartPhase(state: anytype, phase: GamePhase) !void {
