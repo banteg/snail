@@ -174,7 +174,7 @@ fn wall2PillarActorVisible(preview: *const track.LoadedLevelPreview, global_row:
 
 fn drawTimeTrialGhost(render: Context, runner: gameplay.Runner, camera: rl.Camera3D) void {
     if (!runner.time_trial_ghost_active) return;
-    const loaded_texture = render.resources.sprites.ghost.?;
+    const loaded_texture = render.resources.sprites.ghost;
     inline for (.{ -4.0, 4.0 }) |world_x| {
         gameplay_billboard.drawTexture(
             loaded_texture.texture,
@@ -245,9 +245,9 @@ fn drawGameplaySlugActor(
     // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`).
     // Projectile hits drive the recovered state-machine branches that switch to 119/120.
     const loaded_texture = if (visual.use_mask)
-        render.resources.sprites.slug_mask orelse render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?
+        render.resources.sprites.slug_mask
     else
-        render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)].?;
+        render.resources.sprites.slug_frames[@min(visual.frame_index, render.resources.sprites.slug_frames.len - 1)];
     const frame = slugSpriteFrame(preview, global_row, lane_index, slug_sprite_y_offset);
     gameplay_billboard.drawTextureRectBasisBlendedAlphaCutoff(
         loaded_texture.texture,
@@ -383,7 +383,7 @@ fn drawGameplayGarbageActor(
         @as(usize, hazard.sprite_variant_index),
         gameplay_assets.gameplay_garbage_sprite_paths.len - 1,
     );
-    const loaded_texture = render.resources.sprites.garbage_variants[variant_index].?;
+    const loaded_texture = render.resources.sprites.garbage_variants[variant_index];
     gameplay_billboard.drawTextureRectRolledAlphaCutoff(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
@@ -498,7 +498,7 @@ fn drawGameplayHealthPickupActor(
     camera: rl.Camera3D,
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
-    const loaded_texture = render.resources.sprites.health.?;
+    const loaded_texture = render.resources.sprites.health;
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, render.billboard_shader, .white);
 }
 
@@ -508,7 +508,7 @@ fn drawGameplayJetpackPickupActor(
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(render.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_assets.gameplay_jetpack_sprite_paths.len))));
-    const loaded_texture = render.resources.sprites.jetpack_frames[frame_index].?;
+    const loaded_texture = render.resources.sprites.jetpack_frames[frame_index];
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, render.billboard_shader, .white);
 }
 
@@ -539,10 +539,10 @@ fn drawGameplayRingSprite(
 ) void {
     switch (ring_kind) {
         .none => {},
-        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.?.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
-        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
-        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
-        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.?.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .normal => gameplay_billboard.drawTexture(render.resources.sprites.ring.texture, position, 0.46 * scale, 0.46 * scale, camera, render.billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 }),
+        .powerup => gameplay_billboard.drawTexture(render.resources.sprites.ring_big.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .explode => gameplay_billboard.drawTexture(render.resources.sprites.explode_big.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
+        .slow => gameplay_billboard.drawTexture(render.resources.sprites.slow_ring_big.texture, position, 0.72 * scale, 0.72 * scale, camera, render.billboard_shader, .white),
     }
 }
 
@@ -601,9 +601,9 @@ fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFa
 
 fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) rl.Texture2D {
     switch (runtimeRingParticleTextureSlot(family)) {
-        .ring_big => return render.resources.sprites.ring_big.?.texture,
-        .explode_big => return render.resources.sprites.explode_big.?.texture,
-        .slow_big => return render.resources.sprites.slow_ring_big.?.texture,
+        .ring_big => return render.resources.sprites.ring_big.texture,
+        .explode_big => return render.resources.sprites.explode_big.texture,
+        .slow_big => return render.resources.sprites.slow_ring_big.texture,
     }
 }
 
@@ -637,7 +637,7 @@ fn drawGameplayTrackParcelActor(
     camera: rl.Camera3D,
     parcel: gameplay_runtime_entities.TrackParcel,
 ) void {
-    const loaded_texture = render.resources.sprites.parcel.?;
+    const loaded_texture = render.resources.sprites.parcel;
     const position = parcel.presentationPosition();
     const scale = parcel.presentationScale();
     gameplay_billboard.drawTexture(
@@ -687,7 +687,7 @@ fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile:
 
 fn drawGameplayBlasterProjectileActor(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
     drawGameplayBlasterProjectileTrail(render, camera, projectile);
-    const texture = render.resources.sprites.blaster_projectile.?.texture;
+    const texture = render.resources.sprites.blaster_projectile.texture;
     const position: rl.Vector3 = .{
         .x = projectile.world_x,
         .y = projectile.world_y,
@@ -708,7 +708,7 @@ fn drawGameplayBlasterProjectileActor(render: Context, camera: rl.Camera3D, proj
 }
 
 fn drawGameplayBlasterProjectileTrail(render: Context, camera: rl.Camera3D, projectile: gameplay.Projectile) void {
-    const texture = render.resources.sprites.blaster_trail.?.texture;
+    const texture = render.resources.sprites.blaster_trail.texture;
     const source: rl.Rectangle = .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) };
     const offsets = [_]f32{ 0.0, 0.3, 0.6 };
     const tints = [_]rl.Color{
@@ -774,7 +774,7 @@ fn drawGameplaySubLazerSlotActor(render: Context, camera: rl.Camera3D, slot: gam
 }
 
 fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
-    const smoke_texture = render.resources.sprites.smoke.?;
+    const smoke_texture = render.resources.sprites.smoke;
     for (render.effects.jet_particles) |particle| {
         if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
         gameplay_billboard.drawTextureBlended(
@@ -789,7 +789,7 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         );
     }
 
-    const nuke_texture = render.resources.sprites.explode_big.?;
+    const nuke_texture = render.resources.sprites.explode_big;
     for (render.effects.nuke_particles) |particle| {
         if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
         gameplay_billboard.drawTexture(
@@ -807,11 +807,11 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
         const effect = render.effects.items[index];
         if (!effect.active or effect.ticks_remaining == 0) continue;
         const loaded_texture = switch (effect.kind) {
-            .explode_big => render.resources.sprites.explode_big.?,
-            .explode_small => render.resources.sprites.explode_small.?,
-            .slug_goo => render.resources.sprites.slug_goo.?,
-            .garbage_smoke => render.resources.sprites.blaster_trail.?,
-            .smoke => render.resources.sprites.smoke.?,
+            .explode_big => render.resources.sprites.explode_big,
+            .explode_small => render.resources.sprites.explode_small,
+            .slug_goo => render.resources.sprites.slug_goo,
+            .garbage_smoke => render.resources.sprites.blaster_trail,
+            .smoke => render.resources.sprites.smoke,
         };
         gameplay_billboard.drawTextureBlended(
             loaded_texture.texture,

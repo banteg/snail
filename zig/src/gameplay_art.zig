@@ -6,139 +6,61 @@ const resource_store = @import("resource_store.zig");
 const x2 = @import("x2.zig");
 
 pub const SpriteArt = struct {
-    slug_frames: [gameplay_assets.gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_slug_sprite_paths.len,
-    slug_mask: ?assets.LoadedTexture = null,
-    ghost: ?assets.LoadedTexture = null,
-    garbage_variants: [gameplay_assets.gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_garbage_sprite_paths.len,
-    health: ?assets.LoadedTexture = null,
-    life: ?assets.LoadedTexture = null,
-    jetpack_frames: [gameplay_assets.gameplay_jetpack_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_jetpack_sprite_paths.len,
-    parcel: ?assets.LoadedTexture = null,
-    ring: ?assets.LoadedTexture = null,
-    ring_big: ?assets.LoadedTexture = null,
-    slow_ring: ?assets.LoadedTexture = null,
-    slow_ring_big: ?assets.LoadedTexture = null,
-    blaster_projectile: ?assets.LoadedTexture = null,
-    blaster_trail: ?assets.LoadedTexture = null,
-    progress_bar: ?assets.LoadedTexture = null,
-    progress_bar_lit: ?assets.LoadedTexture = null,
-    progress_cursor: ?assets.LoadedTexture = null,
-    damage_gauge: ?assets.LoadedTexture = null,
-    damage_gauge_full: ?assets.LoadedTexture = null,
-    damage_gauge_bright: ?assets.LoadedTexture = null,
-    warning: ?assets.LoadedTexture = null,
-    explode_big: ?assets.LoadedTexture = null,
-    explode_small: ?assets.LoadedTexture = null,
-    slug_goo: ?assets.LoadedTexture = null,
-    smoke: ?assets.LoadedTexture = null,
+    loaded: bool = false,
+    slug_frames: [gameplay_assets.gameplay_slug_sprite_paths.len]assets.LoadedTexture = undefined,
+    slug_mask: assets.LoadedTexture = undefined,
+    ghost: assets.LoadedTexture = undefined,
+    garbage_variants: [gameplay_assets.gameplay_garbage_sprite_paths.len]assets.LoadedTexture = undefined,
+    health: assets.LoadedTexture = undefined,
+    life: assets.LoadedTexture = undefined,
+    jetpack_frames: [gameplay_assets.gameplay_jetpack_sprite_paths.len]assets.LoadedTexture = undefined,
+    parcel: assets.LoadedTexture = undefined,
+    ring: assets.LoadedTexture = undefined,
+    ring_big: assets.LoadedTexture = undefined,
+    slow_ring: assets.LoadedTexture = undefined,
+    slow_ring_big: assets.LoadedTexture = undefined,
+    blaster_projectile: assets.LoadedTexture = undefined,
+    blaster_trail: assets.LoadedTexture = undefined,
+    progress_bar: assets.LoadedTexture = undefined,
+    progress_bar_lit: assets.LoadedTexture = undefined,
+    progress_cursor: assets.LoadedTexture = undefined,
+    damage_gauge: assets.LoadedTexture = undefined,
+    damage_gauge_full: assets.LoadedTexture = undefined,
+    damage_gauge_bright: assets.LoadedTexture = undefined,
+    warning: assets.LoadedTexture = undefined,
+    explode_big: assets.LoadedTexture = undefined,
+    explode_small: assets.LoadedTexture = undefined,
+    slug_goo: assets.LoadedTexture = undefined,
+    smoke: assets.LoadedTexture = undefined,
 
     pub fn unload(self: *SpriteArt) void {
-        for (&self.slug_frames) |*texture| {
-            if (texture.*) |*loaded| {
-                loaded.unload();
-                texture.* = null;
-            }
-        }
-        if (self.slug_mask) |*texture| {
-            texture.unload();
-            self.slug_mask = null;
-        }
-        if (self.ghost) |*texture| {
-            texture.unload();
-            self.ghost = null;
-        }
-        for (&self.garbage_variants) |*texture| {
-            if (texture.*) |*loaded| {
-                loaded.unload();
-                texture.* = null;
-            }
-        }
-        if (self.health) |*texture| {
-            texture.unload();
-            self.health = null;
-        }
-        if (self.life) |*texture| {
-            texture.unload();
-            self.life = null;
-        }
-        for (&self.jetpack_frames) |*texture| {
-            if (texture.*) |*loaded| {
-                loaded.unload();
-                texture.* = null;
-            }
-        }
-        if (self.parcel) |*texture| {
-            texture.unload();
-            self.parcel = null;
-        }
-        if (self.ring) |*texture| {
-            texture.unload();
-            self.ring = null;
-        }
-        if (self.ring_big) |*texture| {
-            texture.unload();
-            self.ring_big = null;
-        }
-        if (self.slow_ring) |*texture| {
-            texture.unload();
-            self.slow_ring = null;
-        }
-        if (self.slow_ring_big) |*texture| {
-            texture.unload();
-            self.slow_ring_big = null;
-        }
-        if (self.blaster_projectile) |*texture| {
-            texture.unload();
-            self.blaster_projectile = null;
-        }
-        if (self.blaster_trail) |*texture| {
-            texture.unload();
-            self.blaster_trail = null;
-        }
-        if (self.progress_bar) |*texture| {
-            texture.unload();
-            self.progress_bar = null;
-        }
-        if (self.progress_bar_lit) |*texture| {
-            texture.unload();
-            self.progress_bar_lit = null;
-        }
-        if (self.progress_cursor) |*texture| {
-            texture.unload();
-            self.progress_cursor = null;
-        }
-        if (self.damage_gauge) |*texture| {
-            texture.unload();
-            self.damage_gauge = null;
-        }
-        if (self.damage_gauge_full) |*texture| {
-            texture.unload();
-            self.damage_gauge_full = null;
-        }
-        if (self.damage_gauge_bright) |*texture| {
-            texture.unload();
-            self.damage_gauge_bright = null;
-        }
-        if (self.warning) |*texture| {
-            texture.unload();
-            self.warning = null;
-        }
-        if (self.explode_big) |*texture| {
-            texture.unload();
-            self.explode_big = null;
-        }
-        if (self.explode_small) |*texture| {
-            texture.unload();
-            self.explode_small = null;
-        }
-        if (self.slug_goo) |*texture| {
-            texture.unload();
-            self.slug_goo = null;
-        }
-        if (self.smoke) |*texture| {
-            texture.unload();
-            self.smoke = null;
-        }
+        if (!self.loaded) return;
+        for (&self.slug_frames) |*texture| texture.unload();
+        self.slug_mask.unload();
+        self.ghost.unload();
+        for (&self.garbage_variants) |*texture| texture.unload();
+        self.health.unload();
+        self.life.unload();
+        for (&self.jetpack_frames) |*texture| texture.unload();
+        self.parcel.unload();
+        self.ring.unload();
+        self.ring_big.unload();
+        self.slow_ring.unload();
+        self.slow_ring_big.unload();
+        self.blaster_projectile.unload();
+        self.blaster_trail.unload();
+        self.progress_bar.unload();
+        self.progress_bar_lit.unload();
+        self.progress_cursor.unload();
+        self.damage_gauge.unload();
+        self.damage_gauge_full.unload();
+        self.damage_gauge_bright.unload();
+        self.warning.unload();
+        self.explode_big.unload();
+        self.explode_small.unload();
+        self.slug_goo.unload();
+        self.smoke.unload();
+        self.loaded = false;
     }
 };
 
@@ -330,6 +252,7 @@ pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     art.slug_goo = try store.texture(gameplay_assets.gameplay_slug_goo_sprite_path);
     art.smoke = try store.texture(gameplay_assets.gameplay_smoke_sprite_path);
 
+    art.loaded = true;
     return art;
 }
 
