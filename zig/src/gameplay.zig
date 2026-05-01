@@ -3870,9 +3870,13 @@ pub const Runner = struct {
         for (0..self.runtime.rings.count) |read_index| {
             const effect = self.runtime.rings.slots[read_index];
             switch (effect.state) {
-                .active => {
-                    if (effect.row < window_start or effect.row >= window_end) continue;
-                },
+                // PORT(verified): `spawn_track_ring_or_special_effect` installs
+                // a linked runtime actor; once spawned, active rings are not
+                // tied to the row scanner window. This matters for annotated
+                // ramp rings, where native spawns the actor from the source row
+                // but anchors it 48 rows ahead. The actor update/collision path
+                // owns removal when the player passes it or collects it.
+                .active => {},
                 .collect_setup, .collect_follow, .miss_setup, .miss_expand => {
                     if (effect.presentation_position.z < min_z or effect.presentation_position.z > max_z) continue;
                 },
@@ -7306,6 +7310,9 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
         runner.activeRuntimeRingEffects()[0].world_position.z,
         0.001,
     );
+    runner.row_position = @as(f32, @floatFromInt(source_row)) + 1.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
 
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.ring_powerup);

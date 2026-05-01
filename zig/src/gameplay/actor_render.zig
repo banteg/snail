@@ -36,6 +36,12 @@ const RuntimeRingParticleSpriteFamily = enum {
     slow,
 };
 
+const RuntimeRingParticleTextureSlot = enum {
+    ring_big,
+    explode_big,
+    slow_big,
+};
+
 pub const Context = struct {
     resources: *const gameplay_resources.State,
     ui_font: *const game_font.Loaded,
@@ -594,11 +600,19 @@ fn runtimeRingParticleSpriteFamily(effect_kind: u8) ?RuntimeRingParticleSpriteFa
 }
 
 fn runtimeRingParticleTexture(render: Context, family: RuntimeRingParticleSpriteFamily) rl.Texture2D {
-    switch (family) {
-        .ring => return render.resources.sprites.ring.?.texture,
-        .explode => return render.resources.sprites.explode_big.?.texture,
-        .slow => return render.resources.sprites.slow_ring_big.?.texture,
+    switch (runtimeRingParticleTextureSlot(family)) {
+        .ring_big => return render.resources.sprites.ring_big.?.texture,
+        .explode_big => return render.resources.sprites.explode_big.?.texture,
+        .slow_big => return render.resources.sprites.slow_ring_big.?.texture,
     }
+}
+
+fn runtimeRingParticleTextureSlot(family: RuntimeRingParticleSpriteFamily) RuntimeRingParticleTextureSlot {
+    return switch (family) {
+        .ring => .ring_big,
+        .explode => .explode_big,
+        .slow => .slow_big,
+    };
 }
 
 fn runtimeRingParticleNativeSpriteRef(family: RuntimeRingParticleSpriteFamily) u16 {
@@ -1004,6 +1018,12 @@ test "runtime ring halo uses recovered native sprite refs" {
     try std.testing.expectEqual(@as(u16, 0x87), runtimeRingParticleNativeSpriteRef(.ring));
     try std.testing.expectEqual(@as(u16, 0x83), runtimeRingParticleNativeSpriteRef(.explode));
     try std.testing.expectEqual(@as(u16, 0x85), runtimeRingParticleNativeSpriteRef(.slow));
+}
+
+test "runtime ring halo uses recovered native sprite textures" {
+    try std.testing.expectEqual(RuntimeRingParticleTextureSlot.ring_big, runtimeRingParticleTextureSlot(.ring));
+    try std.testing.expectEqual(RuntimeRingParticleTextureSlot.explode_big, runtimeRingParticleTextureSlot(.explode));
+    try std.testing.expectEqual(RuntimeRingParticleTextureSlot.slow_big, runtimeRingParticleTextureSlot(.slow));
 }
 
 test "garbage sprites keep the native soft alpha lane" {
