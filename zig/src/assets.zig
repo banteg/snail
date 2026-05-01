@@ -129,11 +129,11 @@ pub const Catalog = struct {
     }
 
     pub fn loadTexture(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedTexture {
-        _ = allocator;
         const decoded = try self.readEntryBytes(entry);
 
-        const image = try rl.loadImageFromMemory(".tga", decoded);
+        var image = try rl.loadImageFromMemory(".tga", decoded);
         defer rl.unloadImage(image);
+        try bleedTransparentRgb(allocator, &image);
 
         const texture = try rl.loadTextureFromImage(image);
         rl.setTextureWrap(texture, .clamp);
@@ -189,6 +189,62 @@ pub const Catalog = struct {
         return self.loadMusic(allocator, entry);
     }
 };
+
+fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
+    rl.imageFormat(image, .uncompressed_r8g8b8a8);
+
+    const width: usize = @intCast(image.width);
+    const height: usize = @intCast(image.height);
+    if (width == 0 or height == 0) return;
+
+    const pixels = @as([*]u8, @ptrCast(image.data))[0 .. width * height * 4];
+    try bleedTransparentRgbPixels(allocator, pixels, width, height);
+}
+
+fn bleedTransparentRgbPixels(
+    allocator: std.mem.Allocator,
+    pixels: []u8,
+    width: usize,
+    height: usize,
+) !void {
+    std.debug.assert(pixels.len == width * height * 4);
+
+    const source = try allocator.dupe(u8, pixels);
+    defer allocator.free(source);
+
+    for (0..height) |y| {
+        for (0..width) |x| {
+            const offset = ((y * width) + x) * 4;
+            if (source[offset + 3] != 0) continue;
+
+            var red_sum: u16 = 0;
+            var green_sum: u16 = 0;
+            var blue_sum: u16 = 0;
+            var count: u16 = 0;
+
+            const y_min = if (y == 0) y else y - 1;
+            const y_max = @min(y + 1, height - 1);
+            const x_min = if (x == 0) x else x - 1;
+            const x_max = @min(x + 1, width - 1);
+            for (y_min..y_max + 1) |ny| {
+                for (x_min..x_max + 1) |nx| {
+                    if (nx == x and ny == y) continue;
+                    const neighbor_offset = ((ny * width) + nx) * 4;
+                    if (source[neighbor_offset + 3] == 0) continue;
+                    red_sum += source[neighbor_offset + 0];
+                    green_sum += source[neighbor_offset + 1];
+                    blue_sum += source[neighbor_offset + 2];
+                    count += 1;
+                }
+            }
+            if (count == 0) continue;
+
+            pixels[offset + 0] = @intCast(red_sum / count);
+            pixels[offset + 1] = @intCast(green_sum / count);
+            pixels[offset + 2] = @intCast(blue_sum / count);
+        }
+    }
+}
 
 pub const LoadedTexture = struct {
     path: []const u8,
@@ -338,6 +394,30 @@ fn filterObjectEntriesAlloc(
     }
 
     return list.toOwnedSlice(allocator);
+}
+
+test "transparent texture pixels borrow neighboring color for filtered edges" {
+    var pixels = [_]u8{
+        255, 255, 255, 0,
+        10,  20,  30,  255,
+    };
+
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1);
+
+    try std.testing.expectEqualSlices(u8, &.{ 10, 20, 30, 0 }, pixels[0..4]);
+    try std.testing.expectEqualSlices(u8, &.{ 10, 20, 30, 255 }, pixels[4..8]);
+}
+
+test "transparent texture pixels average all opaque neighbors" {
+    var pixels = [_]u8{
+        10,  20,  30,  255,
+        255, 255, 255, 0,
+        40,  50,  60,  255,
+    };
+
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
+
+    try std.testing.expectEqualSlices(u8, &.{ 25, 35, 45, 0 }, pixels[4..8]);
 }
 
 test "catalog groups archive entries by asset type" {
