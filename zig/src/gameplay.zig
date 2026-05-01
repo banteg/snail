@@ -185,8 +185,9 @@ const max_slug_engagement_voice_cells: usize = 64;
 const native_slug_health: i32 = 7;
 const native_slug_laser_damage: i32 = 2;
 const native_slug_rocket_damage: i32 = 4;
-const native_slug_hit_flash_ticks: u8 = 18;
-const native_slug_death_visual_ticks: u8 = 24;
+const native_slug_hit_flash_step_factor: f32 = 0.16666667;
+const native_slug_blink_initial_step: f32 = 0.033333335;
+const native_slug_blink_close_step: f32 = -0.16666667;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
 const starting_visible_life_stock = score_module.starting_visible_life_stock;
@@ -465,8 +466,11 @@ pub const NukeController = struct {
 const SlugRuntimeCell = struct {
     target: RowTarget = .{ .row = 0, .lane = 0 },
     health: i32 = native_slug_health,
-    hit_flash_ticks: u8 = 0,
-    death_visual_ticks: u8 = 0,
+    hit_flash_pending: bool = false,
+    hit_flash_progress: f32 = 0.0,
+    hit_flash_step: f32 = native_slug_hit_flash_step_factor,
+    blink_progress: f32 = 0.0,
+    blink_step: f32 = native_slug_blink_initial_step,
 };
 
 pub const Runner = struct {
@@ -3079,7 +3083,7 @@ pub const Runner = struct {
         if (cell.health < 0) {
             self.defeatSlug(global_row, lane_index);
         } else {
-            cell.hit_flash_ticks = native_slug_hit_flash_ticks;
+            cell.hit_flash_pending = true;
             self.queueSlugHitVoice();
         }
         return true;
@@ -3087,11 +3091,31 @@ pub const Runner = struct {
 
     fn updateSlugProjectileAnimations(self: *Runner) void {
         for (0..self.slug_runtime_cell_count) |index| {
-            if (self.slug_runtime_cells[index].hit_flash_ticks > 0) {
-                self.slug_runtime_cells[index].hit_flash_ticks -= 1;
+            var cell = &self.slug_runtime_cells[index];
+            if (cell.health == 0) continue;
+            if (cell.hit_flash_pending) {
+                cell.hit_flash_pending = false;
+                cell.hit_flash_progress = cell.hit_flash_step;
             }
-            if (self.slug_runtime_cells[index].death_visual_ticks > 0) {
-                self.slug_runtime_cells[index].death_visual_ticks -= 1;
+            if (cell.hit_flash_progress != 0.0) {
+                cell.hit_flash_progress += cell.hit_flash_step;
+                if (cell.hit_flash_progress > 1.0) {
+                    cell.hit_flash_progress = 0.0;
+                    cell.blink_progress = 1.0;
+                    cell.blink_step = native_slug_blink_close_step;
+                }
+                continue;
+            }
+            cell.blink_progress += cell.blink_step;
+            if (cell.blink_progress > 1.0) {
+                cell.blink_progress = 1.0;
+                cell.blink_step = native_slug_blink_close_step;
+            } else if (cell.blink_progress < 0.0) {
+                cell.blink_progress = 0.0;
+                // `advance_blink_random` picks the next positive reopen delay;
+                // the exact RNG family is not yet shared with hazard visuals, so
+                // keep the native initial cadence instead of freezing closed.
+                cell.blink_step = native_slug_blink_initial_step;
             }
         }
     }
@@ -3111,6 +3135,7 @@ pub const Runner = struct {
         self.slug_runtime_cells[index] = .{
             .target = .{ .row = global_row, .lane = lane_index },
             .health = native_slug_health,
+            .hit_flash_step = self.nativeRunRate() * native_slug_hit_flash_step_factor,
         };
         self.slug_runtime_cell_count += 1;
         return index;
@@ -3119,22 +3144,17 @@ pub const Runner = struct {
     pub fn slugVisualState(self: *const Runner, global_row: usize, lane_index: usize) SlugVisualState {
         if (self.findSlugRuntimeCellIndex(global_row, lane_index)) |index| {
             const cell = self.slug_runtime_cells[index];
-            if (cell.death_visual_ticks > 0) {
-                return .{
-                    .frame_index = 1,
-                    .tint = .{ .r = 255, .g = 255, .b = 255, .a = 208 },
-                };
-            }
             if (self.isSlugDefeated(global_row, lane_index)) {
                 return .{ .visible = false };
             }
-            if (cell.hit_flash_ticks > 0) {
+            if (cell.hit_flash_progress != 0.0) {
                 return .{
-                    .frame_index = 1,
+                    .frame_index = 2,
                     .use_mask = true,
-                    .tint = .{ .r = 255, .g = 32, .b = 32, .a = 236 },
+                    .tint = .{ .r = 255, .g = 0, .b = 0, .a = 252 },
                 };
             }
+            if (cell.blink_step < 0.0) return .{ .frame_index = 1 };
         } else if (self.isSlugDefeated(global_row, lane_index)) {
             return .{ .visible = false };
         }
@@ -3194,8 +3214,8 @@ pub const Runner = struct {
 
     fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
         if (self.ensureSlugRuntimeCell(global_row, lane_index)) |index| {
-            self.slug_runtime_cells[index].death_visual_ticks = native_slug_death_visual_ticks;
-            self.slug_runtime_cells[index].hit_flash_ticks = 0;
+            self.slug_runtime_cells[index].hit_flash_pending = false;
+            self.slug_runtime_cells[index].hit_flash_progress = 0.0;
             self.slug_runtime_cells[index].health = 0;
         }
         self.markSlugDefeated(global_row, lane_index);
@@ -7665,6 +7685,7 @@ test "native blaster bounces off slugs while upgraded weapons damage them" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    runner.configureBaseSubgameRate(0.2);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
     const lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
@@ -7700,18 +7721,19 @@ test "native blaster bounces off slugs while upgraded weapons damage them" {
     inline for (0..3) |_| {
         try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &laser));
         try std.testing.expect(!runner.isSlugDefeated(slug.row, slug.lane));
+        runner.updateSlugProjectileAnimations();
     }
     try std.testing.expectEqual(@as(u32, 3), runner.slug_hit_voice_token);
     const hit_visual = runner.slugVisualState(slug.row, slug.lane);
     try std.testing.expect(hit_visual.visible);
     try std.testing.expect(hit_visual.use_mask);
+    try std.testing.expectEqual(@as(usize, 2), hit_visual.frame_index);
 
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &laser));
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.slug);
     const death_visual = runner.slugVisualState(slug.row, slug.lane);
-    try std.testing.expect(death_visual.visible);
-    try std.testing.expectEqual(@as(usize, 1), death_visual.frame_index);
+    try std.testing.expect(!death_visual.visible);
 }
 
 test "native rocket needs two slug hits before kill" {
