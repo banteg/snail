@@ -85,21 +85,6 @@ pub const Store = struct {
         return self.texture_cache.getPtr(entry.path).?.borrowed();
     }
 
-    pub fn textureAlphaFringe(self: *Store, path: []const u8) !assets.LoadedTexture {
-        const entry = self.catalog.findTextureEntry(path) orelse return error.EntryNotFound;
-        if (self.texture_cache.getPtr(entry.path)) |loaded| return loaded.borrowed();
-
-        const loaded = try self.catalog.loadTextureEx(self.allocator, entry, .{
-            .rgb_bleed_mode = .alpha_fringe_pixels,
-        });
-        errdefer {
-            var owned = loaded;
-            owned.unload();
-        }
-        try self.texture_cache.put(entry.path, loaded);
-        return self.texture_cache.getPtr(entry.path).?.borrowed();
-    }
-
     pub fn sound(self: *Store, path: []const u8) !?assets.LoadedSound {
         if (!self.audio_ready) return null;
 
