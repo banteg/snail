@@ -541,9 +541,6 @@ fn drawGameplayRuntimeRingEffectActor(
     camera: rl.Camera3D,
     effect: gameplay_runtime_entities.RingEffect,
 ) void {
-    const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
-    drawGameplayRingSprite(render, camera, effect.presentation_position, effect.presentation_scale, ring_kind);
-
     if (runtimeRingParticleSpriteFamily(effect.kind)) |family| {
         drawRuntimeRingParticleHalo(render, camera, effect, family);
     }
