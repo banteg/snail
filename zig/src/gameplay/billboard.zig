@@ -24,11 +24,14 @@ pub const hard_alpha_cutoff: f32 = 0.5;
 pub const BlendMode = enum {
     alpha,
     additive,
-    src_alpha_src_color,
+    src_alpha_dst_color,
 };
 
-const gl_src_color = 0x0300;
+const gl_dst_color = 0x0306;
 const gl_src_alpha = 0x0302;
+const gl_one = 1;
+const gl_zero = 0;
+const gl_one_minus_src_alpha = 0x0303;
 const gl_func_add = 0x8006;
 
 pub fn loadAlphaCutoutShader() !rl.Shader {
@@ -289,13 +292,12 @@ fn drawQuad(
     alpha_cutoff: f32,
 ) void {
     switch (blend_mode) {
-        .alpha => rl.beginBlendMode(.alpha),
-        .additive => rl.beginBlendMode(.additive),
-        .src_alpha_src_color => {
+        .alpha => beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_one_minus_src_alpha),
+        .additive => beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_one),
+        .src_alpha_dst_color => {
             // Native sprite render state 13 maps D3DBLEND_SRCALPHA over
-            // D3DBLEND_SRCCOLOR. Explode/slow ring particles use this lane.
-            rl.gl.rlSetBlendFactors(gl_src_alpha, gl_src_color, gl_func_add);
-            rl.beginBlendMode(.custom);
+            // D3DBLEND_DESTCOLOR. Explode/slow ring particles use this lane.
+            beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_dst_color);
         },
     }
     defer rl.endBlendMode();
@@ -321,6 +323,11 @@ fn drawQuad(
     rl.gl.rlVertex3f(bottom_right.x, bottom_right.y, bottom_right.z);
     rl.gl.rlTexCoord2f(uv.right, uv.top);
     rl.gl.rlVertex3f(top_right.x, top_right.y, top_right.z);
+}
+
+fn beginCustomBlendPreservingFramebufferAlpha(src_rgb: i32, dst_rgb: i32) void {
+    rl.gl.rlSetBlendFactorsSeparate(src_rgb, dst_rgb, gl_zero, gl_one, gl_func_add, gl_func_add);
+    rl.beginBlendMode(.custom_separate);
 }
 
 fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {

@@ -133,7 +133,7 @@ pub const Catalog = struct {
 
         var image = try rl.loadImageFromMemory(".tga", decoded);
         defer rl.unloadImage(image);
-        try bleedTransparentRgb(allocator, &image);
+        try bleedTransparentRgb(allocator, &image, entry.path);
 
         const texture = try rl.loadTextureFromImage(image);
         rl.setTextureWrap(texture, .clamp);
@@ -191,8 +191,9 @@ pub const Catalog = struct {
 };
 
 const rgb_bleed_alpha_cutoff: u8 = 15;
+const sprite_edge_rgb_bleed_alpha_cutoff: u8 = 254;
 
-fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
+fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image, path: []const u8) !void {
     rl.imageFormat(image, .uncompressed_r8g8b8a8);
 
     const width: usize = @intCast(image.width);
@@ -200,7 +201,16 @@ fn bleedTransparentRgb(allocator: std.mem.Allocator, image: *rl.Image) !void {
     if (width == 0 or height == 0) return;
 
     const pixels = @as([*]u8, @ptrCast(image.data))[0 .. width * height * 4];
-    try bleedTransparentRgbPixels(allocator, pixels, width, height);
+    try bleedTransparentRgbPixels(allocator, pixels, width, height, rgbBleedAlphaCutoffForPath(path));
+}
+
+fn rgbBleedAlphaCutoffForPath(path: []const u8) u8 {
+    // These billboard sprites carry wide partially-transparent padding whose
+    // RGB is black in the archived TGA. Bilinear filtering then darkens the
+    // whole quad even though the alpha is valid. Native renders them as soft
+    // sprite cards, so preserve alpha and repair only the edge RGB.
+    if (std.ascii.startsWithIgnoreCase(path, "SPRITES/PARTICLE")) return sprite_edge_rgb_bleed_alpha_cutoff;
+    return rgb_bleed_alpha_cutoff;
 }
 
 fn bleedTransparentRgbPixels(
@@ -208,6 +218,7 @@ fn bleedTransparentRgbPixels(
     pixels: []u8,
     width: usize,
     height: usize,
+    alpha_cutoff: u8,
 ) !void {
     std.debug.assert(pixels.len == width * height * 4);
 
@@ -215,7 +226,7 @@ fn bleedTransparentRgbPixels(
     const has_bleed_rgb = try allocator.alloc(bool, pixel_count);
     defer allocator.free(has_bleed_rgb);
     for (0..pixel_count) |index| {
-        has_bleed_rgb[index] = pixels[index * 4 + 3] > rgb_bleed_alpha_cutoff;
+        has_bleed_rgb[index] = pixels[index * 4 + 3] > alpha_cutoff;
     }
 
     var repaired_any = true;
@@ -443,7 +454,7 @@ test "transparent texture pixels borrow neighboring color for filtered edges" {
         10,  20,  30,  255,
     };
 
-    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1);
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1, rgb_bleed_alpha_cutoff);
 
     try std.testing.expectEqualSlices(u8, &.{ 10, 20, 30, 0 }, pixels[0..4]);
     try std.testing.expectEqualSlices(u8, &.{ 10, 20, 30, 255 }, pixels[4..8]);
@@ -456,7 +467,7 @@ test "transparent texture pixels average all opaque neighbors" {
         40,  50,  60,  255,
     };
 
-    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1, rgb_bleed_alpha_cutoff);
 
     try std.testing.expectEqualSlices(u8, &.{ 25, 35, 45, 0 }, pixels[4..8]);
 }
@@ -467,7 +478,7 @@ test "low-alpha texture pixels borrow visible neighbor color for filtered sprite
         80, 120, 160, 255,
     };
 
-    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1);
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1, rgb_bleed_alpha_cutoff);
 
     try std.testing.expectEqualSlices(u8, &.{ 80, 120, 160, 6 }, pixels[0..4]);
     try std.testing.expectEqualSlices(u8, &.{ 80, 120, 160, 255 }, pixels[4..8]);
@@ -480,10 +491,28 @@ test "low-alpha texture bleed propagates visible edge color outward" {
         40, 60, 80, 255,
     };
 
-    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1);
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 3, 1, rgb_bleed_alpha_cutoff);
 
     try std.testing.expectEqualSlices(u8, &.{ 40, 60, 80, 4 }, pixels[0..4]);
     try std.testing.expectEqualSlices(u8, &.{ 40, 60, 80, 6 }, pixels[4..8]);
+}
+
+test "sprite billboard edge bleed repairs semitransparent black padding without changing alpha" {
+    var pixels = [_]u8{
+        0,   0,   0,   96,
+        120, 150, 180, 255,
+    };
+
+    try bleedTransparentRgbPixels(std.testing.allocator, &pixels, 2, 1, sprite_edge_rgb_bleed_alpha_cutoff);
+
+    try std.testing.expectEqualSlices(u8, &.{ 120, 150, 180, 96 }, pixels[0..4]);
+    try std.testing.expectEqualSlices(u8, &.{ 120, 150, 180, 255 }, pixels[4..8]);
+}
+
+test "billboard sprite paths use full edge RGB repair" {
+    try std.testing.expectEqual(sprite_edge_rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/PARTICLERING-BIG.TGA"));
+    try std.testing.expectEqual(rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/GARBAGEA.TGA"));
+    try std.testing.expectEqual(rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/BORDER.TGA"));
 }
 
 test "catalog groups archive entries by asset type" {

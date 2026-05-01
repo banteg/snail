@@ -69,6 +69,7 @@ pub const SaltSlot = struct {
     row: usize = 0,
     lane: usize = 0,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    spawn_y: f32 = 0.0,
     velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     lifetime_progress: f32 = 0.0,
     lifetime_step: f32 = 0.0,

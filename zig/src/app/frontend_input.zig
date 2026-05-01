@@ -565,40 +565,12 @@ pub fn snapWidgetStates(state: anytype) void {
 }
 
 pub fn primeWidgetStatesForNativeInit(state: anytype) void {
-    for (&state.main_menu_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.new_game_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.challenge_setup_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.options_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.pause_menu_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.route_map_button_states, 0..) |*button_state, index| {
-        button_state.primeForNativeInit(if (index == frontend_route_map.replay_button_index) .route_map_secondary_action else .menu_button);
-    }
-    for (&state.help_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
-    for (&state.high_score_button_states) |*button_state| {
-        button_state.primeForNativeInit(.footer_button);
-    }
-    for (&state.high_score_replay_button_states) |*button_state| {
-        button_state.primeForNativeInit(.compact_score_row);
-    }
-    for (&state.post_level_high_score_button_states) |*button_state| {
-        button_state.primeForNativeInit(.footer_button);
-    }
-    state.completion_continue_button_state.primeForNativeInit(.menu_button);
-    for (&state.exit_prompt_button_states) |*button_state| {
-        button_state.primeForNativeInit(.menu_button);
-    }
+    // Phase entry clears hover and keyboard focus. Priming every widget from
+    // the hot state made whole menus flash as if all buttons were hovered on
+    // the first visible frame. Seed the rendered state from the real current
+    // interaction target instead; later hover/selection changes still ease
+    // through `updateWidgetAnimations`.
+    snapWidgetStates(state);
 }
 
 fn activeRouteMenuHotAction(state: anytype) frontend.RouteMenuAction {

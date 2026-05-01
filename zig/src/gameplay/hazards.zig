@@ -43,6 +43,12 @@ pub const native_salt_z_velocity_bit_pattern: u32 = 1;
 // scale but advances a runner-local RNG so salt spawn does not perturb the
 // broader gameplay random stream.
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
+// PORT(partial): native `update_salt_hazard` feeds the lifted slot through
+// track-attachment tests and deactivates it once that attachment no longer
+// accepts the next position. The port does not yet carry those native
+// attachment objects for salt, so cap the visible lift near the spawn anchor
+// instead of letting authored salt drift upward for the whole live window.
+pub const port_salt_visible_lift_cap: f32 = 0.08;
 // PORT(verified): `spawn_sub_lazer_projectile` seeds the nested-sprite bob
 // phase step as
 // `track_center_x * 0.0055555557`
@@ -209,6 +215,7 @@ pub const SaltHazardPool = struct {
             .row = row,
             .lane = lane,
             .world_position = world_position,
+            .spawn_y = world_position.y,
             .velocity = .{
                 .x = 0.0,
                 .y = track_center_x * native_salt_vertical_velocity_factor,
@@ -240,7 +247,10 @@ pub const SaltHazardPool = struct {
                         continue;
                     }
                     slot.world_position.x += slot.velocity.x;
-                    slot.world_position.y += slot.velocity.y;
+                    slot.world_position.y = @min(
+                        slot.world_position.y + slot.velocity.y,
+                        slot.spawn_y + port_salt_visible_lift_cap,
+                    );
                     slot.world_position.z += slot.velocity.z;
                 },
                 .removing => {
@@ -302,11 +312,7 @@ test "salt spawn seeds native lift velocity instead of lifetime expiry" {
     pool.tickActiveSlots();
 
     try std.testing.expectEqual(SaltSlotState.active, slot.state);
-    try std.testing.expectApproxEqAbs(
-        @as(f32, 0.18) + (track_center_x * native_salt_vertical_velocity_factor),
-        slot.world_position.y,
-        0.0001,
-    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.18) + port_salt_visible_lift_cap, slot.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_progress, 0.0001);
 }
 

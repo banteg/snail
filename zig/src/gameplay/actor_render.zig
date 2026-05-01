@@ -399,7 +399,7 @@ fn drawGameplayGarbageActor(
 }
 
 fn garbageAlphaCutoff() f32 {
-    return gameplay_billboard.default_alpha_cutoff;
+    return gameplay_billboard.hard_alpha_cutoff;
 }
 
 fn drawGameplaySaltSlotActor(
@@ -591,7 +591,7 @@ fn drawRuntimeRingParticleHalo(
 fn runtimeRingParticleBlendMode(family: RuntimeRingParticleSpriteFamily) gameplay_billboard.BlendMode {
     return switch (family) {
         .ring => .additive,
-        .explode, .slow => .src_alpha_src_color,
+        .explode, .slow => .src_alpha_dst_color,
     };
 }
 
@@ -1058,8 +1058,8 @@ test "runtime powerup rings use the native particle-ring sprite family" {
 
 test "runtime ring particles use recovered native sprite blend lanes" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, runtimeRingParticleBlendMode(.ring));
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.explode));
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.slow));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_dst_color, runtimeRingParticleBlendMode(.explode));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_dst_color, runtimeRingParticleBlendMode(.slow));
 }
 
 test "runtime ring halo uses recovered native sprite refs" {
@@ -1077,8 +1077,8 @@ test "runtime ring halo uses recovered native sprite textures" {
     try std.testing.expectEqual(RuntimeRingParticleTextureSlot.slow_big, runtimeRingParticleTextureSlot(.slow));
 }
 
-test "garbage sprites keep the native soft alpha lane" {
-    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, garbageAlphaCutoff());
+test "garbage sprites use hard alpha cutout" {
+    try std.testing.expectEqual(gameplay_billboard.hard_alpha_cutoff, garbageAlphaCutoff());
 }
 
 test "native runtime ring halo positions ten sprites around the parent" {
