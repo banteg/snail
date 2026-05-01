@@ -276,25 +276,22 @@ fn drawFringeSides(
     back_height: f32,
     edge_mask: u8,
 ) void {
+    const outer_z = fringeSideOuterZSpan(front, back);
     if ((edge_mask & 0x08) != 0) {
-        const outer_front_z = fringeSideOuterFrontZ(edge_mask, front);
-        const outer_back_z = fringeSideOuterBackZ(edge_mask, back);
         drawFringeRamp(
             scene,
             .{ .x = left, .y = back_height, .z = back },
-            .{ .x = left - attachment_fringe_outset, .y = back_height, .z = outer_back_z },
-            .{ .x = left - attachment_fringe_outset, .y = front_height, .z = outer_front_z },
+            .{ .x = left - attachment_fringe_outset, .y = back_height, .z = outer_z.back },
+            .{ .x = left - attachment_fringe_outset, .y = front_height, .z = outer_z.front },
             .{ .x = left, .y = front_height, .z = front },
         );
     }
     if ((edge_mask & 0x04) != 0) {
-        const outer_front_z = fringeSideOuterFrontZ(edge_mask, front);
-        const outer_back_z = fringeSideOuterBackZ(edge_mask, back);
         drawFringeRamp(
             scene,
             .{ .x = right, .y = front_height, .z = front },
-            .{ .x = right + attachment_fringe_outset, .y = front_height, .z = outer_front_z },
-            .{ .x = right + attachment_fringe_outset, .y = back_height, .z = outer_back_z },
+            .{ .x = right + attachment_fringe_outset, .y = front_height, .z = outer_z.front },
+            .{ .x = right + attachment_fringe_outset, .y = back_height, .z = outer_z.back },
             .{ .x = right, .y = back_height, .z = back },
         );
     }
@@ -318,12 +315,13 @@ fn drawFringeSides(
     }
 }
 
-fn fringeSideOuterFrontZ(edge_mask: u8, front: f32) f32 {
-    return if ((edge_mask & 0x01) != 0) front - attachment_fringe_outset else front;
-}
+const FringeSideOuterZSpan = struct {
+    front: f32,
+    back: f32,
+};
 
-fn fringeSideOuterBackZ(edge_mask: u8, back: f32) f32 {
-    return if ((edge_mask & 0x02) != 0) back + attachment_fringe_outset else back;
+fn fringeSideOuterZSpan(front: f32, back: f32) FringeSideOuterZSpan {
+    return .{ .front = front, .back = back };
 }
 
 fn drawFringeRamp(
@@ -802,14 +800,13 @@ test "track skirt tint follows the recovered shared skirt alpha" {
     try std.testing.expectEqual(@as(u8, 102), track_skirt_tint.a);
 }
 
-test "fringe side ramps miter exposed row corners" {
-    const front: f32 = 12.0;
-    const back: f32 = 13.0;
-
-    try std.testing.expectApproxEqAbs(front - attachment_fringe_outset, fringeSideOuterFrontZ(0x08 | 0x01, front), 0.0001);
-    try std.testing.expectApproxEqAbs(front, fringeSideOuterFrontZ(0x08, front), 0.0001);
-    try std.testing.expectApproxEqAbs(back + attachment_fringe_outset, fringeSideOuterBackZ(0x04 | 0x02, back), 0.0001);
-    try std.testing.expectApproxEqAbs(back, fringeSideOuterBackZ(0x04, back), 0.0001);
+test "fringe side ramps stay row-local at exposed row corners" {
+    // PORT(verified): Windows chooses separate directional fringe-object variants
+    // in `build_track_fringe_objects`; side meshes do not stretch through the
+    // front/back corner cells.
+    const span = fringeSideOuterZSpan(12.0, 13.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), span.front, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 13.0), span.back, 0.0001);
 }
 
 test "attachment fringe extends beyond the path edge by the native outset" {
