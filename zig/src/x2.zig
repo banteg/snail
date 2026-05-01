@@ -256,6 +256,19 @@ pub const Uploaded = struct {
         }
     }
 
+    pub fn drawAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, shader: rl.Shader) void {
+        rl.beginBlendMode(.alpha);
+        defer rl.endBlendMode();
+
+        setAlphaCutoff(shader, default_alpha_cutoff);
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            var material = submesh.material;
+            material.shader = shader;
+            rl.drawMesh(submesh.mesh, material, transform);
+        }
+    }
+
     pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
         rl.beginBlendMode(.alpha);
         defer rl.endBlendMode();

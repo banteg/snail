@@ -1011,7 +1011,7 @@ pub const LoadedLevelPreview = struct {
             drawSegmentAnnotations(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
         }
 
-        self.drawPlacedModels(width_offset, cell_size);
+        self.drawPlacedModels(width_offset, cell_size, null);
     }
 
     pub fn drawDebugOverlay(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
@@ -1334,7 +1334,7 @@ pub const LoadedLevelPreview = struct {
         };
     }
 
-    fn drawPlacedModels(self: *const LoadedLevelPreview, width_offset: f32, cell_size: f32) void {
+    fn drawPlacedModels(self: *const LoadedLevelPreview, width_offset: f32, cell_size: f32, alpha_cutout_shader: ?rl.Shader) void {
         for (self.placed_models) |instance| {
             if (instance.asset_index >= self.model_assets.len) continue;
             if (instance.segment_index >= self.segments.len) continue;
@@ -1354,12 +1354,16 @@ pub const LoadedLevelPreview = struct {
                 position.y - asset.bounds.min.y,
                 position.z - asset.bounds.center.z,
             );
-            asset.drawEx(transform);
+            if (alpha_cutout_shader) |shader| {
+                asset.drawAlphaCutoutEx(transform, shader);
+            } else {
+                asset.drawEx(transform);
+            }
         }
     }
 
-    pub fn drawPlacedModelsOnly(self: *const LoadedLevelPreview) void {
-        self.drawPlacedModels(@as(f32, @floatFromInt(self.max_width)) * 0.5, 1.0);
+    pub fn drawPlacedModelsOnly(self: *const LoadedLevelPreview, alpha_cutout_shader: ?rl.Shader) void {
+        self.drawPlacedModels(@as(f32, @floatFromInt(self.max_width)) * 0.5, 1.0, alpha_cutout_shader);
     }
 };
 

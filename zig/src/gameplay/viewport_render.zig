@@ -23,7 +23,7 @@ pub fn draw(state: anytype) void {
     defer rl.endMode3D();
 
     if (state.current_game_track_scene) |*scene| {
-        scene.drawGameplay(&loaded_track_preview);
+        scene.drawGameplay(&loaded_track_preview, state.gameplay_billboard_shader);
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }

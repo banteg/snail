@@ -51,14 +51,14 @@ pub const Scene = struct {
         drawBackPlane(self, preview);
         drawRenderCacheCells(self, preview);
         drawAttachmentGeometry(self, preview, selected_segment_index);
-        preview.drawPlacedModelsOnly();
+        preview.drawPlacedModelsOnly(null);
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
 
-    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview) void {
+    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, alpha_cutout_shader: ?rl.Shader) void {
         drawRenderCacheCells(self, preview);
         drawAllAttachmentGeometry(self, preview);
-        preview.drawPlacedModelsOnly();
+        preview.drawPlacedModelsOnly(alpha_cutout_shader);
     }
 };
 
