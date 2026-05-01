@@ -118,6 +118,10 @@ const garbage_distance_threshold: f32 = 0.98;
 // authored tile-0x22 salt contact, not the `0.49f` gate that the SubLazer
 // projectile pool uses. Aligning to the `cRSalt` side of the split.
 const salt_collision_distance_threshold: f32 = 0.98;
+// PORT(verified): `update_subgame` calls `spawn_salt_hazard` with the cell
+// gameplay anchor at `TrackRowCell + 0x10`, not the low floor/trampoline
+// anchor. That is the same authored height used by the debug gameplay marker.
+const salt_spawn_y_offset: f32 = 0.62;
 // PORT(verified): `cRSubLazerManager` projectile collision uses
 // `+0.02f` damage and a `0.49f` distance gate per
 // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:122-126`.
@@ -3922,7 +3926,7 @@ pub const Runner = struct {
         // `spawn_salt_hazard` itself seeds x velocity 0, y lift from
         // `track_center_x * 0.033333335`, and the odd byte write at the
         // z-velocity address.
-        const position = runtimeCellWorldPosition(preview, global_row, lane, 0.18);
+        const position = runtimeCellWorldPosition(preview, global_row, lane, salt_spawn_y_offset);
         _ = self.runtime.salts.spawn(
             global_row,
             lane,
@@ -8260,8 +8264,8 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
 
     // Salt spawns into its dedicated `SaltHazardPool`, carries the native
-    // `runtimeCellWorldPosition(..., 0.18)` Y anchor directly on the slot,
-    // and receives the recovered native upward velocity from `track_center_x`.
+    // gameplay-anchor Y directly on the slot, and receives the recovered
+    // native upward velocity from `track_center_x`.
     try std.testing.expect(runner.runtime.salts.contains(48, 1));
     var salt_slot: ?gameplay_runtime_entities.SaltSlot = null;
     for (runner.runtime.salts.slots) |slot| {
@@ -8271,7 +8275,7 @@ test "runtime hazards preserve recovered presentation scalars" {
         }
     }
     try std.testing.expect(salt_slot != null);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
+    try std.testing.expectApproxEqAbs(salt_spawn_y_offset, salt_slot.?.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(
         runner.track_center_x * hazards_module.native_salt_vertical_velocity_factor,
         salt_slot.?.velocity.y,

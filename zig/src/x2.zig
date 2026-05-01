@@ -7,6 +7,7 @@ const io = std.Options.debug_io;
 
 const native_toon_reference_screen_width = 640.0;
 const toon_outline_antialias_fringe_pixels = 1.0;
+const default_alpha_cutoff: f32 = 0.05;
 
 const toon_outline_fragment_shader: [:0]const u8 =
     \\#version 330
@@ -261,6 +262,7 @@ pub const Uploaded = struct {
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
 
+        setAlphaCutoff(shader, default_alpha_cutoff);
         const submeshes = @constCast(self.submeshes);
         for (submeshes) |*submesh| {
             const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
@@ -1540,6 +1542,13 @@ fn transformedBoundsRadius(bounds_radius: f32, transform: rl.Matrix) f32 {
 
 fn outlineDepthBiasDistance(world_radius: f32) f32 {
     return @max(world_radius * 0.004, 0.002);
+}
+
+fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
+    const location = rl.getShaderLocation(shader, "alphaCutoff");
+    if (location < 0) return;
+    var cutoff = alpha_cutoff;
+    rl.setShaderValue(shader, location, &cutoff, .float);
 }
 
 fn writeVec3(buffer: []f32, at: *usize, v: Vec3) void {
