@@ -4,6 +4,7 @@ const assets = @import("assets.zig");
 const attachment_builders = @import("attachment_builders.zig");
 const archive = @import("archive.zig");
 const level = @import("level.zig");
+const render_blend = @import("render_blend.zig");
 const segment = @import("segment.zig");
 const x2 = @import("x2.zig");
 
@@ -1335,6 +1336,18 @@ pub const LoadedLevelPreview = struct {
     }
 
     fn drawPlacedModels(self: *const LoadedLevelPreview, width_offset: f32, cell_size: f32, alpha_cutout_shader: ?rl.Shader) void {
+        if (alpha_cutout_shader) |shader| {
+            render_blend.beginAlphaPreservingFramebufferAlpha();
+            defer rl.endBlendMode();
+            rl.gl.rlDisableDepthMask();
+            defer rl.gl.rlEnableDepthMask();
+
+            x2.configureAlphaCutoutShader(shader);
+            self.drawPlacedModelsQueued(width_offset, cell_size, shader);
+            rl.gl.rlDrawRenderBatchActive();
+            return;
+        }
+
         for (self.placed_models) |instance| {
             if (instance.asset_index >= self.model_assets.len) continue;
             if (instance.segment_index >= self.segments.len) continue;
@@ -1354,11 +1367,31 @@ pub const LoadedLevelPreview = struct {
                 position.y - asset.bounds.min.y,
                 position.z - asset.bounds.center.z,
             );
-            if (alpha_cutout_shader) |shader| {
-                asset.drawAlphaCutoutEx(transform, shader);
-            } else {
-                asset.drawEx(transform);
-            }
+            asset.drawEx(transform);
+        }
+    }
+
+    fn drawPlacedModelsQueued(self: *const LoadedLevelPreview, width_offset: f32, cell_size: f32, shader: rl.Shader) void {
+        for (self.placed_models) |instance| {
+            if (instance.asset_index >= self.model_assets.len) continue;
+            if (instance.segment_index >= self.segments.len) continue;
+
+            const loaded_segment = self.segments[instance.segment_index];
+            if (instance.row_index >= loaded_segment.rows.len) continue;
+
+            const row = loaded_segment.rows[instance.row_index];
+            const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[instance.segment_index])) * cell_size;
+            const global_row = self.row_offsets[instance.segment_index] + instance.row_index;
+            const base = rowAnchorPosition(self, global_row, row, instance.row_index, width_offset, segment_start_z, cell_size, 0.02);
+            const position = applyAnnotationOffset(base, instance.offset);
+            const asset = &self.model_assets[instance.asset_index].loaded;
+
+            const transform = rl.Matrix.translate(
+                position.x - asset.bounds.center.x,
+                position.y - asset.bounds.min.y,
+                position.z - asset.bounds.center.z,
+            );
+            asset.drawAlphaCutoutQueuedEx(transform, shader);
         }
     }
 

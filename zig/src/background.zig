@@ -440,6 +440,22 @@ pub const LightStreakController = struct {
         render_blend.beginAlphaPreservingFramebufferAlpha();
         defer rl.endBlendMode();
 
+        const draw_mode = switch (options.mode) {
+            .automatic => if (texture != null) LightStreakDrawMode.textured else .lines,
+            else => options.mode,
+        };
+        const batched_sprite_texture = if (draw_mode == .textured and !options.draw_debug_quads) texture else null;
+        if (batched_sprite_texture) |sprite_texture| {
+            rlgl.rlDrawRenderBatchActive();
+            rlgl.rlSetTexture(sprite_texture.id);
+            rlgl.rlBegin(rlgl.rl_quads);
+        }
+        defer if (batched_sprite_texture != null) {
+            rlgl.rlEnd();
+            rlgl.rlDrawRenderBatchActive();
+            rlgl.rlSetTexture(0);
+        };
+
         for (self.entries) |entry| {
             stats.total_entries += 1;
             const scene_packet = lightStreakScenePacket(camera, entry.sprite_position, entry.direction);
@@ -467,13 +483,17 @@ pub const LightStreakController = struct {
             if (authored_half_size <= 0.0 or stretch <= 0.0) continue;
             stretch_sum += stretch;
 
-            const draw_mode = switch (options.mode) {
-                .automatic => if (texture != null) LightStreakDrawMode.textured else .lines,
-                else => options.mode,
-            };
-
             const drew = switch (draw_mode) {
-                .textured => if (texture) |sprite_texture|
+                .textured => if (batched_sprite_texture != null)
+                    emitLightStreakSpriteQuad(
+                        viewport,
+                        camera,
+                        scene_packet,
+                        authored_half_size,
+                        stretch,
+                        color,
+                    )
+                else if (texture) |sprite_texture|
                     drawLightStreakSprite(
                         sprite_texture,
                         viewport,
@@ -580,6 +600,26 @@ fn drawLightStreakLine(
     return true;
 }
 
+fn emitLightStreakSpriteQuad(
+    viewport: rl.Rectangle,
+    camera: LightStreakCamera,
+    scene_packet: LightStreakScenePacket,
+    authored_half_size: f32,
+    stretch: f32,
+    tint: rl.Color,
+) bool {
+    const quad = projectLightStreakSpriteQuad(
+        viewport,
+        camera,
+        scene_packet,
+        authored_half_size,
+        stretch,
+    ) orelse return false;
+
+    emitLightStreakProjectedQuad(quad, tint);
+    return true;
+}
+
 fn projectLightStreakSpriteQuad(
     viewport: rl.Rectangle,
     camera: LightStreakCamera,
@@ -628,6 +668,21 @@ fn drawLightStreakSprite(
     defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
+    emitLightStreakProjectedQuad(.{ v0, v1, v2, v3 }, tint);
+    rlgl.rlEnd();
+    rlgl.rlDrawRenderBatchActive();
+
+    if (draw_debug_quad) {
+        drawLightStreakDebugQuad(v0, v1, v2, v3);
+    }
+    return true;
+}
+
+fn emitLightStreakProjectedQuad(quad: [4]rl.Vector2, tint: rl.Color) void {
+    const v0 = quad[0];
+    const v1 = quad[1];
+    const v2 = quad[2];
+    const v3 = quad[3];
 
     // Native `draw_sprite_quad` builds the four corners in scene space and hands
     // them to D3D with the native winding. In the raylib 2D path that same visual
@@ -643,13 +698,6 @@ fn drawLightStreakSprite(
         rlgl.rlTexCoord2f(vertex.uv.x, vertex.uv.y);
         rlgl.rlVertex3f(vertex.point.x, vertex.point.y, 0.0);
     }
-    rlgl.rlEnd();
-    rlgl.rlDrawRenderBatchActive();
-
-    if (draw_debug_quad) {
-        drawLightStreakDebugQuad(v0, v1, v2, v3);
-    }
-    return true;
 }
 
 fn drawLightStreakDebugMarker(center: rl.Vector2) void {

@@ -210,6 +210,8 @@ fn rgbBleedAlphaCutoffForPath(path: []const u8) u8 {
     // whole quad even though the alpha is valid. Native renders them as soft
     // sprite cards, so preserve alpha and repair only the edge RGB.
     if (std.ascii.startsWithIgnoreCase(path, "SPRITES/PARTICLE")) return sprite_edge_rgb_bleed_alpha_cutoff;
+    if (std.ascii.startsWithIgnoreCase(path, "SPRITES/GARBAGE")) return sprite_edge_rgb_bleed_alpha_cutoff;
+    if (std.ascii.eqlIgnoreCase(path, "X/POSTOFFICESTOP.TGA")) return sprite_edge_rgb_bleed_alpha_cutoff;
     return rgb_bleed_alpha_cutoff;
 }
 
@@ -511,7 +513,8 @@ test "sprite billboard edge bleed repairs semitransparent black padding without 
 
 test "billboard sprite paths use full edge RGB repair" {
     try std.testing.expectEqual(sprite_edge_rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/PARTICLERING-BIG.TGA"));
-    try std.testing.expectEqual(rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/GARBAGEA.TGA"));
+    try std.testing.expectEqual(sprite_edge_rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/GARBAGEA.TGA"));
+    try std.testing.expectEqual(sprite_edge_rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("X/POSTOFFICESTOP.TGA"));
     try std.testing.expectEqual(rgb_bleed_alpha_cutoff, rgbBleedAlphaCutoffForPath("SPRITES/BORDER.TGA"));
 }
 

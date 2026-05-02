@@ -263,14 +263,18 @@ pub const Uploaded = struct {
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
 
-        setAlphaCutoff(shader, default_alpha_cutoff);
+        configureAlphaCutoutShader(shader);
+        self.drawAlphaCutoutQueuedEx(transform, shader);
+        rl.gl.rlDrawRenderBatchActive();
+    }
+
+    pub fn drawAlphaCutoutQueuedEx(self: *const Uploaded, transform: rl.Matrix, shader: rl.Shader) void {
         const submeshes = @constCast(self.submeshes);
         for (submeshes) |*submesh| {
             var material = submesh.material;
             material.shader = shader;
             rl.drawMesh(submesh.mesh, material, transform);
         }
-        rl.gl.rlDrawRenderBatchActive();
     }
 
     pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
@@ -1560,6 +1564,10 @@ fn transformedBoundsRadius(bounds_radius: f32, transform: rl.Matrix) f32 {
 
 fn outlineDepthBiasDistance(world_radius: f32) f32 {
     return @max(world_radius * 0.004, 0.002);
+}
+
+pub fn configureAlphaCutoutShader(shader: rl.Shader) void {
+    setAlphaCutoff(shader, default_alpha_cutoff);
 }
 
 fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
