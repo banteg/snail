@@ -26,12 +26,11 @@ const SaltSlotState = gameplay_runtime_entities.SaltSlotState;
 const SubLazerSlot = gameplay_runtime_entities.SubLazerSlot;
 const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 
-// PORT(verified): `spawn_salt_hazard`
-// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c:29`) seeds the
-// salt slot's Y velocity (`+0x90`) as `track_center_x * 0.033333335`.
-// `+0x9c`, the lifetime-step field consumed by `update_salt_hazard`, is not
-// initialized by spawn and remains zero in the reset pool. Salt therefore
-// rises from its anchor instead of timing out after a few frames.
+// PORT(verified): Windows `spawn_salt_hazard`
+// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c:29`) seeds the lane
+// at `+0x90` as `track_center_x * 0.033333335`. The Android cross-port
+// `cRSalt::AI` does not integrate this into the visible position, though: salt
+// stays anchored and fades/removes by row distance.
 pub const native_salt_vertical_velocity_factor: f32 = 0.033333335;
 // PORT(verified): native writes only byte `1` at `+0x94`, even though
 // `update_salt_hazard` later reads the same address as the z-velocity float.
@@ -43,12 +42,6 @@ pub const native_salt_z_velocity_bit_pattern: u32 = 1;
 // scale but advances a runner-local RNG so salt spawn does not perturb the
 // broader gameplay random stream.
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
-// PORT(partial): native `update_salt_hazard` feeds the lifted slot through
-// track-attachment tests and deactivates it once that attachment no longer
-// accepts the next position. The port does not yet carry those native
-// attachment objects for salt, so cap the visible lift near the spawn anchor
-// instead of letting authored salt drift upward for the whole live window.
-pub const port_salt_visible_lift_cap: f32 = 0.08;
 // PORT(verified): `spawn_sub_lazer_projectile` seeds the nested-sprite bob
 // phase step as
 // `track_center_x * 0.0055555557`
@@ -228,14 +221,11 @@ pub const SaltHazardPool = struct {
         return slot;
     }
 
-    // PORT(verified): mirror of `update_salt_hazard`
-    // (`artifacts/ida/functions/004417d0-update_salt_hazard.c`). Each active
-    // slot advances its lifetime counter by `lifetime_step` per tick; once
-    // the counter crosses `1.0` the slot transitions to `removing` for
-    // cleanup on the next tick. While active, position integrates by
-    // velocity.  The track-attachment collision + screen-bounds check in
-    // native lines 45-91 lives on the Runner side (it has to reach into
-    // the preview's installed attachment slots).
+    // PORT(verified): cross-port `cRSalt::AI` leaves the visual position
+    // anchored. Windows stores a nonzero lane at `+0x90`, but Android uses
+    // state 1 only to refresh alpha and remove the slot once it trails past
+    // the active camera window. Keep the seeded lane for structure parity
+    // without applying the earlier invented visible lift.
     pub fn tickActiveSlots(self: *SaltHazardPool) void {
         for (&self.slots) |*slot| {
             switch (slot.state) {
@@ -246,12 +236,6 @@ pub const SaltHazardPool = struct {
                         slot.state = .removing;
                         continue;
                     }
-                    slot.world_position.x += slot.velocity.x;
-                    slot.world_position.y = @min(
-                        slot.world_position.y + slot.velocity.y,
-                        slot.spawn_y + port_salt_visible_lift_cap,
-                    );
-                    slot.world_position.z += slot.velocity.z;
                 },
                 .removing => {
                     // PORT(verified): native `update_salt_hazard` state-2
@@ -290,7 +274,7 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
     return centered * native_salt_yaw_random_scale;
 }
 
-test "salt spawn seeds native lift velocity instead of lifetime expiry" {
+test "salt spawn records native motion lane but stays visually anchored" {
     var pool = SaltHazardPool{};
     var random_state: u32 = 0;
     const track_center_x: f32 = 4.0;
@@ -312,7 +296,7 @@ test "salt spawn seeds native lift velocity instead of lifetime expiry" {
     pool.tickActiveSlots();
 
     try std.testing.expectEqual(SaltSlotState.active, slot.state);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.18) + port_salt_visible_lift_cap, slot.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.18), slot.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_progress, 0.0001);
 }
 

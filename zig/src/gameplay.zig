@@ -3954,9 +3954,10 @@ pub const Runner = struct {
         // PORT(verified): `spawn_salt_hazard` takes only a Vec3 position.
         // Native reads the cell's anchor position (`cell + 0x10..0x18`) as the
         // spawn anchor; the port mirrors that via `runtimeCellWorldPosition`.
-        // `spawn_salt_hazard` itself seeds x velocity 0, y lift from
-        // `track_center_x * 0.033333335`, and the odd byte write at the
-        // z-velocity address.
+        // `spawn_salt_hazard` itself seeds x velocity 0, records the native
+        // `track_center_x * 0.033333335` motion lane, and performs the odd
+        // byte write at the z-velocity address. Cross-port `cRSalt::AI`
+        // leaves the visible position anchored.
         const position = runtimeCellWorldPosition(preview, global_row, lane, salt_spawn_y_offset);
         _ = self.runtime.salts.spawn(
             global_row,
