@@ -61,10 +61,11 @@ pub const Effect = struct {
     position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     acceleration: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    width: f32 = 0.8,
-    height: f32 = 0.8,
+    scale_start: f32 = 0.8,
+    scale_end: f32 = 0.8,
     tint: rl.Color = .white,
     ticks_remaining: u16 = 0,
+    total_ticks: u16 = 0,
 };
 
 pub const JetParticle = struct {
@@ -157,8 +158,8 @@ pub const Controller = struct {
         self: *Controller,
         kind: Kind,
         position: rl.Vector3,
-        width: f32,
-        height: f32,
+        scale_start: f32,
+        scale_end: f32,
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
@@ -167,8 +168,8 @@ pub const Controller = struct {
             position,
             .{ .x = 0.0, .y = 0.0, .z = 0.0 },
             .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            width,
-            height,
+            scale_start,
+            scale_end,
             ticks_remaining,
             tint,
         );
@@ -179,8 +180,8 @@ pub const Controller = struct {
         kind: Kind,
         position: rl.Vector3,
         velocity: rl.Vector3,
-        width: f32,
-        height: f32,
+        scale_start: f32,
+        scale_end: f32,
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
@@ -189,8 +190,8 @@ pub const Controller = struct {
             position,
             velocity,
             .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            width,
-            height,
+            scale_start,
+            scale_end,
             ticks_remaining,
             tint,
         );
@@ -202,8 +203,8 @@ pub const Controller = struct {
         position: rl.Vector3,
         velocity: rl.Vector3,
         acceleration: rl.Vector3,
-        width: f32,
-        height: f32,
+        scale_start: f32,
+        scale_end: f32,
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
@@ -214,10 +215,11 @@ pub const Controller = struct {
             .position = position,
             .velocity = velocity,
             .acceleration = acceleration,
-            .width = width,
-            .height = height,
+            .scale_start = scale_start,
+            .scale_end = scale_end,
             .tint = tint,
             .ticks_remaining = ticks_remaining,
+            .total_ticks = ticks_remaining,
         };
         self.count += 1;
     }
@@ -320,8 +322,8 @@ pub const Controller = struct {
 
     // PORT(verified): native `spawn_garbage_smoke_particle` allocates sprite
     // ref 33 (`SPRITES/JET.TGA`) from the live garbage object's current
-    // position, copies `garbage.velocity * 0.2`, and seeds size lanes to
-    // `0.3 x 1.3`.
+    // position, copies `garbage.velocity * 0.2`, and seeds the sprite scale
+    // interpolation lanes to `0.3 -> 1.3`.
     pub fn spawnGarbageSmokeParticle(self: *Controller, current: gameplay.Runner) void {
         const smoke_origin = current.last_garbage_smoke_position orelse current.last_garbage_hit_position orelse return;
         self.spawnWithVelocity(
@@ -337,7 +339,7 @@ pub const Controller = struct {
 
     // PORT(verified): native `spawn_golb_smoke` emits `SMOKE.TGA` from a
     // rocket-family Golb shot at the current body position and a half-step
-    // trailing position, with sprite size lanes seeded to 0.1 x 0.5 and
+    // trailing position, with sprite scale lanes seeded to `0.1 -> 0.5` and
     // velocity copied from `projectile_velocity * 0.4`.
     pub fn spawnRocketSmokeParticles(self: *Controller, current: gameplay.Runner) void {
         for (current.last_rocket_smoke_positions) |position| {
@@ -618,8 +620,8 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.25) + (player_velocity.x * 3.0), effect.position.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 2.5) + (player_velocity.y * 3.0), effect.position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 3.75) + (player_velocity.z * 3.0), effect.position.z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.width, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), effect.height, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.scale_start, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), effect.scale_end, 0.0001);
     try std.testing.expectEqual(@as(u8, 255), effect.tint.r);
     try std.testing.expectEqual(@as(u8, 191), effect.tint.g);
     try std.testing.expectEqual(@as(u8, 191), effect.tint.b);
@@ -658,8 +660,8 @@ test "garbage smoke uses native jet sprite packet" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.velocity.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), effect.velocity.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.3), effect.velocity.z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.3), effect.width, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.3), effect.height, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), effect.scale_start, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.3), effect.scale_end, 0.0001);
     try std.testing.expectEqual(@as(u16, 8), effect.ticks_remaining);
 }
 
@@ -681,8 +683,8 @@ test "rocket smoke uses recovered golb smoke packet" {
         try std.testing.expectApproxEqAbs(position.x, effect.position.x, 0.0001);
         try std.testing.expectApproxEqAbs(position.y, effect.position.y, 0.0001);
         try std.testing.expectApproxEqAbs(position.z, effect.position.z, 0.0001);
-        try std.testing.expectApproxEqAbs(rocket_smoke_width, effect.width, 0.0001);
-        try std.testing.expectApproxEqAbs(rocket_smoke_height, effect.height, 0.0001);
+        try std.testing.expectApproxEqAbs(rocket_smoke_width, effect.scale_start, 0.0001);
+        try std.testing.expectApproxEqAbs(rocket_smoke_height, effect.scale_end, 0.0001);
         try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.x, effect.velocity.x, 0.0001);
         try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.y, effect.velocity.y, 0.0001);
         try std.testing.expectApproxEqAbs(current.last_rocket_smoke_velocity.z, effect.velocity.z, 0.0001);
@@ -717,10 +719,10 @@ test "slug death spawns the native goo burst instead of one static sprite" {
     const first = controller.items[0];
     try std.testing.expectEqual(Kind.slug_goo, first.kind);
     try std.testing.expect(first.position.y >= origin.y);
-    try std.testing.expect(first.width >= slug_goo_size_base * slug_goo_width_scale);
-    try std.testing.expect(first.width <= (slug_goo_size_base + 0.75) * slug_goo_width_scale);
-    try std.testing.expect(first.height >= slug_goo_size_base * slug_goo_height_scale);
-    try std.testing.expect(first.height <= (slug_goo_size_base + 0.75) * slug_goo_height_scale);
+    try std.testing.expect(first.scale_start >= slug_goo_size_base * slug_goo_width_scale);
+    try std.testing.expect(first.scale_start <= (slug_goo_size_base + 0.75) * slug_goo_width_scale);
+    try std.testing.expect(first.scale_end >= slug_goo_size_base * slug_goo_height_scale);
+    try std.testing.expect(first.scale_end <= (slug_goo_size_base + 0.75) * slug_goo_height_scale);
     try std.testing.expectApproxEqAbs(slug_goo_gravity_scale, first.acceleration.y, 0.0001);
     try std.testing.expect(first.ticks_remaining >= 36);
     try std.testing.expect(first.ticks_remaining <= 66);
@@ -820,8 +822,8 @@ test "jetpack trail tip can emit recovered detached smoke puff" {
     try std.testing.expectApproxEqAbs(right_tip.position.x, effect.position.x, 0.0001);
     try std.testing.expectApproxEqAbs(right_tip.position.y, effect.position.y, 0.0001);
     try std.testing.expectApproxEqAbs(right_tip.position.z, effect.position.z, 0.0001);
-    try std.testing.expectApproxEqAbs(jet_particle_detached_width, effect.width, 0.0001);
-    try std.testing.expectApproxEqAbs(jet_particle_detached_height, effect.height, 0.0001);
+    try std.testing.expectApproxEqAbs(jet_particle_detached_width, effect.scale_start, 0.0001);
+    try std.testing.expectApproxEqAbs(jet_particle_detached_height, effect.scale_end, 0.0001);
     try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().x * jet_particle_detached_velocity_scale, effect.velocity.x, 0.0001);
     try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().y * jet_particle_detached_velocity_scale, effect.velocity.y, 0.0001);
     try std.testing.expectApproxEqAbs(runner.nativeVelocityPerTick().z * jet_particle_detached_velocity_scale, effect.velocity.z, 0.0001);

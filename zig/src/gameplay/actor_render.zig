@@ -121,7 +121,7 @@ pub fn drawRuntimeActors(
         if (!gameplay_render_policy.hazardVisible(runner, hazard)) continue;
         switch (hazard.kind) {
             .garbage => {
-                drawGameplayGarbageActor(render, loaded_track_preview, camera, hazard);
+                drawGameplayGarbageActor(render, loaded_track_preview, hazard);
             },
         }
     }
@@ -150,7 +150,7 @@ pub fn drawRuntimeActors(
 
     for (runner.activeRuntimeRingEffects()) |effect| {
         if (!gameplay_render_policy.ringEffectVisible(runner, effect)) continue;
-        drawGameplayRuntimeRingEffectActor(render, camera, effect);
+        drawGameplayRuntimeRingEffectActor(render, effect);
     }
 
     drawTimeTrialGhost(render, runner, camera);
@@ -159,7 +159,7 @@ pub fn drawRuntimeActors(
         drawGameplayProjectileActor(render, camera, projectile);
     }
 
-    drawGameplayEffects(render, camera);
+    drawGameplayEffects(render);
 }
 
 fn wall2PillarActorVisible(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -374,7 +374,6 @@ test "slug sprite frame uses active attachment basis" {
 fn drawGameplayGarbageActor(
     render: Context,
     preview: *const track.LoadedLevelPreview,
-    camera: rl.Camera3D,
     hazard: gameplay_runtime_entities.Hazard,
 ) void {
     _ = preview;
@@ -384,16 +383,16 @@ fn drawGameplayGarbageActor(
         gameplay_assets.gameplay_garbage_sprite_paths.len - 1,
     );
     const loaded_texture = render.resources.sprites.garbage_variants[variant_index];
-    gameplay_billboard.drawTextureRectRolledAlphaCutoff(
+    gameplay_billboard.drawTextureRectWorldXyRolledBlendedAlphaCutoff(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         hazard.world_position,
         nativeSpriteHalfExtentWorldSize(hazard.presentation_scale),
         nativeSpriteHalfExtentWorldSize(hazard.presentation_scale),
-        camera,
         render.billboard_shader,
         hazard.presentation_phase,
         .white,
+        .alpha,
         garbageAlphaCutoff(),
     );
 }
@@ -548,17 +547,15 @@ fn drawGameplayRingSprite(
 
 fn drawGameplayRuntimeRingEffectActor(
     render: Context,
-    camera: rl.Camera3D,
     effect: gameplay_runtime_entities.RingEffect,
 ) void {
     if (runtimeRingParticleSpriteFamily(effect.kind)) |family| {
-        drawRuntimeRingParticleHalo(render, camera, effect, family);
+        drawRuntimeRingParticleHalo(render, effect, family);
     }
 }
 
 fn drawRuntimeRingParticleHalo(
     render: Context,
-    camera: rl.Camera3D,
     effect: gameplay_runtime_entities.RingEffect,
     family: RuntimeRingParticleSpriteFamily,
 ) void {
@@ -569,21 +566,19 @@ fn drawRuntimeRingParticleHalo(
     for (0..native_runtime_ring_particle_count) |child_index| {
         const child_phase = runtimeRingParticlePhase(effect.active_phase, child_index);
         // Native stores each halo child as a regular sprite with a world-space
-        // center and a per-child angle. The sprite renderer then faces the
-        // camera; treating these as fixed XY quads makes weapon rings disappear
-        // when they are near edge-on to the gameplay camera.
-        gameplay_billboard.drawTextureRectRolledBlendedAlphaCutoff(
+        // center and a per-child angle. `draw_sprite_quad` keeps the quad in
+        // world XY space and lets the gameplay camera project it.
+        gameplay_billboard.drawTextureRectWorldXyRolledBlendedAlphaCutoff(
             texture,
             .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
             runtimeRingParticlePosition(effect.presentation_position, child_phase, radius),
             sprite_size,
             sprite_size,
-            camera,
             render.billboard_shader,
             runtimeRingParticleRoll(child_phase),
             .{ .r = 255, .g = 255, .b = 255, .a = native_runtime_ring_particle_alpha },
             blend_mode,
-            gameplay_billboard.soft_alpha_cutoff,
+            runtimeRingParticleAlphaCutoff(family),
         );
     }
 }
@@ -591,7 +586,14 @@ fn drawRuntimeRingParticleHalo(
 fn runtimeRingParticleBlendMode(family: RuntimeRingParticleSpriteFamily) gameplay_billboard.BlendMode {
     return switch (family) {
         .ring => .additive,
-        .explode, .slow => .src_alpha_dst_color,
+        .explode, .slow => .src_alpha_src_color,
+    };
+}
+
+fn runtimeRingParticleAlphaCutoff(family: RuntimeRingParticleSpriteFamily) f32 {
+    return switch (family) {
+        .ring => gameplay_billboard.default_alpha_cutoff,
+        .explode, .slow => sourceColorParticleAlphaCutoff(),
     };
 }
 
@@ -794,33 +796,34 @@ fn drawGameplaySubLazerSlotActor(render: Context, camera: rl.Camera3D, slot: gam
     });
 }
 
-fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
+fn drawGameplayEffects(render: Context) void {
     const smoke_texture = render.resources.sprites.smoke;
     for (render.effects.jet_particles) |particle| {
         if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
-        gameplay_billboard.drawTextureBlended(
+        gameplay_billboard.drawTextureWorldXyBlendedAlphaCutoff(
             smoke_texture.texture,
             particle.position,
             nativeSpriteHalfExtentWorldSize(particle.width),
             nativeSpriteHalfExtentWorldSize(particle.height),
-            camera,
             render.billboard_shader,
             particle.tint,
             .additive,
+            gameplay_billboard.default_alpha_cutoff,
         );
     }
 
     const nuke_texture = render.resources.sprites.explode_big;
     for (render.effects.nuke_particles) |particle| {
         if (!particle.active or particle.width <= 0.0 or particle.height <= 0.0) continue;
-        gameplay_billboard.drawTexture(
+        gameplay_billboard.drawTextureWorldXyBlendedAlphaCutoff(
             nuke_texture.texture,
             particle.position,
             nativeSpriteHalfExtentWorldSize(particle.width),
             nativeSpriteHalfExtentWorldSize(particle.height),
-            camera,
             render.billboard_shader,
             particle.tint,
+            .alpha,
+            gameplay_billboard.default_alpha_cutoff,
         );
     }
 
@@ -834,36 +837,84 @@ fn drawGameplayEffects(render: Context, camera: rl.Camera3D) void {
             .garbage_smoke => render.resources.sprites.blaster_trail,
             .smoke => render.resources.sprites.smoke,
         };
-        gameplay_billboard.drawTextureBlended(
+        gameplay_billboard.drawTextureWorldXyBlendedAlphaCutoff(
             loaded_texture.texture,
             effect.position,
             effectWorldWidth(effect),
             effectWorldHeight(effect),
-            camera,
             render.billboard_shader,
-            effect.tint,
+            effectTint(effect),
             effectBlendMode(effect.kind),
+            effectAlphaCutoff(effect.kind),
         );
     }
 }
 
 fn effectWorldWidth(effect: gameplay_effects.Effect) f32 {
     return switch (effect.kind) {
-        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effect.width),
-        .explode_big, .explode_small => effect.width,
+        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
+        .explode_big, .explode_small => effect.scale_start,
     };
 }
 
 fn effectWorldHeight(effect: gameplay_effects.Effect) f32 {
     return switch (effect.kind) {
-        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effect.height),
-        .explode_big, .explode_small => effect.height,
+        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
+        .explode_big, .explode_small => effect.scale_end,
+    };
+}
+
+fn effectScale(effect: gameplay_effects.Effect) f32 {
+    const progress = effectProgress(effect);
+    return (effect.scale_start * (1.0 - progress)) + (effect.scale_end * progress);
+}
+
+fn effectProgress(effect: gameplay_effects.Effect) f32 {
+    if (effect.total_ticks == 0) return 1.0;
+    const elapsed: f32 = @floatFromInt(effect.total_ticks -| effect.ticks_remaining);
+    return @min(1.0, @max(0.0, elapsed / @as(f32, @floatFromInt(effect.total_ticks))));
+}
+
+fn effectTint(effect: gameplay_effects.Effect) rl.Color {
+    return switch (effect.kind) {
+        .slug_goo, .garbage_smoke, .smoke => fadeEffectTint(effect.tint, 1.0 - effectProgress(effect)),
+        else => effect.tint,
+    };
+}
+
+fn fadeEffectTint(tint: rl.Color, alpha: f32) rl.Color {
+    const scaled_alpha = @as(f32, @floatFromInt(tint.a)) * @min(1.0, @max(0.0, alpha));
+    return .{
+        .r = tint.r,
+        .g = tint.g,
+        .b = tint.b,
+        .a = @intFromFloat(@round(scaled_alpha)),
     };
 }
 
 fn effectBlendMode(kind: gameplay_effects.Kind) gameplay_billboard.BlendMode {
     _ = kind;
     return .alpha;
+}
+
+fn effectAlphaCutoff(kind: gameplay_effects.Kind) f32 {
+    return switch (kind) {
+        .garbage_smoke, .smoke => smokeCardAlphaCutoff(),
+        else => gameplay_billboard.default_alpha_cutoff,
+    };
+}
+
+fn sourceColorParticleAlphaCutoff() f32 {
+    // Native mode 13 is SRCALPHA/SRCCOLOR. In GL, admitting the very low alpha
+    // padding from the archived TGAs lets the source color modulate the whole
+    // card, which shows up as rectangular darkening around explode/slow rings.
+    return 0.5;
+}
+
+fn smokeCardAlphaCutoff() f32 {
+    // JET/SMOKE have nonzero alpha across the whole TGA. The software port uses
+    // shader discard to recover the compact sprite-card silhouette.
+    return 0.5;
 }
 
 test "runtime sprite effects use native alpha blend lane" {
@@ -874,20 +925,47 @@ test "runtime sprite effects use native alpha blend lane" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.alpha, effectBlendMode(.smoke));
 }
 
-test "native sprite effect size lanes render as half extents" {
-    try std.testing.expectApproxEqAbs(@as(f32, 0.6), nativeSpriteHalfExtentWorldSize(0.3), 0.0001);
+test "runtime sprite effects cut off soft smoke-card padding" {
+    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, effectAlphaCutoff(.explode_big));
+    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, effectAlphaCutoff(.explode_small));
+    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, effectAlphaCutoff(.slug_goo));
+    try std.testing.expectEqual(smokeCardAlphaCutoff(), effectAlphaCutoff(.garbage_smoke));
+    try std.testing.expectEqual(smokeCardAlphaCutoff(), effectAlphaCutoff(.smoke));
+}
+
+test "native sprite effect scale lanes interpolate before rendering as half extents" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), effectScale(.{
+        .kind = .garbage_smoke,
+        .scale_start = 0.3,
+        .scale_end = 1.3,
+        .ticks_remaining = 8,
+        .total_ticks = 8,
+    }), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 2.6), effectWorldHeight(.{
         .kind = .garbage_smoke,
-        .height = 1.3,
+        .scale_start = 0.3,
+        .scale_end = 1.3,
+        .ticks_remaining = 0,
+        .total_ticks = 8,
     }), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 2.4), effectWorldHeight(.{
         .kind = .slug_goo,
-        .height = 1.2,
+        .scale_start = 1.2,
+        .scale_end = 1.2,
     }), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.9), effectWorldWidth(.{
         .kind = .explode_small,
-        .width = 0.9,
+        .scale_start = 0.9,
     }), 0.0001);
+}
+
+test "native sprite effects fade alpha over their lifetime" {
+    try std.testing.expectEqual(@as(u8, 128), effectTint(.{
+        .kind = .garbage_smoke,
+        .tint = .{ .r = 255, .g = 255, .b = 255, .a = 255 },
+        .ticks_remaining = 4,
+        .total_ticks = 8,
+    }).a);
 }
 
 pub fn drawTurbo(
@@ -1058,8 +1136,14 @@ test "runtime powerup rings use the native particle-ring sprite family" {
 
 test "runtime ring particles use recovered native sprite blend lanes" {
     try std.testing.expectEqual(gameplay_billboard.BlendMode.additive, runtimeRingParticleBlendMode(.ring));
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_dst_color, runtimeRingParticleBlendMode(.explode));
-    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_dst_color, runtimeRingParticleBlendMode(.slow));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.explode));
+    try std.testing.expectEqual(gameplay_billboard.BlendMode.src_alpha_src_color, runtimeRingParticleBlendMode(.slow));
+}
+
+test "runtime ring particles use the sprite alpha-test cutoff" {
+    try std.testing.expectEqual(gameplay_billboard.default_alpha_cutoff, runtimeRingParticleAlphaCutoff(.ring));
+    try std.testing.expectEqual(sourceColorParticleAlphaCutoff(), runtimeRingParticleAlphaCutoff(.explode));
+    try std.testing.expectEqual(sourceColorParticleAlphaCutoff(), runtimeRingParticleAlphaCutoff(.slow));
 }
 
 test "runtime ring halo uses recovered native sprite refs" {

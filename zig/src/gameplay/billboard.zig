@@ -24,10 +24,10 @@ pub const hard_alpha_cutoff: f32 = 0.5;
 pub const BlendMode = enum {
     alpha,
     additive,
-    src_alpha_dst_color,
+    src_alpha_src_color,
 };
 
-const gl_dst_color = 0x0306;
+const gl_src_color = 0x0300;
 const gl_src_alpha = 0x0302;
 const gl_one = 1;
 const gl_zero = 0;
@@ -79,6 +79,32 @@ pub fn drawTextureBlended(
         shader,
         tint,
         blend_mode,
+    );
+}
+
+pub fn drawTextureBlendedAlphaCutoff(
+    texture: rl.Texture2D,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    shader: ?rl.Shader,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+    alpha_cutoff: f32,
+) void {
+    drawTextureRectRolledBlendedAlphaCutoff(
+        texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
+        position,
+        width,
+        height,
+        camera,
+        shader,
+        0.0,
+        tint,
+        blend_mode,
+        alpha_cutoff,
     );
 }
 
@@ -175,6 +201,46 @@ pub fn drawTextureRectRolledBlendedAlphaCutoff(
     }
 
     drawTextureRectBasisBlendedAlphaCutoff(texture, source, position, width, height, right, up, shader, tint, blend_mode, alpha_cutoff);
+}
+
+pub fn drawTextureRectWorldXyRolledBlendedAlphaCutoff(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    shader: ?rl.Shader,
+    roll_radians: f32,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+    alpha_cutoff: f32,
+) void {
+    const basis = worldXyRolledBasis(roll_radians);
+    drawTextureRectBasisBlendedAlphaCutoff(texture, source, position, width, height, basis.right, basis.up, shader, tint, blend_mode, alpha_cutoff);
+}
+
+pub fn drawTextureWorldXyBlendedAlphaCutoff(
+    texture: rl.Texture2D,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    shader: ?rl.Shader,
+    tint: rl.Color,
+    blend_mode: BlendMode,
+    alpha_cutoff: f32,
+) void {
+    drawTextureRectWorldXyRolledBlendedAlphaCutoff(
+        texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
+        position,
+        width,
+        height,
+        shader,
+        0.0,
+        tint,
+        blend_mode,
+        alpha_cutoff,
+    );
 }
 
 pub fn drawTextureRectBasis(
@@ -294,10 +360,10 @@ fn drawQuad(
     switch (blend_mode) {
         .alpha => beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_one_minus_src_alpha),
         .additive => beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_one),
-        .src_alpha_dst_color => {
+        .src_alpha_src_color => {
             // Native sprite render state 13 maps D3DBLEND_SRCALPHA over
-            // D3DBLEND_DESTCOLOR. Explode/slow ring particles use this lane.
-            beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_dst_color);
+            // D3DBLEND_SRCCOLOR. Explode/slow ring particles use this lane.
+            beginCustomBlendPreservingFramebufferAlpha(gl_src_alpha, gl_src_color);
         },
     }
     defer rl.endBlendMode();
@@ -325,6 +391,28 @@ fn drawQuad(
     rl.gl.rlVertex3f(top_right.x, top_right.y, top_right.z);
 }
 
+const Basis = struct {
+    right: rl.Vector3,
+    up: rl.Vector3,
+};
+
+fn worldXyRolledBasis(roll_radians: f32) Basis {
+    const roll_cos = std.math.cos(roll_radians);
+    const roll_sin = std.math.sin(roll_radians);
+    return .{
+        .right = .{
+            .x = roll_cos,
+            .y = roll_sin,
+            .z = 0.0,
+        },
+        .up = .{
+            .x = -roll_sin,
+            .y = roll_cos,
+            .z = 0.0,
+        },
+    };
+}
+
 fn beginCustomBlendPreservingFramebufferAlpha(src_rgb: i32, dst_rgb: i32) void {
     rl.gl.rlSetBlendFactorsSeparate(src_rgb, dst_rgb, gl_zero, gl_one, gl_func_add, gl_func_add);
     rl.beginBlendMode(.custom_separate);
@@ -335,6 +423,22 @@ fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
     if (location < 0) return;
     var cutoff = alpha_cutoff;
     rl.setShaderValue(shader, location, &cutoff, .float);
+}
+
+test "world XY rolled basis matches native sprite quad axes" {
+    const unrolled = worldXyRolledBasis(0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), unrolled.right.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.right.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.right.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.up.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), unrolled.up.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.up.z, 0.0001);
+
+    const quarter = worldXyRolledBasis(std.math.pi / 2.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), quarter.right.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), quarter.right.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.0), quarter.up.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), quarter.up.y, 0.0001);
 }
 
 fn vectorLength(v: rl.Vector3) f32 {
