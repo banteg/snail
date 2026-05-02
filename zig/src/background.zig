@@ -625,13 +625,9 @@ fn drawLightStreakSprite(
 
     rlgl.rlDrawRenderBatchActive();
     rlgl.rlSetTexture(texture.id);
-    defer {
-        rlgl.rlSetTexture(0);
-        rlgl.rlDrawRenderBatchActive();
-    }
+    defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
-    defer rlgl.rlEnd();
 
     // Native `draw_sprite_quad` builds the four corners in scene space and hands
     // them to D3D with the native winding. In the raylib 2D path that same visual
@@ -647,6 +643,9 @@ fn drawLightStreakSprite(
         rlgl.rlTexCoord2f(vertex.uv.x, vertex.uv.y);
         rlgl.rlVertex3f(vertex.point.x, vertex.point.y, 0.0);
     }
+    rlgl.rlEnd();
+    rlgl.rlDrawRenderBatchActive();
+
     if (draw_debug_quad) {
         drawLightStreakDebugQuad(v0, v1, v2, v3);
     }
@@ -900,7 +899,6 @@ fn drawWarpedTexture(
     defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
-    defer rlgl.rlEnd();
     rlgl.rlColor4ub(255, 255, 255, 255);
 
     for (0..warp_grid_height - 1) |row| {
@@ -925,6 +923,8 @@ fn drawWarpedTexture(
             rlgl.rlVertex2f(top_right.x, top_right.y);
         }
     }
+    rlgl.rlEnd();
+    rlgl.rlDrawRenderBatchActive();
 }
 
 const WarpCellUvBounds = struct {

@@ -108,7 +108,6 @@ fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right:
     defer rl.gl.rlSetTexture(0);
 
     rl.gl.rlBegin(rl.gl.rl_quads);
-    defer rl.gl.rlEnd();
 
     const segment_count: usize = @intCast(projectile.trail_count - 1);
     for (0..segment_count) |index| {
@@ -117,6 +116,8 @@ fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right:
         const start_v, const end_v = nativeTrailVRange(index, segment_count);
         emitTrailSegment(start, end, right, native_vapour_trail_width, start_v, end_v);
     }
+    rl.gl.rlEnd();
+    rl.gl.rlDrawRenderBatchActive();
     return true;
 }
 

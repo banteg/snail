@@ -859,7 +859,6 @@ fn drawTexturedQuad(
     defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
-    defer rlgl.rlEnd();
     rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     rlgl.rlTexCoord2f(uv.left, uv.top);
@@ -873,6 +872,9 @@ fn drawTexturedQuad(
 
     rlgl.rlTexCoord2f(uv.right, uv.top);
     rlgl.rlVertex3f(top_right.x, top_right.y, top_right.z);
+
+    rlgl.rlEnd();
+    rlgl.rlDrawRenderBatchActive();
 }
 
 fn drawDoubleSidedTexturedQuad(
@@ -912,13 +914,15 @@ fn drawTexturedVertexQuad(
     defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
-    defer rlgl.rlEnd();
     rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     drawTexturedVertex(a);
     drawTexturedVertex(b);
     drawTexturedVertex(c);
     drawTexturedVertex(d);
+
+    rlgl.rlEnd();
+    rlgl.rlDrawRenderBatchActive();
 }
 
 fn drawTexturedVertex(vertex: TexturedVertex) void {

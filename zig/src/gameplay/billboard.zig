@@ -373,7 +373,6 @@ fn drawQuad(
     defer rl.gl.rlSetTexture(0);
 
     rl.gl.rlBegin(rl.gl.rl_quads);
-    defer rl.gl.rlEnd();
     rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     rl.gl.rlTexCoord2f(uv.left, uv.top);
@@ -384,6 +383,9 @@ fn drawQuad(
     rl.gl.rlVertex3f(bottom_right.x, bottom_right.y, bottom_right.z);
     rl.gl.rlTexCoord2f(uv.right, uv.top);
     rl.gl.rlVertex3f(top_right.x, top_right.y, top_right.z);
+
+    rl.gl.rlEnd();
+    rl.gl.rlDrawRenderBatchActive();
 }
 
 const Basis = struct {
