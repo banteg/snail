@@ -710,6 +710,7 @@ fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile:
         .lazer_object = &render.resources.lazer_object.?,
         .vapour_lazer_object = &render.resources.vapour_lazer_object.?,
         .rocket_model = &render.resources.rocket_model.?,
+        .alpha_cutout_shader = render.billboard_shader,
     }, projectile);
 }
 

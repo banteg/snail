@@ -14,6 +14,7 @@ pub const Resources = struct {
     lazer_object: *const object.LoadedObject,
     vapour_lazer_object: *const object.LoadedObject,
     rocket_model: *const x2.Uploaded,
+    alpha_cutout_shader: ?rl.Shader,
 };
 
 pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
@@ -50,6 +51,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
                 world_transform,
                 0.22,
                 .{ .r = 180, .g = 255, .b = 255, .a = 236 },
+                resources.alpha_cutout_shader,
             );
         },
         .sub_lazer => {
@@ -59,6 +61,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
                 world_transform,
                 0.18,
                 .{ .r = 255, .g = 136, .b = 96, .a = 236 },
+                resources.alpha_cutout_shader,
             );
         },
         .rocket => {
@@ -84,6 +87,7 @@ fn drawObjectProjectile(
     world_transform: rl.Matrix,
     scale_factor: f32,
     tint: rl.Color,
+    alpha_cutout_shader: ?rl.Shader,
 ) void {
     const offset = rl.Matrix.translate(
         -loaded_object.center.x,
@@ -91,7 +95,12 @@ fn drawObjectProjectile(
         -loaded_object.center.z,
     );
     const scale = rl.Matrix.scale(scale_factor, scale_factor, scale_factor);
-    loaded_object.drawTintedEx(world_transform.multiply(offset).multiply(scale), tint);
+    const transform = world_transform.multiply(offset).multiply(scale);
+    if (alpha_cutout_shader) |shader| {
+        loaded_object.drawTintedAlphaCutoutEx(transform, tint, shader);
+    } else {
+        loaded_object.drawTintedEx(transform, tint);
+    }
 }
 
 fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right: rl.Vector3) bool {
@@ -174,6 +183,7 @@ test "laser projectile rendering prefers the dynamic vapour object" {
         .lazer_object = &lazer_object,
         .vapour_lazer_object = &vapour_lazer_object,
         .rocket_model = &rocket_model,
+        .alpha_cutout_shader = null,
     }) == &vapour_lazer_object);
 }
 

@@ -2,8 +2,10 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const render_blend = @import("render_blend.zig");
 
 const io = std.Options.debug_io;
+const default_alpha_cutoff: f32 = 0.05;
 
 pub const Vec2 = struct {
     x: f32,
@@ -157,7 +159,49 @@ pub const LoadedObject = struct {
             albedo_map.color = previous_tint;
         }
     }
+
+    pub fn drawAlphaCutoutEx(self: *const LoadedObject, transform: rl.Matrix, shader: rl.Shader) void {
+        render_blend.beginAlphaPreservingFramebufferAlpha();
+        defer rl.endBlendMode();
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
+
+        setAlphaCutoff(shader, default_alpha_cutoff);
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            var material = submesh.material;
+            material.shader = shader;
+            rl.drawMesh(submesh.mesh, material, transform);
+        }
+    }
+
+    pub fn drawTintedAlphaCutoutEx(self: *const LoadedObject, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
+        render_blend.beginAlphaPreservingFramebufferAlpha();
+        defer rl.endBlendMode();
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
+
+        setAlphaCutoff(shader, default_alpha_cutoff);
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
+            const previous_tint = albedo_map.color;
+            albedo_map.color = tint;
+
+            var material = submesh.material;
+            material.shader = shader;
+            rl.drawMesh(submesh.mesh, material, transform);
+            albedo_map.color = previous_tint;
+        }
+    }
 };
+
+fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
+    const location = rl.getShaderLocation(shader, "alphaCutoff");
+    if (location < 0) return;
+    var cutoff = alpha_cutoff;
+    rl.setShaderValue(shader, location, &cutoff, .float);
+}
 
 const Bounds = struct {
     min: rl.Vector3,
