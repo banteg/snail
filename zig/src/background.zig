@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rlgl = rl.gl;
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const render_blend = @import("render_blend.zig");
 const resource_store = @import("resource_store.zig");
 
 const original_screen_width: f32 = 640.0;
@@ -436,7 +437,7 @@ pub const LightStreakController = struct {
         const viewport = rectFromLayout(layout);
         if (viewport.width <= 0.0 or viewport.height <= 0.0) return stats;
 
-        rl.beginBlendMode(.alpha);
+        render_blend.beginAlphaPreservingFramebufferAlpha();
         defer rl.endBlendMode();
 
         for (self.entries) |entry| {

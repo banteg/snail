@@ -2,6 +2,7 @@ const rl = @import("raylib");
 
 const gameplay = @import("../gameplay.zig");
 const object = @import("../object.zig");
+const render_blend = @import("../render_blend.zig");
 const track = @import("../track.zig");
 
 pub fn draw(
@@ -59,7 +60,7 @@ pub fn draw(
     // quads point outward from the track center (`+X` on the right strip,
     // `-X` on the left strip), so our raylib/OpenGL mesh winding hides the
     // interior faces when culling is left on.
-    rl.beginBlendMode(.additive);
+    render_blend.beginOneOnePreservingFramebufferAlpha();
     defer rl.endBlendMode();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();

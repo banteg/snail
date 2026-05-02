@@ -3,6 +3,7 @@ const rl = @import("raylib");
 
 const gameplay = @import("../gameplay.zig");
 const object = @import("../object.zig");
+const render_blend = @import("../render_blend.zig");
 const x2 = @import("../x2.zig");
 const model_render = @import("model_render.zig");
 
@@ -97,7 +98,7 @@ fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right:
     if (projectile.trail_count < 2) return false;
     const texture = vapourTrailTexture(resources) orelse return false;
 
-    rl.beginBlendMode(.alpha);
+    render_blend.beginAlphaPreservingFramebufferAlpha();
     defer rl.endBlendMode();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();

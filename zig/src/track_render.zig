@@ -4,6 +4,7 @@ const rlgl = rl.gl;
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const level = @import("level.zig");
+const render_blend = @import("render_blend.zig");
 const resource_store = @import("resource_store.zig");
 const track = @import("track.zig");
 
@@ -227,7 +228,9 @@ fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLeve
 fn drawRenderCacheFringe(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
     const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
 
-    rl.beginBlendMode(.alpha);
+    // PORT(verified): `build_track_fringe_supertramp_mesh` seeds blend preset 5,
+    // and `set_blend_mode(5)` maps to D3DBLEND_SRCALPHA/D3DBLEND_ONE.
+    render_blend.beginAdditivePreservingFramebufferAlpha();
     defer rl.endBlendMode();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
@@ -438,6 +441,11 @@ fn drawBuiltAttachment(scene: *const Scene, built: *const attachment_builders.Bu
 fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     const template = &built.template;
     if (template.samples.len < 2 or template.width_cells == 0) return;
+
+    render_blend.beginAdditivePreservingFramebufferAlpha();
+    defer rl.endBlendMode();
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
 
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const left_edge_offset = -half_width;

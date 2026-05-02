@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const render_blend = @import("render_blend.zig");
 
 const io = std.Options.debug_io;
 
@@ -257,7 +258,7 @@ pub const Uploaded = struct {
     }
 
     pub fn drawAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, shader: rl.Shader) void {
-        rl.beginBlendMode(.alpha);
+        render_blend.beginAlphaPreservingFramebufferAlpha();
         defer rl.endBlendMode();
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
@@ -272,7 +273,7 @@ pub const Uploaded = struct {
     }
 
     pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
-        rl.beginBlendMode(.alpha);
+        render_blend.beginAlphaPreservingFramebufferAlpha();
         defer rl.endBlendMode();
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
@@ -331,7 +332,7 @@ pub const Uploaded = struct {
         // edges as shader-softened strips so the 640px-authored art keeps its intended
         // line weight in larger windows without stacking aliased GL line samples.
         rl.gl.rlDrawRenderBatchActive();
-        rl.beginBlendMode(.alpha);
+        render_blend.beginAlphaPreservingFramebufferAlpha();
         rl.beginShaderMode(toon_shader);
         rl.gl.rlDisableDepthMask();
         rl.gl.rlDisableBackfaceCulling();
