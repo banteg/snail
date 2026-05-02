@@ -270,6 +270,7 @@ pub const Uploaded = struct {
             material.shader = shader;
             rl.drawMesh(submesh.mesh, material, transform);
         }
+        rl.gl.rlDrawRenderBatchActive();
     }
 
     pub fn drawTintedAlphaCutoutEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
@@ -290,6 +291,7 @@ pub const Uploaded = struct {
             rl.drawMesh(submesh.mesh, material, transform);
             albedo_map.color = previous_tint;
         }
+        rl.gl.rlDrawRenderBatchActive();
     }
 
     pub fn previewCamera(self: *const Uploaded, seconds: f32) rl.Camera3D {

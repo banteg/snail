@@ -173,6 +173,7 @@ pub const LoadedObject = struct {
             material.shader = shader;
             rl.drawMesh(submesh.mesh, material, transform);
         }
+        rl.gl.rlDrawRenderBatchActive();
     }
 
     pub fn drawTintedAlphaCutoutEx(self: *const LoadedObject, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
@@ -193,6 +194,7 @@ pub const LoadedObject = struct {
             rl.drawMesh(submesh.mesh, material, transform);
             albedo_map.color = previous_tint;
         }
+        rl.gl.rlDrawRenderBatchActive();
     }
 };
 
