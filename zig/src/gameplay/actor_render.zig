@@ -208,7 +208,12 @@ pub fn drawPostOfficeStopBanners(
     // sine bob to y. The cRBod render path passes these fields straight through
     // as the object matrix translation; it does not use annotation-style
     // center/ground correction against the mesh bounds.
-    model.drawEx(startBannerNativeTransform(loaded_track_preview, y));
+    const transform = startBannerNativeTransform(loaded_track_preview, y);
+    if (render.billboard_shader) |alpha_cutout_shader| {
+        model.drawAlphaCutoutEx(transform, alpha_cutout_shader);
+    } else {
+        model.drawEx(transform);
+    }
 }
 
 fn startBannerNativeTransform(loaded_track_preview: *const track.LoadedLevelPreview, bob_y: f32) rl.Matrix {
