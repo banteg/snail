@@ -169,7 +169,22 @@ fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPr
 }
 
 fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
+    drawRenderCacheSurfacePass(scene, preview, .floor, true);
+    drawRenderCacheSurfacePass(scene, preview, .slide, false);
+    drawRenderCacheSurfacePass(scene, preview, .warn, false);
+    drawRenderCacheSurfacePass(scene, preview, .ramp, false);
+}
+
+fn drawRenderCacheSurfacePass(
+    scene: *const Scene,
+    preview: *const track.LoadedLevelPreview,
+    target_family: RenderCacheFamily,
+    include_ramp_backing: bool,
+) void {
     const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
+
+    var surface_batch = TexturedQuadBatch.begin(textureForRenderCacheFamily(scene, target_family));
+    defer surface_batch.end();
 
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -184,6 +199,11 @@ fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLeve
             const backing_surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type);
             if (!preview.renderCacheHeadAt(global_row, lane_index) and backing_surface_tile == null) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
+            const draw_ramp_backing = include_ramp_backing and family == .ramp;
+            if (family != target_family and !draw_ramp_backing) {
+                lane_index += run_length - 1;
+                continue;
+            }
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
             const right = left + @as(f32, @floatFromInt(run_length));
@@ -198,9 +218,8 @@ fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLeve
             const bottom_right = rl.Vector3{ .x = right, .y = back_height, .z = back };
             const top_right = rl.Vector3{ .x = right, .y = front_height, .z = front };
 
-            if (family == .ramp) {
-                drawTexturedQuad(
-                    scene.textures.track.texture,
+            if (draw_ramp_backing) {
+                surface_batch.emitQuad(
                     top_left,
                     bottom_left,
                     bottom_right,
@@ -208,17 +227,16 @@ fn drawRenderCacheSurfaces(scene: *const Scene, preview: *const track.LoadedLeve
                     renderCacheSurfaceUv(.floor, left, right, front, back),
                     .white,
                 );
+            } else {
+                surface_batch.emitQuad(
+                    top_left,
+                    bottom_left,
+                    bottom_right,
+                    top_right,
+                    renderCacheSurfaceUv(family, left, right, front, back),
+                    .white,
+                );
             }
-
-            drawTexturedQuad(
-                textureForRenderCacheFamily(scene, family),
-                top_left,
-                bottom_left,
-                bottom_right,
-                top_right,
-                renderCacheSurfaceUv(family, left, right, front, back),
-                .white,
-            );
 
             lane_index += run_length - 1;
         }
@@ -234,6 +252,9 @@ fn drawRenderCacheFringe(scene: *const Scene, preview: *const track.LoadedLevelP
     defer rl.endBlendMode();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
+
+    var fringe_batch = TexturedQuadBatch.begin(scene.textures.fringe.texture);
+    defer fringe_batch.end();
 
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -264,13 +285,13 @@ fn drawRenderCacheFringe(scene: *const Scene, preview: *const track.LoadedLevelP
             const front_height = surfaceHeightAtTileFraction(surface_tile, front, 0.0);
             const back_height = surfaceHeightAtTileFraction(surface_tile, front, 0.999);
 
-            drawFringeSides(scene, left, right, front, back, front_height, back_height, fringe_edge_mask);
+            drawFringeSides(&fringe_batch, left, right, front, back, front_height, back_height, fringe_edge_mask);
         }
     }
 }
 
 fn drawFringeSides(
-    scene: *const Scene,
+    fringe_batch: *TexturedQuadBatch,
     left: f32,
     right: f32,
     front: f32,
@@ -282,7 +303,7 @@ fn drawFringeSides(
     const outer_z = fringeSideOuterZSpan(front, back);
     if ((edge_mask & 0x08) != 0) {
         drawFringeRamp(
-            scene,
+            fringe_batch,
             .{ .x = left, .y = back_height, .z = back },
             .{ .x = left - attachment_fringe_outset, .y = back_height, .z = outer_z.back },
             .{ .x = left - attachment_fringe_outset, .y = front_height, .z = outer_z.front },
@@ -291,7 +312,7 @@ fn drawFringeSides(
     }
     if ((edge_mask & 0x04) != 0) {
         drawFringeRamp(
-            scene,
+            fringe_batch,
             .{ .x = right, .y = front_height, .z = front },
             .{ .x = right + attachment_fringe_outset, .y = front_height, .z = outer_z.front },
             .{ .x = right + attachment_fringe_outset, .y = back_height, .z = outer_z.back },
@@ -300,7 +321,7 @@ fn drawFringeSides(
     }
     if ((edge_mask & 0x01) != 0) {
         drawFringeRamp(
-            scene,
+            fringe_batch,
             .{ .x = left, .y = front_height, .z = front },
             .{ .x = left, .y = front_height, .z = front - attachment_fringe_outset },
             .{ .x = right, .y = front_height, .z = front - attachment_fringe_outset },
@@ -309,7 +330,7 @@ fn drawFringeSides(
     }
     if ((edge_mask & 0x02) != 0) {
         drawFringeRamp(
-            scene,
+            fringe_batch,
             .{ .x = right, .y = back_height, .z = back },
             .{ .x = right, .y = back_height, .z = back + attachment_fringe_outset },
             .{ .x = left, .y = back_height, .z = back + attachment_fringe_outset },
@@ -328,14 +349,13 @@ fn fringeSideOuterZSpan(front: f32, back: f32) FringeSideOuterZSpan {
 }
 
 fn drawFringeRamp(
-    scene: *const Scene,
+    fringe_batch: *TexturedQuadBatch,
     edge_a: rl.Vector3,
     outer_a: rl.Vector3,
     outer_b: rl.Vector3,
     edge_b: rl.Vector3,
 ) void {
-    drawDoubleSidedTexturedVertexQuad(
-        scene.textures.fringe.texture,
+    fringe_batch.emitDoubleSidedVertexQuad(
         .{ .position = edge_a, .u = fringe_texture_u, .v = fringe_edge_v },
         .{ .position = outer_a, .u = fringe_texture_u, .v = fringe_outset_v },
         .{ .position = outer_b, .u = fringe_texture_u, .v = fringe_outset_v },
@@ -447,6 +467,9 @@ fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.B
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
 
+    var fringe_batch = TexturedQuadBatch.begin(scene.textures.fringe.texture);
+    defer fringe_batch.end();
+
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const left_edge_offset = -half_width;
     const left_inner_offset = @min(left_edge_offset + 1.0, half_width);
@@ -469,8 +492,8 @@ fn drawAttachmentFringe(scene: *const Scene, built: *const attachment_builders.B
 
         // Native keeps U pinned at the middle of FRINGE.TGA and uses V across the edge/outset span.
         // The raylib upload path samples V inverted relative to the recovered object facequads.
-        drawFringeRamp(scene, back_left_edge, back_left_outer, front_left_outer, front_left_edge);
-        drawFringeRamp(scene, back_right_edge, back_right_outer, front_right_outer, front_right_edge);
+        drawFringeRamp(&fringe_batch, back_left_edge, back_left_outer, front_left_outer, front_left_edge);
+        drawFringeRamp(&fringe_batch, back_right_edge, back_right_outer, front_right_outer, front_right_edge);
     }
 }
 
@@ -482,6 +505,9 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
     const base_row = @as(f32, @floatFromInt(built.row.global_row));
+
+    var surface_batch = TexturedQuadBatch.begin(surface_texture);
+    defer surface_batch.end();
 
     for (0..template.samples.len - 1) |sample_index| {
         const front_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index));
@@ -499,16 +525,15 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
             const front_right = attachmentVertex(front_pose, right_offset, base_row);
             const uv = attachmentSurfaceUv(template, sample_index, subdivision, left_offset, right_offset, front_world_z, back_world_z);
             if (template.spec.family == .start) {
-                drawStartAttachmentQuad(surface_texture, front_left, back_left, back_right, front_right, uv);
+                drawStartAttachmentQuad(&surface_batch, front_left, back_left, back_right, front_right, uv);
             } else {
-                drawDoubleSidedTexturedQuad(
-                    surface_texture,
-                    surface_texture,
+                surface_batch.emitDoubleSidedQuad(
                     front_left,
                     back_left,
                     back_right,
                     front_right,
                     uv,
+                    .white,
                 );
             }
         }
@@ -516,27 +541,18 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
 }
 
 fn drawStartAttachmentQuad(
-    texture: rl.Texture2D,
+    surface_batch: *TexturedQuadBatch,
     front_left: rl.Vector3,
     back_left: rl.Vector3,
     back_right: rl.Vector3,
     front_right: rl.Vector3,
     uv: QuadUv,
 ) void {
-    drawTexturedVertexQuad(
-        texture,
+    surface_batch.emitDoubleSidedVertexQuad(
         .{ .position = front_left, .u = uv.left, .v = uv.top },
         .{ .position = front_right, .u = uv.right, .v = uv.top },
         .{ .position = back_right, .u = uv.right, .v = uv.bottom },
         .{ .position = back_left, .u = uv.left, .v = uv.bottom },
-        .white,
-    );
-    drawTexturedVertexQuad(
-        texture,
-        .{ .position = front_right, .u = uv.right, .v = uv.top },
-        .{ .position = front_left, .u = uv.left, .v = uv.top },
-        .{ .position = back_left, .u = uv.left, .v = uv.bottom },
-        .{ .position = back_right, .u = uv.right, .v = uv.bottom },
         .white,
     );
 }
@@ -548,6 +564,9 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
     const surface_texture = attachmentSurfaceTexture(scene, template);
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
+
+    var surface_batch = TexturedQuadBatch.begin(surface_texture);
+    defer surface_batch.end();
 
     for (0..template.samples.len - 1) |sample_index| {
         const front_progress: f32 = @floatFromInt(sample_index);
@@ -561,14 +580,13 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
             const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
             const right_offset = left_offset + 1.0;
 
-            drawDoubleSidedTexturedQuad(
-                surface_texture,
-                surface_texture,
+            surface_batch.emitDoubleSidedQuad(
                 nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, left_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, right_offset),
                 renderCacheSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
+                .white,
             );
         }
     }
@@ -877,52 +895,116 @@ fn drawTexturedQuad(
     rlgl.rlDrawRenderBatchActive();
 }
 
-fn drawDoubleSidedTexturedQuad(
-    front_texture: rl.Texture2D,
-    back_texture: rl.Texture2D,
+const TexturedQuadBatch = struct {
+    texture: ?rl.Texture2D = null,
+
+    fn init() TexturedQuadBatch {
+        return .{};
+    }
+
+    fn begin(texture: rl.Texture2D) TexturedQuadBatch {
+        var batch = TexturedQuadBatch.init();
+        batch.useTexture(texture);
+        return batch;
+    }
+
+    fn useTexture(self: *TexturedQuadBatch, texture: rl.Texture2D) void {
+        if (self.texture) |active_texture| {
+            if (active_texture.id == texture.id) return;
+            self.end();
+        }
+
+        rlgl.rlDrawRenderBatchActive();
+        rlgl.rlSetTexture(texture.id);
+        rlgl.rlBegin(rlgl.rl_quads);
+        self.texture = texture;
+    }
+
+    fn end(self: *TexturedQuadBatch) void {
+        if (self.texture == null) return;
+
+        rlgl.rlEnd();
+        rlgl.rlDrawRenderBatchActive();
+        rlgl.rlSetTexture(0);
+        self.texture = null;
+    }
+
+    fn emitQuad(
+        self: *TexturedQuadBatch,
+        top_left: rl.Vector3,
+        bottom_left: rl.Vector3,
+        bottom_right: rl.Vector3,
+        top_right: rl.Vector3,
+        uv: QuadUv,
+        tint: rl.Color,
+    ) void {
+        std.debug.assert(self.texture != null);
+        emitTexturedQuad(top_left, bottom_left, bottom_right, top_right, uv, tint);
+    }
+
+    fn emitDoubleSidedQuad(
+        self: *TexturedQuadBatch,
+        top_left: rl.Vector3,
+        bottom_left: rl.Vector3,
+        bottom_right: rl.Vector3,
+        top_right: rl.Vector3,
+        uv: QuadUv,
+        tint: rl.Color,
+    ) void {
+        self.emitQuad(top_left, bottom_left, bottom_right, top_right, uv, tint);
+        self.emitQuad(top_right, bottom_right, bottom_left, top_left, uv, tint);
+    }
+
+    fn emitDoubleSidedVertexQuad(
+        self: *TexturedQuadBatch,
+        a: TexturedVertex,
+        b: TexturedVertex,
+        c: TexturedVertex,
+        d: TexturedVertex,
+        tint: rl.Color,
+    ) void {
+        std.debug.assert(self.texture != null);
+        emitTexturedVertexQuad(a, b, c, d, tint);
+        emitTexturedVertexQuad(d, c, b, a, tint);
+    }
+};
+
+fn emitTexturedQuad(
     top_left: rl.Vector3,
     bottom_left: rl.Vector3,
     bottom_right: rl.Vector3,
     top_right: rl.Vector3,
     uv: QuadUv,
+    tint: rl.Color,
 ) void {
-    drawTexturedQuad(front_texture, top_left, bottom_left, bottom_right, top_right, uv, .white);
-    drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv, .white);
+    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    rlgl.rlTexCoord2f(uv.left, uv.top);
+    rlgl.rlVertex3f(top_left.x, top_left.y, top_left.z);
+
+    rlgl.rlTexCoord2f(uv.left, uv.bottom);
+    rlgl.rlVertex3f(bottom_left.x, bottom_left.y, bottom_left.z);
+
+    rlgl.rlTexCoord2f(uv.right, uv.bottom);
+    rlgl.rlVertex3f(bottom_right.x, bottom_right.y, bottom_right.z);
+
+    rlgl.rlTexCoord2f(uv.right, uv.top);
+    rlgl.rlVertex3f(top_right.x, top_right.y, top_right.z);
 }
 
-fn drawDoubleSidedTexturedVertexQuad(
-    texture: rl.Texture2D,
+fn emitTexturedVertexQuad(
     a: TexturedVertex,
     b: TexturedVertex,
     c: TexturedVertex,
     d: TexturedVertex,
     tint: rl.Color,
 ) void {
-    drawTexturedVertexQuad(texture, a, b, c, d, tint);
-    drawTexturedVertexQuad(texture, d, c, b, a, tint);
-}
-
-fn drawTexturedVertexQuad(
-    texture: rl.Texture2D,
-    a: TexturedVertex,
-    b: TexturedVertex,
-    c: TexturedVertex,
-    d: TexturedVertex,
-    tint: rl.Color,
-) void {
-    rlgl.rlSetTexture(texture.id);
-    defer rlgl.rlSetTexture(0);
-
-    rlgl.rlBegin(rlgl.rl_quads);
     rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     drawTexturedVertex(a);
     drawTexturedVertex(b);
     drawTexturedVertex(c);
     drawTexturedVertex(d);
-
-    rlgl.rlEnd();
-    rlgl.rlDrawRenderBatchActive();
 }
 
 fn drawTexturedVertex(vertex: TexturedVertex) void {
