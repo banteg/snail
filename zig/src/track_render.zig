@@ -57,8 +57,9 @@ pub const Scene = struct {
     }
 
     pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, alpha_cutout_shader: ?rl.Shader) void {
+        drawAllAttachmentGeometryForFamily(self, preview, .start);
         drawRenderCacheCells(self, preview);
-        drawAllAttachmentGeometry(self, preview);
+        drawAllAttachmentGeometryExceptFamily(self, preview, .start);
         preview.drawPlacedModelsOnly(alpha_cutout_shader);
     }
 };
@@ -117,6 +118,13 @@ const TexturedVertex = struct {
     v: f32,
 };
 
+const TexturedQuad = struct {
+    a: TexturedVertex,
+    b: TexturedVertex,
+    c: TexturedVertex,
+    d: TexturedVertex,
+};
+
 const LaneBounds = struct {
     min: usize,
     max: usize,
@@ -134,13 +142,19 @@ fn resolveTrackSetIndex(track_set_index: u8) !u8 {
 }
 
 fn setSceneTextureWrap(textures: *Textures) void {
-    rl.setTextureWrap(textures.track.texture, .repeat);
-    rl.setTextureWrap(textures.slide.texture, .repeat);
-    rl.setTextureWrap(textures.warn.texture, .repeat);
-    rl.setTextureWrap(textures.ramp.texture, .repeat);
+    setSceneSurfaceTextureSampling(&textures.track.texture, .repeat);
+    setSceneSurfaceTextureSampling(&textures.slide.texture, .repeat);
+    setSceneSurfaceTextureSampling(&textures.warn.texture, .repeat);
+    setSceneSurfaceTextureSampling(&textures.ramp.texture, .repeat);
     // FRINGE.TGA is a tiny edge alpha ramp; repeating wraps the opposite edge into the falloff.
     rl.setTextureWrap(textures.fringe.texture, .clamp);
-    rl.setTextureWrap(textures.back.texture, .repeat);
+    setSceneSurfaceTextureSampling(&textures.back.texture, .repeat);
+}
+
+fn setSceneSurfaceTextureSampling(texture: *rl.Texture2D, wrap: rl.TextureWrap) void {
+    rl.genTextureMipmaps(texture);
+    rl.setTextureWrap(texture.*, wrap);
+    rl.setTextureFilter(texture.*, .anisotropic_16x);
 }
 
 fn drawBackPlane(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
@@ -450,6 +464,32 @@ fn drawAllAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLe
     }
 }
 
+fn drawAllAttachmentGeometryForFamily(
+    scene: *const Scene,
+    preview: *const track.LoadedLevelPreview,
+    family: attachment_builders.BuilderFamily,
+) void {
+    if (preview.attachment_scaffold.built_attachments.len == 0) return;
+
+    for (preview.attachment_scaffold.built_attachments) |*built| {
+        if (built.template.spec.family != family) continue;
+        drawBuiltAttachment(scene, built);
+    }
+}
+
+fn drawAllAttachmentGeometryExceptFamily(
+    scene: *const Scene,
+    preview: *const track.LoadedLevelPreview,
+    family: attachment_builders.BuilderFamily,
+) void {
+    if (preview.attachment_scaffold.built_attachments.len == 0) return;
+
+    for (preview.attachment_scaffold.built_attachments) |*built| {
+        if (built.template.spec.family == family) continue;
+        drawBuiltAttachment(scene, built);
+    }
+}
+
 fn drawBuiltAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     drawAttachmentFringe(scene, built);
     switch (built.template.spec.family) {
@@ -501,6 +541,8 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     const template = &built.template;
     if (template.samples.len < 2) return;
 
+    enableAttachmentSurfaceCulling();
+
     const surface_texture = attachmentSurfaceTexture(scene, template);
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
@@ -512,6 +554,7 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     for (0..template.samples.len - 1) |sample_index| {
         const front_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index));
         const back_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index + 1));
+        if (startAttachmentFinalFlatSpanSuppressed(template, sample_index, front_pose, back_pose)) continue;
         const front_world_z = base_row + front_pose.position.z;
         const back_world_z = base_row + back_pose.position.z;
 
@@ -548,18 +591,56 @@ fn drawStartAttachmentQuad(
     front_right: rl.Vector3,
     uv: QuadUv,
 ) void {
-    surface_batch.emitDoubleSidedVertexQuad(
-        .{ .position = front_left, .u = uv.left, .v = uv.top },
-        .{ .position = front_right, .u = uv.right, .v = uv.top },
-        .{ .position = back_right, .u = uv.right, .v = uv.bottom },
-        .{ .position = back_left, .u = uv.left, .v = uv.bottom },
-        .white,
-    );
+    const quads = startAttachmentFaceQuads(front_left, back_left, back_right, front_right, uv);
+    surface_batch.emitVertexQuad(quads[0], .white);
+    surface_batch.emitVertexQuad(quads[1], .white);
+}
+
+fn startAttachmentFinalFlatSpanSuppressed(
+    template: *const attachment_builders.Template,
+    sample_index: usize,
+    front_pose: attachment_builders.AttachmentPose,
+    back_pose: attachment_builders.AttachmentPose,
+) bool {
+    if (template.spec.family != .start) return false;
+    if (sample_index + 2 != template.samples.len) return false;
+    return @abs(front_pose.position.y) <= 0.0001 and @abs(back_pose.position.y) <= 0.0001;
+}
+
+fn enableAttachmentSurfaceCulling() void {
+    // Native path meshes render with D3D culling enabled; without it the paired
+    // front/back facequads fight because they use opposite quad diagonals.
+    rl.gl.rlEnableBackfaceCulling();
+}
+
+fn startAttachmentFaceQuads(
+    front_left: rl.Vector3,
+    back_left: rl.Vector3,
+    back_right: rl.Vector3,
+    front_right: rl.Vector3,
+    uv: QuadUv,
+) [2]TexturedQuad {
+    return .{
+        .{
+            .a = .{ .position = front_left, .u = uv.left, .v = uv.top },
+            .b = .{ .position = front_right, .u = uv.right, .v = uv.top },
+            .c = .{ .position = back_right, .u = uv.right, .v = uv.bottom },
+            .d = .{ .position = back_left, .u = uv.left, .v = uv.bottom },
+        },
+        .{
+            .a = .{ .position = front_right, .u = uv.right, .v = uv.top },
+            .b = .{ .position = front_left, .u = uv.left, .v = uv.top },
+            .c = .{ .position = back_left, .u = uv.left, .v = uv.bottom },
+            .d = .{ .position = back_right, .u = uv.right, .v = uv.bottom },
+        },
+    };
 }
 
 fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     const template = &built.template;
     if (template.samples.len < 2) return;
+
+    enableAttachmentSurfaceCulling();
 
     const surface_texture = attachmentSurfaceTexture(scene, template);
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
@@ -723,6 +804,7 @@ fn renderCacheFamilyForRuntimeCell(
     lane_index: usize,
 ) ?RenderCacheFamily {
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
+    if (tile_type == 0x20 and runtimeCellIsFullWidthCapRow(preview, global_row)) return .floor;
     if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
     const surface_tile = renderBackingSurfaceTileForRuntimeCell(preview, global_row, lane_index, tile_type) orelse tile_type;
@@ -735,6 +817,17 @@ fn renderCacheFamilyForRuntimeCell(
         };
     }
     return family;
+}
+
+fn runtimeCellIsFullWidthCapRow(preview: *const track.LoadedLevelPreview, global_row: usize) bool {
+    const row_location = preview.locateRow(global_row) orelse return false;
+    var saw_cap_cell = false;
+    for (row_location.row.cells) |cell| {
+        if (cell == '@') continue;
+        if (cell != '#') return false;
+        saw_cap_cell = true;
+    }
+    return saw_cap_cell;
 }
 
 fn renderBackingSurfaceTileForRuntimeCell(
@@ -955,6 +1048,15 @@ const TexturedQuadBatch = struct {
         self.emitQuad(top_right, bottom_right, bottom_left, top_left, uv, tint);
     }
 
+    fn emitVertexQuad(
+        self: *TexturedQuadBatch,
+        quad: TexturedQuad,
+        tint: rl.Color,
+    ) void {
+        std.debug.assert(self.texture != null);
+        emitTexturedVertexQuad(quad.a, quad.b, quad.c, quad.d, tint);
+    }
+
     fn emitDoubleSidedVertexQuad(
         self: *TexturedQuadBatch,
         a: TexturedVertex,
@@ -1059,6 +1161,34 @@ test "start attachment span leaves authored empty rows out of the render cache" 
     }
 }
 
+test "start terminal cap renders as floor instead of a warning strip" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/TUTORIAL.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    const terminal_cap_row = 30;
+    try std.testing.expectEqual(@as(u8, 0x20), preview.runtimeTileAt(terminal_cap_row, 1).?);
+    try std.testing.expect(runtimeCellIsFullWidthCapRow(&preview, terminal_cap_row));
+    try std.testing.expectEqual(
+        @as(?RenderCacheFamily, .floor),
+        renderCacheFamilyForRuntimeCell(&preview, terminal_cap_row, 1),
+    );
+}
+
 test "start attachment uv follows recovered facequad tiling" {
     const template = attachment_builders.Template{
         .spec = attachment_builders.specForPublicPath(.start),
@@ -1076,6 +1206,62 @@ test "start attachment uv follows recovered facequad tiling" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), wrapped.right, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.125), wrapped.top, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.25), wrapped.bottom, 0.0001);
+}
+
+test "start attachment emits recovered facequad vertex order" {
+    const front_left = rl.Vector3{ .x = -1.0, .y = 2.0, .z = 3.0 };
+    const back_left = rl.Vector3{ .x = -1.0, .y = 1.0, .z = 4.0 };
+    const back_right = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 4.0 };
+    const front_right = rl.Vector3{ .x = 0.0, .y = 2.0, .z = 3.0 };
+    const uv = QuadUv{ .left = 0.25, .right = 0.375, .top = 0.5, .bottom = 0.625 };
+
+    const quads = startAttachmentFaceQuads(front_left, back_left, back_right, front_right, uv);
+
+    try expectTexturedVertex(quads[0].a, front_left, uv.left, uv.top);
+    try expectTexturedVertex(quads[0].b, front_right, uv.right, uv.top);
+    try expectTexturedVertex(quads[0].c, back_right, uv.right, uv.bottom);
+    try expectTexturedVertex(quads[0].d, back_left, uv.left, uv.bottom);
+
+    try expectTexturedVertex(quads[1].a, front_right, uv.right, uv.top);
+    try expectTexturedVertex(quads[1].b, front_left, uv.left, uv.top);
+    try expectTexturedVertex(quads[1].c, back_left, uv.left, uv.bottom);
+    try expectTexturedVertex(quads[1].d, back_right, uv.right, uv.bottom);
+}
+
+test "start attachment suppresses only the final flat cap span" {
+    var samples = [_]attachment_builders.TemplateSample{.{}} ** 4;
+    const template = attachment_builders.Template{
+        .spec = attachment_builders.specForPublicPath(.start),
+        .samples = &samples,
+    };
+    const flat = attachment_builders.AttachmentPose{
+        .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .center_x = 0.0,
+        .lateral_scale = 1.0,
+        .basis_right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+        .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .special_scalar = 0.0,
+    };
+    var raised = flat;
+    raised.position.y = 1.0;
+
+    try std.testing.expect(!startAttachmentFinalFlatSpanSuppressed(&template, 1, flat, flat));
+    try std.testing.expect(!startAttachmentFinalFlatSpanSuppressed(&template, 2, raised, flat));
+    try std.testing.expect(startAttachmentFinalFlatSpanSuppressed(&template, 2, flat, flat));
+}
+
+fn expectTexturedVertex(
+    actual: TexturedVertex,
+    expected_position: rl.Vector3,
+    expected_u: f32,
+    expected_v: f32,
+) !void {
+    try std.testing.expectApproxEqAbs(expected_position.x, actual.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_position.y, actual.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_position.z, actual.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_u, actual.u, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_v, actual.v, 0.0001);
 }
 
 test "top surface uv follows recovered world mapping" {
