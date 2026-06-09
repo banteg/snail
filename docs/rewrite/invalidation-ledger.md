@@ -28,6 +28,12 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-10 - Jetpack gauge
+
+- invalidated claim: `update_jetpack_gauge` keeps the gauge state live when `progress > 1.0` or within 5 rows of the route end, only skipping the warning math (`PORT(verified)` comments in `zig/src/gameplay/jetpack.zig` and `zig/src/gameplay.zig:10903`)
+- replacement evidence: both decompilers show that branch fully disarms — `end_jetpack_hover`, conditional `set_snail_jetpack(0)` when `progress <= 0.94`, `state = 0`, wobble fields zeroed (`analysis/decompile/ida/functions/0043a390-update_jetpack_gauge.c:23-32`, BN @ 0x43a543-0x43a579)
+- port consequence: `Gauge.update` must disarm on fuel exhaustion and the near-route-end window; `gameplay.zig:2456` otherwise grants jetpack forward velocity forever; the two tests encoding the stay-active behavior must flip (full audit: `analysis/runtime/port-parity-audit-2026-06-10.md`)
+
 ## 2026-03-25 - Outer bridge
 
 - invalidated claim: ordinary respawn rebuild should stay modeled as a saved-owner bridge opcode lane
