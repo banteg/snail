@@ -2717,7 +2717,7 @@ fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: 
         else if ((build_flags & 0x20) == 0)
             '>'
         else if (mirror_state)
-            '['
+            '{'
         else
             cell,
         else => cell,
@@ -3263,6 +3263,7 @@ test "normalize segment glyph for track flags matches recovered helper cases" {
     try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('$', 0x40, false, false));
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('o', 0, false, false));
     try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags(']', defaultRuntimeBuildFlags, true, false));
+    try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags('}', defaultRuntimeBuildFlags, true, false));
     try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('_', 0, false, true));
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('-', 0x40, false, false));
