@@ -287,8 +287,9 @@ pub const Controller = struct {
 
         var overlay_envelope: f32 = 1.0;
         if (fill_ratio <= 0.89999998) {
-            if (fill_ratio >= 0.1) return 0.0;
-            overlay_envelope = fill_ratio * 10.0;
+            if (fill_ratio < 0.1) {
+                overlay_envelope = fill_ratio * 10.0;
+            }
         } else if (self.warning_state == .idle) {
             overlay_envelope = (fill_ratio - 0.89999998) * 10.0;
         }

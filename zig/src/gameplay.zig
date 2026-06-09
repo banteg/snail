@@ -8651,6 +8651,9 @@ test "damage gauge warning overlay follows display fill and pulse lanes" {
     runner.damage.runtime.display_fill = 0.5;
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damageGaugeWarningOverlayAlpha(), 0.0001);
 
+    runner.damage.warning_state = .draining;
+    try std.testing.expect(runner.damageGaugeWarningOverlayAlpha() > 0.0);
+
     runner.damage.runtime.display_fill = 0.95;
     runner.damage.runtime.pulse_progress = 0.0;
     try std.testing.expect(runner.damageGaugeWarningOverlayAlpha() > 0.0);
