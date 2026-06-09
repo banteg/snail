@@ -2,7 +2,9 @@
 
 Static cross-check of the Zig runtime against the tracked BN/IDA decompile exports,
 looking specifically for behavior the repo believed correct that contradicts the
-native code. Four divergences confirmed, each verified against both decompilers.
+native code. Round 1 (findings 1-4) is fixed as of `ba7638e`; round 2
+actionable findings are fixed as of `2f3b410`, `43e1cd0`, and `84a7550`.
+Finding 6 is evidence-only and remains an IDA typing follow-up.
 
 ## Confirmed findings
 
@@ -70,6 +72,68 @@ native code. Four divergences confirmed, each verified against both decompilers.
   (`gameplay.zig:10891`, `jetpack.zig` "near empty edge...") encode the wrong
   behavior, so they will need updating together with the fix.
 
+## Round 2 findings
+
+### 5. Cameraman matrix blend uses per-tick velocity instead of the subgame rate (medium-high)
+
+- port: `zig/src/gameplay/camera.zig:483-485` —
+  `cameramanMatrixBlendFactor` returns `runner.track_step_rows * 0.3`
+  (clamped), where `track_step_rows` is the per-tick forward row advance
+  (`gameplay.zig:806`, ≈ rate × 0.17…0.5).
+- native: `update_cameraman` @ 0x4461d0, BN @ 0x4466b4 —
+  `linear_interpolate_matrix(..., game->track_center_x * 0.3)`. `Game+0x38`
+  is the live subgame rate written by `calc_subgame_rate` @ 0x4404d0
+  (`analysis/headers/path_template_types.h:672`), which the port already
+  mirrors in `runner.track_center_x` (`updateNativeTrackCenterRate`).
+- consequence: at base rate ≈ 0.49 the native camera lerps ~0.147/tick while
+  the port lerps ~0.025-0.073/tick — the follow camera is roughly 2-6x
+  laggier than the original, and the lag varies with instantaneous velocity
+  instead of the rate. The test expectations at `gameplay.zig:10979/10982`
+  encode the wrong source.
+
+### 6. IDA Player typing is shifted in the cameraman region (low, evidence-only)
+
+- the IDA export `analysis/decompile/ida/functions/004461d0-update_cameraman.c`
+  labels the reads at `player+0x2964/0x2968/0x296c` as
+  `jetpack_gauge.warning_intensity` / `cached_camera_target_world.x/.y`;
+  the raw instruction at 0x4461f5 is `fld dword [eax + 0x2964]` and the
+  BN-typed header places `cached_camera_target_world` at `player+0x2964`
+  (after the 0x214-byte gauge at +0x2750). BN's export and the Zig port are
+  correct; IDA's Player struct is off by one field here.
+- consequence: none in the port; this is an audit hazard. Anyone comparing
+  the port against the IDA export alone would "find" three false camera
+  divergences (base x shake, lateral follow, lateral roll). Re-sync the IDA
+  database's Player typing.
+
+### 7. Mirror state does not flip the authored lane order in the port (high)
+
+- port: `zig/src/track.zig:1996-2044` (`buildRuntimeTileGrid`) and the parallel
+  walk in `buildAttachmentSourceRowMirrorStates` — under `mirror_state` the
+  port only swaps directional glyphs via `normalizeSegmentGlyphForTrackFlags`;
+  source cells are always read at their authored lane index.
+- native: `populate_runtime_track_cells_from_segments` @ 0x435eb0 —
+  IDA lines 499-515: `v50 = mirror_byte ? 7 - lane : lane` and the source cell
+  read `v54 = segment + row + (v50 << 8) + 20`; BN @ 0x436655-0x436682 shows
+  the same (`ebp_1 = 7 - edx_29` selects the source column, destination walks
+  0..7 sequentially). The glyph normalize pass handles the directional swaps
+  on top of the flip, not instead of it.
+- consequence: every row whose mirror coin lands true is horizontally flipped
+  in the original but keeps its authored orientation in the port — wrong lane
+  layout for roughly half of all segments in any mode where the mirror
+  selector runs. This compounds with the (now-fixed) `'}'` finding: glyph
+  swap parity alone was never sufficient.
+
+### 8. Mirror coin decision is off by one at exactly 0x4000 (low)
+
+- port: `zig/src/track.zig:1971` — `decision = nextInt15() >= 0x4000`.
+- native: `switch_track_mirror` @ 0x435e60 — `random_float_below(1.0) > 0.5`,
+  i.e. `rand * 2^-15 > 0.5`, which is `rand > 16384`; a roll of exactly
+  16384 (0x4000) is `false` natively but `true` in the port.
+- consequence: 1-in-32768 rolls diverge, and once one coin differs the
+  anti-streak counter and every subsequent mirror state in the level
+  diverges with it. Trivial fix (`> 0x4000`), meaningful for deterministic
+  replay parity.
+
 ## Checked and matching (for coverage)
 
 - `normalize_segment_glyph_for_track_flags`: all non-`'}'` glyph lanes
@@ -94,8 +158,8 @@ native code. Four divergences confirmed, each verified against both decompilers.
 
 - This audit pass was interrupted twice; the track-rendering, attachment,
   asset-format, frontend-transition, and parcels/outer-bridge lanes were only
-  partially swept and got no completed verdict. The four findings above are the
+  partially swept and got no completed verdict. The findings above are the
   fully verified subset, not an exhaustive sweep.
-- Two of the four findings sat under `PORT(verified)` comments or
+- Two of the first four findings sat under `PORT(verified)` comments or
   parity-labelled tests. When fixing, re-check neighbors of each finding —
   verified tags in these files are not currently trustworthy evidence.
