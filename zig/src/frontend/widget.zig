@@ -502,8 +502,8 @@ fn clampWrappedWidgetTextRect(text_rect: Rect, hot_padding: f32) Rect {
     } else if (clamped.left - hot_padding < 0.0) {
         clamped.left = hot_padding;
     }
-    if (clamped.top + clamped.height + hot_padding > 480.0) {
-        clamped.top = 480.0 - hot_padding - clamped.height;
+    if (clamped.top + hot_padding > 480.0) {
+        clamped.top = 480.0 - hot_padding;
     } else if (clamped.top - hot_padding < 0.0) {
         clamped.top = hot_padding;
     }
@@ -897,7 +897,7 @@ test "menu prompt layout uses native tip widget bounds" {
     try std.testing.expectApproxEqAbs(@as(f32, 47.25), layout.frame_rect.width, 0.001);
 }
 
-test "menu prompt clamp keeps the hot text block inside authored space" {
+test "menu prompt clamp uses native bottom anchor without height" {
     var font: game_font.Loaded = undefined;
     font.nominal_height = 20.0;
     font.spacing_scale = 0.75;
@@ -912,6 +912,7 @@ test "menu prompt clamp keeps the hot text block inside authored space" {
     const lines = [_][]const u8{"AB"};
     const layout = menuPromptLayout(&font, &lines, 470.0, false);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 441.0), layout.line_rects[0].top, 0.001);
-    try std.testing.expect(layout.line_rects[0].top + layout.line_rects[0].height + menu_button_hot_padding <= 480.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 467.0), layout.line_rects[0].top, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 480.0), layout.line_rects[0].top + menu_button_hot_padding, 0.001);
+    try std.testing.expect(layout.line_rects[0].top + layout.line_rects[0].height + menu_button_hot_padding > 480.0);
 }
