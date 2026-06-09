@@ -1968,7 +1968,7 @@ const RuntimeBuildState = struct {
     }
 
     fn switchTrackMirror(self: *RuntimeBuildState) bool {
-        const decision = self.math_random.nextInt15() >= 0x4000;
+        const decision = self.math_random.nextInt15() > 0x4000;
         return self.applyMirrorDecision(decision);
     }
 };
@@ -3662,6 +3662,14 @@ test "runtime build mirror latch matches recovered threshold logic" {
     try std.testing.expect(state.applyMirrorDecision(true));
     try std.testing.expect(!state.applyMirrorDecision(true));
     try std.testing.expect(!state.applyMirrorDecision(false));
+}
+
+test "runtime build mirror coin treats exact half roll as false" {
+    var exact_half = RuntimeBuildState.init(defaultRuntimeBuildFlags, 15040);
+    try std.testing.expect(!exact_half.switchTrackMirror());
+
+    var above_half = RuntimeBuildState.init(defaultRuntimeBuildFlags, 5006);
+    try std.testing.expect(above_half.switchTrackMirror());
 }
 
 test "runtime build ignores parser side guards for mirror decisions" {
