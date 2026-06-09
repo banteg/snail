@@ -1805,8 +1805,11 @@ pub const Runner = struct {
 
         const cell = row_location.row.cells[resolved_lane_index];
         const annotation = row_location.row.annotation;
-        const runtime_tile_hint = preview.runtimeTileAt(global_row, resolved_lane_index) orelse track.confirmedRuntimeTileHint(cell);
-        const gameplay_cell = if (runtime_tile_hint) |tile_type|
+        const runtime_tile = preview.runtimeTileAt(global_row, resolved_lane_index);
+        const runtime_tile_hint = runtime_tile orelse track.confirmedRuntimeTileHint(cell);
+        const gameplay_cell = if (runtime_tile) |tile_type|
+            track.runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags)
+        else if (runtime_tile_hint) |tile_type|
             track.runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags) orelse track.gameplayCellKind(cell)
         else
             track.gameplayCellKind(cell);

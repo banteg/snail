@@ -1129,7 +1129,7 @@ pub const LoadedLevelPreview = struct {
 
         const cell = row.cells[lane_index];
         const kind = if (self.runtimeTileAt(global_row, lane_index)) |tile_type|
-            runtimeGameplayCellKindForTile(tile_type, self.runtime_build_flags) orelse gameplayCellKind(cell) orelse return null
+            runtimeGameplayCellKindForTile(tile_type, self.runtime_build_flags) orelse return null
         else
             gameplayCellKind(cell) orelse return null;
         return .{
@@ -2011,7 +2011,9 @@ fn buildRuntimeTileGrid(
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
             const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
-            for (row.cells, 0..) |cell, lane_index| {
+            for (row.cells, 0..) |_, lane_index| {
+                const source_lane_index = runtimeMirroredSourceLaneIndex(row.cells.len, lane_index, build_state.mirror_state);
+                const cell = row.cells[source_lane_index];
                 const normalized_cell = normalizeSegmentGlyphForTrackFlags(
                     cell,
                     build_state.build_flags,
@@ -2061,7 +2063,9 @@ fn buildAttachmentSourceRowMirrorStates(
             const global_row = row_base + row_index;
             const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
             var recorded = false;
-            for (row.cells, 0..) |cell, lane_index| {
+            for (row.cells, 0..) |_, lane_index| {
+                const source_lane_index = runtimeMirroredSourceLaneIndex(row.cells.len, lane_index, build_state.mirror_state);
+                const cell = row.cells[source_lane_index];
                 const normalized_cell = normalizeSegmentGlyphForTrackFlags(
                     cell,
                     build_state.build_flags,
@@ -2584,6 +2588,14 @@ fn runtimePlayableLaneEnd(max_width: usize) usize {
         @min(max_width - 1, runtimePlayableLaneStart(max_width) + native_playable_lane_count)
     else
         max_width;
+}
+
+fn runtimeMirroredSourceLaneIndex(row_width: usize, lane_index: usize, mirror_state: bool) usize {
+    if (!mirror_state) return lane_index;
+    const playable_lane_start = runtimePlayableLaneStart(row_width);
+    const playable_lane_end = runtimePlayableLaneEnd(row_width);
+    if (lane_index < playable_lane_start or lane_index >= playable_lane_end) return lane_index;
+    return playable_lane_start + playable_lane_end - 1 - lane_index;
 }
 
 fn runtimeOpenEdgeMask(
@@ -3702,6 +3714,55 @@ test "runtime build ignores parser side guards for mirror decisions" {
     try std.testing.expect(!mirror_state_build.states[0]);
 }
 
+test "runtime build mirrors playable source lane order" {
+    const rows = [_]segment.Row{
+        .{ .cells = "@_......M@" },
+    };
+    const segments = [_]segment.Definition{
+        .{
+            .arena = undefined,
+            .source_path = "SEGMENTS/MIRROR-LANES-TEST.TXT",
+            .segment_id = 0,
+            .name = "Mirror Lanes Test",
+            .width = rows[0].cells.len,
+            .height = rows.len,
+            .rows = &rows,
+        },
+    };
+    const row_offsets = [_]usize{0};
+    const config = RuntimeBuildConfig{
+        .build_flags = defaultRuntimeBuildFlags,
+        .build_seed = 5006,
+        .active_row_start = 0,
+        .active_row_end = rows.len,
+    };
+
+    const runtime_tiles = try buildRuntimeTileGrid(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        rows.len,
+        rows[0].cells.len,
+        config,
+    );
+    defer std.testing.allocator.free(runtime_tiles);
+
+    const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        rows.len,
+        config,
+    );
+    defer std.testing.allocator.free(mirror_state_build.states);
+
+    try std.testing.expect(mirror_state_build.states[0]);
+    try std.testing.expectEqual(@as(u8, 0x00), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 0)]);
+    try std.testing.expectEqual(@as(u8, 0x12), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 1)]);
+    try std.testing.expectEqual(@as(u8, 0x0f), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 8)]);
+    try std.testing.expectEqual(@as(u8, 0x00), runtime_tiles[runtimeTileIndex(rows[0].cells.len, 0, 9)]);
+}
+
 test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
@@ -3721,32 +3782,31 @@ test "level preview builds derived runtime tiles for shipped glyphs across the c
         defer preview.deinit();
 
         for (0..preview.total_rows) |row_index| {
-            const row_location = preview.locateRow(row_index) orelse continue;
-            for (row_location.row.cells, 0..) |cell, lane_index| {
+            for (0..preview.max_width) |lane_index| {
                 const tile_type = preview.runtimeTileAt(row_index, lane_index) orelse continue;
-                switch (cell) {
-                    '$' => {
+                switch (runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags) orelse continue) {
+                    .health => {
                         saw_health = true;
                         try std.testing.expectEqual(@as(u8, 0x17), tile_type);
                     },
-                    'J' => {
+                    .jetpack => {
                         saw_jetpack = true;
                         try std.testing.expectEqual(@as(u8, 0x19), tile_type);
                     },
-                    'M' => {
+                    .slug => {
                         saw_slug = true;
                         try std.testing.expectEqual(@as(u8, 0x12), tile_type);
                     },
-                    '(' => {
+                    .trampoline => {
                         saw_trampoline = true;
                         try std.testing.expectEqual(@as(u8, 0x16), tile_type);
                         try std.testing.expectEqual(@as(?f32, -3.0), preview.floorHeightAtCellCenter(row_index, lane_index));
                     },
-                    's' => {
+                    .garbage => {
                         saw_garbage = true;
                         try std.testing.expectEqual(@as(u8, 0x21), tile_type);
                     },
-                    '&' => {
+                    .salt => {
                         saw_salt = true;
                         try std.testing.expectEqual(@as(u8, 0x22), tile_type);
                     },
