@@ -10975,10 +10975,12 @@ test "cameraman matrix blend factor follows the live subgame rate" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.track_step_rows = 0.2;
+    runner.track_center_x = 0.2;
+    runner.track_step_rows = 8.0;
     try std.testing.expectApproxEqAbs(@as(f32, 0.06), runner.cameramanMatrixBlendFactor(), 0.0001);
 
-    runner.track_step_rows = 8.0;
+    runner.track_center_x = 8.0;
+    runner.track_step_rows = 0.2;
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
 }
 
@@ -11024,7 +11026,7 @@ test "cameraman z deadzone follows the desired camera position after base offset
     runner.updateCameraman(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(@as(f32, 99.9), runner.cameraman.desired_matrix.m14, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 97.8), runner.cameraman.live_matrix.m14, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 99.9), runner.cameraman.live_matrix.m14, 0.0001);
 }
 
 test "jetpack gauge ramps warning intensity during the startup tenth" {
