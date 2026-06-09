@@ -4,7 +4,7 @@
 //! - 1/600 per-tick countdown
 //! - 0.94 near-empty band
 //! - runtime-cell `flags_b & 0x80` warning snap seeded from `JetPack=Off`
-//! - 5-row end-of-course warning-math skip (state stays live)
+//! - fuel-out and 5-row end-of-course auto-shutoff
 //! - recovered warning-intensity / pulse / wobble fields
 
 const std = @import("std");
@@ -73,17 +73,19 @@ pub const Gauge = struct {
 
     /// Mirrors `update_jetpack_gauge` @ 0x43a390 state 1. `forced_warning` is the
     /// recovered `runtimeFlagB80At` runtime-cell bit for the current sample.
-    /// `row_near_end` short-circuits the warning math for the 5-row auto-shutoff
-    /// window; the gauge stays active.
+    /// `row_near_end` mirrors the 5-row native auto-shutoff window.
     pub fn update(self: *Gauge, forced_warning: bool, row_near_end: bool) void {
         if (!self.active) return;
 
         const previous_progress = self.progress;
         self.progress += tick_step;
-        // PORT(verified): native @ 0x43a3c9 skips the warning-band math when sum > 1.0
-        // or when the player's world-z is within 5 rows of the course end, but the
-        // state stays active — the gauge does not disarm here.
-        if (self.progress > 1.0 or row_near_end) return;
+        // PORT(verified): native @ 0x43a3c9 disarms when fuel is spent or the
+        // player's world-z is within 5 rows of the course end. `disarm` is the
+        // port's state-zeroing equivalent, including particle shutdown.
+        if (self.progress > 1.0 or row_near_end) {
+            self.disarm();
+            return;
+        }
 
         var warning_phase: f32 = 1.0;
         self.warning_band = .steady;
@@ -157,4 +159,19 @@ test "near empty edge shuts down thrust particles without disarming gauge" {
     try std.testing.expect(!gauge.jet_particles_active);
     try std.testing.expectEqual(@as(u32, 1), gauge.jet_particle_shutdown_generation);
     try std.testing.expectEqual(WarningBand.near_empty, gauge.warning_band);
+}
+
+test "fuel out disarms gauge" {
+    var gauge = Gauge{};
+    gauge.arm();
+    gauge.progress = 1.0;
+    gauge.wobble_y = 1.0;
+
+    gauge.update(false, false);
+
+    try std.testing.expect(!gauge.active);
+    try std.testing.expect(!gauge.thrust_visual_active);
+    try std.testing.expect(!gauge.jet_particles_active);
+    try std.testing.expectEqual(@as(u32, 1), gauge.jet_particle_shutdown_generation);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), gauge.wobble_y, 0.0001);
 }

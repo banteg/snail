@@ -10891,7 +10891,7 @@ test "halfpipe attachment rides above the trough floor" {
     try std.testing.expect(world_position.y > floor_height + 0.35);
 }
 
-test "jetpack gauge enters near-empty warning and skips warning math near route end" {
+test "jetpack gauge enters near-empty warning and disarms near route end" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
@@ -10904,9 +10904,7 @@ test "jetpack gauge enters near-empty warning and skips warning math near route 
     try std.testing.expect(runner.jetpack.wobble_y > 0.0);
 
     // PORT(verified): native `update_jetpack_gauge` @ 0x43a3ee uses the 5-row
-    // end-of-course band only to skip warning-math presentation that tick; the gauge
-    // stays state 1. Assert the gauge remains active, wobbles are not updated, and
-    // the band stays at its pre-call default.
+    // end-of-course band to disarm the gauge and zero the wobble fields.
     runner.jetpack.disarm();
     runner.armJetpackGauge();
     fixture.preview.course_end_threshold = 40.0;
@@ -10915,7 +10913,9 @@ test "jetpack gauge enters near-empty warning and skips warning math near route 
     runner.track_row_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
-    try std.testing.expect(runner.jetpack.active);
+    try std.testing.expect(!runner.jetpack.active);
+    try std.testing.expect(!runner.jetpack.thrust_visual_active);
+    try std.testing.expect(!runner.jetpack.jet_particles_active);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpack.wobble_x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpack.wobble_y, 0.0001);
 }
