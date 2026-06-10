@@ -134,6 +134,32 @@ Finding 6 is evidence-only and remains an IDA typing follow-up.
   diverges with it. Trivial fix (`> 0x4000`), meaningful for deterministic
   replay parity.
 
+### 9. Early void-edge carryover arm is missing from a PORT(verified) region (medium)
+
+- port: `zig/src/gameplay.zig:4647-4660` — the only ground-path
+  `begin_post_follow_carryover` arm fires at `position_y < 0.0` with
+  non-positive velocity, citing `0043b120-update_subgoldy.c:581-583`. The
+  enclosing comment block (`gameplay.zig:4515`) claims the mirror covers IDA
+  lines 352-584.
+- native: `update_subgoldy` @ 0x43b120, IDA lines 477-491 — inside that same
+  claimed region there is a second, earlier arm: when the current cell's
+  `tile_id` is 0 or 35 (void / open-neighbor), `position.y < 0.49`, and
+  `velocity.y <= 0`, native begins carryover immediately, gated by a
+  row-fraction window (`frac(z)` must be above `0.2` when `tile_flags_3d & 1`
+  and below `0.8` when `tile_flags_3d & 2`, otherwise `(0.0, 1.0)`).
+- consequence: walking off a floor edge arms `attachment.exit.pending` about
+  half a ride-height later in the port. Exit-pending gates swept attachment
+  entry (`try_enter_track_attachment_from_swept_motion` requires it) and the
+  exit-damping/gravity lanes, so late arming can miss path entries the
+  original catches. The fraction-window gating does not exist in the port at
+  all.
+
+Doc nit found on the way: the comment above `applyTileFamilyFloorReaction`
+(`gameplay.zig:4695-4697`) says slope tiles drive `velocity.y = 1.2` and
+down-ramps `0.8`; the code (correctly) uses `rate * 0.3` and `rate * 0.2`.
+Native also gates the down-ramp lookback dispatch on
+`!control_override_active` (IDA :564), which the port does not check.
+
 ## Checked and matching (for coverage)
 
 - `normalize_segment_glyph_for_track_flags`: all non-`'}'` glyph lanes
@@ -153,6 +179,37 @@ Finding 6 is evidence-only and remains an IDA typing follow-up.
   `(1-p)*16.666668` phase, cell-flag `0x80` snap to 0.94, the one-shot
   `set_snail_jetpack(0)` + `uninit_jet_particles` on the 0.94 crossing, and the
   wobble formulas all match.
+
+## Round 2 checked and matching
+
+- `format_time_trial_string` @ 0x448960: the effective `%1i:%02i:%02i` format
+  (the `%03i` sprintf is dead, overwritten by the second call) and the
+  `-:--:--` zero sentinel (verified against the binary at VA 0x4AC5BC) match
+  `formatTimeTrialString`.
+- `update_cameraman` @ 0x4461d0: base matrix rows (0.946001/0.324162),
+  vertical lift lerp (1.15 → 0.35 over the `z/first_rows*1.4-0.4` blend),
+  intro pitch `(1-blend)*0.8725`, pitch clamp ±1.2215 from
+  `(-2-(h-0.49)*5)*0.017450`, lift-envelope template-kind set
+  {8,9,10,0x0e,0x10,0x24,0x2b,0x2d} (decoded from the named enum), launch
+  envelope `cos(p*3π/2+π/2)` scale 0.24, smoothed-lift lerp 0.1, prev-z
+  deadzone clamp 1.7/3.0, worm FOV 110+50 with lerp 0.3, and the outer
+  0.9 shared-camera lerp (`app/subgame_camera.zig`) all match.
+- track build seed path: replay seed reuse, seed 0 for tutorial/time-trial,
+  `(i64)random_float_below(32768.0)` ≡ raw `rand()`, MSVC LCG constants in
+  `math_random.zig`, pick order (pick → mirror roll per segment), mode-1 pick
+  range `(scalar*0.9+0.1)*count`, course length `floor((scalar*0.65+0.35) *
+  Length) - last_rows`, and the mirror anti-streak counter (≥4 flips) match.
+- `update_subgoldy` physics constants: yz decay `1-rate*0.003` (z gated on
+  the trampoline flag, y unconditional), x decay `1-rate*0.1`, gravity
+  `-0.01*rate²`, forward clamp `[0.17, 0.5]*rate`, slide/jetpack boost
+  `2*rate²*0.004`, negative-ring recovery `rate²*0.004*0.25`, exit damping
+  `1-rate*0.2` gated on row flag 0x100/jetpack, slide-boost tile set
+  {0x0f,0x10,0x12,0x13} plus drain+slide-family, slope lift `rate*0.3`,
+  ramp-down `rate*0.2`, mouse steer `(320-x)*0.0125` clamp ±3.7, x clamp
+  ±4.0, floor snap window `(-0.16333, 0.49)`, squidge threshold −0.03,
+  trampoline catch (tile 22, ±0.49 around anchor, `rate*0.3` bounce,
+  sound 41), completion deceleration `2*rate²*0.004` past
+  `completion_row_start+2.5`, and death at `y < -7` all match.
 
 ## Caveats
 
