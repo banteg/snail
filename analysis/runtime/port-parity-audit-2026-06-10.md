@@ -190,6 +190,25 @@ Native also gates the down-ramp lookback dispatch on
   RNG consumption (one rand per chosen set/single) is missing from the
   build-stream model, shifting every later consumer.
 
+### 11. Attachment entry/exit half-span uses float division; native truncates (medium)
+
+- port: `zig/src/gameplay/attachment.zig:152-158` — `templateHalfSpan`
+  returns `span_cells * 0.5` as f32; shared by the swept-entry x gate
+  (`installedAttachmentEntryForSweep`) and the side-exit threshold.
+- native: `try_enter_track_attachment_from_swept_motion` @ 0x42c770 —
+  IDA `*(this + 21) / -2` / `*(this + 21) / 2`; BN @ 0x42c84b/0x42c86f
+  shows the `(x - (x >> 31)) s>> 1` idiom, i.e. signed *integer* division
+  of the template `+0x54` span before the float compare against ±0.3.
+- consequence: for odd-span templates (cage2, screw, twistera/b,
+  twister2a/b, toads — span 3 per the port's own spec table) the native
+  acceptance window is ±(1 + 0.3) = ±1.3 cells while the port accepts
+  ±(1.5 + 0.3) = ±1.8 — the port lets the player enter (and side-exit)
+  those attachments half a cell further out on each side. Even-span
+  templates are unaffected.
+- the rest of the swept gate matches: tail-to-head sample walk, the
+  `sample[5] > 0` (up-y) skip, start gates `y ≥ −0.2`, `0 < z < extent`,
+  end gate `y ≤ 0.001`, and the caller's 1.05 velocity scale.
+
 ## Checked and matching (for coverage)
 
 - `normalize_segment_glyph_for_track_flags`: all non-`'}'` glyph lanes
