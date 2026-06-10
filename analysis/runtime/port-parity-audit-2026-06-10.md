@@ -2,9 +2,26 @@
 
 Static cross-check of the Zig runtime against the tracked BN/IDA decompile exports,
 looking specifically for behavior the repo believed correct that contradicts the
-native code. Round 1 (findings 1-4) is fixed as of `ba7638e`; round 2
-actionable findings are fixed as of `2f3b410`, `43e1cd0`, and `84a7550`.
-Finding 6 is evidence-only and remains an IDA typing follow-up.
+native code. All actionable findings are fixed as listed below. Finding 6 was
+evidence-only; its IDA typing follow-up is also resolved.
+
+## Resolution status
+
+| Finding | Status | Fix commit |
+| --- | --- | --- |
+| 1. `'}'` mirrors to `'['` instead of `'{'` | Fixed | `bb287cd` |
+| 2. Damage warning overlay envelope is 0 where native uses 1.0 | Fixed | `dc9438e` |
+| 3. Widget vertical clamp subtracts height; native does not | Fixed | `6ca2fc5` |
+| 4. Jetpack gauge never disarms on fuel-out or near route end | Fixed | `ba7638e` |
+| 5. Cameraman matrix blend uses per-tick velocity instead of the subgame rate | Fixed | `2f3b410` |
+| 6. IDA Player typing is shifted in the cameraman region | Evidence-only typing follow-up resolved | `f4114ce` |
+| 7. Mirror state does not flip the authored lane order in the port | Fixed | `43e1cd0` |
+| 8. Mirror coin decision is off by one at exactly 0x4000 | Fixed | `84a7550` |
+| 9. Early void-edge carryover arm is missing from a PORT(verified) region | Fixed | `745777c` |
+| 10. Parcel placement model spawns every annotation instead of a seeded subset | Fixed | `52598b0` |
+| 11. Swept-entry half-span uses float division; native truncates | Fixed | `b274931` |
+| 12. Slug contact is cell-crossing in the port; native is a radius test | Fixed | `f8bc253` |
+| 13. Supertramp launch handoff uses scaffold constants | Fixed | `d01bc79` |
 
 ## Confirmed findings
 
