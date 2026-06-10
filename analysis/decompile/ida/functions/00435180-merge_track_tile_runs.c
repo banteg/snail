@@ -3,14 +3,14 @@
 /* selector: merge_track_tile_runs */
 
 // Collapses repeated horizontal tile runs into longer strip variants where the renderer allows it.
-int __thiscall sub_435180(int *this)
+int32_t __thiscall merge_track_tile_runs(Game *game)
 {
-  int *v1; // esi
-  int v2; // edx
-  int *v3; // eax
+  Game *v1; // esi
+  int32_t v2; // edx
+  uint8_t *v3; // eax
   int v4; // ecx
   int v5; // ebp
-  int result; // eax
+  int32_t result; // eax
   int *v7; // ebx
   int v8; // ebp
   int *v9; // edi
@@ -20,13 +20,13 @@ int __thiscall sub_435180(int *this)
   char v13; // al
   int v14; // eax
   int v15; // esi
-  int v16; // eax
+  uint8_t *v16; // eax
   int v17; // ecx
   int v18; // esi
   int *v19; // edi
   int v20; // eax
   int v21; // esi
-  int v22; // eax
+  uint8_t *v22; // eax
   int v23; // ebp
   int v24; // edx
   char v25; // al
@@ -37,39 +37,39 @@ int __thiscall sub_435180(int *this)
   int v30; // edx
   int v31; // ecx
   int v32; // esi
-  int v33; // eax
+  uint8_t *v33; // eax
   int v34; // ecx
   int v35; // eax
-  int v36; // [esp+8h] [ebp-10h]
+  int32_t v36; // [esp+8h] [ebp-10h]
   int v38; // [esp+10h] [ebp-8h]
   _DWORD *v39; // [esp+14h] [ebp-4h]
 
-  v1 = this;
+  v1 = game;
   v2 = 0;
-  if ( *(this + 21) > 0 )
+  if ( game->runtime_row_count > 0 )
   {
-    v3 = this + 982722;
+    v3 = &game->_pad_74622[3454182];
     do
     {
       v4 = 8;
       do
       {
-        v5 = *v3;
-        v3 += 21;
+        v5 = *(_DWORD *)v3;
+        v3 += 84;
         --v4;
-        *(v3 - 21) = v5 | 0x6000;
+        *((_DWORD *)v3 - 21) = v5 | 0x6000;
       }
       while ( v4 );
       ++v2;
     }
-    while ( v2 < v1[21] );
+    while ( v2 < v1->runtime_row_count );
   }
-  result = v1[21];
+  result = v1->runtime_row_count;
   v36 = 0;
   if ( result > 0 )
   {
-    v39 = (int *)((char *)&unk_5CCB7C + (_DWORD)v1);
-    v7 = v1 + 982722;
+    v39 = (_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v1);
+    v7 = (int *)&v1->_pad_74622[3454182];
     do
     {
       v8 = 0;
@@ -77,9 +77,13 @@ int __thiscall sub_435180(int *this)
       while ( 1 )
       {
         v9 = v7 - 16;
-        if ( !is_slide_cache_tile_family((_BYTE *)v7 - 64) || (BYTE1(*v7) & 0x80u) != 0 || (*v7 & 0x40) != 0 )
+        if ( !(unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v7 - 16))
+          || (BYTE1(*v7) & 0x80u) != 0
+          || (*v7 & 0x40) != 0 )
         {
-          if ( !is_floor_cache_tile_family((_BYTE *)v7 - 64) || (BYTE1(*v7) & 0x80u) != 0 || (*v7 & 0x40) != 0 )
+          if ( !(unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v7 - 16))
+            || (BYTE1(*v7) & 0x80u) != 0
+            || (*v7 & 0x40) != 0 )
           {
             v25 = *((_BYTE *)v9 + 60);
             v26 = v9 + 15;
@@ -113,14 +117,14 @@ int __thiscall sub_435180(int *this)
                 *v7 = v31;
                 if ( v32 > 0 )
                 {
-                  v33 = (int)(this + 168 * v36 + 21 * v8 + 21 * v32 + 982722);
+                  v33 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v8 + 84 * v32];
                   do
                   {
-                    v34 = *(_DWORD *)(v33 - 60);
+                    v34 = *((_DWORD *)v33 - 15);
                     v33 -= 84;
-                    *(_DWORD *)(v33 + 24) = v34 & 0xFFFFFFDF;
+                    *((_DWORD *)v33 + 6) = v34 & 0xFFFFFFDF;
                     --v32;
-                    *(_DWORD *)(v33 + 84) &= 0xFFFF9FFF;
+                    *((_DWORD *)v33 + 21) &= 0xFFFF9FFF;
                   }
                   while ( v32 );
                 }
@@ -131,7 +135,7 @@ int __thiscall sub_435180(int *this)
               v35 = *v7;
               BYTE1(v35) = BYTE1(*v7) & 0xDF;
               *v7 = v35;
-              if ( v1[16] == 2 )
+              if ( v1->level_mode == 2 )
               {
                 set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 69705));
               }
@@ -148,7 +152,7 @@ int __thiscall sub_435180(int *this)
             v19 = v7;
             do
             {
-              if ( !is_floor_cache_tile_family((_BYTE *)v19 - 64) )
+              if ( !(unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v19 - 16)) )
                 break;
               v20 = *v19;
               if ( (BYTE1(*v19) & 0x80u) != 0 )
@@ -168,14 +172,14 @@ int __thiscall sub_435180(int *this)
               v21 = v18 - 1;
               if ( v21 > 0 )
               {
-                v22 = (int)(this + 168 * v36 + 21 * v38 + 21 * v21 + 982722);
+                v22 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v38 + 84 * v21];
                 do
                 {
-                  v23 = *(_DWORD *)(v22 - 60);
+                  v23 = *((_DWORD *)v22 - 15);
                   v22 -= 84;
-                  *(_DWORD *)(v22 + 24) = v23 & 0xFFFFFFDF;
+                  *((_DWORD *)v22 + 6) = v23 & 0xFFFFFFDF;
                   --v21;
-                  *(_DWORD *)(v22 + 84) &= 0xFFFF9FFF;
+                  *((_DWORD *)v22 + 21) &= 0xFFFF9FFF;
                 }
                 while ( v21 );
               }
@@ -211,14 +215,14 @@ int __thiscall sub_435180(int *this)
             v15 = v10 - 1;
             if ( v15 > 0 )
             {
-              v16 = (int)(this + 168 * v36 + 21 * v8 + 21 * v15 + 982722);
+              v16 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v8 + 84 * v15];
               do
               {
-                v17 = *(_DWORD *)(v16 - 60);
+                v17 = *((_DWORD *)v16 - 15);
                 v16 -= 84;
-                *(_DWORD *)(v16 + 24) = v17 & 0xFFFFFFDF;
+                *((_DWORD *)v16 + 6) = v17 & 0xFFFFFFDF;
                 --v15;
-                *(_DWORD *)(v16 + 84) &= 0xFFFF9FFF;
+                *((_DWORD *)v16 + 21) &= 0xFFFF9FFF;
               }
               while ( v15 );
             }
@@ -237,11 +241,11 @@ int __thiscall sub_435180(int *this)
         v38 = v8;
         if ( v8 >= 8 )
           break;
-        v1 = this;
+        v1 = game;
       }
-      v1 = this;
+      v1 = game;
       v39 += 61;
-      result = *(this + 21);
+      result = game->runtime_row_count;
       ++v36;
     }
     while ( v36 < result );

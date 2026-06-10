@@ -478,6 +478,54 @@ TRUSTED_DECLARATIONS = [
         "initialize_sbend_path_template_pair",
         "int32_t __thiscall initialize_sbend_path_template_pair(PathTemplate* self, uint32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
     ),
+    (
+        "build_subgame_level",
+        "void __thiscall build_subgame_level(Game* game, int32_t level_index);",
+    ),
+    (
+        "calc_subgame_rate",
+        "void __thiscall calc_subgame_rate(Game* game);",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "void __thiscall populate_runtime_track_cells_from_segments(Game* game);",
+    ),
+    (
+        "rebuild_track_runtime_from_segments",
+        "int32_t __thiscall rebuild_track_runtime_from_segments(Game* game, int32_t level_index);",
+    ),
+    (
+        "place_parcels_on_track",
+        "int32_t __thiscall place_parcels_on_track(Game* game);",
+    ),
+    (
+        "mark_track_warning_zones",
+        "int32_t __thiscall mark_track_warning_zones(Game* game);",
+    ),
+    (
+        "select_track_tile_edge_variants",
+        "int32_t __thiscall select_track_tile_edge_variants(Game* game);",
+    ),
+    (
+        "merge_track_tile_runs",
+        "int32_t __thiscall merge_track_tile_runs(Game* game);",
+    ),
+    (
+        "promote_track_tiles_to_fringe_variants",
+        "int32_t __thiscall promote_track_tiles_to_fringe_variants(Game* game);",
+    ),
+    (
+        "harmonize_center_lane_floor_slide_variants",
+        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game* game);",
+    ),
+    (
+        "build_track_fringe_objects",
+        "int32_t __thiscall build_track_fringe_objects(Game* game);",
+    ),
+    (
+        "update_subgame_camera",
+        "char __thiscall update_subgame_camera(Game* game);",
+    ),
 ]
 
 

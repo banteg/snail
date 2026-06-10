@@ -2,57 +2,57 @@
 /* function: promote_track_tiles_to_fringe_variants @ 0x4355f0 */
 /* selector: promote_track_tiles_to_fringe_variants */
 
-int __thiscall sub_4355F0(_DWORD *this)
+int32_t __thiscall promote_track_tiles_to_fringe_variants(Game *game)
 {
-  int result; // eax
-  _DWORD *v2; // esi
+  int32_t result; // eax
+  uint8_t *v2; // esi
   int v3; // ebp
   char *v4; // eax
   int i; // edi
   int j; // edi
-  int v7; // [esp+0h] [ebp-8h]
+  int32_t v7; // [esp+0h] [ebp-8h]
 
-  result = *(this + 21) - 1;
+  result = game->runtime_row_count - 1;
   v7 = 0;
   if ( result > 0 )
   {
-    v2 = this + 982715;
+    v2 = &game->_pad_74622[3454154];
     do
     {
       v3 = 8;
       do
       {
-        v2[7] &= ~0x20u;
-        if ( is_open_neighbor_tile_family((_BYTE *)v2 + 636) )
+        *((_DWORD *)v2 + 7) &= ~0x20u;
+        if ( is_open_neighbor_tile_family(v2 + 636) )
         {
           v4 = (char *)MEMORY[0x4DF904];
           for ( i = 0; i < 448; i += 56 )
           {
-            if ( *v2 == *(_DWORD *)&v4[i + 280500] || *v2 == *(_DWORD *)&v4[i + 281396] )
+            if ( *(_DWORD *)v2 == *(_DWORD *)&v4[i + 280500] || *(_DWORD *)v2 == *(_DWORD *)&v4[i + 281396] )
             {
-              set_bod_object(v2 - 9, *(_DWORD *)&v4[i + 280948]);
-              v2[7] |= 0x20u;
+              set_bod_object((_DWORD *)v2 - 9, *(_DWORD *)&v4[i + 280948]);
+              *((_DWORD *)v2 + 7) |= 0x20u;
               v4 = (char *)MEMORY[0x4DF904];
             }
           }
           for ( j = 0; j < 224; j += 56 )
           {
-            if ( *v2 == *(_DWORD *)&v4[j + 279100] || *v2 == *(_DWORD *)&v4[j + 279548] )
+            if ( *(_DWORD *)v2 == *(_DWORD *)&v4[j + 279100] || *(_DWORD *)v2 == *(_DWORD *)&v4[j + 279548] )
             {
-              set_bod_object(v2 - 9, *(_DWORD *)&v4[j + 279324]);
-              v2[7] |= 0x20u;
+              set_bod_object((_DWORD *)v2 - 9, *(_DWORD *)&v4[j + 279324]);
+              *((_DWORD *)v2 + 7) |= 0x20u;
               v4 = (char *)MEMORY[0x4DF904];
             }
           }
         }
-        v2 += 21;
+        v2 += 84;
         --v3;
       }
       while ( v3 );
       result = v7 + 1;
       v7 = result;
     }
-    while ( result < *(this + 21) - 1 );
+    while ( result < game->runtime_row_count - 1 );
   }
   return result;
 }

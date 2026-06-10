@@ -3,30 +3,30 @@
 /* selector: mark_track_warning_zones */
 
 // Marks warning-zone footprints around hazard-bearing runtime tiles before the fringe-object and cache builders run. Cross-port Android symbols match this pass to `cRSubGame::WarnTrack()`.
-int __fastcall sub_4354F0(int a1)
+int32_t __thiscall mark_track_warning_zones(Game *game)
 {
   int v1; // ebx
-  int result; // eax
-  _BYTE *v3; // edx
+  int32_t result; // eax
+  char *v3; // edx
   int v4; // ebp
   char v5; // al
   int v6; // edi
   int v7; // esi
   int v8; // [esp+4h] [ebp-Ch]
-  _BYTE *v9; // [esp+8h] [ebp-8h]
+  int32_t v9; // [esp+8h] [ebp-8h]
   int v10; // [esp+Ch] [ebp-4h]
 
   v1 = 0;
-  result = *(_DWORD *)(a1 + 84) - 1;
+  result = game->runtime_row_count - 1;
   v10 = 0;
   if ( result > 0 )
   {
-    result = a1 + 3930884;
+    result = (int32_t)&game->_pad_74622[3454178];
     do
     {
-      v3 = (_BYTE *)result;
+      v3 = (char *)result;
       v4 = 0;
-      v9 = (_BYTE *)result;
+      v9 = result;
       do
       {
         v5 = *v3;
@@ -54,8 +54,8 @@ int __fastcall sub_4354F0(int a1)
             v7 = -1;
             do
             {
-              if ( v1 >= 0 && v1 < *(_DWORD *)(a1 + 84) - 1 && (unsigned int)(v7 + v4) < 8 )
-                *(_DWORD *)(a1 + 84 * (v6 + v7) + 3930888) |= 0x18u;
+              if ( v1 >= 0 && v1 < game->runtime_row_count - 1 && (unsigned int)(v7 + v4) < 8 )
+                *(_DWORD *)&game->_pad_74622[84 * v6 + 3454182 + 84 * v7] |= 0x18u;
               ++v7;
             }
             while ( v7 < 1 );
@@ -64,18 +64,18 @@ int __fastcall sub_4354F0(int a1)
             --v8;
           }
           while ( v8 );
-          v3 = v9;
+          v3 = (char *)v9;
           v1 = v10;
         }
         ++v4;
         v3 += 84;
-        v9 = v3;
+        v9 = (int32_t)v3;
       }
       while ( v4 < 8 );
-      result = (int)v3;
+      result = (int32_t)v3;
       v10 = ++v1;
     }
-    while ( v1 < *(_DWORD *)(a1 + 84) - 1 );
+    while ( v1 < game->runtime_row_count - 1 );
   }
   return result;
 }

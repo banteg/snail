@@ -3,48 +3,48 @@
 /* selector: place_parcels_on_track */
 
 // Places parcels for the current course and projects flagged parcel offsets onto generated track rows. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcels()`.
-int __thiscall sub_4438E0(int *this)
+int32_t __thiscall place_parcels_on_track(Game *game)
 {
-  int result; // eax
-  int v2; // esi
+  int32_t result; // eax
+  float v2; // esi
   int i; // eax
-  int v4; // eax
+  int32_t level_segment_count; // eax
   int v5; // ebp
   int *v6; // ebx
   int v7; // eax
   int v8; // ecx
-  int v9; // edx
-  _DWORD *v10; // edi
+  float v9; // edx
+  float *v10; // edi
   int v11; // eax
-  _DWORD *v12; // ebx
+  float *v12; // ebx
   int v13; // ebp
   _DWORD *v14; // eax
   int v15; // eax
   double v16; // st7
-  char *v17; // edi
+  float *v17; // edi
   char *v18; // edi
   bool v19; // cc
   int v20; // eax
   int v21; // edx
   int v22; // edi
   int *v23; // edx
-  int v24; // ecx
+  int32_t v24; // ecx
   int v25; // edi
   int v26; // eax
   int v27; // esi
-  int v28; // eax
+  float *v28; // eax
   _DWORD *v29; // edx
   int v30; // ebx
   int v31; // eax
   int v32; // edi
   int v33; // eax
   float *v34; // ebx
-  int *v35; // esi
+  float *v35; // esi
   float *v36; // eax
   double v37; // st7
-  int v38; // ecx
+  float v38; // ecx
   float *v39; // ecx
-  int v40; // edi
+  float *v40; // edi
   int *v41; // edx
   int *v42; // esi
   int *v43; // eax
@@ -54,35 +54,35 @@ int __thiscall sub_4438E0(int *this)
   int *v47; // edi
   int v48; // ebx
   int v49; // esi
-  int v50; // eax
-  int *v51; // edi
-  _DWORD *v52; // edx
-  _DWORD *v53; // eax
+  float v50; // eax
+  float *v51; // edi
+  float *v52; // edx
+  float v53; // eax
   char *v54; // edx
   int v55; // ecx
-  int *v56; // ebp
+  Game *v56; // ebp
   int v57; // eax
   int v58; // ecx
-  float *v59; // esi
+  char *v59; // esi
   int v60; // edi
   _DWORD *v61; // ecx
-  int v62; // edx
-  int v63; // eax
+  float y; // edx
+  int track_cell_row_index; // eax
   float v64; // [esp+0h] [ebp-22Ch]
   float v65; // [esp+0h] [ebp-22Ch]
-  int *v66; // [esp+18h] [ebp-214h]
+  uint8_t *v66; // [esp+18h] [ebp-214h]
   int v67; // [esp+18h] [ebp-214h]
   int v68; // [esp+18h] [ebp-214h]
-  int v69; // [esp+18h] [ebp-214h]
+  char *v69; // [esp+18h] [ebp-214h]
   int v70; // [esp+18h] [ebp-214h]
-  int v71; // [esp+18h] [ebp-214h]
-  int v72; // [esp+1Ch] [ebp-210h]
+  int32_t v71; // [esp+18h] [ebp-214h]
+  float v72; // [esp+1Ch] [ebp-210h]
   int v73; // [esp+1Ch] [ebp-210h]
-  int v74; // [esp+20h] [ebp-20Ch] BYREF
+  float *out_angle; // [esp+20h] [ebp-20Ch] BYREF
   float *v75; // [esp+24h] [ebp-208h]
   int v76; // [esp+28h] [ebp-204h]
   int v77; // [esp+2Ch] [ebp-200h]
-  int *v78; // [esp+30h] [ebp-1FCh]
+  Game *v78; // [esp+30h] [ebp-1FCh]
   int v79; // [esp+34h] [ebp-1F8h]
   int *v80; // [esp+38h] [ebp-1F4h]
   char *v81; // [esp+3Ch] [ebp-1F0h]
@@ -93,31 +93,31 @@ int __thiscall sub_4438E0(int *this)
   float v86; // [esp+50h] [ebp-1DCh]
   int v87; // [esp+54h] [ebp-1D8h]
   int v88; // [esp+58h] [ebp-1D4h]
-  int v89[16]; // [esp+5Ch] [ebp-1D0h] BYREF
+  TransformMatrix transform; // [esp+5Ch] [ebp-1D0h] BYREF
   _DWORD v90[100]; // [esp+9Ch] [ebp-190h] BYREF
 
-  result = *(this + 16);
-  v78 = this;
+  result = game->level_mode;
+  v78 = game;
   if ( result == 1 )
-    return place_challenge_parcels_on_track((int)this);
-  v2 = 0;
+    return place_challenge_parcels_on_track((int)game);
+  v2 = 0.0;
   if ( !result || result == 7 )
   {
     for ( i = 0; i < 268288; i += 131 )
     {
-      MEMORY[0x53D390][i] = 0;
+      flt_4DFAFC[i + 95781] = 0.0;
       unk_6489E8[i] = 0;
     }
-    v4 = *(this + 10781);
+    level_segment_count = game->level_segment_count;
     v5 = 0;
-    v72 = 0;
+    v72 = 0.0;
     v76 = 0;
     v79 = 0;
-    if ( v4 > 0 )
+    if ( level_segment_count > 0 )
     {
-      v6 = this + 10783;
+      v6 = (int *)&game->_pad_a878[4];
       v80 = v90;
-      v66 = this + 10783;
+      v66 = &game->_pad_a878[4];
       do
       {
         v7 = 0;
@@ -127,42 +127,42 @@ int __thiscall sub_4438E0(int *this)
         v8 = 131 * v79;
         while ( 1 )
         {
-          v9 = 0;
+          v9 = 0.0;
           if ( *v6 > 0 )
           {
             v81 = (char *)(v6 + 4);
-            v10 = v6 + 518;
-            v74 = (int)(v6 + 518);
+            v10 = (float *)(v6 + 518);
+            out_angle = (float *)(v6 + 518);
             while ( 1 )
             {
-              if ( (*(_BYTE *)(v10 - 2) & 1) != 0 && *(v10 - 1) == v7 )
+              if ( (*(_BYTE *)(v10 - 2) & 1) != 0 && *((_DWORD *)v10 - 1) == v7 )
               {
                 if ( v7 )
                 {
-                  unk_6489F0[v8] = v2;
-                  unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
+                  *(float *)&unk_6489F0[v8] = v2;
+                  *(float *)&unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
                   v14 = (_DWORD *)((char *)&unk_6487EC + 16 * unk_6489E8[v8] + v8 * 4);
-                  *v14 = *v10;
-                  v14[1] = v10[1];
-                  v14[2] = v10[2];
+                  *v14 = *(_DWORD *)v10;
+                  v14[1] = *((_DWORD *)v10 + 1);
+                  v14[2] = *((_DWORD *)v10 + 2);
                   unk_6489EC[v8] = v77;
                   ++unk_6489E8[v8];
                 }
                 else
                 {
                   v11 = 131 * v5;
-                  MEMORY[0x53D398][v11] = v2;
-                  MEMORY[0x53D190][4 * MEMORY[0x53D390][131 * v5] + v11] = v9;
-                  v12 = &MEMORY[0x53D194][131 * v5 + 4 * MEMORY[0x53D390][131 * v5]];
+                  flt_4DFAFC[v11 + 95783] = v2;
+                  flt_4DFAFC[4 * LODWORD(flt_4DFAFC[131 * v5 + 95781]) + 95653 + v11] = v9;
+                  v12 = &flt_4DFAFC[131 * v5 + 95654 + 4 * LODWORD(flt_4DFAFC[131 * v5 + 95781])];
                   *v12 = *v10;
                   v12[1] = v10[1];
                   v13 = v76;
                   v12[2] = v10[2];
-                  MEMORY[0x53D394][v11] = 0;
+                  flt_4DFAFC[v11 + 95782] = 0.0;
                   v5 = v13 + 1;
-                  ++MEMORY[0x53D390][v11];
+                  ++LODWORD(flt_4DFAFC[v11 + 95781]);
                   v76 = v5;
-                  ++v72;
+                  ++LODWORD(v72);
                 }
               }
               v76 = 0;
@@ -175,8 +175,8 @@ int __thiscall sub_4438E0(int *this)
                   v16 = (double)v76;
                   if ( v77 )
                   {
-                    unk_6489F0[v8] = v2;
-                    unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
+                    *(float *)&unk_6489F0[v8] = v2;
+                    *(float *)&unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
                     v18 = (char *)&unk_6487EC + 16 * unk_6489E8[v8] + v8 * 4;
                     v87 = 0;
                     v88 = 0;
@@ -189,33 +189,33 @@ int __thiscall sub_4438E0(int *this)
                   }
                   else
                   {
-                    MEMORY[0x53D398][v15] = v2;
-                    MEMORY[0x53D190][4 * MEMORY[0x53D390][v15] + v15] = v9;
-                    v17 = (char *)&MEMORY[0x53D194][4 * MEMORY[0x53D390][v15] + v15];
+                    flt_4DFAFC[v15 + 95783] = v2;
+                    flt_4DFAFC[4 * LODWORD(flt_4DFAFC[v15 + 95781]) + 95653 + v15] = v9;
+                    v17 = &flt_4DFAFC[4 * LODWORD(flt_4DFAFC[v15 + 95781]) + 95654 + v15];
                     v84 = 0;
                     v85 = 0;
                     v15 += 131;
                     v83 = v16 - 4.0 + 0.5;
-                    *(float *)v17 = v83;
+                    *v17 = v83;
                     *((_DWORD *)v17 + 1) = v84;
                     *((_DWORD *)v17 + 2) = v85;
-                    MEMORY[0x53D188][v15] = 0;
+                    flt_4DFAFC[v15 + 95651] = 0.0;
                     ++v5;
-                    ++MEMORY[0x53D184][v15];
-                    ++v72;
+                    ++LODWORD(flt_4DFAFC[v15 + 95650]);
+                    ++LODWORD(v72);
                   }
                 }
                 v19 = ++v76 < 8;
                 v82 += 256;
               }
               while ( v19 );
-              ++v9;
-              v10 = (_DWORD *)(v74 + 56);
+              ++LODWORD(v9);
+              v10 = out_angle + 14;
               v76 = v5;
               ++v81;
-              v6 = v66;
-              v74 += 56;
-              if ( v9 >= *v66 )
+              v6 = (int *)v66;
+              out_angle += 14;
+              if ( SLODWORD(v9) >= *(_DWORD *)v66 )
                 break;
               v7 = v77;
             }
@@ -237,41 +237,43 @@ int __thiscall sub_4438E0(int *this)
             break;
           v7 = v77;
         }
-        ++v2;
-        v24 = v78[10781];
+        ++LODWORD(v2);
+        v24 = v78->level_segment_count;
         v6 += 4232;
         ++v80;
-        v66 = v6;
+        v66 = (uint8_t *)v6;
       }
-      while ( v2 < v24 );
+      while ( SLODWORD(v2) < v24 );
     }
-    v25 = v78[442488];
-    v26 = v78[10781];
+    v25 = *(_DWORD *)&v78->_pad_74622[1293246];
+    v26 = v78->level_segment_count;
     v27 = 80 * v25 / 100 - (_DWORD)v75;
     v77 = v27;
-    v74 = v72;
+    *(float *)&out_angle = v72;
     if ( v26 <= 0 )
     {
-      v28 = v74;
+      v28 = out_angle;
     }
     else
     {
       v67 = v26;
-      v28 = v74;
+      v28 = out_angle;
       v29 = v90;
       do
       {
         if ( *v29 != 10000 )
-          v28 += *v29;
+          v28 = (float *)((char *)v28 + *v29);
         ++v29;
         --v67;
       }
       while ( v67 );
     }
-    if ( v28 < v25 )
-      report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets", (const char *)v78 + 1769808);
-    if ( v78[442488] - v27 > v72 )
-      report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", (const char *)v78 + 1769808);
+    if ( (int)v28 < v25 )
+      report_errorf(
+        "Parcel Allocation could fail in %s.  Add more parcel Sets",
+        (const char *)&v78->_pad_74622[1293102]);
+    if ( *(_DWORD *)&v78->_pad_74622[1293246] - v27 > SLODWORD(v72) )
+      report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", (const char *)&v78->_pad_74622[1293102]);
     v30 = 0;
     v73 = 0;
     if ( v27 > 0 )
@@ -291,21 +293,21 @@ int __thiscall sub_4438E0(int *this)
           v34 = (float *)((char *)&unk_6487EC + v32 * 4);
           do
           {
-            v74 = *((_DWORD *)v34 - 1) + v78[4232 * unk_6489F0[v32] + 10782];
-            v35 = &v78[61 * v74];
-            if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v35) & 0x10) != 0 )
-              report_errorf("Duplicate Parcel Request in %s.", (const char *)v78 + 1769808);
+            out_angle = (float *)(*((_DWORD *)v34 - 1) + *(_DWORD *)&v78->_pad_a878[16928 * unk_6489F0[v32]]);
+            v35 = (float *)&v78->_pad_00[244 * (_DWORD)out_angle];
+            if ( (byte_5CCAC8[(_DWORD)v35] & 0x10) != 0 )
+              report_errorf("Duplicate Parcel Request in %s.", (const char *)&v78->_pad_74622[1293102]);
             v36 = (float *)((char *)&unk_5CCB58 + (_DWORD)v35);
-            v37 = (double)v74;
-            *(int *)((char *)byte_5CCAC8 + (_DWORD)v35) |= 0x11u;
-            v38 = *(_DWORD *)v34;
+            v37 = (double)(int)out_angle;
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)v35] |= 0x11u;
+            v38 = *v34;
             v75 = v36;
-            *(_DWORD *)v36 = v38;
+            *v36 = v38;
             v36[1] = v34[1];
             v36[2] = v34[2];
-            *((float *)v35 + 1520344) = v37 + *((float *)v35 + 1520344) + 0.5;
-            *((float *)v35 + 1520343) = *((float *)v35 + 1520343) + 1.0;
-            if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v35) & 0x20) != 0 )
+            v35[1520344] = v37 + v35[1520344] + 0.5;
+            v35[1520343] = v35[1520343] + 1.0;
+            if ( (byte_5CCAC8[(_DWORD)v35] & 0x20) != 0 )
               *v75 = *v75 * -1.0;
             v34 += 4;
             ++v68;
@@ -318,20 +320,20 @@ int __thiscall sub_4438E0(int *this)
         v75 = nullptr;
         if ( v79 > 0 )
         {
-          v40 = v79 - 1;
+          v40 = (float *)(v79 - 1);
           v41 = (int *)&unk_648BF4;
           v42 = unk_6489F0;
-          v74 = v79 - 1;
+          out_angle = (float *)(v79 - 1);
           v81 = (char *)&unk_648BF4;
           v80 = unk_6489F0;
           do
           {
             if ( (char *)*v42 == v82 )
             {
-              if ( (int)v39 < v40 )
+              if ( (int)v39 < (int)v40 )
               {
                 v43 = v41;
-                v69 = v40 - (_DWORD)v39;
+                v69 = (char *)((char *)v40 - (char *)v39);
                 do
                 {
                   v44 = 0;
@@ -359,16 +361,16 @@ int __thiscall sub_4438E0(int *this)
                   --v69;
                 }
                 while ( v69 );
-                v40 = v74;
+                v40 = out_angle;
                 v41 = (int *)v81;
                 v42 = v80;
               }
               v39 = (float *)((char *)v39 - 1);
               v42 -= 131;
               v41 -= 131;
-              --v40;
+              v40 = (float *)((char *)v40 - 1);
               --v79;
-              v74 = v40;
+              out_angle = v40;
               v31 = v79;
             }
             v39 = (float *)((char *)v39 + 1);
@@ -384,7 +386,7 @@ int __thiscall sub_4438E0(int *this)
       }
       while ( v73 < v77 );
     }
-    if ( v30 < v78[442488] )
+    if ( v30 < *(_DWORD *)&v78->_pad_74622[1293246] )
     {
       v75 = (float *)(v5 - 1);
       do
@@ -394,67 +396,67 @@ int __thiscall sub_4438E0(int *this)
         v65 = (float)v76;
         v48 = (__int64)random_float_below(v65);
         v49 = 131 * v48;
-        v50 = MEMORY[0x53D398][131 * v48];
-        v73 += MEMORY[0x53D390][131 * v48];
-        v74 = (int)&MEMORY[0x53D190][131 * v48];
-        v70 = *(_DWORD *)v74 + v78[4232 * v50 + 10782];
-        v51 = &v78[61 * v70];
-        if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v51) & 0x10) != 0 )
-          report_errorf("Duplicate Parcel Request in %s.", (const char *)v78 + 1769808);
-        *(int *)((char *)byte_5CCAC8 + (_DWORD)v51) |= 0x11u;
-        v52 = (_DWORD *)((char *)&unk_5CCB58 + (_DWORD)v51);
-        *v52 = MEMORY[0x53D194][131 * v48];
-        v52[1] = MEMORY[0x53D194][v49 + 1];
-        v52[2] = MEMORY[0x53D194][v49 + 2];
-        *((float *)v51 + 1520344) = (double)v70 + *((float *)v51 + 1520344) + 0.5;
-        *((float *)v51 + 1520343) = *((float *)v51 + 1520343) + 1.0;
-        if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v51) & 0x20) != 0 )
+        v50 = flt_4DFAFC[131 * v48 + 95783];
+        v73 += LODWORD(flt_4DFAFC[131 * v48 + 95781]);
+        out_angle = &flt_4DFAFC[131 * v48 + 95653];
+        v70 = *(_DWORD *)out_angle + *(_DWORD *)&v78->_pad_a878[16928 * LODWORD(v50)];
+        v51 = (float *)&v78->_pad_00[244 * v70];
+        if ( (byte_5CCAC8[(_DWORD)v51] & 0x10) != 0 )
+          report_errorf("Duplicate Parcel Request in %s.", (const char *)&v78->_pad_74622[1293102]);
+        *(_DWORD *)&byte_5CCAC8[(_DWORD)v51] |= 0x11u;
+        v52 = (float *)((char *)&unk_5CCB58 + (_DWORD)v51);
+        *v52 = flt_4DFAFC[131 * v48 + 95654];
+        v52[1] = flt_4DFAFC[v49 + 95655];
+        v52[2] = flt_4DFAFC[v49 + 95656];
+        v51[1520344] = (double)v70 + v51[1520344] + 0.5;
+        v51[1520343] = v51[1520343] + 1.0;
+        if ( (byte_5CCAC8[(_DWORD)v51] & 0x20) != 0 )
           *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) = *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) * -1.0;
         if ( v48 < (int)v75 )
         {
-          v53 = (_DWORD *)v74;
+          v53 = *(float *)&out_angle;
           v54 = (char *)v75 - v48;
           do
           {
             --v54;
-            *v53 = v53[131];
-            v53[1] = v53[132];
-            v53[2] = v53[133];
-            v53[3] = v53[134];
-            v53[128] = v53[259];
-            v53[130] = v53[261];
-            v53[129] = 0;
-            v53 += 131;
+            *(_DWORD *)LODWORD(v53) = *(_DWORD *)(LODWORD(v53) + 524);
+            *(_DWORD *)(LODWORD(v53) + 4) = *(_DWORD *)(LODWORD(v53) + 528);
+            *(_DWORD *)(LODWORD(v53) + 8) = *(_DWORD *)(LODWORD(v53) + 532);
+            *(_DWORD *)(LODWORD(v53) + 12) = *(_DWORD *)(LODWORD(v53) + 536);
+            *(_DWORD *)(LODWORD(v53) + 512) = *(_DWORD *)(LODWORD(v53) + 1036);
+            *(_DWORD *)(LODWORD(v53) + 520) = *(_DWORD *)(LODWORD(v53) + 1044);
+            *(_DWORD *)(LODWORD(v53) + 516) = 0;
+            LODWORD(v53) += 524;
           }
           while ( v54 );
         }
         --v5;
-        v55 = v78[442488];
+        v55 = *(_DWORD *)&v78->_pad_74622[1293246];
         v75 = (float *)((char *)v75 - 1);
         v76 = v5;
       }
       while ( v73 < v55 );
     }
     v56 = v78;
-    v57 = v78[442488];
+    v57 = *(_DWORD *)&v78->_pad_74622[1293246];
     if ( v73 != v57 )
     {
-      report_errorf("Did not generate required Parcels(%i) in %s", v57, (const char *)v78 + 1769808);
-      v58 = v78[442490];
+      report_errorf("Did not generate required Parcels(%i) in %s", v57, (const char *)&v78->_pad_74622[1293102]);
+      v58 = *(_DWORD *)&v78->_pad_74622[1293254];
       if ( v58 )
-        v78[442490] = v73 * v78[442488] / v58;
+        *(_DWORD *)&v78->_pad_74622[1293254] = v73 * *(_DWORD *)&v78->_pad_74622[1293246] / v58;
     }
-    v56[442488] = v73;
-    result = v56[21];
+    *(_DWORD *)&v56->_pad_74622[1293246] = v73;
+    result = v56->runtime_row_count;
     v71 = 0;
     if ( result > 0 )
     {
-      v59 = (float *)((char *)byte_5CCAC8 + (_DWORD)v56);
+      v59 = &byte_5CCAC8[(_DWORD)v56];
       do
       {
         if ( (*(_DWORD *)v59 & 1) != 0 && (*(_DWORD *)v59 & 0x40) != 0 )
         {
-          v60 = (__int64)v59[38] - get_track_cell_row_index(*((_DWORD **)v59 + 41));
+          v60 = (__int64)*((float *)v59 + 38) - get_track_cell_row_index(*((_DWORD **)v59 + 41));
           if ( v60 < 0 )
             v60 = 0;
           v61 = *((_DWORD **)v59 + 41);
@@ -462,25 +464,30 @@ int __thiscall sub_4438E0(int *this)
           {
             compute_kind42_attachment_transform(
               *(float *)(*(_DWORD *)(v61[14] + 88) + 168 * v60 + 160),
-              v59[36],
-              v59[37],
-              (int)v89,
-              (float *)&v74);
-            v62 = v89[13];
-            v59[36] = *(float *)&v89[12];
-            *((_DWORD *)v59 + 37) = v62;
+              *((float *)v59 + 36),
+              *((float *)v59 + 37),
+              &transform,
+              (float *)&out_angle);
+            y = transform.position.y;
+            *((_DWORD *)v59 + 36) = LODWORD(transform.position.x);
+            *((float *)v59 + 37) = y;
           }
           else
           {
-            v63 = get_track_cell_row_index(v61);
-            get_path_position_at_node(*(_DWORD **)(*((_DWORD *)v59 + 41) + 56), v59 + 36, v60, v63, v59 + 36);
+            track_cell_row_index = get_track_cell_row_index(v61);
+            get_path_position_at_node(
+              *(_DWORD **)(*((_DWORD *)v59 + 41) + 56),
+              (float *)v59 + 36,
+              v60,
+              track_cell_row_index,
+              (float *)v59 + 36);
           }
         }
         result = v71 + 1;
-        v59 += 61;
+        v59 += 244;
         ++v71;
       }
-      while ( v71 < v56[21] );
+      while ( v71 < v56->runtime_row_count );
     }
   }
   return result;
