@@ -190,21 +190,24 @@ Native also gates the down-ramp lookback dispatch on
   RNG consumption (one rand per chosen set/single) is missing from the
   build-stream model, shifting every later consumer.
 
-### 11. Attachment entry/exit half-span uses float division; native truncates (medium)
+### 11. Swept-entry half-span uses float division; native truncates (entry gate only) (medium)
 
 - port: `zig/src/gameplay/attachment.zig:152-158` — `templateHalfSpan`
   returns `span_cells * 0.5` as f32; shared by the swept-entry x gate
   (`installedAttachmentEntryForSweep`) and the side-exit threshold.
-- native: `try_enter_track_attachment_from_swept_motion` @ 0x42c770 —
-  IDA `*(this + 21) / -2` / `*(this + 21) / 2`; BN @ 0x42c84b/0x42c86f
-  shows the `(x - (x >> 31)) s>> 1` idiom, i.e. signed *integer* division
-  of the template `+0x54` span before the float compare against ±0.3.
+- native is *asymmetric* about the same `+0x54` field (`width_cells`,
+  `analysis/headers/path_template_types.h:731`):
+  - entry: `try_enter_track_attachment_from_swept_motion` @ 0x42c770 uses
+    signed **integer** division (BN @ 0x42c84b/0x42c86f, `s>> 1` idiom)
+    before the ±0.3 margin;
+  - side-exit: `update_track_attachment_follow_state` @ 0x420cb0 uses
+    `float(width_cells) * 0.5 + 0.3` (BN @ 0x421675) — no truncation.
 - consequence: for odd-span templates (cage2, screw, twistera/b,
-  twister2a/b, toads — span 3 per the port's own spec table) the native
-  acceptance window is ±(1 + 0.3) = ±1.3 cells while the port accepts
-  ±(1.5 + 0.3) = ±1.8 — the port lets the player enter (and side-exit)
-  those attachments half a cell further out on each side. Even-span
-  templates are unaffected.
+  twister2a/b, toads — span 3 per the port's spec table) the native entry
+  window is ±1.3 cells while the port accepts ±1.8; the port's side-exit
+  threshold already matches native. The port comment claiming entry and
+  side-exit share the same semantics over `+0x54` is wrong about the
+  arithmetic, not the field.
 - the rest of the swept gate matches: tail-to-head sample walk, the
   `sample[5] > 0` (up-y) skip, start gates `y ≥ −0.2`, `0 < z < extent`,
   end gate `y ≤ 0.001`, and the caller's 1.05 velocity scale.
@@ -230,6 +233,30 @@ Native also gates the down-ramp lookback dispatch on
 - note: this collision pass is another consumer of the shifted IDA Player
   typing (finding 6): the position triple reads at lines 160-162 are
   labeled `jetpack_gauge.warning_intensity` / `cached_camera_target_world`.
+
+### 13. Supertramp launch handoff uses scaffold constants instead of the native velocity transfer (low-medium)
+
+- port: `zig/src/gameplay.zig:4995-5020` — launch vertical velocity is
+  `max(0.15, clamp(rate·last_delta, 0, 1)) · 12.0`, launch height is floored
+  at 0.6, and the camera pitch cycle steps at a fixed `1/72`.
+- native: `update_track_attachment_follow_state` @ 0x420cb0 end-of-template
+  SUPERTRAMP branch (IDA :401-429) — `motion.y = motion.z * 0.7` where
+  `motion.z = clamp(path_factor · last_delta_length, ·, 1.0)` with **no
+  floor**; launch position comes from the last sample's forward scaled by
+  `(remainder + width_or_scale)`; the pitch cycle step is a game global
+  (`game+0x74650`) times `0.013888888`; and voice 15 plays on launch.
+- consequence: launch arc height and the minimum-speed launch behavior
+  differ (native launches proportionally weaker at low approach speed; the
+  port never launches below 1.8 units of vertical velocity). The enclosing
+  launch lane is flagged PORT(partial) in a *different* function
+  (`gameplay.zig:1885`), so this function reads as finished. Confidence:
+  confirmed for the formula shape; the global multiplier needs a trace.
+- related latent nit: the port adds `installed_heading_delta` to
+  `heading_roll` every follow tick (`gameplay.zig:5188`) where native adds
+  it once per exit (IDA :318, :438). The only shipped non-zero value is
+  ±2π, so both are rotation-identity today, but the port accumulates
+  unbounded float magnitude over long follows and the cadence is wrong if
+  any template ever carries a non-full-turn delta.
 
 ## Checked and matching (for coverage)
 
@@ -275,6 +302,19 @@ Native also gates the down-ramp lookback dispatch on
   `math_random.zig`, pick order (pick → mirror roll per segment), mode-1 pick
   range `(scalar*0.9+0.1)*count`, course length `floor((scalar*0.65+0.35) *
   Length) - last_rows`, and the mirror anti-streak counter (≥4 flips) match.
+- `update_track_attachment_follow_state` @ 0x420cb0: the distance-step
+  advancement (step = `path_factor · delta_length(initial sample)`, remainder
+  carried across sample boundaries, progress zeroed per crossing), the
+  0.999000013 overshoot clamp, the `vertical_offset += motion.y` accumulate
+  with negative clamp-to-zero, the side-exit gates (jetpack suppress,
+  `vertical_offset > 0` suppress, `float(width)·0.5 + 0.3` threshold, ±4.0
+  world clamp), the wrapped ±π orientation interpolation, and the
+  `(index+frac)·delta/count` camera phase lane all match the port. The
+  `side_exit_mode` flag the port omits is 0 in every shipped template
+  constructor (nothing writes nonzero), so the omission is behaviorally
+  neutral. The `voice 4` milestone is documented unresolved in the export
+  header itself; the `flag_9c` BOD-swap milestones at `(3·count)/7` and
+  `count−1` belong to the known-partial installed-record/BOD lane.
 - `handle_subgoldy_collisions` @ 0x444cf0 constants: salt 0.15 @ 0.98 gate,
   sublazer 0.02 @ 0.49, garbage 0.04 @ 0.98 with z-tolerance 1.0 and
   knockback factors 0.18 (x) / 0.10 (z), slug reaction branches
