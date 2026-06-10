@@ -28,7 +28,7 @@ const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 
 // PORT(verified): Windows `spawn_salt_hazard`
 // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c:29`) seeds the lane
-// at `+0x90` as `track_center_x * 0.033333335`. The Android cross-port
+// at `+0x90` as `subgame_rate * 0.033333335`. The Android cross-port
 // `cRSalt::AI` does not integrate this into the visible position, though: salt
 // stays anchored and fades/removes by row distance.
 pub const native_salt_vertical_velocity_factor: f32 = 0.033333335;
@@ -44,9 +44,9 @@ pub const native_salt_z_velocity_bit_pattern: u32 = 1;
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
 // PORT(verified): `spawn_sub_lazer_projectile` seeds the nested-sprite bob
 // phase step as
-// `track_center_x * 0.0055555557`
+// `subgame_rate * 0.0055555557`
 // (`analysis/decompile/ida/functions/00441670-spawn_sub_lazer_projectile.c:29`). At
-// the port's fixed `track_center_x = 4.0`, this is `0.0222` per tick, so one
+// the port's fixed `subgame_rate = 4.0`, this is `0.0222` per tick, so one
 // full sine cycle takes ~45 ticks (~0.75s).
 pub const native_sub_lazer_phase_step_factor: f32 = 0.0055555557;
 // PORT(verified): `update_sub_lazer_projectile` writes the nested sprite Y
@@ -150,7 +150,7 @@ pub const RingPool = struct {
 /// state byte on every slot; `spawn_salt_hazard`
 /// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`) allocates the
 /// first inactive slot, seeds position, writes `0` to x velocity, writes
-/// `track_center_x * 0.033333335` to y velocity, writes byte `1` at the
+/// `subgame_rate * 0.033333335` to y velocity, writes byte `1` at the
 /// z-velocity address, and installs a randomized Y rotation.
 pub const SaltHazardPool = struct {
     slots: [max_active_salt_slots]SaltSlot = [_]SaltSlot{.{}} ** max_active_salt_slots,
@@ -199,7 +199,7 @@ pub const SaltHazardPool = struct {
         row: usize,
         lane: usize,
         world_position: rl.Vector3,
-        track_center_x: f32,
+        subgame_rate: f32,
         random_state: *u32,
     ) ?*SaltSlot {
         const slot = self.allocate() orelse return null;
@@ -211,7 +211,7 @@ pub const SaltHazardPool = struct {
             .spawn_y = world_position.y,
             .velocity = .{
                 .x = 0.0,
-                .y = track_center_x * native_salt_vertical_velocity_factor,
+                .y = subgame_rate * native_salt_vertical_velocity_factor,
                 .z = @as(f32, @bitCast(native_salt_z_velocity_bit_pattern)),
             },
             .lifetime_progress = 0.0,
@@ -277,17 +277,17 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
 test "salt spawn records native motion lane but stays visually anchored" {
     var pool = SaltHazardPool{};
     var random_state: u32 = 0;
-    const track_center_x: f32 = 4.0;
+    const subgame_rate: f32 = 4.0;
     const slot = pool.spawn(
         12,
         3,
         .{ .x = 2.5, .y = 0.18, .z = 12.0 },
-        track_center_x,
+        subgame_rate,
         &random_state,
     ).?;
 
     try std.testing.expectApproxEqAbs(
-        track_center_x * native_salt_vertical_velocity_factor,
+        subgame_rate * native_salt_vertical_velocity_factor,
         slot.velocity.y,
         0.0001,
     );
@@ -350,7 +350,7 @@ pub const SubLazerPool = struct {
         emitter_lane: usize,
         world_position: rl.Vector3,
         velocity: rl.Vector3,
-        track_center_x: f32,
+        subgame_rate: f32,
     ) ?*SubLazerSlot {
         const allocation = self.allocateAt() orelse return null;
         allocation.slot.* = .{
@@ -361,7 +361,7 @@ pub const SubLazerPool = struct {
             .visual_y = world_position.y,
             .velocity = velocity,
             .phase = 0.0,
-            .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
+            .phase_step = subgame_rate * native_sub_lazer_phase_step_factor,
         };
         return allocation.slot;
     }
@@ -381,7 +381,7 @@ pub const SubLazerPool = struct {
         emitter_lane: usize,
         world_position: rl.Vector3,
         velocity: rl.Vector3,
-        track_center_x: f32,
+        subgame_rate: f32,
     ) ?*SubLazerSlot {
         const allocation = self.allocateAt() orelse return null;
         const stacked_position: rl.Vector3 = .{
@@ -397,7 +397,7 @@ pub const SubLazerPool = struct {
             .visual_y = stacked_position.y,
             .velocity = velocity,
             .phase = 0.0,
-            .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
+            .phase_step = subgame_rate * native_sub_lazer_phase_step_factor,
         };
         self.fire_generation +%= 1;
         self.last_fire_position = world_position;

@@ -85,7 +85,7 @@ pub const SaltSlot = struct {
 //   - `+0x68..+0x70` live body position sampled by `handle_subgoldy_collisions`
 //   - `+0x8c..+0x94` launch direction/velocity from `spawn_sub_lazer_projectile`
 //   - `+0x98` phase accumulator, reset by spawn
-//   - `+0x9c` phase step, seeded from `track_center_x * 0.0055555557`
+//   - `+0x9c` phase step, seeded from `subgame_rate * 0.0055555557`
 //
 // `update_sub_lazer_projectile` writes the sine bob to a nested sprite field,
 // not to the body position sampled for damage. `visual_y` models that nested

@@ -365,7 +365,7 @@ pub const Controller = struct {
         defeated: gameplay.RowTarget,
     ) void {
         const origin = laneWorldPosition(preview, defeated.row, defeated.lane, 1.7);
-        const run_rate = @max(current.track_center_x, 0.001);
+        const run_rate = @max(current.subgame_rate, 0.001);
         for (0..slug_goo_particle_count) |_| {
             const spread = self.nextNativeVisualRandomFloatScaled(slug_goo_spread_random_scale) + slug_goo_spread_base;
             const size_seed = self.nextNativeVisualRandomFloatScaled(slug_goo_size_random_scale) + slug_goo_size_base;
@@ -710,7 +710,7 @@ test "slug death spawns the native goo burst instead of one static sprite" {
 
     var controller = Controller{};
     var runner = gameplay.Runner.init(&loaded_track_preview);
-    runner.track_center_x = 1.0;
+    runner.subgame_rate = 1.0;
     controller.spawnSlugGooBurst(runner, &loaded_track_preview, .{ .row = 12, .lane = 1 });
 
     try std.testing.expectEqual(slug_goo_particle_count, controller.count);

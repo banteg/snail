@@ -487,11 +487,11 @@ pub const Runner = struct {
     // rate unless they configure a specific level/replay speed.
     base_subgame_rate: f32 = native_track_half_width,
     // PORT(verified): native keeps `Game+0x48` (`base_subgame_rate`) separate
-    // from the live `Game+0x38` (`track_center_x`) recomputed by
+    // from the live `Game+0x38` (`subgame_rate`) recomputed by
     // `calc_subgame_rate` each subgame update. Movement, hazards, and
     // presentation use this live lane; spawn gates and default ring timing use
     // the base lane directly.
-    track_center_x: f32 = native_track_half_width,
+    subgame_rate: f32 = native_track_half_width,
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -624,7 +624,7 @@ pub const Runner = struct {
         self.* = .{
             .session_mode = session_mode,
             .base_subgame_rate = base_subgame_rate,
-            .track_center_x = base_subgame_rate,
+            .subgame_rate = base_subgame_rate,
             .speed_rows_per_second = 12.0,
             .row_event_display = .{
                 .parcel_target_count = row_event_config.parcel_target_count,
@@ -1325,7 +1325,7 @@ pub const Runner = struct {
 
     pub fn configureBaseSubgameRate(self: *Runner, base_subgame_rate: f32) void {
         self.base_subgame_rate = base_subgame_rate;
-        self.track_center_x = base_subgame_rate;
+        self.subgame_rate = base_subgame_rate;
     }
 
     fn nativeBaseSubgameRate(self: *const Runner) f32 {
@@ -1333,12 +1333,12 @@ pub const Runner = struct {
     }
 
     fn nativeRunRate(self: *const Runner) f32 {
-        return self.track_center_x;
+        return self.subgame_rate;
     }
 
     fn updateNativeTrackCenterRate(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) {
-            self.track_center_x = self.nativeBaseSubgameRate();
+            self.subgame_rate = self.nativeBaseSubgameRate();
             return;
         }
         if (self.paused) return;
@@ -1373,7 +1373,7 @@ pub const Runner = struct {
             }
         }
 
-        self.track_center_x = rate;
+        self.subgame_rate = rate;
     }
 
     fn nativeVelocityXDecayPerTick(self: *const Runner) f32 {
@@ -3958,7 +3958,7 @@ pub const Runner = struct {
         // Native reads the cell's anchor position (`cell + 0x10..0x18`) as the
         // spawn anchor; the port mirrors that via `runtimeCellWorldPosition`.
         // `spawn_salt_hazard` itself seeds x velocity 0, records the native
-        // `track_center_x * 0.033333335` motion lane, and performs the odd
+        // `subgame_rate * 0.033333335` motion lane, and performs the odd
         // byte write at the z-velocity address. Cross-port `cRSalt::AI`
         // leaves the visible position anchored.
         const position = runtimeCellWorldPosition(preview, global_row, lane, salt_spawn_y_offset);
@@ -3966,7 +3966,7 @@ pub const Runner = struct {
             global_row,
             lane,
             position,
-            self.track_center_x,
+            self.subgame_rate,
             &self.math_random_state,
         );
     }
@@ -8333,7 +8333,7 @@ test "runtime hazards preserve recovered presentation scalars" {
 
     // Salt spawns into its dedicated `SaltHazardPool`, carries the native
     // gameplay-anchor Y directly on the slot, and receives the recovered
-    // native upward velocity from `track_center_x`.
+    // native upward velocity from `subgame_rate`.
     try std.testing.expect(runner.runtime.salts.contains(48, 1));
     var salt_slot: ?gameplay_runtime_entities.SaltSlot = null;
     for (runner.runtime.salts.slots) |slot| {
@@ -8345,7 +8345,7 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expect(salt_slot != null);
     try std.testing.expectApproxEqAbs(salt_spawn_y_offset, salt_slot.?.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(
-        runner.track_center_x * hazards_module.native_salt_vertical_velocity_factor,
+        runner.subgame_rate * hazards_module.native_salt_vertical_velocity_factor,
         salt_slot.?.velocity.y,
         0.0001,
     );
@@ -10978,11 +10978,11 @@ test "cameraman matrix blend factor follows the live subgame rate" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.track_center_x = 0.2;
+    runner.subgame_rate = 0.2;
     runner.track_step_rows = 8.0;
     try std.testing.expectApproxEqAbs(@as(f32, 0.06), runner.cameramanMatrixBlendFactor(), 0.0001);
 
-    runner.track_center_x = 8.0;
+    runner.subgame_rate = 8.0;
     runner.track_step_rows = 0.2;
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
 }
