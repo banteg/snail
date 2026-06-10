@@ -192,6 +192,9 @@ const max_slug_engagement_voice_cells: usize = 64;
 const native_slug_health: i32 = 7;
 const native_slug_laser_damage: i32 = 2;
 const native_slug_rocket_damage: i32 = 4;
+const native_slug_contact_radius: f32 = 1.5675001;
+const native_slug_contact_z_gate: f32 = 2.0;
+const native_slug_spawn_y_offset: f32 = 1.7;
 const native_slug_hit_flash_step_factor: f32 = 0.16666667;
 const native_slug_blink_initial_step: f32 = 0.033333335;
 const native_slug_blink_close_step: f32 = -0.16666667;
@@ -1883,6 +1886,8 @@ pub const Runner = struct {
             }
         }
 
+        if (self.phase != .active) return;
+
         // PORT(partial): attached travel and supertramp-style launch are still driven from the
         // built attachment surface, not the original installed collision volumes. Until the
         // remaining local-frame collision ownership is ported, do not consume floor-level
@@ -1907,52 +1912,61 @@ pub const Runner = struct {
             .garbage => {},
             .salt => {},
             .slug => {
-                if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
-                if (self.isMovementFlagInvincible()) {
-                    // PORT(verified): the invincible contact branch in
-                    // `handle_subgoldy_collisions` calls `kill_slug_hazard`; that helper
-                    // owns both the death voice and the normal slug score award.
-                    self.defeatSlug(global_row, sample.resolved_lane_index);
-                    return;
-                }
-                self.counters.slug_hits += 1;
-                self.recent_event = .slug_hit;
-                if (self.damage.slug_hit_active) {
-                    // PORT(verified): repeat-hit branch at
-                    // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:183-188`.
-                    // Native writes `velocity.z = run_rate^2 * 0.004 * -8` into the
-                    // player's `+0x418` lane
-                    // and immediately calls `apply_damage_gauge_delta(+1.0, 0)`. The
-                    // port folds `velocity.z` into the one-shot
-                    // `native_velocity_z_override_per_tick` lane that the existing
-                    // ring-hit knockback already uses.
-                    self.native_velocity_z_override_per_tick = self.nativeRepeatSlugKnockbackVelocityZ();
-                    self.queueSlugHitVoice();
-                    self.applyDamageGaugeDelta(1.0);
-                    return;
-                }
-                // PORT(verified): first-hit branch at
-                // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:190-221`.
-                // Native stamps the player velocity triplet before arming
-                // `begin_post_follow_carryover` and entering cutscene state `10`:
-                //   velocity.x = 0 (player + 0x410)
-                //   velocity.y = run_rate * 0.2 (player + 0x414)
-                //   velocity.z = run_rate * -0.2 (player + 0x418)
-                // and clears `follow_state.active`. `clearAttachmentFollow` inside
-                // `beginFallState` mirrors the follow clear; the velocity writes
-                // need to happen before that transition so the fall phase picks up
-                // a non-zero vertical velocity as its initial knockback impulse.
-                // Side effects not yet ported: the slug slot's hit-flash flag at
-                // `SlugHazardRuntime+0xcc` and the `firework_shoot(...)` burst
-                // land with the slug pool and firework/sfx ports.
-                self.queueSlugHitVoice();
-                self.native_velocity_x_per_tick = 0.0;
-                self.velocity_y = self.nativeSlugKnockbackVelocityY();
-                self.native_velocity_z_override_per_tick = self.nativeSlugKnockbackVelocityZ();
-                self.damage.slug_hit_active = true;
-                self.beginFallState(preview, .hazard, cutscene_death_id);
+                _ = self.processSlugContact(preview, global_row, sample.resolved_lane_index);
             },
         }
+    }
+
+    fn processSlugContact(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        lane_index: usize,
+    ) bool {
+        if (self.isSlugDefeated(global_row, lane_index)) return false;
+        if (self.isMovementFlagInvincible()) {
+            // PORT(verified): the invincible contact branch in
+            // `handle_subgoldy_collisions` calls `kill_slug_hazard`; that helper
+            // owns both the death voice and the normal slug score award.
+            self.defeatSlug(global_row, lane_index);
+            return true;
+        }
+        self.counters.slug_hits += 1;
+        self.recent_event = .slug_hit;
+        if (self.damage.slug_hit_active) {
+            // PORT(verified): repeat-hit branch at
+            // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:183-188`.
+            // Native writes `velocity.z = run_rate^2 * 0.004 * -8` into the
+            // player's `+0x418` lane and immediately calls
+            // `apply_damage_gauge_delta(+1.0, 0)`. The port folds `velocity.z`
+            // into the one-shot `native_velocity_z_override_per_tick` lane that
+            // the existing ring-hit knockback already uses.
+            self.native_velocity_z_override_per_tick = self.nativeRepeatSlugKnockbackVelocityZ();
+            self.queueSlugHitVoice();
+            self.applyDamageGaugeDelta(1.0);
+            return true;
+        }
+        // PORT(verified): first-hit branch at
+        // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:190-221`.
+        // Native stamps the player velocity triplet before arming
+        // `begin_post_follow_carryover` and entering cutscene state `10`:
+        //   velocity.x = 0 (player + 0x410)
+        //   velocity.y = run_rate * 0.2 (player + 0x414)
+        //   velocity.z = run_rate * -0.2 (player + 0x418)
+        // and clears `follow_state.active`. `clearAttachmentFollow` inside
+        // `beginFallState` mirrors the follow clear; the velocity writes need
+        // to happen before that transition so the fall phase picks up a non-zero
+        // vertical velocity as its initial knockback impulse.
+        // Side effects not yet ported: the slug slot's hit-flash flag at
+        // `SlugHazardRuntime+0xcc` and the `firework_shoot(...)` burst land with
+        // the slug pool and firework/sfx ports.
+        self.queueSlugHitVoice();
+        self.native_velocity_x_per_tick = 0.0;
+        self.velocity_y = self.nativeSlugKnockbackVelocityY();
+        self.native_velocity_z_override_per_tick = self.nativeSlugKnockbackVelocityZ();
+        self.damage.slug_hit_active = true;
+        self.beginFallState(preview, .hazard, cutscene_death_id);
+        return true;
     }
 
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2228,6 +2242,82 @@ pub const Runner = struct {
             self.beginGarbageBurst(hazard, player_position);
             return;
         }
+
+        self.processRuntimeSlugContacts(preview);
+    }
+
+    fn processRuntimeSlugContacts(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.phase != .active) return;
+        if (self.movement_mode == .attachment or self.attachment.launch.active) return;
+
+        const player_position = self.playerWorldPosition(preview);
+        const row_min_f = @floor(@max(0.0, player_position.z - native_slug_contact_z_gate));
+        const row_max_f = @floor(@min(
+            @as(f32, @floatFromInt(preview.total_rows)),
+            player_position.z + native_slug_contact_z_gate + 1.0,
+        ));
+        const row_min: usize = @intFromFloat(row_min_f);
+        const row_max: usize = @min(preview.total_rows, @as(usize, @intFromFloat(row_max_f)) + 1);
+
+        var row = row_min;
+        while (row < row_max) : (row += 1) {
+            for (0..preview.max_width) |lane| {
+                if (self.isSlugDefeated(row, lane)) continue;
+                const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
+                if (sample.kind != .slug) continue;
+
+                const slug_position = self.slugStaticWorldPosition(preview, row, lane);
+                const delta_x = slug_position.x - player_position.x;
+                const delta_y = slug_position.y - player_position.y;
+                const delta_z = slug_position.z - player_position.z;
+                if (delta_z >= native_slug_contact_z_gate) continue;
+
+                const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+                if (distance >= native_slug_contact_radius) continue;
+                _ = self.processSlugContact(preview, row, lane);
+                return;
+            }
+        }
+    }
+
+    fn slugStaticWorldPosition(
+        self: *const Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        lane_index: usize,
+    ) rl.Vector3 {
+        _ = self;
+        const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+        const lane_center = @as(f32, @floatFromInt(lane_index)) + 0.5;
+        const flat_surface = preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(global_row)),
+            floor_height,
+        );
+        if (preview.activeBuiltAttachmentAtRow(global_row)) |built| {
+            const progress: f32 = @floatFromInt(global_row -| built.row.global_row);
+            const pose = attachment_builders.worldPoseForTemplate(&built.template, progress, built.row.global_row, 0.0, 0.0);
+            const local_surface = attachmentLocalPosition(pose, .{
+                .x = flat_surface.x,
+                .y = flat_surface.y,
+                .z = flat_surface.z,
+            });
+            const projected_position = attachmentWorldPositionFromLocal(pose, .{
+                .x = local_surface.x,
+                .y = native_slug_spawn_y_offset,
+                .z = local_surface.z,
+            });
+            return .{
+                .x = projected_position.x,
+                .y = projected_position.y,
+                .z = projected_position.z,
+            };
+        }
+        return .{
+            .x = flat_surface.x,
+            .y = flat_surface.y + native_slug_spawn_y_offset,
+            .z = flat_surface.z,
+        };
     }
 
     // PORT(partial): Windows resolves health and jetpack against their live runtime pickup
@@ -7031,6 +7121,29 @@ test "slug hit latches the shared fall path" {
         0.0001,
     );
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.native_velocity_x_per_tick, 0.0001);
+}
+
+test "slug contact uses native radius before exact row crossing" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    const slug_position = runner.slugStaticWorldPosition(&fixture.preview, slug.row, slug.lane);
+    runner.lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+    runner.resolved_lane_index = runner.lane_index;
+    runner.row_position = slug_position.z - 0.51;
+    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
+    runner.track_row_progress = runner.row_position - @floor(runner.row_position);
+    runner.refreshSample(&fixture.preview);
+    try std.testing.expect(runner.current_global_row != slug.row);
+
+    runner.processRuntimeHazardCollisions(&fixture.preview);
+
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
 }
 
 test "slug ambient voice alert follows native one-shot proximity gate" {
