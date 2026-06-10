@@ -55,7 +55,7 @@ Template:
 ## 2026-03-25 - Runtime capture policy
 
 - invalidated claim: broader Windows capture is still the default next step for bridge and attachment work
-- replacement evidence: the stable March 24 packets closed the practical bridge handoff lanes, while broader probe sets caused host hangs
+- replacement evidence: the stable March 24 subsystem notes closed the practical bridge handoff lanes, while broader probe sets caused host hangs
 - port consequence: outer bridge is unblocked for replacement from the locked capture baseline; attachment exit stays static-RE only until a narrower stable proof exists
 
 ## 2026-03-26 - Ring runtime and Game fields

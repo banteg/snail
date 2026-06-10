@@ -27,7 +27,6 @@ uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
 uv run snail trace summary /path/to/snailmail-trace.ndjson
 uv run snail trace plan
 uv run snail symbols
-uv run snail packets
 uv run snail screenshots compare artifacts/screenshots/snail-game-main_menu-000006-001.png artifacts/screenshots/reference-original/main-menu-new-game-selected--2026-03-10_01-35-25-36.png --search-offset 8 --search-scale 0.95:1.05:0.01
 ```
 
@@ -51,7 +50,6 @@ The format parser adds:
 - `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
 - `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, no-fall, jetpack-off, authored-salt, and scalar-salt targets
 - `symbols`: validation for the tracked Binary Ninja gameplay symbol manifest in `analysis/symbols/gameplay-functions.json`
-- `packets`: validation and summary for the current rewrite packet ledger in `analysis/packets/rewrite-packets.json`
 - `screenshots compare`: writes normalized render/reference captures plus signed diff, absolute diff, and montage artifacts under `artifacts/screenshots/compare`
 
 ## Asset Format Notes
@@ -61,7 +59,7 @@ Browse the docs locally with `zensical serve`.
 Verified archive and asset format notes live in [docs/original/asset-formats.md](docs/original/asset-formats.md).
 
 The rewrite direction and runtime goals live in [docs/rewrite/index.md](docs/rewrite/index.md).
-The current packet ledger lives in [analysis/packets/rewrite-packets.json](analysis/packets/rewrite-packets.json), with workflow notes in [docs/rewrite/packets.md](docs/rewrite/packets.md). Prefer it over old narrative "current status" prose.
+Use [docs/rewrite/remaining-work-checklist.md](docs/rewrite/remaining-work-checklist.md) for the active backlog, and use dated notes under `analysis/runtime/` for concrete parity audits and evidence trails.
 
 Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [docs/re/path-system.md](docs/re/path-system.md).
 
@@ -81,15 +79,9 @@ Confirmed asset families in [`SnailMail.dat`](artifacts/bin/SnailMail.dat):
 - `.x2` text mesh or animation fragments
 - an embedded `BASS.DLL`
 
-The Zig runtime reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) directly and has a native game path plus an archive-backed debug browser. For live parity status, use:
+The Zig runtime reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) directly and has a native game path plus an archive-backed debug browser. For live parity status, use [docs/rewrite/remaining-work-checklist.md](docs/rewrite/remaining-work-checklist.md).
 
-```bash
-uv run snail packets
-```
-
-The packet ledger is intentionally shorter than the old README status dump. It records which subsystem is verified, partial, or still risky, and points at the primary code and evidence paths for that packet.
-
-Path-system evidence now shows that hardcoded `Path=` templates are gameplay data, not only visual data: `P/p` cells install sampled attachment pointers onto runtime track cells, and player movement can transition into attachment-follow state backed by those path objects. Current attachment parity details live in the `attachment-templates` and `attachment-follow` packets.
+Path-system evidence now shows that hardcoded `Path=` templates are gameplay data, not only visual data: `P/p` cells install sampled attachment pointers onto runtime track cells, and player movement can transition into attachment-follow state backed by those path objects. Current attachment parity details live in the rewrite backlog and dated runtime audit notes.
 
 The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
@@ -154,10 +146,4 @@ Interactive controls for `zig build run -- debug`:
 
 ## Status Workflow
 
-Use the packet ledger for current status and next actions:
-
-```bash
-uv run snail packets --strict
-```
-
-Use [docs/rewrite/remaining-work-checklist.md](docs/rewrite/remaining-work-checklist.md) as the longer backlog. Treat dated `analysis/runtime/*.md` notes as evidence history unless a packet cites them.
+Use [docs/rewrite/remaining-work-checklist.md](docs/rewrite/remaining-work-checklist.md) for current priorities and known blind spots. Treat dated `analysis/runtime/*.md` notes as evidence-backed audit trails; when a dated audit contradicts older prose, prefer the newer audit and update the affected docs after the fix lands.

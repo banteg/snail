@@ -4,24 +4,16 @@ The old prose ledger on this page was retired because it mixed current facts,
 stale "remaining gap" notes, and dated investigation summaries in one long
 surface.
 
-The current status source is now the packet manifest:
+Use these surfaces instead:
 
-- packet data: [`../../analysis/packets/rewrite-packets.json`](../../analysis/packets/rewrite-packets.json)
-- workflow notes: [packets.md](packets.md)
 - detailed reference notes: [subsystem-status.md](subsystem-status.md)
-- backlog: [remaining-work-checklist.md](remaining-work-checklist.md)
-
-Use:
-
-```bash
-uv run snail packets --strict
-```
+- backlog and priority order: [remaining-work-checklist.md](remaining-work-checklist.md)
+- dated parity audits and runtime findings: `../../analysis/runtime/*.md`
 
 Interpretation rule:
 
-- packets are current status
-- `analysis/decompile`, `analysis/symbols`, `analysis/headers`, and cited runtime notes are primary evidence
-- old narrative docs are context unless the packet manifest points to them
+- `analysis/decompile`, `analysis/symbols`, `analysis/headers`, and dated runtime notes are primary evidence
+- old narrative docs are context unless a newer audit or checked-in implementation confirms the same claim
 
 Status values are intentionally conservative. A subsystem should stay `partial`
 while any known native owner, runtime field, payload writer, or post-run handoff

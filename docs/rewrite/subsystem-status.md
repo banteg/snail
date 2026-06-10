@@ -1,18 +1,17 @@
 # Subsystem Status
 
-This page is the detailed working tracker for the Zig port. The current
-machine-readable status source is
-[`../../analysis/packets/rewrite-packets.json`](../../analysis/packets/rewrite-packets.json);
-use this page for the longer notes behind packet entries.
+This page is the detailed working tracker for the Zig port. Use it for
+subsystem-level status and context behind the active backlog.
 
 Reference only:
 - not default loop context
-- use the active dossier or packet first
-- keep transient narrowing in focused notes or runtime packets instead of appending every micro-finding here
+- use the active subsystem dossier or dated parity audit first
+- keep transient narrowing in focused notes or runtime audits instead of appending every micro-finding here
 
-Use it when picking the next task after checking [packets.md](packets.md). This
-page is the fuller subsystem-by-subsystem read of what is implemented now, what
-is still approximate, and what the next grounded work should be.
+Use this alongside [remaining-work-checklist.md](remaining-work-checklist.md)
+when picking the next task. This page is the fuller subsystem-by-subsystem read
+of what is implemented now, what is still approximate, and what the next
+grounded work should be.
 
 ## Status Legend
 

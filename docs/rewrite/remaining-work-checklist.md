@@ -1,16 +1,15 @@
 # Remaining Work Checklist
 
 This page is the long-form working checklist for remaining reverse-engineering
-and porting work. The current status ledger is
-[`../../analysis/packets/rewrite-packets.json`](../../analysis/packets/rewrite-packets.json);
-use this checklist as backlog detail behind packet `next_actions`.
+and porting work. Use it as the default backlog for current priorities,
+known blind spots, and owner-level parity gaps.
 
 Reference backlog:
 - not default loop context
-- active execution should start from the current packet or subsystem dossier
+- active execution should start from the current subsystem dossier or dated parity audit
 - update this page when priority order changes or a blind spot materially closes, not for every local narrowing
 
-It is intentionally narrower than the broad rewrite plan and more action-oriented than the status ledgers:
+It is intentionally narrower than the broad rewrite plan and more action-oriented than the status notes:
 
 - [port-status.md](port-status.md) says what is verified vs partial
 - [subsystem-status.md](subsystem-status.md) gives the fuller subsystem read
