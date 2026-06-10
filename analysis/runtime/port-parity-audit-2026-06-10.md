@@ -209,6 +209,28 @@ Native also gates the down-ramp lookback dispatch on
   `sample[5] > 0` (up-y) skip, start gates `y ≥ −0.2`, `0 < z < extent`,
   end gate `y ≤ 0.001`, and the caller's 1.05 velocity scale.
 
+### 12. Slug contact is cell-crossing in the port; native is a radius test against the live actor (medium)
+
+- port: `zig/src/gameplay.zig:1908-1944` — slug contact fires when the
+  resolved row/lane's `gameplay_cell == .slug`. The reaction branches
+  (invincible kill, repeat-hit `−8·rate²·0.004` + damage 1.0, first-hit
+  velocity triplet + carryover + cutscene 10) are correctly cited and
+  match native.
+- native: `handle_subgoldy_collisions` @ 0x444cf0, IDA lines 160-200 —
+  contact requires `Δ component < 2.0` then `|Δ| < 1.5675001` against the
+  slug actor's *live* position, which `update_slug_hazard_ai` @ 0x43f930
+  moves over time (including along attachments). The 1.5675 radius constant
+  appears nowhere in the port.
+- consequence: contact geometry differs — native slugs hit within a ~1.57
+  sphere around wherever the slug currently is; the port hits exactly on the
+  authored cell. A patrolling slug that has crawled off its spawn cell can
+  be walked through in the port, and near-miss lanes that the original
+  punishes are safe. Detection sits beside PORT(verified)-tagged reaction
+  code, so the gap is easy to mistake for verified behavior.
+- note: this collision pass is another consumer of the shifted IDA Player
+  typing (finding 6): the position triple reads at lines 160-162 are
+  labeled `jetpack_gauge.warning_intensity` / `cached_camera_target_world`.
+
 ## Checked and matching (for coverage)
 
 - `normalize_segment_glyph_for_track_flags`: all non-`'}'` glyph lanes
@@ -253,6 +275,13 @@ Native also gates the down-ramp lookback dispatch on
   `math_random.zig`, pick order (pick → mirror roll per segment), mode-1 pick
   range `(scalar*0.9+0.1)*count`, course length `floor((scalar*0.65+0.35) *
   Length) - last_rows`, and the mirror anti-streak counter (≥4 flips) match.
+- `handle_subgoldy_collisions` @ 0x444cf0 constants: salt 0.15 @ 0.98 gate,
+  sublazer 0.02 @ 0.49, garbage 0.04 @ 0.98 with z-tolerance 1.0 and
+  knockback factors 0.18 (x) / 0.10 (z), slug reaction branches
+  (invincible kill, repeat `−8·rate²·0.004` + 1.0, first-hit
+  `(0, rate·0.2, −rate·0.2)` + carryover + cutscene 10), health −0.5 @
+  0.98 with 0.4 height gate, jetpack pickup @ 3.0, and ring gate 1.24 all
+  match the port (detection-model caveat for slugs in finding 12).
 - `update_subgoldy` physics constants: yz decay `1-rate*0.003` (z gated on
   the trampoline flag, y unconditional), x decay `1-rate*0.1`, gravity
   `-0.01*rate²`, forward clamp `[0.17, 0.5]*rate`, slide/jetpack boost
