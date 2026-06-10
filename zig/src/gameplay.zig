@@ -4565,6 +4565,16 @@ pub const Runner = struct {
             }
         }
 
+        // Early void/open-neighbor carryover arm (`0043b120-update_subgoldy.c:477-491`).
+        // Native begins post-follow carryover before the tail `position.y < 0` gate
+        // when the rider has just dipped below grounded height over tile `0x00` or
+        // `0x23`. The current cell's row-edge flags narrow the row-fraction window.
+        if (!self.attachment.exit.pending and
+            self.currentVoidEdgeCarryoverAllows(preview, tile_at_position))
+        {
+            self.seedAttachmentExitStateZeroed(self.row_position);
+        }
+
         // Death trigger (`0043b120-update_subgoldy.c:504`). Native keeps the check
         // inside the grounded-state block; the port routes `.fall` through the
         // existing `beginFallState` path, which hands off to `updatePhaseController`
@@ -4687,14 +4697,30 @@ pub const Runner = struct {
         }
     }
 
+    fn currentVoidEdgeCarryoverAllows(
+        self: *const Runner,
+        preview: *const track.LoadedLevelPreview,
+        tile_opt: ?u8,
+    ) bool {
+        const tile = tile_opt orelse return false;
+        if (tile != 0x00 and tile != 0x23) return false;
+        if (self.position_y >= native_grounded_rider_height or self.velocity_y > 0.0) return false;
+
+        const edge_mask = preview.runtimeEdgeMaskAt(self.current_global_row, self.resolved_lane_index) orelse 0;
+        const row_fraction = self.row_position - @floor(self.row_position);
+        const min_fraction: f32 = if ((edge_mask & 0x01) != 0) 0.2 else 0.0;
+        const max_fraction: f32 = if ((edge_mask & 0x02) != 0) 0.80000001 else 1.0;
+        return row_fraction > min_fraction and row_fraction < max_fraction;
+    }
+
     // PORT(verified): mirror of the tile-family velocity.y reactions at
     // `artifacts/ida/functions/0043b120-update_subgoldy.c:545-579`. Fires only
     // inside the "below floor" branch where `floor_y + 0.49 > position.y` just
     // snapped the rider up to the floor.
     //
-    // - Tiles `0x08..0x0d` (up-slides and ramp-up mirrors) drive `velocity.y = 1.2`
-    //   so the rider climbs the slope each tick.
-    // - Tiles `0x02..0x07` (down-ramps) set `velocity.y = 0.8` and seed the
+    // - Tiles `0x08..0x0d` (up-slides and ramp-up mirrors) drive `velocity.y =
+    //   rate * 0.3` so the rider climbs the slope each tick.
+    // - Tiles `0x02..0x07` (down-ramps) set `velocity.y = rate * 0.2` and seed the
     //   surface-reaction animation lane; the `dispatch_cutscene_animation` calls
     //   land when that clip-dispatch layer is ported (plan §4 / task #5).
     // - Any other tile that is not empty (`0x00`), open-neighbor (`0x23`), or
@@ -11089,6 +11115,23 @@ test "runner descends through an authored gap row instead of halting at the edge
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
     try std.testing.expect(runner.velocity_y < 0.0);
     try std.testing.expectApproxEqAbs(starting_position_y, runner.position_y, 0.0001);
+}
+
+test "runner arms carryover immediately after dipping below a void edge" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const gap = findFirstFloorGap(&fixture.preview, true).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, gap);
+    runner.velocity_y = -0.02;
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expectApproxEqAbs(runner.row_position, runner.attachment.exit.anchor_z, 0.0001);
+    try std.testing.expect(runner.position_y < native_grounded_rider_height);
 }
 
 test "barrier hold tile snaps z and arms post-follow exit after the native timer" {
