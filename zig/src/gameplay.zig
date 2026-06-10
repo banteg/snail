@@ -224,9 +224,10 @@ const attachment_side_exit_margin = attachment_module.side_exit_margin;
 const attachment_entry_start_y_tolerance = attachment_module.entry_start_y_tolerance;
 const attachment_entry_end_y_tolerance = attachment_module.entry_end_y_tolerance;
 const attachment_entry_rider_height = attachment_module.entry_rider_height;
-const supertramp_launch_velocity_scale: f32 = 12.0;
+const supertramp_launch_velocity_y_factor: f32 = 0.69999999;
 const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
+const launch_camera_progress_step_rate_factor: f32 = 0.013888888;
 const native_steering_center_x: f32 = 320.0;
 const native_steering_max_x: f32 = 639.0;
 const native_steering_world_scale: f32 = 0.0125;
@@ -4995,6 +4996,7 @@ pub const Runner = struct {
         self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
         self.resolved_lane_index = self.lane_index;
         self.lane_center = laneCenterFromWorldX(preview, exit_world_position.x);
+        self.applyAttachmentExitHeadingDelta();
     }
 
     fn commitSupertrampNaturalExit(
@@ -5003,32 +5005,31 @@ pub const Runner = struct {
         built: *const attachment_builders.BuiltAttachment,
     ) void {
         const sample_count_f: f32 = @floatFromInt(built.template.sample_count);
-        const final_progress = @max(0.0, sample_count_f - 0.001);
-        const end_pose = attachment_builders.worldPoseForTemplate(
+        const final_progress = @max(0.0, sample_count_f - 1.0);
+        const final_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
             final_progress,
             self.attachment.follow.source_cell_row,
             self.attachment.follow.lateral_offset,
             self.attachment.follow.vertical_offset,
         );
-        const end_position = attachment_builders.worldPositionForTemplate(
-            &built.template,
-            sample_count_f,
-            self.attachment.follow.source_cell_row,
-            self.attachment.follow.lateral_offset,
-            self.attachment.follow.vertical_offset,
-        );
         const last_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, final_progress);
         const launch_factor = std.math.clamp(self.track_step_rows * last_delta_length, 0.0, 1.0);
+        const launch_distance = built.template.exit_tail_extra + self.attachment.follow.exit_overshoot;
+        const launch_position = attachment_builders.Vec3.add(
+            final_pose.position,
+            attachment_builders.Vec3.scale(final_pose.basis_forward, launch_distance),
+        );
         const exit_world_x = self.attachment.follow.cached_output_position.x;
         const exit_lane = preview.laneIndexAtWorldX(exit_world_x);
         const exit_floor_y = preview.sampleFloorHeightAtGridPosition(
-            currentRowIndex(preview, end_position.z),
+            currentRowIndex(preview, launch_position.z),
             exit_lane,
-            end_position.z,
+            launch_position.z,
         ) orelse 0.0;
+        const camera_progress_step = self.subgame_rate * launch_camera_progress_step_rate_factor;
 
-        self.row_position = end_position.z + built.template.exit_tail_extra + self.attachment.follow.exit_overshoot;
+        self.row_position = launch_position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.track_row_progress = self.row_position - @floor(self.row_position);
         self.lane_index = exit_lane;
@@ -5037,13 +5038,14 @@ pub const Runner = struct {
         self.attachment.launch = .{
             .active = true,
             .world_x = exit_world_x,
-            .height = @max(0.6, end_position.y - exit_floor_y),
-            .vertical_velocity = @max(0.15, launch_factor) * supertramp_launch_velocity_scale,
-            .camera_progress = launch_camera_progress_step_default,
-            .camera_progress_step = launch_camera_progress_step_default,
-            .basis_forward = end_pose.basis_forward,
-            .basis_up = end_pose.basis_up,
+            .height = launch_position.y - exit_floor_y,
+            .vertical_velocity = launch_factor * supertramp_launch_velocity_y_factor,
+            .camera_progress = camera_progress_step,
+            .camera_progress_step = camera_progress_step,
+            .basis_forward = final_pose.basis_forward,
+            .basis_up = final_pose.basis_up,
         };
+        self.applyAttachmentExitHeadingDelta();
     }
 
     fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
@@ -5099,6 +5101,11 @@ pub const Runner = struct {
                 .basis_up = world_pose.basis_up,
             };
         }
+        self.applyAttachmentExitHeadingDelta();
+    }
+
+    fn applyAttachmentExitHeadingDelta(self: *Runner) void {
+        self.attachment.camera.heading_roll += self.attachment.follow.installed_heading_delta;
     }
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -5211,7 +5218,6 @@ pub const Runner = struct {
             }
         }
 
-        self.attachment.camera.heading_roll += self.attachment.follow.installed_heading_delta;
         self.syncAttachmentFollowTemplateProgress(built);
         self.updateAttachmentFollowPosition(preview);
         if (self.attachment.follow.vertical_offset < 0.0) {
@@ -6416,7 +6422,7 @@ test "installed attachment begin preserves raw local progress and advances once 
     try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment.follow.template_progress, 0.0001);
 }
 
-test "attachment follow updates heading roll from the live phase scalar" {
+test "attachment follow keeps heading roll until the exit handoff" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer fixture.deinit();
 
@@ -6435,8 +6441,26 @@ test "attachment follow updates heading roll from the live phase scalar" {
 
     runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
 
-    try std.testing.expectApproxEqAbs(built.template.installed_heading_delta, runner.attachment.camera.heading_roll, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.heading_roll, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment.follow.template_progress, 0.0001);
+}
+
+test "attachment natural exit applies installed heading delta once" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.attachment.follow = .{
+        .active = true,
+        .source_cell_row = target.row,
+        .installed_heading_delta = built.template.installed_heading_delta,
+    };
+
+    runner.commitAttachmentNaturalExit(&fixture.preview, built);
+
+    try std.testing.expectApproxEqAbs(built.template.installed_heading_delta, runner.attachment.camera.heading_roll, 0.0001);
 }
 
 test "attachment follow keeps zero phase scalar on position refresh" {
@@ -10514,6 +10538,66 @@ test "supertramp natural exit enters a launch state above the floor" {
 
     const launch_forward = runner.worldForward(&fixture.preview);
     try std.testing.expect(launch_forward.y > 0.1);
+}
+
+test "supertramp natural exit transfers forward motion into native launch state" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/SUPERTRAMP.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const sample_count: f32 = @floatFromInt(built.template.sample_count);
+    const cached_output_position = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        sample_count,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    runner.subgame_rate = 0.5;
+    runner.track_step_rows = 0.25;
+    runner.attachment.follow = .{
+        .active = true,
+        .source_cell_row = built.row.global_row,
+        .exit_overshoot = 0.4,
+        .cached_output_position = cached_output_position,
+        .installed_heading_delta = 1.25,
+    };
+
+    runner.commitSupertrampNaturalExit(&fixture.preview, built);
+
+    const final_progress = @max(0.0, sample_count - 1.0);
+    const final_pose = attachment_builders.worldPoseForTemplate(
+        &built.template,
+        final_progress,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const expected_position = attachment_builders.Vec3.add(
+        final_pose.position,
+        attachment_builders.Vec3.scale(final_pose.basis_forward, built.template.exit_tail_extra + 0.4),
+    );
+    const expected_launch_factor = std.math.clamp(
+        runner.track_step_rows * attachment_builders.deltaLengthAtProgress(&built.template, final_progress),
+        0.0,
+        1.0,
+    );
+    const expected_floor_y = fixture.preview.sampleFloorHeightAtGridPosition(
+        currentRowIndex(&fixture.preview, expected_position.z),
+        fixture.preview.laneIndexAtWorldX(cached_output_position.x),
+        expected_position.z,
+    ) orelse 0.0;
+    const expected_camera_step = runner.subgame_rate * launch_camera_progress_step_rate_factor;
+
+    try std.testing.expect(runner.attachment.launch.active);
+    try std.testing.expectApproxEqAbs(expected_position.z, runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_position.y - expected_floor_y, runner.attachment.launch.height, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_launch_factor * supertramp_launch_velocity_y_factor, runner.attachment.launch.vertical_velocity, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_camera_step, runner.attachment.launch.camera_progress_step, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_camera_step, runner.attachment.launch.camera_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25), runner.attachment.camera.heading_roll, 0.0001);
 }
 
 test "attachment follow side threshold enters the shared fall state" {
