@@ -160,6 +160,36 @@ down-ramps `0.8`; the code (correctly) uses `rate * 0.3` and `rate * 0.2`.
 Native also gates the down-ramp lookback dispatch on
 `!control_override_active` (IDA :564), which the port does not check.
 
+### 10. Parcel placement model: port spawns every annotation, native places a seeded random subset of sets (high)
+
+- port: `zig/src/gameplay.zig:3332-3372` — `refreshLiveTrackParcels` spawns a
+  live parcel for every row whose segment annotation is `.parcel`, in a
+  scan-ahead window. `segment.ParcelAnnotation.id` (the authored set index)
+  is stored but never used for selection. Digit cells `'0'..'9'` only map to
+  floor tile 0x0f (`track.zig` glyph table).
+- native: `place_parcels_on_track` @ 0x4438e0 (modes 0/7; mode 1 delegates to
+  `place_challenge_parcels_on_track`):
+  - candidates are grouped per segment-instance into sets 1..9 (from
+    flagged `Parcel=` records *and* digit glyphs, which place at lane
+    `i - 4 + 0.5`), with set-0 candidates pooled individually;
+  - whole sets are chosen via `random_float_below(set_count)` (CRT rand,
+    part of the seeded build stream) until `80% · required − max_set_size`
+    parcels are placed, each chosen set then removed from the pool;
+  - the remainder is filled one-by-one from random set-0 candidates until
+    exactly the authored `Parcels=` count is on track (with
+    `report_errorf` checks for under-allocation and duplicates);
+  - placed cells get flags `|= 0x11`; parcel x is negated on mirrored rows
+    (row flag 0x20); parcels on attachment rows (flags `1|0x40`) are
+    projected onto the path node position (`get_path_position_at_node`, or
+    the kind-42 transform).
+- consequence: parcel count and distribution are wrong in the port — every
+  authored candidate appears every run, instead of a per-seed random subset
+  summing to the authored count. Set grouping, digit-glyph candidates, the
+  mirrored-row x flip, and path projection are all absent. This also breaks
+  replay determinism for postal runs once seeds are honored, and the
+  RNG consumption (one rand per chosen set/single) is missing from the
+  build-stream model, shifting every later consumer.
+
 ## Checked and matching (for coverage)
 
 - `normalize_segment_glyph_for_track_flags`: all non-`'}'` glyph lanes
@@ -194,6 +224,11 @@ Native also gates the down-ramp lookback dispatch on
   envelope `cos(p*3π/2+π/2)` scale 0.24, smoothed-lift lerp 0.1, prev-z
   deadzone clamp 1.7/3.0, worm FOV 110+50 with lerp 0.3, and the outer
   0.9 shared-camera lerp (`app/subgame_camera.zig`) all match.
+- `mark_track_warning_zones` @ 0x4354f0: seed tile set
+  {0x02..0x0e, 0x17, 0x19, 0x21}, the 6-rows-behind × 2-lanes footprint,
+  and the row/lane bound guards all match `buildRuntimeWarningZoneGrid`.
+  The fringe-variant promotion and slide harmonize passes are deliberately
+  empty in the port (documented PORT(partial) BOD-table gaps, not errors).
 - track build seed path: replay seed reuse, seed 0 for tutorial/time-trial,
   `(i64)random_float_below(32768.0)` ≡ raw `rand()`, MSVC LCG constants in
   `math_random.zig`, pick order (pick → mirror roll per segment), mode-1 pick
