@@ -3432,30 +3432,25 @@ pub const Runner = struct {
 
         for (self.parcel.last_scan_end..window_end) |global_row| {
             if (self.isParcelCollected(global_row)) continue;
-            const row_location = preview.locateRow(global_row) orelse continue;
-            const annotation = row_location.row.annotation orelse continue;
-            switch (annotation) {
-                .parcel => |parcel| self.spawnLiveTrackParcel(preview, row_location, parcel),
-                else => {},
-            }
+            const placement = preview.runtimeParcelAt(global_row) orelse continue;
+            self.spawnLiveTrackParcel(global_row, placement);
         }
         self.parcel.last_scan_end = window_end;
     }
 
     fn spawnLiveTrackParcel(
         self: *Runner,
-        preview: *const track.LoadedLevelPreview,
-        row_location: track.RowLocation,
-        parcel: segment.ParcelAnnotation,
+        global_row: usize,
+        placement: track.RuntimeParcelPlacement,
     ) void {
-        if (self.findTrackParcelSlotIndex(row_location.global_row) != null) return;
+        if (self.findTrackParcelSlotIndex(global_row) != null) return;
         const slot = self.allocateTrackParcelSlot() orelse return;
-        const world_position = trackParcelWorldPosition(preview, row_location, parcel.offset);
+        const world_position = placement.world_position;
         const world_row: usize = @intFromFloat(@floor(@max(world_position.z, 0.0)));
         slot.* = .{
             .state = 1,
-            .row = row_location.global_row,
-            .parcel_id = parcel.id,
+            .row = global_row,
+            .parcel_id = placement.parcel_id,
             .world_position = world_position,
             .bob_phase = if ((world_row & 1) == 0) 0.5 else 0.0,
             .bob_phase_step = track_parcel_bob_phase_step,
@@ -5778,22 +5773,6 @@ fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) 
     return motion_module.currentRowIndex(preview, row_position);
 }
 
-fn trackParcelWorldPosition(
-    preview: *const track.LoadedLevelPreview,
-    row_location: track.RowLocation,
-    offset: segment.Vec3,
-) rl.Vector3 {
-    const bounds = preview.laneBoundsForRow(row_location);
-    const center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-    const floor_height = preview.floorHeightAtCellCenter(row_location.global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
-    const base = preview.worldPositionForLane(center_lane, @as(f32, @floatFromInt(row_location.global_row)), floor_height + 0.48);
-    return .{
-        .x = base.x + offset.x,
-        .y = base.y + offset.y,
-        .z = base.z + offset.z,
-    };
-}
-
 fn returnAttachmentHint(path_center_lane: ?f32) AttachmentHint {
     return if (path_center_lane != null) .probe else .none;
 }
@@ -6087,6 +6066,17 @@ fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment
         return .{
             .row = global_row,
             .lane = center_lane,
+        };
+    }
+    return null;
+}
+
+fn findFirstRuntimeParcel(preview: *const track.LoadedLevelPreview) ?RowTarget {
+    for (1..preview.total_rows) |global_row| {
+        const placement = preview.runtimeParcelAt(global_row) orelse continue;
+        return .{
+            .row = global_row,
+            .lane = preview.laneIndexAtWorldX(placement.world_position.x),
         };
     }
     return null;
@@ -8861,7 +8851,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 100), runner.score.ring);
 
     runner = Runner.init(&arcade_fixture.preview);
-    const parcel = findFirstAnnotationTag(&arcade_fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&arcade_fixture.preview).?;
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     try std.testing.expect(stepUntilParcelPickup(&runner, &arcade_fixture.preview, 32) < 32);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
@@ -8889,7 +8879,7 @@ test "runner consumes parcel rows only once" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
@@ -8909,7 +8899,7 @@ test "runner spawns live parcel slots ahead of the current row" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
 
     runner.refreshLiveTrackParcels(&fixture.preview);
@@ -8926,7 +8916,7 @@ test "runner promotes live parcel slots into flight on pickup" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
 
     runner.refreshLiveTrackParcels(&fixture.preview);
@@ -9185,7 +9175,7 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
 
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
@@ -9213,7 +9203,7 @@ test "final parcel delivery reaches the bonus prompt by the end of the gameplay 
 
     var runner = Runner.init(&fixture.preview);
     runner.configureCompletionBonus(1, false);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
 
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
@@ -9517,7 +9507,7 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
 
     var runner = Runner.init(&fixture.preview);
     runner.configureCompletionBonus(1, true);
-    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    const parcel = findFirstRuntimeParcel(&fixture.preview).?;
 
     primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);

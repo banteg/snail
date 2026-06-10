@@ -110,7 +110,7 @@ pub fn configureRuntimeParcels(context: Context, random_state: *u32, loaded_trac
                 currentRunChallengeSpeedValue(context),
                 currentRunChallengeDifficultyScalar(context),
             );
-            _ = try loaded_track_preview.trimParcelAnnotationsToTarget(random_state, target_count);
+            _ = try loaded_track_preview.placeChallengeParcelsToTarget(random_state, target_count);
         },
         .postal, .time_trial, .tutorial => {},
     }

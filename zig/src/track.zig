@@ -161,6 +161,8 @@ pub const tutorialRuntimeBuildFlags: u32 = tutorialSetSubgameRuntimeBuildFlags &
 pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
 const native_playable_lane_count: usize = 8;
 pub const runtime_row_flag_no_fall: u32 = 0x0000_0100;
+pub const runtime_row_flag_parcel: u32 = 0x0000_0001;
+pub const runtime_row_flag_parcel_selected: u32 = 0x0000_0010;
 pub const runtime_row_flag_ring_none: u32 = 0x0000_0200;
 pub const runtime_row_flag_ring_normal: u32 = 0x0000_0400;
 pub const runtime_row_flag_ring_explode: u32 = 0x0000_0800;
@@ -205,6 +207,13 @@ pub const LoadOptions = struct {
     random_length_scalar_override: ?f32 = null,
     garbage_scalar_override: ?f32 = null,
     salt_scalar_override: ?f32 = null,
+};
+
+pub const RuntimeParcelPlacement = struct {
+    active: bool = false,
+    global_row: usize = 0,
+    parcel_id: i32 = 0,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
 fn appendLoadedLevelSegmentToLists(
@@ -340,12 +349,14 @@ pub const LoadedLevelPreview = struct {
     runtime_build_flags: u32,
     runtime_build_seed: u32,
     runtime_build_final_random_state: u32,
+    runtime_row_mirror_states: []bool,
     runtime_active_row_start: usize,
     runtime_active_row_end: usize,
     course_end_threshold: f32,
     garbage_scalar: f32,
     salt_scalar: f32,
     parcel_target_count: usize,
+    runtime_parcel_placements: []RuntimeParcelPlacement,
     runtime_tiles: []u8,
     runtime_row_flags: []u32,
     runtime_row_ring_speeds: []f32,
@@ -623,7 +634,7 @@ pub const LoadedLevelPreview = struct {
             total_rows,
             runtime_build_config,
         );
-        defer allocator.free(mirror_state_build.states);
+        errdefer allocator.free(mirror_state_build.states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -645,6 +656,23 @@ pub const LoadedLevelPreview = struct {
             runtime_build_flags,
         );
         errdefer allocator.free(runtime_spawn_hints);
+        var runtime_build_final_random_state = mirror_state_build.final_random_state;
+        const runtime_parcel_placements = try buildRuntimeParcelPlacementGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            runtime_tiles,
+            &attachment_scaffold,
+            mirror_state_build.states,
+            runtime_row_flags,
+            level_definition.parcels orelse countParcelCandidates(segments, row_offsets, max_width),
+            &runtime_build_final_random_state,
+            .normal,
+        );
+        errdefer allocator.free(runtime_parcel_placements);
+        const parcel_target_count = countRuntimeParcelPlacements(runtime_parcel_placements);
 
         return .{
             .allocator = allocator,
@@ -656,13 +684,15 @@ pub const LoadedLevelPreview = struct {
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
-            .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .runtime_build_final_random_state = runtime_build_final_random_state,
+            .runtime_row_mirror_states = mirror_state_build.states,
             .runtime_active_row_start = runtime_active_row_start,
             .runtime_active_row_end = runtime_active_row_end,
             .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
-            .parcel_target_count = countActiveParcelAnnotations(segments),
+            .parcel_target_count = parcel_target_count,
+            .runtime_parcel_placements = runtime_parcel_placements,
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
@@ -852,7 +882,7 @@ pub const LoadedLevelPreview = struct {
             total_rows,
             runtime_build_config,
         );
-        defer allocator.free(mirror_state_build.states);
+        errdefer allocator.free(mirror_state_build.states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -874,6 +904,22 @@ pub const LoadedLevelPreview = struct {
             runtime_build_flags,
         );
         errdefer allocator.free(runtime_spawn_hints);
+        const runtime_parcel_placements = try buildRuntimeParcelPlacementGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            runtime_tiles,
+            &attachment_scaffold,
+            mirror_state_build.states,
+            runtime_row_flags,
+            countParcelCandidates(segments, row_offsets, max_width),
+            null,
+            .all,
+        );
+        errdefer allocator.free(runtime_parcel_placements);
+        const parcel_target_count = countRuntimeParcelPlacements(runtime_parcel_placements);
 
         return .{
             .allocator = allocator,
@@ -886,12 +932,14 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .runtime_row_mirror_states = mirror_state_build.states,
             .runtime_active_row_start = runtime_active_row_start,
             .runtime_active_row_end = runtime_active_row_end,
             .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse 0.0,
-            .parcel_target_count = countActiveParcelAnnotations(segments),
+            .parcel_target_count = parcel_target_count,
+            .runtime_parcel_placements = runtime_parcel_placements,
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
@@ -921,11 +969,13 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.runtime_spawn_hints);
         self.allocator.free(self.runtime_ring_effect_kinds);
         self.allocator.free(self.runtime_warning_zone_grid);
+        self.allocator.free(self.runtime_parcel_placements);
         self.allocator.free(self.runtime_row_flags);
         self.allocator.free(self.runtime_row_ring_speeds);
         self.render_cache.deinit(self.allocator);
         self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
+        self.allocator.free(self.runtime_row_mirror_states);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
@@ -936,44 +986,41 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn activeParcelCount(self: *const LoadedLevelPreview) usize {
-        return countActiveParcelAnnotations(self.segments);
+        return countRuntimeParcelPlacements(self.runtime_parcel_placements);
     }
 
-    pub fn trimParcelAnnotationsToTarget(
+    pub fn runtimeParcelAt(self: *const LoadedLevelPreview, global_row: usize) ?RuntimeParcelPlacement {
+        if (global_row >= self.runtime_parcel_placements.len) return null;
+        const placement = self.runtime_parcel_placements[global_row];
+        return if (placement.active) placement else null;
+    }
+
+    pub fn placeChallengeParcelsToTarget(
         self: *LoadedLevelPreview,
         random_state: *u32,
         target_count: usize,
     ) !usize {
-        var parcel_rows: std.ArrayList(ParcelRowLocation) = .empty;
-        defer parcel_rows.deinit(self.allocator);
-
-        for (self.segments, 0..) |loaded_segment, segment_index| {
-            for (loaded_segment.rows, 0..) |row, row_index| {
-                const annotation = row.annotation orelse continue;
-                if (annotation.tag() != .parcel) continue;
-                try parcel_rows.append(self.allocator, .{
-                    .segment_index = segment_index,
-                    .row_index = row_index,
-                    .annotation = annotation,
-                });
-                @constCast(self.segments[segment_index].rows)[row_index].annotation = null;
-            }
-        }
-
-        const keep_count = @min(target_count, parcel_rows.items.len);
-        var remaining = parcel_rows.items.len;
-        var kept: usize = 0;
-        while (kept < keep_count and remaining > 0) : (kept += 1) {
-            const keep_index = nextMathRandomScaledIndex(random_state, remaining);
-            const last_index = remaining - 1;
-            const keep_row = parcel_rows.items[keep_index];
-            @constCast(self.segments[keep_row.segment_index].rows)[keep_row.row_index].annotation = keep_row.annotation;
-            parcel_rows.items[keep_index] = parcel_rows.items[last_index];
-            remaining = last_index;
-        }
-
-        self.parcel_target_count = keep_count;
-        return keep_count;
+        clearRuntimeParcelPlacements(self.runtime_parcel_placements, self.runtime_row_flags);
+        var pool = try collectParcelCandidatePool(self.allocator, self.segments, self.row_offsets, self.max_width);
+        defer pool.deinit(self.allocator);
+        try placeRuntimeParcelCandidates(
+            self.allocator,
+            self.runtime_parcel_placements,
+            self.runtime_row_flags,
+            &pool,
+            target_count,
+            random_state,
+            .challenge,
+            &self.attachment_scaffold,
+            .{
+                .total_rows = self.total_rows,
+                .max_width = self.max_width,
+                .runtime_tiles = self.runtime_tiles,
+                .runtime_row_mirror_states = self.runtime_row_mirror_states,
+            },
+        );
+        self.parcel_target_count = countRuntimeParcelPlacements(self.runtime_parcel_placements);
+        return self.parcel_target_count;
     }
 
     pub fn previewCamera(self: *const LoadedLevelPreview, time_seconds: f32, selected_segment_index: usize) rl.Camera3D {
@@ -2238,7 +2285,7 @@ fn runtimeRowFlagsForRow(row: segment.Row) u32 {
                     .slow => runtime_row_flag_ring_slow,
                 };
             },
-            .parcel => flags |= 0x01,
+            .parcel => {},
             .model => flags |= 0x02,
             .jetpack_off => flags |= runtime_row_flag_jetpack_off,
             .no_fall => flags |= runtime_row_flag_no_fall,
@@ -2487,25 +2534,6 @@ fn buildRuntimeFlagB01Grid(
     return flag_grid;
 }
 
-const ParcelRowLocation = struct {
-    segment_index: usize,
-    row_index: usize,
-    annotation: segment.Annotation,
-};
-
-fn countActiveParcelAnnotations(segments: []const segment.Definition) usize {
-    var count: usize = 0;
-    for (segments) |loaded_segment| {
-        for (loaded_segment.rows) |row| {
-            const annotation = row.annotation orelse continue;
-            if (annotation.tag() == .parcel) {
-                count += 1;
-            }
-        }
-    }
-    return count;
-}
-
 fn nextMathRandomScaledIndex(random_state: *u32, upper_bound: usize) usize {
     if (upper_bound <= 1) return 0;
     random_state.* = (random_state.* *% 0x343fd) +% 0x269ec3;
@@ -2513,6 +2541,398 @@ fn nextMathRandomScaledIndex(random_state: *u32, upper_bound: usize) usize {
     const scaled = @as(f32, @floatFromInt(random_value)) *
         @as(f32, @floatFromInt(upper_bound)) * 0.0000305175781;
     return @min(@as(usize, @intFromFloat(scaled)), upper_bound - 1);
+}
+
+const ParcelPlacementMode = enum {
+    normal,
+    challenge,
+    all,
+};
+
+const ParcelCandidate = struct {
+    segment_index: usize,
+    global_row: usize,
+    set_id: u8,
+    center_lane: f32,
+    floor_lane_index: usize,
+    offset: segment.Vec3,
+};
+
+const ParcelCandidateGroup = struct {
+    segment_index: usize,
+    set_id: u8,
+    candidates: std.ArrayList(ParcelCandidate) = .empty,
+
+    fn deinit(self: *ParcelCandidateGroup, allocator: std.mem.Allocator) void {
+        self.candidates.deinit(allocator);
+    }
+};
+
+const ParcelCandidatePool = struct {
+    zero_candidates: std.ArrayList(ParcelCandidate) = .empty,
+    groups: std.ArrayList(ParcelCandidateGroup) = .empty,
+
+    fn deinit(self: *ParcelCandidatePool, allocator: std.mem.Allocator) void {
+        for (self.groups.items) |*group| {
+            group.deinit(allocator);
+        }
+        self.groups.deinit(allocator);
+        self.zero_candidates.deinit(allocator);
+    }
+
+    fn totalCandidateCount(self: *const ParcelCandidatePool) usize {
+        var count = self.zero_candidates.items.len;
+        for (self.groups.items) |group| {
+            count += group.candidates.items.len;
+        }
+        return count;
+    }
+
+    fn maxGroupCandidateCount(self: *const ParcelCandidatePool) usize {
+        var max_count: usize = 0;
+        for (self.groups.items) |group| {
+            max_count = @max(max_count, group.candidates.items.len);
+        }
+        return max_count;
+    }
+};
+
+fn clearRuntimeParcelPlacements(placements: []RuntimeParcelPlacement, row_flags: []u32) void {
+    for (placements) |*placement| {
+        placement.* = .{};
+    }
+    for (row_flags) |*flags| {
+        flags.* &= ~(runtime_row_flag_parcel | runtime_row_flag_parcel_selected);
+    }
+}
+
+fn countRuntimeParcelPlacements(placements: []const RuntimeParcelPlacement) usize {
+    var count: usize = 0;
+    for (placements) |placement| {
+        if (placement.active) count += 1;
+    }
+    return count;
+}
+
+fn countParcelCandidates(
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    max_width: usize,
+) usize {
+    _ = row_offsets;
+    var count: usize = 0;
+    for (segments) |loaded_segment| {
+        for (loaded_segment.rows) |row| {
+            if (row.annotation) |annotation| {
+                switch (annotation) {
+                    .parcel => |parcel| if (parcelSetIdFromAnnotationId(parcel.id) != null) {
+                        count += 1;
+                    },
+                    else => {},
+                }
+            }
+            const playable_start = runtimePlayableLaneStart(max_width);
+            const playable_end = @min(playable_start + native_playable_lane_count, row.cells.len);
+            for (playable_start..playable_end) |lane_index| {
+                const cell = row.cells[lane_index];
+                if (cell >= '0' and cell <= '9') count += 1;
+            }
+        }
+    }
+    return count;
+}
+
+fn collectParcelCandidatePool(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    max_width: usize,
+) !ParcelCandidatePool {
+    var pool: ParcelCandidatePool = .{};
+    errdefer pool.deinit(allocator);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            const bounds = guidanceBounds(row) orelse if (row.cells.len == 0)
+                LaneBounds{ .min = 0, .max = 0 }
+            else
+                LaneBounds{ .min = 0, .max = row.cells.len - 1 };
+            const center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+            const floor_lane_index = (bounds.min + bounds.max) / 2;
+            if (row.annotation) |annotation| {
+                switch (annotation) {
+                    .parcel => |parcel| if (parcelSetIdFromAnnotationId(parcel.id)) |set_id| {
+                        try appendParcelCandidate(allocator, &pool, .{
+                            .segment_index = segment_index,
+                            .global_row = global_row,
+                            .set_id = set_id,
+                            .center_lane = center_lane,
+                            .floor_lane_index = floor_lane_index,
+                            .offset = parcel.offset,
+                        });
+                    },
+                    else => {},
+                }
+            }
+
+            const playable_start = runtimePlayableLaneStart(max_width);
+            const playable_end = @min(playable_start + native_playable_lane_count, row.cells.len);
+            for (playable_start..playable_end) |lane_index| {
+                const cell = row.cells[lane_index];
+                if (cell < '0' or cell > '9') continue;
+                const set_id: u8 = @intCast(cell - '0');
+                const playable_lane_index = lane_index - playable_start;
+                try appendParcelCandidate(allocator, &pool, .{
+                    .segment_index = segment_index,
+                    .global_row = global_row,
+                    .set_id = set_id,
+                    .center_lane = center_lane,
+                    .floor_lane_index = floor_lane_index,
+                    .offset = .{
+                        .x = @as(f32, @floatFromInt(playable_lane_index)) - 4.0 + 0.5,
+                        .y = 0.0,
+                        .z = 0.0,
+                    },
+                });
+            }
+        }
+    }
+
+    return pool;
+}
+
+fn appendParcelCandidate(
+    allocator: std.mem.Allocator,
+    pool: *ParcelCandidatePool,
+    candidate: ParcelCandidate,
+) !void {
+    if (candidate.set_id == 0) {
+        try pool.zero_candidates.append(allocator, candidate);
+        return;
+    }
+
+    for (pool.groups.items) |*group| {
+        if (group.segment_index == candidate.segment_index and group.set_id == candidate.set_id) {
+            try group.candidates.append(allocator, candidate);
+            return;
+        }
+    }
+
+    try pool.groups.append(allocator, .{
+        .segment_index = candidate.segment_index,
+        .set_id = candidate.set_id,
+    });
+    try pool.groups.items[pool.groups.items.len - 1].candidates.append(allocator, candidate);
+}
+
+fn parcelSetIdFromAnnotationId(id: i32) ?u8 {
+    if (id < 0 or id > 9) return null;
+    return @intCast(id);
+}
+
+fn buildRuntimeParcelPlacementGrid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+    runtime_tiles: []const u8,
+    attachment_scaffold: *const attachment_builders.Scaffold,
+    mirror_states: []const bool,
+    row_flags: []u32,
+    target_count: usize,
+    random_state: ?*u32,
+    mode: ParcelPlacementMode,
+) ![]RuntimeParcelPlacement {
+    const placements = try allocator.alloc(RuntimeParcelPlacement, total_rows);
+    for (placements) |*placement| {
+        placement.* = .{};
+    }
+    errdefer allocator.free(placements);
+
+    var pool = try collectParcelCandidatePool(allocator, segments, row_offsets, max_width);
+    defer pool.deinit(allocator);
+
+    try placeRuntimeParcelCandidates(
+        allocator,
+        placements,
+        row_flags,
+        &pool,
+        target_count,
+        random_state,
+        mode,
+        attachment_scaffold,
+        .{
+            .total_rows = total_rows,
+            .max_width = max_width,
+            .runtime_tiles = runtime_tiles,
+            .runtime_row_mirror_states = mirror_states,
+        },
+    );
+
+    return placements;
+}
+
+const ParcelProjectionContext = struct {
+    total_rows: usize,
+    max_width: usize,
+    runtime_tiles: []const u8,
+    runtime_row_mirror_states: []const bool,
+};
+
+fn placeRuntimeParcelCandidates(
+    allocator: std.mem.Allocator,
+    placements: []RuntimeParcelPlacement,
+    row_flags: []u32,
+    pool: *ParcelCandidatePool,
+    target_count: usize,
+    random_state: ?*u32,
+    mode: ParcelPlacementMode,
+    attachment_scaffold: *const attachment_builders.Scaffold,
+    projection: ParcelProjectionContext,
+) !void {
+    switch (mode) {
+        .all => {
+            for (pool.groups.items) |group| {
+                for (group.candidates.items) |candidate| {
+                    _ = placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection);
+                }
+            }
+            for (pool.zero_candidates.items) |candidate| {
+                _ = placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection);
+            }
+        },
+        .challenge => {
+            const state = random_state orelse return;
+            var placed_count: usize = 0;
+            while (placed_count < target_count and pool.zero_candidates.items.len > 0) {
+                const candidate_index = nextMathRandomScaledIndex(state, pool.zero_candidates.items.len);
+                const candidate = pool.zero_candidates.swapRemove(candidate_index);
+                if (placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection)) {
+                    placed_count += 1;
+                }
+            }
+        },
+        .normal => {
+            const state = random_state orelse return;
+            const max_group_count = pool.maxGroupCandidateCount();
+            const grouped_target = (@as(isize, @intCast((target_count * 80) / 100)) -
+                @as(isize, @intCast(max_group_count)));
+            var placed_count: usize = 0;
+            while (grouped_target > 0 and
+                placed_count < @as(usize, @intCast(grouped_target)) and
+                pool.groups.items.len > 0)
+            {
+                const group_index = nextMathRandomScaledIndex(state, pool.groups.items.len);
+                const group = pool.groups.items[group_index];
+                for (group.candidates.items) |candidate| {
+                    if (placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection)) {
+                        placed_count += 1;
+                    }
+                }
+                removeParcelGroupsForSegment(allocator, pool, group.segment_index);
+            }
+
+            while (placed_count < target_count and pool.zero_candidates.items.len > 0) {
+                const candidate_index = nextMathRandomScaledIndex(state, pool.zero_candidates.items.len);
+                const candidate = pool.zero_candidates.swapRemove(candidate_index);
+                if (placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection)) {
+                    placed_count += 1;
+                }
+            }
+        },
+    }
+}
+
+fn removeParcelGroupsForSegment(allocator: std.mem.Allocator, pool: *ParcelCandidatePool, segment_index: usize) void {
+    var index: usize = 0;
+    while (index < pool.groups.items.len) {
+        if (pool.groups.items[index].segment_index == segment_index) {
+            var group = pool.groups.swapRemove(index);
+            group.deinit(allocator);
+            continue;
+        }
+        index += 1;
+    }
+}
+
+fn placeRuntimeParcelCandidate(
+    placements: []RuntimeParcelPlacement,
+    row_flags: []u32,
+    candidate: ParcelCandidate,
+    attachment_scaffold: *const attachment_builders.Scaffold,
+    projection: ParcelProjectionContext,
+) bool {
+    if (candidate.global_row >= placements.len or candidate.global_row >= row_flags.len) return false;
+    if (placements[candidate.global_row].active) return false;
+    const world_position = runtimeParcelWorldPosition(candidate, attachment_scaffold, projection);
+    placements[candidate.global_row] = .{
+        .active = true,
+        .global_row = candidate.global_row,
+        .parcel_id = candidate.set_id,
+        .world_position = world_position,
+    };
+    row_flags[candidate.global_row] |= runtime_row_flag_parcel | runtime_row_flag_parcel_selected;
+    return true;
+}
+
+fn runtimeParcelWorldPosition(
+    candidate: ParcelCandidate,
+    attachment_scaffold: *const attachment_builders.Scaffold,
+    projection: ParcelProjectionContext,
+) rl.Vector3 {
+    var offset = candidate.offset;
+    if (candidate.global_row < projection.runtime_row_mirror_states.len and
+        projection.runtime_row_mirror_states[candidate.global_row])
+    {
+        offset.x = -offset.x;
+    }
+
+    if (attachment_scaffold.installedBuiltAttachmentAtRow(candidate.global_row)) |built| {
+        const progress = @as(f32, @floatFromInt(candidate.global_row -| built.row.global_row)) + offset.z;
+        const position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            progress,
+            built.row.global_row,
+            offset.x,
+            offset.y + 0.48,
+        );
+        return .{ .x = position.x, .y = position.y, .z = position.z };
+    }
+
+    const floor_height = runtimeFloorHeightAtCellCenter(projection, candidate.global_row, candidate.floor_lane_index) orelse 0.0;
+    const base = runtimeWorldPositionForLane(
+        projection.max_width,
+        candidate.center_lane,
+        @as(f32, @floatFromInt(candidate.global_row)),
+        floor_height + 0.48,
+    );
+    return .{
+        .x = base.x + offset.x,
+        .y = base.y + offset.y,
+        .z = base.z + offset.z,
+    };
+}
+
+fn runtimeFloorHeightAtCellCenter(projection: ParcelProjectionContext, global_row: usize, lane_index: usize) ?f32 {
+    if (global_row >= projection.total_rows or projection.max_width == 0 or lane_index >= projection.max_width) return null;
+    const tile_type = projection.runtime_tiles[runtimeTileIndex(projection.max_width, global_row, lane_index)];
+    return sampleFloorHeightForRuntimeTile(
+        tile_type,
+        @as(f32, @floatFromInt(global_row)) + 0.5,
+        specialFloorHeightForShippedRuntimeTile(tile_type),
+    );
+}
+
+fn runtimeWorldPositionForLane(max_width: usize, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
+    const width_offset = @as(f32, @floatFromInt(max_width)) * 0.5;
+    return .{
+        .x = (lane_center - width_offset) * 1.0,
+        .y = y,
+        .z = row_position + 0.5,
+    };
 }
 
 fn buildRuntimeEdgeMaskGrid(
@@ -2953,7 +3373,7 @@ test "load tutorial level preview" {
     try std.testing.expect(preview.cellAt(0, 0) != null);
 }
 
-test "challenge preview counts live parcel rows instead of level metadata" {
+test "challenge preview defers parcel placements until challenge tuning" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -2971,11 +3391,12 @@ test "challenge preview counts live parcel rows instead of level metadata" {
     );
     defer preview.deinit();
 
-    try std.testing.expect(preview.parcel_target_count > 0);
+    try std.testing.expect(countParcelCandidates(preview.segments, preview.row_offsets, preview.max_width) > 0);
+    try std.testing.expectEqual(@as(usize, 0), preview.parcel_target_count);
     try std.testing.expectEqual(preview.parcel_target_count, preview.activeParcelCount());
 }
 
-test "challenge parcel trim reduces live parcel rows to the requested target" {
+test "challenge parcel placement chooses the requested target" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -2991,17 +3412,16 @@ test "challenge parcel trim reduces live parcel rows to the requested target" {
     );
     defer preview.deinit();
 
-    const initial_count = preview.parcel_target_count;
-    try std.testing.expect(initial_count > 5);
+    try std.testing.expectEqual(@as(usize, 0), preview.parcel_target_count);
 
     var random_state = preview.runtime_build_final_random_state;
-    const kept_count = try preview.trimParcelAnnotationsToTarget(&random_state, 5);
+    const kept_count = try preview.placeChallengeParcelsToTarget(&random_state, 5);
     try std.testing.expectEqual(@as(usize, 5), kept_count);
     try std.testing.expectEqual(@as(usize, 5), preview.parcel_target_count);
     try std.testing.expectEqual(@as(usize, 5), preview.activeParcelCount());
 }
 
-test "challenge parcel selection consumes one random draw per kept parcel" {
+test "challenge parcel placement consumes one random draw per kept parcel" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -3017,10 +3437,18 @@ test "challenge parcel selection consumes one random draw per kept parcel" {
     );
     defer preview.deinit();
 
-    const initial_count = preview.parcel_target_count;
+    var pool = try collectParcelCandidatePool(
+        std.testing.allocator,
+        preview.segments,
+        preview.row_offsets,
+        preview.max_width,
+    );
+    defer pool.deinit(std.testing.allocator);
+
     const target_count: usize = 7;
+    try std.testing.expect(pool.zero_candidates.items.len >= target_count);
     var expected_random_state = preview.runtime_build_final_random_state;
-    var remaining = initial_count;
+    var remaining = pool.zero_candidates.items.len;
     var kept: usize = 0;
     while (kept < target_count) : (kept += 1) {
         _ = nextMathRandomScaledIndex(&expected_random_state, remaining);
@@ -3028,7 +3456,7 @@ test "challenge parcel selection consumes one random draw per kept parcel" {
     }
 
     var random_state = preview.runtime_build_final_random_state;
-    const kept_count = try preview.trimParcelAnnotationsToTarget(&random_state, target_count);
+    const kept_count = try preview.placeChallengeParcelsToTarget(&random_state, target_count);
 
     try std.testing.expectEqual(target_count, kept_count);
     try std.testing.expectEqual(expected_random_state, random_state);
