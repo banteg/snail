@@ -5031,8 +5031,8 @@ pub const Runner = struct {
         );
     }
 
-    fn attachmentTemplateHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
-        return attachment_module.templateHalfSpan(built);
+    fn attachmentEntryHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
+        return attachment_module.templateEntryHalfSpan(built);
     }
 
     fn commitAttachmentSideExit(
@@ -5429,7 +5429,7 @@ pub const Runner = struct {
         );
         const entry_local = attachmentLocalPosition(entry_pose, entry_world_position);
         const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, template_progress, entry_local.x);
-        if (@abs(entry_local.x) > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin) return null;
+        if (@abs(entry_local.x) > attachmentEntryHalfSpan(built) + attachment_side_exit_margin) return null;
         return .{
             .sample_index = sample_index,
             .local_progress = local_progress,
@@ -5483,7 +5483,7 @@ pub const Runner = struct {
             const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
             const sample_length = sample.delta_length;
 
-            if (@abs(start_local.x) > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin) continue;
+            if (@abs(start_local.x) > attachmentEntryHalfSpan(built) + attachment_side_exit_margin) continue;
             if (start_local.y < attachment_entry_start_y_tolerance) continue;
             if (start_local.z < 0.0 or start_local.z > sample_length) continue;
 
@@ -6152,7 +6152,7 @@ fn laneOutsideAttachmentWidth(
         0.0,
         0.0,
     );
-    const half_width = Runner.attachmentTemplateHalfSpan(built);
+    const half_width = Runner.attachmentEntryHalfSpan(built);
 
     for (0..preview.max_width) |lane| {
         const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
@@ -10190,7 +10190,7 @@ test "swept installed entry rejects pre-sample positions while current-row begin
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 }
 
-test "current-row installed entry uses the native template span" {
+test "current-row installed entry uses the native entry span" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer fixture.deinit();
 
@@ -10198,7 +10198,7 @@ test "current-row installed entry uses the native template span" {
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
     const width_threshold = (@as(f32, @floatFromInt(built.template.width_cells)) * 0.5) + attachment_side_exit_margin;
-    const native_threshold = Runner.attachmentTemplateHalfSpan(built) + attachment_side_exit_margin;
+    const native_threshold = Runner.attachmentEntryHalfSpan(built) + attachment_side_exit_margin;
 
     runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.1;
     runner.lane_center = 7.5;

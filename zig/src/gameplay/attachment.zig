@@ -149,12 +149,45 @@ pub fn entryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f
     };
 }
 
-pub fn templateHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
-    // PORT(verified): native entry and side-exit checks use template `+0x54`, which
-    // constructor traces show is the wide template span lane (`WORM`: 16), not the
-    // narrower Zig-side builder width (`WORM`: 4).
-    const span_cells = built.template.spec.subdivision_count orelse built.template.width_cells;
+fn templateSpanCells(built: *const attachment_builders.BuiltAttachment) usize {
+    // Native entry and side-exit checks both read template `+0x54`, which
+    // constructor traces show is the wide template span lane (`WORM`: 16), not
+    // the narrower Zig-side builder width (`WORM`: 4).
+    return built.template.spec.subdivision_count orelse built.template.width_cells;
+}
+
+pub fn templateEntryHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
+    const span_cells = templateSpanCells(built);
+    return @floatFromInt(span_cells / 2);
+}
+
+pub fn templateSideExitHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
+    const span_cells = templateSpanCells(built);
     return @as(f32, @floatFromInt(span_cells)) * 0.5;
+}
+
+test "entry half span truncates odd template spans while side exit uses float half" {
+    const built = attachment_builders.BuiltAttachment{
+        .row = .{
+            .global_row = 0,
+            .segment_index = 0,
+            .row_index = 0,
+            .raw_name = "",
+            .public_path = .cage2,
+        },
+        .template = .{
+            .spec = .{
+                .public_path = .cage2,
+                .family = .cage2,
+                .status = .partial,
+                .subdivision_count = 3,
+            },
+            .width_cells = 3,
+        },
+    };
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), templateEntryHalfSpan(&built), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.5), templateSideExitHalfSpan(&built), 0.0001);
 }
 
 pub fn lateralOffsetFromLocalX(
@@ -189,5 +222,5 @@ pub fn shouldSideExit(
         vertical_offset,
     );
     const world_delta_x = @abs(world_pose.position.x - pose.center_x);
-    return world_delta_x > templateHalfSpan(built) + side_exit_margin;
+    return world_delta_x > templateSideExitHalfSpan(built) + side_exit_margin;
 }
