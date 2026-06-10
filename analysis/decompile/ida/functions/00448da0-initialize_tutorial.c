@@ -2,20 +2,19 @@
 /* function: initialize_tutorial @ 0x448da0 */
 /* selector: initialize_tutorial */
 
-char __thiscall sub_448DA0(_DWORD *this)
+void __fastcall initialize_tutorial(TutorialController *controller)
 {
   char *v1; // eax
-  int v2; // ecx
+  _DWORD *game; // ecx
   int v3; // eax
 
-  *this = 0;
+  controller->state = 0;
   v1 = (char *)MEMORY[0x4DF904] + 476696;
-  *(this + 3) = (char *)MEMORY[0x4DF904] + 476696;
+  controller->game = (char *)MEMORY[0x4DF904] + 476696;
   *((_DWORD *)v1 + 19) |= (unsigned int)&unk_600000;
-  v2 = *(this + 3);
-  v3 = *(_DWORD *)(v2 + 76);
+  game = controller->game;
+  v3 = game[19];
   LOBYTE(v3) = v3 & 0xFD;
-  *(_DWORD *)(v2 + 76) = v3;
-  return v3;
+  game[19] = v3;
 }
 

@@ -4,7 +4,11 @@
 /* function: build_snail_hotspots @ 0x445d50 */
 
 00445d50        struct PlayerPresentationController* presentation_1 = presentation
-00445d53        void* ebp = presentation->_pad_1644[0x2c].d
+00445d53        void* ebp
+00445d53        ebp.b = presentation->_pad_1644[0x2c]
+00445d53        ebp:1.b = presentation->_pad_1644[0x2d]
+00445d53        ebp:2.b = presentation->_pad_1644[0x2e]
+00445d53        ebp:3.b = presentation->_pad_1644[0x2f]
 00445d5f        char (** i)[0x16] = &data_4a4aa0
 00445d64        float* esi = &presentation->snail_hotspots_local[0].z
 00445d71        (esi - 0x16d4)->snail_hotspots_local[0].z = 0f
@@ -14,15 +18,14 @@
 00445d83        int32_t edx_1 = *(ebp + 0x54)
 00445d86        int32_t ecx = 0
 00445d8a        if (edx_1 s<= 0)
-00445da0        label_445da0:
-00445da0        char (* var_18_1)[0x16] = *i
-00445da6        report_errorf("Cannot find HotPoint Texture %s")
+00445da6        label_445da6:
+00445da6        report_errorf("Cannot find HotPoint Texture %s", *i)
 00445d8f        int32_t* edi_2 = *(ebp + 0x5c) + 0xc
 00445d94        while (*edi_2 != j)
 00445d96        ecx += 1
 00445d97        edi_2 = &edi_2[0xc]
 00445d9c        if (ecx s>= edx_1)
-00445d9c        goto label_445da0
+00445d9c        goto label_445da6
 00445dbb        int32_t eax_2
 00445dbb        eax_2.w = *(ecx * 0x30 + *(ebp + 0x5c) + 2)
 00445dc0        int32_t ecx_2 = *(ebp + 0x38)

@@ -18,8 +18,6 @@
 00430f8c        if (sub_48c18b(esi) != 0)
 00430f98        char var_100[0x100]
 00430f98        sub_496946(&var_100, 0x100)
-00430fa1        char (* var_114)[0x100] = &var_100
-00430fa2        char* var_118 = esi
-00430fa8        report_messagef("ERROR: cannot find directory %s (from %s)\n")
+00430fa8        report_messagef("ERROR: cannot find directory %s (from %s)\n", esi, &var_100)
 00430fbc        return 1
 00430fc6        return 0

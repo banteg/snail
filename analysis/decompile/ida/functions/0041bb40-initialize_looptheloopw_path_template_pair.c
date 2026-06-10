@@ -64,8 +64,8 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
   Vec3 *vertices; // [esp+2Ch] [ebp-48h]
   signed int v60; // [esp+2Ch] [ebp-48h]
   int v61; // [esp+30h] [ebp-44h]
-  float v62; // [esp+34h] [ebp-40h]
-  float v63; // [esp+34h] [ebp-40h]
+  float angle; // [esp+34h] [ebp-40h]
+  float anglea; // [esp+34h] [ebp-40h]
   float v64; // [esp+38h] [ebp-3Ch]
   float v65; // [esp+38h] [ebp-3Ch]
   float v66; // [esp+3Ch] [ebp-38h]
@@ -93,7 +93,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
   int32_t arg3c; // [esp+7Ch] [ebp+8h]
   int32_t arg3d; // [esp+7Ch] [ebp+8h]
   float arg3e; // [esp+7Ch] [ebp+8h]
-  char *v91; // [esp+88h] [ebp+14h]
+  char *texture_path; // [esp+88h] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
   v47 = 0.0;
@@ -181,8 +181,8 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
       v54 = v14;
       v56 = v14 * 0.5;
       v43 = v54 * 8.0;
-      v62 = sine(v43);
-      v63 = sine(v56) * v62 * 0.39269909;
+      angle = sine(v43);
+      anglea = sine(v56) * angle * 0.39269909;
       self->primary_samples[v12].center_x = (*(float *)((char *)self->primary_samples + v11 - 24)
                                            - self->primary_samples->center_x)
                                           * v46
@@ -215,7 +215,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
         (Vec3 *)&self->primary_samples[v12].transform.basis_forward,
         (Vec3 *)&self->primary_samples[v12],
         (Vec3 *)&self->primary_samples[v12].transform.basis_up);
-      rotate_matrix_world_z(&self->primary_samples[v12].transform, v63);
+      rotate_matrix_world_z(&self->primary_samples[v12].transform, anglea);
       v17 = &self->secondary_samples[v12];
       v17->transform.basis_right.x = 1.0;
       v17->transform.basis_right.y = 0.0;
@@ -228,7 +228,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
         (Vec3 *)&self->secondary_samples[v12].transform.basis_forward,
         (Vec3 *)&self->secondary_samples[v12],
         (Vec3 *)&self->secondary_samples[v12].transform.basis_up);
-      rotate_matrix_world_z(&self->secondary_samples[v12++].transform, v63);
+      rotate_matrix_world_z(&self->secondary_samples[v12++].transform, anglea);
       if ( ++arg3c >= v49 )
         break;
       v11 = v61;
@@ -356,7 +356,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
             v41->vertex_index_b = v39 + i * (LOWORD(self->width_cells) + 1);
             v41->vertex_index_c = v39 + (i + 1) * (LOWORD(self->width_cells) + 1);
             v41->vertex_index_d = (i + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-            v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v91, 0, 0);
+            v41->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v41->u0 = v50;
             v41->v0 = arg3e;
             v41->u1 = arg2d;
@@ -371,7 +371,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
             v41->vertex_index_b = i * (LOWORD(self->width_cells) + 1) + v39 + 1;
             v41->vertex_index_c = (i + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
             v41->vertex_index_d = v39 + (i + 1) * (LOWORD(self->width_cells) + 1);
-            v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+            v41->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
             v41->u0 = arg2d;
             v41->v0 = arg3e;
             v41->u1 = v50;

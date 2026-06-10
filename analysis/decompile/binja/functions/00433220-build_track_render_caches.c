@@ -24,7 +24,12 @@
 004332cc        manager->_pad_a7bc[0].d = fconvert.s(float.t(var_40) * fconvert.t(24f))
 004332de        int32_t i_3 = 5
 004332ef        int32_t i
-004332e9        *eax_9 = manager->_pad_a7bc[0].d
+004332e3        int32_t edx_6
+004332e3        edx_6.b = manager->_pad_a7bc[0]
+004332e3        edx_6:1.b = manager->_pad_a7bc[1]
+004332e3        edx_6:2.b = manager->_pad_a7bc[2]
+004332e3        edx_6:3.b = manager->_pad_a7bc[3]
+004332e9        *eax_9 = edx_6
 004332eb        eax_9 = &eax_9[0xf]
 004332ee        i = i_3
 004332ee        i_3 -= 1
@@ -38,10 +43,15 @@
 0043330d        struct TrackRenderGrid* track_render_grid = manager->track_render_grid
 00433310        void* edx_7 = *(track_render_grid + ebp_1)
 00433315        if (edx_7 != 0)
-00433319        int32_t var_60_1 = 0
+00433317        struct ColorBGRA8 ecx_5
+00433317        ecx_5.b = manager->clear_color.b
+00433317        ecx_5.g = manager->clear_color.g
+00433317        ecx_5.r = manager->clear_color.r
+00433317        ecx_5.a = manager->clear_color.a
+00433346        char* var_88_1 = var_4c
 00433349        int32_t var_18
 00433349        int32_t var_4
-00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->clear_color)
+00433349        sub_433960(manager, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], manager->max_index_counts[4], ecx_5, 0)
 00433373        *(&manager->slots[4].render_object)[esi_1 * 0x4b]->texture_group_texture_refs = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
 00433378        *(manager->track_render_grid + ebp_1) = 0
 00433383        ebp_1 += 4
@@ -63,18 +73,20 @@
 00433427        eax_25 = edi_1 + track_render_grid_3
 00433438        int32_t var_64_3
 00433438        if (eax_24 != 0 && (ebp_2 & 0x4000) == 0x4000)
-00433443        int32_t var_60_3 = 1
+00433443        int32_t var_60_1 = 1
 00433448        var_64_3 = var_48
 00433449        if ((ebp_2.b & 0x40) != 0x40)
-0043351b        label_43351b:
-0043351b        sub_433960(manager, var_4c, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[0], &var_28, manager->shared_index_buffers[0], &var_14, manager->max_vertex_counts[0], (manager->max_index_counts[0]).b, var_64_3)
+00433518        label_433518:
+00433518        char* var_88_4 = var_4c
+0043351b        sub_433960(manager, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[0], &var_28, manager->shared_index_buffers[0], &var_14, manager->max_vertex_counts[0], manager->max_index_counts[0], var_64_3, 1)
 0043352a        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 00433536        eax_23 = (&manager->slots[0].render_object)[esi_1 * 0x4b]
 0043353a        goto label_4335d0
-0043347e        label_43347e:
+0043347b        label_43347b:
+0043347b        char* var_88_3 = var_4c
 0043347e        int32_t var_24
 0043347e        int32_t var_10
-0043347e        sub_433960(manager, var_4c, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[1], &var_24, manager->shared_index_buffers[1], &var_10, manager->max_vertex_counts[1], (manager->max_index_counts[1]).b, var_64_3)
+0043347e        sub_433960(manager, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[1], &var_24, manager->shared_index_buffers[1], &var_10, manager->max_vertex_counts[1], manager->max_index_counts[1], var_64_3, 1)
 0043348d        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 00433499        eax_23 = (&manager->slots[1].render_object)[esi_1 * 0x4b]
 004334a0        goto label_4335d0
@@ -84,25 +96,25 @@
 004334bf        eax_25 = manager->track_render_grid + edi_1
 004334c1        ebp_3 = *(eax_25 + 0x3bfb08)
 004334d5        if (eax_30 != 0 && (ebp_3 & 0x4000) == 0x4000)
-004334e0        int32_t var_60_4 = 1
+004334e0        int32_t var_60_2 = 1
 004334e5        var_64_3 = var_48
 004334e6        if ((ebp_3.b & 0x40) != 0x40)
-004334e6        goto label_43347e
-004334e6        goto label_43351b
+004334e6        goto label_43347b
+004334e6        goto label_433518
 00433550        if (is_ramp_cache_tile_family(&manager->track_render_grid->cells + edi_1) != 0)
 00433559        void* eax_38 = manager->track_render_grid + edi_1
 0043356d        if ((*(eax_38 + 0x3bfb08) & 0x4000) == 0x4000)
-00433576        int32_t var_60_5 = 0
+004335a2        char* var_88_5 = var_4c
 004335a5        int32_t var_1c
 004335a5        int32_t var_8
-004335a5        sub_433960(manager, var_4c, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &var_1c, manager->shared_index_buffers[3], &var_8, manager->max_vertex_counts[3], (manager->max_index_counts[3]).b, var_48)
+004335a5        sub_433960(manager, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &var_1c, manager->shared_index_buffers[3], &var_8, manager->max_vertex_counts[3], manager->max_index_counts[3], var_48, 0)
 004335ba        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 004335c0        eax_23 = (&manager->slots[3].render_object)[esi_1 * 0x4b]
 004335c0        goto label_4335d0
-004333b4        int32_t var_60_2 = 1
+004333e0        char* var_88_2 = var_4c
 004333e3        int32_t var_20
 004333e3        int32_t var_c
-004333e3        sub_433960(manager, var_4c, *(eax_18 + 0x3bfaec), eax_18 + 0x3bfad8, manager->shared_vertex_buffers[2], &var_20, manager->shared_index_buffers[2], &var_c, manager->max_vertex_counts[2], (manager->max_index_counts[2]).b, var_48)
+004333e3        sub_433960(manager, *(eax_18 + 0x3bfaec), eax_18 + 0x3bfad8, manager->shared_vertex_buffers[2], &var_20, manager->shared_index_buffers[2], &var_c, manager->max_vertex_counts[2], manager->max_index_counts[2], var_48, 1)
 004333f2        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 004333fe        eax_23 = (&manager->slots[2].render_object)[esi_1 * 0x4b]
 004335d0        label_4335d0:
@@ -139,7 +151,12 @@
 004336b9        __builtin_memcpy(edi_6, esi_6, ecx_62 & 3)
 004336c4        int32_t* eax_58 = *(*(*ebp_4 + 0xc0) + 8)
 004336ca        (*(*eax_58 + 0x30))(eax_58)
-004336d6        int32_t* eax_60 = **(*ebp_4 + 0xc8)
+004336d0        char* ecx_67 = *(*ebp_4 + 0xc8)
+004336d6        int32_t* eax_60
+004336d6        eax_60.b = *ecx_67
+004336d6        eax_60:1.b = ecx_67[1]
+004336d6        eax_60:2.b = ecx_67[2]
+004336d6        eax_60:3.b = ecx_67[3]
 004336db        (*(*eax_60 + 0x30))(eax_60)
 004336e2        void* eax_61 = *ebp_4
 004336e9        ebp_4 = &ebp_4[0xf]
@@ -203,7 +220,7 @@
 004337dd        var_4c = "Ramp"
 004337e7        case 4
 004337e7        var_4c = "Fringe"
-004337f3        int32_t var_60_8 = ebp_5
+004337f3        int32_t var_60_5 = ebp_5
 004337f4        int32_t var_64_7 = edi_7
 004337f5        char* var_68_8 = var_4c
 004337f6        char* var_6c_6 = "Max Cache Type=%s Vertices=%i   Indices=%i\n"

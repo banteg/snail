@@ -69,8 +69,7 @@
 00449023        char* cursor_1 = find_case_insensitive_substring(&var_200, eax)
 0044902d        cursor = cursor_1
 00449031        if (cursor_1 == 0)
-00449245        char* var_228_9 = &var_200
-0044924b        report_errorf("Cannot find %s in _Voice.txt")
+0044924b        report_errorf("Cannot find %s in _Voice.txt", &var_200)
 0044925d        return 0
 0044903d        char* cursor_2 = find_case_insensitive_substring("{", cursor_1)
 00449048        cursor = cursor_2

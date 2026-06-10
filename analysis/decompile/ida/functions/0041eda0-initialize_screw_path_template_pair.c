@@ -93,7 +93,7 @@ int32_t __thiscall initialize_screw_path_template_pair(
   int arg3c; // [esp+6Ch] [ebp+8h]
   int32_t arg3d; // [esp+6Ch] [ebp+8h]
   float arg3e; // [esp+6Ch] [ebp+8h]
-  char *v91; // [esp+78h] [ebp+14h]
+  char *texture_path; // [esp+78h] [ebp+14h]
 
   v6 = 0;
   self->width_cells = arg3;
@@ -351,7 +351,7 @@ int32_t __thiscall initialize_screw_path_template_pair(
               v42->vertex_index_b = v40 + v6 * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_c = v40 + (v6 + 1) * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_d = (v6 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v91, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
               v42->u0 = v45;
               v42->v0 = arg3e;
               v42->u1 = arg2c;
@@ -366,7 +366,7 @@ int32_t __thiscall initialize_screw_path_template_pair(
               v42->vertex_index_b = v6 * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_c = (v6 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_d = v40 + (v6 + 1) * (LOWORD(self->width_cells) + 1);
-              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
               v42->u0 = arg2c;
               v42->v0 = arg3e;
               v42->u1 = v45;

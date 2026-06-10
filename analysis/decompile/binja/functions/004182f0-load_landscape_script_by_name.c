@@ -17,8 +17,7 @@
 00418348        do while (i s< *(arg1 + 0x5a0))
 00418354        char* eax_3 = load_file_bytes(&var_600, nullptr)
 00418360        if (eax_3 == 0)
-00418369        char (* var_71c_2)[0x200] = &var_600
-0041836f        report_errorf("Landscape.Cannot load %s")
+0041836f        report_errorf("Landscape.Cannot load %s", &var_600)
 00418383        return 0
 004183aa        rstrcpy_checked_ascii(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a8, ebx)
 004183b5        char* cursor_1 = find_case_insensitive_substring("ID:", eax_3)
@@ -26,8 +25,7 @@
 004183c3        if (cursor_1 != 0)
 00418402        cursor = find_case_insensitive_substring(":", cursor_1)
 0041841b        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a4) = parse_next_signed_int(&cursor)
-004183cc        char (* var_71c_4)[0x200] = &var_600
-004183d2        report_errorf("Landscape. Cannot find ID: %s")
+004183d2        report_errorf("Landscape. Cannot find ID: %s", &var_600)
 004183e6        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x5a4) = 0
 00418428        char* cursor_2 = find_case_insensitive_substring("Fog:", eax_3)
 00418430        cursor = cursor_2
@@ -36,8 +34,7 @@
 004184a2        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b4) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 004184cd        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b8) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 004184f6        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6bc) = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
-0041843f        char (* var_71c_7)[0x200] = &var_600
-00418445        report_errorf("Landscape. Cannot find Fog: %s")
+00418445        report_errorf("Landscape. Cannot find Fog: %s", &var_600)
 00418460        set_color_black()
 00418503        char* cursor_3 = find_case_insensitive_substring("Picture:", eax_3)
 0041850b        cursor = cursor_3
@@ -87,8 +84,7 @@
 004185f4        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62c) = 0
 0041871c        void* var_71c_14 = arg1 + *(arg1 + 0x5a0) * 0x124 + 0x62d
 0041871d        char* var_720_8 = "Loading backdrop texture %s"
-0041851a        char (* var_71c_10)[0x200] = &var_600
-00418520        report_errorf("Landscape. Cannot find Picture: in %s")
+00418520        report_errorf("Landscape. Cannot find Picture: in %s", &var_600)
 00418730        char* cursor_5 = find_case_insensitive_substring("Landscape:", eax_3)
 00418738        cursor = cursor_5
 0041873e        if (cursor_5 != 0)
@@ -110,8 +106,7 @@
 004187a2        ecx_22[1] = 0x78
 004187a5        ecx_22[2] = 0
 004187c0        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6b0) = load_or_reuse_cached_x_mesh(eax_46 + 0x48e00, &var_200)
-00418747        char (* var_71c_16)[0x200] = &var_600
-0041874d        report_errorf("Landscape. Cannot find Landscape: in %s")
+0041874d        report_errorf("Landscape. Cannot find Landscape: in %s", &var_600)
 004187e6        char* cursor_7 = find_case_insensitive_substring("Distort:", eax_3)
 004187ee        cursor = cursor_7
 004187f4        if (cursor_7 != 0)
@@ -120,8 +115,7 @@
 00418822        unimplemented  {call 0x431f20}
 00418836        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6c4) = fconvert.s(unimplemented  {fstp dword [esi+edx*4+0x6c4], st0})
 00418836        unimplemented  {fstp dword [esi+edx*4+0x6c4], st0}
-004187fd        char (* var_71c_20)[0x200] = &var_600
-00418803        report_errorf("Landscape. Cannot find Distort: in %s")
+00418803        report_errorf("Landscape. Cannot find Distort: in %s", &var_600)
 00418843        char* var_71c_22 = ebx
 00418845        char* var_720_9 = "Landscape: %s imported\n"
 0041884a        *(arg1 + 0x5a0) += 1

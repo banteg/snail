@@ -41,7 +41,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   float authored_top; // eax
   float authored_width; // ecx
   float authored_height; // edx
-  float previous_mouse_x; // eax
+  int32_t mouse_settle_frames; // eax
   FrontendWidget *slider_more_widget; // ecx
   uint32_t v40; // eax
   double v41; // st7
@@ -52,15 +52,15 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   uint32_t v46; // edx
   FrontendWidget *v47; // eax
   uint32_t v48; // ecx
-  float *p_g; // ecx
-  float v50; // [esp+0h] [ebp-24h]
-  float v51; // [esp+0h] [ebp-24h]
-  float v52; // [esp+4h] [ebp-20h]
-  float v53; // [esp+4h] [ebp-20h]
-  float v54; // [esp+8h] [ebp-1Ch]
-  float v55; // [esp+8h] [ebp-1Ch]
-  float v56; // [esp+Ch] [ebp-18h]
-  float v57; // [esp+Ch] [ebp-18h]
+  Color4f *p_current_text_color; // ecx
+  float r; // [esp+0h] [ebp-24h]
+  float ra; // [esp+0h] [ebp-24h]
+  float g; // [esp+4h] [ebp-20h]
+  float ga; // [esp+4h] [ebp-20h]
+  float b; // [esp+8h] [ebp-1Ch]
+  float ba; // [esp+8h] [ebp-1Ch]
+  float a; // [esp+Ch] [ebp-18h]
+  float aa; // [esp+Ch] [ebp-18h]
   char v58; // [esp+1Ch] [ebp-8h]
 
   widget->previous_widget_flags = widget->widget_flags;
@@ -70,8 +70,8 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   {
     widget->slider_hit_left = widget->layout_width * 0.1 + widget->layout_left + 4.0 - 12.0;
     widget->slider_hit_right = widget->layout_width * 0.80000001 + widget->layout_left - 4.0;
-    widget->slider_hit_top = *(float *)widget->layout_height * 0.5 + widget->layout_top - 6.0;
-    widget->slider_hit_bottom = *(float *)widget->layout_height * 0.5 + widget->layout_top + 32.0 - 6.0;
+    widget->slider_hit_top = widget->layout_height * 0.5 + widget->layout_top - 6.0;
+    widget->slider_hit_bottom = widget->layout_height * 0.5 + widget->layout_top + 32.0 - 6.0;
   }
   widget->slider_position_current = (widget->slider_position_target - widget->slider_position_current) * 0.80000001
                                   + widget->slider_position_current;
@@ -85,7 +85,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
       if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
-        reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+        reset_tooltip(&widget->tooltip);
       }
       else
       {
@@ -102,13 +102,13 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
         v8 = widget->list_flags;
         BYTE1(v8) &= ~2u;
         widget->list_flags = v8;
-        reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+        reset_tooltip(&widget->tooltip);
       }
     }
     else
     {
       report_errorf(aListRemove);
-      reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+      reset_tooltip(&widget->tooltip);
     }
     return;
   }
@@ -123,7 +123,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
 LABEL_16:
       report_errorf(aListRemove);
 LABEL_33:
-      reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+      reset_tooltip(&widget->tooltip);
       widget->widget_flags = 0;
       return;
     }
@@ -167,9 +167,9 @@ LABEL_82:
       widget->hover_blend_target = 1.0;
     v19 = widget->widget_flags;
     if ( (v19 & 0x2000000) != 0
-      && !LODWORD(widget->mouse_settle_frames)
+      && !widget->mouse_settle_frames
       && (*((float *)MEMORY[0x4DF904] + 167) != widget->previous_mouse_x
-       || *((float *)MEMORY[0x4DF904] + 168) != *(float *)widget->previous_mouse_y) )
+       || *((float *)MEMORY[0x4DF904] + 168) != widget->previous_mouse_y) )
     {
       widget->widget_flags = v19 | 0x4000000;
     }
@@ -177,7 +177,7 @@ LABEL_82:
       && is_mouse_captured((char *)MEMORY[0x4DF904] + 656)
       && read_pressed_text_input_key_code() == widget->shortcut_key_code )
     {
-      reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+      reset_tooltip(&widget->tooltip);
       v20 = widget->widget_flags;
       if ( (v20 & 0x1000000) != 0 )
       {
@@ -239,7 +239,7 @@ LABEL_72:
             queue_frontend_widget_flag_after_delay((int)(v25 + 723), (int)widget, 128);
           }
           play_sound_effect(8);
-          reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+          reset_tooltip(&widget->tooltip);
         }
         goto LABEL_83;
       }
@@ -254,8 +254,8 @@ LABEL_72:
       }
       if ( ((unsigned int)&unk_800000 & widget->widget_flags) == 0 )
         play_sound_effect(8);
-      if ( ((int)widget->?.owner_widget & 0x20) == 0 )
-        reset_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+      if ( (widget->tooltip.mode_flags & 0x20) == 0 )
+        reset_tooltip(&widget->tooltip);
     }
     v25 = MEMORY[0x4DF904];
     goto LABEL_72;
@@ -321,34 +321,34 @@ LABEL_83:
     }
   }
   update_twinkle_manager(widget->_pad_80);
-  update_tooltip((FrontendWidgetTooltip *)&widget->?.state);
+  update_tooltip(&widget->tooltip);
   v58 = BYTE1(widget->widget_flags) & 1;
   layout_frontend_widget(widget);
   if ( (widget->widget_flags & 0x1000) == 0 )
   {
     v32 = 1.0 - widget->hover_blend_current;
-    v56 = widget->hover_blend_current * widget->?.r + v32 * widget->?.r;
-    v54 = widget->hover_blend_current * widget->?.a + v32 * widget->?.a;
-    v52 = widget->hover_blend_current * widget->?.b + v32 * widget->?.b;
-    v50 = widget->hover_blend_current * widget->?.g + v32 * widget->?.g;
-    store_color4f((Color4f *)&widget->_pad_1a8.g, v50, v52, v54, v56);
+    a = widget->hover_blend_current * widget->hot_fill_color.a + v32 * widget->idle_fill_color.a;
+    b = widget->hover_blend_current * widget->hot_fill_color.b + v32 * widget->idle_fill_color.b;
+    g = widget->hover_blend_current * widget->hot_fill_color.g + v32 * widget->idle_fill_color.g;
+    r = widget->hover_blend_current * widget->hot_fill_color.r + v32 * widget->idle_fill_color.r;
+    store_color4f(&widget->current_fill_color, r, g, b, a);
     v33 = 1.0 - widget->hover_blend_current;
-    v57 = widget->hover_blend_current * widget->? + v33 * widget->?.r;
-    v55 = widget->hover_blend_current * widget->?.a + v33 * widget->?.a;
-    v53 = widget->hover_blend_current * widget->?.b + v33 * widget->?.b;
-    v51 = widget->hover_blend_current * widget->?.g + v33 * widget->?.g;
-    store_color4f((Color4f *)&widget->?.g, v51, v53, v55, v57);
+    aa = widget->hover_blend_current * widget->hot_text_color.a + v33 * widget->idle_text_color.a;
+    ba = widget->hover_blend_current * widget->hot_text_color.b + v33 * widget->idle_text_color.b;
+    ga = widget->hover_blend_current * widget->hot_text_color.g + v33 * widget->idle_text_color.g;
+    ra = widget->hover_blend_current * widget->hot_text_color.r + v33 * widget->idle_text_color.r;
+    store_color4f(&widget->current_text_color, ra, ga, ba, aa);
     v34 = widget->widget_flags;
     if ( (v34 & 0x8000) != 0 )
     {
-      widget->?.g = widget->?.g * 0.5;
-      widget->?.b = widget->?.b * 0.5;
-      widget->?.a = widget->?.a * 0.5;
-      widget->?.r = widget->?.r * 0.5;
-      widget->_pad_1a8.g = widget->_pad_1a8.g * 0.5;
-      widget->_pad_1a8.b = widget->_pad_1a8.b * 0.5;
-      widget->_pad_1a8.a = widget->_pad_1a8.a * 0.5;
-      widget->?.r = widget->?.r * 0.5;
+      widget->current_text_color.r = widget->current_text_color.r * 0.5;
+      widget->current_text_color.g = widget->current_text_color.g * 0.5;
+      widget->current_text_color.b = widget->current_text_color.b * 0.5;
+      widget->current_text_color.a = widget->current_text_color.a * 0.5;
+      widget->current_fill_color.r = widget->current_fill_color.r * 0.5;
+      widget->current_fill_color.g = widget->current_fill_color.g * 0.5;
+      widget->current_fill_color.b = widget->current_fill_color.b * 0.5;
+      widget->current_fill_color.a = widget->current_fill_color.a * 0.5;
     }
     if ( (v34 & 0x800) == 0 )
     {
@@ -360,37 +360,37 @@ LABEL_83:
         authored_height = widget->authored_height;
         widget->layout_top = authored_top;
         widget->layout_width = authored_width;
-        *(float *)widget->layout_height = authored_height;
+        widget->layout_height = authored_height;
       }
       else
       {
         layout_and_queue_wrapped_font_text(
-          (char *)&widget->?.raw[4],
-          LODWORD(widget->font_id),
+          (char *)&widget->text_buffer,
+          widget->font_id,
           LODWORD(widget->font_scale),
           widget->layout_anchor_x,
-          *(float *)widget->layout_anchor_y,
+          widget->layout_anchor_y,
           &widget->layout_left,
           &widget->layout_top,
           &widget->layout_width,
-          (float *)widget->layout_height,
+          &widget->layout_height,
           LODWORD(widget->text_effect_current),
           unk_4DF935 & 1,
-          LODWORD(widget->text_alignment),
+          widget->text_alignment,
           LODWORD(widget->anchor_x),
           0x1000000,
-          (int)&widget->?.g,
+          (int)&widget->current_text_color,
           0,
           v58);
       }
     }
     draw_frontend_widget((int)widget);
   }
-  previous_mouse_x = widget->mouse_settle_frames;
-  if ( previous_mouse_x != 0.0 )
-    LODWORD(widget->mouse_settle_frames) = LODWORD(previous_mouse_x) - 1;
+  mouse_settle_frames = widget->mouse_settle_frames;
+  if ( mouse_settle_frames )
+    widget->mouse_settle_frames = mouse_settle_frames - 1;
   widget->previous_mouse_x = *((float *)MEMORY[0x4DF904] + 167);
-  *(_DWORD *)widget->previous_mouse_y = *((_DWORD *)MEMORY[0x4DF904] + 168);
+  widget->previous_mouse_y = *((float *)MEMORY[0x4DF904] + 168);
   if ( (widget->widget_flags & 0x100000) != 0 )
   {
     slider_more_widget = widget->slider_more_widget;
@@ -433,15 +433,15 @@ LABEL_83:
     {
       v47->widget_flags &= ~0x8000u;
     }
-    p_g = &widget->slider_value_widget->?.g;
-    *p_g = widget->?.g;
-    p_g[1] = widget->?.b;
-    p_g[2] = widget->?.a;
-    p_g[3] = widget->?.r;
+    p_current_text_color = &widget->slider_value_widget->current_text_color;
+    p_current_text_color->r = widget->current_text_color.r;
+    p_current_text_color->g = widget->current_text_color.g;
+    p_current_text_color->b = widget->current_text_color.b;
+    p_current_text_color->a = widget->current_text_color.a;
     widget->slider_value_widget->hover_blend_target = widget->hover_blend_target;
     widget->slider_value_widget->hover_blend_current = widget->hover_blend_current;
     sprintf(
-      (char *const)&widget->slider_value_widget->?.raw[4],
+      (char *const)&widget->slider_value_widget->text_buffer,
       "%02i%%",
       (unsigned int)(__int64)(widget->slider_position_target * 100.0 + 0.1));
   }

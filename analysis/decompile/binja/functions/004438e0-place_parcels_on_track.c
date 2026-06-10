@@ -139,12 +139,10 @@
 00443cda        var_214_2 -= 1
 00443cde        do while (cond:3_1)
 00443ce8        if (out_angle_2 s< edi_31)
-00443cf0        void* var_228_1 = arg1 + 0x1b0150
-00443cf6        report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets")
+00443cf6        report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets", arg1 + 0x1b0150)
 00443d08        int32_t ecx_13 = *(arg1 + 0x1b01e0) - esi_1
 00443d0c        if (ecx_13 s> out_angle_1)
-00443d14        void* var_228_2 = arg1 + 0x1b0150
-00443d1a        ecx_13 = report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ")
+00443d1a        ecx_13 = report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", arg1 + 0x1b0150)
 00443d22        int32_t ebx_26 = 0
 00443d26        int32_t var_210_1 = 0
 00443d2a        int16_t x87control
@@ -166,8 +164,7 @@
 00443daa        out_angle = out_angle_3
 00443db7        void* esi_3 = arg1 + out_angle_3 i* 0xf4
 00443dc1        if ((*(esi_3 + 0x5ccac8) & 0x10) != 0)
-00443dcd        void* var_228_4 = arg1 + 0x1b0150
-00443dd3        report_errorf("Duplicate Parcel Request in %s.")
+00443dd3        report_errorf("Duplicate Parcel Request in %s.", arg1 + 0x1b0150)
 00443dec        long double x87_r7_9 = float.t(out_angle)
 00443df0        *(esi_3 + 0x5ccac8) |= 0x11
 00443dfc        *(esi_3 + 0x5ccb58) = *ebx_28
@@ -257,8 +254,7 @@
 00443fff        eax_47.b = *(arg1 + (edx_39 << 2) + 0x5ccac8)
 00444008        void* edi_36 = arg1 + (edx_39 << 2)
 0044400b        if ((eax_47.b & 0x10) != 0)
-00444016        void* var_228_6 = arg1 + 0x1b0150
-0044401c        report_errorf("Duplicate Parcel Request in %s.")
+0044401c        report_errorf("Duplicate Parcel Request in %s.", arg1 + 0x1b0150)
 0044403d        *(edi_36 + 0x5ccac8) |= 0x11
 00444047        *(edi_36 + 0x5ccb58) = *(esi_10 + 0x53d194)
 0044404c        *(edi_36 + 0x5ccb5c) = *(esi_10 + 0x53d198)
@@ -290,9 +286,7 @@
 004440ff        break
 0044410d        int32_t eax_52 = *(arg1 + 0x1b01e0)
 00444115        if (var_210_1 != eax_52)
-0044411d        void* var_228_7 = arg1 + 0x1b0150
-0044411e        int32_t var_22c_5 = eax_52
-00444124        report_errorf("Did not generate required Parcels(%i) in %s")
+00444124        report_errorf("Did not generate required Parcels(%i) in %s", eax_52, arg1 + 0x1b0150)
 00444129        int32_t ecx_41 = *(arg1 + 0x1b01e8)
 00444134        if (ecx_41 != 0)
 00444142        *(arg1 + 0x1b01e8) = divs.dp.d(sx.q(*(arg1 + 0x1b01e0) * var_210_1), ecx_41)

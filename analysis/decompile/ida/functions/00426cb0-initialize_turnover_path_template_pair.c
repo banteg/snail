@@ -96,7 +96,7 @@ int32_t __thiscall initialize_turnover_path_template_pair(
   int32_t arg3c; // [esp+70h] [ebp+8h]
   int32_t arg3d; // [esp+70h] [ebp+8h]
   float arg3e; // [esp+70h] [ebp+8h]
-  char *v94; // [esp+7Ch] [ebp+14h]
+  char *texture_path; // [esp+7Ch] [ebp+14h]
 
   v6 = 0;
   self->kind = PATH_TEMPLATE_KIND_TURNOVER;
@@ -339,7 +339,7 @@ int32_t __thiscall initialize_turnover_path_template_pair(
             v46->vertex_index_b = v44 + i * (LOWORD(self->width_cells) + 1);
             v46->vertex_index_c = v44 + (i + 1) * (LOWORD(self->width_cells) + 1);
             v46->vertex_index_d = (i + 1) * (LOWORD(self->width_cells) + 1) + v44 + 1;
-            v46->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v94, 0, 0);
+            v46->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v46->u0 = v50;
             v46->v0 = arg3e;
             v46->u1 = arg2d;
@@ -354,7 +354,7 @@ int32_t __thiscall initialize_turnover_path_template_pair(
             v46->vertex_index_b = i * (LOWORD(self->width_cells) + 1) + v44 + 1;
             v46->vertex_index_c = (i + 1) * (LOWORD(self->width_cells) + 1) + v44 + 1;
             v46->vertex_index_d = v44 + (i + 1) * (LOWORD(self->width_cells) + 1);
-            v46->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+            v46->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
             v46->u0 = arg2d;
             v46->v0 = arg3e;
             v46->u1 = v50;

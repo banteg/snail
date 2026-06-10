@@ -33,7 +33,7 @@ void __cdecl sub_41A4D0(int *a1, int a2, int a3, int a4, int a5, _BYTE *a6)
   *(_WORD *)(v7 + 4) = 1;
   *(_WORD *)(v7 + 6) = 3;
   *(_WORD *)(v7 + 8) = 2;
-  *(_DWORD *)(v7 + 12) = get_or_create_texture_ref(&dword_4B7790, a6, 0, 0);
+  *(_DWORD *)(v7 + 12) = get_or_create_texture_ref(&texture_list, a6, 0, 0);
   *(_DWORD *)(v7 + 24) = 1045220557;
   *(_DWORD *)(v7 + 32) = 1045220557;
   *(_DWORD *)(v7 + 16) = 1061997773;

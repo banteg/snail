@@ -2,7 +2,7 @@
 /* function: apply_damage_gauge_delta @ 0x4413f0 */
 /* selector: apply_damage_gauge_delta */
 
-// Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path.
+// Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path.
 void __thiscall sub_4413F0(float *this, float a2, char a3)
 {
   double v4; // st7

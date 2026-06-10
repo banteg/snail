@@ -28,6 +28,18 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-10 - Game runtime fields
+
+- invalidated claim: `Game+0x38` is `track_center_x` (a lateral coordinate) and `Game+0x3c` is padding
+- replacement evidence: `calc_subgame_rate` @ 0x4404d0 writes `+0x38` as the live per-tick gameplay rate consumed by the movement clamps (`rate*0.17/0.5`), gravity (`rate²`), and the cameraman matrix blend (`rate*0.3`); `build_subgame_level` writes `+0x3c = 2`, `update_subgame_camera` branches on `+0x3c == 1`, and `calc_subgame_rate` gates on `+0x3c != 2`
+- port consequence: BN, both checked-in headers, and the binja sync tuples now name these `subgame_rate` / `subgame_state`; the Zig runner field `track_center_x` (which stores the rate) should be renamed to match and to stop inviting the rate/center-x conflation that produced the cameraman blend bug
+
+## 2026-06-10 - Attachment follow voice-4 milestone
+
+- invalidated claim: the `voice 4` lane in `update_track_attachment_follow_state` @ 0x420cb0 is an unresolved milestone that may need porting
+- replacement evidence: the guard compares the incremented sample index against `2 * PathTemplate+0x44` while the loop terminates at `== +0x44`, and both entry paths seed the index below `+0x44` (`begin_track_attachment_follow_state` seeds 0; the swept scan stays below the count) — the call is unreachable; a BN comment at 0x420d1d now records this
+- port consequence: do not port the voice-4 milestone; remove it from open-question lists
+
 ## 2026-06-10 - Jetpack gauge
 
 - invalidated claim: `update_jetpack_gauge` keeps the gauge state live when `progress > 1.0` or within 5 rows of the route end, only skipping the warning math (`PORT(verified)` comments in `zig/src/gameplay/jetpack.zig` and `zig/src/gameplay.zig:10903`)

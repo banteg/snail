@@ -155,7 +155,7 @@
 0043adbb        player->presentation.wobble.roll_phase_step = 0.00574712642f
 0043adc5        player->presentation.wobble.lift_phase = 0f
 0043adcb        player->presentation.wobble.lift_phase_step = 0.00677506765f
-0043add5        player->flag84.b = 0
+0043add5        player->resurrect_active.b = 0
 0043addb        player->cached_camera_target_world.z = z
 0043adde        player->velocity.z = 0f
 0043ade4        player->velocity.y = 0f
@@ -163,10 +163,10 @@
 0043adf9        void* eax_10 = data_4df904
 0043adfe        struct PlayerControlSource* eax_11
 0043adfe        if (player->player_slot != 1)
-0043ae14        if (eax_10 == 0xffffff4c)
+0043ae14        if (eax_10 + 0xb4 == 0)
 0043ae1d        eax_11 = nullptr
 0043ae16        eax_11 = eax_10 + 0xec
-0043ae05        if (eax_10 == 0xffffffbc)
+0043ae05        if (eax_10 + 0x44 == 0)
 0043ae1d        eax_11 = nullptr
 0043ae07        eax_11 = eax_10 + 0x7c
 0043ae25        player->control_source = eax_11
@@ -195,7 +195,12 @@
 0043ae7d        i = i_1
 0043ae7d        i_1 -= 1
 0043ae7e        do while (i != 1)
-0043ae89        int32_t edx_11 = player->_pad_00[4].d | 0x20
+0043ae80        int32_t edx_10
+0043ae80        edx_10.b = player->_pad_00[4]
+0043ae80        edx_10:1.b = player->_pad_00[5]
+0043ae80        edx_10:2.b = player->_pad_00[6]
+0043ae80        edx_10:3.b = player->_pad_00[7]
+0043ae89        int32_t edx_11 = edx_10 | 0x20
 0043ae8c        int32_t player_slot_1 = player->player_slot
 0043ae93        player->_pad_00[4] = edx_11.b
 0043ae93        player->_pad_00[5] = edx_11:1.b

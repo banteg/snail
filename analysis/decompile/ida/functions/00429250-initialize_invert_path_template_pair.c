@@ -84,7 +84,7 @@ int32_t __thiscall initialize_invert_path_template_pair(
   char *texture_ab; // [esp+6Ch] [ebp+8h]
   char *texture_ac; // [esp+6Ch] [ebp+8h]
   float texture_ad; // [esp+6Ch] [ebp+8h]
-  char *v82; // [esp+74h] [ebp+10h]
+  char *texture_path; // [esp+74h] [ebp+10h]
   char *v83; // [esp+78h] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_INVERT;
@@ -304,7 +304,7 @@ int32_t __thiscall initialize_invert_path_template_pair(
             v43->vertex_index_b = v41 + j * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_c = v41 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v83, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, v83, 0, 0);
             v43->u0 = v46;
             v43->v0 = v45;
             v43->u1 = texture_ad;
@@ -319,7 +319,7 @@ int32_t __thiscall initialize_invert_path_template_pair(
             v43->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_d = v41 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v82, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v43->u0 = texture_ad;
             v43->v0 = v45;
             v43->u1 = v46;

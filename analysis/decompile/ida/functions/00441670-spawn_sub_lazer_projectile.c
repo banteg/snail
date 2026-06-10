@@ -46,3 +46,4 @@ void __thiscall sub_441670(int this, _DWORD *a2, _DWORD *a3)
     set_matrix_z_direction(v4, v8, (_DWORD *)(this + 140));
   }
 }
+

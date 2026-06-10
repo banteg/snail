@@ -4,21 +4,34 @@
 /* function: complete_subgame @ 0x438700 */
 
 0043870a        display_score_stats(&game->__offset(0x3bb764).d)
-00438715        int32_t eax_1 = game->runtime_track_index * 3
+00438715        int32_t eax_1 = game->replay_update_cursor * 3
 00438718        game->_pad_00[(eax_1 << 1) + 0xfd2b84] |= 8
-00438734        int32_t ecx_2 = game->runtime_track_index + 1
+00438734        int32_t ecx_2 = game->replay_update_cursor + 1
 00438735        game->__offset(0xfd2b7c).d += 1
-0043873b        game->runtime_track_index = ecx_2
+0043873b        game->replay_update_cursor = ecx_2
 0043874d        if ((1 & data_4b2f40) != 0)
 0043874d        return 
 00438759        int32_t eax_3 = game->__offset(0x3bba64).d
 00438761        game->__offset(0xfd2b14).d = game->__offset(0x3bba48).d
 00438778        __builtin_memcpy(&game->__offset(0xfd2b18).d, &game->stopwatch, 0x18)
 0043877a        float challenge_difficulty_scalar = game->challenge_difficulty_scalar
-0043877d        int32_t ecx_4 = game->_pad_00[0x28].d
+0043877d        int32_t ecx_4
+0043877d        ecx_4.b = game->_pad_00[0x28]
+0043877d        ecx_4:1.b = game->_pad_00[0x29]
+0043877d        ecx_4:2.b = game->_pad_00[0x2a]
+0043877d        ecx_4:3.b = game->_pad_00[0x2b]
 00438780        game->__offset(0xfd2b30).d = eax_3
-00438789        game->__offset(0xfd2b60).d = game->_pad_00[0x2c].d
-0043878f        int32_t eax_5 = game->_pad_00[0x30].d
+00438786        int32_t eax_4
+00438786        eax_4.b = game->_pad_00[0x2c]
+00438786        eax_4:1.b = game->_pad_00[0x2d]
+00438786        eax_4:2.b = game->_pad_00[0x2e]
+00438786        eax_4:3.b = game->_pad_00[0x2f]
+00438789        game->__offset(0xfd2b60).d = eax_4
+0043878f        int32_t eax_5
+0043878f        eax_5.b = game->_pad_00[0x30]
+0043878f        eax_5:1.b = game->_pad_00[0x31]
+0043878f        eax_5:2.b = game->_pad_00[0x32]
+0043878f        eax_5:3.b = game->_pad_00[0x33]
 00438792        game->__offset(0xfd2b44).d = challenge_difficulty_scalar
 00438798        int32_t esi_2 = game->__offset(0x125ffd8).d
 0043879e        game->__offset(0xfd2b58).d = eax_5

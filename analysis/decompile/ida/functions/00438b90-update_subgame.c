@@ -2,7 +2,7 @@
 /* function: update_subgame @ 0x438b90 */
 /* selector: update_subgame */
 
-// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, and the active gameplay tick. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`.
+// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live Player movement_state at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`.
 void __thiscall sub_438B90(int this)
 {
   int v2; // eax

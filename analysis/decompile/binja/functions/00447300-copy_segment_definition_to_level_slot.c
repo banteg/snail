@@ -13,9 +13,7 @@
 0044732f        ebp_1 = &ebp_1[0x4088]
 00447337        do while (i s< *edi)
 0044733b        if (i == *edi)
-00447343        int32_t var_14_2 = data_74ec74
-00447344        char* var_18_2 = arg1
-0044734a        report_errorf("Cannot find segment %s for %s")
+0044734a        report_errorf("Cannot find segment %s for %s", arg1, data_74ec74)
 00447356        return 0
 0044735b        void* ebp_2 = arg2
 00447364        arg1 = 8

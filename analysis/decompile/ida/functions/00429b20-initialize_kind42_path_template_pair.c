@@ -91,13 +91,13 @@ int32_t __thiscall initialize_kind42_path_template_pair(
   float v85; // [esp+4Ch] [ebp-64h]
   float v86; // [esp+4Ch] [ebp-64h]
   float v87; // [esp+50h] [ebp-60h]
-  float v88[2]; // [esp+54h] [ebp-5Ch] BYREF
+  float out_angle[2]; // [esp+54h] [ebp-5Ch] BYREF
   float v89; // [esp+5Ch] [ebp-54h]
   float v90; // [esp+60h] [ebp-50h]
   float v91; // [esp+64h] [ebp-4Ch]
   float v92; // [esp+68h] [ebp-48h]
-  TransformMatrix v93; // [esp+70h] [ebp-40h] BYREF
-  char *v94; // [esp+C0h] [ebp+10h]
+  TransformMatrix transform; // [esp+70h] [ebp-40h] BYREF
+  char *texture_path; // [esp+C0h] [ebp+10h]
   char *v95; // [esp+C4h] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
@@ -164,7 +164,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
   {
     v11 = (double)v55;
     primary_samples = self->primary_samples;
-    v88[0] = v11 * 0.18479957;
+    out_angle[0] = v11 * 0.18479957;
     primary_samples[v10].center_x = (primary_samples[50].center_x - primary_samples->center_x) * v11 * 0.029411765
                                   + primary_samples->center_x;
     self->primary_samples[v10].rotation_scalar_98 = 0.0;
@@ -253,7 +253,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
   strip_mesh = self->strip_mesh;
   vertices = strip_mesh->vertices;
   facequads = strip_mesh->facequads;
-  set_matrix_identity(&v93);
+  set_matrix_identity(&transform);
   v33 = 0;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
@@ -306,12 +306,12 @@ int32_t __thiscall initialize_kind42_path_template_pair(
           self->primary_samples[v45].special_scalar,
           vertices[v36 + v33 * (self->width_cells + 1)].x,
           0.0,
-          &v93,
-          v88);
+          &transform,
+          out_angle);
         if ( v73 > 168 && v33 != self->segment_count )
         {
-          vertices[v36 + v33 * (self->width_cells + 1)].x = v93.position.x;
-          vertices[v36 + v33 * (self->width_cells + 1)].y = v93.position.y;
+          vertices[v36 + v33 * (self->width_cells + 1)].x = transform.position.x;
+          vertices[v36 + v33 * (self->width_cells + 1)].y = transform.position.y;
         }
         width_cells = self->width_cells;
         v34 = v73;
@@ -349,7 +349,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
             v49->vertex_index_b = v47 + k * (LOWORD(self->width_cells) + 1);
             v49->vertex_index_c = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
             v49->vertex_index_d = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
+            v49->texture_ref = get_or_create_texture_ref(&texture_list, v95, 0, 0);
             v49->u0 = v81;
             v49->v0 = v74;
             v49->u1 = v58;
@@ -364,7 +364,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
             v49->vertex_index_b = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
             v49->vertex_index_c = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
             v49->vertex_index_d = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v94, 0, 0);
+            v49->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v49->u0 = v58;
             v49->v0 = v74;
             v49->u1 = v81;

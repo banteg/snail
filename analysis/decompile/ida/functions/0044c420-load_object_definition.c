@@ -102,7 +102,7 @@ char *__cdecl sub_44C420(char *a1, int *a2)
             append_c_string(v30, asc_4ACCE0);
             append_c_string(v30, v29);
             v9 *= 48;
-            *(_DWORD *)(a2[23] + v9 + 12) = get_or_create_texture_ref(&dword_4B7790, v30, 0, 0);
+            *(_DWORD *)(a2[23] + v9 + 12) = get_or_create_texture_ref(&texture_list, v30, 0, 0);
             skip_to_next_line(&v15);
             v12 = v17;
             *(_WORD *)(a2[23] + v9) = 0;

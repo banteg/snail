@@ -8,15 +8,13 @@
 004474a4        char var_700[0x200]
 004474a4        sub_48b32c(&var_700, "Levels/%s")
 004474bf        if (load_file_bytes_from_archive_or_fs(&var_700, 0x74ec78, nullptr) == 0)
-004474c5        char (* var_724_1)[0x200] = &var_700
-004474cb        report_errorf("Cannot find %s reverting to default.txt")
+004474cb        report_errorf("Cannot find %s reverting to default.txt", &var_700)
 004474da        sub_48b32c(&var_700, "Levels/Default.txt")
 004474eb        load_file_bytes_from_archive_or_fs(&var_700, 0x74ec78, nullptr)
 004474fd        char* cursor_2 = find_case_insensitive_substring("Name:'", 0x74ec78)
 00447505        char* cursor = cursor_2
 0044750b        if (cursor_2 == 0)
-00447511        char (* var_724_2)[0x200] = &var_700
-00447517        report_errorf("Cannot find Name:' in %s")
+00447517        report_errorf("Cannot find Name:' in %s", &var_700)
 0044751c        cursor_2 = cursor
 00447531        char* cursor_3 = &find_case_insensitive_substring("'", cursor_2)[1]
 00447532        cursor = cursor_3
@@ -66,14 +64,11 @@
 004476d1        i_1 = &cursor[1]
 004476d4        cursor = i_1
 004476da        *edx_4 = 0
-0044766c        char* var_724_10 = arg2
-00447672        report_warningf("Cannot find } for GalaxyText: in %s")
+00447672        report_warningf("Cannot find } for GalaxyText: in %s", arg2)
 0044768a        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR } MISSING")
-00447626        char* var_724_8 = arg2
-0044762c        report_warningf("Cannot find { for GalaxyText: in %s")
+0044762c        report_warningf("Cannot find { for GalaxyText: in %s", arg2)
 00447643        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT ERROR { MISSING")
-004475e5        char* var_724_6 = arg2
-004475eb        report_warningf("Cannot find GalaxyText: in %s")
+004475eb        report_warningf("Cannot find GalaxyText: in %s", arg2)
 00447603        rstrcpy_checked_ascii(edi_2 + data_4df904 + 0x12d46e8, "TEXT MISSING")
 004476e7        char* cursor_8 = find_case_insensitive_substring("Random:yes", 0x74ec78)
 004476f3        cursor = cursor_8
@@ -84,8 +79,7 @@
 00447712        char* cursor_9 = find_case_insensitive_substring("Length:", 0x74ec78)
 0044771c        cursor = cursor_9
 00447720        if (cursor_9 == 0)
-00447726        char (* var_724_11)[0x200] = &var_700
-0044772c        report_errorf("Cannot Length: in %s")
+0044772c        report_errorf("Cannot Length: in %s", &var_700)
 0044773e        return 0
 00447747        char* eax_11
 00447747        int32_t ecx_6
@@ -106,8 +100,7 @@
 004477ab        char* cursor_11 = find_case_insensitive_substring("Background:", 0x74ec78)
 004477b5        cursor = cursor_11
 004477b9        if (cursor_11 == 0)
-004477bf        char (* var_724_13)[0x200] = &var_700
-004477c5        report_errorf("No Background: in %s")
+004477c5        report_errorf("No Background: in %s", &var_700)
 004477d7        return 0
 004477e8        char* cursor_12 = &find_case_insensitive_substring(":", cursor_11)[1]
 004477e9        cursor = cursor_12
@@ -134,8 +127,7 @@
 004478b6        arg1[0x69633] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 004478d4        arg1[0x69634] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 004478f0        arg1[0x69635] = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
-0044785a        char (* var_724_16)[0x200] = &var_700
-00447860        report_errorf("No Fringe: in %s using white")
+00447860        report_errorf("No Fringe: in %s using white", &var_700)
 00447882        store_color4f(&arg1[0x69633], 1f, 1f, 1f, 1f)
 00447900        char* cursor_14 = find_case_insensitive_substring("Track:", 0x74ec78)
 0044790a        cursor = cursor_14
@@ -153,15 +145,13 @@
 0044796b        arg1[0x6965c] = 3
 00447979        if (cursor_15.b == 0x72)
 0044797b        arg1[0x6965c] = 5
-00447914        char (* var_724_18)[0x200] = &var_700
-0044791a        report_errorf("No Track: in %s using Track0.tga")
+0044791a        report_errorf("No Track: in %s using Track0.tga", &var_700)
 00447922        arg1[0x6965c] = 0
 0044798f        char* cursor_16 = find_case_insensitive_substring("Parcels:", 0x74ec78)
 00447999        cursor = cursor_16
 0044799d        if (cursor_16 == 0)
 004479a3        arg1[0x6965b] = 0
-004479a9        char (* var_724_20)[0x200] = &var_700
-004479af        report_errorf("No Parcel: in %s")
+004479af        report_errorf("No Parcel: in %s", &var_700)
 004479c1        return 0
 004479cf        cursor = find_case_insensitive_substring(":", cursor_16)
 004479e7        arg1[0x6965b] = parse_next_signed_int(&cursor)
@@ -169,8 +159,7 @@
 004479f7        cursor = cursor_17
 004479fb        if (cursor_17 == 0)
 00447a01        arg1[0x6965d] = 0
-00447a07        char (* var_724_22)[0x200] = &var_700
-00447a0d        report_errorf("No Quota: in %s")
+00447a0d        report_errorf("No Quota: in %s", &var_700)
 00447a1f        return 0
 00447a31        cursor = find_case_insensitive_substring(":", cursor_17)
 00447a45        arg1[0x6965d] = parse_next_signed_int(&cursor)
@@ -185,8 +174,7 @@
 00447ab5        unimplemented  {call 0x431f20}
 00447aba        arg1[0x69657] = fconvert.s(unimplemented  {fstp dword [esi+0x1a595c], st0})
 00447aba        unimplemented  {fstp dword [esi+0x1a595c], st0}
-00447a86        char (* var_724_24)[0x200] = &var_700
-00447a8c        report_errorf("Cannot find Speed: in Segment %s\n")
+00447a8c        report_errorf("Cannot find Speed: in Segment %s\n", &var_700)
 00447a94        arg1[0x69657] = 0x42c80000
 00447a60        arg1[0x69657] = 0xbf800000
 00447acd        char* cursor_20 = find_case_insensitive_substring("Garbage:", 0x74ec78)
@@ -209,13 +197,11 @@
 00447b39        char* cursor_22 = find_case_insensitive_substring("Segments Begin:", 0x74ec78)
 00447b43        cursor = cursor_22
 00447b47        if (cursor_22 == 0)
-00447b4d        char (* var_724_28)[0x200] = &var_700
-00447b53        report_errorf("Cannot find Segments Begin: in %s")
+00447b53        report_errorf("Cannot find Segments Begin: in %s", &var_700)
 00447b65        return 0
 00447b72        char* eax_26 = find_case_insensitive_substring("Segments End:", 0x74ec78)
 00447b82        if (eax_26 == 0)
-00447b88        char (* var_724_29)[0x200] = &var_700
-00447b8e        report_errorf("Cannot find Segments End: in %s")
+00447b8e        report_errorf("Cannot find Segments End: in %s", &var_700)
 00447ba0        return 0
 00447ba8        char* cursor_23 = sub_44e690(cursor)
 00447bb2        cursor = cursor_23
@@ -311,22 +297,18 @@
 00447e3a        *edx_35 = 0
 00447e5f        *((*arg1 + 1) * 0x4220 + arg1) = sub_432fc0(&var_480)
 00447e78        if (*((*arg1 + 1) * 0x4220 + arg1) == 0xffffffff)
-00447e85        char (* var_724_41)[0x200] = &var_700
-00447e86        void* var_728_3 = &var_480
-00447e8c        report_errorf("Cannot find sample %s in %s")
+00447e8c        report_errorf("Cannot find sample %s in %s", &var_480, &var_700)
 00447e96        char* cursor_36 = cursor
 00447e9c        *arg1 += 1
 00447e9e        cursor_23 = sub_44e690(cursor_36)
 00447ea8        cursor = cursor_23
 00447eac        if (cursor_23 == 0)
-00447f12        char* var_724_44 = arg2
-00447f18        report_errorf("Unexpected end of file in %s")
+00447f18        report_errorf("Unexpected end of file in %s", arg2)
 00447f2a        return 0
 00447ec2        char* cursor_31 = find_case_insensitive_substring("First:", 0x74ec78)
 00447ecc        cursor = cursor_31
 00447ed0        if (cursor_31 == 0)
-00447ed6        char (* var_724_43)[0x200] = &var_700
-00447edc        report_errorf("Cannot find 'First:' in %s")
+00447edc        report_errorf("Cannot find 'First:' in %s", &var_700)
 00447eee        return 0
 00447f2e        char* cursor_32 = sub_44e690(cursor_31)
 00447f38        cursor = cursor_32
@@ -348,14 +330,12 @@
 00447fad        char* cursor_33 = find_case_insensitive_substring("Last:", 0x74ec78)
 00447fb7        cursor = cursor_33
 00447fbb        if (cursor_33 == 0)
-00447fc1        char (* var_724_48)[0x200] = &var_700
-00447fc7        report_errorf("Cannot find 'Last:' in %s")
+00447fc7        report_errorf("Cannot find 'Last:' in %s", &var_700)
 00447fd9        return 0
 00447fdd        char* cursor_34 = sub_44e690(cursor_33)
 00447fe7        cursor = cursor_34
 00447feb        if (cursor_34 == 0)
-00447ff1        char (* var_724_50)[0x200] = &var_700
-00447ff7        report_errorf("Unexpected end of file in %s")
+00447ff7        report_errorf("Unexpected end of file in %s", &var_700)
 00448009        return 0
 0044800c        char i_8 = *cursor_34
 0044800e        char* ecx_51 = &var_400
@@ -371,6 +351,5 @@
 0044803c        ecx_51[3] = 0x74
 0044803f        ecx_51[4] = 0
 0044805c        return copy_segment_definition_to_level_slot(&var_400, &arg1[0x685a9])
-00447f42        char (* var_724_46)[0x200] = &var_700
-00447f48        report_errorf("Unexpected end of file in %s")
+00447f48        report_errorf("Unexpected end of file in %s", &var_700)
 00447f5a        return 0

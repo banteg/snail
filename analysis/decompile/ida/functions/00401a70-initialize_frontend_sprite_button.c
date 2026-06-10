@@ -3,19 +3,25 @@
 /* selector: initialize_frontend_sprite_button */
 
 // Constructs one sprite-backed front-end child control, including arrow-button animation ids, authored anchor, and immediate-vs-delayed click behavior.
-float *__thiscall sub_401A70(int this, int a2, int a3, int a4, int a5, _DWORD *a6, float a7, int a8)
+float *__thiscall initialize_frontend_sprite_button(
+        int this,
+        int a2,
+        int a3,
+        int a4,
+        int a5,
+        _DWORD *a6,
+        float a7,
+        int a8)
 {
   char *v8; // eax
   int v10; // eax
-  _DWORD *v11; // eax
-  _DWORD *v12; // eax
+  int v11; // ecx
+  int v12; // edx
   int v13; // ecx
-  int v14; // edx
-  int v15; // ecx
-  double v16; // st7
-  double v17; // st7
-  int v18; // edx
-  _DWORD v20[4]; // [esp+8h] [ebp-10h] BYREF
+  double v14; // st7
+  double v15; // st7
+  int v16; // edx
+  Color4f color; // [esp+8h] [ebp-10h] BYREF
 
   v8 = (char *)MEMORY[0x4DF904] + 2892;
   if ( (*(_DWORD *)(this + 4) & 0x200) != 0 )
@@ -63,51 +69,43 @@ float *__thiscall sub_401A70(int this, int a2, int a3, int a4, int a5, _DWORD *a
   *(_DWORD *)(this + 464) = a6[1];
   *(_DWORD *)(this + 468) = a6[2];
   *(_DWORD *)(this + 472) = a6[3];
-  v11 = set_color_rgba(v20, 1065353216, 1065353216, 1065353216, 1065353216);
-  *(_DWORD *)(this + 492) = *v11;
-  *(_DWORD *)(this + 496) = v11[1];
-  *(_DWORD *)(this + 500) = v11[2];
-  *(_DWORD *)(this + 504) = v11[3];
-  v12 = set_color_rgba(v20, 1065353216, 1065353216, 1065353216, 1065353216);
-  *(_DWORD *)(this + 508) = *v12;
-  *(_DWORD *)(this + 512) = v12[1];
-  *(_DWORD *)(this + 516) = v12[2];
-  *(_DWORD *)(this + 520) = v12[3];
+  *(Color4f *)(this + 492) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
+  *(Color4f *)(this + 508) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
   if ( (*(_BYTE *)(this + 416) & 2) != 0 )
   {
-    v13 = *(_DWORD *)(this + 536);
+    v11 = *(_DWORD *)(this + 536);
     *(_DWORD *)(this + 524) = 1065353216;
-    *(_DWORD *)(this + 540) = v13;
+    *(_DWORD *)(this + 540) = v11;
   }
   else
   {
-    v14 = *(_DWORD *)(this + 532);
+    v12 = *(_DWORD *)(this + 532);
     *(_DWORD *)(this + 524) = 0;
-    *(_DWORD *)(this + 540) = v14;
+    *(_DWORD *)(this + 540) = v12;
   }
-  v15 = *(_DWORD *)(this + 540);
+  v13 = *(_DWORD *)(this + 540);
   *(_DWORD *)(this + 528) = *(_DWORD *)(this + 524);
-  *(_DWORD *)(this + 544) = v15;
+  *(_DWORD *)(this + 544) = v13;
   *(_DWORD *)(this + 548) = 0;
   *(_DWORD *)(this + 552) = 0;
   *(_DWORD *)(this + 604) = 0;
   *(float *)(this + 608) = a7;
-  v16 = a7 + *((float *)MEMORY[0x4DF904] + 69695);
+  v14 = a7 + *((float *)MEMORY[0x4DF904] + 69695);
   *(_DWORD *)(this + 568) = a4;
   *(_DWORD *)(this + 572) = a5;
-  *(float *)(this + 608) = v16;
+  *(float *)(this + 608) = v14;
   *(float *)(this + 584) = (float)*(int *)(LODWORD(unk_78FF90[a3]) + 4);
-  v17 = (double)*(int *)(LODWORD(unk_78FF90[a3]) + 8);
+  v15 = (double)*(int *)(LODWORD(unk_78FF90[a3]) + 8);
   *(_DWORD *)(this + 592) = *(_DWORD *)(this + 584);
   *(_DWORD *)(this + 624) = a3;
-  *(float *)(this + 588) = v17;
-  v18 = *(_DWORD *)(this + 588);
+  *(float *)(this + 588) = v15;
+  v16 = *(_DWORD *)(this + 588);
   *(_DWORD *)(this + 1780) = a4;
-  *(_DWORD *)(this + 596) = v18;
+  *(_DWORD *)(this + 596) = v16;
   *(_DWORD *)(this + 1784) = a5;
   *(_DWORD *)(this + 628) = a8;
   *(_DWORD *)(this + 612) = 0;
   *(_DWORD *)(this + 616) = 0;
-  return layout_frontend_widget(this);
+  return (float *)layout_frontend_widget((FrontendWidget *)this);
 }
 

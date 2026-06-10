@@ -26,10 +26,19 @@
 0043d76e        void* edx_3 = *(edx_2 + 0x5ac)
 0043d776        if (edx_3 != 0)
 0043d784        *(edx_3 + 8) = esi + 0x356000
-0043d787        void* edx_4 = *(edx_2 + 0x5ac)
+0043d787        void* edx_4
+0043d787        edx_4.b = *(edx_2 + 0x5ac)
+0043d787        edx_4:1.b = *(edx_2 + 0x5ad)
+0043d787        edx_4:2.b = *(edx_2 + 0x5ae)
+0043d787        edx_4:3.b = *(edx_2 + 0x5af)
 0043d78c        *(*(edx_4 + 8) + 0xc) = edx_4
+0043d78f        void* edx_5
+0043d78f        edx_5.b = *(edx_2 + 0x5ac)
+0043d78f        edx_5:1.b = *(edx_2 + 0x5ad)
+0043d78f        edx_5:2.b = *(edx_2 + 0x5ae)
+0043d78f        edx_5:3.b = *(edx_2 + 0x5af)
 0043d791        cell_1 = cell
-0043d795        void* edx_6 = *(*(edx_2 + 0x5ac) + 8)
+0043d795        void* edx_6 = *(edx_5 + 8)
 0043d798        *(edx_2 + 0x5ac) = edx_6.b
 0043d798        *(edx_2 + 0x5ad) = edx_6:1.b
 0043d798        *(edx_2 + 0x5ae) = edx_6:2.b
@@ -40,7 +49,15 @@
 0043d778        *(edx_2 + 0x5ae) = (esi + 0x356000):2.b
 0043d778        *(edx_2 + 0x5af) = (esi + 0x356000):3.b
 0043d77a        *(esi + 0x356008) = edx_3
-0043d77f        *(*(edx_2 + 0x5ac) + 0xc) = edx_3
+0043d77d        void* ecx_3
+0043d77d        ecx_3.b = *(edx_2 + 0x5ac)
+0043d77d        ecx_3:1.b = *(edx_2 + 0x5ad)
+0043d77d        ecx_3:2.b = *(edx_2 + 0x5ae)
+0043d77d        ecx_3:3.b = *(edx_2 + 0x5af)
+0043d77f        *(ecx_3 + 0xc) = edx_3.b
+0043d77f        *(ecx_3 + 0xd) = edx_3:1.b
+0043d77f        *(ecx_3 + 0xe) = edx_3:2.b
+0043d77f        *(ecx_3 + 0xf) = edx_3:3.b
 0043d7a4        int32_t ecx_4
 0043d7a4        ecx_4:1.b = (*(esi + 0x356004)):1.b | 2
 0043d7a7        *(esi + 0x356004) = ecx_4
@@ -61,8 +78,16 @@
 0043d813        ecx_9[1] = edx_11:1.b
 0043d813        ecx_9[2] = edx_11:2.b
 0043d813        ecx_9[3] = edx_11:3.b
-0043d818        *(ecx_9 + 4) = *(esi + 0x356014)
-0043d81e        *(ecx_9 + 8) = *(esi + 0x356018)
+0043d815        int32_t edx_12 = *(esi + 0x356014)
+0043d818        ecx_9[4] = edx_12.b
+0043d818        ecx_9[5] = edx_12:1.b
+0043d818        ecx_9[6] = edx_12:2.b
+0043d818        ecx_9[7] = edx_12:3.b
+0043d81b        int32_t edx_13 = *(esi + 0x356018)
+0043d81e        ecx_9[8] = edx_13.b
+0043d81e        ecx_9[9] = edx_13:1.b
+0043d81e        ecx_9[0xa] = edx_13:2.b
+0043d81e        ecx_9[0xb] = edx_13:3.b
 0043d821        *(esi + 0x356068) = cell_1
 0043d827        *(esi + 0x35606c) = 0
 0043d83a        int16_t x87control

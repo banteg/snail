@@ -66,10 +66,10 @@ int32_t __fastcall build_track_render_caches(TrackRenderCacheManager *manager)
   int v60; // [esp+70h] [ebp-Ch] BYREF
   int v61; // [esp+74h] [ebp-8h] BYREF
   int v62; // [esp+78h] [ebp-4h] BYREF
-  Color4f v63; // [esp+80h] [ebp+4h] BYREF
+  Color4f color; // [esp+80h] [ebp+4h] BYREF
 
   Iostream_init::Iostream_init((#93 *)&v45);
-  pack_color_rgba_u8(&manager->clear_color, &v63);
+  pack_color_rgba_u8(&manager->clear_color, &color);
   v45 = -1;
   noop_runtime_ai();
   v2 = 0;

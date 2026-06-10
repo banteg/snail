@@ -52,19 +52,19 @@ int32_t __thiscall update_cutscene(CutsceneAI *cutscene_ai)
   char v46; // c2
   bool v47; // c3
   Vec3 *v48; // edx
-  Vec4 *p_position; // [esp+0h] [ebp-FCh]
-  float v50; // [esp+0h] [ebp-FCh]
-  Vec4 *v51; // [esp+0h] [ebp-FCh]
-  float v52; // [esp+0h] [ebp-FCh]
-  float v53; // [esp+0h] [ebp-FCh]
-  float v54; // [esp+0h] [ebp-FCh]
-  float v55; // [esp+0h] [ebp-FCh]
-  float v56; // [esp+0h] [ebp-FCh]
-  float v57; // [esp+0h] [ebp-FCh]
-  Vec4 *v58; // [esp+0h] [ebp-FCh]
-  float v59; // [esp+0h] [ebp-FCh]
-  float v60; // [esp+0h] [ebp-FCh]
-  Vec4 *v61; // [esp+0h] [ebp-FCh]
+  Vec4 *alpha; // [esp+0h] [ebp-FCh]
+  float alphaa; // [esp+0h] [ebp-FCh]
+  Vec4 *alphab; // [esp+0h] [ebp-FCh]
+  float alphac; // [esp+0h] [ebp-FCh]
+  float alphad; // [esp+0h] [ebp-FCh]
+  float alphae; // [esp+0h] [ebp-FCh]
+  float alphaf; // [esp+0h] [ebp-FCh]
+  float alphag; // [esp+0h] [ebp-FCh]
+  float alphah; // [esp+0h] [ebp-FCh]
+  Vec4 *alphai; // [esp+0h] [ebp-FCh]
+  float alphaj; // [esp+0h] [ebp-FCh]
+  float alphak; // [esp+0h] [ebp-FCh]
+  Vec4 *alphal; // [esp+0h] [ebp-FCh]
   float v62; // [esp+14h] [ebp-E8h]
   float v63; // [esp+14h] [ebp-E8h]
   float v64; // [esp+18h] [ebp-E4h]
@@ -72,11 +72,11 @@ int32_t __thiscall update_cutscene(CutsceneAI *cutscene_ai)
   float v66; // [esp+18h] [ebp-E4h]
   float v67; // [esp+1Ch] [ebp-E0h]
   float v68; // [esp+1Ch] [ebp-E0h]
-  Vec3 v69; // [esp+24h] [ebp-D8h] BYREF
+  Vec3 vector; // [esp+24h] [ebp-D8h] BYREF
   float v70; // [esp+34h] [ebp-C8h]
   float v71; // [esp+38h] [ebp-C4h]
-  TransformMatrix v72; // [esp+3Ch] [ebp-C0h] BYREF
-  TransformMatrix v73; // [esp+7Ch] [ebp-80h] BYREF
+  TransformMatrix transform; // [esp+3Ch] [ebp-C0h] BYREF
+  TransformMatrix to; // [esp+7Ch] [ebp-80h] BYREF
   float x; // [esp+ECh] [ebp-10h]
   float y; // [esp+F0h] [ebp-Ch]
   float v76; // [esp+F4h] [ebp-8h]
@@ -102,11 +102,11 @@ LABEL_3:
       cutscene_ai->unresolved_08 = 1;
       set_matrix_identity(&cutscene_ai->live_matrix);
       v5 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      p_position = &cutscene_ai->presentation->live_matrix.position;
+      alpha = &cutscene_ai->presentation->live_matrix.position;
       cutscene_ai->live_matrix.position.x = v5->x;
       cutscene_ai->live_matrix.position.y = v5->y;
       cutscene_ai->live_matrix.position.z = v5->z;
-      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)p_position);
+      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)alpha);
       v6 = cutscene_ai->progress + cutscene_ai->progress_step;
       cutscene_ai->progress = v6;
       v8 = v6 < 1.0;
@@ -140,53 +140,52 @@ LABEL_3:
         if ( v36 == 1 )
           initialize_completion_screen(
             (int)MEMORY[0x4DF904] + 19820016,
-            *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58,
+            *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3],
             1u);
       }
       else
       {
         initialize_completion_screen(
           (int)MEMORY[0x4DF904] + 19820016,
-          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58,
-          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58 == *((_DWORD *)MEMORY[0x4DF904]
-                                                                                     + 561662));
+          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3],
+          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3] == *((_DWORD *)MEMORY[0x4DF904] + 561662));
       }
       play_sound_effect(46);
       goto LABEL_25;
     case 5:
 LABEL_25:
       cutscene_ai->unresolved_08 = -1;
-      set_matrix_identity(&v73);
+      set_matrix_identity(&to);
       v37 = &cutscene_ai->presentation->snail_hotspots_world[12];
       v38 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      v72.position.x = v37->x;
-      v72.position.y = v37->y;
-      v72.position.z = v37->z;
+      transform.position.x = v37->x;
+      transform.position.y = v37->y;
+      transform.position.z = v37->z;
       x = v38->x;
       z = v38->z;
       y = v38->y;
       progress = cutscene_ai->progress;
       v76 = z;
-      v65 = y - v72.position.y;
-      v67 = z - v72.position.z;
+      v65 = y - transform.position.y;
+      v67 = z - transform.position.z;
       v70 = v65 * progress;
       v71 = v67 * progress;
-      v63 = (x - v72.position.x) * progress + v72.position.x;
-      v73.position.x = v63;
-      v66 = v72.position.y + v70;
-      v73.position.y = v66;
-      v68 = v72.position.z + v71;
+      v63 = (x - transform.position.x) * progress + transform.position.x;
+      to.position.x = v63;
+      v66 = transform.position.y + v70;
+      to.position.y = v66;
+      v68 = transform.position.z + v71;
       v41 = cutscene_ai->progress * 3.1415927;
-      v73.position.z = v68;
-      v57 = v41;
-      v42 = sine(v57);
-      v58 = &cutscene_ai->presentation->live_matrix.position;
-      v73.position.x = v73.position.x - v42 * 0.5;
-      look_at_point(&v73, (const Vec3 *)v58);
-      qmemcpy(&v72, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v72));
-      v59 = cutscene_ai->progress * 1.5707964;
-      v60 = sine(v59);
-      linear_interpolate_matrix(&cutscene_ai->live_matrix, &v72, &v73, v60);
+      to.position.z = v68;
+      alphah = v41;
+      v42 = sine(alphah);
+      alphai = &cutscene_ai->presentation->live_matrix.position;
+      to.position.x = to.position.x - v42 * 0.5;
+      look_at_point(&to, (const Vec3 *)alphai);
+      qmemcpy(&transform, cutscene_ai->presentation->owner_player->_pad_200, sizeof(transform));
+      alphaj = cutscene_ai->progress * 1.5707964;
+      alphak = sine(alphaj);
+      linear_interpolate_matrix(&cutscene_ai->live_matrix, &transform, &to, alphak);
       v43 = cutscene_ai->progress + cutscene_ai->progress_step;
       cutscene_ai->progress = v43;
       v45 = v43 < 1.0;
@@ -205,11 +204,11 @@ LABEL_25:
       cutscene_ai->unresolved_58 = 1;
       set_matrix_identity(&cutscene_ai->live_matrix);
       v48 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      v61 = &cutscene_ai->presentation->live_matrix.position;
+      alphal = &cutscene_ai->presentation->live_matrix.position;
       cutscene_ai->live_matrix.position.x = v48->x;
       cutscene_ai->live_matrix.position.y = v48->y;
       cutscene_ai->live_matrix.position.z = v48->z;
-      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)v61);
+      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)alphal);
       result = cutscene_ai->presentation->anim_manager.queued_animation_count;
       if ( !result )
         result = dispatch_cutscene_animation(cutscene_ai->presentation, 9, 0, -1);
@@ -217,32 +216,32 @@ LABEL_25:
     case 7:
       *((_BYTE *)&loc_42FEC4 + (_DWORD)MEMORY[0x4DF904]) = 0;
       cutscene_ai->unresolved_08 = 1;
-      set_matrix_identity(&v72);
+      set_matrix_identity(&transform);
       v11 = cutscene_ai->progress * 3.1415927;
       v12 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      v72.position.x = v12->x;
-      v50 = v11;
-      v72.position.y = v12->y;
-      v72.position.z = v12->z;
-      v13 = sine(v50);
-      v51 = &cutscene_ai->presentation->live_matrix.position;
-      v72.position.x = v13 + v13 + v72.position.x;
-      look_at_point(&v72, (const Vec3 *)v51);
-      qmemcpy(&v73, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v73));
-      v52 = cutscene_ai->progress * 1.5707964;
-      v53 = sine(v52);
-      linear_interpolate_matrix(&cutscene_ai->live_matrix, &v72, &v73, v53);
+      transform.position.x = v12->x;
+      alphaa = v11;
+      transform.position.y = v12->y;
+      transform.position.z = v12->z;
+      v13 = sine(alphaa);
+      alphab = &cutscene_ai->presentation->live_matrix.position;
+      transform.position.x = v13 + v13 + transform.position.x;
+      look_at_point(&transform, (const Vec3 *)alphab);
+      qmemcpy(&to, cutscene_ai->presentation->owner_player->_pad_200, sizeof(to));
+      alphac = cutscene_ai->progress * 1.5707964;
+      alphad = sine(alphac);
+      linear_interpolate_matrix(&cutscene_ai->live_matrix, &transform, &to, alphad);
       v77.x = cutscene_ai->live_matrix.position.x - cutscene_ai->presentation->live_matrix.position.x;
       v77.y = cutscene_ai->live_matrix.position.y - cutscene_ai->presentation->live_matrix.position.y;
       v77.z = cutscene_ai->live_matrix.position.z - cutscene_ai->presentation->live_matrix.position.z;
-      v69 = v77;
-      v14 = normalize_vector(&v69);
+      vector = v77;
+      v14 = normalize_vector(&vector);
       if ( v14 < 1.5 )
       {
         v15 = 1.5 - v14;
-        v62 = v69.x * v15;
-        v64 = v69.y * v15;
-        v16 = v15 * v69.z;
+        v62 = vector.x * v15;
+        v64 = vector.y * v15;
+        v16 = v15 * vector.z;
         cutscene_ai->live_matrix.position.x = v62 + cutscene_ai->live_matrix.position.x;
         cutscene_ai->live_matrix.position.y = v64 + cutscene_ai->live_matrix.position.y;
         cutscene_ai->live_matrix.position.z = v16 + cutscene_ai->live_matrix.position.z;
@@ -282,23 +281,23 @@ LABEL_25:
     case 10:
 LABEL_11:
       cutscene_ai->unresolved_08 = -1;
-      set_matrix_identity(&v73);
+      set_matrix_identity(&to);
       v23 = cutscene_ai->progress * 3.1415927;
       v24 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      v73.position.x = v24->x;
-      v73.position.y = v24->y;
-      v54 = v23;
-      v73.position.z = v24->z;
-      v25 = sine(v54);
-      v73.position.x = v25 + v25 + v73.position.x;
-      if ( v73.position.y < 0.0 )
-        v73.position.y = 0.0;
-      look_at_point(&v73, (const Vec3 *)&cutscene_ai->presentation->live_matrix.position);
+      to.position.x = v24->x;
+      to.position.y = v24->y;
+      alphae = v23;
+      to.position.z = v24->z;
+      v25 = sine(alphae);
+      to.position.x = v25 + v25 + to.position.x;
+      if ( to.position.y < 0.0 )
+        to.position.y = 0.0;
+      look_at_point(&to, (const Vec3 *)&cutscene_ai->presentation->live_matrix.position);
       v26 = cutscene_ai->progress;
-      qmemcpy(&v72, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v72));
-      v55 = v26 * 1.5707964;
-      v56 = sine(v55);
-      linear_interpolate_matrix(&cutscene_ai->live_matrix, &v72, &v73, v56);
+      qmemcpy(&transform, cutscene_ai->presentation->owner_player->_pad_200, sizeof(transform));
+      alphaf = v26 * 1.5707964;
+      alphag = sine(alphaf);
+      linear_interpolate_matrix(&cutscene_ai->live_matrix, &transform, &to, alphag);
       v27 = cutscene_ai->progress + cutscene_ai->progress_step;
       cutscene_ai->progress = v27;
       v29 = v27 < 1.0;
@@ -324,7 +323,7 @@ LABEL_11:
         cutscene_ai->live_matrix.position.y = 0.0;
       look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)&v32->live_matrix.position);
       player = cutscene_ai->player;
-      LOBYTE(result) = player->_pad_78[12];
+      LOBYTE(result) = player->resurrect_active;
       if ( (_BYTE)result
         || (initialize_subgoldy_death(player), result = (int32_t)cutscene_ai->player, *(_BYTE *)(result + 1101)) )
       {

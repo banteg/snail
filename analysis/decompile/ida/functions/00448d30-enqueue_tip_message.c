@@ -3,7 +3,10 @@
 /* selector: enqueue_tip_message */
 
 // Allocates one of the three small gameplay tip-message slots, seeds it with the requested text payload, and warns if all slots are already occupied.
-TipSlot *__thiscall enqueue_tip_message(TipManager *manager, TipMessageDefinition *definition, int32_t show_only_ok)
+TipSlot *__thiscall enqueue_tip_message(
+        TipManager *manager,
+        TipMessageDefinition *definition,
+        int32_t show_disable_button)
 {
   int v3; // eax
   TipSlot *i; // edx
@@ -19,7 +22,7 @@ TipSlot *__thiscall enqueue_tip_message(TipManager *manager, TipMessageDefinitio
     }
   }
   v6 = &manager->slots[v3];
-  initialize_tip(v6, definition, show_only_ok);
+  initialize_tip(v6, definition, show_disable_button);
   return v6;
 }
 

@@ -26,6 +26,5 @@
 00449891        int32_t eax_3 = data_7517a0(eax_2, 0, 4)
 00449898        *arg1 = 1
 0044989f        return eax_3
-004498b8        char* var_14_1 = arg2
-004498be        report_errorf("Music Play Memory Failed %s")
+004498be        report_errorf("Music Play Memory Failed %s", arg2)
 004498ca        return 0

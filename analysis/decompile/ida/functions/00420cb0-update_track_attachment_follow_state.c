@@ -79,17 +79,17 @@ int32_t __thiscall update_track_attachment_follow_state(
   double v73; // st7
   Player *player; // ecx
   double v75; // st7
-  float v76; // [esp+0h] [ebp-1A0h]
-  float v77; // [esp+Ch] [ebp-194h]
+  float arg2; // [esp+0h] [ebp-1A0h]
+  float alpha; // [esp+Ch] [ebp-194h]
   float v78; // [esp+20h] [ebp-180h]
   float v79; // [esp+20h] [ebp-180h]
-  int v80; // [esp+24h] [ebp-17Ch] BYREF
-  float progress; // [esp+28h] [ebp-178h]
+  float out_angle; // [esp+24h] [ebp-17Ch] BYREF
+  float arg1; // [esp+28h] [ebp-178h]
   float v82; // [esp+2Ch] [ebp-174h]
   float v83; // [esp+30h] [ebp-170h]
   float v84; // [esp+34h] [ebp-16Ch]
   float v85; // [esp+38h] [ebp-168h]
-  TransformMatrix v86; // [esp+3Ch] [ebp-164h] BYREF
+  TransformMatrix transform; // [esp+3Ch] [ebp-164h] BYREF
   float v87; // [esp+7Ch] [ebp-124h]
   float v88; // [esp+80h] [ebp-120h]
   float v89; // [esp+84h] [ebp-11Ch]
@@ -97,10 +97,10 @@ int32_t __thiscall update_track_attachment_follow_state(
   float v91; // [esp+8Ch] [ebp-114h]
   float v92; // [esp+94h] [ebp-10Ch]
   float v93; // [esp+98h] [ebp-108h]
-  TransformMatrix v94; // [esp+A0h] [ebp-100h] BYREF
+  TransformMatrix from; // [esp+A0h] [ebp-100h] BYREF
   TransformMatrix v95; // [esp+E0h] [ebp-C0h] BYREF
   TransformMatrix v96; // [esp+120h] [ebp-80h] BYREF
-  TransformMatrix v97; // [esp+160h] [ebp-40h] BYREF
+  TransformMatrix to; // [esp+160h] [ebp-40h] BYREF
 
   sample_index = follow_state->sample_index;
   template_record = follow_state->template_record;
@@ -112,8 +112,8 @@ int32_t __thiscall update_track_attachment_follow_state(
   {
 LABEL_11:
     v18 = follow_state->sample_index;
-    *(float *)&v80 = v78 + follow_state->progress;
-    follow_state->progress = *(float *)&v80;
+    out_angle = v78 + follow_state->progress;
+    follow_state->progress = out_angle;
     v19 = follow_state->template_record;
     v20 = v19->segment_count - 1;
     v21 = v18;
@@ -121,76 +121,76 @@ LABEL_11:
     if ( v18 == v20 )
       v85 = p_x[36];
     else
-      v85 = *(float *)&v80 / v19->secondary_samples[v18].delta_length * (p_x[78] - p_x[36]) + p_x[36];
+      v85 = out_angle / v19->secondary_samples[v18].delta_length * (p_x[78] - p_x[36]) + p_x[36];
     if ( v18 == v20 )
       v79 = p_x[39];
     else
-      v79 = *(float *)&v80 / v19->secondary_samples[v21].delta_length * (p_x[81] - p_x[39]) + p_x[39];
+      v79 = out_angle / v19->secondary_samples[v21].delta_length * (p_x[81] - p_x[39]) + p_x[39];
     if ( v18 == v20 )
-      progress = p_x[40];
+      arg1 = p_x[40];
     else
-      progress = *(float *)&v80 / v19->secondary_samples[v21].delta_length * (p_x[82] - p_x[40]) + p_x[40];
+      arg1 = out_angle / v19->secondary_samples[v21].delta_length * (p_x[82] - p_x[40]) + p_x[40];
     if ( v19->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
     {
       v38 = out_position;
-      v76 = out_position->x - v85;
-      compute_kind42_attachment_transform(progress, v76, 0.49000001, &v86, (float *)&v80);
+      arg2 = out_position->x - v85;
+      compute_kind42_attachment_transform(arg1, arg2, 0.49000001, &transform, &out_angle);
       v39 = follow_state->sample_index;
       if ( !v39 || v39 == follow_state->template_record->segment_count - 1 )
       {
-        set_matrix_identity(&v94);
-        v94.position.x = v86.position.x;
+        set_matrix_identity(&from);
+        from.position.x = transform.position.x;
         v40 = follow_state->sample_index;
-        v94.position.y = v86.position.y;
-        v94.position.z = v86.position.z;
-        qmemcpy(&v97, &v86, sizeof(v97));
+        from.position.y = transform.position.y;
+        from.position.z = transform.position.z;
+        qmemcpy(&to, &transform, sizeof(to));
         if ( v40 )
-          progress = 1.0 - follow_state->progress;
+          arg1 = 1.0 - follow_state->progress;
         else
-          progress = follow_state->progress;
-        linear_interpolate_matrix(&v86, &v94, &v97, progress);
+          arg1 = follow_state->progress;
+        linear_interpolate_matrix(&transform, &from, &to, arg1);
       }
       p_output_position = &follow_state->output_position;
       p_y = &motion->y;
-      y = v86.position.y;
+      y = transform.position.y;
       v44 = follow_state->template_record->secondary_samples[follow_state->sample_index].delta_dir_to_next.z
           * follow_state->progress
           + follow_state->source_cell->anchor_position.z
           + follow_state->template_record->secondary_samples[follow_state->sample_index].transform.position.z;
-      v86.basis_right.x = v86.basis_right.x * v79;
-      v86.basis_right.y = v86.basis_right.y * v79;
-      v86.basis_right.z = v86.basis_right.z * v79;
+      transform.basis_right.x = transform.basis_right.x * v79;
+      transform.basis_right.y = transform.basis_right.y * v79;
+      transform.basis_right.z = transform.basis_right.z * v79;
       v45 = motion->y + follow_state->vertical_offset;
-      follow_state->output_position.x = v86.position.x;
-      x = v86.basis_right.x;
+      follow_state->output_position.x = transform.position.x;
+      x = transform.basis_right.x;
       follow_state->output_position.y = y;
       follow_state->vertical_offset = v45;
       follow_state->output_position.z = v44;
       v47 = (char *)MEMORY[0x4DF904] + 4390324;
       *((float *)MEMORY[0x4DF904] + 1097581) = x;
-      *((_DWORD *)v47 + 1) = LODWORD(v86.basis_right.y);
-      *((_DWORD *)v47 + 2) = LODWORD(v86.basis_right.z);
+      *((_DWORD *)v47 + 1) = LODWORD(transform.basis_right.y);
+      *((_DWORD *)v47 + 2) = LODWORD(transform.basis_right.z);
       v48 = (float *)((char *)&loc_42FDC4 + (_DWORD)MEMORY[0x4DF904]);
-      *v48 = v86.basis_up.x;
-      v48[1] = v86.basis_up.y;
-      v48[2] = v86.basis_up.z;
+      *v48 = transform.basis_up.x;
+      v48[1] = transform.basis_up.y;
+      v48[2] = transform.basis_up.z;
       v49 = (char *)MEMORY[0x4DF904] + 4390356;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(v86.basis_forward.x);
-      *((_DWORD *)v49 + 1) = LODWORD(v86.basis_forward.y);
-      *((_DWORD *)v49 + 2) = LODWORD(v86.basis_forward.z);
+      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(transform.basis_forward.x);
+      *((_DWORD *)v49 + 1) = LODWORD(transform.basis_forward.y);
+      *((_DWORD *)v49 + 2) = LODWORD(transform.basis_forward.z);
     }
     else
     {
       v50 = v19->secondary_samples;
-      v51 = *(float *)&v80 * v50[v21].delta_dir_to_next.x;
+      v51 = out_angle * v50[v21].delta_dir_to_next.x;
       v52 = &v50[v21].transform.basis_right.x;
       source_cell = follow_state->source_cell;
       v82 = v51 * v79 + source_cell->anchor_position.x + v52[12];
-      v83 = *(float *)&v80 * v52[33] * v79 + source_cell->anchor_position.y + v52[13];
-      v84 = *(float *)&v80 * v52[34] + source_cell->anchor_position.z + v52[14];
+      v83 = out_angle * v52[33] * v79 + source_cell->anchor_position.y + v52[13];
+      v84 = out_angle * v52[34] + source_cell->anchor_position.z + v52[14];
       if ( v18 == v20 )
       {
-        set_matrix_identity(&v86);
+        set_matrix_identity(&transform);
       }
       else
       {
@@ -198,26 +198,26 @@ LABEL_11:
         qmemcpy(&v96, &v19->secondary_samples[v18 + 1], sizeof(v96));
         memset(&v95.position, 0, 12);
         memset(&v96.position, 0, 12);
-        v77 = *(float *)&v80 / v19->secondary_samples[v21].delta_length;
-        linear_interpolate_matrix(&v86, &v95, &v96, v77);
+        alpha = out_angle / v19->secondary_samples[v21].delta_length;
+        linear_interpolate_matrix(&transform, &v95, &v96, alpha);
       }
       p_output_position = &follow_state->output_position;
       v38 = out_position;
       p_y = &motion->y;
-      v86.basis_right.x = v86.basis_right.x * v79;
-      v86.basis_right.y = v86.basis_right.y * v79;
-      v86.basis_right.z = v86.basis_right.z * v79;
+      transform.basis_right.x = transform.basis_right.x * v79;
+      transform.basis_right.y = transform.basis_right.y * v79;
+      transform.basis_right.z = transform.basis_right.z * v79;
       v54 = motion->y + follow_state->vertical_offset;
       follow_state->vertical_offset = v54;
-      v92 = v86.basis_up.x * v54;
-      v93 = v86.basis_up.y * v54;
-      v55 = v54 * v86.basis_up.z;
+      v92 = transform.basis_up.x * v54;
+      v93 = transform.basis_up.y * v54;
+      v55 = v54 * transform.basis_up.z;
       v56 = out_position->x - v85;
-      v87 = v56 * v86.basis_right.x;
-      v88 = v86.basis_right.y * v56;
+      v87 = v56 * transform.basis_right.x;
+      v88 = transform.basis_right.y * v56;
       v90 = v87 + v82;
       v91 = v88 + v83;
-      v57 = v56 * v86.basis_right.z + v84;
+      v57 = v56 * transform.basis_right.z + v84;
       v82 = v90 + v92;
       v58 = v91 + v93;
       follow_state->output_position.x = v82;
@@ -226,27 +226,27 @@ LABEL_11:
       v84 = v57 + v55;
       follow_state->output_position.z = v84;
       v59 = (char *)MEMORY[0x4DF904] + 4390324;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097581) = LODWORD(v86.basis_right.x);
-      *((_DWORD *)v59 + 1) = LODWORD(v86.basis_right.y);
-      *((_DWORD *)v59 + 2) = LODWORD(v86.basis_right.z);
+      *((_DWORD *)MEMORY[0x4DF904] + 1097581) = LODWORD(transform.basis_right.x);
+      *((_DWORD *)v59 + 1) = LODWORD(transform.basis_right.y);
+      *((_DWORD *)v59 + 2) = LODWORD(transform.basis_right.z);
       v60 = (float *)((char *)&loc_42FDC4 + (_DWORD)MEMORY[0x4DF904]);
-      *v60 = v86.basis_up.x;
-      v60[1] = v86.basis_up.y;
-      v60[2] = v86.basis_up.z;
+      *v60 = transform.basis_up.x;
+      v60[1] = transform.basis_up.y;
+      v60[2] = transform.basis_up.z;
       v61 = (char *)MEMORY[0x4DF904] + 4390356;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(v86.basis_forward.x);
-      *((_DWORD *)v61 + 1) = LODWORD(v86.basis_forward.y);
-      *((_DWORD *)v61 + 2) = LODWORD(v86.basis_forward.z);
+      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(transform.basis_forward.x);
+      *((_DWORD *)v61 + 1) = LODWORD(transform.basis_forward.y);
+      *((_DWORD *)v61 + 2) = LODWORD(transform.basis_forward.z);
     }
-    v62 = v86.basis_up.y;
-    follow_state->orientation_c = v86.basis_up.x;
-    z = v86.basis_up.z;
+    v62 = transform.basis_up.y;
+    follow_state->orientation_c = transform.basis_up.x;
+    z = transform.basis_up.z;
     follow_state->orientation_d = v62;
     v64 = follow_state->template_record;
     follow_state->orientation_e = z;
     v65 = *(float *)&follow_state->sample_index;
     v66 = LODWORD(v65) == v64->segment_count - 1;
-    progress = v65;
+    arg1 = v65;
     if ( v66 )
     {
       v67 = 168 * LODWORD(v65);
@@ -292,10 +292,10 @@ LABEL_11:
     }
     v73 = follow_state->progress / *(float *)((char *)&v64->secondary_samples->delta_length + v67);
     player = follow_state->player;
-    follow_state->orientation_b = (v73 + (double)SLODWORD(progress))
+    follow_state->orientation_b = (v73 + (double)SLODWORD(arg1))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( LODWORD(player->jetpack_gauge.cycle_phase_step) == 1 )
+    if ( player->jetpack_gauge.state == 1 )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )

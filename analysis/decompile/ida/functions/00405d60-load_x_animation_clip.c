@@ -37,7 +37,7 @@ int __thiscall load_x_animation_clip(int this, const char *ArgList, int *a3)
   if ( is_archive_index_loaded() )
     *v20++ = 50;
   *v20++ = 0;
-  enumerate_matching_archive_or_fs_entries(asc_4A169C, Buffer, &v23, unk_4B2F50);
+  enumerate_matching_archive_or_fs_entries(asc_4A169C, Buffer, &v23, mesh_path);
   v6 = allocate_tracked_memory(v23 << 7, (int)aAnimKeyFrameBo);
   v7 = v23;
   v8 = 0;
@@ -46,7 +46,7 @@ int __thiscall load_x_animation_clip(int this, const char *ArgList, int *a3)
   *(_DWORD *)(this + 24072) = 0;
   if ( !v9 )
   {
-    v10 = unk_4B2F50;
+    v10 = mesh_path;
     v11 = (int *)(v6 + 124);
     do
     {
@@ -66,7 +66,7 @@ int __thiscall load_x_animation_clip(int this, const char *ArgList, int *a3)
     v3 = ArgList;
   }
   clean_duplicate_vertices((int *)(this + 24072), v7);
-  load_x_mesh(unk_4B2F50, a3, 0);
+  load_x_mesh(mesh_path, a3, 0);
   request_object_vertices_copy((unsigned int *)a3);
   a3[4] |= (unsigned int)&unk_800000;
   sprintf(v25, "Anim:%s", v3);

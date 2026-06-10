@@ -27,9 +27,17 @@
 00443236        parcel->bob_phase = fconvert.s(x87_r7_4 - fconvert.t(1f))
 00443243        float* ecx_2 = parcel->sprite + 0x48
 00443248        *ecx_2 = parcel->world_position.x
-0044324d        ecx_2[1] = parcel->world_position.y
+0044324a        float y = parcel->world_position.y
+0044324d        ecx_2[1].b = y.b
+0044324d        *(ecx_2 + 5) = y:1.b
+0044324d        *(ecx_2 + 6) = y:2.b
+0044324d        *(ecx_2 + 7) = y:3.b
+00443250        float z = parcel->world_position.z
 00443253        float* var_38_1 = ecx_2
-00443254        ecx_2[2] = parcel->world_position.z
+00443254        ecx_2[2].b = z.b
+00443254        *(ecx_2 + 9) = z:1.b
+00443254        *(ecx_2 + 0xa) = z:2.b
+00443254        *(ecx_2 + 0xb) = z:3.b
 00443257        void* sprite_5 = parcel->sprite
 00443277        *(sprite_5 + 0x4c) = fconvert.s(sine(fconvert.s(fconvert.t(parcel->bob_phase) * fconvert.t(6.28318548f))) * fconvert.t(0.300000012f) + fconvert.t(*(sprite_5 + 0x4c)))
 00443286        *(parcel->sprite + 0x7c) = *(parcel->owner + 0x370)
@@ -62,31 +70,39 @@
 0044336c        normalize_vector(&parcel->travel_dir_x)
 00443379        label_443379:
 00443379        long double x87_r7_35 = fconvert.t(1f) - fconvert.t(parcel->progress)
-00443382        void* __offset(Game, 0x3bf91c) eax_12 = &parcel->game->__offset(0x3bf91c).d
+00443382        void* __offset(Game, 0x3bf91c) eax_11 = &parcel->game->__offset(0x3bf91c).d
 0044338b        long double x87_r6_2 = x87_r7_35 * fconvert.t(parcel->target_distance)
-004433c3        parcel->world_position.x = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_x))) + fconvert.t((eax_12 - 0x3bf91c)->__offset(0x3bf91c).d))
-004433c5        parcel->world_position.y = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_y))) + fconvert.t((eax_12 - 0x3bf91c)->__offset(0x3bf920).d))
-004433d9        parcel->world_position.z = fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_z) + fconvert.t((eax_12 - 0x3bf91c)->__offset(0x3bf924).d))
+004433b8        float var_14_3 = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_y))) + fconvert.t((eax_11 - 0x3bf91c)->__offset(0x3bf920).d))
+004433c3        parcel->world_position.x = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_x))) + fconvert.t((eax_11 - 0x3bf91c)->__offset(0x3bf91c).d))
+004433c5        parcel->world_position.y.b = var_14_3.b
+004433c5        parcel->world_position.y:1.b = var_14_3:1.b
+004433c5        parcel->world_position.y:2.b = var_14_3:2.b
+004433c5        parcel->world_position.y:3.b = var_14_3:3.b
+004433cb        float var_10_3 = fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_z) + fconvert.t((eax_11 - 0x3bf91c)->__offset(0x3bf924).d))
+004433d9        parcel->world_position.z.b = var_10_3.b
+004433d9        parcel->world_position.z:1.b = var_10_3:1.b
+004433d9        parcel->world_position.z:2.b = var_10_3:2.b
+004433d9        parcel->world_position.z:3.b = var_10_3:3.b
 004433e2        *(parcel->sprite + 0x64) = fconvert.s(x87_r7_35 * fconvert.t(0.600000024f) + fconvert.t(0.400000006f))
 004433e5        void* sprite = parcel->sprite
 004433e8        int32_t ecx_8 = *(sprite + 0x64)
 004433eb        *(sprite + 0x60) = ecx_8
 004433ee        int32_t var_38_4 = ecx_8
 00443400        long double x87_r7_41 = sine(fconvert.s(fconvert.t(parcel->progress) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)
-0044340c        void* __offset(Game, 0x3be130) eax_16 = &parcel->game->__offset(0x3be130).d
-00443411        int32_t* edx_9 = parcel->sprite + 0x48
-00443440        float var_14_4 = fconvert.s(fconvert.t(fconvert.s(x87_r7_41 * fconvert.t((eax_16 - 0x3be130)->__offset(0x3be134).d))) + fconvert.t(parcel->world_position.y))
-00443448        long double x87_r7_43 = x87_r7_41 * fconvert.t((eax_16 - 0x3be130)->__offset(0x3be138).d) + fconvert.t(parcel->world_position.z)
-0044344b        *edx_9 = fconvert.s(fconvert.t(fconvert.s(x87_r7_41 * fconvert.t((eax_16 - 0x3be130)->__offset(0x3be130).d))) + fconvert.t(parcel->world_position.x))
-0044344d        edx_9[1] = var_14_4
-00443458        edx_9[2] = fconvert.s(x87_r7_43)
+0044340c        void* __offset(Game, 0x3be130) eax_15 = &parcel->game->__offset(0x3be130).d
+00443411        int32_t* edx_8 = parcel->sprite + 0x48
+00443440        float var_14_4 = fconvert.s(fconvert.t(fconvert.s(x87_r7_41 * fconvert.t((eax_15 - 0x3be130)->__offset(0x3be134).d))) + fconvert.t(parcel->world_position.y))
+00443448        long double x87_r7_43 = x87_r7_41 * fconvert.t((eax_15 - 0x3be130)->__offset(0x3be138).d) + fconvert.t(parcel->world_position.z)
+0044344b        *edx_8 = fconvert.s(fconvert.t(fconvert.s(x87_r7_41 * fconvert.t((eax_15 - 0x3be130)->__offset(0x3be130).d))) + fconvert.t(parcel->world_position.x))
+0044344d        edx_8[1] = var_14_4
+00443458        edx_8[2] = fconvert.s(x87_r7_43)
 0044345e        long double x87_r7_45 = fconvert.t(parcel->progress_step) + fconvert.t(parcel->progress)
 00443461        parcel->progress = fconvert.s(x87_r7_45)
 00443464        long double temp1_1 = fconvert.t(1f)
 00443464        x87_r7_45 - temp1_1
-0044346a        float eax_18
-0044346a        eax_18.w = (x87_r7_45 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_45, temp1_1) ? 1 : 0) << 0xa | (x87_r7_45 == temp1_1 ? 1 : 0) << 0xe
-0044346f        if ((eax_18:1.b & 0x41) == 0)
+0044346a        float eax_17
+0044346a        eax_17.w = (x87_r7_45 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_45, temp1_1) ? 1 : 0) << 0xa | (x87_r7_45 == temp1_1 ? 1 : 0) << 0xe
+0044346f        if ((eax_17:1.b & 0x41) == 0)
 00443475        void* sprite_2 = parcel->sprite
 00443478        parcel->state = 0
 0044347b        kill_sprite(sprite_2)
@@ -97,9 +113,9 @@
 0044348a        parcel->progress_step = 0.0166666675f
 00443491        parcel->state = 7
 004434b1        parcel->delivery_offset_x = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
-004434b7        int32_t eax_20 = next_math_random_value()
+004434b7        int32_t eax_19 = next_math_random_value()
 004434c0        parcel->delivery_offset_z = 0f
-004434dc        parcel->delivery_offset_y = fconvert.s((float.t(eax_20) - fconvert.t(16384f)) * fconvert.t(9.15527344e-05f) + fconvert.t(1f))
+004434dc        parcel->delivery_offset_y = fconvert.s((float.t(eax_19) - fconvert.t(16384f)) * fconvert.t(9.15527344e-05f) + fconvert.t(1f))
 004434e2        label_4434e2:
 004434e2        struct Game* game_2 = parcel->game
 00443505        float var_14_5 = fconvert.s(fconvert.t(game_2->row_event_display.widget_world_y) - fconvert.t(game_2->__offset(0x3bf920).d))
@@ -110,27 +126,27 @@
 00443542        void* sprite_1 = parcel->sprite
 00443548        *(sprite_1 + 0x60) = *(sprite_1 + 0x64)
 0044354e        long double x87_r7_62 = fconvert.t(parcel->progress)
-00443557        void* __offset(Game, 0x3bf91c) eax_23 = &parcel->game->__offset(0x3bf91c).d
-00443583        float var_14_6 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_14_5) * x87_r7_62)) + fconvert.t((eax_23 - 0x3bf91c)->__offset(0x3bf920).d))
-00443591        float* eax_25 = parcel->sprite + 0x48
-00443594        float var_10_6 = fconvert.s(x87_r7_62 * fconvert.t(var_10_5) + fconvert.t((eax_23 - 0x3bf91c)->__offset(0x3bf924).d))
-00443598        *eax_25 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_24) * x87_r7_62)) + fconvert.t((eax_23 - 0x3bf91c)->__offset(0x3bf91c).d))
+00443557        void* __offset(Game, 0x3bf91c) eax_22 = &parcel->game->__offset(0x3bf91c).d
+00443583        float var_14_6 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_14_5) * x87_r7_62)) + fconvert.t((eax_22 - 0x3bf91c)->__offset(0x3bf920).d))
+00443591        float* eax_24 = parcel->sprite + 0x48
+00443594        float var_10_6 = fconvert.s(x87_r7_62 * fconvert.t(var_10_5) + fconvert.t((eax_22 - 0x3bf91c)->__offset(0x3bf924).d))
+00443598        *eax_24 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_24) * x87_r7_62)) + fconvert.t((eax_22 - 0x3bf91c)->__offset(0x3bf91c).d))
 0044359e        float var_38_6 = var_10_6
-0044359f        eax_25[1] = var_14_6
-004435a2        eax_25[2] = var_10_6
+0044359f        eax_24[1] = var_14_6
+004435a2        eax_24[2] = var_10_6
 004435b1        long double st0_6 = sine(fconvert.s(fconvert.t(parcel->progress) * fconvert.t(3.14159274f)))
-004435c4        float* eax_27 = parcel->sprite + 0x48
+004435c4        float* eax_26 = parcel->sprite + 0x48
 004435d3        float var_8_4 = fconvert.s(st0_6 * fconvert.t(parcel->delivery_offset_y))
 004435d7        long double x87_r7_68 = st0_6 * fconvert.t(parcel->delivery_offset_z)
-004435e3        *eax_27 = fconvert.s(fconvert.t(fconvert.s(st0_6 * fconvert.t(parcel->delivery_offset_x))) + fconvert.t(*eax_27))
-004435ec        eax_27[1] = fconvert.s(fconvert.t(var_8_4) + fconvert.t(eax_27[1]))
-004435f2        eax_27[2] = fconvert.s(x87_r7_68 + fconvert.t(eax_27[2]))
+004435e3        *eax_26 = fconvert.s(fconvert.t(fconvert.s(st0_6 * fconvert.t(parcel->delivery_offset_x))) + fconvert.t(*eax_26))
+004435ec        eax_26[1] = fconvert.s(fconvert.t(var_8_4) + fconvert.t(eax_26[1]))
+004435f2        eax_26[2] = fconvert.s(x87_r7_68 + fconvert.t(eax_26[2]))
 004435f8        long double x87_r7_71 = fconvert.t(parcel->progress_step) + fconvert.t(parcel->progress)
 004435fb        parcel->progress = fconvert.s(x87_r7_71)
 004435fe        long double temp2_1 = fconvert.t(1f)
 004435fe        x87_r7_71 - temp2_1
-00443604        eax_27.w = (x87_r7_71 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_71, temp2_1) ? 1 : 0) << 0xa | (x87_r7_71 == temp2_1 ? 1 : 0) << 0xe
-00443609        if ((eax_27:1.b & 0x41) == 0)
+00443604        eax_26.w = (x87_r7_71 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_71, temp2_1) ? 1 : 0) << 0xa | (x87_r7_71 == temp2_1 ? 1 : 0) << 0xe
+00443609        if ((eax_26:1.b & 0x41) == 0)
 00443614        register_parcel_delivery(&parcel->game->row_event_display)
 00443619        void* sprite_3 = parcel->sprite
 0044361c        parcel->state = 0

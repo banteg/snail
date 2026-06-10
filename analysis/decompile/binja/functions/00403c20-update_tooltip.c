@@ -120,7 +120,7 @@
 00403f05        tooltip_widget_3->layout_anchor_x = fconvert.s(fconvert.t(tooltip_widget_3->layout_anchor_x) - (x87_r7_27 - fconvert.t(640f)))
 00403f17        return layout_frontend_widget(tooltip->tooltip_widget)
 00403c33        owner_widget = state - 3
-00403c34        if (state == 3)
+00403c34        if (state - 2 == 1)
 00403c3a        owner_widget = tooltip->owner_widget
 00403c47        if ((owner_widget->widget_flags & 0x20000) == 0)
 00403c4d        struct FrontendWidget* tooltip_widget_1 = tooltip->tooltip_widget

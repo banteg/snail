@@ -606,7 +606,7 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
               v60->vertex_index_c = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
               v60->vertex_index_d = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
             }
-            v60->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
+            v60->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v61 = v97;
             __asm { fild    dword ptr [esi+54h] }
             __asm

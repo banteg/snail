@@ -334,7 +334,7 @@ int32_t __thiscall initialize_twister2_path_template_pair(
               v43->vertex_index_b = v41 + v7 * (LOWORD(self->width_cells) + 1);
               v43->vertex_index_c = v41 + (v7 + 1) * (LOWORD(self->width_cells) + 1);
               v43->vertex_index_d = (v7 + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
-              v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
               v43->u0 = arg2b;
               v43->v0 = arg3d;
               v43->u1 = arg4c;
@@ -349,7 +349,7 @@ int32_t __thiscall initialize_twister2_path_template_pair(
               v43->vertex_index_b = v7 * (LOWORD(self->width_cells) + 1) + v41 + 1;
               v43->vertex_index_c = (v7 + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
               v43->vertex_index_d = v41 + (v7 + 1) * (LOWORD(self->width_cells) + 1);
-              v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
+              v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
               v43->u0 = arg4c;
               v43->v0 = arg3d;
               v43->u1 = arg2b;

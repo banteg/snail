@@ -13,6 +13,6 @@
 0044d5b1        long double st0_3
 0044d5b1        st0_3, result = sine(arg2)
 0044d5bd        arg1[2] = fconvert.s(fconvert.t(edi[2]) / st0_3)
-0044d5c0        long double x87_r7_7 = fconvert.t(arg2)
-0044d5c6        arg1[3] = fconvert.s(x87_r7_7 + x87_r7_7)
+0044d5c0        long double x87_r0_7 = fconvert.t(arg2)
+0044d5c6        arg1[3] = fconvert.s(x87_r0_7 + x87_r0_7)
 0044d5cb        return result

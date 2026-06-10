@@ -282,7 +282,7 @@ int32_t __thiscall initialize_sbend_path_template_pair(
             v42->vertex_index_b = v40 + j * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_c = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
             v42->u0 = arg2b;
             v42->v0 = arg3b;
             v42->u1 = arg5d;
@@ -297,7 +297,7 @@ int32_t __thiscall initialize_sbend_path_template_pair(
             v42->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_d = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
             v42->u0 = arg5d;
             v42->v0 = arg3b;
             v42->u1 = arg2b;

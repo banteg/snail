@@ -87,7 +87,7 @@ int32_t __thiscall initialize_wibble_path_template_pair(
   char *texture_ab; // [esp+70h] [ebp+8h]
   char *texture_ac; // [esp+70h] [ebp+8h]
   float texture_ad; // [esp+70h] [ebp+8h]
-  char *v85; // [esp+78h] [ebp+10h]
+  char *texture_path; // [esp+78h] [ebp+10h]
   char *v86; // [esp+7Ch] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_WIBBLE;
@@ -310,7 +310,7 @@ int32_t __thiscall initialize_wibble_path_template_pair(
             v43->vertex_index_b = v41 + j * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_c = v41 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v86, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, v86, 0, 0);
             v43->u0 = v48;
             v43->v0 = v47;
             v43->u1 = texture_ad;
@@ -325,7 +325,7 @@ int32_t __thiscall initialize_wibble_path_template_pair(
             v43->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_d = v41 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v85, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v43->u0 = texture_ad;
             v43->v0 = v47;
             v43->u1 = v48;

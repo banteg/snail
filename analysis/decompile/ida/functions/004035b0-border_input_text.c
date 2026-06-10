@@ -2,9 +2,9 @@
 /* function: border_input_text @ 0x4035b0 */
 /* selector: border_input_text */
 
-void __thiscall sub_4035B0(int this)
+void __thiscall border_input_text(int this)
 {
-  char v2; // bl
+  char repeating_text_input_key_code; // bl
   int v3; // eax
   int v4; // eax
   char v5; // bl
@@ -74,13 +74,13 @@ void __thiscall sub_4035B0(int this)
   int v77; // eax
   int v78; // edi
 
-  v2 = read_repeating_text_input_key_code();
+  repeating_text_input_key_code = read_repeating_text_input_key_code();
   if ( (*(_DWORD *)(this + 1804) & 0xC) == 0
     || (update_input_ok((float **)(this + 680)), (*(_BYTE *)(*(_DWORD *)(this + 712) + 416) & 0x20) == 0) )
   {
-    if ( v2 != 5 && (*(_DWORD *)(this + 416) & 0x8000000) == 0 )
+    if ( repeating_text_input_key_code != 5 && (*(_DWORD *)(this + 416) & 0x8000000) == 0 )
     {
-      switch ( v2 )
+      switch ( repeating_text_input_key_code )
       {
         case 6:
           v3 = *(_DWORD *)(this + 1804);
@@ -321,12 +321,13 @@ void __thiscall sub_4035B0(int this)
           goto LABEL_99;
       }
       if ( *(_DWORD *)(this + 1808) >= *(_DWORD *)(this + 1812)
-        || v2 == 32 && (*(_BYTE *)(this + 1804) & 1) != 0
-        || (*(_BYTE *)(this + 1804) & 2) != 0 && (v2 == 44 || v2 == 46) )
+        || repeating_text_input_key_code == 32 && (*(_BYTE *)(this + 1804) & 1) != 0
+        || (*(_BYTE *)(this + 1804) & 2) != 0
+        && (repeating_text_input_key_code == 44 || repeating_text_input_key_code == 46) )
       {
         goto LABEL_99;
       }
-      *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 716) = v2;
+      *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 716) = repeating_text_input_key_code;
       v61 = *(_DWORD *)(this + 1788) + 1;
       *(_DWORD *)(this + 1788) = v61;
       v62 = 32;
@@ -393,7 +394,7 @@ LABEL_99:
         *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 716) = 124;
       else
         *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 716) = 32;
-      layout_frontend_widget(this);
+      layout_frontend_widget((FrontendWidget *)this);
       return;
     }
   }
@@ -414,7 +415,7 @@ LABEL_99:
   *(_DWORD *)(this + 416) = v76;
   *(_DWORD *)(this + 1808) = v78;
   *(_DWORD *)(this + 416) = v77;
-  layout_frontend_widget(this);
+  layout_frontend_widget((FrontendWidget *)this);
   if ( (*(_BYTE *)(this + 1804) & 0xC) != 0 )
     kill_border(*(_DWORD **)(this + 712));
 }

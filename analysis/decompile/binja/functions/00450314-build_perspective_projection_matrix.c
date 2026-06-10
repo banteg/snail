@@ -3,13 +3,16 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_perspective_projection_matrix @ 0x450314 */
 
+00450326        float* var_10 = &arg2
+0045032c        float var_8
+0045032c        int32_t* var_14 = &var_8
 0045033b        long double st0
 0045033b        long double st1
 0045033b        bool c1
 0045033b        bool c2
 0045033b        st1, st0, c1, c2 = __fsincos(fconvert.t(fconvert.s(fconvert.t(arg2) * fconvert.t(0.5f))))
 0045033d        arg2 = fconvert.s(st0)
-0045033f        float var_8 = fconvert.s(st1)
+0045033f        var_8 = fconvert.s(st1)
 00450347        long double x87_r7_5 = fconvert.t(arg2) / fconvert.t(var_8)
 0045034a        arg1[0xb] = 0xbf800000
 00450356        *arg1 = fconvert.s(x87_r7_5 / fconvert.t(arg3))

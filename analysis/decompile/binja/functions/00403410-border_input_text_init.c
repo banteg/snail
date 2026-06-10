@@ -19,21 +19,39 @@
 0040343d        arg1->_pad_6fc[0x17] = 0
 0040344a        if (*eax != 0)
 0040346b        int32_t edx_4
+0040344c        int32_t edx_1
+0040344c        edx_1.b = arg1->_pad_6fc[0x14]
+0040344c        edx_1:1.b = arg1->_pad_6fc[0x15]
+0040344c        edx_1:2.b = arg1->_pad_6fc[0x16]
+0040344c        edx_1:3.b = arg1->_pad_6fc[0x17]
 00403452        eax = &eax[1]
-00403453        int32_t edx_2 = arg1->_pad_6fc[0x14].d + 1
-00403454        arg1->_pad_6fc[0x14] = edx_2.b
-00403454        arg1->_pad_6fc[0x15] = edx_2:1.b
-00403454        arg1->_pad_6fc[0x16] = edx_2:2.b
-00403454        arg1->_pad_6fc[0x17] = edx_2:3.b
-00403460        edx_4 = arg1->_pad_6fc[0].d + 1
-00403461        arg1->_pad_6fc[0] = edx_4.b
-00403461        arg1->_pad_6fc[1] = edx_4:1.b
-00403461        arg1->_pad_6fc[2] = edx_4:2.b
-00403461        arg1->_pad_6fc[3] = edx_4:3.b
+00403454        arg1->_pad_6fc[0x14] = (edx_1 + 1).b
+00403454        arg1->_pad_6fc[0x15] = (edx_1 + 1):1.b
+00403454        arg1->_pad_6fc[0x16] = (edx_1 + 1):2.b
+00403454        arg1->_pad_6fc[0x17] = (edx_1 + 1):3.b
+0040345a        int32_t edx_3
+0040345a        edx_3.b = arg1->_pad_6fc[0]
+0040345a        edx_3:1.b = arg1->_pad_6fc[1]
+0040345a        edx_3:2.b = arg1->_pad_6fc[2]
+0040345a        edx_3:3.b = arg1->_pad_6fc[3]
+00403461        arg1->_pad_6fc[0] = (edx_3 + 1).b
+00403461        arg1->_pad_6fc[1] = (edx_3 + 1):1.b
+00403461        arg1->_pad_6fc[2] = (edx_3 + 1):2.b
+00403461        arg1->_pad_6fc[3] = (edx_3 + 1):3.b
 00403467        edx_4.b = *eax
 0040346b        do while (edx_4.b != 0)
-00403473        arg1->text_buffer.raw[arg1->_pad_6fc[0].d] = 0x7c
-00403481        arg1->text_buffer.raw[1 + arg1->_pad_6fc[0].d] = 0
+0040346d        int32_t edx_5
+0040346d        edx_5.b = arg1->_pad_6fc[0]
+0040346d        edx_5:1.b = arg1->_pad_6fc[1]
+0040346d        edx_5:2.b = arg1->_pad_6fc[2]
+0040346d        edx_5:3.b = arg1->_pad_6fc[3]
+00403473        arg1->text_buffer.raw[edx_5] = 0x7c
+0040347b        int32_t eax_1
+0040347b        eax_1.b = arg1->_pad_6fc[0]
+0040347b        eax_1:1.b = arg1->_pad_6fc[1]
+0040347b        eax_1:2.b = arg1->_pad_6fc[2]
+0040347b        eax_1:3.b = arg1->_pad_6fc[3]
+00403481        arg1->text_buffer.raw[1 + eax_1] = 0
 00403488        arg1->_pad_6fc[8] = 0
 00403488        arg1->_pad_6fc[9] = 0
 00403488        arg1->_pad_6fc[0xa] = 0

@@ -32,8 +32,7 @@
 00448223        int32_t ecx_1
 00448223        eax_1, ecx_1 = find_case_insensitive_substring("ID:", &arg_4e0)
 0044822d        if (eax_1 == 0)
-00448808        void* var_14_28 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
-0044880e        report_errorf("Cannot find ID: in Segment %s\n")
+0044880e        report_errorf("Cannot find ID: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
 00448820        return 0
 00448233        ecx_1.b = eax_1[3]
 00448236        char* eax_2 = &eax_1[3]
@@ -50,8 +49,7 @@
 00448268        sub_48b32c(&arg_4[-0x11], "%s")
 0044827a        char* eax_4 = find_case_insensitive_substring("Name:'", &arg_4e0)
 00448284        if (eax_4 == 0)
-0044882b        void* var_14_29 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
-00448831        report_errorf("Cannot find Name: in Segment %s\n")
+00448831        report_errorf("Cannot find Name: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
 00448843        return 0
 00448290        char* eax_5 = find_case_insensitive_substring("'", eax_4)
 00448295        char i = eax_5[1]
@@ -64,20 +62,17 @@
 004482b0        do while (i != 0x27)
 004482bf        char* eax_7 = find_case_insensitive_substring("Data:", &arg_4e0)
 004482c9        if (eax_7 == 0)
-0044884e        void* var_14_30 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
-00448854        report_errorf("Cannot find Data: in Segment %s\n")
+00448854        report_errorf("Cannot find Data: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
 00448866        return 0
 004482d0        char* eax_8 = sub_44e690(eax_7)
 004482da        if (eax_8 == 0)
-00448871        void* var_14_31 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
-004488de        return report_errorf("Unexpected end of file in Segment %s\n")
+004488de        return report_errorf("Unexpected end of file in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
 004482e6        char* edi_2 = sub_44e690(eax_8)
 004482ed        void* eax_46
 004482ed        if (edi_2 == 0)
 00448877        eax_46 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
 004488d8        label_4488d8:
-004488d8        void* var_14_34 = eax_46
-004488de        return report_errorf("Unexpected end of file in Segment %s\n")
+004488de        return report_errorf("Unexpected end of file in Segment %s\n", eax_46)
 004482f6        if (*edi_2 != 0x40)
 004482f6        break
 00448300        int32_t arg_1c = 0
@@ -108,8 +103,7 @@
 00448356        *(edx_8 + ecx + 0x8c) = ebx_1.b
 0044835d        do while (i_1 s< 8)
 00448362        if (*edi_3 != 0x40)
-004488b1        void* var_14_33 = &(&__saved_edi)[arg_10 * 0x20 + 0x53c]
-004488b7        report_errorf("Data line must end with '@' in Segment %s\n")
+004488b7        report_errorf("Data line must end with '@' in Segment %s\n", &(&__saved_edi)[arg_10 * 0x20 + 0x53c])
 004488c9        return 0
 0044836f        char* edi_4 = &edi_3[1]
 00448370        *arg_4 += 1
@@ -197,9 +191,7 @@
 004485fd        int32_t eax_29
 004485fd        eax_29.b = (*(esi_4 + 0x88c)).b | 8
 004485ff        *(esi_4 + 0x88c) = eax_29
-004485e6        void* var_14_17 = arg_8
-004485e7        void* var_18_2 = &arg_20
-004485ed        report_errorf("Unknown path %s in %s")
+004485ed        report_errorf("Unknown path %s in %s", &arg_20, arg_8)
 0044860f        char* __return_addr_7 = find_case_insensitive_substring("NoFall", &arg_60)
 00448619        __return_addr = __return_addr_7
 0044861d        if (__return_addr_7 != 0)
@@ -254,6 +246,5 @@
 004488d1        goto label_4488d8
 0044879a        ebp = arg_10
 0044879f        arg_1c += 1
-0044888a        void* var_14_32 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
-00448890        report_errorf("Data line must start with '@' in Segment %s\n")
+00448890        report_errorf("Data line must start with '@' in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
 004488a2        return 0

@@ -74,9 +74,13 @@
 0043a8df        eax_17[0x1e] = 0x3a83126f
 0043a8e6        eax_17[0x15] = var_28_1
 0043a8e8        eax_17[0x12] = var_34_2
+0043a8ea        float var_20_1 = fconvert.s(x87_r7_26)
 0043a8f2        eax_17[0x16] = var_24_1
 0043a8f9        eax_17[0x13] = var_30_2
-0043a8fc        eax_17[0x17] = fconvert.s(x87_r7_26)
+0043a8fc        eax_17[0x17].b = var_20_1.b
+0043a8fc        *(eax_17 + 0x5d) = var_20_1:1.b
+0043a8fc        *(eax_17 + 0x5e) = var_20_1:2.b
+0043a8fc        *(eax_17 + 0x5f) = var_20_1:3.b
 0043a8ff        eax_17[0x14] = var_2c_2
 0043a902        esi_1 = var_50_1
 0043a906        i = i_1

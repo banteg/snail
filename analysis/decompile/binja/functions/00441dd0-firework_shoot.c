@@ -36,10 +36,25 @@
 00441f1a        eax_2[0x15] = fconvert.s(x87_r7_17 * fconvert.t(1.22070314e-05f))
 00441f20        eax_2[0x16] = world_y
 00441f23        eax_2[0x17] = world_x
-00441f2f        eax_2[0x12] = game->_pad_00[0].d
+00441f2d        int32_t eax_8
+00441f2d        eax_8.b = game->_pad_00[0]
+00441f2d        eax_8:1.b = game->_pad_00[1]
+00441f2d        eax_8:2.b = game->_pad_00[2]
+00441f2d        eax_8:3.b = game->_pad_00[3]
+00441f2f        eax_2[0x12] = eax_8
+00441f35        int32_t ecx_8
+00441f35        ecx_8.b = game->_pad_00[4]
+00441f35        ecx_8:1.b = game->_pad_00[5]
+00441f35        ecx_8:2.b = game->_pad_00[6]
+00441f35        ecx_8:3.b = game->_pad_00[7]
 00441f38        cond:1_1 = world_z_1 != 1
-00441f39        eax_2[0x13] = game->_pad_00[4].d
+00441f39        eax_2[0x13] = ecx_8
 00441f3c        world_z_1 -= 1
-00441f43        eax_2[0x14] = game->_pad_00[8].d
+00441f40        int32_t edx_4
+00441f40        edx_4.b = game->_pad_00[8]
+00441f40        edx_4:1.b = game->_pad_00[9]
+00441f40        edx_4:2.b = game->_pad_00[0xa]
+00441f40        edx_4:3.b = game->_pad_00[0xb]
+00441f43        eax_2[0x14] = edx_4
 00441f46        do while (cond:1_1)
 00441f53        return

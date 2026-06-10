@@ -27,25 +27,62 @@
 0043ef4c        report_errorf("List remove NEXTBOD")
 0043ef5a        kill_sprite(pickup->__offset(0xac).d)
 0043ef61        return 
-0043ef62        void* eax_10 = pickup->_pad_00[0xc].d
+0043ef62        void* eax_10
+0043ef62        eax_10.b = pickup->_pad_00[0xc]
+0043ef62        eax_10:1.b = pickup->_pad_00[0xd]
+0043ef62        eax_10:2.b = pickup->_pad_00[0xe]
+0043ef62        eax_10:3.b = pickup->_pad_00[0xf]
 0043ef67        if (eax_10 != 0)
-0043ef6c        *(eax_10 + 8) = pickup->_pad_00[8].d
-0043ef6f        void* eax_11 = pickup->_pad_00[8].d
+0043ef69        int32_t edi_1
+0043ef69        edi_1.b = pickup->_pad_00[8]
+0043ef69        edi_1:1.b = pickup->_pad_00[9]
+0043ef69        edi_1:2.b = pickup->_pad_00[0xa]
+0043ef69        edi_1:3.b = pickup->_pad_00[0xb]
+0043ef6c        *(eax_10 + 8) = edi_1
+0043ef6f        void* eax_11
+0043ef6f        eax_11.b = pickup->_pad_00[8]
+0043ef6f        eax_11:1.b = pickup->_pad_00[9]
+0043ef6f        eax_11:2.b = pickup->_pad_00[0xa]
+0043ef6f        eax_11:3.b = pickup->_pad_00[0xb]
 0043ef74        if (eax_11 == 0)
-0043ef81        label_43ef81:
-0043ef81        *(ecx_1 + 4) = pickup->_pad_00[0xc].d
+0043ef7e        label_43ef7e:
+0043ef7e        int32_t eax_12
+0043ef7e        eax_12.b = pickup->_pad_00[0xc]
+0043ef7e        eax_12:1.b = pickup->_pad_00[0xd]
+0043ef7e        eax_12:2.b = pickup->_pad_00[0xe]
+0043ef7e        eax_12:3.b = pickup->_pad_00[0xf]
+0043ef81        *(ecx_1 + 4) = eax_12.b
+0043ef81        *(ecx_1 + 5) = eax_12:1.b
+0043ef81        *(ecx_1 + 6) = eax_12:2.b
+0043ef81        *(ecx_1 + 7) = eax_12:3.b
 0043ef81        goto label_43ef84
-0043ef79        *(eax_11 + 0xc) = pickup->_pad_00[0xc].d
+0043ef76        int32_t edx_1
+0043ef76        edx_1.b = pickup->_pad_00[0xc]
+0043ef76        edx_1:1.b = pickup->_pad_00[0xd]
+0043ef76        edx_1:2.b = pickup->_pad_00[0xe]
+0043ef76        edx_1:3.b = pickup->_pad_00[0xf]
+0043ef79        *(eax_11 + 0xc) = edx_1
 0043ef84        label_43ef84:
-0043ef84        int32_t edx_3 = *(ecx_1 + 8)
-0043ef87        pickup->_pad_00[0xc] = edx_3.b
-0043ef87        pickup->_pad_00[0xd] = edx_3:1.b
-0043ef87        pickup->_pad_00[0xe] = edx_3:2.b
-0043ef87        pickup->_pad_00[0xf] = edx_3:3.b
-0043ef8a        *(ecx_1 + 8) = pickup
+0043ef84        int32_t edx_2
+0043ef84        edx_2.b = *(ecx_1 + 8)
+0043ef84        edx_2:1.b = *(ecx_1 + 9)
+0043ef84        edx_2:2.b = *(ecx_1 + 0xa)
+0043ef84        edx_2:3.b = *(ecx_1 + 0xb)
+0043ef87        pickup->_pad_00[0xc] = edx_2.b
+0043ef87        pickup->_pad_00[0xd] = edx_2:1.b
+0043ef87        pickup->_pad_00[0xe] = edx_2:2.b
+0043ef87        pickup->_pad_00[0xf] = edx_2:3.b
+0043ef8a        *(ecx_1 + 8) = pickup.b
+0043ef8a        *(ecx_1 + 9) = pickup:1.b
+0043ef8a        *(ecx_1 + 0xa) = pickup:2.b
+0043ef8a        *(ecx_1 + 0xb) = pickup:3.b
+0043ef8d        int32_t eax_13
+0043ef8d        eax_13.b = pickup->_pad_00[4]
+0043ef8d        eax_13:1.b = pickup->_pad_00[5]
+0043ef8d        eax_13:2.b = pickup->_pad_00[6]
+0043ef8d        eax_13:3.b = pickup->_pad_00[7]
 0043ef90        void* ecx_7 = pickup->__offset(0xac).d
-0043ef96        int32_t eax_13
-0043ef96        eax_13:1.b = pickup->_pad_00[4].d:1.b & 0xfd
+0043ef96        eax_13:1.b &= 0xfd
 0043ef99        pickup->_pad_00[4] = eax_13.b
 0043ef99        pickup->_pad_00[5] = eax_13:1.b
 0043ef99        pickup->_pad_00[6] = eax_13:2.b
@@ -63,12 +100,30 @@
 0043eebb        report_errorf("List remove NEXTBOD")
 0043eec9        kill_sprite(pickup->__offset(0xac).d)
 0043eed0        return 
-0043eed1        void* eax_6 = pickup->_pad_00[0xc].d
+0043eed1        void* eax_6
+0043eed1        eax_6.b = pickup->_pad_00[0xc]
+0043eed1        eax_6:1.b = pickup->_pad_00[0xd]
+0043eed1        eax_6:2.b = pickup->_pad_00[0xe]
+0043eed1        eax_6:3.b = pickup->_pad_00[0xf]
 0043eed6        if (eax_6 != 0)
-0043eedb        *(eax_6 + 8) = pickup->_pad_00[8].d
-0043eede        void* eax_7 = pickup->_pad_00[8].d
+0043eed8        int32_t edi
+0043eed8        edi.b = pickup->_pad_00[8]
+0043eed8        edi:1.b = pickup->_pad_00[9]
+0043eed8        edi:2.b = pickup->_pad_00[0xa]
+0043eed8        edi:3.b = pickup->_pad_00[0xb]
+0043eedb        *(eax_6 + 8) = edi
+0043eede        void* eax_7
+0043eede        eax_7.b = pickup->_pad_00[8]
+0043eede        eax_7:1.b = pickup->_pad_00[9]
+0043eede        eax_7:2.b = pickup->_pad_00[0xa]
+0043eede        eax_7:3.b = pickup->_pad_00[0xb]
 0043eee3        if (eax_7 == 0)
-0043eee3        goto label_43ef81
-0043eeec        *(eax_7 + 0xc) = pickup->_pad_00[0xc].d
+0043eee3        goto label_43ef7e
+0043eee9        int32_t edx
+0043eee9        edx.b = pickup->_pad_00[0xc]
+0043eee9        edx:1.b = pickup->_pad_00[0xd]
+0043eee9        edx:2.b = pickup->_pad_00[0xe]
+0043eee9        edx:3.b = pickup->_pad_00[0xf]
+0043eeec        *(eax_7 + 0xc) = edx
 0043eeef        goto label_43ef84
 0043efa3        return

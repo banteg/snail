@@ -11,7 +11,7 @@ void __thiscall update_invincible_shell(InvincibleShellController *shell)
   unsigned __int8 v6; // c0
   unsigned __int8 v7; // c3
   double spin_phase; // st7
-  float v9; // [esp+0h] [ebp-10h]
+  float angle; // [esp+0h] [ebp-10h]
 
   switch ( shell->state )
   {
@@ -53,8 +53,8 @@ LABEL_15:
         *(float *)&shell->_pad_00[52] = shell->fade_progress * 0.80000001;
         spin_phase = shell->spin_phase;
         qmemcpy(&shell->_pad_00[56], (char *)&loc_432738 + (_DWORD)MEMORY[0x4DF904], 0x40u);
-        v9 = spin_phase * 6.2831855;
-        rotate_matrix_world_y((TransformMatrix *)&shell->_pad_00[56], v9);
+        angle = spin_phase * 6.2831855;
+        rotate_matrix_world_y((TransformMatrix *)&shell->_pad_00[56], angle);
       }
       else
       {

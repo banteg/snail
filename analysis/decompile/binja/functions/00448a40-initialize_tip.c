@@ -3,51 +3,51 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_tip @ 0x448a40 */
 
-00448a4f        *arg1 = 1
-00448a55        if (arg2 == 0)
-00448a5c        arg1[2] = 0x4ac5c8
-00448a57        arg1[2] = arg2
-00448a74        arg1[3] = allocate_border(data_4df904 + 0xb4c)
-00448a7a        void* edi = arg1[2]
-00448a7f        float anchor_x_1 = *(edi + 4)
-00448a8b        uint32_t text_alignment = (sx.d(not.b((*arg1[2]).b)) & 4) u>> 1
+00448a4f        slot->active = 1
+00448a55        if (definition == 0)
+00448a5c        slot->definition = &data_4ac5c8
+00448a57        slot->definition = definition
+00448a74        slot->widget_main = allocate_border(data_4df904 + 0xb4c)
+00448a7a        struct TipMessageDefinition* definition_4 = slot->definition
+00448a7f        float layout_y_1 = definition_4->layout_y
+00448a8b        uint32_t text_alignment = (sx.d(not.b((slot->definition->flags).b)) & 4) u>> 1
 00448aa6        struct Color4f color
 00448aa6        struct Color4f* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00448abf        initialize_frontend_widget(arg1[3], 2, *(edi + 0x10), 0x14, *(edi + 4), *(edi + 8), color_1, text_alignment, anchor_x_1)
-00448ac4        char* eax_6 = arg1[2]
-00448acb        if ((*eax_6 & 2) != 0)
-00448acd        arg1[6] = 0
-00448adf        arg1[7] = fconvert.s(fconvert.t(1f) / (fconvert.t(*(eax_6 + 0xc)) * fconvert.t(60f)))
-00448ae5        if ((*eax_6 & 1) == 0)
-00448c09        arg1[4] = 0
-00448c0c        arg1[5] = 0
-00448afb        arg1[4] = allocate_border(data_4df904 + 0xb4c)
-00448b04        if (arg3 != 0)
-00448bc5        float anchor_x = *(arg1[2] + 4)
+00448abf        initialize_frontend_widget(slot->widget_main, 2, definition_4->text, 0x14, definition_4->layout_y, definition_4->text_scale, color_1, text_alignment, layout_y_1)
+00448ac4        struct TipMessageDefinition* definition_1 = slot->definition
+00448acb        if ((definition_1->flags.b & 2) != 0)
+00448acd        slot->dismiss_progress = 0f
+00448adf        slot->dismiss_step = fconvert.s(fconvert.t(1f) / (fconvert.t(definition_1->dismiss_seconds) * fconvert.t(60f)))
+00448ae5        if ((definition_1->flags.b & 1) == 0)
+00448c09        slot->widget_ok = nullptr
+00448c0c        slot->widget_disable = nullptr
+00448afb        slot->widget_ok = allocate_border(data_4df904 + 0xb4c)
+00448b04        if (show_disable_button != 0)
+00448bc5        float layout_y = slot->definition->layout_y
 00448bdf        struct Color4f* color_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00448bf3        initialize_frontend_widget(arg1[4], 0x14, "OK", 0x14, 0f, 0f, color_4, 2, anchor_x)
-00448bf8        void* ecx_17 = arg1[3]
-00448bfb        arg1[5] = 0
-00448c02        stack_widget_below(arg1[4], ecx_17)
-00448b0a        void* __saved_edi_9 = arg1[2]
-00448b0d        void* __saved_edi_1 = __saved_edi_9
-00448b1b        float __saved_edi_2 = fconvert.s(fconvert.t(*(__saved_edi_9 + 4)) + fconvert.t(40f))
+00448bf3        initialize_frontend_widget(slot->widget_ok, 0x14, "OK", 0x14, 0f, 0f, color_4, 2, layout_y)
+00448bf8        void* widget_main = slot->widget_main
+00448bfb        slot->widget_disable = nullptr
+00448c02        stack_widget_below(slot->widget_ok, widget_main)
+00448b0a        struct TipMessageDefinition* definition_2 = slot->definition
+00448b0d        struct TipMessageDefinition* __saved_edi_1 = definition_2
+00448b1b        float __saved_edi_2 = fconvert.s(fconvert.t(definition_2->layout_y) + fconvert.t(40f))
 00448b34        struct Color4f* color_2 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00448b48        initialize_frontend_widget(arg1[4], 0x14, "OK", 0x14, 0f, 0f, color_2, 2, __saved_edi_2)
-00448b59        void* eax_10
-00448b59        int32_t __saved_edi_10
-00448b59        eax_10, __saved_edi_10 = allocate_border(data_4df904 + 0xb4c)
-00448b5e        arg1[5] = eax_10
-00448b64        int32_t __saved_edi_3 = __saved_edi_10
-00448b72        float __saved_edi_4 = fconvert.s(fconvert.t(*(arg1[2] + 4)) - fconvert.t(60f))
+00448b48        initialize_frontend_widget(slot->widget_ok, 0x14, "OK", 0x14, 0f, 0f, color_2, 2, __saved_edi_2)
+00448b59        void* eax_9
+00448b59        int32_t __saved_edi_9
+00448b59        eax_9, __saved_edi_9 = allocate_border(data_4df904 + 0xb4c)
+00448b5e        slot->widget_disable = eax_9
+00448b64        int32_t __saved_edi_3 = __saved_edi_9
+00448b72        float __saved_edi_4 = fconvert.s(fconvert.t(slot->definition->layout_y) - fconvert.t(60f))
 00448b8b        struct Color4f* color_3 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00448b9f        initialize_frontend_widget(arg1[5], 0x14, "Disable", 0x14, 0f, 0f, color_3, 2, __saved_edi_4)
-00448bab        stack_widget_below(arg1[5], arg1[3])
-00448bb7        stack_widget_below(arg1[4], arg1[3])
-00448c15        char* ecx_19 = arg1[2]
-00448c1e        arg1[1] = *(data_4df904 + 0x1b8)
-00448c21        int32_t result
-00448c21        result.b = *ecx_19
-00448c27        if ((result.b & 1) != 0)
+00448b9f        initialize_frontend_widget(slot->widget_disable, 0x14, "Disable", 0x14, 0f, 0f, color_3, 2, __saved_edi_4)
+00448bab        stack_widget_below(slot->widget_disable, slot->widget_main)
+00448bb7        stack_widget_below(slot->widget_ok, slot->widget_main)
+00448c15        struct TipMessageDefinition* definition_3 = slot->definition
+00448c1e        slot->previous_outer_owner = *(data_4df904 + 0x1b8)
+00448c21        int32_t eax_11
+00448c21        eax_11.b = definition_3->flags.b
+00448c27        if ((eax_11.b & 1) != 0)
 00448c2f        *(data_4df904 + 0x1b8) = 0x16
-00448c3c        return result
+00448c3c        return

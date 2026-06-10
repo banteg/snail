@@ -227,7 +227,7 @@
 00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & 0x800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(*(data_4df904 + 0x440fc)) + fconvert.t(458f)), var_104_1, eax_30, 0f, 4)
 00402389        border_sprite_extend(widget->slider_more_widget, 0x2c, 0x2b, 0x2d, 1)
 004023ba        widget->slider_less_widget = allocate_border(data_4df904 + 0xb4c)
-004023c0        int32_t* eax_33
+004023c0        char* eax_33
 004023c0        int32_t ecx_51
 004023c0        eax_33, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 004023cc        int32_t var_128_3 = ecx_51

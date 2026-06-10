@@ -13,8 +13,7 @@
 0043101e        return eax_4
 00431020        sub_48b3a7(eax_4)
 00430ff1        if (find_archive_entry(arg1) == 0)
-00430ff3        char* var_8_1 = arg1
-00430ff9        report_warningf("Missing Dat File %s")
+00430ff9        report_warningf("Missing Dat File %s", arg1)
 00431001        int32_t eax_2
 00431001        eax_2.b = 0
 00431004        return 0

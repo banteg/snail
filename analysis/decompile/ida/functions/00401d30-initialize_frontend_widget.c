@@ -210,7 +210,7 @@ LABEL_11:
     widget->slider_value_widget = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
     v24 = set_color_rgba(&v30, 1.0, 1.0, 1.0, 1.0);
     v28 = *(float *)widget->layout_anchor_y + 40.0;
-    initialize_frontend_widget(widget->slider_value_widget, 0x400000u, a00, 21, 0.0, v28, v24, 2, 0.0);
+    initialize_frontend_widget(widget->slider_value_widget, 0x400000u, ::text, 21, 0.0, v28, v24, 2, 0.0);
   }
   return layout_frontend_widget(widget);
 }

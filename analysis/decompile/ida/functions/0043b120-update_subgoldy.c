@@ -11,12 +11,12 @@ int32_t __thiscall update_subgoldy(Player *player)
   signed int segment_count; // ecx
   Game *game; // eax
   Game *v7; // eax
-  int v8; // ecx
-  int v9; // eax
+  SelectedLevelRecord *selected_level_record; // ecx
+  int32_t replay_update_cursor; // eax
   Vec3 *p_position; // ebx
   Game *v11; // eax
   double v12; // st7
-  double steering_x; // st7
+  double track_z_offset; // st7
   double v14; // st7
   char v16; // c0
   double v17; // st7
@@ -35,7 +35,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   int v30; // esi
   Game *v31; // edx
   uint8_t tile_id; // al
-  double track_center_x; // st7
+  double subgame_rate; // st7
   Game *v34; // ecx
   Vec3 *p_velocity; // esi
   double v36; // st7
@@ -76,12 +76,12 @@ int32_t __thiscall update_subgoldy(Player *player)
   Game *v71; // ebp
   bool v72; // zf
   double v73; // st7
-  double wobble_y; // st7
+  double wobble_alpha; // st7
   float v75; // edx
   double v76; // st7
-  double wobble_x; // st6
+  double wobble_y; // st6
   double v78; // st6
-  double v79; // st5
+  double wobble_x; // st5
   double v80; // st5
   int32_t skin_hold_ticks; // eax
   double v82; // st7
@@ -91,13 +91,13 @@ int32_t __thiscall update_subgoldy(Player *player)
   double v86; // st7
   Game *v87; // ecx
   char *v88; // eax
-  int v89; // ecx
+  int32_t v89; // ecx
   int v90; // edx
   int v91; // ecx
   double v92; // st7
   double v93; // st7
   double v94; // st7
-  float cycle_phase_step; // eax
+  int32_t state; // eax
   double v96; // st7
   double v97; // st6
   double v98; // st7
@@ -117,17 +117,17 @@ int32_t __thiscall update_subgoldy(Player *player)
   float z; // [esp-Ch] [ebp-64h]
   float v113; // [esp-Ch] [ebp-64h]
   float v114; // [esp+0h] [ebp-58h]
-  int v115; // [esp+4h] [ebp-54h]
-  int v116; // [esp+4h] [ebp-54h]
-  float v117; // [esp+4h] [ebp-54h]
-  float v118; // [esp+4h] [ebp-54h]
-  int v119; // [esp+4h] [ebp-54h]
-  float v120; // [esp+18h] [ebp-40h]
-  TrackRowCell *v121; // [esp+18h] [ebp-40h]
-  float v122; // [esp+18h] [ebp-40h]
-  float completion_row_start; // [esp+18h] [ebp-40h]
-  int v124; // [esp+18h] [ebp-40h]
-  float v125; // [esp+18h] [ebp-40h]
+  int value; // [esp+4h] [ebp-54h]
+  int valuea; // [esp+4h] [ebp-54h]
+  float valueb; // [esp+4h] [ebp-54h]
+  float valuec; // [esp+4h] [ebp-54h]
+  int valued; // [esp+4h] [ebp-54h]
+  float source_celld; // [esp+18h] [ebp-40h]
+  TrackRowCell *source_cell; // [esp+18h] [ebp-40h]
+  float source_cella; // [esp+18h] [ebp-40h]
+  float source_cellb; // [esp+18h] [ebp-40h]
+  int source_celle; // [esp+18h] [ebp-40h]
+  float source_cellc; // [esp+18h] [ebp-40h]
   float v126; // [esp+1Ch] [ebp-3Ch]
   float v127; // [esp+1Ch] [ebp-3Ch]
   float v128; // [esp+1Ch] [ebp-3Ch]
@@ -137,7 +137,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   float v132; // [esp+24h] [ebp-34h]
   float v133; // [esp+24h] [ebp-34h]
   float v134; // [esp+24h] [ebp-34h]
-  Vec3 v135; // [esp+28h] [ebp-30h] BYREF
+  Vec3 position; // [esp+28h] [ebp-30h] BYREF
   float v136; // [esp+34h] [ebp-24h]
   float v137; // [esp+38h] [ebp-20h]
   float v138; // [esp+40h] [ebp-18h]
@@ -154,7 +154,7 @@ int32_t __thiscall update_subgoldy(Player *player)
       update_damage_gauge((int)&player->damage_gauge);
       update_progress_bar();
       update_warning((float *)&player->_pad_3f0[4]);
-      update_row_event_display((RowEventDisplayController *)&player->game[1]._pad_5c[340]);
+      update_row_event_display(&player->game->row_event_display);
     }
     return result;
   }
@@ -165,25 +165,21 @@ int32_t __thiscall update_subgoldy(Player *player)
     segment_count = template_record->segment_count;
     if ( v4 >= segment_count )
       v4 = segment_count - 1;
-    *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 128) = (*(float *)template_record->primary_samples[v4]._pad_a4
-                                                                    * -3.0
-                                                                    - *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
-                                                                               + 128))
-                                                                   * 0.1
-                                                                   + *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
-                                                                              + 128);
+    player->presentation.visual_root->follow_lateral_response = (*(float *)template_record->primary_samples[v4]._pad_a4
+                                                               * -3.0
+                                                               - player->presentation.visual_root->follow_lateral_response)
+                                                              * 0.1
+                                                              + player->presentation.visual_root->follow_lateral_response;
   }
   else
   {
-    *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 128) = -*(float *)(*(_DWORD *)&player->presentation._pad_08[24]
-                                                                               + 128)
-                                                                   * 0.1
-                                                                   + *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
-                                                                              + 128);
+    player->presentation.visual_root->follow_lateral_response = -player->presentation.visual_root->follow_lateral_response
+                                                              * 0.1
+                                                              + player->presentation.visual_root->follow_lateral_response;
   }
-  update_squidge((SquidgeState *)&player->visible_life_stock);
-  *(_DWORD *)(*(_DWORD *)&player->presentation._pad_08[24] + 132) = player->visible_life_stock;
-  *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 136) = player->squidge.y_phase;
+  update_squidge(&player->squidge);
+  player->presentation.visual_root->squidge_primary = player->squidge.y_output;
+  player->presentation.visual_root->squidge_secondary = player->squidge.z_output;
   if ( !player->game->level_mode )
     show_subgoldy_lives(player);
   result = player->movement_mode_selector;
@@ -193,26 +189,23 @@ int32_t __thiscall update_subgoldy(Player *player)
     if ( result )
     {
       game = player->game;
-      if ( *(int *)&game->_pad_ff25e0[508] > 20 && !game->track_state_latch )
+      if ( game->replay_update_cursor > 20 && !game->track_state_latch )
         game->track_state_latch = 1;
       v7 = player->game;
-      if ( v7->_pad_ff25e0[496] )
+      if ( v7->selected_level_record_active )
       {
-        v8 = *(_DWORD *)&v7->_pad_ff25e0[500];
-        v9 = *(_DWORD *)&v7->_pad_ff25e0[508];
-        if ( v9 < *(_DWORD *)(v8 + 108) && player->movement_state != 2 )
+        selected_level_record = v7->selected_level_record;
+        replay_update_cursor = v7->replay_update_cursor;
+        if ( replay_update_cursor < (signed int)selected_level_record->replay_sample_count
+          && player->movement_state != 2 )
         {
           p_position = (Vec3 *)&player->live_matrix.position;
-          player->live_matrix.position.x = convert_math_type16_to_32(*(_WORD *)(v8 + 6 * v9 + 112), 16.0);
+          player->live_matrix.position.x = convert_math_type16_to_32(
+                                             selected_level_record->replay_samples[replay_update_cursor].lateral_x,
+                                             16.0);
           v11 = player->game;
-          v11->track_state_latch = (*(_BYTE *)(*(_DWORD *)&v11->_pad_ff25e0[500]
-                                             + 6 * *(_DWORD *)&v11->_pad_ff25e0[508]
-                                             + 116)
-                                  & 4) != 0;
-          if ( (*(_BYTE *)(*(_DWORD *)&player->game->_pad_ff25e0[500]
-                         + 6 * *(_DWORD *)&player->game->_pad_ff25e0[508]
-                         + 116)
-              & 8) != 0 )
+          v11->track_state_latch = (v11->selected_level_record->replay_samples[v11->replay_update_cursor].flags & 4) != 0;
+          if ( (player->game->selected_level_record->replay_samples[player->game->replay_update_cursor].flags & 8) != 0 )
           {
             *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
             *((_DWORD *)MEMORY[0x4DF904] + 111) = 10;
@@ -231,11 +224,11 @@ LABEL_60:
             p_position->x = 4.0;
             player->velocity.x = 0.0;
           }
-          if ( player->_pad_78[12] )
+          if ( LOBYTE(player->resurrect_active) )
             update_subgoldy_resurrect((int)player);
           track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(player->game, p_position);
           v26 = player->game;
-          v121 = track_grid_cell_at_world_position;
+          source_cell = track_grid_cell_at_world_position;
           v27 = 61 * get_track_cell_row_index(track_grid_cell_at_world_position);
           v28 = &byte_5CCAC8[(_DWORD)v26 + 4 * v27];
           v29 = *(int *)((char *)unk_5CCBB8 + (_DWORD)v26 + 4 * v27);
@@ -249,20 +242,20 @@ LABEL_60:
                                                                                    + 42516];
               player->row_event.tip_definition.layout_y = 0.0;
               player->row_event.tip_definition.text_scale = 30.0;
-              player->row_event.tip_definition.dismiss_seconds = *(float *)&player->game->_pad_a855[16928 * *((_DWORD *)v28 + 60) + 27];
+              player->row_event.tip_definition.dismiss_seconds = *(float *)&player->game->_pad_a868[16928 * *((_DWORD *)v28 + 60) + 8];
               if ( !player->row_event_cutscene_started )
               {
                 player->row_event_cutscene_started = 1;
                 if ( p_position->x <= 0.0 )
-                  dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 3, 1u, -1);
+                  dispatch_cutscene_animation(&player->presentation, 3, 1u, -1);
                 else
-                  dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 4, 1u, -1);
-                dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 1, 0, -1);
+                  dispatch_cutscene_animation(&player->presentation, 4, 1u, -1);
+                dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
               }
               v30 = *((_DWORD *)v28 + 60);
               v31 = player->game;
-              if ( *(_DWORD *)&v31->_pad_a855[16928 * v30 + 31] != -1 )
-                play_voice_manager((int)unk_751498, 13, 2u, *(_DWORD *)&v31->_pad_a855[16928 * v30 + 31]);
+              if ( *(_DWORD *)&v31->_pad_a868[16928 * v30 + 12] != -1 )
+                play_voice_manager((int)unk_751498, 13, 2u, *(_DWORD *)&v31->_pad_a868[16928 * v30 + 12]);
               enqueue_tip_message(
                 (TipManager *)((char *)MEMORY[0x4DF904] + 19820376),
                 &player->row_event.tip_definition,
@@ -271,10 +264,10 @@ LABEL_60:
           }
           if ( !player->attachment_exit_pending )
           {
-            tile_id = v121->tile_id;
+            tile_id = source_cell->tile_id;
             if ( (tile_id == 29 || tile_id == 30) && !player->follow_state.active )
             {
-              begin_track_attachment_follow_state(&player->follow_state, v121, p_position, player);
+              begin_track_attachment_follow_state(&player->follow_state, source_cell, p_position, player);
               if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
                 play_voice_manager((int)unk_751498, 12, 0, -1);
             }
@@ -283,8 +276,8 @@ LABEL_60:
           {
             if ( player->velocity.z < 0.0 )
             {
-              track_center_x = player->game->track_center_x;
-              player->velocity.z = track_center_x * track_center_x * 0.0040000002 * 0.25 + player->velocity.z;
+              subgame_rate = player->game->subgame_rate;
+              player->velocity.z = subgame_rate * subgame_rate * 0.0040000002 * 0.25 + player->velocity.z;
             }
             if ( player->velocity.z > 0.0 )
 LABEL_94:
@@ -294,7 +287,7 @@ LABEL_94:
           {
             v34 = player->game;
             if ( (double)v34->first_block_row_count > player->live_matrix.position.z )
-              player->velocity.z = v34->track_center_x * v34->track_center_x * 0.0040000002 + player->velocity.z;
+              player->velocity.z = v34->subgame_rate * v34->subgame_rate * 0.0040000002 + player->velocity.z;
             if ( player->velocity.z > 1.0 )
               player->velocity.z = 1.0;
             if ( player->movement_state == 2 )
@@ -312,7 +305,7 @@ LABEL_94:
               case 0:
                 if ( player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR )
                 {
-                  v36 = player->game->track_center_x;
+                  v36 = player->game->subgame_rate;
                   player->velocity.z = v36 * v36 * 0.0040000002 + v36 * v36 * 0.0040000002 + player->velocity.z;
                 }
                 goto LABEL_101;
@@ -326,10 +319,10 @@ LABEL_101:
                 p_position->x = p_position->x + p_velocity->x;
                 p_position->y = player->velocity.y + p_position->y;
                 p_position->z = player->velocity.z + p_position->z;
-                player->velocity.z = (1.0 - player->game->track_center_x * 0.003) * player->velocity.z;
-                player->velocity.y = (1.0 - player->game->track_center_x * 0.003) * player->velocity.y;
-                p_velocity->x = (1.0 - player->game->track_center_x * 0.1) * p_velocity->x;
-                player->velocity.y = player->game->track_center_x * player->game->track_center_x * -0.0099999998
+                player->velocity.z = (1.0 - player->game->subgame_rate * 0.003) * player->velocity.z;
+                player->velocity.y = (1.0 - player->game->subgame_rate * 0.003) * player->velocity.y;
+                p_velocity->x = (1.0 - player->game->subgame_rate * 0.1) * p_velocity->x;
+                player->velocity.y = player->game->subgame_rate * player->game->subgame_rate * -0.0099999998
                                    + player->velocity.y;
                 if ( p_position->x < -4.0 )
                 {
@@ -371,27 +364,27 @@ LABEL_101:
                 && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
                     (unsigned __int8)is_slide_cache_tile_family(v37)) )
               {
-                v38 = player->game->track_center_x * player->game->track_center_x * 0.0040000002;
+                v38 = player->game->subgame_rate * player->game->subgame_rate * 0.0040000002;
                 player->velocity.z = v38 + v38 + player->velocity.z;
                 if ( (double)player->game->first_block_row_count <= player->live_matrix.position.z
-                  && player->live_matrix.position.z > (double)player->movement_rate_scalar )
+                  && player->live_matrix.position.z > (double)*(float *)player->_pad_2738 )
                 {
-                  player->movement_rate_scalar = player->live_matrix.position.z + 1.0;
+                  *(float *)player->_pad_2738 = player->live_matrix.position.z + 1.0;
                 }
               }
             }
-            if ( LODWORD(player->jetpack_gauge.cycle_phase_step) == 1 )
+            if ( player->jetpack_gauge.state == 1 )
             {
-              v39 = player->game->track_center_x;
+              v39 = player->game->subgame_rate;
               player->velocity.z = v39 * v39 * 0.0040000002 + v39 * v39 * 0.0040000002 + player->velocity.z;
             }
             if ( !player->_pad_1e4[0] )
-              player->velocity.z = (1.0 - player->game->track_center_x * 0.003) * player->velocity.z;
-            player->velocity.y = (1.0 - player->game->track_center_x * 0.003) * player->velocity.y;
-            player->velocity.x = (1.0 - player->game->track_center_x * 0.1) * player->velocity.x;
+              player->velocity.z = (1.0 - player->game->subgame_rate * 0.003) * player->velocity.z;
+            player->velocity.y = (1.0 - player->game->subgame_rate * 0.003) * player->velocity.y;
+            player->velocity.x = (1.0 - player->game->subgame_rate * 0.1) * player->velocity.x;
             if ( player->_pad_41c[0] )
             {
-              v40 = player->game->track_center_x;
+              v40 = player->game->subgame_rate;
               player->velocity.z = v40 * v40 * 0.0040000002 + v40 * v40 * 0.0040000002 + player->velocity.z;
               player->attachment_exit_pending = 0;
             }
@@ -402,18 +395,18 @@ LABEL_101:
               {
                 v42 = player->game;
                 if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)v42 + 244 * get_track_cell_row_index(v41)] & 0x100) == 0
-                  && !LODWORD(player->jetpack_gauge.cycle_phase_step)
+                  && !player->jetpack_gauge.state
                   && !player->control_override_active )
                 {
-                  player->velocity.z = (1.0 - v42->track_center_x * 0.2) * player->velocity.z;
+                  player->velocity.z = (1.0 - v42->subgame_rate * 0.2) * player->velocity.z;
                 }
                 if ( (byte_5CCAC8[(unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]] & 0x40) != 0 )
                 {
                   v126 = player->velocity.x * 1.05;
                   v129 = player->velocity.y * 1.05;
                   v132 = player->velocity.z * 1.05;
-                  v115 = *(int *)((char *)unk_5CCB6C
-                                + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
+                  value = *(int *)((char *)unk_5CCB6C
+                                 + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
                   x = p_position->x;
                   y = p_position->y;
                   z = p_position->z;
@@ -428,7 +421,7 @@ LABEL_101:
                     v126,
                     v129,
                     v132,
-                    v115);
+                    value);
                 }
                 if ( player->attachment_exit_pending
                   && byte_5CCAC8[(unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]] < 0 )
@@ -436,8 +429,8 @@ LABEL_101:
                   v127 = player->velocity.x * 1.05;
                   v130 = player->velocity.y * 1.05;
                   v133 = player->velocity.z * 1.05;
-                  v116 = *(int *)((char *)unk_5CCB70
-                                + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
+                  valuea = *(int *)((char *)unk_5CCB70
+                                  + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
                   v109 = p_position->x;
                   v111 = p_position->y;
                   v113 = p_position->z;
@@ -450,7 +443,7 @@ LABEL_101:
                     v127,
                     v130,
                     v133,
-                    v116);
+                    valuea);
                 }
               }
               if ( !player->follow_state.active )
@@ -464,8 +457,8 @@ LABEL_101:
                   player->_pad_1e4[0] = 0;
                   if ( player->velocity.y < -0.029999999 )
                   {
-                    v117 = player->velocity.y - 0.029999999;
-                    start_squidge_y((SquidgeState *)&player->visible_life_stock, v117);
+                    valueb = player->velocity.y - 0.029999999;
+                    start_squidge_y(&player->squidge, valueb);
                   }
                   if ( player->velocity.y <= 0.0 )
                   {
@@ -483,10 +476,10 @@ LABEL_101:
                     v48 = 0.80000001;
                   else
                     v48 = 1.0;
-                  v122 = 0.0;
+                  source_cella = 0.0;
                   if ( (tile_flags_3d & 1) != 0 )
-                    v122 = 0.2;
-                  if ( v47 < v48 && v47 > v122 && !player->attachment_exit_pending )
+                    source_cella = 0.2;
+                  if ( v47 < v48 && v47 > source_cella && !player->attachment_exit_pending )
                     begin_post_follow_carryover((int)player);
                 }
                 v49 = player->game;
@@ -495,13 +488,13 @@ LABEL_101:
                 if ( ((player->game->runtime_flags & 0x400) == 0 || (byte_4B2F40 & 2) != 0)
                   && player->live_matrix.position.y < 0.49000001 )
                 {
-                  start_squidge_y((SquidgeState *)&player->visible_life_stock, player->velocity.y);
+                  start_squidge_y(&player->squidge, player->velocity.y);
                   player->_pad_1e4[0] = 0;
                   player->velocity.y = 0.0;
                   player->attachment_exit_pending = 0;
                   player->live_matrix.position.y = 0.49000001;
                 }
-                if ( player->live_matrix.position.y < -7.0 && !player->_pad_78[12] )
+                if ( player->live_matrix.position.y < -7.0 && !LOBYTE(player->resurrect_active) )
                   initialize_subgoldy_death(player);
               }
             }
@@ -514,7 +507,7 @@ LABEL_101:
             }
             if ( player->attachment_exit_pending )
             {
-              player->velocity.y = player->game->track_center_x * player->game->track_center_x * -0.0099999998
+              player->velocity.y = player->game->subgame_rate * player->game->subgame_rate * -0.0099999998
                                  + player->velocity.y;
               v53 = get_track_grid_cell_at_world_position(player->game, p_position);
               v54 = v53;
@@ -522,8 +515,8 @@ LABEL_101:
                 && v53->anchor_position.y + 0.49000001 > player->live_matrix.position.y
                 && v53->anchor_position.y - 0.49000001 < player->live_matrix.position.y )
               {
-                start_squidge_y((SquidgeState *)&player->visible_life_stock, player->velocity.y);
-                player->velocity.y = player->game->track_center_x * 0.30000001;
+                start_squidge_y(&player->squidge, player->velocity.y);
+                player->velocity.y = player->game->subgame_rate * 0.30000001;
                 player->live_matrix.position.y = v54->anchor_position.y + 0.49000001;
                 player->attachment_exit_pending = 0;
                 player->_pad_1e4[0] = 1;
@@ -535,7 +528,7 @@ LABEL_101:
               v51 = sample_track_floor_height_at_position(player->game, p_position) + 0.49000001;
               if ( v51 <= player->live_matrix.position.y )
               {
-                v52 = player->game->track_center_x;
+                v52 = player->game->subgame_rate;
                 player->velocity.y = v52 * v52 * -0.0099999998 + player->velocity.y;
               }
               else
@@ -549,7 +542,7 @@ LABEL_101:
                   || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 12
                   || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 13 )
                 {
-                  player->velocity.y = player->game->track_center_x * 0.30000001;
+                  player->velocity.y = player->game->subgame_rate * 0.30000001;
                 }
                 else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
                        || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 3
@@ -560,14 +553,14 @@ LABEL_101:
                 {
                   if ( player->surface_reaction_timer == 0.0 )
                     player->surface_reaction_timer = player->surface_reaction_step;
-                  player->velocity.y = player->game->track_center_x * 0.2;
+                  player->velocity.y = player->game->subgame_rate * 0.2;
                   if ( !player->control_override_active )
                   {
                     if ( p_position->x <= 0.0 )
-                      dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 3, 1u, -1);
+                      dispatch_cutscene_animation(&player->presentation, 3, 1u, -1);
                     else
-                      dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 4, 1u, -1);
-                    dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 1, 0, -1);
+                      dispatch_cutscene_animation(&player->presentation, 4, 1u, -1);
+                    dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
                   }
                 }
                 else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id
@@ -588,11 +581,11 @@ LABEL_98:
             || player->follow_state.active
             || (v55 = p_position->y,
                 v134 = p_position->z + 0.49000001,
-                v135.x = p_position->x,
-                v135.z = v134,
+                position.x = p_position->x,
+                position.z = v134,
                 v56 = player->game,
-                v135.y = v55,
-                get_track_grid_cell_at_world_position(v56, &v135)->tile_id != 14)
+                position.y = v55,
+                get_track_grid_cell_at_world_position(v56, &position)->tile_id != 14)
             || player->live_matrix.position.y >= 6.5 )
           {
             *(_DWORD *)&player->_pad_30c[28] = 0;
@@ -601,9 +594,9 @@ LABEL_98:
           {
             player->velocity.z = 0.0;
             player->live_matrix.position.z = (double)(int)(__int64)(player->live_matrix.position.z + 0.49000001) - 0.5;
-            if ( player->squidge.y_phase == 0.0 )
+            if ( player->squidge.z_output == 0.0 )
               play_sound_effect(47);
-            start_squidge_z((SquidgeState *)&player->visible_life_stock, -0.33000001);
+            start_squidge_z(&player->squidge, -0.33000001);
             v57 = *(float *)&player->_pad_30c[32] + *(float *)&player->_pad_30c[28];
             *(float *)&player->_pad_30c[28] = v57;
             if ( v57 > 1.0 )
@@ -626,7 +619,7 @@ LABEL_98:
             && !player->attachment_exit_pending
             && player->live_matrix.position.y <= 0.98000002 )
           {
-            player->lane_lean_progress_step = player->game->track_center_x * 0.037037037;
+            player->lane_lean_progress_step = player->game->subgame_rate * 0.037037037;
             if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
               || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
               || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
@@ -649,15 +642,15 @@ LABEL_98:
               player->damage_retrigger_timer = 0.0;
           }
           v59 = player->game;
-          completion_row_start = (float)v59->completion_row_start;
-          if ( player->live_matrix.position.z < (double)completion_row_start || player->attachment_exit_pending )
+          source_cellb = (float)v59->completion_row_start;
+          if ( player->live_matrix.position.z < (double)source_cellb || player->attachment_exit_pending )
           {
             if ( !player->_pad_41c[0] && !player->control_override_active )
             {
-              v73 = v59->track_center_x * 0.17;
+              v73 = v59->subgame_rate * 0.17;
               if ( player->velocity.z >= v73 )
               {
-                v73 = v59->track_center_x * 0.5;
+                v73 = v59->subgame_rate * 0.5;
                 if ( player->velocity.z <= v73 )
                   v73 = player->velocity.z;
               }
@@ -670,25 +663,24 @@ LABEL_98:
             {
               if ( v59->level_mode == 4 )
               {
-                v118 = (1.0 - (player->live_matrix.position.z - completion_row_start) / player->velocity.z)
-                     * 0.016666668;
-                advance_timer_counters((float *)&player->_pad_2e4[4], v118);
+                valuec = (1.0 - (player->live_matrix.position.z - source_cellb) / player->velocity.z) * 0.016666668;
+                advance_timer_counters((float *)&player->_pad_2e4[4], valuec);
               }
               v60 = player->game;
               player->completion_handoff_timer = 0.0;
               player->completion_handoff_timer_step = 0.016666668;
               player->completion_handoff_voice_gate = 0;
-              v61 = v60->track_center_x * 0.17;
+              v61 = v60->subgame_rate * 0.17;
               if ( player->velocity.z >= v61 )
               {
-                v61 = v60->track_center_x * 0.5;
+                v61 = v60->subgame_rate * 0.5;
                 if ( player->velocity.z <= v61 )
                   v61 = player->velocity.z;
               }
               player->velocity.z = v61;
               reset_voice_manager(unk_751498);
-              end_jetpack_hover((float *)&player->_pad_2744[8]);
-              player->presentation.cutscene_ai.unresolved_08 = 5;
+              end_jetpack_hover(&player->jetpack_gauge.progress);
+              player->presentation.cutscene_ai.state = 5;
               play_sound_effect(0);
               player->_pad_41c[0] = 0;
             }
@@ -697,19 +689,19 @@ LABEL_98:
             if ( (double)v62->completion_row_start + 2.5 < player->live_matrix.position.z )
             {
               v63 = player->velocity.z
-                  - (v62->track_center_x * v62->track_center_x * 0.0040000002
-                   + v62->track_center_x * v62->track_center_x * 0.0040000002);
+                  - (v62->subgame_rate * v62->subgame_rate * 0.0040000002
+                   + v62->subgame_rate * v62->subgame_rate * 0.0040000002);
               player->velocity.z = v63;
               if ( v63 < 0.0 )
                 player->velocity.z = 0.0;
             }
-            v64 = *(float *)player->_pad_2744 + player->track_z_anchor;
-            player->track_z_anchor = v64;
+            v64 = player->completion_handoff_cycle_step + player->completion_handoff_cycle_progress;
+            player->completion_handoff_cycle_progress = v64;
             if ( v64 > 1.0 )
-              player->track_z_anchor = 0.0;
+              player->completion_handoff_cycle_progress = 0.0;
             v65 = player->game;
             player->completion_handoff_timer = player->completion_handoff_timer + player->completion_handoff_timer_step;
-            *(_DWORD *)&v65->_pad_ff25e0[2616296] = 2;
+            *(_DWORD *)&v65->_pad_ff25e8[2615776] = 2;
             if ( player->completion_handoff_timer > 2.0 && !player->completion_handoff_voice_gate )
             {
               player->completion_handoff_voice_gate = 1;
@@ -720,16 +712,16 @@ LABEL_98:
               v66 = player->game;
               if ( v66->level_mode <= 1u )
               {
-                if ( v66[1]._pad_5c[364] == 1 && (player->control_source->control_flags_a & 0x4000) != 0 )
+                if ( v66->row_event_display.gate_18 == 1 && (player->control_source->control_flags_a & 0x4000) != 0 )
                   player->completion_handoff_timer = 5.0999999;
-                if ( *(_DWORD *)&v66[1]._pad_5c[360] == 5 )
+                if ( v66->row_event_display.state == 5 )
                   player->completion_handoff_timer = 5.0999999;
               }
             }
             if ( player->completion_handoff_timer > 5.0 )
             {
               v67 = player->game;
-              if ( v67->level_mode <= 1u && *(_DWORD *)&v67[1]._pad_5c[360] != 5 )
+              if ( v67->level_mode <= 1u && v67->row_event_display.state != 5 )
                 player->completion_handoff_timer = player->completion_handoff_timer
                                                  - player->completion_handoff_timer_step;
             }
@@ -744,8 +736,8 @@ LABEL_98:
               if ( v68 == 4 )
               {
                 v69 = player->game;
-                if ( *(_DWORD *)&v69[1]._pad_5c[360] )
-                  flush_row_event_display((RowEventDisplayController *)&v69[1]._pad_5c[340]);
+                if ( v69->row_event_display.state )
+                  flush_row_event_display(&v69->row_event_display);
                 v70 = player->game;
                 if ( v70->level_mode )
                 {
@@ -772,7 +764,7 @@ LABEL_98:
                 }
                 else
                 {
-                  v72 = v71->_pad_ff25e0[497] == 0;
+                  v72 = v71->selected_level_record_persistent == 0;
                   result = (int32_t)MEMORY[0x4DF904];
                   *((_DWORD *)MEMORY[0x4DF904] + 111) = *((_DWORD *)MEMORY[0x4DF904] + 110);
                   if ( v72 )
@@ -794,7 +786,7 @@ LABEL_287:
             p_position->y = player->follow_state.output_position.y;
             p_position->z = player->follow_state.output_position.z;
           }
-          update_jetpack_gauge((int)&player->_pad_2744[8]);
+          update_jetpack_gauge((int)&player->jetpack_gauge);
           if ( LOBYTE(player->completion_handoff_active) )
           {
             qmemcpy((char *)MEMORY[0x4DF904] + 716, (char *)MEMORY[0x4DF904] + 348, 0x40u);
@@ -802,35 +794,35 @@ LABEL_287:
           }
           update_damage_gauge((int)&player->damage_gauge);
           update_progress_bar();
-          wobble_y = player->jetpack_gauge.wobble_y;
-          player->jetpack_gauge.warning_intensity = p_position->x;
+          wobble_alpha = player->jetpack_gauge.wobble_alpha;
+          player->cached_camera_target_world.x = p_position->x;
           v75 = p_position->z;
-          player->cached_camera_target_world.x = p_position->y;
-          player->cached_camera_target_world.y = v75;
-          v138 = wobble_y * player->live_matrix.basis_forward.x;
-          v139 = wobble_y * player->live_matrix.basis_forward.y;
-          v76 = wobble_y * player->live_matrix.basis_forward.z;
+          player->cached_camera_target_world.y = p_position->y;
+          player->cached_camera_target_world.z = v75;
+          v138 = wobble_alpha * player->live_matrix.basis_forward.x;
+          v139 = wobble_alpha * player->live_matrix.basis_forward.y;
+          v76 = wobble_alpha * player->live_matrix.basis_forward.z;
+          wobble_y = player->jetpack_gauge.wobble_y;
+          v128 = wobble_y * player->live_matrix.basis_up.x;
+          v131 = wobble_y * player->live_matrix.basis_up.y;
+          v78 = wobble_y * player->live_matrix.basis_up.z;
           wobble_x = player->jetpack_gauge.wobble_x;
-          v128 = wobble_x * player->live_matrix.basis_up.x;
-          v131 = wobble_x * player->live_matrix.basis_up.y;
-          v78 = wobble_x * player->live_matrix.basis_up.z;
-          v79 = *(float *)&player->jetpack_gauge.warning_anchor;
-          v135.x = v79 * player->live_matrix.basis_right.x;
-          v135.y = v79 * player->live_matrix.basis_right.y;
-          v80 = v79 * player->live_matrix.basis_right.z;
-          v136 = v135.x + v128;
-          v137 = v135.y + v131;
-          v135.x = v136 + v138;
-          v135.y = v137 + v139;
-          player->jetpack_gauge.warning_intensity = v135.x + player->jetpack_gauge.warning_intensity;
-          player->cached_camera_target_world.x = v135.y + player->cached_camera_target_world.x;
-          player->cached_camera_target_world.y = v76 + v78 + v80 + player->cached_camera_target_world.y;
+          position.x = wobble_x * player->live_matrix.basis_right.x;
+          position.y = wobble_x * player->live_matrix.basis_right.y;
+          v80 = wobble_x * player->live_matrix.basis_right.z;
+          v136 = position.x + v128;
+          v137 = position.y + v131;
+          position.x = v136 + v138;
+          position.y = v137 + v139;
+          player->cached_camera_target_world.x = position.x + player->cached_camera_target_world.x;
+          player->cached_camera_target_world.y = position.y + player->cached_camera_target_world.y;
+          player->cached_camera_target_world.z = v76 + v78 + v80 + player->cached_camera_target_world.z;
           skin_hold_ticks = player->damage_gauge.skin_hold_ticks;
           if ( skin_hold_ticks > 0 )
             player->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
           if ( player->follow_state.active == 1 )
             p_position->x = v140;
-          v82 = player->game->track_center_x * 0.037037037;
+          v82 = player->game->subgame_rate * 0.037037037;
           player->lane_lean_progress_step = v82;
           if ( player->lane_lean_state )
           {
@@ -852,19 +844,19 @@ LABEL_287:
               *(_DWORD *)player->_pad_360 = 0;
             }
           }
-          v85 = player->game->track_center_x * 0.022222223;
-          *(float *)&player->_pad_374[4] = v85;
-          if ( *(float *)player->_pad_374 > 0.0 )
+          v85 = player->game->subgame_rate * 0.022222223;
+          player->nuke_effect_progress_step = v85;
+          if ( player->nuke_effect_progress > 0.0 )
           {
-            v86 = v85 + *(float *)player->_pad_374;
-            *(float *)player->_pad_374 = v86;
+            v86 = v85 + player->nuke_effect_progress;
+            player->nuke_effect_progress = v86;
             if ( v86 <= 1.0 )
             {
               update_nuke(&player->nuke);
             }
             else
             {
-              *(_DWORD *)player->_pad_374 = 0;
+              player->nuke_effect_progress = 0.0;
               uninit_nuke(&player->nuke);
             }
           }
@@ -872,9 +864,9 @@ LABEL_287:
           if ( v87->level_mode == 4 )
           {
             v88 = (char *)v87 + 129728 * v87->level_mode_arg;
-            if ( *((_DWORD *)v88 + 2429012) == 1 && !v87->_pad_ff25e0[496] )
+            if ( *((_DWORD *)v88 + 2429012) == 1 && !v87->selected_level_record_active )
             {
-              v89 = *(_DWORD *)&v87->_pad_ff25e0[508];
+              v89 = v87->replay_update_cursor;
               if ( v89 >= *((_DWORD *)v88 + 2429039) )
                 v89 = *((_DWORD *)v88 + 2429039);
               v90 = *(_DWORD *)&player->_pad_2e4[32];
@@ -883,13 +875,13 @@ LABEL_287:
               else
                 v92 = convert_math_type16_to_32(*((_WORD *)v88 + 4858081), 32.0);
               flt_643190 = v92;
-              if ( player->game->_pad_ff25e0[496] )
+              if ( player->game->selected_level_record_active )
                 flt_643190 = player->live_matrix.position.z;
               v93 = player->live_matrix.position.z + 20.0;
               if ( flt_643190 >= v93 )
               {
-                *(float *)&v124 = v93;
-                mark_current_track_pair_with_payload(player, v124);
+                *(float *)&source_celle = v93;
+                mark_current_track_pair_with_payload(player, source_celle);
               }
               else
               {
@@ -897,21 +889,21 @@ LABEL_287:
               }
             }
           }
-          *(float *)&v119 = player->live_matrix.position.z / (double)player->game->runtime_row_count;
-          set_backdrop_progress_fraction((_DWORD *)MEMORY[0x4DF904] + 80644, v119);
+          *(float *)&valued = player->live_matrix.position.z / (double)player->game->runtime_row_count;
+          set_backdrop_progress_fraction((_DWORD *)MEMORY[0x4DF904] + 80644, valued);
           v94 = (double)player->game->completion_row_start - 30.0;
-          v125 = player->live_matrix.position.z - 8.0;
-          if ( v94 >= v125 )
-            v94 = v125;
-          cycle_phase_step = player->jetpack_gauge.cycle_phase_step;
-          *(float *)&player->_pad_2974[8] = v94;
-          if ( LODWORD(cycle_phase_step) == 1 )
+          source_cellc = player->live_matrix.position.z - 8.0;
+          if ( v94 >= source_cellc )
+            v94 = source_cellc;
+          state = player->jetpack_gauge.state;
+          player->interaction_max_z = v94;
+          if ( state == 1 )
           {
             if ( player->live_matrix.position.y < 1.0 )
             {
               v96 = player->velocity.y * 0.89999998;
               player->velocity.y = v96;
-              v97 = player->game->track_center_x;
+              v97 = player->game->subgame_rate;
               player->velocity.y = v96 - v97 * v97 * -0.0099999998;
             }
             player->attachment_exit_pending = 0;
@@ -926,7 +918,7 @@ LABEL_287:
               control_override_active = player->control_override_active;
               player->attachment_exit_gate_a = 1;
               if ( !control_override_active && player->live_matrix.position.y < -6.0 )
-                dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 5, 1u, -1);
+                dispatch_cutscene_animation(&player->presentation, 5, 1u, -1);
             }
             if ( player->live_matrix.position.y < -7.0 && !player->attachment_exit_gate_b )
             {
@@ -946,35 +938,35 @@ LABEL_287:
             }
           }
           v101 = player->game;
-          v102 = v101->track_center_x * 0.17;
-          if ( (v101->track_center_x * 0.5 - v102) * 0.1 + v102 <= player->velocity.z
+          v102 = v101->subgame_rate * 0.17;
+          if ( (v101->subgame_rate * 0.5 - v102) * 0.1 + v102 <= player->velocity.z
             || v102 >= player->velocity.z
             || player->attachment_exit_pending
             || player->movement_state == 2 )
           {
-            player->squidge.z_phase = 0.0;
+            player->slow_commentary_timer = 0.0;
           }
           else
           {
-            v103 = *((float *)player + 4312) + player->squidge.z_phase;
-            player->squidge.z_phase = v103;
+            v103 = player->slow_commentary_step + player->slow_commentary_timer;
+            player->slow_commentary_timer = v103;
             if ( v103 > 1.0 )
             {
-              player->squidge.z_phase = 0.0;
+              player->slow_commentary_timer = 0.0;
               play_voice_manager((int)unk_751498, 6, 1u, -1);
             }
           }
           handle_subgoldy_collisions(player);
-          update_anim_manager((AnimationDispatchState *)&player->presentation.owner_player);
-          update_anim_manager((AnimationDispatchState *)&player->presentation.jetpack_channel.selected_state);
-          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[0].selected_state);
-          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[1].selected_state);
-          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[2].selected_state);
-          update_track_parcels(&player->game->_pad_ff25e0[2539680]);
-          initialize_cutscene((PlayerPresentationController *)&player->interaction_max_z);
+          update_anim_manager(&player->presentation.anim_manager);
+          update_anim_manager(&player->presentation.jetpack_channel.anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
+          update_track_parcels(&player->game->_pad_ff25e8[2539160]);
+          initialize_cutscene(&player->presentation);
           update_player_movement_flags((int *)player);
           if ( *((int *)MEMORY[0x4DF904] + 4299517) < 10 )
-            player->slow_commentary_step = player->movement_progress;
+            player->movement_fire_progress = player->movement_fire_progress_step;
           v104 = player->game;
           if ( (v104->runtime_flags & 0x400000) == 0 )
             goto LABEL_365;
@@ -988,21 +980,21 @@ LABEL_287:
             if ( movement_state != 4 )
               goto LABEL_365;
           }
-          if ( player->slow_commentary_step > 0.0 )
+          if ( player->movement_fire_progress > 0.0 )
           {
-            v106 = player->movement_progress + player->slow_commentary_step;
-            player->slow_commentary_step = v106;
+            v106 = player->movement_fire_progress_step + player->movement_fire_progress;
+            player->movement_fire_progress = v106;
             if ( v106 > 1.0 )
-              player->slow_commentary_step = 0.0;
+              player->movement_fire_progress = 0.0;
             goto LABEL_365;
           }
           if ( v104->track_state_latch )
           {
-            if ( v104->_pad_ff25e0[496] )
+            if ( v104->selected_level_record_active )
             {
-              if ( (*(_BYTE *)(*(_DWORD *)&v104->_pad_ff25e0[500] + 6 * *(_DWORD *)&v104->_pad_ff25e0[508] + 116) & 1) == 0 )
+              if ( (v104->selected_level_record->replay_samples[v104->replay_update_cursor].flags & 1) == 0 )
               {
-                if ( (*(_BYTE *)(*(_DWORD *)&v104->_pad_ff25e0[500] + 6 * *(_DWORD *)&v104->_pad_ff25e0[508] + 116) & 2) == 0 )
+                if ( (v104->selected_level_record->replay_samples[v104->replay_update_cursor].flags & 2) == 0 )
                   goto LABEL_365;
                 goto LABEL_364;
               }
@@ -1013,59 +1005,59 @@ LABEL_287:
 LABEL_359:
               play_movement_state_sound((int)player);
               update_movement_flag_emitters((char *)player, (int)player);
-              player->slow_commentary_step = player->movement_progress + 0.30000001;
+              player->movement_fire_progress = player->movement_fire_progress_step + 0.30000001;
               goto LABEL_365;
             }
             if ( (player->control_source->control_flags_b & 0x4000) != 0 )
             {
 LABEL_364:
-              player->slow_commentary_step = player->movement_progress;
+              player->movement_fire_progress = player->movement_fire_progress_step;
               play_movement_state_sound((int)player);
               update_movement_flag_emitters((char *)player, (int)player);
             }
           }
 LABEL_365:
-          update_row_event_display((RowEventDisplayController *)&player->game[1]._pad_5c[340]);
-          ++*(_DWORD *)&player->game->_pad_a878[16548612];
-          ++*(_DWORD *)&player->game->_pad_ff25e0[508];
+          update_row_event_display(&player->game->row_event_display);
+          ++*(_DWORD *)&player->game->_pad_74622[16115034];
+          ++player->game->replay_update_cursor;
           v107 = player->game;
-          if ( *(_DWORD *)&v107->_pad_ff25e0[508] == 21000 )
-            show_times_up_message((int *)&v107[1]._pad_5c[420]);
-          update_times_up((int)&player->game[1]._pad_5c[420]);
+          if ( v107->replay_update_cursor == 21000 )
+            show_times_up_message((int *)&v107[1]);
+          update_times_up((int)&player->game[1]);
           return result;
         }
       }
       if ( player->follow_state._pad_3c[0] && LOBYTE(player->completion_handoff_active) )
       {
-        *(_DWORD *)player->_pad_2738 = 1134559232;
         player->track_z_offset = 320.0;
+        player->track_z_anchor = 320.0;
       }
       else
       {
         if ( player->control_override_active )
         {
-          v12 = *(float *)player->_pad_2738
-              - (player->presentation.live_matrix.basis_right.w
-               + player->presentation.live_matrix.basis_right.w);
-          *(float *)player->_pad_2738 = v12;
+          v12 = player->track_z_offset
+              - (player->presentation.live_matrix.basis_up.x
+               + player->presentation.live_matrix.basis_up.x);
           player->track_z_offset = v12;
-          if ( *(float *)player->_pad_2738 >= 0.0 )
+          player->track_z_anchor = v12;
+          if ( player->track_z_offset >= 0.0 )
           {
-            if ( *(float *)player->_pad_2738 <= 639.0 )
-              steering_x = *(float *)player->_pad_2738;
+            if ( player->track_z_offset <= 639.0 )
+              track_z_offset = player->track_z_offset;
             else
-              steering_x = 639.0;
+              track_z_offset = 639.0;
           }
           else
           {
-            steering_x = 0.0;
+            track_z_offset = 0.0;
           }
         }
         else
         {
-          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[LODWORD(player->cached_camera_target_world.z)]);
-          v14 = player->control_source->steering_x - player->track_z_offset + *(float *)player->_pad_2738;
-          *(float *)player->_pad_2738 = v14;
+          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[player->steering_mode_selector]);
+          v14 = player->control_source->steering_x - player->track_z_anchor + player->track_z_offset;
+          player->track_z_offset = v14;
           if ( v16 )
           {
             v14 = 0.0;
@@ -1074,18 +1066,18 @@ LABEL_365:
           {
             v14 = 639.0;
           }
-          *(float *)player->_pad_2738 = v14;
-          player->track_z_offset = player->control_source->steering_x;
-          if ( LODWORD(player->cached_camera_target_world.z) != 1 )
+          player->track_z_offset = v14;
+          player->track_z_anchor = player->control_source->steering_x;
+          if ( player->steering_mode_selector != 1 )
             goto LABEL_40;
-          steering_x = player->control_source->steering_x;
+          track_z_offset = player->control_source->steering_x;
         }
-        *(float *)player->_pad_2738 = steering_x;
+        player->track_z_offset = track_z_offset;
       }
 LABEL_40:
       if ( !LOBYTE(player->completion_handoff_active) )
       {
-        v17 = (320.0 - *(float *)player->_pad_2738) * 0.0125;
+        v17 = (320.0 - player->track_z_offset) * 0.0125;
         if ( v17 >= -3.7 )
         {
           if ( v17 > 3.7 )
@@ -1096,36 +1088,34 @@ LABEL_40:
           v17 = -3.7;
         }
         if ( player->movement_state != 2 )
-          player->live_matrix.position.x = player->game->track_center_x * 0.2 * (v17 - player->live_matrix.position.x)
+          player->live_matrix.position.x = player->game->subgame_rate * 0.2 * (v17 - player->live_matrix.position.x)
                                          + player->live_matrix.position.x;
       }
       p_position = (Vec3 *)&player->live_matrix.position;
       v18 = convert_math_type32_to_16(player->live_matrix.position.x, 16.0);
-      v120 = convert_math_type16_to_32(v18, 16.0);
-      player->live_matrix.position.x = v120;
+      source_celld = convert_math_type16_to_32(v18, 16.0);
+      player->live_matrix.position.x = source_celld;
       v19 = player->game;
-      *(_WORD *)&v19->_pad_a878[6 * *(_DWORD *)&v19->_pad_ff25e0[508] + 16548616] = convert_math_type32_to_16(
-                                                                                      v120,
-                                                                                      16.0);
+      *(_WORD *)&v19->_pad_74622[6 * v19->replay_update_cursor + 16115038] = convert_math_type32_to_16(
+                                                                               source_celld,
+                                                                               16.0);
       v20 = player->game;
-      if ( *(_DWORD *)&v20->_pad_ff25e0[508] )
+      if ( v20->replay_update_cursor )
       {
         v114 = player->live_matrix.position.z - unk_643194;
-        *(_WORD *)&v20->_pad_a878[6 * *(_DWORD *)&v20->_pad_ff25e0[508] + 16548618] = convert_math_type32_to_16(
-                                                                                        v114,
-                                                                                        32.0);
+        *(_WORD *)&v20->_pad_74622[6 * v20->replay_update_cursor + 16115040] = convert_math_type32_to_16(v114, 32.0);
         v21 = convert_math_type16_to_32(
-                *(_WORD *)&player->game->_pad_a878[6 * *(_DWORD *)&player->game->_pad_ff25e0[508] + 16548618],
+                *(_WORD *)&player->game->_pad_74622[6 * player->game->replay_update_cursor + 16115040],
                 32.0)
             + unk_643194;
       }
       else
       {
-        *(_WORD *)&v20->_pad_a878[6 * *(_DWORD *)&v20->_pad_ff25e0[508] + 16548618] = convert_math_type32_to_16(
-                                                                                        player->live_matrix.position.z,
-                                                                                        32.0);
+        *(_WORD *)&v20->_pad_74622[6 * v20->replay_update_cursor + 16115040] = convert_math_type32_to_16(
+                                                                                 player->live_matrix.position.z,
+                                                                                 32.0);
         v21 = convert_math_type16_to_32(
-                *(_WORD *)&player->game->_pad_a878[6 * *(_DWORD *)&player->game->_pad_ff25e0[508] + 16548618],
+                *(_WORD *)&player->game->_pad_74622[6 * player->game->replay_update_cursor + 16115040],
                 32.0);
       }
       unk_643194 = v21;
@@ -1133,16 +1123,16 @@ LABEL_40:
       if ( v22->track_state_latch )
       {
         if ( (player->control_source->control_flags_a & 0x4000) != 0 )
-          v22->_pad_a878[6 * *(_DWORD *)&v22->_pad_ff25e0[508] + 16548620] |= 1u;
+          v22->_pad_74622[6 * v22->replay_update_cursor + 16115042] |= 1u;
         if ( (player->control_source->control_flags_b & 0x4000) != 0 )
-          player->game->_pad_a878[6 * *(_DWORD *)&player->game->_pad_ff25e0[508] + 16548620] |= 2u;
+          player->game->_pad_74622[6 * player->game->replay_update_cursor + 16115042] |= 2u;
       }
       control_source = player->control_source;
       if ( (control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0 )
         player->game->track_state_latch = 1;
       v24 = player->game;
       if ( v24->track_state_latch )
-        v24->_pad_a878[6 * *(_DWORD *)&v24->_pad_ff25e0[508] + 16548620] |= 4u;
+        v24->_pad_74622[6 * v24->replay_update_cursor + 16115042] |= 4u;
       goto LABEL_60;
     }
   }

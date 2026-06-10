@@ -31,28 +31,24 @@
 004056b5        eax[var_204 - 2] = 0
 004056ba        char* eax_3 = find_case_insensitive_substring("Frame ", eax)
 004056ca        if (eax_3 == 0)
-004056d0        char (* var_248_1)[0x100] = &var_200
-004056d6        report_errorf("No 'Frame ' Data in %s")
+004056d6        report_errorf("No 'Frame ' Data in %s", &var_200)
 004056e8        return 0
 004056f1        char* eax_4 = find_case_insensitive_substring("Mesh ", eax_3)
 004056f9        char* var_218 = eax_4
 004056ff        if (eax_4 == 0)
-00405705        char (* var_248_3)[0x100] = &var_200
-0040570b        report_errorf("No 'VertexDuplicationIndices 'Data in %s")
+0040570b        report_errorf("No 'VertexDuplicationIndices 'Data in %s", &var_200)
 00405710        eax_4 = var_218
 00405728        var_218 = find_case_insensitive_substring("{", eax_4)
 0040572c        char* cursor_2 = find_case_insensitive_substring("Mesh ", eax_3)
 00405734        char* cursor = cursor_2
 0040573a        if (cursor_2 == 0)
-00405740        char (* var_248_5)[0x100] = &var_200
-00405746        report_errorf("No 'Mesh 'Data in %s")
+00405746        report_errorf("No 'Mesh 'Data in %s", &var_200)
 0040574b        cursor_2 = cursor
 00405763        cursor = find_case_insensitive_substring("{", cursor_2)
 00405767        char* eax_7 = find_case_insensitive_substring("MeshMaterialList ", eax_3)
 0040576f        char* var_21c = eax_7
 00405775        if (eax_7 == 0)
-0040577b        char (* var_248_7)[0x100] = &var_200
-00405781        report_errorf("No 'MeshMaterialList 'Data in %s")
+00405781        report_errorf("No 'MeshMaterialList 'Data in %s", &var_200)
 00405786        eax_7 = var_21c
 0040579c        var_21c = find_case_insensitive_substring("{", eax_7)
 004057a1        parse_next_signed_int(&var_21c)
@@ -60,19 +56,16 @@
 004057b7        int16_t vertex_count_2 = parse_next_signed_int(&var_218)
 004057c5        int32_t vertex_count = sx.d(vertex_count_2)
 004057d2        if (vertex_count != parse_next_signed_int(&cursor))
-004057d8        char (* var_248_9)[0x100] = &var_200
-004057de        report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s")
+004057de        report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s", &var_200)
 004057eb        parse_next_signed_int(&var_218)
 004057f6        char* cursor_3 = find_case_insensitive_substring("MeshTextureCoords ", eax_3)
 004057fe        char* cursor_1 = cursor_3
 00405804        if (cursor_3 == 0)
-0040580a        char (* var_248_11)[0x100] = &var_200
-00405810        report_errorf("No 'Mesh 'Data in %s")
+00405810        report_errorf("No 'Mesh 'Data in %s", &var_200)
 00405815        cursor_3 = cursor_1
 00405827        cursor_1 = find_case_insensitive_substring("{", cursor_3)
 0040583a        if (vertex_count != parse_next_signed_int(&cursor_1))
-00405840        char (* var_248_13)[0x100] = &var_200
-00405846        report_errorf("Mesh texture coords number does not match mesh vertext count in %s")
+00405846        report_errorf("Mesh texture coords number does not match mesh vertext count in %s", &var_200)
 00405855        int32_t facequad_count = sx.d(facequad_count_3)
 0040585b        int32_t facequad_count_2 = facequad_count
 0040585f        request_object_facequads(mesh, facequad_count)
@@ -102,8 +95,7 @@
 00405914        do while (i_1 != 1)
 00405916        facequad_count = facequad_count_2
 00405929        if (facequad_count != parse_next_signed_int(&cursor))
-0040592f        char (* var_248_19)[0x100] = &var_200
-00405935        report_errorf("Mesh face count does not match material face count in %s")
+00405935        report_errorf("Mesh face count does not match material face count in %s", &var_200)
 0040593f        if (facequad_count s> 0)
 00405945        int16_t* esi_1 = nullptr
 00405947        int32_t facequad_count_1 = facequad_count
@@ -155,15 +147,13 @@
 00405aae        char* eax_32 = find_case_insensitive_substring("MeshMaterialList", eax_3)
 00405ab6        char* var_22c = eax_32
 00405abc        if (eax_32 == 0)
-00405ac2        char (* var_248_23)[0x100] = &var_200
-00405ac8        report_errorf("No MeshMaterialList { in %s")
+00405ac8        report_errorf("No MeshMaterialList { in %s", &var_200)
 00405ada        return 0
 00405aec        var_22c = find_case_insensitive_substring("{", eax_32)
 00405af1        int32_t eax_34 = parse_next_signed_int(&var_22c)
 00405b01        int32_t i_5 = parse_next_signed_int(&var_22c)
 00405b0f        if (i_5 != facequad_count)
-00405b15        char (* var_248_25)[0x100] = &var_200
-00405b1b        report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s")
+00405b1b        report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s", &var_200)
 00405b2d        return 0
 00405b3d        int32_t* eax_35 = allocate_tracked_memory(eax_34 << 2, "Direct X Materiallist")
 00405b46        char* esi_3 = var_22c
@@ -200,9 +190,7 @@
 00405c26        ecx_22:1.b = (*eax_44):1.b | 0x80
 00405c29        *eax_44 = ecx_22
 00405b77        if ((options_flags & 2) == 0)
-00405b7d        char (* var_248_27)[0x100] = &var_200
-00405b7e        int32_t var_24c_9 = ebp_1
-00405b84        report_warningf("No TextureFilename for Material %i in %s")
+00405b84        report_warningf("No TextureFilename for Material %i in %s", ebp_1, &var_200)
 00405b9f        *ebx_5 = get_or_create_texture_ref(&data_4b7790, "Sprites/debug.tga", 0, 0)
 00405ba1        esi_3 = var_22c
 00405c2f        ebp_1 += 1

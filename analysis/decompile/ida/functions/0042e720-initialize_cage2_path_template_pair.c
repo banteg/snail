@@ -46,9 +46,9 @@ int32_t __thiscall initialize_cage2_path_template_pair(
   int v40; // edi
   int v41; // ecx
   ObjectFaceQuad *v42; // ebp
-  float v44; // [esp+0h] [ebp-68h]
-  float v45; // [esp+0h] [ebp-68h]
-  float v46; // [esp+0h] [ebp-68h]
+  float angle; // [esp+0h] [ebp-68h]
+  float anglea; // [esp+0h] [ebp-68h]
+  float angleb; // [esp+0h] [ebp-68h]
   float v47; // [esp+14h] [ebp-54h]
   float v48; // [esp+18h] [ebp-50h]
   int j; // [esp+1Ch] [ebp-4Ch]
@@ -131,8 +131,8 @@ int32_t __thiscall initialize_cage2_path_template_pair(
     v9 = (double)arg2a;
     v10 = self->primary_samples;
     v51 = v9 * 0.31415927;
-    v44 = v9 * 0.47123891;
-    v10[i].center_x = cosine(v44) * v10->center_x;
+    angle = v9 * 0.47123891;
+    v10[i].center_x = cosine(angle) * v10->center_x;
     self->primary_samples[i].rotation_scalar_98 = 0.0;
     self->primary_samples[i].rotation_scalar_94 = 0.0;
     self->primary_samples[i].special_scalar = 0.0;
@@ -173,8 +173,8 @@ int32_t __thiscall initialize_cage2_path_template_pair(
         (Vec3 *)&self->primary_samples[i - 1].transform.basis_up,
         (Vec3 *)&self->primary_samples[i - 1].transform.basis_forward);
       v15 = &self->primary_samples[i];
-      v45 = (1.0 - cosine(v51)) * 0.5 * v15[-1].center_x * 0.39269909;
-      rotate_matrix_world_z(&v15[-1].transform, v45);
+      anglea = (1.0 - cosine(v51)) * 0.5 * v15[-1].center_x * 0.39269909;
+      rotate_matrix_world_z(&v15[-1].transform, anglea);
       v16 = &self->secondary_samples[i - 1].transform.basis_up;
       v16->x = 0.0;
       v16->y = 1.0;
@@ -193,8 +193,8 @@ int32_t __thiscall initialize_cage2_path_template_pair(
         (Vec3 *)&self->secondary_samples[i - 1],
         (Vec3 *)&self->secondary_samples[i - 1].transform.basis_up,
         (Vec3 *)&self->secondary_samples[i - 1].transform.basis_forward);
-      v46 = (1.0 - cosine(v51)) * 0.5 * self->primary_samples[i - 1].center_x * 0.39269909;
-      rotate_matrix_world_z(&self->secondary_samples[i - 1].transform, v46);
+      angleb = (1.0 - cosine(v51)) * 0.5 * self->primary_samples[i - 1].center_x * 0.39269909;
+      rotate_matrix_world_z(&self->secondary_samples[i - 1].transform, angleb);
     }
   }
   v20 = 0;
@@ -321,7 +321,7 @@ int32_t __thiscall initialize_cage2_path_template_pair(
               v42->vertex_index_b = v40 + v5 * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_c = v40 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_d = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
               v42->u0 = v48;
               v42->v0 = v47;
               v42->u1 = arg2d;
@@ -336,7 +336,7 @@ int32_t __thiscall initialize_cage2_path_template_pair(
               v42->vertex_index_b = v5 * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_c = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_d = v40 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
               v42->u0 = arg2d;
               v42->v0 = v47;
               v42->u1 = v48;

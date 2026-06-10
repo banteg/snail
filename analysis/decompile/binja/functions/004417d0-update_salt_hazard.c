@@ -34,28 +34,28 @@
 00441914        eax_8.w = (x87_r7_10 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp4_1) ? 1 : 0) << 0xa | (x87_r7_10 == temp4_1 ? 1 : 0) << 0xe
 00441919        if ((eax_8:1.b & 1) != 0)
 00441ac3        deactivate_salt_hazard(slot_1)
-0044192c        struct TrackRowCell* eax_9 = get_track_grid_cell_at_world_position(data_4df904 + 0x74618, &slot_1->world_position.x)
-00441945        struct TrackRuntimeRow* ebx_1 = get_track_runtime_cell_at_world_z(data_4df904 + 0x74618, &slot_1->world_position.x)
-00441947        struct TrackRuntimeRow* eax_10
+0044192c        struct TrackRowCell* eax_9 = get_track_grid_cell_at_world_position(data_4df904 + 0x74618, &slot_1->world_position)
+00441945        char* ebx_1 = get_track_runtime_cell_at_world_z(data_4df904 + 0x74618, &slot_1->world_position.x)
+00441947        char* eax_10
 00441947        eax_10.b = eax_9->tile_id
 0044194c        if (eax_10.b != 0xe)
 00441965        label_441965:
 00441965        char eax_12
-00441965        if ((ebx_1->flags.b & 0x40) != 0)
-00441977        void* eax_11 = ebx_1->_pad_04[0xa0].d
-0044197d        void* var_2c_3 = eax_11
+00441965        if ((*ebx_1 & 0x40) != 0)
+00441977        int32_t eax_11 = *(ebx_1 + 0xa4)
+0044199a        float var_38_1 = fconvert.s(fconvert.t(slot_1->velocity_x) * fconvert.t(1.04999995f))
 004419b0        float var_34_1 = fconvert.s(fconvert.t(slot_1->velocity_y) * fconvert.t(1.04999995f))
 004419c3        float var_30_1 = fconvert.s(fconvert.t(slot_1->armed_substate) * fconvert.t(1.04999995f))
-004419fd        eax_12 = is_point_inside_track_attachment(*(eax_11 + 0x38), fconvert.s(fconvert.t(slot_1->velocity_x) + fconvert.t(slot_1->world_position.x)), fconvert.s(fconvert.t(slot_1->velocity_y) + fconvert.t(slot_1->world_position.y)), fconvert.s(fconvert.t(slot_1->armed_substate) + fconvert.t(slot_1->world_position.z)), fconvert.s(fconvert.t(slot_1->velocity_x) * fconvert.t(1.04999995f)))
-00441a04        if ((ebx_1->flags.b & 0x40) != 0 && eax_12 != 0)
+004419fd        eax_12 = is_point_inside_track_attachment(*(eax_11 + 0x38), fconvert.s(fconvert.t(slot_1->velocity_x) + fconvert.t(slot_1->world_position.x)), fconvert.s(fconvert.t(slot_1->velocity_y) + fconvert.t(slot_1->world_position.y)), fconvert.s(fconvert.t(slot_1->armed_substate) + fconvert.t(slot_1->world_position.z)), eax_11)
+00441a04        if ((*ebx_1 & 0x40) != 0 && eax_12 != 0)
 00441a06        char* var_2c_4 = "lazer path kill\n"
 00441ac3        deactivate_salt_hazard(slot_1)
-00441a13        if ((ebx_1->flags.b & 0x80) != 0)
-00441a25        void* ebx_2 = ebx_1->_pad_04[0xa4].d
-00441a2b        void* var_2c_5 = ebx_2
+00441a13        if ((*ebx_1 & 0x80) != 0)
+00441a25        int32_t ebx_2 = *(ebx_1 + 0xa8)
+00441a48        float var_38_2 = fconvert.s(fconvert.t(slot_1->velocity_x) * fconvert.t(1.04999995f))
 00441a5e        float var_34_2 = fconvert.s(fconvert.t(slot_1->velocity_y) * fconvert.t(1.04999995f))
 00441a73        float var_30_2 = fconvert.s(fconvert.t(slot_1->armed_substate) * fconvert.t(1.04999995f))
-00441aab        char eax_15 = is_point_inside_track_attachment(*(ebx_2 + 0x38), fconvert.s(fconvert.t(slot_1->velocity_x) + fconvert.t(slot_1->world_position.x)), fconvert.s(fconvert.t(slot_1->velocity_y) + fconvert.t(slot_1->world_position.y)), fconvert.s(fconvert.t(slot_1->armed_substate) + fconvert.t(slot_1->world_position.z)), fconvert.s(fconvert.t(slot_1->velocity_x) * fconvert.t(1.04999995f)))
+00441aab        char eax_15 = is_point_inside_track_attachment(*(ebx_2 + 0x38), fconvert.s(fconvert.t(slot_1->velocity_x) + fconvert.t(slot_1->world_position.x)), fconvert.s(fconvert.t(slot_1->velocity_y) + fconvert.t(slot_1->world_position.y)), fconvert.s(fconvert.t(slot_1->armed_substate) + fconvert.t(slot_1->world_position.z)), ebx_2)
 00441ab2        if (eax_15 != 0)
 00441ab4        char* var_2c_6 = "lazer path2 kill\n"
 00441ac3        deactivate_salt_hazard(slot_1)
@@ -77,20 +77,57 @@
 0044183a        report_errorf("List remove NEXTBOD")
 00441842        slot_1->active = 0
 00441853        return 
-00441854        void* eax_4 = slot_1->_pad_00[0xc].d
+00441854        void* eax_4
+00441854        eax_4.b = slot_1->_pad_00[0xc]
+00441854        eax_4:1.b = slot_1->_pad_00[0xd]
+00441854        eax_4:2.b = slot_1->_pad_00[0xe]
+00441854        eax_4:3.b = slot_1->_pad_00[0xf]
 00441859        if (eax_4 != 0)
-0044185e        *(eax_4 + 8) = slot_1->_pad_00[8].d
-00441861        void* eax_5 = slot_1->_pad_00[8].d
+0044185b        int32_t edx
+0044185b        edx.b = slot_1->_pad_00[8]
+0044185b        edx:1.b = slot_1->_pad_00[9]
+0044185b        edx:2.b = slot_1->_pad_00[0xa]
+0044185b        edx:3.b = slot_1->_pad_00[0xb]
+0044185e        *(eax_4 + 8) = edx
+00441861        void* eax_5
+00441861        eax_5.b = slot_1->_pad_00[8]
+00441861        eax_5:1.b = slot_1->_pad_00[9]
+00441861        eax_5:2.b = slot_1->_pad_00[0xa]
+00441861        eax_5:3.b = slot_1->_pad_00[0xb]
 00441866        if (eax_5 == 0)
-00441873        *(ecx_1 + 4) = slot_1->_pad_00[0xc].d
-0044186b        *(eax_5 + 0xc) = slot_1->_pad_00[0xc].d
-00441876        int32_t edx_3 = *(ecx_1 + 8)
-00441879        slot_1->_pad_00[0xc] = edx_3.b
-00441879        slot_1->_pad_00[0xd] = edx_3:1.b
-00441879        slot_1->_pad_00[0xe] = edx_3:2.b
-00441879        slot_1->_pad_00[0xf] = edx_3:3.b
-0044187c        *(ecx_1 + 8) = slot_1
-0044187f        int32_t eax_7 = slot_1->_pad_00[4].d
+00441870        int32_t eax_6
+00441870        eax_6.b = slot_1->_pad_00[0xc]
+00441870        eax_6:1.b = slot_1->_pad_00[0xd]
+00441870        eax_6:2.b = slot_1->_pad_00[0xe]
+00441870        eax_6:3.b = slot_1->_pad_00[0xf]
+00441873        *(ecx_1 + 4) = eax_6.b
+00441873        *(ecx_1 + 5) = eax_6:1.b
+00441873        *(ecx_1 + 6) = eax_6:2.b
+00441873        *(ecx_1 + 7) = eax_6:3.b
+00441868        int32_t edx_1
+00441868        edx_1.b = slot_1->_pad_00[0xc]
+00441868        edx_1:1.b = slot_1->_pad_00[0xd]
+00441868        edx_1:2.b = slot_1->_pad_00[0xe]
+00441868        edx_1:3.b = slot_1->_pad_00[0xf]
+0044186b        *(eax_5 + 0xc) = edx_1
+00441876        int32_t edx_2
+00441876        edx_2.b = *(ecx_1 + 8)
+00441876        edx_2:1.b = *(ecx_1 + 9)
+00441876        edx_2:2.b = *(ecx_1 + 0xa)
+00441876        edx_2:3.b = *(ecx_1 + 0xb)
+00441879        slot_1->_pad_00[0xc] = edx_2.b
+00441879        slot_1->_pad_00[0xd] = edx_2:1.b
+00441879        slot_1->_pad_00[0xe] = edx_2:2.b
+00441879        slot_1->_pad_00[0xf] = edx_2:3.b
+0044187c        *(ecx_1 + 8) = slot_1.b
+0044187c        *(ecx_1 + 9) = slot_1:1.b
+0044187c        *(ecx_1 + 0xa) = slot_1:2.b
+0044187c        *(ecx_1 + 0xb) = slot_1:3.b
+0044187f        int32_t eax_7
+0044187f        eax_7.b = slot_1->_pad_00[4]
+0044187f        eax_7:1.b = slot_1->_pad_00[5]
+0044187f        eax_7:2.b = slot_1->_pad_00[6]
+0044187f        eax_7:3.b = slot_1->_pad_00[7]
 00441882        slot_1->active = 0
 0044188c        eax_7:1.b &= 0xfd
 0044188f        slot_1->_pad_00[4] = eax_7.b

@@ -30,15 +30,10 @@
 004315b2        int32_t* eax_1 = sub_48b41d(&var_500, "wb")
 004315be        char var_400[0x200]
 004315be        if (eax_1 != 0)
-004315f2        char (* var_50c_2)[0x100] = &var_500
-004315f8        report_messagef("*Deleting file* :%s\n")
+004315f8        report_messagef("*Deleting file* :%s\n", &var_500)
 004315fe        sub_48b3a7(eax_1)
 00431613        if (sub_48b8ab(&var_500) == 0xffffffff)
-00431620        char (* var_50c_3)[0x200] = &var_400
-00431621        char (* var_510_3)[0x100] = &var_500
-00431627        report_messagef("ERROR:Cannot delete file : %s (from %s)\n")
+00431627        report_messagef("ERROR:Cannot delete file : %s (from %s)\n", &var_500, &var_400)
 004315cd        sub_496946(&var_400, 0x200)
-004315dd        char (* var_514)[0x200] = &var_400
-004315de        char (* var_518)[0x100] = &var_500
-004315e4        report_messagef("ERROR:Cannot delete file : %s (from %s)\n")
+004315e4        report_messagef("ERROR:Cannot delete file : %s (from %s)\n", &var_500, &var_400)
 00431647        return sub_48c18b(&var_200)

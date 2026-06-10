@@ -11,6 +11,10 @@
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": true,
-  "health_check_ran": false,
-  "strict": false
+  "health_check_ran": true,
+  "strict": false,
+  "health_check_count": 14,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

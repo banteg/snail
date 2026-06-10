@@ -2,7 +2,7 @@
 /* function: border_input_text_init @ 0x403410 */
 /* selector: border_input_text_init */
 
-float *__thiscall sub_403410(int this, int a2, char *ArgList, int a4)
+float *__thiscall border_input_text_init(int this, int a2, char *ArgList, int a4)
 {
   _BYTE *v5; // eax
   float *result; // eax
@@ -22,7 +22,7 @@ float *__thiscall sub_403410(int this, int a2, char *ArgList, int a4)
   *(_DWORD *)(this + 1792) = 1;
   *(_DWORD *)(this + 1812) = a2;
   *(_DWORD *)(this + 1800) = 1034594987;
-  result = layout_frontend_widget(this);
+  result = (float *)layout_frontend_widget((FrontendWidget *)this);
   if ( (a4 & 0xC) != 0 )
     return (float *)initialize_input_ok(this + 680);
   return result;

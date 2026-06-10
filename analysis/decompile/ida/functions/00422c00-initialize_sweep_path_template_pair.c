@@ -86,7 +86,7 @@ int32_t __thiscall initialize_sweep_path_template_pair(
   char *texture_ad; // [esp+6Ch] [ebp+8h]
   char *texture_ae; // [esp+6Ch] [ebp+8h]
   float texture_af; // [esp+6Ch] [ebp+8h]
-  char *v84; // [esp+74h] [ebp+10h]
+  char *texture_path; // [esp+74h] [ebp+10h]
   char *v85; // [esp+78h] [ebp+14h]
 
   v5 = 0;
@@ -332,7 +332,7 @@ int32_t __thiscall initialize_sweep_path_template_pair(
               v41->vertex_index_b = v39 + v5 * (LOWORD(self->width_cells) + 1);
               v41->vertex_index_c = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
               v41->vertex_index_d = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v85, 0, 0);
+              v41->texture_ref = get_or_create_texture_ref(&texture_list, v85, 0, 0);
               v41->u0 = v44;
               v41->v0 = v43;
               v41->u1 = texture_af;
@@ -347,7 +347,7 @@ int32_t __thiscall initialize_sweep_path_template_pair(
               v41->vertex_index_b = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
               v41->vertex_index_c = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
               v41->vertex_index_d = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v84, 0, 0);
+              v41->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
               v41->u0 = texture_af;
               v41->v0 = v43;
               v41->u1 = v44;

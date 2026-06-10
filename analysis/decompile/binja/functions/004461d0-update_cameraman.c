@@ -143,6 +143,6 @@
 004466a0        cameraman->fov_degrees = fconvert.s((x87_r7_75 - fconvert.t(cameraman->fov_degrees)) * fconvert.t(0.300000012f) + fconvert.t(cameraman->fov_degrees))
 004466b4        int32_t result
 004466b4        int32_t ebx_1
-004466b4        result, ebx_1 = linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->track_center_x) * fconvert.t(0.300000012f)))
+004466b4        result, ebx_1 = linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->subgame_rate) * fconvert.t(0.300000012f)))
 004466c0        __builtin_memcpy(&cameraman->previous_desired_matrix, ebx_1, 0x40)
 004466c9        return result

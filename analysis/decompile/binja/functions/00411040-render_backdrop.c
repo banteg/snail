@@ -26,7 +26,7 @@
 00411086        float var_78_2
 00411086        float var_74_2
 00411086        float var_70_2
-00411086        struct Color4f* var_60_1
+00411086        int32_t* var_60_1
 00411086        float var_5c_2
 00411086        float var_58_2
 00411086        float var_54_2
@@ -48,7 +48,7 @@
 00411204        void* var_5c_3 = arg1
 0041120f        var_5c_2 = fconvert.s(fconvert.t(0.800000012f) - fconvert.t(var_38) * fconvert.t(0.0892857164f))
 00411226        struct Color4f color_1
-00411226        struct Color4f* eax_6
+00411226        int32_t* eax_6
 00411226        int32_t ecx_4
 00411226        eax_6, ecx_4 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00411235        var_60_1 = eax_6
@@ -88,7 +88,7 @@
 004110f6        void* var_5c_1 = arg1
 004110fb        var_5c_2 = fconvert.s(fconvert.t(var_38) * fconvert.t(0.0892857164f))
 00411112        struct Color4f color
-00411112        struct Color4f* eax_5
+00411112        int32_t* eax_5
 00411112        int32_t ecx_1
 00411112        eax_5, ecx_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00411121        var_60_1 = eax_5
@@ -112,7 +112,7 @@
 00411187        int32_t var_8c_1 = ecx_1
 0041118b        var_8c_2 = fconvert.s(fconvert.t(var_24_1) + fconvert.t(*(esi_1 + 0x68)))
 0041118e        var_90_1 = *(edi + 0x3c)
-004112a3        queue_textured_quad_corners(var_90_1, var_8c_2, var_88_2, var_84_2, var_80_2, var_7c_2, var_78_2, var_74_2, var_70_2, 0, nullptr, 0x8000000, var_60_1, var_5c_2, var_58_2, var_54_2, var_50_2)
+004112a3        queue_textured_quad_corners(var_90_1, var_8c_2, var_88_2, var_84_2, var_80_2, var_7c_2, var_78_2, var_74_2, var_70_2, 0x8000000, var_60_1, var_5c_2, var_58_2, var_54_2, var_50_2, 0, 0)
 004112a8        x87_r7_1 = fconvert.t(var_34_1)
 004112ac        temp0_1 = fconvert.t(7f)
 004112ac        x87_r7_1 - temp0_1

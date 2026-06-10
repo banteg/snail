@@ -11,7 +11,7 @@
 0043df30        if (eax s>= 2)
 0043df39        return eax
 0043df5c        void* esi = &arg1->_pad_00[eax * 0x1f8]
-0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->base_subgame_rate) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->base_subgame_rate) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->subgame_rate) * fconvert.t(6.28318548f))
 0043df86        set_matrix_identity(esi + 0x35b7c4)
 0043df8b        int32_t ebp = arg3
 0043df8f        *(esi + 0x35b810) = arg4
@@ -112,7 +112,7 @@
 0043e276        *(esi + 0x35b7f8) = var_8_6
 0043e279        *(esi + 0x35b7fc) = edx_10
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->subgame_rate) * fconvert.t(6.28318548f))
 0043e2c1        case 6
 0043e2c1        char* var_24_10 = "RR12"
 0043e2cf        int32_t ecx_19 = *(arg2 + 0x10)
@@ -123,7 +123,7 @@
 0043e2f1        *(esi + 0x35b7f8) = var_8_8
 0043e2f4        *(esi + 0x35b7fc) = edx_14
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->subgame_rate) * fconvert.t(6.28318548f))
 0043e303        case 7
 0043e303        char* var_24_11 = "RR13"
 0043e30b        long double x87_r7_61 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
@@ -134,10 +134,17 @@
 0043e31b        *(esi + 0x35b7f6) = edx_16:2.b
 0043e31b        *(esi + 0x35b7f7) = edx_16:3.b
 0043e31d        int32_t var_c_9 = edx_16
-0043e32d        *(esi + 0x35b7f8) = fconvert.s(x87_r7_61)
-0043e330        *(esi + 0x35b7fc) = eax_23
+0043e325        float var_8_9 = fconvert.s(x87_r7_61)
+0043e32d        *(esi + 0x35b7f8) = var_8_9.b
+0043e32d        *(esi + 0x35b7f9) = var_8_9:1.b
+0043e32d        *(esi + 0x35b7fa) = var_8_9:2.b
+0043e32d        *(esi + 0x35b7fb) = var_8_9:3.b
+0043e330        *(esi + 0x35b7fc) = eax_23.b
+0043e330        *(esi + 0x35b7fd) = eax_23:1.b
+0043e330        *(esi + 0x35b7fe) = eax_23:2.b
+0043e330        *(esi + 0x35b7ff) = eax_23:3.b
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->subgame_rate) * fconvert.t(6.28318548f))
 0043e28b        case 8
 0043e28b        char* var_24_9 = "RR11"
 0043e293        long double x87_r7_57 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
@@ -148,10 +155,17 @@
 0043e2a3        *(esi + 0x35b7f6) = edx_12:2.b
 0043e2a3        *(esi + 0x35b7f7) = edx_12:3.b
 0043e2a5        int32_t var_c_7 = edx_12
-0043e2b5        *(esi + 0x35b7f8) = fconvert.s(x87_r7_57)
-0043e2b8        *(esi + 0x35b7fc) = eax_18
+0043e2ad        float var_8_7 = fconvert.s(x87_r7_57)
+0043e2b5        *(esi + 0x35b7f8) = var_8_7.b
+0043e2b5        *(esi + 0x35b7f9) = var_8_7:1.b
+0043e2b5        *(esi + 0x35b7fa) = var_8_7:2.b
+0043e2b5        *(esi + 0x35b7fb) = var_8_7:3.b
+0043e2b8        *(esi + 0x35b7fc) = eax_18.b
+0043e2b8        *(esi + 0x35b7fd) = eax_18:1.b
+0043e2b8        *(esi + 0x35b7fe) = eax_18:2.b
+0043e2b8        *(esi + 0x35b7ff) = eax_18:3.b
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->subgame_rate) * fconvert.t(6.28318548f))
 0043e374        struct TrackRowCell* eax_26 = get_track_grid_cell_at_world_position(arg1, esi + 0x35b7f4)
 0043e37d        if (eax_26->tile_id == 0xe)
 0043e449        return eax_26
@@ -168,15 +182,35 @@
 0043e3ff        int32_t** eax_30 = data_4df904 + 0x5ac
 0043e404        int32_t* ecx_24 = *eax_30
 0043e408        if (ecx_24 != 0)
-0043e416        ecx_24[2] = esi + 0x35b78c
+0043e416        ecx_24[2].b = (esi + 0x35b78c).b
+0043e416        *(ecx_24 + 9) = (esi + 0x35b78c):1.b
+0043e416        *(ecx_24 + 0xa) = (esi + 0x35b78c):2.b
+0043e416        *(ecx_24 + 0xb) = (esi + 0x35b78c):3.b
 0043e419        int32_t* ecx_26 = *eax_30
-0043e41e        *(ecx_26[2] + 0xc) = ecx_26
-0043e423        int32_t* ecx_28 = (*eax_30)[2]
+0043e41b        void* ebp_1
+0043e41b        ebp_1.b = ecx_26[2].b
+0043e41b        ebp_1:1.b = *(ecx_26 + 9)
+0043e41b        ebp_1:2.b = *(ecx_26 + 0xa)
+0043e41b        ebp_1:3.b = *(ecx_26 + 0xb)
+0043e41e        *(ebp_1 + 0xc) = ecx_26
+0043e421        int32_t* ecx_27 = *eax_30
+0043e423        int32_t* ecx_28
+0043e423        ecx_28.b = ecx_27[2].b
+0043e423        ecx_28:1.b = *(ecx_27 + 9)
+0043e423        ecx_28:2.b = *(ecx_27 + 0xa)
+0043e423        ecx_28:3.b = *(ecx_27 + 0xb)
 0043e426        *eax_30 = ecx_28
-0043e428        ecx_28[2] = 0
+0043e428        ecx_28[2].b = 0
+0043e428        *(ecx_28 + 9) = 0
+0043e428        *(ecx_28 + 0xa) = 0
+0043e428        *(ecx_28 + 0xb) = 0
 0043e40a        *eax_30 = esi + 0x35b78c
 0043e40c        *(esi + 0x35b794) = 0
-0043e411        (*eax_30)[3] = 0
+0043e40f        int32_t* ecx_25 = *eax_30
+0043e411        ecx_25[3].b = 0
+0043e411        *(ecx_25 + 0xd) = 0
+0043e411        *(ecx_25 + 0xe) = 0
+0043e411        *(ecx_25 + 0xf) = 0
 0043e42b        *(esi + 0x35b790) |= 0x200
 0043e3ee        report_errorf("List ADD")
 0043e436        int32_t var_24_14 = *(arg4 + 0x404)

@@ -49,8 +49,8 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
   int v43; // ebx
   int v44; // ecx
   ObjectFaceQuad *v45; // edi
-  float v47; // [esp+0h] [ebp-64h]
-  float v48; // [esp+0h] [ebp-64h]
+  float angle; // [esp+0h] [ebp-64h]
+  float anglea; // [esp+0h] [ebp-64h]
   float v49; // [esp+14h] [ebp-50h]
   float v50; // [esp+18h] [ebp-4Ch]
   float v51; // [esp+18h] [ebp-4Ch]
@@ -95,7 +95,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
   float arg3h; // [esp+6Ch] [ebp+8h]
   signed int arg3d; // [esp+6Ch] [ebp+8h]
   float arg3e; // [esp+6Ch] [ebp+8h]
-  char *v93; // [esp+78h] [ebp+14h]
+  char *texture_path; // [esp+78h] [ebp+14h]
 
   v6 = 0;
   self->width_cells = arg3;
@@ -206,8 +206,8 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
           (Vec3 *)&self->primary_samples[v11 - 1].transform.basis_up,
           (Vec3 *)&self->primary_samples[v11 - 1].transform.basis_forward);
         v18 = &self->primary_samples[v11];
-        v47 = v18[-1].center_x * 0.2617994;
-        rotate_matrix_world_z(&v18[-1].transform, v47);
+        angle = v18[-1].center_x * 0.2617994;
+        rotate_matrix_world_z(&v18[-1].transform, angle);
         v19 = &self->secondary_samples[v11 - 1].transform.basis_up;
         v19->x = 0.0;
         v19->y = 1.0;
@@ -226,8 +226,8 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
           (Vec3 *)&self->secondary_samples[v11 - 1],
           (Vec3 *)&self->secondary_samples[v11 - 1].transform.basis_up,
           (Vec3 *)&self->secondary_samples[v11 - 1].transform.basis_forward);
-        v48 = self->primary_samples[v11 - 1].center_x * 0.2617994;
-        rotate_matrix_world_z(&self->secondary_samples[v11 - 1].transform, v48);
+        anglea = self->primary_samples[v11 - 1].center_x * 0.2617994;
+        rotate_matrix_world_z(&self->secondary_samples[v11 - 1].transform, anglea);
       }
       ++v10;
       ++v11;
@@ -356,7 +356,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
               v45->vertex_index_b = v6 + v43 * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_c = v6 + (v43 + 1) * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_d = (v43 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v93, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
               v45->u0 = v49;
               v45->v0 = arg3e;
               v45->u1 = arg2c;
@@ -371,7 +371,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
               v45->vertex_index_b = v43 * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v45->vertex_index_c = (v43 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v45->vertex_index_d = v6 + (v43 + 1) * (LOWORD(self->width_cells) + 1);
-              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
               v45->u0 = arg2c;
               v45->v0 = arg3e;
               v45->u1 = v49;

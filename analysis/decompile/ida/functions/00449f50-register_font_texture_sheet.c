@@ -134,16 +134,16 @@ LABEL_23:
   unk_777B1C[v16 / 4u] = a2;
   if ( *((_WORD *)v5 + 6) == 2048 )
   {
-    v17 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, v27, 0, 0);
+    v17 = (_DWORD *)get_or_create_texture_ref(&texture_list, v27, 0, 0);
     *((_DWORD *)&unk_7772FC + 522 * unk_777B20) = v17;
     *v17 |= 0x420u;
-    v18 = (int *)get_or_create_texture_ref(&dword_4B7790, v28, 0, 0);
+    v18 = (int *)get_or_create_texture_ref(&texture_list, v28, 0, 0);
     unk_777300[522 * unk_777B20] = (int)v18;
     v19 = *v18 | 0x420;
   }
   else
   {
-    v18 = (int *)get_or_create_texture_ref(&dword_4B7790, FileName, 0, 0);
+    v18 = (int *)get_or_create_texture_ref(&texture_list, FileName, 0, 0);
     *((_DWORD *)&unk_7772FC + 522 * unk_777B20) = v18;
     v19 = *v18;
     BYTE1(v19) = BYTE1(*v18) | 4;

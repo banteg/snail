@@ -35,7 +35,7 @@
 00439dff        float z_1 = z
 00439e03        direction.y = fconvert.s(fconvert.t(arg1->anchor_position.y) + fconvert.t(8f))
 00439e0d        direction.z = z
-00439e15        direction.x = fconvert.s(float.t(var_34) * fconvert.t(0.5f) + fconvert.t(x))
+00439e15        direction.x = fconvert.s(float.t(var_34.x.q) * fconvert.t(0.5f) + fconvert.t(x))
 00439e19        long double st0_2 = random_signed_float_below(3f)
 00439e1e        ecx = data_4df904
 00439e33        float edx_5 = *(ecx + 0x42fde8)
@@ -75,17 +75,29 @@
 00439f8f        set_color_alpha(&arg1->_pad_1c[0xc], 0.800000012f)
 00439f8f        top = 0xffff
 00439f94        ecx = data_4df904
-00439fa6        int32_t* eax_7 = get_track_skirt_color(ecx + 0x74618, &var_10)
+00439fa6        float* eax_7 = get_track_skirt_color(ecx + 0x74618, &var_10)
 00439faf        int32_t eax_8 = get_track_cell_row_index(arg1)
 00439fc2        char* ecx_13 = data_4df904 + eax_8 * 0xf4 + 0x6411b8
-00439fc9        int32_t edx_9 = *eax_7
+00439fc9        float edx_9 = *eax_7
 00439fcb        *ecx_13 = edx_9.b
 00439fcb        ecx_13[1] = edx_9:1.b
 00439fcb        ecx_13[2] = edx_9:2.b
 00439fcb        ecx_13[3] = edx_9:3.b
-00439fd0        *(ecx_13 + 4) = eax_7[1]
-00439fd6        *(ecx_13 + 8) = eax_7[2]
-00439fdd        *(ecx_13 + 0xc) = eax_7[3]
+00439fcd        int32_t eax_10 = eax_7[1]
+00439fd0        ecx_13[4] = eax_10.b
+00439fd0        ecx_13[5] = eax_10:1.b
+00439fd0        ecx_13[6] = eax_10:2.b
+00439fd0        ecx_13[7] = eax_10:3.b
+00439fd3        int32_t edx_10 = eax_7[2]
+00439fd6        ecx_13[8] = edx_10.b
+00439fd6        ecx_13[9] = edx_10:1.b
+00439fd6        ecx_13[0xa] = edx_10:2.b
+00439fd6        ecx_13[0xb] = edx_10:3.b
+00439fd9        result = eax_7[3]
+00439fdd        ecx_13[0xc] = result.b
+00439fdd        ecx_13[0xd] = result:1.b
+00439fdd        ecx_13[0xe] = result:2.b
+00439fdd        ecx_13[0xf] = result:3.b
 00439fe9        unimplemented  {fild st0, dword [ecx+0x48]}
 00439fec        unimplemented  {fadd dword [0x497288]}
 00439ff2        unimplemented  {fsubr st0, dword [edx+0x4326fc]}

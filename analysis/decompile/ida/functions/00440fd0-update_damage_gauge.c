@@ -2,7 +2,7 @@
 /* function: update_damage_gauge @ 0x440fd0 */
 /* selector: update_damage_gauge */
 
-// Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, and rendering the sprite-backed gauge widget each gameplay tick.
+// Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved.
 void __thiscall sub_440FD0(int this)
 {
   float *v2; // ecx

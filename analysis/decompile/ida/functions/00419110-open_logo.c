@@ -39,7 +39,7 @@ int __thiscall open_logo(int **this)
     do
     {
       sprintf(Buffer, "Intro/%s", (const char *)v7);
-      texture_ref = (int *)get_or_create_texture_ref(dword_4B7790, Buffer, 0, 0);
+      texture_ref = (int *)get_or_create_texture_ref(texture_list, Buffer, 0, 0);
       v9 = *texture_ref;
       v7 += 32;
       BYTE1(v9) = BYTE1(*texture_ref) | 4;

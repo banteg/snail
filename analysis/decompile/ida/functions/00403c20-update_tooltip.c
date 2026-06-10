@@ -15,25 +15,25 @@ int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
   FrontendWidget *v10; // eax
   uint32_t mode_flags; // eax
   Color4f *v12; // eax
-  float *v13; // edi
+  FrontendWidget *v13; // edi
   Color4f *v14; // eax
-  float *v15; // edi
-  float *v16; // eax
+  FrontendWidget *v15; // edi
+  FrontendWidget *v16; // eax
   double v17; // st7
-  float *v18; // edi
+  FrontendWidget *v18; // edi
   FrontendWidget *v19; // ecx
-  float *pad_00; // ecx
+  FrontendWidget *v20; // ecx
   double v21; // st7
-  float v22; // [esp+0h] [ebp-6Ch]
-  float v23; // [esp+0h] [ebp-6Ch]
-  float v24; // [esp+0h] [ebp-6Ch]
-  float v25; // [esp+0h] [ebp-6Ch]
+  float y; // [esp+0h] [ebp-6Ch]
+  float ya; // [esp+0h] [ebp-6Ch]
+  float yb; // [esp+0h] [ebp-6Ch]
+  float yc; // [esp+0h] [ebp-6Ch]
   Color4f *v26; // [esp+4h] [ebp-68h]
   Color4f *v27; // [esp+4h] [ebp-68h]
   int32_t v28; // [esp+8h] [ebp-64h]
   float v29; // [esp+Ch] [ebp-60h]
-  float aux_progress; // [esp+18h] [ebp-54h]
-  Color4f v31; // [esp+1Ch] [ebp-50h] BYREF
+  float anchor_x; // [esp+18h] [ebp-54h]
+  Color4f color; // [esp+1Ch] [ebp-50h] BYREF
   Color4f v32; // [esp+2Ch] [ebp-40h] BYREF
   Color4f v33; // [esp+3Ch] [ebp-30h] BYREF
   Color4f v34; // [esp+4Ch] [ebp-20h] BYREF
@@ -72,10 +72,10 @@ int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
     LOWORD(result) = v6;
     if ( v5 <= 1.0 )
       return result;
-    if ( LODWORD(owner_widget->text_alignment) )
-      aux_progress = owner_widget->anchor_x;
+    if ( owner_widget->text_alignment )
+      anchor_x = owner_widget->anchor_x;
     else
-      aux_progress = owner_widget->layout_width * 0.5 + owner_widget->layout_anchor_x - 320.0;
+      anchor_x = owner_widget->layout_width * 0.5 + owner_widget->layout_anchor_x - 320.0;
     v10 = tooltip->tooltip_widget;
     tooltip->state = 3;
     if ( v10 )
@@ -85,55 +85,73 @@ int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
     mode_flags = tooltip->mode_flags;
     if ( (mode_flags & 1) != 0 )
     {
-      v12 = set_color_rgba(&v31, 1.0, 1.0, 1.0, 1.0);
-      v22 = *((float *)MEMORY[0x4DF904] + 168) + 64.0;
+      v12 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
+      y = *((float *)MEMORY[0x4DF904] + 168) + 64.0;
       initialize_frontend_widget(
         tooltip->tooltip_widget,
         2u,
         (char *)tooltip,
         7,
         *((float *)MEMORY[0x4DF904] + 167),
-        v22,
+        y,
         v12,
         1,
-        aux_progress);
+        anchor_x);
 LABEL_27:
       v19 = tooltip->tooltip_widget;
-      if ( v19->layout_left - v19->hot_padding - *(float *)&v19->stack_gap < 0.0 )
-        LODWORD(v19->layout_anchor_x) = v19->stack_gap;
-      pad_00 = (float *)tooltip->tooltip_widget->_pad_00;
-      v21 = pad_00[155] + pad_00[146] + pad_00[142] + pad_00[134];
+      if ( v19->layout_left - v19->hot_padding - v19->stack_gap < 0.0 )
+        v19->layout_anchor_x = v19->stack_gap;
+      v20 = tooltip->tooltip_widget;
+      v21 = v20->stack_gap + v20->layout_width + v20->layout_left + v20->hot_padding;
       if ( v21 > 640.0 )
-        pad_00[445] = pad_00[445] - (v21 - 640.0);
+        v20->layout_anchor_x = v20->layout_anchor_x - (v21 - 640.0);
       return layout_frontend_widget(tooltip->tooltip_widget);
     }
     if ( (mode_flags & 4) != 0 )
     {
-      v13 = (float *)tooltip->owner_widget->_pad_00;
-      v29 = aux_progress;
+      v13 = tooltip->owner_widget;
+      v29 = anchor_x;
       v28 = 1;
       v14 = set_color_rgba(&v32, 1.0, 1.0, 1.0, 1.0);
 LABEL_22:
-      v24 = v13[446] - v13[136];
-      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v13[445], v24, v14, v28, v29);
-      v16 = (float *)tooltip->tooltip_widget->_pad_00;
-      v17 = v16[446] - (v16[147] + v16[136]);
+      yb = v13->layout_anchor_y - v13->current_padding;
+      initialize_frontend_widget(
+        tooltip->tooltip_widget,
+        2u,
+        (char *)tooltip,
+        7,
+        v13->layout_anchor_x,
+        yb,
+        v14,
+        v28,
+        v29);
+      v16 = tooltip->tooltip_widget;
+      v17 = v16->layout_anchor_y - (v16->layout_height + v16->current_padding);
 LABEL_26:
-      v16[446] = v17;
+      v16->layout_anchor_y = v17;
       goto LABEL_27;
     }
     if ( (mode_flags & 2) != 0 )
     {
-      v15 = (float *)tooltip->owner_widget->_pad_00;
+      v15 = tooltip->owner_widget;
       v26 = set_color_rgba(&v33, 1.0, 1.0, 1.0, 1.0);
-      v23 = v15[446] + v15[147] + v15[136];
-      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v15[445], v23, v26, 1, aux_progress);
+      ya = v15->layout_anchor_y + v15->layout_height + v15->current_padding;
+      initialize_frontend_widget(
+        tooltip->tooltip_widget,
+        2u,
+        (char *)tooltip,
+        7,
+        v15->layout_anchor_x,
+        ya,
+        v26,
+        1,
+        anchor_x);
     }
     else
     {
       if ( (mode_flags & 0x10) != 0 )
       {
-        v13 = (float *)tooltip->owner_widget->_pad_00;
+        v13 = tooltip->owner_widget;
         v29 = 0.0;
         v28 = 0;
         v14 = set_color_rgba(&v34, 1.0, 1.0, 1.0, 1.0);
@@ -141,13 +159,13 @@ LABEL_26:
       }
       if ( (mode_flags & 8) == 0 )
         goto LABEL_27;
-      v18 = (float *)tooltip->owner_widget->_pad_00;
+      v18 = tooltip->owner_widget;
       v27 = set_color_rgba(&v35, 1.0, 1.0, 1.0, 1.0);
-      v25 = v18[446] + v18[147] + v18[136];
-      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v18[445], v25, v27, 0, 0.0);
+      yc = v18->layout_anchor_y + v18->layout_height + v18->current_padding;
+      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v18->layout_anchor_x, yc, v27, 0, 0.0);
     }
-    v16 = (float *)tooltip->tooltip_widget->_pad_00;
-    v17 = v16[136] + v16[446];
+    v16 = tooltip->tooltip_widget;
+    v17 = v16->current_padding + v16->layout_anchor_y;
     goto LABEL_26;
   }
   result = (int32_t)tooltip->owner_widget;

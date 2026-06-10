@@ -177,7 +177,7 @@ int __thiscall sub_4191E0(_DWORD *this, char *FileName)
         v22 = v61;
         set_bod_object(this + 36 * *(this + 5) + 6, *(_DWORD *)LODWORD(v61));
         *(_DWORD *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 92) + 12) = get_or_create_texture_ref(
-                                                                                &dword_4B7790,
+                                                                                &texture_list,
                                                                                 Buffer,
                                                                                 0,
                                                                                 0);

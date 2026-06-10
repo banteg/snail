@@ -8,8 +8,7 @@
 00430a85        if (arg2 s> 0)
 00430a8a        int32_t* ecx = ebx + 0x24
 00430a92        if (*(*ecx + 0x2c) != *(arg1 + 0x2c))
-00430b3b        int32_t var_4c = *((eax << 7) + ebx + 0x7c)
-00430b41        report_errorf("Anim tween Vertices don't match Frame %i")
+00430b41        report_errorf("Anim tween Vertices don't match Frame %i", *((eax << 7) + ebx + 0x7c))
 00430b50        return 0
 00430a98        eax += 1
 00430a99        ecx = &ecx[0x20]

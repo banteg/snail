@@ -32,15 +32,15 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
   float v28; // [esp+0h] [ebp-170h]
   float v29; // [esp+0h] [ebp-170h]
   float v30; // [esp+0h] [ebp-170h]
-  float v31; // [esp+14h] [ebp-15Ch]
+  float angle; // [esp+14h] [ebp-15Ch]
   float v32; // [esp+18h] [ebp-158h]
   float v33; // [esp+1Ch] [ebp-154h]
   float v34; // [esp+24h] [ebp-14Ch]
   float v35; // [esp+28h] [ebp-148h]
-  TransformMatrix v36; // [esp+30h] [ebp-140h] BYREF
-  TransformMatrix v37; // [esp+70h] [ebp-100h] BYREF
-  TransformMatrix v38; // [esp+B0h] [ebp-C0h] BYREF
-  TransformMatrix v39; // [esp+F0h] [ebp-80h] BYREF
+  TransformMatrix transform; // [esp+30h] [ebp-140h] BYREF
+  TransformMatrix to; // [esp+70h] [ebp-100h] BYREF
+  TransformMatrix rhs; // [esp+B0h] [ebp-C0h] BYREF
+  TransformMatrix out; // [esp+F0h] [ebp-80h] BYREF
   TransformMatrix v40; // [esp+130h] [ebp-40h] BYREF
 
   result = (int32_t)MEMORY[0x4DF904];
@@ -52,10 +52,10 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     {
       if ( owner_player->attachment_exit_pending )
       {
-        qmemcpy(&v36, &owner_player->live_matrix, sizeof(v36));
-        qmemcpy(&v37, &owner_player->live_matrix, sizeof(v37));
-        set_matrix_rotation_identity(&v36);
-        linear_interpolate_matrix(&presentation->owner_player->live_matrix, &v36, &v37, 0.97000003);
+        qmemcpy(&transform, &owner_player->live_matrix, sizeof(transform));
+        qmemcpy(&to, &owner_player->live_matrix, sizeof(to));
+        set_matrix_rotation_identity(&transform);
+        linear_interpolate_matrix(&presentation->owner_player->live_matrix, &transform, &to, 0.97000003);
       }
     }
     else
@@ -65,15 +65,15 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
       if ( v4->cutscene_pitch_cycle > 1.0 )
         v4->cutscene_pitch_cycle = 0.0;
       p_live_matrix = &presentation->owner_player->live_matrix;
-      qmemcpy(&v36, p_live_matrix, sizeof(v36));
-      qmemcpy(&v37, p_live_matrix, sizeof(v37));
-      set_matrix_rotation_identity(&v36);
+      qmemcpy(&transform, p_live_matrix, sizeof(transform));
+      qmemcpy(&to, p_live_matrix, sizeof(to));
+      set_matrix_rotation_identity(&transform);
       v6 = (-0.78539819 - presentation->owner_player->cutscene_pitch_cycle * 6.2831855) * 1.4;
-      v31 = v6;
+      angle = v6;
       if ( v6 < -6.2831855 )
-        v31 = -6.2831855;
-      rotate_matrix_world_x(&v36, v31);
-      linear_interpolate_matrix(&presentation->owner_player->live_matrix, &v36, &v37, 0.94);
+        angle = -6.2831855;
+      rotate_matrix_world_x(&transform, angle);
+      linear_interpolate_matrix(&presentation->owner_player->live_matrix, &transform, &to, 0.94);
     }
     pad_00 = (float *)presentation->owner_player->_pad_00;
     v8 = &presentation->live_matrix;
@@ -83,12 +83,12 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.x = *pad_00;
     presentation->live_matrix.position.y = pad_00[1];
     presentation->live_matrix.position.z = pad_00[2];
-    qmemcpy(&v36, &presentation->live_matrix, sizeof(v36));
-    linear_interpolate_matrix(&presentation->live_matrix, &v36, &presentation->cached_cutscene_matrix, 0.69999999);
+    qmemcpy(&transform, &presentation->live_matrix, sizeof(transform));
+    linear_interpolate_matrix(&presentation->live_matrix, &transform, &presentation->cached_cutscene_matrix, 0.69999999);
     y = presentation->live_matrix.basis_up.y;
-    presentation->live_matrix.position.x = v36.position.x;
-    presentation->live_matrix.position.y = v36.position.y;
-    presentation->live_matrix.position.z = v36.position.z;
+    presentation->live_matrix.position.x = transform.position.x;
+    presentation->live_matrix.position.y = transform.position.y;
+    presentation->live_matrix.position.z = transform.position.z;
     if ( y > 0.0 )
     {
       v26 = (presentation->live_matrix.position.x - presentation->cached_cutscene_matrix.position.x) * 0.80000001;
@@ -103,14 +103,14 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     if ( !(v17 | v18) )
       presentation->wobble.lift_phase = v15 - 1.0;
     qmemcpy(&v40, v8, sizeof(v40));
-    set_matrix_identity(&v38);
+    set_matrix_identity(&rhs);
     v27 = presentation->wobble.roll_phase * 6.2831855;
     v28 = sine(v27) * 0.017449999;
-    rotate_matrix_world_z(&v38, v28);
-    invert_matrix_from_source(&v39, v19);
-    multiply_matrix_in_place(&presentation->live_matrix, &v39);
+    rotate_matrix_world_z(&rhs, v28);
+    invert_matrix_from_source(&out, v19);
+    multiply_matrix_in_place(&presentation->live_matrix, &out);
     presentation->live_matrix.position.y = presentation->live_matrix.position.y + 1.3;
-    multiply_matrix_in_place(&presentation->live_matrix, &v38);
+    multiply_matrix_in_place(&presentation->live_matrix, &rhs);
     presentation->live_matrix.position.y = presentation->live_matrix.position.y - 1.3;
     multiply_matrix_in_place(&presentation->live_matrix, &v40);
     v29 = presentation->wobble.lift_phase * 6.2831855;
@@ -185,7 +185,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     {
       dispatch_cutscene_animation(presentation, 1, 0, -1);
     }
-    update_jet_particles((int)&presentation->owner_player->_pad_2744[8]);
+    update_jet_particles((int)&presentation->owner_player->jetpack_gauge);
   }
   return result;
 }

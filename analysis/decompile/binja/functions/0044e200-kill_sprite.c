@@ -4,8 +4,7 @@
 /* function: kill_sprite @ 0x44e200 */
 
 0044e207        if ((*(arg1 + 4) & 1) == 0)
-0044e20f        int32_t var_8_1 = *(arg1 + 0x1c) + 0xc
-0044e215        report_errorf("Sprite kill error, already dead (%s)")
+0044e215        report_errorf("Sprite kill error, already dead (%s)", *(arg1 + 0x1c) + 0xc)
 0044e223        if (arg1 == 0x814cb0)
 0044e223        return 
 0044e22b        *(arg1 + 4) &= 0xfffffffe

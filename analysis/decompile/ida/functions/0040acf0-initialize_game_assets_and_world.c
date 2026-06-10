@@ -354,7 +354,7 @@ char __thiscall sub_40ACF0(int this)
   set_subgame_rate((_DWORD *)(this + 476696), 1066192077);
   *(_DWORD *)(this + 1388) = 2;
   *(_DWORD *)(this + 60) = 1;
-  initialize_texture_list(&dword_4B7790, 500);
+  initialize_texture_list(&texture_list, 500);
   initialize_object_list(unk_4B7648, 3000);
   *(_DWORD *)(this + 1300) = 0;
   *(_DWORD *)(this + 1304) = 0;
@@ -582,7 +582,7 @@ char __thiscall sub_40ACF0(int this)
     initialize_backdrop_slice_quad(*(int **)(v18 + 280948), aObjectsWorld00_0, v307);
     v21 = add_object_to_list(unk_4B7648);
     set_bod_object((_DWORD *)(v18 + 281360), (int)v21);
-    initialize_backdrop_slice_quad(*(int **)(v18 + 281396), aObjectsWorld00_1, v307);
+    initialize_backdrop_slice_quad(*(int **)(v18 + 281396), texture_a, v307);
     v22 = v307 + 1.0;
     v307 = v22;
   }
@@ -666,16 +666,16 @@ char __thiscall sub_40ACF0(int this)
   initialize_backdrop_corner_quad(3, *(int **)(this + 279436), aObjectsWorld00_0);
   v42 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 279512), (int)v42);
-  initialize_backdrop_corner_quad(0, *(int **)(this + 279548), aObjectsWorld00_1);
+  initialize_backdrop_corner_quad(0, *(int **)(this + 279548), texture_a);
   v43 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 279568), (int)v43);
-  initialize_backdrop_corner_quad(1, *(int **)(this + 279604), aObjectsWorld00_1);
+  initialize_backdrop_corner_quad(1, *(int **)(this + 279604), texture_a);
   v44 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 279680), (int)v44);
-  initialize_backdrop_corner_quad(2, *(int **)(this + 279716), aObjectsWorld00_1);
+  initialize_backdrop_corner_quad(2, *(int **)(this + 279716), texture_a);
   v45 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 279624), (int)v45);
-  initialize_backdrop_corner_quad(3, *(int **)(this + 279660), aObjectsWorld00_1);
+  initialize_backdrop_corner_quad(3, *(int **)(this + 279660), texture_a);
   v46 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 279736), (int)v46);
   load_x_mesh(aTrampX, *(int **)(this + 279772), 1);
@@ -923,14 +923,7 @@ char __thiscall sub_40ACF0(int this)
   sub_449C00();
   v98 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17198892), (int)v98);
-  initialize_looptheloop_path_template_pair(
-    this + 17198892,
-    6.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17198892, 6.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17198916) = 0;
   *(_DWORD *)(this + 17198912) = 0;
   *(_DWORD *)(this + 17198908) = 0;
@@ -950,14 +943,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199172) = 0;
   v100 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17199228), (int)v100);
-  initialize_looptheloop_path_template_pair(
-    this + 17199228,
-    6.0,
-    2,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17199228, 6.0, 2, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17199252) = 0;
   *(_DWORD *)(this + 17199248) = 0;
   *(_DWORD *)(this + 17199244) = 0;
@@ -977,14 +963,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199508) = 0;
   v102 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17199564), (int)v102);
-  initialize_looptheloop_path_template_pair(
-    this + 17199564,
-    8.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17199564, 8.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17199588) = 0;
   *(_DWORD *)(this + 17199584) = 0;
   *(_DWORD *)(this + 17199580) = 0;
@@ -1004,14 +983,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199844) = 0;
   v104 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17200908), (int)v104);
-  initialize_looptheloopw_path_template_pair(
-    this + 17200908,
-    8.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloopw_path_template_pair(this + 17200908, 8.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17200932) = 0;
   *(_DWORD *)(this + 17200928) = 0;
   *(_DWORD *)(this + 17200924) = 0;
@@ -1031,14 +1003,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17201188) = 0;
   v106 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17199900), (int)v106);
-  initialize_looptheloop_path_template_pair(
-    this + 17199900,
-    3.0,
-    2,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17199900, 3.0, 2, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17199924) = 0;
   *(_DWORD *)(this + 17199920) = 0;
   *(_DWORD *)(this + 17199916) = 0;
@@ -1058,14 +1023,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200180) = 0;
   v108 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17200236), (int)v108);
-  initialize_looptheloop_path_template_pair(
-    this + 17200236,
-    3.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17200236, 3.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17200260) = 0;
   *(_DWORD *)(this + 17200256) = 0;
   *(_DWORD *)(this + 17200252) = 0;
@@ -1085,14 +1043,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200516) = 0;
   v110 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17200572), (int)v110);
-  initialize_looptheloop_path_template_pair(
-    this + 17200572,
-    3.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17200572, 3.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17200596) = 0;
   *(_DWORD *)(this + 17200592) = 0;
   *(_DWORD *)(this + 17200588) = 0;
@@ -1112,14 +1063,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200852) = 0;
   v112 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17201244), (int)v112);
-  initialize_loopbow_path_template_pair(
-    this + 17201244,
-    6.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopbow_path_template_pair(this + 17201244, 6.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17201268) = 0;
   *(_DWORD *)(this + 17201264) = 0;
   *(_DWORD *)(this + 17201260) = 0;
@@ -1139,14 +1083,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17201524) = 0;
   v114 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17211324), (int)v114);
-  initialize_turnover_path_template_pair(
-    this + 17211324,
-    6.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_turnover_path_template_pair(this + 17211324, 6.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17211348) = 0;
   *(_DWORD *)(this + 17211344) = 0;
   *(_DWORD *)(this + 17211340) = 0;
@@ -1166,14 +1103,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17211604) = 0;
   v116 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17211660), (int)v116);
-  initialize_turnoverdouble_path_template_pair(
-    this + 17211660,
-    6.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_turnoverdouble_path_template_pair(this + 17211660, 6.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17211684) = 0;
   *(_DWORD *)(this + 17211680) = 0;
   *(_DWORD *)(this + 17211676) = 0;
@@ -1198,8 +1128,8 @@ char __thiscall sub_40ACF0(int this)
     2.5,
     COERCE_FLOAT(3),
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17213364) = 0;
   *(_DWORD *)(this + 17213360) = 0;
@@ -1225,8 +1155,8 @@ char __thiscall sub_40ACF0(int this)
     2.5,
     COERCE_FLOAT(3),
     0,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17213700) = 0;
   *(_DWORD *)(this + 17213696) = 0;
@@ -1252,8 +1182,8 @@ char __thiscall sub_40ACF0(int this)
     2.5,
     COERCE_FLOAT(3),
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17214036) = 0;
   *(_DWORD *)(this + 17214032) = 0;
@@ -1279,8 +1209,8 @@ char __thiscall sub_40ACF0(int this)
     2.5,
     COERCE_FLOAT(3),
     0,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17214372) = 0;
   *(_DWORD *)(this + 17214368) = 0;
@@ -1301,14 +1231,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17214628) = 0;
   v126 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17211996), (int)v126);
-  initialize_turnunder_path_template_pair(
-    this + 17211996,
-    6.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_turnunder_path_template_pair(this + 17211996, 6.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17212020) = 0;
   *(_DWORD *)(this + 17212016) = 0;
   *(_DWORD *)(this + 17212012) = 0;
@@ -1333,8 +1256,8 @@ char __thiscall sub_40ACF0(int this)
     1086324736,
     COERCE_FLOAT(8),
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17212692) = 0;
   *(_DWORD *)(this + 17212688) = 0;
@@ -1355,14 +1278,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17212948) = 0;
   v130 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17213004), (int)v130);
-  initialize_kind42_path_template_pair(
-    this + 17213004,
-    1086324736,
-    8,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_kind42_path_template_pair(this + 17213004, 1086324736, 8, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17213028) = 0;
   *(_DWORD *)(this + 17213024) = 0;
   *(_DWORD *)(this + 17213020) = 0;
@@ -1382,14 +1298,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17213284) = 0;
   v132 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17212332), (int)v132);
-  initialize_wibble_path_template_pair(
-    this + 17212332,
-    1086324736,
-    8,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
-    (int)aObjectsPathVer);
+  initialize_wibble_path_template_pair(this + 17212332, 1086324736, 8, 1, texture_a, texture_a, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17212356) = 0;
   *(_DWORD *)(this + 17212352) = 0;
   *(_DWORD *)(this + 17212348) = 0;
@@ -1414,8 +1323,8 @@ char __thiscall sub_40ACF0(int this)
     6.0,
     2,
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer,
     aObjectsWorld00_0);
   *(_DWORD *)(this + 17209332) = 0;
@@ -1432,8 +1341,8 @@ char __thiscall sub_40ACF0(int this)
     6.0,
     2,
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer,
     aObjectsWorld00_0);
   *(_DWORD *)(this + 17209500) = 0;
@@ -1445,14 +1354,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17209588) = 0;
   v136 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17210988), (int)v136);
-  initialize_start_path_template_pair(
-    this + 17210988,
-    4.0,
-    8,
-    1,
-    aObjectsWorld00_1,
-    (int)aObjectsWorld00_1,
-    (int)aObjectsPathVer);
+  initialize_start_path_template_pair(this + 17210988, 4.0, 8, 1, texture_a, (int)texture_a, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17211012) = 0;
   *(_DWORD *)(this + 17211008) = 0;
   *(_DWORD *)(this + 17211004) = 0;
@@ -1467,7 +1369,7 @@ char __thiscall sub_40ACF0(int this)
     4.0,
     8,
     1,
-    aObjectsWorld00_1,
+    texture_a,
     (int)aObjectsWorld00_3,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17211180) = 0;
@@ -1479,14 +1381,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17211268) = 0;
   v138 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17207292), (int)v138);
-  initialize_loopout_path_template_pair(
-    this + 17207292,
-    3.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17207292, 3.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17207316) = 0;
   *(_DWORD *)(this + 17207312) = 0;
   *(_DWORD *)(this + 17207308) = 0;
@@ -1506,14 +1401,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17207572) = 0;
   v140 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17207964), (int)v140);
-  initialize_loopout_path_template_pair(
-    this + 17207964,
-    5.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17207964, 5.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17207988) = 0;
   *(_DWORD *)(this + 17207984) = 0;
   *(_DWORD *)(this + 17207980) = 0;
@@ -1533,14 +1421,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17208244) = 0;
   v142 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17207628), (int)v142);
-  initialize_loopout_path_template_pair(
-    this + 17207628,
-    3.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17207628, 3.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17207652) = 0;
   *(_DWORD *)(this + 17207648) = 0;
   *(_DWORD *)(this + 17207644) = 0;
@@ -1560,15 +1441,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17207908) = 0;
   v144 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204268), (int)v144);
-  initialize_hump_path_template_pair(
-    this + 17204268,
-    4.0,
-    1.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_hump_path_template_pair(this + 17204268, 4.0, 1.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17204292) = 0;
   *(_DWORD *)(this + 17204288) = 0;
   *(_DWORD *)(this + 17204284) = 0;
@@ -1588,15 +1461,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17204548) = 0;
   v146 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204604), (int)v146);
-  initialize_dump_path_template_pair(
-    this + 17204604,
-    4.0,
-    1.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_dump_path_template_pair(this + 17204604, 4.0, 1.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17204628) = 0;
   *(_DWORD *)(this + 17204624) = 0;
   *(_DWORD *)(this + 17204620) = 0;
@@ -1616,15 +1481,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17204884) = 0;
   v148 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204940), (int)v148);
-  initialize_hump_path_template_pair(
-    this + 17204940,
-    4.0,
-    0.30000001,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_hump_path_template_pair(this + 17204940, 4.0, 0.30000001, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17204964) = 0;
   *(_DWORD *)(this + 17204960) = 0;
   *(_DWORD *)(this + 17204956) = 0;
@@ -1644,15 +1501,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17205220) = 0;
   v150 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17205276), (int)v150);
-  initialize_dump_path_template_pair(
-    this + 17205276,
-    4.0,
-    0.30000001,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_dump_path_template_pair(this + 17205276, 4.0, 0.30000001, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17205300) = 0;
   *(_DWORD *)(this + 17205296) = 0;
   *(_DWORD *)(this + 17205292) = 0;
@@ -1678,8 +1527,8 @@ char __thiscall sub_40ACF0(int this)
     4.0,
     20.0,
     COERCE_FLOAT(1),
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
+    texture_a,
+    texture_a,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17201604) = 0;
   *(_DWORD *)(this + 17201600) = 0;
@@ -1706,8 +1555,8 @@ char __thiscall sub_40ACF0(int this)
     4.0,
     20.0,
     0.0,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17202276) = 0;
   *(_DWORD *)(this + 17202272) = 0;
@@ -1734,8 +1583,8 @@ char __thiscall sub_40ACF0(int this)
     4.0,
     20.0,
     COERCE_FLOAT(1),
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17201940) = 0;
   *(_DWORD *)(this + 17201936) = 0;
@@ -1790,8 +1639,8 @@ char __thiscall sub_40ACF0(int this)
     -4.0,
     20.0,
     COERCE_FLOAT(1),
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
+    texture_a,
+    texture_a,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17202612) = 0;
   *(_DWORD *)(this + 17202608) = 0;
@@ -1818,8 +1667,8 @@ char __thiscall sub_40ACF0(int this)
     -4.0,
     20.0,
     0.0,
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
+    texture_a,
+    texture_a,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17203284) = 0;
   *(_DWORD *)(this + 17203280) = 0;
@@ -1846,8 +1695,8 @@ char __thiscall sub_40ACF0(int this)
     -4.0,
     20.0,
     COERCE_FLOAT(1),
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
+    texture_a,
+    texture_a,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17202948) = 0;
   *(_DWORD *)(this + 17202944) = 0;
@@ -1868,14 +1717,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17203204) = 0;
   v166 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17205612), (int)v166);
-  initialize_dip_path_template_pair(
-    this + 17205612,
-    4.0,
-    2,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_dip_path_template_pair(this + 17205612, 4.0, 2, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17205636) = 0;
   *(_DWORD *)(this + 17205632) = 0;
   *(_DWORD *)(this + 17205628) = 0;
@@ -1895,14 +1737,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17205892) = 0;
   v168 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17205948), (int)v168);
-  initialize_screw_path_template_pair(
-    this + 17205948,
-    24,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_1,
-    (int)aObjectsPathVer);
+  initialize_screw_path_template_pair(this + 17205948, 24, 3, 1, texture_a, texture_a, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17205972) = 0;
   *(_DWORD *)(this + 17205968) = 0;
   *(_DWORD *)(this + 17205964) = 0;
@@ -1922,14 +1757,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17206228) = 0;
   v170 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17206284), (int)v170);
-  initialize_slalom_path_template_pair(
-    this + 17206284,
-    32,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_slalom_path_template_pair(this + 17206284, 32, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17206308) = 0;
   *(_DWORD *)(this + 17206304) = 0;
   *(_DWORD *)(this + 17206300) = 0;
@@ -1949,14 +1777,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17206564) = 0;
   v172 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17206620), (int)v172);
-  initialize_slalombig_path_template_pair(
-    this + 17206620,
-    32,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_slalombig_path_template_pair(this + 17206620, 32, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17206644) = 0;
   *(_DWORD *)(this + 17206640) = 0;
   *(_DWORD *)(this + 17206636) = 0;
@@ -1976,14 +1797,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17206900) = 0;
   v174 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17209644), (int)v174);
-  initialize_slalomdouble_path_template_pair(
-    this + 17209644,
-    32,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_slalomdouble_path_template_pair(this + 17209644, 32, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17209668) = 0;
   *(_DWORD *)(this + 17209664) = 0;
   *(_DWORD *)(this + 17209660) = 0;
@@ -2023,14 +1837,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(*(_DWORD *)(this + 17207160) + 20) = 8;
   v180 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17208300), (int)v180);
-  initialize_sweep_path_template_pair(
-    this + 17208300,
-    1082130432,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_sweep_path_template_pair(this + 17208300, 1082130432, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17208324) = 0;
   *(_DWORD *)(this + 17208320) = 0;
   *(_DWORD *)(this + 17208316) = 0;
@@ -2050,7 +1857,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17208580) = 0;
   v182 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17203932), (int)v182);
-  initialize_cage2_path_template_pair(this + 17203932, 3, aObjectsWorld00_1, aObjectsWorld00_2, (int)aObjectsPathVer);
+  initialize_cage2_path_template_pair(this + 17203932, 3, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17203956) = 0;
   *(_DWORD *)(this + 17203952) = 0;
   *(_DWORD *)(this + 17203948) = 0;
@@ -2078,8 +1885,8 @@ char __thiscall sub_40ACF0(int this)
     0.5,
     -2.5,
     14,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17210004) = 0;
   *(_DWORD *)(this + 17210000) = 0;
@@ -2108,8 +1915,8 @@ char __thiscall sub_40ACF0(int this)
     -2.5,
     2.5,
     14,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17210340) = 0;
   *(_DWORD *)(this + 17210336) = 0;
@@ -2138,8 +1945,8 @@ char __thiscall sub_40ACF0(int this)
     2.5,
     0.5,
     14,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17210676) = 0;
   *(_DWORD *)(this + 17210672) = 0;
@@ -2165,7 +1972,7 @@ char __thiscall sub_40ACF0(int this)
     0x40000000,
     4,
     1,
-    aObjectsWorld00_1,
+    texture_a,
     aObjectsWorld00,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17208660) = 0;
@@ -2187,7 +1994,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17208916) = 0;
   v192 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17214684), (int)v192);
-  initialize_toad_path_template_pair(this + 17214684, 1, aObjectsWorld00_1, aObjectsWorld00, (int)aObjectsPathVer);
+  initialize_toad_path_template_pair(this + 17214684, 1, texture_a, aObjectsWorld00, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17214708) = 0;
   *(_DWORD *)(this + 17214704) = 0;
   *(_DWORD *)(this + 17214700) = 0;
@@ -2207,7 +2014,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17214964) = 0;
   v194 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17215020), (int)v194);
-  initialize_toad_path_template_pair(this + 17215020, 0, aObjectsWorld00_1, aObjectsWorld00, (int)aObjectsPathVer);
+  initialize_toad_path_template_pair(this + 17215020, 0, texture_a, aObjectsWorld00, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17215044) = 0;
   *(_DWORD *)(this + 17215040) = 0;
   *(_DWORD *)(this + 17215036) = 0;
@@ -2227,7 +2034,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17215300) = 0;
   v196 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17215356), (int)v196);
-  initialize_toad_path_template_pair(this + 17215356, 1, aObjectsWorld00_1, aObjectsWorld00, (int)aObjectsPathVer);
+  initialize_toad_path_template_pair(this + 17215356, 1, texture_a, aObjectsWorld00, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17215380) = 0;
   *(_DWORD *)(this + 17215376) = 0;
   *(_DWORD *)(this + 17215372) = 0;
@@ -2247,7 +2054,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17215636) = 0;
   v198 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17215692), (int)v198);
-  initialize_toad_path_template_pair(this + 17215692, 0, aObjectsWorld00_1, aObjectsWorld00, (int)aObjectsPathVer);
+  initialize_toad_path_template_pair(this + 17215692, 0, texture_a, aObjectsWorld00, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17215716) = 0;
   *(_DWORD *)(this + 17215712) = 0;
   *(_DWORD *)(this + 17215708) = 0;
@@ -2269,14 +2076,7 @@ char __thiscall sub_40ACF0(int this)
   store_color4f(v328, 1065353216, 1065353216, 1065353216, 1058642330);
   v200 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17216028), (int)v200);
-  initialize_looptheloop_path_template_pair(
-    this + 17216028,
-    6.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17216028, 6.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17216052) = 0;
   *(_DWORD *)(this + 17216048) = 0;
   *(_DWORD *)(this + 17216044) = 0;
@@ -2303,14 +2103,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199224) = v204;
   v205 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17216364), (int)v205);
-  initialize_looptheloop_path_template_pair(
-    this + 17216364,
-    6.0,
-    2,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17216364, 6.0, 2, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17216388) = 0;
   *(_DWORD *)(this + 17216384) = 0;
   *(_DWORD *)(this + 17216380) = 0;
@@ -2336,14 +2129,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199556) = v208;
   v209 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17216700), (int)v209);
-  initialize_looptheloop_path_template_pair(
-    this + 17216700,
-    8.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17216700, 8.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17216724) = 0;
   *(_DWORD *)(this + 17216720) = 0;
   *(_DWORD *)(this + 17216716) = 0;
@@ -2369,14 +2155,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17199896) = *(_DWORD *)(this + 17199768);
   v213 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17218044), (int)v213);
-  initialize_looptheloopw_path_template_pair(
-    this + 17218044,
-    8.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloopw_path_template_pair(this + 17218044, 8.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17218068) = 0;
   *(_DWORD *)(this + 17218064) = 0;
   *(_DWORD *)(this + 17218060) = 0;
@@ -2400,14 +2179,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17201240) = *(_DWORD *)(this + 17201112);
   v215 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17217036), (int)v215);
-  initialize_looptheloop_path_template_pair(
-    this + 17217036,
-    3.0,
-    2,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17217036, 3.0, 2, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17217060) = 0;
   *(_DWORD *)(this + 17217056) = 0;
   *(_DWORD *)(this + 17217052) = 0;
@@ -2431,14 +2203,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200232) = *(_DWORD *)(this + 17200104);
   v217 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17217372), (int)v217);
-  initialize_looptheloop_path_template_pair(
-    this + 17217372,
-    3.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17217372, 3.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17217396) = 0;
   *(_DWORD *)(this + 17217392) = 0;
   *(_DWORD *)(this + 17217388) = 0;
@@ -2462,14 +2227,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200568) = *(_DWORD *)(this + 17200440);
   v219 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17217708), (int)v219);
-  initialize_looptheloop_path_template_pair(
-    this + 17217708,
-    3.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_looptheloop_path_template_pair(this + 17217708, 3.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17217732) = 0;
   *(_DWORD *)(this + 17217728) = 0;
   *(_DWORD *)(this + 17217724) = 0;
@@ -2493,14 +2251,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17200904) = *(_DWORD *)(this + 17200776);
   v221 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17218380), (int)v221);
-  initialize_loopbow_path_template_pair(
-    this + 17218380,
-    6.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopbow_path_template_pair(this + 17218380, 6.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17218404) = 0;
   *(_DWORD *)(this + 17218400) = 0;
   *(_DWORD *)(this + 17218396) = 0;
@@ -2529,8 +2280,8 @@ char __thiscall sub_40ACF0(int this)
     1086324736,
     COERCE_FLOAT(8),
     1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
+    texture_a,
+    texture_b,
     (int)aObjectsPathVer);
   *(_DWORD *)(this + 17219748) = 0;
   *(_DWORD *)(this + 17219744) = 0;
@@ -2555,14 +2306,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17213000) = *(_DWORD *)(this + 17212872);
   v225 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17218716), (int)v225);
-  initialize_loopout_path_template_pair(
-    this + 17218716,
-    3.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17218716, 3.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17218740) = 0;
   *(_DWORD *)(this + 17218736) = 0;
   *(_DWORD *)(this + 17218732) = 0;
@@ -2586,14 +2330,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17207624) = *(_DWORD *)(this + 17207496);
   v227 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17219388), (int)v227);
-  initialize_loopout_path_template_pair(
-    this + 17219388,
-    5.0,
-    4,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17219388, 5.0, 4, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17219412) = 0;
   *(_DWORD *)(this + 17219408) = 0;
   *(_DWORD *)(this + 17219404) = 0;
@@ -2617,14 +2354,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17208296) = *(_DWORD *)(this + 17208168);
   v229 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17219052), (int)v229);
-  initialize_loopout_path_template_pair(
-    this + 17219052,
-    3.0,
-    3,
-    1,
-    aObjectsWorld00_1,
-    aObjectsWorld00_2,
-    (int)aObjectsPathVer);
+  initialize_loopout_path_template_pair(this + 17219052, 3.0, 3, 1, texture_a, texture_b, (int)aObjectsPathVer);
   initialize_distort((_DWORD *)(this + 17219068));
   v230 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17219220), (int)v230);
@@ -2865,9 +2595,9 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(*(_DWORD *)((char *)&loc_433523 + this + 5) + 128) = 0;
   *(_DWORD *)(*(_DWORD *)((char *)&loc_433523 + this + 5) + 132) = 0;
   *(_DWORD *)(*(_DWORD *)((char *)&loc_433523 + this + 5) + 136) = 0;
-  *(_DWORD *)((char *)&loc_434037 + this + 5) = get_or_create_texture_ref(&dword_4B7790, aXSnailTurboTga_0, 0, 0);
-  *(_DWORD *)((char *)&loc_43403D + this + 3) = get_or_create_texture_ref(&dword_4B7790, aXSnailTurboDam, 0, 0);
-  *(_DWORD *)((char *)&loc_434042 + this + 2) = get_or_create_texture_ref(&dword_4B7790, aXSnailTurboInv, 0, 0);
+  *(_DWORD *)((char *)&loc_434037 + this + 5) = get_or_create_texture_ref(&texture_list, aXSnailTurboTga_0, 0, 0);
+  *(_DWORD *)((char *)&loc_43403D + this + 3) = get_or_create_texture_ref(&texture_list, aXSnailTurboDam, 0, 0);
+  *(_DWORD *)((char *)&loc_434042 + this + 2) = get_or_create_texture_ref(&texture_list, aXSnailTurboInv, 0, 0);
   v276 = add_object_to_list(unk_4B7648);
   set_bod_object((char *)&loc_433F94 + this, (int)v276);
   load_x_mesh(aInvincibleBase, *(int **)((char *)&loc_433FB8 + this), 1);
@@ -2890,55 +2620,55 @@ char __thiscall sub_40ACF0(int this)
     --v325;
   }
   while ( v325 );
-  v280 = (int *)get_or_create_texture_ref(&dword_4B7790, aObjectsVapourl_0, 0, 0);
+  v280 = (int *)get_or_create_texture_ref(&texture_list, aObjectsVapourl_0, 0, 0);
   v281 = *v280;
   BYTE1(v281) = BYTE1(*v280) | 4;
   *v280 = v281;
-  v282 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_4, 0, 0);
+  v282 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_4, 0, 0);
   *v282 |= 0x1403u;
-  v283 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_2, 0, 0);
+  v283 = (_DWORD *)get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
   *v283 |= 0x1402u;
-  *(_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_0, 0, 0) = 4096;
-  v284 = (int *)get_or_create_texture_ref(&dword_4B7790, aObjectsUnivers, 0, 0);
+  *(_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_0, 0, 0) = 4096;
+  v284 = (int *)get_or_create_texture_ref(&texture_list, aObjectsUnivers, 0, 0);
   v285 = *v284;
   BYTE1(v285) = BYTE1(*v284) | 0x10;
   *v284 = v285;
-  v286 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00, 0, 0);
+  v286 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00, 0, 0);
   *v286 |= 0x1002u;
-  v287 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_1, 0, 0);
+  v287 = (_DWORD *)get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
   *v287 |= 0x1002u;
-  v288 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_5, 0, 0);
+  v288 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_5, 0, 0);
   *v288 |= 0x1002u;
-  v289 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_6, 0, 0);
+  v289 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_6, 0, 0);
   *v289 |= 0x1002u;
-  v290 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_7, 0, 0);
+  v290 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_7, 0, 0);
   *v290 |= 0x1002u;
-  v291 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_8, 0, 0);
+  v291 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_8, 0, 0);
   *v291 |= 0x1002u;
-  v292 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_9, 0, 0);
+  v292 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_9, 0, 0);
   *v292 |= 0x1002u;
-  v293 = (_DWORD *)get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_10, 0, 0);
+  v293 = (_DWORD *)get_or_create_texture_ref(&texture_list, aObjectsWorld00_10, 0, 0);
   *v293 |= 0x1002u;
-  *(_DWORD *)(this + 2852) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00, 0, 0);
-  *(_DWORD *)(this + 2868) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_1, 0, 0);
-  *(_DWORD *)(this + 2856) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_5, 0, 0);
-  *(_DWORD *)(this + 2872) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_6, 0, 0);
-  *(_DWORD *)(this + 2860) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_7, 0, 0);
-  *(_DWORD *)(this + 2876) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_8, 0, 0);
-  *(_DWORD *)(this + 2864) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_9, 0, 0);
-  *(_DWORD *)(this + 2880) = get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_10, 0, 0);
+  *(_DWORD *)(this + 2852) = get_or_create_texture_ref(&texture_list, aObjectsWorld00, 0, 0);
+  *(_DWORD *)(this + 2868) = get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
+  *(_DWORD *)(this + 2856) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_5, 0, 0);
+  *(_DWORD *)(this + 2872) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_6, 0, 0);
+  *(_DWORD *)(this + 2860) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_7, 0, 0);
+  *(_DWORD *)(this + 2876) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_8, 0, 0);
+  *(_DWORD *)(this + 2864) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_9, 0, 0);
+  *(_DWORD *)(this + 2880) = get_or_create_texture_ref(&texture_list, aObjectsWorld00_10, 0, 0);
   *(_DWORD *)(this + 2884) = 0;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_2, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_0, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsUnivers, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_1, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_5, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_6, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_7, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_8, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_9, 0, 0) + 160) = 2;
-  *(_DWORD *)(get_or_create_texture_ref(&dword_4B7790, aObjectsWorld00_10, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, texture_b, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_0, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsUnivers, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, texture_a, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_5, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_6, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_7, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_8, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_9, 0, 0) + 160) = 2;
+  *(_DWORD *)(get_or_create_texture_ref(&texture_list, aObjectsWorld00_10, 0, 0) + 160) = 2;
   v294 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17220060), (int)v294);
   load_object_definition(aObjectsBarrier, *(int **)(this + 17220096));
@@ -2973,7 +2703,7 @@ char __thiscall sub_40ACF0(int this)
     ++v326;
   }
   while ( v326 < 8 );
-  v300 = (int *)get_or_create_texture_ref(&dword_4B7790, aObjectsUnivers_1, 0, 0);
+  v300 = (int *)get_or_create_texture_ref(&texture_list, aObjectsUnivers_1, 0, 0);
   v301 = *v300;
   v302 = (int *)(this + 124);
   BYTE1(v301) = BYTE1(*v300) | 4;

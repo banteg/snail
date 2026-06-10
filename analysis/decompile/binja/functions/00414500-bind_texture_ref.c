@@ -12,8 +12,7 @@
 00414533        int32_t eax_1 = (*(*eax + 0xf4))(eax, 0, *(edi_1 + (arg1[0x23] << 2)))
 00414543        data_5031c0 += 1
 00414549        if (eax_1 != 0)
-0041454e        void* __saved_edi = &arg1[3]
-00414554        report_errorf("SetTexture Failed %s")
+00414554        report_errorf("SetTexture Failed %s", &arg1[3])
 0041455d        return 0
 00414563        int32_t* eax_3 = data_502fec
 00414568        int32_t ecx_2 = *eax_3

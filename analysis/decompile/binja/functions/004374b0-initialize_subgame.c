@@ -61,10 +61,7 @@
 004375c6        game->_pad_00[0x11] = 0x88
 004375c6        game->_pad_00[0x12] = 8
 004375c6        game->_pad_00[0x13] = 0x3d
-004375d2        game->_pad_3c[0] = 0
-004375d2        game->_pad_3c[1] = 0
-004375d2        game->_pad_3c[2] = 0
-004375d2        game->_pad_3c[3] = 0
+004375d2        game->subgame_state = 0
 004375d5        game->times_up.state = 0
 0043760b        game->__offset(0x35bb88).d = allocate_border(data_4df904 + 0xb4c)
 00437611        struct Color4f color
@@ -140,14 +137,27 @@
 00437991        set_matrix_identity(&game->__offset(0x3bb79c).d)
 004379a2        game->__offset(0x3bbb70).d = 0
 004379a8        game->__offset(0x3bbb6c).d = game
-004379ae        int32_t eax_26 = game->__offset(0x3bb7cc).d
+004379ae        int32_t eax_26
+004379ae        eax_26.b = game->__offset(0x3bb7cc).b
+004379ae        eax_26:1.b = game->__offset(0x3bb7cd).b
+004379ae        eax_26:2.b = game->__offset(0x3bb7ce).b
+004379ae        eax_26:3.b = game->__offset(0x3bb7cf).b
 004379b0        game->__offset(0x3bbb81).b = 0
 004379b6        game->__offset(0x3be0c8).d = eax_26
 004379b8        game->__offset(0x3bbb80).b = 0
-004379be        int32_t eax_27 = game->__offset(0x3bb7d0).d
+004379be        int32_t eax_27
+004379be        eax_27.b = game->__offset(0x3bb7d0).b
+004379be        eax_27:1.b = game->__offset(0x3bb7d1).b
+004379be        eax_27:2.b = game->__offset(0x3bb7d2).b
+004379be        eax_27:3.b = game->__offset(0x3bb7d3).b
 004379c1        game->__offset(0x3bbb68).d = 0
 004379c7        game->__offset(0x3be0cc).d = eax_27
-004379cd        game->__offset(0x3be0d0).d = game->__offset(0x3bb7d4).d
+004379ca        int32_t ecx_47
+004379ca        ecx_47.b = game->__offset(0x3bb7d4).b
+004379ca        ecx_47:1.b = game->__offset(0x3bb7d5).b
+004379ca        ecx_47:2.b = game->__offset(0x3bb7d6).b
+004379ca        ecx_47:3.b = game->__offset(0x3bb7d7).b
+004379cd        game->__offset(0x3be0d0).d = ecx_47
 004379df        game->__offset(0x3bb768).d &= 0xffffffdf
 004379e5        initialize_warning(&game->warning_actor)
 004379ea        int32_t subgame_rebuild_selector_1 = game->subgame_rebuild_selector
@@ -173,10 +183,7 @@
 00437a69        reset_subgame(game)
 00437a75        return 
 00437a92        case 7
-00437a92        game->_pad_3c[0] = 0
-00437a92        game->_pad_3c[1] = 0
-00437a92        game->_pad_3c[2] = 0
-00437a92        game->_pad_3c[3] = 0
+00437a92        game->subgame_state = 0
 00437a95        reset_subgame(game)
 00437aa1        return 
 00437aa7        report_errorf("Unknown game mode")

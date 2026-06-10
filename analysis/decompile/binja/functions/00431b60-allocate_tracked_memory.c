@@ -6,8 +6,8 @@
 00431b6b        char* eax = sub_48b72d(arg1 + 8)
 00431b77        if (eax == 0)
 00431b7e        report_errorf("Not enough memory\n\n")
-00431b8a        int32_t* var_10_1 = arg1 + 8
-00431b92        push_tracked_allocation(&data_5108c0, arg2, eax)
+00431b8c        int32_t var_18 = arg2
+00431b92        push_tracked_allocation(&data_5108c0, eax, arg1 + 8)
 00431bab        __builtin_memset(__builtin_memset(eax, 0, (arg1 + 8) & 0xfffffffc), 0, (arg1 + 8) & 3)
 00431bb1        *eax = 0xde
 00431bb4        eax[1] = 0xad

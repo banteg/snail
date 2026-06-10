@@ -93,7 +93,8 @@ PLAYER_FIELD_UPDATES = (
 
 GAME_FIELD_UPDATES = (
     ("0x34", "challenge_difficulty_scalar", "float"),
-    ("0x38", "track_center_x", "float"),
+    ("0x38", "subgame_rate", "float"),
+    ("0x3c", "subgame_state", "int32_t"),
     ("0x40", "level_mode", "int32_t"),
     ("0x44", "level_mode_arg", "int32_t"),
     ("0x48", "base_subgame_rate", "float"),

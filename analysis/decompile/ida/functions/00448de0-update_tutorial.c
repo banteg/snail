@@ -2,8 +2,8 @@
 /* function: update_tutorial @ 0x448de0 */
 /* selector: update_tutorial */
 
-char *__thiscall sub_448DE0(char **this)
+TrackRowCell *__fastcall update_tutorial(TutorialController *controller)
 {
-  return get_track_grid_cell_at_world_position(*(this + 3), (float *)*(this + 3) + 978419);
+  return get_track_grid_cell_at_world_position((#26 *)controller->game, (Vec3 *)((char *)controller->game + 3913676));
 }
 

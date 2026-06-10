@@ -9,35 +9,35 @@ void __thiscall set_matrix_z_direction(TransformMatrix *transform, const Vec3 *d
   float y; // edx
   float v6; // eax
   float z; // ecx
-  Vec3 v8; // [esp+8h] [ebp-18h] BYREF
-  Vec3 v9; // [esp+14h] [ebp-Ch] BYREF
+  Vec3 vector; // [esp+8h] [ebp-18h] BYREF
+  Vec3 out; // [esp+14h] [ebp-Ch] BYREF
 
-  if ( normalize_vector_from_source(&v9, direction) != 0.0 )
+  if ( normalize_vector_from_source(&out, direction) != 0.0 )
   {
-    v3 = v9.x == 0.0;
-    x = v9.x;
-    y = v9.y;
-    transform->basis_forward.z = v9.z;
+    v3 = out.x == 0.0;
+    x = out.x;
+    y = out.y;
+    transform->basis_forward.z = out.z;
     transform->basis_forward.x = x;
     transform->basis_forward.y = y;
-    if ( v3 && v9.z == 0.0 )
+    if ( v3 && out.z == 0.0 )
     {
-      v8.x = 1.0;
-      v8.z = 0.0;
+      vector.x = 1.0;
+      vector.z = 0.0;
     }
     else
     {
-      v8.z = -v9.x;
-      v8.x = v9.z;
+      vector.z = -out.x;
+      vector.x = out.z;
     }
-    v8.y = 0.0;
-    normalize_vector(&v8);
-    v6 = v8.y;
-    z = v8.z;
-    transform->basis_right.x = v8.x;
+    vector.y = 0.0;
+    normalize_vector(&vector);
+    v6 = vector.y;
+    z = vector.z;
+    transform->basis_right.x = vector.x;
     transform->basis_right.y = v6;
     transform->basis_right.z = z;
-    cross_vectors((Vec3 *)&transform->basis_up, &v9, &v8);
+    cross_vectors((Vec3 *)&transform->basis_up, &out, &vector);
   }
 }
 

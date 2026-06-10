@@ -89,7 +89,7 @@ int32_t __thiscall initialize_dip_path_template_pair(
   int32_t arg3a; // [esp+58h] [ebp+8h]
   int32_t arg3b; // [esp+58h] [ebp+8h]
   float arg3c; // [esp+58h] [ebp+8h]
-  char *v87; // [esp+64h] [ebp+14h]
+  char *texture_path; // [esp+64h] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_CAGE2;
   self->is_mirrored_x = 0;
@@ -330,7 +330,7 @@ int32_t __thiscall initialize_dip_path_template_pair(
             v43->vertex_index_b = v41 + i * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_c = v41 + (i + 1) * (LOWORD(self->width_cells) + 1);
             v43->vertex_index_d = (i + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v87, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
             v43->u0 = v45;
             v43->v0 = arg3c;
             v43->u1 = arg2d;
@@ -345,7 +345,7 @@ int32_t __thiscall initialize_dip_path_template_pair(
             v43->vertex_index_b = i * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_c = (i + 1) * (LOWORD(self->width_cells) + 1) + v41 + 1;
             v43->vertex_index_d = v41 + (i + 1) * (LOWORD(self->width_cells) + 1);
-            v43->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+            v43->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
             v43->u0 = arg2d;
             v43->v0 = arg3c;
             v43->u1 = v45;

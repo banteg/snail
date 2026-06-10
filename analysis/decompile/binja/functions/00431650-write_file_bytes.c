@@ -33,7 +33,5 @@
 00431714        sub_48b3a7(eax_1)
 004316dd        char var_400[0x200]
 004316dd        sub_496946(&var_400, 0x200)
-004316ed        char (* var_514_1)[0x200] = &var_400
-004316ee        char (* var_518)[0x100] = &var_500
-004316f4        report_messagef("ERROR:Cannot save file : %s (from %s)\n")
+004316f4        report_messagef("ERROR:Cannot save file : %s (from %s)\n", &var_500, &var_400)
 00431734        return sub_48c18b(&var_200)

@@ -28,6 +28,6 @@ TrackRowCell *__thiscall get_track_grid_cell_at_world_position(Game *game, Vec3 
   {
     LODWORD(z) = 0;
   }
-  return (TrackRowCell *)&game->_pad_a878[672 * z + 3887696 + 84 * v2];
+  return (TrackRowCell *)&game->_pad_74622[672 * z + 3454118 + 84 * v2];
 }
 

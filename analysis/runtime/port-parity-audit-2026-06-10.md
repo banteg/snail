@@ -104,6 +104,14 @@ Finding 6 is evidence-only and remains an IDA typing follow-up.
   the port against the IDA export alone would "find" three false camera
   divergences (base x shake, lateral follow, lateral roll). Re-sync the IDA
   database's Player typing.
+- RESOLVED 2026-06-10: root cause was `analysis/headers/path_template_types.h`
+  carrying a stale Player tail (`slow_commentary_*` mid-struct, `_pad_44f`
+  4 bytes short) and a mis-ordered Game tail (`pause_gate` placed before the
+  `track_state_latch` cluster with a +0xa0000 pad typo that also unhooked the
+  `selected_level_record` cluster). Both headers are fixed, the stale `Player`
+  and `Game` types were force-replaced in the IDA database (IDA's
+  `parse_decls` silently keeps conflicting definitions), and all 664 tracked
+  exports were refreshed with health checks passing.
 
 ### 7. Mirror state does not flip the authored lane order in the port (high)
 

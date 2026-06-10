@@ -33,7 +33,11 @@
 0043a645        i_1 -= 1
 0043a646        *ecx_4 = eax_7->r
 0043a64b        ecx_4[1] = eax_7->g
-0043a651        ecx_4[2] = eax_7->b
+0043a64e        float b = eax_7->b
+0043a651        ecx_4[2].b = b.b
+0043a651        *(ecx_4 + 9) = b:1.b
+0043a651        *(ecx_4 + 0xa) = b:2.b
+0043a651        *(ecx_4 + 0xb) = b:3.b
 0043a657        ecx_4[3] = eax_7->a
 0043a65a        (esi - 0x20)->wobble_x = 0f
 0043a65d        struct Player* player = (esi - 0x20)->player

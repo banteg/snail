@@ -193,11 +193,19 @@
 004450fe        player->velocity.x = esp_1[0xf]
 00445104        esp_1[0x10] = fconvert.s(unimplemented  {fstp dword [esp+0x40], st0})
 00445104        unimplemented  {fstp dword [esp+0x40], st0}
+00445108        int32_t eax_15 = esp_1[0x10]
 0044510c        unimplemented  {fmul st0, dword [0x4974b8]}
-00445112        player->velocity.y = esp_1[0x10]
+00445112        player->velocity.y.b = eax_15.b
+00445112        player->velocity.y:1.b = eax_15:1.b
+00445112        player->velocity.y:2.b = eax_15:2.b
+00445112        player->velocity.y:3.b = eax_15:3.b
 00445115        esp_1[0x11] = fconvert.s(unimplemented  {fstp dword [esp+0x44], st0})
 00445115        unimplemented  {fstp dword [esp+0x44], st0}
-0044511d        player->velocity.z = esp_1[0x11]
+00445119        int32_t edx_8 = esp_1[0x11]
+0044511d        player->velocity.z.b = edx_8.b
+0044511d        player->velocity.z:1.b = edx_8:1.b
+0044511d        player->velocity.z:2.b = edx_8:2.b
+0044511d        player->velocity.z:3.b = edx_8:3.b
 00445122        begin_post_follow_carryover(player)
 0044512d        player->presentation.cutscene_ai.state = 0xa
 00445137        player->game->_pad_00[i_3 + 0x356479] = 1
@@ -287,16 +295,20 @@
 004452f4        *(esp_1 - 4) = 0x1b
 004452fb        play_sound_effect()
 00445306        *(&player->game->parcel_pool[0].state + i_4) = 4
+00445311        int32_t ebx_1
+00445311        ebx_1.b = player->presentation.cutscene_ai._pad_59[3]
+00445311        ebx_1:1.b = player->presentation.cutscene_ai._pad_59[4]
+00445311        ebx_1:2.b = player->presentation.cutscene_ai._pad_59[5]
+00445311        ebx_1:3.b = player->presentation.cutscene_ai._pad_59[6]
 00445317        struct Game* game = player->game
-0044531d        int32_t ebx_2 = player->presentation.cutscene_ai._pad_59[3].d + 1
-0044531e        player->presentation.cutscene_ai._pad_59[3] = ebx_2.b
-0044531e        player->presentation.cutscene_ai._pad_59[4] = ebx_2:1.b
-0044531e        player->presentation.cutscene_ai._pad_59[5] = ebx_2:2.b
-0044531e        player->presentation.cutscene_ai._pad_59[6] = ebx_2:3.b
+0044531e        player->presentation.cutscene_ai._pad_59[3] = (ebx_1 + 1).b
+0044531e        player->presentation.cutscene_ai._pad_59[4] = (ebx_1 + 1):1.b
+0044531e        player->presentation.cutscene_ai._pad_59[5] = (ebx_1 + 1):2.b
+0044531e        player->presentation.cutscene_ai._pad_59[6] = (ebx_1 + 1):3.b
 0044532b        if (game->level_mode == 0)
 00445333        int32_t eax_24 = game->__offset(0x35bb94).d
 00445339        *(esp_1 - 4) = game->__offset(0x1b01e0).d
-0044533a        *(esp_1 - 8) = ebx_2
+0044533a        *(esp_1 - 8) = ebx_1 + 1
 00445340        *(esp_1 - 0xc) = "%i/%i"
 00445345        *(esp_1 - 0x10) = eax_24 + 0x2cc
 00445346        sub_48b32c()
@@ -550,7 +562,11 @@
 004456fd        result = *(i_6 + game_2 + 0x35b814)
 00445710        int32_t eax_39
 00445710        if (result == 4 || result == 5)
-004457ab        int32_t eax_40 = player->_pad_3f0[0x14].d
+004457ab        int32_t eax_40
+004457ab        eax_40.b = player->_pad_3f0[0x14]
+004457ab        eax_40:1.b = player->_pad_3f0[0x15]
+004457ab        eax_40:2.b = player->_pad_3f0[0x16]
+004457ab        eax_40:3.b = player->_pad_3f0[0x17]
 004457b4        if (eax_40 s< 0xa)
 004457c0        if ((game_2->runtime_flags.b & 0x10) != 0 && game_2->level_mode != 3)
 004457c3        player->_pad_3f0[0x14] = (eax_40 + 1).b

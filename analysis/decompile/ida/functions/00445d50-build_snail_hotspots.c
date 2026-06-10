@@ -27,7 +27,7 @@ int __thiscall sub_445D50(int this)
     *v3 = 0.0;
     *(v3 - 1) = 0.0;
     *(v3 - 2) = 0.0;
-    v4 = get_or_create_texture_ref(&dword_4B7790, *v2, 0, 0);
+    v4 = get_or_create_texture_ref(&texture_list, *v2, 0, 0);
     v5 = v1[21];
     v6 = 0;
     if ( v5 <= 0 )

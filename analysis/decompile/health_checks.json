@@ -156,7 +156,7 @@
       "name": "bn_resurrect_fields_named",
       "artifact": "analysis/decompile/binja/functions/00441fa0-initialize_subgoldy_resurrect.c",
       "required_substrings": [
-        "flag84",
+        "resurrect_active",
         "resurrect_final_loss",
         "resurrect_progress",
         "resurrect_progress_step"
@@ -191,7 +191,7 @@
         "completion_handoff_active",
         "completion_handoff_timer",
         "completion_handoff_voice_gate",
-        "flag84"
+        "resurrect_active"
       ],
       "forbidden_substrings": [
         "_pad_78[0xc]",

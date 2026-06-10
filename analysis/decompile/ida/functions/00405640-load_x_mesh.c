@@ -44,7 +44,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
   int v41; // [esp+14h] [ebp-230h]
   char *v42; // [esp+18h] [ebp-22Ch] BYREF
   int v43; // [esp+1Ch] [ebp-228h]
-  char *v44; // [esp+20h] [ebp-224h] BYREF
+  char *cursor; // [esp+20h] [ebp-224h] BYREF
   _BYTE *v45; // [esp+24h] [ebp-220h]
   char *v46; // [esp+28h] [ebp-21Ch] BYREF
   char *v47; // [esp+2Ch] [ebp-218h] BYREF
@@ -54,7 +54,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
   _BYTE *tracked_memory; // [esp+3Ch] [ebp-208h]
   int v52; // [esp+40h] [ebp-204h] BYREF
   char Buffer[256]; // [esp+44h] [ebp-200h] BYREF
-  char v54[2]; // [esp+144h] [ebp-100h] BYREF
+  char texture_path[2]; // [esp+144h] [ebp-100h] BYREF
   char v55; // [esp+146h] [ebp-FEh] BYREF
 
   archive_data_base = (char *)get_archive_data_base();
@@ -101,14 +101,14 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     report_errorf("Mesh vertices count does not match vertext duplicate vertices count in %s", Buffer);
   parse_next_signed_int(&v47);
   v12 = find_case_insensitive_substring(aMeshtexturecoo, v5);
-  v44 = v12;
+  cursor = v12;
   if ( !v12 )
   {
     report_errorf("No 'Mesh 'Data in %s", Buffer);
-    v12 = v44;
+    v12 = cursor;
   }
-  v44 = find_case_insensitive_substring(asc_4A1568, v12);
-  if ( v11 != parse_next_signed_int(&v44) )
+  cursor = find_case_insensitive_substring(asc_4A1568, v12);
+  if ( v11 != parse_next_signed_int(&cursor) )
     report_errorf("Mesh texture coords number does not match mesh vertext count in %s", Buffer);
   v10 = (__int16)v10;
   v48 = (__int16)v10;
@@ -123,8 +123,8 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     v43 = v11;
     do
     {
-      *v15 = parse_next_float32(&v44);
-      v15[1] = parse_next_float32(&v44);
+      *v15 = parse_next_float32(&cursor);
+      v15[1] = parse_next_float32(&cursor);
       v15 += 2;
       --v43;
     }
@@ -176,11 +176,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
       mesh->facequads[v17].v0 = *(float *)(v14 + 8 * v19 + 4);
       mesh->facequads[v17].u3 = *(float *)(v14 + 8 * v20);
       mesh->facequads[v17++].v3 = *(float *)(v14 + 8 * v20 + 4);
-      mesh->facequads[v17 - 1].texture_ref = get_or_create_texture_ref(
-                                               (TextureRefList *)dword_4B7790,
-                                               aXSnailTurboTga,
-                                               0,
-                                               0);
+      mesh->facequads[v17 - 1].texture_ref = get_or_create_texture_ref(&texture_list, ::texture_path, 0, 0);
       v21 = v50;
       texture_ref = mesh->facequads[v17 - 1].texture_ref;
       flags = texture_ref->flags;
@@ -221,7 +217,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
       if ( v30 )
       {
         v27 = find_case_insensitive_substring(asc_4A1314, v30) + 1;
-        qmemcpy(v54, "X/", sizeof(v54));
+        qmemcpy(texture_path, "X/", sizeof(texture_path));
         v31 = &v55;
         for ( i = *v27; i != 46; ++v27 )
         {
@@ -235,7 +231,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
         *v33++ = 103;
         *v33 = 97;
         v33[1] = 0;
-        v34 = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v54, 0, 0);
+        v34 = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
         *v29 = (int *)v34;
         v35 = v34->flags;
         BYTE1(v35) = BYTE1(v34->flags) | 0x10;
@@ -251,7 +247,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
       {
         if ( (options_flags & 2) == 0 )
           report_warningf("No TextureFilename for Material %i in %s", v28, Buffer);
-        *v29 = (int *)get_or_create_texture_ref((TextureRefList *)dword_4B7790, aSpritesDebugTg_0, 0, 0);
+        *v29 = (int *)get_or_create_texture_ref(&texture_list, aSpritesDebugTg_0, 0, 0);
         v27 = v42;
       }
       ++v28;

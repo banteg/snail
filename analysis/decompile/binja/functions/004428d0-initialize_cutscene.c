@@ -37,7 +37,10 @@
 00442935        long double temp1_1 = fconvert.t(1f)
 00442935        x87_r7_4 - temp1_1
 00442940        if ((((x87_r7_4 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_4, temp1_1) ? 1 : 0) << 0xa | (x87_r7_4 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00442942        owner_player_3->cutscene_pitch_cycle = 0f
+00442942        owner_player_3->cutscene_pitch_cycle.b = 0
+00442942        owner_player_3->cutscene_pitch_cycle:1.b = 0
+00442942        owner_player_3->cutscene_pitch_cycle:2.b = 0
+00442942        owner_player_3->cutscene_pitch_cycle:3.b = 0
 00442957        struct TransformMatrix* eax_2 = &presentation_2->owner_player->live_matrix
 00442960        __builtin_memcpy(&var_140, eax_2, 0x40)
 0044296d        __builtin_memcpy(&to, eax_2, 0x40)
@@ -60,7 +63,11 @@
 00442a45        float alpha
 00442a45        __builtin_strncpy(&alpha, "333?", 4)
 00442a4a        presentation_2->live_matrix.position.y = owner_player->cached_camera_target_world.y
-00442a50        presentation_2->live_matrix.position.z = owner_player->cached_camera_target_world.z
+00442a4d        float z = owner_player->cached_camera_target_world.z
+00442a50        presentation_2->live_matrix.position.z.b = z.b
+00442a50        presentation_2->live_matrix.position.z:1.b = z:1.b
+00442a50        presentation_2->live_matrix.position.z:2.b = z:2.b
+00442a50        presentation_2->live_matrix.position.z:3.b = z:3.b
 00442a58        __builtin_memcpy(&var_140, &presentation_2->live_matrix, 0x40)
 00442a68        struct PlayerPresentationController* presentation_1 = linear_interpolate_matrix(&presentation_2->live_matrix, &var_140, &presentation_2->cached_cutscene_matrix, alpha)
 00442a74        long double x87_r7_9 = fconvert.t(presentation_1->live_matrix.basis_up.y)
@@ -69,9 +76,9 @@
 00442a7f        presentation_1->live_matrix.position.x = var_140.position.x
 00442a85        presentation_1->live_matrix.position.y = var_140.position.y
 00442a8c        presentation_1->live_matrix.position.z = var_140.position.z
-00442a8f        float eax_10
-00442a8f        eax_10.w = (x87_r7_9 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp2_1) ? 1 : 0) << 0xa | (x87_r7_9 == temp2_1 ? 1 : 0) << 0xe
-00442a94        if ((eax_10:1.b & 0x41) == 0)
+00442a8f        float eax_9
+00442a8f        eax_9.w = (x87_r7_9 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp2_1) ? 1 : 0) << 0xa | (x87_r7_9 == temp2_1 ? 1 : 0) << 0xe
+00442a94        if ((eax_9:1.b & 0x41) == 0)
 00442a9e        float* var_170_3 = &presentation_1->live_matrix.position.x
 00442aaa        rotate_matrix_world_y(&presentation_2->live_matrix, fconvert.s((fconvert.t(presentation_1->live_matrix.position.x) - fconvert.t(presentation_1->cached_cutscene_matrix.position.x)) * fconvert.t(0.800000012f)))
 00442ab5        long double x87_r7_14 = fconvert.t(presentation_1->wobble.roll_phase_step) + fconvert.t(presentation_1->wobble.roll_phase)
@@ -79,16 +86,16 @@
 00442abb        x87_r7_14 - temp4_1
 00442ac1        presentation_1->wobble.roll_phase = fconvert.s(x87_r7_14)
 00442ac1        bool c1_1 = unimplemented  {fst dword [ebx+0x15bc], st0}
-00442ac7        eax_10.w = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe | 0x3800
-00442acc        if ((eax_10:1.b & 0x41) == 0)
+00442ac7        eax_9.w = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe | 0x3800
+00442acc        if ((eax_9:1.b & 0x41) == 0)
 00442ad4        presentation_1->wobble.roll_phase = fconvert.s(x87_r7_14 - fconvert.t(1f))
 00442ae4        long double x87_r7_18 = fconvert.t(presentation_1->wobble.lift_phase_step) + fconvert.t(presentation_1->wobble.lift_phase)
 00442aea        long double temp5_1 = fconvert.t(1f)
 00442aea        x87_r7_18 - temp5_1
 00442af0        presentation_1->wobble.lift_phase = fconvert.s(x87_r7_18)
 00442af0        bool c1_2 = unimplemented  {fst dword [ebx+0x15c4], st0}
-00442af6        eax_10.w = (x87_r7_18 < temp5_1 ? 1 : 0) << 8 | (c1_2 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_18, temp5_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp5_1 ? 1 : 0) << 0xe | 0x3800
-00442afb        if ((eax_10:1.b & 0x41) == 0)
+00442af6        eax_9.w = (x87_r7_18 < temp5_1 ? 1 : 0) << 8 | (c1_2 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_18, temp5_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp5_1 ? 1 : 0) << 0xe | 0x3800
+00442afb        if ((eax_9:1.b & 0x41) == 0)
 00442b03        presentation_1->wobble.lift_phase = fconvert.s(x87_r7_18 - fconvert.t(1f))
 00442b1b        var_40
 00442b1b        __builtin_memcpy(&var_40, &presentation_2->live_matrix, 0x40)
@@ -127,9 +134,9 @@
 00442c66        presentation_1->invincible_shell._pad_90[5] = 0
 00442c66        presentation_1->invincible_shell._pad_90[6] = 0x80
 00442c66        presentation_1->invincible_shell._pad_90[7] = 0x3f
-00442c70        int16_t eax_11
-00442c70        eax_11.b = presentation_1->invincible_shell._pad_90[0xc]
-00442c78        if (eax_11.b == 0)
+00442c70        int16_t eax_10
+00442c70        eax_10.b = presentation_1->invincible_shell._pad_90[0xc]
+00442c78        if (eax_10.b == 0)
 00442d65        __builtin_memcpy(&presentation_1->jetpack_channel.live_matrix, &presentation_2->live_matrix, 0x40)
 00442d74        __builtin_memcpy(&presentation_1->weapon_channels[0].live_matrix, &presentation_2->live_matrix, 0x40)
 00442d83        __builtin_memcpy(&presentation_1->weapon_channels[2].live_matrix, &presentation_2->live_matrix, 0x40)
@@ -151,15 +158,19 @@
 00442dbc        __builtin_memcpy(&presentation_1->snail_hotspot_source_matrix_b, &owner_player_1->live_matrix, 0x40)
 00442dc6        presentation_1->snail_hotspot_source_matrix_b.position.x = owner_player_1->cached_camera_target_world.x
 00442dcf        presentation_1->snail_hotspot_source_matrix_b.position.y = owner_player_1->cached_camera_target_world.y
-00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z = owner_player_1->cached_camera_target_world.z
+00442dd2        int32_t z_1 = owner_player_1->cached_camera_target_world.z
+00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z.b = z_1.b
+00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z:1.b = z_1:1.b
+00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z:2.b = z_1:2.b
+00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z:3.b = z_1:3.b
 00442dda        update_snail_skin(presentation_1)
 00442de7        esp = &var_164
 00442dea        if (presentation_1->cutscene_ai.state != 0)
 00442df2        update_cutscene(&presentation_1->cutscene_ai)
 00442e01        if (presentation_1->anim_manager.queued_animation_count == 0)
-00442e09        int32_t eax_15
-00442e09        eax_15.b = presentation_1->owner_player->control_override_active
-00442e11        if (eax_15.b == 0)
+00442e09        int32_t eax_13
+00442e09        eax_13.b = presentation_1->owner_player->control_override_active
+00442e11        if (eax_13.b == 0)
 00442e1b        dispatch_cutscene_animation(presentation_1, 1, 0, 0xffffffff)
 00442e1b        esp = &var_164
 00442e2c        result = update_jet_particles(&presentation_1->owner_player->jetpack_gauge)

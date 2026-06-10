@@ -53,11 +53,11 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
   float v52; // [esp+20h] [ebp-48h]
   int v53; // [esp+20h] [ebp-48h]
   ObjectFaceQuad *facequads; // [esp+24h] [ebp-44h]
-  float v55; // [esp+28h] [ebp-40h]
-  float v56; // [esp+28h] [ebp-40h]
-  float v57; // [esp+28h] [ebp-40h]
-  Vec3 *v58; // [esp+28h] [ebp-40h]
-  signed int v59; // [esp+28h] [ebp-40h]
+  float angleb; // [esp+28h] [ebp-40h]
+  float anglec; // [esp+28h] [ebp-40h]
+  float angled; // [esp+28h] [ebp-40h]
+  Vec3 *angle; // [esp+28h] [ebp-40h]
+  signed int anglea; // [esp+28h] [ebp-40h]
   float v60; // [esp+2Ch] [ebp-3Ch]
   float v61; // [esp+2Ch] [ebp-3Ch]
   float v62; // [esp+30h] [ebp-38h]
@@ -125,14 +125,14 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
     self->primary_samples[v6].lateral_scale = 1.0;
     set_matrix_identity(&self->primary_samples[v6].transform);
     self->primary_samples[v6].transform.position.x = self->primary_samples[v6].center_x;
-    v55 = (float)arg2a;
+    angleb = (float)arg2a;
     self->primary_samples[v6].transform.position.y = 0.0;
-    self->primary_samples[v6].transform.position.z = v55;
+    self->primary_samples[v6].transform.position.z = angleb;
     self->primary_samples[v6].delta_length = 1.0;
     set_matrix_identity(&self->secondary_samples[v6].transform);
     self->secondary_samples[v6].transform.position.x = self->primary_samples[v6].center_x;
     self->secondary_samples[v6].transform.position.y = 0.49000001;
-    self->secondary_samples[v6].transform.position.z = v55;
+    self->secondary_samples[v6].transform.position.z = angleb;
     self->secondary_samples[v6++].delta_length = 1.0;
     ++arg2a;
   }
@@ -147,15 +147,15 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
     self->primary_samples[v7].special_scalar = 0.0;
     self->primary_samples[v7].lateral_scale = 1.0;
     set_matrix_identity(&self->primary_samples[v7].transform);
-    v56 = (float)arg2b;
+    anglec = (float)arg2b;
     self->primary_samples[v7].transform.position.x = self->primary_samples[v7].center_x;
     self->primary_samples[v7].transform.position.y = 0.0;
-    self->primary_samples[v7].transform.position.z = v56;
+    self->primary_samples[v7].transform.position.z = anglec;
     self->primary_samples[v7].delta_length = 1.0;
     set_matrix_identity(&self->secondary_samples[v7].transform);
     self->secondary_samples[v7].transform.position.x = self->primary_samples[v7].center_x;
     self->secondary_samples[v7].transform.position.y = 0.49000001;
-    self->secondary_samples[v7].transform.position.z = v56;
+    self->secondary_samples[v7].transform.position.z = anglec;
     self->secondary_samples[v7++].delta_length = 1.0;
     ++arg2b;
   }
@@ -165,14 +165,14 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
   do
   {
     v44 = (double)arg2c * 0.24166098;
-    v57 = (1.0 - cosine(v44)) * 0.5 * v52 * 1.5707964;
+    angled = (1.0 - cosine(v44)) * 0.5 * v52 * 1.5707964;
     self->primary_samples[v8].center_x = v47;
     self->primary_samples[v8].rotation_scalar_98 = 0.0;
     self->primary_samples[v8].rotation_scalar_94 = 0.0;
     self->primary_samples[v8].special_scalar = 0.0;
     self->primary_samples[v8].lateral_scale = 1.0;
     set_matrix_identity(&self->primary_samples[v8].transform);
-    v9 = sine(v57);
+    v9 = sine(angled);
     self->primary_samples[v8].transform.position.x = v9 + v9 + v47;
     self->primary_samples[v8].transform.position.z = (float)(v45 + arg2c);
     self->primary_samples[v8].transform.position.y = 0.0;
@@ -195,7 +195,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
       (Vec3 *)&self->primary_samples[v8],
       (Vec3 *)&self->primary_samples[v8].transform.basis_up,
       (Vec3 *)&self->primary_samples[v8].transform.basis_forward);
-    rotate_matrix_world_z(&self->primary_samples[v8].transform, v57);
+    rotate_matrix_world_z(&self->primary_samples[v8].transform, angled);
     qmemcpy(&self->secondary_samples[v8], &self->primary_samples[v8], 0x40u);
     primary_samples = self->primary_samples;
     v15 = primary_samples[v8].transform.basis_up.x * 0.49000001;
@@ -256,7 +256,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
   vertices = strip_mesh->vertices;
   facequads = strip_mesh->facequads;
   v30 = 0;
-  v58 = vertices;
+  angle = vertices;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
     v31 = 0;
@@ -271,14 +271,14 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
         v35 = &self->primary_samples[v31];
         if ( v30 == self->segment_count )
         {
-          vertices = v58;
+          vertices = angle;
           v79 = v34 * v35[-1].transform.basis_right.x;
           v80 = v34 * v35[-1].transform.basis_right.y;
           v38 = v34 * v35[-1].transform.basis_right.z;
           v81 = v35[-1].transform.position.z + 1.0;
           v61 = v35[-1].transform.position.x + v79;
           v63 = v35[-1].transform.position.y + v80;
-          v36 = &v58[v33 + v30 * (width_cells + 1)].x;
+          v36 = &angle[v33 + v30 * (width_cells + 1)].x;
           *v36 = v61;
           v65 = v81 + v38;
           v36[1] = v63;
@@ -317,7 +317,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
       do
       {
         v41 = 0;
-        v59 = v40 + 1;
+        anglea = v40 + 1;
         v53 = 0;
         arg2f = (double)arg2e * 0.125;
         v48 = (double)(v40 + 1) * 0.125;
@@ -331,7 +331,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
             v42->vertex_index_b = v40 + j * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_c = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
             v42->u0 = v48;
             v42->v0 = v51;
             v42->u1 = arg2f;
@@ -346,7 +346,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
             v42->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_d = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref(&texture_list, texture_a, 0, 0);
             v42->u0 = arg2f;
             v42->v0 = v51;
             v42->u1 = v48;
@@ -361,9 +361,9 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
           v41 = v53;
         }
         ++v40;
-        arg2e = v59;
+        arg2e = anglea;
       }
-      while ( v59 < (signed int)self->width_cells );
+      while ( anglea < (signed int)self->width_cells );
     }
   }
   return finalize_path_template(self);

@@ -669,8 +669,8 @@ typedef struct SelectedLevelRecord {
 typedef struct Game {
     uint8_t _pad_00[0x34];
     float challenge_difficulty_scalar;
-    float track_center_x;
-    uint8_t _pad_3c[0x4];
+    float subgame_rate;
+    int32_t subgame_state;
     int32_t level_mode;
     int32_t level_mode_arg;
     float base_subgame_rate;
@@ -678,15 +678,15 @@ typedef struct Game {
     int32_t first_block_row_count;
     int32_t runtime_row_count;
     int32_t completion_row_start;
-    uint8_t _pad_5c[0x745c5];
-    uint8_t pause_gate;
-    uint8_t _pad_74622[0x36232];
+    uint8_t _pad_5c[0xa7f8];
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
     TutorialController tutorial;
     uint8_t _pad_a868[0xc];
     int32_t level_segment_count;
-    uint8_t _pad_a878[0xfe7d58];
+    uint8_t _pad_a878[0x69da9];
+    uint8_t pause_gate;
+    uint8_t _pad_74622[0xf7dfae];
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
@@ -829,9 +829,7 @@ typedef struct Player {
     uint8_t attachment_exit_gate_a;
     uint8_t attachment_exit_gate_b;
     uint8_t completion_handoff_voice_gate;
-    uint8_t _pad_44f[0x22dd];
-    float slow_commentary_timer;
-    float slow_commentary_step;
+    uint8_t _pad_44f[0x22e1];
     float movement_fire_progress;
     float movement_fire_progress_step;
     uint8_t _pad_2738[0x4];
@@ -848,6 +846,8 @@ typedef struct Player {
     PlayerPresentationController presentation;
     int32_t visible_life_stock;
     SquidgeState squidge;
+    float slow_commentary_timer;
+    float slow_commentary_step;
 } Player;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);

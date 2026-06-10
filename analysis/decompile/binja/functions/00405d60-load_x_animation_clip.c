@@ -59,14 +59,12 @@
 00405f22        float var_18c
 00405f22        int32_t edi_2
 00405f22        if (eax_14 == 0)
-00406004        int32_t var_1a8_12 = edi
-0040600a        report_errorf("Did not find Anim:%s in _Animation.txt. Using defaults")
+0040600a        report_errorf("Did not find Anim:%s in _Animation.txt. Using defaults", edi)
 00406016        var_18c = 0.0166666675f
 0040601e        edi_2 = eax_8 | 1
 00405f2e        char* eax_15 = find_case_insensitive_substring("AnimEnd:", eax_14)
 00405f3a        if (eax_15 == 0)
-00405f3c        int32_t var_1a8_6 = edi
-00405f42        report_errorf("Cannot find AnimEnd: for %s \n")
+00405f42        report_errorf("Cannot find AnimEnd: for %s \n", edi)
 00405f54        return 0
 00405f57        char ecx_11 = *eax_15
 00405f63        *eax_15 = 0

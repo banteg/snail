@@ -181,7 +181,7 @@ int __thiscall sub_4246A0(int this, _BYTE *a2, float a3)
     v28 = v33 + 2;
     do
     {
-      *(_DWORD *)(v28 + 10) = get_or_create_texture_ref(&dword_4B7790, a2, 0, 0);
+      *(_DWORD *)(v28 + 10) = get_or_create_texture_ref(&texture_list, a2, 0, 0);
       *(_WORD *)v28 = 4 * v30 + 5;
       *(_WORD *)(v28 + 2) = 4 * v30 + 4;
       *(_WORD *)(v28 + 4) = 4 * v30;
@@ -194,7 +194,7 @@ int __thiscall sub_4246A0(int this, _BYTE *a2, float a3)
       *(_DWORD *)(v28 + 26) = 1065353216;
       *(_DWORD *)(v28 + 30) = 1056964608;
       *(_DWORD *)(v28 + 34) = 1065353216;
-      *(_DWORD *)(v28 + 58) = get_or_create_texture_ref(&dword_4B7790, a2, 0, 0);
+      *(_DWORD *)(v28 + 58) = get_or_create_texture_ref(&texture_list, a2, 0, 0);
       *(_WORD *)(v28 + 48) = 4 * v30 + 6;
       *(_WORD *)(v28 + 50) = 4 * v30 + 7;
       *(_WORD *)(v28 + 52) = 4 * v30 + 3;

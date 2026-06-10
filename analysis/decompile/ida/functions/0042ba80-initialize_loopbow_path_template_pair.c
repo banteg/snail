@@ -48,8 +48,8 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   int v42; // edi
   int v43; // ecx
   ObjectFaceQuad *v44; // ebx
-  float v46; // [esp+0h] [ebp-B0h]
-  float v47; // [esp+0h] [ebp-B0h]
+  float angle; // [esp+0h] [ebp-B0h]
+  float anglea; // [esp+0h] [ebp-B0h]
   int v48; // [esp+14h] [ebp-9Ch]
   int v49; // [esp+14h] [ebp-9Ch]
   int v50; // [esp+14h] [ebp-9Ch]
@@ -95,9 +95,9 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   float v90; // [esp+60h] [ebp-50h]
   float v91; // [esp+64h] [ebp-4Ch]
   float v92; // [esp+68h] [ebp-48h]
-  TransformMatrix v93; // [esp+70h] [ebp-40h] BYREF
+  TransformMatrix transform; // [esp+70h] [ebp-40h] BYREF
   float arg2a; // [esp+B4h] [ebp+4h]
-  char *v95; // [esp+C4h] [ebp+14h]
+  char *texture_path; // [esp+C4h] [ebp+14h]
 
   v6 = 0;
   self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
@@ -188,8 +188,8 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
                                           + self->primary_samples->center_x;
       p_center_x = &self->primary_samples[v12].center_x;
       v54 = v78 * 0.5;
-      v46 = v54 + 4.712389;
-      *p_center_x = sine(v46) * v70 + *p_center_x;
+      angle = v54 + 4.712389;
+      *p_center_x = sine(angle) * v70 + *p_center_x;
       self->primary_samples[v12].rotation_scalar_98 = 0.0;
       self->primary_samples[v12].rotation_scalar_94 = 0.0;
       self->primary_samples[v12].special_scalar = 0.0;
@@ -226,15 +226,15 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
         (Vec3 *)&self->secondary_samples[v12].transform.basis_forward,
         (Vec3 *)&self->secondary_samples[v12],
         (Vec3 *)&self->secondary_samples[v12].transform.basis_up);
-      set_matrix_identity(&v93);
+      set_matrix_identity(&transform);
       v17 = v54;
       v55 = sine(v54);
-      v47 = sine(v17) * v55 * 0.52359879;
-      rotate_matrix_world_y(&v93, v47);
+      anglea = sine(v17) * v55 * 0.52359879;
+      rotate_matrix_world_y(&transform, anglea);
       self->primary_samples[v12].transform.position.z = self->primary_samples[v12].transform.position.z - 7.0;
       self->secondary_samples[v12].transform.position.z = self->secondary_samples[v12].transform.position.z - 7.0;
-      sub_44D1D0(&self->primary_samples[v12], &v93.basis_right.x);
-      sub_44D1D0(&self->secondary_samples[v12], &v93.basis_right.x);
+      sub_44D1D0(&self->primary_samples[v12], &transform.basis_right.x);
+      sub_44D1D0(&self->secondary_samples[v12], &transform.basis_right.x);
       self->primary_samples[v12].transform.position.z = self->primary_samples[v12].transform.position.z + 7.0;
       self->secondary_samples[v12].transform.position.z = self->secondary_samples[v12].transform.position.z + 7.0;
       qmemcpy(&self->secondary_samples[v12], &self->primary_samples[v12], 0x40u);
@@ -376,7 +376,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
               v44->vertex_index_b = v6 + v42 * (LOWORD(self->width_cells) + 1);
               v44->vertex_index_c = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
               v44->vertex_index_d = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
+              v44->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
               v44->u0 = v53;
               v44->v0 = v73;
               v44->u1 = v71;
@@ -391,7 +391,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
               v44->vertex_index_b = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v44->vertex_index_c = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v44->vertex_index_d = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
-              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              v44->texture_ref = get_or_create_texture_ref(&texture_list, texture_b, 0, 0);
               v44->u0 = v71;
               v44->v0 = v73;
               v44->u1 = v53;

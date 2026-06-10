@@ -58,7 +58,7 @@
 00404e26        case 3
 00404e26        unhide_border_init(controller_1->widget_e)
 00404e2b        int32_t bonus_enabled = controller_1->bonus_enabled
-00404e2e        controller_1->gate_18 = 0
+00404e2e        controller_1->completion_fast_forward_gate = 0
 00404e33        controller_1->state = 4
 00404e3a        if (bonus_enabled == 0)
 00404e3a        goto label_404e74

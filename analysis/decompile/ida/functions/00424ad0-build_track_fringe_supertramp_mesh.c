@@ -150,7 +150,7 @@ int __thiscall sub_424AD0(_DWORD *this, _BYTE *a2)
     v23 = v7 + 2;
     while ( 1 )
     {
-      v24 = get_or_create_texture_ref(&dword_4B7790, a2, 0, 0);
+      v24 = get_or_create_texture_ref(&texture_list, a2, 0, 0);
       v25 = 4 * v22 + 4;
       *(_DWORD *)(v23 + 10) = v24;
       v26 = 4 * v22;
@@ -166,7 +166,7 @@ int __thiscall sub_424AD0(_DWORD *this, _BYTE *a2)
       *(_DWORD *)(v23 + 26) = 0;
       *(_DWORD *)(v23 + 30) = 1056964608;
       *(_DWORD *)(v23 + 34) = 0;
-      *(_DWORD *)(v23 + 58) = get_or_create_texture_ref(&dword_4B7790, a2, 0, 0);
+      *(_DWORD *)(v23 + 58) = get_or_create_texture_ref(&texture_list, a2, 0, 0);
       *(_WORD *)(v23 + 48) = v26 + 7;
       *(_WORD *)(v23 + 50) = v26 + 6;
       *(_WORD *)(v23 + 52) = v26 + 2;
@@ -229,7 +229,7 @@ int __thiscall sub_424AD0(_DWORD *this, _BYTE *a2)
   *v40 = *v41;
   v40[1] = v41[1];
   v40[2] = v41[2];
-  *(_DWORD *)(96 * *(this + 17) + v7 + 12) = get_or_create_texture_ref(&dword_4B7790, a2, 0, 0);
+  *(_DWORD *)(96 * *(this + 17) + v7 + 12) = get_or_create_texture_ref(&texture_list, a2, 0, 0);
   *(_WORD *)(96 * *(this + 17) + v7 + 2) = 4 * *((_WORD *)this + 34) + 1;
   *(_WORD *)(96 * *(this + 17) + v7 + 4) = 4 * *((_WORD *)this + 34) + 3;
   *(_WORD *)(96 * *(this + 17) + v7 + 6) = 4 * *((_WORD *)this + 34) + 5;

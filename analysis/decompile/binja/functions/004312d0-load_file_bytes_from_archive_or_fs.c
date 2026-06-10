@@ -57,9 +57,7 @@
 00431353        if (eax_2 == 0)
 00431363        char var_200[0x200]
 00431363        sub_496946(&var_200, 0x200)
-0043136c        char (* var_220)[0x200] = &var_200
-0043136d        char* var_224 = arg1
-00431373        report_messagef("WARNING:Cannot find file : %s (from %s)\n")
+00431373        report_messagef("WARNING:Cannot find file : %s (from %s)\n", arg1, &var_200)
 00431387        return 0
 004314be        void* eax_20 = get_stream_length_preserve_position(eax_2)
 004314c3        char* ebx_4 = arg2

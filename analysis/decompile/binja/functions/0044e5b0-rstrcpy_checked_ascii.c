@@ -12,8 +12,7 @@
 0044e5c0        *edi = i
 0044e5c2        i = *esi
 0044e5d1        if (sx.d(i) s> 0x80 || i s< 0)
-0044e5d3        char* var_c_1 = esi
-0044e5d9        report_errorf("Dodgy Rstrcpy %s")
+0044e5d9        report_errorf("Dodgy Rstrcpy %s", esi)
 0044e5e1        i = esi[1]
 0044e5e4        edi = &edi[1]
 0044e5e5        esi = &esi[1]

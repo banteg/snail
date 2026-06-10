@@ -37,10 +37,20 @@
 0043d9a9        *(edx_7 + 8) = 0
 0043d989        *(edx_3 + 0x5ac) = esi + 0x355e64
 0043d98b        *(esi + 0x355e6c) = 0
+0043d98b        *(esi + 0x355e6d) = 0
+0043d98b        *(esi + 0x355e6e) = 0
+0043d98b        *(esi + 0x355e6f) = 0
 0043d990        *(*(edx_3 + 0x5ac) + 0xc) = 0
-0043d9af        int32_t eax_12
-0043d9af        eax_12:1.b = (*(esi + 0x355e68)):1.b | 2
-0043d9b2        *(esi + 0x355e68) = eax_12
+0043d9ac        int32_t eax_12
+0043d9ac        eax_12.b = *(esi + 0x355e68)
+0043d9ac        eax_12:1.b = *(esi + 0x355e69)
+0043d9ac        eax_12:2.b = *(esi + 0x355e6a)
+0043d9ac        eax_12:3.b = *(esi + 0x355e6b)
+0043d9af        eax_12:1.b |= 2
+0043d9b2        *(esi + 0x355e68) = eax_12.b
+0043d9b2        *(esi + 0x355e69) = eax_12:1.b
+0043d9b2        *(esi + 0x355e6a) = eax_12:2.b
+0043d9b2        *(esi + 0x355e6b) = eax_12:3.b
 0043d969        report_errorf("List ADD")
 0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->player_slot, 0x7c, 0xffffffff, 0xffffffff)
 0043d9d0        *(esi + 0x355ec8) = eax_14

@@ -2,18 +2,18 @@
 /* function: update_tip_manager @ 0x448d80 */
 /* selector: update_tip_manager */
 
-void __thiscall update_tip_manager(_DWORD *this)
+void __fastcall update_tip_manager(TipManager *manager)
 {
-  _DWORD *v1; // esi
+  TipSlot *slots; // esi
   int v2; // edi
 
-  v1 = this + 14;
+  slots = manager->slots;
   v2 = 3;
   do
   {
-    if ( *v1 == 1 )
-      update_tip((int)v1);
-    v1 += 8;
+    if ( slots->active == 1 )
+      update_tip(slots);
+    ++slots;
     --v2;
   }
   while ( v2 );

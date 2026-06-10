@@ -60,9 +60,7 @@
 00436093        var_24 = 0
 004360a2        *(arg1 + 0x58) = *(arg1 + 0x54) - *(arg1 + 0x1abf1c)
 004360ad        if (*(arg1 + 0x54) s>= 0xc1c)
-004360b5        int32_t var_58_5 = 0xc1c
-004360ba        void* var_5c_2 = &arg1[0x1b0150]
-004360c0        report_errorf("Track (%s) too long, Maximum Length %i")
+004360c0        report_errorf("Track (%s) too long, Maximum Length %i", &arg1[0x1b0150], 0xc1c)
 00435fbc        if (eax_11 == 3)
 00435fc8        *(arg1 + 0x50) = *(arg1 + 0x1a7cfc)
 00435fd9        int32_t i_6 = 0x10
@@ -166,11 +164,11 @@
 00436236        if (*(i_11 + 0x40) != 1)
 00436254        top_1 = top - 1
 00436254        unimplemented  {fild st0, dword [ebp+0xa874]}
-0043625a        char* var_58_7 = "Segtra"
+0043625a        char* var_58_6 = "Segtra"
 00436238        top_1 = top - 1
 00436238        unimplemented  {fld st0, dword [ebp+0x34]}
 0043623b        unimplemented  {fmul st0, dword [0x49726c]}
-00436241        char* var_58_6 = "Segdif"
+00436241        char* var_58_5 = "Segdif"
 00436246        unimplemented  {fadd dword [0x497258]}
 0043624c        unimplemented  {fimul st0, dword [ebp+0xa874]}
 0043625f        char* i_9 = i_7
@@ -337,7 +335,7 @@
 00436ec0        label_436ec0:
 00436ec0        int32_t* edx_58
 00436ec0        edx_58.b = *(j_2 + &i_10[ebp_1 << 8] + 0x14)
-00436ec3        int32_t var_58_36 = j_2[4]
+00436ec3        int32_t var_58_35 = j_2[4]
 00436ed4        int32_t var_5c_5 = sx.d(normalize_segment_glyph_for_track_flags(arg1, edx_58.b, j_1, 1))
 00436ed5        char* var_60_4 = "TrackError:%c in Segment %s\n"
 0043670c        int32_t edx_33
@@ -610,7 +608,7 @@
 00436fce        float var_64_3 = *eax_112
 00436fd3        int32_t var_60_5 = eax_112[1]
 00436fdc        int32_t var_5c_6 = eax_112[2]
-00436fdf        int32_t var_58_38 = eax_112[3]
+00436fdf        int32_t var_58_37 = eax_112[3]
 00436fe9        eax_74, x87control_1 = set_object_color(*(ebx_5 + 0x5ccb9c))
 00436f12        unimplemented  {fild st0, dword [esp+0x24]}
 00436f16        unimplemented  {fsub st0, dword [0x497210]}

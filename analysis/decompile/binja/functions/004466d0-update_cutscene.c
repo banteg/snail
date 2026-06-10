@@ -70,7 +70,11 @@
 00446b9d        presentation_2->invincible_shell._pad_90[0xa] = 0x88
 00446b9d        presentation_2->invincible_shell._pad_90[0xb] = 0x3c
 00446ba7        struct PlayerPresentationController* presentation_3 = cutscene_ai->presentation
-00446baa        int32_t ecx_23 = presentation_3->invincible_shell._pad_90[8].d
+00446baa        int32_t ecx_23
+00446baa        ecx_23.b = presentation_3->invincible_shell._pad_90[8]
+00446baa        ecx_23:1.b = presentation_3->invincible_shell._pad_90[9]
+00446baa        ecx_23:2.b = presentation_3->invincible_shell._pad_90[0xa]
+00446baa        ecx_23:3.b = presentation_3->invincible_shell._pad_90[0xb]
 00446bb0        presentation_3->invincible_shell._pad_90[4] = ecx_23.b
 00446bb0        presentation_3->invincible_shell._pad_90[5] = ecx_23:1.b
 00446bb0        presentation_3->invincible_shell._pad_90[6] = ecx_23:2.b
@@ -79,16 +83,26 @@
 00446bb9        void* ecx_24 = data_4df904
 00446bbf        int32_t eax_14 = *(ecx_24 + 0x74658)
 00446bc7        if (eax_14 == 0)
-00446bd2        struct TransformMatrix* eax_15 = cutscene_ai->player->presentation.cutscene_ai._pad_59[3].d
-00446bda        struct Player* edx_13
-00446bda        edx_13.b = eax_15 == *(ecx_24 + 0x2247f8)
+00446bc9        struct Player* player_2 = cutscene_ai->player
+00446bd2        struct TransformMatrix* eax_15
+00446bd2        eax_15.b = player_2->presentation.cutscene_ai._pad_59[3]
+00446bd2        eax_15:1.b = player_2->presentation.cutscene_ai._pad_59[4]
+00446bd2        eax_15:2.b = player_2->presentation.cutscene_ai._pad_59[5]
+00446bd2        eax_15:3.b = player_2->presentation.cutscene_ai._pad_59[6]
+00446bda        player_2.b = eax_15 == *(ecx_24 + 0x2247f8)
 00446bdd        int32_t var_dc
-00446bdd        var_dc.b = edx_13.b
+00446bdd        var_dc.b = player_2.b
 00446be6        var_100 = eax_15
 00446bfe        initialize_completion_screen(ecx_24 + 0x12e6df0, var_100, var_dc)
 00446beb        if (eax_14 == 1)
+00446bed        struct Player* player = cutscene_ai->player
 00446bf0        int32_t var_fc_11 = 1
-00446bf7        var_100 = cutscene_ai->player->presentation.cutscene_ai._pad_59[3].d
+00446bf1        struct TransformMatrix* edx_13
+00446bf1        edx_13.b = player->presentation.cutscene_ai._pad_59[3]
+00446bf1        edx_13:1.b = player->presentation.cutscene_ai._pad_59[4]
+00446bf1        edx_13:2.b = player->presentation.cutscene_ai._pad_59[5]
+00446bf1        edx_13:3.b = player->presentation.cutscene_ai._pad_59[6]
+00446bf7        var_100 = edx_13
 00446bfe        initialize_completion_screen(ecx_24 + 0x12e6df0, var_100, var_fc_11)
 00446c0a        play_sound_effect(0x2e)
 00446c0a        goto label_446c13
@@ -200,12 +214,12 @@
 0044699c        label_44699c:
 0044699c        cutscene_ai->unresolved_08 = 0xffffffff
 0044699f        set_matrix_identity(&transform)
-004469b0        struct Vec3* edx_8 = &cutscene_ai->presentation->snail_hotspots_world[0x12]
-004469b8        transform.position.x = edx_8->x
-004469bf        float y = edx_8->y
+004469b0        struct Vec3* edx_7 = &cutscene_ai->presentation->snail_hotspots_world[0x12]
+004469b8        transform.position.x = edx_7->x
+004469bf        float y = edx_7->y
 004469c2        float y_1 = y
 004469c3        transform.position.y = y
-004469d0        transform.position.z = edx_8->z
+004469d0        transform.position.z = edx_7->z
 004469d7        long double st0_4 = sine(fconvert.s(fconvert.t(cutscene_ai->progress) * fconvert.t(3.14159274f)))
 004469e8        transform.position.x = fconvert.s(st0_4 + st0_4 + fconvert.t(transform.position.x))
 004469ef        long double x87_r7_29 = fconvert.t(transform.position.y)
@@ -246,13 +260,13 @@
 00446adf        if ((1 & eax_12:1.b) != 0)
 00446ae1        cutscene_ai->live_matrix.position.y = 0f
 00446aee        look_at_point(&cutscene_ai->live_matrix, &presentation_10->live_matrix.position.x)
-00446af3        struct Player* player = cutscene_ai->player
-00446af6        eax.b = player->flag84.b
+00446af3        struct Player* player_1 = cutscene_ai->player
+00446af6        eax.b = player_1->resurrect_active.b
 00446afe        if (eax.b == 0)
-00446b04        initialize_subgoldy_death(player)
+00446b04        initialize_subgoldy_death(player_1)
 00446b09        eax = cutscene_ai->player
-00446b0c        player.b = *(eax + 0x44d)
-00446b14        if (player.b == 0)
+00446b0c        player_1.b = *(eax + 0x44d)
+00446b14        if (player_1.b == 0)
 00446b1a        int32_t sample_override_1 = 0xffffffff
 00446b1c        var_100 = 2
 00446b25        int32_t eax_13 = play_voice_manager(0x751498, 0xb, var_100, sample_override_1)

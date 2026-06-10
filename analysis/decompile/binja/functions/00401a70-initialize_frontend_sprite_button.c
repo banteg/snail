@@ -46,14 +46,19 @@
 00401b50        arg1->previous_widget_flags = eax_2
 00401b5a        arg1->text_buffer.raw[0] = 0
 00401b60        arg1->layout_anchor_x = arg4
-00401b83        arg1->idle_fill_color.r = *arg6
-00401b8d        arg1->idle_fill_color.g = arg6[1]
-00401b93        arg1->idle_fill_color.b = arg6[2]
-00401b99        arg1->idle_fill_color.a = arg6[3]
+00401b7c        int32_t ebp
+00401b7c        ebp.b = *arg6
+00401b7c        ebp:1.b = arg6[1]
+00401b7c        ebp:2.b = arg6[2]
+00401b7c        ebp:3.b = arg6[3]
+00401b83        arg1->idle_fill_color.r = ebp
+00401b8d        arg1->idle_fill_color.g = *(arg6 + 4)
+00401b93        arg1->idle_fill_color.b = *(arg6 + 8)
+00401b99        arg1->idle_fill_color.a = *(arg6 + 0xc)
 00401ba4        arg1->hot_fill_color.r = *arg6
-00401bad        arg1->hot_fill_color.g = arg6[1]
-00401bb3        arg1->hot_fill_color.b = arg6[2]
-00401bbd        arg1->hot_fill_color.a = arg6[3]
+00401bad        arg1->hot_fill_color.g = *(arg6 + 4)
+00401bb3        arg1->hot_fill_color.b = *(arg6 + 8)
+00401bbd        arg1->hot_fill_color.a = *(arg6 + 0xc)
 00401bc0        struct Color4f color
 00401bc0        struct Color4f* eax_6 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00401bc5        float r = eax_6->r
