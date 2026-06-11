@@ -71,7 +71,7 @@ pub fn uploadedModelTransform(
         -model.bounds.center.z,
     );
     const model_scale = rl.Matrix.scale(scale.x, scale.y, scale.z);
-    return world_transform.multiply(local_offset).multiply(model_scale);
+    return local_offset.multiply(model_scale).multiply(world_transform);
 }
 
 pub fn drawUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
@@ -96,7 +96,7 @@ pub fn turboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.L
         .right = right,
         .up = corrected_up,
         .forward = forward,
-        .transform = world_transform.multiply(local_offset),
+        .transform = local_offset.multiply(world_transform),
     };
 }
 
@@ -110,7 +110,7 @@ pub fn tutorialClickStartTurboPose(model: *const x2.Uploaded, loaded_track_previ
         .right = base_pose.right,
         .up = base_pose.up,
         .forward = base_pose.forward,
-        .transform = world_transform.multiply(local_offset),
+        .transform = local_offset.multiply(world_transform),
     };
 }
 

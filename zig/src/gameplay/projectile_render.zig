@@ -95,7 +95,7 @@ fn drawObjectProjectile(
         -loaded_object.center.z,
     );
     const scale = rl.Matrix.scale(scale_factor, scale_factor, scale_factor);
-    const transform = world_transform.multiply(offset).multiply(scale);
+    const transform = offset.multiply(scale).multiply(world_transform);
     if (alpha_cutout_shader) |shader| {
         loaded_object.drawTintedAlphaCutoutEx(transform, tint, shader);
     } else {
