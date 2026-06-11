@@ -330,6 +330,20 @@ pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
 pub const native_nuke_phase_step: f32 = 0.10471976;
 const native_turbo_projectile_spread_x_per_tick: f32 = 0.1;
+// PORT(partial): `update_golb_ai` @ 0x414820 keeps kind-0 (turbo) Golb shots
+// level while their height stays inside the native `[0, 0.49]` band and
+// applies `subgame_rate * 0.017` per-tick gravity outside it. Tile-`0x1e`
+// path-follow (`initialize_path_follow_golb`) is still unported, so shots fly
+// level through raised attachments instead of riding them.
+const native_golb_level_band_max_y: f32 = 0.49000001;
+const native_golb_band_gravity_per_tick: f32 = 0.017000001;
+// PORT(partial): `create_golb` @ 0x415280 seeds the Golb lifetime step as
+// `subgame_rate / 24` for turbo/laser and `subgame_rate / 36` for rockets;
+// `update_golb_ai` kills the shot once accumulated progress passes 1.0 or it
+// leaves the `[interaction_max_z, player_z + 46]` window.
+const native_golb_lifetime_step_per_tick: f32 = 0.0416666679;
+const native_rocket_golb_lifetime_step_per_tick: f32 = 0.0277777761;
+const native_golb_forward_window_rows: f32 = 46.0;
 const slug_projectile_kill_score: u32 = score_module.nativeEventPoints(.slug, 0);
 const parcel_delivery_register_score: u32 = score_module.nativeEventPoints(.parcel_deliver, 0);
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
@@ -2963,7 +2977,7 @@ pub const Runner = struct {
         direction_lateral: f32,
     ) void {
         const spawn_position = offsetPosition(origin, right, up, forward, local_x, local_y, local_z);
-        const direction = self.nativeProjectileVelocityPerTick(kind, right, forward, direction_lateral);
+        const direction = self.nativeProjectileVelocityPerTick(kind, direction_lateral);
         self.spawnProjectile(
             kind,
             spawn_position.x,
@@ -2979,8 +2993,6 @@ pub const Runner = struct {
     fn nativeProjectileVelocityPerTick(
         self: *const Runner,
         kind: Projectile.Kind,
-        right: rl.Vector3,
-        forward: rl.Vector3,
         lateral_x_per_tick: f32,
     ) rl.Vector3 {
         const run_rate = self.nativeRunRate();
@@ -2990,10 +3002,14 @@ pub const Runner = struct {
             .rocket => (run_rate + 0.60000002) * 0.80000001,
             .sub_lazer => native_sub_lazer_speed,
         };
+        // PORT(partial): `create_golb` @ 0x415280 seeds Golb velocity on world
+        // axes as `(lateral, 0, forward)` regardless of the player pose, so
+        // shots fly level instead of inheriting the snail's pitch and diving
+        // into the floor when fired on a downward slope.
         return .{
-            .x = (forward.x * forward_z_per_tick) + (right.x * lateral_x_per_tick),
-            .y = (forward.y * forward_z_per_tick) + (right.y * lateral_x_per_tick),
-            .z = (forward.z * forward_z_per_tick) + (right.z * lateral_x_per_tick),
+            .x = lateral_x_per_tick,
+            .y = 0.0,
+            .z = forward_z_per_tick,
         };
     }
 
@@ -3034,6 +3050,7 @@ pub const Runner = struct {
     }
 
     fn updateProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        const tick_delta = native_ticks_per_second * delta_seconds;
         var write_index: usize = 0;
         for (0..self.combat.projectiles.count) |read_index| {
             var projectile = self.combat.projectiles.slots[read_index];
@@ -3046,9 +3063,21 @@ pub const Runner = struct {
             projectile.world_x += movement_delta.x;
             projectile.world_y += movement_delta.y;
             projectile.world_z += movement_delta.z;
+            self.applyGolbVerticalBand(&projectile, tick_delta);
             if (projectile.kind == .rocket) {
                 self.recordRocketProjectileSmoke(projectile, movement_delta);
             }
+            // PORT(partial): `update_golb_ai` kills a Golb shot once its
+            // lifetime progress passes 1.0 or it leaves the alive window
+            // between the trailing `interaction_max_z` line (`Game+0x2980`,
+            // modelled as the same 8-row trailing window the SubLazer port
+            // uses) and `player_z + 46`. Without this the 12-slot pool
+            // saturates under rapid fire and shots silently fail to spawn
+            // while the fire sound still plays.
+            projectile.lifetime_progress += self.subgame_rate * golbLifetimeStepPerTick(projectile.kind) * tick_delta;
+            if (projectile.lifetime_progress > 1.0) continue;
+            if (projectile.world_z < self.row_position - native_sub_lazer_trailing_rows) continue;
+            if (projectile.world_z > self.row_position + native_golb_forward_window_rows) continue;
             if (self.resolveProjectileHit(preview, &projectile)) continue;
             if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
             projectile.appendTrailPoint();
@@ -3059,6 +3088,29 @@ pub const Runner = struct {
         for (write_index..max_active_projectiles) |index| {
             self.combat.projectiles.slots[index].active = false;
         }
+    }
+
+    fn applyGolbVerticalBand(self: *const Runner, projectile: *Projectile, tick_delta: f32) void {
+        if (projectile.kind != .turbo) return;
+        // PORT(partial): `update_golb_ai` @ 0x414820 kind-0 band rule — zero
+        // the vertical velocity while the shot sits inside `[0, 0.49]` so it
+        // skims the track, and pull it down with `subgame_rate * 0.017` per
+        // tick once it is above the band (e.g. fired from a raised pose).
+        if (projectile.world_y > native_golb_level_band_max_y or projectile.world_y < 0.0) {
+            projectile.dir_y -= self.subgame_rate * native_golb_band_gravity_per_tick * tick_delta;
+        } else {
+            projectile.dir_y = 0.0;
+        }
+    }
+
+    fn golbLifetimeStepPerTick(kind: Projectile.Kind) f32 {
+        return switch (kind) {
+            .turbo, .laser => native_golb_lifetime_step_per_tick,
+            .rocket => native_rocket_golb_lifetime_step_per_tick,
+            // Wall2 SubLazer slots own their lifecycle in `runtime.sub_lazers`;
+            // they never enter this Golb pool.
+            .sub_lazer => 0.0,
+        };
     }
 
     fn recordRocketProjectileSmoke(self: *Runner, projectile: Projectile, movement_delta: rl.Vector3) void {
@@ -8180,6 +8232,69 @@ test "rocket projectiles seed native smoke particle events" {
     );
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.last_rocket_smoke_velocity.x, 0.0001);
     try std.testing.expect(runner.last_rocket_smoke_velocity.z > 0.0);
+}
+
+test "projectiles fire level regardless of the player pose pitch" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const velocity = runner.nativeProjectileVelocityPerTick(.turbo, native_turbo_projectile_spread_x_per_tick);
+    try std.testing.expectApproxEqAbs(native_turbo_projectile_spread_x_per_tick, velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs(runner.nativeRunRate() + 1.0, velocity.z, 0.0001);
+}
+
+test "turbo projectiles keep the native level band and sink back from above it" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+
+    // Inside the band: any vertical velocity is zeroed.
+    runner.spawnProjectile(.turbo, 0.0, 0.2, 4.0, 0.0, -0.05, 1.0, native_ticks_per_second);
+    runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.combat.projectiles.slots[0].dir_y, 0.0001);
+
+    // Above the band: native per-tick gravity pulls the shot down.
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
+    runner.spawnProjectile(.turbo, 0.0, 1.2, 4.0, 0.0, 0.0, 1.0, native_ticks_per_second);
+    runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+    const tick_delta = native_ticks_per_second * simulation_step_seconds;
+    try std.testing.expectApproxEqAbs(
+        -runner.subgame_rate * native_golb_band_gravity_per_tick * tick_delta,
+        runner.combat.projectiles.slots[0].dir_y,
+        0.0001,
+    );
+}
+
+test "projectiles despawn on the native lifetime and forward window" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+
+    // Lifetime: a turbo shot accumulates `subgame_rate / 24` per tick and dies
+    // past 1.0 even while it stays inside the alive window.
+    runner.spawnProjectile(.turbo, 0.0, 0.2, 4.0, 0.0, 0.0, 0.0, native_ticks_per_second);
+    const ticks_to_expire = 1.0 / (runner.subgame_rate * native_golb_lifetime_step_per_tick);
+    var elapsed_ticks: f32 = 0.0;
+    while (elapsed_ticks <= ticks_to_expire + 1.0) : (elapsed_ticks += native_ticks_per_second * simulation_step_seconds) {
+        runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+    }
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
+
+    // Forward window: a shot past `player_z + 46` is removed immediately.
+    runner.spawnProjectile(.turbo, 0.0, 0.2, runner.row_position + native_golb_forward_window_rows + 2.0, 0.0, 0.0, 0.0, native_ticks_per_second);
+    runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
+
+    // Trailing window: a shot behind the trailing line is removed.
+    runner.row_position = 20.0;
+    runner.spawnProjectile(.turbo, 0.0, 0.2, runner.row_position - native_sub_lazer_trailing_rows - 2.0, 0.0, 0.0, 0.0, native_ticks_per_second);
+    runner.updateProjectiles(&fixture.preview, simulation_step_seconds);
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
 }
 
 test "movement fire cadence follows the native selector-owned cooldown lane" {

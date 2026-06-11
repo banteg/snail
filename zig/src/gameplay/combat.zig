@@ -35,6 +35,9 @@ pub const Projectile = struct {
     dir_y: f32 = 0.0,
     dir_z: f32 = 1.0,
     speed_rows_per_second: f32 = 0.0,
+    // Native `cGolb` lifetime lane (`+0x268`/`+0x26c`): progress accumulates
+    // `subgame_rate`-scaled steps per tick and the shot dies past 1.0.
+    lifetime_progress: f32 = 0.0,
     bounced_off_slug: bool = false,
     trail_points: [max_trail_points]TrailPoint = [_]TrailPoint{.{}} ** max_trail_points,
     trail_count: u8 = 0,
