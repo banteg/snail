@@ -17,7 +17,7 @@ export WINEPREFIX="${WINEPREFIX:-$HOME/.wine-snail}"
 export WINEDEBUG="${WINEDEBUG:--all}"
 
 # wine maps Z: to /, so unix paths become Z:-prefixed windows paths
-INCLUDE="Z:$(echo "$MSVC_ROOT/Include" | tr '/' '\\')"
+INCLUDE="Z:$(echo "$MSVC_ROOT/Include" | tr '/' '\\');Z:$(echo "$MATCH_ROOT/include" | tr '/' '\\')"
 export INCLUDE
 
 exec "$WINE" "$MSVC_ROOT/Bin/CL.EXE" /nologo "$@"

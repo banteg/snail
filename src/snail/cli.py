@@ -10,7 +10,12 @@ import msgspec
 
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
-from .match import run_match
+from .match import (
+    collect_scratch_statuses,
+    render_status_markdown,
+    render_status_table,
+    run_match,
+)
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
 from .screenshots import (
@@ -276,41 +281,68 @@ def build_parser() -> argparse.ArgumentParser:
 
     match_parser = subparsers.add_parser(
         "match",
+        help="Matching-islands workflow: diff scratches against the original image.",
+    )
+    match_subparsers = match_parser.add_subparsers(dest="match_command", required=True)
+
+    match_diff_parser = match_subparsers.add_parser(
+        "diff",
         help="Diff a compiled scratch object's function against the original image.",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "obj",
         type=Path,
         help="Path to the VC6 COFF object compiled from the candidate scratch.",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "function",
         help="Curated function name from the symbol manifest.",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "--symbol",
         help="Override the object symbol to extract (default: match the function name).",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "--image",
         type=Path,
         help="Path to the original image (default: the manifest primary target).",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "--manifest",
         type=Path,
         default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
         help="Path to the tracked gameplay function symbol manifest.",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "--end",
         type=lambda value: int(value, 0),
         help="Explicit end VA when the next curated function overshoots the extent.",
     )
-    match_parser.add_argument(
+    match_diff_parser.add_argument(
         "--full",
         action="store_true",
         help="Print both normalized listings side by side instead of only the diff.",
+    )
+
+    match_status_parser = match_subparsers.add_parser(
+        "status",
+        help="Compile all scratches and print a match dashboard.",
+    )
+    match_status_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_status_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_status_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the markdown dashboard to this path in addition to stdout.",
     )
 
     return parser
@@ -445,7 +477,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(text)
         return 0
 
-    if args.command == "match":
+    if args.command == "match" and args.match_command == "status":
+        manifest = load_function_symbol_manifest(args.manifest)
+        image_path = args.image or REPO_ROOT / manifest.primary_target
+        statuses = collect_scratch_statuses(manifest, image_path)
+        print(render_status_table(statuses))
+        if args.write is not None:
+            args.write.write_text(render_status_markdown(statuses), encoding="utf-8")
+        return 0
+
+    if args.command == "match" and args.match_command == "diff":
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
         result = run_match(

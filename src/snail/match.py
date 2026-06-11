@@ -231,6 +231,9 @@ def load_image(path: Path, image_base: int) -> LoadedImage:
     )
 
 
+_OPERAND_SIZE_NAMES = {1: "byte", 2: "word", 4: "dword", 8: "qword", 10: "tword"}
+
+
 def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     mem = operand.mem
     parts: list[str] = []
@@ -242,7 +245,8 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
         parts.append("ADDR")
     elif mem.disp != 0 or not parts:
         parts.append(f"0x{mem.disp:x}" if mem.disp >= 0 else f"-0x{-mem.disp:x}")
-    return f"[{'+'.join(parts)}]"
+    size = _OPERAND_SIZE_NAMES.get(operand.size, str(operand.size))
+    return f"{size} [{'+'.join(parts)}]"
 
 
 def normalize_function(
@@ -370,3 +374,185 @@ def run_match(
         image=image,
         target_va=start,
     )
+
+
+DEFAULT_MATCH_ROOT = Path(__file__).resolve().parents[2] / "tools/match"
+DEFAULT_SCRATCH_COMPILER = "msvc6.5"
+DEFAULT_SCRATCH_CFLAGS = "/O2 /G5 /W3"
+
+
+@dataclass(frozen=True, slots=True)
+class ScratchConfig:
+    directory: Path
+    function: str
+    compiler: str
+    cflags: str
+    end_va: int | None
+    symbol: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class ScratchStatus:
+    config: ScratchConfig
+    address: int
+    target_size: int
+    result: MatchResult | None
+    error: str | None
+
+    @property
+    def state(self) -> str:
+        if self.result is None:
+            return "error"
+        if self.result.ratio == 1.0:
+            return "match"
+        return "wip"
+
+
+def load_scratch_config(directory: Path) -> ScratchConfig:
+    import shlex
+
+    values: dict[str, str] = {}
+    for token in shlex.split((directory / "scratch.conf").read_text()):
+        key, _, value = token.partition("=")
+        if value:
+            values[key] = value
+    if "FUNCTION" not in values:
+        raise ValueError(f"{directory}/scratch.conf must set FUNCTION")
+    return ScratchConfig(
+        directory=directory,
+        function=values["FUNCTION"],
+        compiler=values.get("COMPILER", DEFAULT_SCRATCH_COMPILER),
+        cflags=values.get("CFLAGS", DEFAULT_SCRATCH_CFLAGS),
+        end_va=int(values["END"], 0) if "END" in values else None,
+        symbol=values.get("SYMBOL"),
+    )
+
+
+def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT) -> Path:
+    """Compile scratch.cpp with cl.sh when the object is missing or stale."""
+    import os
+    import shlex
+    import shutil
+    import subprocess
+
+    source = config.directory / "scratch.cpp"
+    build_dir = config.directory / "build"
+    obj_path = build_dir / "scratch.obj"
+    if obj_path.exists() and obj_path.stat().st_mtime >= source.stat().st_mtime:
+        return obj_path
+
+    build_dir.mkdir(exist_ok=True)
+    shutil.copy(source, build_dir / "scratch.cpp")
+    completed = subprocess.run(
+        [str(match_root / "cl.sh"), "/c", *shlex.split(config.cflags), "scratch.cpp"],
+        cwd=build_dir,
+        env={**os.environ, "MSVC_VER": config.compiler},
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode != 0 or not obj_path.exists():
+        raise RuntimeError(f"cl failed:\n{completed.stdout}{completed.stderr}")
+    return obj_path
+
+
+def collect_scratch_statuses(
+    manifest: FunctionSymbolManifest,
+    image_path: Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> list[ScratchStatus]:
+    image = load_image(image_path, manifest.image_base)
+    by_name = {symbol.name: symbol for symbol in manifest.functions}
+    statuses: list[ScratchStatus] = []
+    for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
+        config = load_scratch_config(conf_path.parent)
+        address = by_name[config.function].address if config.function in by_name else 0
+        try:
+            start, end = resolve_function_extent(manifest, config.function, config.end_va)
+            target_data = image.function_bytes(start, end)
+            obj_path = compile_scratch(config, match_root)
+            obj = parse_coff_object(obj_path.read_bytes())
+            candidate = extract_object_function(obj, config.symbol or config.function)
+            result = match_function(target_data, candidate, image=image, target_va=start)
+            statuses.append(
+                ScratchStatus(
+                    config=config,
+                    address=address,
+                    target_size=len(target_data),
+                    result=result,
+                    error=None,
+                )
+            )
+        except (ValueError, RuntimeError) as error:
+            statuses.append(
+                ScratchStatus(
+                    config=config,
+                    address=address,
+                    target_size=0,
+                    result=None,
+                    error=str(error).splitlines()[0] if str(error) else "unknown error",
+                )
+            )
+    return statuses
+
+
+STATE_ICONS = {"match": "✅", "wip": "🚧", "error": "❌"}
+STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "build", "note")
+
+
+def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
+    rows = []
+    for status in sorted(statuses, key=lambda item: item.address):
+        ratio = f"{status.result.ratio:.2%}" if status.result else "-"
+        insns = (
+            f"{len(status.result.candidate_lines)}/{len(status.result.target_lines)}"
+            if status.result
+            else "-"
+        )
+        rows.append(
+            (
+                STATE_ICONS[status.state],
+                status.config.function,
+                f"0x{status.address:x}",
+                str(status.target_size),
+                insns,
+                ratio,
+                f"{status.config.compiler} {status.config.cflags}",
+                status.error or "",
+            )
+        )
+    return rows
+
+
+def render_status_table(statuses: list[ScratchStatus]) -> str:
+    rows = [STATUS_HEADER, *render_status_rows(statuses)]
+    widths = [max(len(row[column]) for row in rows) for column in range(len(STATUS_HEADER))]
+    lines = [
+        "  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip()
+        for row in rows
+    ]
+    matched = sum(1 for status in statuses if status.state == "match")
+    lines.append(f"\n{matched}/{len(statuses)} matched")
+    return "\n".join(lines)
+
+
+def render_status_markdown(statuses: list[ScratchStatus]) -> str:
+    matched = sum(1 for status in statuses if status.state == "match")
+    total_bytes = sum(status.target_size for status in statuses)
+    matched_bytes = sum(
+        status.target_size for status in statuses if status.state == "match"
+    )
+    lines = [
+        "# Matching Status",
+        "",
+        "Regenerate with `uv run snail match status --write tools/match/STATUS.md`.",
+        "",
+        f"**{matched}/{len(statuses)}** functions matched, "
+        f"**{matched_bytes}/{total_bytes}** bytes.",
+        "",
+        "| | function | address | bytes | insns | match | build |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for row in render_status_rows(statuses):
+        lines.append("| " + " | ".join(row[:7]) + " |")
+    lines.append("")
+    return "\n".join(lines)

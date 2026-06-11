@@ -79,11 +79,11 @@ def test_normalize_masks_relocated_and_absolute_operands() -> None:
     # mov eax, [0x004a1234]; ret
     code = bytes.fromhex("a134124a00c3")
     masked_by_reloc = normalize_function(code, relocation_offsets=frozenset({1}))
-    assert masked_by_reloc[0] == "mov eax, [ADDR]"
+    assert masked_by_reloc[0] == "mov eax, dword [ADDR]"
     masked_by_range = normalize_function(code, address_range=(0x400000, 0x500000))
-    assert masked_by_range[0] == "mov eax, [ADDR]"
+    assert masked_by_range[0] == "mov eax, dword [ADDR]"
     unmasked = normalize_function(code)
-    assert unmasked[0] == "mov eax, [0x4a1234]"
+    assert unmasked[0] == "mov eax, dword [0x4a1234]"
 
 
 def test_normalize_labels_intra_function_branches() -> None:
@@ -100,7 +100,7 @@ def test_normalize_keeps_struct_offsets_exact() -> None:
     # mov [ecx+0x14], 1
     code = bytes.fromhex("c741140100000090")
     lines = normalize_function(code)
-    assert lines[0] == "mov [ecx+0x14], 0x1"
+    assert lines[0] == "mov dword [ecx+0x14], 0x1"
 
 
 MANIFEST_AVAILABLE = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH.exists()
