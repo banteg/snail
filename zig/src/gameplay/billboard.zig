@@ -393,17 +393,25 @@ const Basis = struct {
     up: rl.Vector3,
 };
 
+// The gameplay camera looks down +Z, so raylib's look-at basis maps world -X
+// to screen-right. The world-XY sprite basis mirrors X to match the
+// camera-facing billboard basis (`right = forward x up = -X`): the quad winds
+// front-facing for the +Z camera (a `right = +X` basis is back-face culled —
+// every world-XY sprite was invisible), keeps the texture unmirrored relative
+// to the rest of the scene, and rolls the same screen direction as the rolled
+// camera-billboard path. Native `draw_sprite_quad` quads are also single-sided
+// under D3D's default CCW culling.
 fn worldXyRolledBasis(roll_radians: f32) Basis {
     const roll_cos = std.math.cos(roll_radians);
     const roll_sin = std.math.sin(roll_radians);
     return .{
         .right = .{
-            .x = roll_cos,
+            .x = -roll_cos,
             .y = roll_sin,
             .z = 0.0,
         },
         .up = .{
-            .x = -roll_sin,
+            .x = roll_sin,
             .y = roll_cos,
             .z = 0.0,
         },
@@ -417,9 +425,9 @@ fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
     rl.setShaderValue(shader, location, &cutoff, .float);
 }
 
-test "world XY rolled basis matches native sprite quad axes" {
+test "world XY rolled basis matches the camera-facing billboard winding" {
     const unrolled = worldXyRolledBasis(0.0);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), unrolled.right.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.0), unrolled.right.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.right.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.right.z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), unrolled.up.x, 0.0001);
@@ -429,7 +437,7 @@ test "world XY rolled basis matches native sprite quad axes" {
     const quarter = worldXyRolledBasis(std.math.pi / 2.0);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), quarter.right.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), quarter.right.y, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, -1.0), quarter.up.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), quarter.up.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), quarter.up.y, 0.0001);
 }
 
