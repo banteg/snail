@@ -2,7 +2,7 @@
 #include "track_attachment.h"
 
 AttachmentPathTemplate* FollowState::begin_track_attachment_follow_state(
-    TrackRowCell* cell, const Vector3* world_position, GamePlayer* owning_player)
+    TrackRowCell* cell, const Vector3* world_position, Player* owning_player)
 {
     active = 1;
     template_record = cell->attachment_template_record;

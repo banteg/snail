@@ -1,8 +1,11 @@
 // Player (Goldy) runtime struct, partial — fields recovered around the
 // attachment-exit lanes. Offsets per analysis/decompile/*/0043af60-*.c and
-// the update_subgoldy cluster notes.
+// the swept-entry asm (position vector at +0x68; the global instance lives
+// at game+0x42fd7c, so game+0x42fde8 is position.y).
 #ifndef PLAYER_H
 #define PLAYER_H
+
+#include "golb.h"
 
 struct AttachmentRecord {
     int unknown_00[38];
@@ -12,9 +15,10 @@ struct AttachmentRecord {
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
+    void start_squidge_y(float amount);   // thiscall, image-resident
 
-    int unknown_00[28];                    // +0x00
-    float position_z;                      // +0x70
+    int unknown_00[26];                    // +0x00
+    Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)
     char unknown_74[0x384 - 0x74];
     unsigned char follow_active;           // +0x384
     char unknown_385[3];

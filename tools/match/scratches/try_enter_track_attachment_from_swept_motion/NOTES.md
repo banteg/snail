@@ -1,34 +1,44 @@
-# Pre-match dossier — scratch not yet written (204 insns, ~12 globals)
+# WIP — 37.16% score, 205/204 insns (structure aligned, registers shifted)
 
-@ 0x42c770, thiscall on the **path template** (not the player), 6 float
-args (position xyz + sweep deltas xyz) + cell ptr, ret 0x1c.
+The SequenceMatcher score understates progress: instruction count and
+control-flow layout now mirror the target; the residual is a global
+register-assignment shift (`this` lands in ebp instead of edi, cascading
+through the loop) plus stack-slot numbering. Verified source shapes that
+got the structure right:
 
-Recovered semantics (IDA export + raw asm read, 2026-06-12):
+- `/O2 /G5 /W3 /Op` — precise-float mode explains the stored+reloaded
+  float temps and integer-register copies into the rotated vectors
+- `do { ... } while (--idx >= 0); return;` with `if (probe.y <= 0.001f)
+  goto seed;` — reproduces the target layout (seed block after the plain
+  return, fallthrough-free hot loop)
+- world x lanes inline in the delta expressions (stay on the FPU; IDA's
+  `double v13/v15` are FPU-resident temporaries — declaring real
+  `double` locals forces an 8-aligned ebp frame the target lacks)
+- `extern char* volatile g_game_base` reproduces the per-statement base
+  reloads in the seed block (this also moved
+  begin_track_attachment_follow_state from 85.19% to 88.89%)
 
-- scan: walks template samples **backward** from `sample_count-1`
-  (template +0x44), stride 0xa8, base ptr at template +0x5c; skips
-  samples whose +0x14 float is <= 0
-- candidate test: world delta = (pos + cell anchor[+0x10..0x18] +
-  sample offset[+0x30..0x38]) rotated by the sample matrix (+0x40) via
-  `Vector3::rotate_by_matrix` (thiscall on the vector, matrix pushed);
-  the dual-slot temp+copy idiom from search_path_for_golb appears again
-- half-span gate: `width_cells` (template +0x54, **int**) divided by
-  ±2 with **signed integer division** (cdq/sar idiom confirmed) then
-  ±0.3f — matches the 06-10 half-span truncation finding exactly
-- vertical gates: rotated y >= -0.2, rotated z > 0, z < sample depth
-  limit (+0x8c)
-- second probe: sweep-displaced position re-rotated; accept when its
-  rotated y <= 0.001
-- on accept, seeds the **global FollowState instance at game+0x430100**
-  (same layout matched in begin_track_attachment_follow_state):
-  active=1, template=this, cell, sample_index, progress=rotated z,
-  vertical_offset=0, then `*(game+0x42fde8) = rotated y` (the 0.49-gate
-  global from the audit), squidge start, heading table write
-  (61-dword/244-byte stride, same table), and a validating call to
-  `update_track_attachment_follow_state(game+0x430100, ...)`
-- confirmed: does NOT clear `player+0x41d` itself (caller's gate does)
+Remaining: register-allocation alignment golf (declaration order /
+usage-order experiments), second-probe CSE differences, seed-block
+float copies (`fld/fstp` vs integer moves for progress / position.y).
 
-To write the scratch: extend `track_attachment.h` AttachmentPathTemplate
-with +0x44/+0x54/+0x5c fields and an AttachmentSample struct; model the
-game-relative globals as `extern char g_*[]` symbols added to
-`(int)g_game_base` like begin_track_attachment_follow_state does.
+Semantics fully recovered (see also the seeding writes in scratch.cpp):
+
+- scan template samples backward from `sample_count-1` (+0x44), stride
+  0xa8 via base at +0x5c, skipping samples with +0x14 <= 0
+- probe 1: position minus (cell anchor + sample offset), rotated into
+  the sample local frame (`Vector3::rotate_by_matrix`, thiscall)
+- gates: `(float)(width_cells / -2) - 0.3f < x < (float)(width_cells / 2)
+  + 0.3f` (signed INTEGER division — the 06-10 half-span finding),
+  `y >= -0.2` (double constant), `z > 0.0f`, `z < sample depth limit
+  (+0x8c)`
+- probe 2: sweep-displaced position re-rotated; accept when rotated
+  y <= 0.001f
+- seeding: the global FollowState at game+0x430100 (active=1, template,
+  cell, sample index, progress = rotated z, vertical_offset = 0,
+  player = game+0x42fd7c, fields +0x18/+0x1c zeroed, live byte +0x99
+  cleared, squidge scratch +0x90 consumed then zeroed), player
+  position.y snapped to rotated local y, heading table write
+  (61-dword row stride), then a validating
+  `update_track_attachment_follow_state(rate at +0x94,
+  &sample_index, &player.position)` — thiscall, three args

@@ -1,13 +1,40 @@
 // Attachment-follow runtime structures, partial.
-// Offsets per analysis/decompile/*/00420c40-*.c and 00420cb0-*.c
+// Offsets per analysis/decompile/*/00420c40-*.c, 0042c770-*.c, 00420cb0-*.c.
+// The shared FollowState instance lives at game+0x430100; the Player at
+// game+0x42fd7c.
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
-#include "golb.h"
+#include "player.h"
+
+struct AttachmentSample {            // stride 0xa8
+    char unknown_00[0x14];
+    float active;                    // +0x14, sample participates when > 0
+    char unknown_18[0x30 - 0x18];
+    Vector3 offset;                  // +0x30
+    char unknown_3c[0x40 - 0x3c];
+    float matrix[12];                // +0x40, local-frame rotation
+    char unknown_70[0x8c - 0x70];
+    float entry_depth_limit;         // +0x8c
+    char unknown_90[0xa8 - 0x90];
+};
+
+struct TrackRowCell;
 
 struct AttachmentPathTemplate {
-    char unknown_00[0x98];
-    float installed_heading_delta; // +0x98
+    void try_enter_track_attachment_from_swept_motion(
+        float px, float py, float pz,
+        float sweep_x, float sweep_y, float sweep_z,
+        TrackRowCell* cell); // @ 0x42c770
+
+    char unknown_00[0x44];
+    int sample_count;                // +0x44
+    char unknown_48[0x54 - 0x48];
+    int width_cells;                 // +0x54, integer half-span source
+    char unknown_58[0x5c - 0x58];
+    AttachmentSample* samples;       // +0x5c
+    char unknown_60[0x98 - 0x60];
+    float installed_heading_delta;   // +0x98
 };
 
 struct TrackRowCell {
@@ -19,12 +46,12 @@ struct TrackRowCell {
     int get_row_index(); // get_track_cell_row_index, thiscall
 };
 
-struct GamePlayer; // opaque
-
 class FollowState {
 public:
     AttachmentPathTemplate* begin_track_attachment_follow_state(
-        TrackRowCell* source_cell, const Vector3* world_position, GamePlayer* player); // @ 0x420c40
+        TrackRowCell* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
+    void update_track_attachment_follow_state(
+        float rate, int* sample_index, Vector3* position); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
@@ -33,13 +60,23 @@ public:
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14
-    char unknown_18[0x38 - 0x18];
-    GamePlayer* player;          // +0x38
+    int field_18;                // +0x18
+    int field_1c;                // +0x1c
+    char unknown_20[0x38 - 0x20];
+    Player* player;              // +0x38
+    char unknown_3c[0x90 - 0x3c];
+    float squidge_scratch;       // +0x90
+    float update_rate;           // +0x94
+    char unknown_98;             // +0x98
+    unsigned char live_flag;     // +0x99
 };
 
-// data_4df904: relocatable game-allocation base; the per-row heading table
-// lives at a fixed VA offset from it
-extern char* g_game_base;
-extern char g_row_heading_table[];
+// data_4df904: relocatable game-allocation base; structures below live at
+// fixed VA offsets added to it. volatile: native code re-reads it around
+// every store through derived pointers.
+extern char* volatile g_game_base;
+extern char g_row_heading_table[]; // 0x64118c, 61 dwords per row
+extern char g_follow_state_block[]; // 0x430100
+extern char g_player_block[];       // 0x42fd7c
 
 #endif
