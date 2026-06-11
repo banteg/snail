@@ -141,3 +141,13 @@ def test_change_snail_skin_scratch_matches_image() -> None:
         target_va=start,
     )
     assert result.ratio == 1.0
+
+
+def test_normalize_masks_relocated_call_targets() -> None:
+    # call rel32 (reloc at offset 1, zero displacement lands in-function); ret
+    code = bytes.fromhex("e800000000") + bytes.fromhex("c3")
+    relocated = normalize_function(code, relocation_offsets=frozenset({1}))
+    assert relocated[0] == "call ADDR"
+    # without a relocation the same encoding is an intra-function branch
+    plain = normalize_function(code)
+    assert plain[0] == "call L5"

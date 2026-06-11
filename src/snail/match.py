@@ -291,9 +291,13 @@ def normalize_function(
             elif operand.type == capstone.x86.X86_OP_IMM:
                 value = operand.imm
                 target_offset = value - base_address
-                if is_branch and 0 <= target_offset < size:
+                # a relocated branch target is external even when the zero
+                # displacement happens to land inside the function
+                if imm_masked:
+                    operands.append("ADDR")
+                elif is_branch and 0 <= target_offset < size:
                     operands.append(f"L{target_offset:x}")
-                elif imm_masked or is_masked_value(value):
+                elif is_masked_value(value):
                     operands.append("ADDR")
                 else:
                     operands.append(f"0x{value:x}" if value >= 0 else f"-0x{-value:x}")
