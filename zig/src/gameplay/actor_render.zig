@@ -668,11 +668,16 @@ fn drawGameplayTrackParcelActor(
     const loaded_texture = render.resources.sprites.parcel;
     const position = parcel.presentationPosition();
     const scale = parcel.presentationScale();
+    // PORT(partial): native `spawn_track_parcel` @ 0x443730 allocates the
+    // parcel sprite with scale 1.0 on both axes, and `draw_sprite_quad`
+    // @ 0x4137f0 emits the quad corners at +/-scale in view units, so the
+    // shipped sprite covers 2.0 world units per axis before the grow/shrink
+    // lane (`progress * 0.6 + 0.4`) modelled by `presentationScale`.
     gameplay_billboard.drawTexture(
         loaded_texture.texture,
         position,
-        0.56 * scale,
-        0.56 * scale,
+        2.0 * scale,
+        2.0 * scale,
         camera,
         render.billboard_shader,
         if (parcel.parcel_id == 0)
