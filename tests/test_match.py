@@ -86,6 +86,17 @@ def test_normalize_masks_relocated_and_absolute_operands() -> None:
     assert unmasked[0] == "mov eax, dword [0x4a1234]"
 
 
+def test_normalize_masks_candidate_immediates_in_image_range() -> None:
+    # push 0x400802; ret. Some widget flag literals fall inside the image VA
+    # range, so candidate objects must normalize them the same way as the image
+    # side without requiring fake relocation symbols in scratches.
+    code = bytes.fromhex("6802084000c3")
+    masked_by_range = normalize_function(code, address_range=(0x400000, 0x500000))
+    assert masked_by_range[0] == "push ADDR"
+    unmasked = normalize_function(code)
+    assert unmasked[0] == "push 0x400802"
+
+
 def test_normalize_labels_intra_function_branches() -> None:
     # jz +2 (to the ret); xor eax, eax; ret
     code = bytes.fromhex("7402") + bytes.fromhex("31c0") + bytes.fromhex("c3")

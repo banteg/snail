@@ -1,7 +1,6 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
 extern char* g_game_base; // data_4df904
-extern char g_warning_sprite_flags[]; // 0x400802
 
 struct Color4f {
     float r;
@@ -40,7 +39,7 @@ void WarningActor::initialize_warning()
     Color4f color;
 
     border = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    border->initialize_frontend_sprite_button((int)g_warning_sprite_flags, 0x5e, 288.0f, 64.0f,
+    border->initialize_frontend_sprite_button(0x400802, 0x5e, 288.0f, 64.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f), 0.0f, 4);
     border->warning_field = 0;
     border->hide_border_init();

@@ -258,10 +258,12 @@ def normalize_function(
 ) -> tuple[str, ...]:
     """Disassemble to normalized instruction lines.
 
-    Object side: pass relocation_offsets so reloc'd immediates/displacements
-    become ADDR. Image side: pass address_range so absolute VAs inside the
-    image become ADDR. Intra-function branch targets become L<offset> labels
-    on both sides, so layouts compare structurally.
+    Pass relocation_offsets so reloc'd immediates/displacements become ADDR.
+    Pass address_range so absolute VAs inside the image range become ADDR.
+    The same address_range is used for image and object code; otherwise
+    immediate literals that merely look like image VAs encourage fake
+    relocation symbols in scratches. Intra-function branch targets become
+    L<offset> labels on both sides, so layouts compare structurally.
     """
     md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
     md.detail = True
@@ -325,6 +327,7 @@ def match_function(
     candidate_lines = normalize_function(
         candidate.data,
         relocation_offsets=candidate.relocation_offsets,
+        address_range=(image.image_base, image.image_base + image.size_of_image),
     )
     ratio = difflib.SequenceMatcher(a=target_lines, b=candidate_lines, autojunk=False).ratio()
     return MatchResult(
