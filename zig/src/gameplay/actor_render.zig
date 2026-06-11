@@ -22,11 +22,11 @@ const start_banner_visible_rows: f32 = 40.0;
 const banner_bob_amplitude: f32 = 0.26;
 const banner_bob_cycle_seconds: f32 = 144.0 / 60.0;
 const tau: f32 = 6.2831855;
-const native_runtime_ring_particle_count: usize = 10;
-const native_runtime_ring_particle_radius: f32 = 1.2;
+const native_runtime_ring_particle_count = gameplay_runtime_entities.ring_effect_child_count;
+const native_runtime_ring_particle_radius = gameplay_runtime_entities.ring_effect_child_orbit_radius;
 const native_runtime_ring_particle_half_extent: f32 = 0.72;
 const native_runtime_ring_particle_alpha: u8 = 204;
-const native_runtime_ring_particle_phase_step: f32 = tau / @as(f32, @floatFromInt(native_runtime_ring_particle_count));
+const native_runtime_ring_particle_phase_step = gameplay_runtime_entities.ring_effect_child_phase_step;
 const native_time_trial_ghost_sprite_world_size: f32 = 1.0;
 const native_time_trial_ghost_y: f32 = 1.0;
 
@@ -565,11 +565,14 @@ fn drawRuntimeRingParticleHalo(
     family: RuntimeRingParticleSpriteFamily,
 ) void {
     const texture = runtimeRingParticleTexture(render, family);
-    const sprite_size = runtimeRingParticleWorldSize(effect.presentation_scale);
+    // PORT(partial): the collect/miss lerp in `update_subgoldy_bullet` only
+    // rescales each child's orbit radius lane (`child + 0x1c`); the sprite
+    // size lanes stay at the spawn half-extent for the whole effect.
+    const sprite_size = runtimeRingParticleWorldSize();
     const radius = native_runtime_ring_particle_radius * effect.presentation_scale;
     const blend_mode = runtimeRingParticleBlendMode(family);
     for (0..native_runtime_ring_particle_count) |child_index| {
-        const child_phase = runtimeRingParticlePhase(effect.active_phase, child_index);
+        const child_phase = runtimeRingParticlePhase(effect, child_index);
         // Native stores each halo child as a regular sprite with a world-space
         // center and a per-child angle. `draw_sprite_quad` keeps the quad in
         // world XY space and lets the gameplay camera project it.
@@ -580,7 +583,7 @@ fn drawRuntimeRingParticleHalo(
             sprite_size,
             sprite_size,
             render.billboard_shader,
-            runtimeRingParticleRoll(child_phase),
+            runtimeRingParticleRoll(effect, child_index),
             .{ .r = 255, .g = 255, .b = 255, .a = native_runtime_ring_particle_alpha },
             blend_mode,
             runtimeRingParticleAlphaCutoff(family),
@@ -635,17 +638,24 @@ fn runtimeRingParticleNativeSpriteRef(family: RuntimeRingParticleSpriteFamily) u
     };
 }
 
-fn runtimeRingParticleWorldSize(scale: f32) f32 {
+fn runtimeRingParticleWorldSize() f32 {
     // Native `draw_sprite_quad` treats the sprite size lane as a half-extent.
-    return nativeSpriteHalfExtentWorldSize(native_runtime_ring_particle_half_extent) * scale;
+    return nativeSpriteHalfExtentWorldSize(native_runtime_ring_particle_half_extent);
 }
 
 fn nativeSpriteHalfExtentWorldSize(half_extent: f32) f32 {
     return half_extent * 2.0;
 }
 
-fn runtimeRingParticlePhase(active_phase: f32, child_index: usize) f32 {
-    return active_phase + @as(f32, @floatFromInt(child_index)) * native_runtime_ring_particle_phase_step;
+fn runtimeRingParticleBasePhase(child_index: usize) f32 {
+    return @as(f32, @floatFromInt(child_index)) * native_runtime_ring_particle_phase_step;
+}
+
+// PORT(partial): `initialize_ring_or_special_effect_particles` spaces the ten
+// children at `i * tau/10`, and `update_ring_or_special_effect_particle`
+// advances the shared spin that `child_orbit_phase` accumulates.
+fn runtimeRingParticlePhase(effect: gameplay_runtime_entities.RingEffect, child_index: usize) f32 {
+    return runtimeRingParticleBasePhase(child_index) + effect.child_orbit_phase;
 }
 
 fn runtimeRingParticlePosition(base: rl.Vector3, child_phase: f32, radius: f32) rl.Vector3 {
@@ -656,8 +666,14 @@ fn runtimeRingParticlePosition(base: rl.Vector3, child_phase: f32, radius: f32) 
     };
 }
 
-fn runtimeRingParticleRoll(child_phase: f32) f32 {
-    return child_phase;
+// PORT(partial): native seeds the child sprite roll lane (`sprite + 0x7c`) at
+// the child's base phase and a roll velocity (`sprite + 0x80`) of minus the
+// orbit spin, so the quads counter-rotate against the orbit. Kinds 3 and 6
+// zero the roll velocity and keep the spawn roll.
+fn runtimeRingParticleRoll(effect: gameplay_runtime_entities.RingEffect, child_index: usize) f32 {
+    const base_phase = runtimeRingParticleBasePhase(child_index);
+    if (effect.kind == 6) return base_phase;
+    return base_phase - effect.child_orbit_phase;
 }
 
 fn drawGameplayTrackParcelActor(
@@ -843,10 +859,12 @@ fn drawGameplayEffects(render: Context) void {
         if (!effect.active or effect.ticks_remaining == 0) continue;
         const loaded_texture = switch (effect.kind) {
             .explode_big => render.resources.sprites.explode_big,
-            .explode_small => render.resources.sprites.explode_small,
+            .explode_small, .explode_star => render.resources.sprites.explode_small,
             .slug_goo => render.resources.sprites.slug_goo,
             .garbage_smoke => render.resources.sprites.blaster_trail,
             .smoke => render.resources.sprites.smoke,
+            .ring_star => render.resources.sprites.ring,
+            .slow_star => render.resources.sprites.slow_ring,
         };
         gameplay_billboard.drawTextureWorldXyBlendedAlphaCutoff(
             loaded_texture.texture,
@@ -863,14 +881,14 @@ fn drawGameplayEffects(render: Context) void {
 
 fn effectWorldWidth(effect: gameplay_effects.Effect) f32 {
     return switch (effect.kind) {
-        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
+        .slug_goo, .garbage_smoke, .smoke, .ring_star, .explode_star, .slow_star => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
         .explode_big, .explode_small => effect.scale_start,
     };
 }
 
 fn effectWorldHeight(effect: gameplay_effects.Effect) f32 {
     return switch (effect.kind) {
-        .slug_goo, .garbage_smoke, .smoke => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
+        .slug_goo, .garbage_smoke, .smoke, .ring_star, .explode_star, .slow_star => nativeSpriteHalfExtentWorldSize(effectScale(effect)),
         .explode_big, .explode_small => effect.scale_end,
     };
 }
@@ -888,7 +906,10 @@ fn effectProgress(effect: gameplay_effects.Effect) f32 {
 
 fn effectTint(effect: gameplay_effects.Effect) rl.Color {
     return switch (effect.kind) {
-        .slug_goo, .garbage_smoke, .smoke => fadeEffectTint(effect.tint, 1.0 - effectProgress(effect)),
+        // Native `draw_sprite_quad` scales the packed alpha byte by
+        // `1 - lifetime progress` for every sprite without the hold flag;
+        // ring stars ride the same fade.
+        .slug_goo, .garbage_smoke, .smoke, .ring_star, .explode_star, .slow_star => fadeEffectTint(effect.tint, 1.0 - effectProgress(effect)),
         else => effect.tint,
     };
 }
@@ -1177,23 +1198,65 @@ test "garbage sprites use hard alpha cutout" {
 }
 
 test "native runtime ring halo positions ten sprites around the parent" {
+    const effect = gameplay_runtime_entities.RingEffect{
+        .source_row = 0,
+        .row = 0,
+        .lane = 0,
+        .kind = 5,
+    };
     const base = rl.Vector3{ .x = 2.0, .y = 3.0, .z = 4.0 };
-    const first = runtimeRingParticlePosition(base, runtimeRingParticlePhase(0.0, 0), native_runtime_ring_particle_radius);
+    const first = runtimeRingParticlePosition(base, runtimeRingParticlePhase(effect, 0), native_runtime_ring_particle_radius);
     try std.testing.expectApproxEqAbs(base.x, first.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y + native_runtime_ring_particle_radius, first.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, first.z, 0.0001);
 
-    const opposite = runtimeRingParticlePosition(base, runtimeRingParticlePhase(0.0, 5), native_runtime_ring_particle_radius);
+    const opposite = runtimeRingParticlePosition(base, runtimeRingParticlePhase(effect, 5), native_runtime_ring_particle_radius);
     try std.testing.expectApproxEqAbs(base.x, opposite.x, 0.0001);
     try std.testing.expectApproxEqAbs(base.y - native_runtime_ring_particle_radius, opposite.y, 0.0001);
     try std.testing.expectApproxEqAbs(base.z, opposite.z, 0.0001);
 }
 
-test "runtime ring halo uses native sprite half extent and camera-facing roll" {
-    try std.testing.expectApproxEqAbs(@as(f32, 1.44), runtimeRingParticleWorldSize(1.0), 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.72), runtimeRingParticleWorldSize(0.5), 0.0001);
+test "runtime ring halo orbits with the shared child spin accumulator" {
+    var effect = gameplay_runtime_entities.RingEffect{
+        .source_row = 0,
+        .row = 0,
+        .lane = 0,
+        .kind = 5,
+    };
+    effect.child_orbit_phase = 0.25;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runtimeRingParticlePhase(effect, 0), 0.0001);
+    try std.testing.expectApproxEqAbs(
+        native_runtime_ring_particle_phase_step + 0.25,
+        runtimeRingParticlePhase(effect, 1),
+        0.0001,
+    );
+}
 
-    try std.testing.expectApproxEqAbs(@as(f32, std.math.pi / 2.0), runtimeRingParticleRoll(std.math.pi / 2.0), 0.0001);
+test "runtime ring halo uses native sprite half extent and counter-rotating roll" {
+    try std.testing.expectApproxEqAbs(@as(f32, 1.44), runtimeRingParticleWorldSize(), 0.0001);
+
+    var effect = gameplay_runtime_entities.RingEffect{
+        .source_row = 0,
+        .row = 0,
+        .lane = 0,
+        .kind = 5,
+    };
+    effect.child_orbit_phase = 0.25;
+    // Native seeds `sprite + 0x80` with minus the orbit spin, so the quad
+    // rolls against the orbit direction.
+    try std.testing.expectApproxEqAbs(
+        native_runtime_ring_particle_phase_step - 0.25,
+        runtimeRingParticleRoll(effect, 1),
+        0.0001,
+    );
+
+    // Kinds 3 and 6 zero the roll velocity and hold the spawn roll.
+    effect.kind = 6;
+    try std.testing.expectApproxEqAbs(
+        native_runtime_ring_particle_phase_step,
+        runtimeRingParticleRoll(effect, 1),
+        0.0001,
+    );
 }
 
 test "native blaster trail points use recovered movement-delta offsets" {

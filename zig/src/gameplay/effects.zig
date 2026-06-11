@@ -5,6 +5,7 @@ const app = @import("../app.zig");
 const assets = @import("../assets.zig");
 const gameplay = @import("../gameplay.zig");
 const level = @import("../level.zig");
+const runtime_entities = @import("runtime_entities.zig");
 const track = @import("../track.zig");
 
 const default_archive_path = app.default_archive_path;
@@ -46,6 +47,11 @@ const jet_particle_detached_ticks: u16 = 18;
 const rocket_smoke_width: f32 = 0.1;
 const rocket_smoke_height: f32 = 0.5;
 const rocket_smoke_ticks: u16 = 12;
+const ring_star_half_extent_start: f32 = 0.40000001;
+const ring_star_half_extent_end: f32 = 0.2;
+const ring_star_ticks: u16 = 9;
+const ring_star_velocity_scale: f32 = 0.30000001;
+const ring_star_phase_lead: f32 = 1.0471976;
 
 pub const Kind = enum {
     explode_big,
@@ -53,6 +59,9 @@ pub const Kind = enum {
     slug_goo,
     garbage_smoke,
     smoke,
+    ring_star,
+    explode_star,
+    slow_star,
 };
 
 pub const Effect = struct {
@@ -287,6 +296,86 @@ pub const Controller = struct {
                 self.spawnSlugGooBurst(current, preview, defeated);
             }
         }
+        self.spawnRingStarShowers(previous, current);
+    }
+
+    // PORT(partial): `update_ring_or_special_effect_particle` calls
+    // `emit_ring_star_shower` for each halo child whenever the parent cadence
+    // lane (`+0x1e8`) reads zero — once when
+    // `initialize_ring_or_special_effect_particles` runs the children at
+    // spawn, then every third parent update. The detail bit
+    // (`config & 0x10`) that gates it natively is set in the default config.
+    pub fn spawnRingStarShowers(
+        self: *Controller,
+        previous: gameplay.Runner,
+        current: gameplay.Runner,
+    ) void {
+        for (current.activeRuntimeRingEffects()) |effect| {
+            if (findRingEffect(previous, effect)) |previous_effect| {
+                // The cadence only reads zero right after a wrap; comparing
+                // against the previous tick keeps paused frames from
+                // re-emitting the same burst.
+                if (effect.child_update_cadence != 0) continue;
+                if (previous_effect.child_update_cadence == effect.child_update_cadence) continue;
+            }
+            self.emitRingStarShower(effect);
+        }
+    }
+
+    fn findRingEffect(
+        runner: gameplay.Runner,
+        effect: runtime_entities.RingEffect,
+    ) ?runtime_entities.RingEffect {
+        for (runner.activeRuntimeRingEffects()) |candidate| {
+            if (candidate.source_row == effect.source_row and
+                candidate.row == effect.row and
+                candidate.lane == effect.lane and
+                candidate.kind == effect.kind)
+            {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    // PORT(partial): `emit_ring_star_shower` allocates the family's small
+    // sprite (refs 0x88/0x84/0x86) at the child's live position, gives it the
+    // tangential velocity `(sin/cos)(child_phase + pi/3) * radius * 0.3`, no
+    // gravity, half extents interpolating `0.4 -> 0.2` across a 9-tick
+    // lifetime, and the default alpha-fade blend lane.
+    fn emitRingStarShower(self: *Controller, effect: runtime_entities.RingEffect) void {
+        const star_kind = ringStarKind(effect.kind) orelse return;
+        const radius = runtime_entities.ring_effect_child_orbit_radius * effect.presentation_scale;
+        for (0..runtime_entities.ring_effect_child_count) |child_index| {
+            const child_phase = (@as(f32, @floatFromInt(child_index)) * runtime_entities.ring_effect_child_phase_step) + effect.child_orbit_phase;
+            const lead_phase = child_phase + ring_star_phase_lead;
+            self.spawnWithVelocity(
+                star_kind,
+                .{
+                    .x = effect.presentation_position.x + (@sin(child_phase) * radius),
+                    .y = effect.presentation_position.y + (@cos(child_phase) * radius),
+                    .z = effect.presentation_position.z,
+                },
+                .{
+                    .x = @sin(lead_phase) * radius * ring_star_velocity_scale,
+                    .y = @cos(lead_phase) * radius * ring_star_velocity_scale,
+                    .z = 0.0,
+                },
+                ring_star_half_extent_start,
+                ring_star_half_extent_end,
+                ring_star_ticks,
+                .white,
+            );
+        }
+    }
+
+    fn ringStarKind(effect_kind: u8) ?Kind {
+        return switch (effect_kind) {
+            4, 5, 8 => .ring_star,
+            2, 6 => .explode_star,
+            3, 7 => .slow_star,
+            else => null,
+        };
     }
 
     // PORT(verified): native `initialize_nuke` allocates 25 sprites, sets each

@@ -130,6 +130,28 @@ pub const RingEffectState = enum(u8) {
     miss_expand,
 };
 
+// PORT(partial): runtime slot for `spawn_track_ring_or_special_effect`
+// (2-slot pool at `game + 0x35b78c`, stride 0x1f8). Recovered native fields
+// used by the port:
+//
+//   - `+0x80` state, `+0x88` kind, `+0x8c` movement-selector snapshot
+//   - `+0x68..+0x70` world position (children orbit this anchor)
+//   - `+0x1e0`/`+0x1e4` random phase/step lanes. `update_subgoldy_bullet`
+//     only consumes them behind the byte flag at `+0x1dc`, which is never
+//     written anywhere in this binary, so the sine X-drift branch is dead
+//     native code. The port keeps the lanes (spawn still burns the same
+//     RNG draws) but never moves the ring with them.
+//   - `+0x1e8` child-update cadence; wraps at 3 and gates the per-child
+//     star shower (`emit_ring_star_shower`).
+//   - per-child orbit phase (`child + 0x14`) starts at `i * tau/10` and
+//     advances by `subgame_rate * tau/60` per tick
+//     (`initialize_ring_or_special_effect_particles` /
+//     `update_ring_or_special_effect_particle`), frozen for kind 3. The
+//     port folds the shared accumulator into `child_orbit_phase`.
+pub const ring_effect_child_count: usize = 10;
+pub const ring_effect_child_orbit_radius: f32 = 1.2;
+pub const ring_effect_child_phase_step: f32 = std.math.tau / @as(f32, @floatFromInt(ring_effect_child_count));
+
 pub const RingEffect = struct {
     source_row: usize,
     row: usize,
@@ -140,10 +162,11 @@ pub const RingEffect = struct {
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
     movement_flag_selector_snapshot: u8 = 0,
-    active_x_oscillation_enabled: bool = false,
     child_update_cadence: u8 = 0,
     active_phase: f32 = 0.0,
     active_phase_step: f32 = 0.0,
+    child_orbit_phase: f32 = 0.0,
+    child_orbit_phase_step: f32 = 0.0,
     effect_progress: f32 = 0.0,
     effect_progress_step: f32 = 0.0,
 };

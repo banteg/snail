@@ -172,6 +172,9 @@ const runtime_ring_default_gate_threshold: f32 = 0.7;
 const runtime_ring_kind4_to3_threshold: f32 = 0.93;
 const runtime_ring_time_trial_kind3_threshold: f32 = 0.5;
 const runtime_ring_effect_progress_scale: f32 = 0.069444448;
+// Native 0.10471976 (`tau / 60`) child spin per `subgame_rate` unit in
+// `initialize_ring_or_special_effect_particles`.
+const runtime_ring_child_orbit_phase_per_rate: f32 = 0.10471976;
 const runtime_ring_effect_collect_lerp: f32 = 0.94;
 const runtime_ring_effect_collect_z_offset: f32 = 0.2;
 const runtime_ring_effect_miss_expand_scale: f32 = 1.1;
@@ -4266,6 +4269,11 @@ pub const Runner = struct {
         if (runtimeRingKindUsesRandomizedSpawnX(kind)) {
             world_position.x = (self.nextMathRandomFloat01() - 0.5) * 2.0 * runtime_ring_spawn_random_x_amplitude;
         }
+        // PORT(partial): native always burns these two RNG draws into the
+        // `+0x1e0`/`+0x1e4` phase lanes, but the consuming oscillation branch
+        // in `update_subgoldy_bullet` is gated on the never-written flag at
+        // `+0x1dc` — the ring never drifts in X. The draws stay for RNG-stream
+        // parity; nothing reads the resulting values for motion.
         const active_phase = self.nextMathRandomFloat01() * std.math.tau;
         const seeded_phase_step = self.runtimeRingActivePhaseStep(preview, source_row, kind);
         const active_phase_step = if (self.nextMathRandomFloat01() > 0.5)
@@ -4281,9 +4289,13 @@ pub const Runner = struct {
             .presentation_position = world_position,
             .presentation_scale = 1.0,
             .movement_flag_selector_snapshot = self.presentation.movement_flag_selector,
-            .active_x_oscillation_enabled = runtimeRingKindUsesRandomizedSpawnX(kind),
             .active_phase = active_phase,
             .active_phase_step = active_phase_step,
+            // PORT(partial): `initialize_ring_or_special_effect_particles`
+            // seeds every child spin lane from the live `subgame_rate * tau/60`,
+            // always positive — the random-sign lane above never reaches the
+            // halo children.
+            .child_orbit_phase_step = self.nativeRunRate() * runtime_ring_child_orbit_phase_per_rate,
         };
     }
 
@@ -4382,17 +4394,19 @@ pub const Runner = struct {
     }
 
     fn updateRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, effect: *RuntimeRingEffect) bool {
+        // PORT(partial): `update_subgoldy_bullet` advances the star-shower
+        // cadence and runs `update_ring_or_special_effect_particle` for all
+        // ten children in every live state, so the halo keeps orbiting while
+        // it collapses (collect) or expands (miss). The child orbit phase is
+        // frozen for kind 3 (`parent + 0x88 == 3` guard in the child update).
+        effect.child_update_cadence +%= 1;
+        if (effect.child_update_cadence == 3) effect.child_update_cadence = 0;
+        if (effect.kind != 3) {
+            effect.child_orbit_phase += effect.child_orbit_phase_step;
+            if (effect.child_orbit_phase > std.math.tau) effect.child_orbit_phase -= std.math.tau;
+        }
         switch (effect.state) {
             .active => {
-                effect.child_update_cadence +%= 1;
-                if (effect.child_update_cadence == 3) effect.child_update_cadence = 0;
-                if (effect.kind != 3) {
-                    effect.active_phase = @mod(effect.active_phase + effect.active_phase_step, std.math.tau);
-                    if (effect.active_phase < 0.0) effect.active_phase += std.math.tau;
-                }
-                if (effect.active_x_oscillation_enabled) {
-                    effect.world_position.x = @sin(effect.active_phase) * runtime_ring_spawn_random_x_amplitude;
-                }
                 effect.presentation_position = effect.world_position;
                 effect.presentation_scale = 1.0;
 
@@ -7681,7 +7695,11 @@ test "runtime ring effect keeps source row and native presentation anchor" {
     const effect = runner.activeRuntimeRingEffects()[0];
     try std.testing.expectEqual(@as(usize, 51), effect.source_row);
     try std.testing.expectEqual(@as(usize, 51), effect.row);
-    try std.testing.expect(!effect.active_x_oscillation_enabled);
+    try std.testing.expectApproxEqAbs(
+        runner.nativeRunRate() * runtime_ring_child_orbit_phase_per_rate,
+        effect.child_orbit_phase_step,
+        0.0001,
+    );
     try std.testing.expectApproxEqAbs(
         Runner.runtimeCellWorldPosition(&fixture.preview, 51, 1, runtime_ring_spawn_y_offset_default).y,
         effect.presentation_position.y,
@@ -7729,7 +7747,6 @@ test "default ramp ring uses native live slot position for collision and present
                 effect.presentation_position.y,
                 0.0001,
             );
-            try std.testing.expect(effect.active_x_oscillation_enabled);
             try std.testing.expectApproxEqAbs(effect.world_position.x, effect.presentation_position.x, 0.0001);
             return;
         }
@@ -7771,10 +7788,20 @@ test "default ramp ring seeds native phase step from base subgame rate" {
                 runner.nativeRunRate() *
                 std.math.tau;
             try std.testing.expectApproxEqAbs(expected, @abs(effect.active_phase_step), 0.0001);
+            // PORT(partial): the random phase lanes never move the ring —
+            // `update_subgoldy_bullet` gates the sine X drift on the byte at
+            // `+0x1dc`, which nothing in the binary ever writes. The spawn X
+            // stays fixed while the halo children orbit it.
             const x_before = effect.world_position.x;
+            const orbit_before = effect.child_orbit_phase;
             runner.updateRuntimeRingEffects(&preview);
             const updated = runner.activeRuntimeRingEffects()[0];
-            try std.testing.expect(updated.world_position.x != x_before);
+            try std.testing.expectApproxEqAbs(x_before, updated.world_position.x, 0.0001);
+            try std.testing.expectApproxEqAbs(
+                orbit_before + updated.child_orbit_phase_step,
+                updated.child_orbit_phase,
+                0.0001,
+            );
             return;
         }
     }
