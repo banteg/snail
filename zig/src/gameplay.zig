@@ -131,7 +131,9 @@ const runtime_health_collision_distance_threshold: f32 = 0.98;
 const runtime_jetpack_collision_distance_threshold: f32 = 3.0;
 const runtime_health_collision_y_tolerance: f32 = 0.4;
 const runtime_hazard_collision_z_tolerance: f32 = 1.0;
-const runtime_pickup_phase_step: f32 = 0.016666668;
+// PORT(partial): `spawn_track_health_pickup` seeds the bob phase step with the
+// same 0.012820513 lane as track parcels, not 1/60.
+const runtime_pickup_phase_step: f32 = 0.012820513;
 const runtime_health_pickup_bob_height: f32 = 0.3;
 const garbage_burst_side_bias_scale: f32 = 0.2;
 const garbage_burst_gravity_scale: f32 = -0.01;

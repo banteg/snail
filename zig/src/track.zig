@@ -663,7 +663,6 @@ pub const LoadedLevelPreview = struct {
             row_offsets,
             total_rows,
             max_width,
-            runtime_tiles,
             &attachment_scaffold,
             mirror_state_build.states,
             runtime_row_flags,
@@ -910,7 +909,6 @@ pub const LoadedLevelPreview = struct {
             row_offsets,
             total_rows,
             max_width,
-            runtime_tiles,
             &attachment_scaffold,
             mirror_state_build.states,
             runtime_row_flags,
@@ -1012,12 +1010,7 @@ pub const LoadedLevelPreview = struct {
             random_state,
             .challenge,
             &self.attachment_scaffold,
-            .{
-                .total_rows = self.total_rows,
-                .max_width = self.max_width,
-                .runtime_tiles = self.runtime_tiles,
-                .runtime_row_mirror_states = self.runtime_row_mirror_states,
-            },
+            .{ .runtime_row_mirror_states = self.runtime_row_mirror_states },
         );
         self.parcel_target_count = countRuntimeParcelPlacements(self.runtime_parcel_placements);
         return self.parcel_target_count;
@@ -2553,8 +2546,6 @@ const ParcelCandidate = struct {
     segment_index: usize,
     global_row: usize,
     set_id: u8,
-    center_lane: f32,
-    floor_lane_index: usize,
     offset: segment.Vec3,
 };
 
@@ -2655,12 +2646,6 @@ fn collectParcelCandidatePool(
         const row_base = row_offsets[segment_index];
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
-            const bounds = guidanceBounds(row) orelse if (row.cells.len == 0)
-                LaneBounds{ .min = 0, .max = 0 }
-            else
-                LaneBounds{ .min = 0, .max = row.cells.len - 1 };
-            const center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-            const floor_lane_index = (bounds.min + bounds.max) / 2;
             if (row.annotation) |annotation| {
                 switch (annotation) {
                     .parcel => |parcel| if (parcelSetIdFromAnnotationId(parcel.id)) |set_id| {
@@ -2668,8 +2653,6 @@ fn collectParcelCandidatePool(
                             .segment_index = segment_index,
                             .global_row = global_row,
                             .set_id = set_id,
-                            .center_lane = center_lane,
-                            .floor_lane_index = floor_lane_index,
                             .offset = parcel.offset,
                         });
                     },
@@ -2688,8 +2671,8 @@ fn collectParcelCandidatePool(
                     .segment_index = segment_index,
                     .global_row = global_row,
                     .set_id = set_id,
-                    .center_lane = center_lane,
-                    .floor_lane_index = floor_lane_index,
+                    // Native seeds digit-cell fallback parcels at the playable
+                    // lane center relative to the track axis.
                     .offset = .{
                         .x = @as(f32, @floatFromInt(playable_lane_index)) - 4.0 + 0.5,
                         .y = 0.0,
@@ -2738,7 +2721,6 @@ fn buildRuntimeParcelPlacementGrid(
     row_offsets: []const usize,
     total_rows: usize,
     max_width: usize,
-    runtime_tiles: []const u8,
     attachment_scaffold: *const attachment_builders.Scaffold,
     mirror_states: []const bool,
     row_flags: []u32,
@@ -2764,21 +2746,13 @@ fn buildRuntimeParcelPlacementGrid(
         random_state,
         mode,
         attachment_scaffold,
-        .{
-            .total_rows = total_rows,
-            .max_width = max_width,
-            .runtime_tiles = runtime_tiles,
-            .runtime_row_mirror_states = mirror_states,
-        },
+        .{ .runtime_row_mirror_states = mirror_states },
     );
 
     return placements;
 }
 
 const ParcelProjectionContext = struct {
-    total_rows: usize,
-    max_width: usize,
-    runtime_tiles: []const u8,
     runtime_row_mirror_states: []const bool,
 };
 
@@ -2890,40 +2864,44 @@ fn runtimeParcelWorldPosition(
         offset.x = -offset.x;
     }
 
+    // PORT(partial): `place_parcels_on_track` builds the anchor from the
+    // authored offset alone — x verbatim (track-centered), `y += 1.0`,
+    // `z += row + 0.5`. Floor height is never sampled.
+    const anchor = rl.Vector3{
+        .x = offset.x,
+        .y = offset.y + 1.0,
+        .z = @as(f32, @floatFromInt(candidate.global_row)) + 0.5 + offset.z,
+    };
+
     if (attachment_scaffold.installedBuiltAttachmentAtRow(candidate.global_row)) |built| {
-        const progress = @as(f32, @floatFromInt(candidate.global_row -| built.row.global_row)) + offset.z;
+        // PORT(partial): attachment rows re-project the anchor at path node
+        // `trunc(anchor.z) - attachment_row` (clamped at 0). The kind-42
+        // transform consumes the lifted anchor y directly (the shared pose
+        // helper re-adds the rider height, so back it out) and keeps the
+        // anchor z; other families take the node-basis position from
+        // `get_path_position_at_node`.
+        const attachment_row: f32 = @floatFromInt(built.row.global_row);
+        const progress = @max(@floor(anchor.z) - attachment_row, 0.0);
+        const is_nonlinear_42 = built.template.spec.family == .nonlinear_42;
+        const vertical_offset = if (is_nonlinear_42)
+            anchor.y - attachment_builders.nonlinear_42_rider_height
+        else
+            anchor.y;
         const position = attachment_builders.worldPositionForTemplate(
             &built.template,
             progress,
             built.row.global_row,
             offset.x,
-            offset.y + 0.48,
+            vertical_offset,
         );
-        return .{ .x = position.x, .y = position.y, .z = position.z };
+        return .{
+            .x = position.x,
+            .y = position.y,
+            .z = if (is_nonlinear_42) anchor.z else position.z,
+        };
     }
 
-    const floor_height = runtimeFloorHeightAtCellCenter(projection, candidate.global_row, candidate.floor_lane_index) orelse 0.0;
-    const base = runtimeWorldPositionForLane(
-        projection.max_width,
-        candidate.center_lane,
-        @as(f32, @floatFromInt(candidate.global_row)),
-        floor_height + 0.48,
-    );
-    return .{
-        .x = base.x + offset.x,
-        .y = base.y + offset.y,
-        .z = base.z + offset.z,
-    };
-}
-
-fn runtimeFloorHeightAtCellCenter(projection: ParcelProjectionContext, global_row: usize, lane_index: usize) ?f32 {
-    if (global_row >= projection.total_rows or projection.max_width == 0 or lane_index >= projection.max_width) return null;
-    const tile_type = projection.runtime_tiles[runtimeTileIndex(projection.max_width, global_row, lane_index)];
-    return sampleFloorHeightForRuntimeTile(
-        tile_type,
-        @as(f32, @floatFromInt(global_row)) + 0.5,
-        specialFloorHeightForShippedRuntimeTile(tile_type),
-    );
+    return anchor;
 }
 
 fn runtimeWorldPositionForLane(max_width: usize, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {

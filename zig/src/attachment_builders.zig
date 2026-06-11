@@ -636,7 +636,7 @@ const SurfaceBasis = struct {
     forward: Vec3,
 };
 
-const nonlinear_42_rider_height: f32 = 0.49;
+pub const nonlinear_42_rider_height: f32 = 0.49;
 
 const Nonlinear42LocalTransform = struct {
     position: Vec3,

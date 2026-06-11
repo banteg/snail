@@ -25,6 +25,7 @@ const tau: f32 = 6.2831855;
 const native_runtime_ring_particle_count = gameplay_runtime_entities.ring_effect_child_count;
 const native_runtime_ring_particle_radius = gameplay_runtime_entities.ring_effect_child_orbit_radius;
 const native_runtime_ring_particle_half_extent: f32 = 0.72;
+const native_health_pickup_half_extent: f32 = 0.6;
 const native_runtime_ring_particle_alpha: u8 = 204;
 const native_runtime_ring_particle_phase_step = gameplay_runtime_entities.ring_effect_child_phase_step;
 const native_time_trial_ghost_sprite_world_size: f32 = 1.0;
@@ -114,7 +115,7 @@ pub fn drawRuntimeActors(
     for (runner.activeTrackParcels()) |parcel| {
         if (!parcel.active()) continue;
         if (!gameplay_render_policy.actorRowVisible(runner, parcel.row)) continue;
-        drawGameplayTrackParcelActor(render, camera, parcel);
+        drawGameplayTrackParcelActor(render, runner, parcel);
     }
 
     for (runner.activeRuntimeHazards()) |hazard| {
@@ -503,7 +504,10 @@ fn drawGameplayHealthPickupActor(
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const loaded_texture = render.resources.sprites.health;
-    gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, render.billboard_shader, .white);
+    // PORT(partial): `spawn_track_health_pickup` seeds both sprite size lanes
+    // to 0.6, and `draw_sprite_quad` treats them as half extents.
+    const sprite_size = nativeSpriteHalfExtentWorldSize(native_health_pickup_half_extent);
+    gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, sprite_size, sprite_size, camera, render.billboard_shader, .white);
 }
 
 fn drawGameplayJetpackPickupActor(
@@ -678,7 +682,7 @@ fn runtimeRingParticleRoll(effect: gameplay_runtime_entities.RingEffect, child_i
 
 fn drawGameplayTrackParcelActor(
     render: Context,
-    camera: rl.Camera3D,
+    runner: gameplay.Runner,
     parcel: gameplay_runtime_entities.TrackParcel,
 ) void {
     const loaded_texture = render.resources.sprites.parcel;
@@ -689,18 +693,32 @@ fn drawGameplayTrackParcelActor(
     // @ 0x4137f0 emits the quad corners at +/-scale in view units, so the
     // shipped sprite covers 2.0 world units per axis before the grow/shrink
     // lane (`progress * 0.6 + 0.4`) modelled by `presentationScale`.
-    gameplay_billboard.drawTexture(
+    // `update_track_parcel` rolls the quad by the player's accumulated
+    // heading roll (`player + 0x370`) plus the live follow-state heading
+    // lane, so parcels stay upright relative to the rolled world.
+    gameplay_billboard.drawTextureRectWorldXyRolledBlendedAlphaCutoff(
         loaded_texture.texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         position,
         2.0 * scale,
         2.0 * scale,
-        camera,
         render.billboard_shader,
+        runnerSpriteHeadingRoll(runner),
         if (parcel.parcel_id == 0)
             .white
         else
             .{ .r = 196, .g = 255, .b = 196, .a = 232 },
+        .alpha,
+        gameplay_billboard.default_alpha_cutoff,
     );
+}
+
+fn runnerSpriteHeadingRoll(runner: gameplay.Runner) f32 {
+    var roll = runner.attachment.camera.heading_roll;
+    if (runner.attachment.follow.active) {
+        roll += runner.attachment.follow.camera_orientation_b;
+    }
+    return roll;
 }
 
 fn gameplayLaneWorldPosition(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) rl.Vector3 {
