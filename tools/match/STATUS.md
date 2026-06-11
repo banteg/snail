@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**4/9** functions matched, **293/1713** bytes.
+**8/13** functions matched, **489/1909** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -12,6 +12,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 205/204 | 37.16% | msvc6.5 /O2 /G5 /W3 /Op |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
