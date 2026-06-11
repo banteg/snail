@@ -128,6 +128,7 @@ Work this top-down unless a new runtime capture invalidates the order.
   - likely next step: trace `[controller + 0x98]`, `data_4df904 + 110`, `+119190`, `+4299515`, `+4299516`, and `+17198056/+17198057` together in one Windows session
 - [x] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
   - current port shape: result exits and abandon exits now route through one owner-driven bridge transition lane with native opcode names plus explicit saved-owner and saved-replay-return state on `AppState`
+- [ ] Mirror the `destroy_subgame → app+0x1bc = 0x12` outer-bridge safety net (native 0x438b09); current Zig paths compute the right owner via helpers, so this is defensive — defer until a repro surfaces
 - [ ] Finish moving any remaining post-overlay/final-loss/thanks-for-playing updates onto that same explicit bridge
   - current narrowing: respawn now follows the confirmed `update_subgoldy_resurrect -> save current owner -> state 0x1c` bridge lane instead of an app-local reload helper
   - newer narrowing: selected-level-record final loss is no longer lumped into opcode `28`; BN disassembly now shows `complete_subgame(game, 1)` followed by `save current owner -> state 0x1a`
@@ -172,24 +173,39 @@ Work this top-down unless a new runtime capture invalidates the order.
   - winner after swept re-entry: **`0x43bf6f`** grounded-snap lane with predicate `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0` → position.y=0.49, zero velocity, clear
   - remaining two lanes: `0x43c06d` tile-flags grounded re-snap (`velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`), `0x43c3ea` trampoline bounce on tile `0x16` with `|y - cell_y| < 0.49` envelope, squidge, velocity flip, position.y=cell_y+0.49, play_sound_effect(0x29)
   - current Zig consequence: the old `progress >= 1.0` timeout clear is gone; active-phase retirement uses the confirmed jetpack clear plus a broad trampoline-or-non-open-neighbor proxy that fires too eagerly compared to any of the three grounded-snap lanes
+- [ ] Port the minimum player motion slice needed to tighten attachment-exit retirement to the native lanes (harvested from the retired 2026-04 infrastructure plan)
+  - fields: `position_y` (Player+0x6c, rest value `0.49`), `velocity_y` (Player+0x414), `follow_active` derived from the existing follow state machine (Player+0x384)
+  - steps: gravity-coupled `velocity_y += -0.01 * v_z^2` @ 0x43c316 (native v_z source is the movement-fire progress step at Player+0x2734, not track speed), then `position_y += velocity_y` @ 0x43bac4
+  - the `attachment_exit_progress` step at 0x43ce96 is the explicit else-branch — it only runs when neither 0x43bcb3 nor 0x43bf6f fired this tick
+  - `begin_post_follow_carryover` @ 0x43af60 is matched 100% in `tools/match/scratches/begin_post_follow_carryover`; port from the matched source, not HLIL
+  - deferred follow-ups: 0x43c06d re-snap needs a tile `flags_3d` + global flag 2 mirror; 0x43c3ea trampoline needs a `cell_y` accessor (current proxy fires too eagerly); 0x43ce75 needs `position_y` plus a `jetpack_gauge.state == 1` mirror; full `velocity.x/z` model and the ±4 lateral clamp come last
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
 - [ ] Recover the deeper movement-state emitter owner and literal input-device source behind `play_movement_state_sound`
 - [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
-- [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `calc_path_length_z`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn).
+- [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `calc_path_length_z`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). Both helpers are matched in `tools/match/scratches` (100% and 92% with a documented scheduling-only residual) — port from the matched sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the exact dedicated health-particle bod owner, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners
 - [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner
+  - hit-flash side effects in `apply_damage_gauge_delta` @ 0x4413f0: gate `(*(game+0x4300b4) & 0x80) && !force` (no static writer found; likely `update_invincible_shell`), then `change_snail_skin(slot 1, 0.2s)`, voice `damage` with `ouch` fallback, and `dispatch_cutscene_animation(6, immediate, -1)` when `*(game+0x430054) == 0` else `(1, queued, -1)`; needs a `force: bool` parameter threaded through all call sites
+  - state-2 drain side effects: `change_snail_skin(slot 1, 0.2s)` each tick while draining, `postal` voice on the 1→2 transition, `stop_warning_sample` handle release on state-2 exit
+  - the 6× accelerated drain flag `*(game+0x4301bc)` has no writers in the decompile set; blocked on a live Frida trace before its meaning can be inferred
 
 ### Phase 5. Tighten gameplay runtime ownership
 
 - [ ] Port the remaining ambient hazard suppressor details beyond the generated-garbage postal/time-trial mode gates
-- [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by Wall2 AI via `shoot_subgoldy`. Reference: `wall2_emitter_maybe_fire_sub_lazer` @ 0x439d50, `update_sub_lazer_projectile` @ 0x43efb0, `spawn_sub_lazer_projectile` @ 0x441670, `cRSalt` @ `game + 0x3578c0`.
+- [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by Wall2 AI via `shoot_subgoldy` @ 0x441ad0. Reference: `wall2_emitter_maybe_fire_sub_lazer` @ 0x439d50 (RNG gate plus `game+0x74668 > game+0x42fdec` cadence), `update_sub_lazer_projectile` @ 0x43efb0, `spawn_sub_lazer_projectile` @ 0x441670, `cRSalt` @ `game + 0x3578c0`; salt pool helpers: `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`), `update_salt_hazard` @ 0x4417d0, `deactivate_salt_hazard` @ 0x441740.
+- [ ] Jetpack state 2 (hover) controller + `end_jetpack_hover` @ 0x43a370 — large; belongs with a broader jetpack hover-mode port that is not prioritized yet
 - [ ] Recover the exact `gate_18` input/controller source
 - [ ] Recover parcel-flight and row-event widget timing details that still rely on app-side or inferred helpers
 - [ ] Port the missing score events tied to replay, jetpack, slug kills, and the remaining unresolved branches
+- [ ] Port the slug-hit velocity writes once the motion slice lands (harvested from the retired 2026-04 infrastructure plan)
+  - first hit: velocity triplet `(0, tc_x*0.2, -tc_x*0.2)` plus `begin_post_follow_carryover`, cutscene state `0xa`, `firework_shoot`, and `play_slug_voice(0x22 - rand)`
+  - repeat hit: z-velocity knockback `tc_x² × 0.004 × -8`
+  - garbage impact: slot `+0x88` direction-of-hit field set to `1` or `2` from `vector.x > 0`
+- [ ] Small recovered gates, low impact: global pause gate `data_4df904 + 0x74621` on `update_warning` / `update_damage_gauge` / the pulse lane; health and jetpack pickup per-slot `player.live_matrix.position.y >= 0.49` gate (needs `position_y`)
 
 ### Phase 6. Recover track render-normalization
 
@@ -209,8 +225,13 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 8. Tighten presentation layers last
 
 - [ ] Finish Turbo gameplay anchor/orientation and broader state-specific animation switching
+  - `dispatch_cutscene_animation` @ 0x444600 recovery (harvested from the retired 2026-04 infrastructure plan): `AnimDispatchState` layout per `path_template_types.h:354` (`active, progress, progress_step, active_keyframe, edge_latched, queued_animation_ids[10], queued_animation_count, self_ref, queue_sentinel`); `immediate=false` enqueues, `immediate=true` indexes the 128-byte-stride `animation_slot_table` at presentation_controller `+0x14c+0x24`, latches the keyframe, clears the queue, sets flag `0x20`
+  - anim ids: `1`=base, `3`/`4`=lookback-L/R, `5`=skidstop, `6`=damaged, `7`=intoshell, `8`=fall, `9`=talk; per-clip keyframes come from the shipped `X/_ANIMATION.TXT` entries
+  - replace the manual turbo-talk family switch with a real `dispatch_cutscene_animation(.talk, immediate, 0)`
+- [ ] Jet-particle pool + `SPRITES/JETPACKTHRUST.TGA` / `SPRITES/SMOKE.TGA` loading (presentation polish; the sfx and mesh-swap lanes are already covered)
 - [ ] Recover non-billboarded actor ownership where the original runtime uses real object/model controllers
 - [ ] Tighten combat VFX ownership after the underlying controller is recovered
+- [ ] Hook the snail-skin render-state material index lookup once the snail-presentation render layer is ported — the `SnailSkinTransition` state is ported and matched, but the port has no renderer-side consumer yet
 - [ ] Tighten remaining frontend widget polish only when ownership is already understood
   - current narrowing: native widget shortcut keys are now ported for pause-menu and post-level high-score flows; the remaining gap is shared widget-controller polish, not basic keyboard activation ownership
 
@@ -232,6 +253,7 @@ If there is time for only one focused RE session, use this order:
 
 While working through this list:
 
+- when an item hinges on the exact semantics of a single contested function, match it first (`tools/match`, see its README) and port from the matched C++ instead of re-reading HLIL
 - do not count UI parity as proof that the owning runtime controller is ported
 - prefer replacing fallback producers with recovered native fields before tuning presentation
 - update the relevant status docs whenever a blind spot is closed or narrowed
