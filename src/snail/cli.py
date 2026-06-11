@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 from pathlib import Path
 from typing import Sequence
@@ -9,6 +10,7 @@ import msgspec
 
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
+from .match import run_match
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
 from .screenshots import (
@@ -18,6 +20,7 @@ from .screenshots import (
 )
 from .symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    REPO_ROOT,
     load_function_symbol_manifest,
     summarize_function_symbol_manifest,
     write_function_symbol_manifest,
@@ -271,6 +274,45 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the JSON summary to this path in addition to stdout.",
     )
 
+    match_parser = subparsers.add_parser(
+        "match",
+        help="Diff a compiled scratch object's function against the original image.",
+    )
+    match_parser.add_argument(
+        "obj",
+        type=Path,
+        help="Path to the VC6 COFF object compiled from the candidate scratch.",
+    )
+    match_parser.add_argument(
+        "function",
+        help="Curated function name from the symbol manifest.",
+    )
+    match_parser.add_argument(
+        "--symbol",
+        help="Override the object symbol to extract (default: match the function name).",
+    )
+    match_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_parser.add_argument(
+        "--end",
+        type=lambda value: int(value, 0),
+        help="Explicit end VA when the next curated function overshoots the extent.",
+    )
+    match_parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Print both normalized listings side by side instead of only the diff.",
+    )
+
     return parser
 
 
@@ -402,6 +444,35 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.write.write_text(text + "\n", encoding="utf-8")
         print(text)
         return 0
+
+    if args.command == "match":
+        manifest = load_function_symbol_manifest(args.manifest)
+        image_path = args.image or REPO_ROOT / manifest.primary_target
+        result = run_match(
+            obj_path=args.obj,
+            function_name=args.function,
+            image_path=image_path,
+            manifest=manifest,
+            symbol_name=args.symbol,
+            end_va=args.end,
+        )
+        print(f"match: {result.ratio:.2%}")
+        print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
+        if args.full:
+            width = max((len(line) for line in result.target_lines), default=0)
+            matcher = difflib.SequenceMatcher(
+                a=result.target_lines, b=result.candidate_lines, autojunk=False
+            )
+            for tag, a0, a1, b0, b1 in matcher.get_opcodes():
+                for offset in range(max(a1 - a0, b1 - b0)):
+                    left = result.target_lines[a0 + offset] if a0 + offset < a1 else ""
+                    right = result.candidate_lines[b0 + offset] if b0 + offset < b1 else ""
+                    marker = " " if tag == "equal" else "|"
+                    print(f"{left:<{width}} {marker} {right}")
+        else:
+            for line in result.diff_lines:
+                print(line)
+        return 0 if result.ratio == 1.0 else 1
 
     parser.error(f"Unhandled command: {args.command}")
     return 2

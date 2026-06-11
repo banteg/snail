@@ -6,3 +6,5 @@ __pycache__/
 zig-pkg/
 zig-out/
 site/
+tools/match/compilers/
+tools/match/scratches/*/build/

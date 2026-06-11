@@ -19,6 +19,7 @@ snail = "snail:main"
 
 [dependency-groups]
 dev = [
+    "capstone>=5.0.9",
     "pytest>=9.0.2",
 ]
 
