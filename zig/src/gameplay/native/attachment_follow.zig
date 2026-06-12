@@ -268,10 +268,15 @@ test "swept entry skips samples whose gate float is exactly zero" {
 }
 
 pub const FollowUpdateMode = enum(i32) {
+    /// also what a BLOCKED side exit returns natively (side_exit_mode != 0):
+    /// the side effects (snap, clamp, heading roll) happen but the caller
+    /// cannot distinguish it from following — verified from the boss asm
+    /// (all three side-exit paths: test [template+0x40]; sete al)
     following = 0,
-    side_exit_blocked = 0x100, // side exit with side_exit_mode != 0 (returns 0 native)
-    side_exit = 1, // side exit with side_exit_mode == 0 (returns 1 native)
+    side_exit = 1, // side_exit_mode == 0
     natural_end = 3,
+    // update_subgoldy's case 2 for this call is dead code (unreachable —
+    // the function only returns 0, 1, or 3), same class as the voice-4 lane
 };
 
 pub const FollowUpdateDeps = struct {
@@ -374,7 +379,7 @@ pub fn updateTrackAttachmentFollowState(
         const half: f32 = @floatFromInt(deps.width_cells);
         if (!(lateral <= half * 0.5 + 0.30000001 or state.vertical_offset > 0.0)) {
             deps.add_heading_roll_fn(deps.context, deps.installed_heading_delta);
-            return if (deps.side_exit_mode_zero) .side_exit else .side_exit_blocked;
+            return if (deps.side_exit_mode_zero) .side_exit else .following;
         }
     }
     if (state.vertical_offset < 0.0) {

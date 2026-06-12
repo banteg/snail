@@ -29,3 +29,13 @@ the boss return codes — then the exit-lane cluster, then the motion
 step). Each region transcribes into the cluster-2 mirror as it pins.
 The FollowState/Player/carryover layouts recovered this campaign cover
 most of the struct surface already.
+
+## Mode-code question RESOLVED (2026-06-12, boss asm verification)
+
+All three side-exit return paths in update_track_attachment_follow_state
+end with `mov ecx, [template+0x40]; test ecx, ecx; sete al` — the
+function returns only 0, 1, or 3. update_subgoldy's case 2 for this
+switch is dead code (the voice-4 class). A BLOCKED side exit (mode != 0)
+returns 0: its side effects happen but the caller treats it as
+following. The mirror's FollowUpdateMode is corrected accordingly, and
+template+0x40 is confirmed as side_exit_mode.
