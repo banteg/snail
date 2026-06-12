@@ -87,9 +87,13 @@ invalidation ledger.
 2. **Cruise cadence**: track mode has NO per-tile z boost. The 0.24-0.31
    oscillation = collision boosts (speedup pickup and ring effects both
    set `vz = rate*0.5`) decaying via `(1 - rate*0.003)` toward the
-   `rate*0.17` window floor. The oracle's drag-to-floor symptom means the
-   port is missing/mistiming RING COLLECTION along the recorded path —
-   instrument ring hits vs native cadence next.
+   `rate*0.17` window floor. The port already models the rate*0.5 ring
+   lane (`applyNativeForwardVelocityRing`), so the drag-to-floor symptom
+   means rings are being MISSED or mistimed along the recorded path —
+   which is exactly the grid-alignment audit's open "collision probes"
+   consumer conversion. Converting those probes to containing-cell
+   sampling + instrumenting ring-hit ticks vs native is the next oracle
+   move.
 
 ## Next actions (keep this list short and current)
 
