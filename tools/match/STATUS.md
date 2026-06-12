@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**95/105** functions matched, **4414/7816** bytes.
+**96/106** functions matched, **4470/7872** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -64,6 +64,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
