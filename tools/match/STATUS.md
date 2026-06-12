@@ -2,11 +2,14 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**80/90** functions matched, **3982/7384** bytes.
+**84/94** functions matched, **4051/7453** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -83,6 +86,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
