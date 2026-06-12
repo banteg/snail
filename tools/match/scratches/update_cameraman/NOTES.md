@@ -24,3 +24,35 @@ Next session: read the full IDA export, map the cameraman struct
 (desired_matrix offset, player member, the +0x2964 field), write the
 scratch. The matched matrix helpers in the corpus should make the calls
 cheap to model.
+
+## Full semantics (2026-06-12 read of the IDA export)
+
+Pipeline per tick, all on the desired matrix before the final blend:
+base rows (1,0,0 / 0,0.946001,0.324162 / 0,-0.324162,0.946001) with
+position (target.x*0.4, 1.8, -0.5), orthogonalized; start-ramp before
+first_block_row_count blends y*1.15/(1-t) + y*0.35*t with a
+(1-t)*0.87249994 world-x rotation, after the ramp just y*0.35;
+attachment lift envelope (kinds 8/9/10/family10/36/43/45/loopw|8):
+cos envelope over (live z - anchor z)/segment_count_f scaled 0.35,
+smoothed 0.1, cutscene pitch adds a 0.24 envelope at 4.712389*cycle +
+pi/2; position x += target.x/3, z += target.z + 0.4 with previous-z
+clamped into [z-3, z-1.7]; pitch (-2 - (y-0.49)*5)*0.017449999 clamped
++/-1.2215 world-x; roll = lane-lean cos envelope * amplitude * 2pi +
+target.x * -8 * 0.017449999 * 0.17 world-z.
+
+**Open-question answers:**
+- when follow active: world-z rotate by orientation_a (via identity
+  matrix multiply) THEN by orientation_b — the orientation lanes'
+  consumers
+- when attachment_exit_pending: world-z rotate by post_follow_value_a —
+  ITS consumer (checklist Phase 3 open item; value_b consumer still
+  unknown)
+- heading_roll rotates last before the WORM FOV envelope
+  (110 + 50 * cos envelope, debug stub call inside) and the 0.3 FOV
+  smoothing
+- final: linear_interpolate_matrix(live, previous_desired, desired,
+  subgame_rate * 0.3) — the audited blend, now mirrored in
+  native/matrix_math.zig — then previous_desired = desired
+
+Scratch next: structure is linear with two matrix locals; the matched
+matrix helpers cover every call.
