@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**133/142** functions matched, **6767/9756** bytes.
+**138/147** functions matched, **6910/9899** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -40,6 +40,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -133,6 +134,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -144,6 +147,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
