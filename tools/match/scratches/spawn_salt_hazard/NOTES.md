@@ -1,0 +1,22 @@
+# Pinned — 74.07%, 67/68 insns, layout-only residual
+
+The free-scan loop is the only divergence: the original lays it out as a
+single top test with the bound compare as conditional back-edge; every
+source shape tried (for-with-increment, while, for(;;)+break,
+do-while+goto) rotates and duplicates the state test under our compiler
+pass ordering. All semantics verified in the diff body:
+
+- free scan over `slots[i].state` (+0x80, stride 0x98), bails with
+  `return index` at 40
+- seeding order: state=1, +0x8c=0.0f, speed +0x90 =
+  `game[+0x74650] * (1/30)`, position triple into the live-matrix
+  position row (+0x68), `set_matrix_rotation_identity` on +0x38,
+  random world-y rotation `(rand() - 16384) * 0.0001917476` (±π),
+  byte +0x94 = 1
+- **+0x94 is a byte flag, not a velocity lane** — IDA's update render
+  showing a float read there is wrong; settle the real layout when
+  matching update_salt_hazard @ 0x4417d0
+- live-list add-after onto the node-shaped anchor at game+0x3ca224,
+  flag 0x200, prev/next at +0x08/+0x0c, returns `list_flags |= 0x200`
+- spawn's true extent ends at 0x44164c; an uncurated 20-slot pool
+  initializer sits between it and deactivate (worth curating)

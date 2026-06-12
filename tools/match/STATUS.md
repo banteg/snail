@@ -78,8 +78,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% |  |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% |  |
 | ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% |  |
+| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 74.07% |  |
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% |  |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% |  |
+| 🚧 | deactivate_salt_hazard | 0x441740 | 140 | 39/43 | 41.46% |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% |  |
 | ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% |  |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% |  |
