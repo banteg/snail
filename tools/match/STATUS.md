@@ -157,6 +157,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% |  |
+| 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/66 | 49.57% |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% |  |
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% |  |
