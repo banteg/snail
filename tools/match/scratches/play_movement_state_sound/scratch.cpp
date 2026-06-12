@@ -52,12 +52,14 @@ void Player::play_movement_state_sound()
     if (sound_id != -1) {
         if (attachment_exit_pending) {
             Vector3 vector;
+            Vector3 normalized_vector;
 
             vector.x = *(float*)(g_game_base + 0x18c) - position.x;
             vector.y = *(float*)(g_game_base + 0x190) - position.y;
             vector.z = *(float*)(g_game_base + 0x194) - position.z;
 
-            float distance = (float)normalize_vector(&vector);
+            normalized_vector = vector;
+            float distance = (float)normalize_vector(&normalized_vector);
             float volume = 1.0f - distance * 0.016666668f;
             if (volume < 0.0f) {
                 volume = 0.0f;
