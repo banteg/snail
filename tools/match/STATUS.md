@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**44/52** functions matched, **2435/5362** bytes.
+**47/55** functions matched, **2489/5416** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -18,6 +18,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | msvc6.5 /O2 /G5 /W3 |
