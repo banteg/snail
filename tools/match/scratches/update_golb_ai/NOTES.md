@@ -57,3 +57,19 @@ function is read (next session).
 
 Mirror plan: entry + homing + trails are transcribable now; riding waits
 on calc_path_length_z.
+
+## calc_path_length_z @ 0x4217b0 (read 2026-06-12)
+
+It is a sibling of update_track_attachment_follow_state: identical
+advance structure (step = factor * delta_length, segment-fit check,
+center/scale/angle lerps with the terminal-sample special case, kind-42
+compute vs general matrix lerp with zeroed position rows through
+linear_interpolate_matrix), operating on the golb path state whose
+relative layout equals FollowState (template +0x4, sample_index +0xc,
+progress +0x10, vertical +0x14, output +0x18). The mode codes 0-3 it
+returns are what update_golb_ai switches on. The original clearly
+stamped one template-follow routine into both call sites — a future
+scratch should be derived from the boss scratch's source, and any boss
+golf wins transfer here. For the Zig mirror, the existing
+updateTrackAttachmentFollowState transcription covers this function's
+semantics modulo the state struct binding.

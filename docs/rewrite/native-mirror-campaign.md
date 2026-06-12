@@ -37,7 +37,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
 | 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | 🚧 salt done | · | · |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
-| 6 | golb / projectiles | search_path @ 0x415e30 (100%), init_path_follow @ 0x421770 (100%), update_golb_ai @ 0x414820 (2.7KB) | 🚧 | · | · | · |
+| 6 | golb / projectiles | search_path + init_path_follow 100%; update_golb_ai dossier complete 06-12 (path-follow entry, riding via calc_path_length_z — a boss sibling — rocket homing, trail dispatch); spec is mirror-ready | 🚧 | · | · | · |
 | 7 | cameraman | update_cameraman @ 0x4461d0 full pipeline recorded + Zig camera verified clean 06-12 (match = proof-polish, deprioritized); initialize_cameraman @ 0x446160 | 🚧 | n/a (camera verified in place) | · | · |
 | 8 | row events / tips | update_row_event_display @ 0x404cf0 (78.5% WIP) | 🚧 | · | · | · |
 | 9 | snail skin / presentation seams | all three skin functions (100%); renderer-side consumer still missing | ✅ | · | · | · |
