@@ -33,7 +33,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | # | cluster | key functions | match | mirror | route | collapse |
 |---|---------|---------------|-------|--------|-------|----------|
 | 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 pose interpolation routed into worldPoseForTemplate 06-12 | 🚧 entry-height + pose-lerp collapses ledgered 06-12 |
-| 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 (8.5KB boss; five retirement lanes), begin_post_follow_carryover @ 0x43af60 (100%) | 🚧 | · | · | · |
+| 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 dossiered with motion core + all five exit lanes specified 06-12 (gravity corrected to rate^2, +0x1e4 bounce byte decoded); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
 | 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | 🚧 salt done | · | · |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
