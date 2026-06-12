@@ -2799,7 +2799,10 @@ fn placeRuntimeParcelCandidates(
             var placed_count: usize = 0;
             while (placed_count < target_count and pool.zero_candidates.items.len > 0) {
                 const candidate_index = nextMathRandomScaledIndex(state, pool.zero_candidates.items.len);
-                const candidate = pool.zero_candidates.swapRemove(candidate_index);
+                // PORT(verified): native compaction shifts entries down in order
+                // (place_parcels_on_track scratch); swapRemove reordered the pool
+                // and diverged every later random pick from the native stream.
+                const candidate = pool.zero_candidates.orderedRemove(candidate_index);
                 if (placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection)) {
                     placed_count += 1;
                 }
@@ -2827,7 +2830,10 @@ fn placeRuntimeParcelCandidates(
 
             while (placed_count < target_count and pool.zero_candidates.items.len > 0) {
                 const candidate_index = nextMathRandomScaledIndex(state, pool.zero_candidates.items.len);
-                const candidate = pool.zero_candidates.swapRemove(candidate_index);
+                // PORT(verified): native compaction shifts entries down in order
+                // (place_parcels_on_track scratch); swapRemove reordered the pool
+                // and diverged every later random pick from the native stream.
+                const candidate = pool.zero_candidates.orderedRemove(candidate_index);
                 if (placeRuntimeParcelCandidate(placements, row_flags, candidate, attachment_scaffold, projection)) {
                     placed_count += 1;
                 }
@@ -2840,7 +2846,9 @@ fn removeParcelGroupsForSegment(allocator: std.mem.Allocator, pool: *ParcelCandi
     var index: usize = 0;
     while (index < pool.groups.items.len) {
         if (pool.groups.items[index].segment_index == segment_index) {
-            var group = pool.groups.swapRemove(index);
+            // PORT(verified): same-segment group removal is order-preserving
+            // in native (the 131-dword shift loop).
+            var group = pool.groups.orderedRemove(index);
             group.deinit(allocator);
             continue;
         }
