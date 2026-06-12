@@ -35,7 +35,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 pose interpolation routed into worldPoseForTemplate 06-12 | 🚧 entry-height + pose-lerp collapses ledgered 06-12 |
 | 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 dossiered with motion core + all five exit lanes specified 06-12 (gravity corrected to rate^2, +0x1e4 bounce byte decoded); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
-| 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | 🚧 salt done | · | · |
+| 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | ✅ salt (canonical home: `gameplay/hazards.zig`, match-derived incl. the OB-1 bit pattern; `native/salt_pool.zig` is a redundant parallel mirror — consolidate during cluster-4 collapse) | 🚧 hazards pool is live in the runner | · |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
 | 6 | golb / projectiles | search_path + init_path_follow 100%; update_golb_ai dossier complete 06-12 (path-follow entry, riding via calc_path_length_z — a boss sibling — rocket homing, trail dispatch); spec is mirror-ready | 🚧 | · | · | · |
 | 7 | cameraman | update_cameraman @ 0x4461d0 full pipeline recorded + Zig camera verified clean 06-12 (match = proof-polish, deprioritized); initialize_cameraman @ 0x446160 | 🚧 | n/a (camera verified in place) | · | · |
@@ -59,10 +59,10 @@ benefits from everything below it being trustworthy first.
    seam from the module doc).
 3. Finish `try_enter_track_attachment_from_swept_motion` register alignment
    on standard flags (NOTES has the dual-slot source-shape lead).
-4. Route the runner's salt lanes through `native/salt_pool.zig` (replaces
-   the runner-local salt live strip per checklist Phase 5), then match the
-   sub-lazer trio (wall2 emitter, shoot_subgoldy, update @ 0x43efb0) and
-   extend the mirror.
+4. Consolidate the duplicate salt pools (`gameplay/hazards.zig` is
+   canonical and live; fold or delete `native/salt_pool.zig` keeping its
+   tests), then match the sub-lazer trio (wall2 emitter, shoot_subgoldy,
+   update @ 0x43efb0).
 5. Finish `update_row_event_display` (78.5%) and
    `project_position_onto_track_attachment` (56%).
 
