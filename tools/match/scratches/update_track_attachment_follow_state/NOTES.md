@@ -62,3 +62,8 @@ Known residuals after the current source shape:
   `[esi+0xa0]` where the register context suggests the template, not the
   attached record — re-verify the +0x24 source field during the
   restructure.
+- advance-block duplication landed via cross-jump gotos (loop fits-exit
+  carries its own prologue + last-segment v85 case, jumping into the
+  shared else-lerp / after-v85 labels): 42.77% -> 47.39%, 654 insns.
+  Remaining structural deficit is now concentrated in the kind-42 /
+  general matrix-copy regions and the tail.

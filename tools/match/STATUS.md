@@ -32,7 +32,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% |  |
 | ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% |  |
-| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 644/726 | 42.77% |  |
+| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 654/726 | 47.39% |  |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% |  |

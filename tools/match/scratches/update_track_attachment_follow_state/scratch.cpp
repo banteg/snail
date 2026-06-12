@@ -174,8 +174,12 @@ int FollowState::update_track_attachment_follow_state(
     TransformMatrix v96;
     TransformMatrix to;
 
+    unsigned int current_index;
+    PathTemplate* current_template;
+    int terminal_index;
+    PathTemplateSample* primary;
     if (delta + progress > secondary_samples[index].delta_length) {
-        do {
+        for (;;) {
             delta -= secondary_samples[index].delta_length - progress;
             ++index;
             progress = 0.0f;
@@ -255,22 +259,36 @@ int FollowState::update_track_attachment_follow_state(
                 return 3;
             }
             secondary_samples = template_record->secondary_samples;
-        } while (delta + progress > secondary_samples[index].delta_length);
+            if (delta + progress <= secondary_samples[index].delta_length) {
+                current_index = sample_index;
+                out_angle = delta + progress;
+                progress = out_angle;
+                current_template = template_record;
+                terminal_index = current_template->segment_count - 1;
+                primary = &current_template->primary_samples[current_index];
+                if (current_index != (unsigned int)terminal_index)
+                    goto general_lerp_v85;
+                v85 = primary->center_x;
+                goto after_v85;
+            }
+        }
     }
 
-    unsigned int current_index = sample_index;
+    current_index = sample_index;
     out_angle = delta + progress;
     progress = out_angle;
-    PathTemplate* current_template = template_record;
-    int terminal_index = current_template->segment_count - 1;
-    PathTemplateSample* primary = &current_template->primary_samples[current_index];
+    current_template = template_record;
+    terminal_index = current_template->segment_count - 1;
+    primary = &current_template->primary_samples[current_index];
     if (current_index == (unsigned int)terminal_index) {
         v85 = primary->center_x;
     } else {
+general_lerp_v85:
         v85 = out_angle / current_template->secondary_samples[current_index].delta_length
             * (primary[1].center_x - primary->center_x)
             + primary->center_x;
     }
+after_v85:
     if (current_index == (unsigned int)terminal_index) {
         v79 = primary->lateral_scale;
     } else {
