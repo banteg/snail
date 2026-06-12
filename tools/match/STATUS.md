@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**30/39** functions matched, **1950/5069** bytes.
+**31/40** functions matched, **1953/5072** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -24,6 +24,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 90/88 | 80.90% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
