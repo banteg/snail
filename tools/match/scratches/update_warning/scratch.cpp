@@ -1,58 +1,57 @@
 // update_warning @ 0x446f80 (thiscall, ret)
+// The damage-warning actor: state 1 holds the overlay alpha near full
+// (0.99748... bits 1065336439) while the phase fills; state 2 fades the
+// first half then holds zero, replaying sound 50 on wrap back to 1.
 
-extern char* g_game_base; // data_4df904
+struct Game {
+    char unknown_00[0x74621];
+    unsigned char suspended; // +0x74621
+};
 
-struct SoundEffectBackend {
+extern Game* volatile g_game; // data_4df904
+
+struct WarningTarget {
+    char unknown_00[0x208];
+    float overlay_alpha; // +0x208 (dword 130)
+};
+
+struct SoundEffectManager {
     void play_sound_effect(int sound_id);
 };
+extern SoundEffectManager g_sound_effect_manager;
 
-extern SoundEffectBackend g_sound_effect_backend;
-
-struct FrontendWidget {
-    char unknown_00[0x208];
-    float hot_text_alpha; // +0x208
-};
-
-class WarningActor {
-public:
+struct WarningActor {
     void update_warning();
 
-    int state;                 // +0x00
-    float progress;            // +0x04
-    float progress_step;       // +0x08
-    FrontendWidget* border;    // +0x0c
+    int state;             // +0x00: 0 idle, 1 fill, 2 fade
+    float phase;           // +0x04
+    float phase_step;      // +0x08
+    WarningTarget* target; // +0x0c
 };
 
 void WarningActor::update_warning()
 {
-    int zero = 0;
-    if (*(unsigned char*)(g_game_base + 0x74621) != zero)
-        return;
-
-    switch (state - zero) {
-    case 0:
-        return;
-        case 2:
-            if (progress < 0.5f) {
-                border->hot_text_alpha = 1.0f - (progress + progress);
-            } else {
-                border->hot_text_alpha = 0.0f;
-            }
-
-            progress = progress + progress_step;
-            if (progress > 1.0f) {
-                progress = 0.0f;
-                state = 1;
-                g_sound_effect_backend.play_sound_effect(0x32);
-            }
-            break;
-        case 1:
-            border->hot_text_alpha = 0.999000013f;
-            progress = progress + progress_step;
-            if (progress > 1.0f) {
-                progress = 0.0f;
+    if (!g_game->suspended && state) {
+        if (state == 1) {
+            *(int*)&target->overlay_alpha = 1065336439;
+            float advanced = phase_step + phase;
+            phase = advanced;
+            if (advanced > 1.0f) {
+                phase = 0.0f;
                 state = 2;
             }
-            break;
+        } else if (state == 2) {
+            if (phase >= 0.5f)
+                target->overlay_alpha = 0;
+            else
+                target->overlay_alpha = 1.0f - (phase + phase);
+            float advanced = phase_step + phase;
+            phase = advanced;
+            if (advanced > 1.0f) {
+                phase = 0.0f;
+                state = 1;
+                g_sound_effect_manager.play_sound_effect(50);
+            }
+        }
     }
 }
