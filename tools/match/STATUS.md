@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**55/65** functions matched, **3269/6671** bytes.
+**56/66** functions matched, **3276/6678** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -23,6 +23,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |

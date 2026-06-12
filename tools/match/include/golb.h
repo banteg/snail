@@ -27,6 +27,7 @@ struct GolbPathSample {
 
 class GolbPathBank {
 public:
+    void initialize_enemy_manager(); // @ 0x415e20
     GolbPathSample* search_path_for_golb(const Vector3* position); // @ 0x415e30
 
     int count;                  // +0x00
