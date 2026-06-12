@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**102/112** functions matched, **4711/8113** bytes.
+**103/113** functions matched, **4758/8160** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -103,6 +103,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | reset_voice_manager | 0x448ec0 | 31 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_voice_manager | 0x4492a0 | 47 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_voice_set | 0x449360 | 46 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
