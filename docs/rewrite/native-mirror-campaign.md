@@ -85,9 +85,12 @@ invalidation ledger.
    recording — if the port integrates unquantized x, lateral drift vs
    recordings accumulates. Audit the runner's lateral lane.
 2. **Cruise cadence**: track mode has NO per-tile z boost. The 0.24-0.31
-   oscillation = collision boosts (speedup pickup and ring effects both
-   set `vz = rate*0.5`) decaying via `(1 - rate*0.003)` toward the
-   `rate*0.17` window floor. The port already models the rate*0.5 ring
+   oscillation = ring-effect collision boosts (`vz = rate*0.5`) decaying
+   via `(1 - rate*0.003)` toward the `rate*0.17` window floor.
+   (CORRECTED 06-13: the speedup pickup half is dead config —
+   `spawn_track_speedup` @ 0x43d880 is an EMPTY STUB in the shipped
+   binary, so the collisions speedup lane never fires; rings are the
+   only cruise boost. Same cut-feature class as the +0x41c boost byte.) The port already models the rate*0.5 ring
    lane (`applyNativeForwardVelocityRing`), so the drag-to-floor symptom
    means rings are being MISSED or mistimed along the recorded path —
    which is exactly the grid-alignment audit's open "collision probes"

@@ -1588,7 +1588,10 @@ pub const Runner = struct {
         if (world_position.y > lane_lean_grounded_max_y) return;
 
         const global_row = preview.rowIndexAtWorldZ(world_position.z);
-        const lane_index = preview.laneIndexAtWorldX(world_position.x);
+        // PORT(verified): the lane-lean trigger samples the containing cell at
+        // the live world position (`get_track_grid_cell_at_world_position` in
+        // update_subgoldy, pinned) — a cell-content query, not a steering one.
+        const lane_index = preview.gridColumnAtWorldX(world_position.x);
         const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return;
         const direction = laneLeanDirectionForRuntimeTile(tile_type);
         if (direction == 0.0) return;
@@ -9893,8 +9896,15 @@ test "runtime lane-roll tile families arm cameraman roll without input steering"
 
     var runner = Runner.init(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    const tile_index = runner.current_global_row * fixture.preview.max_width + runner.resolved_lane_index;
-    fixture.preview.runtime_tiles[tile_index] = 2;
+    // the lane-lean trigger samples the CONTAINING cell at the live world
+    // position (native get_track_grid_cell_at_world_position), not the
+    // steering lane — plant the tile where that probe looks
+    // plant the lean tile across the whole row: the trigger samples the
+    // containing cell at the live world position (native convention), so a
+    // single-lane plant would re-encode a lane convention in the test
+    for (0..fixture.preview.max_width) |lane| {
+        fixture.preview.runtime_tiles[runner.current_global_row * fixture.preview.max_width + lane] = 2;
+    }
     runner.refreshCameraState(&fixture.preview);
     const baseline = cameraTransformFromMatrix(runner.cameramanMatrix());
 
