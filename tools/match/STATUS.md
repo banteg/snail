@@ -6,160 +6,160 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
-| 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_slug_hazard_runtime | 0x408530 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_garbage_hazard | 0x408550 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_row_runtime | 0x408590 | 36 | 13/13 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_path_template_record_pair | 0x4085c0 | 26 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 205/204 | 37.16% | msvc6.5 /O2 /G5 /W3 /Op |
-| ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | copy_c_string | 0x431da0 | 21 | 10/10 | 40.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_slug_voice_manager | 0x43f5e0 | 49 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | hide_gameplay_scores | 0x445f10 | 35 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | unhide_gameplay_scores | 0x445f40 | 27 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_snail_skin | 0x445f60 | 27 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_tip_manager | 0x448d80 | 31 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | initialize_voice_set | 0x448df0 | 101 | 33/33 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | shuffle_voice_set | 0x448e60 | 93 | 34/34 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | reset_voice_manager | 0x448ec0 | 31 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_voice_manager | 0x4492a0 | 47 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_voice_manager | 0x4492d0 | 142 | 51/51 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | update_voice_set | 0x449360 | 46 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_voice_set | 0x449390 | 119 | 43/43 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_voice_playing | 0x449410 | 78 | 40/40 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_music_stream | 0x4498d0 | 71 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_registered_sound_sample_scaled | 0x4499a0 | 106 | 30/30 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_sound_sample_handle | 0x449a10 | 14 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_registered_sound_sample | 0x449a20 | 21 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | is_registered_sound_sample_playing | 0x449a40 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_registered_sound_sample_default | 0x449a60 | 31 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_registered_sound_sample_backend | 0x449a80 | 90 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_registered_sound_sample_scaled_panned | 0x449ae0 | 98 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_global_sample_volume_config | 0x449b50 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_global_stream_volume_config | 0x449b70 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_audio_backend | 0x449b90 | 6 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | resume_audio_backend_if_paused | 0x449ba0 | 21 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| ✅ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% |  |
+| ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% |  |
+| ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% |  |
+| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% |  |
+| ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% |  |
+| ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% |  |
+| ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% |  |
+| ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_slug_hazard_runtime | 0x408530 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_garbage_hazard | 0x408550 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_track_row_runtime | 0x408590 | 36 | 13/13 | 100.00% |  |
+| ✅ | initialize_path_template_record_pair | 0x4085c0 | 26 | 9/9 | 100.00% |  |
+| ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% |  |
+| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% |  |
+| ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% |  |
+| ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% |  |
+| ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% |  |
+| ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% |  |
+| 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% |  |
+| ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% |  |
+| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 183/204 | 39.79% |  |
+| ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% |  |
+| ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% |  |
+| ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% |  |
+| ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% |  |
+| ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% |  |
+| ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% |  |
+| ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% |  |
+| ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% |  |
+| ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% |  |
+| 🚧 | copy_c_string | 0x431da0 | 21 | 10/10 | 40.00% |  |
+| ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% |  |
+| ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% |  |
+| ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% |  |
+| ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% |  |
+| 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% |  |
+| 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% |  |
+| ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% |  |
+| ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% |  |
+| ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% |  |
+| ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% |  |
+| ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% |  |
+| ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% |  |
+| ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% |  |
+| ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% |  |
+| ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% |  |
+| ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% |  |
+| ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% |  |
+| 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% |  |
+| ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% |  |
+| 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% |  |
+| ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% |  |
+| ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% |  |
+| ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% |  |
+| ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% |  |
+| ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% |  |
+| ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% |  |
+| ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% |  |
+| ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% |  |
+| ✅ | update_slug_voice_manager | 0x43f5e0 | 49 | 15/15 | 100.00% |  |
+| ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% |  |
+| ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% |  |
+| ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% |  |
+| ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% |  |
+| ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% |  |
+| ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% |  |
+| 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% |  |
+| ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% |  |
+| ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% |  |
+| ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% |  |
+| ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% |  |
+| ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% |  |
+| ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% |  |
+| ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% |  |
+| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% |  |
+| ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% |  |
+| ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% |  |
+| ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% |  |
+| ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% |  |
+| ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% |  |
+| ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% |  |
+| ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% |  |
+| ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% |  |
+| ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% |  |
+| ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% |  |
+| ✅ | hide_gameplay_scores | 0x445f10 | 35 | 12/12 | 100.00% |  |
+| ✅ | unhide_gameplay_scores | 0x445f40 | 27 | 8/8 | 100.00% |  |
+| ✅ | initialize_snail_skin | 0x445f60 | 27 | 6/6 | 100.00% |  |
+| ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% |  |
+| ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% |  |
+| ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% |  |
+| ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% |  |
+| ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% |  |
+| ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% |  |
+| ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% |  |
+| ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% |  |
+| ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% |  |
+| ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% |  |
+| ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% |  |
+| ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% |  |
+| ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% |  |
+| ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% |  |
+| ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% |  |
+| ✅ | update_tip_manager | 0x448d80 | 31 | 14/14 | 100.00% |  |
+| ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% |  |
+| ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% |  |
+| ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% |  |
+| ✅ | initialize_voice_set | 0x448df0 | 101 | 33/33 | 100.00% |  |
+| ✅ | shuffle_voice_set | 0x448e60 | 93 | 34/34 | 100.00% |  |
+| ✅ | reset_voice_manager | 0x448ec0 | 31 | 8/8 | 100.00% |  |
+| ✅ | update_voice_manager | 0x4492a0 | 47 | 18/18 | 100.00% |  |
+| ✅ | play_voice_manager | 0x4492d0 | 142 | 51/51 | 100.00% |  |
+| ✅ | update_voice_set | 0x449360 | 46 | 14/14 | 100.00% |  |
+| ✅ | play_voice_set | 0x449390 | 119 | 43/43 | 100.00% |  |
+| ✅ | is_voice_playing | 0x449410 | 78 | 40/40 | 100.00% |  |
+| ✅ | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% |  |
+| ✅ | stop_music_stream | 0x4498d0 | 71 | 21/21 | 100.00% |  |
+| ✅ | play_registered_sound_sample_scaled | 0x4499a0 | 106 | 30/30 | 100.00% |  |
+| ✅ | stop_sound_sample_handle | 0x449a10 | 14 | 4/4 | 100.00% |  |
+| ✅ | stop_registered_sound_sample | 0x449a20 | 21 | 5/5 | 100.00% |  |
+| ✅ | is_registered_sound_sample_playing | 0x449a40 | 27 | 7/7 | 100.00% |  |
+| ✅ | play_registered_sound_sample_default | 0x449a60 | 31 | 10/10 | 100.00% |  |
+| ✅ | play_registered_sound_sample_backend | 0x449a80 | 90 | 27/27 | 100.00% |  |
+| ✅ | play_registered_sound_sample_scaled_panned | 0x449ae0 | 98 | 29/29 | 100.00% |  |
+| ✅ | set_global_sample_volume_config | 0x449b50 | 27 | 7/7 | 100.00% |  |
+| ✅ | set_global_stream_volume_config | 0x449b70 | 27 | 7/7 | 100.00% |  |
+| ✅ | stop_audio_backend | 0x449b90 | 6 | 1/1 | 100.00% |  |
+| ✅ | resume_audio_backend_if_paused | 0x449ba0 | 21 | 8/8 | 100.00% |  |
+| ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% |  |
+| ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% |  |
+| ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% |  |
+| ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% |  |
+| ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% |  |
+| ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% |  |
+| ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% |  |
+| ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% |  |
+| ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% |  |
+| ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% |  |
+| ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% |  |
+| ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% |  |
+| ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% |  |
+| ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% |  |
+| ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% |  |
+| ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% |  |
+| ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% |  |
+| ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% |  |
+| ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% |  |
+| ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% |  |
+| ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% |  |
+| ✅ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% |  |

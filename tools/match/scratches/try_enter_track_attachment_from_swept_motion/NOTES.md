@@ -1,13 +1,13 @@
-# WIP — 37.16% score, 205/204 insns (structure aligned, registers shifted)
+# WIP — 39.79% score, 183/204 insns on standard flags
 
-The SequenceMatcher score understates progress: instruction count and
-control-flow layout now mirror the target; the residual is a global
-register-assignment shift (`this` lands in ebp instead of edi, cascading
-through the loop) plus stack-slot numbering. Verified source shapes that
-got the structure right:
+Now on the project-standard `msvc6.5 /O2 /G5 /W3` (the earlier `/Op`
+experiment reached 205/204 instructions, which proves the dual-slot
+float temps + integer-register copies are reachable — but per the
+search_path_for_golb precedent the same pattern emerges from source
+shape alone when the pre-rotation delta stays live after the copy, so
+the open task is finding that source idiom, not flags). Verified source
+shapes that got the structure right:
 
-- `/O2 /G5 /W3 /Op` — precise-float mode explains the stored+reloaded
-  float temps and integer-register copies into the rotated vectors
 - `do { ... } while (--idx >= 0); return;` with `if (probe.y <= 0.001f)
   goto seed;` — reproduces the target layout (seed block after the plain
   return, fallthrough-free hot loop)

@@ -20,8 +20,15 @@ build environment:
   libs, never decompile these
 - no RTTI, 25 C++ EH functions
 
-`change_snail_skin` matched 100% with `msvc6.5` at `/O2 /G5`, so start every
-scratch from that configuration before trying other compiler/flag pairs.
+**Project assumption: all game code compiles with `msvc6.5 /O2 /G5 /W3`.**
+Established empirically — 147+ functions across every subsystem match at 100%
+with exactly this configuration and nothing has required another one.
+`scratch.conf` therefore only needs `FUNCTION` (plus `END`/`SYMBOL` when the
+extent or symbol needs overriding); `COMPILER`/`CFLAGS` overrides still work
+but are for experiments only, and the STATUS build column stays empty unless
+a scratch deviates. When a function refuses to match, change the source shape,
+not the flags — every flag-looking pattern so far (dual-slot float temps,
+tail duplication, register pinning) turned out to be a source idiom.
 
 ## Setup
 

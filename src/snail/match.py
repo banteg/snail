@@ -503,6 +503,8 @@ def collect_scratch_statuses(
 
 
 STATE_ICONS = {"match": "✅", "wip": "🚧", "error": "❌"}
+# build column stays empty unless a scratch deviates from the project-wide
+# toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
 STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "build", "note")
 
 
@@ -515,6 +517,8 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
             if status.result
             else "-"
         )
+        build = f"{status.config.compiler} {status.config.cflags}"
+        default_build = f"{DEFAULT_SCRATCH_COMPILER} {DEFAULT_SCRATCH_CFLAGS}"
         rows.append(
             (
                 STATE_ICONS[status.state],
@@ -523,7 +527,7 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
                 str(status.target_size),
                 insns,
                 ratio,
-                f"{status.config.compiler} {status.config.cflags}",
+                "" if build == default_build else build,
                 status.error or "",
             )
         )
