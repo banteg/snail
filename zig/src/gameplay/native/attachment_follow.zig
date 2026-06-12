@@ -266,3 +266,226 @@ test "swept entry skips samples whose gate float is exactly zero" {
     );
     try std.testing.expect(result == null);
 }
+
+pub const FollowUpdateMode = enum(i32) {
+    following = 0,
+    side_exit_blocked = 0x100, // side exit with side_exit_mode != 0 (returns 0 native)
+    side_exit = 1, // side exit with side_exit_mode == 0 (returns 1 native)
+    natural_end = 3,
+};
+
+pub const FollowUpdateDeps = struct {
+    /// player jetpack gauge state (state 1 skips the side-exit test)
+    jetpack_state_is_hover: bool,
+    /// template kind ids per the native table
+    kind: u8,
+    width_cells: i32,
+    width_or_scale: f32,
+    side_exit_mode_zero: bool,
+    special_runtime_flag: bool,
+    installed_heading_delta: f32,
+    segment_count: u32,
+    context: *anyopaque,
+    /// voice 4 (dead lane, index+1 == 2*count) and voice 15 (supertramp)
+    play_voice_fn: *const fn (context: *anyopaque, voice: u8) void,
+    /// milestone row writes at count-1 (value 1.0) and 3*count/7 (0.6 + flag 0x80)
+    milestone_fn: *const fn (context: *anyopaque, terminal: bool) void,
+    /// heading roll accumulation on the player
+    add_heading_roll_fn: *const fn (context: *anyopaque, delta: f32) void,
+    /// supertramp pitch-cycle seed (subgame_rate / 72)
+    seed_pitch_cycle_fn: *const fn (context: *anyopaque) void,
+};
+
+/// update_track_attachment_follow_state @ 0x420cb0 (pinned scratch,
+/// tools/match). Progress stepping, milestone lanes, exhaust handling and
+/// the exit gates; the transform/lerp output lanes stay runner-side until
+/// the matrix-lerp seam is settled (native linear_interpolate_matrix does
+/// not obviously normalize; the runner's pose lerp does — flagged in the
+/// campaign notes).
+pub fn updateTrackAttachmentFollowState(
+    state: *FollowState,
+    template: *Template,
+    path_factor: f32,
+    out_lateral_x: f32,
+    lateral_center: f32,
+    motion_y: *f32,
+    motion_z: *f32,
+    deps: FollowUpdateDeps,
+) FollowUpdateMode {
+    const samples = template.samples;
+    const count: u32 = deps.segment_count;
+    var index: u32 = @intCast(state.sample_index);
+    if (index >= samples.len) return .following;
+    var step = path_factor * samples[index].delta_length;
+
+    if (step + state.progress > samples[index].delta_length) {
+        while (true) {
+            step -= samples[index].delta_length - state.progress;
+            index += 1;
+            state.progress = 0.0;
+            state.sample_index = @intCast(index);
+            if (index == 2 * count) deps.play_voice_fn(deps.context, 4); // dead lane, kept faithful
+            if (deps.special_runtime_flag) {
+                if (index == count - 1) {
+                    deps.milestone_fn(deps.context, true);
+                } else if (index == (3 * count) / 7) {
+                    deps.milestone_fn(deps.context, false);
+                }
+            }
+            if (index == count) {
+                // exhaustion: natural end
+                state.active = false;
+                if (step >= 1.0) step = 0.99900001;
+                var launch = path_factor * samples[count - 1].delta_length;
+                if (launch > 1.0) launch = 1.0;
+                motion_z.* = launch;
+                if (deps.kind == 31) {
+                    motion_y.* = launch * 0.7;
+                    deps.seed_pitch_cycle_fn(deps.context);
+                    deps.play_voice_fn(deps.context, 15);
+                }
+                _ = deps.width_or_scale; // exhaust z-position lane stays runner-side
+                deps.add_heading_roll_fn(deps.context, deps.installed_heading_delta);
+                return .natural_end;
+            }
+            if (index < samples.len and step + state.progress <= samples[index].delta_length) break;
+            if (index >= samples.len) return .following;
+        }
+    }
+
+    state.progress = step + state.progress;
+    const alpha = if (samples[index].delta_length <= 0.0001)
+        0.0
+    else
+        state.progress / samples[index].delta_length;
+
+    // orientation phase lane (the native rotation-scalar lerp into b is dead)
+    const index_f: f32 = @floatFromInt(index);
+    const count_f: f32 = @floatFromInt(count);
+    state.vertical_offset += motion_y.*;
+
+    const orientation_b = (alpha + index_f) * deps.installed_heading_delta / count_f;
+    _ = orientation_b; // published runner-side until orientation fields route
+
+    // exit gates
+    if (!deps.jetpack_state_is_hover) {
+        var lateral = out_lateral_x - lateral_center;
+        if (lateral < 0.0) lateral = -lateral;
+        const half: f32 = @floatFromInt(deps.width_cells);
+        if (!(lateral <= half * 0.5 + 0.30000001 or state.vertical_offset > 0.0)) {
+            deps.add_heading_roll_fn(deps.context, deps.installed_heading_delta);
+            return if (deps.side_exit_mode_zero) .side_exit else .side_exit_blocked;
+        }
+    }
+    if (state.vertical_offset < 0.0) {
+        state.vertical_offset = 0.0;
+        motion_y.* = 0.0;
+    }
+    return .following;
+}
+
+test "follow update returns natural end and caps the launch lanes" {
+    var samples = [_]attachment_builders.TemplateSample{ .{ .delta_length = 1.0 }, .{ .delta_length = 1.0 } };
+    var template = Template{
+        .spec = .{ .public_path = .looptheloop, .family = .start, .status = .ported },
+        .sample_count = 2,
+        .samples = &samples,
+    };
+    var state = FollowState{ .active = true, .sample_index = 1, .progress = 0.9 };
+    var calls = TestFollowDeps{};
+    var my: f32 = 0.0;
+    var mz: f32 = 0.0;
+    const mode = updateTrackAttachmentFollowState(&state, &template, 2.0, 0.0, 0.0, &my, &mz, calls.deps(.{ .kind = 31, .segment_count = 2 }));
+    try std.testing.expectEqual(FollowUpdateMode.natural_end, mode);
+    try std.testing.expect(!state.active);
+    try std.testing.expectEqual(@as(f32, 1.0), mz); // capped
+    try std.testing.expectApproxEqAbs(@as(f32, 0.7), my, 0.0001); // supertramp 0.7 * z
+    try std.testing.expect(calls.voice_15);
+    try std.testing.expect(calls.pitch_seeded);
+    try std.testing.expect(calls.heading_rolls == 1);
+}
+
+test "follow update accumulates motion y into vertical offset and clamps at zero" {
+    var samples = [_]attachment_builders.TemplateSample{.{ .delta_length = 10.0 }};
+    var template = Template{
+        .spec = .{ .public_path = .looptheloop, .family = .start, .status = .ported },
+        .sample_count = 1,
+        .samples = &samples,
+    };
+    var state = FollowState{ .active = true, .sample_index = 0, .progress = 0.0, .vertical_offset = 0.05 };
+    var calls = TestFollowDeps{};
+    var my: f32 = -0.2;
+    var mz: f32 = 0.0;
+    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, 0.0, 0.0, &my, &mz, calls.deps(.{}));
+    try std.testing.expectEqual(FollowUpdateMode.following, mode);
+    // 0.05 + (-0.2) = -0.15 -> clamped to 0 with motion y zeroed
+    try std.testing.expectEqual(@as(f32, 0.0), state.vertical_offset);
+    try std.testing.expectEqual(@as(f32, 0.0), my);
+}
+
+test "follow update side-exits outside the float half span" {
+    var samples = [_]attachment_builders.TemplateSample{.{ .delta_length = 10.0 }};
+    var template = Template{
+        .spec = .{ .public_path = .looptheloop, .family = .start, .status = .ported },
+        .sample_count = 1,
+        .samples = &samples,
+    };
+    var state = FollowState{ .active = true, .sample_index = 0, .vertical_offset = -0.1 };
+    var calls = TestFollowDeps{};
+    var my: f32 = 0.0;
+    var mz: f32 = 0.0;
+    // width 4 -> half span 2.0 + 0.3; |x - center| = 2.4 exits
+    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, 2.4, 0.0, &my, &mz, calls.deps(.{ .width_cells = 4 }));
+    try std.testing.expectEqual(FollowUpdateMode.side_exit, mode);
+    try std.testing.expect(calls.heading_rolls == 1);
+}
+
+const TestFollowDeps = struct {
+    voice_15: bool = false,
+    pitch_seeded: bool = false,
+    heading_rolls: u32 = 0,
+    milestones: u32 = 0,
+
+    const Overrides = struct {
+        kind: u8 = 0,
+        width_cells: i32 = 4,
+        segment_count: u32 = 1,
+    };
+
+    fn deps(self: *TestFollowDeps, overrides: Overrides) FollowUpdateDeps {
+        return .{
+            .jetpack_state_is_hover = false,
+            .kind = overrides.kind,
+            .width_cells = overrides.width_cells,
+            .width_or_scale = 0.0,
+            .side_exit_mode_zero = true,
+            .special_runtime_flag = false,
+            .installed_heading_delta = 0.5,
+            .segment_count = overrides.segment_count,
+            .context = self,
+            .play_voice_fn = playVoice,
+            .milestone_fn = milestone,
+            .add_heading_roll_fn = addHeadingRoll,
+            .seed_pitch_cycle_fn = seedPitch,
+        };
+    }
+
+    fn playVoice(context: *anyopaque, voice: u8) void {
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        if (voice == 15) self.voice_15 = true;
+    }
+    fn milestone(context: *anyopaque, terminal: bool) void {
+        _ = terminal;
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        self.milestones += 1;
+    }
+    fn addHeadingRoll(context: *anyopaque, delta: f32) void {
+        _ = delta;
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        self.heading_rolls += 1;
+    }
+    fn seedPitch(context: *anyopaque) void {
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        self.pitch_seeded = true;
+    }
+};
