@@ -140,15 +140,6 @@ pub fn localPosition(pose: attachment_builders.WorldPose, world_position: attach
     };
 }
 
-pub fn entryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f32) f32 {
-    return switch (family) {
-        // Windows seeds nonlinear kind-42 follow height from the raw local rider offset.
-        // That path legitimately reaches `-0.49` once Goldy is riding the trough floor.
-        .nonlinear_42 => local_y,
-        else => @max(0.0, local_y - entry_rider_height),
-    };
-}
-
 fn templateSpanCells(built: *const attachment_builders.BuiltAttachment) usize {
     // Native entry and side-exit checks both read template `+0x54`, which
     // constructor traces show is the wide template span lane (`WORM`: 16), not

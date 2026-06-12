@@ -5122,10 +5122,6 @@ pub const Runner = struct {
         return attachment_module.localPosition(pose, world_position);
     }
 
-    fn attachmentEntryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f32) f32 {
-        return attachment_module.entryVerticalOffset(family, local_y);
-    }
-
     fn commitAttachmentNaturalExit(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
@@ -5619,7 +5615,10 @@ pub const Runner = struct {
             .sample_index = sample_index,
             .local_progress = local_progress,
             .lateral_offset = lateral_offset,
-            .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, entry_local.y),
+            // PORT(verified): matched `begin_track_attachment_follow_state` (94.55%,
+            // tools/match) seeds the follow height from raw world y - 0.49 with no
+            // family branch; see tools/match/scratches/begin_track_attachment_follow_state.
+            .vertical_offset = entry_world_position.y - attachment_entry_rider_height,
         };
     }
 
@@ -5655,7 +5654,9 @@ pub const Runner = struct {
             candidate_index -= 1;
 
             const sample = built.template.samples[candidate_index];
-            if (sample.basis_up.y < 0.0) continue;
+            // PORT(verified): native skips when the sample gate float is <= 0
+            // (`fcomp` + `test ah, 0x41`), so an exactly-zero gate is also skipped.
+            if (sample.basis_up.y <= 0.0) continue;
 
             const candidate_progress: f32 = @floatFromInt(candidate_index);
             const candidate_pose = attachment_builders.worldPoseForTemplate(
@@ -5685,7 +5686,11 @@ pub const Runner = struct {
                 .sample_index = candidate_index,
                 .local_progress = start_local.z,
                 .lateral_offset = lateral_offset,
-                .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, start_local.y),
+                // PORT(verified): native swept entry seeds vertical_offset = 0 with no
+                // family branch and snaps the player's world y to the rotated local y;
+                // the prior family-dependent offset was a placeholder model. See
+                // tools/match/scratches/try_enter_track_attachment_from_swept_motion.
+                .vertical_offset = 0.0,
             };
         }
 
@@ -10446,14 +10451,10 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     );
 }
 
-test "nonlinear kind-42 entry height preserves the recovered raw local offset" {
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.nonlinear_42, 0.0), 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, -0.49), Runner.attachmentEntryVerticalOffset(.nonlinear_42, -0.49), 0.0001);
-}
-
-test "ordinary entry height still subtracts the rider baseline" {
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.start, attachment_entry_rider_height), 0.0001);
-}
+// The previous family-dependent entry height model was collapsed by matched
+// native code: the direct begin lane seeds raw world y - 0.49
+// (begin_track_attachment_follow_state) and the swept entry lane seeds zero
+// (try_enter_track_attachment_from_swept_motion), for every template family.
 
 test "swept installed entry rejects pre-sample positions while current-row begin remains available" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");

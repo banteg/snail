@@ -28,6 +28,23 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Attachment entry height model
+
+- invalidated claim: attachment entry follow height is family-dependent
+  (`nonlinear_42` keeps the raw local rider offset, other families clamp
+  `max(0, local_y - 0.49)`)
+- replacement evidence: matched native source (tools/match) shows no family
+  branch on either entry lane — `begin_track_attachment_follow_state`
+  (94.55%) seeds raw world `y - 0.49` unclamped, and
+  `try_enter_track_attachment_from_swept_motion` (structure-aligned scratch)
+  seeds `vertical_offset = 0` and snaps the player's world y to the rotated
+  local-frame y before the validating follow update
+- port consequence: `entryVerticalOffset` removed from
+  `gameplay/attachment.zig`; the direct lane in
+  `currentRowInstalledAttachmentEntry` now seeds world `y - 0.49` and the
+  swept lane seeds zero; the swept sample gate now skips `<= 0` like the
+  native `fcomp`/`test ah, 0x41` pair
+
 ## 2026-06-10 - Game runtime fields
 
 - invalidated claim: `Game+0x38` is `track_center_x` (a lateral coordinate) and `Game+0x3c` is padding
