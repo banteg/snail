@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**123/132** functions matched, **6441/9430** bytes.
+**128/137** functions matched, **6568/9557** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -28,6 +28,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 205/204 | 37.16% | msvc6.5 /O2 /G5 /W3 /Op |
@@ -122,6 +123,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_registered_sound_sample_default | 0x449a60 | 31 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_registered_sound_sample_backend | 0x449a80 | 90 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_registered_sound_sample_scaled_panned | 0x449ae0 | 98 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_global_sample_volume_config | 0x449b50 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_global_stream_volume_config | 0x449b70 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | stop_audio_backend | 0x449b90 | 6 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
