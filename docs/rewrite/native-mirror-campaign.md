@@ -35,7 +35,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (pinned), **update @ 0x420cb0 (2.7KB, unmatched — defines the FollowState contract)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept in `native/attachment_follow.zig` | · | 🚧 entry-height collapse ledgered 06-12 |
 | 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 (8.5KB boss; five retirement lanes), begin_post_follow_carryover @ 0x43af60 (100%) | 🚧 | · | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 (2.9KB; all contact constants, slug radius finding) | · | · | · | · |
-| 4 | hazard pools | spawn_sub_lazer @ 0x441670 (98.4%), salt: init @ 0x441540 (100%), spawn @ 0x441560 (74% pinned, +0x94 is a byte flag), deactivate @ 0x441740 (41% pinned, free-stack @ game+0x5a8), **update @ 0x4417d0 unmatched (stride/layout question in spawn NOTES)**, wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0 | 🚧 | · | · | · |
+| 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | 🚧 salt done | · | · |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
 | 6 | golb / projectiles | search_path @ 0x415e30 (100%), init_path_follow @ 0x421770 (100%), update_golb_ai @ 0x414820 (2.7KB) | 🚧 | · | · | · |
 | 7 | cameraman | update_cameraman @ 0x4461d0 (matrix constants in 06-10 audit), initialize_cameraman @ 0x446160 | · | · | · | · |
@@ -59,10 +59,10 @@ benefits from everything below it being trustworthy first.
    seam from the module doc).
 3. Finish `try_enter_track_attachment_from_swept_motion` register alignment
    on standard flags (NOTES has the dual-slot source-shape lead).
-4. Mirror cluster 4 (salt) from the matched/pinned quartet — all four are
-   done (100/74/48/41, layout quirks ledgered 06-12: velocity.z byte poke,
-   progress overlap past the stride). The Zig SaltHazardPool port must
-   preserve the quirks, not fix them.
+4. Route the runner's salt lanes through `native/salt_pool.zig` (replaces
+   the runner-local salt live strip per checklist Phase 5), then match the
+   sub-lazer trio (wall2 emitter, shoot_subgoldy, update @ 0x43efb0) and
+   extend the mirror.
 5. Finish `update_row_event_display` (78.5%) and
    `project_position_onto_track_attachment` (56%).
 
