@@ -24,3 +24,16 @@ diffing against the runner's pickup collision slots.
 Match plan: five sequential pool loops with the shared
 pre-gate-then-normalize idiom — start the scratch from the salt loop and
 extend pool by pool; reuse the salt slot layout from the quartet.
+
+## Verify pass (2026-06-12): Zig gates all confirmed
+
+Diffed against the runner: salt 0.98, sub-lazer 0.49, garbage 0.98,
+ring 1.24, slug 1.5675001 with the 2.0 z-gate, health 0.98, and the
+damage_retrigger_timer seeded from retrigger_step when zero — all
+present and correct (gameplay.zig constants + processRuntimeHazard /
+pickup lanes). The June-10 audit fixes hold against the matched-grade
+table. Remaining gaps are exactly the motion-slice consumers already on
+the checklist: slug first-hit/repeat velocity lanes and the garbage
+0.18/0.1 knockback pair. The eventual full match is proof-polish over a
+now-verified model, so cluster 3's priority drops below the cameraman
+and golb matches.
