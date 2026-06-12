@@ -181,6 +181,9 @@ Work this top-down unless a new runtime capture invalidates the order.
   - the `attachment_exit_progress` step at 0x43ce96 is the explicit else-branch — it only runs when neither 0x43bcb3 nor 0x43bf6f fired this tick
   - `begin_post_follow_carryover` @ 0x43af60 is matched 100% in `tools/match/scratches/begin_post_follow_carryover`; port from the matched source, not HLIL
   - deferred follow-ups: 0x43c06d re-snap needs a tile `flags_3d` + global flag 2 mirror; 0x43c3ea trampoline needs a `cell_y` accessor (current proxy fires too eagerly); 0x43ce75 needs `position_y` plus a `jetpack_gauge.state == 1` mirror; full `velocity.x/z` model and the ±4 lateral clamp come last
+  - new consumer (2026-06-12, boss dossier): `update_track_attachment_follow_state` accumulates the caller's `motion.y` into `follow_state.vertical_offset` every normal-path tick and zeroes both on the negative-offset clamp — so attached riders fall onto / lift off the path through the vertical velocity lane; the Zig follow keeps the offset constant until the motion slice lands
+  - new consumer: the follow update publishes the rider basis rows into the **player live_matrix** (player+0x38..0x58) each tick — the matrix is the authoritative source other native systems read; the Zig port derives poses from the template per consumer instead (wrong-source-lane class, fold into the cluster-1 mirror routing)
+  - builder gap: native per-sample rotation scalars (+0x94 feeds the live orientation_a lerp; +0x98 only the dead lane) are not stored by the Zig template builder; orientation_a uses a basis-derived proxy until they are
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 

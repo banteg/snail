@@ -5369,6 +5369,11 @@ pub const Runner = struct {
 
         self.syncAttachmentFollowTemplateProgress(built);
         self.updateAttachmentFollowPosition(preview);
+        // PORT(partial): native accumulates the caller's motion.y into
+        // vertical_offset every normal-path tick (riders fall onto / lift off
+        // the path), and the exit clamp zeroes BOTH vertical_offset and the
+        // motion.y lane. The runner has no vertical velocity lane yet (motion
+        // slice, checklist Phase 3), so only the offset clamp is mirrored.
         if (self.attachment.follow.vertical_offset < 0.0) {
             self.attachment.follow.vertical_offset = 0.0;
         }
@@ -5378,14 +5383,14 @@ pub const Runner = struct {
         self: *Runner,
         built: *const attachment_builders.BuiltAttachment,
     ) void {
-        // PORT(partial): native `update_track_attachment_follow_state` publishes live
-        // cameraman rotations through `follow_state.orientation_a/orientation_b`.
-        // `orientation_a` is a wrapped interpolation of a per-sample local-roll scalar,
-        // while `orientation_b` is the template phase lane
-        // (`(sample_index + (local_progress / delta_length)) * installed_heading_delta / sample_count`).
-        // The Zig scaffold still does not store the raw Windows per-sample scalar, so derive
-        // the same local-roll lane from the built sample basis before applying the native
-        // wrapped interpolation.
+        // PORT(partial): orientation_b is verified against the in-progress matched
+        // source of `update_track_attachment_follow_state` (tools/match): the native
+        // +/-pi-wrapped lerp into orientation_b is dead code, immediately overwritten
+        // by the phase lane `(sample_index + alpha) * installed_heading_delta /
+        // segment_count` — exactly what this computes. orientation_a remains partial:
+        // native lerps the raw per-sample rotation scalar at sample+0x94 (+0x98 feeds
+        // only the dead lane); the Zig builder does not store those scalars yet, so the
+        // local-roll lane is derived from the built sample basis instead.
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
         if (sample_count <= 0.0 or built.template.samples.len == 0) {
             self.attachment.follow.camera_orientation_a = 0.0;
