@@ -255,6 +255,7 @@ If there is time for only one focused RE session, use this order:
 While working through this list:
 
 - when an item hinges on the exact semantics of a single contested function, match it first (`tools/match`, see its README) and port from the matched C++ instead of re-reading HLIL
+- the gameplay simulation core is migrating to native-mirror modules under `zig/src/gameplay/native/` — one Zig function per matched native function, native names and statement order, no invented abstraction layers; rendering/platform/asset code stays idiomatic Zig (the modern-engine layer is intentionally not a mirror)
 - do not count UI parity as proof that the owning runtime controller is ported
 - prefer replacing fallback producers with recovered native fields before tuning presentation
 - update the relevant status docs whenever a blind spot is closed or narrowed
