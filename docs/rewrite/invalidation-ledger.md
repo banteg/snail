@@ -28,6 +28,24 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Score bank xor mask
+
+- invalidated claim: the Score?.dat banks are masked with the archive xor
+  (`(i*i) ^ (3*i)`, `archive.xorMask`) — the port's loader and saver both
+  used it and round-tripped cleanly
+- replacement evidence: the first real Windows fixtures
+  (tests/fixtures/replays/Score?.windows-2026-04-17.dat) decode to garbage
+  under the archive mask. load_high_scores_from_file @ 0x4175e0 and
+  save_high_scores_and_config @ 0x417940 call
+  xor_decode_buffer_with_index @ 0x433010, which is a plain index mask
+  (`byte ^= i & 0xff`). Under it all 25 fixture records parse with valid
+  checksums and intact replays (71,535 samples)
+- port consequence: high_score.zig now mirrors
+  xor_decode_buffer_with_index for both load and save; the port can read
+  real saves and the original game can read the port's. A fixture test
+  pins the real-bank decode. Round-trip-only validation hides mask bugs —
+  real-artifact fixtures are the guard
+
 ## 2026-06-12 - Attachment begin progress seed normalization
 
 - invalidated claim: the generic attachment begin "preserves the raw

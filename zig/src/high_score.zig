@@ -1,5 +1,4 @@
 const std = @import("std");
-const archive = @import("archive.zig");
 const runtime_state = @import("runtime_state.zig");
 
 const io = std.Options.debug_io;
@@ -462,6 +461,18 @@ fn blankCompletionEntries() [completion_entry_count]Entry {
     return [_]Entry{Entry{}} ** completion_entry_count;
 }
 
+/// Faithful mirror of xor_decode_buffer_with_index @ 0x433010: the score
+/// banks use a plain index mask (`byte ^= i & 0xff`), NOT the archive mask
+/// (`(i*i) ^ (3*i)`). Proven by the real Windows fixtures in
+/// tests/fixtures/replays — they only decode under this mask; the port's
+/// earlier archive-mask use round-tripped its own saves but could never
+/// read (or be read by) the original game. Ledgered 2026-06-12.
+fn xorDecodeBufferWithIndex(buffer: []u8) void {
+    for (buffer, 0..) |*byte, index| {
+        byte.* ^= @truncate(index);
+    }
+}
+
 fn loadBankFile(allocator: std.mem.Allocator, root_path: []const u8, kind: runtime_state.FileKind, tables: *Tables) !void {
     var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
     const path = try runtime_state.filePath(&path_buffer, root_path, kind);
@@ -470,9 +481,14 @@ fn loadBankFile(allocator: std.mem.Allocator, root_path: []const u8, kind: runti
         else => return err,
     };
     defer allocator.free(bytes);
+    try loadBankBytes(allocator, bytes, tables);
+}
+
+/// Decode one raw (still-masked) Score?.dat byte stream into the tables.
+fn loadBankBytes(allocator: std.mem.Allocator, bytes: []u8, tables: *Tables) !void {
     if (bytes.len == 0) return;
 
-    archive.xorDecodeInPlace(bytes, 0);
+    xorDecodeBufferWithIndex(bytes);
 
     var offset: usize = 0;
     while (offset < bytes.len) {
@@ -599,7 +615,7 @@ fn saveBankFile(
         try encoded.appendSlice(allocator, owned_record);
     }
 
-    archive.xorDecodeInPlace(encoded.items, 0);
+    xorDecodeBufferWithIndex(encoded.items);
 
     var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
     const path = try runtime_state.filePath(&path_buffer, root_path, kind);
@@ -626,6 +642,48 @@ fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []c
         if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
     }
     return slice[0..end];
+}
+
+test "real windows score banks decode with the native index mask" {
+    // Fixtures: tests/fixtures/replays/Score?.windows-2026-04-17.dat —
+    // banks written by the original game on a Windows host (provenance in
+    // the fixtures README). 25 records, every checksum valid, every record
+    // carrying a replay (71,535 samples total). These only decode under the
+    // xor_decode_buffer_with_index mask; the archive mask produces garbage.
+    const allocator = std.testing.allocator;
+    var tables = Tables.initDefault();
+    defer tables.deinit(allocator);
+
+    const fixture_paths = [_][]const u8{
+        "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat",
+        "tests/fixtures/replays/ScoreB.windows-2026-04-17.dat",
+        "tests/fixtures/replays/ScoreC.windows-2026-04-17.dat",
+    };
+    for (fixture_paths) |path| {
+        const bytes = try std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .limited(1 << 20));
+        defer allocator.free(bytes);
+        try loadBankBytes(allocator, bytes, &tables);
+    }
+
+    // postal bank: full top-10 + overflow row, all live runs
+    try std.testing.expectEqual(@as(u32, 141030), tables.postal[0].score);
+    try std.testing.expectEqualStrings("banteg", tables.postal[0].name());
+    try std.testing.expectEqual(@as(u32, 12), tables.postal[0].replay_level_index);
+    try std.testing.expect(tables.postal[0].has_replay);
+    try std.testing.expectEqual(@as(usize, 5006), tables.postal[0].replaySampleCount());
+
+    // the embedded replay decodes end to end
+    var decoded = try tables.postal[0].decodeReplay(allocator);
+    defer decoded.deinit();
+    try std.testing.expectEqual(@as(usize, 5006), decoded.samples.len);
+    try std.testing.expect(decoded.sampleAt(0) != null);
+
+    // challenge bank top entry and a completion (time-trial ghost) slot
+    try std.testing.expectEqual(@as(u32, 69190), tables.challenge[0].score);
+    try std.testing.expectEqual(@as(usize, 1842), tables.challenge[0].replaySampleCount());
+    try std.testing.expectEqual(@as(u32, 2220), tables.completion[6].score);
+    try std.testing.expect(tables.completion[6].has_replay);
+    try std.testing.expectEqual(@as(usize, 2305), tables.completion[6].replaySampleCount());
 }
 
 test "default tables seed the recovered startup bank shape" {
@@ -1119,7 +1177,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     @memcpy(payload[compact_record_header_size..], &[_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 });
 
     var encoded = payload;
-    archive.xorDecodeInPlace(&encoded, 0);
+    xorDecodeBufferWithIndex(&encoded);
     try runtime_state.ensureRootExists("runtime");
     try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = "runtime/ScoreA.dat", .data = &encoded });
 
@@ -1132,7 +1190,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
 
     const saved_bytes = try std.Io.Dir.cwd().readFileAlloc(io, "runtime/ScoreA.dat", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(saved_bytes);
-    archive.xorDecodeInPlace(saved_bytes, 0);
+    xorDecodeBufferWithIndex(saved_bytes);
 
     try std.testing.expectEqual(@as(usize, record_len), saved_bytes.len);
     try std.testing.expectEqual(@as(u32, record_len), readU32(saved_bytes, 0));

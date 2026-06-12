@@ -14,3 +14,21 @@ captures use `--preserve-bugs` (docs/rewrite/original-bugs.md).
 Name fixtures by provenance, e.g. `ScoreA.tutorial-run-2026-06-12.dat`,
 and note alongside each file what was played and on which level, plus the
 matching frida trace filename if one was captured during the replay.
+
+## Score?.windows-2026-04-17.dat
+
+Banks from banteg's Windows host (original game, saves dated 2026-04-17).
+25 records, all checksum-valid, every record with a replay — 71,535
+samples total:
+
+- ScoreA (postal): 11 records, top run score 141030 on level 12
+  (5006 samples); levels 5–26 covered
+- ScoreB (challenge): 11 records, top 69190 (1842 samples); biggest
+  replay 7332 samples
+- ScoreC (completion/time-trial ghosts): 3 records — routes 1, 6, 13
+
+These fixtures exposed the score-bank xor mask bug (see the 2026-06-12
+ledger entry): the banks use xor_decode_buffer_with_index @ 0x433010
+(`byte ^= i & 0xff`), not the archive mask. The decode is pinned by
+"real windows score banks decode with the native index mask" in
+`zig/src/high_score.zig`.
