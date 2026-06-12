@@ -28,6 +28,20 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Attachment pose interpolation model
+
+- invalidated claim: interpolating between attachment sample poses by
+  lerping each basis vector and normalizing (`Vec3.normalize(Vec3.lerp)`,
+  used by `worldPoseForTemplate`) reproduces the native math
+- replacement evidence: `linear_interpolate_matrix` @ 0x44da90 (pinned,
+  tools/match) interpolates rotation in matrix space — invert(from) x to,
+  `interpolate_matrix_rotation` by alpha, premultiply by from, then
+  `orthogonalize_matrix` — with only the translation blended linearly
+- port consequence: rider/camera orientation through curved attachment
+  segments diverges from native between samples (most visible on tight
+  loops); fold the real chain into the cluster-1 mirror's transform lane
+  and re-verify the 18-commit camera churn against it once routed
+
 ## 2026-06-12 - Salt hazard slot layout
 
 - invalidated claim: the salt slot is a self-contained 0x98-stride record
