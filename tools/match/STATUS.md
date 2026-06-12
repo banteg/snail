@@ -69,6 +69,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% |  |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% |  |
+| 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 72.44% |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% |  |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% |  |
