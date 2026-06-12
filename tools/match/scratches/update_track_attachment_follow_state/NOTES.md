@@ -67,3 +67,11 @@ Known residuals after the current source shape:
   shared else-lerp / after-v85 labels): 42.77% -> 47.39%, 654 insns.
   Remaining structural deficit is now concentrated in the kind-42 /
   general matrix-copy regions and the tail.
+- clone now survives cross-jump merging (distinct `advanced` temp + fully
+  duplicated v85 computation): 678/726 insns. Score 46.44% is alignment
+  noise below the 47.39 peak; instruction count is the truer metric here.
+- next: the 3*count/7 milestone-store region — target orders it
+  [flags lookup+store] [attached fetch] [+0x24 lookup+store reading
+  attached from esi] [+0x34 lookup+store of 0.6f]; candidate emits the
+  +0x24 pair earlier and drops one lookup. Re-order the source statements
+  to the IDA sequence and keep `attached` live across the +0x24 lookup.

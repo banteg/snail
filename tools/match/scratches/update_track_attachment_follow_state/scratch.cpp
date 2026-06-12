@@ -261,14 +261,19 @@ int FollowState::update_track_attachment_follow_state(
             secondary_samples = template_record->secondary_samples;
             if (delta + progress <= secondary_samples[index].delta_length) {
                 current_index = sample_index;
-                out_angle = delta + progress;
-                progress = out_angle;
+                float advanced = delta + progress;
+                progress = advanced;
                 current_template = template_record;
                 terminal_index = current_template->segment_count - 1;
                 primary = &current_template->primary_samples[current_index];
-                if (current_index != (unsigned int)terminal_index)
-                    goto general_lerp_v85;
-                v85 = primary->center_x;
+                if (current_index == (unsigned int)terminal_index) {
+                    v85 = primary->center_x;
+                } else {
+                    v85 = advanced / current_template->secondary_samples[current_index].delta_length
+                        * (primary[1].center_x - primary->center_x)
+                        + primary->center_x;
+                }
+                out_angle = advanced;
                 goto after_v85;
             }
         }
@@ -283,7 +288,6 @@ int FollowState::update_track_attachment_follow_state(
     if (current_index == (unsigned int)terminal_index) {
         v85 = primary->center_x;
     } else {
-general_lerp_v85:
         v85 = out_angle / current_template->secondary_samples[current_index].delta_length
             * (primary[1].center_x - primary->center_x)
             + primary->center_x;
