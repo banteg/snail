@@ -21,17 +21,17 @@ void TimesUpController::update_times_up()
 {
     switch (state) {
         case 0:
-            break;
-        case 2:
-            uninit_times_up();
-            ((Player*)(g_game_base + 0x42fd7c))->kill_subgoldy();
-            state = 0;
-            break;
+            return;
         case 1:
             progress = progress_step + progress;
             if (progress > 1.0f) {
                 state = 2;
             }
+            break;
+        case 2:
+            uninit_times_up();
+            ((Player*)(g_game_base + 0x42fd7c))->kill_subgoldy();
+            state = 0;
             break;
     }
 }

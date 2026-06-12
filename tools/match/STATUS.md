@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**25/35** functions matched, **1404/4598** bytes.
+**26/35** functions matched, **1479/4598** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -26,7 +26,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | update_times_up | 0x445e20 | 75 | 24/26 | 84.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | hide_gameplay_scores | 0x445f10 | 35 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
