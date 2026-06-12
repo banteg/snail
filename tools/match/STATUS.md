@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**112/121** functions matched, **5750/8739** bytes.
+**113/122** functions matched, **5845/8834** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -58,6 +58,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
