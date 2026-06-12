@@ -75,3 +75,18 @@ Known residuals after the current source shape:
   attached from esi] [+0x34 lookup+store of 0.6f]; candidate emits the
   +0x24 pair earlier and drops one lookup. Re-order the source statements
   to the IDA sequence and keep `attached` live across the +0x24 lookup.
+
+## Pinned (2026-06-12): semantics complete, golf parked at 46.4%/678 insns
+
+All lanes are source-shaped and cross-validated (IDA export, target.asm,
+and the matched neighbors): progress/overflow stepping, dead voice-4
+lane, both milestone writes, kind-42 + general interpolation, orientation
+block with the dead-b lerp, side-exit gates, supertramp exhaust. The
+remaining diff is clone PLACEMENT (compiler block ordering puts our
+loop-exit clone at the function tail instead of between loop and
+exhaust), register assignment (attached record in esi, template in esi
+vs ebx), and x87 scheduling in the matrix regions — layout-only classes
+per the established precedents. Per campaign rules this qualifies as
+pinned: the FollowState contract is fully recovered and the mirror
+transcription can proceed. Golf leads for a future polish pass are in
+the iteration notes above.

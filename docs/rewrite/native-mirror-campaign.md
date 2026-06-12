@@ -32,7 +32,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 
 | # | cluster | key functions | match | mirror | route | collapse |
 |---|---------|---------------|-------|--------|-------|----------|
-| 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (pinned), **update @ 0x420cb0 (2.7KB, unmatched — defines the FollowState contract)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept in `native/attachment_follow.zig` | · | 🚧 entry-height collapse ledgered 06-12 |
+| 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept in `native/attachment_follow.zig` | · | 🚧 entry-height collapse ledgered 06-12 |
 | 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 (8.5KB boss; five retirement lanes), begin_post_follow_carryover @ 0x43af60 (100%) | 🚧 | · | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 (2.9KB; all contact constants, slug radius finding) | · | · | · | · |
 | 4 | hazard pools | salt quartet done (100/74/48/41, quirks ledgered) and mirrored in `native/salt_pool.zig`; spawn_sub_lazer @ 0x441670 (98.4%); remaining: wall2 emitter @ 0x439d50, shoot_subgoldy @ 0x441ad0, sub-lazer update @ 0x43efb0 | 🚧 | 🚧 salt done | · | · |
@@ -50,10 +50,10 @@ benefits from everything below it being trustworthy first.
 
 ## Next actions (keep this list short and current)
 
-1. Match `update_track_attachment_follow_state` @ 0x420cb0 — unlocks the
-   FollowState contract, cluster 1 route/collapse, and the voice/milestone
-   semantics. Signature already recovered: thiscall,
-   `(float rate, int* sample_index, Vector3* position)`.
+1. Mirror `update_track_attachment_follow_state` into
+   `native/attachment_follow.zig` from the pinned scratch (FollowState
+   contract complete), then route the runner's follow lanes through the
+   mirror and collapse the invented follow model.
 2. Route runner begin/swept call sites through `native/attachment_follow.zig`
    (map `attachment.follow` reads to FollowState fields; keep the y-snap
    seam from the module doc).
