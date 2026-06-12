@@ -1,26 +1,34 @@
-# WIP — 39.79% score, 183/204 insns on standard flags
+# WIP — 79.80% score, 202/204 insns on standard flags
 
 Now on the project-standard `msvc6.5 /O2 /G5 /W3` (the earlier `/Op`
-experiment reached 205/204 instructions, which proves the dual-slot
-float temps + integer-register copies are reachable — but per the
-search_path_for_golb precedent the same pattern emerges from source
-shape alone when the pre-rotation delta stays live after the copy, so
-the open task is finding that source idiom, not flags). Verified source
-shapes that got the structure right:
+experiment reached 205/204 instructions, but flag changes remain only
+experiments). Current source-shape wins:
 
 - `do { ... } while (--idx >= 0); return;` with `if (probe.y <= 0.001f)
   goto seed;` — reproduces the target layout (seed block after the plain
   return, fallthrough-free hot loop)
-- world x lanes inline in the delta expressions (stay on the FPU; IDA's
-  `double v13/v15` are FPU-resident temporaries — declaring real
-  `double` locals forces an 8-aligned ebp frame the target lacks)
+- copying `cell->anchor_position` into a `Vector3` first recovers the native
+  `add eax, 0x10` anchor-load prologue and the `v19/v20/v21` stack slots
+- explicit `sample_origin`, `hit_origin`, and `swept_position` vectors recover
+  the native 0x64-byte frame and the stored world-y/z and swept-y/z lanes
+- two-step y/z subtracts (`v23 = py; v23 -= v31`) recover the target `fsub`
+  polarity on the first probe; world x lanes still stay FPU-resident
 - `extern char* volatile g_game_base` reproduces the per-statement base
   reloads in the seed block (this also moved
   begin_track_attachment_follow_state from 85.19% to 88.89%)
 
-Remaining: register-allocation alignment golf (declaration order /
-usage-order experiments), second-probe CSE differences, seed-block
-float copies (`fld/fstp` vs integer moves for progress / position.y).
+Remaining residuals at 79.80%:
+
+- sample pointer formation uses `eax` + `ecx` (`mov eax, [edi+0x5c]; mov ecx,
+  ebp; add ecx, eax`) instead of target `mov ecx, [edi+0x5c]; add ecx, ebp`
+- first probe z-copy scheduling has one integer move before the `fsub`
+  where target schedules it after
+- second-probe vector copy registers are swapped (`eax`/`edx`) around the
+  `v25/v26/v27 -> probe` stores
+- loop-exit branch polarity is still `jl return; jmp loop` versus target
+  `jge loop; return` for the same seed-after-return layout
+- seed stores for `progress` and `player.position.y` are integer moves; target
+  uses `fld/fstp`. Plain casts and neutral arithmetic did not move codegen.
 
 Semantics fully recovered (see also the seeding writes in scratch.cpp):
 

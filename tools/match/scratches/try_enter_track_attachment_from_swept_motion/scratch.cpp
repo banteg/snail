@@ -14,25 +14,42 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
     float sweep_x, float sweep_y, float sweep_z,
     TrackRowCell* cell)
 {
-    const Vector3* anchor = &cell->anchor_position;
-    float anchor_x = anchor->x;
-    float anchor_y = anchor->y;
-    float anchor_z = anchor->z;
+    Vector3 local;
+    Vector3 probe;
+    Vector3 sample_origin;
+    Vector3 hit_origin;
+    Vector3 swept_position;
+    Vector3 anchor = cell->anchor_position;
+    float v19 = anchor.x;
+    float v20 = anchor.y;
+    float v21 = anchor.z;
+    float v22;
+    float v23;
+    float v24;
+    float v25;
+    float v26;
+    float v27;
+    float v31;
+    float v32;
+    float v33;
+    float v34;
+    float v35;
+    float v36;
     int idx = sample_count - 1;
     if (idx < 0)
         return;
-    Vector3 local;
     do {
         AttachmentSample* s = &samples[idx];
         if (s->active > 0.0f) {
-            float wy = anchor_y + s->offset.y;
-            float wz = anchor_z + s->offset.z;
-            float dx = px - (anchor_x + s->offset.x);
-            local.x = dx;
-            float dy = py - wy;
-            local.y = dy;
-            float dz = pz - wz;
-            local.z = dz;
+            sample_origin = Vector3(v19 + s->offset.x, v20 + s->offset.y, v21 + s->offset.z);
+            v31 = sample_origin.y;
+            v32 = sample_origin.z;
+            v22 = px - sample_origin.x;
+            v23 = py;
+            v23 -= v31;
+            v24 = pz;
+            v24 -= v32;
+            local = Vector3(v22, v23, v24);
             local.rotate_by_matrix(s->matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
@@ -40,17 +57,18 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
                 && local.z > 0.0f) {
                 AttachmentSample* hit = &samples[idx];
                 if (local.z < hit->entry_depth_limit) {
-                    float wy2 = anchor_y + hit->offset.y;
-                    float wz2 = anchor_z + hit->offset.z;
-                    float sy = py + sweep_y;
-                    float sz = pz + sweep_z;
-                    Vector3 probe;
-                    float dx2 = sweep_x + px - (anchor_x + hit->offset.x);
-                    probe.x = dx2;
-                    float dy2 = sy - wy2;
-                    probe.y = dy2;
-                    float dz2 = sz - wz2;
-                    probe.z = dz2;
+                    hit_origin = Vector3(v19 + hit->offset.x, v20 + hit->offset.y, v21 + hit->offset.z);
+                    v35 = hit_origin.y;
+                    v36 = hit_origin.z;
+                    swept_position = Vector3(sweep_x + px, py + sweep_y, pz + sweep_z);
+                    v33 = swept_position.y;
+                    v34 = swept_position.z;
+                    v25 = swept_position.x - hit_origin.x;
+                    v26 = v33;
+                    v26 -= v35;
+                    v27 = v34;
+                    v27 -= v36;
+                    probe = Vector3(v25, v26, v27);
                     probe.rotate_by_matrix(hit->matrix);
                     if (probe.y <= 0.001f)
                         goto seed;
@@ -62,7 +80,9 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
 
 seed:
     FOLLOW->live_flag = 0;
-    PLAYER->start_squidge_y(FOLLOW->squidge_scratch);
+    char* call_base = g_game_base;
+    ((Player*)(g_player_block + (int)call_base))->start_squidge_y(
+        ((FollowState*)(g_follow_state_block + (int)call_base))->squidge_scratch);
     FOLLOW->active = 1;
     FOLLOW->template_record = this;
     FOLLOW->source_cell = cell;
@@ -71,11 +91,16 @@ seed:
     FOLLOW->vertical_offset = 0;
     PLAYER->position.y = local.y;
     FOLLOW->squidge_scratch = 0;
-    FOLLOW->player = PLAYER;
+    char* player_base = g_game_base;
+    ((FollowState*)(g_follow_state_block + (int)player_base))->player =
+        (Player*)(g_player_block + (int)player_base);
     FOLLOW->template_record->installed_heading_delta =
         *(float*)(g_row_heading_table + (int)g_game_base + 4 * (61 * cell->get_row_index()));
     FOLLOW->field_1c = 0;
     FOLLOW->field_18 = 0;
-    FOLLOW->update_track_attachment_follow_state(
-        FOLLOW->update_rate, &FOLLOW->sample_index, &PLAYER->position);
+    char* update_base = g_game_base;
+    ((FollowState*)(g_follow_state_block + (int)update_base))->update_track_attachment_follow_state(
+        ((FollowState*)(g_follow_state_block + (int)update_base))->update_rate,
+        &((FollowState*)(g_follow_state_block + (int)update_base))->sample_index,
+        &((Player*)(g_player_block + (int)update_base))->position);
 }
