@@ -2,10 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**17/22** functions matched, **1039/2459** bytes.
+**18/28** functions matched, **1074/4268** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
+| 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | search_path_for_golb | 0x415e30 | 192 | 63/63 | 92.06% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 88.89% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -16,9 +17,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 90/88 | 80.90% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | update_times_up | 0x445e20 | 75 | 24/26 | 84.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | hide_gameplay_scores | 0x445f10 | 35 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | msvc6.5 /O2 /G5 /W3 |
