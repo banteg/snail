@@ -3805,16 +3805,16 @@ pub const Runner = struct {
         }
         self.runtime.hazards.count = write_index;
 
-        // PORT(verified): `update_salt_hazard`
-        // (`artifacts/ida/functions/004417d0-update_salt_hazard.c`) runs per
-        // active slot each tick, advancing lifetime progress and integrating
-        // position by the spawn-owned motion lane. The pool-side
-        // `tickActiveSlots` handles that;
-        // the attachment-collision/off-track check at native lines 45-91 is
-        // not yet wired here (the port already resolves salt contact in
-        // `processRuntimeHazardCollisions` against the damage gauge).
+        // PORT(verified): `update_salt_hazard` @ 0x4417d0 (pinned,
+        // tools/match) runs per active slot each tick: lifetime progress,
+        // then position += velocity (pool-side `tickActiveSlots`), then the
+        // exit checks (runner-side `retireSaltHazards`: kill plane, y < 0,
+        // wall2 floor). The attachment containment probes (native lines
+        // 45-91, `is_point_inside_track_attachment`) remain a named seam —
+        // the port has no containment helper yet; player contact resolves in
+        // `processRuntimeHazardCollisions` against the damage gauge.
         self.runtime.salts.tickActiveSlots();
-        self.retireSaltHazardsPastTrailingWindow();
+        self.retireSaltHazards(preview);
 
         // PORT(verified): `update_sub_lazer_projectile`
         // (`analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c`)
@@ -3896,10 +3896,20 @@ pub const Runner = struct {
         }
     }
 
-    fn retireSaltHazardsPastTrailingWindow(self: *Runner) void {
+    // PORT(verified): the exit checks of `update_salt_hazard` @ 0x4417d0
+    // (pinned, tools/match). Native deactivates when position.y < 0 or
+    // position.z < game[+0x3be0e4] (the kill plane — the port's trailing
+    // window stands in for that global), or on the tile-14/wall2 floor exit
+    // while below y = 7. Salt only moves vertically (vx = 0, vz = 0 under
+    // OB-1), so the spawn row/lane stay valid for the grid lookup.
+    fn retireSaltHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         for (&self.runtime.salts.slots) |*slot| {
             if (slot.state != .active) continue;
-            if (slot.world_position.z + 48.0 < self.row_position) {
+            const past_kill_plane = slot.world_position.z + 48.0 < self.row_position;
+            const below_floor = slot.world_position.y < 0.0;
+            const wall2_floor_exit = slot.world_position.y < 7.0 and
+                (preview.runtimeTileAt(slot.row, slot.lane) orelse 0) == native_wall2_tile_id;
+            if (past_kill_plane or below_floor or wall2_floor_exit) {
                 self.runtime.salts.deactivate(slot);
             }
         }

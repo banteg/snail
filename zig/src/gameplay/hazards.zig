@@ -32,10 +32,10 @@ const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 // `cRSalt::AI` does not integrate this into the visible position, though: salt
 // stays anchored and fades/removes by row distance.
 pub const native_salt_vertical_velocity_factor: f32 = 0.033333335;
-// PORT(verified): native writes only byte `1` at `+0x94`, even though
-// `update_salt_hazard` later reads the same address as the z-velocity float.
-// Preserve that odd lane exactly: it is effectively stationary in z.
-pub const native_salt_z_velocity_bit_pattern: u32 = 1;
+// OB-1 (docs/rewrite/original-bugs.md): native spawn pokes only the LOW BYTE
+// of velocity.z (+0x94) with 1, producing a denormal the update integrates as
+// effectively zero. Fixed-default is a plain 0.0; no --preserve-bugs branch
+// because the two are observationally identical.
 // PORT(partial): native `spawn_salt_hazard` draws from shared
 // `next_math_random_value`, which returns `[-16384, 16384]`, then multiplies
 // by `0.0001917476` for the initial Y-rotation angle. The port keeps the same
@@ -212,7 +212,7 @@ pub const SaltHazardPool = struct {
             .velocity = .{
                 .x = 0.0,
                 .y = subgame_rate * native_salt_vertical_velocity_factor,
-                .z = @as(f32, @bitCast(native_salt_z_velocity_bit_pattern)),
+                .z = 0.0, // OB-1 fixed: native's byte poke is a denormal ≈ 0
             },
             .lifetime_progress = 0.0,
             .lifetime_step = 0.0,
@@ -221,11 +221,15 @@ pub const SaltHazardPool = struct {
         return slot;
     }
 
-    // PORT(verified): cross-port `cRSalt::AI` leaves the visual position
-    // anchored. Windows stores a nonzero lane at `+0x90`, but Android uses
-    // state 1 only to refresh alpha and remove the slot once it trails past
-    // the active camera window. Keep the seeded lane for structure parity
-    // without applying the earlier invented visible lift.
+    // PORT(verified): `update_salt_hazard` @ 0x4417d0 (pinned,
+    // tools/match/scratches/update_salt_hazard) state 1: advance lifetime
+    // progress (zero-step under OB-2-fixed, so it never fires), then
+    // integrate `position += velocity` — salt visibly drifts on the
+    // spawn-seeded lanes. The earlier anchored-position model came from the
+    // Android cross-port's cRSalt::AI and is overruled by the matched
+    // Windows asm (see the 06-12 ledger). The native exit conditions
+    // (kill plane, y < 0, tile-14 floor, attachment containment) need track
+    // context and run runner-side in `retireSaltHazards`.
     pub fn tickActiveSlots(self: *SaltHazardPool) void {
         for (&self.slots) |*slot| {
             switch (slot.state) {
@@ -236,6 +240,9 @@ pub const SaltHazardPool = struct {
                         slot.state = .removing;
                         continue;
                     }
+                    slot.world_position.x += slot.velocity.x;
+                    slot.world_position.y += slot.velocity.y;
+                    slot.world_position.z += slot.velocity.z;
                 },
                 .removing => {
                     // PORT(verified): native `update_salt_hazard` state-2
@@ -274,7 +281,7 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
     return centered * native_salt_yaw_random_scale;
 }
 
-test "salt spawn records native motion lane but stays visually anchored" {
+test "salt spawn seeds the native lanes with the OB-1 fix" {
     var pool = SaltHazardPool{};
     var random_state: u32 = 0;
     const subgame_rate: f32 = 4.0;
@@ -291,13 +298,48 @@ test "salt spawn records native motion lane but stays visually anchored" {
         slot.velocity.y,
         0.0001,
     );
+    try std.testing.expectEqual(@as(f32, 0.0), slot.velocity.x);
+    try std.testing.expectEqual(@as(f32, 0.0), slot.velocity.z);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_step, 0.0001);
+}
+
+test "salt tick integrates position by the spawn-seeded velocity" {
+    var pool = SaltHazardPool{};
+    var random_state: u32 = 0;
+    const slot = pool.spawn(12, 3, .{ .x = 2.5, .y = 0.18, .z = 12.0 }, 4.0, &random_state).?;
 
     pool.tickActiveSlots();
 
+    // matched update_salt_hazard state 1: position += velocity each tick
     try std.testing.expectEqual(SaltSlotState.active, slot.state);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.18), slot.world_position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), slot.lifetime_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(
+        0.18 + 4.0 * native_salt_vertical_velocity_factor,
+        slot.world_position.y,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), slot.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), slot.world_position.z, 0.0001);
+}
+
+test "live salt persists without external retirement because progress never fires" {
+    // OB-2 fixed: lifetime progress/step are plain zeroed fields (native
+    // leaves them uninitialized past the slot stride); the state-2
+    // transition never fires on its own
+    var pool = SaltHazardPool{};
+    var random_state: u32 = 0;
+    const slot = pool.spawn(12, 3, .{ .x = 0.0, .y = 5.0, .z = 10.0 }, 4.0, &random_state).?;
+    for (0..100) |_| pool.tickActiveSlots();
+    try std.testing.expectEqual(SaltSlotState.active, slot.state);
+}
+
+test "salt spawn returns null when the pool is exhausted" {
+    var pool = SaltHazardPool{};
+    var random_state: u32 = 0;
+    const origin = rl.Vector3{ .x = 0.0, .y = 0.0, .z = 0.0 };
+    for (0..max_active_salt_slots) |i| {
+        try std.testing.expect(pool.spawn(i, 0, origin, 4.0, &random_state) != null);
+    }
+    try std.testing.expect(pool.spawn(99, 0, origin, 4.0, &random_state) == null);
 }
 
 /// PORT(partial): 20-slot `cRSubLazerManager` projectile pool. Keeps the

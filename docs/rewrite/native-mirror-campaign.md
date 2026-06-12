@@ -35,7 +35,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 pose interpolation routed into worldPoseForTemplate 06-12 | 🚧 entry-height + pose-lerp collapses ledgered 06-12 |
 | 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 dossiered with motion core + all five exit lanes specified 06-12 (gravity corrected to rate^2, +0x1e4 bounce byte decoded); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
-| 4 | hazard pools | salt quartet + sub-lazer trio ALL pinned 06-12 (spawn 98.4%, shoot/emitter/update structure-exact; update-state +0x38 vs free-flag +0x80 disambiguated, y-stagger and 4% fire gate recovered) | 🚧 | ✅ salt (canonical home: `gameplay/hazards.zig`, match-derived incl. the OB-1 bit pattern; `native/salt_pool.zig` is a redundant parallel mirror — consolidate during cluster-4 collapse) | 🚧 hazards pool is live in the runner | · |
+| 4 | hazard pools | salt quartet + sub-lazer trio ALL pinned 06-12 (spawn 98.4%, shoot/emitter/update structure-exact; update-state +0x38 vs free-flag +0x80 disambiguated, y-stagger and 4% fire gate recovered) | 🚧 | ✅ salt consolidated 06-12 (`gameplay/hazards.zig` sole home; tick integrates position per pinned asm; OB-1 fixed) | ✅ salt live with native exit set in `retireSaltHazards` | ✅ salt (`native/salt_pool.zig` deleted; containment-probe seam named) |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
 | 6 | golb / projectiles | search_path + init_path_follow 100%; update_golb_ai dossier complete 06-12 (path-follow entry, riding via calc_path_length_z — a boss sibling — rocket homing, trail dispatch); spec is mirror-ready | 🚧 | · | · | · |
 | 7 | cameraman | update_cameraman @ 0x4461d0 full pipeline recorded + Zig camera verified clean 06-12 (match = proof-polish, deprioritized); initialize_cameraman @ 0x446160 | 🚧 | n/a (camera verified in place) | · | · |
@@ -77,10 +77,13 @@ invalidation ledger.
    seam from the module doc).
 3. Finish `try_enter_track_attachment_from_swept_motion` register alignment
    on standard flags (NOTES has the dual-slot source-shape lead).
-4. Consolidate the duplicate salt pools (`gameplay/hazards.zig` is
-   canonical and live; fold or delete `native/salt_pool.zig` keeping its
-   tests), then match the sub-lazer trio (wall2 emitter, shoot_subgoldy,
-   update @ 0x43efb0).
+4. ~~Consolidate the duplicate salt pools~~ DONE 06-12: `native/salt_pool.zig`
+   deleted, its tests folded into `gameplay/hazards.zig`; the tick now
+   integrates position per the pinned asm (the Android-cross-port anchored
+   model is overruled), OB-1 fixed to a plain 0.0, and `retireSaltHazards`
+   carries the native exit set (kill-plane proxy, y < 0, wall2 floor).
+   Remaining named seam: the attachment containment probes need an
+   `is_point_inside_track_attachment` port.
 5. Finish `update_row_event_display` (78.5%) and
    `project_position_onto_track_attachment` (56%).
 
