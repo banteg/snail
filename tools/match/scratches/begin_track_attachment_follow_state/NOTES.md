@@ -1,10 +1,11 @@
-# Residual diff — 85.19%, 27/27 insns
+# Residual diff — 94.55%, 28/27 insns
 
-Pure register renaming in the heading-table tail: target computes the
-×61 index into edx and loads `data_4df904` into ecx; our build swaps the
-two. Instruction sequence and addressing are otherwise identical, all
-struct offsets and the `g_row_heading_table + game_base + 4*61*row`
-addressing confirmed. Semantics fully pinned.
+The heading-table tail now keeps the ×61 index in `edx`, loads
+`data_4df904` into `ecx`, and schedules the `pop esi` like the target.
+The remaining miss is that the typed row-heading table pointer materializes
+the table base with `add ecx, ADDR`, then loads `[ecx + edx*4]`; the target
+folds the same table base into the final memory displacement as
+`[ecx + edx*4 + ADDR]`. Semantics and all offsets are pinned.
 
 Recovered: FollowState layout (+0x00 active, +0x04 template, +0x08 cell,
 +0x0c sample_index, +0x10 progress = z - cell anchor z, +0x14

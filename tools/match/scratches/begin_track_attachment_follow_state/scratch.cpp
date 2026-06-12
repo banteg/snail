@@ -13,9 +13,8 @@ AttachmentPathTemplate* FollowState::begin_track_attachment_follow_state(
     player = owning_player;
     vertical_offset = height;
     int table_index = 61 * cell->get_row_index();
-    char* table = g_game_base;
+    float* table = (float*)(g_row_heading_table + (int)g_game_base);
     AttachmentPathTemplate* record = template_record;
-    record->installed_heading_delta =
-        *(float*)(g_row_heading_table + (int)table + 4 * table_index);
+    record->installed_heading_delta = table[table_index];
     return record;
 }
