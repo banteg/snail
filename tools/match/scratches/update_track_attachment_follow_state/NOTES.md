@@ -25,3 +25,20 @@ Known residuals after the current source shape:
 - special-runtime row writes are semantically typed, but row lookup/store ordering and registers still differ in both milestone branches
 - normal interpolation now follows the target's scalar and output temporary flow, but matrix-copy stack offsets and camera-basis stores remain different
 - `orientation_b` is intentionally overwritten by the installed-heading lane, matching the native semantic result; exact dead/intermediate stores still need source-shape work
+
+## Cross-findings (2026-06-12, second agent)
+
+- the "camera basis" globals at 0x42fdb4/c4/d4 are the **player's
+  live_matrix rows**: player block at game+0x42fd7c, TransformMatrix at
+  +0x38, position row = the position vector at +0x68 — same shape as the
+  hazard slots. Worth folding into the mirror's Player model even though
+  the normalized addressing is identical either way.
+- FollowState +0x18..+0x20 is output_position (the swept entry zeroes
+  its x/y), orientation block spans +0x24..+0x34;
+  tools/match/include/track_attachment.h updated.
+- sample +0x8c renamed delta_length across the headers (the swept-entry
+  "depth limit" gate is z < segment length); swept scratch updated, score
+  holds at 79.80%.
+- target preloads ebx=0x80 and edi=0x3f19999a (0.6f) in the prologue —
+  loop-invariant constant hoisting; the candidate can only mirror it once
+  those callee-saved registers are free across the overflow loop.

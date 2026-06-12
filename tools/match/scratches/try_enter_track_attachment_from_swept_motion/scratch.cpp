@@ -56,7 +56,7 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
                 && local.y >= -0.2
                 && local.z > 0.0f) {
                 AttachmentSample* hit = &samples[idx];
-                if (local.z < hit->entry_depth_limit) {
+                if (local.z < hit->delta_length) {
                     hit_origin = Vector3(v19 + hit->offset.x, v20 + hit->offset.y, v21 + hit->offset.z);
                     v35 = hit_origin.y;
                     v36 = hit_origin.z;

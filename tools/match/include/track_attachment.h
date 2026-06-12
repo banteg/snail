@@ -15,8 +15,12 @@ struct AttachmentSample {            // stride 0xa8
     char unknown_3c[0x40 - 0x3c];
     float matrix[12];                // +0x40, local-frame rotation
     char unknown_70[0x8c - 0x70];
-    float entry_depth_limit;         // +0x8c
-    char unknown_90[0xa8 - 0x90];
+    float delta_length;              // +0x8c, segment length (the swept-entry
+                                     // "depth limit" gate is z < this)
+    char unknown_90[0x94 - 0x90];
+    float rotation_scalar_94;        // +0x94
+    float rotation_scalar_98;        // +0x98
+    char unknown_9c[0xa8 - 0x9c];
 };
 
 struct TrackRowCell;
@@ -60,9 +64,12 @@ public:
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14
-    int field_18;                // +0x18
-    int field_1c;                // +0x1c
-    char unknown_20[0x38 - 0x20];
+    Vector3 output_position;     // +0x18 (x/y zeroed by the swept entry)
+    float orientation_a;         // +0x24 (exact a..e order pending boss match)
+    float orientation_b;         // +0x28
+    float orientation_c;         // +0x2c
+    float orientation_d;         // +0x30
+    float orientation_e;         // +0x34
     Player* player;              // +0x38
     char unknown_3c[0x90 - 0x3c];
     float squidge_scratch;       // +0x90
