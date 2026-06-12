@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**147/664** mapped gameplay functions matched, **7219/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**146/664** mapped gameplay functions matched, **7040/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -118,7 +118,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% |  |
 | ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% |  |
 | ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% |  |
-| ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% |  |
+| 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 57.69% |  |
 | ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% |  |
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% |  |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% |  |

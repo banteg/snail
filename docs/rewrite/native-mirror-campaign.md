@@ -48,6 +48,15 @@ block the attachment-exit checklist items; 3–4 are next by audit-finding
 density; 10 is last because the bridge spans app/runtime ownership and
 benefits from everything below it being trustworthy first.
 
+## Matching arc complete (2026-06-12)
+
+Every important gameplay-sim function is matched, pinned, or fully
+specified; clusters 3 and 7 verified clean; the motion port verifies
+clean against the corrected update_subgoldy spec. Remaining named
+residuals: the +0x41c boost producer hunt, the grounded-snap rotation
+reset, the trampoline cell-y proxy, the orientation_a builder scalars,
+the duplicate salt pools, and the deferred bridge cluster (10).
+
 ## Next actions (keep this list short and current)
 
 1. Mirror `update_track_attachment_follow_state` into

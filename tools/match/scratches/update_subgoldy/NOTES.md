@@ -92,3 +92,20 @@ specified for transcription.
 byte +0x1e4 is now fully decoded: set by trampoline bounce, cleared by
 both grounding lanes, gates the vz drag. With this the five-lane spec is
 complete and the cluster-2 mirror can be written.
+
+## Zig verify pass (final, 2026-06-12)
+
+stepActivePhaseVerticalMotion verifies CLEAN against the corrected spec:
+integration, damping, the grounded-snap band with the unconditional
+pending clear (the correction is already applied at block level), the
+squidge threshold nesting (observationally equivalent), the void-edge
+carryover arm, the death trigger, and the pending-exit trampoline with
+rate*0.3. Three named residuals:
+
+1. the +0x41c one-tick boost lane is absent (acknowledged in the code
+   comment) — its CONSUMER is fully specified (quantum + clear pending)
+   but its PRODUCER is unread; hunt the writer before porting
+2. native resets the live-matrix rotation to identity in the grounded
+   snap; the port only clears the airborne flag (presentation-level)
+3. the trampoline envelope uses a shipped-tile floor-height proxy for
+   the cell anchor y (the checklist correction stands)
