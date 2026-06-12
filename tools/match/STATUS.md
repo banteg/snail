@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**48/56** functions matched, **2811/5738** bytes.
+**52/60** functions matched, **2901/5828** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -42,7 +42,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
