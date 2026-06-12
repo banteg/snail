@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**90/100** functions matched, **4214/7616** bytes.
+**95/105** functions matched, **4414/7816** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -65,6 +65,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -81,6 +85,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_snail_skin | 0x445f60 | 27 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
