@@ -83,6 +83,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% |  |
 | 🚧 | deactivate_salt_hazard | 0x441740 | 140 | 39/43 | 41.46% |  |
 | 🚧 | update_salt_hazard | 0x4417d0 | 768 | 215/218 | 48.04% |  |
+| 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 44/48 | 63.04% |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% |  |
 | ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% |  |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% |  |
