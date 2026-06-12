@@ -23,6 +23,18 @@ For each cluster, in order:
 4. **Collapse**: delete the invented model, write the invalidation-ledger
    entry for every overturned assumption, update the checklist.
 
+Naming rule (2026-06-13): any Zig function corresponding to a native
+function carries the native name camelCased (`calc_subgame_rate` ->
+`calcSubgameRate`) — greppable against the decompile, mechanical to port.
+Runner helpers covering a SLICE of a big native fn get region names
+(`updateSubgoldyMotionCore`), never invented concepts. Rename legacy
+invented names when touched.
+
+Decomposition rule (2026-06-13): `gameplay.zig` (~12k lines) is a god
+object — every route/collapse step moves the surviving slice into its
+cluster module instead of leaving it inline; the end state is gameplay.zig
+as a thin orchestrator over `gameplay/<area>.zig` + `gameplay/native/*`.
+
 A cluster is **done** when the old code path no longer exists.
 
 ## Cluster board

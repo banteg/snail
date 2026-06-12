@@ -795,7 +795,7 @@ pub const Runner = struct {
             return;
         }
 
-        self.updateNativeTrackCenterRate(preview);
+        self.calcSubgameRate(preview);
 
         if (!self.paused) {
             self.presentation.squidge.tick();
@@ -1374,7 +1374,10 @@ pub const Runner = struct {
         return self.subgame_rate;
     }
 
-    fn updateNativeTrackCenterRate(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    /// calc_subgame_rate @ 0x4404d0 — native name mirrored per the
+    /// campaign naming rule (one Zig fn per native fn keeps the port
+    /// mechanical and greppable against the decompile)
+    fn calcSubgameRate(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) {
             self.subgame_rate = self.nativeBaseSubgameRate();
             return;
@@ -7604,7 +7607,7 @@ test "native live track rate is recomputed separately from base subgame rate" {
     runner.configureBaseSubgameRate(0.2);
     runner.row_position = fixture.preview.course_end_threshold * 0.5;
 
-    runner.updateNativeTrackCenterRate(&fixture.preview);
+    runner.calcSubgameRate(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.base_subgame_rate, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.3), runner.nativeRunRate(), 0.0001);
@@ -7618,11 +7621,11 @@ test "paused active run preserves native live track rate" {
     runner.configureSessionMode(.tutorial);
     runner.configureBaseSubgameRate(0.2);
     runner.row_position = fixture.preview.course_end_threshold * 0.5;
-    runner.updateNativeTrackCenterRate(&fixture.preview);
+    runner.calcSubgameRate(&fixture.preview);
 
     runner.paused = true;
     runner.row_position = fixture.preview.course_end_threshold;
-    runner.updateNativeTrackCenterRate(&fixture.preview);
+    runner.calcSubgameRate(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.3), runner.nativeRunRate(), 0.0001);
 }
@@ -7638,7 +7641,7 @@ test "native draining damage state adds the recovered track-rate boost envelope"
     runner.damage.warning_state = .draining;
     runner.damage.runtime.warning_transition_progress = 0.5;
 
-    runner.updateNativeTrackCenterRate(&fixture.preview);
+    runner.calcSubgameRate(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.80000002), runner.nativeRunRate(), 0.0001);
 }
