@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**104/113** functions matched, **5171/8160** bytes.
+**105/114** functions matched, **5273/8262** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -87,6 +87,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_snail_skin_transition | 0x445f80 | 69 | 25/25 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
