@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**84/94** functions matched, **4051/7453** bytes.
+**87/97** functions matched, **4117/7519** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -64,6 +64,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
