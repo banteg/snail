@@ -39,7 +39,10 @@ struct Player {
     void add_subgoldy_score(int score_kind, int bonus_score);
 };
 
-void __stdcall play_sound_effect(int sound_id);
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id); // thiscall on the global manager
+};
+extern SoundEffectManager g_sound_effect_manager;
 
 struct InputState {
     char unknown_00[0x3c];
@@ -147,7 +150,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
                 char* game = g_game_base;
                 if (*(int*)(game + 0x74658) == 1) {
                     ((Player*)(game + 0x42fd7c))->add_subgoldy_score(5, controller->bonus_score);
-                    play_sound_effect(0x31);
+                    g_sound_effect_manager.play_sound_effect(0x31);
                 }
             }
         }
@@ -171,7 +174,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
 
         if ((((InputState**)(game + 0x28c))[0]->control_flags & 0x4000) != 0) {
             controller->state = 5;
-            play_sound_effect(8);
+            g_sound_effect_manager.play_sound_effect(8);
         }
         break;
     }
