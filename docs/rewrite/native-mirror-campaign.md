@@ -59,10 +59,10 @@ benefits from everything below it being trustworthy first.
    seam from the module doc).
 3. Finish `try_enter_track_attachment_from_swept_motion` register alignment
    on standard flags (NOTES has the dual-slot source-shape lead).
-4. Match `update_salt_hazard` @ 0x4417d0 — the rest of the quartet is
-   matched/pinned; its asm settles whether the +0x98/+0x9c progress fields
-   overlap the documented 0x98 stride (see spawn NOTES). Then mirror
-   cluster 4 directly from matched source.
+4. Mirror cluster 4 (salt) from the matched/pinned quartet — all four are
+   done (100/74/48/41, layout quirks ledgered 06-12: velocity.z byte poke,
+   progress overlap past the stride). The Zig SaltHazardPool port must
+   preserve the quirks, not fix them.
 5. Finish `update_row_event_display` (78.5%) and
    `project_position_onto_track_attachment` (56%).
 

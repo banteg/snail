@@ -28,6 +28,21 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Salt hazard slot layout
+
+- invalidated claim: the salt slot is a self-contained 0x98-stride record
+  and IDA's update render reads a velocity triple seeded by spawn
+- replacement evidence: matched/pinned asm (tools/match scratches for the
+  salt quartet) shows spawn seeds velocity.x = 0, velocity.y =
+  game[+0x74650]/30, and pokes only the LOW BYTE of velocity.z (+0x94) —
+  while update integrates all three lanes as floats; progress/step at
+  +0x98/+0x9c sit past the 0x98 stride in the next slot's header and are
+  never initialized by spawn
+- port consequence: the planned Zig SaltHazardPool must not "fix" these
+  quirks silently — velocity.z is effectively zero (denormal) and the
+  progress-based state-2 transition almost never fires; lifetime is
+  governed by collision, y < 0, kill plane, and the tile-14 floor exit
+
 ## 2026-06-12 - Attachment entry height model
 
 - invalidated claim: attachment entry follow height is family-dependent
