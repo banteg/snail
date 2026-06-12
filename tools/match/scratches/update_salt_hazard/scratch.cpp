@@ -62,8 +62,8 @@ struct Game {
 };
 
 extern Game* volatile g_game; // data_4df904
-extern char g_salt_collision_effect_target[];
-int salt_collision_effect(void* target); // @ 0x449c00
+extern char g_debug_report_arg[];
+int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
 struct SaltHazardSlot {
@@ -143,7 +143,7 @@ void SaltHazardSlot::update_salt_hazard()
                             (RuntimeTrackCellRef*)cell->secondary_attachment))
                         return;
                 }
-                salt_collision_effect(g_salt_collision_effect_target);
+                debug_report_stub(g_debug_report_arg);
                 deactivate_salt_hazard();
                 return;
             }

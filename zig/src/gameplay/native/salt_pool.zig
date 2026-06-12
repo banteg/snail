@@ -156,7 +156,7 @@ pub const SaltHazardPool = struct {
                             if (!deps.insideAttachment(.secondary, probe, sweep)) return .none;
                         }
                         self.deactivateSaltHazard(slot);
-                        return .collision_effect;
+                        return .absorbed_by_attachment;
                     }
                 }
                 self.deactivateSaltHazard(slot);
@@ -167,7 +167,9 @@ pub const SaltHazardPool = struct {
     }
 };
 
-pub const UpdateResult = enum { none, collision_effect };
+// the native "effect" call at 0x449c00 is a stripped debug stub (xor eax;
+// ret); the observable outcome of an attachment hit is just the despawn
+pub const UpdateResult = enum { none, absorbed_by_attachment };
 
 pub const AttachmentLane = enum { primary, secondary };
 
@@ -292,7 +294,7 @@ test "containment hit reports the collision effect and frees the slot" {
     _ = pool.spawnSaltHazard(.{ .y = 5.0, .z = 10.0 }, 30.0, 16384);
     var deps = TestDeps{ .flags = 0x80, .secondary_hit = true };
     try std.testing.expectEqual(
-        UpdateResult.collision_effect,
+        UpdateResult.absorbed_by_attachment,
         pool.updateSaltHazard(&pool.slots[0], deps.deps()),
     );
     try std.testing.expectEqual(@as(i32, 0), pool.slots[0].state);
