@@ -2,12 +2,13 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**32/41** functions matched, **1971/5090** bytes.
+**33/42** functions matched, **2026/5145** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | search_path_for_golb | 0x415e30 | 192 | 63/63 | 92.06% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 88.89% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
