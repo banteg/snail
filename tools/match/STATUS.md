@@ -102,6 +102,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% |  |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% |  |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 673/673 | 44.58% |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% |  |

@@ -1,3 +1,39 @@
+# WIP scratch — 44.58%, 673/673 insns (2026-06-13)
+
+Structure complete: all eight pool sweeps in order with asm-verified
+offsets. The low ratio is systematic small deltas, leads for next pass:
+
+- frame 0x74 vs 0x5c: native stages MORE locals — the slug first-hit
+  writes an unused staging triple (IDA v70=0/v71/v72 before the velocity
+  stores) and the per-loop delta/probe pairs each own slots; add the
+  staging Vec3 and check slot reuse
+- the movement-flags 0x80 test rides a REGISTER (mov bl, 0x80; test bl,
+  al) reused by the garbage-loop test — try a local mask variable
+- delta.z wants fst+fcomp straight off the FPU (store z, compare in one
+  flow) — the struct copy `probe = delta` currently intervenes; try
+  per-component copies ordered after the z compare like the health loop
+- velocity.z = -0.1f at ring kinds 3/7 compiles to `mov ebp, 0xbdcccccd`
+  hoisted before the loop + reg store — NOT a byte-poke bug (IDA's -0.1
+  confirmed); should fall out once loop shape aligns
+
+Asm-verified field finds (cross-findings for the campaign):
+
+- player+0x408 = Game* (the back-pointer)
+- player+0x440 = completion_handoff_active — cross-confirms the
+  unification's "damage-warning drain blocker at 0x4301bc"
+- nuke_effect_progress/step at player+0x374/+0x378 (NOT 0x4180);
+  initialize_nuke receives player+0x150 as this (overlaps the
+  player_slot read — settle when the nuke port lands)
+- pools (game-relative): salt state 0x357940/live byte 0x357954/pos
+  0x357928; sub-lazer state 0x356b80/pos 0x356b68; garbage list head
+  0x359140 (node: pos +0x68, next +0x80, state +0x84, direction +0x88);
+  slug state 0x356420/pos 0x356408/object 0x3563a0/hit byte 0x356479;
+  track rings state 0x125e4b8/pos 0x125e490; health state 0x356038/pos
+  0x356010/particles 0x356000; speedup single 0x355e30/0x355e18;
+  jetpack single 0x355e9c/0x355e74; ring effects state 0x35b80c/pos
+  0x35b7f4/kind 0x35b814; parcel hud owner dword 0x35bb94, total
+  0x1b01e0
+
 # Dossier — scratch not yet written (673 insns, 2887 bytes)
 
 cRSubGoldy::Collision() per cross-port symbols. target.asm committed.
