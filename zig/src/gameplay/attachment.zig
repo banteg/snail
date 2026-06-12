@@ -6,8 +6,8 @@ const runner_state = @import("runner_state.zig");
 
 pub const entry_rider_height: f32 = 0.49;
 pub const side_exit_margin: f32 = 0.3;
-pub const entry_start_y_tolerance: f32 = -0.2;
-pub const entry_end_y_tolerance: f32 = 0.001;
+// the swept-entry y tolerances live in the native mirror
+// (gameplay/native/attachment_follow.zig: entry_min_local_y, entry_accept_max_y)
 pub const exit_progress_step_default: f32 = 1.0 / 60.0;
 pub const exit_gate_a_progress_threshold: f32 = 0.7;
 

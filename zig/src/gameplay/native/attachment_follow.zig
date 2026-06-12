@@ -86,7 +86,18 @@ pub const SweptEntryAcceptance = struct {
     sample_index: i32,
     /// rotated local y of the first probe; native snaps player world y to this
     snap_player_y: f32,
+    /// rotated local x of the first probe relative to the raw sample origin.
+    /// Native consumes it only through the gates; the runner's lateral-offset
+    /// seam derives its invented lateral lane from it.
+    entry_local_x: f32,
 };
+
+/// Native template+0x54 is the wide span lane (constructor traces: WORM 16,
+/// not the builder width 4); the Zig builder splits it into
+/// spec.subdivision_count / width_cells.
+pub fn templateSpanCells(template: *const Template) i32 {
+    return @intCast(template.spec.subdivision_count orelse template.width_cells);
+}
 
 /// try_enter_track_attachment_from_swept_motion @ 0x42c770.
 /// Backward sample scan with two rotated probes; on acceptance seeds the
@@ -123,8 +134,8 @@ pub fn tryEnterTrackAttachmentFromSweptMotion(
             .z = position.z - world.z,
         });
 
-        // native half-span: signed INTEGER division of width_cells, then ±0.3
-        const half_span: f32 = @floatFromInt(@divTrunc(@as(i32, template.width_cells), 2));
+        // native half-span: signed INTEGER division of template+0x54, then ±0.3
+        const half_span: f32 = @floatFromInt(@divTrunc(templateSpanCells(template), 2));
         if (!(-half_span - entry_margin < local.x)) continue;
         if (!(half_span + entry_margin > local.x)) continue;
         if (@as(f64, local.y) < entry_min_local_y) continue;
@@ -155,6 +166,7 @@ pub fn tryEnterTrackAttachmentFromSweptMotion(
             return .{
                 .sample_index = @intCast(idx),
                 .snap_player_y = local.y,
+                .entry_local_x = local.x,
             };
         }
     }

@@ -76,9 +76,16 @@ invalidation ledger.
    side_exit_mode (template+0x40) on built templates, the milestone row
    writes, voice 15 on supertramp launch, and the motion.y vertical lane
    (checklist Phase 3 motion slice).
-2. Route runner begin/swept call sites through `native/attachment_follow.zig`
-   (map `attachment.follow` reads to FollowState fields; keep the y-snap
-   seam from the module doc).
+2. 🚧 Route runner begin/swept call sites: swept entry ROUTED 06-12
+   (`installedAttachmentEntryForSweep` calls the mirror's
+   `tryEnterTrackAttachmentFromSweptMotion`; the invented scan probed the
+   center_x-shifted pose with deltas clamped ≥ 1.0 — native probes the raw
+   sample origin with raw deltas and a strict local-z window; the runner's
+   lateral lane derives from the mirror's `entry_local_x` minus center_x).
+   Remaining: the direct begin lane (`currentRowInstalledAttachmentEntry` +
+   `beginInstalledAttachmentFollow` are a faithful field-for-field
+   transcription of the begin mirror but don't call it yet — converge when
+   the cluster-2 entry conditions route).
 3. Finish `try_enter_track_attachment_from_swept_motion` register alignment
    on standard flags (NOTES has the dual-slot source-shape lead).
 4. ~~Consolidate the duplicate salt pools~~ DONE 06-12: `native/salt_pool.zig`

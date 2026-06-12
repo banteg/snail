@@ -230,8 +230,6 @@ const fall_resurrect_delay_ticks: u16 = 120;
 const fall_world_y_threshold: f32 = native_position_y_death_threshold;
 const attachment_exit_progress_step_default = attachment_module.exit_progress_step_default;
 const attachment_side_exit_margin = attachment_module.side_exit_margin;
-const attachment_entry_start_y_tolerance = attachment_module.entry_start_y_tolerance;
-const attachment_entry_end_y_tolerance = attachment_module.entry_end_y_tolerance;
 const attachment_entry_rider_height = attachment_module.entry_rider_height;
 const supertramp_launch_velocity_y_factor: f32 = 0.69999999;
 const supertramp_launch_gravity: f32 = 18.0;
@@ -5728,58 +5726,43 @@ pub const Runner = struct {
         start_world_position: attachment_builders.Vec3,
         end_world_position: attachment_builders.Vec3,
     ) ?InstalledAttachmentEntry {
-        // PORT(verified): Windows `try_enter_track_attachment_from_swept_motion` walks the
-        // installed sample array from tail to head, skips samples whose world-up Y component
-        // is negative, and applies the raw local sweep thresholds against each sample pose.
-        const sample_count = @min(@as(usize, built.template.sample_count), built.template.samples.len);
-        if (sample_count == 0) return null;
+        // ROUTED through gameplay/native/attachment_follow.zig
+        // (try_enter_track_attachment_from_swept_motion @ 0x42c770, pinned
+        // scratch): the tail-to-head scan, raw-sample-origin probes, strict
+        // local-z window, and the span gates all run in the mirror. The
+        // builders' world model places the cell anchor at (0, 0, row); the
+        // mirror writes the heading delta into a template view (the built
+        // template already carries the asset-derived value — Zig seam).
+        var scratch_state = native_attachment_follow.FollowState{};
+        var template_view = built.template;
+        const acceptance = native_attachment_follow.tryEnterTrackAttachmentFromSweptMotion(
+            &scratch_state,
+            &template_view,
+            built.row.global_row,
+            .{ .x = 0.0, .y = 0.0, .z = @floatFromInt(built.row.global_row) },
+            start_world_position,
+            attachment_builders.Vec3.sub(end_world_position, start_world_position),
+            built.template.installed_heading_delta,
+        ) orelse return null;
 
-        var candidate_index = sample_count;
-        while (candidate_index > 0) {
-            candidate_index -= 1;
-
-            const sample = built.template.samples[candidate_index];
-            // PORT(verified): native skips when the sample gate float is <= 0
-            // (`fcomp` + `test ah, 0x41`), so an exactly-zero gate is also skipped.
-            if (sample.basis_up.y <= 0.0) continue;
-
-            const candidate_progress: f32 = @floatFromInt(candidate_index);
-            const candidate_pose = attachment_builders.worldPoseForTemplate(
-                &built.template,
-                candidate_progress,
-                built.row.global_row,
-                0.0,
-                0.0,
-            );
-            const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
-            const sample_length = sample.delta_length;
-
-            if (@abs(start_local.x) > attachmentEntryHalfSpan(built) + attachment_side_exit_margin) continue;
-            if (start_local.y < attachment_entry_start_y_tolerance) continue;
-            if (start_local.z < 0.0 or start_local.z > sample_length) continue;
-
-            const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
-            if (end_local.y > attachment_entry_end_y_tolerance) continue;
-
-            const sample_fraction = if (sample_length <= 0.0001)
-                0.0
-            else
-                std.math.clamp(start_local.z / sample_length, 0.0, 1.0);
-            const progress = candidate_progress + sample_fraction;
-            const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, start_local.x);
-            return .{
-                .sample_index = candidate_index,
-                .local_progress = start_local.z,
-                .lateral_offset = lateral_offset,
-                // PORT(verified): native swept entry seeds vertical_offset = 0 with no
-                // family branch and snaps the player's world y to the rotated local y;
-                // the prior family-dependent offset was a placeholder model. See
-                // tools/match/scratches/try_enter_track_attachment_from_swept_motion.
-                .vertical_offset = 0.0,
-            };
-        }
-
-        return null;
+        const accepted_index: usize = @intCast(acceptance.sample_index);
+        // lateral seam: the runner's invented lateral lane is relative to the
+        // sample's center x; the mirror reports raw-origin local x
+        const centered_local_x = acceptance.entry_local_x - built.template.samples[accepted_index].center_x;
+        const sample_length = built.template.samples[accepted_index].delta_length;
+        const sample_fraction = if (sample_length <= 0.0001)
+            0.0
+        else
+            std.math.clamp(scratch_state.progress / sample_length, 0.0, 1.0);
+        const progress = @as(f32, @floatFromInt(accepted_index)) + sample_fraction;
+        return .{
+            .sample_index = accepted_index,
+            .local_progress = scratch_state.progress,
+            .lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, centered_local_x),
+            // native swept entry seeds vertical_offset = 0 with no family
+            // branch and snaps the player's world y to the rotated local y
+            .vertical_offset = 0.0,
+        };
     }
 
     fn clearAttachmentFollow(self: *Runner) void {
