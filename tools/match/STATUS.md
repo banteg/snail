@@ -97,6 +97,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 643/639 | 23.40% |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 94/106 | 56.00% |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% |  |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% |  |

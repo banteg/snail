@@ -57,3 +57,31 @@ challenge test pins one draw per parcel); a deeper diff of the
 candidate-bank reset and the row-record accumulator lanes against
 buildRuntimeParcelPlacementGrid is the next verify step once the row
 record struct (game+0x641184 region) is typed end-to-end.
+
+## WIP scratch — 23.40%, 643/639 insns (2026-06-13)
+
+Structure complete and ordered: mode dispatch, the dual-bank reset, the
+segment/set/row/lane scan with both probe lanes (authored records at
+segment+0x814 stride 56, character grid at +0x14 lane-major stride 256),
+min/max set statistics, both warning gates, the "P1" set selection with
+same-segment compaction, the "P2" digit-0 selection with entry shifts,
+the requirement rescale, and the attachment projection tail
+(kind 42 vs get_path_position_at_node).
+
+Cross-finding: `random_float_below`'s true prototype carries a debug tag
+— callers push ("P1"/"P2" here) a string immediate as the SECOND arg;
+the matched body never reads it, which is why the one-arg scratch still
+pins at 100%.
+
+Golf leads (next pass):
+1. The asm folds bank lanes as `[eax+ADDR]` with eax = the dword-scaled
+   131*entry offset — flat parallel arrays per lane, NOT struct-member
+   displacements (a full flat-lane rewrite measured 17% because the diff
+   re-anchored; reconcile the two shapes region by region instead of
+   wholesale).
+2. The original keeps more loop state in registers (pushes
+   ebx/ebp/edi early; frame 0x214 vs 0x204) — the scan loop's
+   row/lane/set counters live in a different spill pattern.
+3. The grid-scan zero-entry append maintains `131*entry` incrementally
+   (add 0x20c inside the lane loop) while the authored append recomputes
+   it — split the two append helpers accordingly.
