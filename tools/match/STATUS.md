@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**114/123** functions matched, **5863/8852** bytes.
+**115/124** functions matched, **5912/8901** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -60,6 +60,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_slug_voice_manager | 0x43f5e0 | 49 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
