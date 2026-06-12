@@ -5336,9 +5336,9 @@ pub const Runner = struct {
                 // (attachment_module.templateSpanCells), for the gate width
                 .width_cells = @intCast(attachment_module.templateSpanCells(self.built)),
                 .width_or_scale = 0.0,
-                // SEAM: built templates do not surface native template+0x40
-                // (side_exit_mode); all templates currently allow side exits,
-                // matching the pre-routing runner behavior
+                // VERIFIED: all 29 native template constructors write
+                // side_exit_mode (+0x40) = 0 — every template allows side
+                // exits; the blocked branch is dead configuration
                 .side_exit_mode_zero = true,
                 // SEAM: the milestone row writes (0.6 + flag 0x80, 1.0 at
                 // count-1) need the runtime row record display lane

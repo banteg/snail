@@ -296,7 +296,9 @@ pub const FollowUpdateMode = enum(i32) {
     /// also what a BLOCKED side exit returns natively (side_exit_mode != 0):
     /// the side effects (snap, clamp, heading roll) happen but the caller
     /// cannot distinguish it from following — verified from the boss asm
-    /// (all three side-exit paths: test [template+0x40]; sete al)
+    /// (all three side-exit paths: test [template+0x40]; sete al).
+    /// NOTE: all 29 native template constructors write side_exit_mode = 0,
+    /// so the blocked branch is dead configuration in the shipped game.
     following = 0,
     side_exit = 1, // side_exit_mode == 0
     natural_end = 3,
