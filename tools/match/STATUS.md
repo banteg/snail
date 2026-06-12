@@ -2,11 +2,12 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**142/152** functions matched, **6962/9972** bytes.
+**147/157** functions matched, **7219/10229** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -43,6 +44,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | copy_c_string | 0x431da0 | 21 | 10/10 | 40.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
