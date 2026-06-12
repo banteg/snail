@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**22/32** functions matched, **1256/4450** bytes.
+**25/35** functions matched, **1404/4598** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -16,6 +16,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 90/88 | 80.90% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
