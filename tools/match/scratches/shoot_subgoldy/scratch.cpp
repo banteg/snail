@@ -1,4 +1,6 @@
 // shoot_subgoldy @ 0x441ad0 (thiscall, ret 0x8)
+// Free-scan the 20-slot sub-lazer pool, stagger the spawn y down by
+// index * 0.01, route through the matched spawn, positional fire cue.
 
 struct Vector3 {
     float x;
@@ -6,46 +8,39 @@ struct Vector3 {
     float z;
 };
 
-class SubLazerSlot {
-public:
-    void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction);
+struct SubLazerSlot {
+    void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // matched 98.4%
 
     char unknown_00[0x80];
-    int state;
+    int state; // +0x80
     char unknown_84[0xb0 - 0x84];
 };
 
+void play_sound_effect_at_position(int sound_id, const float* position);
+
 class SubLazerPool {
 public:
-    void shoot_subgoldy(const Vector3* origin, const Vector3* direction);
+    void shoot_subgoldy(const float* origin, const Vector3* direction);
+
+    SubLazerSlot slots[20];
 };
 
-class PositionalSoundEffectPlayer {
-public:
-    void play_sound_effect_at_position(int sound_id, const Vector3* position);
-};
-
-extern PositionalSoundEffectPlayer g_positional_sound_effect_player; // 0x78ff88
-
-void SubLazerPool::shoot_subgoldy(const Vector3* origin, const Vector3* direction)
+void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
 {
-    int slot_index = 0;
-    volatile int* slot_state = (volatile int*)((char*)this + 0x80);
-    while (*slot_state != 0) {
-        ++slot_index;
-        slot_state = (volatile int*)((char*)slot_state + 0xb0);
-        if (slot_index >= 20)
+    int index = 0;
+    int* state = &slots[0].state;
+    while (*state) {
+        ++index;
+        state += 44;
+        if (index >= 20)
             return;
     }
-
-    int origin_x = *(const int*)&origin->x;
-    int origin_z = *(const int*)&origin->z;
-    float spawn_y = (float)slot_index * -0.0099999998f + origin->y;
-    Vector3 spawn_origin;
-    *(int*)&spawn_origin.x = origin_x;
-    spawn_origin.y = spawn_y;
-    *(int*)&spawn_origin.z = origin_z;
-    SubLazerSlot* slot = (SubLazerSlot*)((char*)this + 0xb0 * slot_index);
-    slot->spawn_sub_lazer_projectile(&spawn_origin, direction);
-    g_positional_sound_effect_player.play_sound_effect_at_position(15, origin);
+    Vector3 staged;
+    float z = origin[2];
+    staged.x = origin[0];
+    float y = (float)index * -0.0099999998f + origin[1];
+    staged.y = y;
+    staged.z = z;
+    slots[index].spawn_sub_lazer_projectile(&staged, direction);
+    play_sound_effect_at_position(15, origin);
 }
