@@ -158,12 +158,15 @@ test "lockstep oracle: postal top run ratchet" {
     try std.testing.expectEqual(run.replay.samples.len, report.ticks_run);
     try std.testing.expect(!report.finished);
 
-    // RATCHET (2026-06-12 baseline): the port tracks the native run within
-    // 1.0 world units for the first 28 ticks before the motion models part;
-    // worst-case drift over the full run is ~917 units (the port's z model
-    // runs behind native). Tighten these as the campaign collapses invented
-    // motion — never loosen them to pass.
+    // RATCHET: tighten as the campaign collapses invented motion — never
+    // loosen to pass. History:
+    //   2026-06-12 v1: first_div(>1.0)=28, max_dz~917 (z model far behind)
+    //   2026-06-12 v2: startup hold + native forward window (mode-
+    //   independent clamp at completion_row_start, pre-integration order):
+    //   first_div=144, start ramp in lockstep to ~0.001/tick; max_dz~916
+    //   persists from the steady-state cruise model (tile-boost/drag
+    //   equilibrium) — the next motion target
     const first_divergence = report.first_divergence_tick orelse run.replay.samples.len;
-    try std.testing.expect(first_divergence >= 28);
+    try std.testing.expect(first_divergence >= 140);
     try std.testing.expect(report.max_abs_dz <= 950.0);
 }

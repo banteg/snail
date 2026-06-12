@@ -4039,11 +4039,18 @@ test "startup block after click-start dismissal resumes the live runner under in
 
     try std.testing.expect(state.startupGameplayBlockActive());
 
-    state.refreshRunnerForStartupBlock(
-        &state.level_runner.?,
-        &loaded_track_preview,
-        @floatCast(simulation_step_seconds),
-    );
+    // PORT(verified by the replay fixtures): native holds the snail for the
+    // first 9 sim ticks of every run (the intro control-override window) —
+    // all 24 recordings idle exactly that long before the first moving
+    // tick. Step through the hold; motion resumes under the intro camera.
+    var startup_refresh: usize = 0;
+    while (startup_refresh < 12) : (startup_refresh += 1) {
+        state.refreshRunnerForStartupBlock(
+            &state.level_runner.?,
+            &loaded_track_preview,
+            @floatCast(simulation_step_seconds),
+        );
+    }
 
     try std.testing.expectEqual(gameplay.MovementMode.attachment, state.level_runner.?.movement_mode);
     try std.testing.expect(state.level_runner.?.attachment.follow.active);

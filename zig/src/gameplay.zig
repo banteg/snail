@@ -329,6 +329,14 @@ const TimesUpController = struct {
 
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_start_block_velocity_z_max_per_tick: f32 = 1.0;
+// PORT(partial): native holds `control_override_active` for the first ticks
+// of every run — `update_subgoldy` (IDA 275-285) zeroes velocity.z each tick
+// while it is set (with the negative-recovery lane first) and the forward
+// window clamp skips (line 648). The producer is the intro handoff, not yet
+// RE'd; the duration is pinned observationally: all 24 replay fixtures
+// (tests/fixtures/replays) show 9 idle steps (the absolute seed sample plus
+// 8 zero deltas) before the first moving tick lands on the rate*0.17 floor.
+const native_startup_control_override_ticks: u32 = 9;
 const slow_ring_duration_ticks: u16 = 240;
 pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
@@ -523,6 +531,9 @@ pub const Runner = struct {
     // remains the current rendered row. Keep this separate so selected-record playback
     // and future saveback consume the native per-tick stream instead of row indices.
     replay_sample_index: usize = 0,
+    /// native control_override startup hold (see
+    /// native_startup_control_override_ticks); decremented per drive tick
+    control_override_ticks: u32 = native_startup_control_override_ticks,
     track_row_progress: f32 = 0.0,
     track_step_rows: f32 = 0.0,
     row_position: f32 = 0.0,
@@ -714,6 +725,7 @@ pub const Runner = struct {
         self.steering_anchor_authored_x = 0.0;
         self.steering_offset_authored_x = 0.0;
         self.replay_sample_index = 0;
+        self.control_override_ticks = native_startup_control_override_ticks;
         self.track_step_rows = 0.0;
         self.position_y = native_grounded_rider_height;
         self.velocity_y = 0.0;
@@ -825,6 +837,11 @@ pub const Runner = struct {
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.updateNativeVelocityZOverride(preview, delta_seconds);
+            // PORT(verified): native clamps the forward window (IDA 644-658)
+            // between the acceleration lanes and the position integration —
+            // the clamp must see this tick's velocity before movement runs
+            self.enforceNativeForwardVelocityWindow(preview);
+            if (self.control_override_ticks > 0) self.control_override_ticks -= 1;
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             self.tick_count += 1;
@@ -879,7 +896,6 @@ pub const Runner = struct {
         }
         if (!self.paused and self.phase == .active) {
             self.stepActivePhaseVerticalMotion(preview);
-            self.enforceNativeForwardVelocityWindow(preview);
         }
         if (!self.paused and self.phase == .active) {
             self.updateTimesUpController(preview);
@@ -2551,6 +2567,21 @@ pub const Runner = struct {
 
         const tick_scale = delta_seconds * native_ticks_per_second;
 
+        // PORT(verified): while control_override is active, native applies
+        // only the negative-recovery lane and then zeroes any positive
+        // velocity (`update_subgoldy` IDA 275-285) — the snail holds still
+        // through the startup window. The counter decrements after the
+        // window clamp (native clears the override between ticks, so the
+        // clamp never runs on a held tick).
+        if (self.control_override_ticks > 0) {
+            if (velocity_z < 0.0) {
+                velocity_z += self.nativeNegativeRingVelocityRecoveryZPerTick() * tick_scale;
+            }
+            if (velocity_z > 0.0) velocity_z = 0.0;
+            self.native_velocity_z_override_per_tick = velocity_z;
+            return;
+        }
+
         if (velocity_z < 0.0) {
             velocity_z += self.nativeNegativeRingVelocityRecoveryZPerTick() * tick_scale;
             if (velocity_z >= 0.0) velocity_z = 0.0;
@@ -2598,12 +2629,33 @@ pub const Runner = struct {
 
     fn enforceNativeForwardVelocityWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) return;
-        if (self.movement_mode != .track) return;
         if (self.nativeMovementStateBlocksDrive()) return;
-        if (self.row_position >= @as(f32, @floatFromInt(preview.runtime_active_row_end)) and !self.attachment.exit.pending) return;
+        // native gates the clamp on !control_override_active (IDA 648)
+        if (self.control_override_ticks > 0) return;
+        // negative-velocity episodes (ring 3/7, slug knockback) run under a
+        // native control-override cutscene — without this skip the clamp
+        // would snap the knockback straight up to the rate*0.17 floor and
+        // the recovery lane (IDA 277-281, inside the override branch) would
+        // be dead code. PORT(partial): the override producer is the hit
+        // cutscene; the port keys the skip off the negative lane itself.
+        if (self.native_velocity_z_override_per_tick) |velocity_z_override| {
+            if (velocity_z_override < 0.0) return;
+        }
+        // PORT(verified): `update_subgoldy` (IDA lines 644-658) clamps
+        // `velocity.z` into `[rate * 0.17, rate * 0.5]` whenever
+        // `z < completion_row_start OR attachment_exit_pending`, gated only
+        // on the dead +0x41c boost byte and `control_override_active` —
+        // INDEPENDENT of follow/track mode and active inside the start
+        // block. The pre-oracle port gated this on track mode and on
+        // runtime_active_row_end, so attachment riders (including the START
+        // ramp at tick 0) integrated velocity from zero — the lockstep
+        // oracle exposed the missing floor on the very first moving tick.
+        const completion_row_start = if (preview.course_end_threshold > 0.0)
+            preview.course_end_threshold
+        else
+            @as(f32, @floatFromInt(preview.runtime_active_row_end));
+        if (!(self.row_position < completion_row_start or self.attachment.exit.pending)) return;
 
-        // PORT(verified): `update_subgoldy` clamps Goldy's forward velocity to
-        // `[run_rate * 0.17, run_rate * 0.5]` during active play.
         var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
         const min_velocity = self.nativeForwardVelocityZMinPerTick();
         const max_velocity = self.nativeForwardVelocityZMaxPerTick();
@@ -6276,6 +6328,8 @@ fn rowHasAnyFloor(preview: *const track.LoadedLevelPreview, global_row: usize) b
 fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPreview, target: RowTarget) void {
     std.debug.assert(target.row > 0);
     runner.reset(preview);
+    // tests target steady-state gameplay; skip the native startup hold
+    runner.control_override_ticks = 0;
 
     // When `target.row` sits inside an installed attachment span, naïve priming at
     // `target.row - 1` leaves the runner in `.track` mode over a no-floor tile, and
@@ -6320,6 +6374,7 @@ fn primeRunnerAfterFirstInstalledAttachment(runner: *Runner, preview: *const tra
     const start_row = target.row + built.template.sample_count + 2;
 
     runner.reset(preview);
+    runner.control_override_ticks = 0;
     runner.runtime_track_index = start_row;
     runner.track_row_progress = 0.0;
     runner.syncRowPosition(preview);
@@ -7500,6 +7555,7 @@ test "configured tutorial run rate drives native movement lanes" {
 
     var runner = Runner.init(&fixture.preview);
     runner.configureBaseSubgameRate(0.29);
+    runner.control_override_ticks = 0;
 
     runner.recordNativeRingEffect(&fixture.preview, 1);
     try std.testing.expectApproxEqAbs(@as(f32, 0.145), runner.native_velocity_z_override_per_tick.?, 0.0001);
@@ -7586,6 +7642,7 @@ test "native negative-velocity ring recovery moves backward before handing back 
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    runner.control_override_ticks = 0;
     runner.speed_rows_per_second = 12.0;
     runner.runtime_track_index = 40;
     runner.track_row_progress = 0.0;
@@ -11817,6 +11874,7 @@ test "replay directive seeds the tick before live steering and movement" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    runner.control_override_ticks = 0;
     const replay_world_x: f32 = -3.25;
     const replay_lane_center = Runner.laneCenterFromWorldX(&fixture.preview, replay_world_x);
     runner.stepWithReplay(
@@ -11844,6 +11902,11 @@ test "replay sample cursor advances per active update independent of row index" 
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    runner.control_override_ticks = 0;
+    // a recording-realistic base rate: at the legacy default 4.0 the native
+    // velocity floor (rate * 0.17 = 0.68/tick) crosses a row immediately,
+    // which is not what this cursor-semantics test is about
+    runner.configureBaseSubgameRate(0.47);
     try std.testing.expectEqual(starting_runtime_track_index, runner.runtime_track_index);
     try std.testing.expectEqual(@as(usize, 0), runner.replay_sample_index);
 

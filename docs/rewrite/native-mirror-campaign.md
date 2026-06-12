@@ -128,9 +128,25 @@ pattern. Landing them immediately caught the score-bank xor mask bug
 (ledger 06-12).
 
 **Baseline (postal[0], ARCADE012, 5006 ticks):** the port survives the
-full replay; within 1.0 world units for the first 28 ticks; worst drift
-~917 units (port z runs behind native). The test pins these as a RATCHET —
-tighten `first_divergence`/`max_abs_dz` as motion models collapse, never
-loosen. The drift curve is now the campaign's primary progress metric:
-cluster-2 motion-core routing (gravity, drags, acceleration quantum,
-velocity-z window) should move it first.
+full replay. The test pins the numbers as a RATCHET — tighten as motion
+models collapse, never loosen.
+
+- v1 (06-12): first divergence >1.0 units at tick 28; worst drift ~917.
+- v2 (06-12): first divergence at tick 144; the start ramp tracks native
+  to ~0.001/tick. Fixes: the 9-tick startup control-override hold (pinned
+  by all 24 recordings; `update_subgoldy` IDA 275-285), the forward window
+  clamp made mode-independent and gated at `completion_row_start` (IDA
+  644-658 — the old port clamped only in track mode, so attachment riders
+  including the START ramp integrated velocity from zero), clamp moved
+  before position integration, and the negative-knockback clamp skip
+  (override episodes). Worst drift ~916 persists from the steady-state
+  cruise model — native's velocity oscillates 0.24-0.31 via tile boosts vs
+  drag while the port decays to the window floor between boosts. That
+  equilibrium (cluster-2 motion core: per-tile boost cadence + drag) is
+  the next oracle target.
+
+The recordings also decoded the native rate model
+(`calc_subgame_rate` @ 0x4404d0, fully mirrored in
+`updateNativeTrackCenterRate`): `rate = base + progress_frac × mode_gain`
+(0.55 modes 1/3, 0.4 + 0.2 flat mode 4, 0.2 default) plus the
+damage-drain sine envelope and a powerup half-add lane.
