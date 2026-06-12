@@ -28,6 +28,19 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Damage hit-flash entry gate
+
+- invalidated claim: the damage hit flash and skin change trigger when the
+  gauge rises from empty (`gauge <= 0 && delta > 0`)
+- replacement evidence: apply_damage_gauge_delta (pinned 94/95 insns,
+  tools/match) gates on the RETRIGGER TIMER (`this+0x24 == 0 && delta > 0`)
+  — the flash re-fires on every hit once the retrigger window closes,
+  regardless of fill level
+- port consequence: gameplay/damage.zig applyDeltaNativeWithContext now
+  gates on hit_flash_progress == 0; repeated mid-gauge hits flash again
+  like native. Seam recorded: native seeds the timer only on voice
+  success, the port's diff-based cue lane seeds unconditionally
+
 ## 2026-06-12 - Attachment pose interpolation model
 
 - invalidated claim: interpolating between attachment sample poses by

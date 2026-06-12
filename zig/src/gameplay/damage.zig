@@ -177,12 +177,17 @@ pub const Controller = struct {
             if (!force and delta < 0.0 and context.negative_drain_delta_blocked) return;
         }
 
-        const damage_entry = self.gauge <= 0.0 and delta > 0.0;
+        // PORT(verified): the native entry gate is the retrigger timer
+        // (`this+0x24 == 0.0 && delta > 0`), not an empty gauge — the hit
+        // flash re-fires on every hit once the retrigger window closes
+        // (pinned 94/95-insn match, tools/match/scratches/
+        // apply_damage_gauge_delta). Seam: native seeds the timer only on
+        // voice success; the port's diff-based cue lane fires the voice
+        // elsewhere, so the timer seeds unconditionally here.
+        const damage_entry = self.runtime.hit_flash_progress == 0.0 and delta > 0.0;
         self.gauge = std.math.clamp(self.gauge + delta, 0.0, 1.0);
         if (damage_entry) {
             self.runtime.hit_flash_progress = self.runtime.hit_flash_step;
-            // PORT(verified): `change_snail_skin(1, 0.2f)` on damage entry
-            // (`004413f0-apply_damage_gauge_delta.c:16`).
             skin.change(.damage, 0.2);
         }
     }
