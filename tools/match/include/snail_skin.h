@@ -17,6 +17,7 @@ struct PlayerRenderOwner {
 
 class SnailSkinTransition {
 public:
+    void initialize_snail_skin();                    // @ 0x445f60
     void update_snail_skin_transition();             // @ 0x445f80
     void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0
 
