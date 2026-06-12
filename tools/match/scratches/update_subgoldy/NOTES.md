@@ -39,3 +39,32 @@ switch is dead code (the voice-4 class). A BLOCKED side exit (mode != 0)
 returns 0: its side effects happen but the caller treats it as
 following. The mirror's FollowUpdateMode is corrected accordingly, and
 template+0x40 is confirmed as side_exit_mode.
+
+## Motion core (consumer block read, lines 296-400)
+
+The boss is called as update(velocity.z, &position, &velocity) — follow
+advance speed IS the z velocity, and vertical_offset accumulates
+velocity.y per tick (closing the loop on the earlier verify finding).
+
+- mode 0 (following): non-DETOUR templates add the acceleration quantum
+  `2 * rate^2 * 0.004` to velocity.z, then fall into the shared
+  integration; modes 1/3 with still-active follow jump to the re-enter
+  lane; mode 2 is dead (verified)
+- shared integration (both follow and free): position += velocity;
+  drags vz *= (1 - rate*0.003), vy *= (1 - rate*0.003),
+  vx *= (1 - rate*0.1); **gravity vy += rate^2 * -0.01 — the harvested
+  motion-plan formula's "v_z" is actually the subgame rate**; +/-4
+  lateral clamp zeroing vx at the walls
+- free flight extras: slide tiles 15/16/18/19 (or damage state 2 +
+  slide family) add the acceleration quantum and bump the +0x2738
+  threshold float past first_block_row_count; jetpack state 1 adds the
+  quantum; the vz drag is GATED on byte +0x1e4 being clear
+- byte +0x41c (adjacent to exit_pending +0x41d): one-tick boost lane —
+  adds the quantum and clears attachment_exit_pending
+- the pending-exit gate checks row-record flag 0x100, jetpack state 0,
+  and no control override before the swept probes
+
+This block is the cluster-2 mirror's core; with FollowState, Player,
+and the carryover/swept layouts already recovered, the motion-slice
+fields (velocity triple, position, the two gate bytes) are now fully
+specified for transcription.
