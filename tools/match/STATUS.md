@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**36/45** functions matched, **2080/5199** bytes.
+**37/45** functions matched, **2272/5199** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_slug_hazard_runtime | 0x408530 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_garbage_hazard | 0x408550 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
-| 🚧 | search_path_for_golb | 0x415e30 | 192 | 63/63 | 92.06% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 88.89% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 205/204 | 37.16% | msvc6.5 /O2 /G5 /W3 /Op |
