@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**96/106** functions matched, **4470/7872** bytes.
+**102/112** functions matched, **4711/8113** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -95,9 +95,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_tip_manager | 0x448d80 | 31 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | reset_voice_manager | 0x448ec0 | 31 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_voice_set | 0x449360 | 46 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
