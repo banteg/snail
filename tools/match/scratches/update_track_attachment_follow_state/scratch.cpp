@@ -176,11 +176,10 @@ int FollowState::update_track_attachment_follow_state(
 
     if (delta + progress > secondary_samples[index].delta_length) {
         do {
-            float consumed = secondary_samples[index].delta_length - progress;
+            delta -= secondary_samples[index].delta_length - progress;
             ++index;
             progress = 0.0f;
             sample_index = index;
-            delta = delta - consumed;
 
             if (index == 2 * template_record->segment_count) {
                 g_voice_manager.play_voice_manager(4, 1, -1);

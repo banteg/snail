@@ -42,3 +42,23 @@ Known residuals after the current source shape:
 - target preloads ebx=0x80 and edi=0x3f19999a (0.6f) in the prologue —
   loop-invariant constant hoisting; the candidate can only mirror it once
   those callee-saved registers are free across the overflow loop.
+
+## Iteration findings (loop session, 2026-06-12)
+
+- overflow subtract now matches via the one-expression shape
+  (`delta -= len - progress` before the index bump): 42.77%, 644 insns.
+- **template+0x58 confirmed as the primary_samples pointer** (the
+  loop-exit advance clone reads `[edx+0x58]` then `[ecx+0x90]`);
+  +0x5c is secondary_samples. Fold into the struct map.
+- **the 47-insn deficit in hunk -107,129: the target DUPLICATES the
+  advance-block head at the loop exit** (re-evaluates fits-check, stores
+  progress via an int temp through [esp+0x14], clones the v85 lerp setup
+  reading primary_samples) instead of jumping to the shared block. The
+  candidate's `goto`-style shared advance block must be restructured so
+  the loop-exit path carries its own copy of the advance prologue —
+  likely literal duplicated source in the original (or a macro).
+- milestone-store region: target re-runs the full row lookup (including
+  the get_track_cell_row_index call) per store, and one store reads
+  `[esi+0xa0]` where the register context suggests the template, not the
+  attached record — re-verify the +0x24 source field during the
+  restructure.
