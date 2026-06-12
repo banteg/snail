@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**61/71** functions matched, **3376/6778** bytes.
+**65/75** functions matched, **3538/6940** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -28,6 +28,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 205/204 | 37.16% | msvc6.5 /O2 /G5 /W3 /Op |
+| ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
