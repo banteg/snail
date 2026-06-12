@@ -1,3 +1,42 @@
+# WIP scratch — 20.79%, 637/700 insns (2026-06-13)
+
+Structure complete and ordered; the 63-insn gap is the original's
+staging-local stores (IDA v69-v76: compute into named stack floats, then
+store to the destination — same class the collisions golf documents) and
+the duplicated early-return epilogues. Next golf pass: transcribe the
+staging flow per block (trail/smoke offsets, direction update, slug
+deflection) and let the early returns duplicate.
+
+Recovered this pass (full field map in scratch.cpp):
+
+- GolbShot layout: live matrix +0x150; homing target/blend +0x198-0x1b0;
+  spin pair +0x1b4; skip byte +0x1bc; bounce byte +0x1bd; kind +0x1c0
+  (0 golb, 1 lazer/vapour, 2 rocket); position +0x1f4; previous output
+  +0x234; state +0x244; owner body +0x248 (position row written at +72);
+  velocity +0x24c; direction +0x258; path factor +0x264; lifetime pair
+  +0x268; game +0x270; player +0x278; source transform +0x27c whose
+  POSITION ROW is the output position at +0x2ac (one matrix, two views —
+  the 0x40 qmemcpy to the live matrix spans both); path-follow object
+  +0x2bc with output at +0x18; path-entry z latch +0x2e4
+- golb (kind 0) gravity: vy -= subgame_rate * 0.017 while y outside
+  [0, 0.49]; vy = 0 inside the band
+- homing (kind 2): blend ramps by step to 1.0; vel = normalize((1 -
+  blend*1.5)*vel + blend*target_dir) * old_speed; impact when target
+  distance < 0.4; dies when speed < 0.1
+- path entry: latch z, tile 30 at the cell — AND a second probe one row
+  EARLIER (cell - 672 = previous row record, 672 = 244-stride x ... no:
+  -672 bytes = the row-cell grid stride math) when vz > 1.0, latching
+  z + 1.0 — fast shots pre-enter the next path row
+- trail offsets: kind 0 three sprites at out, out - dir*0.3, out -
+  dir*0.6; kind 2 two smokes at out and out - dir*0.5 + spin wrap 2pi
+- bounds band: golb_band_min_z at player+0x2980 <= z <= player z + 46
+- slug contact: |dz| < 2.5 && dist < 2.5; velocity deflects to
+  (-speed*nx, 0, -speed*nz); kind 1 -> hit_slug_hazard(slot, 2), kind 2
+  -> mode 4, kind 0 -> first contact arms the bounce byte, second kills
+- garbage gate: |dz| < 3 && dist < radius(+156) + 0.49; kind 2 splash
+  re-sweeps the list at radius 3.0
+- wall tile 14: impact sprite at z - 1.0 then retire
+
 # Dossier — scratch not yet written (700 insns, 2656 bytes)
 
 update_golb_ai @ 0x414820. target.asm committed. Focus: the path-follow
