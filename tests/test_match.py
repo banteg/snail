@@ -162,3 +162,55 @@ def test_normalize_masks_relocated_call_targets() -> None:
     # without a relocation the same encoding is an intra-function branch
     plain = normalize_function(code)
     assert plain[0] == "call L5"
+
+
+def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
+    from snail.match import validate_scratch_source
+
+    clean = tmp_path / "clean.cpp"
+    clean.write_text("void f() { int x = 1; }\n")
+    validate_scratch_source(clean)
+
+    for token in ("__asm { mov eax, 1 }", "_asm mov eax, 1", "__declspec(naked)"):
+        dirty = tmp_path / "dirty.cpp"
+        dirty.write_text(f"void f() {{ {token} }}\n")
+        with pytest.raises(ValueError, match="fakematching"):
+            validate_scratch_source(dirty)
+
+
+def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
+    from snail.match import ScratchConfig, _load_cached_status, _store_cached_status
+
+    scratch_dir = tmp_path / "scratch"
+    scratch_dir.mkdir()
+    (scratch_dir / "scratch.cpp").write_text("// candidate\n")
+    (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
+    image = tmp_path / "image.exe"
+    image.write_bytes(b"MZ")
+    config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+
+    assert _load_cached_status(config, image) is None
+    fields = {
+        "target_size": 10,
+        "ratio": 1.0,
+        "target_instructions": 4,
+        "candidate_instructions": 4,
+        "error": None,
+    }
+    _store_cached_status(config, image, fields)
+    assert _load_cached_status(config, image) == fields
+
+    # editing the source invalidates the cache
+    import os
+    import time
+
+    stamp = time.time() + 10
+    os.utime(scratch_dir / "scratch.cpp", (stamp, stamp))
+    assert _load_cached_status(config, image) is None

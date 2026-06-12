@@ -67,6 +67,29 @@ Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
 functions sit in the gap, pass an explicit end through `MATCH_ARGS="--end 0x..."`.
 
+## No fakematching
+
+A match is only useful if the scratch is plausible original source whose
+*semantics* the compiler independently translates into the target bytes.
+Anything that reproduces bytes without recovering semantics is fakematching
+and is worth less than an honest 60%:
+
+1. **No inline assembly.** `__asm`, `_asm`, `__declspec(naked)` — rejected
+   mechanically by the harness (`validate_scratch_source`).
+2. **No flag shopping.** The toolchain is fixed (`msvc6.5 /O2 /G5 /W3`).
+   When a function refuses to match, change the source shape, not the flags.
+3. **No normalizer gaming.** Don't invent extern symbols or other dummy
+   relocation sources to turn a constant you can't explain into a masked
+   `ADDR`; a symbol in a scratch must correspond to a real native global or
+   function with a recovered meaning.
+4. **No byte-shaped source.** Code must read like something a 2004 game
+   programmer wrote: real control flow, named struct fields at recovered
+   offsets, no unrolled or hand-scheduled statement sequences whose only
+   justification is the disassembly.
+5. **Honest percentages.** Score comes only from `snail match`; never edit
+   STATUS.md by hand. Residuals get documented in the scratch's NOTES.md,
+   not massaged away.
+
 ## Notes
 
 - x87-heavy functions are the hardest to match; near-misses that differ only

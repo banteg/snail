@@ -403,14 +403,16 @@ class ScratchStatus:
     config: ScratchConfig
     address: int
     target_size: int
-    result: MatchResult | None
+    ratio: float | None
+    target_instructions: int
+    candidate_instructions: int
     error: str | None
 
     @property
     def state(self) -> str:
-        if self.result is None:
+        if self.ratio is None:
             return "error"
-        if self.result.ratio == 1.0:
+        if self.ratio == 1.0:
             return "match"
         return "wip"
 
@@ -435,6 +437,21 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
     )
 
 
+FORBIDDEN_SOURCE_TOKENS = ("__asm", "_asm", "__declspec(naked)")
+
+
+def validate_scratch_source(source: Path) -> None:
+    """Reject fakematching: a scratch must be plausible original C++.
+
+    Inline assembly trivially reproduces any target bytes without recovering
+    semantics, which defeats the entire purpose of matching.
+    """
+    text = source.read_text(encoding="latin1")
+    for token in FORBIDDEN_SOURCE_TOKENS:
+        if token in text:
+            raise ValueError(f"{source}: {token!r} is not allowed in scratches (no fakematching)")
+
+
 def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT) -> Path:
     """Compile scratch.cpp with cl.sh when the object is missing or stale."""
     import os
@@ -443,6 +460,7 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     import subprocess
 
     source = config.directory / "scratch.cpp"
+    validate_scratch_source(source)
     build_dir = config.directory / "build"
     obj_path = build_dir / "scratch.obj"
     if obj_path.exists() and obj_path.stat().st_mtime >= source.stat().st_mtime:
@@ -462,17 +480,70 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     return obj_path
 
 
+# bump when the normalizer or scoring changes so cached ratios recompute
+CACHE_VERSION = 1
+
+
+def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
+    def mtime(path: Path) -> float | None:
+        return path.stat().st_mtime if path.exists() else None
+
+    return {
+        "version": CACHE_VERSION,
+        "source_mtime": mtime(config.directory / "scratch.cpp"),
+        "conf_mtime": mtime(config.directory / "scratch.conf"),
+        "image_mtime": mtime(image_path),
+    }
+
+
+def _load_cached_status(config: ScratchConfig, image_path: Path) -> dict | None:
+    import json
+
+    cache_path = config.directory / "build/match-cache.json"
+    if not cache_path.exists():
+        return None
+    try:
+        cached = json.loads(cache_path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
+    if cached.get("key") != _scratch_cache_key(config, image_path):
+        return None
+    return cached.get("status")
+
+
+def _store_cached_status(config: ScratchConfig, image_path: Path, status: dict) -> None:
+    import json
+
+    cache_path = config.directory / "build/match-cache.json"
+    cache_path.parent.mkdir(exist_ok=True)
+    cache_path.write_text(
+        json.dumps({"key": _scratch_cache_key(config, image_path), "status": status})
+    )
+
+
 def collect_scratch_statuses(
     manifest: FunctionSymbolManifest,
     image_path: Path,
     match_root: Path = DEFAULT_MATCH_ROOT,
 ) -> list[ScratchStatus]:
-    image = load_image(image_path, manifest.image_base)
+    """Match every scratch, reusing cached results for unchanged ones.
+
+    The cache keys on scratch source/conf and image mtimes, so an unchanged
+    scratch costs one stat() pass instead of a compile + disassembly + diff.
+    """
+    image: LoadedImage | None = None
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     statuses: list[ScratchStatus] = []
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
+
+        if (cached := _load_cached_status(config, image_path)) is not None:
+            statuses.append(ScratchStatus(config=config, address=address, **cached))
+            continue
+
+        if image is None:
+            image = load_image(image_path, manifest.image_base)
         try:
             start, end = resolve_function_extent(manifest, config.function, config.end_va)
             target_data = image.function_bytes(start, end)
@@ -480,26 +551,66 @@ def collect_scratch_statuses(
             obj = parse_coff_object(obj_path.read_bytes())
             candidate = extract_object_function(obj, config.symbol or config.function)
             result = match_function(target_data, candidate, image=image, target_va=start)
-            statuses.append(
-                ScratchStatus(
-                    config=config,
-                    address=address,
-                    target_size=len(target_data),
-                    result=result,
-                    error=None,
-                )
-            )
+            fields = {
+                "target_size": len(target_data),
+                "ratio": result.ratio,
+                "target_instructions": len(result.target_lines),
+                "candidate_instructions": len(result.candidate_lines),
+                "error": None,
+            }
         except (ValueError, RuntimeError) as error:
-            statuses.append(
-                ScratchStatus(
-                    config=config,
-                    address=address,
-                    target_size=0,
-                    result=None,
-                    error=str(error).splitlines()[0] if str(error) else "unknown error",
-                )
-            )
+            fields = {
+                "target_size": 0,
+                "ratio": None,
+                "target_instructions": 0,
+                "candidate_instructions": 0,
+                "error": str(error).splitlines()[0] if str(error) else "unknown error",
+            }
+        else:
+            _store_cached_status(config, image_path, fields)
+        statuses.append(ScratchStatus(config=config, address=address, **fields))
     return statuses
+
+
+@dataclass(frozen=True, slots=True)
+class ClusterTotals:
+    function_count: int
+    byte_total: int
+    matched_functions: int
+    matched_bytes: int
+
+    @property
+    def byte_percentage(self) -> float:
+        return self.matched_bytes / self.byte_total if self.byte_total else 0.0
+
+
+def manifest_cluster_totals(
+    manifest: FunctionSymbolManifest,
+    image_path: Path,
+    statuses: list[ScratchStatus],
+) -> ClusterTotals:
+    """Totals over the whole mapped gameplay cluster, not just touched scratches.
+
+    Each curated function's extent runs to the next curated address (padding
+    trimmed); the last function ends at the next int3 padding byte.
+    """
+    image = load_image(image_path, manifest.image_base)
+    addresses = sorted(symbol.address for symbol in manifest.functions)
+    byte_total = 0
+    for start, end in zip(addresses, addresses[1:]):
+        byte_total += len(image.function_bytes(start, end))
+    last = addresses[-1]
+    padding_index = image.mapped.find(b"\xcc", last - image.image_base)
+    if padding_index != -1:
+        byte_total += len(image.function_bytes(last, image.image_base + padding_index))
+
+    matched = [status for status in statuses if status.state == "match"]
+    return ClusterTotals(
+        function_count=len(addresses),
+        byte_total=byte_total,
+        matched_functions=len(matched),
+        matched_bytes=sum(status.target_size for status in matched),
+    )
 
 
 STATE_ICONS = {"match": "✅", "wip": "🚧", "error": "❌"}
@@ -511,10 +622,10 @@ STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "build", 
 def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
     rows = []
     for status in sorted(statuses, key=lambda item: item.address):
-        ratio = f"{status.result.ratio:.2%}" if status.result else "-"
+        ratio = f"{status.ratio:.2%}" if status.ratio is not None else "-"
         insns = (
-            f"{len(status.result.candidate_lines)}/{len(status.result.target_lines)}"
-            if status.result
+            f"{status.candidate_instructions}/{status.target_instructions}"
+            if status.ratio is not None
             else "-"
         )
         build = f"{status.config.compiler} {status.config.cflags}"
@@ -534,31 +645,37 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
     return rows
 
 
-def render_status_table(statuses: list[ScratchStatus]) -> str:
+def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> str:
+    return (
+        f"cluster: {totals.matched_functions}/{totals.function_count} functions, "
+        f"{totals.matched_bytes}/{totals.byte_total} bytes "
+        f"({totals.byte_percentage:.1%}) matched; "
+        f"{totals.matched_functions}/{len(statuses)} scratches at 100%"
+    )
+
+
+def render_status_table(statuses: list[ScratchStatus], totals: ClusterTotals) -> str:
     rows = [STATUS_HEADER, *render_status_rows(statuses)]
     widths = [max(len(row[column]) for row in rows) for column in range(len(STATUS_HEADER))]
     lines = [
         "  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip()
         for row in rows
     ]
-    matched = sum(1 for status in statuses if status.state == "match")
-    lines.append(f"\n{matched}/{len(statuses)} matched")
+    lines.append(f"\n{_cluster_summary(totals, statuses)}")
     return "\n".join(lines)
 
 
-def render_status_markdown(statuses: list[ScratchStatus]) -> str:
-    matched = sum(1 for status in statuses if status.state == "match")
-    total_bytes = sum(status.target_size for status in statuses)
-    matched_bytes = sum(
-        status.target_size for status in statuses if status.state == "match"
-    )
+def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals) -> str:
     lines = [
         "# Matching Status",
         "",
         "Regenerate with `uv run snail match status --write tools/match/STATUS.md`.",
         "",
-        f"**{matched}/{len(statuses)}** functions matched, "
-        f"**{matched_bytes}/{total_bytes}** bytes.",
+        f"**{totals.matched_functions}/{totals.function_count}** mapped gameplay "
+        f"functions matched, **{totals.matched_bytes}/{totals.byte_total}** bytes "
+        f"(**{totals.byte_percentage:.1%}**). Byte totals are curated-extent "
+        "upper bounds: uncurated code between manifest functions counts toward "
+        "the preceding extent.",
         "",
         "| | function | address | bytes | insns | match | build |",
         "|---|---|---|---|---|---|---|",

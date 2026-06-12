@@ -12,6 +12,7 @@ from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
     collect_scratch_statuses,
+    manifest_cluster_totals,
     render_status_markdown,
     render_status_table,
     run_match,
@@ -481,9 +482,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
         statuses = collect_scratch_statuses(manifest, image_path)
-        print(render_status_table(statuses))
+        totals = manifest_cluster_totals(manifest, image_path, statuses)
+        print(render_status_table(statuses, totals))
         if args.write is not None:
-            args.write.write_text(render_status_markdown(statuses), encoding="utf-8")
+            args.write.write_text(render_status_markdown(statuses, totals), encoding="utf-8")
         return 0
 
     if args.command == "match" and args.match_command == "diff":
