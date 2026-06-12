@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**56/66** functions matched, **3276/6678** bytes.
+**57/67** functions matched, **3292/6694** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -72,3 +72,4 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
