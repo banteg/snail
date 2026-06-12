@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**26/35** functions matched, **1479/4598** bytes.
+**27/36** functions matched, **1515/4634** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -17,6 +17,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
