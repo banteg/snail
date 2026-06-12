@@ -6,6 +6,7 @@ known blind spots, and owner-level parity gaps.
 
 Reference backlog:
 - not default loop context
+- the gameplay-sim convergence plan lives in [native-mirror-campaign.md](native-mirror-campaign.md) — start there for match/mirror/route/collapse work
 - active execution should start from the current subsystem dossier or dated parity audit
 - update this page when priority order changes or a blind spot materially closes, not for every local narrowing
 
