@@ -65,6 +65,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% |  |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% |  |
+| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2075/2091 | 72.30% |  |
 | ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% |  |
 | 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% |  |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% |  |

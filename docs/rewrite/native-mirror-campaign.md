@@ -45,7 +45,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 | # | cluster | key functions | match | mirror | route | collapse |
 |---|---------|---------------|-------|--------|-------|----------|
 | 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 follow update ROUTED 06-12: `stepAttachmentFollowAtRate` calls the mirror (stepping, exhaust/launch lanes, side-exit gate, vertical clamp); `endAttachmentIfNeeded` consumes the returned mode like update_subgoldy's switch; pose interpolation routed into worldPoseForTemplate | 🚧 invented stepping loop + `shouldSideExit` predicate deleted 06-12; entry-height + pose-lerp collapses ledgered; named seams: milestone row writes, voice 15, motion.y lane (side_exit_mode RESOLVED 06-12: all 29 constructors write 0 — blocked side exits are dead config) |
-| 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 dossiered with motion core + all five exit lanes specified 06-12 (gravity corrected to rate^2, +0x1e4 bounce byte decoded); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
+| 2 | player motion / exit lanes | **update_subgoldy @ 0x43b120 SCRATCHED 06-13 (72.30%, 2075/2091 insns, structure complete — residuals are regalloc-class, see NOTES)**; the unread track-mode slice is now pinned: steering anchor model, per-tick 16-bit lateral quantization, replay record/playback, completion handoff machine, ghost marking, fire emitters; cruise boost cadence resolved to ring/speedup collisions (NOT tiles); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
 | 4 | hazard pools | salt quartet + sub-lazer trio ALL pinned 06-12 (spawn 98.4%, shoot/emitter/update structure-exact; update-state +0x38 vs free-flag +0x80 disambiguated, y-stagger and 4% fire gate recovered) | 🚧 | ✅ salt consolidated 06-12 (`gameplay/hazards.zig` sole home; tick integrates position per pinned asm; OB-1 fixed) | ✅ salt live with native exit set in `retireSaltHazards` | ✅ salt (`native/salt_pool.zig` deleted; containment-probe seam named) |
 | 5 | damage / warning | apply_damage_gauge_delta @ 0x4413f0, update_damage_gauge @ 0x440fd0 (audit findings recorded), update_warning @ 0x446f80 | · | · | · | · |
@@ -77,6 +77,19 @@ Player fields: +0x90 = velocity.y, +0x94 = velocity.z, +0x99 =
 attachment_exit_pending. Headers, the swept scratch (re-verified 79.80%),
 and `native/attachment_follow.zig` renamed; full entry in the
 invalidation ledger.
+
+## Oracle leads from the update_subgoldy scratch (2026-06-13)
+
+1. **Lateral codec parity**: native quantizes `position.x` through the
+   16-bit replay codec (`16.0` scale round-trip) EVERY tick before
+   recording — if the port integrates unquantized x, lateral drift vs
+   recordings accumulates. Audit the runner's lateral lane.
+2. **Cruise cadence**: track mode has NO per-tile z boost. The 0.24-0.31
+   oscillation = collision boosts (speedup pickup and ring effects both
+   set `vz = rate*0.5`) decaying via `(1 - rate*0.003)` toward the
+   `rate*0.17` window floor. The oracle's drag-to-floor symptom means the
+   port is missing/mistiming RING COLLECTION along the recorded path —
+   instrument ring hits vs native cadence next.
 
 ## Next actions (keep this list short and current)
 

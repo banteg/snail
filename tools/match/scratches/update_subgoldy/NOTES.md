@@ -1,118 +1,151 @@
-# Dossier — scratch not yet written (2091 insns, 8456 bytes — the boss of bosses)
+# update_subgoldy @ 0x43b120 — 72.30%, 2075/2091 insns, structure complete
 
-update_subgoldy @ 0x43b120. target.asm committed. Existing analysis:
-analysis/runtime/update-subgoldy-attachment-exit-2026-03-15.md, the
-five-clear-site narrowing in the checklist, and the harvested motion
-plan (gravity @ 0x43c316, integrate @ 0x43bac4, lane predicates).
+The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
+of the function is transcribed and the diff is dominated by
+register-allocation residuals, not semantics. The previously-unread
+track-mode slice (steering, replay record/playback, completion handoff,
+ghost marking, emitters) is now pinned.
 
-## Structural index (IDA export line refs)
+## Semantics recovered beyond the old dossier
 
-- ~299: the follow-update mode switch — **case 0 following, cases 1/3
-  shared (exit handling), case 2 separate. The boss mirror currently
-  returns side_exit_mode == 0 as a bool; the native side exit likely
-  returns 1 or 2 keyed on side_exit_mode (calc_path_length_z's sibling
-  modes group 0/2 and 1/3). Verify the boss return lane and fix
-  FollowUpdateMode before routing.**
-- ~414/438: the two swept-entry call sites (primary 0x40 then secondary
-  0x80 live-owner bits per the checklist narrowing)
-- ~483/576/606 (+1 more): the four begin_post_follow_carryover arms
-- the five attachment_exit_pending clear sites (0x43bcb3 slide/floor,
-  0x43bf6f grounded snap, 0x43c06d flags re-snap, 0x43c3ea trampoline,
-  0x43ce75 jetpack) with the harvested predicates
-- gravity velocity_y += -0.01*v_z^2 @ 0x43c316, integrate @ 0x43bac4
+The dossier covered the follow-consumer block and the exit lanes. The
+scratch additionally pins:
 
-## Plan
+- **Steering model** (the oracle's lateral lane): `track_z_offset` is a
+  mouse-anchor accumulator clamped to [0, 639];
+  `resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[steering_mode_selector])`
+  is called for its side effect each tick; selector 1 maps `steering_x`
+  absolutely; steer target = `(320 - offset) * 0.0125` clamped ±3.7;
+  `x += rate*0.2 * (target - x)` unless movement_state == 2. Under control
+  override the offset is pulled by `-2 * presentation.live_basis_up.x`.
+- **Lateral quantization EVERY tick**: `position.x =
+  convert_math_type16_to_32(convert_math_type32_to_16(x, 16.0), 16.0)` —
+  live x snaps to the 16-bit replay codec grid each frame before being
+  recorded. PORT IMPLICATION: a port that doesn't quantize x identically
+  accumulates lateral drift against recordings.
+- **Replay record**: z stored as 16-bit per-tick DELTA against the
+  accumulator `unk_643194` (which re-accumulates the decoded value, so
+  codec error never compounds); flags bit0/bit1 = fire buttons, bit2 =
+  latch, bit3 = end marker. Recording flags only written while
+  `track_state_latch` (game+0xa854) is set; the latch arms when both fire
+  bits are released, or unconditionally at cursor > 20.
+- **Replay playback**: recorded lateral_x drives position.x directly;
+  flags bit2 drives the latch; bit3 triggers the frontend fade-out
+  (app states 26/10 + skip byte).
+- **Completion handoff machine**: timer step 1/60; entry resets voice
+  gate, clamps vz into [rate*0.17, rate*0.5], `reset_voice_manager`,
+  `end_jetpack_hover`, cutscene state 5, sound 0; past start+2.5 decays vz
+  by 2×quantum; voice 8 at t>2; skip lanes (display gate_18 + fire, or
+  display state 5, level_mode ≤ 1) jump the timer to 5.0999999; t>5 holds
+  by re-subtracting the step while display state != 5; then frontend fade
+  state 0 → begin fade-out, state 4 → flush display + `complete_subgame`
+  dispatch (last-level via app+0x12d4644 - 1 → states 29/26; level 7 →
+  26/2; else substate = state, state = persistent ? 26 : 27).
+- **Cruise window**: every non-handoff tick with z < completion_row_start
+  (or exit pending) and no boost/override: vz floored at rate*0.17 and
+  capped at rate*0.5. With the track-mode accel only firing below
+  first_block_row_count, the steady-state z-velocity oscillation
+  (oracle's 0.24–0.31) must come from the COLLISION boosts (speedup
+  pickup and ring effects set vz = rate*0.5) decaying through
+  (1 - rate*0.003) toward the 0.17 floor — the "tile-boost cadence"
+  hypothesis is dead; it's ring/speedup cadence.
+- **Ghost marking (level_mode 4)**: record block at game + 129728*arg;
+  active flag +0x944150, cursor base +0x944174, count +0x9441bc, ghost
+  words stride 6 at +0x9441c2; payload = min(accumulated ghost z, z+20)
+  through flt_643190, anchored by player+0x304;
+  `mark_current_track_pair_with_payload(float)` each tick.
+- **Movement-fire emitters**: require runtime_flags & 0x400000, no
+  handoff/override, movement_state 0 or 4; fire cooldown via +0x2730
+  progress (+0.3 bias on flags_a fire); replay flags bits 1/2 replay the
+  fire actions; app+0x1066bf4 < 10 (the 9-tick startup hold) re-arms the
+  cooldown.
+- **Wall-14 stall**: probe at z+0.49, y < 6.5; vz = 0,
+  z = trunc(z+0.49) - 0.5, squidge z -0.33 (sound 47 on first), stall
+  timer at +0x328 → carryover when it wraps past 1.0.
+- **Tail**: collisions, 5 anim managers (presentation +0x104, jetpack
+  channel +0x12e8, weapon channels +0x754 stride 0x3dc), track parcels
+  (game+0x125e480), initialize_cutscene, update_player_movement_flags,
+  row event display, frame counter game+0xfd2b7c++, cursor++ == 21000 →
+  times-up (game+0x1272828).
 
-Too large for a single scratch pass; match it in regions the way the
-follow-update went (the mode-switch consumer block first — it validates
-the boss return codes — then the exit-lane cluster, then the motion
-step). Each region transcribes into the cluster-2 mirror as it pins.
-The FollowState/Player/carryover layouts recovered this campaign cover
-most of the struct surface already.
+## Struct facts (player block)
 
-## Mode-code question RESOLVED (2026-06-12, boss asm verification)
+damage_gauge at +0x3c4 (state is the FIRST field; skin_hold_ticks +0x18),
+progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
+(visual_root* +0x24 with lateral/squidge floats at +0x80/84/88, live
+basis_up.x +0x48, cutscene state +0x1964), squidge +0x4344 (y_out +0x00,
+z_out +0x0c), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
+slide threshold +0x2738, track_z offset/anchor +0x273c/+0x2740, handoff
+cycle +0x2744/8, jetpack gauge +0x2750 (state +0xc, wobble x/y/alpha
++0x14/18/1c), camera target +0x2964, steering selector +0x2970,
+interaction_max_z +0x2980, movement_mode_selector +0x40c (0/2 = early
+out), movement_state +0x120, resurrect_active +0x84, row event id +0x1e8
++ tip def +0x1ec, ghost anchor +0x304, wall stall +0x328/c, exit voice
+timer +0x330/4, lane lean +0x350..+0x35c, timer pair +0x360/+0x368/+0x36c,
+nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
+Game side: level_mode at +0x40 (NOT +0x150), level_mode_arg +0x44,
+runtime_flags +0x4c, first_block_row_count +0x50, runtime_row_count
++0x54, completion_row_start +0x58, row event defs +0xa670 stride 16928
+(text +0, dismiss +0x200, voice +0x204), level_segment_count +0xa874,
+row records +0x5ccac8 stride 244 (flags +0x00: 0x40/0x80 owner bits +
+0x100 no-drag; attachment cells +0xa4/+0xa8; event id +0xf0), ghost
+blocks +0x944150 stride 129728, frame counter +0xfd2b7c, replay buffer
++0xfd2b80 stride 6, replay state +0xff25d0/d1/d4/dc, parcels +0x125e480,
+display +0x12727d8 (state +0x14, gate +0x18; the "2" flag dword sits at
+game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
++0x15c→+0x2cc (0x40 bytes, scroll float at +0x300 inside), states
++0x1b8/+0x1bc, skip byte +0x30c, backdrop +0x4ec10, startup counter
++0x1066bf4, level count +0x12d4644, tip manager +0x12e6f58.
 
-All three side-exit return paths in update_track_attachment_follow_state
-end with `mov ecx, [template+0x40]; test ecx, ecx; sete al` — the
-function returns only 0, 1, or 3. update_subgoldy's case 2 for this
-switch is dead code (the voice-4 class). A BLOCKED side exit (mode != 0)
-returns 0: its side effects happen but the caller treats it as
-following. The mirror's FollowUpdateMode is corrected accordingly, and
-template+0x40 is confirmed as side_exit_mode.
+## Source-shape idioms that mattered
 
-## Motion core (consumer block read, lines 296-400)
+- Doubled quantum is `quantum + quantum` via a named local (fadd st0,st0),
+  never two products (VC6 folds those into one const).
+- Gravity sites need `float gravity = rate*rate*-0.0099999998f;` as a
+  named local or VC6 rewrites `+ x*-c` into `- x*c` (fsubr).
+- Clamp ladders are written negative-arm-first
+  (`if (x < lo) ... else if (x > hi) ...`).
+- The pending/floor and floor/gravity branches are polarity-flipped
+  (`if (!pending) {floor} else {trampoline}`, `if (floor > y) {snap}
+  else {gravity}`) so the trampoline/gravity blocks land last and fall
+  into the continuation.
+- The follow switch is source-ordered case 1/3 first, case 0 falling
+  through into case 2.
+- The position stash around the camera block is a Vector3 struct copy
+  (dead y/z stores survive), and the camera writes go through a
+  `Vector3*` local (lea-reused base).
+- The steering lerp needs `pull` and `steer_delta` locals to force the
+  fxch evaluation order.
 
-The boss is called as update(velocity.z, &position, &velocity) — follow
-advance speed IS the z velocity, and vertical_offset accumulates
-velocity.y per tick (closing the loop on the earlier verify finding).
+## Named residuals (all register-allocation / micro-shape class)
 
-- mode 0 (following): non-DETOUR templates add the acceleration quantum
-  `2 * rate^2 * 0.004` to velocity.z, then fall into the shared
-  integration; modes 1/3 with still-active follow jump to the re-enter
-  lane; mode 2 is dead (verified)
-- shared integration (both follow and free): position += velocity;
-  drags vz *= (1 - rate*0.003), vy *= (1 - rate*0.003),
-  vx *= (1 - rate*0.1); **gravity vy += rate^2 * -0.01 — the harvested
-  motion-plan formula's "v_z" is actually the subgame rate**; +/-4
-  lateral clamp zeroing vx at the walls
-- free flight extras: slide tiles 15/16/18/19 (or damage state 2 +
-  slide family) add the acceleration quantum and bump the +0x2738
-  threshold float past first_block_row_count; jetpack state 1 adds the
-  quantum; the vz drag is GATED on byte +0x1e4 being clear
-- byte +0x41c (adjacent to exit_pending +0x41d): one-tick boost lane —
-  adds the quantum and clears attachment_exit_pending. DEAD: no producer
-  exists in the binary (see the resolved residual below)
-- the pending-exit gate checks row-record flag 0x100, jetpack state 0,
-  and no control override before the swept probes
+1. esi/edi zero-register swap born at the wall-14 block (`xor esi,esi`
+   native vs `xor edi,edi` here) — cascades through the whole tail.
+2. eax/ecx/edx scratch rotation shifted by one from the z-record site:
+   native splits the game load (`mov edx,[0x408]; mov esi,edx`), ours
+   loads esi directly; the missing split shifts every later scratch pick.
+3. The three replay-flag ORs: native `or byte [sib+disp], imm` followed
+   by a DEAD `lea eax,[sib+disp]`; no source shape found yet that emits
+   the dead lea (likely the same idiom in all three).
+4. Frame 0x24 vs 0x40: native keeps more spilled temps (the wall-probe
+   y/z temps, v136/v137 camera sums, the x-quantize temp survive as
+   distinct slots).
+5. `(320 - offset)`: native `fld var; fsubr const`, ours
+   `fld const; fsub var`.
+6. The two window clamps compare via `fld vz; fcomp st(1)` (vz loaded)
+   vs our `fcom [vz]`.
+7. Free-lane z / case-2 x integrate operand commutation (velocity-first
+   vs position-first) — VC6 commutes one site each way regardless of
+   source order so far.
 
-This block is the cluster-2 mirror's core; with FollowState, Player,
-and the carryover/swept layouts already recovered, the motion-slice
-fields (velocity triple, position, the two gate bytes) are now fully
-specified for transcription.
+## Zig port residuals (carried from the pre-scratch dossier, still open)
 
-## Exit-lane cluster (lines 440-530) — checklist predicates validated + corrected
-
-- grounded snap (0x43bf6f): !follow.active, y in (-0.16333334, 0.49),
-  !open-neighbor, tile != 22 -> rotation identity, clear byte +0x1e4,
-  squidge when vy < -0.03 (amount vy - 0.03), and only when vy <= 0:
-  snap y = 0.49 + zero vy; **pending clears unconditionally in the
-  block** (the static predicate over-constrained the clear)
-- tile-0/35 carryover arm: fractional z inside (0.2 if flags_3d&1 else
-  0, 0.8 if flags_3d&2 else 1.0) and !pending -> begin_post_follow_carryover
-- flags re-snap (0x43c06d): (runtime_flags & 0x400) == 0 or global
-  byte_4B2F40 & 2, plus y < 0.49 -> squidge(vy), clear +0x1e4, vy = 0,
-  clear pending, snap 0.49
-- death plane: y < -7.0 and !resurrect_active -> initialize_subgoldy_death
-- trampoline (0x43c3ea): while pending, gravity applies; tile 22 with
-  |y - (anchor.y + 0.49)| < 0.49 -> squidge(vy), **vy = rate * 0.3 (a
-  set, not a velocity flip — corrects the checklist)**, y = anchor.y +
-  0.49, clear pending, **byte +0x1e4 = 1** (the trampoline-bounce state
-  that skips the vz drag in the motion core), play_sound_effect(41)
-- surface_reaction_timer: step-accumulated, resets past 1.0
-
-byte +0x1e4 is now fully decoded: set by trampoline bounce, cleared by
-both grounding lanes, gates the vz drag. With this the five-lane spec is
-complete and the cluster-2 mirror can be written.
-
-## Zig verify pass (final, 2026-06-12)
-
-stepActivePhaseVerticalMotion verifies CLEAN against the corrected spec:
-integration, damping, the grounded-snap band with the unconditional
-pending clear (the correction is already applied at block level), the
-squidge threshold nesting (observationally equivalent), the void-edge
-carryover arm, the death trigger, and the pending-exit trampoline with
-rate*0.3. Three named residuals:
-
-1. ~~the +0x41c one-tick boost lane is absent~~ **RESOLVED (2026-06-12):
-   the lane is DEAD CODE in the shipped binary.** Exhaustive scan for the
-   0x41c displacement across the whole image finds exactly one register
-   write (`mov [esi+0x41c], bl` at 0x43aef5 inside initialize_subgoldy's
-   reg-zero mass-clear, bl = 0), the imm-0 clear in update_subgoldy, and
-   three reads (two boost-lane reads here, one in
-   handle_subgoldy_collisions). No absolute references to 0x430198 exist.
-   The byte is never set nonzero — vestigial/cut feature; the port
-   correctly omits it.
-2. native resets the live-matrix rotation to identity in the grounded
-   snap; the port only clears the airborne flag (presentation-level)
-3. the trampoline envelope uses a shipped-tile floor-height proxy for
-   the cell anchor y (the checklist correction stands)
+1. native resets the live-matrix rotation to identity in the grounded
+   snap; the port only clears the airborne flag (presentation-level).
+2. the trampoline envelope uses a shipped-tile floor-height proxy for the
+   cell anchor y (the checklist correction stands).
+3. +0x41c boost lane is DEAD CODE in the shipped binary (only ever
+   written 0) — the port correctly omits it.
+4. NEW (this scratch): the per-tick 16-bit lateral quantization and the
+   replay z-delta accumulator are not modeled in the port — audit
+   `stepActivePhase`/the oracle harness for codec parity on x.
