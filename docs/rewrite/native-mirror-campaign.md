@@ -32,7 +32,7 @@ Stages: `match` → `mirror` → `route` → `collapse`. ✅ done, 🚧 in progr
 
 | # | cluster | key functions | match | mirror | route | collapse |
 |---|---------|---------------|-------|--------|-------|----------|
-| 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 pose interpolation routed into worldPoseForTemplate 06-12 | 🚧 entry-height + pose-lerp collapses ledgered 06-12 |
+| 1 | attachment follow | begin @ 0x420c40 (94.6%), swept entry @ 0x42c770 (79.8% pinned), **update @ 0x420cb0 pinned 06-12 (semantics complete, golf parked)**, project_position @ 0x4444b0 (56%) | 🚧 | 🚧 begin+swept+update stepping/gates + full pose-math chain (`native/matrix_math.zig`) | 🚧 follow update ROUTED 06-12: `stepAttachmentFollowAtRate` calls the mirror (stepping, exhaust/launch lanes, side-exit gate, vertical clamp); `endAttachmentIfNeeded` consumes the returned mode like update_subgoldy's switch; pose interpolation routed into worldPoseForTemplate | 🚧 invented stepping loop + `shouldSideExit` predicate deleted 06-12; entry-height + pose-lerp collapses ledgered; named seams: side_exit_mode (template+0x40) not surfaced on built templates, milestone row writes, voice 15, motion.y lane |
 | 2 | player motion / exit lanes | update_subgoldy @ 0x43b120 dossiered with motion core + all five exit lanes specified 06-12 (gravity corrected to rate^2, +0x1e4 bounce byte decoded); carryover @ 0x43af60 (100%) | 🚧 | 🚧 motion core + grounding/trampoline lanes in `native/player_motion.zig` | · | · |
 | 3 | collisions | handle_subgoldy_collisions @ 0x444cf0 — dossier + contact table done, all Zig gates verified clean 06-12 (match = proof-polish); remaining gaps are motion-slice consumers | 🚧 | · | · | · |
 | 4 | hazard pools | salt quartet + sub-lazer trio ALL pinned 06-12 (spawn 98.4%, shoot/emitter/update structure-exact; update-state +0x38 vs free-flag +0x80 disambiguated, y-stagger and 4% fire gate recovered) | 🚧 | ✅ salt consolidated 06-12 (`gameplay/hazards.zig` sole home; tick integrates position per pinned asm; OB-1 fixed) | ✅ salt live with native exit set in `retireSaltHazards` | ✅ salt (`native/salt_pool.zig` deleted; containment-probe seam named) |
@@ -68,10 +68,14 @@ invalidation ledger.
 
 ## Next actions (keep this list short and current)
 
-1. Mirror `update_track_attachment_follow_state` into
-   `native/attachment_follow.zig` from the pinned scratch (FollowState
-   contract complete), then route the runner's follow lanes through the
-   mirror and collapse the invented follow model.
+1. ~~Route the follow update~~ DONE 06-12: `stepAttachmentFollowAtRate` now
+   calls the mirror's `updateTrackAttachmentFollowState` (stepping, exhaust
+   step, launch lanes, side-exit gate, vertical clamp); the invented stepping
+   loop and `shouldSideExit` predicate are deleted; `endAttachmentIfNeeded`
+   switches on the returned mode. Follow-up seams to close: surface
+   side_exit_mode (template+0x40) on built templates, the milestone row
+   writes, voice 15 on supertramp launch, and the motion.y vertical lane
+   (checklist Phase 3 motion slice).
 2. Route runner begin/swept call sites through `native/attachment_follow.zig`
    (map `attachment.follow` reads to FollowState fields; keep the y-snap
    seam from the module doc).

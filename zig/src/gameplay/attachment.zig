@@ -140,7 +140,7 @@ pub fn localPosition(pose: attachment_builders.WorldPose, world_position: attach
     };
 }
 
-fn templateSpanCells(built: *const attachment_builders.BuiltAttachment) usize {
+pub fn templateSpanCells(built: *const attachment_builders.BuiltAttachment) usize {
     // Native entry and side-exit checks both read template `+0x54`, which
     // constructor traces show is the wide template span lane (`WORM`: 16), not
     // the narrower Zig-side builder width (`WORM`: 4).
@@ -193,25 +193,6 @@ pub fn lateralOffsetFromLocalX(
         local_x;
 }
 
-pub fn shouldSideExit(
-    built: *const attachment_builders.BuiltAttachment,
-    jetpack_active: bool,
-    vertical_offset: f32,
-    template_progress: f32,
-    source_cell_row: usize,
-    lateral_offset: f32,
-) bool {
-    if (jetpack_active) return false;
-    if (vertical_offset > 0.0) return false;
-
-    const pose = attachment_builders.samplePoseAtProgress(&built.template, template_progress);
-    const world_pose = attachment_builders.worldPoseForTemplate(
-        &built.template,
-        template_progress,
-        source_cell_row,
-        lateral_offset,
-        vertical_offset,
-    );
-    const world_delta_x = @abs(world_pose.position.x - pose.center_x);
-    return world_delta_x > templateSideExitHalfSpan(built) + side_exit_margin;
-}
+// The side-exit predicate moved into the native follow-update mirror
+// (gameplay/native/attachment_follow.zig, the gate inside
+// updateTrackAttachmentFollowState); the runner consumes its returned mode.

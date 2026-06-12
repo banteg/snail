@@ -292,6 +292,15 @@ pub const FollowUpdateMode = enum(i32) {
     // the function only returns 0, 1, or 3), same class as the voice-4 lane
 };
 
+/// inputs of the native side-exit gate: the rider's freshly computed output
+/// x and the sample's lateral center. Native computes the output transform
+/// between the stepping and the gate; those lanes stay runner-side, so the
+/// gate reads them back through a callback at the post-step progress.
+pub const LateralGateInputs = struct {
+    x: f32,
+    center: f32,
+};
+
 pub const FollowUpdateDeps = struct {
     /// player jetpack gauge state (state 1 skips the side-exit test)
     jetpack_state_is_hover: bool,
@@ -308,6 +317,11 @@ pub const FollowUpdateDeps = struct {
     play_voice_fn: *const fn (context: *anyopaque, voice: u8) void,
     /// milestone row writes at count-1 (value 1.0) and 3*count/7 (0.6 + flag 0x80)
     milestone_fn: *const fn (context: *anyopaque, terminal: bool) void,
+    /// natural-end residual step past the final boundary, capped 0.99900001 —
+    /// native folds it into the exhaust z position via out_position
+    exhaust_step_fn: *const fn (context: *anyopaque, capped_step: f32) void,
+    /// side-exit gate inputs at the post-step (sample_index, alpha) pose
+    output_lateral_fn: *const fn (context: *anyopaque, sample_index: u32, alpha: f32) LateralGateInputs,
     /// heading roll accumulation on the player
     add_heading_roll_fn: *const fn (context: *anyopaque, delta: f32) void,
     /// supertramp pitch-cycle seed (subgame_rate / 72)
@@ -322,10 +336,8 @@ pub const FollowUpdateDeps = struct {
 /// campaign notes).
 pub fn updateTrackAttachmentFollowState(
     state: *FollowState,
-    template: *Template,
+    template: *const Template,
     path_factor: f32,
-    out_lateral_x: f32,
-    lateral_center: f32,
     motion_y: *f32,
     motion_z: *f32,
     deps: FollowUpdateDeps,
@@ -354,6 +366,7 @@ pub fn updateTrackAttachmentFollowState(
                 // exhaustion: natural end
                 state.active = false;
                 if (step >= 1.0) step = 0.99900001;
+                deps.exhaust_step_fn(deps.context, step);
                 var launch = path_factor * samples[count - 1].delta_length;
                 if (launch > 1.0) launch = 1.0;
                 motion_z.* = launch;
@@ -387,7 +400,8 @@ pub fn updateTrackAttachmentFollowState(
 
     // exit gates
     if (!deps.jetpack_state_is_hover) {
-        var lateral = out_lateral_x - lateral_center;
+        const gate = deps.output_lateral_fn(deps.context, index, alpha);
+        var lateral = gate.x - gate.center;
         if (lateral < 0.0) lateral = -lateral;
         const half: f32 = @floatFromInt(deps.width_cells);
         if (!(lateral <= half * 0.5 + 0.30000001 or state.vertical_offset > 0.0)) {
@@ -413,7 +427,7 @@ test "follow update returns natural end and caps the launch lanes" {
     var calls = TestFollowDeps{};
     var my: f32 = 0.0;
     var mz: f32 = 0.0;
-    const mode = updateTrackAttachmentFollowState(&state, &template, 2.0, 0.0, 0.0, &my, &mz, calls.deps(.{ .kind = 31, .segment_count = 2 }));
+    const mode = updateTrackAttachmentFollowState(&state, &template, 2.0, &my, &mz, calls.deps(.{ .kind = 31, .segment_count = 2 }));
     try std.testing.expectEqual(FollowUpdateMode.natural_end, mode);
     try std.testing.expect(!state.active);
     try std.testing.expectEqual(@as(f32, 1.0), mz); // capped
@@ -421,6 +435,8 @@ test "follow update returns natural end and caps the launch lanes" {
     try std.testing.expect(calls.voice_15);
     try std.testing.expect(calls.pitch_seeded);
     try std.testing.expect(calls.heading_rolls == 1);
+    // residual past the boundary was 1.9, capped to the native constant
+    try std.testing.expectApproxEqAbs(@as(f32, 0.99900001), calls.exhaust_step, 0.0001);
 }
 
 test "follow update accumulates motion y into vertical offset and clamps at zero" {
@@ -434,7 +450,7 @@ test "follow update accumulates motion y into vertical offset and clamps at zero
     var calls = TestFollowDeps{};
     var my: f32 = -0.2;
     var mz: f32 = 0.0;
-    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, 0.0, 0.0, &my, &mz, calls.deps(.{}));
+    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, &my, &mz, calls.deps(.{}));
     try std.testing.expectEqual(FollowUpdateMode.following, mode);
     // 0.05 + (-0.2) = -0.15 -> clamped to 0 with motion y zeroed
     try std.testing.expectEqual(@as(f32, 0.0), state.vertical_offset);
@@ -453,7 +469,8 @@ test "follow update side-exits outside the float half span" {
     var my: f32 = 0.0;
     var mz: f32 = 0.0;
     // width 4 -> half span 2.0 + 0.3; |x - center| = 2.4 exits
-    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, 2.4, 0.0, &my, &mz, calls.deps(.{ .width_cells = 4 }));
+    calls.gate_x = 2.4;
+    const mode = updateTrackAttachmentFollowState(&state, &template, 0.01, &my, &mz, calls.deps(.{ .width_cells = 4 }));
     try std.testing.expectEqual(FollowUpdateMode.side_exit, mode);
     try std.testing.expect(calls.heading_rolls == 1);
 }
@@ -463,6 +480,8 @@ const TestFollowDeps = struct {
     pitch_seeded: bool = false,
     heading_rolls: u32 = 0,
     milestones: u32 = 0,
+    exhaust_step: f32 = 0.0,
+    gate_x: f32 = 0.0,
 
     const Overrides = struct {
         kind: u8 = 0,
@@ -483,9 +502,23 @@ const TestFollowDeps = struct {
             .context = self,
             .play_voice_fn = playVoice,
             .milestone_fn = milestone,
+            .exhaust_step_fn = exhaustStep,
+            .output_lateral_fn = outputLateral,
             .add_heading_roll_fn = addHeadingRoll,
             .seed_pitch_cycle_fn = seedPitch,
         };
+    }
+
+    fn exhaustStep(context: *anyopaque, capped_step: f32) void {
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        self.exhaust_step = capped_step;
+    }
+
+    fn outputLateral(context: *anyopaque, sample_index: u32, alpha: f32) LateralGateInputs {
+        _ = sample_index;
+        _ = alpha;
+        const self: *TestFollowDeps = @ptrCast(@alignCast(context));
+        return .{ .x = self.gate_x, .center = 0.0 };
     }
 
     fn playVoice(context: *anyopaque, voice: u8) void {

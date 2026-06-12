@@ -4,6 +4,7 @@ const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const attachment_module = @import("gameplay/attachment.zig");
+const native_attachment_follow = @import("gameplay/native/attachment_follow.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const combat_module = @import("gameplay/combat.zig");
@@ -1991,7 +1992,10 @@ pub const Runner = struct {
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode != .attachment or !self.attachment.follow.active or preview.total_rows == 0) return;
         if (self.currentAttachmentBuilt(preview)) |built| {
-            if (self.attachmentShouldSideExit(built)) {
+            // ROUTED: the side-exit decision is the mode returned by the
+            // native follow-update mirror (update_subgoldy's mode switch);
+            // the gate itself runs inside updateTrackAttachmentFollowState
+            if (self.attachment.follow.last_update_mode == .side_exit) {
                 self.beginFallState(preview, .fall, cutscene_none_id);
                 return;
             }
@@ -5207,17 +5211,6 @@ pub const Runner = struct {
         self.applyAttachmentExitHeadingDelta();
     }
 
-    fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
-        return attachment_module.shouldSideExit(
-            built,
-            self.jetpack.active,
-            self.attachment.follow.vertical_offset,
-            self.attachment.follow.template_progress,
-            self.attachment.follow.source_cell_row,
-            self.attachment.follow.lateral_offset,
-        );
-    }
-
     fn attachmentEntryHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
         return attachment_module.templateEntryHalfSpan(built);
     }
@@ -5330,15 +5323,97 @@ pub const Runner = struct {
         self.attachment.follow.template_progress = sample_index_f + normalized_local_progress;
     }
 
+    /// Adapter wiring the runner into the native follow-update mirror's deps.
+    /// Each callback is a native side-effect lane; no-ops carry named seams.
+    const NativeFollowDepsAdapter = struct {
+        runner: *Runner,
+        built: *const attachment_builders.BuiltAttachment,
+        mirror_state: *native_attachment_follow.FollowState,
+
+        fn deps(self: *NativeFollowDepsAdapter) native_attachment_follow.FollowUpdateDeps {
+            return .{
+                .jetpack_state_is_hover = self.runner.jetpack.active,
+                .kind = self.built.template.spec.template_kind orelse 0,
+                // native reads template +0x54, the wide span lane
+                // (attachment_module.templateSpanCells), for the gate width
+                .width_cells = @intCast(attachment_module.templateSpanCells(self.built)),
+                .width_or_scale = 0.0,
+                // SEAM: built templates do not surface native template+0x40
+                // (side_exit_mode); all templates currently allow side exits,
+                // matching the pre-routing runner behavior
+                .side_exit_mode_zero = true,
+                // SEAM: the milestone row writes (0.6 + flag 0x80, 1.0 at
+                // count-1) need the runtime row record display lane
+                .special_runtime_flag = false,
+                .installed_heading_delta = self.runner.attachment.follow.installed_heading_delta,
+                .segment_count = self.built.template.sample_count,
+                .context = self,
+                .play_voice_fn = playVoice,
+                .milestone_fn = milestone,
+                .exhaust_step_fn = exhaustStep,
+                .output_lateral_fn = outputLateral,
+                .add_heading_roll_fn = addHeadingRoll,
+                .seed_pitch_cycle_fn = seedPitchCycle,
+            };
+        }
+
+        fn playVoice(context: *anyopaque, voice: u8) void {
+            // voice 4 is the dead lane; SEAM: voice 15 (supertramp launch)
+            // awaits the runner's voice queue wiring
+            _ = context;
+            _ = voice;
+        }
+
+        fn milestone(context: *anyopaque, terminal: bool) void {
+            _ = context;
+            _ = terminal;
+        }
+
+        fn exhaustStep(context: *anyopaque, capped_step: f32) void {
+            const self: *NativeFollowDepsAdapter = @ptrCast(@alignCast(context));
+            self.runner.attachment.follow.exit_overshoot = capped_step;
+        }
+
+        fn outputLateral(context: *anyopaque, sample_index: u32, alpha: f32) native_attachment_follow.LateralGateInputs {
+            const self: *NativeFollowDepsAdapter = @ptrCast(@alignCast(context));
+            const progress = @as(f32, @floatFromInt(sample_index)) + alpha;
+            const world_pose = attachment_builders.worldPoseForTemplate(
+                &self.built.template,
+                progress,
+                self.runner.attachment.follow.source_cell_row,
+                self.runner.attachment.follow.lateral_offset,
+                self.mirror_state.vertical_offset,
+            );
+            const center_pose = attachment_builders.samplePoseAtProgress(&self.built.template, progress);
+            return .{ .x = world_pose.position.x, .center = center_pose.center_x };
+        }
+
+        fn addHeadingRoll(context: *anyopaque, delta: f32) void {
+            // SEAM: the runner accumulates the install heading delta in its
+            // exit commits (applyAttachmentExitHeadingDelta) — equivalent
+            // placement, single application per exit
+            _ = context;
+            _ = delta;
+        }
+
+        fn seedPitchCycle(context: *anyopaque) void {
+            // SEAM: the supertramp cutscene pitch cycle (subgame_rate / 72)
+            // lives in the camera envelope lanes
+            _ = context;
+        }
+    };
+
     fn stepAttachmentFollowAtRate(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
         path_factor: f32,
     ) void {
-        // PORT(verified): native `update_track_attachment_follow_state` advances a raw
-        // local-distance lane inside the current sample, carries any remainder across sample
-        // boundaries, and still publishes the camera phase / heading-roll lanes on zero-rate
-        // updates.
+        // ROUTED through gameplay/native/attachment_follow.zig (pinned
+        // update_track_attachment_follow_state @ 0x420cb0): progress stepping,
+        // exhaust/launch lanes, the side-exit gate, and the vertical clamp all
+        // run in the mirror; the transform/lerp output lanes stay runner-side
+        // (updateAttachmentFollowPosition). Zero-rate updates still publish
+        // the phase lanes, like native.
         const built = self.currentAttachmentBuilt(preview) orelse {
             self.syncRowPosition(preview);
             return;
@@ -5347,46 +5422,41 @@ pub const Runner = struct {
 
         const sample_count = built.template.sample_count;
         self.attachment.follow.exit_overshoot = 0.0;
+        self.attachment.follow.last_update_mode = .following;
         if (sample_count > 0 and self.attachment.follow.sample_index < sample_count) {
-            const current_sample_index_f: f32 = @floatFromInt(self.attachment.follow.sample_index);
-            var remaining_local_progress =
-                @max(path_factor, 0.0) *
-                attachment_builders.deltaLengthAtProgress(&built.template, current_sample_index_f);
-
-            while (remaining_local_progress > 0.0 and self.attachment.follow.sample_index < sample_count) {
-                const sample_index_f: f32 = @floatFromInt(self.attachment.follow.sample_index);
-                const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
-                const segment_remaining = @max(0.0, delta_length - self.attachment.follow.local_progress);
-                if (remaining_local_progress <= segment_remaining) {
-                    self.attachment.follow.local_progress = std.math.clamp(
-                        self.attachment.follow.local_progress + remaining_local_progress,
-                        0.0,
-                        delta_length,
-                    );
-                    remaining_local_progress = 0.0;
-                    break;
-                }
-
-                remaining_local_progress -= segment_remaining;
-                self.attachment.follow.sample_index += 1;
-                self.attachment.follow.local_progress = 0.0;
-            }
-
-            if (self.attachment.follow.sample_index >= sample_count) {
-                self.attachment.follow.exit_overshoot = std.math.clamp(remaining_local_progress, 0.0, 0.999000013);
-            }
+            var mirror_state = native_attachment_follow.FollowState{
+                .active = true,
+                .source_cell_row = self.attachment.follow.source_cell_row,
+                .sample_index = @intCast(self.attachment.follow.sample_index),
+                .progress = self.attachment.follow.local_progress,
+                .vertical_offset = self.attachment.follow.vertical_offset,
+            };
+            var adapter = NativeFollowDepsAdapter{
+                .runner = self,
+                .built = built,
+                .mirror_state = &mirror_state,
+            };
+            // motion-slice seam: the runner has no vertical velocity lane yet
+            // (checklist Phase 3), so motion.y enters as zero; motion.z is the
+            // natural-end launch output consumed by the supertramp commit
+            var motion_y: f32 = 0.0;
+            var motion_z: f32 = 0.0;
+            const mode = native_attachment_follow.updateTrackAttachmentFollowState(
+                &mirror_state,
+                &built.template,
+                path_factor,
+                &motion_y,
+                &motion_z,
+                adapter.deps(),
+            );
+            self.attachment.follow.sample_index = @intCast(mirror_state.sample_index);
+            self.attachment.follow.local_progress = mirror_state.progress;
+            self.attachment.follow.vertical_offset = mirror_state.vertical_offset;
+            self.attachment.follow.last_update_mode = mode;
         }
 
         self.syncAttachmentFollowTemplateProgress(built);
         self.updateAttachmentFollowPosition(preview);
-        // PORT(partial): native accumulates the caller's motion.y into
-        // vertical_offset every normal-path tick (riders fall onto / lift off
-        // the path), and the exit clamp zeroes BOTH vertical_offset and the
-        // motion.y lane. The runner has no vertical velocity lane yet (motion
-        // slice, checklist Phase 3), so only the offset clamp is mirrored.
-        if (self.attachment.follow.vertical_offset < 0.0) {
-            self.attachment.follow.vertical_offset = 0.0;
-        }
     }
 
     fn updateAttachmentFollowCameraOrientations(
@@ -6498,7 +6568,11 @@ test "rolled attachments use world x for side-exit threshold" {
         .lateral_offset = lateral_offset,
     };
 
-    try std.testing.expect(!runner.attachmentShouldSideExit(built));
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+    try std.testing.expectEqual(
+        native_attachment_follow.FollowUpdateMode.following,
+        runner.attachment.follow.last_update_mode,
+    );
 }
 
 test "attachment side exit uses subdivision count rather than template width" {
@@ -6540,7 +6614,11 @@ test "attachment side exit uses subdivision count rather than template width" {
         .lateral_offset = matching_lateral_offset.?,
     };
 
-    try std.testing.expect(!runner.attachmentShouldSideExit(built));
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+    try std.testing.expectEqual(
+        native_attachment_follow.FollowUpdateMode.following,
+        runner.attachment.follow.last_update_mode,
+    );
 }
 
 test "attachment follow advances template progress by path factor" {
@@ -10314,7 +10392,7 @@ test "standalone start segment attachment follow seeds generic entry from player
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
 }
 
-test "generic attachment begin preserves the raw row-relative progress seed" {
+test "generic attachment begin carries the raw progress seed across samples like native" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -10325,7 +10403,21 @@ test "generic attachment begin preserves the raw row-relative progress seed" {
 
     runner.beginAttachmentFollow(&fixture.preview, sample);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 1.25), runner.attachment.follow.progress, 0.0001);
+    // Native begin seeds raw local progress (z - anchor), and the same-tick
+    // validating update carries any past-the-sample residue across sample
+    // boundaries (the pinned `step + progress > delta` check fires even at
+    // zero rate). The total local distance is preserved.
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    var expected_index: usize = 0;
+    var expected_progress: f32 = 1.25;
+    while (expected_index < built.template.sample_count) {
+        const delta = built.template.samples[expected_index].delta_length;
+        if (expected_progress <= delta) break;
+        expected_progress -= delta;
+        expected_index += 1;
+    }
+    try std.testing.expectEqual(expected_index, runner.attachment.follow.sample_index);
+    try std.testing.expectApproxEqAbs(expected_progress, runner.attachment.follow.progress, 0.0001);
 }
 
 test "blocked startup refresh primes the current-row start attachment at zero rate" {
@@ -10892,7 +10984,9 @@ test "attachment follow side threshold enters the shared fall state" {
         side_exit_lateral += 0.25 * lateral_sign;
     }
     runner.attachment.follow.lateral_offset = side_exit_lateral;
-    runner.updateAttachmentFollowPosition(&fixture.preview);
+    // ROUTED: the side-exit gate runs inside the native follow update; a
+    // zero-rate update publishes the gate verdict like native
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -10934,7 +11028,13 @@ test "attachment side threshold is suppressed while jetpack is active" {
     runner.attachment.follow.lateral_offset = side_exit_lateral;
     runner.jetpack.active = true;
 
-    try std.testing.expect(!runner.attachmentShouldSideExit(built));
+    // ROUTED: jetpack hover skips the side-exit gate inside the native
+    // follow update (deps.jetpack_state_is_hover)
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+    try std.testing.expectEqual(
+        native_attachment_follow.FollowUpdateMode.following,
+        runner.attachment.follow.last_update_mode,
+    );
 }
 
 test "loop side threshold preserves airborne fall height" {
@@ -10993,7 +11093,9 @@ test "loop side threshold preserves airborne fall height" {
         side_exit_lateral += 0.25 * lateral_sign;
     }
     runner.attachment.follow.lateral_offset = side_exit_lateral;
-    runner.updateAttachmentFollowPosition(&fixture.preview);
+    // ROUTED: the side-exit gate runs inside the native follow update; a
+    // zero-rate update publishes the gate verdict like native
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);

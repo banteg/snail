@@ -28,6 +28,23 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - Attachment begin progress seed normalization
+
+- invalidated claim: the generic attachment begin "preserves the raw
+  row-relative progress seed" — a follow state seeded with local progress
+  past the first sample's length keeps that raw value until the next
+  positive-rate step (the old runner stepping loop only ran when
+  `remaining > 0`)
+- replacement evidence: the pinned update_track_attachment_follow_state
+  carry check is `step + progress > delta` — it fires even at zero rate, so
+  the same-tick validating update both entry paths run normalizes an
+  over-length seed across sample boundaries immediately (total local
+  distance preserved)
+- port consequence: `stepAttachmentFollowAtRate` is routed through the
+  mirror, which carries the seed natively; the test asserting raw-seed
+  preservation now asserts the carry. Riders entering mid-sample on
+  multi-row attachments land on the correct sample index one tick earlier
+
 ## 2026-06-12 - FollowState is the Player's embedded follow struct
 
 - invalidated claim: the attachment FollowState is a standalone global block

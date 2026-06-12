@@ -7,6 +7,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
+const native_attachment_follow = @import("native/attachment_follow.zig");
 const segment = @import("../segment.zig");
 
 pub const RunnerInput = struct {
@@ -376,6 +377,10 @@ pub const AttachmentFollowState = struct {
     exit_carryover_a: f32 = 0.0,
     exit_carryover_b: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
+    // Return code of the most recent routed follow update
+    // (native update_track_attachment_follow_state @ 0x420cb0); the
+    // exit-handling consumer reads it like update_subgoldy's mode switch.
+    last_update_mode: native_attachment_follow.FollowUpdateMode = .following,
 };
 
 pub const AttachmentExitCarryover = struct {
