@@ -56,6 +56,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% |  |
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% |  |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% |  |
+| 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 189/187 | 40.43% |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% |  |
 | ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% |  |
