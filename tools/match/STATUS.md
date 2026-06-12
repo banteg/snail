@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**54/62** functions matched, **3072/5999** bytes.
+**55/63** functions matched, **3269/6196** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -42,6 +42,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
