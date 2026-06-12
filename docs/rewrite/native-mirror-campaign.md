@@ -141,11 +141,25 @@ models collapse, never loosen.
   past the tail); the exhaust placement is anchor + terminal_sample.z +
   width_or_scale + step (width_or_scale = 1.0 everywhere except WORM's
   4.0 — the port's exit_tail_extra now mirrors both). Named follow-ups:
-  the exit-pending damping event around t=205 (native keeps cruising
-  where the port damps to the floor), and the follow OUTPUT rotation is
-  identity across the terminal segment (set_matrix_identity at
-  segment == count-1) — geometry consumers keep the sample basis, the
-  identity lane lands with the cluster-1 output routing. Fixes: the 9-tick startup control-override hold (pinned
+  ~~the exit-pending damping event around t=205~~ (RESOLVED in v4), and
+  the follow OUTPUT rotation is identity across the terminal segment
+  (set_matrix_identity at segment == count-1) — geometry consumers keep
+  the sample basis, the identity lane lands with the cluster-1 output
+  routing.
+- v4 (06-12): first divergence at tick 212 — exit-pending no longer arms
+  at natural ends. Native arms it ONLY via the four event-gated
+  begin_post_follow_carryover arms (void-edge tile 0/35 window, fall
+  below y=0, the wall-14 stall timer); the port's unconditional exit
+  handoff armed it on every exit, so the (1-rate*0.2) damping + gravity
+  sent the runner off a cliff the recorded native run cruised over.
+  Also: a past-the-end re-begin guard (native's begin gate is the 29/30
+  entry tile, absent past the span) and natural exits preserve the live
+  x (the exhaust writes z only). Next frontier: the cruise boost cadence
+  — native holds ~0.23 where the port drags toward the floor between
+  boosts (tile-boost cadence trace needed). Named residual: the output-x
+  model carries the terminal sample's center_x where native's
+  v85-relative local-x preservation re-centers (cluster-1 output
+  routing). Fixes: the 9-tick startup control-override hold (pinned
   by all 24 recordings; `update_subgoldy` IDA 275-285), the forward window
   clamp made mode-independent and gated at `completion_row_start` (IDA
   644-658 — the old port clamped only in track mode, so attachment riders

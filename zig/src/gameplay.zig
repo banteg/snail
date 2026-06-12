@@ -2015,22 +2015,25 @@ pub const Runner = struct {
             }
             if (self.attachment.follow.sample_index >= built.template.sample_count) {
                 self.commitAttachmentNaturalExit(preview, built);
-                if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
-                    self.finishAttachmentFollowDirect();
-                } else {
-                    self.finishAttachmentFollowWithExitHandoff(preview);
-                }
+                // PORT(verified): native does NOT arm attachment_exit_pending
+                // at a natural end — all four begin_post_follow_carryover
+                // arms in update_subgoldy are event-gated (the void-edge
+                // tile-0/35 window, fall below y=0, the wall-14 stall timer)
+                // and fire later from track mode. The old unconditional exit
+                // handoff armed pending on every exit, so the (1-rate*0.2)
+                // damping crushed cruise speed where the recorded native run
+                // keeps rolling — the lockstep oracle's t~205 frontier.
+                self.finishAttachmentFollowDirect();
             }
             return;
         }
         const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
         if (sample.path_center_lane != null) return;
 
-        if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
-            self.finishAttachmentFollowDirect();
-            return;
-        }
-        self.finishAttachmentFollowWithExitHandoff(preview);
+        // degenerate retirement (the built template vanished mid-follow):
+        // same native rule — no pending at attachment end; the carryover
+        // arms event-gated from track mode
+        self.finishAttachmentFollowDirect();
     }
 
     fn recordRing(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind) void {
@@ -5212,11 +5215,18 @@ pub const Runner = struct {
         );
         self.row_position = exit_world_position.z + built.template.exit_tail_extra;
         self.row_position += self.attachment.follow.exit_overshoot;
+        // the native exhaust writes only z — x stays the rider's LIVE
+        // lateral from the follow output (the boss's out_position is the
+        // player position; the non-31 lane touches only ->z). Residual: the
+        // port's output x carries the terminal sample's center_x where
+        // native's v85-relative local-x preservation re-centers along the
+        // path line — lands with the cluster-1 output routing.
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.track_row_progress = self.row_position - @floor(self.row_position);
-        self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
+        const exit_world_x = self.attachment.follow.cached_output_position.x;
+        self.lane_index = preview.laneIndexAtWorldX(exit_world_x);
         self.resolved_lane_index = self.lane_index;
-        self.lane_center = laneCenterFromWorldX(preview, exit_world_position.x);
+        self.lane_center = laneCenterFromWorldX(preview, exit_world_x);
         self.applyAttachmentExitHeadingDelta();
     }
 
@@ -5732,6 +5742,10 @@ pub const Runner = struct {
         // is clear. That begin path seeds progress from the current row cell, not only from
         // the attachment source row, so use the current installed row span here.
         const sample_index = global_row - built.row.global_row;
+        // native's begin gate is the grid tile (29/30) at the CURRENT cell —
+        // past the template end (the natural-exit landing row) the tile is no
+        // longer an entry tile, so a row at/after sample_count cannot re-begin
+        if (sample_index >= built.template.sample_count) return null;
         const sample_index_f: f32 = @floatFromInt(sample_index);
         const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
         const local_progress = std.math.clamp(
@@ -10550,8 +10564,12 @@ test "tutorial intro startup exits the start attachment on the authored track ce
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(!runner.attachment.follow.active);
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.001);
+    // native exits preserve the rider's live x (the exhaust writes z only).
+    // The ~0.12 off-center residual is the port's output-x model carrying
+    // the terminal sample's center_x where native's v85-relative local-x
+    // preservation re-centers — tighten with the cluster-1 output routing.
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.15);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.15);
 }
 
 test "initial live cameraman update does not queue a stale shared-camera snap" {

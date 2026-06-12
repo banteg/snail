@@ -165,10 +165,13 @@ test "lockstep oracle: postal top run ratchet" {
     //   independent clamp at completion_row_start, pre-integration order):
     //   first_div=144, start ramp in lockstep to ~0.001/tick
     //   2026-06-12 v3: terminal-segment position extension + native exhaust
-    //   placement (the natural-exit +1.7 teleport removed): first_div=195.
-    //   max_dz~916 persists from post-divergence decoherence (the exit-
-    //   pending damping event around t=205 is the next frontier)
+    //   placement (the natural-exit +1.7 teleport removed): first_div=195
+    //   2026-06-12 v4: exit-pending no longer arms at natural ends (native
+    //   arms it only via the event-gated carryover arms), past-the-end
+    //   re-begin guard, exit preserves live x: first_div=212. The next
+    //   frontier is the cruise boost cadence (native holds ~0.23 where the
+    //   port drags toward the floor between boosts)
     const first_divergence = report.first_divergence_tick orelse run.replay.samples.len;
-    try std.testing.expect(first_divergence >= 190);
+    try std.testing.expect(first_divergence >= 210);
     try std.testing.expect(report.max_abs_dz <= 950.0);
 }
