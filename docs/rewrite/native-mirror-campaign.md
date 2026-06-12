@@ -75,6 +75,10 @@ benefits from everything below it being trustworthy first.
   existing Zig model against matched truth before mirroring — confirmed-
   correct models (mirror coin, warning zones) get cited, wrong ones get
   ledgered (entry height). Every collapse gets an invalidation-ledger entry.
+- **Original bugs**: proven native bugs go in
+  [original-bugs.md](original-bugs.md); the port fixes them by default and
+  `--preserve-bugs` restores original behavior for differential testing
+  (switch in `zig/src/gameplay/native/original_bugs.zig`).
 - **Harness upkeep**: bump `CACHE_VERSION` in `src/snail/match.py` whenever
   the normalizer changes; keep STATUS.md regenerated, never hand-edited.
 - **Endgame instrumentation** (after clusters 1–4): per-tick state dump of

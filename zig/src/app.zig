@@ -93,6 +93,10 @@ pub const Options = struct {
     hidden_window: bool = false,
     credits_with_remake: bool = true,
     debug_mode: ?[]const u8 = null,
+    /// Reproduce documented native bugs (docs/rewrite/original-bugs.md)
+    /// instead of the default fixed behavior; for differential testing
+    /// against the original game.
+    preserve_bugs: bool = false,
     command: AppCommand = .game,
 };
 
@@ -214,6 +218,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
         }
         if (std.mem.eql(u8, arg, "--fullscreen")) {
             options.fullscreen = true;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--preserve-bugs")) {
+            options.preserve_bugs = true;
             continue;
         }
         if (std.mem.eql(u8, arg, "--hidden-window")) {
@@ -393,6 +401,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(false, options.fullscreen);
     try std.testing.expectEqual(false, options.hidden_window);
     try std.testing.expectEqual(true, options.credits_with_remake);
+    try std.testing.expectEqual(false, options.preserve_bugs);
     try std.testing.expectEqual(@as(?[]const u8, null), options.debug_mode);
 }
 
@@ -534,4 +543,9 @@ test "parse window size validates dimensions" {
 
     try std.testing.expectError(error.InvalidWindowSize, parseWindowSize("640"));
     try std.testing.expectError(error.InvalidWindowSize, parseWindowSize("0x480"));
+}
+
+test "preserve-bugs flag parses" {
+    const options = try parseArgsFromSlice(&.{"--preserve-bugs"});
+    try std.testing.expectEqual(true, options.preserve_bugs);
 }

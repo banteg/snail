@@ -38,10 +38,12 @@ Template:
   while update integrates all three lanes as floats; progress/step at
   +0x98/+0x9c sit past the 0x98 stride in the next slot's header and are
   never initialized by spawn
-- port consequence: the planned Zig SaltHazardPool must not "fix" these
-  quirks silently — velocity.z is effectively zero (denormal) and the
+- port consequence: velocity.z is effectively zero (denormal) and the
   progress-based state-2 transition almost never fires; lifetime is
-  governed by collision, y < 0, kill plane, and the tile-14 floor exit
+  governed by collision, y < 0, kill plane, and the tile-14 floor exit.
+  Cataloged as OB-1/OB-2 in original-bugs.md (fixed by default,
+  `--preserve-bugs` for differential runs; both happen to be
+  observationally identical either way)
 
 ## 2026-06-12 - Attachment entry height model
 

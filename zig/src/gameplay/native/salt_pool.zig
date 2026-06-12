@@ -5,15 +5,14 @@
 //! deactivate @ 0x441740 41% — residuals are layout-only, semantics pinned;
 //! see each scratch's NOTES.md and the 2026-06-12 invalidation-ledger entry).
 //!
-//! RULE: do not refactor this module for taste, and do not fix the native
-//! quirks — they are observable behavior:
-//! - spawn corrupts velocity.z with a single byte write, leaving it a
-//!   denormal ~0; mirrored here as literal zero
-//! - the native progress/step fields overlap the next slot's header and are
-//!   never initialized, so the progress-driven state-2 transition almost
-//!   never fires; mirrored here as fields that stay zero
-//! - salt lifetime is therefore governed by collision, y < 0, the kill
-//!   plane, and the tile-14 low-altitude floor exit
+//! RULE: do not refactor this module for taste. Native bugs follow the
+//! original-bugs policy (docs/rewrite/original-bugs.md): fixed by default,
+//! `--preserve-bugs` restores original behavior. This pool carries OB-1
+//! (velocity.z byte poke) and OB-2 (progress/step overlap, never seeded) —
+//! both have NO observable fixed-vs-preserved difference, so there are no
+//! branches here: velocity.z and progress/step are simply zero, and salt
+//! lifetime is governed by collision, y < 0, the kill plane, and the
+//! tile-14 low-altitude floor exit.
 //!
 //! Zig seams: the live list / free stack anchors live in the pool instead
 //! of game globals; the grid/runtime cell lookups and the containment probe

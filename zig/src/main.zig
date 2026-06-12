@@ -9,6 +9,7 @@ const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
 const game_tick = @import("app/game_tick.zig");
+const original_bugs = @import("gameplay/native/original_bugs.zig");
 const level_loader = @import("app/level_loader.zig");
 const math_random = @import("app/math_random.zig");
 const music_audio = @import("app/music_audio.zig");
@@ -2118,6 +2119,7 @@ pub fn main(init: std.process.Init) !void {
     const allocator = gpa.allocator();
 
     const options = try parseArgs(allocator, init.minimal.args);
+    original_bugs.preserve = options.preserve_bugs;
     try runtime_state.ensureRootExists(options.runtime_root_path);
     try std.Io.Dir.cwd().createDirPath(io, options.screenshot_dir);
     var runtime_config_result = try config.Blob.loadFromRuntimeRoot(allocator, options.runtime_root_path);
