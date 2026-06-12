@@ -1189,6 +1189,22 @@ pub const LoadedLevelPreview = struct {
         return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(self.max_width - 1))));
     }
 
+    /// The column half of native get_track_grid_cell_at_world_position
+    /// @ 0x43d410: `column = trunc(x + 4)` — the CONTAINING cell, spanning
+    /// [j - w/2, j + 1 - w/2) in world x, exactly where track_render draws
+    /// column j. Distinct from laneIndexAtWorldX, whose -0.5 half-lane
+    /// shift is nearest-lane STEERING semantics; sampling cell content
+    /// through that shift reads the neighboring column for the lower half
+    /// of every lane (the lockstep oracle caught the port falling through
+    /// void it never stood on). Native clamps to its 8-lane grid; the port
+    /// clamps to the authored width (seam).
+    pub fn gridColumnAtWorldX(self: *const LoadedLevelPreview, world_x: f32) usize {
+        if (self.max_width == 0) return 0;
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+        const raw_index: isize = @intFromFloat(@floor(world_x + width_offset));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(self.max_width - 1))));
+    }
+
     pub fn rowIndexAtWorldZ(self: *const LoadedLevelPreview, world_z: f32) usize {
         if (self.total_rows == 0) return 0;
         const raw_index: isize = @intFromFloat(@floor(world_z));

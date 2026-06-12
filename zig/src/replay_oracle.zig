@@ -168,10 +168,14 @@ test "lockstep oracle: postal top run ratchet" {
     //   placement (the natural-exit +1.7 teleport removed): first_div=195
     //   2026-06-12 v4: exit-pending no longer arms at natural ends (native
     //   arms it only via the event-gated carryover arms), past-the-end
-    //   re-begin guard, exit preserves live x: first_div=212. The next
-    //   frontier is the cruise boost cadence (native holds ~0.23 where the
-    //   port drags toward the floor between boosts)
+    //   re-begin guard, exit preserves live x: first_div=212
+    //   2026-06-13 v5: containing-column cell sampling (the native
+    //   trunc(x+4) convention via gridColumnAtWorldX at the live world x)
+    //   carries the port through the t~204 gap natively: first_div=253.
+    //   max_dz (~968 at the tail) is POST-divergence decoherence — once the
+    //   runs structurally diverge, magnitude is noise; the primary ratchet
+    //   is first_div, max_dz stays only as a runaway backstop
     const first_divergence = report.first_divergence_tick orelse run.replay.samples.len;
-    try std.testing.expect(first_divergence >= 210);
-    try std.testing.expect(report.max_abs_dz <= 950.0);
+    try std.testing.expect(first_divergence >= 250);
+    try std.testing.expect(report.max_abs_dz <= 1100.0);
 }

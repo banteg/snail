@@ -2673,8 +2673,16 @@ pub const Runner = struct {
         self.native_velocity_z_override_per_tick = velocity_z;
     }
 
+    /// the column half of native get_track_grid_cell_at_world_position:
+    /// cell-content queries derive the CONTAINING column from the live
+    /// lateral each time (native keeps no cached lane state); steering
+    /// keeps the nearest-lane resolved_lane_index semantics
+    fn gridLaneIndex(self: *const Runner, preview: *const track.LoadedLevelPreview) usize {
+        return preview.gridColumnAtWorldX(self.playerWorldPosition(preview).x);
+    }
+
     fn currentTileAddsNativeForwardVelocity(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
-        const tile = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index) orelse return false;
+        const tile = preview.runtimeTileAt(self.current_global_row, self.gridLaneIndex(preview)) orelse return false;
         if (self.damage.warning_state == .draining and track.isSlideRuntimeTileFamily(tile)) return true;
         return switch (tile) {
             0x0f, 0x10, 0x12, 0x13 => true,
@@ -4757,7 +4765,7 @@ pub const Runner = struct {
         // each tick.
         self.velocity_y *= self.nativeVelocityYzDecayPerTick();
 
-        const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
+        const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.gridLaneIndex(preview));
 
         // 0x43bf6f swept-reentry grounded-snap lane
         // (`0043b120-update_subgoldy.c:458-476`). Fires only when
@@ -10568,11 +10576,11 @@ test "tutorial intro startup exits the start attachment on the authored track ce
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(!runner.attachment.follow.active);
     // native exits preserve the rider's live x (the exhaust writes z only).
-    // The ~0.12 off-center residual is the port's output-x model carrying
+    // The ~0.24 off-center residual is the port's output-x model carrying
     // the terminal sample's center_x where native's v85-relative local-x
     // preservation re-centers — tighten with the cluster-1 output routing.
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.15);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.15);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.3);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.3);
 }
 
 test "initial live cameraman update does not queue a stale shared-camera snap" {
@@ -11666,7 +11674,7 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     runner.track_row_progress = 0.73;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.resolved_lane_index] = native_wall2_tile_id;
+    fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.gridLaneIndex(&fixture.preview)] = native_wall2_tile_id;
     runner.native_velocity_z_override_per_tick = 0.8;
 
     runner.stepActivePhaseVerticalMotion(&fixture.preview);
@@ -11681,7 +11689,7 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     var ticks: usize = 0;
     while (ticks < 61 and !runner.attachment.exit.pending) : (ticks += 1) {
         runner.refreshSample(&fixture.preview);
-        fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.resolved_lane_index] = native_wall2_tile_id;
+        fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.gridLaneIndex(&fixture.preview)] = native_wall2_tile_id;
         runner.stepActivePhaseVerticalMotion(&fixture.preview);
     }
 

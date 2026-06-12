@@ -124,16 +124,23 @@ a lane samples the neighboring column. The recorded replay rides
 off-center constantly, so the port reads void/wall cells (and falls to
 its death) where native cruises on solid track.
 
-A sampling-only fix REGRESSES the oracle: the port's runtime-grid
-CONTENT placement uses the same shifted convention, so build and sample
-are internally consistent — the native-true fix must move both sides
-together (where runtime rows/tiles/flags land in columns AND every
-lane/world-x sampler: laneIndexForLaneCenter, laneIndexAtWorldX,
-trackEntryWorldPosition, floor sampling, collisions). Also re-check the
-"world quantization matches recovered track grid sampling" test —
-its -3.99 -> 0 expectation encodes the shifted convention, not the
-native asm. This audit is the top cluster-2/3 blocker: tile-driven boost
-cadence, the void-edge arm, and collision probes all sample through it.
+RESOLVED in part (2026-06-13 v5): the regression hypothesis was wrong —
+track_render draws column j spanning [j - w/2, j + 1 - w/2), so CONTENT
+placement already matches the containing-cell convention; the earlier
+blanket fix regressed through the nearest-lane STEERING consumers, which
+legitimately keep the -0.5 shift. The roles are now split:
+`gridColumnAtWorldX` (track.zig, the column half of native
+get_track_grid_cell_at_world_position) + the runner's `gridLaneIndex`
+(sampling at the LIVE world x like native — no cached lane state) serve
+cell-content queries; `laneIndexForLaneCenter`/`laneIndexAtWorldX` stay
+steering-only. Converted so far: the boost-tile gate and
+stepActivePhaseVerticalMotion's tile fetch — oracle first_div 212 -> 253.
+REMAINING: convert the rest of the cell-content consumers off
+resolved_lane_index (collision probes, salt retire, row events, entry
+floor sampling — audit the ~28 laneIndex* call sites + 63
+resolved_lane_index uses by role), and re-check the
+"world quantization" test's -3.99 -> 0 expectation (encodes the steering
+shift, not the native containing-cell asm).
 
 ## Supporting workstreams
 
