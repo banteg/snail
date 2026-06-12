@@ -1,4 +1,28 @@
-# Dossier — scratch not yet written (322 insns, 1274 bytes)
+# PINNED — 92.55%, 322/322 insns exact (2026-06-12)
+
+Structure-exact; every remaining diff line is register allocation
+(eax/edx/ecx swaps), one faddp vs fadd+fstp pair from upstream register
+pressure, and the lea/push ordering in the orientation block. Semantics
+fully proven. Source-shape notes: ramp branch is the fall-through
+(`if (first > z)`), all three [0,1] clamps are `if (v<0) v=0; else if
+(v>1) v=1;`, the pitch clamp clamps-then-calls once, and the steer roll
+needs sequential assignments to stop VC6 folding -8*0.01745*0.17.
+
+**Findings from the asm:**
+- the exit roll while `attachment_exit_pending` reads player+0x42c — the
+  ORIENTATION-B carryover (begin_post_follow_carryover writes
+  follow_orientation_b there; the heading carryover at +0x430 still has
+  no known consumer). player.h renamed semantically; the Zig camera
+  already consumes the right lane (carryover_a = orientation_b phase).
+- orientation_a at player+0x39c, orientation_b at +0x3a0 — third
+  independent confirmation of the unified follow-struct slot order.
+- lift-envelope kind table: {8, 9, 10, 0xe, 0x10, 0x24, 0x2b, 0x2d};
+  WORM fov kind = 0x18.
+- CameramanState layout: live 0x00 / desired 0x40 / previous 0x80 /
+  player 0xc0 / game 0xc4 / fov 0xc8 / byte 0xcc / lift 0xd0 /
+  smoothed 0xd4.
+
+# Original dossier (322 insns, 1274 bytes)
 
 update_cameraman @ 0x4461d0, behind 18 camera fix commits and the 06-10
 audit findings (base matrix rows, subgame-rate blend). target.asm in this

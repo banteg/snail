@@ -40,8 +40,12 @@ public:
     char unknown_41e[0x424 - 0x41e];
     float attachment_exit_anchor_z;        // +0x424
     char unknown_428[0x42c - 0x428];
-    int post_follow_value_b;               // +0x42c
-    int post_follow_value_a;               // +0x430
+    // carryover pair written by begin_post_follow_carryover (matched 100%):
+    // +0x42c <- follow_orientation_b (the camera exit roll: update_cameraman
+    // @ 0x4461d0, pinned, rotates world-z by it while exit_pending);
+    // +0x430 <- attachment_record->installed_heading (consumer still open)
+    int post_follow_orientation_carryover; // +0x42c (was "post_follow_value_b")
+    int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_a")
     int attachment_exit_progress;          // +0x434
     char unknown_438[0x44c - 0x438];
     unsigned char attachment_exit_gate_a;  // +0x44c
