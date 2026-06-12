@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**47/55** functions matched, **2489/5416** bytes.
+**48/56** functions matched, **2811/5738** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -19,6 +19,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
