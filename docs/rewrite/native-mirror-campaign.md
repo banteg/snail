@@ -113,6 +113,24 @@ rebuild stages (edge variants, fringe promotion, tile-run merge,
 warning zones, fringe objects) run AFTER parcels and any draws they
 make land before gameplay — audit those when their scratches land.
 
+## OPEN: digit tiles on attachment rows (found 2026-06-13, grid-build dossier)
+
+Native `populate_runtime_track_cells_from_segments` maps parcel digit
+glyphs ('0'-'9') to tile 0x0f (slide family) ONLY on rows without
+attachment owner flags; on rows already carrying 0x40/0x80 (set by the
+'P'/'p' install walk earlier in the same pass) the digit cell becomes
+tile 0 (void, no bod). The port's
+`runtimeTileTransitionForNormalizedGlyph` maps digits to 0x0f
+unconditionally — so on attachment spans the port has slide tiles where
+native has void, granting the slide double-quantum z acceleration and a
+solid floor that native doesn't have. Candidate for the oracle's t=253
+frontier (the divergence sits just past an attachment exit). Fix needs
+attachment-span knowledge in/after the tile pass (the scaffold collects
+FROM tiles, so either a span pre-pass from 'P'/'p' rows + template row
+counts, or a post-scaffold re-zero before the derived grids build).
+Full glyph/anchor ground truth:
+tools/match/scratches/populate_runtime_track_cells_from_segments/NOTES.md.
+
 ## Next actions (keep this list short and current)
 
 1. ~~Route the follow update~~ DONE 06-12: `stepAttachmentFollowAtRate` now
