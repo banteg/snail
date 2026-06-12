@@ -98,6 +98,21 @@ invalidation ledger.
    sampling + instrumenting ring-hit ticks vs native is the next oracle
    move.
 
+## Level-build RNG chain verified (2026-06-13)
+
+`build_subgame_level` draws the music pick from the global stream BEFORE
+the track rebuild, but `populate_runtime_track_cells_from_segments`
+re-seeds with `runtime_build_seed` at its top and
+`place_parcels_on_track` runs immediately after the cell build inside
+`rebuild_track_runtime_from_segments` — so the port's
+seed -> build draws -> `runtime_build_final_random_state` -> parcels
+chain is structurally faithful; music/backdrop draws cannot shift it.
+With the parcel-pool ordered-compaction fix (ef5a3fab) the placement
+stream should now be draw-for-draw native. The remaining
+rebuild stages (edge variants, fringe promotion, tile-run merge,
+warning zones, fringe objects) run AFTER parcels and any draws they
+make land before gameplay — audit those when their scratches land.
+
 ## Next actions (keep this list short and current)
 
 1. ~~Route the follow update~~ DONE 06-12: `stepAttachmentFollowAtRate` now
