@@ -5,6 +5,7 @@ const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const attachment_module = @import("gameplay/attachment.zig");
 const native_attachment_follow = @import("gameplay/native/attachment_follow.zig");
+const native_golb = @import("gameplay/native/golb.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const combat_module = @import("gameplay/combat.zig");
@@ -342,13 +343,14 @@ pub const native_nuke_sprite_count: usize = 25;
 pub const native_nuke_orbit_radius: f32 = 7.0;
 pub const native_nuke_phase_step: f32 = 0.10471976;
 const native_turbo_projectile_spread_x_per_tick: f32 = 0.1;
-// PORT(partial): `update_golb_ai` @ 0x414820 keeps kind-0 (turbo) Golb shots
-// level while their height stays inside the native `[0, 0.49]` band and
-// applies `subgame_rate * 0.017` per-tick gravity outside it. Tile-`0x1e`
-// path-follow (`initialize_path_follow_golb`) is still unported, so shots fly
-// level through raised attachments instead of riding them.
-const native_golb_level_band_max_y: f32 = 0.49000001;
-const native_golb_band_gravity_per_tick: f32 = 0.017000001;
+// PORT(partial): `update_golb_ai` @ 0x414820 lanes now live in the
+// `gameplay/native/golb.zig` mirror (band gravity, homing, trail offsets,
+// slug deflection, contact band, path-entry predicate). Tile-`0x1e`
+// path-follow riding (`initialize_path_follow_golb` + the
+// calc_path_length_z stepping) is still unrouted, so shots fly level
+// through raised attachments instead of riding them.
+const native_golb_level_band_max_y: f32 = native_golb.band_ceiling_y;
+const native_golb_band_gravity_per_tick: f32 = native_golb.band_gravity_coefficient;
 // PORT(partial): `create_golb` @ 0x415280 seeds the Golb lifetime step as
 // `subgame_rate / 24` for turbo/laser and `subgame_rate / 36` for rockets;
 // `update_golb_ai` kills the shot once accumulated progress passes 1.0 or it
@@ -3149,8 +3151,11 @@ pub const Runner = struct {
             // while the fire sound still plays.
             projectile.lifetime_progress += self.subgame_rate * golbLifetimeStepPerTick(projectile.kind) * tick_delta;
             if (projectile.lifetime_progress > 1.0) continue;
-            if (projectile.world_z < self.row_position - native_sub_lazer_trailing_rows) continue;
-            if (projectile.world_z > self.row_position + native_golb_forward_window_rows) continue;
+            if (!native_golb.insideContactBand(
+                projectile.world_z,
+                self.row_position - native_sub_lazer_trailing_rows,
+                self.row_position,
+            )) continue;
             if (self.resolveProjectileHit(preview, &projectile)) continue;
             if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
             projectile.appendTrailPoint();
@@ -3165,15 +3170,16 @@ pub const Runner = struct {
 
     fn applyGolbVerticalBand(self: *const Runner, projectile: *Projectile, tick_delta: f32) void {
         if (projectile.kind != .turbo) return;
-        // PORT(partial): `update_golb_ai` @ 0x414820 kind-0 band rule — zero
-        // the vertical velocity while the shot sits inside `[0, 0.49]` so it
-        // skims the track, and pull it down with `subgame_rate * 0.017` per
-        // tick once it is above the band (e.g. fired from a raised pose).
-        if (projectile.world_y > native_golb_level_band_max_y or projectile.world_y < 0.0) {
-            projectile.dir_y -= self.subgame_rate * native_golb_band_gravity_per_tick * tick_delta;
-        } else {
-            projectile.dir_y = 0.0;
-        }
+        // PORT(verified): kind-0 band rule routed through the
+        // `update_golb_ai` mirror — zero vy inside `[0, 0.49]`, pull down
+        // with `subgame_rate * 0.017` per tick outside it. The fractional
+        // tick_delta scales the gravity rate; the in-band zero is scale-free.
+        var shot = native_golb.GolbShot{
+            .position = .{ .y = projectile.world_y },
+            .velocity = .{ .y = projectile.dir_y },
+        };
+        native_golb.applyGolbBandGravity(&shot, self.subgame_rate * tick_delta);
+        projectile.dir_y = shot.velocity.y;
     }
 
     fn golbLifetimeStepPerTick(kind: Projectile.Kind) f32 {
@@ -3192,12 +3198,14 @@ pub const Runner = struct {
             .y = projectile.world_y,
             .z = projectile.world_z,
         };
+        // PORT(verified): the mirror's kind-2 smoke pair — output and
+        // output - 0.5 * direction (direction = this tick's output delta).
         self.last_rocket_smoke_positions = .{
             current_position,
             .{
-                .x = current_position.x - (movement_delta.x * 0.5),
-                .y = current_position.y - (movement_delta.y * 0.5),
-                .z = current_position.z - (movement_delta.z * 0.5),
+                .x = current_position.x - (movement_delta.x * native_golb.smoke_step_fraction),
+                .y = current_position.y - (movement_delta.y * native_golb.smoke_step_fraction),
+                .z = current_position.z - (movement_delta.z * native_golb.smoke_step_fraction),
             },
         };
         self.last_rocket_smoke_velocity = .{
@@ -3286,19 +3294,20 @@ pub const Runner = struct {
             @as(f32, @floatFromInt(global_row)) + 0.5,
             0.0,
         );
-        const delta_x = slug_position.x - projectile.world_x;
-        const delta_z = slug_position.z - projectile.world_z;
-        const distance = @sqrt((delta_x * delta_x) + (delta_z * delta_z));
-        const speed = @sqrt((projectile.dir_x * projectile.dir_x) + (projectile.dir_z * projectile.dir_z));
-        if (distance > 0.0001 and speed > 0.0001) {
-            projectile.dir_x = -(delta_x / distance) * speed;
-            projectile.dir_y = 0.0;
-            projectile.dir_z = -(delta_z / distance) * speed;
-        } else {
-            projectile.dir_x = -projectile.dir_x;
-            projectile.dir_y = 0.0;
-            projectile.dir_z = -projectile.dir_z;
-        }
+        // PORT(verified): routed through the `update_golb_ai` mirror — the
+        // native deflection takes the 3D speed and the 3D contact normal
+        // (vy still zeroes), not the old 2D approximation.
+        var shot = native_golb.GolbShot{
+            .velocity = .{ .x = projectile.dir_x, .y = projectile.dir_y, .z = projectile.dir_z },
+        };
+        native_golb.deflectVelocityFromSlug(&shot, .{
+            .x = slug_position.x - projectile.world_x,
+            .y = slug_position.y - projectile.world_y,
+            .z = slug_position.z - projectile.world_z,
+        });
+        projectile.dir_x = shot.velocity.x;
+        projectile.dir_y = shot.velocity.y;
+        projectile.dir_z = shot.velocity.z;
         projectile.bounced_off_slug = true;
     }
 

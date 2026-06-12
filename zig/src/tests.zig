@@ -6,6 +6,7 @@ test {
     std.testing.refAllDecls(@import("config.zig"));
     std.testing.refAllDecls(@import("gameplay.zig"));
     std.testing.refAllDecls(@import("gameplay/native/attachment_follow.zig"));
+    std.testing.refAllDecls(@import("gameplay/native/golb.zig"));
     std.testing.refAllDecls(@import("gameplay/native/matrix_math.zig"));
     std.testing.refAllDecls(@import("gameplay/native/player_motion.zig"));
     std.testing.refAllDecls(@import("level.zig"));
