@@ -117,3 +117,20 @@ invalidation ledger.
 - **Endgame instrumentation** (after clusters 1–4): per-tick state dump of
   the mirrored FollowState/Player fields on both native (frida) and Zig
   sides — the lockstep replay oracle becomes mechanical once layouts agree.
+
+## Lockstep replay oracle (LIVE 2026-06-12)
+
+Real Windows replays landed (tests/fixtures/replays, 25 records / 71,535
+samples) and `zig/src/replay_oracle.zig` now drives a headless Runner with
+the recorded lateral/flags lanes and compares the port's z trajectory
+against the recording's ghost-z lane per tick — the crimson differential
+pattern. Landing them immediately caught the score-bank xor mask bug
+(ledger 06-12).
+
+**Baseline (postal[0], ARCADE012, 5006 ticks):** the port survives the
+full replay; within 1.0 world units for the first 28 ticks; worst drift
+~917 units (port z runs behind native). The test pins these as a RATCHET —
+tighten `first_divergence`/`max_abs_dz` as motion models collapse, never
+loosen. The drift curve is now the campaign's primary progress metric:
+cluster-2 motion-core routing (gravity, drags, acceleration quantum,
+velocity-z window) should move it first.

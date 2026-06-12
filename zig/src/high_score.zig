@@ -485,7 +485,7 @@ fn loadBankFile(allocator: std.mem.Allocator, root_path: []const u8, kind: runti
 }
 
 /// Decode one raw (still-masked) Score?.dat byte stream into the tables.
-fn loadBankBytes(allocator: std.mem.Allocator, bytes: []u8, tables: *Tables) !void {
+pub fn loadBankBytes(allocator: std.mem.Allocator, bytes: []u8, tables: *Tables) !void {
     if (bytes.len == 0) return;
 
     xorDecodeBufferWithIndex(bytes);

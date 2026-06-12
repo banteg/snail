@@ -2703,7 +2703,7 @@ pub const Runner = struct {
         gameplay_camera.refreshRunnerCameraRollState(self, preview);
     }
 
-    fn playerWorldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+    pub fn playerWorldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
         return gameplay_camera.playerWorldPosition(self, preview);
     }
 
