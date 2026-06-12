@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**65/75** functions matched, **3538/6940** bytes.
+**78/88** functions matched, **3926/7328** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -32,6 +32,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -81,3 +83,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_tutorial | 0x448de0 | 16 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
