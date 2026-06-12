@@ -68,3 +68,27 @@ This block is the cluster-2 mirror's core; with FollowState, Player,
 and the carryover/swept layouts already recovered, the motion-slice
 fields (velocity triple, position, the two gate bytes) are now fully
 specified for transcription.
+
+## Exit-lane cluster (lines 440-530) — checklist predicates validated + corrected
+
+- grounded snap (0x43bf6f): !follow.active, y in (-0.16333334, 0.49),
+  !open-neighbor, tile != 22 -> rotation identity, clear byte +0x1e4,
+  squidge when vy < -0.03 (amount vy - 0.03), and only when vy <= 0:
+  snap y = 0.49 + zero vy; **pending clears unconditionally in the
+  block** (the static predicate over-constrained the clear)
+- tile-0/35 carryover arm: fractional z inside (0.2 if flags_3d&1 else
+  0, 0.8 if flags_3d&2 else 1.0) and !pending -> begin_post_follow_carryover
+- flags re-snap (0x43c06d): (runtime_flags & 0x400) == 0 or global
+  byte_4B2F40 & 2, plus y < 0.49 -> squidge(vy), clear +0x1e4, vy = 0,
+  clear pending, snap 0.49
+- death plane: y < -7.0 and !resurrect_active -> initialize_subgoldy_death
+- trampoline (0x43c3ea): while pending, gravity applies; tile 22 with
+  |y - (anchor.y + 0.49)| < 0.49 -> squidge(vy), **vy = rate * 0.3 (a
+  set, not a velocity flip — corrects the checklist)**, y = anchor.y +
+  0.49, clear pending, **byte +0x1e4 = 1** (the trampoline-bounce state
+  that skips the vz drag in the motion core), play_sound_effect(41)
+- surface_reaction_timer: step-accumulated, resets past 1.0
+
+byte +0x1e4 is now fully decoded: set by trampoline bounce, cleared by
+both grounding lanes, gates the vz drag. With this the five-lane spec is
+complete and the cluster-2 mirror can be written.
