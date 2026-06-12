@@ -133,7 +133,19 @@ models collapse, never loosen.
 
 - v1 (06-12): first divergence >1.0 units at tick 28; worst drift ~917.
 - v2 (06-12): first divergence at tick 144; the start ramp tracks native
-  to ~0.001/tick. Fixes: the 9-tick startup control-override hold (pinned
+  to ~0.001/tick.
+- v3 (06-12): first divergence at tick 195 — the attachment natural-exit
+  +1.7 z teleport removed. The pinned boss asm shows the output position
+  EXTENDS along delta_dir_to_next across the terminal segment (the port's
+  pose clamped at the terminal sample, and the exit commit then jumped
+  past the tail); the exhaust placement is anchor + terminal_sample.z +
+  width_or_scale + step (width_or_scale = 1.0 everywhere except WORM's
+  4.0 — the port's exit_tail_extra now mirrors both). Named follow-ups:
+  the exit-pending damping event around t=205 (native keeps cruising
+  where the port damps to the floor), and the follow OUTPUT rotation is
+  identity across the terminal segment (set_matrix_identity at
+  segment == count-1) — geometry consumers keep the sample basis, the
+  identity lane lands with the cluster-1 output routing. Fixes: the 9-tick startup control-override hold (pinned
   by all 24 recordings; `update_subgoldy` IDA 275-285), the forward window
   clamp made mode-independent and gated at `completion_row_start` (IDA
   644-658 — the old port clamped only in track mode, so attachment riders

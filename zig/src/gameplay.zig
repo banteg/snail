@@ -5195,9 +5195,17 @@ pub const Runner = struct {
             self.commitSupertrampNaturalExit(preview, built);
             return;
         }
+        // PORT(verified): native exhaust placement (pinned boss, non-31
+        // lane) is `anchor + terminal_sample.z + width_or_scale +
+        // capped_step` — the TERMINAL SAMPLE plus the tail, evaluated
+        // without the final-segment extension (exit_tail_extra mirrors
+        // width_or_scale). The live pose reaches terminal + extension
+        // continuously through the final segment, so this lands within one
+        // tick of the live z instead of teleporting past the tail.
+        const terminal_progress: f32 = @floatFromInt(@max(built.template.sample_count, 1) - 1);
         const exit_world_position = attachment_builders.worldPositionForTemplate(
             &built.template,
-            @floatFromInt(built.template.sample_count),
+            terminal_progress,
             self.attachment.follow.source_cell_row,
             self.attachment.follow.lateral_offset,
             self.attachment.follow.vertical_offset,
@@ -10885,7 +10893,12 @@ test "attachment natural exit carries overshoot past the template end" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(target.row)) + sample_count + built.template.exit_tail_extra);
+    // native exhaust placement: anchor + terminal_sample.z + tail + step
+    // (the terminal SAMPLE is at sample_count - 1; the old expectation
+    // encoded the one-row-too-far clamp at the extra point)
+    try std.testing.expect(
+        runner.row_position > @as(f32, @floatFromInt(target.row)) + (sample_count - 1.0) + built.template.exit_tail_extra,
+    );
 }
 
 test "supertramp natural exit enters a launch state above the floor" {

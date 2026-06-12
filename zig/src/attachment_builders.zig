@@ -336,6 +336,10 @@ const WaveParams = struct {
     installed_heading_delta: f32 = 0.0,
     start_z: f32 = 0.0,
     center_bias: f32 = 0.0,
+    // native template width_or_scale (+0x50): 1.0 in every constructor
+    // except WORM's 4.0; the exhaust placement adds it past the terminal
+    // sample (pinned update_track_attachment_follow_state)
+    exit_tail_extra: f32 = 1.0,
 };
 
 const PFamilyParams = struct {
@@ -542,10 +546,33 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
 
     const clamped_progress = std.math.clamp(progress, 0.0, @as(f32, @floatFromInt(template.sample_count)));
     const base_index: usize = @intFromFloat(@floor(clamped_progress));
-    if (base_index >= template.samples.len - 1) {
-        const sample = template.samples[template.samples.len - 1];
+    const terminal_index = @min(
+        @as(usize, @max(template.sample_count, 1)) - 1,
+        template.samples.len - 1,
+    );
+    if (base_index >= terminal_index) {
+        // PORT(verified): the native output path (pinned
+        // update_track_attachment_follow_state, terminal-segment branch)
+        // EXTENDS the position along delta_dir_to_next by the raw local
+        // progress past the terminal sample. The old clamp-at-terminal
+        // model parked riders at the last sample and the natural-exit
+        // commit then teleported them past the tail — the lockstep oracle
+        // showed a +1.7 z jump per exit while the recorded native
+        // trajectory never steps more than 0.41 in one tick.
+        // SEAM: native's follow OUTPUT rotation is identity across the
+        // terminal segment (set_matrix_identity at segment == count-1);
+        // geometry consumers (renderers, the supertramp launch basis) read
+        // the sample transform, so the basis stays geometric here and the
+        // identity lane belongs to the cluster-1 output routing.
+        const sample = template.samples[terminal_index];
+        const local_distance =
+            (clamped_progress - @as(f32, @floatFromInt(terminal_index))) * sample.delta_length;
         return .{
-            .position = sample.position,
+            .position = .{
+                .x = sample.position.x + sample.delta_dir_to_next.x * local_distance,
+                .y = sample.position.y + sample.delta_dir_to_next.y * local_distance,
+                .z = sample.position.z + sample.delta_dir_to_next.z * local_distance,
+            },
             .center_x = sample.center_x,
             .lateral_scale = sample.lateral_scale,
             .basis_right = sample.basis_right,
@@ -754,6 +781,8 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
             .vertical_amplitude = 1.75,
             .vertical_cycles = 2.0,
             .installed_heading_delta = 6.2831855,
+            // native initialize_worm_path_template_pair: width_or_scale = 4.0
+            .exit_tail_extra = 4.0,
         }),
         .sweep => try buildWaveTemplate(allocator, spec, .{ .template_kind = 28, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 3.0, .lateral_cycles = 0.5 }),
         .snake => try buildWaveTemplate(allocator, spec, .{ .template_kind = 29, .width_cells = 4, .sample_count = 27, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
@@ -1309,7 +1338,7 @@ fn buildWaveTemplate(
         .width_cells = params.width_cells,
         .sample_count = params.sample_count,
         .installed_heading_delta = params.installed_heading_delta,
-        .exit_tail_extra = 1.0,
+        .exit_tail_extra = params.exit_tail_extra,
         .samples = samples,
     };
 }

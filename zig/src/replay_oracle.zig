@@ -163,10 +163,12 @@ test "lockstep oracle: postal top run ratchet" {
     //   2026-06-12 v1: first_div(>1.0)=28, max_dz~917 (z model far behind)
     //   2026-06-12 v2: startup hold + native forward window (mode-
     //   independent clamp at completion_row_start, pre-integration order):
-    //   first_div=144, start ramp in lockstep to ~0.001/tick; max_dz~916
-    //   persists from the steady-state cruise model (tile-boost/drag
-    //   equilibrium) — the next motion target
+    //   first_div=144, start ramp in lockstep to ~0.001/tick
+    //   2026-06-12 v3: terminal-segment position extension + native exhaust
+    //   placement (the natural-exit +1.7 teleport removed): first_div=195.
+    //   max_dz~916 persists from post-divergence decoherence (the exit-
+    //   pending damping event around t=205 is the next frontier)
     const first_divergence = report.first_divergence_tick orelse run.replay.samples.len;
-    try std.testing.expect(first_divergence >= 140);
+    try std.testing.expect(first_divergence >= 190);
     try std.testing.expect(report.max_abs_dz <= 950.0);
 }
