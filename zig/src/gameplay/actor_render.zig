@@ -50,6 +50,7 @@ pub const Context = struct {
     weapon_visual_state: *const gameplay_presentation.WeaponVisualState,
     jetpack_visual_state: *const gameplay_presentation.JetpackVisualState,
     billboard_shader: ?rl.Shader,
+    model_shader: ?rl.Shader,
     render_time_seconds: f64,
     click_start_active: bool,
     tutorial_click_start_cutscene_active: bool,
@@ -64,6 +65,7 @@ pub fn context(state: anytype) Context {
         .weapon_visual_state = &state.gameplay_weapon_visual_state,
         .jetpack_visual_state = &state.gameplay_jetpack_visual_state,
         .billboard_shader = state.gameplay_billboard_shader,
+        .model_shader = state.gameplay_model_shader,
         .render_time_seconds = state.render_time_seconds,
         .click_start_active = state.gameplay_click_start_active,
         .tutorial_click_start_cutscene_active = if (state.gameplay_click_start_active) blk: {
@@ -210,7 +212,7 @@ pub fn drawPostOfficeStopBanners(
     // as the object matrix translation; it does not use annotation-style
     // center/ground correction against the mesh bounds.
     const transform = startBannerNativeTransform(loaded_track_preview, y);
-    if (render.billboard_shader) |alpha_cutout_shader| {
+    if (render.model_shader) |alpha_cutout_shader| {
         model.drawAlphaCutoutEx(transform, alpha_cutout_shader);
     } else {
         model.drawEx(transform);
@@ -431,7 +433,7 @@ fn drawGameplaySaltVisual(
         const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
         const transform = gameplay_model_render.transformFromBasis(world_position, right, up, forward);
         const tint: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = presentation_alpha };
-        if (render.billboard_shader) |alpha_cutout_shader| {
+        if (render.model_shader) |alpha_cutout_shader| {
             model.drawTintedAlphaCutoutEx(transform, tint, alpha_cutout_shader);
         } else {
             model.drawTintedEx(transform, tint);
@@ -476,7 +478,11 @@ fn drawGameplayWall2PillarActor(
         position.y - model.bounds.min.y,
         position.z - model.bounds.center.z,
     );
-    model.drawEx(transform);
+    if (render.model_shader) |fog_shader| {
+        model.drawShadedEx(transform, fog_shader);
+    } else {
+        model.drawEx(transform);
+    }
 }
 
 const Wall2PillarModelInfo = struct {
@@ -736,6 +742,7 @@ pub fn drawBarrier(render: Context, loaded_track_preview: *const track.LoadedLev
         loaded_track_preview,
         runner,
         render.is_tutorial_level,
+        render.model_shader,
     );
 }
 
@@ -749,7 +756,7 @@ fn drawGameplayProjectileActor(render: Context, camera: rl.Camera3D, projectile:
         .lazer_object = &render.resources.lazer_object.?,
         .vapour_lazer_object = &render.resources.vapour_lazer_object.?,
         .rocket_model = &render.resources.rocket_model.?,
-        .alpha_cutout_shader = render.billboard_shader,
+        .alpha_cutout_shader = render.model_shader,
     }, projectile);
 }
 
@@ -1030,7 +1037,11 @@ pub fn drawTurbo(
         gameplay_model_render.tutorialClickStartTurboPose(model, loaded_track_preview, runner)
     else
         gameplay_model_render.turboPose(model, loaded_track_preview, runner);
-    model.drawEx(pose.transform);
+    if (render.model_shader) |fog_shader| {
+        model.drawShadedEx(pose.transform, fog_shader);
+    } else {
+        model.drawEx(pose.transform);
+    }
     model.drawToonOutlineEx(pose.transform, camera, .black);
 
     if (click_start_active) return;
@@ -1064,6 +1075,7 @@ fn drawGameplayTurboAttachments(
                 model,
                 turbo_transform,
                 camera,
+                render.model_shader,
             );
         }
     }
@@ -1091,6 +1103,7 @@ fn drawGameplayTurboAttachments(
                 model,
                 turbo_transform,
                 camera,
+                render.model_shader,
             );
         }
     }
@@ -1118,6 +1131,7 @@ fn drawGameplayTurboAttachments(
                 model,
                 turbo_transform,
                 camera,
+                render.model_shader,
             );
         }
     }
@@ -1135,6 +1149,7 @@ fn drawGameplayTurboAttachments(
                 model,
                 turbo_transform,
                 camera,
+                render.model_shader,
             );
         }
     }
@@ -1158,6 +1173,7 @@ fn drawGameplayTurboAttachments(
                 forward,
                 .{ .x = 0.24, .y = 0.24, .z = 0.24 },
                 camera,
+                render.model_shader,
             );
         }
     }
@@ -1172,6 +1188,7 @@ fn drawGameplayTurboAttachments(
                 forward,
                 .{ .x = 1.05, .y = 1.05, .z = 1.05 },
                 .{ .r = 220, .g = 240, .b = 255, .a = 180 },
+                render.model_shader,
             );
         }
     }

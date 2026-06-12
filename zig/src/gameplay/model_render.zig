@@ -24,10 +24,13 @@ pub fn drawUploadedModel(
     forward: rl.Vector3,
     scale: rl.Vector3,
     tint: ?rl.Color,
+    shader: ?rl.Shader,
 ) void {
     const transform = uploadedModelTransform(&model, position, right, up, forward, scale);
     if (tint) |tint_color| {
-        drawUploadedModelTinted(&model, transform, tint_color);
+        drawUploadedModelTinted(&model, transform, tint_color, shader);
+    } else if (shader) |fog_shader| {
+        model.drawShadedEx(transform, fog_shader);
     } else {
         model.drawEx(transform);
     }
@@ -41,18 +44,23 @@ pub fn drawUploadedModelWithToonOutline(
     forward: rl.Vector3,
     scale: rl.Vector3,
     camera: rl.Camera3D,
+    shader: ?rl.Shader,
 ) void {
     const transform = uploadedModelTransform(model, position, right, up, forward, scale);
-    model.drawEx(transform);
-    model.drawToonOutlineEx(transform, camera, .black);
+    drawUploadedModelWithToonOutlineEx(model, transform, camera, shader);
 }
 
 pub fn drawUploadedModelWithToonOutlineEx(
     model: *const x2.Uploaded,
     transform: rl.Matrix,
     camera: rl.Camera3D,
+    shader: ?rl.Shader,
 ) void {
-    model.drawEx(transform);
+    if (shader) |fog_shader| {
+        model.drawShadedEx(transform, fog_shader);
+    } else {
+        model.drawEx(transform);
+    }
     model.drawToonOutlineEx(transform, camera, .black);
 }
 
@@ -74,8 +82,12 @@ pub fn uploadedModelTransform(
     return local_offset.multiply(model_scale).multiply(world_transform);
 }
 
-pub fn drawUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
-    model.drawTintedEx(transform, tint);
+pub fn drawUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color, shader: ?rl.Shader) void {
+    if (shader) |fog_shader| {
+        model.drawTintedShadedEx(transform, tint, fog_shader);
+    } else {
+        model.drawTintedEx(transform, tint);
+    }
 }
 
 pub fn turboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) TurboPose {

@@ -368,6 +368,7 @@ const AppState = struct {
     gameplay_jetpack_visual_state: GameplayJetpackVisualState = .{},
     gameplay_weapon_visual_state: GameplayWeaponVisualState = .{},
     gameplay_billboard_shader: ?rl.Shader = null,
+    gameplay_model_shader: ?rl.Shader = null,
     gameplay_effects: gameplay_effects.Controller = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
@@ -416,6 +417,8 @@ const AppState = struct {
         errdefer background_light_streak_texture.unload();
         const gameplay_billboard_shader = try gameplay_billboard.loadAlphaCutoutShader();
         errdefer rl.unloadShader(gameplay_billboard_shader);
+        const gameplay_model_shader = try gameplay_billboard.loadModelAlphaCutoutShader();
+        errdefer rl.unloadShader(gameplay_model_shader);
         var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &resources.catalog, galaxy_names_path);
         errdefer if (galaxy_names) |*names| names.deinit();
 
@@ -468,6 +471,7 @@ const AppState = struct {
             .route_map_art = route_map_art,
             .current_background_light_streak_texture = background_light_streak_texture,
             .gameplay_billboard_shader = gameplay_billboard_shader,
+            .gameplay_model_shader = gameplay_model_shader,
             .galaxy_names = galaxy_names,
         };
         errdefer state.deinit();
@@ -509,6 +513,10 @@ const AppState = struct {
         if (self.gameplay_billboard_shader) |shader| {
             rl.unloadShader(shader);
             self.gameplay_billboard_shader = null;
+        }
+        if (self.gameplay_model_shader) |shader| {
+            rl.unloadShader(shader);
+            self.gameplay_model_shader = null;
         }
         if (self.pending_screenshot) |*request| {
             request.deinit(self.allocator);

@@ -3,19 +3,86 @@ const rl = @import("raylib");
 
 const render_blend = @import("../render_blend.zig");
 
+// PORT(partial): native `render_camera` @ 0x411fa0 enables D3D linear range
+// fog (`D3DRS_FOGENABLE/FOGCOLOR/FOGVERTEXMODE=LINEAR/FOGSTART/FOGEND/
+// RANGEFOGENABLE`) for every gameplay camera pass. The start/end lanes are
+// seeded once in `initialize_game_assets_and_world` @ 0x40acf0 (30/50, range
+// fog on), and the color comes from the active background script's `Fog:`
+// line via `activate_landscape_entry` @ 0x418870.
+pub const native_fog_start: f32 = 30.0;
+pub const native_fog_end: f32 = 50.0;
+
+pub const FogState = struct {
+    enabled: bool = false,
+    color: rl.Color = .white,
+    camera_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+};
+
+// Batched/billboard geometry is emitted with world-space vertices, so the
+// vertex position doubles as the fog sample point.
+const world_space_vertex_shader: [:0]const u8 =
+    \\#version 330
+    \\in vec3 vertexPosition;
+    \\in vec2 vertexTexCoord;
+    \\in vec4 vertexColor;
+    \\uniform mat4 mvp;
+    \\out vec2 fragTexCoord;
+    \\out vec4 fragColor;
+    \\out vec3 fragWorldPosition;
+    \\
+    \\void main() {
+    \\    fragTexCoord = vertexTexCoord;
+    \\    fragColor = vertexColor;
+    \\    fragWorldPosition = vertexPosition;
+    \\    gl_Position = mvp * vec4(vertexPosition, 1.0);
+    \\}
+;
+
+// Mesh draws carry a model transform, which raylib binds as `matModel`.
+const model_space_vertex_shader: [:0]const u8 =
+    \\#version 330
+    \\in vec3 vertexPosition;
+    \\in vec2 vertexTexCoord;
+    \\in vec4 vertexColor;
+    \\uniform mat4 mvp;
+    \\uniform mat4 matModel;
+    \\out vec2 fragTexCoord;
+    \\out vec4 fragColor;
+    \\out vec3 fragWorldPosition;
+    \\
+    \\void main() {
+    \\    fragTexCoord = vertexTexCoord;
+    \\    fragColor = vertexColor;
+    \\    fragWorldPosition = vec3(matModel * vec4(vertexPosition, 1.0));
+    \\    gl_Position = mvp * vec4(vertexPosition, 1.0);
+    \\}
+;
+
+// Native D3D linear fog: factor = clamp((end - distance) / (end - start)),
+// output = factor * color + (1 - factor) * fogColor, alpha untouched.
+// `RANGEFOGENABLE` is set, so distance is the euclidean range from the
+// camera rather than view depth.
 const alpha_cutout_fragment_shader: [:0]const u8 =
     \\#version 330
     \\in vec2 fragTexCoord;
     \\in vec4 fragColor;
+    \\in vec3 fragWorldPosition;
     \\uniform sampler2D texture0;
     \\uniform vec4 colDiffuse;
     \\uniform float alphaCutoff;
+    \\uniform float fogEnabled;
+    \\uniform vec3 fogColor;
+    \\uniform vec2 fogRange;
+    \\uniform vec3 fogCameraPosition;
     \\out vec4 finalColor;
     \\
     \\void main() {
     \\    vec4 color = texture(texture0, fragTexCoord) * colDiffuse * fragColor;
     \\    if (color.a <= alphaCutoff) discard;
-    \\    finalColor = color;
+    \\    float fogDistance = length(fragWorldPosition - fogCameraPosition);
+    \\    float fogFactor = clamp((fogRange.y - fogDistance) / (fogRange.y - fogRange.x), 0.0, 1.0);
+    \\    fogFactor = mix(1.0, fogFactor, fogEnabled);
+    \\    finalColor = vec4(mix(fogColor, color.rgb, fogFactor), color.a);
     \\}
 ;
 
@@ -30,9 +97,54 @@ pub const BlendMode = enum {
 };
 
 pub fn loadAlphaCutoutShader() !rl.Shader {
-    const shader = try rl.loadShaderFromMemory(null, alpha_cutout_fragment_shader);
+    return loadFogAlphaCutoutShader(world_space_vertex_shader);
+}
+
+pub fn loadModelAlphaCutoutShader() !rl.Shader {
+    return loadFogAlphaCutoutShader(model_space_vertex_shader);
+}
+
+fn loadFogAlphaCutoutShader(vertex_shader: [:0]const u8) !rl.Shader {
+    const shader = try rl.loadShaderFromMemory(vertex_shader, alpha_cutout_fragment_shader);
     setAlphaCutoff(shader, default_alpha_cutoff);
+    configureFog(shader, .{});
     return shader;
+}
+
+pub fn configureFog(shader: rl.Shader, fog: FogState) void {
+    setShaderFloat(shader, "fogEnabled", if (fog.enabled) 1.0 else 0.0);
+    setShaderVec3(shader, "fogColor", .{
+        @as(f32, @floatFromInt(fog.color.r)) / 255.0,
+        @as(f32, @floatFromInt(fog.color.g)) / 255.0,
+        @as(f32, @floatFromInt(fog.color.b)) / 255.0,
+    });
+    setShaderVec2(shader, "fogRange", .{ native_fog_start, native_fog_end });
+    setShaderVec3(shader, "fogCameraPosition", .{
+        fog.camera_position.x,
+        fog.camera_position.y,
+        fog.camera_position.z,
+    });
+}
+
+fn setShaderFloat(shader: rl.Shader, name: [:0]const u8, value: f32) void {
+    const location = rl.getShaderLocation(shader, name);
+    if (location < 0) return;
+    var scalar = value;
+    rl.setShaderValue(shader, location, &scalar, .float);
+}
+
+fn setShaderVec2(shader: rl.Shader, name: [:0]const u8, value: [2]f32) void {
+    const location = rl.getShaderLocation(shader, name);
+    if (location < 0) return;
+    var vector = value;
+    rl.setShaderValue(shader, location, &vector, .vec2);
+}
+
+fn setShaderVec3(shader: rl.Shader, name: [:0]const u8, value: [3]f32) void {
+    const location = rl.getShaderLocation(shader, name);
+    if (location < 0) return;
+    var vector = value;
+    rl.setShaderValue(shader, location, &vector, .vec3);
 }
 
 const Uv = struct {
@@ -418,7 +530,7 @@ fn worldXyRolledBasis(roll_radians: f32) Basis {
     };
 }
 
-fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
+pub fn setAlphaCutoff(shader: rl.Shader, alpha_cutoff: f32) void {
     const location = rl.getShaderLocation(shader, "alphaCutoff");
     if (location < 0) return;
     var cutoff = alpha_cutoff;

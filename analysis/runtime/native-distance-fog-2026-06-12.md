@@ -50,11 +50,19 @@ idles in low, surface-grazing shots (side and centered low views) where
 the platform fills the frame to the fogged horizon, while the port holds
 a higher chase-style camera that looks down past the platform edge.
 
-## Port gap
+## Port status
 
-The port renders no distance fog at all (`background.zig` only stores
-`fogColor` for 2D use), so every track/attachment/actor edge cuts
-sharply against the nebula image. Porting the native fog means applying
-the linear fog factor (start/end from the native `game + 0x8/0xc`
-lanes, color from the loaded background's `Fog:` line) to the gameplay
-3D passes: the track scene, attachments, fringe, models, and billboards.
+Ported. The gameplay alpha-cutout shader pair (world-space batch
+variant and `matModel` mesh variant in `gameplay/billboard.zig`) carries
+the linear range-fog lanes; `viewport_render` seeds them per frame with
+the native 30/50 start/end, the loaded background's `Fog:` color, and
+the live camera position, enabled only while a runner is active. Track
+surfaces, attachments, fringe, placed models, billboards, mesh actors,
+and the barrier all take the fogged path; the 2D nebula backdrop and
+HUD stay unfogged like native.
+
+Remaining gap at the level start: the original's wide ground apron
+around the start platform (visible in original captures between the pad
+edge and the fog band) is separate geometry the port does not draw yet,
+so the platform edge inside the fog-start radius still reads as a hard
+line during the intro.

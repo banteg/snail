@@ -73,6 +73,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
                 forward,
                 .{ .x = 0.16, .y = 0.16, .z = 0.16 },
                 null,
+                resources.alpha_cutout_shader,
             );
         },
     }

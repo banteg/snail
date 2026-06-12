@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rlgl = rl.gl;
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
+const gameplay_billboard = @import("gameplay/billboard.zig");
 const level = @import("level.zig");
 const render_blend = @import("render_blend.zig");
 const resource_store = @import("resource_store.zig");
@@ -56,11 +57,25 @@ pub const Scene = struct {
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
 
-    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, alpha_cutout_shader: ?rl.Shader) void {
+    pub fn drawGameplay(
+        self: *const Scene,
+        preview: *const track.LoadedLevelPreview,
+        batch_shader: ?rl.Shader,
+        model_shader: ?rl.Shader,
+    ) void {
+        // PORT(partial): native draws the whole world pass with the camera's
+        // fog render state active. The batch shader carries the ported fog
+        // lanes for world-space geometry; the surfaces themselves are opaque,
+        // so only the soft cutoff applies.
+        if (batch_shader) |shader| {
+            gameplay_billboard.setAlphaCutoff(shader, gameplay_billboard.soft_alpha_cutoff);
+            rl.beginShaderMode(shader);
+        }
         drawAllAttachmentGeometryForFamily(self, preview, .start);
         drawRenderCacheCells(self, preview);
         drawAllAttachmentGeometryExceptFamily(self, preview, .start);
-        preview.drawPlacedModelsOnly(alpha_cutout_shader);
+        if (batch_shader != null) rl.endShaderMode();
+        preview.drawPlacedModelsOnly(model_shader);
     }
 };
 

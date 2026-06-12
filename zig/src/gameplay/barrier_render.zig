@@ -10,6 +10,7 @@ pub fn draw(
     loaded_track_preview: *const track.LoadedLevelPreview,
     runner: gameplay.Runner,
     is_tutorial_level: bool,
+    fog_shader: ?rl.Shader,
 ) void {
     const loaded_object = maybe_loaded_object orelse return;
     // Native barrier visibility follows `Game.level_mode == FrontendLevelMode.tutorial`
@@ -67,5 +68,9 @@ pub fn draw(
     rl.gl.rlDisableBackfaceCulling();
     defer rl.gl.rlEnableBackfaceCulling();
     const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
-    loaded_object.drawTintedEx(world_transform, barrier_tint);
+    if (fog_shader) |shader| {
+        loaded_object.drawTintedShadedEx(world_transform, barrier_tint, shader);
+    } else {
+        loaded_object.drawTintedEx(world_transform, barrier_tint);
+    }
 }

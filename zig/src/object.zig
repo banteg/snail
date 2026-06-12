@@ -160,6 +160,23 @@ pub const LoadedObject = struct {
         }
     }
 
+    // Tinted draw through the fog-aware gameplay shader; unlike the cutout
+    // helper this leaves blend state and depth writes alone.
+    pub fn drawTintedShadedEx(self: *const LoadedObject, transform: rl.Matrix, tint: rl.Color, shader: rl.Shader) void {
+        setAlphaCutoff(shader, default_alpha_cutoff);
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
+            const previous_tint = albedo_map.color;
+            albedo_map.color = tint;
+
+            var material = submesh.material;
+            material.shader = shader;
+            rl.drawMesh(submesh.mesh, material, transform);
+            albedo_map.color = previous_tint;
+        }
+    }
+
     pub fn drawAlphaCutoutEx(self: *const LoadedObject, transform: rl.Matrix, shader: rl.Shader) void {
         render_blend.beginAlphaPreservingFramebufferAlpha();
         defer rl.endBlendMode();
