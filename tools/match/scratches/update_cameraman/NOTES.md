@@ -56,3 +56,14 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
 
 Scratch next: structure is linear with two matrix locals; the matched
 matrix helpers cover every call.
+
+## Verify pass (2026-06-12): Zig camera confirmed against the pipeline
+
+gameplay/camera.zig already carries the full recorded pipeline: base
+rows, pitch formula with the +/-1.22149992 clamp, z-deadzone [1.7, 3.0],
+FOV 110 + 50*envelope WORM lane with 0.3 blend, lateral roll
+-8*0.0174499992*0.17, orientation_a (local z) then orientation_b
+(world z) sequence, and the post_follow_value_a exit roll. The camera
+model is sound; the full match is proof-polish and drops in priority
+like collisions. The orientation_a SOURCE remains the basis-derived
+proxy (builder rotation scalars still unstored — checklist item).
