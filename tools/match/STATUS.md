@@ -2,11 +2,12 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**138/147** functions matched, **6910/9899** bytes.
+**142/152** functions matched, **6962/9972** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 219/214 | 78.52% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -38,6 +39,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| 🚧 | copy_c_string | 0x431da0 | 21 | 10/10 | 40.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
