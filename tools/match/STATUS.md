@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**128/137** functions matched, **6568/9557** bytes.
+**133/142** functions matched, **6767/9756** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -63,6 +63,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_slug_voice_manager | 0x43f5e0 | 49 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -116,6 +117,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_voice_set | 0x449360 | 46 | 14/14 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_voice_set | 0x449390 | 119 | 43/43 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | is_voice_playing | 0x449410 | 78 | 40/40 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | stop_music_stream | 0x4498d0 | 71 | 21/21 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | play_registered_sound_sample_scaled | 0x4499a0 | 106 | 30/30 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | stop_sound_sample_handle | 0x449a10 | 14 | 4/4 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | stop_registered_sound_sample | 0x449a20 | 21 | 5/5 | 100.00% | msvc6.5 /O2 /G5 /W3 |
@@ -126,6 +129,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_global_sample_volume_config | 0x449b50 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_global_stream_volume_config | 0x449b70 | 27 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | stop_audio_backend | 0x449b90 | 6 | 1/1 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | resume_audio_backend_if_paused | 0x449ba0 | 21 | 8/8 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | msvc6.5 /O2 /G5 /W3 |
