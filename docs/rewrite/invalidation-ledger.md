@@ -28,6 +28,30 @@ Template:
 - replacement evidence:
 - port consequence:
 
+## 2026-06-12 - FollowState is the Player's embedded follow struct
+
+- invalidated claim: the attachment FollowState is a standalone global block
+  at game+0x430100, with mystery fields `squidge_scratch` (+0x90),
+  `update_rate` (+0x94), and `live_flag` (+0x99); separately, player+0x41c
+  is a live one-tick boost lane awaiting its producer
+- replacement evidence: address arithmetic plus cross-confirmation — the
+  player block sits at game+0x42fd7c, and 0x42fd7c + 0x384 = 0x430100,
+  exactly the independently recovered `player.follow_active` (+0x384).
+  Every "FollowState" offset lands on a known Player field: +0x04 =
+  attachment_record (+0x388), +0x1c = follow_orientation_b (+0x3a0, the
+  carryover's read — also pins the boss scratch's orientation slot order),
+  +0x90 = velocity.y (+0x414), +0x94 = velocity.z (+0x418), +0x99 =
+  attachment_exit_pending (+0x41d). An exhaustive displacement scan of the
+  image shows player+0x41c is only ever written zero (initialize_subgoldy
+  reg-zero, update_subgoldy clear) — the boost lane has no producer
+- port consequence: the swept-entry seed re-reads as the exit-lane idiom in
+  reverse (clear exit_pending, start_squidge_y(velocity.y), velocity.y = 0,
+  validate with update(velocity.z, ...)); `attachment_follow.zig`,
+  `track_attachment.h`, and `player.h` renamed accordingly (codegen-neutral,
+  swept match re-verified at 79.80%). The boost lane must NOT be ported —
+  dead code. The damage-warning blocker at 0x430199 is attachment_exit_pending,
+  not a follow "live flag"
+
 ## 2026-06-12 - Damage hit-flash entry gate
 
 - invalidated claim: the damage hit flash and skin change trigger when the

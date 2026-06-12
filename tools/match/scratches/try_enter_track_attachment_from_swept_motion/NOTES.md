@@ -42,11 +42,14 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
   (+0x8c)`
 - probe 2: sweep-displaced position re-rotated; accept when rotated
   y <= 0.001f
-- seeding: the global FollowState at game+0x430100 (active=1, template,
-  cell, sample index, progress = rotated z, vertical_offset = 0,
-  player = game+0x42fd7c, fields +0x18/+0x1c zeroed, live byte +0x99
-  cleared, squidge scratch +0x90 consumed then zeroed), player
-  position.y snapped to rotated local y, heading table write
-  (61-dword row stride), then a validating
-  `update_track_attachment_follow_state(rate at +0x94,
+- seeding: the FollowState at game+0x430100 — UNIFIED (2026-06-12): this
+  is the Player's embedded follow sub-struct at player+0x384, not a
+  standalone global (0x42fd7c + 0x384 = 0x430100). The seed re-reads as:
+  active=1, template, cell, sample index, progress = rotated z,
+  vertical_offset = 0, player back-reference, orientation_a/_b
+  (+0x18/+0x1c) reset, **attachment_exit_pending (player+0x41d) cleared,
+  start_squidge_y(player.velocity.y) then velocity.y = 0** — the
+  exit-lane squidge idiom in reverse — player position.y snapped to
+  rotated local y, heading table write (61-dword row stride), then a
+  validating `update_track_attachment_follow_state(player.velocity.z,
   &sample_index, &player.position)` — thiscall, three args

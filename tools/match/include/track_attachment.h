@@ -1,7 +1,10 @@
 // Attachment-follow runtime structures, partial.
 // Offsets per analysis/decompile/*/00420c40-*.c, 0042c770-*.c, 00420cb0-*.c.
-// The shared FollowState instance lives at game+0x430100; the Player at
-// game+0x42fd7c.
+// UNIFIED (2026-06-12): the "FollowState global at game+0x430100" is the
+// Player's embedded follow sub-struct at player+0x384 (player block at
+// game+0x42fd7c; 0x42fd7c + 0x384 = 0x430100). Accesses past the struct
+// (+0x90/+0x94/+0x99 relative) are adjacent Player fields: velocity.y
+// (+0x414), velocity.z (+0x418), attachment_exit_pending (+0x41d).
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
@@ -64,18 +67,23 @@ public:
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14
-    Vector3 output_position;     // +0x18 (x/y zeroed by the swept entry)
-    float orientation_a;         // +0x24 (exact a..e order pending boss match)
-    float orientation_b;         // +0x28
-    float orientation_c;         // +0x2c
-    float orientation_d;         // +0x30
-    float orientation_e;         // +0x34
-    Player* player;              // +0x38
+    // slot order pinned by the update_track_attachment_follow_state scratch;
+    // orientation_b (+0x1c) = player+0x3a0, cross-confirmed by
+    // begin_post_follow_carryover's follow_orientation_b read.
+    float orientation_a;         // +0x18 (zeroed by the swept entry)
+    float orientation_b;         // +0x1c (zeroed by the swept entry)
+    float orientation_c;         // +0x20
+    float orientation_d;         // +0x24
+    float orientation_e;         // +0x28
+    Vector3 output_position;     // +0x2c
+    Player* player;              // +0x38 back-reference (player+0x3bc)
     char unknown_3c[0x90 - 0x3c];
-    float squidge_scratch;       // +0x90
-    float update_rate;           // +0x94
-    char unknown_98;             // +0x98
-    unsigned char live_flag;     // +0x99
+    // adjacent Player fields, reachable from the follow base because the
+    // struct is embedded at player+0x384 (see header comment):
+    float player_velocity_y;     // +0x90 = player+0x414
+    float player_velocity_z;     // +0x94 = player+0x418
+    char unknown_98;             // +0x98 = player+0x41c boost byte (dead: never set)
+    unsigned char attachment_exit_pending; // +0x99 = player+0x41d
 };
 
 // data_4df904: relocatable game-allocation base; structures below live at
@@ -83,7 +91,7 @@ public:
 // every store through derived pointers.
 extern char* volatile g_game_base;
 extern char g_row_heading_table[]; // 0x64118c, 61 dwords per row
-extern char g_follow_state_block[]; // 0x430100
+extern char g_follow_state_block[]; // 0x430100 = g_player_block + 0x384
 extern char g_player_block[];       // 0x42fd7c
 
 #endif

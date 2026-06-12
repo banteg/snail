@@ -53,9 +53,18 @@ benefits from everything below it being trustworthy first.
 Every important gameplay-sim function is matched, pinned, or fully
 specified; clusters 3 and 7 verified clean; the motion port verifies
 clean against the corrected update_subgoldy spec. Remaining named
-residuals: the +0x41c boost producer hunt, the grounded-snap rotation
+residuals: ~~the +0x41c boost producer hunt~~ (RESOLVED 06-12: dead code,
+no producer in the binary — see the ledger), the grounded-snap rotation
 reset, the trampoline cell-y proxy, the orientation_a builder scalars,
 the duplicate salt pools, and the deferred bridge cluster (10).
+
+**Player-block unification (2026-06-12):** the "FollowState global at
+game+0x430100" is the Player's embedded follow sub-struct at +0x384
+(0x42fd7c + 0x384 = 0x430100). Its mystery tail fields are adjacent
+Player fields: +0x90 = velocity.y, +0x94 = velocity.z, +0x99 =
+attachment_exit_pending. Headers, the swept scratch (re-verified 79.80%),
+and `native/attachment_follow.zig` renamed; full entry in the
+invalidation ledger.
 
 ## Next actions (keep this list short and current)
 

@@ -33,7 +33,12 @@ pub const entry_margin: f32 = 0.3;
 pub const entry_min_local_y: f64 = -0.2; // native compares against a double constant
 pub const entry_accept_max_y: f32 = 0.001;
 
-/// Native FollowState, one global instance at game+0x430100.
+/// Native FollowState. UNIFIED (2026-06-12): not a standalone global — the
+/// Player's embedded follow sub-struct at player+0x384 (player block at
+/// game+0x42fd7c, so 0x42fd7c + 0x384 = the familiar 0x430100). Accesses at
+/// +0x90/+0x94/+0x99 relative to the follow base are adjacent Player fields
+/// (velocity.y +0x414, velocity.z +0x418, attachment_exit_pending +0x41d);
+/// they are mirrored here until the Player mirror exists.
 pub const FollowState = struct {
     active: bool = false, // +0x00
     /// +0x04 PathTemplate*; mutated by begin (installed_heading_delta)
@@ -42,12 +47,18 @@ pub const FollowState = struct {
     sample_index: i32 = 0, // +0x0c
     progress: f32 = 0.0, // +0x10
     vertical_offset: f32 = 0.0, // +0x14
-    field_18: f32 = 0.0, // +0x18, zeroed on swept entry, meaning unrecovered
-    field_1c: f32 = 0.0, // +0x1c, zeroed on swept entry, meaning unrecovered
-    // +0x20..+0x38 unrecovered; +0x38 Player* lives runner-side
-    squidge_scratch: f32 = 0.0, // +0x90, consumed then zeroed by swept entry
-    update_rate: f32 = 0.0, // +0x94, first arg of the validating follow update
-    live_flag: bool = false, // +0x99, cleared by swept entry
+    /// +0x18, zeroed on swept entry (fresh-entry orientation reset)
+    orientation_a: f32 = 0.0,
+    /// +0x1c = player+0x3a0, the carryover's follow_orientation_b
+    orientation_b: f32 = 0.0,
+    // +0x20..+0x28 orientation_c..e; +0x2c output_position;
+    // +0x38 Player* back-reference — all runner-side
+    /// player.velocity.y (+0x414): squidged then zeroed by swept entry
+    player_velocity_y: f32 = 0.0,
+    /// player.velocity.z (+0x418): path factor of the validating follow update
+    player_velocity_z: f32 = 0.0,
+    /// player.attachment_exit_pending (+0x41d), cleared by swept entry
+    attachment_exit_pending: bool = false,
 };
 
 /// begin_track_attachment_follow_state @ 0x420c40 (matched 94.55%).
@@ -81,7 +92,7 @@ pub const SweptEntryAcceptance = struct {
 /// Backward sample scan with two rotated probes; on acceptance seeds the
 /// shared FollowState exactly like native and reports the player y snap.
 /// The caller must run one follow update in the same tick (native calls
-/// update_track_attachment_follow_state(state.update_rate, ...) here).
+/// update_track_attachment_follow_state(player.velocity.z, ...) here).
 pub fn tryEnterTrackAttachmentFromSweptMotion(
     state: *FollowState,
     template: *Template,
@@ -126,19 +137,21 @@ pub fn tryEnterTrackAttachmentFromSweptMotion(
             .z = (position.z + sweep.z) - world.z,
         });
         if (probe.y <= entry_accept_max_y) {
-            // seed order mirrors the matched source
-            state.live_flag = false;
-            // native: player.start_squidge_y(state.squidge_scratch) — caller-side
+            // seed order mirrors the matched source; the entry squidges with
+            // the incoming fall speed and zeroes it — the exit-lane idiom in
+            // reverse — then resets the orientation accumulators
+            state.attachment_exit_pending = false;
+            // native: player.start_squidge_y(player.velocity.y) — caller-side
             state.active = true;
             state.template_record = template;
             state.source_cell_row = source_cell_row;
             state.sample_index = @intCast(idx);
             state.progress = local.z;
             state.vertical_offset = 0.0;
-            state.squidge_scratch = 0.0;
+            state.player_velocity_y = 0.0;
             template.installed_heading_delta = row_heading_delta;
-            state.field_1c = 0.0;
-            state.field_18 = 0.0;
+            state.orientation_b = 0.0;
+            state.orientation_a = 0.0;
             return .{
                 .sample_index = @intCast(idx),
                 .snap_player_y = local.y,
@@ -170,7 +183,7 @@ fn testTemplate(allocator: std.mem.Allocator, width_cells: u16, samples: []const
 test "begin seeds follow state in native order with raw world height" {
     var template = try testTemplate(std.testing.allocator, 4, &.{.{}});
     defer template.deinit(std.testing.allocator);
-    var state = FollowState{ .live_flag = true };
+    var state = FollowState{ .attachment_exit_pending = true };
     const returned = beginTrackAttachmentFollowState(
         &state,
         &template,
@@ -187,7 +200,7 @@ test "begin seeds follow state in native order with raw world height" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.2 - 0.49), state.vertical_offset, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.125), template.installed_heading_delta, 0.0001);
     // begin does NOT touch the swept-entry-only fields
-    try std.testing.expect(state.live_flag);
+    try std.testing.expect(state.attachment_exit_pending);
 }
 
 test "swept entry truncates odd width spans with integer division" {
@@ -223,10 +236,10 @@ test "swept entry seeds zero vertical offset and reports the player y snap" {
     var template = try testTemplate(std.testing.allocator, 4, &.{sample});
     defer template.deinit(std.testing.allocator);
     var state = FollowState{
-        .live_flag = true,
-        .squidge_scratch = 0.7,
-        .field_18 = 9.0,
-        .field_1c = 9.0,
+        .attachment_exit_pending = true,
+        .player_velocity_y = 0.7,
+        .orientation_a = 9.0,
+        .orientation_b = 9.0,
     };
     const acceptance = tryEnterTrackAttachmentFromSweptMotion(
         &state,
@@ -242,10 +255,10 @@ test "swept entry seeds zero vertical offset and reports the player y snap" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.5), state.progress, 0.0001);
     try std.testing.expectEqual(@as(f32, 0.0), state.vertical_offset);
     try std.testing.expectApproxEqAbs(@as(f32, 0.05), acceptance.snap_player_y, 0.0001);
-    try std.testing.expect(!state.live_flag);
-    try std.testing.expectEqual(@as(f32, 0.0), state.squidge_scratch);
-    try std.testing.expectEqual(@as(f32, 0.0), state.field_18);
-    try std.testing.expectEqual(@as(f32, 0.0), state.field_1c);
+    try std.testing.expect(!state.attachment_exit_pending);
+    try std.testing.expectEqual(@as(f32, 0.0), state.player_velocity_y);
+    try std.testing.expectEqual(@as(f32, 0.0), state.orientation_a);
+    try std.testing.expectEqual(@as(f32, 0.0), state.orientation_b);
     try std.testing.expectApproxEqAbs(@as(f32, 0.25), template.installed_heading_delta, 0.0001);
 }
 

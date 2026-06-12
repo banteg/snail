@@ -79,10 +79,14 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
     return;
 
 seed:
-    FOLLOW->live_flag = 0;
+    // unified layout: these "FollowState" fields are adjacent Player fields
+    // (exit_pending +0x41d, velocity.y +0x414, velocity.z +0x418) — the
+    // follow struct is embedded at player+0x384. The entry squidges with the
+    // incoming fall speed and zeroes it, the exit-lane idiom in reverse.
+    FOLLOW->attachment_exit_pending = 0;
     char* call_base = g_game_base;
     ((Player*)(g_player_block + (int)call_base))->start_squidge_y(
-        ((FollowState*)(g_follow_state_block + (int)call_base))->squidge_scratch);
+        ((FollowState*)(g_follow_state_block + (int)call_base))->player_velocity_y);
     FOLLOW->active = 1;
     FOLLOW->template_record = this;
     FOLLOW->source_cell = cell;
@@ -90,17 +94,17 @@ seed:
     FOLLOW->progress = local.z;
     FOLLOW->vertical_offset = 0;
     PLAYER->position.y = local.y;
-    FOLLOW->squidge_scratch = 0;
+    FOLLOW->player_velocity_y = 0;
     char* player_base = g_game_base;
     ((FollowState*)(g_follow_state_block + (int)player_base))->player =
         (Player*)(g_player_block + (int)player_base);
     FOLLOW->template_record->installed_heading_delta =
         *(float*)(g_row_heading_table + (int)g_game_base + 4 * (61 * cell->get_row_index()));
-    FOLLOW->field_1c = 0;
-    FOLLOW->field_18 = 0;
+    FOLLOW->orientation_b = 0;
+    FOLLOW->orientation_a = 0;
     char* update_base = g_game_base;
     ((FollowState*)(g_follow_state_block + (int)update_base))->update_track_attachment_follow_state(
-        ((FollowState*)(g_follow_state_block + (int)update_base))->update_rate,
+        ((FollowState*)(g_follow_state_block + (int)update_base))->player_velocity_z,
         &((FollowState*)(g_follow_state_block + (int)update_base))->sample_index,
         &((Player*)(g_player_block + (int)update_base))->position);
 }

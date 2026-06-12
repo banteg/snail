@@ -20,12 +20,22 @@ public:
     int unknown_00[26];                    // +0x00
     Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)
     char unknown_74[0x384 - 0x74];
+    // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
+    // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
+    // follow_active = FollowState.active, attachment_record =
+    // FollowState.template_record, follow_orientation_b =
+    // FollowState.orientation_b (+0x1c).
     unsigned char follow_active;           // +0x384
     char unknown_385[3];
     AttachmentRecord* attachment_record;   // +0x388
     char unknown_38c[0x3a0 - 0x38c];
     int follow_orientation_b;              // +0x3a0
-    char unknown_3a4[0x41d - 0x3a4];
+    char unknown_3a4[0x410 - 0x3a4];
+    Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
+    unsigned char boost_one_tick;          // +0x41c — DEAD: only ever written 0
+                                           // (initialize_subgoldy reg-zero +
+                                           // update_subgoldy clear); the boost
+                                           // consumer lane never fires
     unsigned char attachment_exit_pending; // +0x41d
     char unknown_41e[0x424 - 0x41e];
     float attachment_exit_anchor_z;        // +0x424

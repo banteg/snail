@@ -60,7 +60,8 @@ velocity.y per tick (closing the loop on the earlier verify finding).
   threshold float past first_block_row_count; jetpack state 1 adds the
   quantum; the vz drag is GATED on byte +0x1e4 being clear
 - byte +0x41c (adjacent to exit_pending +0x41d): one-tick boost lane —
-  adds the quantum and clears attachment_exit_pending
+  adds the quantum and clears attachment_exit_pending. DEAD: no producer
+  exists in the binary (see the resolved residual below)
 - the pending-exit gate checks row-record flag 0x100, jetpack state 0,
   and no control override before the swept probes
 
@@ -102,9 +103,15 @@ squidge threshold nesting (observationally equivalent), the void-edge
 carryover arm, the death trigger, and the pending-exit trampoline with
 rate*0.3. Three named residuals:
 
-1. the +0x41c one-tick boost lane is absent (acknowledged in the code
-   comment) — its CONSUMER is fully specified (quantum + clear pending)
-   but its PRODUCER is unread; hunt the writer before porting
+1. ~~the +0x41c one-tick boost lane is absent~~ **RESOLVED (2026-06-12):
+   the lane is DEAD CODE in the shipped binary.** Exhaustive scan for the
+   0x41c displacement across the whole image finds exactly one register
+   write (`mov [esi+0x41c], bl` at 0x43aef5 inside initialize_subgoldy's
+   reg-zero mass-clear, bl = 0), the imm-0 clear in update_subgoldy, and
+   three reads (two boost-lane reads here, one in
+   handle_subgoldy_collisions). No absolute references to 0x430198 exist.
+   The byte is never set nonzero — vestigial/cut feature; the port
+   correctly omits it.
 2. native resets the live-matrix rotation to identity in the grounded
    snap; the port only clears the airborne flag (presentation-level)
 3. the trampoline envelope uses a shipped-tile floor-height proxy for
