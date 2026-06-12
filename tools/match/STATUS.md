@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**27/36** functions matched, **1515/4634** bytes.
+**28/37** functions matched, **1581/4700** bytes.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -20,6 +20,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% | msvc6.5 /O2 /G5 /W3 |
+| ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 90/88 | 80.90% | msvc6.5 /O2 /G5 /W3 |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | msvc6.5 /O2 /G5 /W3 |
