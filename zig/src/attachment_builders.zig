@@ -1,4 +1,5 @@
 const std = @import("std");
+const native_matrix_math = @import("gameplay/native/matrix_math.zig");
 const segment = @import("segment.zig");
 
 pub const Vec3 = struct {
@@ -557,15 +558,40 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
     const t = clamped_progress - @as(f32, @floatFromInt(base_index));
     const lhs = template.samples[base_index];
     const rhs = template.samples[base_index + 1];
+    // PORT(verified): native sample-pose interpolation is rotation-space
+    // (linear_interpolate_matrix @ 0x44da90, pinned) with position rows
+    // zeroed before the matrix lerp — see gameplay/native/matrix_math.zig
+    // and the 2026-06-12 invalidation-ledger entry replacing the old
+    // per-basis-vector lerp+normalize model.
+    const interpolated = native_matrix_math.linearInterpolateMatrix(
+        sampleBasisMat(lhs),
+        sampleBasisMat(rhs),
+        t,
+    );
     return .{
         .position = Vec3.lerp(lhs.position, rhs.position, t),
         .center_x = std.math.lerp(lhs.center_x, rhs.center_x, t),
         .lateral_scale = std.math.lerp(lhs.lateral_scale, rhs.lateral_scale, t),
-        .basis_right = Vec3.normalize(Vec3.lerp(lhs.basis_right, rhs.basis_right, t)),
-        .basis_up = Vec3.normalize(Vec3.lerp(lhs.basis_up, rhs.basis_up, t)),
-        .basis_forward = Vec3.normalize(Vec3.lerp(lhs.basis_forward, rhs.basis_forward, t)),
+        .basis_right = fromMathVec(interpolated.right),
+        .basis_up = fromMathVec(interpolated.up),
+        .basis_forward = fromMathVec(interpolated.forward),
         .special_scalar = std.math.lerp(lhs.special_scalar, rhs.special_scalar, t),
     };
+}
+
+fn sampleBasisMat(sample: TemplateSample) native_matrix_math.Mat {
+    // native zeroes the position rows before the rotation lerp; positions
+    // blend separately (memset(&copy.position, 0, 12) in the boss scratch)
+    return .{
+        .right = .{ .x = sample.basis_right.x, .y = sample.basis_right.y, .z = sample.basis_right.z },
+        .up = .{ .x = sample.basis_up.x, .y = sample.basis_up.y, .z = sample.basis_up.z },
+        .forward = .{ .x = sample.basis_forward.x, .y = sample.basis_forward.y, .z = sample.basis_forward.z },
+        .position = .{},
+    };
+}
+
+fn fromMathVec(v: native_matrix_math.Vec3) Vec3 {
+    return .{ .x = v.x, .y = v.y, .z = v.z };
 }
 
 pub fn worldPositionForTemplate(

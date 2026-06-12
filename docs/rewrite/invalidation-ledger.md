@@ -38,9 +38,11 @@ Template:
   `interpolate_matrix_rotation` by alpha, premultiply by from, then
   `orthogonalize_matrix` — with only the translation blended linearly
 - port consequence: rider/camera orientation through curved attachment
-  segments diverges from native between samples (most visible on tight
-  loops); fold the real chain into the cluster-1 mirror's transform lane
-  and re-verify the 18-commit camera churn against it once routed
+  segments diverged from native between samples (most visible on tight
+  loops). RESOLVED 2026-06-12: `worldPoseForTemplate` now routes through
+  `gameplay/native/matrix_math.zig` (rotation-space, position rows zeroed,
+  linear position blend); re-verify the historical camera churn fixes
+  against the corrected interpolation
 
 ## 2026-06-12 - Salt hazard slot layout
 
