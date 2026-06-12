@@ -99,6 +99,30 @@ invalidation ledger.
 5. Finish `update_row_event_display` (78.5%) and
    `project_position_onto_track_attachment` (56%).
 
+## Grid-alignment audit (OPEN, found 2026-06-13)
+
+The lockstep oracle's t≈204 frontier exposed a foundational convention
+split. Native `get_track_grid_cell_at_world_position` maps
+`column = trunc(x + 4)` on the fixed 8-lane gameplay grid (x in [-4, 4),
+cell i spans [i, i+1) — in authored lane-center space that is
+`floor(lane_center)`, with the 8 native columns = authored columns 1..8
+when the authored width is 10). The port maps `floor(lane_center - 0.5)`
+(spans [i+0.5, i+1.5)) — every off-center position in the lower half of
+a lane samples the neighboring column. The recorded replay rides
+off-center constantly, so the port reads void/wall cells (and falls to
+its death) where native cruises on solid track.
+
+A sampling-only fix REGRESSES the oracle: the port's runtime-grid
+CONTENT placement uses the same shifted convention, so build and sample
+are internally consistent — the native-true fix must move both sides
+together (where runtime rows/tiles/flags land in columns AND every
+lane/world-x sampler: laneIndexForLaneCenter, laneIndexAtWorldX,
+trackEntryWorldPosition, floor sampling, collisions). Also re-check the
+"world quantization matches recovered track grid sampling" test —
+its -3.99 -> 0 expectation encodes the shifted convention, not the
+native asm. This audit is the top cluster-2/3 blocker: tile-driven boost
+cadence, the void-edge arm, and collision probes all sample through it.
+
 ## Supporting workstreams
 
 - **Matching queue discipline**: pick targets by (active churn × audit
