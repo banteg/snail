@@ -7,6 +7,15 @@ struct ScoreStats {
     char unknown_000[0x2e4];
 };
 
+struct RunRecord {
+    unsigned char unknown_flag_0 : 1;
+    unsigned char unknown_flag_1 : 1;
+    unsigned char unknown_flag_2 : 1;
+    unsigned char completed : 1;
+    unsigned char unknown_flags_4_7 : 4;
+    char pad[5];
+};
+
 struct SixDwords {
     int values[6];
 };
@@ -62,7 +71,7 @@ public:
     char unknown_fd2b64[0xfd2b7c - 0xfd2b64];
     int completion_count; // +0xfd2b7c
     char unknown_fd2b80[0xfd2b84 - 0xfd2b80];
-    unsigned char run_records[0x1fa3c]; // +0xfd2b84, 6-byte stride
+    RunRecord run_records[0x1fa3c / 6]; // +0xfd2b84, 6-byte stride
     int timer_snapshot_a; // +0xff25c0
     int timer_snapshot_b; // +0xff25c4
     char unknown_ff25c8[0xff25d0 - 0xff25c8];
@@ -78,11 +87,13 @@ void Game::complete_subgame(unsigned char completed)
 {
     score_stats.display_score_stats();
 
-    run_records[replay_update_cursor * 6] |= 8;
+    run_records[replay_update_cursor].completed = 1;
     ++completion_count;
     ++replay_update_cursor;
 
     if ((g_completion_snapshot_flags & 1) == 0) {
+        ResultRecord* record = &result_record;
+
         result_record.score = source_score;
         result_record.stats = source_stats;
         result_record.score_tail = source_score_tail;
@@ -101,14 +112,14 @@ void Game::complete_subgame(unsigned char completed)
             && completed == 1) {
             switch (level_mode) {
             case 0:
-                high_score_bank.add_arcade_high_score(&result_record, level_arg);
+                high_score_bank.add_arcade_high_score(record, level_arg);
                 break;
             case 1:
-                high_score_bank.add_survival_high_score(&result_record);
+                high_score_bank.add_survival_high_score(record);
                 break;
             case 4:
                 high_score_bank.add_time_trial_high_score(
-                    &result_record,
+                    record,
                     level_arg,
                     time_trial_route_active);
                 break;
