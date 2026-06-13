@@ -4428,7 +4428,51 @@ pub const Runner = struct {
 
     fn initialRuntimeHazardWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind, presentation_scale: f32) rl.Vector3 {
         return switch (kind) {
-            .garbage => runtimeCellWorldPosition(preview, row, lane, presentation_scale),
+            // PORT(partial): native `spawn_track_garbage_hazard` seeds the
+            // cell-anchor position then calls `project_position_onto_track_attachment`
+            // before the slot becomes live. That projection matters on
+            // attachment-owned rows because the collision body rides the
+            // path sample instead of the flat runtime cell.
+            .garbage => projectPositionOntoTrackAttachment(preview, runtimeCellWorldPosition(preview, row, lane, presentation_scale)),
+        };
+    }
+
+    fn projectPositionOntoTrackAttachment(preview: *const track.LoadedLevelPreview, position: rl.Vector3) rl.Vector3 {
+        const global_row = preview.rowIndexAtWorldZ(position.z);
+        const built = preview.installedBuiltAttachmentAtRow(global_row) orelse return position;
+        return projectPositionOntoBuiltAttachment(position, built);
+    }
+
+    fn projectPositionOntoBuiltAttachment(position: rl.Vector3, built: *const attachment_builders.BuiltAttachment) rl.Vector3 {
+        const source_row = built.row.global_row;
+        const position_row: usize = @intFromFloat(@floor(@max(position.z, 0.0)));
+        if (position_row < source_row) return position;
+        const sample_index = position_row - source_row;
+        if (sample_index >= built.template.samples.len) return position;
+
+        const sample = built.template.samples[sample_index];
+        if (built.template.spec.family == .nonlinear_42) {
+            const progress: f32 = @floatFromInt(sample_index);
+            const projected = attachment_builders.worldPositionForTemplate(
+                &built.template,
+                progress,
+                source_row,
+                position.x,
+                position.y - attachment_builders.nonlinear_42_rider_height,
+            );
+            return .{
+                .x = projected.x,
+                .y = projected.y,
+                .z = position.z,
+            };
+        }
+
+        const local_x = position.x - sample.center_x;
+        const local_y = position.y;
+        return .{
+            .x = sample.position.x + (local_x * sample.basis_right.x) + (local_y * sample.basis_up.x),
+            .y = sample.position.y + (local_x * sample.basis_right.y) + (local_y * sample.basis_up.y),
+            .z = @as(f32, @floatFromInt(source_row)) + sample.position.z + (local_x * sample.basis_right.z) + (local_y * sample.basis_up.z),
         };
     }
 
@@ -8875,6 +8919,42 @@ test "runtime hazards preserve recovered presentation scalars" {
         0.0001,
     );
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), salt_slot.?.lifetime_step, 0.0001);
+}
+
+test "garbage spawn projection follows native attachment sample transform" {
+    var samples = [_]attachment_builders.TemplateSample{.{
+        .basis_right = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .basis_up = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .basis_forward = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+        .position = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
+        .center_x = 0.25,
+    }};
+    const built = attachment_builders.BuiltAttachment{
+        .row = .{
+            .global_row = 10,
+            .segment_index = 0,
+            .row_index = 10,
+            .raw_name = "TEST",
+            .public_path = .start,
+        },
+        .template = .{
+            .spec = .{ .public_path = .start, .family = .start, .status = .ported },
+            .sample_count = 1,
+            .samples = &samples,
+        },
+    };
+
+    const projected = Runner.projectPositionOntoBuiltAttachment(
+        .{ .x = 0.75, .y = 0.6, .z = 10.0 },
+        &built,
+    );
+
+    // Mirrors project_position_onto_track_attachment: local x is
+    // `position.x - sample.center_x`, local y is the seeded height, and the
+    // row anchor contributes only the source-row z in the Zig scaffold.
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), projected.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.0 + (0.75 - 0.25)), projected.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.0 + 3.0 + 0.6), projected.z, 0.0001);
 }
 
 test "generated garbage applies native mode gates after scalar pass" {
