@@ -63,6 +63,12 @@ Residuals:
   forced an x87 spill at the append call and regressed to 72.12%. A switch-value
   case-0 return and direct state-3 x-sum spelling were also tested and emitted
   identical code; leave them out of the source.
+- 2026-06-13 follow-up rejection pass: commuting the state-2 x scale expression
+  to `random_x * rate` emitted the same 75.56% code, so keep the existing
+  spelling. Splitting the state-3 teardown into separate y and z checks delayed
+  the player load but duplicated the destroy epilogue and regressed to 73.71%.
+  An explicit state-1 source-position pointer alias was also score-neutral at
+  75.56% and did not recover the native copy registers.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
