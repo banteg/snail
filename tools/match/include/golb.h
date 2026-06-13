@@ -34,28 +34,41 @@ public:
     GolbPathSample samples[1];  // +0x04
 };
 
-// path template fields touched by initialize_path_follow_golb; the real
-// PathTemplate layout lives in analysis/headers, only two fields matter here
+// Attachment path template fields touched by Golb path-follow helpers.
 struct GolbPathTemplate {
-    char unknown_00[0x18];
-    float base_z;    // +0x18
+    char unknown_00[0x38];
+    int kind;          // +0x38
+    char unknown_3c[0x44 - 0x3c];
+    int sample_count;  // +0x44
+    char unknown_48[0x50 - 0x48];
+    float width_or_scale; // +0x50
+    int width_cells;      // +0x54
+    void* primary_samples;   // +0x58
+    void* secondary_samples; // +0x5c
+};
+
+struct GolbPathSourceCell {
+    char unknown_00[0x10];
+    Vector3 anchor_position; // +0x10
     char unknown_1c[0x38 - 0x1c];
-    int sample_count; // +0x38
+    GolbPathTemplate* path_template; // +0x38
 };
 
 class GolbPathFollowState {
 public:
     int initialize_path_follow_golb(
-        GolbPathTemplate* path, const Vector3* position, int search_slot); // @ 0x421770
+        GolbPathSourceCell* source_cell,
+        const Vector3* position,
+        int search_slot); // @ 0x421770
 
     unsigned char active;     // +0x00
     char unknown_01[3];
-    int sample_count;         // +0x04, copy of path->sample_count
-    GolbPathTemplate* path;   // +0x08
-    float progress;           // +0x0c
-    float offset_z;           // +0x10, position.z - path->base_z
-    float offset_y;           // +0x14, position.y - 0.49f
-    char unknown_18[0x24 - 0x18];
+    GolbPathTemplate* template_record; // +0x04
+    GolbPathSourceCell* source_cell;   // +0x08
+    int sample_index;          // +0x0c
+    float progress;            // +0x10
+    float vertical_offset;     // +0x14
+    Vector3 output_position;   // +0x18
     int search_slot;          // +0x24
 };
 

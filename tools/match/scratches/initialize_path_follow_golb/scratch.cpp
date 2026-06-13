@@ -2,14 +2,14 @@
 #include "golb.h"
 
 int GolbPathFollowState::initialize_path_follow_golb(
-    GolbPathTemplate* path_template, const Vector3* position, int slot)
+    GolbPathSourceCell* cell, const Vector3* position, int slot)
 {
     active = 1;
-    sample_count = path_template->sample_count;
-    path = path_template;
-    progress = 0.0f;
-    offset_z = position->z - path_template->base_z;
+    template_record = cell->path_template;
+    source_cell = cell;
+    sample_index = 0;
+    progress = position->z - cell->anchor_position.z;
     search_slot = slot;
-    offset_y = position->y - 0.49f;
+    vertical_offset = position->y - 0.49f;
     return slot;
 }

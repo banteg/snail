@@ -81,8 +81,8 @@ function is read (next session).
   a mode: 0/2 -> position adopts the state's output vector (+724/728/732
   — the GolbPathFollowState shares the FollowState output_position
   layout, sibling types confirmed); 1/3 -> keep the raw integrated
-  position. calc_path_length_z needs its own read/match (the last
-  unmatched helper in the golb chain).
+  position. calc_path_length_z now has a structure-complete scratch; use
+  its NOTES for path-follow residuals.
 - not following: position += velocity, then per state:
   - 0 (laser): outside the y band [0, 0.49], vy -= subgame_rate * 0.017
     (the lane the port already has)
