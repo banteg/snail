@@ -150,6 +150,28 @@ through. Two layered causes:
    near t≈208 with different sizes). Next probe: print the port's
    subgame_rate and boost events alongside the back-solved native rate.
 
+## OPEN: z-axis row-convention audit (found 2026-06-13, v6)
+
+`row_position` is a HALF-SHIFTED z (world z = row_position + 0.5 via
+worldPositionForLane) while native has only world z — the z-axis twin of
+the lane-convention audit. The natural-exit import is fixed (7933dbea),
+but other world-z producers/consumers mix spaces: the barrier-hold snap
+applies trunc(z+0.49)-0.5 in row_position space (native formula is world
+space — off by ~0.5 in half the fraction range), the launch branch of
+worldPosition returns z = row_position WITHOUT +0.5, and any
+`row_position = <world z>` assignment needs the -0.5. Audit all
+assignments/conversions by space, like the lane audit.
+
+## OPEN: attachment-phase -0.117 z offset (found 2026-06-13, v6)
+
+Through the whole t=140-143 ride the port's follow output z runs a
+CONSTANT -0.117 below native — an entry-side seed offset (progress seed
+or anchor fraction). Post-exit-fix it is the remaining first-order error:
+it tips a marginal garbage clip at t~153 (one-tick -4% vz) that native
+misses by < 0.117, and the accumulated lag still hides the row-54 wall
+stall. Fix the entry seed and the oracle should clear t=243's stall
+natively — potentially a large ratchet jump.
+
 ## RESOLVED 06-13 (50967917): digit tiles on attachment rows
 
 Native `populate_runtime_track_cells_from_segments` maps parcel digit
