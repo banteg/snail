@@ -105,6 +105,8 @@ These are large but important once the immediate lockstep frontier moves.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `place_parcels_on_track` | `0x4438e0` | 23.40%, structure-first | Parcel RNG stream, placement banks, attachment-row projection. | Continue bank layout and ordered-compaction shape. |
+| `initialize_parcel_set_bucket_pool` | `0x443870` | 100% | Exact positive-count parcel bucket reset before authored parcel placement. | Done; use as the `place_parcels_on_track` bucket stride/count anchor. |
+| `initialize_zero_parcel_bucket_pool` | `0x4438b0` | 100% | Exact zero-parcel fallback bucket reset before filler placement. | Done; use with the positive bucket initializer to separate authored parcel requests from zero-fill rows. |
 | `allocate_track_parcel_slot` | `0x443190` | 100% | Exact free-slot scan for the 50-entry parcel runtime pool. | Done; use as the allocation anchor for `spawn_track_parcel`, row-event delivery parcels, and parcel-placement pool assumptions. |
 | `rebuild_track_runtime_from_segments` | `0x437de0` | 100% | Exact bridge ordering for runtime cell population, parcel placement, tile variant passes, warnings, fringe build, and render-cache refresh. | Done; use as the call-order anchor before expanding `populate_runtime_track_cells_from_segments` or `build_track_fringe_objects`. |
 | `build_track_colours` | `0x435d40` | 100% | Initializes every global track colour bank before runtime cell population. | Done; keep the byte-offset loop and duplicate J/K bank calls as the exact source shape. |
@@ -136,7 +138,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
-  `append_subgame_contact_target`, voice helpers,
+  `append_subgame_contact_target`, `initialize_array_with_constructor`,
+  voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,

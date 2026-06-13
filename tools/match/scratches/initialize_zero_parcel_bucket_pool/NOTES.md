@@ -1,0 +1,11 @@
+# Exact match
+
+`initialize_zero_parcel_bucket_pool` @ 0x4438b0 clears the zero-parcel fallback
+bucket pool at `data_53d190`.
+
+Its source shape mirrors `initialize_parcel_set_bucket_pool`: `0x800` buckets,
+bucket stride `0x20c`, `0x20` slots per bucket, slot stride `0x10`, and the
+real shared callback at `0x408600`.
+
+The exact loop source is a pointer cursor plus explicit `0x800` countdown,
+matching native's `esi` bucket pointer and `edi` counter.
