@@ -99,6 +99,11 @@ void GolbShot::update_golb_ai()
     float speed;
     float deflect_speed;
     float lived;
+    float direction_x;
+    float direction_y;
+    float direction_z;
+    Vec3* new_output;
+    Vec3* new_direction;
     Vec3 probe;
     Vec3 delta;
     Vec3 smoke_position;
@@ -231,9 +236,14 @@ void GolbShot::update_golb_ai()
         spawn_golb_trail_sprite(&trail_b);
     }
 
-    direction.x = output_position.x - previous_output.x;
-    direction.y = output_position.y - previous_output.y;
-    direction.z = output_position.z - previous_output.z;
+    new_output = &output_position;
+    new_direction = &direction;
+    direction_x = new_output->x - previous_output.x;
+    direction_y = new_output->y - previous_output.y;
+    direction_z = new_output->z - previous_output.z;
+    new_direction->x = direction_x;
+    new_direction->y = direction_y;
+    new_direction->z = direction_z;
     if (kind == 2) {
         set_matrix_z_direction(live_matrix, direction.z, &direction);
         rotate_matrix_world_z(live_matrix, spin);

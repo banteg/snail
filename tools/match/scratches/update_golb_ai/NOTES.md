@@ -1,11 +1,11 @@
-# WIP scratch — 24.36%, 638/700 insns (2026-06-13)
+# WIP scratch — 24.53%, 637/700 insns (2026-06-13)
 
-Structure complete and mostly ordered; the 62-insn gap is the original's
+Structure complete and mostly ordered; the 63-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. Next golf pass: transcribe the
-staging flow per block (trail/smoke offsets, direction update, slug
-deflection) and let the early returns duplicate.
+staging flow per block (trail/smoke offsets, slug deflection) and let the
+early returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -26,6 +26,12 @@ shape and improving the scratch to 24.23%. The non-follow integration now uses
 real `Vec3*` movement/current-position locals before the x/y/z position adds,
 improving the scratch to 24.36%, 638/700 instructions.
 
+Direction update follow-up: native stages `output_position - previous_output`
+through named stack floats before copying into the live direction vector. The
+scratch now spells that as explicit `direction_x/y/z` locals plus output and
+direction pointers, improving the scratch from 24.36% to 24.53% and dropping
+the candidate from 638 to 637 instructions.
+
 Measured source-shape rejections:
 
 - replacing the `kind` trail dispatch with a `switch` regressed from 21.84% to
@@ -40,6 +46,14 @@ Measured source-shape rejections:
   explicit x/y/z stores there;
 - staging the non-follow x integration through a `next_x` local emitted the
   same 24.36% code and was reverted as neutral source churn.
+- a label/goto trail dispatch that followed native's zero-then-decrement
+  ladder regressed from 24.36% to 24.22% because the surrounding register and
+  frame shape moved away from native;
+- replacing the accepted direction `direction_x/y/z` locals with a `Vec3`
+  delta local regressed from 24.53% to 24.31%;
+- copying `previous_output` through the accepted output pointer regressed from
+  24.53% to 24.49%, despite shrinking the candidate, so keep the explicit
+  field copy from `output_position`.
 
 Recovered this pass (full field map in scratch.cpp):
 
