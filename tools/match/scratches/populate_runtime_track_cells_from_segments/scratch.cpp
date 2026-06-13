@@ -2,7 +2,7 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 struct Color4f {
-    float set_color_white();
+    void set_color_white();
 };
 
 struct HighScoreEntry {

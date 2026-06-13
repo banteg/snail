@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**155/665** mapped gameplay functions matched, **7901/326119** bytes (**2.4%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**157/665** mapped gameplay functions matched, **8138/326119** bytes (**2.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -56,9 +56,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 |  |
+| ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 |  |
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 |  |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 219/1324 | 7.13% | 0/1324 |  |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 218/1324 | 7.13% | 0/1324 |  |
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 |  |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | 11/11 |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 |  |
@@ -109,6 +110,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | 6/6 |  |
+| ✅ | get_track_skirt_color | 0x442120 | 76 | 25/25 | 100.00% | 25/25 |  |
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 |  |

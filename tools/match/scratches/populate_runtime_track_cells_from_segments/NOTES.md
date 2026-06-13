@@ -7,7 +7,7 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result: 7.13%,
-219/1324 instructions (`tools/match/match.sh
+218/1324 instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -24,6 +24,11 @@ setup before the authored-row/glyph pass:
   3100-row report gate;
 - the 3200-row runtime-row/cell clear pass and random-segment visited-byte
   reset.
+
+2026-06-14 type cleanup: `set_color_white` is now declared as a void mutator,
+matching the exact standalone helper and `build_track_colours`. This removes
+the stale ignored-float signature from the scratch without changing the broad
+7.13% status.
 
 Residuals: the scratch returns before the main authored-row copy and glyph
 normalization switch, so most of the function remains unmatched. The accepted

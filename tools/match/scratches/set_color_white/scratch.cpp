@@ -2,11 +2,11 @@
 
 class Color4f {
 public:
-    float set_color_grayscale(float intensity);
-    float set_color_white();
+    void set_color_grayscale(float intensity);
+    void set_color_white();
 };
 
-float Color4f::set_color_white()
+void Color4f::set_color_white()
 {
-    return set_color_grayscale(1.0f);
+    set_color_grayscale(1.0f);
 }
