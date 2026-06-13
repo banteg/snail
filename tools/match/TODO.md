@@ -89,7 +89,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `populate_runtime_track_cells_from_segments` | `0x435eb0` | NOTES only | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Promote scratch/status entry if not already manifest-backed. |
 | `mark_track_warning_zones` | `0x4354f0` | 32.51% | Warning footprint and hazard suppression. | Match after runtime grid roles settle. |
 | `build_track_fringe_objects` | `0x434be0` | no scratch | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Defer until runtime grid and warning footprints are pinned. |
-| `switch_track_mirror` | `0x435e60` | 91.23% | Runtime mirror state and builder row convention. | Finish if simple; otherwise pin. |
+| `switch_track_mirror` | `0x435e60` | 91.23%, pinned | Runtime mirror state and builder row convention. | Semantics are pinned; remaining duplicate-tail layout residual is documented in NOTES. |
 | `update_row_event_display` | `0x404cf0` | 96.38%, source-shaped | Parcel home anchor, row-event widget, prompt ownership. | Widget-world frame and delivered-count branch now match native shape; remaining residual is bonus sound call setup order and tail padding, documented in NOTES. |
 | `complete_subgame` | `0x438700` | 62.50%, source-shaped | Completion bridge producer. | Continue source-shaping around direct run-record OR, result-record pointer ownership, and independent snapshot store order; semantics are documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |

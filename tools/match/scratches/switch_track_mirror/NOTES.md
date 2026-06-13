@@ -12,3 +12,7 @@ inversion (`coin = !coin`) with streak reset, last coin persists at
 pushes `0x4a4c90`, which resolves to the `"Mirror"` string. This is not an
 RNG state object; the normalizer masked the address either way, so the score
 did not expose the earlier wrong assumption.
+
+2026-06-13 pin audit: focused matcher still verifies 91.23%, 27/30 insns.
+Keep pinned; the remaining diff is only the duplicated native return tail
+versus VC6 cross-jump merging.
