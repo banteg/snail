@@ -1,6 +1,6 @@
-# WIP scratch — 21.84%, 637/700 insns (2026-06-13)
+# WIP scratch — 24.36%, 638/700 insns (2026-06-13)
 
-Structure complete and mostly ordered; the 63-insn gap is the original's
+Structure complete and mostly ordered; the 62-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. Next golf pass: transcribe the
@@ -17,6 +17,15 @@ unused `Vec3 scratch` local was removed after the full matcher stayed at 21.84%,
 destination-pointer spelling for the `calc_path_length_z` output switch was
 tested and rejected because it regressed to 21.04%.
 
+2026-06-13 source-shaping follow-up: the live-state gate is now spelled as a
+one-case `switch`, which matches native's `dec state; jne return` entry shape
+and improves the scratch from 21.84% to 23.07%. The path-follow output switch
+now uses whole-`Vec3` assignment for both the raw position and follow-state
+output cases, matching the native copy-through-source/destination-pointer
+shape and improving the scratch to 24.23%. The non-follow integration now uses
+real `Vec3*` movement/current-position locals before the x/y/z position adds,
+improving the scratch to 24.36%, 638/700 instructions.
+
 Measured source-shape rejections:
 
 - replacing the `kind` trail dispatch with a `switch` regressed from 21.84% to
@@ -26,6 +35,11 @@ Measured source-shape rejections:
   without claiming a match win;
 - assigning `previous_output = output_position` regressed from 21.84% to
   21.71%.
+- re-testing `previous_output = output_position` after the accepted whole-copy
+  output switch still regressed slightly, from 24.36% to 24.35%, so keep the
+  explicit x/y/z stores there;
+- staging the non-follow x integration through a `next_x` local emitted the
+  same 24.36% code and was reverted as neutral source churn.
 
 Recovered this pass (full field map in scratch.cpp):
 

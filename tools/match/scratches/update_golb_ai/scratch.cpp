@@ -112,30 +112,32 @@ void GolbShot::update_golb_ai()
         skip_one_tick = 0;
         return;
     }
-    if (state != 1)
+    switch (state) {
+    case 1:
+        break;
+    default:
         return;
+    }
 
     if (path_follow.active == 1) {
         switch (path_follow.calc_path_length_z(path_factor, &position, &velocity)) {
         case 1:
         case 3:
-            output_position.x = position.x;
-            output_position.y = position.y;
-            output_position.z = position.z;
+            output_position = position;
             break;
         case 0:
         case 2:
-            output_position.x = path_follow.output_position.x;
-            output_position.y = path_follow.output_position.y;
-            output_position.z = path_follow.output_position.z;
+            output_position = path_follow.output_position;
             break;
         default:
             break;
         }
     } else {
-        position.x = velocity.x + position.x;
-        position.y = velocity.y + position.y;
-        position.z = velocity.z + position.z;
+        Vec3* movement = &velocity;
+        Vec3* current_position = &position;
+        current_position->x = movement->x + current_position->x;
+        current_position->y = movement->y + current_position->y;
+        current_position->z = movement->z + current_position->z;
         if (kind) {
             if (kind == 2 && homing_target_active) {
                 float blend = homing_blend_step + homing_blend;
