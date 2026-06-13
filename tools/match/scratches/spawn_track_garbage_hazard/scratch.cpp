@@ -40,11 +40,14 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     DWORD* self_words = (DWORD*)this;
     DWORD* scan;
     scan = self_words + 877682;
-    while (*scan) {
+    while (1) {
+        if (*scan == 0)
+            break;
         ++slot_index;
         scan += 49;
-        if (slot_index >= 50)
-            return (DWORD*)report_warningf("Run Out of Garbage Slots");
+        if (slot_index < 50)
+            continue;
+        return (DWORD*)report_warningf("Run Out of Garbage Slots");
     }
 
     float* slot_base_words = (float*)(self_words + 49 * slot_index);

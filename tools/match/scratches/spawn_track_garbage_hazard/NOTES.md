@@ -33,12 +33,13 @@ Residuals:
   out of `edi`) and regressed the match; leave the remaining frame/staging gap
   alone until stronger source evidence appears.
 - 2026-06-13 source-shaping follow-up: a typed `PositionBits` staging record
-  assigned into the live slot position recovers the native `0x10` stack frame
-  and exact 143/143 instruction count. Current result: 75.52%
+  assigned into the live slot position recovers the native `0x10` stack frame.
+  A source-equivalent `while (1)` pool scan now matches the native loop head
+  and overflow branch shape exactly. Current result: 82.69%, 140/143 insns
   (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
   --full`).
 - Current residuals are source-shape/register issues, not known semantic gaps:
-  the pool scan still compiles as a preloaded first-state test instead of the
-  native memory compare at the top of the scan, and the projection staging
-  still differs in x87 operand order plus x/z local register allocation. Do not
-  force the remaining loop or projection order with dummy volatile locals.
+  projection staging still differs in x87 operand order plus x/z local register
+  allocation, and the slot/player setup block still has different callee-saved
+  register timing. Do not force the remaining projection order with dummy
+  volatile locals.
