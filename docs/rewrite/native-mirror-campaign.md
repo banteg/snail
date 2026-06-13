@@ -113,7 +113,28 @@ rebuild stages (edge variants, fringe promotion, tile-run merge,
 warning zones, fringe objects) run AFTER parcels and any draws they
 make land before gameplay — audit those when their scratches land.
 
-## OPEN: digit tiles on attachment rows (found 2026-06-13, grid-build dossier)
+## Oracle t=253 frontier DECODED (2026-06-13, postal[0] instrumentation)
+
+The divergence is the **row-54 wall-14 stall**: native's ghost stops dead
+at z = 53.500 (t=243-244, the trunc(z+0.49)-0.5 snap) and resumes from
+the window floor (~rate*0.17 = 0.082, rate ≈ 0.48), while the port sails
+through. Two layered causes:
+
+1. ~~The port's wall probe sampled the cell under the rider~~ FIXED
+   06-13 (27c115cf): native probes (x, y, z + 0.49) — a next-row
+   lookahead at the live x.
+2. **REMAINING (the true frontier): the port cruises ~5% slow** —
+   pvz ≈ 0.2085 vs native dz/tick ≈ 0.2197 through t=200-242, an
+   accumulated ~0.44 z-lag, so the port reaches the wall ~2 ticks late,
+   after the recorded lateral leaves the wall lane (x crosses from the
+   wall column into lane 1 at t≈244). Suspects, now measurable: the
+   subgame rate (native back-solves to ≈0.48 from the stall-exit floor;
+   compare the port's rate at z≈53.6 — progress_frac/runtime_row_count
+   parity), or the ring-boost magnitude/timing (both sides show a boost
+   near t≈208 with different sizes). Next probe: print the port's
+   subgame_rate and boost events alongside the back-solved native rate.
+
+## RESOLVED 06-13 (50967917): digit tiles on attachment rows
 
 Native `populate_runtime_track_cells_from_segments` maps parcel digit
 glyphs ('0'-'9') to tile 0x0f (slide family) ONLY on rows without
