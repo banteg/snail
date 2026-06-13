@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 27.21% (`tools/match/match.sh
+- Current matcher result: 27.93% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -35,6 +35,12 @@ Residuals:
 - Native stages several vector copies through stack locals and callee-saved
   registers. The scratch writes most `Vec3` fields directly, so register choice
   and stack frame use differ even where the same fields are covered.
+- The sprite path's position copy now uses whole-`Vec3` assignment, improving
+  local pointer-copy shape. The same source shape was tested and rejected for
+  the velocity-to-direction copy (27.21% -> 21.10%) and previous-output copy
+  (27.21% -> 26.99%) in isolated trials, so keep those as explicit field stores
+  unless a broader source-shape change changes the surrounding register
+  allocation.
 - The kind-specific setup lanes are complete, but vapour/list insertion,
   sprite color copy, and path-search hit handling still differ in local
   ordering. Do not add dummy temporaries solely to force those byte layouts

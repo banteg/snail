@@ -304,9 +304,7 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
         *(DWORD*)((char*)sprite + 0x60) = 1056629064;
         *(DWORD*)((char*)sprite + 0x64) = 1056629064;
         Vec3* sprite_position = (Vec3*)((char*)sprite + 0x48);
-        sprite_position->x = position->x;
-        sprite_position->y = position->y;
-        sprite_position->z = position->z;
+        *sprite_position = *position;
         *(float*)((char*)sprite + 0x7c) =
             ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
         *(float*)((char*)sprite + 0x80) = *(float*)(words[156] + 0x38) * 0.58177644f;
