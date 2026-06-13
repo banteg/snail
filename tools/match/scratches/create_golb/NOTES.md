@@ -40,7 +40,8 @@ Residuals:
   the velocity-to-direction copy (27.21% -> 21.10%) and previous-output copy
   (27.21% -> 26.99%) in isolated trials, so keep those as explicit field stores
   unless a broader source-shape change changes the surrounding register
-  allocation.
+  allocation. After the 28.38% allocation-shape pass, the direction whole-copy
+  was retested and rejected again because it regressed to 15.92%.
 - 2026-06-13 source-shaping follow-up: narrowing the `position`/`velocity`
   pointer lifetimes until after the list/kind setup improves the scratch from
   27.93% to 28.16%, 448/582 instructions. Splitting the `player+0x338` read
