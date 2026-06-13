@@ -42,9 +42,14 @@ Residuals:
   result: 91.87%, 140/143 insns
   (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
   --full`).
+- 2026-06-13 follow-up: spelling the y coordinate as a two-step `staged_y`
+  temporary (`scale`, then `+= cell_y`) recovers the native `fld scale` side of
+  the projection staging block. Current result: 92.58%, 140/143 insns
+  (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
+  --full`).
 - Current residuals are source-shape/register issues, not known semantic gaps:
   projection staging still differs in x87 operand order plus x/z local register
   allocation. Aggregate initialization, y-first staging, destination-pointer
   hoisting, and field-wise live-position copies were tested; only x/z/y staging
-  helped. Do not force the remaining projection order with dummy volatile
-  locals.
+  plus the two-step y temporary helped. Do not force the remaining projection
+  order with dummy volatile locals.
