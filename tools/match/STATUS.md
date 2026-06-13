@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**146/664** mapped gameplay functions matched, **7040/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**147/664** mapped gameplay functions matched, **7245/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -74,6 +74,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% |  |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% |  |
 | 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 41.73% |  |
+| ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% |  |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% |  |

@@ -31,7 +31,7 @@ garbage/projectile divergence.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `update_garbage_hazard` | `0x43f200` | no scratch | Owns garbage active/burst states, smoke cadence, nuke reaction, and the final live body position that collision/projectile probes sample. | Create scratch from checked-in IDA/BN decompile; include state 1/2/3 switch and native helper calls. |
-| `destroy_garbage_hazard` | `0x43f130` | no scratch | Confirms live-list teardown and whether any collision-side or sprite state survives after hit. | Small scratch before `update_garbage_hazard`, so AI can call a named helper. |
+| `destroy_garbage_hazard` | `0x43f130` | 100% | Confirms live-list teardown and whether any collision-side or sprite state survives after hit. | Done; use as the exact kill/unlink reference for `update_garbage_hazard`. |
 | `spawn_track_garbage_hazard` | `0x43da80` | no scratch | Seeds garbage scale, sprite variant, projected body position, active list link, and slot owner. Recent port fix depends on this path. | Scratch after destroy helper; use native slot layout from `runtime-structures.md`. |
 | `append_subgame_contact_target` | `0x415ef0` | unmanifested helper | Called by garbage and slug AI; disassembly shows it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Add manifest entry or scratch with explicit `END=0x415f50`; match as a small helper. |
 | `update_golb_ai` | `0x414820` | 20.79%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Finish staging-local shape and duplicated returns; keep semantics from NOTES authoritative. |
@@ -109,8 +109,9 @@ These are not gameplay owners, but several mirrors depend on them.
 - Exact helpers to keep using as anchors: `search_path_for_golb`,
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
-  `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`, voice helpers,
-  and the small runtime initializer family in `tools/match/STATUS.md`.
+  `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
+  `destroy_garbage_hazard`, voice helpers, and the small runtime initializer
+  family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
   `try_enter_track_attachment_from_swept_motion`,
