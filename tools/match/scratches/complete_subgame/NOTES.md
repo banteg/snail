@@ -90,6 +90,11 @@ Rejected experiments:
   75.28% headline score but worsened the localized snapshot region; delaying
   only `source_arg_tail` until after the first timer snapshot regressed to
   74.16%. Keep the current store order.
+- A follow-up `snail match dump` comparison made the native post-copy schedule
+  explicit (`score_tail`, `level_index_tail`, `difficulty_tail`, `level_arg_tail`,
+  timer A, `source_arg_tail`, timer B), but spelling that order directly in the
+  scratch regressed to 74.16%. Leave this as register-allocation/scheduling
+  residual, not a source-order mandate.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register

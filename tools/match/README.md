@@ -68,9 +68,10 @@ Useful analysis helpers:
 - `uv run snail match idioms --list` shows canned VC6 source-idiom probes.
   Running one or more cases compiles tiny standalone snippets with the same
   compiler flags and prints normalized asm.
-- `uv run snail match types` scans scratch-local `struct`/`class` definitions
-  and reports which names are ready, already covered, or too divergent for
-  shared-header consolidation.
+- `uv run snail match types [Name ...]` scans scratch-local `struct`/`class`
+  definitions and reports which names are ready, already covered, or too
+  divergent for shared-header consolidation. Pass names such as `Game
+  TrackRowCell` to focus a cleanup decision.
 
 The differ (`snail match`, `src/snail/match.py`) normalizes both sides before
 comparing: relocated immediates/displacements in the object and absolute-looking

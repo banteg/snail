@@ -449,6 +449,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Report scratch-local type definitions that are ready or not ready to consolidate.",
     )
     match_types_parser.add_argument(
+        "names",
+        nargs="*",
+        help="Specific type names to report (default: all findings).",
+    )
+    match_types_parser.add_argument(
         "--threshold",
         type=int,
         default=2,
@@ -632,7 +637,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "match" and args.match_command == "types":
-        findings = type_consolidation_findings(threshold=args.threshold)
+        findings = type_consolidation_findings(
+            threshold=args.threshold,
+            names=set(args.names) if args.names else None,
+        )
         if args.json:
             print(
                 json.dumps(

@@ -1156,6 +1156,7 @@ def type_consolidation_findings(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     threshold: int = 2,
+    names: set[str] | None = None,
 ) -> list[TypeConsolidationFinding]:
     if threshold < 1:
         raise ValueError("threshold must be at least 1")
@@ -1166,6 +1167,8 @@ def type_consolidation_findings(
 
     findings: list[TypeConsolidationFinding] = []
     for name, named_definitions in sorted(by_name.items()):
+        if names is not None and name not in names:
+            continue
         scratch_definitions = [definition for definition in named_definitions if not definition.is_header]
         header_definitions = [definition for definition in named_definitions if definition.is_header]
         if len(scratch_definitions) < threshold and not header_definitions:

@@ -224,6 +224,9 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
     assert findings["Divergent"].status == "divergent"
     assert findings["Covered"].status == "covered"
 
+    filtered = type_consolidation_findings(match_root, names={"Shared", "Missing"})
+    assert [finding.name for finding in filtered] == ["Shared"]
+
 
 def test_render_status_rows_includes_prefix() -> None:
     config = ScratchConfig(
