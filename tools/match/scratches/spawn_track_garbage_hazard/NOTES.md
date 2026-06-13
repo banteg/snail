@@ -47,9 +47,13 @@ Residuals:
   the projection staging block. Current result: 92.58%, 140/143 insns
   (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
   --full`).
-- Current residuals are source-shape/register issues, not known semantic gaps:
-  projection staging still differs in x87 operand order plus x/z local register
-  allocation. Aggregate initialization, y-first staging, destination-pointer
-  hoisting, and field-wise live-position copies were tested; only x/z/y staging
-  plus the two-step y temporary helped. Do not force the remaining projection
-  order with dummy volatile locals.
+- 2026-06-13 pin audit: a pointer-to-local staging spelling compiled to the
+  same 92.58% code, while explicit staged-record field copies changed
+  function-wide register ownership and regressed to 52.86%. Revert both forms.
+- Pinned at 92.58%, 140/143 insns. Current residuals are source-shape/register
+  issues, not known semantic gaps: projection staging still differs in x87
+  operand order plus x/z local register allocation. Aggregate initialization,
+  y-first staging, destination-pointer hoisting, pointer-to-local staging, and
+  field-wise live-position copies were tested; only x/z/y staging plus the
+  two-step y temporary helped. Do not force the remaining projection order with
+  dummy volatile locals.
