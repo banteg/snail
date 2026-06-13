@@ -81,6 +81,15 @@ Rejected experiments:
   regressed to 58.76% by moving the index into different registers. Moving the
   `score_tail` assignment before the six-dword stats copy kept the same score
   but stored too early, before `rep movsd`, so keep the current snapshot order.
+- 2026-06-13 post-push tool pass: `snail match diff --regions
+  --region-context 1` confirms the remaining useful clusters are still the
+  byte-OR and result-snapshot schedule. The `sparse-switch-0-1-4` idiom probe
+  matches the high-score dispatch tail, so that switch shape is not the
+  blocker. Reordering the post-copy fields to store `score_tail`,
+  `level_index_tail`, `level_arg_tail`, then `difficulty_tail` kept the same
+  75.28% headline score but worsened the localized snapshot region; delaying
+  only `source_arg_tail` until after the first timer snapshot regressed to
+  74.16%. Keep the current store order.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register
