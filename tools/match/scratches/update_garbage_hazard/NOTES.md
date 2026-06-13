@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 77.16% (`tools/match/match.sh
+- Current matcher result: 77.61% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -65,6 +65,12 @@ Residuals:
   77.16%, 227/224 instructions. The remaining operand order is still reversed
   (`fld world; fadd velocity` instead of `fld velocity; fadd world`), but the
   broad block layout is closer.
+- 2026-06-13 source-shaping follow-up 6: the state-3 teardown check now uses
+  `player->interaction_max_z` directly in the short-circuit condition and
+  declares the smoke-call `owner` local after the destroy checks. This delays
+  the `player` load until after the y `< -10` test, matching the native
+  short-circuit shape without duplicating the destroy epilogue, and improves
+  the scratch from 77.16% to 77.61%, 227/224 instructions.
 - A direct-memory side-bias rewrite was tested because native reloads
   `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
   store and regressed the scratch to 72.09%; keep the current local

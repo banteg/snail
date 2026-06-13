@@ -177,10 +177,10 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
                 * -0.0099999998f;
             velocity.y = gravity_step + velocity.y;
 
-            Player* owner = player;
-            if (world_position.y < -10.0f || world_position.z < owner->interaction_max_z)
+            if (world_position.y < -10.0f || world_position.z < player->interaction_max_z)
                 return destroy_garbage_hazard();
 
+            Player* owner = player;
             float next_smoke_timer = smoke_timer_step + smoke_timer;
             smoke_timer = next_smoke_timer;
             if (next_smoke_timer > 1.0f) {
