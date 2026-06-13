@@ -93,7 +93,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `update_row_event_display` | `0x404cf0` | 96.38%, pinned | Parcel home anchor, row-event widget, prompt ownership. | Semantics are pinned; the only accepted residual is bonus sound thiscall setup order plus tail padding noise, documented in NOTES. |
 | `complete_subgame` | `0x438700` | 75.28%, source-shaped | Completion bridge producer. | Region diff isolated the byte-OR and result-snapshot residuals; source-ordering improved the snapshot block, but continue only around native's direct memory OR and register allocation documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |
-| `update_frontend_state_machine` | `0x4107d0` | no scratch | Frontend/subgame bridge and return owners. | Defer; match as bridge cluster with `update_subgame`. |
+| `update_frontend_state_machine` | `0x4107d0` | 47.11%, structure-first | Frontend/subgame bridge and return owners. | First scratch now covers states 10/11, 26/27/28, intro/menu/high-score/thanks/help dispatch, and the tail camera snapshot. Continue around jump-table body ordering, `data_4df904` reload/register ownership, and the camera x `fld/fstp` residual documented in NOTES. |
 
 ### P5 - Math Helpers That Block Cleaner Mirrors
 
