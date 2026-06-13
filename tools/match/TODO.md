@@ -45,7 +45,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `update_subgoldy` | `0x43b120` | 72.30%, structure complete | Master player motion, replay codec, fire lane, completion handoff, attachment-exit clears. | Continue slice-first: grounded/trampoline clear lanes, projectile/replay consumers, then residual register-shape cleanup. |
-| `play_movement_state_sound` | `0x43afd0` | 89.13% | Shared RNG draw and fire/movement sound variant cadence. | Finish register/branch residuals; preserve the variant-draw semantics already routed. |
+| `play_movement_state_sound` | `0x43afd0` | 89.13%, pinned | Shared RNG draw and fire/movement sound variant cadence. | Semantics are pinned; remaining clamp-tail duplication is documented in NOTES. |
 | `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |
 | `try_enter_track_attachment_from_swept_motion` | `0x42c770` | 79.80%, pinned | Swept re-entry gates and player y/lateral seed. | Finish dual-slot source-shape lead in NOTES; do not disturb pinned semantics. |
 | `update_track_attachment_follow_state` | `0x420cb0` | 46.44%, semantics pinned | Attachment stepping, natural end, side exit, supertramp launch. | Golf only with source-plausible staging; do not regress routed mirror semantics. |

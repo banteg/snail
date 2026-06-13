@@ -12,3 +12,10 @@ structured `else if`, two independent `if`s, explicit `goto play_scaled`,
 nested `else`, ternary clamp, do/break clamp, sentinel-initialized `sound_id`,
 and a raw-double lower-bound spelling. Avoid using volatile, fake symbols, or
 asm to force this tail merge.
+
+2026-06-13 pin audit: focused matcher still verifies 89.13%, 96/88 insns.
+Semantics are pinned: movement flag buckets, RNG variant draws,
+camera-minus-player vector staging, normalized distance volume, and both audio
+call paths match the recovered behavior. Leave the remaining residual as
+clamp-tail control-flow duplication unless a new source-shaped VC6 tail form
+appears.
