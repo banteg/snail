@@ -90,3 +90,13 @@ per the established precedents. Per campaign rules this qualifies as
 pinned: the FollowState contract is fully recovered and the mirror
 transcription can proceed. Golf leads for a future polish pass are in
 the iteration notes above.
+
+## Tooling recheck (2026-06-13)
+
+Native loads `ecx = template_record` immediately before the kind-42 transform
+helper call, matching the member-call evidence seen in
+`project_position_onto_track_attachment` and `calc_path_length_z`. Rewriting
+this scratch's helper declaration as a `PathTemplate` member still regressed
+the focused match from 46.44% to 44.87%, mostly by perturbing the already
+fragile stack/layout alignment. Treat the convention evidence as a future
+shared-type consolidation lead, not a bulk scratch rewrite.

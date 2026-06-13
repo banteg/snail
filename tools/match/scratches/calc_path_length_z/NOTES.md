@@ -93,3 +93,10 @@ emitted the same 40.58% code and was reverted as neutral source churn.
 Rejected source-shape trial: narrowing the `shot_position` pointer alias to
 only the side-exit copy still regressed the accepted basis-copy shape from
 40.58% to 39.38%, so keep the explicit side-exit x/y/z stores.
+
+Rejected source-shape trial: native loads `ecx = template_record` immediately
+before the kind-42 transform helper call, matching the member-call evidence
+seen in `project_position_onto_track_attachment`, but changing this scratch's
+helper declaration to a `PathTemplate` member regressed global alignment from
+40.58% to 35.21%. The callsite convention evidence is real, but this large
+scratch needs a more isolated consolidation than a direct local rewrite.

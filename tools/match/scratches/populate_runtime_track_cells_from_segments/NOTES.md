@@ -1,9 +1,35 @@
-# Dossier — scratch not yet written (5056 bytes, the runtime grid build)
+# populate_runtime_track_cells_from_segments
 
 populate_runtime_track_cells_from_segments @ 0x435eb0. The function that
 DEFINES the grid conventions the 2026-06-13 grid-alignment audit hinges
-on. Read complete 2026-06-13; scratch deferred (the glyph switch makes
-it large but mechanical).
+on.
+
+## Scratch status
+
+Promoted to a matcher scratch on 2026-06-13. Current result: 7.13%,
+219/1324 instructions (`tools/match/match.sh
+tools/match/scratches/populate_runtime_track_cells_from_segments --regions
+--max-regions 8`).
+
+The first scratch is intentionally structure-first and covers the deterministic
+setup before the authored-row/glyph pass:
+
+- runtime build seed selection from selected-record replay, mode 4/7 zero seed,
+  or the `"Seed"` RNG draw;
+- mode 0/1/4 high-score entry initialization;
+- replay cursor reset, subgame rebuild selector 3 -> 1, visible life stock
+  reset to 3, score-bucket/timer clears, RNG seeding, and texture-set select;
+- row-count seeding for modes 0/1/3/4/7, including challenge difficulty
+  scaling, non-random segment row-count summing, completion row start, and the
+  3100-row report gate;
+- the 3200-row runtime-row/cell clear pass and random-segment visited-byte
+  reset.
+
+Residuals: the scratch returns before the main authored-row copy and glyph
+normalization switch, so most of the function remains unmatched. The accepted
+source should expand next at the row-selection loop beginning after the visited
+reset, then the row flag copy, and only then the 8-lane glyph switch. Do not
+try to pad the frame or hide the missing switch with dummy work.
 
 ## Build sequence
 

@@ -86,7 +86,7 @@ These are large but important once the immediate lockstep frontier moves.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `place_parcels_on_track` | `0x4438e0` | 23.40%, structure-first | Parcel RNG stream, placement banks, attachment-row projection. | Continue bank layout and ordered-compaction shape. |
-| `populate_runtime_track_cells_from_segments` | `0x435eb0` | NOTES only | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Promote scratch/status entry if not already manifest-backed. |
+| `populate_runtime_track_cells_from_segments` | `0x435eb0` | 7.13%, structure-first | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Scratch now covers setup, row-count seeding, clear pass, and visited reset; expand next through row-selection/row-flag copy before tackling the glyph switch. |
 | `mark_track_warning_zones` | `0x4354f0` | 32.51%, pinned | Warning footprint and hazard suppression. | Semantics are pinned; tile seed set, 6x2 footprint, bounds, and register-layout residuals are documented in NOTES. |
 | `build_track_fringe_objects` | `0x434be0` | no scratch | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Defer until runtime grid and warning footprints are pinned. |
 | `switch_track_mirror` | `0x435e60` | 91.23%, pinned | Runtime mirror state and builder row convention. | Semantics are pinned; remaining duplicate-tail layout residual is documented in NOTES. |
