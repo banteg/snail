@@ -59,7 +59,7 @@ These should turn current verified port behavior into matched proof.
 |---|---:|---|---|---|
 | `handle_subgoldy_collisions` | `0x444cf0` | 44.58%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Proof-polish: local staging, mask register reuse, per-loop delta/probe shape. |
 | `wall2_emitter_maybe_fire_sub_lazer` | `0x439d50` | 40.43% | Wall2 fire cadence and 4% RNG gate. | RNG tags are documented; continue cadence locals and emitter-origin call shape. |
-| `spawn_sub_lazer_projectile` | `0x441670` | 98.41% | SubLazer body/sprite spawn and y stagger. | Finish small residual if source remains plausible; otherwise pin. |
+| `spawn_sub_lazer_projectile` | `0x441670` | 98.41%, pinned | SubLazer body/sprite spawn and y stagger. | Semantics and instruction count are pinned; remaining residual is store scheduling around velocity z versus bob phase, documented in NOTES. |
 | `update_sub_lazer_projectile` | `0x43efb0` | 41.73% | SubLazer body flight, nested sprite bob, teardown. | Use recovered slot layout; separate body position from visual bob. |
 | `shoot_subgoldy` | `0x441ad0` | 49.46% | Weapon/sub-lazer spawn callsite and audio cue. | Match after sub-lazer pool helpers stabilize. |
 | `spawn_salt_hazard` | `0x441560` | 74.07% | Salt slot layout, velocity byte-poke bug, yaw RNG. | Finish source shape if possible; keep OB notes explicit. |
