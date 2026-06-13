@@ -93,7 +93,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `update_row_event_display` | `0x404cf0` | 96.38%, pinned | Parcel home anchor, row-event widget, prompt ownership. | Semantics are pinned; the only accepted residual is bonus sound thiscall setup order plus tail padding noise, documented in NOTES. |
 | `complete_subgame` | `0x438700` | 75.28%, source-shaped | Completion bridge producer. | Region diff isolated the byte-OR and result-snapshot residuals; source-ordering improved the snapshot block, but continue only around native's direct memory OR and register allocation documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |
-| `update_frontend_state_machine` | `0x4107d0` | 48.50%, structure-first | Frontend/subgame bridge and return owners. | Tail camera snapshot now matches the x87/copy/source-pointer shape; continue around jump-table body ordering and `data_4df904` reload/register ownership documented in NOTES. |
+| `update_frontend_state_machine` | `0x4107d0` | 58.12%, structure-first | Frontend/subgame bridge and return owners. | Block-local game owners now recover the native `lea ecx, [base+offset]` call shape for most dispatch bodies; continue only around register allocation, shared-exit label distance, and jump-table/data extent residuals documented in NOTES. |
 
 ### P5 - Math Helpers That Block Cleaner Mirrors
 

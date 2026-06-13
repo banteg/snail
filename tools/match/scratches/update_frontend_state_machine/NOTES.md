@@ -1,7 +1,7 @@
 # update_frontend_state_machine @ 0x4107d0
 
-First source-shaped bridge scratch: 48.50% against the default extent
-(`194` target insns, `239` candidate insns), with prefix `12/194`. It covers
+First source-shaped bridge scratch: 58.12% against the default extent
+(`194` target insns, `243` candidate insns), with prefix `12/194`. It covers
 the recovered front-end dispatch states, the subgame handoff/return opcodes at
 states 10/11 and 26/27/28, and the tail camera transform snapshot/invert.
 
@@ -16,9 +16,11 @@ Residuals are intentionally left to the matcher rather than papered over:
   semantic state grouping from IDA/Binary Ninja. Region output shows most of
   the remaining loss is jump-table target placement plus shared exit-label
   distance, not missing states.
-- `data_4df904` reload ownership differs in many call blocks: native often
-  loads the game base into `eax`/`edx` and then uses `lea ecx, [reg+offset]`,
-  while the current typed member calls usually lower to `mov ecx; add ecx`.
+- Most `data_4df904` call owners now use block-local `GameRoot*` temporaries,
+  recovering the native `mov base; lea ecx, [base+offset]` member-call shape
+  without going back to preprocessor offset helpers. Remaining differences are
+  mostly `eax` versus `edx` owner-register choices and shared-exit label
+  distances.
 - The state-20 high-score block is source-shaped with a local `GameRoot*`
   because the native code loads one base pointer and reads `+0x314/+0x310`
   before calling `initialize_high_score_screen`.
