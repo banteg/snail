@@ -83,7 +83,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 |  |
 | 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 41.73% | 6/127 |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 |  |
-| 🚧 | update_garbage_hazard | 0x43f200 | 796 | 218/224 | 78.73% | 0/224 |  |
+| 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | 22/22 |  |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | 4/4 |  |

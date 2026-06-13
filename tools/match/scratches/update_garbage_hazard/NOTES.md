@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 78.73% (`tools/match/match.sh
+- Current matcher result: 80.00% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -119,6 +119,11 @@ Residuals:
   removes untargeted bytes after final `ret` instructions, so the same source
   now reports 78.73%, 218/224 instructions. This is a measurement correction,
   not a source-shape change.
+- 2026-06-14 target-extent rebaseline: the native function returns at
+  `0x43f508`, but the next curated symbol is `0x43f520`, so the default target
+  extent included non-function bytes after the final `ret`. `scratch.conf` now
+  caps the function at `0x43f509`, improving the honest measurement to 80.00%,
+  218/217 instructions without changing source behavior.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
