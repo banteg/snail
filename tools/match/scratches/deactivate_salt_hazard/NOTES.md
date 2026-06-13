@@ -9,8 +9,8 @@ iteration-guard (0x40) error second, unlink last.
 
 Semantics fully pinned:
 
-- guard bits on +0x04: 0x200 = linked (error "List REMOVE" when clear),
-  0x40 = iteration guard (error "List REMOVEnext" when set); both error
+- guard bits on +0x04: 0x200 = linked (error "List remove" when clear),
+  0x40 = iteration guard (error "List remove NEXTBOD" when set); both error
   paths still clear state (+0x80)
 - unlink: next->prev = prev; prev ? prev->next = next : anchor->first
   (+0x04 of the anchor at game+0x5a8) = next

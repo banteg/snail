@@ -94,12 +94,12 @@ void SaltHazardSlot::update_salt_hazard()
         SaltListAnchor* anchor = &g_game->salt_free_anchor;
         int flags = list_flags;
         if ((flags & 0x200) == 0) {
-            report_errorf("List REMOVE");
+            report_errorf("List remove");
             state = 0;
             return;
         }
         if ((flags & 0x40) != 0) {
-            report_errorf("List REMOVEnext");
+            report_errorf("List remove NEXTBOD");
             state = 0;
             return;
         }

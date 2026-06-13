@@ -19,7 +19,7 @@ extern Game* volatile g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 struct SaltHazardSlot {
-    void deactivate_salt_hazard();
+    int deactivate_salt_hazard();
 
     int unknown_00;
     unsigned int list_flags;   // +0x04, 0x200 = linked, 0x40 = iteration guard
@@ -30,19 +30,19 @@ struct SaltHazardSlot {
     char unknown_84[0x98 - 0x84];
 };
 
-void SaltHazardSlot::deactivate_salt_hazard()
+int SaltHazardSlot::deactivate_salt_hazard()
 {
     SaltListAnchor* anchor = &g_game->salt_free_anchor;
     int flags = list_flags;
     if ((flags & 0x200) == 0) {
-        report_errorf("List REMOVE");
+        int result = report_errorf("List remove");
         state = 0;
-        return;
+        return result;
     }
     if ((flags & 0x40) != 0) {
-        report_errorf("List REMOVEnext");
+        int result = report_errorf("List remove NEXTBOD");
         state = 0;
-        return;
+        return result;
     }
     if (list_next)
         list_next->list_prev = list_prev;
@@ -56,4 +56,5 @@ void SaltHazardSlot::deactivate_salt_hazard()
     state = 0;
     updated &= ~0x200;
     list_flags = updated;
+    return updated;
 }

@@ -34,9 +34,8 @@ struct SaltHazardSlot {
     int state;                  // +0x80, 0 free / 1 live
     char unknown_84[0x8c - 0x84];
     float velocity_x;           // +0x8c, zeroed at spawn
-    float speed;                // +0x90, game rate / 30
-    unsigned char armed;        // +0x94 byte flag (not a velocity lane)
-    char unknown_95[0x98 - 0x95];
+    float velocity_y;           // +0x90, game rate / 30
+    float velocity_z;           // +0x94 low byte poked to 1 at spawn
 };
 
 struct Game {
@@ -73,13 +72,13 @@ found:
     SaltHazardSlot* slot = &slots[index];
     slot->state = 1;
     slot->velocity_x = 0.0f;
-    slot->speed = g_game->salt_speed_base * 0.033333335f;
+    slot->velocity_y = g_game->salt_speed_base * 0.033333335f;
     Vector3* spawn_position = (Vector3*)&slot->live_matrix.position;
     *spawn_position = *position;
     slot->live_matrix.set_matrix_rotation_identity();
     float angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
     slot->live_matrix.rotate_matrix_world_y(angle);
-    slot->armed = 1;
+    *(unsigned char*)&slot->velocity_z = 1;
     SaltHazardSlot* head = &g_game->salt_list_head;
     if ((slot->list_flags & 0x200) != 0)
         return report_errorf("List ADDafter");

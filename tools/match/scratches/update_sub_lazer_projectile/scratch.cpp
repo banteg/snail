@@ -70,12 +70,12 @@ void SubLazerSlot::update_sub_lazer_projectile()
             state = 0;
             FreeAnchor* anchor = &g_game->free_anchor;
             if ((flags & 0x200) == 0) {
-                report_errorf("List REMOVE");
+                report_errorf("List remove");
                 kill_sprite(sprite);
                 return;
             }
             if ((flags & 0x40) != 0) {
-                report_errorf("List REMOVEnext");
+                report_errorf("List remove NEXTBOD");
                 kill_sprite(sprite);
                 return;
             }
@@ -100,12 +100,12 @@ void SubLazerSlot::update_sub_lazer_projectile()
         state = 0;
         FreeAnchor* anchor = &g_game->free_anchor;
         if ((flags & 0x200) == 0) {
-            report_errorf("List REMOVE");
+            report_errorf("List remove");
             kill_sprite(sprite);
             return;
         }
         if ((flags & 0x40) != 0) {
-            report_errorf("List REMOVEnext");
+            report_errorf("List remove NEXTBOD");
             kill_sprite(sprite);
             return;
         }
