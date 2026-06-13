@@ -1,12 +1,12 @@
-# WIP scratch — 27.84%, 636/700 insns (2026-06-14)
+# WIP scratch — 28.10%, 638/700 insns (2026-06-14)
 
-Structure complete and mostly ordered; the 64-insn gap is the original's
+Structure complete and mostly ordered; the 62-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. The frame mismatch is now `0x70` native
 versus `0x64` candidate after recovering homing vector temporaries. Next golf
-pass: transcribe the staging flow per block (trail/smoke offsets, reflected
-velocity store order) and let the early returns duplicate.
+pass: transcribe the staging flow per block (trail/smoke offsets and any
+remaining stack-vector copies) and let the early returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -61,6 +61,11 @@ The scratch now spells those as `pull_delta` and `kept_velocity` `Vec3` locals,
 improving the scratch from 27.05% to 27.84% and growing the candidate from
 631 to 636 instructions without changing the recovered homing formula.
 
+Reflected velocity follow-up: native stages slug deflection through a stack
+reflected vector before copying it into velocity. The scratch now spells this
+as `reflected_velocity`, improving from 27.84% to 28.10%, 638/700 instructions,
+without changing horizontal slug deflection.
+
 Tooling cleanup note: `uv run snail match types Game Player PathFollow
 TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 `TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
@@ -91,14 +96,18 @@ Measured source-shape rejections:
   24.53% to 24.49%, despite shrinking the candidate, so keep the explicit
   field copy from `output_position`.
 - staging reflected x/z through `deflected_velocity`/`reflect_x`/`zero_y`
-  after the accepted y-zero regressed from 24.66% to 24.40%, so keep the
-  direct velocity stores.
+  after the accepted y-zero regressed from 24.66% to 24.40%; that scalar
+  spelling was not the native stack-vector shape.
 - re-testing trail/smoke offsets as x-direct plus y/z staged locals after the
   27.05% slug-dispatch change emitted identical code, so the symmetric
   `half/third/deep` locals stay as clearer source.
 - re-testing the trail/vapour/smoke dispatch as a `switch` ordered `case 2`,
   `case 1`, `case 0` recovered the tempting zero/one/two ladder locally but
   regressed the scratch from 27.05% to 26.75%; keep the current `if` chain.
+- assigning `velocity = reflected_velocity` for the slug bounce regressed from
+  28.10% to 27.72%, so keep explicit field copies.
+- reordering reflected velocity to mirror IDA's y/x/z/source schedule regressed
+  to 27.84%, so keep x/y/z local staging followed by explicit velocity stores.
 
 Recovered this pass (full field map in scratch.cpp):
 

@@ -108,6 +108,7 @@ void GolbShot::update_golb_ai()
     Vec3 delta;
     Vec3 pull_delta;
     Vec3 kept_velocity;
+    Vec3 reflected_velocity;
     Vec3 smoke_position;
     Vec3 trail_a;
     Vec3 trail_b;
@@ -319,10 +320,12 @@ slugs:
                         deflect_speed = normalize_vector(&velocity);
                         probe.y = 0.0f;
                         normalize_vector(&probe);
-                        velocity.x = -(deflect_speed * probe.x);
-                        float reflect_z = deflect_speed * probe.z;
-                        velocity.y = 0.0f;
-                        velocity.z = -reflect_z;
+                        reflected_velocity.x = -(deflect_speed * probe.x);
+                        reflected_velocity.y = 0.0f;
+                        reflected_velocity.z = -(deflect_speed * probe.z);
+                        velocity.x = reflected_velocity.x;
+                        velocity.y = reflected_velocity.y;
+                        velocity.z = reflected_velocity.z;
                         if (kind == 1) {
                             kill_golb();
                             spawn_golb_impact_sprite(&output_position);
