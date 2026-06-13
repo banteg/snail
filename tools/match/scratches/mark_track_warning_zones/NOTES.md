@@ -1,4 +1,4 @@
-# WIP — 32.51%, register allocation diverges
+# Pinned — 32.51%, register allocation diverges
 
 Control flow, constants, and operations all line up in the diff; our
 build moves `this` out of ecx and spills differently, so the score is
@@ -13,3 +13,7 @@ read and are what blind spot #6 needs:
 - effect: `cells[idx].flags |= 0x18`
 - cell bank: game + 0x3bfb04, stride 84 (0x54), tile byte +0x00,
   flags dword +0x04, 8 cells per row, row-major contiguous walk
+
+2026-06-13 pin audit: focused matcher still verifies 32.51%, 104/99 insns.
+Keep pinned at semantics; the remaining work would be layout/register golf
+around the nested footprint loops.
