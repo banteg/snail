@@ -124,6 +124,14 @@ Residuals:
   extent included non-function bytes after the final `ret`. `scratch.conf` now
   caps the function at `0x43f509`, improving the honest measurement to 80.00%,
   218/217 instructions without changing source behavior.
+- 2026-06-14 pin recheck: the localized diff still isolates the same residual
+  classes after the extent fix: native uses a `0x1c` frame versus the
+  candidate `0x14` frame, sends state 0 through the shared jump-table epilogue,
+  and keeps different register/x87 ownership for the state-1 vector copy,
+  state-2 random velocity staging, side-bias compare, and state-3 x add. The
+  obvious source spellings for those areas are already rejected above, so treat
+  this scratch as pinned unless new original-source or callsite evidence
+  explains the frame/layout gap.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
@@ -134,5 +142,5 @@ Residuals:
   copies let VC6 choose close but not identical registers in case 1.
 - Collision-side x bias, gravity update, smoke timer, and final roll update are
   covered, but still differ in x87 scheduling, comparison temporary width, and
-  register selection. Do not force these with dummy locals or opaque casts
-  without stronger original-source evidence.
+  register selection. Do not force these with dummy locals, raw offset macros,
+  volatile, or opaque casts without stronger original-source evidence.

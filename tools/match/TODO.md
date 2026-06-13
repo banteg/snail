@@ -33,7 +33,7 @@ garbage/projectile divergence.
 
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
-| `update_garbage_hazard` | `0x43f200` | 80.00%, source-shaped | Owns garbage active/burst states, smoke cadence, nuke reaction, and the final live body position that collision/projectile probes sample. | Target extent is capped at the native `ret`; continue only around the `0x1c` frame gap, random velocity stack slots, side-bias compare/reload shape, and case-1 vector-copy register order documented in NOTES. |
+| `update_garbage_hazard` | `0x43f200` | 80.00%, pinned | Owns garbage active/burst states, smoke cadence, nuke reaction, and the final live body position that collision/projectile probes sample. | Semantics and target extent are pinned; remaining frame, jump-table epilogue, random velocity stack-slot, side-bias compare/reload, and vector-copy register residuals are documented in NOTES. |
 | `destroy_garbage_hazard` | `0x43f130` | 100% | Confirms live-list teardown and whether any collision-side or sprite state survives after hit. | Done; use as the exact kill/unlink reference for `update_garbage_hazard`. |
 | `spawn_track_garbage_hazard` | `0x43da80` | 92.58%, pinned | Seeds garbage scale, sprite variant, projected body position, active list link, and slot owner. Recent port fix depends on this path. | Semantics are pinned; remaining projection x87/register residual and rejected variants are documented in NOTES. |
 | `append_subgame_contact_target` | `0x415ef0` | 100% | Called by garbage and slug AI; exact match confirms it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Done; use as the exact contact-target registry helper for garbage and slug AI. |
