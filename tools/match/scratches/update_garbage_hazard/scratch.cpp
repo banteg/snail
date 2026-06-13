@@ -2,8 +2,6 @@
 // cRSubGarbage::AI(): hover/contact registration, nuke/contact burst setup,
 // burst integration, smoke cadence, teardown, and final sprite roll update.
 
-typedef unsigned int DWORD;
-
 struct Vec3 {
     float x;
     float y;
@@ -88,11 +86,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         case 1: {
             Vec3* position = &world_position;
-            DWORD* sprite_position = (DWORD*)&sprite->position;
-            DWORD* source_position = (DWORD*)position;
-            sprite_position[0] = source_position[0];
-            sprite_position[1] = source_position[1];
-            sprite_position[2] = source_position[2];
+            sprite->position = *position;
 
             Player* owner = player;
             if (world_position.z < owner->interaction_max_z)
@@ -101,10 +95,10 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             if (owner->nuke_effect_progress > 0.0f) {
                 float x = position->x;
                 state = 2;
-                if (x <= 0.0f)
-                    collision_side = 2;
-                else
+                if (x > 0.0f)
                     collision_side = 1;
+                else
+                    collision_side = 2;
                 owner->add_subgoldy_score(0, 0);
             }
 
@@ -124,13 +118,12 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             Game* rate_game = game;
             Vec3* burst_velocity = &velocity;
             double rate = rate_game->subgame_rate;
+            Vec3 staged_velocity;
 
-            float scaled_x = (float)(rate * random_x);
-            velocity.x = scaled_x;
-            float scaled_y = (float)(random_y * rate);
-            velocity.y = scaled_y;
-            float scaled_z = (float)(random_z * rate);
-            velocity.z = scaled_z;
+            staged_velocity.x = (float)(rate * random_x);
+            staged_velocity.y = (float)(random_y * rate);
+            staged_velocity.z = (float)(random_z * rate);
+            *burst_velocity = staged_velocity;
 
             int side = collision_side;
             if (side == 1) {
@@ -146,10 +139,13 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             }
 
             int sign;
-            if (burst_velocity->x >= 0.0f)
-                sign = burst_velocity->x != 0.0f;
-            else
+            if (burst_velocity->x < 0.0f) {
                 sign = -1;
+            } else {
+                sign = 0;
+                if (burst_velocity->x != 0.0f)
+                    sign = 1;
+            }
             unknown_a4 = 0;
             burst_velocity->x =
                 (float)sign * 0.2f * rate_game->subgame_rate + burst_velocity->x;
@@ -160,20 +156,17 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             // fall through
 
         case 3: {
-            world_position.x = velocity.x + world_position.x;
-            world_position.y = velocity.y + world_position.y;
-            world_position.z = velocity.z + world_position.z;
+            world_position.x += velocity.x;
+            world_position.y += velocity.y;
+            world_position.z += velocity.z;
 
-            DWORD* sprite_position = (DWORD*)&sprite->position;
-            DWORD* source_position = (DWORD*)&world_position;
-            sprite_position[0] = source_position[0];
-            sprite_position[1] = source_position[1];
-            sprite_position[2] = source_position[2];
+            sprite->position = world_position;
 
             Game* owner_game = game;
-            velocity.y += owner_game->subgame_rate
+            float gravity_step = owner_game->subgame_rate
                 * owner_game->subgame_rate
                 * -0.0099999998f;
+            velocity.y = gravity_step + velocity.y;
 
             Player* owner = player;
             if (world_position.y < -10.0f || world_position.z < owner->interaction_max_z)
