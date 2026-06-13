@@ -154,8 +154,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             signed_push *= rate_game->subgame_rate;
             unknown_a4 = 0;
             burst_velocity->x = signed_push + burst_velocity->x;
-            burst_rate_step = rate_game->subgame_rate * 0.0083333338f;
+            float rate_step = rate_game->subgame_rate * 0.0083333338f;
             smoke_timer = 0.0f;
+            burst_rate_step = rate_step;
             smoke_timer_step = rate_game->subgame_rate * 0.27777779f;
         }
             // fall through

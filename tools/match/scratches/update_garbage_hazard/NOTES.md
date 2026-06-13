@@ -53,6 +53,11 @@ Residuals:
   around `fild sign`, the two `fmul`s, the `unknown_a4 = 0` store, and the
   final `velocity.x` add. Current result: 75.56%, 226/224 instructions
   (`tools/match/match.sh tools/match/scratches/update_garbage_hazard --full`).
+- 2026-06-13 source-shaping follow-up 4: the burst cadence setup now stages
+  `rate * 0.0083333338f` in a source local, clears `smoke_timer`, then stores
+  `burst_rate_step`. This keeps the focused matcher at 75.56%, 226/224
+  instructions, but matches BN's native store order around the held x87 rate
+  step instead of spelling the stores in source field order.
 - A direct-memory side-bias rewrite was tested because native reloads
   `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
   store and regressed the scratch to 72.09%; keep the current local
