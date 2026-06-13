@@ -332,9 +332,7 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
 
     ((float*)self)[153] = velocity->vector_magnitude();
     Vec3* previous_output = (Vec3*)(self + 0x234);
-    previous_output->x = position->x;
-    previous_output->y = position->y;
-    previous_output->z = position->z;
+    *previous_output = *position;
 
     return create_dispatch();
 }

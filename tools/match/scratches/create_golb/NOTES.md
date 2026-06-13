@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 28.38% (`tools/match/match.sh
+- Current matcher result: 28.54% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -38,16 +38,18 @@ Residuals:
 - The sprite path's position copy now uses whole-`Vec3` assignment, improving
   local pointer-copy shape. The same source shape was tested and rejected for
   the velocity-to-direction copy (27.21% -> 21.10%) and previous-output copy
-  (27.21% -> 26.99%) in isolated trials, so keep those as explicit field stores
-  unless a broader source-shape change changes the surrounding register
-  allocation. After the 28.38% allocation-shape pass, the direction whole-copy
-  was retested and rejected again because it regressed to 15.92%.
+  (27.21% -> 26.99%) in isolated trials. After the allocation-shape pass, the
+  direction whole-copy was retested and rejected again because it regressed to
+  15.92%, while the previous-output whole-copy improved the scratch from
+  28.38% to 28.54%, 448/582 instructions.
 - 2026-06-13 source-shaping follow-up: narrowing the `position`/`velocity`
   pointer lifetimes until after the list/kind setup improves the scratch from
   27.93% to 28.16%, 448/582 instructions. Splitting the `player+0x338` read
   into a kind-classification `kind_flags` read and a later movement-tree
   `movement_flags` read matches the native reload better and improves the
-  scratch to 28.38%, 447/582 instructions.
+  scratch to 28.38%, 447/582 instructions. Re-testing the previous-output
+  whole-copy on top of that accepted source shape improves the scratch to
+  28.54%, 448/582 instructions.
 - Rejected source-shape trials from the same pass: an explicit
   `player_position` source pointer for the initial spawn-position copy emitted
   the same score on its own; a whole-`Vec3` initial copy regressed to 28.10%;
