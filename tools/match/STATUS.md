@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**161/665** mapped gameplay functions matched, **8372/326119** bytes (**2.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**162/665** mapped gameplay functions matched, **8704/326119** bytes (**2.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -114,6 +114,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | 6/6 |  |
+| ✅ | update_subgoldy_resurrect | 0x441fd0 | 332 | 76/76 | 100.00% | 76/76 |  |
 | ✅ | get_track_skirt_color | 0x442120 | 76 | 25/25 | 100.00% | 25/25 |  |
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 |  |

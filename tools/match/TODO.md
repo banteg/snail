@@ -63,6 +63,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `update_subgoldy` | `0x43b120` | 72.44%, structure complete | Master player motion, replay codec, fire lane, completion handoff, attachment-exit clears. | Continue slice-first: grounded/trampoline clear lanes, projectile/replay consumers, then residual register-shape cleanup. |
+| `update_subgoldy_resurrect` | `0x441fd0` | 100% | Exact death/resurrection bridge: freezes z velocity, drives fade-out, spends arcade life stock, calls `complete_subgame(1)` on final loss, and routes frontend state. | Done; use with exact `initialize_subgoldy_resurrect` as the respawn/final-loss source of truth. |
 | `play_movement_state_sound` | `0x43afd0` | 89.13%, pinned | Shared RNG draw and fire/movement sound variant cadence. | Semantics are pinned; remaining clamp-tail duplication is documented in NOTES. |
 | `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |
 | `try_enter_track_attachment_from_swept_motion` | `0x42c770` | 79.80%, pinned | Swept re-entry gates and player y/lateral seed. | Finish dual-slot source-shape lead in NOTES; do not disturb pinned semantics. |
@@ -140,6 +141,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
+  `update_subgoldy_resurrect`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
   voice helpers,
