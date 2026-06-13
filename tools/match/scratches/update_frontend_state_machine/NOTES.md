@@ -1,6 +1,6 @@
 # update_frontend_state_machine @ 0x4107d0
 
-First source-shaped bridge scratch: 47.11% against the default extent
+First source-shaped bridge scratch: 48.50% against the default extent
 (`194` target insns, `239` candidate insns), with prefix `12/194`. It covers
 the recovered front-end dispatch states, the subgame handoff/return opcodes at
 states 10/11 and 26/27/28, and the tail camera transform snapshot/invert.
@@ -22,7 +22,8 @@ Residuals are intentionally left to the matcher rather than papered over:
 - The state-20 high-score block is source-shaped with a local `GameRoot*`
   because the native code loads one base pointer and reads `+0x314/+0x310`
   before calling `initialize_high_score_screen`.
-- The tail matrix copy uses aggregate assignment. `uv run snail match idioms
-  six-dword-struct-copy` confirms aggregate copies lower to `rep movsd`; the
-  remaining tail residual is the first camera float assignment, where native
-  uses `fld/fstp` and the current source still lowers to an integer dword copy.
+- The tail now uses explicit live/snapshot `TransformMatrix*` locals. This
+  preserves the native x87 `camera_x`/`camera_y` loads, `rep movsd` matrix
+  copy, and delayed `camera_y` store without byte-shaped code. `uv run snail
+  match idioms six-dword-struct-copy` confirms aggregate copies lower to
+  `rep movsd`.

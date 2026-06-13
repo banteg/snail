@@ -233,9 +233,12 @@ int FrontendStateMachine::update_frontend_state_machine()
     } while (*(unsigned char*)(self + 0x1e8) == 1);
 
     CameraAnchor* camera = *(CameraAnchor**)(self + 0x168);
-    *(float*)(self + 0x178) = camera->camera_x;
+    float camera_x = camera->camera_x;
+    *(float*)(self + 0x178) = camera_x;
     float camera_y = camera->camera_y;
-    *(TransformMatrix*)(self + 0xd8) = *(TransformMatrix*)(self + 0x38);
+    TransformMatrix* live_matrix = (TransformMatrix*)(self + 0x38);
+    TransformMatrix* snapshot_matrix = (TransformMatrix*)(self + 0xd8);
+    *snapshot_matrix = *live_matrix;
     *(float*)(self + 0x17c) = camera_y;
-    return (int)((TransformMatrix*)(self + 0x120))->invert_matrix_from_source((TransformMatrix*)(self + 0x38));
+    return (int)((TransformMatrix*)(self + 0x120))->invert_matrix_from_source(live_matrix);
 }
