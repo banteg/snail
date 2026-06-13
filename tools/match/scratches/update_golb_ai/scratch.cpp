@@ -315,6 +315,7 @@ slugs:
                     if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {
                         path_follow.active = 0;
                         deflect_speed = normalize_vector(&velocity);
+                        probe.y = 0.0f;
                         normalize_vector(&probe);
                         velocity.x = -(deflect_speed * probe.x);
                         float reflect_z = deflect_speed * probe.z;

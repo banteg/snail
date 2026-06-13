@@ -1,11 +1,11 @@
-# WIP scratch — 24.53%, 637/700 insns (2026-06-13)
+# WIP scratch — 24.66%, 638/700 insns (2026-06-13)
 
-Structure complete and mostly ordered; the 63-insn gap is the original's
+Structure complete and mostly ordered; the 62-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. Next golf pass: transcribe the
-staging flow per block (trail/smoke offsets, slug deflection) and let the
-early returns duplicate.
+staging flow per block (trail/smoke offsets, reflected velocity store order)
+and let the early returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -32,6 +32,11 @@ scratch now spells that as explicit `direction_x/y/z` locals plus output and
 direction pointers, improving the scratch from 24.36% to 24.53% and dropping
 the candidate from 638 to 637 instructions.
 
+Slug deflection follow-up: BN native zeros `probe.y` before normalizing the
+slug deflection vector. The scratch now spells that as `probe.y = 0.0f` before
+`normalize_vector(&probe)`, improving the scratch from 24.53% to 24.66%,
+638/700 instructions, and confirming slug deflection is horizontal x/z.
+
 Measured source-shape rejections:
 
 - replacing the `kind` trail dispatch with a `switch` regressed from 21.84% to
@@ -54,6 +59,9 @@ Measured source-shape rejections:
 - copying `previous_output` through the accepted output pointer regressed from
   24.53% to 24.49%, despite shrinking the candidate, so keep the explicit
   field copy from `output_position`.
+- staging reflected x/z through `deflected_velocity`/`reflect_x`/`zero_y`
+  after the accepted y-zero regressed from 24.66% to 24.40%, so keep the
+  direct velocity stores.
 
 Recovered this pass (full field map in scratch.cpp):
 
@@ -78,9 +86,10 @@ Recovered this pass (full field map in scratch.cpp):
 - trail offsets: kind 0 three sprites at out, out - dir*0.3, out -
   dir*0.6; kind 2 two smokes at out and out - dir*0.5 + spin wrap 2pi
 - bounds band: golb_band_min_z at player+0x2980 <= z <= player z + 46
-- slug contact: |dz| < 2.5 && dist < 2.5; velocity deflects to
-  (-speed*nx, 0, -speed*nz); kind 1 -> hit_slug_hazard(slot, 2), kind 2
-  -> mode 4, kind 0 -> first contact arms the bounce byte, second kills
+- slug contact: |dz| < 2.5 && dist < 2.5; native zeroes probe.y, normalizes
+  the x/z plane, then deflects velocity to (-speed*nx, 0, -speed*nz); kind 1
+  -> hit_slug_hazard(slot, 2), kind 2 -> mode 4, kind 0 -> first contact arms
+  the bounce byte, second kills
 - garbage gate: |dz| < 3 && dist < radius(+156) + 0.49; kind 2 splash
   re-sweeps the list at radius 3.0
 - wall tile 14: impact sprite at z - 1.0 then retire
