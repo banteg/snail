@@ -8,11 +8,7 @@ struct ScoreStats {
 };
 
 struct RunRecord {
-    unsigned char unknown_flag_0 : 1;
-    unsigned char unknown_flag_1 : 1;
-    unsigned char unknown_flag_2 : 1;
-    unsigned char completed : 1;
-    unsigned char unknown_flags_4_7 : 4;
+    unsigned char flags;
     char pad[5];
 };
 
@@ -87,7 +83,7 @@ void Game::complete_subgame(unsigned char completed)
 {
     score_stats.display_score_stats();
 
-    run_records[replay_update_cursor].completed = 1;
+    run_records[replay_update_cursor].flags |= 0x08;
     ++completion_count;
     ++replay_update_cursor;
 
@@ -96,12 +92,12 @@ void Game::complete_subgame(unsigned char completed)
 
         result_record.score = source_score;
         result_record.stats = source_stats;
+        result_record.difficulty_tail = difficulty_tail;
+        result_record.source_arg_tail = source_arg_tail;
         result_record.score_tail = source_score_tail;
         result_record.level_index_tail = level_index_tail;
-        result_record.difficulty_tail = difficulty_tail;
         result_record.level_arg_tail = level_arg_tail;
         timer_snapshot_a = source_timer_a;
-        result_record.source_arg_tail = source_arg_tail;
         timer_snapshot_b = source_timer_b;
         result_record.active = 1;
         result_record.source_tail = source_tail;

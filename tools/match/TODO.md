@@ -91,7 +91,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `build_track_fringe_objects` | `0x434be0` | no scratch | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Defer until runtime grid and warning footprints are pinned. |
 | `switch_track_mirror` | `0x435e60` | 91.23%, pinned | Runtime mirror state and builder row convention. | Semantics are pinned; remaining duplicate-tail layout residual is documented in NOTES. |
 | `update_row_event_display` | `0x404cf0` | 96.38%, pinned | Parcel home anchor, row-event widget, prompt ownership. | Semantics are pinned; the only accepted residual is bonus sound thiscall setup order plus tail padding noise, documented in NOTES. |
-| `complete_subgame` | `0x438700` | 74.16%, source-shaped | Completion bridge producer. | Run-record completion bit and result-record `ebp` ownership now better match native; continue only around native's direct memory OR and independent snapshot store order documented in NOTES. |
+| `complete_subgame` | `0x438700` | 75.28%, source-shaped | Completion bridge producer. | Region diff isolated the byte-OR and result-snapshot residuals; source-ordering improved the snapshot block, but continue only around native's direct memory OR and register allocation documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |
 | `update_frontend_state_machine` | `0x4107d0` | no scratch | Frontend/subgame bridge and return owners. | Defer; match as bridge cluster with `update_subgame`. |
 
