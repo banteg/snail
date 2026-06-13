@@ -17,6 +17,13 @@ complete:
   lane (game+0x6411b8, 244 stride); cull at row_count+5 behind
 - default: cull behind the plane when also past active_row_end - 5
 
+RNG call convention is a debug/tag argument, not an RNG state pointer. Raw
+image disassembly shows `random_float_below(100)` pushes `0x4a4dc8`, which
+resolves to the one-character `"W"` tag, and the vertical jitter
+`random_signed_float_below(3)` pushes `0x4a4dc0`, which resolves to `"Wall2"`.
+The normalizer masks both pointers as `ADDR`, so the match percentage does not
+expose this assumption.
+
 Notable: this TU CACHES the game base (non-volatile pattern, reload
 after calls) unlike the seed block in the swept entry — base-caching
 behavior is per-function, worth remembering when modeling globals.

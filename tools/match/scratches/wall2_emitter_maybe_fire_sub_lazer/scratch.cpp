@@ -9,10 +9,8 @@ struct Vector3 {
     float z;
 };
 
-struct RngState;
-extern RngState g_rng_state;
-float random_float_below(float maximum, RngState* state);
-float random_signed_float_below(float maximum, RngState* state);
+float random_float_below(float maximum, const char* tag);
+float random_signed_float_below(float maximum, const char* tag);
 float normalize_vector(float* vector);
 void set_color_alpha(int* color, int alpha_bits);
 int* get_track_skirt_color(int* skirt_owner, float* scratch);
@@ -83,7 +81,7 @@ void FringeObject::wall2_emitter_maybe_fire_sub_lazer()
     case 14: {
         if ((float)g_game->active_row_start >= g_game->player.position.z)
             goto cull_check;
-        if (random_float_below(100.0f, &g_rng_state) < 4.0f) {
+        if (random_float_below(100.0f, "W") < 4.0f) {
             float spawn[3];
             float spawn_y = position.y + 8.0f;
             float spawn_z = position.z;
@@ -92,7 +90,7 @@ void FringeObject::wall2_emitter_maybe_fire_sub_lazer()
             spawn[1] = spawn_y;
             spawn[2] = spawn_z;
             spawn[0] = (float)lane * 0.5f + spawn[0];
-            float jitter = random_signed_float_below(3.0f, &g_rng_state);
+            float jitter = random_signed_float_below(3.0f, "Wall2");
             float target_y = g_game->player.position.y;
             float target_z = jitter + 8.0f + g_game->player.position.z;
             float direction[3];
