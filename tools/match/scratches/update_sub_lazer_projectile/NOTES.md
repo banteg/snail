@@ -14,3 +14,7 @@ Semantics complete; key structural discoveries:
   base (+0x14)
 - no position integration here — the projectile body motion belongs to
   the renderable-body owner linked at spawn
+
+2026-06-13 pin audit: focused matcher still verifies 41.73%, 127/127 insns.
+Keep pinned; state layout, duplicated remove paths, sprite bob, and body-motion
+ownership are recovered, with only register/layout golf remaining.

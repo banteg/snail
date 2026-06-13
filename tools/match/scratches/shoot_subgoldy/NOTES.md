@@ -12,3 +12,7 @@ complete:
   simultaneous shots)
 - routes through the matched spawn_sub_lazer_projectile and plays
   positional sound 15 at the ORIGIN (unstaggered) position
+
+2026-06-13 pin audit: focused matcher still verifies 49.46%, 45/48 insns.
+Keep pinned; the remaining diff is the free-scan loop layout and stack
+staging, not the projectile spawn or audio semantics.

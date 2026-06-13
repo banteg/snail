@@ -27,3 +27,7 @@ expose this assumption.
 Notable: this TU CACHES the game base (non-volatile pattern, reload
 after calls) unlike the seed block in the swept entry — base-caching
 behavior is per-function, worth remembering when modeling globals.
+
+2026-06-13 pin audit: focused matcher still verifies 40.43%, 189/187 insns.
+Keep pinned; RNG tags, emitter cadence, projectile spawn direction, and cull
+semantics are recovered, with only source-shape/register golf remaining.

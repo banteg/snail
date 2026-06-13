@@ -58,10 +58,10 @@ These should turn current verified port behavior into matched proof.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `handle_subgoldy_collisions` | `0x444cf0` | 44.58%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Proof-polish: local staging, mask register reuse, per-loop delta/probe shape. |
-| `wall2_emitter_maybe_fire_sub_lazer` | `0x439d50` | 40.43% | Wall2 fire cadence and 4% RNG gate. | RNG tags are documented; continue cadence locals and emitter-origin call shape. |
+| `wall2_emitter_maybe_fire_sub_lazer` | `0x439d50` | 40.43%, pinned | Wall2 fire cadence and 4% RNG gate. | Semantics are pinned; RNG tags, emitter cadence, and source-shape residuals are documented in NOTES. |
 | `spawn_sub_lazer_projectile` | `0x441670` | 98.41%, pinned | SubLazer body/sprite spawn and y stagger. | Semantics and instruction count are pinned; remaining residual is store scheduling around velocity z versus bob phase, documented in NOTES. |
-| `update_sub_lazer_projectile` | `0x43efb0` | 41.73% | SubLazer body flight, nested sprite bob, teardown. | Use recovered slot layout; separate body position from visual bob. |
-| `shoot_subgoldy` | `0x441ad0` | 49.46% | Weapon/sub-lazer spawn callsite and audio cue. | Match after sub-lazer pool helpers stabilize. |
+| `update_sub_lazer_projectile` | `0x43efb0` | 41.73%, pinned | SubLazer body flight, nested sprite bob, teardown. | Semantics are pinned; body-motion ownership and register/layout residuals are documented in NOTES. |
+| `shoot_subgoldy` | `0x441ad0` | 49.46%, pinned | Weapon/sub-lazer spawn callsite and audio cue. | Semantics are pinned; free-scan loop residual and unstaggered audio origin are documented in NOTES. |
 | `spawn_salt_hazard` | `0x441560` | 74.07%, pinned | Salt slot layout, velocity byte-poke bug, yaw RNG. | Semantics are pinned; free-scan layout residual and velocity.z byte-poke finding are documented in NOTES. |
 | `update_salt_hazard` | `0x4417d0` | 48.04%, pinned | Salt integrate/removal state. | Semantics are pinned; overlapping progress fields, velocity-z byte-poke fallout, and probe residuals are documented in NOTES. |
 | `deactivate_salt_hazard` | `0x441740` | 41.46%, pinned | Salt collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
