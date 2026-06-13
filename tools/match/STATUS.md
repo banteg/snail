@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**147/664** mapped gameplay functions matched, **7245/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**148/665** mapped gameplay functions matched, **7333/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
@@ -31,6 +31,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 637/700 | 20.79% |  |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% |  |
+| ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% |  |
 | ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 678/726 | 46.44% |  |

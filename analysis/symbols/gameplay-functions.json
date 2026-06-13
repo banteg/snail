@@ -716,6 +716,11 @@
       "name": "search_path_for_golb"
     },
     {
+      "address": "0x415ef0",
+      "name": "append_subgame_contact_target",
+      "description": "Appends one garbage or slug contact target to the per-frame subgame contact registry unless the target object's flags include 0x1000."
+    },
+    {
       "address": "0x415f50",
       "name": "initialize_challenge_setup_screen",
       "description": "Builds the mode-1 front-end setup screen with Select Difficulty, Select Speed, Play, Watch Replay, and Back controls before challenge gameplay starts."

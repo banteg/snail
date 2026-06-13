@@ -33,7 +33,7 @@ garbage/projectile divergence.
 | `update_garbage_hazard` | `0x43f200` | no scratch | Owns garbage active/burst states, smoke cadence, nuke reaction, and the final live body position that collision/projectile probes sample. | Create scratch from checked-in IDA/BN decompile; include state 1/2/3 switch and native helper calls. |
 | `destroy_garbage_hazard` | `0x43f130` | 100% | Confirms live-list teardown and whether any collision-side or sprite state survives after hit. | Done; use as the exact kill/unlink reference for `update_garbage_hazard`. |
 | `spawn_track_garbage_hazard` | `0x43da80` | no scratch | Seeds garbage scale, sprite variant, projected body position, active list link, and slot owner. Recent port fix depends on this path. | Scratch after destroy helper; use native slot layout from `runtime-structures.md`. |
-| `append_subgame_contact_target` | `0x415ef0` | unmanifested helper | Called by garbage and slug AI; disassembly shows it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Add manifest entry or scratch with explicit `END=0x415f50`; match as a small helper. |
+| `append_subgame_contact_target` | `0x415ef0` | 100% | Called by garbage and slug AI; exact match confirms it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Done; use as the exact contact-target registry helper for garbage and slug AI. |
 | `update_golb_ai` | `0x414820` | 20.79%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Finish staging-local shape and duplicated returns; keep semantics from NOTES authoritative. |
 | `calc_path_length_z` | `0x4217b0` | no scratch | Golb path-follow riding; sibling of `update_track_attachment_follow_state`. | Derive scratch from the attachment-follow update source, binding the Golb path state layout. |
 | `create_golb` | `0x415280` | no scratch | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Start after `update_golb_ai` residuals identify which seed fields still matter. |
@@ -110,8 +110,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
-  `destroy_garbage_hazard`, voice helpers, and the small runtime initializer
-  family in `tools/match/STATUS.md`.
+  `destroy_garbage_hazard`, `append_subgame_contact_target`, voice helpers,
+  and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
   `try_enter_track_attachment_from_swept_motion`,

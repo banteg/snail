@@ -191,8 +191,8 @@ spawn-tick alignment in the live window) against the port's hazard
 update.
 
 v10 narrowing: `update_barrier_ai` is only the tutorial barrier Y/Z copy,
-and the unmanifested helper @ 0x415ef0 is a per-frame contact/target
-registry append (`kind`, position, radius, object), not a bob mutator.
+and exact-matched `append_subgame_contact_target` @ 0x415ef0 is a per-frame
+contact/target registry append (`kind`, position, radius, object), not a bob mutator.
 The live garbage body is already finalized by `spawn_track_garbage_hazard`,
 which calls `project_position_onto_track_attachment` after seeding the
 cell anchor. The port now projects garbage spawned on attachment-owned rows

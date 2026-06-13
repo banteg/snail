@@ -37,9 +37,9 @@ Template:
   cell-anchor position, then immediately calls
   `project_position_onto_track_attachment` @ 0x4444b0 before the slot becomes
   live. `update_garbage_hazard` state 1 copies that live `world_position` to
-  the sprite and only calls the small unmanifested helper @ 0x415ef0 to enqueue
-  `{kind, position, radius, object}` into the per-frame contact/target list;
-  that helper does not mutate the position
+  the sprite and only calls exact-matched `append_subgame_contact_target`
+  @ 0x415ef0 to enqueue `{kind, position, radius, object}` into the per-frame
+  contact/target list; that helper does not mutate the position
 - port consequence: garbage spawn now projects attachment-owned rows through
   the native helper shape before storing the slot position. Treat 0x415ef0 as
   a registry append, not as the missing garbage bob/update source
