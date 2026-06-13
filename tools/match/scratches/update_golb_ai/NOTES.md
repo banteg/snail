@@ -1,11 +1,15 @@
-# WIP scratch — 20.79%, 637/700 insns (2026-06-13)
+# WIP scratch — 21.39%, 637/700 insns (2026-06-13)
 
-Structure complete and ordered; the 63-insn gap is the original's
+Structure complete and mostly ordered; the 63-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. Next golf pass: transcribe the
 staging flow per block (trail/smoke offsets, direction update, slug
 deflection) and let the early returns duplicate.
+
+Latest matching change: the `calc_path_length_z` switch now emits the
+raw-position copy arms (modes 1/3) before the path-output copy arms
+(modes 0/2), matching the native block order without changing semantics.
 
 Recovered this pass (full field map in scratch.cpp):
 

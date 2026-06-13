@@ -118,17 +118,17 @@ void GolbShot::update_golb_ai()
 
     if (path_follow.active == 1) {
         switch (path_follow.calc_path_length_z(path_factor, &position, &velocity)) {
-        case 0:
-        case 2:
-            output_position.x = path_follow.output_position.x;
-            output_position.y = path_follow.output_position.y;
-            output_position.z = path_follow.output_position.z;
-            break;
         case 1:
         case 3:
             output_position.x = position.x;
             output_position.y = position.y;
             output_position.z = position.z;
+            break;
+        case 0:
+        case 2:
+            output_position.x = path_follow.output_position.x;
+            output_position.y = path_follow.output_position.y;
+            output_position.z = path_follow.output_position.z;
             break;
         default:
             break;
@@ -340,4 +340,3 @@ slugs:
 retire:
     kill_golb();
 }
-
