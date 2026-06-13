@@ -100,3 +100,13 @@ seen in `project_position_onto_track_attachment`, but changing this scratch's
 helper declaration to a `PathTemplate` member regressed global alignment from
 40.58% to 35.21%. The callsite convention evidence is real, but this large
 scratch needs a more isolated consolidation than a direct local rewrite.
+
+2026-06-14 recheck: localized diff still shows one broad region dominated by
+the `0xf4`/`0xe0` frame gap, overflow-loop placement, scalar lerp stack slots,
+and matrix-copy layout. Hoisting the `center_x`/`lateral_scale`/`special_scalar`
+declarations without changing evaluation order emitted identical 40.58% code.
+Hoisting the ordinary-path `base_x`/`base_y`/`base_z` locals with explicit
+assignments also emitted identical 40.58% code. Treat scalar/base local
+declaration order as exhausted; the next useful move needs stronger evidence
+around overflow placement or the matrix-copy block rather than more local
+slot-shuffling.
