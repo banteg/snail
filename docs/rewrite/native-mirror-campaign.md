@@ -162,22 +162,33 @@ worldPosition returns z = row_position WITHOUT +0.5, and any
 `row_position = <world z>` assignment needs the -0.5. Audit all
 assignments/conversions by space, like the lane audit.
 
-## OPEN: attachment-phase z advance runs ~0.3% slow (refined 2026-06-13 v7)
+## RESOLVED 06-13 v8 (47ebd064): the ~0.3% slow ramp — velocity pipeline order
 
-NOT an entry-seed offset: the gap GROWS ~0.0007-0.0009/tick through the
-whole start-ramp ride (0.109 by t=134). The recorded scalar reads
-correctly (0.47), the progress seed formula is algebraically native
-(row_position - row == world_z - anchor_z with the +0.5 anchor), and the
-port's vz rides its window cap exactly. Native's ghost z advances at
-~vz * k with k ≈ 1.003-1.004 — the START template's OUTPUT z mapping is
-scaled: native's authored sample z spacing is not exactly 1.0 per
-segment while the port's built template maps progress to z 1:1. NEXT:
-diff the START ramp template's per-sample z offsets in the native
-constructor (the initialize_*_path_template_pair family) against
-attachment_builders' generated samples; the 0.3% should fall out of the
-authored offsets. Consequences while open: a marginal garbage clip at
-t~153 that native misses (one-tick -4% vz) and the hidden row-54 wall
-stall (the t=254 ratchet).
+NOT template spacing: the pinned update_subgoldy order has the
+integration at IDA ~300-340 and the window clamp at 644-658 — native
+MOVES at the pre-clamp velocity (cap + the first-block quantum; the
+follow advance gets the pre-bonus vz, the case-0 double quantum and the
+free-lane slide quanta land post-integration). The port clamped and
+dragged before movement. Split into pre-move (override hold/recovery +
+first-block accel) and post-move (quanta, exit damping, drag) halves +
+clamp after movement: the START ramp now runs in LOCKSTEP (|dz| <= 0.002
+through tick 140 — new oracle ratchet). The v4 "clamp before
+integration" note is OVERTURNED (ledger).
+
+## FRONTIER NOW: gameplay-stream projectile/RNG parity (2026-06-13 v8)
+
+With the ramp exact, first_div sits at 251: a garbage object at z~33.5
+clips the port at t~153 where geometry says native would hit too (dist
+0.92 < 0.98, same probe) — so the native object was ALREADY DEAD: the
+recorded fire actions shot it. The port replays the fire input but its
+golb shot misses the kill. The chain to audit: gameplay-stream random
+draw alignment (shot sound variants, spread seeds — every
+next_math_random_value consumer along the replay) + golb flight parity
+(cluster 6 mirror: velocity seeds, spread, the garbage sweep gates).
+Until it lands the ratchet holds at >= 250 with the ramp-lockstep
+assertion carrying the regression guard.
+
+(superseded v7 analysis removed)
 
 ## RESOLVED 06-13 (50967917): digit tiles on attachment rows
 
