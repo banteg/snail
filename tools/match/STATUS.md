@@ -2,12 +2,14 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**160/665** mapped gameplay functions matched, **8258/326119** bytes (**2.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**161/665** mapped gameplay functions matched, **8372/326119** bytes (**2.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
 | ✅ | initialize_array_with_constructor | 0x401000 | 42 | 21/21 | 100.00% | 21/21 |  |
+| 🚧 | flush_row_event_display | 0x404830 | 233 | 65/67 | 89.39% | 4/67 |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 |  |
+| ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 |  |
