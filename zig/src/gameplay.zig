@@ -838,14 +838,16 @@ pub const Runner = struct {
                 self.presentation.movement_fire_cooldown = self.presentation.movement_fire_cooldown_step;
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
-            self.updateNativeVelocityZOverride(preview, delta_seconds);
-            // PORT(verified): native clamps the forward window (IDA 644-658)
-            // between the acceleration lanes and the position integration —
-            // the clamp must see this tick's velocity before movement runs
-            self.enforceNativeForwardVelocityWindow(preview);
-            if (self.control_override_ticks > 0) self.control_override_ticks -= 1;
+            self.updateNativeVelocityZOverridePreMove(preview, delta_seconds);
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
+            self.updateNativeVelocityZOverridePostMove(preview, delta_seconds);
+            if (self.control_override_ticks > 0) self.control_override_ticks -= 1;
+            // PORT(verified): native's window clamp sits at the completion
+            // gate (update_subgoldy IDA 644-658), AFTER the integration at
+            // ~300-340 — each tick MOVES at the pre-clamp velocity and only
+            // then accrues the tile/follow quanta, drags, and clamps.
+            self.enforceNativeForwardVelocityWindow(preview);
             self.tick_count += 1;
             self.replay_sample_index += 1;
             self.stopwatch.advance(1.0);
@@ -2570,7 +2572,15 @@ pub const Runner = struct {
         return velocity_z;
     }
 
-    fn updateNativeVelocityZOverride(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+    // PORT(verified): the pre-integration velocity slice of update_subgoldy
+    // (IDA ~275-295): the control-override hold/recovery and the
+    // first-block acceleration run BEFORE the position integrates; the
+    // tile/follow quanta and the drag run AFTER it (free lane IDA 344+,
+    // and the follow advance is called with the pre-bonus velocity — the
+    // case-0 double quantum lands after the boss call). Splitting the old
+    // single pass restored the native cap+quantum ramp speed the lockstep
+    // oracle pinned (the ghost advances at cap + first-block quantum).
+    fn updateNativeVelocityZOverridePreMove(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
         var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
         const had_velocity = self.native_velocity_z_override_per_tick != null;
         const started_negative = velocity_z < 0.0;
@@ -2606,7 +2616,25 @@ pub const Runner = struct {
                 }
                 accelerated = true;
             }
+        }
 
+        if (!had_velocity and velocity_z == 0.0 and !accelerated) {
+            self.native_velocity_z_override_per_tick = null;
+            return;
+        }
+        self.native_velocity_z_override_per_tick = velocity_z;
+    }
+
+    fn updateNativeVelocityZOverridePostMove(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        if (self.control_override_ticks > 0) return;
+        var velocity_z = self.native_velocity_z_override_per_tick orelse 0.0;
+        const had_velocity = self.native_velocity_z_override_per_tick != null;
+        const started_negative = velocity_z < 0.0;
+        var accelerated = false;
+
+        const tick_scale = delta_seconds * native_ticks_per_second;
+
+        if (!started_negative and self.phase == .active) {
             if (self.movement_mode == .attachment and self.currentAttachmentFollowAddsNativeVelocity(preview)) {
                 velocity_z += self.nativeFloorCacheVelocityZDeltaPerTick() * tick_scale;
                 accelerated = true;
@@ -4936,8 +4964,11 @@ pub const Runner = struct {
         }
 
         self.native_velocity_z_override_per_tick = null;
-        const snapped_row_position = @floor(self.row_position + native_grounded_rider_height) - 0.5;
-        self.applyTrackPosition(motion_module.trackPositionFromWorldZ(preview, snapped_row_position));
+        // PORT(verified): the native snap is WORLD-space trunc(z + 0.49) - 0.5
+        // (update_subgoldy wall block); convert into the half-shifted
+        // row_position convention (world z = row_position + 0.5)
+        const snapped_world_z = @floor(probe_world.z + native_grounded_rider_height) - 0.5;
+        self.applyTrackPosition(motion_module.trackPositionFromWorldZ(preview, snapped_world_z - 0.5));
         self.presentation.squidge.startZ(native_barrier_squidge_z_seed);
 
         // PORT(verified): `update_subgoldy` advances `player + 0x328` by the
@@ -11721,7 +11752,10 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     runner.stepActivePhaseVerticalMotion(&fixture.preview);
 
     try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
-    try std.testing.expectApproxEqAbs(@as(f32, 12.5), runner.row_position, 0.0001);
+    // native snaps WORLD z to trunc(z + 0.49) - 0.5; with row_progress 0.73
+    // at index 12 the world z is 13.23, so the snap lands at world 12.5 =
+    // row_position 12.0 in the half-shifted convention
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.row_position, 0.0001);
     try std.testing.expectApproxEqAbs(native_barrier_squidge_z_seed, runner.presentation.squidge.z_phase, 0.0001);
     try std.testing.expect(runner.presentation.squidge.z_velocity > 0.0);
     try std.testing.expectApproxEqAbs(runner.presentation.barrier_hold_step, runner.presentation.barrier_hold_progress, 0.0001);
@@ -12067,7 +12101,9 @@ test "replay flag bit 0x2 seeds native movement fire progress from the selector 
         1.0 / 60.0,
     );
 
-    const expected_track_step = runner.nativeStartBlockVelocityZDeltaPerTick() * runner.nativeVelocityYzDecayPerTick();
+    // the tick MOVES at the pre-decay velocity (native integrates before
+    // the drag/clamp tail of update_subgoldy)
+    const expected_track_step = runner.nativeStartBlockVelocityZDeltaPerTick();
     try std.testing.expectApproxEqAbs(expected_track_step, runner.track_step_rows, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.6) + expected_track_step, runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
