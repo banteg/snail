@@ -64,17 +64,6 @@ int __stdcall compute_kind42_attachment_transform(
 
 char* Game::project_position_onto_track_attachment(float* position, float* out_angle)
 {
-    float v12;
-    float v13;
-    float v14;
-    float v15;
-    float v16;
-    float v17;
-    float v18;
-    float v19;
-    float v20;
-    float v21;
-    float v22;
     TrackRuntimeRow* row =
         (TrackRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position[2]);
     *out_angle = 0.0f;
@@ -96,25 +85,35 @@ char* Game::project_position_onto_track_attachment(float* position, float* out_a
             *((int*)position + 1) = y;
             return (char*)result;
         } else {
-            float v8 = position[1];
-            v21 = v8 * sample->transform.basis_up.x;
-            v22 = v8 * sample->transform.basis_up.y;
-            float v9 = v8 * sample->transform.basis_up.z;
-            float v10 = position[0] - sample->center_x;
-            v12 = v10 * sample->transform.basis_right.x;
-            v14 = v10 * sample->transform.basis_right.y;
-            v17 = sample->transform.position.y + cell->anchor_position.y;
-            v18 = sample->transform.position.z + cell->anchor_position.z;
-            v19 = sample->transform.position.x + cell->anchor_position.x + v12;
-            v20 = v17 + v14;
-            float v11 = v10 * sample->transform.basis_right.z + v18;
-            v13 = v19 + v21;
-            position[0] = v13;
-            v15 = v20 + v22;
-            position[1] = v15;
-            v16 = v11 + v9;
-            position[2] = v16;
-            return (char*)*(int*)&v13;
+            float vertical = position[1];
+            Vector3 vertical_contribution;
+            vertical_contribution.x = vertical * sample->transform.basis_up.x;
+            vertical_contribution.y = vertical * sample->transform.basis_up.y;
+            vertical_contribution.z = vertical * sample->transform.basis_up.z;
+
+            float lateral = position[0] - sample->center_x;
+            Vector3 lateral_contribution;
+            lateral_contribution.x = lateral * sample->transform.basis_right.x;
+            lateral_contribution.y = lateral * sample->transform.basis_right.y;
+            lateral_contribution.z = lateral * sample->transform.basis_right.z;
+
+            Vector3 anchored_base;
+            anchored_base.x = sample->transform.position.x + cell->anchor_position.x;
+            anchored_base.y = sample->transform.position.y + cell->anchor_position.y;
+            anchored_base.z = sample->transform.position.z + cell->anchor_position.z;
+
+            Vector3 projected;
+            projected.x = anchored_base.x + lateral_contribution.x;
+            projected.y = anchored_base.y + lateral_contribution.y;
+            projected.z = anchored_base.z + lateral_contribution.z;
+
+            projected.x += vertical_contribution.x;
+            position[0] = projected.x;
+            projected.y += vertical_contribution.y;
+            position[1] = projected.y;
+            projected.z += vertical_contribution.z;
+            position[2] = projected.z;
+            return (char*)*(int*)&projected.x;
         }
     }
     return (char*)row;
