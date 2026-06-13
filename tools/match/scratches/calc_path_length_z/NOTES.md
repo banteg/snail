@@ -25,7 +25,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 36.95% (`tools/match/match.sh
+- Current matcher result: 40.58% (`tools/match/match.sh
   tools/match/scratches/calc_path_length_z --full`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
@@ -67,6 +67,13 @@ equivalent to the previous `<=` spelling, but it matches the BN-visible tail
 layout better and improves the scratch from 35.76% to 36.95%, still 414/425
 instructions.
 
+2026-06-13 source-shaping follow-up 4: the final basis scratch copies now use
+real destination `Vec3*` locals for the right/up/forward basis rows before
+copying direction to velocity. This matches the native BN shape where each
+basis row is copied through a destination pointer instead of direct
+`shot->field` stores, and improves the scratch from 36.95% to 40.58%,
+408/425 instructions.
+
 Rejected source-shape trial: introducing a `Vec3* shot_position` local for the
 terminal, kind-31, and side-exit shot-position writes regressed the scratch from
 35.76% to 28.57% (408 candidate instructions), so keep the explicit field stores.
@@ -76,3 +83,9 @@ in the terminal kind-31 launch path increased the frame from `0xe0` to `0xec`
 and candidate count from 414 to 424, but regressed the matcher from 35.76% to
 33.22% by perturbing the terminal block and later matrix-local layout. Do not
 use that local as frame padding without stronger source evidence.
+
+Rejected source-shape trial: changing the final velocity transfer to whole
+`Vec3` assignment regressed the accepted basis-copy shape from 40.58% to
+39.28%, and adding an owner-shot alias around the final copy batch regressed to
+37.20%. An explicit scalar-local spelling for the ordinary output vector
+emitted the same 40.58% code and was reverted as neutral source churn.

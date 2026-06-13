@@ -281,19 +281,24 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         output->z = local_x * transform.basis_right.z + base_z;
     }
 
-    shot->basis_right_scratch.x = transform.basis_right.x;
-    shot->basis_right_scratch.y = transform.basis_right.y;
-    shot->basis_right_scratch.z = transform.basis_right.z;
-    shot->basis_up_scratch.x = transform.basis_up.x;
-    shot->basis_up_scratch.y = transform.basis_up.y;
-    shot->basis_up_scratch.z = transform.basis_up.z;
-    shot->basis_forward_scratch.x = transform.basis_forward.x;
-    shot->basis_forward_scratch.y = transform.basis_forward.y;
-    shot->basis_forward_scratch.z = transform.basis_forward.z;
+    Vec3* basis_right = &shot->basis_right_scratch;
+    basis_right->x = transform.basis_right.x;
+    basis_right->y = transform.basis_right.y;
+    basis_right->z = transform.basis_right.z;
+    Vec3* basis_up = &shot->basis_up_scratch;
+    basis_up->x = transform.basis_up.x;
+    basis_up->y = transform.basis_up.y;
+    basis_up->z = transform.basis_up.z;
+    Vec3* basis_forward = &shot->basis_forward_scratch;
+    basis_forward->x = transform.basis_forward.x;
+    basis_forward->y = transform.basis_forward.y;
+    basis_forward->z = transform.basis_forward.z;
 
-    shot->velocity.x = shot->direction.x;
-    shot->velocity.y = shot->direction.y;
-    shot->velocity.z = shot->direction.z;
+    Vec3* shot_velocity = &shot->velocity;
+    Vec3* shot_direction = &shot->direction;
+    shot_velocity->x = shot_direction->x;
+    shot_velocity->y = shot_direction->y;
+    shot_velocity->z = shot_direction->z;
 
     float abs_lateral = input_position->x - center_x;
     if (abs_lateral < 0.0f)
