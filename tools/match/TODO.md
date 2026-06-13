@@ -64,7 +64,7 @@ These should turn current verified port behavior into matched proof.
 | `shoot_subgoldy` | `0x441ad0` | 49.46% | Weapon/sub-lazer spawn callsite and audio cue. | Match after sub-lazer pool helpers stabilize. |
 | `spawn_salt_hazard` | `0x441560` | 74.07% | Salt slot layout, velocity byte-poke bug, yaw RNG. | Finish source shape if possible; keep OB notes explicit. |
 | `update_salt_hazard` | `0x4417d0` | 48.04% | Salt integrate/removal state. | Focus on state switch and list teardown shape. |
-| `deactivate_salt_hazard` | `0x441740` | 41.46% | Salt collision/removal edge. | Match with the same list helper style as `destroy_garbage_hazard`. |
+| `deactivate_salt_hazard` | `0x441740` | 41.46%, pinned | Salt collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
 
 ### P3 - Damage, Warning, Camera, And Presentation Control
 

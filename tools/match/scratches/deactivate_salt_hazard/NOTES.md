@@ -18,3 +18,7 @@ Semantics fully pinned:
   (+0x08), anchor->free_top = this
 - exit writes: state = 0 interleaved between the flags reload and the
   `&= ~0x200` clear
+
+2026-06-13 pin audit: focused matcher still verifies 41.46%, 39/43 insns.
+Keep pinned; the remaining diff is duplicated native error blocks and
+register/anchor materialization, not a semantic gap.
