@@ -46,7 +46,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 |---|---:|---|---|---|
 | `update_subgoldy` | `0x43b120` | 72.30%, structure complete | Master player motion, replay codec, fire lane, completion handoff, attachment-exit clears. | Continue slice-first: grounded/trampoline clear lanes, projectile/replay consumers, then residual register-shape cleanup. |
 | `play_movement_state_sound` | `0x43afd0` | 89.13% | Shared RNG draw and fire/movement sound variant cadence. | Finish register/branch residuals; preserve the variant-draw semantics already routed. |
-| `begin_track_attachment_follow_state` | `0x420c40` | 94.55% | Direct attachment begin seed. | Finish only if source shape is clear; otherwise keep pinned. |
+| `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |
 | `try_enter_track_attachment_from_swept_motion` | `0x42c770` | 79.80%, pinned | Swept re-entry gates and player y/lateral seed. | Finish dual-slot source-shape lead in NOTES; do not disturb pinned semantics. |
 | `update_track_attachment_follow_state` | `0x420cb0` | 46.44%, semantics pinned | Attachment stepping, natural end, side exit, supertramp launch. | Golf only with source-plausible staging; do not regress routed mirror semantics. |
 | `project_position_onto_track_attachment` | `0x4444b0` | 56.00% | Shared projection for garbage/slug/parcel and attachment-row actors. | Match helper after garbage spawn confirms all call-side expectations. |
