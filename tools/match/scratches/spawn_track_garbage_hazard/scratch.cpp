@@ -55,8 +55,8 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     DWORD* slot = (DWORD*)(slot_base_words + 877649);
     self_words[877648] = (DWORD)slot;
 
-    float* scale = (float*)(self_words + 49 * slot_index + 877688);
     ((DWORD*)slot_base_words)[877697] = player;
+    float* scale = (float*)(self_words + 49 * slot_index + 877688);
     *scale = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
     ((DWORD*)slot_base_words)[877682] = 1;
     set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + 877663));

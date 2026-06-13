@@ -35,11 +35,13 @@ Residuals:
 - 2026-06-13 source-shaping follow-up: a typed `PositionBits` staging record
   assigned into the live slot position recovers the native `0x10` stack frame.
   A source-equivalent `while (1)` pool scan now matches the native loop head
-  and overflow branch shape exactly. Current result: 82.69%, 140/143 insns
+  and overflow branch shape exactly. A follow-up independent setup reorder
+  stores the player owner before deriving the scale pointer, matching the
+  native slot/player/scale setup sequence. Current result: 89.75%, 140/143 insns
   (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
   --full`).
 - Current residuals are source-shape/register issues, not known semantic gaps:
   projection staging still differs in x87 operand order plus x/z local register
-  allocation, and the slot/player setup block still has different callee-saved
-  register timing. Do not force the remaining projection order with dummy
+  allocation. A field-wise staged-position copy was tested and regressed
+  register ownership; do not force the remaining projection order with dummy
   volatile locals.
