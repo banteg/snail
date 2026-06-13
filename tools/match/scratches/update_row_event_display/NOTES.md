@@ -19,3 +19,25 @@ recovered row-event semantics. A `< 10` spelling of the delivered-count
 tens branch was tested because it matched the local branch direction, but
 it regressed the whole function to 82.87%, so the clearer `>= 10` source
 form remains.
+
+## Iteration gain (2026-06-13): 85.19% -> 96.38%
+
+The widget-world block now keeps a local `widget_world` plus a typed
+member-output pointer, and splits the camera calculation into a
+`base_target` vector followed by the final camera-forward add. This recovers
+the native `0x3c` stack frame and the staged x/y/z local stores in the
+camera/widget projection tail without changing the semantics.
+
+With that frame shape recovered, spelling the delivered-count branch as
+`< 10` now matches the native branch direction and keeps the tens-space
+store in the same block. The earlier `< 10` regression only applied to the
+old direct-member widget-world form.
+
+Rejected experiment: reusing a local `bonus_score` for the sound id after
+`add_subgoldy_score` did not change the residual call setup order at 96.38%,
+so the simpler constant sound call remains.
+
+Remaining residual: the bonus award sound call still schedules `mov ecx,
+ADDR` and `push 0x31` in the opposite order from native, and the scratch has
+tail padding/jump-table normalization noise. Do not force this with fake
+helpers or dummy symbols.
