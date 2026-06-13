@@ -1,4 +1,4 @@
-# WIP scratch — 24.66%, 638/700 insns (2026-06-13)
+# WIP scratch — 26.74%, 639/700 insns (2026-06-13)
 
 Structure complete and mostly ordered; the 62-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
@@ -36,6 +36,12 @@ Slug deflection follow-up: BN native zeros `probe.y` before normalizing the
 slug deflection vector. The scratch now spells that as `probe.y = 0.0f` before
 `normalize_vector(&probe)`, improving the scratch from 24.53% to 24.66%,
 638/700 instructions, and confirming slug deflection is horizontal x/z.
+
+Non-follow movement follow-up: the straight-flight gravity lane is now tested
+as `kind == 0` before the kind-2 homing branch. This matches the native
+`test kind; jne homing/nonzero` layout and improves the scratch from 24.66% to
+26.74%, 639/700 instructions, without changing the recovered gravity or homing
+semantics.
 
 Measured source-shape rejections:
 

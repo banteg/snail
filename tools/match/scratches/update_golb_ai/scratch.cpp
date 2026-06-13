@@ -143,42 +143,42 @@ void GolbShot::update_golb_ai()
         current_position->x = movement->x + current_position->x;
         current_position->y = movement->y + current_position->y;
         current_position->z = movement->z + current_position->z;
-        if (kind) {
-            if (kind == 2 && homing_target_active) {
-                float blend = homing_blend_step + homing_blend;
-                homing_blend = blend;
-                if (blend > 1.0f)
-                    homing_blend = 1.0f;
-                speed = normalize_vector(&velocity);
-                delta.x = homing_target.x - position.x;
-                delta.y = homing_target.y - position.y;
-                delta.z = homing_target.z - position.z;
-                if (normalize_vector(&delta) < 0.40000001f) {
-                    spawn_golb_impact_sprite(&position);
-                    goto retire;
-                }
-                float pull = homing_blend;
-                float pull_x = delta.x * pull;
-                float pull_y = delta.y * pull;
-                float pull_z = delta.z * pull;
-                float keep = 1.0f - homing_blend * 1.5f;
-                float keep_x = keep * velocity.x;
-                float keep_y = keep * velocity.y;
-                float keep_z = keep * velocity.z;
-                velocity.x = keep_x + pull_x;
-                velocity.y = keep_y + pull_y;
-                velocity.z = keep_z + pull_z;
-                normalize_vector(&velocity);
-                velocity.x = speed * velocity.x;
-                velocity.y = speed * velocity.y;
-                velocity.z = speed * velocity.z;
-                if (speed < 0.1f)
-                    goto retire;
+        if (kind == 0) {
+            if (position.y > 0.49000001f || position.y < 0.0f) {
+                velocity.y = velocity.y - game->subgame_rate * 0.017000001f;
+            } else {
+                velocity.y = 0.0f;
             }
-        } else if (position.y > 0.49000001f || position.y < 0.0f) {
-            velocity.y = velocity.y - game->subgame_rate * 0.017000001f;
-        } else {
-            velocity.y = 0.0f;
+        } else if (kind == 2 && homing_target_active) {
+            float blend = homing_blend_step + homing_blend;
+            homing_blend = blend;
+            if (blend > 1.0f)
+                homing_blend = 1.0f;
+            speed = normalize_vector(&velocity);
+            delta.x = homing_target.x - position.x;
+            delta.y = homing_target.y - position.y;
+            delta.z = homing_target.z - position.z;
+            if (normalize_vector(&delta) < 0.40000001f) {
+                spawn_golb_impact_sprite(&position);
+                goto retire;
+            }
+            float pull = homing_blend;
+            float pull_x = delta.x * pull;
+            float pull_y = delta.y * pull;
+            float pull_z = delta.z * pull;
+            float keep = 1.0f - homing_blend * 1.5f;
+            float keep_x = keep * velocity.x;
+            float keep_y = keep * velocity.y;
+            float keep_z = keep * velocity.z;
+            velocity.x = keep_x + pull_x;
+            velocity.y = keep_y + pull_y;
+            velocity.z = keep_z + pull_z;
+            normalize_vector(&velocity);
+            velocity.x = speed * velocity.x;
+            velocity.y = speed * velocity.y;
+            velocity.z = speed * velocity.z;
+            if (speed < 0.1f)
+                goto retire;
         }
         output_position.x = position.x;
         output_position.y = position.y;
