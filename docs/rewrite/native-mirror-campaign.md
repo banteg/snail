@@ -175,7 +175,20 @@ clamp after movement: the START ramp now runs in LOCKSTEP (|dz| <= 0.002
 through tick 140 — new oracle ratchet). The v4 "clamp before
 integration" note is OVERTURNED (ledger).
 
-## FRONTIER NOW: gameplay-stream projectile/RNG parity (2026-06-13 v8)
+## FRONTIER NOW: gameplay-stream projectile/RNG parity (2026-06-13 v8, updated v9)
+
+v9 progress (1a058525): the recorded t=8 volley now FIRES (the ten-tick
+fire hold was keyed to subgame ticks; native keys the reseed to the APP
+frame counter at +0x1066bf4 — past 10 by any subgame), and every volley
+now consumes the play_movement_state_sound variant draw on the shared
+stream. first_div still 251: the t~153 garbage clip persists — the t=8
+volley dies ~50 ticks in (z<9) so it cannot kill the z=33.5 garbage;
+the native miss must come from the garbage's animation PHASE (the bob y
+at contact decides the 0.92-vs-0.98 margin — port object y 0.6266 at
+contact; ~1.0 would clear it). NEXT: pin the native garbage bob
+(update_barrier_ai/garbage AI cadence, its update-draw consumption and
+spawn-tick alignment in the live window) against the port's hazard
+update.
 
 With the ramp exact, first_div sits at 251: a garbage object at z~33.5
 clips the port at t~153 where geometry says native would hit too (dist
