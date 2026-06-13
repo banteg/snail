@@ -11,11 +11,16 @@ import msgspec
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
+    IDIOM_CASES,
+    IDIOM_CASES_BY_NAME,
+    compile_idiom_case,
     collect_scratch_statuses,
+    diff_regions,
     manifest_cluster_totals,
     render_status_markdown,
     render_status_table,
     run_match,
+    type_consolidation_findings,
 )
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
@@ -324,6 +329,22 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print both normalized listings side by side instead of only the diff.",
     )
+    match_diff_parser.add_argument(
+        "--regions",
+        action="store_true",
+        help="Print localized mismatch region summaries before the diff/listing.",
+    )
+    match_diff_parser.add_argument(
+        "--region-context",
+        type=int,
+        default=4,
+        help="Instruction context to include around each mismatch region (default: 4).",
+    )
+    match_diff_parser.add_argument(
+        "--max-regions",
+        type=int,
+        help="Maximum number of mismatch regions to print.",
+    )
 
     match_status_parser = match_subparsers.add_parser(
         "status",
@@ -344,6 +365,52 @@ def build_parser() -> argparse.ArgumentParser:
         "--write",
         type=Path,
         help="Write the markdown dashboard to this path in addition to stdout.",
+    )
+
+    match_idioms_parser = match_subparsers.add_parser(
+        "idioms",
+        help="Compile small VC6 source-idiom probes and print normalized asm.",
+    )
+    match_idioms_parser.add_argument(
+        "cases",
+        nargs="*",
+        help="Specific idiom case names to compile (default: all cases).",
+    )
+    match_idioms_parser.add_argument(
+        "--list",
+        action="store_true",
+        help="List available idiom cases without compiling.",
+    )
+    match_idioms_parser.add_argument(
+        "--compiler",
+        default="msvc6.5",
+        help="Compiler bundle to use (default: msvc6.5).",
+    )
+    match_idioms_parser.add_argument(
+        "--cflags",
+        default="/O2 /G5 /W3",
+        help="Compiler flags to use (default: /O2 /G5 /W3).",
+    )
+
+    match_types_parser = match_subparsers.add_parser(
+        "types",
+        help="Report scratch-local type definitions that are ready or not ready to consolidate.",
+    )
+    match_types_parser.add_argument(
+        "--threshold",
+        type=int,
+        default=2,
+        help="Minimum scratch-local definition count before reporting a type (default: 2).",
+    )
+    match_types_parser.add_argument(
+        "--paths",
+        action="store_true",
+        help="Print paths contributing to each type finding.",
+    )
+    match_types_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print findings as JSON.",
     )
 
     return parser
@@ -488,6 +555,66 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.write.write_text(render_status_markdown(statuses, totals), encoding="utf-8")
         return 0
 
+    if args.command == "match" and args.match_command == "idioms":
+        if args.list:
+            for case in IDIOM_CASES:
+                print(f"{case.name}: {case.description}")
+            return 0
+        case_names = args.cases or [case.name for case in IDIOM_CASES]
+        unknown = [name for name in case_names if name not in IDIOM_CASES_BY_NAME]
+        if unknown:
+            parser.error(f"unknown idiom case(s): {', '.join(unknown)}")
+        for index, name in enumerate(case_names):
+            if index:
+                print()
+            result = compile_idiom_case(
+                IDIOM_CASES_BY_NAME[name],
+                compiler=args.compiler,
+                cflags=args.cflags,
+            )
+            print(f"== {result.case.name} ==")
+            print(result.case.description)
+            print(f"object: {result.object_path}")
+            for line in result.instructions:
+                print(line)
+        return 0
+
+    if args.command == "match" and args.match_command == "types":
+        findings = type_consolidation_findings(threshold=args.threshold)
+        if args.json:
+            print(
+                json.dumps(
+                    [
+                        {
+                            "name": finding.name,
+                            "status": finding.status,
+                            "scratch_count": finding.scratch_count,
+                            "header_count": finding.header_count,
+                            "signature_count": finding.signature_count,
+                            "recommendation": finding.recommendation,
+                            "paths": [str(path) for path in finding.paths],
+                        }
+                        for finding in findings
+                    ],
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if not findings:
+            print("no consolidation candidates")
+            return 0
+        for finding in findings:
+            print(
+                f"{finding.status:9} {finding.name}: "
+                f"{finding.scratch_count} scratch, {finding.header_count} header, "
+                f"{finding.signature_count} scratch signature(s) - {finding.recommendation}"
+            )
+            if args.paths:
+                for path in finding.paths:
+                    print(f"  {path}")
+        return 0
+
     if args.command == "match" and args.match_command == "diff":
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
@@ -507,6 +634,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             candidate = result.first_candidate_mismatch or "<end>"
             print(f"first mismatch: target[{result.prefix_instructions}] {target}")
             print(f"                candidate[{result.prefix_instructions}] {candidate}")
+        if args.regions:
+            regions = diff_regions(
+                result,
+                context=args.region_context,
+                max_regions=args.max_regions,
+            )
+            print("regions:")
+            if not regions:
+                print("  none")
+            for index, region in enumerate(regions, start=1):
+                print(
+                    f"  {index}. target[{region.target_span}] "
+                    f"candidate[{region.candidate_span}] "
+                    f"match {region.ratio:.2%}, "
+                    f"prefix {region.prefix_instructions}/"
+                    f"{region.target_end - region.target_start}, "
+                    f"delta {region.instruction_delta:+d}, "
+                    f"changed {region.changed_target_instructions}/"
+                    f"{region.changed_candidate_instructions}"
+                )
         if args.full:
             width = max((len(line) for line in result.target_lines), default=0)
             matcher = difflib.SequenceMatcher(

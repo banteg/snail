@@ -6,18 +6,22 @@ import struct
 import pytest
 
 from snail.match import (
+    IDIOM_CASES_BY_NAME,
     LoadedImage,
     ObjectFunction,
     ScratchConfig,
     ScratchStatus,
     common_prefix_length,
+    diff_regions,
     extract_object_function,
+    find_type_definitions,
     load_image,
     match_function,
     normalize_function,
     parse_coff_object,
     render_status_rows,
     resolve_function_extent,
+    type_consolidation_findings,
 )
 from snail.symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
@@ -163,6 +167,61 @@ def test_match_function_reports_end_mismatch_for_short_candidate() -> None:
     assert result.prefix_instructions == 1
     assert result.first_target_mismatch == "ret"
     assert result.first_candidate_mismatch is None
+
+
+def test_diff_regions_reports_localized_mismatch() -> None:
+    target = bytes.fromhex("558bec31c040c3")  # push; mov; xor; inc; ret
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("558becb80100000040c3"),  # push; mov; mov; inc; ret
+        relocation_offsets=frozenset(),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"", image_base=0x400000, size_of_image=0),
+        target_va=0x401000,
+    )
+    regions = diff_regions(result, context=1)
+    assert len(regions) == 1
+    assert regions[0].target_span == "1:4"
+    assert regions[0].candidate_span == "1:4"
+    assert regions[0].changed_target_instructions == 1
+    assert regions[0].changed_candidate_instructions == 1
+
+
+def test_idiom_case_registry_contains_bitfield_probe() -> None:
+    case = IDIOM_CASES_BY_NAME["bitfield-stride6-set"]
+    assert "completed" in case.source
+    assert case.symbol == "probe"
+
+
+def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (scratches / "b").mkdir()
+    (scratches / "c").mkdir()
+    (scratches / "a" / "scratch.cpp").write_text("struct Shared { int x; };\n")
+    (scratches / "b" / "scratch.cpp").write_text("struct Shared { int x; };\n")
+    (scratches / "c" / "scratch.cpp").write_text("struct Divergent { int x; };\n")
+    (scratches / "d").mkdir()
+    (scratches / "d" / "scratch.cpp").write_text("struct Divergent { float x; };\n")
+    (include_dir / "covered.h").write_text("struct Covered { int x; };\n")
+    (scratches / "e").mkdir()
+    (scratches / "e" / "scratch.cpp").write_text("struct Covered { int x; };\n")
+
+    definitions = find_type_definitions(scratches / "a" / "scratch.cpp")
+    assert [(definition.kind, definition.name) for definition in definitions] == [
+        ("struct", "Shared")
+    ]
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["Shared"].status == "ready"
+    assert findings["Divergent"].status == "divergent"
+    assert findings["Covered"].status == "covered"
 
 
 def test_render_status_rows_includes_prefix() -> None:

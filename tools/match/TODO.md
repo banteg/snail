@@ -123,10 +123,10 @@ These are not gameplay owners, but several mirrors depend on them.
 1. Work top-down from P0 unless a new oracle trace moves the frontier.
 2. For each function: create/update scratch, run `tools/match/match.sh`,
    document residuals, then refresh `tools/match/STATUS.md`.
-3. After a function is exact or pinned, mirror it into the relevant
-   `zig/src/gameplay/native/<cluster>.zig` module before adding more logic to
-   `gameplay.zig`.
-4. Route one caller slice at a time and add a regression test or replay-oracle
-   ratchet before deleting the old scaffold path.
+3. After a function is exact or pinned, keep the recovered C as the source of
+   truth and defer the route decision: either mirror it into Zig or expose it
+   through a recovered-C gameplay library with Zig as the platform wrapper.
+4. Route one caller slice at a time only after that route is chosen, and add a
+   regression test or replay-oracle ratchet before deleting the old scaffold path.
 5. Commit each coherent match/mirror/route/collapse step with a conventional
    commit message.

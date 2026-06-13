@@ -7,4 +7,5 @@ zig-pkg/
 zig-out/
 site/
 tools/match/compilers/
+tools/match/idioms/build/
 tools/match/scratches/*/build/

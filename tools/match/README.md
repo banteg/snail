@@ -56,6 +56,18 @@ tail duplication, register pinning) turned out to be a source idiom.
    side-by-side listing instead of a unified diff).
 3. Iterate the source until the diff is empty. Exit code 0 means 100%.
 
+Useful analysis helpers:
+
+- `uv run snail match diff <obj> <function> --regions` prints localized
+  mismatch regions before the normal diff, so large functions can be worked by
+  block instead of by the whole SequenceMatcher score.
+- `uv run snail match idioms --list` shows canned VC6 source-idiom probes.
+  Running one or more cases compiles tiny standalone snippets with the same
+  compiler flags and prints normalized asm.
+- `uv run snail match types` scans scratch-local `struct`/`class` definitions
+  and reports which names are ready, already covered, or too divergent for
+  shared-header consolidation.
+
 The differ (`snail match`, `src/snail/match.py`) normalizes both sides before
 comparing: relocated immediates/displacements in the object and absolute-looking
 VAs in both the image and candidate become `ADDR`, intra-function branch targets

@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import difflib
 from pathlib import Path
+import re
 import struct
 
 import capstone
@@ -94,6 +95,34 @@ class MatchResult:
                 tofile="candidate",
                 lineterm="",
             )
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class DiffRegion:
+    target_start: int
+    target_end: int
+    candidate_start: int
+    candidate_end: int
+    changed_target_instructions: int
+    changed_candidate_instructions: int
+    ratio: float
+    prefix_instructions: int
+    target_lines: tuple[str, ...]
+    candidate_lines: tuple[str, ...]
+
+    @property
+    def target_span(self) -> str:
+        return f"{self.target_start}:{self.target_end}"
+
+    @property
+    def candidate_span(self) -> str:
+        return f"{self.candidate_start}:{self.candidate_end}"
+
+    @property
+    def instruction_delta(self) -> int:
+        return (self.candidate_end - self.candidate_start) - (
+            self.target_end - self.target_start
         )
 
 
@@ -360,6 +389,95 @@ def common_prefix_length(target_lines: tuple[str, ...], candidate_lines: tuple[s
     return min(len(target_lines), len(candidate_lines))
 
 
+def diff_regions(
+    result: MatchResult,
+    *,
+    context: int = 4,
+    max_regions: int | None = None,
+) -> list[DiffRegion]:
+    """Return localized mismatch regions from a normalized function diff.
+
+    Region grouping is intentionally mechanical: adjacent non-equal opcodes are
+    merged when the equal gap between them is no larger than the requested
+    context. Each final region is then expanded by the same context so a human
+    can see the local lead-in and fallout without reading the whole function.
+    """
+    if context < 0:
+        raise ValueError("context must be non-negative")
+    matcher = difflib.SequenceMatcher(
+        a=result.target_lines,
+        b=result.candidate_lines,
+        autojunk=False,
+    )
+    groups: list[dict[str, int]] = []
+    current: dict[str, int] | None = None
+    pending_equal: tuple[int, int, int, int] | None = None
+    for tag, a0, a1, b0, b1 in matcher.get_opcodes():
+        if tag == "equal":
+            if current is not None:
+                pending_equal = (a0, a1, b0, b1)
+            continue
+        if current is None:
+            current = {
+                "a0": a0,
+                "a1": a1,
+                "b0": b0,
+                "b1": b1,
+                "changed_a": a1 - a0,
+                "changed_b": b1 - b0,
+            }
+        elif pending_equal is not None and (
+            (pending_equal[1] - pending_equal[0]) <= context
+            or (pending_equal[3] - pending_equal[2]) <= context
+        ):
+            current["a1"] = a1
+            current["b1"] = b1
+            current["changed_a"] += a1 - a0
+            current["changed_b"] += b1 - b0
+        else:
+            groups.append(current)
+            current = {
+                "a0": a0,
+                "a1": a1,
+                "b0": b0,
+                "b1": b1,
+                "changed_a": a1 - a0,
+                "changed_b": b1 - b0,
+            }
+        pending_equal = None
+    if current is not None:
+        groups.append(current)
+
+    regions: list[DiffRegion] = []
+    for group in groups[:max_regions]:
+        target_start = max(0, group["a0"] - context)
+        target_end = min(len(result.target_lines), group["a1"] + context)
+        candidate_start = max(0, group["b0"] - context)
+        candidate_end = min(len(result.candidate_lines), group["b1"] + context)
+        target_slice = result.target_lines[target_start:target_end]
+        candidate_slice = result.candidate_lines[candidate_start:candidate_end]
+        local_ratio = difflib.SequenceMatcher(
+            a=target_slice,
+            b=candidate_slice,
+            autojunk=False,
+        ).ratio()
+        regions.append(
+            DiffRegion(
+                target_start=target_start,
+                target_end=target_end,
+                candidate_start=candidate_start,
+                candidate_end=candidate_end,
+                changed_target_instructions=group["changed_a"],
+                changed_candidate_instructions=group["changed_b"],
+                ratio=local_ratio,
+                prefix_instructions=common_prefix_length(target_slice, candidate_slice),
+                target_lines=target_slice,
+                candidate_lines=candidate_slice,
+            )
+        )
+    return regions
+
+
 def resolve_function_extent(
     manifest: FunctionSymbolManifest,
     function_name: str,
@@ -502,6 +620,168 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     if completed.returncode != 0 or not obj_path.exists():
         raise RuntimeError(f"cl failed:\n{completed.stdout}{completed.stderr}")
     return obj_path
+
+
+@dataclass(frozen=True, slots=True)
+class IdiomCase:
+    name: str
+    description: str
+    symbol: str
+    source: str
+
+
+@dataclass(frozen=True, slots=True)
+class IdiomResult:
+    case: IdiomCase
+    object_path: Path
+    instructions: tuple[str, ...]
+
+
+IDIOM_CASES: tuple[IdiomCase, ...] = (
+    IdiomCase(
+        name="byte-array-stride6-or",
+        description="Set bit 3 in the first byte of a 6-byte record via byte-array indexing.",
+        symbol="probe",
+        source="""\
+extern "C" void probe(unsigned char* records, int cursor)
+{
+    records[cursor * 6] |= 8;
+}
+""",
+    ),
+    IdiomCase(
+        name="byte-field-stride6-or",
+        description="Set bit 3 in a named first-byte flags field of a 6-byte record.",
+        symbol="probe",
+        source="""\
+struct RunRecord {
+    unsigned char flags;
+    char pad[5];
+};
+
+extern "C" void probe(RunRecord* records, int cursor)
+{
+    records[cursor].flags |= 8;
+}
+""",
+    ),
+    IdiomCase(
+        name="bitfield-stride6-set",
+        description="Set a named bitfield for bit 3 in the first byte of a 6-byte record.",
+        symbol="probe",
+        source="""\
+struct RunRecord {
+    unsigned char unknown_0 : 1;
+    unsigned char unknown_1 : 1;
+    unsigned char unknown_2 : 1;
+    unsigned char completed : 1;
+    unsigned char unknown_4_7 : 4;
+    char pad[5];
+};
+
+extern "C" void probe(RunRecord* records, int cursor)
+{
+    records[cursor].completed = 1;
+}
+""",
+    ),
+    IdiomCase(
+        name="block-scoped-pointer-call",
+        description="Declare a destination pointer at block scope and reuse it for calls.",
+        symbol="probe",
+        source="""\
+struct Record {
+    int active;
+    int value;
+};
+
+struct Bank {
+    void add(Record* record, int value);
+};
+
+extern "C" void probe(Bank* bank, Record* record, int value, int gate)
+{
+    if (gate != 0) {
+        Record* out = record;
+        out->active = 1;
+        out->value = value;
+        bank->add(out, value);
+    }
+}
+""",
+    ),
+    IdiomCase(
+        name="sparse-switch-0-1-4",
+        description="Sparse mode dispatch for cases 0, 1, and 4.",
+        symbol="probe",
+        source="""\
+extern "C" int probe(int mode)
+{
+    switch (mode) {
+    case 0:
+        return 10;
+    case 1:
+        return 11;
+    case 4:
+        return 14;
+    default:
+        return 0;
+    }
+}
+""",
+    ),
+    IdiomCase(
+        name="six-dword-struct-copy",
+        description="Copy a six-dword aggregate by assignment.",
+        symbol="probe",
+        source="""\
+struct SixDwords {
+    int values[6];
+};
+
+extern "C" void probe(SixDwords* dst, const SixDwords* src)
+{
+    *dst = *src;
+}
+""",
+    ),
+)
+IDIOM_CASES_BY_NAME = {case.name: case for case in IDIOM_CASES}
+
+
+def compile_idiom_case(
+    case: IdiomCase,
+    *,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    compiler: str = DEFAULT_SCRATCH_COMPILER,
+    cflags: str = DEFAULT_SCRATCH_CFLAGS,
+) -> IdiomResult:
+    import os
+    import shlex
+    import subprocess
+
+    build_dir = match_root / "idioms/build" / case.name
+    build_dir.mkdir(parents=True, exist_ok=True)
+    source_path = build_dir / "scratch.cpp"
+    obj_path = build_dir / "scratch.obj"
+    source_path.write_text(case.source, encoding="latin1")
+    validate_scratch_source(source_path)
+    completed = subprocess.run(
+        [str(match_root / "cl.sh"), "/c", *shlex.split(cflags), "scratch.cpp"],
+        cwd=build_dir,
+        env={**os.environ, "MSVC_VER": compiler},
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode != 0 or not obj_path.exists():
+        raise RuntimeError(f"cl failed for {case.name}:\n{completed.stdout}{completed.stderr}")
+    obj = parse_coff_object(obj_path.read_bytes())
+    function = extract_object_function(obj, case.symbol)
+    return IdiomResult(
+        case=case,
+        object_path=obj_path,
+        instructions=normalize_function(function.data, relocation_offsets=function.relocation_offsets),
+    )
 
 
 # bump when the normalizer or scoring changes so cached ratios recompute
@@ -716,3 +996,133 @@ def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals)
         lines.append("| " + " | ".join(row[:8]) + " |")
     lines.append("")
     return "\n".join(lines)
+
+
+@dataclass(frozen=True, slots=True)
+class TypeDefinition:
+    kind: str
+    name: str
+    path: Path
+    signature: str
+    is_header: bool
+
+
+@dataclass(frozen=True, slots=True)
+class TypeConsolidationFinding:
+    name: str
+    status: str
+    scratch_count: int
+    header_count: int
+    signature_count: int
+    paths: tuple[Path, ...]
+    recommendation: str
+
+
+_TYPE_DEFINITION_RE = re.compile(r"\b(struct|class)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{")
+_BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+_LINE_COMMENT_RE = re.compile(r"//.*")
+_SPACE_RE = re.compile(r"\s+")
+
+
+def _strip_cpp_comments(text: str) -> str:
+    return _LINE_COMMENT_RE.sub("", _BLOCK_COMMENT_RE.sub("", text))
+
+
+def _find_matching_brace(text: str, open_brace: int) -> int:
+    depth = 0
+    for index in range(open_brace, len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+    raise ValueError("unclosed type definition")
+
+
+def normalize_type_signature(kind: str, name: str, body: str) -> str:
+    body = _strip_cpp_comments(body)
+    body = _SPACE_RE.sub(" ", body).strip()
+    return f"{kind} {name} {{ {body} }}"
+
+
+def find_type_definitions(path: Path, *, is_header: bool = False) -> list[TypeDefinition]:
+    text = path.read_text(encoding="latin1")
+    definitions: list[TypeDefinition] = []
+    for match in _TYPE_DEFINITION_RE.finditer(text):
+        open_brace = match.end() - 1
+        try:
+            close_brace = _find_matching_brace(text, open_brace)
+        except ValueError:
+            continue
+        kind, name = match.group(1), match.group(2)
+        body = text[open_brace + 1 : close_brace]
+        definitions.append(
+            TypeDefinition(
+                kind=kind,
+                name=name,
+                path=path,
+                signature=normalize_type_signature(kind, name, body),
+                is_header=is_header,
+            )
+        )
+    return definitions
+
+
+def scan_match_type_definitions(match_root: Path = DEFAULT_MATCH_ROOT) -> list[TypeDefinition]:
+    definitions: list[TypeDefinition] = []
+    for header in sorted((match_root / "include").glob("*.h")):
+        definitions.extend(find_type_definitions(header, is_header=True))
+    for scratch in sorted(match_root.glob("scratches/*/scratch.cpp")):
+        definitions.extend(find_type_definitions(scratch, is_header=False))
+    return definitions
+
+
+def type_consolidation_findings(
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    threshold: int = 2,
+) -> list[TypeConsolidationFinding]:
+    if threshold < 1:
+        raise ValueError("threshold must be at least 1")
+    definitions = scan_match_type_definitions(match_root)
+    by_name: dict[str, list[TypeDefinition]] = {}
+    for definition in definitions:
+        by_name.setdefault(definition.name, []).append(definition)
+
+    findings: list[TypeConsolidationFinding] = []
+    for name, named_definitions in sorted(by_name.items()):
+        scratch_definitions = [definition for definition in named_definitions if not definition.is_header]
+        header_definitions = [definition for definition in named_definitions if definition.is_header]
+        if len(scratch_definitions) < threshold and not header_definitions:
+            continue
+
+        scratch_signatures = {definition.signature for definition in scratch_definitions}
+        paths = tuple(sorted({definition.path for definition in named_definitions}))
+        if header_definitions and scratch_definitions:
+            status = "covered"
+            recommendation = (
+                "header exists; consider replacing matching scratch-local copies with includes"
+            )
+        elif len(scratch_signatures) == 1 and len(scratch_definitions) >= threshold:
+            status = "ready"
+            recommendation = "same scratch-local definition appears repeatedly; consider a header"
+        elif len(scratch_signatures) > 1 and len(scratch_definitions) >= threshold:
+            status = "divergent"
+            recommendation = "same name has multiple scratch-local shapes; do not consolidate yet"
+        else:
+            continue
+
+        findings.append(
+            TypeConsolidationFinding(
+                name=name,
+                status=status,
+                scratch_count=len(scratch_definitions),
+                header_count=len(header_definitions),
+                signature_count=len(scratch_signatures),
+                paths=paths,
+                recommendation=recommendation,
+            )
+        )
+    return findings
