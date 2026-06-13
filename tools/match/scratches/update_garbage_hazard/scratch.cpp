@@ -150,9 +150,10 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
                 if (burst_velocity->x != 0.0f)
                     sign = 1;
             }
+            float signed_push = (float)sign * 0.2f;
+            signed_push *= rate_game->subgame_rate;
             unknown_a4 = 0;
-            burst_velocity->x =
-                (float)sign * 0.2f * rate_game->subgame_rate + burst_velocity->x;
+            burst_velocity->x = signed_push + burst_velocity->x;
             burst_rate_step = rate_game->subgame_rate * 0.0083333338f;
             smoke_timer = 0.0f;
             smoke_timer_step = rate_game->subgame_rate * 0.27777779f;

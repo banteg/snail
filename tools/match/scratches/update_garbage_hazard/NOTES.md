@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 74.67% (`tools/match/match.sh
+- Current matcher result: 75.56% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -47,10 +47,22 @@ Residuals:
   temporary for the x add, and keeps the native-like struct copy back to the
   sprite. State 1 uses explicit sprite-position field copies. This improves the
   scratch from 66.96% to 74.67% without changing recovered behavior.
+- 2026-06-13 source-shaping follow-up 3: the post-bias signed x push is now
+  staged as `sign * 0.2f`, then multiplied by the subgame rate, then added
+  after clearing `unknown_a4`. This matches the native arithmetic/store order
+  around `fild sign`, the two `fmul`s, the `unknown_a4 = 0` store, and the
+  final `velocity.x` add. Current result: 75.56%, 226/224 instructions
+  (`tools/match/match.sh tools/match/scratches/update_garbage_hazard --full`).
 - A direct-memory side-bias rewrite was tested because native reloads
   `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
   store and regressed the scratch to 72.09%; keep the current local
   `adjusted_x` form unless stronger source evidence appears.
+- A direct state-1 `Vec3` struct copy was tested because native copies through
+  source and destination pointers, but VC6 chose worse register ownership and
+  regressed the scratch to 74.34%. A local `contact_radius` staging variable
+  forced an x87 spill at the append call and regressed to 72.12%. A switch-value
+  case-0 return and direct state-3 x-sum spelling were also tested and emitted
+  identical code; leave them out of the source.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
