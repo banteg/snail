@@ -7,3 +7,11 @@ payload into each sprite's `+0x50` lane and returns the second sprite pointer.
 The only miss is a register-copy artifact before the second payload store. The
 target copies the payload from `edx` to `ecx` and stores from `ecx`; VC6.5 emits
 the equivalent direct store from `edx`. Do not force this with a semantic no-op.
+
+2026-06-14 breadth pass: localized diff still isolates the single final
+`mov ecx, edx` residual. Rejected source-plausible trials because they emitted
+the same 91.43% code: a named `second_payload` local, a comma-return assignment
+expression, an inline `set_payload` member on one or both stores, a pointer to
+the second payload lane, and a reference alias for the second sprite. Keep the
+clear pointer-local baseline unless original-source evidence explains the
+native register copy.

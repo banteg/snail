@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**148/665** mapped gameplay functions matched, **7333/326119** bytes (**2.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**149/665** mapped gameplay functions matched, **7354/326119** bytes (**2.3%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -49,7 +49,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 |  |
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 |  |
 | ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 |  |
-| 🚧 | copy_c_string | 0x431da0 | 21 | 10/10 | 40.00% | 1/10 |  |
+| ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 |  |
 | ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | 13/13 |  |
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | 27/27 |  |
