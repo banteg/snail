@@ -37,11 +37,14 @@ Residuals:
   A source-equivalent `while (1)` pool scan now matches the native loop head
   and overflow branch shape exactly. A follow-up independent setup reorder
   stores the player owner before deriving the scale pointer, matching the
-  native slot/player/scale setup sequence. Current result: 89.75%, 140/143 insns
+  native slot/player/scale setup sequence. Reordering the staged position
+  writes to x/z/y aligns the native x/z load order before the y store. Current
+  result: 91.87%, 140/143 insns
   (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
   --full`).
 - Current residuals are source-shape/register issues, not known semantic gaps:
   projection staging still differs in x87 operand order plus x/z local register
-  allocation. A field-wise staged-position copy was tested and regressed
-  register ownership; do not force the remaining projection order with dummy
-  volatile locals.
+  allocation. Aggregate initialization, y-first staging, destination-pointer
+  hoisting, and field-wise live-position copies were tested; only x/z/y staging
+  helped. Do not force the remaining projection order with dummy volatile
+  locals.

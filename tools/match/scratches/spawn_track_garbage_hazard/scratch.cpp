@@ -63,8 +63,8 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
 
     PositionBits staged_position;
     staged_position.x = *(int*)(cell + 16);
-    staged_position.y = *scale + *(float*)(cell + 20);
     staged_position.z = *(int*)(cell + 24);
+    staged_position.y = *scale + *(float*)(cell + 20);
     PositionBits* live_position = (PositionBits*)(slot_base_words + 877675);
     *live_position = staged_position;
     project_position_onto_track_attachment((float*)live_position, slot_base_words + 877689);
