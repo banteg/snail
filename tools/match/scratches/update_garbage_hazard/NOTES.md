@@ -22,12 +22,22 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 51.48% (`tools/match/match.sh
+- Current matcher result: 55.45% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
   members; `append_subgame_contact_target` is the exact-matched registry
   helper.
+- 2026-06-13 follow-up: the burst RNG calls carry the same ignored debug/tag
+  argument pattern seen in garbage spawn. Raw image disassembly shows the first
+  call pushes `0x4a4e6c`, which resolves to `"GDI"`, and the next two calls
+  push null. The scratch now spells this as
+  `random_signed_float_below(0.1f, "GDI")`,
+  `random_float_below(0.2f, 0)`, and
+  `random_float_below(0.30000001f, 0)`.
+- Collision-side x classification and side-bias adjustment now use float-width
+  locals, matching native 32-bit zero comparisons instead of forcing qword
+  constants through `double`.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame and stages the burst
   random/scaled velocity floats through locals before writing velocity fields,

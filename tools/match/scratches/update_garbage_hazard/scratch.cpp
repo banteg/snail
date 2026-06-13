@@ -75,8 +75,8 @@ public:
     Player* player; // +0xc0
 };
 
-double random_signed_float_below(float upper_bound);
-double random_float_below(float upper_bound);
+double random_signed_float_below(float upper_bound, const char* tag);
+double random_float_below(float upper_bound, const char* tag);
 
 GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 {
@@ -99,7 +99,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
                 return destroy_garbage_hazard();
 
             if (owner->nuke_effect_progress > 0.0f) {
-                double x = position->x;
+                float x = position->x;
                 state = 2;
                 if (x <= 0.0f)
                     collision_side = 2;
@@ -118,9 +118,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         case 2: {
             state = 3;
-            float random_x = (float)random_signed_float_below(0.1f);
-            float random_y = (float)random_float_below(0.2f) + 0.1f;
-            double random_z = random_float_below(0.30000001f);
+            float random_x = (float)random_signed_float_below(0.1f, "GDI");
+            float random_y = (float)random_float_below(0.2f, 0) + 0.1f;
+            double random_z = random_float_below(0.30000001f, 0);
             Game* rate_game = game;
             Vec3* burst_velocity = &velocity;
             double rate = rate_game->subgame_rate;
@@ -134,15 +134,15 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
             int side = collision_side;
             if (side == 1) {
-                double adjusted_x = burst_velocity->x;
+                float adjusted_x = burst_velocity->x;
                 if (adjusted_x < 0.0f)
                     adjusted_x = -adjusted_x;
-                burst_velocity->x = (float)adjusted_x;
+                burst_velocity->x = adjusted_x;
             } else if (side == 2) {
-                double adjusted_x = burst_velocity->x;
+                float adjusted_x = burst_velocity->x;
                 if (adjusted_x < 0.0f)
                     adjusted_x = -adjusted_x;
-                burst_velocity->x = (float)-adjusted_x;
+                burst_velocity->x = -adjusted_x;
             }
 
             int sign;
@@ -152,7 +152,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
                 sign = -1;
             unknown_a4 = 0;
             burst_velocity->x =
-                (float)((double)sign * 0.2f * rate_game->subgame_rate + burst_velocity->x);
+                (float)sign * 0.2f * rate_game->subgame_rate + burst_velocity->x;
             burst_rate_step = rate_game->subgame_rate * 0.0083333338f;
             smoke_timer = 0.0f;
             smoke_timer_step = rate_game->subgame_rate * 0.27777779f;
@@ -171,10 +171,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             sprite_position[2] = source_position[2];
 
             Game* owner_game = game;
-            velocity.y = owner_game->subgame_rate
-                    * owner_game->subgame_rate
-                    * -0.0099999998f
-                + velocity.y;
+            velocity.y += owner_game->subgame_rate
+                * owner_game->subgame_rate
+                * -0.0099999998f;
 
             Player* owner = player;
             if (world_position.y < -10.0f || world_position.z < owner->interaction_max_z)
