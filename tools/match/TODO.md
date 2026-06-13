@@ -49,7 +49,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |
 | `try_enter_track_attachment_from_swept_motion` | `0x42c770` | 79.80%, pinned | Swept re-entry gates and player y/lateral seed. | Finish dual-slot source-shape lead in NOTES; do not disturb pinned semantics. |
 | `update_track_attachment_follow_state` | `0x420cb0` | 46.44%, semantics pinned | Attachment stepping, natural end, side exit, supertramp launch. | Golf only with source-plausible staging; do not regress routed mirror semantics. |
-| `project_position_onto_track_attachment` | `0x4444b0` | 68.29%, source-shaped | Shared projection for garbage/slug/parcel and attachment-row actors. | Continue only around kind-42 transform local offsets plus the remaining non-kind42 stack-slot/register residuals documented in NOTES. |
+| `project_position_onto_track_attachment` | `0x4444b0` | 81.16%, source-shaped | Shared projection for garbage/slug/parcel and attachment-row actors. | Kind-42 helper now source-shaped as a `PathTemplate` member call from callsite evidence; continue only around branch-label/local-transform offsets and non-kind42 stack-slot/register residuals documented in NOTES. |
 
 ### P2 - Collision And Runtime Pools
 

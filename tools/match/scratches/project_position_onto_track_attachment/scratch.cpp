@@ -34,6 +34,9 @@ struct PathTemplateSample {
 };
 
 struct PathTemplate {
+    int compute_kind42_attachment_transform(
+        float radius, float x, float y, TransformMatrix* transform, float* out_angle);
+
     char unknown_00[0x38];
     int kind;
     char unknown_3c[0x1c];
@@ -59,9 +62,6 @@ struct Game {
     char* project_position_onto_track_attachment(float* position, float* out_angle);
 };
 
-int __stdcall compute_kind42_attachment_transform(
-    float radius, float x, float y, TransformMatrix* transform, float* out_angle);
-
 char* Game::project_position_onto_track_attachment(float* position, float* out_angle)
 {
     TrackRuntimeRow* row =
@@ -74,7 +74,7 @@ char* Game::project_position_onto_track_attachment(float* position, float* out_a
         PathTemplateSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {
             TransformMatrix transform;
-            int result = compute_kind42_attachment_transform(
+            int result = template_record->compute_kind42_attachment_transform(
                 sample->special_scalar,
                 position[0],
                 position[1],

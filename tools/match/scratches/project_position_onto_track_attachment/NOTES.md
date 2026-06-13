@@ -11,9 +11,10 @@ Recovered semantics:
 - returns the row pointer unchanged when the attachment flag is clear;
 - derives the attachment sample index from `(int)position.z -
   cell->get_row_index()`;
-- for template kind `42`, calls `compute_kind42_attachment_transform` with the
-  sample scalar, input x/y, a local transform, and `out_angle`, then writes the
-  resulting transform position x/y back into the input position;
+- for template kind `42`, calls the template record's
+  `compute_kind42_attachment_transform` with the sample scalar, input x/y, a
+  local transform, and `out_angle`, then writes the resulting transform
+  position x/y back into the input position;
 - for all other attachment templates, combines the sample transform position,
   cell anchor, lateral offset `(position.x - sample.center_x) * basis_right`,
   and vertical offset `position.y * basis_up`, then writes the projected x/y/z
@@ -32,9 +33,19 @@ Residuals:
   tools/match/scratches/project_position_onto_track_attachment --full`).
   Removing the old unused scalar declarations does not change the score and
   avoids carrying fake-looking locals.
+- 2026-06-13 follow-up: the addressed diff showed native loading
+  `ecx = template_record` immediately before the kind-42 transform helper
+  call, so the scratch now spells the helper as a `PathTemplate` member call
+  at this callsite. That raises the scratch to 81.16%, 101/106 instructions,
+  and improves prefix from 1/106 to 15/106. The shared recovered header still
+  declares this helper as `__stdcall`; consolidate that only after more
+  callsites confirm the method shape.
+- 2026-06-13 rejected variant: a scalar rewrite of the non-kind42 projection
+  based on the IDA local ordering regressed to 59.41% with a smaller `0x4c`
+  frame and reordered final FPU stores. Keep the vector-local spelling unless a
+  source-shaped owner for the final stack-slot order is found.
 - Remaining diff is source-shape/register allocation rather than a known
-  semantic gap: the candidate still misses the native early `push ebx` shape,
-  the kind-42 local transform lives at different stack offsets, and the
-  non-kind42 vector locals have different slot ordering around the final
-  projected writes. Do not introduce dummy volatile locals or inline assembly
-  to coerce these offsets.
+  semantic gap: the kind-42 branch target label and local transform offsets
+  differ, and the non-kind42 vector locals have different slot ordering around
+  the final projected writes. Do not introduce dummy volatile locals or inline
+  assembly to coerce these offsets.

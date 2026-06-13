@@ -106,7 +106,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 643/639 | 23.40% | 0/639 |  |
-| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 99/106 | 68.29% | 1/106 |  |
+| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | 5/5 |  |
