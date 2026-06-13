@@ -25,8 +25,8 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 32.17% (`tools/match/match.sh
-  tools/match/scratches/calc_path_length_z`).
+- Current matcher result: 35.76% (`tools/match/match.sh
+  tools/match/scratches/calc_path_length_z --full`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
   template at `+0x04` and source cell at `+0x08`, not an independent Golb path
@@ -41,3 +41,14 @@ Residuals:
   matrix interpolation, basis scratch stores, direction-to-velocity copy, and
   side-exit return are all covered. Avoid dummy locals solely to chase the
   native frame size without stronger original-source evidence.
+
+2026-06-13 source-shaping follow-up: terminal and side-exit `shot->position`
+copies now use explicit x/y/z stores, matching the native field-write spelling
+instead of relying on whole-struct assignment. The `shot->direction` to
+`shot->velocity` transfer is also explicit x/y/z, and the side-exit lateral
+absolute-value test now uses `float`/`0.0f` instead of widening through
+`double`. These source-shaped changes improve the scratch from 32.17% to
+35.76%, 414/425 instructions. The remaining frame gap (`0xf4` native versus
+`0xe0` candidate), overflow-loop placement, scalar lerp stack slots, and matrix
+copy layout are still broad source-shape residuals rather than new semantic
+unknowns.

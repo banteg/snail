@@ -120,7 +120,9 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     path_factor
                     * current_template->secondary_samples[current_template->segment_count - 1]
                           .delta_length;
-                shot->position = output_position;
+                shot->position.x = output_position.x;
+                shot->position.y = output_position.y;
+                shot->position.z = output_position.z;
 
                 PathTemplate* terminal_template = template_record;
                 if (terminal_template->kind == 31) {
@@ -142,7 +144,9 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     position->y = base_y + forward_y;
                     position->z = base_z + forward_z;
                     position->x = old_x;
-                    shot->position = *position;
+                    shot->position.x = position->x;
+                    shot->position.y = position->y;
+                    shot->position.z = position->z;
                 } else {
                     float z =
                         delta
@@ -287,10 +291,12 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     shot->basis_forward_scratch.y = transform.basis_forward.y;
     shot->basis_forward_scratch.z = transform.basis_forward.z;
 
-    shot->velocity = shot->direction;
+    shot->velocity.x = shot->direction.x;
+    shot->velocity.y = shot->direction.y;
+    shot->velocity.z = shot->direction.z;
 
-    double abs_lateral = input_position->x - center_x;
-    if (abs_lateral < 0.0)
+    float abs_lateral = input_position->x - center_x;
+    if (abs_lateral < 0.0f)
         abs_lateral = -abs_lateral;
 
     PathTemplate* exit_template = template_record;
@@ -302,6 +308,8 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     }
 
     active = 0;
-    shot->position = output_position;
+    shot->position.x = output_position.x;
+    shot->position.y = output_position.y;
+    shot->position.z = output_position.z;
     return template_record->side_exit_mode == 0;
 }
