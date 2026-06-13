@@ -554,6 +554,8 @@ pub const Runner = struct {
     cutscene: phase_module.CutsceneState = .{},
     handoff: phase_module.HandoffState = .{},
     tick_count: u64 = 0,
+    /// the native movement-fire sound variant draw (play_movement_state_sound)
+    movement_sound_variant: u32 = 0,
     stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
     current_global_row: usize = 0,
@@ -830,13 +832,13 @@ pub const Runner = struct {
 
         if (!self.paused and drive_active) {
             self.stepMovementFireCooldown();
-            // PORT(verified): native `update_subgoldy` reseeds the movement-fire cooldown
-            // lane from `presentation.movement_fire_cooldown_step` for the first 10 gameplay ticks
-            // before the fire gate runs, which suppresses all movement-state shots during
-            // that startup window.
-            if (self.tick_count < 10) {
-                self.presentation.movement_fire_cooldown = self.presentation.movement_fire_cooldown_step;
-            }
+            // PORT(verified): the fire-cooldown reseed (update_subgoldy: app
+            // frame counter < 10 reseeds fire_progress) keys to the APP
+            // counter at +0x1066bf4 — frames since LAUNCH, not subgame
+            // ticks. By any real subgame it is long past 10, so the hold
+            // never fires in gameplay; the old tick_count<10 model wrongly
+            // suppressed the postal[0] recording's t=8 volley (and its
+            // sound-variant random draw, desyncing the shared stream).
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.updateNativeVelocityZOverridePreMove(preview, delta_seconds);
             self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
@@ -3010,6 +3012,11 @@ pub const Runner = struct {
     ) void {
         if ((preview.runtime_build_flags & track.runtime_build_flag_movement_fire) == 0) return;
         if (fire_input_state == .none or self.attachment.exit.pending or self.presentation.movement_fire_cooldown > 0.0) return;
+        // PORT(verified): every native volley draws one math random for the
+        // movement-state sound variant (play_movement_state_sound, matched
+        // 89%) — the draw must land even though the port's audio wiring is
+        // pending, or the shared stream desyncs one draw per shot.
+        self.movement_sound_variant = self.nextMathRandomInt15();
         self.spawnProjectiles(preview);
         self.presentation.shot_cooldown_ticks = 2;
         self.presentation.movement_fire_cooldown = motion_module.movementFlagFireStartProgress(
@@ -8662,41 +8669,30 @@ test "replay fire bits drive the native movement fire gate" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
-test "movement fire stays suppressed for the first ten gameplay ticks" {
+test "movement fire is live from the first gameplay tick and draws the sound variant" {
+    // the native fire-cooldown reseed keys to the APP frame counter (past
+    // 10 by any subgame), not subgame ticks — the old ten-tick suppression
+    // wrongly ate the postal[0] recording's t=8 volley and its random draw
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.tutorial);
     runner.reset(&fixture.preview);
+    const random_state_before = runner.math_random_state;
 
-    var tick: usize = 0;
-    while (tick < 10) : (tick += 1) {
-        runner.step(
-            &fixture.preview,
-            .{
-                .fire_pressed = tick == 0,
-                .fire_down = true,
-            },
-            1.0 / 60.0,
-        );
-        try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
-        try std.testing.expectApproxEqAbs(runner.presentation.movement_fire_cooldown_step, runner.presentation.movement_fire_cooldown, 0.0001);
-    }
+    runner.step(
+        &fixture.preview,
+        .{
+            .fire_pressed = true,
+            .fire_down = true,
+        },
+        1.0 / 60.0,
+    );
 
-    var held_ticks: usize = 0;
-    while (runner.combat.projectiles.count == 0 and held_ticks < 32) : (held_ticks += 1) {
-        runner.step(
-            &fixture.preview,
-            .{
-                .fire_down = true,
-            },
-            1.0 / 60.0,
-        );
-    }
-    try std.testing.expect(held_ticks > 0);
-    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
+    try std.testing.expect(runner.combat.projectiles.count > 0);
+    // one volley = one native sound-variant draw on the shared stream
+    try std.testing.expect(runner.math_random_state != random_state_before);
 }
 
 test "projectiles stop on salt without consuming the hazard" {
