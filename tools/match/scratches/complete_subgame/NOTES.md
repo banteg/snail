@@ -95,9 +95,16 @@ Rejected experiments:
   timer A, `source_arg_tail`, timer B), but spelling that order directly in the
   scratch regressed to 74.16%. Leave this as register-allocation/scheduling
   residual, not a source-order mandate.
+- 2026-06-14 recheck: the current localized diff still isolates the same
+  byte-OR and snapshot-scheduling clusters, and the `byte-array-stride6-or`,
+  `byte-field-stride6-or`, and `bitfield-stride6-set` idiom probes all emit
+  the native direct-memory `or byte [..], 0x8` in isolation. Naming the selected
+  run record as `RunRecord* run_record` in the full scratch still emitted the
+  same contextual load/or/store sequence and was reverted as neutral churn.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register
 allocation around the difficulty/timer fields. Result-record pointer ownership
 now matches native `ebp`; do not force the remaining byte-OR or store-schedule
-residuals with volatile or fake aliasing.
+residuals with volatile, raw offset macros, or fake aliasing. Treat this
+scratch as pinned unless new source evidence explains the contextual byte-OR.
