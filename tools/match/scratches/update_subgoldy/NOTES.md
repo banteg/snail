@@ -1,10 +1,15 @@
-# update_subgoldy @ 0x43b120 — 72.30%, 2075/2091 insns, structure complete
+# update_subgoldy @ 0x43b120 — 72.44%, 2067/2091 insns, structure complete
 
 The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
 of the function is transcribed and the diff is dominated by
 register-allocation residuals, not semantics. The previously-unread
 track-mode slice (steering, replay record/playback, completion handoff,
 ghost marking, emitters) is now pinned.
+
+2026-06-13 matcher padding rebaseline: terminal object-padding normalization
+removes untargeted bytes after final `ret` instructions, so the same source now
+reports 72.44%, 2067/2091 instructions. This is a measurement correction, not
+a source-shape change.
 
 ## Semantics recovered beyond the old dossier
 

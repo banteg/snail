@@ -27,6 +27,13 @@ IMAGE_SCN_CNT_CODE = 0x00000020
 SYM_TYPE_FUNCTION = 0x20
 # int3 between image functions, nop for section alignment inside objects
 PADDING_BYTES = b"\xcc\x90"
+PADDING_LINE_TEXT = {
+    "add byte [eax], al",
+    "int3",
+    "lea ecx, dword [ecx]",
+    "nop",
+}
+BRANCH_TARGET_RE = re.compile(r"\bL([0-9a-f]+)\b")
 
 
 @dataclass(frozen=True, slots=True)
@@ -371,7 +378,27 @@ def disassemble_normalized_function(
                 text=f"{insn.mnemonic} {', '.join(operands)}".strip(),
             )
         )
-    return tuple(lines)
+    return _strip_trailing_padding_lines(tuple(lines))
+
+
+def _strip_trailing_padding_lines(
+    lines: tuple[DisassemblyLine, ...],
+) -> tuple[DisassemblyLine, ...]:
+    """Drop section-alignment instructions after an untargeted terminal ret."""
+    trim_start = len(lines)
+    while trim_start > 0 and lines[trim_start - 1].text in PADDING_LINE_TEXT:
+        trim_start -= 1
+    if trim_start == len(lines) or trim_start == 0:
+        return lines
+    if not lines[trim_start - 1].text.startswith("ret"):
+        return lines
+
+    padding_offsets = {line.offset for line in lines[trim_start:]}
+    for line in lines[:trim_start]:
+        targets = {int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text)}
+        if targets & padding_offsets:
+            return lines
+    return lines[:trim_start]
 
 
 def normalize_function(
@@ -857,8 +884,8 @@ def compile_idiom_case(
     )
 
 
-# bump when the normalizer or scoring changes so cached ratios recompute
-CACHE_VERSION = 2
+# bump when the cache schema changes; matcher source mtime handles scoring edits
+CACHE_VERSION = 3
 
 
 def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
@@ -870,6 +897,7 @@ def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
         "source_mtime": mtime(config.directory / "scratch.cpp"),
         "conf_mtime": mtime(config.directory / "scratch.conf"),
         "image_mtime": mtime(image_path),
+        "matcher_mtime": mtime(Path(__file__)),
     }
 
 
@@ -905,8 +933,9 @@ def collect_scratch_statuses(
 ) -> list[ScratchStatus]:
     """Match every scratch, reusing cached results for unchanged ones.
 
-    The cache keys on scratch source/conf and image mtimes, so an unchanged
-    scratch costs one stat() pass instead of a compile + disassembly + diff.
+    The cache keys on scratch source/conf, image, and matcher mtimes, so an
+    unchanged scratch costs one stat() pass instead of a compile + disassembly
+    + diff while normalizer changes still invalidate old scores.
     """
     image: LoadedImage | None = None
     by_name = {symbol.name: symbol for symbol in manifest.functions}

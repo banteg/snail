@@ -6,7 +6,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
-| 🚧 | update_row_event_display | 0x404cf0 | 836 | 228/214 | 96.38% | 102/214 |  |
+| 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 |  |
@@ -29,7 +29,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 243/194 | 58.12% | 12/194 |  |
-| 🚧 | update_golb_ai | 0x414820 | 2656 | 639/700 | 26.74% | 0/700 |  |
+| 🚧 | update_golb_ai | 0x414820 | 2656 | 631/700 | 26.90% | 0/700 |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 |  |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 |  |
@@ -72,7 +72,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% | 23/23 |  |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | 20/20 |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 |  |
-| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2075/2091 | 72.30% | 0/2091 |  |
+| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2091 | 72.44% | 0/2091 |  |
 | ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% | 108/108 |  |
 | 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% | 15/18 |  |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | 34/34 |  |
@@ -83,7 +83,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 |  |
 | 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 41.73% | 6/127 |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 |  |
-| 🚧 | update_garbage_hazard | 0x43f200 | 796 | 227/224 | 77.61% | 0/224 |  |
+| 🚧 | update_garbage_hazard | 0x43f200 | 796 | 218/224 | 78.73% | 0/224 |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | 22/22 |  |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | 4/4 |  |
@@ -116,7 +116,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | 21/21 |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 673/673 | 44.58% | 0/673 |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 656/673 | 45.15% | 0/673 |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 |  |

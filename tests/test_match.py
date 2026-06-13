@@ -306,6 +306,17 @@ def test_normalize_masks_relocated_call_targets() -> None:
     assert plain[0] == "call L5"
 
 
+def test_normalize_strips_untargeted_terminal_padding() -> None:
+    code = bytes.fromhex("c3") + bytes.fromhex("8d4900") + (b"\x00" * 4) + (b"\x90" * 4)
+    assert normalize_function(code) == ("ret",)
+
+
+def test_normalize_keeps_targeted_terminal_padding() -> None:
+    # jmp targets the trailing nop, so it is code from the matcher perspective.
+    code = bytes.fromhex("eb01") + bytes.fromhex("c3") + bytes.fromhex("90")
+    assert normalize_function(code) == ("jmp L3", "ret", "nop")
+
+
 def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
     from snail.match import validate_scratch_source
 

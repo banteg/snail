@@ -46,20 +46,21 @@ bonus award sound also emitted the same `mov ecx, ADDR; push 0x31` order at
 96.38%, so it does not explain native's `push 0x31; mov ecx, ADDR` setup.
 
 Remaining residual: the bonus award sound call still schedules `mov ecx,
-ADDR` and `push 0x31` in the opposite order from native, and the scratch has
-tail padding/jump-table normalization noise. Do not force this with fake
-helpers or dummy symbols.
+ADDR` and `push 0x31` in the opposite order from native. Do not force this
+with fake helpers or dummy symbols.
 
 ## Pin audit (2026-06-13)
 
-Focused verification still reports 96.38%, 228/214 instructions
+Focused verification now reports 99.53%, 213/213 instructions
 (`tools/match/match.sh tools/match/scratches/update_row_event_display --full`).
-The remaining diff is limited to the bonus sound thiscall setup order
-(`push 0x31` versus loading the global sound manager into `ecx`) and inert tail
-padding after the text update. The state machine, pause widget hiding, parcel
-spawn call, bonus score award, skip/confirm sound, widget-world vector staging,
-and delivered-count tens/ones stores all match the recovered native behavior.
+The terminal object-padding normalizer strips the inert `ret`-after padding
+that previously counted as candidate instructions. The remaining diff is
+limited to the bonus sound thiscall setup order (`push 0x31` versus loading
+the global sound manager into `ecx`). The state machine, pause widget hiding,
+parcel spawn call, bonus score award, skip/confirm sound, widget-world vector
+staging, and delivered-count tens/ones stores all match the recovered native
+behavior.
 
-Pinned at 96.38%. Do not churn this scratch for percentage unless new source
+Pinned at 99.53%. Do not churn this scratch for percentage unless new source
 evidence explains the call setup order without introducing a fake helper or
 dummy temporary.

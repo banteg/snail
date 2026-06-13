@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 77.61% (`tools/match/match.sh
+- Current matcher result: 78.73% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -115,6 +115,10 @@ Residuals:
   `sign`/random/velocity stack-slot split; VC6 optimized it back to the same
   77.61% code. The frame gap needs stronger source evidence than local
   declaration order.
+- 2026-06-13 matcher padding rebaseline: terminal object-padding normalization
+  removes untargeted bytes after final `ret` instructions, so the same source
+  now reports 78.73%, 218/224 instructions. This is a measurement correction,
+  not a source-shape change.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses

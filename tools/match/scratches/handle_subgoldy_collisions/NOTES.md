@@ -1,7 +1,12 @@
-# WIP scratch — 44.58%, 673/673 insns (2026-06-13)
+# WIP scratch — 45.15%, 656/673 insns (2026-06-13)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-06-13 matcher padding rebaseline: terminal object-padding normalization
+removes untargeted bytes after final `ret` instructions, so the same source now
+reports 45.15%, 656/673 instructions. This is a measurement correction, not a
+source-shape change.
 
 - frame 0x74 vs 0x5c: native stages MORE locals — the slug first-hit
   writes an unused staging triple (IDA v70=0/v71/v72 before the velocity

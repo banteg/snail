@@ -1,4 +1,4 @@
-# WIP scratch — 26.74%, 639/700 insns (2026-06-13)
+# WIP scratch — 26.90%, 631/700 insns (2026-06-13)
 
 Structure complete and mostly ordered; the 62-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
@@ -42,6 +42,11 @@ as `kind == 0` before the kind-2 homing branch. This matches the native
 `test kind; jne homing/nonzero` layout and improves the scratch from 24.66% to
 26.74%, 639/700 instructions, without changing the recovered gravity or homing
 semantics.
+
+Matcher padding rebaseline: terminal object-padding normalization removes
+untargeted bytes after final `ret` instructions, so the same source now reports
+26.90%, 631/700 instructions. This is a measurement correction, not a source
+shape change.
 
 Measured source-shape rejections:
 
