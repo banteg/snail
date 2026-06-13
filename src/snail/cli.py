@@ -501,6 +501,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(f"match: {result.ratio:.2%}")
         print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
+        print(f"prefix: {result.prefix_instructions}/{len(result.target_lines)} target insns")
+        if result.first_target_mismatch is not None or result.first_candidate_mismatch is not None:
+            target = result.first_target_mismatch or "<end>"
+            candidate = result.first_candidate_mismatch or "<end>"
+            print(f"first mismatch: target[{result.prefix_instructions}] {target}")
+            print(f"                candidate[{result.prefix_instructions}] {candidate}")
         if args.full:
             width = max((len(line) for line in result.target_lines), default=0)
             matcher = difflib.SequenceMatcher(

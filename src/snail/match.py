@@ -4,7 +4,8 @@ Compares a function compiled from a candidate C++ scratch (VC6 COFF object)
 against the same function in the original game image, after normalizing
 addresses and relocations away. The score is a SequenceMatcher ratio over
 normalized instruction text, so struct offsets, register choice, and
-instruction scheduling all count toward the match.
+instruction scheduling all count toward the match. The harness also reports
+the exact common instruction prefix before the first normalized mismatch.
 """
 
 from __future__ import annotations
@@ -67,8 +68,21 @@ class ObjectFunction:
 @dataclass(frozen=True, slots=True)
 class MatchResult:
     ratio: float
+    prefix_instructions: int
     target_lines: tuple[str, ...]
     candidate_lines: tuple[str, ...]
+
+    @property
+    def first_target_mismatch(self) -> str | None:
+        if self.prefix_instructions >= len(self.target_lines):
+            return None
+        return self.target_lines[self.prefix_instructions]
+
+    @property
+    def first_candidate_mismatch(self) -> str | None:
+        if self.prefix_instructions >= len(self.candidate_lines):
+            return None
+        return self.candidate_lines[self.prefix_instructions]
 
     @property
     def diff_lines(self) -> list[str]:
@@ -330,11 +344,20 @@ def match_function(
         address_range=(image.image_base, image.image_base + image.size_of_image),
     )
     ratio = difflib.SequenceMatcher(a=target_lines, b=candidate_lines, autojunk=False).ratio()
+    prefix_instructions = common_prefix_length(target_lines, candidate_lines)
     return MatchResult(
         ratio=ratio,
+        prefix_instructions=prefix_instructions,
         target_lines=target_lines,
         candidate_lines=candidate_lines,
     )
+
+
+def common_prefix_length(target_lines: tuple[str, ...], candidate_lines: tuple[str, ...]) -> int:
+    for index, (target, candidate_line) in enumerate(zip(target_lines, candidate_lines)):
+        if target != candidate_line:
+            return index
+    return min(len(target_lines), len(candidate_lines))
 
 
 def resolve_function_extent(
@@ -404,6 +427,7 @@ class ScratchStatus:
     address: int
     target_size: int
     ratio: float | None
+    prefix_instructions: int
     target_instructions: int
     candidate_instructions: int
     error: str | None
@@ -481,7 +505,7 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
 
 
 # bump when the normalizer or scoring changes so cached ratios recompute
-CACHE_VERSION = 1
+CACHE_VERSION = 2
 
 
 def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
@@ -554,6 +578,7 @@ def collect_scratch_statuses(
             fields = {
                 "target_size": len(target_data),
                 "ratio": result.ratio,
+                "prefix_instructions": result.prefix_instructions,
                 "target_instructions": len(result.target_lines),
                 "candidate_instructions": len(result.candidate_lines),
                 "error": None,
@@ -562,6 +587,7 @@ def collect_scratch_statuses(
             fields = {
                 "target_size": 0,
                 "ratio": None,
+                "prefix_instructions": 0,
                 "target_instructions": 0,
                 "candidate_instructions": 0,
                 "error": str(error).splitlines()[0] if str(error) else "unknown error",
@@ -616,7 +642,7 @@ def manifest_cluster_totals(
 STATE_ICONS = {"match": "✅", "wip": "🚧", "error": "❌"}
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
-STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "build", "note")
+STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "prefix", "build", "note")
 
 
 def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
@@ -625,6 +651,11 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
         ratio = f"{status.ratio:.2%}" if status.ratio is not None else "-"
         insns = (
             f"{status.candidate_instructions}/{status.target_instructions}"
+            if status.ratio is not None
+            else "-"
+        )
+        prefix = (
+            f"{status.prefix_instructions}/{status.target_instructions}"
             if status.ratio is not None
             else "-"
         )
@@ -638,6 +669,7 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
                 str(status.target_size),
                 insns,
                 ratio,
+                prefix,
                 "" if build == default_build else build,
                 status.error or "",
             )
@@ -677,10 +709,10 @@ def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals)
         "upper bounds: uncurated code between manifest functions counts toward "
         "the preceding extent.",
         "",
-        "| | function | address | bytes | insns | match | build |",
-        "|---|---|---|---|---|---|---|",
+        "| | function | address | bytes | insns | match | prefix | build |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for row in render_status_rows(statuses):
-        lines.append("| " + " | ".join(row[:7]) + " |")
+        lines.append("| " + " | ".join(row[:8]) + " |")
     lines.append("")
     return "\n".join(lines)

@@ -6,11 +6,17 @@ import struct
 import pytest
 
 from snail.match import (
+    LoadedImage,
+    ObjectFunction,
+    ScratchConfig,
+    ScratchStatus,
+    common_prefix_length,
     extract_object_function,
     load_image,
     match_function,
     normalize_function,
     parse_coff_object,
+    render_status_rows,
     resolve_function_extent,
 )
 from snail.symbols import (
@@ -112,6 +118,73 @@ def test_normalize_keeps_struct_offsets_exact() -> None:
     code = bytes.fromhex("c741140100000090")
     lines = normalize_function(code)
     assert lines[0] == "mov dword [ecx+0x14], 0x1"
+
+
+def test_common_prefix_length() -> None:
+    assert common_prefix_length(("push ebp", "mov ebp, esp"), ("push ebp", "ret")) == 1
+    assert common_prefix_length(("push ebp",), ("push ebp", "ret")) == 1
+    assert common_prefix_length((), ("ret",)) == 0
+
+
+def test_match_function_reports_prefix_and_first_mismatch() -> None:
+    # target: push ebp; mov ebp, esp; xor eax, eax; ret
+    target = bytes.fromhex("558bec31c0c3")
+    # candidate: push ebp; mov ebp, esp; mov eax, 1; ret
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("558becb801000000c3"),
+        relocation_offsets=frozenset(),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"", image_base=0x400000, size_of_image=0),
+        target_va=0x401000,
+    )
+    assert result.prefix_instructions == 2
+    assert result.first_target_mismatch == "xor eax, eax"
+    assert result.first_candidate_mismatch == "mov eax, 0x1"
+
+
+def test_match_function_reports_end_mismatch_for_short_candidate() -> None:
+    # target: push ebp; ret    candidate: push ebp
+    target = bytes.fromhex("55c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("55"),
+        relocation_offsets=frozenset(),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"", image_base=0x400000, size_of_image=0),
+        target_va=0x401000,
+    )
+    assert result.prefix_instructions == 1
+    assert result.first_target_mismatch == "ret"
+    assert result.first_candidate_mismatch is None
+
+
+def test_render_status_rows_includes_prefix() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch"),
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x401000,
+        target_size=10,
+        ratio=0.5,
+        prefix_instructions=2,
+        target_instructions=4,
+        candidate_instructions=5,
+        error=None,
+    )
+    assert render_status_rows([status])[0][6] == "2/4"
 
 
 MANIFEST_AVAILABLE = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH.exists()

@@ -60,8 +60,10 @@ The differ (`snail match`, `src/snail/match.py`) normalizes both sides before
 comparing: relocated immediates/displacements in the object and absolute-looking
 VAs in both the image and candidate become `ADDR`, intra-function branch targets
 become `L<offset>` labels. Struct offsets, register allocation, and instruction
-scheduling all still count — only link-time layout is forgiven. Do not invent
-extern symbols or other dummy relocation sources just to hide constants.
+scheduling all still count — only link-time layout is forgiven. The CLI reports
+both the whole-function score and the exact common instruction prefix before the
+first normalized mismatch. Do not invent extern symbols or other dummy relocation
+sources just to hide constants.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
