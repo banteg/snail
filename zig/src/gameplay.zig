@@ -5247,7 +5247,14 @@ pub const Runner = struct {
             self.attachment.follow.lateral_offset,
             self.attachment.follow.vertical_offset,
         );
-        self.row_position = exit_world_position.z + built.template.exit_tail_extra;
+        // PORT(verified): the exhaust formula yields NATIVE WORLD z
+        // (anchor + terminal_sample.z + width_or_scale + capped delta), but
+        // `row_position` lives in the half-shifted track convention
+        // (worldPositionForLane reads world z = row_position + 0.5). The
+        // postal[0] oracle pinned the missing conversion as a +0.5 teleport
+        // at every natural exit (t=144: commit 31.2178, world z read
+        // 31.7178, native 31.3350).
+        self.row_position = exit_world_position.z + built.template.exit_tail_extra - 0.5;
         self.row_position += self.attachment.follow.exit_overshoot;
         // the native exhaust writes only z — x stays the rider's LIVE
         // lateral from the follow output (the boss's out_position is the

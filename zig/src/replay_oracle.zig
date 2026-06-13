@@ -175,7 +175,13 @@ test "lockstep oracle: postal top run ratchet" {
     //   max_dz (~968 at the tail) is POST-divergence decoherence — once the
     //   runs structurally diverge, magnitude is noise; the primary ratchet
     //   is first_div, max_dz stays only as a runaway backstop
+    //   2026-06-13 v6: the natural-exit +0.5 row-convention import fixed
+    //   (commitAttachmentNaturalExit converts native world z into the
+    //   half-shifted row_position space): first_div=254. Exit velocities
+    //   now match native exactly; the remaining chain is the -0.117
+    //   attachment-PHASE z offset (entry-side) which tips a marginal
+    //   garbage clip at t~153 that native misses by under 0.117.
     const first_divergence = report.first_divergence_tick orelse run.replay.samples.len;
-    try std.testing.expect(first_divergence >= 250);
+    try std.testing.expect(first_divergence >= 254);
     try std.testing.expect(report.max_abs_dz <= 1100.0);
 }
