@@ -22,3 +22,22 @@ Zig verify: gameplay/damage.zig models these as opaque UpdateContext
 bools (warning_start_blocked, accelerated_drain_gate, suspended) — the
 correct seam shape; they can now be WIRED to their real sources
 (follow.live_flag, the grounded check) when cluster-5 routes.
+
+## Scratch status
+
+Promoted to a matcher scratch on 2026-06-13. Current result: 65.92%,
+266/268 instructions. The first scratch is structure-first and covers:
+
+- suspend gate `Game+0x74621`
+- display-fill smoothing and hit-flash progress wrap
+- state 0 warning start gates at `Game+0x430199` and `Game+0x4301bc`
+- state 1 transition to drain on `Game+0x42fde8 == 0.49f`
+- state 2 skin refresh, forced/unforced drain deltas, warning stop/sample
+  stop exit conditions
+- HUD mask/fill/flash quads with the native 560/70/64/396 geometry and one
+  reused stack color
+
+Remaining diff is mostly block placement and x87/local scheduling: native lays
+out the state-2 body before the state-1/state-0 blocks and uses stack slots
+`esp+4`/`esp+8`/`esp+0xc` for alpha, mask height, and color. Do not use fake
+labels or volatile locals just to coerce that layout.
