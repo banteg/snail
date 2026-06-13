@@ -2,9 +2,7 @@
 // Anti-streak mirror coin: flips at random but never repeats the same
 // side more than 4 times in a row.
 
-struct RngState;
-extern RngState g_rng_state; // 0x4a4c90
-float random_float_below(float maximum, RngState* state); // @ 0x44dc90, cdecl
+float random_float_below(float maximum, const char* tag); // @ 0x44dc90, cdecl
 
 class TrackMirrorState {
 public:
@@ -18,7 +16,7 @@ public:
 
 bool TrackMirrorState::switch_track_mirror()
 {
-    bool coin = random_float_below(1.0f, &g_rng_state) > 0.5f;
+    bool coin = random_float_below(1.0f, "Mirror") > 0.5f;
     if (coin == last_coin)
         ++streak;
     else
