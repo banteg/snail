@@ -162,9 +162,8 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             // fall through
 
         case 3: {
+            float next_x = velocity.x + world_position.x;
             Vec3* movement = &velocity;
-            float next_x = movement->x;
-            next_x += world_position.x;
             Vec3* position = &world_position;
             position->x = next_x;
             position->y = movement->y + position->y;

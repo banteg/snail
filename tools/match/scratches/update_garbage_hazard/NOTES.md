@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 75.56% (`tools/match/match.sh
+- Current matcher result: 77.16% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -43,7 +43,7 @@ Residuals:
   velocity, and a local gravity step improve the scratch from 55.45% to
   66.96%. These are all source-plausible forms of the recovered behavior.
 - 2026-06-13 source-shaping follow-up 2: state 3 now stages the velocity and
-  body pointers before integrating the live position, uses a real `next_x`
+  body pointers while integrating the live position, uses a real `next_x`
   temporary for the x add, and keeps the native-like struct copy back to the
   sprite. State 1 uses explicit sprite-position field copies. This improves the
   scratch from 66.96% to 74.67% without changing recovered behavior.
@@ -58,6 +58,13 @@ Residuals:
   `burst_rate_step`. This keeps the focused matcher at 75.56%, 226/224
   instructions, but matches BN's native store order around the held x87 rate
   step instead of spelling the stores in source field order.
+- 2026-06-13 source-shaping follow-up 5: state 3 now computes
+  `velocity.x + world_position.x` before declaring the movement/body pointer
+  locals. This matches the native ordering where the x add happens before the
+  `lea` setup for the vector pointers and improves the scratch from 75.56% to
+  77.16%, 227/224 instructions. The remaining operand order is still reversed
+  (`fld world; fadd velocity` instead of `fld velocity; fadd world`), but the
+  broad block layout is closer.
 - A direct-memory side-bias rewrite was tested because native reloads
   `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
   store and regressed the scratch to 72.09%; keep the current local
@@ -66,8 +73,8 @@ Residuals:
   source and destination pointers, but VC6 chose worse register ownership and
   regressed the scratch to 74.34%. A local `contact_radius` staging variable
   forced an x87 spill at the append call and regressed to 72.12%. A switch-value
-  case-0 return and direct state-3 x-sum spelling were also tested and emitted
-  identical code; leave them out of the source.
+  case-0 return was also tested and emitted identical code; leave it out of the
+  source.
 - 2026-06-13 follow-up rejection pass: commuting the state-2 x scale expression
   to `random_x * rate` emitted the same 75.56% code, so keep the existing
   spelling. Splitting the state-3 teardown into separate y and z checks delayed
@@ -77,6 +84,13 @@ Residuals:
   state-2 `Vec3 staged_velocity` temporary with three named scaled component
   locals regressed sharply to 66.52% and shrank the frame to `0x8`, so keep the
   struct staging.
+- 2026-06-13 follow-up rejection pass 2: reordering the switch labels so case 1
+  physically preceded case 0 regressed the matcher to 68.00% by pulling the
+  final roll-update tail into the case-1 path. Spelling the accepted state-3
+  x-add as two statements (`next_x = velocity.x; next_x += world_position.x`)
+  returned to the old 75.56% pointer-first sequence. Commuting the accepted
+  single expression to `world_position.x + velocity.x` emitted the same 77.16%
+  code, so keep the clearer velocity-plus-position spelling.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
