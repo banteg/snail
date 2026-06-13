@@ -86,7 +86,11 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         case 1: {
             Vec3* position = &world_position;
-            sprite->position = *position;
+            Sprite* visual = sprite;
+            Vec3* visual_position = &visual->position;
+            visual_position->x = position->x;
+            visual_position->y = position->y;
+            visual_position->z = position->z;
 
             Player* owner = player;
             if (world_position.z < owner->interaction_max_z)
@@ -156,11 +160,15 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             // fall through
 
         case 3: {
-            world_position.x += velocity.x;
-            world_position.y += velocity.y;
-            world_position.z += velocity.z;
+            Vec3* movement = &velocity;
+            float next_x = movement->x;
+            next_x += world_position.x;
+            Vec3* position = &world_position;
+            position->x = next_x;
+            position->y = movement->y + position->y;
+            position->z = movement->z + position->z;
 
-            sprite->position = world_position;
+            sprite->position = *position;
 
             Game* owner_game = game;
             float gravity_step = owner_game->subgame_rate

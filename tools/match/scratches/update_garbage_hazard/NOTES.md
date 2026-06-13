@@ -22,7 +22,7 @@ Recovered semantics covered by the initial scratch:
 
 Residuals:
 
-- Current matcher result: 66.96% (`tools/match/match.sh
+- Current matcher result: 74.67% (`tools/match/match.sh
   tools/match/scratches/update_garbage_hazard --full`).
 - Helper conventions are source-evidenced: `destroy_garbage_hazard`,
   `add_subgoldy_score`, and `spawn_garbage_smoke_particle` are thiscall
@@ -42,14 +42,23 @@ Residuals:
   branch spelling for collision/sign classification, a local staged burst
   velocity, and a local gravity step improve the scratch from 55.45% to
   66.96%. These are all source-plausible forms of the recovered behavior.
+- 2026-06-13 source-shaping follow-up 2: state 3 now stages the velocity and
+  body pointers before integrating the live position, uses a real `next_x`
+  temporary for the x add, and keeps the native-like struct copy back to the
+  sprite. State 1 uses explicit sprite-position field copies. This improves the
+  scratch from 66.96% to 74.67% without changing recovered behavior.
+- A direct-memory side-bias rewrite was tested because native reloads
+  `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
+  store and regressed the scratch to 72.09%; keep the current local
+  `adjusted_x` form unless stronger source evidence appears.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
-  uncovered behavior: native keeps a `0x1c` local frame while the candidate now
+  uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
   different stack slots and x87 scheduling.
-- The case-1 and case-3 position copies are semantically identical but use a
-  different register/source ordering. Native copies through staged source and
-  destination pointers; the scratch's typed field copies let VC6 choose a close
-  but still shorter sequence in case 1.
+- The case-1 and case-3 position copies are semantically identical but still
+  use different register/source ordering in parts of the sequence. Native
+  copies through staged source and destination pointers; the scratch's typed
+  copies let VC6 choose close but not identical registers in case 1.
 - Collision-side x bias, gravity update, smoke timer, and final roll update are
   covered, but still differ in x87 scheduling, comparison temporary width, and
   register selection. Do not force these with dummy locals or opaque casts
