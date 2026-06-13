@@ -1,12 +1,12 @@
-# WIP scratch — 28.10%, 638/700 insns (2026-06-14)
+# WIP scratch — 43.48%, 634/700 insns (2026-06-14)
 
-Structure complete and mostly ordered; the 62-insn gap is the original's
+Structure complete and mostly ordered; the 66-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. The frame mismatch is now `0x70` native
 versus `0x64` candidate after recovering homing vector temporaries. Next golf
-pass: transcribe the staging flow per block (trail/smoke offsets and any
-remaining stack-vector copies) and let the early returns duplicate.
+pass: transcribe the remaining staging flow per block (homing stack vectors,
+path-output copies, and collision probes) and let the early returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -66,17 +66,29 @@ reflected vector before copying it into velocity. The scratch now spells this
 as `reflected_velocity`, improving from 27.84% to 28.10%, 638/700 instructions,
 without changing horizontal slug deflection.
 
+Transform dispatch follow-up: the live/source matrices are now typed as
+`TransformMatrix`. Native's rocket trail block copies the source transform into
+the live matrix with a 16-dword `rep movsd` and calls
+`set_matrix_z_direction` / `rotate_matrix_world_z` as matrix member calls.
+The typed aggregate copy and member calls improve the scratch from 28.10% to
+42.62%, 642/700 instructions. With those owners recovered, re-testing the
+trail dispatch as a `switch` ordered `case 2`, `case 1`, `case 0` now recovers
+native's `sub`/`dec`/`dec` kind ladder and improves the scratch to 43.48%,
+634/700 instructions.
+
 Tooling cleanup note: `uv run snail match types Game Player PathFollow
 TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 `TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
-`Vec3` are still divergent across scratches. Do not consolidate the gameplay
-owner/projectile types yet; keep using scratch-local fields until more
-matching islands agree.
+`Vec3` are still divergent across scratches. After the typed transform pass,
+`uv run snail match types TransformMatrix GolbShot Vec3` also reports
+`TransformMatrix`, `GolbShot`, and `Vec3` as divergent. Do not consolidate the
+gameplay owner/projectile/matrix types yet; keep using scratch-local fields
+until more matching islands agree.
 
 Measured source-shape rejections:
 
-- replacing the `kind` trail dispatch with a `switch` regressed from 21.84% to
-  21.39%;
+- before the `TransformMatrix` recovery, replacing the `kind` trail dispatch
+  with a `switch` regressed from 21.84% to 21.39%;
 - direct trail/smoke offset expressions stayed score-neutral at 21.84%, so the
   named half/third/deep locals remain because they document native staging
   without claiming a match win;
@@ -101,9 +113,11 @@ Measured source-shape rejections:
 - re-testing trail/smoke offsets as x-direct plus y/z staged locals after the
   27.05% slug-dispatch change emitted identical code, so the symmetric
   `half/third/deep` locals stay as clearer source.
-- re-testing the trail/vapour/smoke dispatch as a `switch` ordered `case 2`,
-  `case 1`, `case 0` recovered the tempting zero/one/two ladder locally but
-  regressed the scratch from 27.05% to 26.75%; keep the current `if` chain.
+- before the `TransformMatrix` recovery, re-testing the trail/vapour/smoke
+  dispatch as a `switch` ordered `case 2`, `case 1`, `case 0` recovered the
+  tempting zero/one/two ladder locally but regressed the scratch from 27.05% to
+  26.75%. This was superseded by the typed transform pass, where the same
+  switch shape is now accepted.
 - assigning `velocity = reflected_velocity` for the slug bounce regressed from
   28.10% to 27.72%, so keep explicit field copies.
 - reordering reflected velocity to mirror IDA's y/x/z/source schedule regressed
@@ -130,7 +144,9 @@ Recovered this pass (full field map in scratch.cpp):
   -672 bytes = the row-cell grid stride math) when vz > 1.0, latching
   z + 1.0 — fast shots pre-enter the next path row
 - trail offsets: kind 0 three sprites at out, out - dir*0.3, out -
-  dir*0.6; kind 2 two smokes at out and out - dir*0.5 + spin wrap 2pi
+  dir*0.6; kind 2 copies the 0x40 source transform into the live matrix with
+  aggregate assignment/`rep movsd`, then emits two smokes at out and out -
+  dir*0.5 + spin wrap 2pi
 - bounds band: golb_band_min_z at player+0x2980 <= z <= player z + 46
 - slug contact: |dz| < 2.5 && dist < 2.5; native zeroes probe.y, normalizes
   the x/z plane, then deflects velocity to (-speed*nx, 0, -speed*nz); kind 1

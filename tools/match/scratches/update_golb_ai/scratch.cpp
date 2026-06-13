@@ -11,11 +11,22 @@ struct Vec3 {
 float __fastcall normalize_vector(Vec3* vector);
 void add_subgoldy_score(int* player, int event_id, int value);
 void hit_slug_hazard(int slug, int mode);
-void* qmemcpy(void* dest, const void* src, unsigned int size);
 char* get_track_grid_cell_at_world_position(char* game, Vec3* position);
-void set_matrix_z_direction(float* matrix, float direction_z, Vec3* direction);
-void rotate_matrix_world_z(float* matrix, float angle);
 void add_vapour_point(void* vapour, const void* matrix);
+
+struct TransformMatrix {
+    float right[3];
+    float pad0;
+    float up[3];
+    float pad1;
+    float forward[3];
+    float pad2;
+    Vec3 position;
+    float pad3;
+
+    void set_matrix_z_direction(Vec3* direction);
+    void rotate_matrix_world_z(float angle);
+};
 
 struct Game {
     char unknown_00[0x9];
@@ -57,7 +68,7 @@ struct GolbShot {
 
     char unknown_000[0x80];
     char vapour[0x150 - 0x80];       // +0x80 vapour trail object
-    float live_matrix[16];           // +0x150 (this+336)
+    TransformMatrix live_matrix;     // +0x150 (this+336)
     char unknown_190[0x198 - 0x190];
     int homing_target_active;        // +0x198 (this+408)
     Vec3 homing_target;              // +0x19c (this+412)
@@ -86,10 +97,8 @@ struct GolbShot {
     char unknown_274[4];
     Player* player;                  // +0x278 (this+632)
     // the source transform at +636 spans 0x40 bytes whose POSITION ROW is
-    // the live output position at +684 — one TransformMatrix, two views
-    float source_basis[12];          // +0x27c (this+636), rotation rows
-    Vec3 output_position;            // +0x2ac (this+684), the matrix position row
-    float source_matrix_pad;         // +0x2b8
+    // the live output position at +684.
+    TransformMatrix source_matrix;   // +0x27c (this+636)
     PathFollow path_follow;          // +0x2bc (this+700)
     float path_entry_z_latch;        // +0x2e4 (this+740)
 };
@@ -131,11 +140,11 @@ void GolbShot::update_golb_ai()
         switch (path_follow.calc_path_length_z(path_factor, &position, &velocity)) {
         case 1:
         case 3:
-            output_position = position;
+            source_matrix.position = position;
             break;
         case 0:
         case 2:
-            output_position = path_follow.output_position;
+            source_matrix.position = path_follow.output_position;
             break;
         default:
             break;
@@ -183,63 +192,67 @@ void GolbShot::update_golb_ai()
             if (speed < 0.1f)
                 goto retire;
         }
-        output_position.x = position.x;
-        output_position.y = position.y;
-        output_position.z = position.z;
-        if (path_entry_z_latch < output_position.z && position.y < 1.0f && position.y > 0.0f) {
-            TrackRowCell* cell = (TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &output_position);
+        source_matrix.position.x = position.x;
+        source_matrix.position.y = position.y;
+        source_matrix.position.z = position.z;
+        if (path_entry_z_latch < source_matrix.position.z && position.y < 1.0f && position.y > 0.0f) {
+            TrackRowCell* cell = (TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position);
             if (cell->tile_id == 30) {
-                path_entry_z_latch = output_position.z;
+                path_entry_z_latch = source_matrix.position.z;
                 path_follow.initialize_path_follow_golb((int)cell, &position, this);
             }
             if (velocity.z > 1.0f && ((TrackRowCell*)((char*)cell - 672))->tile_id == 30) {
-                path_entry_z_latch = output_position.z + 1.0f;
+                path_entry_z_latch = source_matrix.position.z + 1.0f;
                 path_follow.initialize_path_follow_golb((int)((char*)cell - 672), &position, this);
             }
         }
     }
 
-    if (kind) {
-        if (kind == 1) {
-            add_vapour_point(vapour + (0x80 - 0x80), source_basis);
-        } else if (kind == 2) {
-            float spun = spin_step + spin;
-            spin = spun;
-            qmemcpy(live_matrix, source_basis, 0x40);
-            if (spun > 6.2831855f)
-                spin = spun - 6.2831855f;
-            spawn_golb_smoke(&output_position);
-            float half_x = direction.x * 0.5f;
-            float half_y = direction.y * 0.5f;
-            float half_z = direction.z * 0.5f;
-            smoke_position.x = output_position.x - half_x;
-            smoke_position.y = output_position.y - half_y;
-            smoke_position.z = output_position.z - half_z;
-            spawn_golb_smoke(&smoke_position);
-        }
-    } else {
+    switch (kind) {
+    case 2: {
+        float spun = spin_step + spin;
+        spin = spun;
+        live_matrix = source_matrix;
+        if (spun > 6.2831855f)
+            spin = spun - 6.2831855f;
+        spawn_golb_smoke(&source_matrix.position);
+        float half_x = direction.x * 0.5f;
+        float half_y = direction.y * 0.5f;
+        float half_z = direction.z * 0.5f;
+        smoke_position.x = source_matrix.position.x - half_x;
+        smoke_position.y = source_matrix.position.y - half_y;
+        smoke_position.z = source_matrix.position.z - half_z;
+        spawn_golb_smoke(&smoke_position);
+        break;
+    }
+    case 1:
+        add_vapour_point(vapour + (0x80 - 0x80), &source_matrix);
+        break;
+    case 0: {
         float* body_position = (float*)((char*)owner_body + 72);
-        body_position[0] = output_position.x;
-        body_position[1] = output_position.y;
-        body_position[2] = output_position.z;
-        spawn_golb_trail_sprite(&output_position);
+        body_position[0] = source_matrix.position.x;
+        body_position[1] = source_matrix.position.y;
+        body_position[2] = source_matrix.position.z;
+        spawn_golb_trail_sprite(&source_matrix.position);
         float third_x = direction.x * 0.30000001f;
         float third_y = direction.y * 0.30000001f;
         float third_z = direction.z * 0.30000001f;
-        trail_a.x = output_position.x - third_x;
-        trail_a.y = output_position.y - third_y;
-        trail_a.z = output_position.z - third_z;
+        trail_a.x = source_matrix.position.x - third_x;
+        trail_a.y = source_matrix.position.y - third_y;
+        trail_a.z = source_matrix.position.z - third_z;
         spawn_golb_trail_sprite(&trail_a);
         float deep_x = direction.x * 0.60000002f;
         float deep_y = direction.y * 0.60000002f;
         float deep_z = direction.z * 0.60000002f;
-        trail_b.x = output_position.x - deep_x;
-        trail_b.y = output_position.y - deep_y;
-        trail_b.z = output_position.z - deep_z;
+        trail_b.x = source_matrix.position.x - deep_x;
+        trail_b.y = source_matrix.position.y - deep_y;
+        trail_b.z = source_matrix.position.z - deep_z;
         spawn_golb_trail_sprite(&trail_b);
+        break;
+    }
     }
 
-    new_output = &output_position;
+    new_output = &source_matrix.position;
     new_direction = &direction;
     direction_x = new_output->x - previous_output.x;
     direction_y = new_output->y - previous_output.y;
@@ -248,14 +261,14 @@ void GolbShot::update_golb_ai()
     new_direction->y = direction_y;
     new_direction->z = direction_z;
     if (kind == 2) {
-        set_matrix_z_direction(live_matrix, direction.z, &direction);
-        rotate_matrix_world_z(live_matrix, spin);
+        live_matrix.set_matrix_z_direction(&direction);
+        live_matrix.rotate_matrix_world_z(spin);
     }
     lived = lifetime_step + lifetime;
     lifetime = lived;
-    previous_output.x = output_position.x;
-    previous_output.y = output_position.y;
-    previous_output.z = output_position.z;
+    previous_output.x = source_matrix.position.x;
+    previous_output.y = source_matrix.position.y;
+    previous_output.z = source_matrix.position.z;
     if (lived <= 1.0f) {
         Player* bounds_player = player;
         if (position.z >= bounds_player->golb_band_min_z
@@ -264,9 +277,9 @@ void GolbShot::update_golb_ai()
             if (garbage) {
                 while (1) {
                     if (*(int*)(garbage + 132) == 1) {
-                        probe.x = *(float*)(garbage + 104) - output_position.x;
-                        probe.y = *(float*)(garbage + 108) - output_position.y;
-                        probe.z = *(float*)(garbage + 112) - output_position.z;
+                        probe.x = *(float*)(garbage + 104) - source_matrix.position.x;
+                        probe.y = *(float*)(garbage + 108) - source_matrix.position.y;
+                        probe.z = *(float*)(garbage + 112) - source_matrix.position.z;
                         float dz = probe.z;
                         if (dz < 0.0f)
                             dz = -dz;
@@ -283,13 +296,13 @@ void GolbShot::update_golb_ai()
                         goto slugs;
                 }
                 kill_golb();
-                spawn_golb_impact_sprite(&output_position);
+                spawn_golb_impact_sprite(&source_matrix.position);
                 if (kind == 2) {
                     for (int splash = game->garbage_list_head; splash; splash = *(int*)(splash + 128)) {
                         if (*(int*)(splash + 132) == 1) {
-                            probe.x = *(float*)(splash + 104) - output_position.x;
-                            probe.y = *(float*)(splash + 108) - output_position.y;
-                            probe.z = *(float*)(splash + 112) - output_position.z;
+                            probe.x = *(float*)(splash + 104) - source_matrix.position.x;
+                            probe.y = *(float*)(splash + 108) - source_matrix.position.y;
+                            probe.z = *(float*)(splash + 112) - source_matrix.position.z;
                             if (normalize_vector(&probe) < 3.0f) {
                                 *(int*)(splash + 132) = 2;
                                 if (probe.x >= 0.0f)
@@ -309,9 +322,9 @@ slugs:
                 char* slot = (char*)game + m;
                 int slug_state = *(int*)(slot + 0x356420);
                 if (slug_state == 1 || slug_state == 4) {
-                    probe.x = *(float*)(slot + 0x356408) - output_position.x;
-                    probe.y = *(float*)(slot + 0x35640c) - output_position.y;
-                    probe.z = *(float*)(slot + 0x356410) - output_position.z;
+                    probe.x = *(float*)(slot + 0x356408) - source_matrix.position.x;
+                    probe.y = *(float*)(slot + 0x35640c) - source_matrix.position.y;
+                    probe.z = *(float*)(slot + 0x356410) - source_matrix.position.z;
                     float dz = probe.z;
                     if (dz < 0.0f)
                         dz = -dz;
@@ -328,20 +341,20 @@ slugs:
                         velocity.z = reflected_velocity.z;
                         if (kind == 1) {
                             kill_golb();
-                            spawn_golb_impact_sprite(&output_position);
+                            spawn_golb_impact_sprite(&source_matrix.position);
                             hit_slug_hazard((int)((char*)game + 236 * slug_index + 0x3563a0), 2);
                             return;
                         }
                         if (kind == 2) {
                             kill_golb();
-                            spawn_golb_impact_sprite(&output_position);
+                            spawn_golb_impact_sprite(&source_matrix.position);
                             hit_slug_hazard((int)((char*)game + 236 * slug_index + 0x3563a0), 4);
                             return;
                         }
                         if (kind == 0) {
                             if (slug_bounce_armed) {
                                 kill_golb();
-                                spawn_golb_impact_sprite(&output_position);
+                                spawn_golb_impact_sprite(&source_matrix.position);
                             } else {
                                 slug_bounce_armed = 1;
                             }
@@ -351,11 +364,11 @@ slugs:
                 }
                 ++slug_index;
             }
-            if (((TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &output_position))->tile_id != 14)
+            if (((TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position))->tile_id != 14)
                 return;
-            wall_impact.x = output_position.x;
-            wall_impact.y = output_position.y;
-            wall_impact.z = output_position.z - 1.0f;
+            wall_impact.x = source_matrix.position.x;
+            wall_impact.y = source_matrix.position.y;
+            wall_impact.z = source_matrix.position.z - 1.0f;
             spawn_golb_impact_sprite(&wall_impact);
         }
     }
