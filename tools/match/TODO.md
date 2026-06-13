@@ -72,9 +72,9 @@ These are medium blast-radius systems already partly understood.
 
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
-| `apply_damage_gauge_delta` | `0x4413f0` | 58.20%, pinned finding | Hit-flash gate, damage/recovery clamp, side effects. | Finish after warning/update damage owner fields settle. |
+| `apply_damage_gauge_delta` | `0x4413f0` | 58.20%, pinned | Hit-flash gate, damage/recovery clamp, side effects. | Semantics are pinned; corrected voice-failure animation nesting and residuals are documented in NOTES. |
 | `update_damage_gauge` | `0x440fd0` | 80.60%, source-shaped | Drain, state transitions, warning interaction. | State block placement and warning call ownership now match native shape; remaining residual is x87/local scheduling documented in NOTES. |
-| `update_warning` | `0x446f80` | 57.69% | Warning actor loop, stop sample handle, global gates. | Align state/timer locals and handle-release semantics. |
+| `update_warning` | `0x446f80` | 57.69%, pinned | Warning actor loop, stop sample handle, global gates. | Semantics are pinned; overlay alpha state machine and residuals are documented in NOTES. |
 | `update_cameraman` | `0x4461d0` | 92.55%, pinned | Camera matrix blend and attachment-exit roll. | Treat as pinned unless exact register allocation becomes obvious. |
 | `initialize_cameraman` | `0x446160` | 100% | Camera init baseline. | Done; keep as dependency. |
 | `initialize_snail_skin` / `update_snail_skin_transition` / `change_snail_skin` | `0x445f60` / `0x445f80` / `0x445fd0` | 100% | Skin state is matched; renderer consumer still missing. | No matching work unless renderer callsites demand more. |

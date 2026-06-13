@@ -6,3 +6,7 @@ as 1 - 2*phase for the first half then holds zero, and on phase wrap
 returns to state 1 replaying sound 50. The target's +0x208 alpha is the
 warning overlay consumed by the HUD. Closes the checklist's "real
 warning actor" question: it is exactly this 16-byte actor.
+
+2026-06-13 pin audit: focused matcher still verifies 57.69%, 52/52 insns.
+Keep pinned; the remaining diff is register/control-flow layout, while the
+state machine, alpha constants, phase wrap, and sound replay semantics match.
