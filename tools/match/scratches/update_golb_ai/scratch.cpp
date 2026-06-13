@@ -321,18 +321,19 @@ slugs:
                         float reflect_z = deflect_speed * probe.z;
                         velocity.y = 0.0f;
                         velocity.z = -reflect_z;
-                        switch (kind) {
-                        case 1:
+                        if (kind == 1) {
                             kill_golb();
                             spawn_golb_impact_sprite(&output_position);
                             hit_slug_hazard((int)((char*)game + 236 * slug_index + 0x3563a0), 2);
                             return;
-                        case 2:
+                        }
+                        if (kind == 2) {
                             kill_golb();
                             spawn_golb_impact_sprite(&output_position);
                             hit_slug_hazard((int)((char*)game + 236 * slug_index + 0x3563a0), 4);
                             return;
-                        case 0:
+                        }
+                        if (kind == 0) {
                             if (slug_bounce_armed) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(&output_position);

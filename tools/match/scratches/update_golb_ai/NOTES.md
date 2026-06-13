@@ -1,6 +1,6 @@
-# WIP scratch — 26.90%, 631/700 insns (2026-06-13)
+# WIP scratch — 27.05%, 631/700 insns (2026-06-14)
 
-Structure complete and mostly ordered; the 62-insn gap is the original's
+Structure complete and mostly ordered; the 69-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. Next golf pass: transcribe the
@@ -47,6 +47,12 @@ Matcher padding rebaseline: terminal object-padding normalization removes
 untargeted bytes after final `ret` instructions, so the same source now reports
 26.90%, 631/700 instructions. This is a measurement correction, not a source
 shape change.
+
+Slug dispatch follow-up: native handles slug-contact projectile kinds as
+`kind == 1`, then `kind == 2`, then `kind == 0` (`cmp 1`, `cmp 2`, `test 0`).
+The scratch now spells that as ordered `if` tests instead of a `switch`,
+improving the scratch from 26.90% to 27.05%, 631/700 instructions, while
+preserving the recovered slug-hit modes and bounce-arming behavior.
 
 Measured source-shape rejections:
 
