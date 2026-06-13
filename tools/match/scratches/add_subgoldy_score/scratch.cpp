@@ -1,0 +1,69 @@
+// add_subgoldy_score @ 0x4402c0 (thiscall, ret 8)
+
+extern char* g_game_base; // data_4df904
+
+void report_errorf(const char* message, ...);
+
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id);
+};
+
+extern SoundEffectManager g_sound_effect_manager;
+
+class Player {
+public:
+    void add_subgoldy_score(int score_kind, int bonus_score);
+
+    char unknown_0000[0x2e4];
+    int total_score; // +0x2e4
+    char unknown_02e8[0x310 - 0x2e8];
+    int score_buckets[6]; // +0x310
+    char unknown_0328[0x4340 - 0x328];
+    int visible_life_stock; // +0x4340
+};
+
+void Player::add_subgoldy_score(int score_kind, int bonus_score)
+{
+    int points;
+
+    switch (score_kind) {
+    case 0:
+        points = 10;
+        break;
+    case 1:
+        points = 500;
+        break;
+    case 2:
+    case 3:
+    case 4:
+        points = 100;
+        break;
+    case 5:
+        points = bonus_score;
+        break;
+    default:
+        report_errorf("Unknown Score Type");
+        points = 0;
+        break;
+    }
+
+    score_buckets[score_kind] += points;
+
+    int old_total = total_score;
+    int new_total = old_total + points;
+    total_score = new_total;
+
+    if (old_total / 50000 != new_total / 50000) {
+        int lives = visible_life_stock;
+        if (lives < 9) {
+            visible_life_stock = lives + 1;
+        }
+    }
+
+    char* game = g_game_base;
+    if (*(int*)(game + 0x74658) == 0) {
+        if (*(int*)(game + 0x24) == 0) {
+            g_sound_effect_manager.play_sound_effect(0x2c);
+        }
+    }
+}

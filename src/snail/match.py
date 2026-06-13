@@ -845,6 +845,175 @@ extern "C" void probe(SixDwords* dst, const SixDwords* src)
 }
 """,
     ),
+    IdiomCase(
+        name="gated-tail-member-void",
+        description="Member mutator with a final two-field global gate and void thiscall side effect.",
+        symbol="probe",
+        source="""\
+extern char* g_game_base;
+
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id);
+};
+
+extern SoundEffectManager g_sound_effect_manager;
+
+struct Player {
+    int total_score;
+    int buckets[6];
+    int visible_life_stock;
+
+    void probe(int score_kind, int points);
+};
+
+void Player::probe(int score_kind, int points)
+{
+    buckets[score_kind] += points;
+    int old_total = total_score;
+    int new_total = old_total + points;
+    total_score = new_total;
+
+    if (old_total / 50000 != new_total / 50000) {
+        int lives = visible_life_stock;
+        if (lives < 9)
+            visible_life_stock = lives + 1;
+    }
+
+    char* game = g_game_base;
+    if (*(int*)(game + 0x74658) == 0 && *(int*)(game + 0x24) == 0)
+        g_sound_effect_manager.play_sound_effect(0x2c);
+}
+""",
+    ),
+    IdiomCase(
+        name="gated-tail-member-void-goto",
+        description="Member mutator with explicit shared done label after a final global gate.",
+        symbol="probe",
+        source="""\
+extern char* g_game_base;
+
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id);
+};
+
+extern SoundEffectManager g_sound_effect_manager;
+
+struct Player {
+    int total_score;
+    int buckets[6];
+    int visible_life_stock;
+
+    void probe(int score_kind, int points);
+};
+
+void Player::probe(int score_kind, int points)
+{
+    buckets[score_kind] += points;
+    int old_total = total_score;
+    int new_total = old_total + points;
+    total_score = new_total;
+
+    if (old_total / 50000 != new_total / 50000) {
+        int lives = visible_life_stock;
+        if (lives < 9)
+            visible_life_stock = lives + 1;
+    }
+
+    char* game = g_game_base;
+    if (*(int*)(game + 0x74658) != 0)
+        goto done;
+    if (*(int*)(game + 0x24) != 0)
+        goto done;
+    g_sound_effect_manager.play_sound_effect(0x2c);
+
+done:
+    return;
+}
+""",
+    ),
+    IdiomCase(
+        name="gated-tail-member-int-preserve-game",
+        description="Member function that returns the global pointer after an optional void thiscall side effect.",
+        symbol="probe",
+        source="""\
+extern char* g_game_base;
+
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id);
+};
+
+extern SoundEffectManager g_sound_effect_manager;
+
+struct Player {
+    int total_score;
+    int buckets[6];
+    int visible_life_stock;
+
+    int probe(int score_kind, int points);
+};
+
+int Player::probe(int score_kind, int points)
+{
+    buckets[score_kind] += points;
+    int old_total = total_score;
+    int new_total = old_total + points;
+    total_score = new_total;
+
+    if (old_total / 50000 != new_total / 50000) {
+        int lives = visible_life_stock;
+        if (lives < 9)
+            visible_life_stock = lives + 1;
+    }
+
+    char* game = g_game_base;
+    if (*(int*)(game + 0x74658) == 0 && *(int*)(game + 0x24) == 0)
+        g_sound_effect_manager.play_sound_effect(0x2c);
+    return (int)game;
+}
+""",
+    ),
+    IdiomCase(
+        name="gated-tail-member-int-call-result",
+        description="Member function that returns either a global pointer or the final thiscall result.",
+        symbol="probe",
+        source="""\
+extern char* g_game_base;
+
+struct SoundEffectManager {
+    int play_sound_effect(int sound_id);
+};
+
+extern SoundEffectManager g_sound_effect_manager;
+
+struct Player {
+    int total_score;
+    int buckets[6];
+    int visible_life_stock;
+
+    int probe(int score_kind, int points);
+};
+
+int Player::probe(int score_kind, int points)
+{
+    buckets[score_kind] += points;
+    int old_total = total_score;
+    int new_total = old_total + points;
+    total_score = new_total;
+
+    if (old_total / 50000 != new_total / 50000) {
+        int lives = visible_life_stock;
+        if (lives < 9)
+            visible_life_stock = lives + 1;
+    }
+
+    char* game = g_game_base;
+    int result = (int)game;
+    if (*(int*)(game + 0x74658) == 0 && *(int*)(game + 0x24) == 0)
+        result = g_sound_effect_manager.play_sound_effect(0x2c);
+    return result;
+}
+""",
+    ),
 )
 IDIOM_CASES_BY_NAME = {case.name: case for case in IDIOM_CASES}
 

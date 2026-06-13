@@ -76,6 +76,7 @@ These should turn current verified port behavior into matched proof.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `handle_subgoldy_collisions` | `0x444cf0` | 45.15%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Proof-polish: local staging, mask register reuse, per-loop delta/probe shape. |
+| `add_subgoldy_score` | `0x4402c0` | 80.62%, source-shaped | Shared score award helper for collisions, hazards, row-event parcels, bonus payouts, life thresholds, and score sound gating. | Semantics and arithmetic prefix are pinned; remaining residual is saved-register epilogue scheduling at the final sound gate, documented with `gated-tail-member-*` idiom probes in NOTES. |
 | `wall2_emitter_maybe_fire_sub_lazer` | `0x439d50` | 40.43%, pinned | Wall2 fire cadence and 4% RNG gate. | Semantics are pinned; RNG tags, emitter cadence, and source-shape residuals are documented in NOTES. |
 | `spawn_sub_lazer_projectile` | `0x441670` | 98.41%, pinned | SubLazer body/sprite spawn and y stagger. | Semantics and instruction count are pinned; remaining residual is store scheduling around velocity z versus bob phase, documented in NOTES. |
 | `update_sub_lazer_projectile` | `0x43efb0` | 41.73%, pinned | SubLazer body flight, nested sprite bob, teardown. | Semantics are pinned; body-motion ownership and register/layout residuals are documented in NOTES. |
