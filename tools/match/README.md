@@ -61,6 +61,10 @@ Useful analysis helpers:
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
+- `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
+  prints addressed normalized listings. Use this when a region involves jump
+  tables, duplicated tails, or branch labels and the side-by-side diff is too
+  lossy.
 - `uv run snail match idioms --list` shows canned VC6 source-idiom probes.
   Running one or more cases compiles tiny standalone snippets with the same
   compiler flags and prints normalized asm.

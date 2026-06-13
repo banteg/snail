@@ -105,6 +105,11 @@ Residuals:
   Flipping the side-bias absolute-value branch spelling also emitted identical
   code, so the remaining `fcomp`/reload residual is not solved by simple source
   branch shape.
+- 2026-06-13 tooling follow-up: `snail match dump` verifies the native jump
+  table sends state 0 to the epilogue at offset `0x302`, relying on the switch
+  value in `eax` as the zero return. Recasting the scratch as a `void AI()`
+  source shape regressed to 73.42%, so keep the current pointer-return scratch
+  and treat the separate candidate state-0 epilogue as layout residual.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses

@@ -20,6 +20,7 @@ from .match import (
     render_status_markdown,
     render_status_table,
     run_match,
+    run_match_dump,
     type_consolidation_findings,
 )
 from .recon import inspect_path, sha256_bytes
@@ -346,6 +347,57 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum number of mismatch regions to print.",
     )
 
+    match_dump_parser = match_subparsers.add_parser(
+        "dump",
+        help="Print addressed normalized target/candidate instruction listings.",
+    )
+    match_dump_parser.add_argument(
+        "obj",
+        type=Path,
+        help="Path to the VC6 COFF object compiled from the candidate scratch.",
+    )
+    match_dump_parser.add_argument(
+        "function",
+        help="Curated function name from the symbol manifest.",
+    )
+    match_dump_parser.add_argument(
+        "--symbol",
+        help="Override the object symbol to extract (default: match the function name).",
+    )
+    match_dump_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_dump_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_dump_parser.add_argument(
+        "--end",
+        type=lambda value: int(value, 0),
+        help="Explicit end VA when the next curated function overshoots the extent.",
+    )
+    match_dump_parser.add_argument(
+        "--side",
+        choices=("both", "target", "candidate"),
+        default="both",
+        help="Which listing to print (default: both).",
+    )
+    match_dump_parser.add_argument(
+        "--start-offset",
+        type=lambda value: int(value, 0),
+        default=0,
+        help="Only print instructions at or after this function-relative offset.",
+    )
+    match_dump_parser.add_argument(
+        "--end-offset",
+        type=lambda value: int(value, 0),
+        help="Only print instructions before this function-relative offset.",
+    )
+
     match_status_parser = match_subparsers.add_parser(
         "status",
         help="Compile all scratches and print a match dashboard.",
@@ -613,6 +665,41 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.paths:
                 for path in finding.paths:
                     print(f"  {path}")
+        return 0
+
+    if args.command == "match" and args.match_command == "dump":
+        if args.end_offset is not None and args.end_offset < args.start_offset:
+            parser.error("--end-offset must be greater than or equal to --start-offset")
+        manifest = load_function_symbol_manifest(args.manifest)
+        image_path = args.image or REPO_ROOT / manifest.primary_target
+        dump = run_match_dump(
+            obj_path=args.obj,
+            function_name=args.function,
+            image_path=image_path,
+            manifest=manifest,
+            symbol_name=args.symbol,
+            end_va=args.end,
+        )
+
+        def selected(lines):
+            return [
+                line
+                for line in lines
+                if line.offset >= args.start_offset
+                and (args.end_offset is None or line.offset < args.end_offset)
+            ]
+
+        def print_listing(title: str, lines) -> None:
+            print(f"== {title} ==")
+            for line in selected(lines):
+                print(f"{line.offset:04x} {line.address:08x}  {line.text}")
+
+        if args.side in ("both", "target"):
+            print_listing("target", dump.target_lines)
+        if args.side == "both":
+            print()
+        if args.side in ("both", "candidate"):
+            print_listing("candidate", dump.candidate_lines)
         return 0
 
     if args.command == "match" and args.match_command == "diff":

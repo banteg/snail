@@ -13,6 +13,7 @@ from snail.match import (
     ScratchStatus,
     common_prefix_length,
     diff_regions,
+    disassemble_normalized_function,
     extract_object_function,
     find_type_definitions,
     load_image,
@@ -291,6 +292,12 @@ def test_normalize_masks_relocated_call_targets() -> None:
     code = bytes.fromhex("e800000000") + bytes.fromhex("c3")
     relocated = normalize_function(code, relocation_offsets=frozenset({1}))
     assert relocated[0] == "call ADDR"
+    relocated_dump = disassemble_normalized_function(code, relocation_offsets=frozenset({1}))
+    assert relocated_dump[0].offset == 0
+    assert relocated_dump[0].address == 0
+    assert relocated_dump[0].text == "call ADDR"
+    assert relocated_dump[1].offset == 5
+    assert relocated_dump[1].text == "ret"
     # without a relocation the same encoding is an intra-function branch
     plain = normalize_function(code)
     assert plain[0] == "call L5"

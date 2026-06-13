@@ -126,6 +126,19 @@ class DiffRegion:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class DisassemblyLine:
+    offset: int
+    address: int
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
+class MatchDump:
+    target_lines: tuple[DisassemblyLine, ...]
+    candidate_lines: tuple[DisassemblyLine, ...]
+
+
 def parse_coff_object(data: bytes) -> CoffObject:
     machine, section_count, _, symtab_offset, symbol_count, optional_header_size, _ = (
         struct.unpack_from("<HHIIIHH", data, 0)
@@ -292,14 +305,14 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     return f"{size} [{'+'.join(parts)}]"
 
 
-def normalize_function(
+def disassemble_normalized_function(
     data: bytes,
     *,
     relocation_offsets: frozenset[int] | None = None,
     address_range: tuple[int, int] | None = None,
     base_address: int = 0,
-) -> tuple[str, ...]:
-    """Disassemble to normalized instruction lines.
+) -> tuple[DisassemblyLine, ...]:
+    """Disassemble to normalized instruction lines with offsets and addresses.
 
     Pass relocation_offsets so reloc'd immediates/displacements become ADDR.
     Pass address_range so absolute VAs inside the image range become ADDR.
@@ -316,7 +329,7 @@ def normalize_function(
     def is_masked_value(value: int) -> bool:
         return address_range is not None and address_range[0] <= value < address_range[1]
 
-    lines: list[str] = []
+    lines: list[DisassemblyLine] = []
     for insn in md.disasm(data, base_address):
         insn_offset = insn.address - base_address
         is_branch = capstone.CS_GRP_JUMP in insn.groups or capstone.CS_GRP_CALL in insn.groups
@@ -351,8 +364,39 @@ def normalize_function(
                 operands.append(_format_memory_operand(insn, operand, masked))
             else:
                 operands.append("?")
-        lines.append(f"{insn.mnemonic} {', '.join(operands)}".strip())
+        lines.append(
+            DisassemblyLine(
+                offset=insn_offset,
+                address=insn.address,
+                text=f"{insn.mnemonic} {', '.join(operands)}".strip(),
+            )
+        )
     return tuple(lines)
+
+
+def normalize_function(
+    data: bytes,
+    *,
+    relocation_offsets: frozenset[int] | None = None,
+    address_range: tuple[int, int] | None = None,
+    base_address: int = 0,
+) -> tuple[str, ...]:
+    """Disassemble to normalized instruction lines.
+
+    Pass relocation_offsets so reloc'd immediates/displacements become ADDR.
+    Pass address_range so absolute VAs inside the image range become ADDR.
+    The same address_range is used for image and object code; otherwise
+    immediate literals that merely look like image VAs encourage fake
+    relocation symbols in scratches. Intra-function branch targets become
+    L<offset> labels on both sides, so layouts compare structurally.
+    """
+    lines = disassemble_normalized_function(
+        data,
+        relocation_offsets=relocation_offsets,
+        address_range=address_range,
+        base_address=base_address,
+    )
+    return tuple(line.text for line in lines)
 
 
 def match_function(
@@ -521,6 +565,35 @@ def run_match(
         candidate,
         image=image,
         target_va=start,
+    )
+
+
+def run_match_dump(
+    *,
+    obj_path: Path,
+    function_name: str,
+    image_path: Path,
+    manifest: FunctionSymbolManifest,
+    symbol_name: str | None = None,
+    end_va: int | None = None,
+) -> MatchDump:
+    obj = parse_coff_object(obj_path.read_bytes())
+    candidate = extract_object_function(obj, symbol_name or function_name)
+    start, end = resolve_function_extent(manifest, function_name, end_va)
+    image = load_image(image_path, manifest.image_base)
+    target_data = image.function_bytes(start, end)
+    address_range = (image.image_base, image.image_base + image.size_of_image)
+    return MatchDump(
+        target_lines=disassemble_normalized_function(
+            target_data,
+            address_range=address_range,
+            base_address=start,
+        ),
+        candidate_lines=disassemble_normalized_function(
+            candidate.data,
+            relocation_offsets=candidate.relocation_offsets,
+            address_range=address_range,
+        ),
     )
 
 
