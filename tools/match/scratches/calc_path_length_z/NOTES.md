@@ -53,6 +53,13 @@ absolute-value test now uses `float`/`0.0f` instead of widening through
 copy layout are still broad source-shape residuals rather than new semantic
 unknowns.
 
+2026-06-13 source-shaping follow-up 2: the ordinary interpolation path now
+zeros the copied matrix position rows in native z/y/x store order for both
+`from` and `to` before calling `linear_interpolate_matrix`. This is BN-visible
+source shape around the matrix-copy block, not a frame-size pad; the focused
+matcher stayed at 35.76%, 414/425 instructions, but the local store order now
+matches that residual more closely.
+
 Rejected source-shape trial: introducing a `Vec3* shot_position` local for the
 terminal, kind-31, and side-exit shot-position writes regressed the scratch from
 35.76% to 28.57% (408 candidate instructions), so keep the explicit field stores.

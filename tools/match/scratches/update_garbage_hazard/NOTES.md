@@ -68,7 +68,10 @@ Residuals:
   spelling. Splitting the state-3 teardown into separate y and z checks delayed
   the player load but duplicated the destroy epilogue and regressed to 73.71%.
   An explicit state-1 source-position pointer alias was also score-neutral at
-  75.56% and did not recover the native copy registers.
+  75.56% and did not recover the native copy registers. Replacing the
+  state-2 `Vec3 staged_velocity` temporary with three named scaled component
+  locals regressed sharply to 66.52% and shrank the frame to `0x8`, so keep the
+  struct staging.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses

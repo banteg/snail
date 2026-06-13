@@ -259,12 +259,12 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         } else {
             from = sample->transform;
             to = secondary[current_index + 1].transform;
-            from.position.x = 0.0f;
-            from.position.y = 0.0f;
             from.position.z = 0.0f;
-            to.position.x = 0.0f;
-            to.position.y = 0.0f;
+            from.position.y = 0.0f;
+            from.position.x = 0.0f;
             to.position.z = 0.0f;
+            to.position.y = 0.0f;
+            to.position.x = 0.0f;
             float alpha =
                 advanced / current_template->secondary_samples[current_index].delta_length;
             transform.linear_interpolate_matrix(&from, &to, alpha);
