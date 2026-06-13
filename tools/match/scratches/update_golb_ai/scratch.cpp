@@ -106,6 +106,8 @@ void GolbShot::update_golb_ai()
     Vec3* new_direction;
     Vec3 probe;
     Vec3 delta;
+    Vec3 pull_delta;
+    Vec3 kept_velocity;
     Vec3 smoke_position;
     Vec3 trail_a;
     Vec3 trail_b;
@@ -163,16 +165,16 @@ void GolbShot::update_golb_ai()
                 goto retire;
             }
             float pull = homing_blend;
-            float pull_x = delta.x * pull;
-            float pull_y = delta.y * pull;
-            float pull_z = delta.z * pull;
+            pull_delta.x = delta.x * pull;
+            pull_delta.y = delta.y * pull;
+            pull_delta.z = delta.z * pull;
             float keep = 1.0f - homing_blend * 1.5f;
-            float keep_x = keep * velocity.x;
-            float keep_y = keep * velocity.y;
-            float keep_z = keep * velocity.z;
-            velocity.x = keep_x + pull_x;
-            velocity.y = keep_y + pull_y;
-            velocity.z = keep_z + pull_z;
+            kept_velocity.x = keep * velocity.x;
+            kept_velocity.y = keep * velocity.y;
+            kept_velocity.z = keep * velocity.z;
+            velocity.x = kept_velocity.x + pull_delta.x;
+            velocity.y = kept_velocity.y + pull_delta.y;
+            velocity.z = kept_velocity.z + pull_delta.z;
             normalize_vector(&velocity);
             velocity.x = speed * velocity.x;
             velocity.y = speed * velocity.y;
