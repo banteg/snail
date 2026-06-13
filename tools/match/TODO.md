@@ -110,6 +110,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `initialize_parcel_set_bucket_pool` | `0x443870` | 100% | Exact positive-count parcel bucket reset before authored parcel placement. | Done; use as the `place_parcels_on_track` bucket stride/count anchor. |
 | `initialize_zero_parcel_bucket_pool` | `0x4438b0` | 100% | Exact zero-parcel fallback bucket reset before filler placement. | Done; use with the positive bucket initializer to separate authored parcel requests from zero-fill rows. |
 | `allocate_track_parcel_slot` | `0x443190` | 100% | Exact free-slot scan for the 50-entry parcel runtime pool. | Done; use as the allocation anchor for `spawn_track_parcel`, row-event delivery parcels, and parcel-placement pool assumptions. |
+| `spawn_track_parcel` | `0x443730` | 100% | Exact runtime parcel spawn helper: allocates a parcel slot, copies world position, assigns score owner/sprite, and seeds row-based bob phase. | Done; use with the exact allocator and bucket initializers before expanding `place_parcels_on_track` or parcel collision/delivery slices. |
 | `rebuild_track_runtime_from_segments` | `0x437de0` | 100% | Exact bridge ordering for runtime cell population, parcel placement, tile variant passes, warnings, fringe build, and render-cache refresh. | Done; use as the call-order anchor before expanding `populate_runtime_track_cells_from_segments` or `build_track_fringe_objects`. |
 | `build_track_colours` | `0x435d40` | 100% | Initializes every global track colour bank before runtime cell population. | Done; keep the byte-offset loop and duplicate J/K bank calls as the exact source shape. |
 | `set_subgame_features` | `0x435df0` | 100% | Exact selected-level override and per-mode runtime flag presets before track population. | Done; use as the runtime-flag source of truth for HUD, barrier, tutorial, and track-generation gates. |
@@ -144,6 +145,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `update_subgoldy_resurrect`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
+  `spawn_track_parcel`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:

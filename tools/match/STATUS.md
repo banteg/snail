@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**162/665** mapped gameplay functions matched, **8704/326119** bytes (**2.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**163/665** mapped gameplay functions matched, **8996/326119** bytes (**2.8%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -121,6 +121,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 |  |
 | ✅ | allocate_track_parcel_slot | 0x443190 | 54 | 18/18 | 100.00% | 18/18 |  |
+| ✅ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 |  |
 | ✅ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 |  |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 643/639 | 23.40% | 0/639 |  |
