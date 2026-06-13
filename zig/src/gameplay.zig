@@ -4919,7 +4919,18 @@ pub const Runner = struct {
         preview: *const track.LoadedLevelPreview,
         tile_opt: ?u8,
     ) void {
-        if (tile_opt != native_wall2_tile_id or self.position_y >= native_barrier_hold_max_y) {
+        _ = tile_opt;
+        // PORT(verified): the native wall probe samples (x, y, z + 0.49) — a
+        // next-row lookahead at the live world x (update_subgoldy scratch,
+        // wall-14 block) — not the cell under the rider. The postal[0] oracle
+        // pinned this: native stalls at the row-54 wall while still inside
+        // the wall's lane; sampling the current row misses the wall entirely
+        // once the recorded lateral departs.
+        const probe_world = self.playerWorldPosition(preview);
+        const probe_row = preview.rowIndexAtWorldZ(probe_world.z + native_grounded_rider_height);
+        const probe_column = preview.gridColumnAtWorldX(probe_world.x);
+        const probe_tile = preview.runtimeTileAt(probe_row, probe_column);
+        if (probe_tile != native_wall2_tile_id or self.position_y >= native_barrier_hold_max_y) {
             self.presentation.barrier_hold_progress = 0.0;
             return;
         }
@@ -11693,7 +11704,11 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     runner.track_row_progress = 0.73;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.gridLaneIndex(&fixture.preview)] = native_wall2_tile_id;
+    // the native wall probe looks ahead at (x, z + 0.49) — plant the wall
+    // where that probe samples
+    const wall_probe_row = fixture.preview.rowIndexAtWorldZ(runner.row_position + native_grounded_rider_height);
+    const wall_probe_column = fixture.preview.gridColumnAtWorldX(runner.playerWorldPosition(&fixture.preview).x);
+    fixture.preview.runtime_tiles[(wall_probe_row * fixture.preview.max_width) + wall_probe_column] = native_wall2_tile_id;
     runner.native_velocity_z_override_per_tick = 0.8;
 
     runner.stepActivePhaseVerticalMotion(&fixture.preview);
@@ -11708,7 +11723,9 @@ test "barrier hold tile snaps z and arms post-follow exit after the native timer
     var ticks: usize = 0;
     while (ticks < 61 and !runner.attachment.exit.pending) : (ticks += 1) {
         runner.refreshSample(&fixture.preview);
-        fixture.preview.runtime_tiles[(runner.current_global_row * fixture.preview.max_width) + runner.gridLaneIndex(&fixture.preview)] = native_wall2_tile_id;
+        const hold_probe_row = fixture.preview.rowIndexAtWorldZ(runner.row_position + native_grounded_rider_height);
+        const hold_probe_column = fixture.preview.gridColumnAtWorldX(runner.playerWorldPosition(&fixture.preview).x);
+        fixture.preview.runtime_tiles[(hold_probe_row * fixture.preview.max_width) + hold_probe_column] = native_wall2_tile_id;
         runner.stepActivePhaseVerticalMotion(&fixture.preview);
     }
 
