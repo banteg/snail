@@ -54,8 +54,6 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
 {
     char* self = (char*)this;
     DWORD* words = (DWORD*)self;
-    Vec3* position = (Vec3*)(self + 0x1f4);
-    Vec3* velocity = (Vec3*)(self + 0x24c);
 
     self[0x1bc] = 0;
     self[0x1bd] = 0;
@@ -80,25 +78,29 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
     }
 
     words[158] = (DWORD)player;
-    DWORD movement_flags = *(DWORD*)(player + 0x338);
-    if ((movement_flags & 7) != 0) {
+    DWORD kind_flags = *(DWORD*)(player + 0x338);
+    if ((kind_flags & 7) != 0) {
         words[112] = 0;
-    } else if ((movement_flags & 0x18) != 0) {
+    } else if ((kind_flags & 0x18) != 0) {
         words[112] = 1;
-    } else if ((movement_flags & 0x60) != 0) {
+    } else if ((kind_flags & 0x60) != 0) {
         words[112] = 2;
     }
 
     set_matrix_identity(self + 0x27c);
     words[145] = 1;
 
-    position->x = *(float*)(player + 0x68);
-    position->y = *(float*)(player + 0x6c);
-    position->z = *(float*)(player + 0x70);
+    Vec3* position = (Vec3*)(self + 0x1f4);
+    Vec3* velocity = (Vec3*)(self + 0x24c);
+    Vec3* player_position = (Vec3*)(player + 0x68);
+    position->x = player_position->x;
+    position->y = player_position->y;
+    position->z = player_position->z;
     position->x = *(float*)(player + 0x58) * 0.5f + position->x;
     position->y = *(float*)(player + 0x5c) * 0.5f + position->y;
     position->z = *(float*)(player + 0x60) * 0.5f + position->z;
 
+    DWORD movement_flags = *(DWORD*)(player + 0x338);
     if ((movement_flags & 5) != 0) {
         Vec3* source;
         switch (spawn_selector) {
