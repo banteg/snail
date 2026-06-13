@@ -24,11 +24,6 @@ Residuals:
   pool scan, active-chain push, tagged `"Gadd"` scale RNG draw, attachment
   projection, shared body-list insertion, sprite variant RNG draw, sprite
   field setup, source-cell store, and hidden-byte clear.
-- Current residuals are source-shape/register issues, not known semantic gaps:
-  the native source reserves a 0x10-byte local frame and stages x/y/z before
-  the projection call, while the current scratch lets VC6 keep more values in
-  registers; the loop condition also compiles as a preloaded test instead of
-  the native memory compare at the top of the scan.
 - 2026-06-13 follow-up: the pool scan now advances the slot pointer before the
   overflow check, matching the native control-flow semantics and improving the
   scratch to 64.31% (`tools/match/match.sh
@@ -37,3 +32,13 @@ Residuals:
   staging before projection, but it changed register ownership (`this` moved
   out of `edi`) and regressed the match; leave the remaining frame/staging gap
   alone until stronger source evidence appears.
+- 2026-06-13 source-shaping follow-up: a typed `PositionBits` staging record
+  assigned into the live slot position recovers the native `0x10` stack frame
+  and exact 143/143 instruction count. Current result: 75.52%
+  (`tools/match/match.sh tools/match/scratches/spawn_track_garbage_hazard
+  --full`).
+- Current residuals are source-shape/register issues, not known semantic gaps:
+  the pool scan still compiles as a preloaded first-state test instead of the
+  native memory compare at the top of the scan, and the projection staging
+  still differs in x87 operand order plus x/z local register allocation. Do not
+  force the remaining loop or projection order with dummy volatile locals.

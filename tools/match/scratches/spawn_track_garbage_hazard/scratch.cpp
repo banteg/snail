@@ -3,8 +3,13 @@
 // seed its live body position from the runtime cell, project attachment rows,
 // link it into both active lists, and allocate the sprite presentation.
 
-typedef unsigned int uint32_t;
 typedef unsigned int DWORD;
+
+struct PositionBits {
+    int x;
+    float y;
+    int z;
+};
 
 struct TransformMatrix {
     float rows[16];
@@ -53,14 +58,13 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     ((DWORD*)slot_base_words)[877682] = 1;
     set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + 877663));
 
-    int x_bits = *(int*)(cell + 16);
-    float y = *scale + *(float*)(cell + 20);
-    int z_bits = *(int*)(cell + 24);
-    ((DWORD*)slot_base_words)[877675] = x_bits;
-    slot_base_words[877676] = y;
-    ((DWORD*)slot_base_words)[877677] = z_bits;
-    float* live_position = slot_base_words + 877675;
-    project_position_onto_track_attachment(live_position, slot_base_words + 877689);
+    PositionBits staged_position;
+    staged_position.x = *(int*)(cell + 16);
+    staged_position.y = *scale + *(float*)(cell + 20);
+    staged_position.z = *(int*)(cell + 24);
+    PositionBits* live_position = (PositionBits*)(slot_base_words + 877675);
+    *live_position = staged_position;
+    project_position_onto_track_attachment((float*)live_position, slot_base_words + 877689);
 
     float* tail = (float*)(self_words + 978393);
     char* anchor = g_game_base + 1448;
