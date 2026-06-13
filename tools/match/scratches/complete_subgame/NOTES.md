@@ -74,6 +74,13 @@ Rejected experiments:
 - Locals for the delayed difficulty/source-arg snapshot fields did not change
   codegen; a `source_score_tail` preload local only reproduced the same 75.28%
   schedule as the simple assignment order.
+- 2026-06-13 tooling recheck: the new `snail match idioms` stride-6 probes
+  still show VC6 can emit a direct `or byte [base + index*6], 0x8` in
+  isolation, but both struct-field and byte-stride spellings in this full
+  scratch keep the contextual load/or/store sequence. A `replay_cursor` local
+  regressed to 58.76% by moving the index into different registers. Moving the
+  `score_tail` assignment before the six-dword stats copy kept the same score
+  but stored too early, before `rep movsd`, so keep the current snapshot order.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register

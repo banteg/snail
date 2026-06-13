@@ -51,3 +51,9 @@ second warning-method call address with `lea`. A render-local declaration-order
 experiment and a pointer-local warning call were tested and produced no score
 movement; do not use fake labels or volatile locals just to coerce those
 layouts.
+
+2026-06-13 tooling recheck: swapping the source declarations for `alpha` and
+`mask_height` still emits identical 80.60% code in the current checkout, even
+though the addressed dump shows those two stack slots are swapped versus
+native. Treat the render-slot mismatch as allocation/scheduling until a
+source-shaped owner changes codegen.

@@ -110,6 +110,11 @@ Residuals:
   value in `eax` as the zero return. Recasting the scratch as a `void AI()`
   source shape regressed to 73.42%, so keep the current pointer-return scratch
   and treat the separate candidate state-0 epilogue as layout residual.
+- 2026-06-13 tooling recheck: declaring the real state-2 `sign` local before
+  the random draws did not recover the native `0x1c` frame or the
+  `sign`/random/velocity stack-slot split; VC6 optimized it back to the same
+  77.61% code. The frame gap needs stronger source evidence than local
+  declaration order.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses

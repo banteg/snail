@@ -41,6 +41,9 @@ old direct-member widget-world form.
 Rejected experiment: reusing a local `bonus_score` for the sound id after
 `add_subgoldy_score` did not change the residual call setup order at 96.38%,
 so the simpler constant sound call remains.
+Rejected experiment: introducing a real `SoundEffectManager*` local for the
+bonus award sound also emitted the same `mov ecx, ADDR; push 0x31` order at
+96.38%, so it does not explain native's `push 0x31; mov ecx, ADDR` setup.
 
 Remaining residual: the bonus award sound call still schedules `mov ecx,
 ADDR` and `push 0x31` in the opposite order from native, and the scratch has
