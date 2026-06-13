@@ -89,3 +89,7 @@ Rejected source-shape trial: changing the final velocity transfer to whole
 39.28%, and adding an owner-shot alias around the final copy batch regressed to
 37.20%. An explicit scalar-local spelling for the ordinary output vector
 emitted the same 40.58% code and was reverted as neutral source churn.
+
+Rejected source-shape trial: narrowing the `shot_position` pointer alias to
+only the side-exit copy still regressed the accepted basis-copy shape from
+40.58% to 39.38%, so keep the explicit side-exit x/y/z stores.

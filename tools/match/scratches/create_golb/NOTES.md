@@ -60,6 +60,13 @@ Residuals:
   `player_position` source pointer for the initial spawn-position copy emitted
   the same score on its own; a whole-`Vec3` initial copy regressed to 28.10%;
   staging the half-extents as named locals regressed to 28.32%.
+- 2026-06-13 rejection pass 2: staging only the y/z spawn half-extents as
+  named locals regressed the current scratch from 28.63% to 28.57%, so keep
+  the direct field adds. Repeatedly reloading the kind-0 sprite from the slot
+  word instead of keeping the typed sprite pointer regressed to 20.96%.
+  Rewriting the post-direction kind dispatch as a decrementing labeled tree
+  regressed to 22.37%. A top-level `zero_byte` local for the initial byte
+  clears emitted the same 28.63% code and was reverted as neutral churn.
 - The kind-specific setup lanes are complete, but vapour/list insertion,
   sprite color copy, and path-search hit handling still differ in local
   ordering. Do not add dummy temporaries solely to force those byte layouts

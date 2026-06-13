@@ -97,6 +97,14 @@ Residuals:
   returned to the old 75.56% pointer-first sequence. Commuting the accepted
   single expression to `world_position.x + velocity.x` emitted the same 77.16%
   code, so keep the clearer velocity-plus-position spelling.
+- 2026-06-13 follow-up rejection pass 3: changing the state-2 `rate` local
+  from `double` to `float` moved the frame to `0x18` but regressed the x87
+  staging from 77.61% to 70.95%, so keep the double-rate spelling. Reordering
+  the case-1 sprite-position declarations and removing the `Sprite* visual`
+  owner both emitted the same 77.61% code and were reverted as neutral churn.
+  Flipping the side-bias absolute-value branch spelling also emitted identical
+  code, so the remaining `fcomp`/reload residual is not solved by simple source
+  branch shape.
 - Remaining diff is dominated by VC6 source-shape/allocation issues, not
   uncovered behavior: native keeps a `0x1c` local frame while the candidate
   keeps a `0x14` frame, and the burst random/scaled velocity staging still uses
