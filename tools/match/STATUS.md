@@ -53,6 +53,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | 27/27 |  |
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 |  |
+| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 219/1324 | 7.13% | 0/1324 |  |
