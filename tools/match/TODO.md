@@ -2,10 +2,12 @@
 
 Created: 2026-06-13
 
-Goal: match or pin every gameplay-simulation function that can overturn port
-semantics, then mirror/route/collapse the old Zig model. This is not a byte
-golf scoreboard: a lower honest match with documented residuals is better than
-a fake 100%.
+Goal: build broad, trustworthy gameplay coverage by matching exact small and
+medium functions, pinning large functions once their semantics and residuals
+are clear, then using those recovered C islands to mirror/route/collapse the
+old Zig model. This is not a byte golf scoreboard: a lower honest match with
+documented residuals is better than a fake 100%, and broad semantic coverage
+beats chasing perfection on one large function.
 
 ## Rules
 
@@ -24,6 +26,19 @@ a fake 100%.
   remaining diff is register allocation, x87 scheduling, or duplicated epilogue
   shape. Mark that as pinned instead of contorting the source.
 
+## Breadth Policy
+
+- Prefer exact or near-exact small/medium helpers over prolonged large-function
+  byte golf when both improve gameplay assurance.
+- For large structure-complete functions, stop once the gameplay semantics,
+  data owners, helper calls, and remaining residual classes are documented.
+- Return to a large pinned function only with a specific lead: new oracle
+  divergence, source-idiom evidence, shared-type consolidation, or localized
+  diff evidence that can improve it without fakematching.
+- Each pass should broaden the trusted map by adding an exact helper, pinning a
+  function, improving a high-leverage scratch, or making the TODO/STATUS state
+  more actionable.
+
 ## Priority Queue
 
 ### P0 - Current Oracle Frontier
@@ -37,7 +52,7 @@ garbage/projectile divergence.
 | `destroy_garbage_hazard` | `0x43f130` | 100% | Confirms live-list teardown and whether any collision-side or sprite state survives after hit. | Done; use as the exact kill/unlink reference for `update_garbage_hazard`. |
 | `spawn_track_garbage_hazard` | `0x43da80` | 92.58%, pinned | Seeds garbage scale, sprite variant, projected body position, active list link, and slot owner. Recent port fix depends on this path. | Semantics are pinned; remaining projection x87/register residual and rejected variants are documented in NOTES. |
 | `append_subgame_contact_target` | `0x415ef0` | 100% | Called by garbage and slug AI; exact match confirms it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Done; use as the exact contact-target registry helper for garbage and slug AI. |
-| `update_golb_ai` | `0x414820` | 49.63%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Live-state gate, path-follow output copies, non-follow position pointer staging, kind-0 gravity ordering, direction delta locals, horizontal slug-deflection normalization, slug kind compare order, homing pull/keep `Vec3` temporaries, homing current-position pointer use, homing target-delta/result stack staging, slug reflected-velocity staging, typed transform copy/member calls, and trail dispatch now better match native; continue around homing y/z velocity-owner operands, path-output stack staging, collision probe scheduling, and duplicated returns documented in NOTES. |
+| `update_golb_ai` | `0x414820` | 49.63%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Treat as a pinned semantic map for breadth-first work unless a specific localized lead appears. Live-state gate, path-follow output copies, non-follow position pointer staging, kind-0 gravity ordering, direction delta locals, horizontal slug-deflection normalization, slug kind compare order, homing pull/keep `Vec3` temporaries, homing current-position pointer use, homing target-delta/result stack staging, slug reflected-velocity staging, typed transform copy/member calls, and trail dispatch now better match native; remaining residuals are homing y/z velocity-owner operands, path-output stack staging, collision probe scheduling, and duplicated returns documented in NOTES. |
 | `calc_path_length_z` | `0x4217b0` | 40.58%, structure complete | Golb path-follow riding; sibling of `update_track_attachment_follow_state`. | Scalar/base declaration-order trials are exhausted; continue only with stronger evidence around overflow block placement, matrix-copy layout, and terminal/side-exit shot-position ownership documented in NOTES. |
 | `create_golb` | `0x415280` | 28.63%, structure complete | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Pointer lifetimes, movement-flag reloads, previous-output whole-copy, and the shared `(flags & 5)` movement-source label now better match native setup; continue around remaining movement-flag branch sharing, direction copy staging, and kind-specific setup locals documented in NOTES. |
 
@@ -123,13 +138,18 @@ These are not gameplay owners, but several mirrors depend on them.
 
 ## Operating Plan
 
-1. Work top-down from P0 unless a new oracle trace moves the frontier.
-2. For each function: create/update scratch, run `tools/match/match.sh`,
+1. Work breadth-first within the priority queue: prefer the next important
+   function whose semantics can be matched, pinned, or usefully improved without
+   sinking into large-function perfection.
+2. Use large structure-complete scratches as semantic maps. Do not continue
+   golfing them solely for percentage once NOTES identify only register/x87/
+   epilogue/layout residuals.
+3. For each function: create/update scratch, run `tools/match/match.sh`,
    document residuals, then refresh `tools/match/STATUS.md`.
-3. After a function is exact or pinned, keep the recovered C as the source of
+4. After a function is exact or pinned, keep the recovered C as the source of
    truth and defer the route decision: either mirror it into Zig or expose it
    through a recovered-C gameplay library with Zig as the platform wrapper.
-4. Route one caller slice at a time only after that route is chosen, and add a
+5. Route one caller slice at a time only after that route is chosen, and add a
    regression test or replay-oracle ratchet before deleting the old scaffold path.
-5. Commit each coherent match/mirror/route/collapse step with a conventional
+6. Commit each coherent match/mirror/route/collapse step with a conventional
    commit message.
