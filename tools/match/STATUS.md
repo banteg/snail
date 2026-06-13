@@ -6,7 +6,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | build |
 |---|---|---|---|---|---|---|
-| 🚧 | update_row_event_display | 0x404cf0 | 836 | 221/214 | 85.06% |  |
+| 🚧 | update_row_event_display | 0x404cf0 | 836 | 218/214 | 85.19% |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% |  |

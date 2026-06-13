@@ -185,7 +185,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
     Vec3 doubled_base;
     Vec3 scaled_target;
     Vec3 target;
-    Vec3 widget_world;
+    Vec3* widget_world = (Vec3*)&controller->widget_world_x;
 
     camera_forward.x = game[95] * 6.0f;
     camera_forward.y = game[96] * 6.0f;
@@ -199,12 +199,9 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
     target.x = scaled_target.x + game[99];
     target.y = scaled_target.y + game[100];
     target.z = scaled_target.z + game[101];
-    widget_world.x = doubled_base.x + target.x + camera_forward.x;
-    widget_world.y = target.y + doubled_base.y + camera_forward.y;
-    widget_world.z = target.z + doubled_base.z + camera_forward.z;
-    controller->widget_world_x = widget_world.x;
-    controller->widget_world_y = widget_world.y;
-    controller->widget_world_z = widget_world.z;
+    widget_world->x = doubled_base.x + target.x + camera_forward.x;
+    widget_world->y = target.y + doubled_base.y + camera_forward.y;
+    widget_world->z = target.z + doubled_base.z + camera_forward.z;
 
     int delivered_parcel_count = controller->delivered_parcel_count;
     if (delivered_parcel_count >= 10)
