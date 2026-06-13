@@ -11,9 +11,21 @@ Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
 improves the scratch from 21.39% to 21.84% without changing the 637-instruction
 candidate count. Trail, smoke, and wall-impact stack temporaries are now typed
-`Vec3` locals; that source cleanup emitted the same score on its own. A
+`Vec3` locals; that source cleanup emitted the same score on its own. The
+unused `Vec3 scratch` local was removed after the full matcher stayed at 21.84%,
+637/700 instructions. A
 destination-pointer spelling for the `calc_path_length_z` output switch was
 tested and rejected because it regressed to 21.04%.
+
+Measured source-shape rejections:
+
+- replacing the `kind` trail dispatch with a `switch` regressed from 21.84% to
+  21.39%;
+- direct trail/smoke offset expressions stayed score-neutral at 21.84%, so the
+  named half/third/deep locals remain because they document native staging
+  without claiming a match win;
+- assigning `previous_output = output_position` regressed from 21.84% to
+  21.71%.
 
 Recovered this pass (full field map in scratch.cpp):
 

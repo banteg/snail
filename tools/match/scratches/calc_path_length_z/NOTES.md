@@ -52,3 +52,7 @@ absolute-value test now uses `float`/`0.0f` instead of widening through
 `0xe0` candidate), overflow-loop placement, scalar lerp stack slots, and matrix
 copy layout are still broad source-shape residuals rather than new semantic
 unknowns.
+
+Rejected source-shape trial: introducing a `Vec3* shot_position` local for the
+terminal, kind-31, and side-exit shot-position writes regressed the scratch from
+35.76% to 28.57% (408 candidate instructions), so keep the explicit field stores.

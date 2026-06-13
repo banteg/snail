@@ -101,7 +101,6 @@ void GolbShot::update_golb_ai()
     float lived;
     Vec3 probe;
     Vec3 delta;
-    Vec3 scratch;
     Vec3 smoke_position;
     Vec3 trail_a;
     Vec3 trail_b;
