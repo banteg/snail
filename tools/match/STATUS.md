@@ -29,7 +29,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 637/700 | 21.84% |  |
-| 🚧 | create_golb | 0x415280 | 2349 | 448/582 | 28.54% |  |
+| 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% |  |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% |  |

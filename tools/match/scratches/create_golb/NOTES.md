@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 28.54% (`tools/match/match.sh
+- Current matcher result: 28.63% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -50,6 +50,12 @@ Residuals:
   scratch to 28.38%, 447/582 instructions. Re-testing the previous-output
   whole-copy on top of that accepted source shape improves the scratch to
   28.54%, 448/582 instructions.
+- 2026-06-13 source-shaping follow-up 2: the `(movement_flags & 5)` selector
+  now uses the native direct compare order with a shared movement-source copy
+  label visible in BN's disassembly. A cleaner `if/else if` spelling improved
+  the scratch to 28.57%, but still emitted a null-source guard; the shared-label
+  spelling removes that guard and improves the scratch to 28.63%, 445/582
+  instructions.
 - Rejected source-shape trials from the same pass: an explicit
   `player_position` source pointer for the initial spawn-position copy emitted
   the same score on its own; a whole-`Vec3` initial copy regressed to 28.10%;

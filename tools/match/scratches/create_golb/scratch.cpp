@@ -103,25 +103,26 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
     DWORD movement_flags = *(DWORD*)(player + 0x338);
     if ((movement_flags & 5) != 0) {
         Vec3* source;
-        switch (spawn_selector) {
-        case 3:
+        if (spawn_selector == 3) {
             source = (Vec3*)(player + 0x4134);
-            break;
-        case 2:
+            goto copy_movement_flag_source;
+        }
+        if (spawn_selector == 2) {
             source = (Vec3*)(player + 0x414c);
-            break;
-        case 1:
+            goto copy_movement_flag_source;
+        }
+        if (spawn_selector == 1) {
             source = (Vec3*)(player + 0x4164);
-            break;
-        default:
-            source = 0;
-            break;
+            goto copy_movement_flag_source;
         }
-        if (source) {
-            position->x = source->x;
-            position->y = source->y;
-            position->z = source->z;
-        }
+        goto after_movement_flag_source;
+
+copy_movement_flag_source:
+        position->x = source->x;
+        position->y = source->y;
+        position->z = source->z;
+
+after_movement_flag_source:
 
         if ((*(unsigned char*)(player + 0x338) & 4) != 0) {
             if (spawn_selector == 3) {
