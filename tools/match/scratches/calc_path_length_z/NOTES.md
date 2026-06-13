@@ -25,7 +25,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 35.76% (`tools/match/match.sh
+- Current matcher result: 36.95% (`tools/match/match.sh
   tools/match/scratches/calc_path_length_z --full`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
@@ -60,6 +60,19 @@ source shape around the matrix-copy block, not a frame-size pad; the focused
 matcher stayed at 35.76%, 414/425 instructions, but the local store order now
 matches that residual more closely.
 
+2026-06-13 source-shaping follow-up 3: the side-exit threshold test is now
+spelled as `abs_lateral > exit_threshold`, so the native side-exit block is the
+fallthrough and the normal continuation is the jump target. This is semantically
+equivalent to the previous `<=` spelling, but it matches the BN-visible tail
+layout better and improves the scratch from 35.76% to 36.95%, still 414/425
+instructions.
+
 Rejected source-shape trial: introducing a `Vec3* shot_position` local for the
 terminal, kind-31, and side-exit shot-position writes regressed the scratch from
 35.76% to 28.57% (408 candidate instructions), so keep the explicit field stores.
+
+Rejected source-shape trial: introducing a real `Vec3 terminal_position` local
+in the terminal kind-31 launch path increased the frame from `0xe0` to `0xec`
+and candidate count from 414 to 424, but regressed the matcher from 35.76% to
+33.22% by perturbing the terminal block and later matrix-local layout. Do not
+use that local as frame padding without stronger source evidence.

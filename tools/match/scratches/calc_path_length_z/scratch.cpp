@@ -301,15 +301,15 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
 
     PathTemplate* exit_template = template_record;
     float exit_threshold = (float)exit_template->width_cells * 0.5f + 0.30000001f;
-    if (abs_lateral <= exit_threshold) {
-        if (exit_template->kind != 42)
-            input_position->x = input_position->x + motion->x;
-        return 0;
+    if (abs_lateral > exit_threshold) {
+        active = 0;
+        shot->position.x = output_position.x;
+        shot->position.y = output_position.y;
+        shot->position.z = output_position.z;
+        return template_record->side_exit_mode == 0;
     }
 
-    active = 0;
-    shot->position.x = output_position.x;
-    shot->position.y = output_position.y;
-    shot->position.z = output_position.z;
-    return template_record->side_exit_mode == 0;
+    if (exit_template->kind != 42)
+        input_position->x = input_position->x + motion->x;
+    return 0;
 }
