@@ -128,7 +128,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
-  `destroy_garbage_hazard`, `append_subgame_contact_target`, voice helpers,
+  `destroy_garbage_hazard`, `hit_slug_hazard`,
+  `append_subgame_contact_target`, voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
