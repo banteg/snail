@@ -549,6 +549,27 @@ pub const LoadedLevelPreview = struct {
             .active_row_end = runtime_active_row_end,
             .random_middle_segment_picks = random_middle_segment_picks,
         };
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        errdefer allocator.free(mirror_state_build.states);
+        // the scaffold ignores runtime_tiles (annotation-driven), so it can
+        // build first and feed the tile pass the attachment-owned rows the
+        // native digit rule needs
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            &.{},
+            total_rows,
+            max_width,
+            mirror_state_build.states,
+        );
+        errdefer attachment_scaffold.deinit();
         const runtime_tiles = try buildRuntimeTileGrid(
             allocator,
             segments,
@@ -556,6 +577,7 @@ pub const LoadedLevelPreview = struct {
             total_rows,
             max_width,
             runtime_build_config,
+            &attachment_scaffold,
         );
         errdefer allocator.free(runtime_tiles);
         const runtime_row_flags = try buildRuntimeRowFlags(
@@ -627,24 +649,6 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer allocator.free(runtime_flag_b80_grid);
-        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
-            allocator,
-            segments,
-            row_offsets,
-            total_rows,
-            runtime_build_config,
-        );
-        errdefer allocator.free(mirror_state_build.states);
-        var attachment_scaffold = try attachment_builders.Scaffold.collect(
-            allocator,
-            segments,
-            row_offsets,
-            runtime_tiles,
-            total_rows,
-            max_width,
-            mirror_state_build.states,
-        );
-        errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
@@ -796,6 +800,27 @@ pub const LoadedLevelPreview = struct {
             .active_row_start = runtime_active_row_start,
             .active_row_end = runtime_active_row_end,
         };
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        errdefer allocator.free(mirror_state_build.states);
+        // the scaffold ignores runtime_tiles (annotation-driven), so it can
+        // build first and feed the tile pass the attachment-owned rows the
+        // native digit rule needs
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            &.{},
+            total_rows,
+            max_width,
+            mirror_state_build.states,
+        );
+        errdefer attachment_scaffold.deinit();
         const runtime_tiles = try buildRuntimeTileGrid(
             allocator,
             segments,
@@ -803,6 +828,7 @@ pub const LoadedLevelPreview = struct {
             total_rows,
             max_width,
             runtime_build_config,
+            &attachment_scaffold,
         );
         errdefer allocator.free(runtime_tiles);
         const runtime_row_flags = try buildRuntimeRowFlags(
@@ -874,24 +900,6 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer allocator.free(runtime_flag_b80_grid);
-        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
-            allocator,
-            segments,
-            row_offsets,
-            total_rows,
-            runtime_build_config,
-        );
-        errdefer allocator.free(mirror_state_build.states);
-        var attachment_scaffold = try attachment_builders.Scaffold.collect(
-            allocator,
-            segments,
-            row_offsets,
-            runtime_tiles,
-            total_rows,
-            max_width,
-            mirror_state_build.states,
-        );
-        errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
@@ -2056,6 +2064,7 @@ fn buildRuntimeTileGrid(
     total_rows: usize,
     max_width: usize,
     config: RuntimeBuildConfig,
+    attachment_scaffold: *const attachment_builders.Scaffold,
 ) ![]u8 {
     const runtime_tiles = try allocator.alloc(u8, total_rows * max_width);
     @memset(runtime_tiles, 0);
@@ -2083,7 +2092,9 @@ fn buildRuntimeTileGrid(
                     runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)]
                 else
                     null;
-                const transition = runtimeTileTransitionForNormalizedGlyph(normalized_cell, previous_tile);
+                const attachment_owned_row =
+                    attachment_scaffold.installedBuiltAttachmentAtRow(global_row) != null;
+                const transition = runtimeTileTransitionForNormalizedGlyph(normalized_cell, previous_tile, attachment_owned_row);
                 const tile_type = if (transition) |value| value.current else 0;
                 runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)] = tile_type;
 
@@ -3159,10 +3170,10 @@ fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: 
 }
 
 fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
-    return runtimeTileTransitionForNormalizedGlyph(cell, previous_tile);
+    return runtimeTileTransitionForNormalizedGlyph(cell, previous_tile, false);
 }
 
-fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
+fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8, attachment_owned_row: bool) ?RuntimeTileTransition {
     return switch (cell) {
         ' ', '@' => .{ .current = 0x00 },
         ',' => .{ .current = 0x1c },
@@ -3173,7 +3184,13 @@ fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?Runtim
         '+' => .{ .current = 0x18 },
         '-' => .{ .current = 0x15 },
         '.' => .{ .current = 0x01 },
-        '0'...'9' => .{ .current = 0x0f },
+        // PORT(verified): native voids digit cells on rows that already carry
+        // the attachment owner flags (0x40/0x80 from the 'P'/'p' install walk);
+        // only unowned rows get the slide-family floor tile.
+        '0'...'9' => if (attachment_owned_row)
+            .{ .current = 0x00 }
+        else
+            .{ .current = 0x0f },
         '<' => .{ .current = 0x06 },
         '=' => .{ .current = 0x0e },
         '>' => if (previous_tile == 0x03)
@@ -3548,19 +3565,19 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x0f },
-        runtimeTileTransitionForNormalizedGlyph('9', null).?,
+        runtimeTileTransitionForNormalizedGlyph('9', null, false).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x18 },
-        runtimeTileTransitionForNormalizedGlyph('+', null).?,
+        runtimeTileTransitionForNormalizedGlyph('+', null, false).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x13 },
-        runtimeTileTransitionForNormalizedGlyph('F', null).?,
+        runtimeTileTransitionForNormalizedGlyph('F', null, false).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x11 },
-        runtimeTileTransitionForNormalizedGlyph('G', null).?,
+        runtimeTileTransitionForNormalizedGlyph('G', null, false).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x05 },
@@ -3568,11 +3585,11 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x1c },
-        runtimeTileTransitionForNormalizedGlyph(',', null).?,
+        runtimeTileTransitionForNormalizedGlyph(',', null, false).?,
     );
     try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x10 },
-        runtimeTileTransitionForNormalizedGlyph('o', null).?,
+        runtimeTileTransitionForNormalizedGlyph('o', null, false).?,
     );
 }
 
@@ -4125,6 +4142,16 @@ test "runtime build ignores parser side guards for mirror decisions" {
         .active_row_end = rows.len,
     };
 
+    var test_scaffold = try attachment_builders.Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &.{},
+        rows.len,
+        rows[0].cells.len,
+        &.{},
+    );
+    defer test_scaffold.deinit();
     const runtime_tiles = try buildRuntimeTileGrid(
         std.testing.allocator,
         &segments,
@@ -4132,6 +4159,7 @@ test "runtime build ignores parser side guards for mirror decisions" {
         rows.len,
         rows[0].cells.len,
         config,
+        &test_scaffold,
     );
     defer std.testing.allocator.free(runtime_tiles);
 
@@ -4175,6 +4203,16 @@ test "runtime build mirrors playable source lane order" {
         .active_row_end = rows.len,
     };
 
+    var test_scaffold = try attachment_builders.Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &.{},
+        rows.len,
+        rows[0].cells.len,
+        &.{},
+    );
+    defer test_scaffold.deinit();
     const runtime_tiles = try buildRuntimeTileGrid(
         std.testing.allocator,
         &segments,
@@ -4182,6 +4220,7 @@ test "runtime build mirrors playable source lane order" {
         rows.len,
         rows[0].cells.len,
         config,
+        &test_scaffold,
     );
     defer std.testing.allocator.free(runtime_tiles);
 
