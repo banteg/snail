@@ -115,6 +115,8 @@ void GolbShot::update_golb_ai()
     Vec3* new_direction;
     Vec3 probe;
     Vec3 delta;
+    Vec3 target_delta;
+    Vec3 blended_velocity;
     Vec3 pull_delta;
     Vec3 kept_velocity;
     Vec3 reflected_velocity;
@@ -167,9 +169,10 @@ void GolbShot::update_golb_ai()
             if (blend > 1.0f)
                 homing_blend = 1.0f;
             speed = normalize_vector(&velocity);
-            delta.x = homing_target.x - current_position->x;
-            delta.y = homing_target.y - current_position->y;
-            delta.z = homing_target.z - current_position->z;
+            target_delta.x = homing_target.x - current_position->x;
+            target_delta.y = homing_target.y - current_position->y;
+            target_delta.z = homing_target.z - current_position->z;
+            delta = target_delta;
             if (normalize_vector(&delta) < 0.40000001f) {
                 spawn_golb_impact_sprite(&position);
                 goto retire;
@@ -182,9 +185,10 @@ void GolbShot::update_golb_ai()
             kept_velocity.x = keep * velocity.x;
             kept_velocity.y = keep * velocity.y;
             kept_velocity.z = keep * velocity.z;
-            velocity.x = kept_velocity.x + pull_delta.x;
-            velocity.y = kept_velocity.y + pull_delta.y;
-            velocity.z = kept_velocity.z + pull_delta.z;
+            blended_velocity.x = kept_velocity.x + pull_delta.x;
+            blended_velocity.y = kept_velocity.y + pull_delta.y;
+            blended_velocity.z = kept_velocity.z + pull_delta.z;
+            velocity = blended_velocity;
             normalize_vector(&velocity);
             velocity.x = speed * velocity.x;
             velocity.y = speed * velocity.y;

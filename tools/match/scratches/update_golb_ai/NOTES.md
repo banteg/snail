@@ -1,13 +1,13 @@
-# WIP scratch — 43.63%, 634/700 insns (2026-06-14)
+# WIP scratch — 49.63%, 646/700 insns (2026-06-14)
 
-Structure complete and mostly ordered; the 66-insn gap is the original's
+Structure complete and mostly ordered; the 54-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
-the duplicated early-return epilogues. The frame mismatch is now `0x70` native
-versus `0x64` candidate after recovering homing vector temporaries. Next golf
-pass: transcribe the remaining staging flow per block (homing target-delta
-stack copies, path-output copies, and collision probes) and let the early
-returns duplicate.
+the duplicated early-return epilogues. The frame now matches native at `0x70`
+after recovering the homing target/result temporaries, and the prefix reaches
+9/700. Next golf pass: transcribe the remaining staging flow per block
+(velocity-owner operands in the homing blend, path-output copies, and collision
+probes) and let the early returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -84,6 +84,15 @@ while computing `homing_target - position`, loading x/y/z through `[pos]`,
 instructions. The remaining homing residual is stack-copy scheduling around
 the target delta vector before `normalize_vector`.
 
+Homing stack-vector follow-up: native first computes the target delta into a
+temporary stack vector, copies it into the vector passed to `normalize_vector`,
+then stages the blended velocity through a result stack vector before assigning
+it back to `velocity`. The scratch now spells those as `target_delta` and
+`blended_velocity`, improving from 43.63% to 49.63%, 646/700 instructions, and
+recovering the native `0x70` frame. Remaining homing residuals are the y/z
+velocity owner operands (`[edi+4]`/`[edi+8]` versus direct member offsets) and
+the downstream path/collision scheduling.
+
 Tooling cleanup note: `uv run snail match types Game Player PathFollow
 TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 `TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
@@ -130,6 +139,11 @@ Measured source-shape rejections:
   28.10% to 27.72%, so keep explicit field copies.
 - reordering reflected velocity to mirror IDA's y/x/z/source schedule regressed
   to 27.84%, so keep x/y/z local staging followed by explicit velocity stores.
+- after the accepted homing stack-vector pass, spelling homing velocity through
+  either the outer `movement` pointer, a branch-local `live_velocity` pointer,
+  or a post-normalize `normalized_velocity` pointer hoisted the velocity owner
+  into `ebx` and regressed to 47.61%-47.76%; keep direct `velocity` fields until
+  a source-plausible spelling preserves native's `edi` owner.
 
 Recovered this pass (full field map in scratch.cpp):
 
@@ -144,10 +158,11 @@ Recovered this pass (full field map in scratch.cpp):
   +0x2bc with output at +0x18; path-entry z latch +0x2e4
 - golb (kind 0) gravity: vy -= subgame_rate * 0.017 while y outside
   [0, 0.49]; vy = 0 inside the band
-- homing (kind 2): blend ramps by step to 1.0; vel = normalize((1 -
-  blend*1.5)*vel + blend*target_dir) * old_speed, with target_dir computed
-  through the live current-position pointer; impact when target distance <
-  0.4; dies when speed < 0.1
+- homing (kind 2): blend ramps by step to 1.0; target_dir is computed through
+  the live current-position pointer, staged through a target-delta copy, and
+  blended as `vel = normalize((1 - blend*1.5)*vel + blend*target_dir) *
+  old_speed` through a stack result vector; impact when target distance < 0.4;
+  dies when speed < 0.1
 - path entry: latch z, tile 30 at the cell — AND a second probe one row
   EARLIER (cell - 672 = previous row record, 672 = 244-stride x ... no:
   -672 bytes = the row-cell grid stride math) when vz > 1.0, latching
