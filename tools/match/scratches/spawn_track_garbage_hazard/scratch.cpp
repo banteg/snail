@@ -34,8 +34,11 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
     DWORD* scan;
-    for (scan = self_words + 877682; *scan; scan += 49) {
-        if (++slot_index >= 50)
+    scan = self_words + 877682;
+    while (*scan) {
+        ++slot_index;
+        scan += 49;
+        if (slot_index >= 50)
             return (DWORD*)report_warningf("Run Out of Garbage Slots");
     }
 
@@ -50,9 +53,10 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     ((DWORD*)slot_base_words)[877682] = 1;
     set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + 877663));
 
-    int z_bits = *(int*)(cell + 24);
+    int x_bits = *(int*)(cell + 16);
     float y = *scale + *(float*)(cell + 20);
-    slot_base_words[877675] = *(float*)(cell + 16);
+    int z_bits = *(int*)(cell + 24);
+    ((DWORD*)slot_base_words)[877675] = x_bits;
     slot_base_words[877676] = y;
     ((DWORD*)slot_base_words)[877677] = z_bits;
     float* live_position = slot_base_words + 877675;

@@ -29,3 +29,11 @@ Residuals:
   the projection call, while the current scratch lets VC6 keep more values in
   registers; the loop condition also compiles as a preloaded test instead of
   the native memory compare at the top of the scan.
+- 2026-06-13 follow-up: the pool scan now advances the slot pointer before the
+  overflow check, matching the native control-flow semantics and improving the
+  scratch to 64.31% (`tools/match/match.sh
+  tools/match/scratches/spawn_track_garbage_hazard --full`). A local
+  three-word staged-position array was tested because the native uses stack
+  staging before projection, but it changed register ownership (`this` moved
+  out of `edi`) and regressed the match; leave the remaining frame/staging gap
+  alone until stronger source evidence appears.
