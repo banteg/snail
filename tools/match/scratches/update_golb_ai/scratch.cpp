@@ -102,10 +102,10 @@ void GolbShot::update_golb_ai()
     Vec3 probe;
     Vec3 delta;
     Vec3 scratch;
-    float smoke_position[3];
-    int trail_a[3];
-    int trail_b[3];
-    int wall_impact[3];
+    Vec3 smoke_position;
+    Vec3 trail_a;
+    Vec3 trail_b;
+    Vec3 wall_impact;
 
     if (game->paused)
         return;
@@ -154,10 +154,14 @@ void GolbShot::update_golb_ai()
                 float pull = homing_blend;
                 float pull_x = delta.x * pull;
                 float pull_y = delta.y * pull;
+                float pull_z = delta.z * pull;
                 float keep = 1.0f - homing_blend * 1.5f;
-                velocity.x = keep * velocity.x + pull_x;
-                velocity.y = keep * velocity.y + pull_y;
-                velocity.z = keep * velocity.z + pull * delta.z;
+                float keep_x = keep * velocity.x;
+                float keep_y = keep * velocity.y;
+                float keep_z = keep * velocity.z;
+                velocity.x = keep_x + pull_x;
+                velocity.y = keep_y + pull_y;
+                velocity.z = keep_z + pull_z;
                 normalize_vector(&velocity);
                 velocity.x = speed * velocity.x;
                 velocity.y = speed * velocity.y;
@@ -199,10 +203,10 @@ void GolbShot::update_golb_ai()
             float half_x = direction.x * 0.5f;
             float half_y = direction.y * 0.5f;
             float half_z = direction.z * 0.5f;
-            smoke_position[0] = output_position.x - half_x;
-            smoke_position[1] = output_position.y - half_y;
-            smoke_position[2] = output_position.z - half_z;
-            spawn_golb_smoke((Vec3*)smoke_position);
+            smoke_position.x = output_position.x - half_x;
+            smoke_position.y = output_position.y - half_y;
+            smoke_position.z = output_position.z - half_z;
+            spawn_golb_smoke(&smoke_position);
         }
     } else {
         float* body_position = (float*)((char*)owner_body + 72);
@@ -213,17 +217,17 @@ void GolbShot::update_golb_ai()
         float third_x = direction.x * 0.30000001f;
         float third_y = direction.y * 0.30000001f;
         float third_z = direction.z * 0.30000001f;
-        *(float*)&trail_a[0] = output_position.x - third_x;
-        *(float*)&trail_a[1] = output_position.y - third_y;
-        *(float*)&trail_a[2] = output_position.z - third_z;
-        spawn_golb_trail_sprite((Vec3*)trail_a);
+        trail_a.x = output_position.x - third_x;
+        trail_a.y = output_position.y - third_y;
+        trail_a.z = output_position.z - third_z;
+        spawn_golb_trail_sprite(&trail_a);
         float deep_x = direction.x * 0.60000002f;
         float deep_y = direction.y * 0.60000002f;
         float deep_z = direction.z * 0.60000002f;
-        *(float*)&trail_b[0] = output_position.x - deep_x;
-        *(float*)&trail_b[1] = output_position.y - deep_y;
-        *(float*)&trail_b[2] = output_position.z - deep_z;
-        spawn_golb_trail_sprite((Vec3*)trail_b);
+        trail_b.x = output_position.x - deep_x;
+        trail_b.y = output_position.y - deep_y;
+        trail_b.z = output_position.z - deep_z;
+        spawn_golb_trail_sprite(&trail_b);
     }
 
     direction.x = output_position.x - previous_output.x;
@@ -331,10 +335,10 @@ slugs:
             }
             if (((TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &output_position))->tile_id != 14)
                 return;
-            *(float*)&wall_impact[0] = output_position.x;
-            *(float*)&wall_impact[1] = output_position.y;
-            *(float*)&wall_impact[2] = output_position.z - 1.0f;
-            spawn_golb_impact_sprite((Vec3*)wall_impact);
+            wall_impact.x = output_position.x;
+            wall_impact.y = output_position.y;
+            wall_impact.z = output_position.z - 1.0f;
+            spawn_golb_impact_sprite(&wall_impact);
         }
     }
 retire:

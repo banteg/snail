@@ -1,4 +1,4 @@
-# WIP scratch — 21.39%, 637/700 insns (2026-06-13)
+# WIP scratch — 21.84%, 637/700 insns (2026-06-13)
 
 Structure complete and mostly ordered; the 63-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
@@ -7,9 +7,13 @@ the duplicated early-return epilogues. Next golf pass: transcribe the
 staging flow per block (trail/smoke offsets, direction update, slug
 deflection) and let the early returns duplicate.
 
-Latest matching change: the `calc_path_length_z` switch now emits the
-raw-position copy arms (modes 1/3) before the path-output copy arms
-(modes 0/2), matching the native block order without changing semantics.
+Latest matching change: the homing blend now stages the pull and keep
+components as named source terms before storing the normalized velocity. This
+improves the scratch from 21.39% to 21.84% without changing the 637-instruction
+candidate count. Trail, smoke, and wall-impact stack temporaries are now typed
+`Vec3` locals; that source cleanup emitted the same score on its own. A
+destination-pointer spelling for the `calc_path_length_z` output switch was
+tested and rejected because it regressed to 21.04%.
 
 Recovered this pass (full field map in scratch.cpp):
 
