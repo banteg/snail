@@ -25,3 +25,7 @@ Layout facts settled by this asm (ledgered 2026-06-12):
   by-value Vector3 args (probe = position+velocity, sweep = velocity*1.05),
   miss returns without deactivating; hit calls the 0x449c00 effect with a
   static arg then deactivates.
+
+2026-06-13 pin audit: focused matcher still verifies 48.04%, 215/218 insns.
+Keep pinned; the remaining diff is zero-register scheduling and stack
+materialization around the attachment probes, not recovered behavior.
