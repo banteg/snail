@@ -162,15 +162,22 @@ worldPosition returns z = row_position WITHOUT +0.5, and any
 `row_position = <world z>` assignment needs the -0.5. Audit all
 assignments/conversions by space, like the lane audit.
 
-## OPEN: attachment-phase -0.117 z offset (found 2026-06-13, v6)
+## OPEN: attachment-phase z advance runs ~0.3% slow (refined 2026-06-13 v7)
 
-Through the whole t=140-143 ride the port's follow output z runs a
-CONSTANT -0.117 below native — an entry-side seed offset (progress seed
-or anchor fraction). Post-exit-fix it is the remaining first-order error:
-it tips a marginal garbage clip at t~153 (one-tick -4% vz) that native
-misses by < 0.117, and the accumulated lag still hides the row-54 wall
-stall. Fix the entry seed and the oracle should clear t=243's stall
-natively — potentially a large ratchet jump.
+NOT an entry-seed offset: the gap GROWS ~0.0007-0.0009/tick through the
+whole start-ramp ride (0.109 by t=134). The recorded scalar reads
+correctly (0.47), the progress seed formula is algebraically native
+(row_position - row == world_z - anchor_z with the +0.5 anchor), and the
+port's vz rides its window cap exactly. Native's ghost z advances at
+~vz * k with k ≈ 1.003-1.004 — the START template's OUTPUT z mapping is
+scaled: native's authored sample z spacing is not exactly 1.0 per
+segment while the port's built template maps progress to z 1:1. NEXT:
+diff the START ramp template's per-sample z offsets in the native
+constructor (the initialize_*_path_template_pair family) against
+attachment_builders' generated samples; the 0.3% should fall out of the
+authored offsets. Consequences while open: a marginal garbage clip at
+t~153 that native misses (one-tick -4% vz) and the hidden row-54 wall
+stall (the t=254 ratchet).
 
 ## RESOLVED 06-13 (50967917): digit tiles on attachment rows
 
