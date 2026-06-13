@@ -20,3 +20,7 @@ pass ordering. All semantics verified in the diff body:
   flag 0x200, prev/next at +0x08/+0x0c, returns `list_flags |= 0x200`
 - spawn's true extent ends at 0x44164c; an uncurated 20-slot pool
   initializer sits between it and deactivate (worth curating)
+
+2026-06-13 pin audit: focused matcher still verifies 74.07%, 68/67 insns.
+Keep pinned; the remaining diff is free-scan loop rotation plus scheduling,
+while the velocity.z low-byte poke and list-link semantics are recovered.

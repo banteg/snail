@@ -62,7 +62,7 @@ These should turn current verified port behavior into matched proof.
 | `spawn_sub_lazer_projectile` | `0x441670` | 98.41%, pinned | SubLazer body/sprite spawn and y stagger. | Semantics and instruction count are pinned; remaining residual is store scheduling around velocity z versus bob phase, documented in NOTES. |
 | `update_sub_lazer_projectile` | `0x43efb0` | 41.73% | SubLazer body flight, nested sprite bob, teardown. | Use recovered slot layout; separate body position from visual bob. |
 | `shoot_subgoldy` | `0x441ad0` | 49.46% | Weapon/sub-lazer spawn callsite and audio cue. | Match after sub-lazer pool helpers stabilize. |
-| `spawn_salt_hazard` | `0x441560` | 74.07% | Salt slot layout, velocity byte-poke bug, yaw RNG. | Finish source shape if possible; keep OB notes explicit. |
+| `spawn_salt_hazard` | `0x441560` | 74.07%, pinned | Salt slot layout, velocity byte-poke bug, yaw RNG. | Semantics are pinned; free-scan layout residual and velocity.z byte-poke finding are documented in NOTES. |
 | `update_salt_hazard` | `0x4417d0` | 48.04% | Salt integrate/removal state. | Focus on state switch and list teardown shape. |
 | `deactivate_salt_hazard` | `0x441740` | 41.46%, pinned | Salt collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
 
