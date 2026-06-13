@@ -36,7 +36,7 @@ garbage/projectile divergence.
 | `append_subgame_contact_target` | `0x415ef0` | 100% | Called by garbage and slug AI; exact match confirms it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Done; use as the exact contact-target registry helper for garbage and slug AI. |
 | `update_golb_ai` | `0x414820` | 20.79%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Finish staging-local shape and duplicated returns; keep semantics from NOTES authoritative. |
 | `calc_path_length_z` | `0x4217b0` | 32.17%, structure complete | Golb path-follow riding; sibling of `update_track_attachment_follow_state`. | Continue source-shaping around overflow block placement, terminal staging, and matrix-copy locals; semantics are documented in NOTES. |
-| `create_golb` | `0x415280` | no scratch | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Start after `update_golb_ai` residuals identify which seed fields still matter. |
+| `create_golb` | `0x415280` | 27.21%, structure complete | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Continue source-shaping around movement-flag branch sharing, vector staging, and kind-specific setup locals; semantics are documented in NOTES. |
 
 ### P1 - Player Motion And Attachment Exit
 

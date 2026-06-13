@@ -95,7 +95,8 @@ function is read (next session).
   for the exit conditions next).
 
 Mirror plan: entry + homing + trails are transcribable now; riding waits
-on calc_path_length_z.
+on calc_path_length_z. Spawn-side setup now has a structure-complete
+create_golb scratch; use its NOTES for movement-flag spawn semantics.
 
 ## calc_path_length_z @ 0x4217b0 (read 2026-06-12)
 
