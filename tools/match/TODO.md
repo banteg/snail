@@ -73,7 +73,7 @@ These are medium blast-radius systems already partly understood.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `apply_damage_gauge_delta` | `0x4413f0` | 58.20%, pinned finding | Hit-flash gate, damage/recovery clamp, side effects. | Finish after warning/update damage owner fields settle. |
-| `update_damage_gauge` | `0x440fd0` | 65.92%, structure-first | Drain, state transitions, warning interaction. | Continue source-shaping around state block placement and x87/local scheduling; semantics are documented in NOTES. |
+| `update_damage_gauge` | `0x440fd0` | 80.60%, source-shaped | Drain, state transitions, warning interaction. | State block placement and warning call ownership now match native shape; remaining residual is x87/local scheduling documented in NOTES. |
 | `update_warning` | `0x446f80` | 57.69% | Warning actor loop, stop sample handle, global gates. | Align state/timer locals and handle-release semantics. |
 | `update_cameraman` | `0x4461d0` | 92.55%, pinned | Camera matrix blend and attachment-exit roll. | Treat as pinned unless exact register allocation becomes obvious. |
 | `initialize_cameraman` | `0x446160` | 100% | Camera init baseline. | Done; keep as dependency. |

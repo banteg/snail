@@ -37,7 +37,17 @@ Promoted to a matcher scratch on 2026-06-13. Current result: 65.92%,
 - HUD mask/fill/flash quads with the native 560/70/64/396 geometry and one
   reused stack color
 
-Remaining diff is mostly block placement and x87/local scheduling: native lays
-out the state-2 body before the state-1/state-0 blocks and uses stack slots
-`esp+4`/`esp+8`/`esp+0xc` for alpha, mask height, and color. Do not use fake
-labels or volatile locals just to coerce that layout.
+2026-06-13 follow-up: rewriting the state dispatch as a real `switch`
+matches the native state-2-first fallthrough layout and raises the scratch
+from 65.92% to 77.53%. Staging the skin-transition owner and calling
+`stop_warning_sample` as a `WarningActor` method (the callee ignores `ecx`,
+but the native callsite sets it up from `g_game+0x430170`) raises the result
+to 80.60% with exact instruction count parity, 268/268.
+
+Remaining diff is mostly x87/local scheduling and small register choices:
+native uses stack slots `esp+4`/`esp+8`/`esp+0xc` for alpha, mask height, and
+color, compares one ground-height field directly from memory, and computes the
+second warning-method call address with `lea`. A render-local declaration-order
+experiment and a pointer-local warning call were tested and produced no score
+movement; do not use fake labels or volatile locals just to coerce those
+layouts.

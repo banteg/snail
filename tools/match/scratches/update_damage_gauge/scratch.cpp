@@ -13,6 +13,7 @@ struct Color4f {
 struct WarningActor {
     void start_warning(); // @ 0x446f30, matched
     void stop_warning();  // @ 0x446f50, matched
+    void stop_warning_sample(); // @ 0x446f60, matched; ecx is ignored
 
     int state;
     float progress;
@@ -52,7 +53,6 @@ struct Game {
 extern Game* volatile g_game; // data_4df904
 extern VoiceManager g_voice_manager; // 0x751498
 
-void stop_warning_sample(); // @ 0x446f60, matched
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -99,7 +99,8 @@ void DamageGaugeController::update_damage_gauge()
                 hit_flash_progress = 0.0f;
         }
 
-        if (state == 0) {
+        switch (state) {
+        case 0: {
             if (*(int*)&fill == 0x3f800000) {
                 game = g_game;
                 if (game->follow_live_flag || game->follow_force_drain)
@@ -112,7 +113,7 @@ void DamageGaugeController::update_damage_gauge()
             goto render_after_refresh;
         }
 
-        if (state == 1) {
+        case 1: {
             if (g_game->follow_force_drain)
                 warning_transition_progress = 1.0f;
             float next_warning = warning_transition_step + warning_transition_progress;
@@ -127,8 +128,9 @@ void DamageGaugeController::update_damage_gauge()
             goto render_after_refresh;
         }
 
-        if (state == 2) {
-            g_game->snail_skin_transition.change_snail_skin(1, 0.2f);
+        case 2: {
+            Game* skin_game = g_game;
+            skin_game->snail_skin_transition.change_snail_skin(1, 0.2f);
             apply_damage_gauge_delta(-0.0016666667f, 1);
             skin_hold_ticks = 5;
             game = g_game;
@@ -142,10 +144,13 @@ void DamageGaugeController::update_damage_gauge()
                 || game->drain_exit_word) {
                 state = 0;
                 g_game->warning.stop_warning();
-                stop_warning_sample();
+                g_game->warning.stop_warning_sample();
                 goto render_after_refresh;
             }
-        } else {
+            break;
+        }
+
+        default:
 render_after_refresh:
             game = g_game;
         }
