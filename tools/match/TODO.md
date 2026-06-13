@@ -90,7 +90,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `mark_track_warning_zones` | `0x4354f0` | 32.51%, pinned | Warning footprint and hazard suppression. | Semantics are pinned; tile seed set, 6x2 footprint, bounds, and register-layout residuals are documented in NOTES. |
 | `build_track_fringe_objects` | `0x434be0` | no scratch | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Defer until runtime grid and warning footprints are pinned. |
 | `switch_track_mirror` | `0x435e60` | 91.23%, pinned | Runtime mirror state and builder row convention. | Semantics are pinned; remaining duplicate-tail layout residual is documented in NOTES. |
-| `update_row_event_display` | `0x404cf0` | 96.38%, source-shaped | Parcel home anchor, row-event widget, prompt ownership. | Widget-world frame and delivered-count branch now match native shape; remaining residual is bonus sound call setup order and tail padding, documented in NOTES. |
+| `update_row_event_display` | `0x404cf0` | 96.38%, pinned | Parcel home anchor, row-event widget, prompt ownership. | Semantics are pinned; the only accepted residual is bonus sound thiscall setup order plus tail padding noise, documented in NOTES. |
 | `complete_subgame` | `0x438700` | 62.50%, source-shaped | Completion bridge producer. | Continue source-shaping around direct run-record OR, result-record pointer ownership, and independent snapshot store order; semantics are documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |
 | `update_frontend_state_machine` | `0x4107d0` | no scratch | Frontend/subgame bridge and return owners. | Defer; match as bridge cluster with `update_subgame`. |
@@ -115,8 +115,8 @@ These are not gameplay owners, but several mirrors depend on them.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
   `try_enter_track_attachment_from_swept_motion`,
-  `spawn_sub_lazer_projectile`, and any scratch whose NOTES identify only
-  register-allocation or x87 scheduling residuals.
+  `spawn_sub_lazer_projectile`, `update_row_event_display`, and any scratch
+  whose NOTES identify only register-allocation or x87 scheduling residuals.
 
 ## Operating Plan
 

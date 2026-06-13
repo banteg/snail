@@ -1,3 +1,8 @@
+# update_row_event_display
+
+update_row_event_display @ 0x404cf0 drives the parcel row-event widget,
+parcel-home spawn prompt, delivered-count text, completion fast-forward gate,
+and bonus award sound.
 
 ## Iteration gain (loop session 2026-06-12): 78.52% -> 85.06%
 
@@ -41,3 +46,17 @@ Remaining residual: the bonus award sound call still schedules `mov ecx,
 ADDR` and `push 0x31` in the opposite order from native, and the scratch has
 tail padding/jump-table normalization noise. Do not force this with fake
 helpers or dummy symbols.
+
+## Pin audit (2026-06-13)
+
+Focused verification still reports 96.38%, 228/214 instructions
+(`tools/match/match.sh tools/match/scratches/update_row_event_display --full`).
+The remaining diff is limited to the bonus sound thiscall setup order
+(`push 0x31` versus loading the global sound manager into `ecx`) and inert tail
+padding after the text update. The state machine, pause widget hiding, parcel
+spawn call, bonus score award, skip/confirm sound, widget-world vector staging,
+and delivered-count tens/ones stores all match the recovered native behavior.
+
+Pinned at 96.38%. Do not churn this scratch for percentage unless new source
+evidence explains the call setup order without introducing a fake helper or
+dummy temporary.
