@@ -167,9 +167,9 @@ void GolbShot::update_golb_ai()
             if (blend > 1.0f)
                 homing_blend = 1.0f;
             speed = normalize_vector(&velocity);
-            delta.x = homing_target.x - position.x;
-            delta.y = homing_target.y - position.y;
-            delta.z = homing_target.z - position.z;
+            delta.x = homing_target.x - current_position->x;
+            delta.y = homing_target.y - current_position->y;
+            delta.z = homing_target.z - current_position->z;
             if (normalize_vector(&delta) < 0.40000001f) {
                 spawn_golb_impact_sprite(&position);
                 goto retire;

@@ -1,12 +1,13 @@
-# WIP scratch — 43.48%, 634/700 insns (2026-06-14)
+# WIP scratch — 43.63%, 634/700 insns (2026-06-14)
 
 Structure complete and mostly ordered; the 66-insn gap is the original's
 staging-local stores (IDA v69-v76: compute into named stack floats, then
 store to the destination — same class the collisions golf documents) and
 the duplicated early-return epilogues. The frame mismatch is now `0x70` native
 versus `0x64` candidate after recovering homing vector temporaries. Next golf
-pass: transcribe the remaining staging flow per block (homing stack vectors,
-path-output copies, and collision probes) and let the early returns duplicate.
+pass: transcribe the remaining staging flow per block (homing target-delta
+stack copies, path-output copies, and collision probes) and let the early
+returns duplicate.
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
@@ -76,6 +77,13 @@ trail dispatch as a `switch` ordered `case 2`, `case 1`, `case 0` now recovers
 native's `sub`/`dec`/`dec` kind ladder and improves the scratch to 43.48%,
 634/700 instructions.
 
+Homing pointer follow-up: native keeps the integrated position pointer live
+while computing `homing_target - position`, loading x/y/z through `[pos]`,
+`[pos+4]`, and `[pos+8]`. The scratch now spells this through the existing
+`current_position` pointer, improving from 43.48% to 43.63%, 634/700
+instructions. The remaining homing residual is stack-copy scheduling around
+the target delta vector before `normalize_vector`.
+
 Tooling cleanup note: `uv run snail match types Game Player PathFollow
 TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 `TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
@@ -137,8 +145,9 @@ Recovered this pass (full field map in scratch.cpp):
 - golb (kind 0) gravity: vy -= subgame_rate * 0.017 while y outside
   [0, 0.49]; vy = 0 inside the band
 - homing (kind 2): blend ramps by step to 1.0; vel = normalize((1 -
-  blend*1.5)*vel + blend*target_dir) * old_speed; impact when target
-  distance < 0.4; dies when speed < 0.1
+  blend*1.5)*vel + blend*target_dir) * old_speed, with target_dir computed
+  through the live current-position pointer; impact when target distance <
+  0.4; dies when speed < 0.1
 - path entry: latch z, tile 30 at the cell — AND a second probe one row
   EARLIER (cell - 672 = previous row record, 672 = 244-stride x ... no:
   -672 bytes = the row-cell grid stride math) when vz > 1.0, latching
