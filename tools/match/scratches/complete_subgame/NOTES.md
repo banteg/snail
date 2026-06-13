@@ -19,8 +19,8 @@ above is what the Zig bridge lanes need for verification.
 
 ## Scratch status
 
-Promoted to a matcher scratch on 2026-06-13. Current result: 59.89%,
-89/88 instructions. The first scratch covers:
+Promoted to a matcher scratch on 2026-06-13. Current result: 62.50%,
+88/88 instructions. The current scratch covers:
 
 - `display_score_stats` on the score block at `game+0x3bb764`
 - 6-byte run-record completion bit at `game+0xfd2b84 + cursor*6`
@@ -29,6 +29,19 @@ Promoted to a matcher scratch on 2026-06-13. Current result: 59.89%,
 - result-record snapshot at `game+0xfd2b10`, including the six-dword stat
   copy and timer tails at `game+0xff25c0`/`game+0xff25c4`
 - high-score dispatch gates for arcade, survival, and time-trial modes
+
+Recent progress: rewriting the high-score mode checks as a direct
+`switch (level_mode)` improved the scratch from 59.89% to 62.50% and brought
+the candidate back to instruction-count parity. This also matches the native
+dispatch shape more closely: arcade for mode 0, survival for mode 1, and
+time-trial for mode 4.
+
+Rejected experiments:
+
+- An over-shaped `ResultRecord*` snapshot rewrite with staged field stores
+  regressed to 42.22%; reverted.
+- A high-score-only `ResultRecord*` local did not change the match at 62.50%;
+  reverted.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, keeps the result-record pointer in `esi` instead of

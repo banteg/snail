@@ -91,7 +91,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `build_track_fringe_objects` | `0x434be0` | no scratch | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Defer until runtime grid and warning footprints are pinned. |
 | `switch_track_mirror` | `0x435e60` | 91.23% | Runtime mirror state and builder row convention. | Finish if simple; otherwise pin. |
 | `update_row_event_display` | `0x404cf0` | 85.19% | Parcel home anchor, row-event widget, prompt ownership. | Finish state-machine source shape; likely high leverage for parcel collapse. |
-| `complete_subgame` | `0x438700` | 59.89%, structure-first | Completion bridge producer. | Continue source-shaping around result-record store order and high-score dispatch register allocation; semantics are documented in NOTES. |
+| `complete_subgame` | `0x438700` | 62.50%, source-shaped | Completion bridge producer. | Continue source-shaping around direct run-record OR, result-record pointer ownership, and independent snapshot store order; semantics are documented in NOTES. |
 | `update_subgame` | `0x438b90` | no scratch | Outer gameplay state machine, active row scan, bridge opcodes. | Defer until lower-level runtime functions are trustworthy. |
 | `update_frontend_state_machine` | `0x4107d0` | no scratch | Frontend/subgame bridge and return owners. | Defer; match as bridge cluster with `update_subgame`. |
 

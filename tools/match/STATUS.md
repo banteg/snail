@@ -56,7 +56,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% |  |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% |  |
-| 🚧 | complete_subgame | 0x438700 | 323 | 89/88 | 59.89% |  |
+| 🚧 | complete_subgame | 0x438700 | 323 | 88/88 | 62.50% |  |
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% |  |
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% |  |
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% |  |

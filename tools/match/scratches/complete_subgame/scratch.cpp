@@ -99,20 +99,19 @@ void Game::complete_subgame(unsigned char completed)
         if ((level_mode != 1 || source_tail != 0)
             && !selected_level_record_active
             && completed == 1) {
-            if (level_mode) {
-                int high_score_mode = level_mode - 1;
-                if (high_score_mode) {
-                    if (high_score_mode == 3) {
-                        high_score_bank.add_time_trial_high_score(
-                            &result_record,
-                            level_arg,
-                            time_trial_route_active);
-                    }
-                } else {
-                    high_score_bank.add_survival_high_score(&result_record);
-                }
-            } else {
+            switch (level_mode) {
+            case 0:
                 high_score_bank.add_arcade_high_score(&result_record, level_arg);
+                break;
+            case 1:
+                high_score_bank.add_survival_high_score(&result_record);
+                break;
+            case 4:
+                high_score_bank.add_time_trial_high_score(
+                    &result_record,
+                    level_arg,
+                    time_trial_route_active);
+                break;
             }
         }
     }
