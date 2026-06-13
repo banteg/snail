@@ -1,16 +1,10 @@
 // spawn_salt_hazard @ 0x441560 (thiscall, ret 0x4)
+#include "vector_types.h"
 
 struct Vector3 {
     float x;
     float y;
     float z;
-};
-
-struct Vector4 {
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct TransformMatrix {

@@ -1,9 +1,4 @@
-struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
-};
+#include "vector_types.h"
 
 struct TransformMatrix {
     Vec4 basis_right;

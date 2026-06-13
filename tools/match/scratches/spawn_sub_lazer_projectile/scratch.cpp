@@ -1,16 +1,10 @@
 // spawn_sub_lazer_projectile @ 0x441670 (thiscall, ret 0x8)
+#include "vector_types.h"
 
 struct Vector3 {
     float x;
     float y;
     float z;
-};
-
-struct Vector4 {
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct TransformMatrix {

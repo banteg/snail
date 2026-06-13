@@ -1,16 +1,10 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
+#include "vector_types.h"
 
 struct Vec3 {
     float x;
     float y;
     float z;
-};
-
-struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct TransformMatrix {

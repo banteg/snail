@@ -1,6 +1,7 @@
 // calc_path_length_z @ 0x4217b0 (thiscall, ret 0xc)
 // cRPathFollow::CalcPathLengthZ(float, Vec3*, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
+#include "vector_types.h"
 
 typedef unsigned int DWORD;
 
@@ -8,13 +9,6 @@ struct Vec3 {
     float x;
     float y;
     float z;
-};
-
-struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct TransformMatrix {

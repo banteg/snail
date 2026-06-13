@@ -3,13 +3,7 @@
 // snap near-zero imaginary lanes, convert to axis-angle, scale the angle
 // by alpha, recompose. When the axis collapses, rebuild from the snapped
 // quaternion directly; when the angle is exactly zero, leave the matrix.
-
-struct Vector4 {
-    float x;
-    float y;
-    float z;
-    float w;
-};
+#include "vector_types.h"
 
 struct TransformMatrix;
 

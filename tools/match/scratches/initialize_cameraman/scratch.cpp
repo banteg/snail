@@ -1,13 +1,7 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
+#include "vector_types.h"
 
 extern int g_game_base; // data_4df904
-
-struct Vector4 {
-    float x;
-    float y;
-    float z;
-    float w;
-};
 
 struct TransformMatrix {
     Vector4 basis_right;
