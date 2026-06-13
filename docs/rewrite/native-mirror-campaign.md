@@ -123,7 +123,23 @@ through. Two layered causes:
 1. ~~The port's wall probe sampled the cell under the rider~~ FIXED
    06-13 (27c115cf): native probes (x, y, z + 0.49) — a next-row
    lookahead at the live x.
-2. **REMAINING (the true frontier): the port cruises ~5% slow** —
+2. REFINED 06-13 (second instrumentation pass): the causal chain runs
+   through the t=144 ATTACHMENT EXIT — the port's natural-exit handoff
+   places it **+0.27 z AHEAD of native** (dz steps 0.116 -> 0.383 at the
+   mode flip; the v3 exhaust model `anchor + terminal_sample.z +
+   width_or_scale + step` carries a residual). Being ahead on the same
+   recorded lateral, the port then clips a garbage object native misses
+   (one-tick -0.0096 vz at t≈152, `garbage_hit`), runs ~5% slow from
+   there, native's faster cruise crosses it at t≈194, and the
+   accumulated lag makes the port reach the row-54 wall ~2 ticks after
+   the lateral leaves the wall lane. ROOT FIX: audit the exit z
+   placement in `native/attachment_follow.zig` against the pinned
+   terminal-segment asm (is `step` double-counted? is the terminal
+   sample one spacing off?). The subgame rate itself VERIFIES CLEAN
+   (port 0.481 vs native back-solved 0.479-0.482), and the t≈208 rise
+   is the slide-tile quantum on both sides.
+   (superseded analysis kept below)
+   **the port cruises ~5% slow** —
    pvz ≈ 0.2085 vs native dz/tick ≈ 0.2197 through t=200-242, an
    accumulated ~0.44 z-lag, so the port reaches the wall ~2 ticks late,
    after the recorded lateral leaves the wall lane (x crosses from the
