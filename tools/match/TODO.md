@@ -174,6 +174,8 @@ These are not gameplay owners, but several mirrors depend on them.
 | `initialize_matrix_from_values` | `0x44cfe0` | 100% | Exact full 16-float transform initializer used by explicit matrix construction sites. | Done; preserves right/up/forward/position row order. |
 | `multiply_matrix_in_place` | `0x44d1a0` | 100% | Exact in-place postmultiply wrapper around `multiply_matrices` with a stack-saved left operand. | Done; keep the explicit end before the adjacent uncurated thunk at `0x44d1d0`. |
 | `premultiply_matrix_in_place` | `0x44d1e0` | 100% | Exact in-place premultiply wrapper around `multiply_matrices` with a stack-saved destination operand. | Done; keep the output-member call shape. |
+| `invert_matrix_in_place` | `0x44d280` | 100% | Exact in-place affine inverse helper for transform matrices, including source-preserving basis transpose and inverse-position dot products. | Done; keep the stack source-matrix copy and native expression order for `position.x`. |
+| `invert_matrix_from_source` | `0x44d330` | 100% | Exact out-of-place affine inverse helper used when a destination matrix is rebuilt from a source transform. | Done; keep the destination-member thiscall shape and null return. |
 | `orthogonalize_matrix` | `0x44d3d0` | 92.31%, pinned | Small basis repair helper that normalizes right/up/forward and rebuilds two axes through exact `cross_vectors`. | Semantics are pinned; the only residual is thiscall setup order for the two cross-product calls. |
 | `set_matrix_z_direction` | `0x44d410` | 100% | Exact basis builder for look/z-direction transforms used by camera/object/attachment math. | Done; keep the persistent `basis_up` pointer that preserves the native saved-`edi` cross-product call shape. |
 | `initialize_quaternion_from_axis` | `0x44d530` | 77.78%, pinned | Axis-angle to quaternion conversion through exact sine/cosine helpers. | Semantics are pinned; residual is x87 operand order for live sine scaling documented in NOTES. |
@@ -200,7 +202,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_uniform_scale_matrix`, `rotate_matrix_world_x`,
   `rotate_matrix_world_y`, `rotate_matrix_world_z`,
   `initialize_matrix_from_values`, `multiply_matrix_in_place`,
-  `premultiply_matrix_in_place`, `set_matrix_z_direction`,
+  `premultiply_matrix_in_place`, `invert_matrix_in_place`,
+  `invert_matrix_from_source`, `set_matrix_z_direction`,
   `initialize_axis_from_quaternion`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
