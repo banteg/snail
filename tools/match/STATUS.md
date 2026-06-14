@@ -166,6 +166,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 |  |
 | 🚧 | format_time_trial_string | 0x448960 | 113 | 37/36 | 95.89% | 26/36 |  |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 |  |
+| 🚧 | update_tip | 0x448c40 | 166 | 53/51 | 73.08% | 11/51 |  |
 | ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | enqueue_tip_message | 0x448d30 | 69 | 26/26 | 100.00% | 26/26 |  |
