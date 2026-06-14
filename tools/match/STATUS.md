@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**209/665** mapped gameplay functions matched, **13340/326119** bytes (**4.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**210/665** mapped gameplay functions matched, **13411/326119** bytes (**4.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -61,8 +61,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 |  |
 | ✅ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 |  |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | 14/14 |  |
+| ✅ | request_object_facequad_normals | 0x42f800 | 71 | 26/26 | 100.00% | 26/26 |  |
 | ✅ | request_object_vertex_colours | 0x42f850 | 77 | 30/30 | 100.00% | 30/30 |  |
 | ✅ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 |  |
+| 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 |  |
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 |  |
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 |  |

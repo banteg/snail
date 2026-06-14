@@ -144,6 +144,8 @@ These are large but important once the immediate lockstep frontier moves.
 | `request_object_vertices` | `0x42f710` | 100% | Exact strip/object vertex allocator used by path-template mesh builders and X-mesh loading; calls exact vertex-colour allocation after seeding vertices. | Done; use with exact facequad/colour helpers as the object mesh layout anchor (`vertex_count +0x2c`, vertices `+0x38`, colours `+0x48`). |
 | `request_object_vertex_colours` | `0x42f850` | 100% | Exact vertex-colour allocator for strip/object meshes; initializes RGB to `1.0f` while leaving alpha untouched. | Done; keep `END=0x42f89d` because the manifest gap includes padding plus an adjacent uncurated thunk. |
 | `request_object_facequads` | `0x42f8c0` | 100% | Exact facequad allocator/capacity helper used by path-template strip builders and X-mesh loading. | Done; pins `facequad_count +0x54`, capacity `+0x58`, and facequad pointer `+0x5c`. |
+| `request_object_facequad_normals` | `0x42f800` | 100% | Exact toon-normal support allocator used by facequad-normal calculators and object animation loading. | Done; pins vertex normals `+0x44`, facequad normals `+0x60`, and the `0x18` facequad-normal pair stride. |
+| `request_object_texture_groups` | `0x42f930` | 96.55%, pinned | Facequad texture-group allocator/capacity helper used by `calc_object_texture_groups`. | Semantics are pinned; remaining residual is one load-order difference in the fixed-buffer branch, documented in NOTES. |
 | `populate_runtime_track_cells_from_segments` | `0x435eb0` | 7.13%, structure-first | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Scratch now covers setup, row-count seeding, clear pass, and visited reset; expand next through row-selection/row-flag copy before tackling the glyph switch. |
 | `mark_track_warning_zones` | `0x4354f0` | 32.51%, pinned | Warning footprint and hazard suppression. | Semantics are pinned; tile seed set, 6x2 footprint, bounds, and register-layout residuals are documented in NOTES. |
 | `build_track_fringe_objects` | `0x434be0` | 49.44%, structure-first | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Register/local ownership is the next blocker: native keeps game in `ebp`, family in `edi`, edge-a in `ebx`, then reuses/restores `ebp` for edge-b; residual bool probes and skirt-color copy scheduling are documented in NOTES. |
@@ -217,7 +219,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `update_movement_flag_emitters`,
   `initialize_array_with_constructor`,
   `request_object_vertices`, `request_object_vertex_colours`,
-  `request_object_facequads`,
+  `request_object_facequad_normals`, `request_object_facequads`,
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
   `initialize_global_identity_matrix`, `initialize_math_random_table`,
