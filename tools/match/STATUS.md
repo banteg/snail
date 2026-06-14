@@ -101,6 +101,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_slug_hazard | 0x43f8b0 | 128 | 35/35 | 100.00% | 35/35 |  |
 | 🚧 | add_subgoldy_score | 0x4402c0 | 190 | 71/58 | 80.62% | 39/58 |  |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 |  |
+| 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 |  |
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 |  |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | 5/5 |  |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | 12/12 |  |
