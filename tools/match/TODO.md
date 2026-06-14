@@ -175,6 +175,10 @@ These are not gameplay owners, but several mirrors depend on them.
 | `multiply_matrix_in_place` | `0x44d1a0` | 100% | Exact in-place postmultiply wrapper around `multiply_matrices` with a stack-saved left operand. | Done; keep the explicit end before the adjacent uncurated thunk at `0x44d1d0`. |
 | `premultiply_matrix_in_place` | `0x44d1e0` | 100% | Exact in-place premultiply wrapper around `multiply_matrices` with a stack-saved destination operand. | Done; keep the output-member call shape. |
 | `orthogonalize_matrix` | `0x44d3d0` | 92.31%, pinned | Small basis repair helper that normalizes right/up/forward and rebuilds two axes through exact `cross_vectors`. | Semantics are pinned; the only residual is thiscall setup order for the two cross-product calls. |
+| `set_matrix_z_direction` | `0x44d410` | 100% | Exact basis builder for look/z-direction transforms used by camera/object/attachment math. | Done; keep the persistent `basis_up` pointer that preserves the native saved-`edi` cross-product call shape. |
+| `initialize_quaternion_from_axis` | `0x44d530` | 77.78%, pinned | Axis-angle to quaternion conversion through exact sine/cosine helpers. | Semantics are pinned; residual is x87 operand order for live sine scaling documented in NOTES. |
+| `initialize_axis_from_quaternion` | `0x44d580` | 100% | Exact quaternion to axis-angle conversion through exact arccosine/sine helpers. | Done; keep repeated `sine(half_angle)` calls, matching native source shape. |
+| `initialize_matrix_from_quaternion` | `0x44d820` | 73.05%, source-shaped | Quaternion to matrix conversion used by rotation interpolation and transform setup. | Semantics are mapped; remaining stack-slot, doubled-expression, and zero-store scheduling residuals are documented in NOTES. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
 
@@ -196,7 +200,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_uniform_scale_matrix`, `rotate_matrix_world_x`,
   `rotate_matrix_world_y`, `rotate_matrix_world_z`,
   `initialize_matrix_from_values`, `multiply_matrix_in_place`,
-  `premultiply_matrix_in_place`,
+  `premultiply_matrix_in_place`, `set_matrix_z_direction`,
+  `initialize_axis_from_quaternion`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
@@ -204,7 +209,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `try_enter_track_attachment_from_swept_motion`,
   `spawn_sub_lazer_projectile`, `update_row_event_display`,
   `vector_magnitude`, `multiply_vector_by_matrix`,
-  `orthogonalize_matrix`, and any scratch
+  `initialize_quaternion_from_axis`, `orthogonalize_matrix`, and any scratch
   whose NOTES identify only register-allocation or x87 scheduling residuals.
 
 ## Operating Plan

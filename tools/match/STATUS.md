@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**193/665** mapped gameplay functions matched, **11426/326119** bytes (**3.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**195/665** mapped gameplay functions matched, **11700/326119** bytes (**3.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -235,6 +235,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 |  |
 | 🚧 | orthogonalize_matrix | 0x44d3d0 | 58 | 26/26 | 92.31% | 13/26 |  |
+| ✅ | set_matrix_z_direction | 0x44d410 | 196 | 57/57 | 100.00% | 57/57 |  |
+| 🚧 | initialize_quaternion_from_axis | 0x44d530 | 74 | 28/26 | 77.78% | 9/26 |  |
+| ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 |  |
+| 🚧 | initialize_matrix_from_quaternion | 0x44d820 | 247 | 85/82 | 73.05% | 10/82 |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/66 | 49.57% | 0/66 |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 |  |
