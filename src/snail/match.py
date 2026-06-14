@@ -28,12 +28,6 @@ IMAGE_SCN_CNT_CODE = 0x00000020
 SYM_TYPE_FUNCTION = 0x20
 # int3 between image functions, nop for section alignment inside objects
 PADDING_BYTES = b"\xcc\x90"
-PADDING_LINE_TEXT = {
-    "add byte [eax], al",
-    "int3",
-    "lea ecx, dword [ecx]",
-    "nop",
-}
 BRANCH_TARGET_RE = re.compile(r"\bL([0-9a-f]+)\b")
 DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
     REPO_ROOT / "analysis/symbols/gameplay-references.json"
@@ -1011,27 +1005,25 @@ def disassemble_normalized_function(
                 masked_references=tuple(masked_references),
             )
         )
-    return _strip_trailing_padding_lines(tuple(lines))
+    return _strip_trailing_unreferenced_lines(tuple(lines))
 
 
-def _strip_trailing_padding_lines(
+def _strip_trailing_unreferenced_lines(
     lines: tuple[DisassemblyLine, ...],
 ) -> tuple[DisassemblyLine, ...]:
-    """Drop section-alignment instructions after an untargeted terminal ret."""
-    trim_start = len(lines)
-    while trim_start > 0 and lines[trim_start - 1].text in PADDING_LINE_TEXT:
-        trim_start -= 1
-    if trim_start == len(lines) or trim_start == 0:
-        return lines
-    if not lines[trim_start - 1].text.startswith("ret"):
-        return lines
-
-    padding_offsets = {line.offset for line in lines[trim_start:]}
-    for line in lines[:trim_start]:
-        targets = {int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text)}
-        if targets & padding_offsets:
-            return lines
-    return lines[:trim_start]
+    """Drop non-code tail bytes after an untargeted terminal ret."""
+    for index, candidate in enumerate(lines[:-1]):
+        if not candidate.text.startswith("ret"):
+            continue
+        trim_start = index + 1
+        tail_offsets = {line.offset for line in lines[trim_start:]}
+        for line in lines[:trim_start]:
+            targets = {int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text)}
+            if targets & tail_offsets:
+                break
+        else:
+            return lines[:trim_start]
+    return lines
 
 
 def normalize_function(

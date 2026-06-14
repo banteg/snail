@@ -662,6 +662,16 @@ def test_normalize_strips_untargeted_terminal_padding() -> None:
     assert normalize_function(code) == ("ret",)
 
 
+def test_normalize_strips_untargeted_terminal_data_after_ret() -> None:
+    code = bytes.fromhex("c3") + bytes.fromhex("b8ad0039c341")
+    assert normalize_function(code) == ("ret",)
+
+
+def test_normalize_strips_tail_that_decodes_to_ret() -> None:
+    code = bytes.fromhex("5bc3c2394380ad0043")
+    assert normalize_function(code) == ("pop ebx", "ret")
+
+
 def test_normalize_keeps_targeted_terminal_padding() -> None:
     # jmp targets the trailing nop, so it is code from the matcher perspective.
     code = bytes.fromhex("eb01") + bytes.fromhex("c3") + bytes.fromhex("90")
