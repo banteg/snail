@@ -59,14 +59,21 @@ def _masked_reference_payload(reference) -> dict:
         "value": reference.value,
         "text": reference.text,
         "key": reference.key,
+        "alternate_keys": list(reference.alternate_keys),
         "explained": reference.explained,
     }
 
 
 def _audit_issue_group_key(issue) -> tuple:
     entry = issue.entry
-    target = tuple((ref.text, ref.key, ref.explained) for ref in entry.target_references)
-    candidate = tuple((ref.text, ref.key, ref.explained) for ref in entry.candidate_references)
+    target = tuple(
+        (ref.text, ref.key, ref.alternate_keys, ref.explained)
+        for ref in entry.target_references
+    )
+    candidate = tuple(
+        (ref.text, ref.key, ref.alternate_keys, ref.explained)
+        for ref in entry.candidate_references
+    )
     return (entry.status, target, candidate)
 
 

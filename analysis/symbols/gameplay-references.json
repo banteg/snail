@@ -2,6 +2,16 @@
   "name": "Snail Mail gameplay reference symbols",
   "symbols": [
     {
+      "address": "0x408600",
+      "name": "initialize_runtime_slot",
+      "kind": "function",
+      "aliases": [
+        "sub_408600",
+        "initialize_iostream"
+      ],
+      "description": "Shared small-object constructor callback used by runtime slot arrays and enemy-manager I/O stream members."
+    },
+    {
       "address": "0x42fd7c",
       "name": "g_player_block",
       "kind": "offset",
@@ -19,6 +29,17 @@
         "__ftol"
       ],
       "description": "MSVC floating-point to integer helper used by timer and placement code."
+    },
+    {
+      "address": "0x48bfe5",
+      "name": "rand",
+      "kind": "function",
+      "aliases": [
+        "_rand",
+        "sub_48bfe5",
+        "j_sub_48bfe5"
+      ],
+      "description": "CRT rand helper used to seed the gameplay random table and random-float wrappers."
     },
     {
       "address": "0x497314",
@@ -270,11 +291,286 @@
       "description": "BOD-base constructor counter incremented by initialize_bod_base."
     },
     {
+      "address": "0x53c800",
+      "name": "g_track_colour_bank_j",
+      "kind": "global",
+      "aliases": [
+        "data_53c800"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x53cb30",
+      "name": "g_track_colour_bank_d",
+      "kind": "global",
+      "aliases": [
+        "data_53cb30"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x53ce60",
+      "name": "g_track_colour_bank_e",
+      "kind": "global",
+      "aliases": [
+        "data_53ce60"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x53d190",
+      "name": "g_zero_parcel_buckets",
+      "kind": "global",
+      "aliases": [
+        "data_53d190"
+      ],
+      "size": "0x106000",
+      "description": "0x800-bucket zero parcel pool initialized by initialize_zero_parcel_bucket_pool."
+    },
+    {
+      "address": "0x643198",
+      "name": "g_track_colour_bank_k",
+      "kind": "global",
+      "aliases": [
+        "data_643198"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x6434c8",
+      "name": "g_track_colour_bank_f",
+      "kind": "global",
+      "aliases": [
+        "data_6434c8"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x6437f8",
+      "name": "g_track_colour_bank_b",
+      "kind": "global",
+      "aliases": [
+        "data_6437f8"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x643b28",
+      "name": "g_track_colour_bank_c",
+      "kind": "global",
+      "aliases": [
+        "data_643b28"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x643e58",
+      "name": "g_track_colour_bank_i",
+      "kind": "global",
+      "aliases": [
+        "data_643e58"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x644188",
+      "name": "g_track_colour_bank_h",
+      "kind": "global",
+      "aliases": [
+        "data_644188"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x6444b8",
+      "name": "g_track_colour_bank_g",
+      "kind": "global",
+      "aliases": [
+        "data_6444b8"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x6487e8",
+      "name": "g_parcel_set_buckets",
+      "kind": "global",
+      "aliases": [
+        "data_6487e8"
+      ],
+      "size": "0x106000",
+      "description": "0x800-bucket parcel-set pool initialized by initialize_parcel_set_bucket_pool."
+    },
+    {
       "address": "0x68b4c8",
       "name": "g_high_score_bank",
       "kind": "offset",
       "aliases": [],
       "description": "Relocatable high-score bank offset used by completion dispatch."
+    },
+    {
+      "address": "0x74e7e8",
+      "name": "g_track_colour_bank_a",
+      "kind": "global",
+      "aliases": [
+        "data_74e7e8"
+      ],
+      "size": "0x330",
+      "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x75165c",
+      "name": "g_bass_channel_remove_sync",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_75165c"
+      ],
+      "description": "BASS_ChannelRemoveSync function pointer used when stopping the active music stream."
+    },
+    {
+      "address": "0x751660",
+      "name": "g_bass_start",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_751660"
+      ],
+      "description": "BASS_Start function pointer used to resume the audio backend."
+    },
+    {
+      "address": "0x751680",
+      "name": "g_active_music_stream_sync",
+      "kind": "global",
+      "aliases": [
+        "data_751680"
+      ],
+      "description": "Active BASS stream sync handle cleared by stop_music_stream."
+    },
+    {
+      "address": "0x7527b4",
+      "name": "g_bass_sample_play_ex",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_7527b4"
+      ],
+      "description": "BASS_SamplePlayEx function pointer used by registered sample playback wrappers."
+    },
+    {
+      "address": "0x7537d8",
+      "name": "g_bass_free",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_7537d8"
+      ],
+      "description": "BASS_Free function pointer used when uninitializing the BASS backend."
+    },
+    {
+      "address": "0x7537e0",
+      "name": "g_registered_sound_sample_handles",
+      "kind": "global",
+      "aliases": [
+        "data_7537e0",
+        "unk_7537e0"
+      ],
+      "description": "Registered BASS sample handles indexed by gameplay sound sample id."
+    },
+    {
+      "address": "0x753be4",
+      "name": "g_bass_channel_stop",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753be4"
+      ],
+      "description": "BASS_ChannelStop function pointer used when stopping the active music stream."
+    },
+    {
+      "address": "0x753bfc",
+      "name": "g_bass_stop",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753bfc"
+      ],
+      "description": "BASS_Stop function pointer used by audio backend stop/uninitialize helpers."
+    },
+    {
+      "address": "0x753c1c",
+      "name": "g_bass_set_config",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753c1c"
+      ],
+      "description": "BASS_SetConfig function pointer used by sample and stream volume config wrappers."
+    },
+    {
+      "address": "0x753c20",
+      "name": "g_active_music_stream",
+      "kind": "global",
+      "aliases": [
+        "data_753c20"
+      ],
+      "description": "Active BASS stream handle stopped and freed by stop_music_stream."
+    },
+    {
+      "address": "0x753c58",
+      "name": "g_audio_backend",
+      "kind": "global",
+      "aliases": [
+        "unk_753c58"
+      ],
+      "description": "Shared audio backend object used by voice, sample, and stream helpers."
+    },
+    {
+      "address": "0x753c90",
+      "name": "g_bass_module",
+      "kind": "global",
+      "aliases": [
+        "data_753c90"
+      ],
+      "description": "Loaded BASS module handle used when resolving and freeing BASS functions."
+    },
+    {
+      "address": "0x753c94",
+      "name": "g_bass_sample_stop",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753c94"
+      ],
+      "description": "BASS_SampleStop function pointer used by registered sample stop wrappers."
+    },
+    {
+      "address": "0x753ca8",
+      "name": "g_bass_sample_is_active",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753ca8"
+      ],
+      "description": "BASS_SampleIsActive function pointer used by registered sample state checks."
+    },
+    {
+      "address": "0x753cb0",
+      "name": "g_bass_stream_free",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753cb0"
+      ],
+      "description": "BASS_StreamFree function pointer used when stopping the active music stream."
+    },
+    {
+      "address": "0x753cc0",
+      "name": "g_bass_pause",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753cc0"
+      ],
+      "description": "BASS_Pause function pointer used to pause the audio backend."
     },
     {
       "address": "0x77ff3c",
@@ -301,6 +597,7 @@
       "aliases": [
         "data_787f8c"
       ],
+      "size": "0x7ffc",
       "description": "0x1fff-entry gameplay random table initialized at startup."
     },
     {

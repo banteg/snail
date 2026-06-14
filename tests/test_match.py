@@ -227,6 +227,7 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert by_name["g_game_base"].address == 0x4DF904
     assert "g_app" in by_name["g_game_base"].aliases
     assert by_name["ftol"].kind == "function"
+    assert by_name["g_math_random_table"].size == 0x7FFC
 
 
 def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
@@ -322,6 +323,31 @@ def test_extract_object_function_maps_reference_symbol_aliases() -> None:
     assert function.relocation_references[0].key == "ref:g_game_base"
 
 
+def test_extract_object_function_preserves_reference_symbol_addends() -> None:
+    code = bytes.fromhex("b808000000c3")
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_table", 0)], [(1, 1)]))
+    function = extract_object_function(
+        obj,
+        "foo",
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                ),
+            ),
+        ),
+    )
+    reference = function.relocation_references[0]
+    assert reference.addend == 0x8
+    assert reference.text == "sym:g_table+0x8"
+    assert reference.key == "ref:g_table+0x8"
+    assert reference.explained
+
+
 def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
     # target: mov eax, [0x402000]; ret. candidate: mov eax, [relocated g_app]; ret.
     target = bytes.fromhex("a100204000c3")
@@ -349,6 +375,96 @@ def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
     assert result.ratio == 1.0
     assert result.masked_operand_audit.ok_count == 1
     assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_accepts_sized_reference_end_addend() -> None:
+    # target: cmp esi, 0x402010; ret. 0x402010 is also the next global, but the
+    # candidate relocation is explicitly g_table + 0x10.
+    target = bytes.fromhex("81fe10204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("81fe10000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="_g_table",
+                text="sym:g_table+0x10",
+                key="ref:g_table+0x10",
+                explained=True,
+                addend=0x10,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                ),
+                ReferenceSymbol(
+                    address=0x402010,
+                    name="g_next_global",
+                    kind="global",
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.key == "ref:g_next_global"
+    assert reference.alternate_keys == ("ref:g_table+0x10",)
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_does_not_treat_sized_reference_base_as_end() -> None:
+    target = bytes.fromhex("81fe10204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("81fe00000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="_g_table",
+                text="sym:g_table",
+                key="ref:g_table",
+                explained=True,
+                addend=0,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                ),
+                ReferenceSymbol(
+                    address=0x402010,
+                    name="g_next_global",
+                    kind="global",
+                ),
+            ),
+        ),
+    )
+    assert result.masked_operand_audit.mismatch_count == 1
 
 
 def test_masked_operand_audit_accepts_matching_rdata_constants() -> None:

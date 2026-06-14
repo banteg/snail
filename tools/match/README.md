@@ -75,6 +75,9 @@ Useful analysis helpers:
   manifest. Add entries only when a scratch note, decompiler label, or matched
   callsite explains the target address. `.rdata` float constants are compared
   by their four bytes, not by MSVC's generated `real@...` symbol spelling.
+  Add `"size"` only for recovered object extents; the audit uses it to keep
+  `symbol+offset` and end-pointer operands distinct from the next global at the
+  same address.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too

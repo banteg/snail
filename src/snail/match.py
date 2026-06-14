@@ -78,6 +78,7 @@ class ObjectRelocationReference:
     text: str
     key: str | None
     explained: bool
+    addend: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +88,7 @@ class ReferenceSymbol:
     kind: str
     aliases: tuple[str, ...] = ()
     description: str | None = None
+    size: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,6 +140,15 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
         description = raw_symbol.get("description")
         if description is not None and not isinstance(description, str):
             raise ValueError(f"symbols[{index}].description must be a string")
+        size_value = raw_symbol.get("size")
+        size = None
+        if size_value is not None:
+            size = _parse_hex_or_int(
+                size_value,
+                field_name=f"symbols[{index}].size",
+            )
+            if size <= 0:
+                raise ValueError(f"symbols[{index}].size must be positive")
         if address in seen_addresses:
             raise ValueError(f"duplicate reference symbol address: 0x{address:x}")
         if name_value in seen_names:
@@ -151,6 +162,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
                 kind=kind,
                 aliases=tuple(aliases_value),
                 description=description,
+                size=size,
             )
         )
     return ReferenceSymbolManifest(name=name, symbols=tuple(symbols))
@@ -179,6 +191,7 @@ class MaskedReference:
     text: str
     key: str | None
     explained: bool
+    alternate_keys: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -401,18 +414,26 @@ def _reference_symbol_by_address(
     return {symbol.address: symbol for symbol in reference_manifest.symbols}
 
 
+def _reference_symbol_by_name(
+    reference_manifest: ReferenceSymbolManifest | None,
+) -> dict[str, ReferenceSymbol]:
+    if reference_manifest is None:
+        return {}
+    by_name: dict[str, ReferenceSymbol] = {}
+    for symbol in reference_manifest.symbols:
+        for name in (symbol.name, *symbol.aliases):
+            by_name[name] = symbol
+            by_name[_canonical_symbol_name(name)] = symbol
+    return by_name
+
+
 def _reference_key_by_name(
     reference_manifest: ReferenceSymbolManifest | None,
 ) -> dict[str, str]:
-    if reference_manifest is None:
-        return {}
-    by_name: dict[str, str] = {}
-    for symbol in reference_manifest.symbols:
-        key = f"ref:{symbol.name}"
-        for name in (symbol.name, *symbol.aliases):
-            by_name[name] = key
-            by_name[_canonical_symbol_name(name)] = key
-    return by_name
+    return {
+        name: _format_reference_key(symbol)
+        for name, symbol in _reference_symbol_by_name(reference_manifest).items()
+    }
 
 
 def _reference_key_for_symbol_name(
@@ -422,8 +443,57 @@ def _reference_key_for_symbol_name(
     return _reference_key_by_name(reference_manifest).get(_canonical_symbol_name(name))
 
 
-def _format_reference_symbol(symbol: ReferenceSymbol) -> tuple[str, str]:
-    return f"{symbol.kind}:{symbol.name}", f"ref:{symbol.name}"
+def _reference_symbol_for_symbol_name(
+    reference_manifest: ReferenceSymbolManifest | None,
+    name: str,
+) -> ReferenceSymbol | None:
+    return _reference_symbol_by_name(reference_manifest).get(_canonical_symbol_name(name))
+
+
+def _format_addend_suffix(addend: int) -> str:
+    if addend == 0:
+        return ""
+    return f"+0x{addend:x}"
+
+
+def _format_reference_key(symbol: ReferenceSymbol, addend: int = 0) -> str:
+    return f"ref:{symbol.name}{_format_addend_suffix(addend)}"
+
+
+def _format_reference_symbol(symbol: ReferenceSymbol, addend: int = 0) -> tuple[str, str]:
+    suffix = _format_addend_suffix(addend)
+    return f"{symbol.kind}:{symbol.name}{suffix}", _format_reference_key(symbol, addend)
+
+
+def _reference_offsets_for_address(
+    reference_manifest: ReferenceSymbolManifest | None,
+    value: int,
+) -> tuple[tuple[ReferenceSymbol, int], ...]:
+    if reference_manifest is None:
+        return ()
+    matches: list[tuple[ReferenceSymbol, int]] = []
+    for symbol in reference_manifest.symbols:
+        if symbol.size is None:
+            continue
+        offset = value - symbol.address
+        if 0 < offset <= symbol.size:
+            matches.append((symbol, offset))
+    return tuple(matches)
+
+
+def _reference_alternate_keys_for_address(
+    reference_manifest: ReferenceSymbolManifest | None,
+    value: int,
+    *,
+    primary_key: str | None,
+) -> tuple[str, ...]:
+    alternate_keys: list[str] = []
+    for symbol, offset in _reference_offsets_for_address(reference_manifest, value):
+        key = _format_reference_key(symbol, offset)
+        if key == primary_key or key in alternate_keys:
+            continue
+        alternate_keys.append(key)
+    return tuple(alternate_keys)
 
 
 def _format_f32_constant(data: bytes, offset: int, value: int | None = None) -> tuple[str, str] | None:
@@ -445,9 +515,10 @@ def _u32_points_into_range(
     return value is not None and address_range[0] <= value < address_range[1]
 
 
-def _format_symbol_reference(name: str) -> tuple[str, str]:
+def _format_symbol_reference(name: str, addend: int = 0) -> tuple[str, str]:
     canonical = _canonical_symbol_name(name)
-    return f"sym:{canonical}", f"name:{canonical}"
+    suffix = _format_addend_suffix(addend)
+    return f"sym:{canonical}{suffix}", f"name:{canonical}{suffix}"
 
 
 def _resolve_object_relocation(
@@ -457,10 +528,18 @@ def _resolve_object_relocation(
     *,
     reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> tuple[str, str | None, bool]:
-    reference_key = _reference_key_for_symbol_name(reference_manifest, symbol.name)
-    if reference_key is not None:
-        text, _ = _format_symbol_reference(symbol.name)
-        return text, reference_key, True
+    reference_symbol = _reference_symbol_for_symbol_name(reference_manifest, symbol.name)
+    if reference_symbol is not None:
+        offset = addend or 0
+        text, key = _format_symbol_reference(symbol.name, offset)
+        explained = offset == 0 or (
+            reference_symbol.size is not None and 0 <= offset <= reference_symbol.size
+        )
+        if offset != 0:
+            key = _format_reference_key(reference_symbol, offset)
+        else:
+            key = _format_reference_key(reference_symbol)
+        return text, key, explained
 
     if symbol.section_number > 0:
         section = obj.sections[symbol.section_number - 1]
@@ -479,10 +558,10 @@ def _resolve_object_relocation(
                 constant := _format_f32_constant(section.data, offset)
             ) is not None:
                 return constant[0], constant[1], True
-        text, key = _format_symbol_reference(symbol.name)
+        text, key = _format_symbol_reference(symbol.name, addend or 0)
         return text, key, bool(_canonical_symbol_name(symbol.name))
 
-    text, key = _format_symbol_reference(symbol.name)
+    text, key = _format_symbol_reference(symbol.name, addend or 0)
     return text, key, bool(_canonical_symbol_name(symbol.name))
 
 
@@ -555,6 +634,7 @@ def extract_object_function(
                     text=f"sym:<symbol#{relocation.symbol_index}>",
                     key=None,
                     explained=False,
+                    addend=None,
                 )
             )
             continue
@@ -572,6 +652,7 @@ def extract_object_function(
                 text=text,
                 key=key,
                 explained=explained,
+                addend=addend,
             )
         )
     return ObjectFunction(
@@ -683,8 +764,38 @@ def _resolve_image_reference(
     reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
     if reference_symbol is not None:
         text, key = _format_reference_symbol(reference_symbol)
-        return MaskedReference(0, "", "image", value, f"{text}@0x{value:x}", key, True)
+        return MaskedReference(
+            0,
+            "",
+            "image",
+            value,
+            f"{text}@0x{value:x}",
+            key,
+            True,
+            alternate_keys=_reference_alternate_keys_for_address(
+                reference_manifest,
+                value,
+                primary_key=key,
+            ),
+        )
     if image is not None and image.image_base <= value < image.image_base + len(image.mapped):
+        range_references = _reference_offsets_for_address(reference_manifest, value)
+        if range_references:
+            symbol, addend = range_references[0]
+            text, key = _format_reference_symbol(symbol, addend)
+            return MaskedReference(
+                0,
+                "",
+                "image",
+                value,
+                f"{text}@0x{value:x}",
+                key,
+                True,
+                alternate_keys=tuple(
+                    _format_reference_key(other_symbol, other_addend)
+                    for other_symbol, other_addend in range_references[1:]
+                ),
+            )
         offset = value - image.image_base
         section = image.section_for_va(value)
         address_range = (image.image_base, image.image_base + image.size_of_image)
@@ -823,6 +934,7 @@ def disassemble_normalized_function(
             text=resolved.text,
             key=resolved.key,
             explained=resolved.explained,
+            alternate_keys=resolved.alternate_keys,
         )
 
     lines: list[DisassemblyLine] = []
@@ -951,14 +1063,22 @@ def _reference_status(
     target_references: tuple[MaskedReference, ...],
     candidate_references: tuple[MaskedReference, ...],
 ) -> str:
-    target_keys = tuple(reference.key for reference in target_references)
-    candidate_keys = tuple(reference.key for reference in candidate_references)
+    def reference_key_options(reference: MaskedReference) -> frozenset[str]:
+        keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
+        return frozenset(keys)
+
+    target_keys = tuple(reference_key_options(reference) for reference in target_references)
+    candidate_keys = tuple(reference_key_options(reference) for reference in candidate_references)
     all_explained = all(
         reference.explained for reference in (*target_references, *candidate_references)
     )
-    if target_keys == candidate_keys and all_explained:
+    if (
+        len(target_keys) == len(candidate_keys)
+        and all(target & candidate for target, candidate in zip(target_keys, candidate_keys))
+        and all_explained
+    ):
         return "ok"
-    if not all_explained or None in target_keys or None in candidate_keys:
+    if not all_explained or any(not keys for keys in (*target_keys, *candidate_keys)):
         return "unresolved"
     return "mismatch"
 
