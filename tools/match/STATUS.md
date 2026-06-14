@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**202/665** mapped gameplay functions matched, **12654/326119** bytes (**3.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**203/665** mapped gameplay functions matched, **12734/326119** bytes (**3.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -220,6 +220,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | initialize_trigonometry_tables | 0x44c930 | 62 | 18/18 | 100.00% | 18/18 |  |
 | ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | 5/5 |  |
+| ✅ | cosine | 0x44c980 | 80 | 21/21 | 100.00% | 21/21 |  |
 | ✅ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | arccosine | 0x44ca00 | 10 | 3/3 | 100.00% | 3/3 |  |
 | ✅ | atan2_positive | 0x44ca10 | 148 | 48/48 | 100.00% | 48/48 |  |

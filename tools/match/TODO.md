@@ -164,6 +164,7 @@ These are not gameplay owners, but several mirrors depend on them.
 | `initialize_global_identity_matrix` | `0x44c880` | 100% | Exact constructor-table wrapper that initializes the shared identity transform through uniform scale `1.0f`. | Done; use with exact `initialize_uniform_scale_matrix` as the global identity-matrix source of truth. |
 | `initialize_math_random_table` | `0x44c8d0` | 100% | Exact 0x1fff-entry gameplay random-table initializer and cursor reset before `next_math_random_value` consumption. | Done; keep the signed pointer compare shape that preserves the native `jl` loop guard. |
 | `initialize_trigonometry_tables` | `0x44c930` | 100% | Exact startup sine/cosine table builder that also resets the gameplay random table. | Done; keep the two `float` scale multiplies before the native `fcos`/`fsin` sequence. |
+| `cosine` | `0x44c980` | 100% | Exact cosine lookup wrapper used by attachment, camera, projectile, nuke/ring, and path-template math. | Done; keep the CRT validation as a `float` local before the masked table lookup so the native x87/dword compare shape stays intact. |
 | `sine` | `0x44c9d0` | 100% | Exact sine lookup wrapper used by pickup bobbing, projectile halos, damage flash, nuke/ring presentation, and camera paths. | Done; keep the explicit scaled-angle intermediate so VC6 preserves the native two-multiply table-index shape. |
 | `arccosine` | `0x44ca00` | 100% | Exact CRT arccos wrapper used by quaternion and attachment/camera math. | Done; keep the explicit result local that prevents tail-call lowering. |
 | `atan2_positive` | `0x44ca10` | 100% | Exact quadrant-aware positive arctangent helper used by kind-42 attachment transforms and sprite-facing angle updates. | Done; keep the sign-normalization/quadrant-id source shape and `atan(y / x)` spelling. |
@@ -207,7 +208,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
   `initialize_global_identity_matrix`, `initialize_math_random_table`,
-  `initialize_trigonometry_tables`, `sine`, `arccosine`, `atan2_positive`,
+  `initialize_trigonometry_tables`, `cosine`, `sine`, `arccosine`, `atan2_positive`,
   `square_root`, `multiply_vector_by_matrix_copy`,
   `rotate_vector_by_matrix`, `normalize_vector`, `cross_vectors`,
   `initialize_uniform_scale_matrix`, `rotate_matrix_world_x`,
