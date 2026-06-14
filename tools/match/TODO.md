@@ -63,6 +63,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `update_subgoldy` | `0x43b120` | 72.44%, structure complete | Master player motion, replay codec, fire lane, completion handoff, attachment-exit clears. | Continue slice-first: grounded/trampoline clear lanes, projectile/replay consumers, then residual register-shape cleanup. |
+| `initialize_subgoldy_death` | `0x446e30` | 100% | Exact selector for respawn versus final-loss entry by gameplay mode and visible life stock. | Done; use with exact `initialize_subgoldy_resurrect` and `update_subgoldy_resurrect` as the death/resurrection source of truth. |
 | `update_subgoldy_resurrect` | `0x441fd0` | 100% | Exact death/resurrection bridge: freezes z velocity, drives fade-out, spends arcade life stock, calls `complete_subgame(1)` on final loss, and routes frontend state. | Done; use with exact `initialize_subgoldy_resurrect` as the respawn/final-loss source of truth. |
 | `play_movement_state_sound` | `0x43afd0` | 89.13%, pinned | Shared RNG draw and fire/movement sound variant cadence. | Semantics are pinned; remaining clamp-tail duplication is documented in NOTES. |
 | `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |

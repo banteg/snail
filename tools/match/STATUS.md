@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**163/665** mapped gameplay functions matched, **8996/326119** bytes (**2.8%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**164/665** mapped gameplay functions matched, **9043/326119** bytes (**2.8%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -145,6 +145,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | 20/20 |  |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 |  |
+| ✅ | initialize_subgoldy_death | 0x446e30 | 47 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 |  |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | 4/4 |  |
