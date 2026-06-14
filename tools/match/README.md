@@ -61,6 +61,12 @@ Useful analysis helpers:
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
+- `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
+  operands still keep linker noise out of the score, but the audit compares
+  target resolved references (function names, imports, strings, or raw image
+  addresses) against candidate relocation symbols/string literals. A 100%
+  normalized score is proof-grade only when this audit has no unresolved or
+  mismatched entries.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too
@@ -80,8 +86,11 @@ become `L<offset>` labels, and untargeted terminal padding after a final `ret`
 is ignored. Struct offsets, register allocation, and instruction scheduling all
 still count — only link-time layout is forgiven. The CLI reports both the
 whole-function score and the exact common instruction prefix before the first
-normalized mismatch. Do not invent extern symbols or other dummy relocation
-sources just to hide constants.
+normalized mismatch. It also audits every normalized-equal instruction with
+masked operands. Do not invent extern symbols or other dummy relocation sources
+just to hide constants; if a candidate symbol does not explain the target
+function/string/global reference, the status stays audit-pending even when the
+normalized instruction stream is 100%.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated

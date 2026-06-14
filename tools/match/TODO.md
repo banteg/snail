@@ -14,6 +14,10 @@ beats chasing perfection on one large function.
 - Use the fixed project toolchain: `msvc6.5 /O2 /G5 /W3`.
 - Do not use inline asm, naked functions, dummy externs, or constants whose
   only purpose is normalizer masking.
+- Treat a normalized 100% as proof-grade only when the masked-operand audit is
+  clean. If `ADDR` hides an unresolved target reference or mismatched candidate
+  relocation/string/global, keep the scratch audit-pending and document the
+  real owner before counting it as matched.
 - Do not change compiler flags to chase a function unless there is independent
   Rich/header evidence for a different object family.
 - Keep source plausible as original 2004 C++: real structs, real control flow,

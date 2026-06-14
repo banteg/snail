@@ -8,6 +8,7 @@ import pytest
 from snail.match import (
     IDIOM_CASES_BY_NAME,
     LoadedImage,
+    ObjectRelocationReference,
     ObjectFunction,
     ScratchConfig,
     ScratchStatus,
@@ -26,14 +27,23 @@ from snail.match import (
 )
 from snail.symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    FunctionSymbol,
+    FunctionSymbolManifest,
     REPO_ROOT,
     load_function_symbol_manifest,
 )
 
 
-def build_object(code: bytes, symbols: list[tuple[str, int]], relocations: list[int]) -> bytes:
+def build_object(
+    code: bytes,
+    symbols: list[tuple[str, int]],
+    relocations: list[int | tuple[int, int]],
+) -> bytes:
     """Hand-pack a minimal i386 COFF object with one .text section."""
     section_count = 1
+    relocation_records = [
+        (item, 0) if isinstance(item, int) else item for item in relocations
+    ]
     symbol_records = b""
     for name, value in symbols:
         symbol_records += struct.pack("<8sIhHBB", name.encode(), value, 1, 0x20, 2, 0)
@@ -56,12 +66,13 @@ def build_object(code: bytes, symbols: list[tuple[str, int]], relocations: list[
         code_offset,
         reloc_offset if relocations else 0,
         0,
-        len(relocations),
+        len(relocation_records),
         0,
         0x60000020,
     )
     reloc_records = b"".join(
-        struct.pack("<IIH", address, 0, 6) for address in relocations
+        struct.pack("<IIH", address, symbol_index, 6)
+        for address, symbol_index in relocation_records
     )
     string_table = struct.pack("<I", 4)
     return header + section + code + reloc_records + symbol_records + string_table
@@ -84,6 +95,16 @@ def test_extract_object_function_collects_relocations() -> None:
     obj = parse_coff_object(build_object(code, [("_foo", 0)], [1]))
     function = extract_object_function(obj, "foo")
     assert function.relocation_offsets == frozenset({1})
+
+
+def test_extract_object_function_records_relocation_symbols() -> None:
+    # call external-ish symbol; ret; callee: ret
+    code = bytes.fromhex("e800000000c3c3")
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("_callee", 6)], [(1, 1)]))
+    function = extract_object_function(obj, "foo")
+    assert function.relocation_references[0].offset == 1
+    assert function.relocation_references[0].symbol_name == "_callee"
+    assert function.relocation_references[0].key == "name:callee"
 
 
 def test_normalize_masks_relocated_and_absolute_operands() -> None:
@@ -168,6 +189,99 @@ def test_match_function_reports_end_mismatch_for_short_candidate() -> None:
     assert result.prefix_instructions == 1
     assert result.first_target_mismatch == "ret"
     assert result.first_candidate_mismatch is None
+
+
+def tiny_manifest() -> FunctionSymbolManifest:
+    return FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x401000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(FunctionSymbol(address=0x401010, name="right_helper"),),
+    )
+
+
+def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
+    return ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("e800000000c3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name=symbol_name,
+                text=f"sym:{key.removeprefix('name:')}",
+                key=key,
+                explained=True,
+            ),
+        ),
+    )
+
+
+def test_masked_operand_audit_accepts_matching_callee_reference() -> None:
+    # target: call 0x401010; ret. candidate: call relocated right_helper; ret.
+    target = bytes.fromhex("e80b000000c3")
+    result = match_function(
+        target,
+        relocated_candidate("_right_helper", "name:right_helper"),
+        image=LoadedImage(mapped=b"\x00" * 0x2000, image_base=0x401000, size_of_image=0x2000),
+        target_va=0x401000,
+        manifest=tiny_manifest(),
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_flags_wrong_callee_reference() -> None:
+    target = bytes.fromhex("e80b000000c3")
+    result = match_function(
+        target,
+        relocated_candidate("_wrong_helper", "name:wrong_helper"),
+        image=LoadedImage(mapped=b"\x00" * 0x2000, image_base=0x401000, size_of_image=0x2000),
+        target_va=0x401000,
+        manifest=tiny_manifest(),
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.mismatch_count == 1
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.status == "mismatch"
+    assert entry.target_references[0].text == "fn:right_helper@0x401010"
+    assert entry.candidate_references[0].text == "sym:wrong_helper"
+
+
+def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
+    # target: push 0x402000; ret. The image address has no function/string name,
+    # so a matching ADDR shape against a candidate symbol is not proof-grade.
+    target = bytes.fromhex("6800204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("6800000000c3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="_g_state",
+                text="sym:g_state",
+                key="name:g_state",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.unresolved_count == 1
+    assert (
+        result.masked_operand_audit.entries[0].target_references[0].text
+        == "image+0x2000@0x402000"
+    )
 
 
 def test_diff_regions_reports_localized_mismatch() -> None:

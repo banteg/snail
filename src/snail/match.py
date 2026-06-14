@@ -10,7 +10,7 @@ the exact common instruction prefix before the first normalized mismatch.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import difflib
 from pathlib import Path
 import re
@@ -53,6 +53,7 @@ class CoffSection:
 
 @dataclass(frozen=True, slots=True)
 class CoffSymbol:
+    raw_index: int
     name: str
     value: int
     section_number: int
@@ -67,10 +68,66 @@ class CoffObject:
 
 
 @dataclass(frozen=True, slots=True)
+class ObjectRelocationReference:
+    offset: int
+    symbol_name: str
+    text: str
+    key: str | None
+    explained: bool
+
+
+@dataclass(frozen=True, slots=True)
 class ObjectFunction:
     name: str
     data: bytes
     relocation_offsets: frozenset[int]
+    relocation_references: tuple[ObjectRelocationReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class MaskedReference:
+    operand_index: int
+    kind: str
+    source: str
+    value: int | None
+    text: str
+    key: str | None
+    explained: bool
+
+
+@dataclass(frozen=True, slots=True)
+class MaskedOperandAuditEntry:
+    target_index: int
+    candidate_index: int
+    target_offset: int
+    candidate_offset: int
+    target_address: int
+    candidate_address: int
+    instruction: str
+    target_references: tuple[MaskedReference, ...]
+    candidate_references: tuple[MaskedReference, ...]
+    status: str
+
+
+@dataclass(frozen=True, slots=True)
+class MaskedOperandAudit:
+    entries: tuple[MaskedOperandAuditEntry, ...] = ()
+
+    @property
+    def ok_count(self) -> int:
+        return sum(entry.status == "ok" for entry in self.entries)
+
+    @property
+    def unresolved_count(self) -> int:
+        return sum(entry.status == "unresolved" for entry in self.entries)
+
+    @property
+    def mismatch_count(self) -> int:
+        return sum(entry.status == "mismatch" for entry in self.entries)
+
+    @property
+    def problem_count(self) -> int:
+        return self.unresolved_count + self.mismatch_count
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +136,9 @@ class MatchResult:
     prefix_instructions: int
     target_lines: tuple[str, ...]
     candidate_lines: tuple[str, ...]
+    target_disassembly: tuple["DisassemblyLine", ...] = ()
+    candidate_disassembly: tuple["DisassemblyLine", ...] = ()
+    masked_operand_audit: MaskedOperandAudit = field(default_factory=MaskedOperandAudit)
 
     @property
     def first_target_mismatch(self) -> str | None:
@@ -138,6 +198,7 @@ class DisassemblyLine:
     offset: int
     address: int
     text: str
+    masked_references: tuple[MaskedReference, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,6 +232,7 @@ def parse_coff_object(data: bytes) -> CoffObject:
         )
         symbols.append(
             CoffSymbol(
+                raw_index=index,
                 name=symbol_name(record[:8]),
                 value=value,
                 section_number=section_number,
@@ -209,6 +271,70 @@ def parse_coff_object(data: bytes) -> CoffObject:
         )
 
     return CoffObject(sections=tuple(sections), symbols=tuple(symbols))
+
+
+def _read_u32(data: bytes, offset: int) -> int | None:
+    if 0 <= offset <= len(data) - 4:
+        return struct.unpack_from("<I", data, offset)[0]
+    return None
+
+
+def _read_printable_c_string(data: bytes, offset: int, *, limit: int = 160) -> str | None:
+    if offset < 0 or offset >= len(data):
+        return None
+    end = data.find(b"\x00", offset, min(len(data), offset + limit + 1))
+    if end == -1 or end == offset:
+        return None
+    raw = data[offset:end]
+    if any(byte < 0x20 or byte > 0x7e for byte in raw):
+        return None
+    return raw.decode("ascii")
+
+
+def _quote_reference_string(value: str) -> str:
+    escaped = value.encode("unicode_escape").decode("ascii")
+    return f'"{escaped}"'
+
+
+def _canonical_symbol_name(name: str) -> str:
+    name = name.removeprefix("__imp_")
+    name = name.removeprefix("__imp__")
+    if name.startswith("?"):
+        match = re.match(r"^\?([^@]+)@", name)
+        if match:
+            return match.group(1)
+    name = name.lstrip("_")
+    return re.sub(r"@\d+$", "", name)
+
+
+def _format_symbol_reference(name: str) -> tuple[str, str]:
+    canonical = _canonical_symbol_name(name)
+    return f"sym:{canonical}", f"name:{canonical}"
+
+
+def _resolve_object_relocation(
+    obj: CoffObject,
+    symbol: CoffSymbol,
+    addend: int | None,
+) -> tuple[str, str | None, bool]:
+    if symbol.section_number > 0:
+        section = obj.sections[symbol.section_number - 1]
+        candidates = [symbol.value]
+        if addend is not None:
+            candidates.extend([symbol.value + addend, addend])
+        seen_offsets: set[int] = set()
+        for offset in candidates:
+            if offset in seen_offsets:
+                continue
+            seen_offsets.add(offset)
+            text = _read_printable_c_string(section.data, offset)
+            if text is not None:
+                return f"str:{_quote_reference_string(text)}", f"str:{text}", True
+        text, key = _format_symbol_reference(symbol.name)
+        return text, key, bool(_canonical_symbol_name(symbol.name))
+
+    text, key = _format_symbol_reference(symbol.name)
+    return text, key, bool(_canonical_symbol_name(symbol.name))
 
 
 def _is_function_symbol(symbol: CoffSymbol) -> bool:
@@ -260,15 +386,40 @@ def extract_object_function(obj: CoffObject, name: str | None = None) -> ObjectF
         and symbol.value > target.value
     )
     end = siblings[0] if siblings else len(section.data)
-    relocation_offsets = frozenset(
-        relocation.virtual_address - target.value
-        for relocation in section.relocations
-        if target.value <= relocation.virtual_address < end
-    )
+    symbols_by_raw_index = {symbol.raw_index: symbol for symbol in obj.symbols}
+    relocation_references: list[ObjectRelocationReference] = []
+    for relocation in section.relocations:
+        if not (target.value <= relocation.virtual_address < end):
+            continue
+        offset = relocation.virtual_address - target.value
+        symbol = symbols_by_raw_index.get(relocation.symbol_index)
+        if symbol is None:
+            relocation_references.append(
+                ObjectRelocationReference(
+                    offset=offset,
+                    symbol_name=f"<symbol#{relocation.symbol_index}>",
+                    text=f"sym:<symbol#{relocation.symbol_index}>",
+                    key=None,
+                    explained=False,
+                )
+            )
+            continue
+        addend = _read_u32(section.data, relocation.virtual_address)
+        text, key, explained = _resolve_object_relocation(obj, symbol, addend)
+        relocation_references.append(
+            ObjectRelocationReference(
+                offset=offset,
+                symbol_name=symbol.name,
+                text=text,
+                key=key,
+                explained=explained,
+            )
+        )
     return ObjectFunction(
         name=target.name,
         data=section.data[target.value : end].rstrip(PADDING_BYTES),
-        relocation_offsets=relocation_offsets,
+        relocation_offsets=frozenset(reference.offset for reference in relocation_references),
+        relocation_references=tuple(relocation_references),
     )
 
 
@@ -277,6 +428,7 @@ class LoadedImage:
     mapped: bytes
     image_base: int
     size_of_image: int
+    imports_by_va: dict[int, str] = field(default_factory=dict)
 
     def function_bytes(self, start_va: int, end_va: int) -> bytes:
         data = self.mapped[start_va - self.image_base : end_va - self.image_base]
@@ -287,11 +439,83 @@ def load_image(path: Path, image_base: int) -> LoadedImage:
     import pefile
 
     pe = pefile.PE(data=path.read_bytes(), fast_load=True)
+    imports_by_va: dict[int, str] = {}
+    try:
+        pe.parse_data_directories(
+            directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_IMPORT"]]
+        )
+    except Exception:
+        pass
+    for entry in getattr(pe, "DIRECTORY_ENTRY_IMPORT", []):
+        dll_name = entry.dll.decode("ascii", errors="replace")
+        for imported in entry.imports:
+            if imported.address is None:
+                continue
+            if imported.name is not None:
+                name = imported.name.decode("ascii", errors="replace")
+            else:
+                name = f"ordinal_{imported.ordinal}"
+            imports_by_va[imported.address] = f"{dll_name}!{name}"
     return LoadedImage(
         mapped=pe.get_memory_mapped_image(ImageBase=image_base),
         image_base=image_base,
         size_of_image=pe.OPTIONAL_HEADER.SizeOfImage,
+        imports_by_va=imports_by_va,
     )
+
+
+def _resolve_image_reference(
+    value: int,
+    *,
+    image: LoadedImage | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+) -> MaskedReference:
+    text: str
+    key: str | None
+    explained = False
+    if manifest is not None:
+        by_address = {symbol.address: symbol.name for symbol in manifest.functions}
+        if value in by_address:
+            name = by_address[value]
+            text = f"fn:{name}@0x{value:x}"
+            key = f"name:{name}"
+            explained = True
+            return MaskedReference(0, "", "image", value, text, key, explained)
+    if image is not None and value in image.imports_by_va:
+        name = image.imports_by_va[value]
+        canonical = _canonical_symbol_name(name.rsplit("!", 1)[-1])
+        return MaskedReference(
+            0,
+            "",
+            "image",
+            value,
+            f"import:{name}@0x{value:x}",
+            f"name:{canonical}",
+            True,
+        )
+    if image is not None and image.image_base <= value < image.image_base + len(image.mapped):
+        offset = value - image.image_base
+        string = _read_printable_c_string(image.mapped, offset)
+        if string is not None:
+            return MaskedReference(
+                0,
+                "",
+                "image",
+                value,
+                f"str:{_quote_reference_string(string)}@0x{value:x}",
+                f"str:{string}",
+                True,
+            )
+        return MaskedReference(
+            0,
+            "",
+            "image",
+            value,
+            f"image+0x{offset:x}@0x{value:x}",
+            f"addr:0x{value:x}",
+            False,
+        )
+    return MaskedReference(0, "", "image", value, f"0x{value:x}", f"addr:0x{value:x}", False)
 
 
 _OPERAND_SIZE_NAMES = {1: "byte", 2: "word", 4: "dword", 8: "qword", 10: "tword"}
@@ -316,8 +540,11 @@ def disassemble_normalized_function(
     data: bytes,
     *,
     relocation_offsets: frozenset[int] | None = None,
+    relocation_references: tuple[ObjectRelocationReference, ...] = (),
     address_range: tuple[int, int] | None = None,
     base_address: int = 0,
+    image: LoadedImage | None = None,
+    manifest: FunctionSymbolManifest | None = None,
 ) -> tuple[DisassemblyLine, ...]:
     """Disassemble to normalized instruction lines with offsets and addresses.
 
@@ -331,26 +558,85 @@ def disassemble_normalized_function(
     md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
     md.detail = True
     relocation_offsets = relocation_offsets or frozenset()
+    relocation_by_offset = {reference.offset: reference for reference in relocation_references}
     size = len(data)
 
     def is_masked_value(value: int) -> bool:
         return address_range is not None and address_range[0] <= value < address_range[1]
 
+    def relocation_in_span(start: int, byte_count: int) -> ObjectRelocationReference | None:
+        for rel_offset in range(start, start + max(byte_count, 1)):
+            if rel_offset in relocation_by_offset:
+                return relocation_by_offset[rel_offset]
+        return None
+
+    def relocated_reference(
+        reference: ObjectRelocationReference | None,
+        *,
+        operand_index: int,
+        kind: str,
+    ) -> MaskedReference:
+        if reference is None:
+            return MaskedReference(
+                operand_index=operand_index,
+                kind=kind,
+                source="reloc",
+                value=None,
+                text="sym:<unknown>",
+                key=None,
+                explained=False,
+            )
+        return MaskedReference(
+            operand_index=operand_index,
+            kind=kind,
+            source="reloc",
+            value=None,
+            text=reference.text,
+            key=reference.key,
+            explained=reference.explained,
+        )
+
+    def image_reference(
+        value: int,
+        *,
+        operand_index: int,
+        kind: str,
+    ) -> MaskedReference:
+        resolved = _resolve_image_reference(value, image=image, manifest=manifest)
+        return MaskedReference(
+            operand_index=operand_index,
+            kind=kind,
+            source=resolved.source,
+            value=value,
+            text=resolved.text,
+            key=resolved.key,
+            explained=resolved.explained,
+        )
+
     lines: list[DisassemblyLine] = []
     for insn in md.disasm(data, base_address):
         insn_offset = insn.address - base_address
         is_branch = capstone.CS_GRP_JUMP in insn.groups or capstone.CS_GRP_CALL in insn.groups
+        imm_relocation = relocation_in_span(
+            insn_offset + insn.imm_offset,
+            insn.imm_size,
+        ) if insn.imm_offset else None
         imm_masked = any(
             insn_offset + rel_offset in relocation_offsets
             for rel_offset in range(insn.imm_offset, insn.imm_offset + max(insn.imm_size, 1))
         ) if insn.imm_offset else False
+        disp_relocation = relocation_in_span(
+            insn_offset + insn.disp_offset,
+            insn.disp_size,
+        ) if insn.disp_offset else None
         disp_masked = any(
             insn_offset + rel_offset in relocation_offsets
             for rel_offset in range(insn.disp_offset, insn.disp_offset + max(insn.disp_size, 1))
         ) if insn.disp_offset else False
 
         operands: list[str] = []
-        for operand in insn.operands:
+        masked_references: list[MaskedReference] = []
+        for operand_index, operand in enumerate(insn.operands):
             if operand.type == capstone.x86.X86_OP_REG:
                 operands.append(insn.reg_name(operand.reg))
             elif operand.type == capstone.x86.X86_OP_IMM:
@@ -360,15 +646,37 @@ def disassemble_normalized_function(
                 # displacement happens to land inside the function
                 if imm_masked:
                     operands.append("ADDR")
+                    masked_references.append(
+                        relocated_reference(
+                            imm_relocation,
+                            operand_index=operand_index,
+                            kind="imm",
+                        )
+                    )
                 elif is_branch and 0 <= target_offset < size:
                     operands.append(f"L{target_offset:x}")
                 elif is_masked_value(value):
                     operands.append("ADDR")
+                    masked_references.append(
+                        image_reference(value, operand_index=operand_index, kind="imm")
+                    )
                 else:
                     operands.append(f"0x{value:x}" if value >= 0 else f"-0x{-value:x}")
             elif operand.type == capstone.x86.X86_OP_MEM:
                 masked = disp_masked or is_masked_value(operand.mem.disp)
                 operands.append(_format_memory_operand(insn, operand, masked))
+                if disp_masked:
+                    masked_references.append(
+                        relocated_reference(
+                            disp_relocation,
+                            operand_index=operand_index,
+                            kind="disp",
+                        )
+                    )
+                elif is_masked_value(operand.mem.disp):
+                    masked_references.append(
+                        image_reference(operand.mem.disp, operand_index=operand_index, kind="disp")
+                    )
             else:
                 operands.append("?")
         lines.append(
@@ -376,6 +684,7 @@ def disassemble_normalized_function(
                 offset=insn_offset,
                 address=insn.address,
                 text=f"{insn.mnemonic} {', '.join(operands)}".strip(),
+                masked_references=tuple(masked_references),
             )
         )
     return _strip_trailing_padding_lines(tuple(lines))
@@ -426,23 +735,86 @@ def normalize_function(
     return tuple(line.text for line in lines)
 
 
+def _reference_status(
+    target_references: tuple[MaskedReference, ...],
+    candidate_references: tuple[MaskedReference, ...],
+) -> str:
+    target_keys = tuple(reference.key for reference in target_references)
+    candidate_keys = tuple(reference.key for reference in candidate_references)
+    all_explained = all(
+        reference.explained for reference in (*target_references, *candidate_references)
+    )
+    if target_keys == candidate_keys and all_explained:
+        return "ok"
+    if not all_explained or None in target_keys or None in candidate_keys:
+        return "unresolved"
+    return "mismatch"
+
+
+def audit_masked_operands(
+    target_disassembly: tuple[DisassemblyLine, ...],
+    candidate_disassembly: tuple[DisassemblyLine, ...],
+) -> MaskedOperandAudit:
+    matcher = difflib.SequenceMatcher(
+        a=tuple(line.text for line in target_disassembly),
+        b=tuple(line.text for line in candidate_disassembly),
+        autojunk=False,
+    )
+    entries: list[MaskedOperandAuditEntry] = []
+    for tag, a0, a1, b0, b1 in matcher.get_opcodes():
+        if tag != "equal":
+            continue
+        for target_index, candidate_index in zip(range(a0, a1), range(b0, b1)):
+            target_line = target_disassembly[target_index]
+            candidate_line = candidate_disassembly[candidate_index]
+            if not target_line.masked_references and not candidate_line.masked_references:
+                continue
+            entries.append(
+                MaskedOperandAuditEntry(
+                    target_index=target_index,
+                    candidate_index=candidate_index,
+                    target_offset=target_line.offset,
+                    candidate_offset=candidate_line.offset,
+                    target_address=target_line.address,
+                    candidate_address=candidate_line.address,
+                    instruction=target_line.text,
+                    target_references=target_line.masked_references,
+                    candidate_references=candidate_line.masked_references,
+                    status=_reference_status(
+                        target_line.masked_references,
+                        candidate_line.masked_references,
+                    ),
+                )
+            )
+    return MaskedOperandAudit(tuple(entries))
+
+
 def match_function(
     target_data: bytes,
     candidate: ObjectFunction,
     *,
     image: LoadedImage,
     target_va: int,
+    manifest: FunctionSymbolManifest | None = None,
 ) -> MatchResult:
-    target_lines = normalize_function(
+    address_range = (image.image_base, image.image_base + image.size_of_image)
+    target_disassembly = disassemble_normalized_function(
         target_data,
-        address_range=(image.image_base, image.image_base + image.size_of_image),
+        address_range=address_range,
         base_address=target_va,
+        image=image,
+        manifest=manifest,
     )
-    candidate_lines = normalize_function(
+    candidate_disassembly = disassemble_normalized_function(
         candidate.data,
         relocation_offsets=candidate.relocation_offsets,
-        address_range=(image.image_base, image.image_base + image.size_of_image),
+        relocation_references=candidate.relocation_references,
+        address_range=address_range,
+        image=image,
+        manifest=manifest,
     )
+    target_lines = tuple(line.text for line in target_disassembly)
+    candidate_lines = tuple(line.text for line in candidate_disassembly)
     ratio = difflib.SequenceMatcher(a=target_lines, b=candidate_lines, autojunk=False).ratio()
     prefix_instructions = common_prefix_length(target_lines, candidate_lines)
     return MatchResult(
@@ -450,6 +822,9 @@ def match_function(
         prefix_instructions=prefix_instructions,
         target_lines=target_lines,
         candidate_lines=candidate_lines,
+        target_disassembly=target_disassembly,
+        candidate_disassembly=candidate_disassembly,
+        masked_operand_audit=audit_masked_operands(target_disassembly, candidate_disassembly),
     )
 
 
@@ -592,6 +967,7 @@ def run_match(
         candidate,
         image=image,
         target_va=start,
+        manifest=manifest,
     )
 
 
@@ -615,11 +991,16 @@ def run_match_dump(
             target_data,
             address_range=address_range,
             base_address=start,
+            image=image,
+            manifest=manifest,
         ),
         candidate_lines=disassemble_normalized_function(
             candidate.data,
             relocation_offsets=candidate.relocation_offsets,
+            relocation_references=candidate.relocation_references,
             address_range=address_range,
+            image=image,
+            manifest=manifest,
         ),
     )
 
@@ -648,14 +1029,23 @@ class ScratchStatus:
     prefix_instructions: int
     target_instructions: int
     candidate_instructions: int
-    error: str | None
+    masked_ok: int = 0
+    masked_unresolved: int = 0
+    masked_mismatches: int = 0
+    error: str | None = None
 
     @property
     def state(self) -> str:
         if self.ratio is None:
             return "error"
-        if self.ratio == 1.0:
+        if (
+            self.ratio == 1.0
+            and self.masked_unresolved == 0
+            and self.masked_mismatches == 0
+        ):
             return "match"
+        if self.ratio == 1.0:
+            return "audit"
         return "wip"
 
 
@@ -1054,7 +1444,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 3
+CACHE_VERSION = 4
 
 
 def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
@@ -1125,13 +1515,22 @@ def collect_scratch_statuses(
             obj_path = compile_scratch(config, match_root)
             obj = parse_coff_object(obj_path.read_bytes())
             candidate = extract_object_function(obj, config.symbol or config.function)
-            result = match_function(target_data, candidate, image=image, target_va=start)
+            result = match_function(
+                target_data,
+                candidate,
+                image=image,
+                target_va=start,
+                manifest=manifest,
+            )
             fields = {
                 "target_size": len(target_data),
                 "ratio": result.ratio,
                 "prefix_instructions": result.prefix_instructions,
                 "target_instructions": len(result.target_lines),
                 "candidate_instructions": len(result.candidate_lines),
+                "masked_ok": result.masked_operand_audit.ok_count,
+                "masked_unresolved": result.masked_operand_audit.unresolved_count,
+                "masked_mismatches": result.masked_operand_audit.mismatch_count,
                 "error": None,
             }
         except (ValueError, RuntimeError) as error:
@@ -1141,6 +1540,9 @@ def collect_scratch_statuses(
                 "prefix_instructions": 0,
                 "target_instructions": 0,
                 "candidate_instructions": 0,
+                "masked_ok": 0,
+                "masked_unresolved": 0,
+                "masked_mismatches": 0,
                 "error": str(error).splitlines()[0] if str(error) else "unknown error",
             }
         else:
@@ -1190,10 +1592,32 @@ def manifest_cluster_totals(
     )
 
 
-STATE_ICONS = {"match": "✅", "wip": "🚧", "error": "❌"}
+STATE_ICONS = {"match": "✅", "audit": "⚠", "wip": "🚧", "error": "❌"}
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
-STATUS_HEADER = ("", "function", "address", "bytes", "insns", "match", "prefix", "build", "note")
+STATUS_HEADER = (
+    "",
+    "function",
+    "address",
+    "bytes",
+    "insns",
+    "match",
+    "prefix",
+    "masked",
+    "build",
+    "note",
+)
+
+
+def _format_masked_counts(status: ScratchStatus) -> str:
+    parts: list[str] = []
+    if status.masked_mismatches:
+        parts.append(f"{status.masked_mismatches} mismatch")
+    if status.masked_unresolved:
+        parts.append(f"{status.masked_unresolved} unresolved")
+    if status.masked_ok:
+        parts.append(f"{status.masked_ok} ok")
+    return ", ".join(parts) if parts else "-"
 
 
 def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
@@ -1221,6 +1645,7 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
                 insns,
                 ratio,
                 prefix,
+                _format_masked_counts(status),
                 "" if build == default_build else build,
                 status.error or "",
             )
@@ -1233,7 +1658,7 @@ def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> st
         f"cluster: {totals.matched_functions}/{totals.function_count} functions, "
         f"{totals.matched_bytes}/{totals.byte_total} bytes "
         f"({totals.byte_percentage:.1%}) matched; "
-        f"{totals.matched_functions}/{len(statuses)} scratches at 100%"
+        f"{totals.matched_functions}/{len(statuses)} scratches at proof-grade 100%"
     )
 
 
@@ -1260,11 +1685,11 @@ def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals)
         "upper bounds: uncurated code between manifest functions counts toward "
         "the preceding extent.",
         "",
-        "| | function | address | bytes | insns | match | prefix | build |",
-        "|---|---|---|---|---|---|---|---|",
+        "| | function | address | bytes | insns | match | prefix | masked | build |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for row in render_status_rows(statuses):
-        lines.append("| " + " | ".join(row[:8]) + " |")
+        lines.append("| " + " | ".join(row[:9]) + " |")
     lines.append("")
     return "\n".join(lines)
 

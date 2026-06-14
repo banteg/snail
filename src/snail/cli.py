@@ -40,6 +40,40 @@ from .symbols import (
 from .trace import build_trace_capture_plan, summarize_runtime_trace_file
 
 
+def _format_masked_reference_list(references) -> str:
+    if not references:
+        return "-"
+    return ", ".join(
+        f"{reference.kind}{reference.operand_index}:{reference.text}"
+        for reference in references
+    )
+
+
+def _print_masked_operand_audit(audit) -> None:
+    if not audit.entries:
+        print("masked operands: none")
+        return
+    print(
+        "masked operands: "
+        f"{audit.ok_count} ok, "
+        f"{audit.unresolved_count} unresolved, "
+        f"{audit.mismatch_count} mismatch"
+    )
+    problem_entries = [entry for entry in audit.entries if entry.status != "ok"]
+    if not problem_entries:
+        return
+    print("masked operand audit:")
+    for entry in problem_entries:
+        print(
+            f"  {entry.status}: target[{entry.target_index}] "
+            f"0x{entry.target_address:x} (off +0x{entry.target_offset:x}) "
+            f"candidate[{entry.candidate_index}] (off +0x{entry.candidate_offset:x})"
+        )
+        print(f"    insn: {entry.instruction}")
+        print(f"    target: {_format_masked_reference_list(entry.target_references)}")
+        print(f"    candidate: {_format_masked_reference_list(entry.candidate_references)}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="snail",
@@ -724,6 +758,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"match: {result.ratio:.2%}")
         print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
         print(f"prefix: {result.prefix_instructions}/{len(result.target_lines)} target insns")
+        _print_masked_operand_audit(result.masked_operand_audit)
         if result.first_target_mismatch is not None or result.first_candidate_mismatch is not None:
             target = result.first_target_mismatch or "<end>"
             candidate = result.first_candidate_mismatch or "<end>"
@@ -763,7 +798,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             for line in result.diff_lines:
                 print(line)
-        return 0 if result.ratio == 1.0 else 1
+        return 0 if result.ratio == 1.0 and result.masked_operand_audit.problem_count == 0 else 1
 
     parser.error(f"Unhandled command: {args.command}")
     return 2
