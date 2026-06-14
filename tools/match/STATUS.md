@@ -274,3 +274,36 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ⚠ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
 | ⚠ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
+
+## Type Consolidation
+
+This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
+Run `uv run snail match types --paths` for the full path-level report.
+
+- ready: 7 type name(s)
+- covered: 8 type name(s) with a header plus scratch-local copies
+- divergent: 61 type name(s) with multiple scratch-local shapes
+
+| status | type | scratch | header | signatures | recommendation |
+|---|---|---:|---:|---:|---|
+| divergent | Game | 38 | 0 | 36 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TransformMatrix | 34 | 0 | 25 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Color4f | 22 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Sprite | 19 | 0 | 15 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BodBase | 12 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
+| ... | 55 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vector3 | 21 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| ... | 2 more covered finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| ready | SoundEffectManager | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ListHead | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ParcelBucket | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ParcelBucketSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | SaltListAnchor | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ... | 1 more ready finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |

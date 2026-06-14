@@ -88,7 +88,9 @@ Useful analysis helpers:
 - `uv run snail match types [Name ...]` scans scratch-local `struct`/`class`
   definitions and reports which names are ready, already covered, or too
   divergent for shared-header consolidation. Pass names such as `Game
-  TrackRowCell` to focus a cleanup decision.
+  TrackRowCell` to focus a cleanup decision. `snail match status --write`
+  includes a concise type-consolidation summary so this stays a regular pass
+  while matching, not an end-of-project cleanup.
 
 The differ (`snail match`, `src/snail/match.py`) normalizes both sides before
 comparing: relocated immediates/displacements in the object and absolute-looking

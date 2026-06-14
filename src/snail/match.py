@@ -2160,7 +2160,11 @@ def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> st
     )
 
 
-def render_status_table(statuses: list[ScratchStatus], totals: ClusterTotals) -> str:
+def render_status_table(
+    statuses: list[ScratchStatus],
+    totals: ClusterTotals,
+    type_findings: list[TypeConsolidationFinding] | None = None,
+) -> str:
     rows = [STATUS_HEADER, *render_status_rows(statuses)]
     widths = [max(len(row[column]) for row in rows) for column in range(len(STATUS_HEADER))]
     lines = [
@@ -2168,10 +2172,16 @@ def render_status_table(statuses: list[ScratchStatus], totals: ClusterTotals) ->
         for row in rows
     ]
     lines.append(f"\n{_cluster_summary(totals, statuses)}")
+    if type_findings is not None:
+        lines.append(_type_consolidation_console_summary(type_findings))
     return "\n".join(lines)
 
 
-def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals) -> str:
+def render_status_markdown(
+    statuses: list[ScratchStatus],
+    totals: ClusterTotals,
+    type_findings: list[TypeConsolidationFinding] | None = None,
+) -> str:
     lines = [
         "# Matching Status",
         "",
@@ -2189,6 +2199,8 @@ def render_status_markdown(statuses: list[ScratchStatus], totals: ClusterTotals)
     for row in render_status_rows(statuses):
         lines.append("| " + " | ".join(row[:9]) + " |")
     lines.append("")
+    if type_findings is not None:
+        lines.extend(render_type_consolidation_markdown(type_findings))
     return "\n".join(lines)
 
 
@@ -2323,3 +2335,93 @@ def type_consolidation_findings(
             )
         )
     return findings
+
+
+TYPE_CONSOLIDATION_STATUS_ORDER = {
+    "divergent": 0,
+    "covered": 1,
+    "ready": 2,
+}
+
+
+def _type_consolidation_counts(findings: list[TypeConsolidationFinding]) -> dict[str, int]:
+    counts = {"ready": 0, "covered": 0, "divergent": 0}
+    for finding in findings:
+        counts[finding.status] = counts.get(finding.status, 0) + 1
+    return counts
+
+
+def _type_consolidation_sort_key(finding: TypeConsolidationFinding) -> tuple[int, int, int, str]:
+    return (
+        TYPE_CONSOLIDATION_STATUS_ORDER.get(finding.status, len(TYPE_CONSOLIDATION_STATUS_ORDER)),
+        -finding.scratch_count,
+        -finding.signature_count,
+        finding.name.lower(),
+    )
+
+
+def _type_consolidation_console_summary(findings: list[TypeConsolidationFinding]) -> str:
+    counts = _type_consolidation_counts(findings)
+    return (
+        "types: "
+        f"{counts['ready']} ready, {counts['covered']} covered, "
+        f"{counts['divergent']} divergent; "
+        "run `uv run snail match types --paths` for details"
+    )
+
+
+def render_type_consolidation_markdown(
+    findings: list[TypeConsolidationFinding],
+    *,
+    per_status_limit: int = 6,
+) -> list[str]:
+    lines = [
+        "## Type Consolidation",
+        "",
+        "This is generated as part of `uv run snail match status --write "
+        "tools/match/STATUS.md`. Keep types scratch-local until multiple "
+        "scratches agree, then promote deliberately; divergent names are "
+        "semantic debt, not merge candidates.",
+        "Run `uv run snail match types --paths` for the full path-level report.",
+        "",
+    ]
+    if not findings:
+        lines.extend(
+            [
+                "No consolidation candidates at the current threshold.",
+                "",
+            ]
+        )
+        return lines
+
+    counts = _type_consolidation_counts(findings)
+    lines.extend(
+        [
+            f"- ready: {counts['ready']} type name(s)",
+            f"- covered: {counts['covered']} type name(s) with a header plus scratch-local copies",
+            f"- divergent: {counts['divergent']} type name(s) with multiple scratch-local shapes",
+            "",
+            "| status | type | scratch | header | signatures | recommendation |",
+            "|---|---|---:|---:|---:|---|",
+        ]
+    )
+    for status in TYPE_CONSOLIDATION_STATUS_ORDER:
+        status_findings = sorted(
+            (finding for finding in findings if finding.status == status),
+            key=_type_consolidation_sort_key,
+        )
+        for finding in status_findings[:per_status_limit]:
+            lines.append(
+                "| "
+                f"{finding.status} | {finding.name} | {finding.scratch_count} | "
+                f"{finding.header_count} | {finding.signature_count} | "
+                f"{finding.recommendation} |"
+            )
+        omitted = len(status_findings) - per_status_limit
+        if omitted > 0:
+            lines.append(
+                f"| ... | {omitted} more {status} finding(s) |  |  |  | "
+                "`uv run snail match types --paths` prints the full list. |"
+            )
+    lines.append("")
+    return lines

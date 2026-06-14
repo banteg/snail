@@ -6,6 +6,7 @@ import struct
 import pytest
 
 from snail.match import (
+    ClusterTotals,
     IDIOM_CASES_BY_NAME,
     ImageSection,
     LoadedImage,
@@ -25,8 +26,11 @@ from snail.match import (
     match_function,
     normalize_function,
     parse_coff_object,
+    render_status_markdown,
     render_status_rows,
+    render_status_table,
     resolve_function_extent,
+    TypeConsolidationFinding,
     type_consolidation_findings,
 )
 from snail.symbols import (
@@ -599,6 +603,70 @@ def test_render_status_rows_includes_prefix() -> None:
         error=None,
     )
     assert render_status_rows([status])[0][6] == "2/4"
+
+
+def test_render_status_outputs_type_consolidation_summary() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch"),
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x401000,
+        target_size=10,
+        ratio=1.0,
+        prefix_instructions=4,
+        target_instructions=4,
+        candidate_instructions=4,
+        error=None,
+    )
+    totals = ClusterTotals(
+        function_count=1,
+        byte_total=10,
+        matched_functions=1,
+        matched_bytes=10,
+    )
+    findings = [
+        TypeConsolidationFinding(
+            name="Game",
+            status="divergent",
+            scratch_count=5,
+            header_count=0,
+            signature_count=3,
+            paths=(),
+            recommendation="same name has multiple scratch-local shapes; do not consolidate yet",
+        ),
+        TypeConsolidationFinding(
+            name="Player",
+            status="covered",
+            scratch_count=4,
+            header_count=1,
+            signature_count=2,
+            paths=(),
+            recommendation="header exists; consider replacing matching scratch-local copies with includes",
+        ),
+        TypeConsolidationFinding(
+            name="BodNode",
+            status="ready",
+            scratch_count=2,
+            header_count=0,
+            signature_count=1,
+            paths=(),
+            recommendation="same scratch-local definition appears repeatedly; consider a header",
+        ),
+    ]
+
+    status_table = render_status_table([status], totals, type_findings=findings)
+    assert "types: 1 ready, 1 covered, 1 divergent" in status_table
+
+    markdown = render_status_markdown([status], totals, type_findings=findings)
+    assert "## Type Consolidation" in markdown
+    assert "| divergent | Game | 5 | 0 | 3 |" in markdown
+    assert "`uv run snail match types --paths`" in markdown
 
 
 MANIFEST_AVAILABLE = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH.exists()
