@@ -88,6 +88,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 75/76 | 76.82% | 5/76 |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 |  |
+| 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 |  |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 |  |
 | 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 41.73% | 6/127 |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 |  |
