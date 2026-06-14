@@ -80,7 +80,8 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | `begin_track_attachment_follow_state` | `0x420c40` | 94.55%, pinned | Direct attachment begin seed. | Semantics and offsets are pinned; remaining table-base folding residual is documented in NOTES. |
 | `try_enter_track_attachment_from_swept_motion` | `0x42c770` | 79.80%, pinned | Swept re-entry gates and player y/lateral seed. | Finish dual-slot source-shape lead in NOTES; do not disturb pinned semantics. |
 | `update_track_attachment_follow_state` | `0x420cb0` | 46.44%, semantics pinned | Attachment stepping, natural end, side exit, supertramp launch. | Golf only with source-plausible staging; do not regress routed mirror semantics. |
-| `project_position_onto_track_attachment` | `0x4444b0` | 81.16%, source-shaped | Shared projection for garbage/slug/parcel and attachment-row actors. | Kind-42 helper now source-shaped as a `PathTemplate` member call from callsite evidence; continue only around branch-label/local-transform offsets and non-kind42 stack-slot/register residuals documented in NOTES. |
+| `project_position_onto_track_attachment` | `0x4444b0` | 81.16%, source-shaped | Shared projection for garbage/slug/parcel and attachment-row actors. | Kind-42 helper is now exact as a `PathTemplate` member call; continue only around branch-label/local-transform offsets and non-kind42 stack-slot/register residuals documented in NOTES. |
+| `compute_kind42_attachment_transform` | `0x42b920` | 100% | Exact kind-42 half-pipe transform helper used by projection, live attachment follow, and constructor-side strip generation. | Done; keep the named `angle` local because it preserves the native x87 schedule around the `atan2_positive` result and output-pointer loads. |
 | `find_segment_path_index_by_name` | `0x429ae0` | 100% | Exact `Path=` name-table lookup used by segment/path-template setup before attachment runtime use. | Done; keep the first-entry symbol plus bounded cursor loop shape that avoids VC6's first-comparison peel. |
 
 ### P2 - Collision And Runtime Pools
@@ -196,6 +197,7 @@ These are not gameplay owners, but several mirrors depend on them.
 
 - Exact helpers to keep using as anchors: `search_path_for_golb`,
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
+  `compute_kind42_attachment_transform`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
   `update_subgoldy_resurrect`,
