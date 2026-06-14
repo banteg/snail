@@ -168,6 +168,12 @@ These are not gameplay owners, but several mirrors depend on them.
 | `normalize_vector` | `0x44cca0` | 100% | Exact in-place vector normalization helper used by path construction, collision probes, projectile steering, sprite-facing math, and presentation systems. | Done; use with exact `dot_vectors` and `square_root` as the vector-length source of truth. |
 | `cross_vectors` | `0x44cd40` | 100% | Exact 3D cross-product helper used by path-template basis construction, matrix orthogonalization, object normals, and track/fringe geometry. | Done; keep the function-local static `Vec3` temporary and explicit target end before the adjacent static destructor stub. |
 | `initialize_uniform_scale_matrix` | `0x44cde0` | 100% | Exact full 4x4 uniform-scale initializer for transform matrices. | Done; use as the matrix constructor source of truth for global identity setup and scale-only transforms. |
+| `rotate_matrix_world_x` | `0x44ce30` | 100% | Exact in-place world-X basis rotation used by camera/object/attachment transform paths. | Done; keep the shared sine/cosine helper calls and lane-local temporaries. |
+| `rotate_matrix_world_y` | `0x44cec0` | 100% | Exact in-place world-Y basis rotation used by camera/object/attachment transform paths. | Done; keep the right/forward basis mix order. |
+| `rotate_matrix_world_z` | `0x44cf50` | 100% | Exact in-place world-Z basis rotation used by sprite/object/camera transform paths. | Done; keep the right/up basis mix order. |
+| `initialize_matrix_from_values` | `0x44cfe0` | 100% | Exact full 16-float transform initializer used by explicit matrix construction sites. | Done; preserves right/up/forward/position row order. |
+| `multiply_matrix_in_place` | `0x44d1a0` | 100% | Exact in-place postmultiply wrapper around `multiply_matrices` with a stack-saved left operand. | Done; keep the explicit end before the adjacent uncurated thunk at `0x44d1d0`. |
+| `premultiply_matrix_in_place` | `0x44d1e0` | 100% | Exact in-place premultiply wrapper around `multiply_matrices` with a stack-saved destination operand. | Done; keep the output-member call shape. |
 | `orthogonalize_matrix` | `0x44d3d0` | 92.31%, pinned | Small basis repair helper that normalizes right/up/forward and rebuilds two axes through exact `cross_vectors`. | Semantics are pinned; the only residual is thiscall setup order for the two cross-product calls. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
@@ -187,7 +193,10 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_trigonometry_tables`, `sine`, `arccosine`, `atan2_positive`,
   `square_root`, `multiply_vector_by_matrix_copy`,
   `rotate_vector_by_matrix`, `normalize_vector`, `cross_vectors`,
-  `initialize_uniform_scale_matrix`,
+  `initialize_uniform_scale_matrix`, `rotate_matrix_world_x`,
+  `rotate_matrix_world_y`, `rotate_matrix_world_z`,
+  `initialize_matrix_from_values`, `multiply_matrix_in_place`,
+  `premultiply_matrix_in_place`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:

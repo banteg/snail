@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**187/665** mapped gameplay functions matched, **10818/326119** bytes (**3.3%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**193/665** mapped gameplay functions matched, **11426/326119** bytes (**3.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -226,6 +226,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 |  |
 | ✅ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 |  |
 | ✅ | initialize_uniform_scale_matrix | 0x44cde0 | 66 | 21/21 | 100.00% | 21/21 |  |
+| ✅ | rotate_matrix_world_x | 0x44ce30 | 136 | 50/50 | 100.00% | 50/50 |  |
+| ✅ | rotate_matrix_world_y | 0x44cec0 | 133 | 50/50 | 100.00% | 50/50 |  |
+| ✅ | rotate_matrix_world_z | 0x44cf50 | 133 | 50/50 | 100.00% | 50/50 |  |
+| ✅ | initialize_matrix_from_values | 0x44cfe0 | 116 | 34/34 | 100.00% | 34/34 |  |
+| ✅ | multiply_matrix_in_place | 0x44d1a0 | 45 | 18/18 | 100.00% | 18/18 |  |
+| ✅ | premultiply_matrix_in_place | 0x44d1e0 | 45 | 18/18 | 100.00% | 18/18 |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 |  |
 | 🚧 | orthogonalize_matrix | 0x44d3d0 | 58 | 26/26 | 92.31% | 13/26 |  |
