@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**197/665** mapped gameplay functions matched, **12021/326119** bytes (**3.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**198/665** mapped gameplay functions matched, **12034/326119** bytes (**3.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -33,10 +33,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 243/194 | 58.12% | 12/194 |  |
+| ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/700 | 49.63% | 9/700 |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 |  |
 | ✅ | spawn_golb_trail_sprite | 0x415bb0 | 161 | 47/47 | 100.00% | 47/47 |  |
 | 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 69/72 | 82.27% | 34/72 |  |
+| 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 54.55% | 3/45 |  |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 |  |

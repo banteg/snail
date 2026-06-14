@@ -56,6 +56,7 @@ garbage/projectile divergence.
 | `update_golb_ai` | `0x414820` | 49.63%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Treat as a pinned semantic map for breadth-first work unless a specific localized lead appears. Live-state gate, path-follow output copies, non-follow position pointer staging, kind-0 gravity ordering, direction delta locals, horizontal slug-deflection normalization, slug kind compare order, homing pull/keep `Vec3` temporaries, homing current-position pointer use, homing target-delta/result stack staging, slug reflected-velocity staging, typed transform copy/member calls, and trail dispatch now better match native; remaining residuals are homing y/z velocity-owner operands, path-output stack staging, collision probe scheduling, and duplicated returns documented in NOTES. |
 | `spawn_golb_trail_sprite` | `0x415bb0` | 100% | Exact short-lived trail sprite producer used by straight-flight Golb projectiles behind `update_golb_ai`. | Done; use as the trail sprite lane/order anchor before expanding projectile presentation slices. |
 | `spawn_golb_smoke` | `0x415c60` | 82.27%, pinned | Smoke sprite producer used by the rotating/smoke Golb presentation path; confirms sprite id, lifetime/rate lanes, scale, velocity scaling, and position copy. | Semantics are pinned; remaining residual is sprite-base lifetime and x87/store scheduling documented in NOTES. |
+| `spawn_golb_impact_sprite` | `0x415d80` | 54.55%, structure-first | Impact sprite producer used when Golb shots are killed or hit terminal collision points. | Semantics are mapped; remaining residual is native stack-vector and saved-`esi` scheduling around the impact velocity copy documented in NOTES. |
 | `calc_path_length_z` | `0x4217b0` | 40.58%, structure complete | Golb path-follow riding; sibling of `update_track_attachment_follow_state`. | Scalar/base declaration-order trials are exhausted; continue only with stronger evidence around overflow block placement, matrix-copy layout, and terminal/side-exit shot-position ownership documented in NOTES. |
 | `create_golb` | `0x415280` | 28.63%, structure complete | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Pointer lifetimes, movement-flag reloads, previous-output whole-copy, and the shared `(flags & 5)` movement-source label now better match native setup; continue around remaining movement-flag branch sharing, direction copy staging, and kind-specific setup locals documented in NOTES. |
 
@@ -66,6 +67,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
 | `update_subgoldy` | `0x43b120` | 72.44%, structure complete | Master player motion, replay codec, fire lane, completion handoff, attachment-exit clears. | Continue slice-first: grounded/trampoline clear lanes, projectile/replay consumers, then residual register-shape cleanup. |
+| `set_backdrop_progress_fraction` | `0x410c30` | 100% | Exact backdrop progress setter driven by `update_subgoldy` from the active row payload ratio. | Done; pins backdrop `+0x6c8` as a plain float progress lane. |
 | `advance_timer_counters` | `0x441b90` | 100% | Exact shared stopwatch accumulator used by `update_subgame` and `update_subgoldy` for elapsed seconds, frame rollover, and display hundredths/thousandths. | Done; use with exact `zero_timer_counters` as the timer-record source of truth. |
 | `format_time_trial_string` | `0x448960` | 95.89%, pinned | Shared Time Trial HUD formatter for `initialize_subgame`, `update_subgame`, and challenge setup route records. | Semantics are pinned against exact `TimerCounters`; remaining residual is cdecl stack-cleanup coalescing across adjacent `sprintf` calls, documented in NOTES. |
 | `initialize_subgoldy_death` | `0x446e30` | 100% | Exact selector for respawn versus final-loss entry by gameplay mode and visible life stock. | Done; use with exact `initialize_subgoldy_resurrect` and `update_subgoldy_resurrect` as the death/resurrection source of truth. |
@@ -191,6 +193,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
   `update_subgoldy_resurrect`,
+  `set_backdrop_progress_fraction`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
   `spawn_track_parcel`, `noop_runtime_ai`,
