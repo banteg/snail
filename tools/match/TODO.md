@@ -105,6 +105,7 @@ These are medium blast-radius systems already partly understood.
 | `apply_damage_gauge_delta` | `0x4413f0` | 58.20%, pinned | Hit-flash gate, damage/recovery clamp, side effects. | Semantics are pinned; corrected voice-failure animation nesting and residuals are documented in NOTES. |
 | `update_damage_gauge` | `0x440fd0` | 80.60%, source-shaped | Drain, state transitions, warning interaction. | State block placement and warning call ownership now match native shape; remaining residual is x87/local scheduling documented in NOTES. |
 | `update_warning` | `0x446f80` | 57.69%, pinned | Warning actor loop, stop sample handle, global gates. | Semantics are pinned; overlay alpha state machine and residuals are documented in NOTES. |
+| `enqueue_tip_message` | `0x448d30` | 100% | Exact three-slot gameplay tip allocator used by `update_subgoldy` row-event and tutorial prompt paths. | Done; keep the `while (1)` scan idiom with exact tip manager init/update/uninit helpers as the tip slot lifecycle anchor. |
 | `update_cameraman` | `0x4461d0` | 92.55%, pinned | Camera matrix blend and attachment-exit roll. | Treat as pinned unless exact register allocation becomes obvious. |
 | `initialize_cameraman` | `0x446160` | 100% | Camera init baseline. | Done; keep as dependency. |
 | `initialize_snail_skin` / `update_snail_skin_transition` / `change_snail_skin` | `0x445f60` / `0x445f80` / `0x445fd0` | 100% | Skin state is matched; renderer consumer still missing. | No matching work unless renderer callsites demand more. |

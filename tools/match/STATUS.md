@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**168/665** mapped gameplay functions matched, **9420/326119** bytes (**2.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**169/665** mapped gameplay functions matched, **9489/326119** bytes (**2.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -168,6 +168,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 |  |
 | ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | 14/14 |  |
+| ✅ | enqueue_tip_message | 0x448d30 | 69 | 26/26 | 100.00% | 26/26 |  |
 | ✅ | update_tip_manager | 0x448d80 | 31 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | initialize_tutorial | 0x448da0 | 43 | 12/12 | 100.00% | 12/12 |  |
 | ✅ | uninit_tutorial | 0x448dd0 | 16 | 3/3 | 100.00% | 3/3 |  |
