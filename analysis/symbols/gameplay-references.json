@@ -21,6 +21,216 @@
       "description": "MSVC floating-point to integer helper used by timer and placement code."
     },
     {
+      "address": "0x497314",
+      "name": "g_track_speedup_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497314",
+        "data_497314"
+      ],
+      "description": "Runtime speed-up object vtable installed by initialize_track_speedup_runtime."
+    },
+    {
+      "address": "0x497318",
+      "name": "g_track_jetpack_pickup_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497318",
+        "data_497318"
+      ],
+      "description": "Runtime jetpack pickup vtable installed by initialize_track_jetpack_pickup_runtime."
+    },
+    {
+      "address": "0x49731c",
+      "name": "g_track_jetpack_body_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49731c",
+        "data_49731c"
+      ],
+      "description": "Embedded jetpack pickup body vtable installed on both child bodies."
+    },
+    {
+      "address": "0x497320",
+      "name": "g_track_health_pickup_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497320",
+        "data_497320"
+      ],
+      "description": "Runtime health pickup vtable installed by initialize_track_health_pickup_runtime."
+    },
+    {
+      "address": "0x497324",
+      "name": "g_slug_hazard_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497324",
+        "data_497324"
+      ],
+      "description": "Slug hazard runtime vtable installed by initialize_slug_hazard_runtime."
+    },
+    {
+      "address": "0x497328",
+      "name": "g_garbage_hazard_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497328",
+        "data_497328"
+      ],
+      "description": "Garbage hazard runtime vtable installed by initialize_garbage_hazard."
+    },
+    {
+      "address": "0x49732c",
+      "name": "g_track_ring_or_special_effect_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49732c",
+        "data_49732c"
+      ],
+      "description": "Authored ring or special-effect runtime vtable installed by its constructor."
+    },
+    {
+      "address": "0x497330",
+      "name": "g_track_row_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497330",
+        "data_497330"
+      ],
+      "description": "Runtime track-row body vtable installed by initialize_track_row_runtime."
+    },
+    {
+      "address": "0x497334",
+      "name": "g_path_template_record_pair_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497334",
+        "data_497334"
+      ],
+      "description": "Paired path-template record vtable installed by initialize_path_template_record_pair."
+    },
+    {
+      "address": "0x497338",
+      "name": "g_active_bod_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497338",
+        "data_497338"
+      ],
+      "description": "Shared active-BOD runtime vtable installed by initialize_active_bod."
+    },
+    {
+      "address": "0x49733c",
+      "name": "g_sub_lazer_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49733c",
+        "data_49733c"
+      ],
+      "description": "Sub-lazer projectile runtime vtable installed by initialize_sub_lazer_runtime."
+    },
+    {
+      "address": "0x497340",
+      "name": "g_salt_hazard_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497340",
+        "data_497340"
+      ],
+      "description": "Salt hazard runtime vtable installed by initialize_salt_hazard_runtime."
+    },
+    {
+      "address": "0x497344",
+      "name": "g_fringe_object_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497344",
+        "data_497344"
+      ],
+      "description": "Fringe render object vtable installed by initialize_fringe_object."
+    },
+    {
+      "address": "0x497354",
+      "name": "g_enemy_manager_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497354",
+        "data_497354"
+      ],
+      "description": "Enemy manager root vtable installed by initialize_enemy_manager_runtime."
+    },
+    {
+      "address": "0x497358",
+      "name": "g_enemy_manager_child_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497358",
+        "data_497358"
+      ],
+      "description": "Enemy manager child vtable installed by initialize_enemy_manager_runtime."
+    },
+    {
+      "address": "0x49735c",
+      "name": "g_enemy_group_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49735c",
+        "data_49735c"
+      ],
+      "description": "Enemy group vtable installed on the four enemy-manager child groups."
+    },
+    {
+      "address": "0x497360",
+      "name": "g_active_landscape_entry_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497360",
+        "data_497360"
+      ],
+      "description": "Active landscape entry vtable installed by initialize_active_landscape_entry."
+    },
+    {
+      "address": "0x497364",
+      "name": "g_track_parcel_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497364",
+        "data_497364"
+      ],
+      "description": "Runtime parcel slot vtable installed by initialize_track_parcel_runtime."
+    },
+    {
+      "address": "0x497368",
+      "name": "g_bod_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497368",
+        "data_497368"
+      ],
+      "description": "Base BOD vtable installed by initialize_bod."
+    },
+    {
+      "address": "0x4974fc",
+      "name": "g_bod_base_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_4974fc",
+        "data_4974fc"
+      ],
+      "description": "Shared BOD base vtable installed by initialize_bod_base."
+    },
+    {
+      "address": "0x497500",
+      "name": "g_renderable_bod_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497500",
+        "data_497500"
+      ],
+      "description": "Renderable BOD vtable installed by initialize_renderable_bod."
+    },
+    {
       "address": "0x4b2f40",
       "name": "g_completion_snapshot_flags",
       "kind": "global",
@@ -41,6 +251,25 @@
       "description": "Global storage for the live game/application root pointer."
     },
     {
+      "address": "0x4dfadc",
+      "name": "g_bod_count",
+      "kind": "global",
+      "aliases": [
+        "unk_4dfadc",
+        "data_4dfadc"
+      ],
+      "description": "BOD constructor counter incremented by initialize_bod."
+    },
+    {
+      "address": "0x50331c",
+      "name": "g_bod_base_init_count",
+      "kind": "global",
+      "aliases": [
+        "data_50331c"
+      ],
+      "description": "BOD-base constructor counter incremented by initialize_bod_base."
+    },
+    {
       "address": "0x68b4c8",
       "name": "g_high_score_bank",
       "kind": "offset",
@@ -48,11 +277,47 @@
       "description": "Relocatable high-score bank offset used by completion dispatch."
     },
     {
+      "address": "0x77ff3c",
+      "name": "g_math_random_index",
+      "kind": "global",
+      "aliases": [
+        "data_77ff3c"
+      ],
+      "description": "Gameplay random-table cursor reset by initialize_math_random_table and advanced by next_math_random_value."
+    },
+    {
+      "address": "0x777f3c",
+      "name": "g_cosine_table",
+      "kind": "global",
+      "aliases": [
+        "data_777f3c"
+      ],
+      "description": "Trigonometry cosine lookup table initialized at startup and read by cosine."
+    },
+    {
+      "address": "0x787f8c",
+      "name": "g_math_random_table",
+      "kind": "global",
+      "aliases": [
+        "data_787f8c"
+      ],
+      "description": "0x1fff-entry gameplay random table initialized at startup."
+    },
+    {
       "address": "0x78ff88",
       "name": "g_sound_effect_manager",
       "kind": "global",
       "aliases": [],
       "description": "Global sound-effect manager object used by gameplay feedback helpers."
+    },
+    {
+      "address": "0x790f30",
+      "name": "g_sprite_manager",
+      "kind": "global",
+      "aliases": [
+        "data_790f30"
+      ],
+      "description": "Shared sprite manager used by gameplay particle, projectile, parcel, and presentation helpers."
     }
   ]
 }

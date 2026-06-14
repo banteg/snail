@@ -385,6 +385,26 @@ def test_masked_operand_audit_accepts_matching_rdata_constants() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_rdata_image_pointer_is_not_reported_as_string_or_float() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<I", mapped, 0x2000, 0x401000)
+    lines = disassemble_normalized_function(
+        bytes.fromhex("b800204000c3"),  # mov eax, 0x402000; ret
+        address_range=(0x400000, 0x403000),
+        base_address=0x401000,
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+            sections=(ImageSection(".rdata", 0x402000, 0x402004, 0),),
+        ),
+    )
+    reference = lines[0].masked_references[0]
+    assert reference.text == "image+0x2000@0x402000"
+    assert reference.key == "addr:0x402000"
+    assert not reference.explained
+
+
 def test_diff_regions_reports_localized_mismatch() -> None:
     target = bytes.fromhex("558bec31c040c3")  # push; mov; xor; inc; ret
     candidate = ObjectFunction(

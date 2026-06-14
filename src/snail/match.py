@@ -436,6 +436,15 @@ def _format_f32_constant(data: bytes, offset: int, value: int | None = None) -> 
     return f"const:f32:{number:.9g}{suffix}", f"const:f32:{bits:08x}"
 
 
+def _u32_points_into_range(
+    data: bytes,
+    offset: int,
+    address_range: tuple[int, int],
+) -> bool:
+    value = _read_u32(data, offset)
+    return value is not None and address_range[0] <= value < address_range[1]
+
+
 def _format_symbol_reference(name: str) -> tuple[str, str]:
     canonical = _canonical_symbol_name(name)
     return f"sym:{canonical}", f"name:{canonical}"
@@ -677,7 +686,14 @@ def _resolve_image_reference(
         return MaskedReference(0, "", "image", value, f"{text}@0x{value:x}", key, True)
     if image is not None and image.image_base <= value < image.image_base + len(image.mapped):
         offset = value - image.image_base
-        string = _read_printable_c_string(image.mapped, offset)
+        section = image.section_for_va(value)
+        address_range = (image.image_base, image.image_base + image.size_of_image)
+        looks_like_rdata_pointer = (
+            section is not None
+            and section.name == ".rdata"
+            and _u32_points_into_range(image.mapped, offset, address_range)
+        )
+        string = None if looks_like_rdata_pointer else _read_printable_c_string(image.mapped, offset)
         if string is not None:
             return MaskedReference(
                 0,
@@ -688,10 +704,10 @@ def _resolve_image_reference(
                 f"str:{string}",
                 True,
             )
-        section = image.section_for_va(value)
         if (
             section is not None
             and section.name == ".rdata"
+            and not looks_like_rdata_pointer
             and (constant := _format_f32_constant(image.mapped, offset, value)) is not None
         ):
             text, key = constant
@@ -1261,6 +1277,14 @@ class ScratchStatus:
         return "wip"
 
 
+@dataclass(frozen=True, slots=True)
+class ScratchMaskedOperandIssue:
+    config: ScratchConfig
+    address: int
+    ratio: float
+    entry: MaskedOperandAuditEntry
+
+
 def load_scratch_config(directory: Path) -> ScratchConfig:
     import shlex
 
@@ -1669,6 +1693,7 @@ def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
         "conf_mtime": mtime(config.directory / "scratch.conf"),
         "image_mtime": mtime(image_path),
         "matcher_mtime": mtime(Path(__file__)),
+        "reference_manifest_mtime": mtime(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
 
@@ -1767,6 +1792,55 @@ def collect_scratch_statuses(
             _store_cached_status(config, image_path, fields)
         statuses.append(ScratchStatus(config=config, address=address, **fields))
     return statuses
+
+
+def collect_masked_operand_issues(
+    manifest: FunctionSymbolManifest,
+    image_path: Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    statuses: frozenset[str] = frozenset(("unresolved", "mismatch")),
+    exact_only: bool = False,
+) -> list[ScratchMaskedOperandIssue]:
+    """Collect detailed masked-operand audit issues across scratch matches."""
+    image = load_image(image_path, manifest.image_base)
+    reference_manifest = load_default_reference_symbol_manifest()
+    by_name = {symbol.name: symbol for symbol in manifest.functions}
+    issues: list[ScratchMaskedOperandIssue] = []
+    for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
+        config = load_scratch_config(conf_path.parent)
+        address = by_name[config.function].address if config.function in by_name else 0
+        start, end = resolve_function_extent(manifest, config.function, config.end_va)
+        target_data = image.function_bytes(start, end)
+        obj_path = compile_scratch(config, match_root)
+        obj = parse_coff_object(obj_path.read_bytes())
+        candidate = extract_object_function(
+            obj,
+            config.symbol or config.function,
+            reference_manifest=reference_manifest,
+        )
+        result = match_function(
+            target_data,
+            candidate,
+            image=image,
+            target_va=start,
+            manifest=manifest,
+            reference_manifest=reference_manifest,
+        )
+        if exact_only and result.ratio != 1.0:
+            continue
+        for entry in result.masked_operand_audit.entries:
+            if entry.status not in statuses:
+                continue
+            issues.append(
+                ScratchMaskedOperandIssue(
+                    config=config,
+                    address=address,
+                    ratio=result.ratio,
+                    entry=entry,
+                )
+            )
+    return issues
 
 
 @dataclass(frozen=True, slots=True)

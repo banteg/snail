@@ -15,8 +15,8 @@ public:
     double sample_track_floor_height_at_position(Vector3* position);
 };
 
-static float kFlatFloorHeight = 0.0f;
-static float kInvalidFloorHeight = -100.0f;
+static const float kFlatFloorHeight = 0.0f;
+static const float kInvalidFloorHeight = -100.0f;
 
 double Game::sample_track_floor_height_at_position(Vector3* position)
 {

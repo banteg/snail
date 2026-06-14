@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**128/665** mapped gameplay functions matched, **8173/326119** bytes (**2.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**150/665** mapped gameplay functions matched, **9721/326119** bytes (**3.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -16,30 +16,30 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 unresolved |  |
 | ⚠ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 unresolved |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
-| ⚠ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | 17/17 | 3 mismatch, 3 ok |  |
-| ⚠ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_slug_hazard_runtime | 0x408530 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_garbage_hazard | 0x408550 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_track_row_runtime | 0x408590 | 36 | 13/13 | 100.00% | 13/13 | 1 mismatch, 2 ok |  |
-| ⚠ | initialize_path_template_record_pair | 0x4085c0 | 26 | 9/9 | 100.00% | 9/9 | 1 mismatch, 2 ok |  |
-| ⚠ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | 79/79 | 6 mismatch, 5 unresolved, 16 ok |  |
-| ⚠ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 1 mismatch, 1 ok |  |
-| ⚠ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 1 mismatch, 2 unresolved, 1 ok |  |
+| ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | 17/17 | 6 ok |  |
+| ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_slug_hazard_runtime | 0x408530 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_garbage_hazard | 0x408550 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_track_row_runtime | 0x408590 | 36 | 13/13 | 100.00% | 13/13 | 3 ok |  |
+| ✅ | initialize_path_template_record_pair | 0x4085c0 | 26 | 9/9 | 100.00% | 9/9 | 3 ok |  |
+| ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ⚠ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | 79/79 | 5 unresolved, 22 ok |  |
+| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 243/194 | 58.12% | 12/194 | 3 mismatch, 1 unresolved, 50 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/700 | 49.63% | 9/700 | 1 mismatch, 1 unresolved, 51 ok |  |
-| 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 | 1 mismatch, 1 unresolved, 30 ok |  |
-| ⚠ | spawn_golb_trail_sprite | 0x415bb0 | 161 | 47/47 | 100.00% | 47/47 | 1 unresolved, 1 ok |  |
-| 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 69/72 | 82.27% | 34/72 | 1 unresolved, 7 ok |  |
-| 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 54.55% | 3/45 | 2 unresolved, 1 ok |  |
+| 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 | 1 mismatch, 31 ok |  |
+| ✅ | spawn_golb_trail_sprite | 0x415bb0 | 161 | 47/47 | 100.00% | 47/47 | 2 ok |  |
+| 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 69/72 | 82.27% | 34/72 | 8 ok |  |
+| 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 54.55% | 3/45 | 1 unresolved, 2 ok |  |
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 | - |  |
 | ⚠ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 | 1 mismatch, 2 ok |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
@@ -55,8 +55,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 5 mismatch, 11 unresolved, 20 ok |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | 6/6 | - |  |
-| ⚠ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 1 mismatch, 3 unresolved, 1 ok |  |
-| ⚠ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 | 1 mismatch, 2 ok |  |
+| ⚠ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 1 unresolved, 4 ok |  |
+| ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 | 3 ok |  |
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 | - |  |
 | ⚠ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 | 1 unresolved, 7 ok |  |
@@ -101,14 +101,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | begin_post_follow_carryover | 0x43af60 | 97 | 20/20 | 100.00% | 20/20 | - |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 mismatch, 17 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2091 | 72.44% | 0/2091 | 5 mismatch, 27 unresolved, 259 ok |  |
-| ⚠ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% | 108/108 | 2 unresolved, 4 ok |  |
+| ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% | 108/108 | 6 ok |  |
 | 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% | 15/18 | - |  |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | 34/34 | 3 ok |  |
 | ⚠ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 2 unresolved, 1 ok |  |
-| ⚠ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 2 mismatch, 6 ok |  |
-| 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 75/76 | 76.82% | 5/76 | 2 unresolved, 7 ok |  |
+| ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
+| 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 75/76 | 76.82% | 5/76 | 1 unresolved, 8 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
-| 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 | 1 unresolved, 15 ok |  |
+| 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 71.88% | 6/128 | 15 ok |  |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
@@ -120,7 +120,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | update_slug_voice_manager | 0x43f5e0 | 49 | 15/15 | 100.00% | 15/15 | 2 ok |  |
 | ✅ | hit_slug_hazard | 0x43f620 | 94 | 25/25 | 100.00% | 25/25 | 5 ok |  |
-| 🚧 | explode_slug_hazard | 0x43f680 | 556 | 148/147 | 73.22% | 0/147 | 1 mismatch, 1 unresolved, 30 ok |  |
+| 🚧 | explode_slug_hazard | 0x43f680 | 556 | 148/147 | 73.22% | 0/147 | 1 mismatch, 31 ok |  |
 | ✅ | kill_slug_hazard | 0x43f8b0 | 128 | 35/35 | 100.00% | 35/35 | 7 ok |  |
 | 🚧 | add_subgoldy_score | 0x4402c0 | 190 | 71/58 | 80.62% | 39/58 | 1 unresolved, 5 ok |  |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
@@ -150,7 +150,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
 | ✅ | allocate_track_parcel_slot | 0x443190 | 54 | 18/18 | 100.00% | 18/18 | 2 ok |  |
-| ⚠ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 | 1 unresolved, 4 ok |  |
+| ✅ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 | 5 ok |  |
 | ⚠ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 | 2 unresolved, 1 ok |  |
 | ⚠ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 2 unresolved, 1 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 643/639 | 23.40% | 0/639 | 3 mismatch, 6 unresolved, 21 ok |  |
@@ -186,7 +186,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | allocate_fringe_object | 0x4470a0 | 50 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | uninit_nuke | 0x4470e0 | 41 | 18/18 | 100.00% | 18/18 | 1 ok |  |
-| 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 1 unresolved, 4 ok |  |
+| 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
 | 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 88.14% | 4/59 | 8 ok |  |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  |
 | 🚧 | format_time_trial_string | 0x448960 | 113 | 37/36 | 95.89% | 26/36 | 8 unresolved, 4 ok |  |
@@ -226,11 +226,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | initialize_global_identity_matrix | 0x44c880 | 16 | 4/4 | 100.00% | 4/4 | 1 unresolved, 1 ok |  |
 | ✅ | convert_math_type32_to_16 | 0x44c890 | 19 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | convert_math_type16_to_32 | 0x44c8b0 | 24 | 6/6 | 100.00% | 6/6 | 1 ok |  |
-| ⚠ | initialize_math_random_table | 0x44c8d0 | 36 | 10/10 | 100.00% | 10/10 | 1 mismatch, 3 unresolved |  |
-| ⚠ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | 8/8 | 3 unresolved |  |
+| ⚠ | initialize_math_random_table | 0x44c8d0 | 36 | 10/10 | 100.00% | 10/10 | 1 mismatch, 1 unresolved, 2 ok |  |
+| ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | 8/8 | 3 ok |  |
 | ⚠ | initialize_trigonometry_tables | 0x44c930 | 62 | 18/18 | 100.00% | 18/18 | 2 unresolved, 3 ok |  |
 | ⚠ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
-| ⚠ | cosine | 0x44c980 | 80 | 21/21 | 100.00% | 21/21 | 2 unresolved, 5 ok |  |
+| ✅ | cosine | 0x44c980 | 80 | 21/21 | 100.00% | 21/21 | 7 ok |  |
 | ⚠ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 | 1 unresolved, 3 ok |  |
 | ⚠ | arccosine | 0x44ca00 | 10 | 3/3 | 100.00% | 3/3 | 1 unresolved |  |
 | ✅ | atan2_positive | 0x44ca10 | 148 | 48/48 | 100.00% | 48/48 | 7 ok |  |

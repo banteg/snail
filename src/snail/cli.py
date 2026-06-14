@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict
 import difflib
 import json
 from pathlib import Path
@@ -14,6 +15,7 @@ from .match import (
     IDIOM_CASES,
     IDIOM_CASES_BY_NAME,
     compile_idiom_case,
+    collect_masked_operand_issues,
     collect_scratch_statuses,
     diff_regions,
     manifest_cluster_totals,
@@ -47,6 +49,68 @@ def _format_masked_reference_list(references) -> str:
         f"{reference.kind}{reference.operand_index}:{reference.text}"
         for reference in references
     )
+
+
+def _masked_reference_payload(reference) -> dict:
+    return {
+        "operand_index": reference.operand_index,
+        "kind": reference.kind,
+        "source": reference.source,
+        "value": reference.value,
+        "text": reference.text,
+        "key": reference.key,
+        "explained": reference.explained,
+    }
+
+
+def _audit_issue_group_key(issue) -> tuple:
+    entry = issue.entry
+    target = tuple((ref.text, ref.key, ref.explained) for ref in entry.target_references)
+    candidate = tuple((ref.text, ref.key, ref.explained) for ref in entry.candidate_references)
+    return (entry.status, target, candidate)
+
+
+def _print_masked_audit_issues(issues, *, limit: int | None = None) -> None:
+    if not issues:
+        print("masked audit issues: none")
+        return
+    grouped = defaultdict(list)
+    for issue in issues:
+        grouped[_audit_issue_group_key(issue)].append(issue)
+    print(
+        "masked audit issues: "
+        f"{len(issues)} entries across "
+        f"{len({issue.config.function for issue in issues})} scratches, "
+        f"{len(grouped)} grouped reference pair(s)"
+    )
+    printed = 0
+    for (_status, _target, _candidate), group in sorted(
+        grouped.items(),
+        key=lambda item: (-len(item[1]), item[0]),
+    ):
+        if limit is not None and printed >= limit:
+            remaining = len(grouped) - printed
+            if remaining > 0:
+                print(f"\n... {remaining} group(s) omitted by --limit")
+            return
+        first = group[0].entry
+        print()
+        print(f"{first.status} ({len(group)}):")
+        print(f"  target: {_format_masked_reference_list(first.target_references)}")
+        print(f"  candidate: {_format_masked_reference_list(first.candidate_references)}")
+        for issue in group[:5]:
+            entry = issue.entry
+            print(
+                "  "
+                f"{issue.config.function} 0x{issue.address:x} "
+                f"match {issue.ratio:.2%} "
+                f"target +0x{entry.target_offset:x} "
+                f"candidate +0x{entry.candidate_offset:x}: "
+                f"{entry.instruction}"
+            )
+        if len(group) > 5:
+            print(f"  ... {len(group) - 5} more")
+        printed += 1
 
 
 def _print_masked_operand_audit(audit) -> None:
@@ -453,6 +517,43 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the markdown dashboard to this path in addition to stdout.",
     )
 
+    match_audit_parser = match_subparsers.add_parser(
+        "audit",
+        help="Print grouped masked-operand audit issues across scratches.",
+    )
+    match_audit_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_audit_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_audit_parser.add_argument(
+        "--status",
+        choices=("problem", "unresolved", "mismatch", "all"),
+        default="problem",
+        help="Which audit entries to include (default: problem).",
+    )
+    match_audit_parser.add_argument(
+        "--exact-only",
+        action="store_true",
+        help="Only report audit issues from scratches with a 100%% normalized match.",
+    )
+    match_audit_parser.add_argument(
+        "--limit",
+        type=int,
+        help="Maximum grouped reference pairs to print.",
+    )
+    match_audit_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print detailed audit entries as JSON.",
+    )
+
     match_idioms_parser = match_subparsers.add_parser(
         "idioms",
         help="Compile small VC6 source-idiom probes and print normalized asm.",
@@ -644,6 +745,57 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(render_status_table(statuses, totals))
         if args.write is not None:
             args.write.write_text(render_status_markdown(statuses, totals), encoding="utf-8")
+        return 0
+
+    if args.command == "match" and args.match_command == "audit":
+        manifest = load_function_symbol_manifest(args.manifest)
+        image_path = args.image or REPO_ROOT / manifest.primary_target
+        if args.status == "all":
+            audit_statuses = frozenset(("ok", "unresolved", "mismatch"))
+        elif args.status == "problem":
+            audit_statuses = frozenset(("unresolved", "mismatch"))
+        else:
+            audit_statuses = frozenset((args.status,))
+        issues = collect_masked_operand_issues(
+            manifest,
+            image_path,
+            statuses=audit_statuses,
+            exact_only=args.exact_only,
+        )
+        if args.json:
+            print(
+                json.dumps(
+                    [
+                        {
+                            "function": issue.config.function,
+                            "scratch": str(issue.config.directory),
+                            "address": issue.address,
+                            "match": issue.ratio,
+                            "status": issue.entry.status,
+                            "instruction": issue.entry.instruction,
+                            "target_index": issue.entry.target_index,
+                            "candidate_index": issue.entry.candidate_index,
+                            "target_offset": issue.entry.target_offset,
+                            "candidate_offset": issue.entry.candidate_offset,
+                            "target_address": issue.entry.target_address,
+                            "candidate_address": issue.entry.candidate_address,
+                            "target_references": [
+                                _masked_reference_payload(ref)
+                                for ref in issue.entry.target_references
+                            ],
+                            "candidate_references": [
+                                _masked_reference_payload(ref)
+                                for ref in issue.entry.candidate_references
+                            ],
+                        }
+                        for issue in issues
+                    ],
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        _print_masked_audit_issues(issues, limit=args.limit)
         return 0
 
     if args.command == "match" and args.match_command == "idioms":

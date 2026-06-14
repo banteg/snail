@@ -67,6 +67,9 @@ Useful analysis helpers:
   addresses) against candidate relocation symbols/string literals. A 100%
   normalized score is proof-grade only when this audit has no unresolved or
   mismatched entries.
+- `uv run snail match audit --exact-only` groups unresolved/mismatched masked
+  operands across all 100% scratches. Use it before editing the reference
+  manifest so repeated target addresses and wrong aliases are visible together.
 - `analysis/symbols/gameplay-references.json` is the curated escape hatch for
   recovered globals, offsets, and helper symbols that are not in the function
   manifest. Add entries only when a scratch note, decompiler label, or matched
