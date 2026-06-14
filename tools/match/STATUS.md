@@ -37,6 +37,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 |  |
+| 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 |  |
 | ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | 11/11 |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 678/726 | 46.44% | 0/726 |  |
