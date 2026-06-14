@@ -156,8 +156,10 @@ These are not gameplay owners, but several mirrors depend on them.
 | `convert_math_type16_to_32` | `0x44c8b0` | 100% | Exact signed16-to-float replay decoder used by `update_subgoldy`, including native expression order for `scale / 65536.0f`. | Done; keep with exact forward conversion as the replay quantization source of truth. |
 | `sine` | `0x44c9d0` | 100% | Exact sine lookup wrapper used by pickup bobbing, projectile halos, damage flash, nuke/ring presentation, and camera paths. | Done; keep the explicit scaled-angle intermediate so VC6 preserves the native two-multiply table-index shape. |
 | `arccosine` | `0x44ca00` | 100% | Exact CRT arccos wrapper used by quaternion and attachment/camera math. | Done; keep the explicit result local that prevents tail-call lowering. |
+| `atan2_positive` | `0x44ca10` | 100% | Exact quadrant-aware positive arctangent helper used by kind-42 attachment transforms and sprite-facing angle updates. | Done; keep the sign-normalization/quadrant-id source shape and `atan(y / x)` spelling. |
 | `square_root` | `0x44cab0` | 100% | Exact CRT square-root wrapper used by vector, attachment, projection, and renderer math. | Done; use as the source-of-truth callee for vector length and projection helpers. |
 | `vector_magnitude` | `0x44ccf0` | 94.74%, pinned | Shared 3D vector length helper used by Golb spawn, track parcels, star-field entries, object geometry helpers, and positional audio. | Semantics are pinned; the only residual is `add esp, 0x4` versus `pop ecx` cleanup after the exact `square_root` call. |
+| `normalize_vector` | `0x44cca0` | 100% | Exact in-place vector normalization helper used by path construction, collision probes, projectile steering, sprite-facing math, and presentation systems. | Done; use with exact `dot_vectors` and `square_root` as the vector-length source of truth. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
 
@@ -172,7 +174,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
-  `sine`, `arccosine`, `square_root`,
+  `sine`, `arccosine`, `atan2_positive`, `square_root`, `normalize_vector`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
