@@ -54,6 +54,7 @@ garbage/projectile divergence.
 | `spawn_garbage_smoke_particle` | `0x43d5a0` | 76.82%, source-shaped | Smoke-effect producer called by `update_garbage_hazard`; owns render/effects gate, sprite setup, subgame-rate lifetime lanes, and velocity scaling. | Semantics are mapped; remaining residual is color/velocity copy scheduling and ignored byte-return shape documented in NOTES. |
 | `append_subgame_contact_target` | `0x415ef0` | 100% | Called by garbage and slug AI; exact match confirms it appends `{kind, position, radius, object}` to a per-frame registry, not a bob mutator. | Done; use as the exact contact-target registry helper for garbage and slug AI. |
 | `kill_golb` | `0x414670` | 100% | Exact Golb projectile teardown helper used by impact, wall, speed, and terminal cleanup paths. | Done; use as the source-of-truth for Golb primary/secondary/tertiary BOD unlinking and kind-specific sprite cleanup. |
+| `update_movement_flag_emitters` | `0x43a300` | 100% | Exact player emitter dispatcher that maps movement flag families to one, two, or three inactive Golb slots before calling `create_golb`. | Done; use as the source-of-truth for Golb spawn budget and slot scan order before expanding `create_golb`. |
 | `update_golb_ai` | `0x414820` | 49.63%, structure complete | Projectile flight, path entry, homing, trails, slug/garbage hit gates, wall impact. | Treat as a pinned semantic map for breadth-first work unless a specific localized lead appears. Live-state gate, path-follow output copies, non-follow position pointer staging, kind-0 gravity ordering, direction delta locals, horizontal slug-deflection normalization, slug kind compare order, homing pull/keep `Vec3` temporaries, homing current-position pointer use, homing target-delta/result stack staging, slug reflected-velocity staging, typed transform copy/member calls, and trail dispatch now better match native; remaining residuals are homing y/z velocity-owner operands, path-output stack staging, collision probe scheduling, and duplicated returns documented in NOTES. |
 | `spawn_golb_trail_sprite` | `0x415bb0` | 100% | Exact short-lived trail sprite producer used by straight-flight Golb projectiles behind `update_golb_ai`. | Done; use as the trail sprite lane/order anchor before expanding projectile presentation slices. |
 | `spawn_golb_smoke` | `0x415c60` | 82.27%, pinned | Smoke sprite producer used by the rotating/smoke Golb presentation path; confirms sprite id, lifetime/rate lanes, scale, velocity scaling, and position copy. | Semantics are pinned; remaining residual is sprite-base lifetime and x87/store scheduling documented in NOTES. |
@@ -197,6 +198,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `set_backdrop_progress_fraction`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `kill_golb`,
+  `update_movement_flag_emitters`,
   `initialize_array_with_constructor`,
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
