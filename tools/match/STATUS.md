@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**170/665** mapped gameplay functions matched, **9595/326119** bytes (**2.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**171/665** mapped gameplay functions matched, **9781/326119** bytes (**3.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -74,6 +74,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | 29/29 |  |
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 |  |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 |  |
+| ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 |  |
 | 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 189/187 | 40.43% | 0/187 |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | 17/17 |  |
