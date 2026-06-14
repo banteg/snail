@@ -160,6 +160,8 @@ These are not gameplay owners, but several mirrors depend on them.
 | `square_root` | `0x44cab0` | 100% | Exact CRT square-root wrapper used by vector, attachment, projection, and renderer math. | Done; use as the source-of-truth callee for vector length and projection helpers. |
 | `vector_magnitude` | `0x44ccf0` | 94.74%, pinned | Shared 3D vector length helper used by Golb spawn, track parcels, star-field entries, object geometry helpers, and positional audio. | Semantics are pinned; the only residual is `add esp, 0x4` versus `pop ecx` cleanup after the exact `square_root` call. |
 | `normalize_vector` | `0x44cca0` | 100% | Exact in-place vector normalization helper used by path construction, collision probes, projectile steering, sprite-facing math, and presentation systems. | Done; use with exact `dot_vectors` and `square_root` as the vector-length source of truth. |
+| `cross_vectors` | `0x44cd40` | 100% | Exact 3D cross-product helper used by path-template basis construction, matrix orthogonalization, object normals, and track/fringe geometry. | Done; keep the function-local static `Vec3` temporary and explicit target end before the adjacent static destructor stub. |
+| `orthogonalize_matrix` | `0x44d3d0` | 92.31%, pinned | Small basis repair helper that normalizes right/up/forward and rebuilds two axes through exact `cross_vectors`. | Semantics are pinned; the only residual is thiscall setup order for the two cross-product calls. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
 
@@ -175,13 +177,14 @@ These are not gameplay owners, but several mirrors depend on them.
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
   `sine`, `arccosine`, `atan2_positive`, `square_root`, `normalize_vector`,
+  `cross_vectors`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
   `try_enter_track_attachment_from_swept_motion`,
   `spawn_sub_lazer_projectile`, `update_row_event_display`,
-  `vector_magnitude`, and any scratch
+  `vector_magnitude`, `orthogonalize_matrix`, and any scratch
   whose NOTES identify only register-allocation or x87 scheduling residuals.
 
 ## Operating Plan

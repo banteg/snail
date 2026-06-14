@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**180/665** mapped gameplay functions matched, **10246/326119** bytes (**3.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**181/665** mapped gameplay functions matched, **10377/326119** bytes (**3.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -218,8 +218,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | normalize_vector | 0x44cca0 | 75 | 29/29 | 100.00% | 29/29 |  |
 | 🚧 | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 94.74% | 17/19 |  |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 |  |
+| ✅ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 |  |
+| 🚧 | orthogonalize_matrix | 0x44d3d0 | 58 | 26/26 | 92.31% | 13/26 |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/66 | 49.57% | 0/66 |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 |  |
