@@ -157,6 +157,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | 2/2 |  |
 | ✅ | allocate_fringe_object | 0x4470a0 | 50 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | uninit_nuke | 0x4470e0 | 41 | 18/18 | 100.00% | 18/18 |  |
+| 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 |  |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 |  |
 | ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | 14/14 |  |
