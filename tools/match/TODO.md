@@ -102,6 +102,7 @@ These should turn current verified port behavior into matched proof.
 | `update_sub_lazer_projectile` | `0x43efb0` | 41.73%, pinned | SubLazer body flight, nested sprite bob, teardown. | Semantics are pinned; body-motion ownership and register/layout residuals are documented in NOTES. |
 | `shoot_subgoldy` | `0x441ad0` | 49.46%, pinned | Weapon/sub-lazer spawn callsite and audio cue. | Semantics are pinned; free-scan loop residual and unstaggered audio origin are documented in NOTES. |
 | `explode_slug_hazard` | `0x43f680` | 73.22%, structure-first | Slug death particle burst spawned by the exact `kill_slug_hazard` helper. | Semantics are mapped; remaining frame/register/x87 scheduling residuals are documented in NOTES. |
+| `initialize_blink_random` / `advance_blink_random` | `0x4408c0` / `0x4408a0` | 100% | Exact 24-entry blink cadence table initialization and advance helper used by slug hazard AI. | Done; use as the RNG cadence source-of-truth before expanding `update_slug_hazard_ai`. |
 | `spawn_salt_hazard` | `0x441560` | 74.07%, pinned | Salt slot layout, velocity byte-poke bug, yaw RNG. | Semantics are pinned; free-scan layout residual and velocity.z byte-poke finding are documented in NOTES. |
 | `update_salt_hazard` | `0x4417d0` | 48.04%, pinned | Salt integrate/removal state. | Semantics are pinned; overlapping progress fields, velocity-z byte-poke fallout, and probe residuals are documented in NOTES. |
 | `deactivate_salt_hazard` | `0x441740` | 41.46%, pinned | Salt collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
@@ -198,6 +199,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `update_subgoldy_resurrect`,
   `set_backdrop_progress_fraction`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
+  `initialize_blink_random`, `advance_blink_random`,
   `append_subgame_contact_target`, `kill_golb`,
   `update_movement_flag_emitters`,
   `initialize_array_with_constructor`,
