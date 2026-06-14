@@ -164,7 +164,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `update_subgoldy_resurrect`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
-  `spawn_track_parcel`,
+  `spawn_track_parcel`, `noop_runtime_ai`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
