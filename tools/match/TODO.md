@@ -152,6 +152,8 @@ These are not gameplay owners, but several mirrors depend on them.
 
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
+| `convert_math_type32_to_16` | `0x44c890` | 100% | Exact float-to-signed16 replay quantizer used by `update_subgoldy` for replay and ghost motion samples. | Done; keep with exact reverse conversion as the replay quantization source of truth. |
+| `convert_math_type16_to_32` | `0x44c8b0` | 100% | Exact signed16-to-float replay decoder used by `update_subgoldy`, including native expression order for `scale / 65536.0f`. | Done; keep with exact forward conversion as the replay quantization source of truth. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
 
@@ -165,6 +167,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
   `spawn_track_parcel`, `noop_runtime_ai`,
+  `convert_math_type32_to_16`, `convert_math_type16_to_32`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
