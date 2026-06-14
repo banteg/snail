@@ -138,6 +138,7 @@ These are large but important once the immediate lockstep frontier moves.
 | `rebuild_track_runtime_from_segments` | `0x437de0` | 100% | Exact bridge ordering for runtime cell population, parcel placement, tile variant passes, warnings, fringe build, and render-cache refresh. | Done; use as the call-order anchor before expanding `populate_runtime_track_cells_from_segments` or `build_track_fringe_objects`. |
 | `build_track_colours` | `0x435d40` | 100% | Initializes every global track colour bank before runtime cell population. | Done; keep the byte-offset loop and duplicate J/K bank calls as the exact source shape. |
 | `set_subgame_features` | `0x435df0` | 100% | Exact selected-level override and per-mode runtime flag presets before track population. | Done; use as the runtime-flag source of truth for HUD, barrier, tutorial, and track-generation gates. |
+| `allocate_path_template_samples` | `0x41b0a0` | 100% | Exact allocator for primary/secondary `PathTemplateSample` arrays used by every authored path-template constructor. | Done; pins `segment_count`, `primary_samples`, `secondary_samples`, and the `0xa8` sample stride before expanding constructor or projection/follow paths. |
 | `populate_runtime_track_cells_from_segments` | `0x435eb0` | 7.13%, structure-first | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Scratch now covers setup, row-count seeding, clear pass, and visited reset; expand next through row-selection/row-flag copy before tackling the glyph switch. |
 | `mark_track_warning_zones` | `0x4354f0` | 32.51%, pinned | Warning footprint and hazard suppression. | Semantics are pinned; tile seed set, 6x2 footprint, bounds, and register-layout residuals are documented in NOTES. |
 | `build_track_fringe_objects` | `0x434be0` | 49.44%, structure-first | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Register/local ownership is the next blocker: native keeps game in `ebp`, family in `edi`, edge-a in `ebx`, then reuses/restores `ebp` for edge-b; residual bool probes and skirt-color copy scheduling are documented in NOTES. |
@@ -196,6 +197,7 @@ These are not gameplay owners, but several mirrors depend on them.
 ## Already Matched Or Pinned Dependencies
 
 - Exact helpers to keep using as anchors: `search_path_for_golb`,
+  `allocate_path_template_samples`,
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `compute_kind42_attachment_transform`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
