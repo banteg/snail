@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**206/665** mapped gameplay functions matched, **13041/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**209/665** mapped gameplay functions matched, **13340/326119** bytes (**4.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -59,7 +59,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 |  |
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 |  |
+| ✅ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 |  |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | 14/14 |  |
+| ✅ | request_object_vertex_colours | 0x42f850 | 77 | 30/30 | 100.00% | 30/30 |  |
+| ✅ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 |  |
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 |  |
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 |  |
@@ -70,6 +73,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | 27/27 |  |
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 |  |
+| 🚧 | is_neighbor_cell_solid | 0x434b60 | 127 | 46/47 | 68.82% | 11/47 |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 |  |

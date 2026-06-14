@@ -141,9 +141,13 @@ These are large but important once the immediate lockstep frontier moves.
 | `build_track_colours` | `0x435d40` | 100% | Initializes every global track colour bank before runtime cell population. | Done; keep the byte-offset loop and duplicate J/K bank calls as the exact source shape. |
 | `set_subgame_features` | `0x435df0` | 100% | Exact selected-level override and per-mode runtime flag presets before track population. | Done; use as the runtime-flag source of truth for HUD, barrier, tutorial, and track-generation gates. |
 | `allocate_path_template_samples` | `0x41b0a0` | 100% | Exact allocator for primary/secondary `PathTemplateSample` arrays used by every authored path-template constructor. | Done; pins `segment_count`, `primary_samples`, `secondary_samples`, and the `0xa8` sample stride before expanding constructor or projection/follow paths. |
+| `request_object_vertices` | `0x42f710` | 100% | Exact strip/object vertex allocator used by path-template mesh builders and X-mesh loading; calls exact vertex-colour allocation after seeding vertices. | Done; use with exact facequad/colour helpers as the object mesh layout anchor (`vertex_count +0x2c`, vertices `+0x38`, colours `+0x48`). |
+| `request_object_vertex_colours` | `0x42f850` | 100% | Exact vertex-colour allocator for strip/object meshes; initializes RGB to `1.0f` while leaving alpha untouched. | Done; keep `END=0x42f89d` because the manifest gap includes padding plus an adjacent uncurated thunk. |
+| `request_object_facequads` | `0x42f8c0` | 100% | Exact facequad allocator/capacity helper used by path-template strip builders and X-mesh loading. | Done; pins `facequad_count +0x54`, capacity `+0x58`, and facequad pointer `+0x5c`. |
 | `populate_runtime_track_cells_from_segments` | `0x435eb0` | 7.13%, structure-first | Runtime glyph normalization, digit-on-attachment voiding, row ownership. | Scratch now covers setup, row-count seeding, clear pass, and visited reset; expand next through row-selection/row-flag copy before tackling the glyph switch. |
 | `mark_track_warning_zones` | `0x4354f0` | 32.51%, pinned | Warning footprint and hazard suppression. | Semantics are pinned; tile seed set, 6x2 footprint, bounds, and register-layout residuals are documented in NOTES. |
 | `build_track_fringe_objects` | `0x434be0` | 49.44%, structure-first | Allocates directional fringe objects after runtime-cell build; useful for separating renderer-only edge data from gameplay grid state. | Register/local ownership is the next blocker: native keeps game in `ebp`, family in `edi`, edge-a in `ebx`, then reuses/restores `ebp` for edge-b; residual bool probes and skirt-color copy scheduling are documented in NOTES. |
+| `is_neighbor_cell_solid` | `0x434b60` | 68.82%, source-shaped lead | Shared fringe-build predicate for lateral/row neighbor solidity, open-neighbor tile families, and tile-id exclusions. | Semantics are recovered; remaining residual is folded neighbor-base address plus tile-id register ownership documented in NOTES. Resume only with a source-shape lead, not volatile/dummy aliasing. |
 | `allocate_fringe_object` | `0x4470a0` | 100% | Exact allocator for the 7000-entry fringe-object pool used by `build_track_fringe_objects`. | Done; use as the pool cursor/overflow anchor for fringe build and renderer assumptions. |
 | `refresh_fringe_object_draw_list` | `0x439b00` | 100% | Exact fringe draw-list refresher: copies the live skirt colour, culls by fringe z threshold, and recycles the BOD node through the shared active/free list. | Done; use with exact `recycle_bod_to_free_list` as the active/free-list source-shape anchor for fringe lifecycle cleanup. |
 | `switch_track_mirror` | `0x435e60` | 91.23%, pinned | Runtime mirror state and builder row convention. | Semantics are pinned; remaining duplicate-tail layout residual is documented in NOTES. |
@@ -212,6 +216,8 @@ These are not gameplay owners, but several mirrors depend on them.
   `append_subgame_contact_target`, `kill_golb`,
   `update_movement_flag_emitters`,
   `initialize_array_with_constructor`,
+  `request_object_vertices`, `request_object_vertex_colours`,
+  `request_object_facequads`,
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
   `initialize_global_identity_matrix`, `initialize_math_random_table`,
