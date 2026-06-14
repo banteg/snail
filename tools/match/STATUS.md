@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**175/665** mapped gameplay functions matched, **9972/326119** bytes (**3.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**178/665** mapped gameplay functions matched, **10023/326119** bytes (**3.1%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -209,8 +209,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | convert_math_type16_to_32 | 0x44c8b0 | 24 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | 8/8 |  |
 | ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | 5/5 |  |
+| ✅ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 |  |
+| ✅ | arccosine | 0x44ca00 | 10 | 3/3 | 100.00% | 3/3 |  |
+| ✅ | square_root | 0x44cab0 | 7 | 3/3 | 100.00% | 3/3 |  |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | 11/11 |  |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | 10/10 |  |
+| 🚧 | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 94.74% | 17/19 |  |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 |  |
