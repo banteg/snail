@@ -7,9 +7,12 @@ import pytest
 
 from snail.match import (
     IDIOM_CASES_BY_NAME,
+    ImageSection,
     LoadedImage,
     ObjectRelocationReference,
     ObjectFunction,
+    ReferenceSymbol,
+    ReferenceSymbolManifest,
     ScratchConfig,
     ScratchStatus,
     common_prefix_length,
@@ -17,6 +20,7 @@ from snail.match import (
     disassemble_normalized_function,
     extract_object_function,
     find_type_definitions,
+    load_default_reference_symbol_manifest,
     load_image,
     match_function,
     normalize_function,
@@ -203,6 +207,28 @@ def tiny_manifest() -> FunctionSymbolManifest:
     )
 
 
+def tiny_reference_manifest() -> ReferenceSymbolManifest:
+    return ReferenceSymbolManifest(
+        name="test references",
+        symbols=(
+            ReferenceSymbol(
+                address=0x402000,
+                name="g_game_base",
+                kind="global",
+                aliases=("g_app",),
+            ),
+        ),
+    )
+
+
+def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None:
+    manifest = load_default_reference_symbol_manifest()
+    by_name = {symbol.name: symbol for symbol in manifest.symbols}
+    assert by_name["g_game_base"].address == 0x4DF904
+    assert "g_app" in by_name["g_game_base"].aliases
+    assert by_name["ftol"].kind == "function"
+
+
 def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
     return ObjectFunction(
         name="_foo",
@@ -282,6 +308,81 @@ def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
         result.masked_operand_audit.entries[0].target_references[0].text
         == "image+0x2000@0x402000"
     )
+
+
+def test_extract_object_function_maps_reference_symbol_aliases() -> None:
+    code = bytes.fromhex("a100000000c3")
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_app", 0)], [(1, 1)]))
+    function = extract_object_function(
+        obj,
+        "foo",
+        reference_manifest=tiny_reference_manifest(),
+    )
+    assert function.relocation_references[0].text == "sym:g_app"
+    assert function.relocation_references[0].key == "ref:g_game_base"
+
+
+def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
+    # target: mov eax, [0x402000]; ret. candidate: mov eax, [relocated g_app]; ret.
+    target = bytes.fromhex("a100204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("a100000000c3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="_g_app",
+                text="sym:g_app",
+                key="ref:g_game_base",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=tiny_reference_manifest(),
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_accepts_matching_rdata_constants() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<f", mapped, 0x2000, 1.0)
+    target = bytes.fromhex("d80d00204000c3")  # fmul dword [0x402000]; ret
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("d80d00000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="real@4@3fff8000000000000000",
+                text="const:f32:1",
+                key="const:f32:3f800000",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+            sections=(ImageSection(".rdata", 0x402000, 0x402004, 0),),
+        ),
+        target_va=0x401000,
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
 
 
 def test_diff_regions_reports_localized_mismatch() -> None:

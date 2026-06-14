@@ -67,6 +67,11 @@ Useful analysis helpers:
   addresses) against candidate relocation symbols/string literals. A 100%
   normalized score is proof-grade only when this audit has no unresolved or
   mismatched entries.
+- `analysis/symbols/gameplay-references.json` is the curated escape hatch for
+  recovered globals, offsets, and helper symbols that are not in the function
+  manifest. Add entries only when a scratch note, decompiler label, or matched
+  callsite explains the target address. `.rdata` float constants are compared
+  by their four bytes, not by MSVC's generated `real@...` symbol spelling.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too
@@ -90,7 +95,9 @@ normalized mismatch. It also audits every normalized-equal instruction with
 masked operands. Do not invent extern symbols or other dummy relocation sources
 just to hide constants; if a candidate symbol does not explain the target
 function/string/global reference, the status stays audit-pending even when the
-normalized instruction stream is 100%.
+normalized instruction stream is 100%. Curated reference-manifest aliases and
+byte-verified `.rdata` constants are allowed audit explanations; scratch-local
+dummy externs are not.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated

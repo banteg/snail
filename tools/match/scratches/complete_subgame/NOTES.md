@@ -101,6 +101,11 @@ Rejected experiments:
   the native direct-memory `or byte [..], 0x8` in isolation. Naming the selected
   run record as `RunRecord* run_record` in the full scratch still emitted the
   same contextual load/or/store sequence and was reverted as neutral churn.
+- 2026-06-15 reference-audit pass: the new curated reference manifest names
+  `byte_4b2f40` as `g_completion_snapshot_flags` and the high-score bank offset
+  as `g_high_score_bank`, clearing the masked operand audit without changing the
+  normalized score. The remaining residual is still the byte-OR and snapshot
+  scheduling shape below.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register

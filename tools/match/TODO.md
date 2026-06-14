@@ -18,6 +18,10 @@ beats chasing perfection on one large function.
   clean. If `ADDR` hides an unresolved target reference or mismatched candidate
   relocation/string/global, keep the scratch audit-pending and document the
   real owner before counting it as matched.
+- Clear masked-audit debt with curated entries in
+  `analysis/symbols/gameplay-references.json` only after independent evidence
+  names the target address. `.rdata` constants may clear by exact bytes; dummy
+  externs or convenience aliases may not.
 - Do not change compiler flags to chase a function unless there is independent
   Rich/header evidence for a different object family.
 - Keep source plausible as original 2004 C++: real structs, real control flow,

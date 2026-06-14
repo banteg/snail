@@ -12,13 +12,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import difflib
+import json
 from pathlib import Path
 import re
 import struct
 
 import capstone
 
-from .symbols import FunctionSymbolManifest
+from .symbols import FunctionSymbolManifest, REPO_ROOT
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
 IMAGE_SYM_CLASS_EXTERNAL = 2
@@ -34,6 +35,9 @@ PADDING_LINE_TEXT = {
     "nop",
 }
 BRANCH_TARGET_RE = re.compile(r"\bL([0-9a-f]+)\b")
+DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
+    REPO_ROOT / "analysis/symbols/gameplay-references.json"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,6 +78,88 @@ class ObjectRelocationReference:
     text: str
     key: str | None
     explained: bool
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceSymbol:
+    address: int
+    name: str
+    kind: str
+    aliases: tuple[str, ...] = ()
+    description: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceSymbolManifest:
+    name: str
+    symbols: tuple[ReferenceSymbol, ...] = ()
+
+
+def _parse_hex_or_int(value: object, *, field_name: str) -> int:
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and re.fullmatch(r"0x[0-9a-fA-F]+", value):
+        return int(value, 16)
+    raise ValueError(f"{field_name} must be an integer or hex string")
+
+
+def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError("reference symbol manifest must be a JSON object")
+    name = raw.get("name")
+    if not isinstance(name, str) or not name:
+        raise ValueError("reference symbol manifest field 'name' must be a string")
+    raw_symbols = raw.get("symbols")
+    if not isinstance(raw_symbols, list):
+        raise ValueError("reference symbol manifest field 'symbols' must be a list")
+
+    symbols: list[ReferenceSymbol] = []
+    seen_addresses: set[int] = set()
+    seen_names: set[str] = set()
+    for index, raw_symbol in enumerate(raw_symbols):
+        if not isinstance(raw_symbol, dict):
+            raise ValueError(f"symbols[{index}] must be an object")
+        address = _parse_hex_or_int(
+            raw_symbol.get("address"),
+            field_name=f"symbols[{index}].address",
+        )
+        name_value = raw_symbol.get("name")
+        kind = raw_symbol.get("kind", "data")
+        if not isinstance(name_value, str) or not name_value:
+            raise ValueError(f"symbols[{index}].name must be a non-empty string")
+        if not isinstance(kind, str) or not kind:
+            raise ValueError(f"symbols[{index}].kind must be a non-empty string")
+        aliases_value = raw_symbol.get("aliases", [])
+        if not isinstance(aliases_value, list) or not all(
+            isinstance(alias, str) and alias for alias in aliases_value
+        ):
+            raise ValueError(f"symbols[{index}].aliases must be a list of strings")
+        description = raw_symbol.get("description")
+        if description is not None and not isinstance(description, str):
+            raise ValueError(f"symbols[{index}].description must be a string")
+        if address in seen_addresses:
+            raise ValueError(f"duplicate reference symbol address: 0x{address:x}")
+        if name_value in seen_names:
+            raise ValueError(f"duplicate reference symbol name: {name_value}")
+        seen_addresses.add(address)
+        seen_names.add(name_value)
+        symbols.append(
+            ReferenceSymbol(
+                address=address,
+                name=name_value,
+                kind=kind,
+                aliases=tuple(aliases_value),
+                description=description,
+            )
+        )
+    return ReferenceSymbolManifest(name=name, symbols=tuple(symbols))
+
+
+def load_default_reference_symbol_manifest() -> ReferenceSymbolManifest:
+    if not DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH.exists():
+        return ReferenceSymbolManifest(name="empty")
+    return load_reference_symbol_manifest(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH)
 
 
 @dataclass(frozen=True, slots=True)
@@ -307,6 +393,49 @@ def _canonical_symbol_name(name: str) -> str:
     return re.sub(r"@\d+$", "", name)
 
 
+def _reference_symbol_by_address(
+    reference_manifest: ReferenceSymbolManifest | None,
+) -> dict[int, ReferenceSymbol]:
+    if reference_manifest is None:
+        return {}
+    return {symbol.address: symbol for symbol in reference_manifest.symbols}
+
+
+def _reference_key_by_name(
+    reference_manifest: ReferenceSymbolManifest | None,
+) -> dict[str, str]:
+    if reference_manifest is None:
+        return {}
+    by_name: dict[str, str] = {}
+    for symbol in reference_manifest.symbols:
+        key = f"ref:{symbol.name}"
+        for name in (symbol.name, *symbol.aliases):
+            by_name[name] = key
+            by_name[_canonical_symbol_name(name)] = key
+    return by_name
+
+
+def _reference_key_for_symbol_name(
+    reference_manifest: ReferenceSymbolManifest | None,
+    name: str,
+) -> str | None:
+    return _reference_key_by_name(reference_manifest).get(_canonical_symbol_name(name))
+
+
+def _format_reference_symbol(symbol: ReferenceSymbol) -> tuple[str, str]:
+    return f"{symbol.kind}:{symbol.name}", f"ref:{symbol.name}"
+
+
+def _format_f32_constant(data: bytes, offset: int, value: int | None = None) -> tuple[str, str] | None:
+    if not (0 <= offset <= len(data) - 4):
+        return None
+    raw = data[offset : offset + 4]
+    bits = struct.unpack("<I", raw)[0]
+    number = struct.unpack("<f", raw)[0]
+    suffix = f"@0x{value:x}" if value is not None else ""
+    return f"const:f32:{number:.9g}{suffix}", f"const:f32:{bits:08x}"
+
+
 def _format_symbol_reference(name: str) -> tuple[str, str]:
     canonical = _canonical_symbol_name(name)
     return f"sym:{canonical}", f"name:{canonical}"
@@ -316,7 +445,14 @@ def _resolve_object_relocation(
     obj: CoffObject,
     symbol: CoffSymbol,
     addend: int | None,
+    *,
+    reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> tuple[str, str | None, bool]:
+    reference_key = _reference_key_for_symbol_name(reference_manifest, symbol.name)
+    if reference_key is not None:
+        text, _ = _format_symbol_reference(symbol.name)
+        return text, reference_key, True
+
     if symbol.section_number > 0:
         section = obj.sections[symbol.section_number - 1]
         candidates = [symbol.value]
@@ -330,6 +466,10 @@ def _resolve_object_relocation(
             text = _read_printable_c_string(section.data, offset)
             if text is not None:
                 return f"str:{_quote_reference_string(text)}", f"str:{text}", True
+            if section.name.startswith(".rdata") and (
+                constant := _format_f32_constant(section.data, offset)
+            ) is not None:
+                return constant[0], constant[1], True
         text, key = _format_symbol_reference(symbol.name)
         return text, key, bool(_canonical_symbol_name(symbol.name))
 
@@ -349,7 +489,12 @@ def _symbol_matches(symbol_name: str, wanted: str) -> bool:
     return wanted in symbol_name
 
 
-def extract_object_function(obj: CoffObject, name: str | None = None) -> ObjectFunction:
+def extract_object_function(
+    obj: CoffObject,
+    name: str | None = None,
+    *,
+    reference_manifest: ReferenceSymbolManifest | None = None,
+) -> ObjectFunction:
     """Pull one function's bytes and relocation offsets out of a COFF object.
 
     The function's extent runs from its symbol value to the next function
@@ -405,7 +550,12 @@ def extract_object_function(obj: CoffObject, name: str | None = None) -> ObjectF
             )
             continue
         addend = _read_u32(section.data, relocation.virtual_address)
-        text, key, explained = _resolve_object_relocation(obj, symbol, addend)
+        text, key, explained = _resolve_object_relocation(
+            obj,
+            symbol,
+            addend,
+            reference_manifest=reference_manifest,
+        )
         relocation_references.append(
             ObjectRelocationReference(
                 offset=offset,
@@ -424,15 +574,30 @@ def extract_object_function(obj: CoffObject, name: str | None = None) -> ObjectF
 
 
 @dataclass(frozen=True, slots=True)
+class ImageSection:
+    name: str
+    start: int
+    end: int
+    characteristics: int
+
+
+@dataclass(frozen=True, slots=True)
 class LoadedImage:
     mapped: bytes
     image_base: int
     size_of_image: int
     imports_by_va: dict[int, str] = field(default_factory=dict)
+    sections: tuple[ImageSection, ...] = ()
 
     def function_bytes(self, start_va: int, end_va: int) -> bytes:
         data = self.mapped[start_va - self.image_base : end_va - self.image_base]
         return data.rstrip(PADDING_BYTES)
+
+    def section_for_va(self, va: int) -> ImageSection | None:
+        for section in self.sections:
+            if section.start <= va < section.end:
+                return section
+        return None
 
 
 def load_image(path: Path, image_base: int) -> LoadedImage:
@@ -456,11 +621,23 @@ def load_image(path: Path, image_base: int) -> LoadedImage:
             else:
                 name = f"ordinal_{imported.ordinal}"
             imports_by_va[imported.address] = f"{dll_name}!{name}"
+    sections = tuple(
+        ImageSection(
+            name=section.Name.rstrip(b"\x00").decode("ascii", errors="replace"),
+            start=image_base + section.VirtualAddress,
+            end=image_base
+            + section.VirtualAddress
+            + max(section.Misc_VirtualSize, section.SizeOfRawData),
+            characteristics=section.Characteristics,
+        )
+        for section in pe.sections
+    )
     return LoadedImage(
         mapped=pe.get_memory_mapped_image(ImageBase=image_base),
         image_base=image_base,
         size_of_image=pe.OPTIONAL_HEADER.SizeOfImage,
         imports_by_va=imports_by_va,
+        sections=sections,
     )
 
 
@@ -469,6 +646,7 @@ def _resolve_image_reference(
     *,
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
+    reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> MaskedReference:
     text: str
     key: str | None
@@ -493,6 +671,10 @@ def _resolve_image_reference(
             f"name:{canonical}",
             True,
         )
+    reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
+    if reference_symbol is not None:
+        text, key = _format_reference_symbol(reference_symbol)
+        return MaskedReference(0, "", "image", value, f"{text}@0x{value:x}", key, True)
     if image is not None and image.image_base <= value < image.image_base + len(image.mapped):
         offset = value - image.image_base
         string = _read_printable_c_string(image.mapped, offset)
@@ -506,6 +688,14 @@ def _resolve_image_reference(
                 f"str:{string}",
                 True,
             )
+        section = image.section_for_va(value)
+        if (
+            section is not None
+            and section.name == ".rdata"
+            and (constant := _format_f32_constant(image.mapped, offset, value)) is not None
+        ):
+            text, key = constant
+            return MaskedReference(0, "", "image", value, text, key, True)
         return MaskedReference(
             0,
             "",
@@ -545,6 +735,7 @@ def disassemble_normalized_function(
     base_address: int = 0,
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
+    reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> tuple[DisassemblyLine, ...]:
     """Disassemble to normalized instruction lines with offsets and addresses.
 
@@ -602,7 +793,12 @@ def disassemble_normalized_function(
         operand_index: int,
         kind: str,
     ) -> MaskedReference:
-        resolved = _resolve_image_reference(value, image=image, manifest=manifest)
+        resolved = _resolve_image_reference(
+            value,
+            image=image,
+            manifest=manifest,
+            reference_manifest=reference_manifest,
+        )
         return MaskedReference(
             operand_index=operand_index,
             kind=kind,
@@ -796,6 +992,7 @@ def match_function(
     image: LoadedImage,
     target_va: int,
     manifest: FunctionSymbolManifest | None = None,
+    reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> MatchResult:
     address_range = (image.image_base, image.image_base + image.size_of_image)
     target_disassembly = disassemble_normalized_function(
@@ -804,6 +1001,7 @@ def match_function(
         base_address=target_va,
         image=image,
         manifest=manifest,
+        reference_manifest=reference_manifest,
     )
     candidate_disassembly = disassemble_normalized_function(
         candidate.data,
@@ -812,6 +1010,7 @@ def match_function(
         address_range=address_range,
         image=image,
         manifest=manifest,
+        reference_manifest=reference_manifest,
     )
     target_lines = tuple(line.text for line in target_disassembly)
     candidate_lines = tuple(line.text for line in candidate_disassembly)
@@ -959,7 +1158,12 @@ def run_match(
     end_va: int | None = None,
 ) -> MatchResult:
     obj = parse_coff_object(obj_path.read_bytes())
-    candidate = extract_object_function(obj, symbol_name or function_name)
+    reference_manifest = load_default_reference_symbol_manifest()
+    candidate = extract_object_function(
+        obj,
+        symbol_name or function_name,
+        reference_manifest=reference_manifest,
+    )
     start, end = resolve_function_extent(manifest, function_name, end_va)
     image = load_image(image_path, manifest.image_base)
     return match_function(
@@ -968,6 +1172,7 @@ def run_match(
         image=image,
         target_va=start,
         manifest=manifest,
+        reference_manifest=reference_manifest,
     )
 
 
@@ -981,7 +1186,12 @@ def run_match_dump(
     end_va: int | None = None,
 ) -> MatchDump:
     obj = parse_coff_object(obj_path.read_bytes())
-    candidate = extract_object_function(obj, symbol_name or function_name)
+    reference_manifest = load_default_reference_symbol_manifest()
+    candidate = extract_object_function(
+        obj,
+        symbol_name or function_name,
+        reference_manifest=reference_manifest,
+    )
     start, end = resolve_function_extent(manifest, function_name, end_va)
     image = load_image(image_path, manifest.image_base)
     target_data = image.function_bytes(start, end)
@@ -993,6 +1203,7 @@ def run_match_dump(
             base_address=start,
             image=image,
             manifest=manifest,
+            reference_manifest=reference_manifest,
         ),
         candidate_lines=disassemble_normalized_function(
             candidate.data,
@@ -1001,6 +1212,7 @@ def run_match_dump(
             address_range=address_range,
             image=image,
             manifest=manifest,
+            reference_manifest=reference_manifest,
         ),
     )
 
@@ -1444,7 +1656,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 4
+CACHE_VERSION = 5
 
 
 def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
@@ -1497,6 +1709,7 @@ def collect_scratch_statuses(
     + diff while normalizer changes still invalidate old scores.
     """
     image: LoadedImage | None = None
+    reference_manifest = load_default_reference_symbol_manifest()
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     statuses: list[ScratchStatus] = []
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
@@ -1514,13 +1727,18 @@ def collect_scratch_statuses(
             target_data = image.function_bytes(start, end)
             obj_path = compile_scratch(config, match_root)
             obj = parse_coff_object(obj_path.read_bytes())
-            candidate = extract_object_function(obj, config.symbol or config.function)
+            candidate = extract_object_function(
+                obj,
+                config.symbol or config.function,
+                reference_manifest=reference_manifest,
+            )
             result = match_function(
                 target_data,
                 candidate,
                 image=image,
                 target_va=start,
                 manifest=manifest,
+                reference_manifest=reference_manifest,
             )
             fields = {
                 "target_size": len(target_data),

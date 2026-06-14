@@ -1,0 +1,58 @@
+{
+  "name": "Snail Mail gameplay reference symbols",
+  "symbols": [
+    {
+      "address": "0x42fd7c",
+      "name": "g_player_block",
+      "kind": "offset",
+      "aliases": [
+        "loc_42FD7C"
+      ],
+      "description": "Relocatable player block offset added to the live game root."
+    },
+    {
+      "address": "0x48b380",
+      "name": "ftol",
+      "kind": "function",
+      "aliases": [
+        "_ftol",
+        "__ftol"
+      ],
+      "description": "MSVC floating-point to integer helper used by timer and placement code."
+    },
+    {
+      "address": "0x4b2f40",
+      "name": "g_completion_snapshot_flags",
+      "kind": "global",
+      "aliases": [
+        "byte_4b2f40"
+      ],
+      "description": "Completion snapshot suppression flags read by complete_subgame."
+    },
+    {
+      "address": "0x4df904",
+      "name": "g_game_base",
+      "kind": "global",
+      "aliases": [
+        "data_4df904",
+        "g_app",
+        "g_game"
+      ],
+      "description": "Global storage for the live game/application root pointer."
+    },
+    {
+      "address": "0x68b4c8",
+      "name": "g_high_score_bank",
+      "kind": "offset",
+      "aliases": [],
+      "description": "Relocatable high-score bank offset used by completion dispatch."
+    },
+    {
+      "address": "0x78ff88",
+      "name": "g_sound_effect_manager",
+      "kind": "global",
+      "aliases": [],
+      "description": "Global sound-effect manager object used by gameplay feedback helpers."
+    }
+  ]
+}
