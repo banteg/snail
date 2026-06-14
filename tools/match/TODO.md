@@ -82,6 +82,7 @@ These govern the broadest wrong-assumption surface in `update_subgoldy`.
 | `update_track_attachment_follow_state` | `0x420cb0` | 46.44%, semantics pinned | Attachment stepping, natural end, side exit, supertramp launch. | Golf only with source-plausible staging; do not regress routed mirror semantics. |
 | `project_position_onto_track_attachment` | `0x4444b0` | 81.16%, source-shaped | Shared projection for garbage/slug/parcel and attachment-row actors. | Kind-42 helper is now exact as a `PathTemplate` member call; continue only around branch-label/local-transform offsets and non-kind42 stack-slot/register residuals documented in NOTES. |
 | `compute_kind42_attachment_transform` | `0x42b920` | 100% | Exact kind-42 half-pipe transform helper used by projection, live attachment follow, and constructor-side strip generation. | Done; keep the named `angle` local because it preserves the native x87 schedule around the `atan2_positive` result and output-pointer loads. |
+| `get_path_position_at_node` | `0x42b9c0` | 41.12%, source-shaped lead | Primary-sample local x/y projection used by parcel placement and challenge parcel placement on attachment rows. | Native prologue/frame/local-pointer lifetime are recovered; remaining duplicated-x87-lane scheduling is documented in NOTES. Resume only with a source-idiom lead, not volatile/asm/dummy aliasing. |
 | `find_segment_path_index_by_name` | `0x429ae0` | 100% | Exact `Path=` name-table lookup used by segment/path-template setup before attachment runtime use. | Done; keep the first-entry symbol plus bounded cursor loop shape that avoids VC6's first-comparison peel. |
 
 ### P2 - Collision And Runtime Pools
@@ -93,6 +94,7 @@ These should turn current verified port behavior into matched proof.
 | `handle_subgoldy_collisions` | `0x444cf0` | 45.15%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Proof-polish: local staging, mask register reuse, per-loop delta/probe shape. |
 | `recycle_bod_to_free_list` | `0x447290` | 100% | Exact shared active-list teardown/free-stack helper for BOD nodes used by runtime pickup, projectile, salt, garbage, fringe, and subgame teardown paths. | Done; use as the source-of-truth anchor before consolidating duplicated inline list-removal blocks in larger scratches. |
 | `update_active_bod` | `0x433e80` | 100% | Exact default active-bod updater: culls nodes once `world_z + 24.0f` falls behind the live threshold and recycles them through the shared active/free list. | Done; use with exact `recycle_bod_to_free_list` and `refresh_fringe_object_draw_list` as the active/free-list lifecycle anchor. |
+| `apply_bod_position` | `0x42f680` | 100% | Exact object-geometry vertex transform loop for BOD/object presentation paths, using exact `multiply_vector_by_matrix_copy`. | Done; keep `END=0x42f6d9` because the manifest gap includes seven nops plus an adjacent uncurated thunk. |
 | `update_track_health_pickup` | `0x43ecc0` | 71.88%, source-shaped | Health pickup runtime update: source-cell hidden gate, state-1 cull, state-2 teardown, and sprite-only sine bob lane. | Semantics are mapped against exact `update_track_jetpack_pickup`; remaining state-1 bob-tail placement and x87/epilogue scheduling residuals are documented in NOTES. |
 | `add_subgoldy_score` | `0x4402c0` | 80.62%, source-shaped | Shared score award helper for collisions, hazards, row-event parcels, bonus payouts, life thresholds, and score sound gating. | Semantics and arithmetic prefix are pinned; remaining residual is saved-register epilogue scheduling at the final sound gate, documented with `gated-tail-member-*` idiom probes in NOTES. |
 | `uninit_nuke` | `0x4470e0` | 100% | Exact teardown for the 25-sprite ring/special-effect controller armed by ring and special-effect collisions. | Done; use as the lifecycle anchor before matching `initialize_nuke` and `update_nuke`. |
@@ -202,6 +204,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `compute_kind42_attachment_transform`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
   `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
+  `apply_bod_position`,
   `update_subgoldy_resurrect`,
   `set_backdrop_progress_fraction`,
   `destroy_garbage_hazard`, `hit_slug_hazard`, `kill_slug_hazard`,

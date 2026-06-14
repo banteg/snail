@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**205/665** mapped gameplay functions matched, **12952/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**206/665** mapped gameplay functions matched, **13041/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -52,10 +52,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 408/425 | 40.58% | 0/425 |  |
 | ✅ | find_segment_path_index_by_name | 0x429ae0 | 59 | 27/27 | 100.00% | 27/27 |  |
 | ✅ | compute_kind42_attachment_transform | 0x42b920 | 146 | 48/48 | 100.00% | 48/48 |  |
+| 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | 6/6 |  |
 | ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 |  |
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 |  |
+| ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 |  |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | 14/14 |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 |  |
