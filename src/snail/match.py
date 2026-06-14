@@ -1407,6 +1407,10 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
             values[key] = value
     if "FUNCTION" not in values:
         raise ValueError(f"{directory}/scratch.conf must set FUNCTION")
+    if "MATCH_ARGS" in values:
+        raise ValueError(
+            f"{directory}/scratch.conf MATCH_ARGS is not supported; use END=... and SYMBOL=..."
+        )
     return ScratchConfig(
         directory=directory,
         function=values["FUNCTION"],

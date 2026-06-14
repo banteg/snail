@@ -692,6 +692,17 @@ def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
             validate_scratch_source(dirty)
 
 
+def test_load_scratch_config_rejects_match_args(tmp_path: Path) -> None:
+    from snail.match import load_scratch_config
+
+    scratch_dir = tmp_path / "scratch"
+    scratch_dir.mkdir()
+    (scratch_dir / "scratch.conf").write_text('FUNCTION=foo MATCH_ARGS="--end 0x401000"\n')
+
+    with pytest.raises(ValueError, match="MATCH_ARGS is not supported"):
+        load_scratch_config(scratch_dir)
+
+
 def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     from snail.match import ScratchConfig, _load_cached_status, _store_cached_status
 

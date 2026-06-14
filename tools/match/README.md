@@ -50,8 +50,8 @@ tail duplication, register pinning) turned out to be a source idiom.
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to
      get thiscall, mirror struct layouts at native offsets
-   - `scratch.conf` — `FUNCTION=<manifest name>`, optional `COMPILER`,
-     `CFLAGS`, `MATCH_ARGS`
+   - `scratch.conf` — `FUNCTION=<manifest name>`, optional `END`, `SYMBOL`,
+     `COMPILER`, `CFLAGS`
 2. Run `tools/match/match.sh scratches/<function>` (append `--full` for a
    side-by-side listing instead of a unified diff).
 3. Iterate the source until the diff is empty. Exit code 0 means 100%.
@@ -107,7 +107,11 @@ dummy externs are not.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
-functions sit in the gap, pass an explicit end through `MATCH_ARGS="--end 0x..."`.
+functions sit in the gap, set `END=0x...` in `scratch.conf`. If the compiled
+function symbol differs from `FUNCTION`, set `SYMBOL=<object symbol>` there too.
+Do not use `MATCH_ARGS` in `scratch.conf`; the shell wrapper and Python status
+path both consume explicit config keys so status generation and one-off diffs
+stay in sync.
 
 ## No fakematching
 

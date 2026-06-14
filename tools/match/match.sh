@@ -16,9 +16,14 @@ COMPILER="msvc6.5"
 CFLAGS="/O2 /G5 /W3"
 END=""
 SYMBOL=""
+unset MATCH_ARGS
 . "$SCRATCH_DIR/scratch.conf"
 
 : "${FUNCTION:?scratch.conf must set FUNCTION}"
+if [ "${MATCH_ARGS+x}" = x ]; then
+    echo "error: scratch.conf MATCH_ARGS is not supported; use END=... and SYMBOL=..." >&2
+    exit 1
+fi
 MATCH_ARGS=""
 [ -n "$END" ] && MATCH_ARGS="$MATCH_ARGS --end $END"
 [ -n "$SYMBOL" ] && MATCH_ARGS="$MATCH_ARGS --symbol $SYMBOL"
