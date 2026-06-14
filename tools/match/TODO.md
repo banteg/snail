@@ -154,13 +154,20 @@ These are not gameplay owners, but several mirrors depend on them.
 |---|---:|---|---|---|
 | `convert_math_type32_to_16` | `0x44c890` | 100% | Exact float-to-signed16 replay quantizer used by `update_subgoldy` for replay and ghost motion samples. | Done; keep with exact reverse conversion as the replay quantization source of truth. |
 | `convert_math_type16_to_32` | `0x44c8b0` | 100% | Exact signed16-to-float replay decoder used by `update_subgoldy`, including native expression order for `scale / 65536.0f`. | Done; keep with exact forward conversion as the replay quantization source of truth. |
+| `initialize_global_identity_matrix` | `0x44c880` | 100% | Exact constructor-table wrapper that initializes the shared identity transform through uniform scale `1.0f`. | Done; use with exact `initialize_uniform_scale_matrix` as the global identity-matrix source of truth. |
+| `initialize_math_random_table` | `0x44c8d0` | 100% | Exact 0x1fff-entry gameplay random-table initializer and cursor reset before `next_math_random_value` consumption. | Done; keep the signed pointer compare shape that preserves the native `jl` loop guard. |
+| `initialize_trigonometry_tables` | `0x44c930` | 100% | Exact startup sine/cosine table builder that also resets the gameplay random table. | Done; keep the two `float` scale multiplies before the native `fcos`/`fsin` sequence. |
 | `sine` | `0x44c9d0` | 100% | Exact sine lookup wrapper used by pickup bobbing, projectile halos, damage flash, nuke/ring presentation, and camera paths. | Done; keep the explicit scaled-angle intermediate so VC6 preserves the native two-multiply table-index shape. |
 | `arccosine` | `0x44ca00` | 100% | Exact CRT arccos wrapper used by quaternion and attachment/camera math. | Done; keep the explicit result local that prevents tail-call lowering. |
 | `atan2_positive` | `0x44ca10` | 100% | Exact quadrant-aware positive arctangent helper used by kind-42 attachment transforms and sprite-facing angle updates. | Done; keep the sign-normalization/quadrant-id source shape and `atan(y / x)` spelling. |
 | `square_root` | `0x44cab0` | 100% | Exact CRT square-root wrapper used by vector, attachment, projection, and renderer math. | Done; use as the source-of-truth callee for vector length and projection helpers. |
+| `multiply_vector_by_matrix_copy` | `0x44cac0` | 100% | Exact out-of-place affine vector transform used by attachment, camera, object, and render-cache math. | Done; keep the stack-result aggregate initialized from `this` before writing the caller output. |
+| `multiply_vector_by_matrix` | `0x44cb90` | 85.00%, pinned | In-place affine vector transform with a by-value matrix ABI and source-vector preservation. | Semantics and ABI are pinned; remaining residual is first matrix load/source-copy x87 scheduling documented in NOTES. |
+| `rotate_vector_by_matrix` | `0x44cc20` | 100% | Exact in-place rotation-only vector transform through the 3x3 matrix basis. | Done; keep the stack source-vector copy before destination overwrite. |
 | `vector_magnitude` | `0x44ccf0` | 94.74%, pinned | Shared 3D vector length helper used by Golb spawn, track parcels, star-field entries, object geometry helpers, and positional audio. | Semantics are pinned; the only residual is `add esp, 0x4` versus `pop ecx` cleanup after the exact `square_root` call. |
 | `normalize_vector` | `0x44cca0` | 100% | Exact in-place vector normalization helper used by path construction, collision probes, projectile steering, sprite-facing math, and presentation systems. | Done; use with exact `dot_vectors` and `square_root` as the vector-length source of truth. |
 | `cross_vectors` | `0x44cd40` | 100% | Exact 3D cross-product helper used by path-template basis construction, matrix orthogonalization, object normals, and track/fringe geometry. | Done; keep the function-local static `Vec3` temporary and explicit target end before the adjacent static destructor stub. |
+| `initialize_uniform_scale_matrix` | `0x44cde0` | 100% | Exact full 4x4 uniform-scale initializer for transform matrices. | Done; use as the matrix constructor source of truth for global identity setup and scale-only transforms. |
 | `orthogonalize_matrix` | `0x44d3d0` | 92.31%, pinned | Small basis repair helper that normalizes right/up/forward and rebuilds two axes through exact `cross_vectors`. | Semantics are pinned; the only residual is thiscall setup order for the two cross-product calls. |
 | `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
 | `linear_interpolate_matrix` | `0x44da90` | 49.57% | Matrix-space interpolation; already invalidated old pose lerp. | Match enough to confirm normalization/orthogonalization call shape. |
@@ -176,15 +183,19 @@ These are not gameplay owners, but several mirrors depend on them.
   `append_subgame_contact_target`, `initialize_array_with_constructor`,
   `spawn_track_parcel`, `noop_runtime_ai`,
   `convert_math_type32_to_16`, `convert_math_type16_to_32`,
-  `sine`, `arccosine`, `atan2_positive`, `square_root`, `normalize_vector`,
-  `cross_vectors`,
+  `initialize_global_identity_matrix`, `initialize_math_random_table`,
+  `initialize_trigonometry_tables`, `sine`, `arccosine`, `atan2_positive`,
+  `square_root`, `multiply_vector_by_matrix_copy`,
+  `rotate_vector_by_matrix`, `normalize_vector`, `cross_vectors`,
+  `initialize_uniform_scale_matrix`,
   voice helpers,
   and the small runtime initializer family in `tools/match/STATUS.md`.
 - Pinned-enough functions should not be churned for percentage alone:
   `update_cameraman`, `begin_track_attachment_follow_state`,
   `try_enter_track_attachment_from_swept_motion`,
   `spawn_sub_lazer_projectile`, `update_row_event_display`,
-  `vector_magnitude`, `orthogonalize_matrix`, and any scratch
+  `vector_magnitude`, `multiply_vector_by_matrix`,
+  `orthogonalize_matrix`, and any scratch
   whose NOTES identify only register-allocation or x87 scheduling residuals.
 
 ## Operating Plan

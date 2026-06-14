@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**181/665** mapped gameplay functions matched, **10377/326119** bytes (**3.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**187/665** mapped gameplay functions matched, **10818/326119** bytes (**3.3%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | build |
 |---|---|---|---|---|---|---|---|
@@ -205,20 +205,27 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | 9/9 |  |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 |  |
+| ✅ | initialize_global_identity_matrix | 0x44c880 | 16 | 4/4 | 100.00% | 4/4 |  |
 | ✅ | convert_math_type32_to_16 | 0x44c890 | 19 | 4/4 | 100.00% | 4/4 |  |
 | ✅ | convert_math_type16_to_32 | 0x44c8b0 | 24 | 6/6 | 100.00% | 6/6 |  |
+| ✅ | initialize_math_random_table | 0x44c8d0 | 36 | 10/10 | 100.00% | 10/10 |  |
 | ✅ | next_math_random_value | 0x44c900 | 28 | 8/8 | 100.00% | 8/8 |  |
+| ✅ | initialize_trigonometry_tables | 0x44c930 | 62 | 18/18 | 100.00% | 18/18 |  |
 | ✅ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | 5/5 |  |
 | ✅ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 |  |
 | ✅ | arccosine | 0x44ca00 | 10 | 3/3 | 100.00% | 3/3 |  |
 | ✅ | atan2_positive | 0x44ca10 | 148 | 48/48 | 100.00% | 48/48 |  |
 | ✅ | square_root | 0x44cab0 | 7 | 3/3 | 100.00% | 3/3 |  |
+| ✅ | multiply_vector_by_matrix_copy | 0x44cac0 | 144 | 49/49 | 100.00% | 49/49 |  |
 | ✅ | dot_vectors | 0x44cb50 | 31 | 11/11 | 100.00% | 11/11 |  |
 | ✅ | dot_vector | 0x44cb70 | 27 | 10/10 | 100.00% | 10/10 |  |
+| 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 |  |
+| ✅ | rotate_vector_by_matrix | 0x44cc20 | 117 | 38/38 | 100.00% | 38/38 |  |
 | ✅ | normalize_vector | 0x44cca0 | 75 | 29/29 | 100.00% | 29/29 |  |
 | 🚧 | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 94.74% | 17/19 |  |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 |  |
 | ✅ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 |  |
+| ✅ | initialize_uniform_scale_matrix | 0x44cde0 | 66 | 21/21 | 100.00% | 21/21 |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 |  |
 | 🚧 | orthogonalize_matrix | 0x44d3d0 | 58 | 26/26 | 92.31% | 13/26 |  |
