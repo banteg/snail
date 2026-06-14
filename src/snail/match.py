@@ -1432,10 +1432,84 @@ def validate_scratch_source(source: Path) -> None:
             raise ValueError(f"{source}: {token!r} is not allowed in scratches (no fakematching)")
 
 
+def _mtime_ns(path: Path) -> int | None:
+    return path.stat().st_mtime_ns if path.exists() else None
+
+
+def _scratch_include_headers(match_root: Path) -> tuple[Path, ...]:
+    include_dir = match_root / "include"
+    if not include_dir.exists():
+        return ()
+    return tuple(sorted(path for path in include_dir.rglob("*.h") if path.is_file()))
+
+
+def _scratch_compile_argv(config: ScratchConfig, match_root: Path) -> tuple[str, ...]:
+    import shlex
+
+    return (
+        str(match_root / "cl.sh"),
+        "/c",
+        *shlex.split(config.cflags),
+        "scratch.cpp",
+    )
+
+
+def _scratch_build_dependencies(config: ScratchConfig, match_root: Path) -> tuple[Path, ...]:
+    compiler_exe = match_root / "compilers" / config.compiler / "Bin" / "CL.EXE"
+    return (
+        config.directory / "scratch.cpp",
+        config.directory / "scratch.conf",
+        match_root / "cl.sh",
+        compiler_exe,
+        *_scratch_include_headers(match_root),
+    )
+
+
+def _scratch_build_key(config: ScratchConfig, match_root: Path) -> dict:
+    return {
+        "compiler": config.compiler,
+        "argv": list(_scratch_compile_argv(config, match_root)),
+        "dependencies": [
+            [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _mtime_ns(path)]
+            for path in _scratch_build_dependencies(config, match_root)
+        ],
+    }
+
+
+def _scratch_object_is_current(
+    obj_path: Path,
+    config: ScratchConfig,
+    match_root: Path,
+) -> bool:
+    if not obj_path.exists():
+        return False
+
+    obj_mtime = obj_path.stat().st_mtime_ns
+    for dependency in _scratch_build_dependencies(config, match_root):
+        dependency_mtime = _mtime_ns(dependency)
+        if dependency_mtime is None or dependency_mtime > obj_mtime:
+            return False
+
+    build_key_path = obj_path.parent / "scratch-build.json"
+    if not build_key_path.exists():
+        return False
+
+    try:
+        cached = json.loads(build_key_path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return False
+    return cached.get("key") == _scratch_build_key(config, match_root)
+
+
+def _store_scratch_build_key(obj_path: Path, config: ScratchConfig, match_root: Path) -> None:
+    (obj_path.parent / "scratch-build.json").write_text(
+        json.dumps({"key": _scratch_build_key(config, match_root)})
+    )
+
+
 def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT) -> Path:
     """Compile scratch.cpp with cl.sh when the object is missing or stale."""
     import os
-    import shlex
     import shutil
     import subprocess
 
@@ -1443,13 +1517,13 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     validate_scratch_source(source)
     build_dir = config.directory / "build"
     obj_path = build_dir / "scratch.obj"
-    if obj_path.exists() and obj_path.stat().st_mtime >= source.stat().st_mtime:
+    if _scratch_object_is_current(obj_path, config, match_root):
         return obj_path
 
     build_dir.mkdir(exist_ok=True)
     shutil.copy(source, build_dir / "scratch.cpp")
     completed = subprocess.run(
-        [str(match_root / "cl.sh"), "/c", *shlex.split(config.cflags), "scratch.cpp"],
+        list(_scratch_compile_argv(config, match_root)),
         cwd=build_dir,
         env={**os.environ, "MSVC_VER": config.compiler},
         capture_output=True,
@@ -1457,6 +1531,7 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     )
     if completed.returncode != 0 or not obj_path.exists():
         raise RuntimeError(f"cl failed:\n{completed.stdout}{completed.stderr}")
+    _store_scratch_build_key(obj_path, config, match_root)
     return obj_path
 
 
@@ -1792,24 +1867,33 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 5
+CACHE_VERSION = 6
 
 
-def _scratch_cache_key(config: ScratchConfig, image_path: Path) -> dict:
-    def mtime(path: Path) -> float | None:
-        return path.stat().st_mtime if path.exists() else None
-
+def _scratch_cache_key(
+    config: ScratchConfig,
+    image_path: Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> dict:
     return {
         "version": CACHE_VERSION,
-        "source_mtime": mtime(config.directory / "scratch.cpp"),
-        "conf_mtime": mtime(config.directory / "scratch.conf"),
-        "image_mtime": mtime(image_path),
-        "matcher_mtime": mtime(Path(__file__)),
-        "reference_manifest_mtime": mtime(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
+        "build": _scratch_build_key(config, match_root),
+        "match": {
+            "function": config.function,
+            "end_va": config.end_va,
+            "symbol": config.symbol,
+        },
+        "image_mtime": _mtime_ns(image_path),
+        "matcher_mtime": _mtime_ns(Path(__file__)),
+        "reference_manifest_mtime": _mtime_ns(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
 
-def _load_cached_status(config: ScratchConfig, image_path: Path) -> dict | None:
+def _load_cached_status(
+    config: ScratchConfig,
+    image_path: Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> dict | None:
     import json
 
     cache_path = config.directory / "build/match-cache.json"
@@ -1819,18 +1903,23 @@ def _load_cached_status(config: ScratchConfig, image_path: Path) -> dict | None:
         cached = json.loads(cache_path.read_text())
     except (json.JSONDecodeError, OSError):
         return None
-    if cached.get("key") != _scratch_cache_key(config, image_path):
+    if cached.get("key") != _scratch_cache_key(config, image_path, match_root):
         return None
     return cached.get("status")
 
 
-def _store_cached_status(config: ScratchConfig, image_path: Path, status: dict) -> None:
+def _store_cached_status(
+    config: ScratchConfig,
+    image_path: Path,
+    status: dict,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> None:
     import json
 
     cache_path = config.directory / "build/match-cache.json"
     cache_path.parent.mkdir(exist_ok=True)
     cache_path.write_text(
-        json.dumps({"key": _scratch_cache_key(config, image_path), "status": status})
+        json.dumps({"key": _scratch_cache_key(config, image_path, match_root), "status": status})
     )
 
 
@@ -1841,9 +1930,10 @@ def collect_scratch_statuses(
 ) -> list[ScratchStatus]:
     """Match every scratch, reusing cached results for unchanged ones.
 
-    The cache keys on scratch source/conf, image, and matcher mtimes, so an
-    unchanged scratch costs one stat() pass instead of a compile + disassembly
-    + diff while normalizer changes still invalidate old scores.
+    The cache keys on scratch source/conf, shared headers, compiler inputs,
+    image, and matcher mtimes, so an unchanged scratch costs one stat() pass
+    instead of a compile + disassembly + diff while normalizer changes still
+    invalidate old scores.
     """
     image: LoadedImage | None = None
     reference_manifest = load_default_reference_symbol_manifest()
@@ -1853,7 +1943,7 @@ def collect_scratch_statuses(
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
 
-        if (cached := _load_cached_status(config, image_path)) is not None:
+        if (cached := _load_cached_status(config, image_path, match_root)) is not None:
             statuses.append(ScratchStatus(config=config, address=address, **cached))
             continue
 
@@ -1901,7 +1991,7 @@ def collect_scratch_statuses(
                 "error": str(error).splitlines()[0] if str(error) else "unknown error",
             }
         else:
-            _store_cached_status(config, image_path, fields)
+            _store_cached_status(config, image_path, fields, match_root)
         statuses.append(ScratchStatus(config=config, address=address, **fields))
     return statuses
 

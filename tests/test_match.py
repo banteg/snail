@@ -695,8 +695,13 @@ def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
 def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     from snail.match import ScratchConfig, _load_cached_status, _store_cached_status
 
-    scratch_dir = tmp_path / "scratch"
-    scratch_dir.mkdir()
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    scratch_dir.mkdir(parents=True)
+    include_dir = match_root / "include"
+    include_dir.mkdir()
+    header = include_dir / "shared.h"
+    header.write_text("struct Shared { int x; };\n")
     (scratch_dir / "scratch.cpp").write_text("// candidate\n")
     (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
     image = tmp_path / "image.exe"
@@ -710,21 +715,123 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         symbol=None,
     )
 
-    assert _load_cached_status(config, image) is None
+    assert _load_cached_status(config, image, match_root) is None
     fields = {
         "target_size": 10,
         "ratio": 1.0,
+        "prefix_instructions": 4,
         "target_instructions": 4,
         "candidate_instructions": 4,
+        "masked_ok": 0,
+        "masked_unresolved": 0,
+        "masked_mismatches": 0,
         "error": None,
     }
-    _store_cached_status(config, image, fields)
-    assert _load_cached_status(config, image) == fields
+    _store_cached_status(config, image, fields, match_root)
+    assert _load_cached_status(config, image, match_root) == fields
 
-    # editing the source invalidates the cache
+    changed_flags = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/Od /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    assert _load_cached_status(changed_flags, image, match_root) is None
+
+    changed_compiler = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.0",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    assert _load_cached_status(changed_compiler, image, match_root) is None
+
+    # editing the source or a shared include invalidates the cache
     import os
     import time
 
     stamp = time.time() + 10
     os.utime(scratch_dir / "scratch.cpp", (stamp, stamp))
-    assert _load_cached_status(config, image) is None
+    assert _load_cached_status(config, image, match_root) is None
+
+    _store_cached_status(config, image, fields, match_root)
+    stamp += 10
+    os.utime(scratch_dir / "scratch.conf", (stamp, stamp))
+    assert _load_cached_status(config, image, match_root) is None
+
+    _store_cached_status(config, image, fields, match_root)
+    stamp += 10
+    os.utime(header, (stamp, stamp))
+    assert _load_cached_status(config, image, match_root) is None
+
+
+def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
+    from snail.match import (
+        ScratchConfig,
+        _scratch_object_is_current,
+        _store_scratch_build_key,
+    )
+
+    import os
+    import time
+
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    build_dir = scratch_dir / "build"
+    include_dir = match_root / "include"
+    compiler_dir = match_root / "compilers/msvc6.5/Bin"
+    build_dir.mkdir(parents=True)
+    include_dir.mkdir()
+    compiler_dir.mkdir(parents=True)
+    (match_root / "cl.sh").write_text("#!/bin/sh\n")
+    (compiler_dir / "CL.EXE").write_bytes(b"cl")
+    (scratch_dir / "scratch.cpp").write_text("// candidate\n")
+    (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
+    header = include_dir / "shared.h"
+    header.write_text("struct Shared { int x; };\n")
+    obj_path = build_dir / "scratch.obj"
+    obj_path.write_bytes(b"obj")
+    config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+
+    base = time.time() + 10
+    for path in (
+        match_root / "cl.sh",
+        compiler_dir / "CL.EXE",
+        scratch_dir / "scratch.cpp",
+        scratch_dir / "scratch.conf",
+        header,
+    ):
+        os.utime(path, (base, base))
+    os.utime(obj_path, (base + 10, base + 10))
+    assert not _scratch_object_is_current(obj_path, config, match_root)
+
+    _store_scratch_build_key(obj_path, config, match_root)
+    assert _scratch_object_is_current(obj_path, config, match_root)
+
+    changed_flags = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/Od /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    assert not _scratch_object_is_current(obj_path, changed_flags, match_root)
+
+    os.utime(header, (base + 20, base + 20))
+    assert not _scratch_object_is_current(obj_path, config, match_root)
+
+    os.utime(header, (base, base))
+    os.utime(scratch_dir / "scratch.conf", (base + 20, base + 20))
+    assert not _scratch_object_is_current(obj_path, config, match_root)
