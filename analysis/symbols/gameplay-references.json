@@ -2,6 +2,13 @@
   "name": "Snail Mail gameplay reference symbols",
   "symbols": [
     {
+      "address": "0x400000",
+      "name": "k_runtime_flags_movement_fire_emitters",
+      "kind": "constant",
+      "aliases": [],
+      "description": "Subgame runtime feature bit that enables movement-state sound and emitter updates in update_subgoldy."
+    },
+    {
       "address": "0x400002",
       "name": "k_frontend_text_widget_flags",
       "kind": "constant",
