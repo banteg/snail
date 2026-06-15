@@ -31,12 +31,19 @@ public:
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
+    int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
 
     int unknown_00[26];                    // +0x00
     Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)
-    char unknown_74[0x384 - 0x74];
+    char unknown_74[0x80 - 0x74];
+    int resurrect_final_loss;              // +0x80
+    unsigned char resurrect_active;        // +0x84
+    char unknown_85[0x8c - 0x85];
+    float resurrect_progress;              // +0x8c
+    float resurrect_progress_step;         // +0x90
+    char unknown_94[0x384 - 0x94];
     // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
     // follow_active = FollowState.active, attachment_record =
