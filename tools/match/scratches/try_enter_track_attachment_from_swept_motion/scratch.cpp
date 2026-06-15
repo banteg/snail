@@ -35,11 +35,11 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
     float v34;
     float v35;
     float v36;
-    int idx = sample_count - 1;
+    int idx = segment_count - 1;
     if (idx < 0)
         return;
     do {
-        AttachmentSample* s = &samples[idx];
+        AttachmentSample* s = &secondary_samples[idx];
         if (s->active > 0.0f) {
             sample_origin = Vector3(v19 + s->offset.x, v20 + s->offset.y, v21 + s->offset.z);
             v31 = sample_origin.y;
@@ -55,7 +55,7 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
                 && (float)(width_cells / 2) + 0.3f > local.x
                 && local.y >= -0.2
                 && local.z > 0.0f) {
-                AttachmentSample* hit = &samples[idx];
+                AttachmentSample* hit = &secondary_samples[idx];
                 if (local.z < hit->delta_length) {
                     hit_origin = Vector3(v19 + hit->offset.x, v20 + hit->offset.y, v21 + hit->offset.z);
                     v35 = hit_origin.y;

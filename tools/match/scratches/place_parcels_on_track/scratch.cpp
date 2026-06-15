@@ -5,11 +5,7 @@
 // singles for the rest, compacting the banks per draw, and finally project
 // flagged rows onto their attachments.
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "track_attachment.h"
 
 struct TransformMatrix {
     float rows[16];
@@ -40,30 +36,6 @@ struct AuthoredParcelRecord { // segment +0x814, one per row, 56 bytes
     int set_id;
     Vector3 position;
     char unknown_14[0x38 - 0x14];
-};
-
-struct AttachmentSample {
-    char unknown_00[0xa0];
-    float kind42_scale; // +0xa0
-    char unknown_a4[0xa8 - 0xa4];
-};
-
-struct AttachmentPathTemplate;
-
-struct TrackRowCell {
-    char unknown_00[0x38];
-    AttachmentPathTemplate* attachment_template_record; // +0x38
-
-    int get_track_cell_row_index();
-};
-
-struct AttachmentPathTemplate {
-    char unknown_00[0x38];
-    int kind; // +0x38: 42 = nonlinear branch
-    char unknown_3c[0x58 - 0x3c];
-    AttachmentSample* primary_samples; // +0x58
-
-    void get_path_position_at_node(float* payload, int node, int row_index, float* out);
 };
 
 struct SegmentRecord { // game+0xa878, stride 16928
@@ -293,7 +265,7 @@ int Game::place_parcels_on_track()
             AttachmentPathTemplate* template_record = live_cell->attachment_template_record;
             if (template_record->kind == 42) {
                 compute_kind42_attachment_transform(
-                    template_record->primary_samples[node].kind42_scale,
+                    template_record->primary_samples[node].special_scalar,
                     *(float*)(row_record + 0x90),
                     *(float*)(row_record + 0x94),
                     &transform,

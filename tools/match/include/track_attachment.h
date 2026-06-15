@@ -17,13 +17,16 @@ struct AttachmentSample {            // stride 0xa8
     Vector3 offset;                  // +0x30
     char unknown_3c[0x40 - 0x3c];
     float matrix[12];                // +0x40, local-frame rotation
-    char unknown_70[0x8c - 0x70];
+    char unknown_70[0x80 - 0x70];
+    Vector3 delta_dir_to_next;       // +0x80
     float delta_length;              // +0x8c, segment length (the swept-entry
                                      // "depth limit" gate is z < this)
-    char unknown_90[0x94 - 0x90];
+    float center_x;                  // +0x90
     float rotation_scalar_94;        // +0x94
     float rotation_scalar_98;        // +0x98
-    char unknown_9c[0xa8 - 0x9c];
+    float lateral_scale;             // +0x9c
+    float special_scalar;            // +0xa0, kind-42 scale/radius source
+    float lateral_source;            // +0xa4
 };
 
 struct TrackRowCell;
@@ -34,14 +37,24 @@ struct AttachmentPathTemplate {
         float sweep_x, float sweep_y, float sweep_z,
         TrackRowCell* cell); // @ 0x42c770
 
-    char unknown_00[0x44];
-    int sample_count;                // +0x44
-    char unknown_48[0x54 - 0x48];
+    char unknown_00[0x38];
+    int kind;                        // +0x38
+    unsigned char is_mirrored_x;     // +0x3c
+    char unknown_3d[0x40 - 0x3d];
+    int side_exit_mode;              // +0x40
+    int segment_count;               // +0x44
+    unsigned int unknown_48;         // +0x48
+    float segment_count_f;           // +0x4c
+    float width_or_scale;            // +0x50
     int width_cells;                 // +0x54, integer half-span source
-    char unknown_58[0x5c - 0x58];
-    AttachmentSample* samples;       // +0x5c
+    AttachmentSample* primary_samples; // +0x58
+    AttachmentSample* secondary_samples; // +0x5c
     char unknown_60[0x98 - 0x60];
     float installed_heading_delta;   // +0x98
+    unsigned char special_runtime_flag_9c; // +0x9c
+    char unknown_9d[0xa8 - 0x9d];
+
+    void get_path_position_at_node(float* payload, int node, int row_index, float* out);
 };
 
 struct TrackRowCell {
