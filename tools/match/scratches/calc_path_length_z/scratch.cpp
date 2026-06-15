@@ -2,7 +2,6 @@
 // cRPathFollow::CalcPathLengthZ(float, Vec3*, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
 #include "vector_types.h"
-#include "track_attachment.h"
 
 typedef unsigned int DWORD;
 
@@ -25,6 +24,7 @@ struct TransformMatrix {
 };
 
 #include "track_attachment_matrix_path_view.h"
+#include "track_row_cell_anchor_view.h"
 
 struct GolbShot {
     char unknown_000[0x1c4];
@@ -47,7 +47,7 @@ public:
     unsigned char active; // +0x00
     char unknown_01[0x04 - 0x01];
     AttachmentPathTemplateMatrixView* template_record; // +0x04
-    TrackRowCell* source_cell; // +0x08
+    TrackRowCellAnchorView* source_cell; // +0x08
     int sample_index; // +0x0c
     float progress; // +0x10
     float vertical_offset; // +0x14
@@ -96,7 +96,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     float carry = delta + terminal_template->width_or_scale;
                     AttachmentSampleMatrixView* terminal =
                         &((AttachmentSampleMatrixView*)terminal_template->secondary_samples)[count];
-                    Vector3* anchor = &source_cell->anchor_position;
+                    Vec3* anchor = &source_cell->anchor_position;
 
                     float forward_x = carry * terminal[-1].transform.basis_forward.x;
                     float forward_y = carry * terminal[-1].transform.basis_forward.y;
@@ -204,7 +204,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     } else {
         AttachmentSampleMatrixView* secondary = (AttachmentSampleMatrixView*)current_template->secondary_samples;
         AttachmentSampleMatrixView* sample = &secondary[current_index];
-        Vector3* anchor = &source_cell->anchor_position;
+        Vec3* anchor = &source_cell->anchor_position;
         float base_x =
             advanced * sample->delta_dir_to_next.x * lateral_scale
             + sample->transform.position.x

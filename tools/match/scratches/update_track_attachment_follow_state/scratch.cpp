@@ -20,15 +20,7 @@ struct TransformMatrix {
 };
 
 #include "track_attachment_matrix_path_view.h"
-
-struct TrackRowCell {
-    char unknown_00[0x10];
-    Vec3 anchor_position;
-    char unknown_1c[0x38 - 0x1c];
-    AttachmentPathTemplateMatrixView* attachment_template_record;
-
-    int get_track_cell_row_index();
-};
+#include "track_row_cell_anchor_view.h"
 
 struct TrackRuntimeRow {
     char unknown_00[0x04];
@@ -74,7 +66,7 @@ public:
     unsigned char active;
     char unknown_01[0x04 - 0x01];
     AttachmentPathTemplateMatrixView* template_record;
-    TrackRowCell* source_cell;
+    TrackRowCellAnchorView* source_cell;
     int sample_index;
     float progress;
     float vertical_offset;
