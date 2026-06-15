@@ -75,7 +75,8 @@ struct TrackRowCell {
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
-    int lane_word;                      // +0x40, low 3 bits are lane
+    int lane_and_flags;                 // +0x40, low 3 bits are lane; 0x18 warning footprint
+    char unknown_44[0x54 - 0x44];
 
     int get_track_cell_row_index();
 };

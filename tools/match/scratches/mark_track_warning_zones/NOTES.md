@@ -10,9 +10,14 @@ read and are what blind spot #6 needs:
 - stamp footprint per seed at (row, col): rows row..row-5, cols
   {col-1, col}, bounds-checked `r >= 0 && r < rows-1 && 0 <= col+dc < 8`
   as signed pairs
-- effect: `cells[idx].flags |= 0x18`
+- effect: `cells[idx].lane_and_flags |= 0x18`
 - cell bank: game + 0x3bfb04, stride 84 (0x54), tile byte +0x00,
-  flags dword +0x04, 8 cells per row, row-major contiguous walk
+  lane/flags dword +0x04, 8 cells per row, row-major contiguous walk
+- relation to shared `TrackRowCell`: this cursor starts at the tile byte, so
+  its `+0x00/+0x04` fields are `TrackRowCell +0x3c/+0x40`. The shared
+  header now records the full 0x54 stride and names `+0x40` as
+  `lane_and_flags`; this scratch keeps the tile-byte view because it preserves
+  the current register/offset shape.
 
 2026-06-13 pin audit: focused matcher still verifies 32.51%, 104/99 insns.
 Keep pinned at semantics; the remaining work would be layout/register golf

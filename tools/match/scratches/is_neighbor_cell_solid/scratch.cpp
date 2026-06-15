@@ -17,7 +17,7 @@ public:
 bool Game::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
-    int lane = cell->lane_word & 7;
+    int lane = cell->lane_and_flags & 7;
     bool result = false;
     if ((unsigned int)(lane + dx) < 8) {
         int neighbor_row = dz + row;

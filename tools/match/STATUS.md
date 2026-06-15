@@ -359,7 +359,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 9 type name(s)
 - covered: 10 type name(s) with a header plus scratch-local copies
-- divergent: 69 type name(s) with multiple scratch-local shapes
+- divergent: 68 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -422,7 +422,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InvincibleShellController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | PathTemplate | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | PathTemplateSample | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | RuntimeTrackCell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SaltHazardPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | StarField | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
