@@ -752,6 +752,23 @@ def _resolve_image_reference(
     text: str
     key: str | None
     explained = False
+    reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
+    if reference_symbol is not None:
+        text, key = _format_reference_symbol(reference_symbol)
+        return MaskedReference(
+            0,
+            "",
+            "image",
+            value,
+            f"{text}@0x{value:x}",
+            key,
+            True,
+            alternate_keys=_reference_alternate_keys_for_address(
+                reference_manifest,
+                value,
+                primary_key=key,
+            ),
+        )
     if manifest is not None:
         by_address = {symbol.address: symbol.name for symbol in manifest.functions}
         if value in by_address:
@@ -771,23 +788,6 @@ def _resolve_image_reference(
             f"import:{name}@0x{value:x}",
             f"name:{canonical}",
             True,
-        )
-    reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
-    if reference_symbol is not None:
-        text, key = _format_reference_symbol(reference_symbol)
-        return MaskedReference(
-            0,
-            "",
-            "image",
-            value,
-            f"{text}@0x{value:x}",
-            key,
-            True,
-            alternate_keys=_reference_alternate_keys_for_address(
-                reference_manifest,
-                value,
-                primary_key=key,
-            ),
         )
     if image is not None and image.image_base <= value < image.image_base + len(image.mapped):
         range_references = _reference_offsets_for_address(reference_manifest, value)

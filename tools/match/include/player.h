@@ -12,10 +12,14 @@ struct AttachmentRecord {
     int installed_heading;            // +0x98
 };
 
+class SquidgeState {
+public:
+    void start_squidge_y(float amount);   // @ 0x444980
+};
+
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
-    void start_squidge_y(float amount);   // thiscall, image-resident
 
     int unknown_00[26];                    // +0x00
     Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)

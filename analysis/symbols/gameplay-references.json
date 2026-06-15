@@ -226,6 +226,15 @@
       "description": "Relocatable snail-skin transition controller offset used by damage and invincible-shell helpers."
     },
     {
+      "address": "0x4340c0",
+      "name": "g_player_squidge_offset",
+      "kind": "offset",
+      "aliases": [
+        "uninit_thanks_screen"
+      ],
+      "description": "Relocatable Player squidge-controller offset at player+0x4344, used by swept attachment entry and subgoldy motion."
+    },
+    {
       "address": "0x4340e0",
       "name": "g_track_row_cells_offset",
       "kind": "offset",

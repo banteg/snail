@@ -81,11 +81,12 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
 seed:
     // unified layout: these "FollowState" fields are adjacent Player fields
     // (exit_pending +0x41d, velocity.y +0x414, velocity.z +0x418) — the
-    // follow struct is embedded at player+0x384. The entry squidges with the
+    // follow struct is embedded at player+0x384. The squidge subobject is
+    // player+0x4344. The entry squidges with the
     // incoming fall speed and zeroes it, the exit-lane idiom in reverse.
     FOLLOW->attachment_exit_pending = 0;
     char* call_base = g_game_base;
-    ((Player*)(g_player_block + (int)call_base))->start_squidge_y(
+    ((SquidgeState*)(g_player_squidge_offset + (int)call_base))->start_squidge_y(
         ((FollowState*)(g_follow_state_block + (int)call_base))->player_velocity_y);
     FOLLOW->active = 1;
     FOLLOW->template_record = this;

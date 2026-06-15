@@ -96,5 +96,6 @@ extern char g_follow_state_block[]; // 0x430100 = g_player_block + 0x384
 extern char g_player_block[];       // 0x42fd7c
 extern char g_player_position_offset[]; // 0x42fde4 = g_player_block + 0x68
 extern char g_player_velocity_offset[]; // 0x43018c = g_player_block + 0x410
+extern char g_player_squidge_offset[]; // 0x4340c0 = g_player_block + 0x4344
 
 #endif

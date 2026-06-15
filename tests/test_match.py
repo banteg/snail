@@ -495,6 +495,49 @@ def test_masked_operand_audit_accepts_same_address_reference_alternate() -> None
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_reference_symbol_overrides_same_address_function_symbol() -> None:
+    # Game-base-relative data offsets can numerically collide with code VAs in
+    # the stripped image. A curated reference entry should keep those operands
+    # from resolving as unrelated functions.
+    target = bytes.fromhex("8d8810104000c3")  # lea ecx, [eax+0x401010]; ret
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("8d8800000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="_g_squidge_offset",
+                text="sym:g_squidge_offset",
+                key="ref:g_squidge_offset",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        manifest=tiny_manifest(),
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x401010,
+                    name="g_squidge_offset",
+                    kind="offset",
+                    aliases=("unrelated_function_name",),
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.text == "offset:g_squidge_offset@0x401010"
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
 def test_masked_operand_audit_accepts_sized_reference_end_addend() -> None:
     # target: cmp esi, 0x402010; ret. 0x402010 is also the next global, but the
     # candidate relocation is explicitly g_table + 0x10.

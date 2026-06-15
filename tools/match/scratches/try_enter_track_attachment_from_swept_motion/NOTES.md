@@ -48,7 +48,7 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
   active=1, template, cell, sample index, progress = rotated z,
   vertical_offset = 0, player back-reference, orientation_a/_b
   (+0x18/+0x1c) reset, **attachment_exit_pending (player+0x41d) cleared,
-  start_squidge_y(player.velocity.y) then velocity.y = 0** — the
+  squidge.start_squidge_y(player.velocity.y) then velocity.y = 0** — the
   exit-lane squidge idiom in reverse — player position.y snapped to
   rotated local y, heading table write (61-dword row stride), then a
   validating `update_track_attachment_follow_state(player.velocity.z,
