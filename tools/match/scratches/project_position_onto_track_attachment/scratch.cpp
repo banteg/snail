@@ -8,23 +8,17 @@ struct TransformMatrix {
     Vector4 position;
 };
 
-struct TrackRuntimeRow {
-    int flags;
-    char unknown_04[0xa4 - 0x04];
-    TrackRowCell* attachment_cell;
-};
-
 struct Game {
     char* project_position_onto_track_attachment(float* position, float* out_angle);
 };
 
 char* Game::project_position_onto_track_attachment(float* position, float* out_angle)
 {
-    TrackRuntimeRow* row =
-        (TrackRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position[2]);
+    TrackAttachmentRuntimeRow* row =
+        (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position[2]);
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
-        TrackRowCell* cell = row->attachment_cell;
+        TrackRowCell* cell = row->primary_attachment_cell;
         AttachmentPathTemplate* template_record = cell->attachment_template_record;
         int sample_index = (int)position[2] - cell->get_track_cell_row_index();
         AttachmentSample* sample = &template_record->primary_samples[sample_index];

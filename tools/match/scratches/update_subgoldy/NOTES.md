@@ -124,6 +124,11 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
 - 2026-06-15 type-consolidation probe: replacing the local `Vector3`
   with shared `vector3.h` preserved the headline score but introduced a
   masked operand mismatch, so this scratch keeps its local view for now.
+- 2026-06-15 attachment-layout probe: expanding the local
+  `AttachmentSample`/`AttachmentPathTemplate`/`TrackRowCell` views to the
+  shared-header field names also preserved the headline score but shrank the
+  stack frame and introduced the same jump-table masked mismatch. Keep the
+  compact local attachment view until a source-shape fix explains the frame.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

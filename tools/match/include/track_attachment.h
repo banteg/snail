@@ -80,6 +80,17 @@ struct TrackRowCell {
     int get_track_cell_row_index();
 };
 
+struct TrackAttachmentRuntimeRow {       // stride 0xf4
+    unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
+    char unknown_04[0x90 - 0x04];
+    Vector3 projection_payload;          // +0x90, parcel/path projection payload
+    char unknown_9c[0xa4 - 0x9c];
+    TrackRowCell* primary_attachment_cell; // +0xa4
+    TrackRowCell* secondary_attachment_cell; // +0xa8
+    char unknown_ac[0xf0 - 0xac];
+    int row_event_id;                    // +0xf0
+};
+
 class FollowState {
 public:
     AttachmentPathTemplate* begin_track_attachment_follow_state(

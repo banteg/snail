@@ -255,27 +255,30 @@ int Game::place_parcels_on_track()
     float out_angle;
     int result = runtime_row_count;
     for (int row = 0; row < runtime_row_count; ++row) {
-        char* row_record = (char*)this + 244 * row + 0x5ccac8;
-        if ((*(int*)row_record & 1) != 0 && (*(int*)row_record & 0x40) != 0) {
-            TrackRowCell* cell = *(TrackRowCell**)(row_record + 0xa4);
-            int node = (int)*(float*)(row_record + 0x98) - cell->get_track_cell_row_index();
+        TrackAttachmentRuntimeRow* row_record =
+            (TrackAttachmentRuntimeRow*)((char*)this + 244 * row + 0x5ccac8);
+        if ((row_record->flags & 1) != 0 && (row_record->flags & 0x40) != 0) {
+            TrackRowCell* cell = row_record->primary_attachment_cell;
+            int node =
+                (int)row_record->projection_payload.z - cell->get_track_cell_row_index();
             if (node < 0)
                 node = 0;
-            TrackRowCell* live_cell = *(TrackRowCell**)(row_record + 0xa4);
+            TrackRowCell* live_cell = row_record->primary_attachment_cell;
             AttachmentPathTemplate* template_record = live_cell->attachment_template_record;
             if (template_record->kind == 42) {
                 compute_kind42_attachment_transform(
                     template_record->primary_samples[node].special_scalar,
-                    *(float*)(row_record + 0x90),
-                    *(float*)(row_record + 0x94),
+                    row_record->projection_payload.x,
+                    row_record->projection_payload.y,
                     &transform,
                     &out_angle);
-                *(float*)(row_record + 0x90) = transform.rows[12];
-                *(float*)(row_record + 0x94) = transform.rows[13];
+                row_record->projection_payload.x = transform.rows[12];
+                row_record->projection_payload.y = transform.rows[13];
             } else {
                 int row_index = live_cell->get_track_cell_row_index();
                 live_cell->attachment_template_record->get_path_position_at_node(
-                    (Vector3*)(row_record + 0x90), node, row_index, (float*)(row_record + 0x90));
+                    &row_record->projection_payload, node, row_index,
+                    (float*)&row_record->projection_payload);
             }
         }
         result = row + 1;
