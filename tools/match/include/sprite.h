@@ -7,6 +7,7 @@
 
 struct Color4f {
     Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
+    void set_color_grayscale(float intensity);                    // @ 0x44db90
     void set_color_white();                                      // @ 0x44dc50
 
     float r; // +0x00

@@ -8,7 +8,7 @@ projectile collision paths:
 - skips all work unless global render/effect flag bit `0x10` is set;
 - allocates sprite id `0x21` for the owning player slot;
 - sets draw flag `0x800`;
-- seeds age, velocity, scale, progress, lifetime, and gravity lanes for the
+- seeds progress, velocity, scale, lifetime, and gravity lanes for the
   impact burst; and
 - copies the caller-provided impact world position into the sprite position.
 

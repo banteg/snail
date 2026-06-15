@@ -2,10 +2,10 @@
 
 `explode_slug_hazard` is recovered as the 70-particle slug goo burst spawned
 by `kill_slug_hazard`. Each iteration allocates sprite texture `129`, sets
-sprite flags `0x802`, seeds grayscale/scale/frame/gravity fields, builds a
-velocity vector from the game track-center scale and random spread terms, then
-offsets the sprite position from the slug world position by a random multiple
-of that velocity.
+sprite flags `0x802`, seeds grayscale, scale, progress/lifetime, gravity, and
+corner-scale fields, builds a velocity vector from the game track-center scale
+and random spread terms, then offsets the sprite position from the slug world
+position by a random multiple of that velocity.
 
 Source-shape wins from the first pass:
 

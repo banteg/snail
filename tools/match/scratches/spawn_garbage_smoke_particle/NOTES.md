@@ -7,8 +7,8 @@ Behavior:
 
 - Gates on `byte_4df934 & 0x10` before doing any sprite work.
 - Allocates sprite id 33 from `g_sprite_manager` for the owning player slot.
-- Marks the sprite as effect-rendered (`flags |= 0x800`), zeros progress lanes,
-  and derives progress/lifetime rates from `game->subgame_rate`.
+- Marks the sprite as effect-rendered (`flags |= 0x800`), zeros progress and
+  lifetime lanes, and derives progress/lifetime rates from `game->subgame_rate`.
 - Seeds white color, scale `(0.30000001, 1.3)`, velocity scaled by `0.2`, and
   position copied from the garbage hazard.
 
@@ -33,5 +33,5 @@ Rejected source-shape probes:
   sprite scratches confirm this is `g_sprite_manager.allocate_sprite(...)`.
 - An `int` return with a byte flag local forced an extra stack slot and
   regressed to 63.69%.
-- A separate `Vec3 scaled_velocity` local over-allocated the stack and regressed
-  to 67.55%.
+- A separate scaled-velocity aggregate local over-allocated the stack and
+  regressed to 67.55%.

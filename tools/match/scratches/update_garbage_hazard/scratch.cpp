@@ -2,24 +2,13 @@
 // cRSubGarbage::AI(): hover/contact registration, nuke/contact burst setup,
 // burst integration, smoke cadence, teardown, and final sprite roll update.
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
-
-struct Sprite {
-    char unknown_00[0x48];
-    Vec3 position;      // +0x48
-    char unknown_54[0x7c - 0x54];
-    float local_roll_y; // +0x7c
-};
+#include "sprite.h"
 
 class GarbageHazardSlot;
 
 struct ContactTargetRegistry {
     void append_subgame_contact_target(
-        Vec3* position,
+        Vector3* position,
         float radius,
         int kind,
         GarbageHazardSlot* object);
@@ -52,16 +41,16 @@ class GarbageHazardSlot {
 public:
     GarbageHazardSlot* update_garbage_hazard();
     GarbageHazardSlot* destroy_garbage_hazard();
-    void spawn_garbage_smoke_particle(Vec3* position, Vec3* velocity, Player* player);
+    void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
     char unknown_00[0x68];
-    Vec3 world_position; // +0x68
+    Vector3 world_position; // +0x68
     char unknown_74[0x80 - 0x74];
     GarbageHazardSlot* next_active; // +0x80
     int state; // +0x84
     int collision_side; // +0x88, 1 right / 2 left
     Game* game; // +0x8c
-    Vec3 velocity; // +0x90
+    Vector3 velocity; // +0x90
     float radius; // +0x9c
     float sprite_y_offset; // +0xa0
     int unknown_a4; // +0xa4
@@ -85,9 +74,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             return 0;
 
         case 1: {
-            Vec3* position = &world_position;
+            Vector3* position = &world_position;
             Sprite* visual = sprite;
-            Vec3* visual_position = &visual->position;
+            Vector3* visual_position = &visual->position;
             visual_position->x = position->x;
             visual_position->y = position->y;
             visual_position->z = position->z;
@@ -120,9 +109,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             float random_y = (float)random_float_below(0.2f, 0) + 0.1f;
             double random_z = random_float_below(0.30000001f, 0);
             Game* rate_game = game;
-            Vec3* burst_velocity = &velocity;
+            Vector3* burst_velocity = &velocity;
             double rate = rate_game->subgame_rate;
-            Vec3 staged_velocity;
+            Vector3 staged_velocity;
 
             staged_velocity.x = (float)(rate * random_x);
             staged_velocity.y = (float)(random_y * rate);
@@ -163,8 +152,8 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         case 3: {
             float next_x = velocity.x + world_position.x;
-            Vec3* movement = &velocity;
-            Vec3* position = &world_position;
+            Vector3* movement = &velocity;
+            Vector3* position = &world_position;
             position->x = next_x;
             position->y = movement->y + position->y;
             position->z = movement->z + position->z;
@@ -194,10 +183,10 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             break;
         }
 
-        sprite->local_roll_y = player->heading_roll + sprite_y_offset;
+        sprite->facing_angle = player->heading_roll + sprite_y_offset;
         Player* roll_result = player;
         if (roll_result->roll_add_enabled == 1)
-            sprite->local_roll_y = roll_result->roll_add + sprite->local_roll_y;
+            sprite->facing_angle = roll_result->roll_add + sprite->facing_angle;
         return (GarbageHazardSlot*)roll_result;
     }
     return (GarbageHazardSlot*)result;

@@ -17,8 +17,8 @@ Recovered semantics covered by the initial scratch:
   y gravity `rate*rate*-0.0099999998`, tears down below y -10 or behind the
   player, and emits smoke through `spawn_garbage_smoke_particle` once
   `smoke_timer > 1`;
-- every live/default path refreshes sprite `+0x7c` from player roll plus the
-  slot offset, with the `player+0x384` addend path.
+- every live/default path refreshes `Sprite::facing_angle` (`+0x7c`) from
+  player roll plus the slot offset, with the `player+0x384` addend path.
 
 Residuals:
 
@@ -38,7 +38,7 @@ Residuals:
 - Collision-side x classification and side-bias adjustment now use float-width
   locals, matching native 32-bit zero comparisons instead of forcing qword
   constants through `double`.
-- 2026-06-13 source-shaping follow-up: typed `Vec3` sprite copies, native-side
+- 2026-06-13 source-shaping follow-up: typed vector sprite copies, native-side
   branch spelling for collision/sign classification, a local staged burst
   velocity, and a local gravity step improve the scratch from 55.45% to
   66.96%. These are all source-plausible forms of the recovered behavior.
@@ -75,7 +75,7 @@ Residuals:
   `velocity.x` around the compare, but VC6 duplicated the state-2 left-side
   store and regressed the scratch to 72.09%; keep the current local
   `adjusted_x` form unless stronger source evidence appears.
-- A direct state-1 `Vec3` struct copy was tested because native copies through
+- A direct state-1 vector struct copy was tested because native copies through
   source and destination pointers, but VC6 chose worse register ownership and
   regressed the scratch to 74.34%. A local `contact_radius` staging variable
   forced an x87 spill at the append call and regressed to 72.12%. A switch-value
@@ -87,7 +87,7 @@ Residuals:
   the player load but duplicated the destroy epilogue and regressed to 73.71%.
   An explicit state-1 source-position pointer alias was also score-neutral at
   75.56% and did not recover the native copy registers. Replacing the
-  state-2 `Vec3 staged_velocity` temporary with three named scaled component
+  state-2 `Vector3 staged_velocity` temporary with three named scaled component
   locals regressed sharply to 66.52% and shrank the frame to `0x8`, so keep the
   struct staging.
 - 2026-06-13 follow-up rejection pass 2: reordering the switch labels so case 1

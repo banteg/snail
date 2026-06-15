@@ -1,5 +1,7 @@
 // update_row_event_display @ 0x404cf0 (fastcall, ret)
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
 
 struct Vec3 {
@@ -16,12 +18,6 @@ struct FrontendWidget {
     unsigned int widget_flags; // +0x1a0
     char unknown_1a4[0x128];
     char text_buffer[2];       // +0x2cc
-};
-
-struct Sprite {
-    char unknown_00[0x60];
-    int scale_x; // +0x60
-    int scale_y; // +0x64
 };
 
 struct TrackParcelRuntime {
@@ -113,8 +109,8 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
                     ((GameRuntime*)(game + 0x74618))->spawn_track_parcel((float*)(game + 0x433f34), game + 0x42fd7c);
                 Sprite* sprite = parcel->sprite;
                 parcel->state = 6;
-                sprite->scale_y = 0;
-                parcel->sprite->scale_x = 0;
+                sprite->scale_y = 0.0f;
+                parcel->sprite->scale_x = 0.0f;
             }
 
             parcel_target_count = controller->parcel_target_count;

@@ -1,43 +1,6 @@
 // explode_slug_hazard @ 0x43f680 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
-
-class Color4f {
-public:
-    void set_color_grayscale(float intensity);
-
-    float r;
-    float g;
-    float b;
-    float a;
-};
-
-struct Sprite {
-    int unknown_00;
-    unsigned int flags;      // +0x04
-    char unknown_08[0x2c - 0x08];
-    Color4f color;           // +0x2c
-    char unknown_3c[0x48 - 0x3c];
-    Vector3 position;        // +0x48
-    Vector3 velocity;        // +0x54
-    float scale_x;           // +0x60
-    float scale_y;           // +0x64
-    int age_or_frame;        // +0x68
-    float frame_step;        // +0x6c
-    int unknown_70;
-    int unknown_74;
-    float gravity_step;      // +0x78
-    char unknown_7c[0x88 - 0x7c];
-    float doubled_size;      // +0x88
-};
-
-struct SpriteManager {
-    Sprite* allocate_sprite(int owner, int sprite_id, int texture_a, int texture_b);
-};
+#include "sprite.h"
 
 struct Game {
     char unknown_00[0x38];
@@ -56,8 +19,6 @@ public:
     Game* owner_game;       // +0x88
 };
 
-extern SpriteManager g_sprite_manager; // data_790f30
-
 int next_math_random_value();
 
 int SlugHazardRuntime::explode_slug_hazard()
@@ -69,16 +30,16 @@ int SlugHazardRuntime::explode_slug_hazard()
         float size = (float)next_math_random_value() * 0.000030517578f;
         size = size * 0.75f + 0.25f;
         Sprite* sprite = g_sprite_manager.allocate_sprite(1, 129, -1, -1);
-        sprite->age_or_frame = 0;
+        sprite->progress = 0.0f;
         sprite->flags |= 0x802;
-        sprite->doubled_size = size + size;
-        float frame_step =
+        sprite->corner_scale = size + size;
+        float progress_step =
             1.0f
             / (((float)next_math_random_value() * 0.000015258789f + 0.60000002f) * 60.0f)
             * owner_game->track_center_x;
-        sprite->unknown_70 = 0;
-        sprite->unknown_74 = 0;
-        sprite->frame_step = frame_step;
+        sprite->lifetime = 0.0f;
+        sprite->lifetime_step = 0.0f;
+        sprite->progress_step = progress_step;
         float intensity = (float)next_math_random_value() * 0.0000091552738f + 0.69999999f;
         sprite->color.set_color_grayscale(intensity);
         sprite->scale_x = size * 0.30000001f;
