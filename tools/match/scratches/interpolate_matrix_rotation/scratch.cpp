@@ -3,9 +3,7 @@
 // snap near-zero imaginary lanes, convert to axis-angle, scale the angle
 // by alpha, recompose. When the axis collapses, rebuild from the snapped
 // quaternion directly; when the angle is exactly zero, leave the matrix.
-#include "vector_types.h"
-
-struct TransformMatrix;
+#include "transform_matrix.h"
 
 struct Quaternion {
     Quaternion(); // out-of-line default ctor in the image
@@ -30,15 +28,6 @@ void initialize_axis_from_quaternion(AxisAngle* axis, const Quaternion* quaterni
 void initialize_quaternion_from_axis(Quaternion* quaternion, const AxisAngle* axis);
 TransformMatrix* initialize_matrix_from_quaternion(TransformMatrix* out, const Quaternion* quaternion);
 
-struct TransformMatrix {
-    void interpolate_matrix_rotation(float alpha);
-
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-};
-
 void TransformMatrix::interpolate_matrix_rotation(float alpha)
 {
     Quaternion working;
@@ -56,7 +45,7 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
         working.z = 0.0f;
     if (working.x == 0.0f && working.y == 0.0f && working.z == 0.0f) {
         TransformMatrix rebuilt;
-        initialize_matrix_from_quaternion(&rebuilt, &working);
+        ::initialize_matrix_from_quaternion(&rebuilt, &working);
         *this = rebuilt;
     } else {
         initialize_axis_from_quaternion(&axis, &working);
@@ -64,7 +53,7 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
             axis.angle = axis.angle * alpha;
             initialize_quaternion_from_axis(&working, &axis);
             TransformMatrix rebuilt;
-            initialize_matrix_from_quaternion(&rebuilt, &working);
+            ::initialize_matrix_from_quaternion(&rebuilt, &working);
             *this = rebuilt;
         }
     }

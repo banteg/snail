@@ -2,21 +2,7 @@
 // tMatrix::LinearInterpolate per Android symbols: rotation interpolated in
 // matrix space (invert/multiply/interpolate/premultiply/orthogonalize),
 // translation blended linearly.
-#include "vector_types.h"
-
-struct TransformMatrix {
-    void linear_interpolate_matrix(const TransformMatrix* from, const TransformMatrix* to, float alpha);
-    void invert_matrix_from_source(const TransformMatrix* source);
-    void multiply_matrix_in_place(const TransformMatrix* rhs);
-    void interpolate_matrix_rotation(float alpha);
-    void premultiply_matrix_in_place(const TransformMatrix* lhs);
-    void orthogonalize_matrix();
-
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position; // +0x30
-};
+#include "transform_matrix.h"
 
 void TransformMatrix::linear_interpolate_matrix(
     const TransformMatrix* from, const TransformMatrix* to, float alpha)
