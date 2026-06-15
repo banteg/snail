@@ -1286,6 +1286,46 @@
       "description": "Subgame runtime feature flag preset assigned by set_subgame_features for level mode 4."
     },
     {
+      "address": "0x7772e8",
+      "name": "g_font_wave_phase_a",
+      "kind": "global",
+      "aliases": [
+        "data_7772e8",
+        "unk_7772e8"
+      ],
+      "description": "First global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
+    },
+    {
+      "address": "0x7772ec",
+      "name": "g_font_wave_phase_b",
+      "kind": "global",
+      "aliases": [
+        "data_7772ec",
+        "unk_7772ec"
+      ],
+      "description": "Second global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
+    },
+    {
+      "address": "0x7772f4",
+      "name": "g_font_wave_step_b",
+      "kind": "global",
+      "aliases": [
+        "data_7772f4",
+        "unk_7772f4"
+      ],
+      "description": "Second text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
+    },
+    {
+      "address": "0x777b28",
+      "name": "g_font_wave_step_a",
+      "kind": "global",
+      "aliases": [
+        "data_777b28",
+        "unk_777b28"
+      ],
+      "description": "First text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
+    },
+    {
       "address": "0x777b4c",
       "name": "g_keyboard_previous_state",
       "kind": "global",
