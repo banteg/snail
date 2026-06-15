@@ -684,9 +684,10 @@
       "name": "g_completion_snapshot_flags",
       "kind": "global",
       "aliases": [
+        "g_environment_flags",
         "byte_4b2f40"
       ],
-      "description": "Completion snapshot suppression flags read by complete_subgame."
+      "description": "Shared gameplay environment/completion flag byte read by complete_subgame and update_subgoldy."
     },
     {
       "address": "0x4b7230",
@@ -874,6 +875,15 @@
         "data_641184"
       ],
       "description": "Relocatable track-runtime row-slot table offset added to the live game root."
+    },
+    {
+      "address": "0x64118c",
+      "name": "g_row_heading_table",
+      "kind": "offset",
+      "aliases": [
+        "data_64118c"
+      ],
+      "description": "Relocatable per-row heading table offset added to the live game root for attachment entry and follow seeding."
     },
     {
       "address": "0x643190",
