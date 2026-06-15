@@ -37,10 +37,10 @@ struct VoiceManager {
 };
 extern VoiceManager g_voice_manager; // unk_751498
 
-struct SoundEffectBackend {
+struct SoundEffectManager {
     void play_sound_effect(int sound_id);
 };
-extern SoundEffectBackend g_sound_effect_backend;
+extern SoundEffectManager g_sound_effect_manager;
 
 extern float g_ghost_payload_z;           // flt_643190
 extern float g_replay_accum_z;            // unk_643194
@@ -888,7 +888,7 @@ steering_stored:
                 live_matrix.position.y = trampoline_cell->anchor_position.y + 0.49000001f;
                 attachment_exit_pending = 0;
                 trampoline_bounce_active = 1;
-                g_sound_effect_backend.play_sound_effect(41);
+                g_sound_effect_manager.play_sound_effect(41);
             }
         }
     }
@@ -908,7 +908,7 @@ steering_stored:
         velocity.z = 0.0f;
         live_matrix.position.z = (float)(int)(live_matrix.position.z + 0.49000001f) - 0.5f;
         if (squidge.z_output == 0.0f)
-            g_sound_effect_backend.play_sound_effect(47);
+            g_sound_effect_manager.play_sound_effect(47);
         squidge.start_squidge_z(-0.33000001f);
         float advanced = wall_stall_step + wall_stall_timer;
         wall_stall_timer = advanced;
@@ -984,7 +984,7 @@ steering_stored:
             g_voice_manager.reset_voice_manager();
             jetpack_gauge.end_jetpack_hover();
             presentation.cutscene_ai_state = 5;
-            g_sound_effect_backend.play_sound_effect(0);
+            g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
         }
         completion_handoff_active = 1;

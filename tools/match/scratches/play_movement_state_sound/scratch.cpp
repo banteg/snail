@@ -7,12 +7,12 @@ extern char* g_game_base; // data_4df904
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);
 
-struct SoundEffectBackend {
+struct SoundEffectManager {
     void play_sound_effect(int sound_id);
     void play_sound_effect_scaled(int sound_id, float volume);
 };
 
-extern SoundEffectBackend g_sound_effect_backend;
+extern SoundEffectManager g_sound_effect_manager;
 
 class Player {
 public:
@@ -66,9 +66,9 @@ void Player::play_movement_state_sound()
             } else if (volume > 1.0f) {
                 volume = 1.0f;
             }
-            g_sound_effect_backend.play_sound_effect_scaled(sound_id, volume);
+            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);
         } else {
-            g_sound_effect_backend.play_sound_effect(sound_id);
+            g_sound_effect_manager.play_sound_effect(sound_id);
         }
     }
 }
