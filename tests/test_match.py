@@ -23,6 +23,7 @@ from snail.match import (
     find_type_definitions,
     load_default_reference_symbol_manifest,
     load_image,
+    load_reference_symbol_manifest,
     match_function,
     normalize_function,
     parse_coff_object,
@@ -234,6 +235,38 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert by_name["g_math_random_table"].size == 0x7FFC
 
 
+def test_reference_symbol_manifest_allows_duplicate_addresses(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "duplicate address references",
+  "symbols": [
+    {
+      "address": "0x402000",
+      "name": "g_table_base",
+      "kind": "offset"
+    },
+    {
+      "address": "0x402000",
+      "name": "foo_static_guard",
+      "kind": "global",
+      "aliases": [
+        "?$S1@?1??foo@@4EA"
+      ]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    manifest = load_reference_symbol_manifest(manifest_path)
+    assert [symbol.name for symbol in manifest.symbols] == [
+        "g_table_base",
+        "foo_static_guard",
+    ]
+
+
 def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
     return ObjectFunction(
         name="_foo",
@@ -410,6 +443,54 @@ def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
         reference_manifest=tiny_reference_manifest(),
     )
     assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_accepts_same_address_reference_alternate() -> None:
+    # target: mov cl, [0x402000]; ret. 0x402000 is the display name for one
+    # global, but the candidate relocation can still honestly name a separate
+    # compiler-emitted static guard at the same address.
+    target = bytes.fromhex("8a0d00204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("8a0d00000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="?$S1@?1??foo@@4EA",
+                text="sym:?$S1@?1??foo@@4EA",
+                key="ref:foo_static_guard",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table_base",
+                    kind="offset",
+                ),
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_static_guard",
+                    kind="global",
+                    aliases=("?$S1@?1??foo@@4EA",),
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.key == "ref:g_table_base"
+    assert reference.alternate_keys == ("ref:foo_static_guard",)
     assert result.masked_operand_audit.ok_count == 1
     assert result.masked_operand_audit.problem_count == 0
 

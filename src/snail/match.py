@@ -111,7 +111,6 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
         raise ValueError("reference symbol manifest field 'symbols' must be a list")
 
     symbols: list[ReferenceSymbol] = []
-    seen_addresses: set[int] = set()
     seen_names: set[str] = set()
     for index, raw_symbol in enumerate(raw_symbols):
         if not isinstance(raw_symbol, dict):
@@ -143,11 +142,8 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             )
             if size <= 0:
                 raise ValueError(f"symbols[{index}].size must be positive")
-        if address in seen_addresses:
-            raise ValueError(f"duplicate reference symbol address: 0x{address:x}")
         if name_value in seen_names:
             raise ValueError(f"duplicate reference symbol name: {name_value}")
-        seen_addresses.add(address)
         seen_names.add(name_value)
         symbols.append(
             ReferenceSymbol(
@@ -408,7 +404,19 @@ def _reference_symbol_by_address(
 ) -> dict[int, ReferenceSymbol]:
     if reference_manifest is None:
         return {}
-    return {symbol.address: symbol for symbol in reference_manifest.symbols}
+    by_address: dict[int, ReferenceSymbol] = {}
+    for symbol in reference_manifest.symbols:
+        by_address.setdefault(symbol.address, symbol)
+    return by_address
+
+
+def _reference_symbols_for_address(
+    reference_manifest: ReferenceSymbolManifest | None,
+    value: int,
+) -> tuple[ReferenceSymbol, ...]:
+    if reference_manifest is None:
+        return ()
+    return tuple(symbol for symbol in reference_manifest.symbols if symbol.address == value)
 
 
 def _reference_symbol_by_name(
@@ -485,6 +493,11 @@ def _reference_alternate_keys_for_address(
     primary_key: str | None,
 ) -> tuple[str, ...]:
     alternate_keys: list[str] = []
+    for symbol in _reference_symbols_for_address(reference_manifest, value):
+        key = _format_reference_key(symbol)
+        if key == primary_key or key in alternate_keys:
+            continue
+        alternate_keys.append(key)
     for symbol, offset in _reference_offsets_for_address(reference_manifest, value):
         key = _format_reference_key(symbol, offset)
         if key == primary_key or key in alternate_keys:

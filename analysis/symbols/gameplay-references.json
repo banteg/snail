@@ -900,6 +900,15 @@
       "description": "Synthetic one-float-before relocation base used by initialize_trigonometry_tables before the canonical cosine table starts at 0x777f3c."
     },
     {
+      "address": "0x777f38",
+      "name": "cross_vectors_static_guard",
+      "kind": "global",
+      "aliases": [
+        "?$S1@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4EA"
+      ],
+      "description": "Compiler-generated guard byte for the function-local static Vec3 result in cross_vectors; it shares storage with the synthetic trigonometry init-base reference."
+    },
+    {
       "address": "0x77ff3c",
       "name": "g_math_random_index",
       "kind": "global",
