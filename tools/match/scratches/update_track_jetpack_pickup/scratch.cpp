@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "track_runtime.h"
+#include "bod_list.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -10,12 +11,6 @@ int report_errorf(char* format, ...);
 struct Player {
     char unknown_00[0x2980];
     float interaction_max_z;
-};
-
-struct ListHead {
-    int unknown_00;
-    void* tail;
-    void* next;
 };
 
 class TrackJetpackPickup {
@@ -41,7 +36,7 @@ void TrackJetpackPickup::update_track_jetpack_pickup()
 {
     int zero = 0;
     unsigned int flags;
-    ListHead* head;
+    BodList* head;
     TrackJetpackPickup* next;
     TrackJetpackPickup* prev;
 
@@ -65,7 +60,7 @@ void TrackJetpackPickup::update_track_jetpack_pickup()
 state_two:
     flags = list_flags;
     state = zero;
-    head = (ListHead*)(g_game_base + 0x5a8);
+    head = (BodList*)(g_game_base + 0x5a8);
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");
         sprite->kill_sprite();
@@ -86,11 +81,11 @@ state_two:
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {
-        head->tail = list_next;
+        head->first = (BodNode*)list_next;
     }
 
-    list_next = (TrackJetpackPickup*)head->next;
-    head->next = this;
+    list_next = (TrackJetpackPickup*)head->free_top;
+    head->free_top = (BodNode*)this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
     return;
@@ -102,7 +97,7 @@ state_one:
 
     flags = list_flags;
     state = zero;
-    head = (ListHead*)(g_game_base + 0x5a8);
+    head = (BodList*)(g_game_base + 0x5a8);
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");
         sprite->kill_sprite();
@@ -123,11 +118,11 @@ state_one:
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {
-        head->tail = list_next;
+        head->first = (BodNode*)list_next;
     }
 
-    list_next = (TrackJetpackPickup*)head->next;
-    head->next = this;
+    list_next = (TrackJetpackPickup*)head->free_top;
+    head->free_top = (BodNode*)this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
 }
