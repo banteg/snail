@@ -6,6 +6,8 @@
 #include "vector3.h"
 #include "vector_types.h"
 
+struct Quaternion;
+
 struct TransformMatrix {
     TransformMatrix* initialize_uniform_scale_matrix(float scale); // @ 0x44cde0
     TransformMatrix* initialize_matrix_from_values(
@@ -18,6 +20,7 @@ struct TransformMatrix {
     TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
     TransformMatrix* invert_matrix_in_place(); // @ 0x44d280
     TransformMatrix* invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330
+    TransformMatrix* initialize_matrix_from_quaternion(const Quaternion* quaternion); // @ 0x44d820
     void set_matrix_rotation_identity();              // @ 0x44d250
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0

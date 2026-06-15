@@ -1,12 +1,6 @@
 // project_position_onto_track_attachment @ 0x4444b0 (thiscall, ret 0x8)
 #include "track_attachment.h"
-
-struct TransformMatrix {
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-};
+#include "transform_matrix.h"
 
 struct Game {
     char* project_position_onto_track_attachment(float* position, float* out_angle);
