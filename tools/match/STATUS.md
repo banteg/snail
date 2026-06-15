@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**276/665** mapped gameplay functions matched, **15998/326119** bytes (**4.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**277/665** mapped gameplay functions matched, **16153/326119** bytes (**5.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -334,6 +334,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | 5/5 | 1 ok |  |
+| ✅ | initialize_sprite | 0x44de90 | 155 | 33/33 | 100.00% | 33/33 | 1 ok |  |
+| 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 44/45 | 47.19% | 5/45 | 1 ok |  |
+| 🚧 | kill_sprite | 0x44e200 | 145 | 45/45 | 97.78% | 24/45 | 8 ok |  |
 | ✅ | set_sprite_manager_paused | 0x44e540 | 9 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_sprite_texture_ref | 0x44e550 | 30 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | get_sprite_texture | 0x44e570 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  |
@@ -354,8 +357,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 |---|---|---:|---:|---:|---|
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TransformMatrix | 35 | 0 | 26 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Color4f | 24 | 0 | 16 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Sprite | 22 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Sprite | 25 | 0 | 19 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Color4f | 25 | 0 | 16 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | ... | 63 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |

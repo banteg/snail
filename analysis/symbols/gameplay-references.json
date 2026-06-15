@@ -1550,6 +1550,36 @@
         "data_790f30"
       ],
       "description": "Shared sprite manager used by gameplay particle, projectile, parcel, and presentation helpers."
+    },
+    {
+      "address": "0x814c94",
+      "name": "g_sprite_active_heads",
+      "kind": "global",
+      "aliases": [
+        "data_814c94",
+        "unk_814C94"
+      ],
+      "description": "Five active sprite bucket heads at the tail of g_sprite_manager; allocate_sprite and kill_sprite index this table by sprite owner."
+    },
+    {
+      "address": "0x814ca8",
+      "name": "g_sprite_free_head",
+      "kind": "global",
+      "aliases": [
+        "data_814ca8",
+        "unk_814CA8"
+      ],
+      "description": "Head of the sprite free list maintained by initialize_sprite_manager, allocate_sprite, and kill_sprite."
+    },
+    {
+      "address": "0x814cb0",
+      "name": "g_sprite_sentinel",
+      "kind": "global",
+      "aliases": [
+        "data_814cb0",
+        "unk_814CB0"
+      ],
+      "description": "Sentinel sprite returned when allocation fails; kill_sprite treats this address as a no-op."
     }
   ]
 }
