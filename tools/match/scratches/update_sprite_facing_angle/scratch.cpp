@@ -1,13 +1,7 @@
 // update_sprite_facing_angle @ 0x44e410 (thiscall, ret 0x4)
 
 #include "sprite.h"
-
-struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
-};
+#include "vector_types.h"
 
 struct TransformMatrix {
     Vec4 basis_right;
