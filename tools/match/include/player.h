@@ -10,6 +10,13 @@
 class Game;
 class Sprite;
 
+class PlayerPresentationController {
+public:
+    void set_snail_weapon(int movement_flags); // @ 0x445920
+
+    char unknown_00[0x4340 - 0x2984];
+};
+
 struct AttachmentRecord {
     int unknown_00[38];
     int installed_heading;            // +0x98
@@ -32,6 +39,8 @@ public:
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
+    int update_player_movement_flags();    // @ 0x43a1a0
+    void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     int clear_subgoldy_score_buckets();    // @ 0x4403a0
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
@@ -51,11 +60,18 @@ public:
     char unknown_94[0x98 - 0x94];
     Sprite* ghost_sprite_a;                // +0x98
     Sprite* ghost_sprite_b;                // +0x9c
-    char unknown_a0[0x310 - 0xa0];
+    char unknown_a0[0x1cc - 0xa0];
+    int movement_sound_variant_sample;      // +0x1cc
+    char unknown_1d0[0x2e4 - 0x1d0];
+    int total_score;                        // +0x2e4
+    char unknown_2e8[0x308 - 0x2e8];
+    int movement_flag_selector;             // +0x308
+    char unknown_30c[0x310 - 0x30c];
     int score_buckets[6];                  // +0x310
     char unknown_328[0x338 - 0x328];
     unsigned int movement_flags;           // +0x338
-    char unknown_33c[0x380 - 0x33c];
+    unsigned int previous_movement_flags;   // +0x33c
+    char unknown_340[0x380 - 0x340];
     int player_slot;                       // +0x380
     // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
@@ -89,7 +105,12 @@ public:
     char unknown_438[0x44c - 0x438];
     unsigned char attachment_exit_gate_a;  // +0x44c
     unsigned char attachment_exit_gate_b;  // +0x44d
-    char unknown_44e[0x4340 - 0x44e];
+    char unknown_44e[0x2730 - 0x44e];
+    float movement_fire_progress;           // +0x2730
+    float movement_fire_progress_step;      // +0x2734
+    char unknown_2738[0x2980 - 0x2738];
+    float interaction_max_z;                // +0x2980
+    PlayerPresentationController presentation; // +0x2984
     int visible_life_stock;                // +0x4340
 };
 

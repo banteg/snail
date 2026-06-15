@@ -1,6 +1,6 @@
 // play_movement_state_sound @ 0x43afd0 (thiscall, ret)
 
-#include "golb.h"
+#include "player.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -13,20 +13,6 @@ struct SoundEffectManager {
 };
 
 extern SoundEffectManager g_sound_effect_manager;
-
-class Player {
-public:
-    void play_movement_state_sound();
-
-    char unknown_00[0x68];
-    Vector3 position; // +0x68
-    char unknown_74[0x1cc - 0x74];
-    int movement_sound_variant_sample; // +0x1cc
-    char unknown_1d0[0x338 - 0x1d0];
-    unsigned int movement_flags; // +0x338
-    char unknown_33c[0x41d - 0x33c];
-    unsigned char attachment_exit_pending; // +0x41d
-};
 
 void Player::play_movement_state_sound()
 {

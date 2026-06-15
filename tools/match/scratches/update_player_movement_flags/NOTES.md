@@ -28,3 +28,8 @@ Residual:
   `ret`; the object-side table is not emitted in the same text extent, so the
   matcher disassembles padding there. Do not force table bytes or disable
   optimization solely to hide this residual.
+- 2026-06-16 shared-`Player` probe: the offsets now exist in `player.h`, but
+  including it here changed the switch-table relocation audit from `2 ok` to
+  `1 ok, 1 mismatch` (`$L441` instead of
+  `update_player_movement_flags_jump_table`). Keep the compact local shell until
+  that symbol-shape issue has a targeted fix.

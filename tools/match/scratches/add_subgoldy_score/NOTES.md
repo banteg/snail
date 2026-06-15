@@ -23,3 +23,9 @@ Current match: 80.62%, source-shaped.
   the void/call-result forms preserve the native gate loads but hoist the pops,
   and the preserve-game return form keeps the epilogue low but adds a non-native
   returned-game restore.
+- 2026-06-16 shared-`Player` probe: `total_score`, `score_buckets`, and
+  `visible_life_stock` are present in `player.h`, but including it here preserved
+  the instruction stream while changing the switch-table relocation audit from
+  `6 ok` to `5 ok, 1 mismatch` (`$L460` instead of
+  `add_subgoldy_score_jump_table`). Keep the compact local shell until that
+  symbol-shape issue has a targeted fix.

@@ -1,14 +1,10 @@
 // update_ring_or_special_effect_particle @ 0x43e780 (thiscall)
 
+#include "player.h"
 #include "sprite.h"
 
 float sine(float radians);
 float cosine(float radians);
-
-struct Player {
-    char unknown_00[0x380];
-    int player_slot; // +0x380
-};
 
 class RingOrSpecialEffectParent {
 public:
