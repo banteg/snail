@@ -55,7 +55,8 @@ public:
     int score_buckets[6];                  // +0x310
     char unknown_328[0x338 - 0x328];
     unsigned int movement_flags;           // +0x338
-    char unknown_33c[0x384 - 0x33c];
+    char unknown_33c[0x380 - 0x33c];
+    int player_slot;                       // +0x380
     // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
     // follow_active = FollowState.active, attachment_record =

@@ -1,13 +1,7 @@
 // spawn_golb_trail_sprite @ 0x415bb0 (thiscall, ret 0x4)
 
 #include "sprite.h"
-
-struct Player {
-    char unknown_000[0x338];
-    int movement_flags; // +0x338
-    char unknown_33c[0x380 - 0x33c];
-    int player_slot; // +0x380
-};
+#include "player.h"
 
 class GolbProjectile {
 public:

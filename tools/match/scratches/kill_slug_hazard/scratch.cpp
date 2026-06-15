@@ -1,15 +1,12 @@
 // kill_slug_hazard @ 0x43f8b0 (thiscall, ret)
 
 #include "slug_hazard_types.h"
+#include "player.h"
 
 int next_math_random_value();
 
-class Player {
+class Game {
 public:
-    void add_subgoldy_score(int score_kind, int bonus_score);
-};
-
-struct Game {
     char unknown_00[0x3bb764];
     Player player; // +0x3bb764
 };
