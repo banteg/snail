@@ -15,8 +15,14 @@ public:
     int texture_ref; // +0x1c
 };
 
-extern Sprite* g_sprite_active_heads[5]; // data_814c94
-extern Sprite* g_sprite_free_head; // data_814ca8
+class SpriteManager {
+public:
+    char unknown_00000[0x83d64];
+    Sprite* active_heads[5]; // +0x83d64
+    Sprite* free_head; // +0x83d78
+};
+
+extern SpriteManager g_sprite_manager; // data_790f30
 extern Sprite g_sprite_sentinel; // data_814cb0
 
 void Sprite::kill_sprite()
@@ -26,14 +32,14 @@ void Sprite::kill_sprite()
     }
     if (this != &g_sprite_sentinel) {
         flags &= ~1;
-        if (this == g_sprite_active_heads[owner]) {
+        if (this == g_sprite_manager.active_heads[owner]) {
             Sprite* next_sprite = next;
             if (next_sprite != 0) {
                 next_sprite->prev = 0;
             }
-            g_sprite_active_heads[owner] = next;
-            next = g_sprite_free_head;
-            g_sprite_free_head = this;
+            g_sprite_manager.active_heads[owner] = next;
+            next = g_sprite_manager.free_head;
+            g_sprite_manager.free_head = this;
         } else {
             Sprite* previous_sprite = prev;
             if (previous_sprite != 0) {
@@ -43,8 +49,8 @@ void Sprite::kill_sprite()
             if (next_sprite != 0) {
                 next_sprite->prev = prev;
             }
-            next = g_sprite_free_head;
-            g_sprite_free_head = this;
+            next = g_sprite_manager.free_head;
+            g_sprite_manager.free_head = this;
         }
     }
 }

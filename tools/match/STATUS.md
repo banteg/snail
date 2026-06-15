@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**283/665** mapped gameplay functions matched, **18367/326119** bytes (**5.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**284/665** mapped gameplay functions matched, **18512/326119** bytes (**5.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -340,7 +340,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_sprite | 0x44df30 | 434 | 125/125 | 100.00% | 125/125 | 10 ok |  |
 | ✅ | register_sprite_texture | 0x44e0f0 | 109 | 35/35 | 100.00% | 35/35 | 6 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 44/45 | 47.19% | 5/45 | 1 ok |  |
-| 🚧 | kill_sprite | 0x44e200 | 145 | 45/45 | 97.78% | 24/45 | 8 ok |  |
+| ✅ | kill_sprite | 0x44e200 | 145 | 45/45 | 100.00% | 45/45 | 9 ok |  |
 | ✅ | allocate_sprite | 0x44e2a0 | 295 | 81/81 | 100.00% | 81/81 | 10 ok |  |
 | ✅ | kill_game_sprites | 0x44e3d0 | 55 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
@@ -368,8 +368,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Color4f | 26 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 21 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SpriteManager | 16 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendWidget | 15 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SpriteManager | 15 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BodBase | 12 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AudioBackend | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -434,7 +434,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TrackRuntimeRow | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Vector3 | 23 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vector3 | 24 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SquidgeState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

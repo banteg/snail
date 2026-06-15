@@ -1622,6 +1622,7 @@
       "aliases": [
         "data_790f30"
       ],
+      "size": "0x83d7c",
       "description": "Shared sprite manager used by gameplay particle, projectile, parcel, and presentation helpers."
     },
     {

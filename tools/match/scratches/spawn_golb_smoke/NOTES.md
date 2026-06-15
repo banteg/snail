@@ -22,6 +22,9 @@ Rejected source-shaped probes:
 
 - explicit RGBA field copies through an `out_color` pointer regressed the score
   to 65.71% by changing the color copy and velocity x87 schedule;
+- separate `velocity_x/velocity_y/velocity_z` scalar locals plus an earlier
+  `out_velocity` pointer grew the frame to `0x14`, reordered the x87 stack, and
+  regressed the score to 61.87%;
 - explicit velocity/position output pointers are score-neutral, but match the
   decompiler's clearer source view and are kept.
 

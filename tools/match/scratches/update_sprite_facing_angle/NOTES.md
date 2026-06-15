@@ -13,3 +13,13 @@ Near-match for Sprite facing-angle refresh at `0x44e410`.
   The only mismatch is the stack slot used to spill the returned rotated `z`
   component before `atan2_positive`; avoid forcing this with an artificial
   one-field copy.
+
+Rejected source-shaped probes:
+
+- assigning the rotated result back into `delta` changed the local layout and
+  expanded the effective recompute blocks;
+- reordering the `rotated`, `delta_source`, and `delta` declarations was
+  score-neutral and did not change the spill slot;
+- keeping the returned `Vector3*`, copying it back into `delta`, and then using
+  the pointer for `atan2_positive` forced a full rotated-vector copy and
+  regressed the score to 56.67%.

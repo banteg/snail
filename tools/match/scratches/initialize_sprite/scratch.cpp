@@ -10,52 +10,54 @@ public:
     float a;
 };
 
+struct TextureRef;
+
+struct Vector3 {
+    float x;
+    float y;
+    float z;
+};
+
 class Sprite {
 public:
     void initialize_sprite();
 
-    int sprite_id; // +0x00
-    int flags; // +0x04
+    void* object_ref; // +0x00, initialized to sentinel -1
+    unsigned int flags; // +0x04
     int owner; // +0x08
     Sprite* next; // +0x0c
     Sprite* prev; // +0x10
-    int field_14;
-    int field_18;
-    int texture_ref; // +0x1c
-    int field_20;
-    int field_24;
-    int field_28;
+    int unknown_14; // +0x14
+    int unknown_18; // +0x18
+    TextureRef* texture_ref; // +0x1c
+    TextureRef* texture_ref_a; // +0x20
+    TextureRef* texture_ref_b; // +0x24
+    int draw_mode; // +0x28
     Color4f color; // +0x2c
-    int field_3c;
-    int field_40;
-    int field_44;
-    int field_48;
-    int field_4c;
-    int field_50;
-    int field_54;
-    int field_58;
-    int field_5c;
-    int scale_x;
-    int scale_y;
-    int progress;
-    int progress_step;
-    int lifetime;
-    int lifetime_step;
-    int gravity_step;
-    int facing_angle;
-    int facing_angle_step;
-    int field_84;
-    int field_88;
-    int facing_refresh_progress;
-    int facing_refresh_step;
-    int field_94;
-    int field_98;
-    int field_9c;
-    int field_a0;
-    int field_a4;
-    int field_a8;
-    int field_ac;
-    int field_b0;
+    Vector3 previous_position; // +0x3c
+    Vector3 position; // +0x48
+    Vector3 velocity; // +0x54
+    float scale_x; // +0x60
+    float scale_y; // +0x64
+    float progress; // +0x68
+    float progress_step; // +0x6c
+    float lifetime; // +0x70
+    float lifetime_step; // +0x74
+    float gravity_step; // +0x78
+    float facing_angle; // +0x7c
+    float facing_angle_step; // +0x80
+    int unknown_84; // +0x84
+    float corner_scale; // +0x88
+    float facing_refresh_progress; // +0x8c
+    float facing_refresh_step; // +0x90
+    float depth_offset; // +0x94
+    int unknown_98; // +0x98
+    int texture_id; // +0x9c
+    int frame_count; // +0xa0
+    int frame; // +0xa4
+    int frame_step; // +0xa8
+    float frame_progress; // +0xac
+    float frame_progress_step; // +0xb0
 };
 
 void Sprite::initialize_sprite()
@@ -64,29 +66,29 @@ void Sprite::initialize_sprite()
     color.set_color_white();
 
     int zero = 0;
-    gravity_step = 0xbc54fdf4;
-    field_28 = zero;
-    progress = zero;
-    lifetime = zero;
-    lifetime_step = zero;
-    facing_angle = zero;
-    facing_angle_step = zero;
-    field_84 = zero;
-    field_88 = 0x3f800000;
-    facing_refresh_progress = zero;
-    facing_refresh_step = zero;
-    field_94 = 0xc3fa0000;
-    field_20 = zero;
-    field_24 = zero;
-    field_5c = zero;
-    field_58 = zero;
-    field_54 = zero;
-    field_98 = zero;
-    sprite_id = -1;
-    field_9c = zero;
-    field_a0 = zero;
-    field_a4 = zero;
-    field_ac = zero;
-    field_b0 = zero;
-    field_a8 = 1;
+    gravity_step = -0.013f;
+    draw_mode = zero;
+    progress = 0.0f;
+    lifetime = 0.0f;
+    lifetime_step = 0.0f;
+    facing_angle = 0.0f;
+    facing_angle_step = 0.0f;
+    unknown_84 = zero;
+    corner_scale = 1.0f;
+    facing_refresh_progress = 0.0f;
+    facing_refresh_step = 0.0f;
+    depth_offset = -500.0f;
+    texture_ref_a = 0;
+    texture_ref_b = 0;
+    velocity.z = 0.0f;
+    velocity.y = 0.0f;
+    velocity.x = 0.0f;
+    unknown_98 = zero;
+    object_ref = (void*)-1;
+    texture_id = zero;
+    frame_count = zero;
+    frame = zero;
+    frame_progress = 0.0f;
+    frame_progress_step = 0.0f;
+    frame_step = 1;
 }

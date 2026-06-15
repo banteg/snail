@@ -1,5 +1,14 @@
-# WIP - sprite unlink/free-list return
+# Exact - sprite unlink/free-list return
 
-Current source maps the native behavior: validates the live flag, reports the texture-name-backed error string from `texture_ref + 0xc`, unlinks from the owner active bucket, and pushes the sprite onto `g_sprite_free_head`.
+Current source maps the native behavior: validates the live flag, reports the texture-name-backed error string from `texture_ref + 0xc`, unlinks from the owner active bucket, and pushes the sprite onto `g_sprite_manager.free_head`.
 
-Current residual: one scheduling difference in the active-head path. Native stores `g_sprite_active_heads[owner] = next` before loading `g_sprite_free_head`; VC6 hoists the free-head load one instruction earlier from the clear source shape. Do not force this with volatile or dummy barriers.
+This is exact once the active buckets and free-list head are modeled as fields
+inside `g_sprite_manager` (`active_heads[5]` at `+0x83d64`, `free_head` at
+`+0x83d78`). Modeling them as independent globals caused VC6 to hoist the
+free-head load before the active-head store.
+
+Rejected source-shaped probe:
+
+- assigning `g_sprite_active_heads[owner] = next_sprite` instead of `next`
+  regressed the block layout and removed the native reload; the correct fix is
+  the manager relationship, not an expression-order tweak.
