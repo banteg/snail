@@ -26,6 +26,42 @@
       "description": "Shared small-object constructor callback used by runtime slot arrays and enemy-manager I/O stream members."
     },
     {
+      "address": "0x405018",
+      "name": "update_row_event_display_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L463"
+      ],
+      "description": "Compiler-emitted state switch jump table used by update_row_event_display."
+    },
+    {
+      "address": "0x410b74",
+      "name": "update_frontend_state_machine_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L576"
+      ],
+      "description": "Compiler-emitted state switch jump table used by update_frontend_state_machine."
+    },
+    {
+      "address": "0x415270",
+      "name": "update_golb_ai_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L630"
+      ],
+      "description": "Compiler-emitted switch jump table used by update_golb_ai."
+    },
+    {
+      "address": "0x42fd14",
+      "name": "g_used_fringe_bods_count_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fd14"
+      ],
+      "description": "Relocatable used-fringe-BOD counter reported by build_track_fringe_objects through the stripped debug report stub."
+    },
+    {
       "address": "0x42fd7c",
       "name": "g_player_block",
       "kind": "offset",
@@ -33,6 +69,89 @@
         "loc_42FD7C"
       ],
       "description": "Relocatable player block offset added to the live game root."
+    },
+    {
+      "address": "0x42fde8",
+      "name": "g_player_position_y_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fde8"
+      ],
+      "description": "Relocatable player position.y offset used by damage-gauge grounded checks and attachment-entry seeding."
+    },
+    {
+      "address": "0x42fdec",
+      "name": "g_player_position_z_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fdec"
+      ],
+      "description": "Relocatable player position.z offset used by track-relative emitter and progress checks."
+    },
+    {
+      "address": "0x42fe08",
+      "name": "g_player_exit_gate_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fe08"
+      ],
+      "description": "Relocatable player-region exit gate used by damage-gauge state-2 exit checks."
+    },
+    {
+      "address": "0x430060",
+      "name": "g_row_event_display_token_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_430060"
+      ],
+      "description": "Relocatable row-event display token restored by flush_row_event_display and read by completion-screen setup."
+    },
+    {
+      "address": "0x430100",
+      "name": "g_player_follow_state_block",
+      "kind": "offset",
+      "aliases": [
+        "g_follow_state_block",
+        "data_430100"
+      ],
+      "size": "0xc0",
+      "description": "Relocatable Player embedded attachment-follow state block at player+0x384, seeded by try_enter_track_attachment_from_swept_motion."
+    },
+    {
+      "address": "0x430170",
+      "name": "g_damage_warning_actor_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_430170"
+      ],
+      "description": "Relocatable damage-warning actor offset used by update_damage_gauge start/stop warning calls."
+    },
+    {
+      "address": "0x430199",
+      "name": "g_follow_live_flag_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_430199"
+      ],
+      "description": "Relocatable follow-state live flag byte that blocks damage-warning startup during attachment entry."
+    },
+    {
+      "address": "0x4301bc",
+      "name": "g_follow_force_drain_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_4301bc"
+      ],
+      "description": "Relocatable follow-region byte that blocks warning startup and forces the damage-gauge drain transition."
+    },
+    {
+      "address": "0x4301c0",
+      "name": "g_follow_drain_exit_gate_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_4301c0"
+      ],
+      "description": "Relocatable follow-region exit gate used by update_damage_gauge state-2 drain exit checks."
     },
     {
       "address": "0x4326fc",
@@ -62,6 +181,15 @@
       "description": "Relocatable presentation flags word whose bit 0x20 is raised while the invincible shell is active."
     },
     {
+      "address": "0x433f34",
+      "name": "g_row_event_parcel_spawn_position_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_433f34"
+      ],
+      "description": "Relocatable world-position vector offset passed to spawn_track_parcel by update_row_event_display."
+    },
+    {
       "address": "0x434038",
       "name": "g_snail_skin_transition_offset",
       "kind": "offset",
@@ -78,6 +206,15 @@
         "loc_4340e0"
       ],
       "description": "Relocatable track-row cell array offset used to recover a cell's row index."
+    },
+    {
+      "address": "0x434064",
+      "name": "g_damage_gauge_exit_owner_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_434064"
+      ],
+      "description": "Relocatable player-region owner offset used by update_damage_gauge state-2 exit checks."
     },
     {
       "address": "0x432dd0",
@@ -105,6 +242,42 @@
         "$L314"
       ],
       "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
+    },
+    {
+      "address": "0x43a2d4",
+      "name": "update_player_movement_flags_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L319"
+      ],
+      "description": "Compiler-emitted movement selector jump table used by update_player_movement_flags."
+    },
+    {
+      "address": "0x43d218",
+      "name": "update_subgoldy_follow_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1476"
+      ],
+      "description": "Compiler-emitted switch jump table used by update_subgoldy in the attachment-follow handling region."
+    },
+    {
+      "address": "0x43f50c",
+      "name": "update_garbage_hazard_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L458"
+      ],
+      "description": "Compiler-emitted state switch jump table used by update_garbage_hazard."
+    },
+    {
+      "address": "0x440380",
+      "name": "add_subgoldy_score_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L327"
+      ],
+      "description": "Compiler-emitted score-kind switch jump table used by add_subgoldy_score."
     },
     {
       "address": "0x446e60",
@@ -556,6 +729,28 @@
       "description": "Saved stream-volume config loaded from SnailMail.cfg and applied to the audio backend."
     },
     {
+      "address": "0x4df934",
+      "name": "g_render_flags",
+      "kind": "global",
+      "aliases": [
+        "data_4df934",
+        "byte_4df934",
+        "g_render_effect_flags",
+        "g_track_render_flags"
+      ],
+      "description": "Shared render-effect flags byte whose 0x20 bit gates fringe and particle rendering."
+    },
+    {
+      "address": "0x4df950",
+      "name": "g_steering_sensitivity",
+      "kind": "global",
+      "aliases": [
+        "data_4df950",
+        "flt_4df950"
+      ],
+      "description": "Steering sensitivity lookup table consumed by update_subgoldy based on the live steering selector."
+    },
+    {
       "address": "0x4dfad0",
       "name": "g_mouse_wheel_delta",
       "kind": "global",
@@ -641,6 +836,16 @@
       ],
       "size": "0x106000",
       "description": "0x800-bucket zero parcel pool initialized by initialize_zero_parcel_bucket_pool."
+    },
+    {
+      "address": "0x643194",
+      "name": "g_replay_accum_z",
+      "kind": "global",
+      "aliases": [
+        "unk_643194",
+        "data_643194"
+      ],
+      "description": "Replay z-delta accumulator updated while recording and decoding subgoldy replay samples."
     },
     {
       "address": "0x643198",
