@@ -1,4 +1,4 @@
-# WIP scratch — 45.15%, 656/673 insns (2026-06-13)
+# WIP scratch — 45.71%, 657/673 insns (2026-06-15)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
@@ -20,6 +20,15 @@ source-shape change.
 - velocity.z = -0.1f at ring kinds 3/7 compiles to `mov ebp, 0xbdcccccd`
   hoisted before the loop + reg store — NOT a byte-poke bug (IDA's -0.1
   confirmed); should fall out once loop shape aligns
+
+2026-06-15 slug-hit shape pass: focused matcher now verifies 45.71%,
+657/673 instructions, masked operands 64 ok / 0 mismatch. BN confirms the
+repeat-hit native code multiplies by subgame_rate, then 0.0040000002f, then
+-8.0f; staging the scaled rate prevents VC6 from folding the constants into
+-0.032. Rewriting the slug-hit branch as normal-control paths first and the
+movement-flag kill path last matches the native physical block order and
+clears the previous `kill_slug_hazard`/`begin_post_follow_carryover` audit
+misalignment.
 
 Asm-verified field finds (cross-findings for the campaign):
 

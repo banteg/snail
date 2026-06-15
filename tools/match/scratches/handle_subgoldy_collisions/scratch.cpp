@@ -186,41 +186,44 @@ void Player::handle_subgoldy_collisions()
                 if (delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
-                        if ((movement_flags & 0x80) != 0) {
-                            kill_slug_hazard((int)((char*)game + m + 0x3563a0));
-                        } else if (control_override_active) {
-                            float rate = game->subgame_rate;
-                            velocity.z = rate * rate * 0.0040000002f * -8.0f;
-                            apply_damage_gauge_delta(&damage_gauge_state, 1.0f, 0);
+                        if ((movement_flags & 0x80) == 0) {
+                            if (control_override_active) {
+                                float rate = game->subgame_rate;
+                                float scaled_rate = rate * rate * 0.0040000002f;
+                                velocity.z = scaled_rate * -8.0f;
+                                apply_damage_gauge_delta(&damage_gauge_state, 1.0f, 0);
+                            } else {
+                                Game* hit_game = game;
+                                control_override_active = 1;
+                                follow_active = 0;
+                                float rate = hit_game->subgame_rate;
+                                velocity.x = 0.0f;
+                                float lift = rate * 0.2f;
+                                velocity.y = lift;
+                                float knockback = rate * -0.2f;
+                                velocity.z = knockback;
+                                begin_post_follow_carryover();
+                                Game* voice_game = game;
+                                cutscene_ai_state = 10;
+                                *((char*)voice_game + m + 0x356479) = 1;
+                                play_slug_voice(
+                                    (int)((char*)game + m + 0x3563a0),
+                                    34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
+                                float half = distance * 0.5f;
+                                wobble_lift_phase_step = 0.0f;
+                                float burst_x = half * probe_b.x;
+                                float burst_y = probe_b.y * half;
+                                probe_salt.x = burst_x + cached_camera_target_world.x;
+                                burst_position[0] = probe_salt.x;
+                                int slot_id = player_slot;
+                                probe_salt.y = burst_y + cached_camera_target_world.y;
+                                burst_position[1] = probe_salt.y;
+                                probe_salt.z = half * probe_b.z + cached_camera_target_world.z;
+                                burst_position[2] = probe_salt.z;
+                                firework_shoot(burst_position, slot_id, 92, 80);
+                            }
                         } else {
-                            Game* hit_game = game;
-                            control_override_active = 1;
-                            follow_active = 0;
-                            float rate = hit_game->subgame_rate;
-                            velocity.x = 0.0f;
-                            float lift = rate * 0.2f;
-                            velocity.y = lift;
-                            float knockback = rate * -0.2f;
-                            velocity.z = knockback;
-                            begin_post_follow_carryover();
-                            Game* voice_game = game;
-                            cutscene_ai_state = 10;
-                            *((char*)voice_game + m + 0x356479) = 1;
-                            play_slug_voice(
-                                (int)((char*)game + m + 0x3563a0),
-                                34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
-                            float half = distance * 0.5f;
-                            wobble_lift_phase_step = 0.0f;
-                            float burst_x = half * probe_b.x;
-                            float burst_y = probe_b.y * half;
-                            probe_salt.x = burst_x + cached_camera_target_world.x;
-                            burst_position[0] = probe_salt.x;
-                            int slot_id = player_slot;
-                            probe_salt.y = burst_y + cached_camera_target_world.y;
-                            burst_position[1] = probe_salt.y;
-                            probe_salt.z = half * probe_b.z + cached_camera_target_world.z;
-                            burst_position[2] = probe_salt.z;
-                            firework_shoot(burst_position, slot_id, 92, 80);
+                            kill_slug_hazard((int)((char*)game + m + 0x3563a0));
                         }
                     }
                 }
