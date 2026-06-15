@@ -44,12 +44,14 @@ struct GolbPathSourceCell {
     GolbPathTemplate* path_template; // +0x38
 };
 
+struct GolbShot;
+
 class GolbPathFollowState {
 public:
     int initialize_path_follow_golb(
         GolbPathSourceCell* source_cell,
         const Vector3* position,
-        int search_slot); // @ 0x421770
+        GolbShot* shot_); // @ 0x421770
 
     unsigned char active;     // +0x00
     char unknown_01[3];
@@ -59,7 +61,7 @@ public:
     float progress;            // +0x10
     float vertical_offset;     // +0x14
     Vector3 output_position;   // +0x18
-    int search_slot;          // +0x24
+    GolbShot* shot;            // +0x24
 };
 
 #endif
