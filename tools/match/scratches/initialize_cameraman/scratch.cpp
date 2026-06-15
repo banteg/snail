@@ -1,16 +1,7 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
-#include "vector_types.h"
+#include "transform_matrix.h"
 
 extern int g_game_base; // data_4df904
-
-struct TransformMatrix {
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-};
-
-void __fastcall set_matrix_identity(TransformMatrix* transform);
 
 class CameramanState {
 public:

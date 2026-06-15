@@ -1,21 +1,11 @@
 // compute_kind42_attachment_transform @ 0x42b920 (thiscall, ret 0x14)
 
-#include "vector_types.h"
+#include "transform_matrix.h"
 
 double square_root(float value);
 float atan2_positive(float y, float x);
 float sine(float angle);
 float cosine(float angle);
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-
-    void set_matrix_rotation_identity();
-    void rotate_matrix_world_z(float angle);
-};
 
 class AttachmentPathTemplateKind42View {
 public:
