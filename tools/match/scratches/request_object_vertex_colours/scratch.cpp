@@ -1,13 +1,8 @@
 // request_object_vertex_colours @ 0x42f850 (fastcall, ret)
 
-void* allocate_tracked_memory(int size, char* name);
+#include "sprite.h"
 
-struct Color4f {
-    float r;
-    float g;
-    float b;
-    float a;
-};
+void* allocate_tracked_memory(int size, char* name);
 
 class Object {
 public:

@@ -1,11 +1,6 @@
 // rebuild_track_runtime_from_segments @ 0x437de0 (thiscall, ret 0x4)
 
-struct Color4f {
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "sprite.h"
 
 extern char* g_game_base; // data_4df904
 

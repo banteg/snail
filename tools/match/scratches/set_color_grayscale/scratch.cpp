@@ -1,14 +1,6 @@
 // set_color_grayscale @ 0x44db90 (thiscall, ret 0x4)
 
-class Color4f {
-public:
-    void set_color_grayscale(float intensity);
-
-    float r; // +0x00
-    float g; // +0x04
-    float b; // +0x08
-    float a; // +0x0c
-};
+#include "sprite.h"
 
 void Color4f::set_color_grayscale(float intensity)
 {

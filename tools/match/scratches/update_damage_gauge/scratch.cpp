@@ -1,14 +1,7 @@
 // update_damage_gauge @ 0x440fd0 (thiscall, ret)
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
-struct Color4f {
-    Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60, matched
-
-    float red;
-    float green;
-    float blue;
-    float alpha;
-};
+#include "sprite.h"
 
 struct WarningActor {
     void start_warning(); // @ 0x446f30, matched

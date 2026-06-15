@@ -1,13 +1,6 @@
 // get_track_skirt_color @ 0x442120 (thiscall, ret 0x4)
 
-struct Color4f {
-    Color4f* set_color_rgba(float r, float g, float b, float a);
-
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "sprite.h"
 
 class SubgameRuntime {
 public:

@@ -1,9 +1,6 @@
 // build_track_colours @ 0x435d40 (thiscall, ret)
 
-class Color4f {
-public:
-    void set_color_white();
-};
+#include "sprite.h"
 
 extern Color4f g_track_colour_bank_a[51]; // data_74e7e8
 extern Color4f g_track_colour_bank_b[51]; // data_6437f8

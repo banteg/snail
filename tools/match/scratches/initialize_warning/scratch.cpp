@@ -1,15 +1,8 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
-
-struct Color4f {
-    float r;
-    float g;
-    float b;
-    float a;
-
-    Color4f* set_color_rgba(float r, float g, float b, float a);
-};
 
 struct FrontendWidget {
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,

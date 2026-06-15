@@ -1,11 +1,6 @@
 // refresh_fringe_object_draw_list @ 0x439b00 (thiscall, ret)
 
-struct Color4f {
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "sprite.h"
 
 class SubgameRuntime {
 public:
