@@ -53,25 +53,6 @@ extern char g_debug_report_arg[];
 int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
-struct SaltHazardSlot {
-    void update_salt_hazard();
-    void deactivate_salt_hazard(); // @ 0x441740
-
-    int unknown_00;
-    unsigned int list_flags;   // +0x04
-    SaltHazardSlot* list_prev; // +0x08
-    SaltHazardSlot* list_next; // +0x0c
-    char unknown_10[0x68 - 0x10];
-    Vector3 position;          // +0x68, live-matrix position row
-    char unknown_74[0x80 - 0x74];
-    int state;                 // +0x80
-    char unknown_84[0x88 - 0x84];
-    Game* owner_game;          // +0x88
-    Vector3 velocity;          // +0x8c (z low byte poked by spawn)
-    float progress;            // +0x98, overlaps next slot
-    float progress_step;       // +0x9c, overlaps next slot
-};
-
 void SaltHazardSlot::update_salt_hazard()
 {
     if (owner_game->paused)
@@ -105,8 +86,10 @@ void SaltHazardSlot::update_salt_hazard()
         return;
     }
     case 1: {
-        progress = progress_step + progress;
-        if (progress > 1.0f) {
+        float* progress = (float*)((char*)this + 0x98);
+        float* progress_step = (float*)((char*)this + 0x9c);
+        *progress = *progress_step + *progress;
+        if (*progress > 1.0f) {
             state = 2;
             return;
         }
