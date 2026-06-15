@@ -1,14 +1,6 @@
 // initialize_frontend_overlay_color_lerp @ 0x40ab00 (thiscall, ret 0x4)
 
-class Color4f {
-public:
-    int store_color4f(int r, int g, int b, int a);
-
-    int r; // +0x00
-    int g; // +0x04
-    int b; // +0x08
-    int a; // +0x0c
-};
+#include "sprite.h"
 
 class FrontendOverlayColorLerp {
 public:
