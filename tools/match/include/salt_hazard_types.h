@@ -35,4 +35,12 @@ struct SaltListAnchor {
     SaltHazardSlot* free_top; // +0x08
 };
 
+class SaltHazardPool {
+public:
+    int* initialize_salt_hazard_pool();              // @ 0x441540
+    int spawn_salt_hazard(const Vector3* position);  // @ 0x441560
+
+    SaltHazardSlot slots[40];
+};
+
 #endif

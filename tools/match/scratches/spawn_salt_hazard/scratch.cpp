@@ -23,13 +23,6 @@ extern Game* volatile g_game; // data_4df904
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-class SaltHazardPool {
-public:
-    int spawn_salt_hazard(const Vector3* position);
-
-    SaltHazardSlot slots[40];
-};
-
 int SaltHazardPool::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;

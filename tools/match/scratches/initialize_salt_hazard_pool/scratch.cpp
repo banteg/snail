@@ -1,15 +1,10 @@
 // initialize_salt_hazard_pool @ 0x441540 (thiscall, ret)
 
-class SaltHazardPool {
-public:
-    int* initialize_salt_hazard_pool();
-
-    char unknown_00[0x80];
-};
+#include "salt_hazard_types.h"
 
 int* SaltHazardPool::initialize_salt_hazard_pool()
 {
-    int* state = (int*)((char*)this + 0x80);
+    int* state = &slots[0].state;
     int count = 40;
     do {
         *state = 0;
