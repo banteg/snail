@@ -6,10 +6,7 @@
 // flagged rows onto their attachments.
 
 #include "track_attachment.h"
-
-struct TransformMatrix {
-    float rows[16];
-};
+#include "transform_matrix.h"
 
 double random_float_below(float upper_bound, const char* tag);
 void report_errorf(const char* format, ...);
@@ -272,8 +269,8 @@ int Game::place_parcels_on_track()
                     row_record->projection_payload.y,
                     &transform,
                     &out_angle);
-                row_record->projection_payload.x = transform.rows[12];
-                row_record->projection_payload.y = transform.rows[13];
+                row_record->projection_payload.x = transform.position.x;
+                row_record->projection_payload.y = transform.position.y;
             } else {
                 int row_index = live_cell->get_track_cell_row_index();
                 live_cell->attachment_template_record->get_path_position_at_node(
