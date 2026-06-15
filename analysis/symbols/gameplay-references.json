@@ -350,10 +350,12 @@
       "name": "noop_this_constructor",
       "kind": "function",
       "aliases": [
+        "?0AxisAngle",
         "?0NoopAiCallback",
+        "?0Quaternion",
         "sub_44db50"
       ],
-      "description": "No-op this-returning constructor thunk used by initialize_bod_base before the same storage is initialized as Color4f."
+      "description": "No-op this-returning constructor thunk reused by trivial default constructors before later real initialization."
     },
     {
       "address": "0x44e6c0",
