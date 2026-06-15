@@ -1,25 +1,6 @@
 // initialize_sprite_manager @ 0x44e160 (thiscall, ret)
 
-class Sprite {
-public:
-    void initialize_sprite();
-
-    char unknown_00[0x0c];
-    Sprite* next; // +0x0c
-    Sprite* prev; // +0x10
-    char unknown_14[0xb4 - 0x14];
-};
-
-class SpriteManager {
-public:
-    void initialize_sprite_manager();
-
-    unsigned char paused; // +0x00000
-    char unknown_00001[0x04 - 0x01];
-    Sprite sprites[3000]; // +0x00004
-    Sprite* active_heads[5]; // +0x83d64
-    Sprite* free_head; // +0x83d78
-};
+#include "sprite.h"
 
 extern "C" void* memset(void* destination, int value, unsigned int count);
 

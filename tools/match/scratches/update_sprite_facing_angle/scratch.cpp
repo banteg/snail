@@ -1,5 +1,7 @@
 // update_sprite_facing_angle @ 0x44e410 (thiscall, ret 0x4)
 
+#include "sprite.h"
+
 struct Vec4 {
     float x;
     float y;
@@ -14,31 +16,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-
-    Vector3* rotate_vector_by_matrix(const TransformMatrix* matrix);
-};
-
 float atan2_positive(float y, float x);
-
-class Sprite {
-public:
-    void update_sprite_facing_angle(const TransformMatrix* matrix);
-
-    void* object_ref; // +0x00
-    unsigned int flags; // +0x04
-    char unknown_08[0x3c - 0x08];
-    Vector3 previous_position; // +0x3c
-    Vector3 position; // +0x48
-    char unknown_54[0x7c - 0x54];
-    float facing_angle; // +0x7c
-    char unknown_80[0x8c - 0x80];
-    float facing_refresh_progress; // +0x8c
-    float facing_refresh_step; // +0x90
-};
 
 void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
 {

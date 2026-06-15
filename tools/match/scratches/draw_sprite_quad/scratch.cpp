@@ -1,5 +1,7 @@
 // draw_sprite_quad @ 0x4137f0 (cdecl, ret)
 
+#include "sprite.h"
+
 struct Vec3 {
     float x;
     float y;
@@ -20,15 +22,6 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct Color4f {
-    float r;
-    float g;
-    float b;
-    float a;
-};
-
-struct TextureRef;
-
 class ColorBGRA8 {
 public:
     ColorBGRA8* noop_this_constructor();
@@ -38,32 +31,6 @@ public:
     unsigned char g;
     unsigned char r;
     unsigned char a;
-};
-
-struct Sprite {
-    void* object_ref;          // +0x00
-    unsigned int flags;        // +0x04
-    int owner;                 // +0x08
-    Sprite* next;              // +0x0c
-    Sprite* prev;              // +0x10
-    char unknown_14[0x1c - 0x14];
-    TextureRef* texture_ref;   // +0x1c
-    TextureRef* texture_ref_a; // +0x20
-    TextureRef* texture_ref_b; // +0x24
-    int draw_mode;             // +0x28
-    Color4f color;             // +0x2c
-    char unknown_3c[0x60 - 0x3c];
-    float scale_x;             // +0x60
-    float scale_y;             // +0x64
-    float progress;            // +0x68
-    float progress_step;       // +0x6c
-    float lifetime;            // +0x70
-    float lifetime_step;       // +0x74
-    float gravity_step;        // +0x78
-    float facing_angle;        // +0x7c
-    float facing_angle_step;   // +0x80
-    float unknown_84;          // +0x84
-    float corner_scale;        // +0x88
 };
 
 struct SpriteVertex {

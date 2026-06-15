@@ -1,13 +1,8 @@
 // set_sprite_manager_paused @ 0x44e540 (thiscall, ret byte)
 
-class SpriteManagerPause {
-public:
-    char set_sprite_manager_paused(char paused);
+#include "sprite.h"
 
-    char paused; // +0x00
-};
-
-char SpriteManagerPause::set_sprite_manager_paused(char paused_)
+char SpriteManager::set_sprite_manager_paused(char paused_)
 {
     paused = paused_;
     return paused_;

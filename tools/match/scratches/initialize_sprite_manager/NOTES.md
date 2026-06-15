@@ -13,11 +13,11 @@ and the first/last-node special cases. Native writes the bucket clears as direct
 clear routes those stores through a bucket pointer. The source should stay
 topology-first until the exact VC6 loop shape is isolated.
 
-`SpriteManager` now carries the recovered pool fields (`paused`, 3000 sprite
-slots at `+0x04`, five active heads at `+0x83d64`, and `free_head` at
-`+0x83d78`). A fully field-access body was tested but dropped because VC6 moved
-`this` to `edi` and reduced the score to 22.22%; the retained body keeps the
-better topology-first shape.
+`SpriteManager` is promoted in `tools/match/include/sprite.h` with the recovered
+pool fields (`paused`, 3000 sprite slots at `+0x04`, five active heads at
+`+0x83d64`, and `free_head` at `+0x83d78`). A fully field-access body was tested
+but dropped because VC6 moved `this` to `edi` and reduced the score to 22.22%;
+the retained body keeps the better topology-first shape.
 
 Rejected/source-neutral probes:
 

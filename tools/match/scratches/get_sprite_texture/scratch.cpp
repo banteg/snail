@@ -1,6 +1,6 @@
 // get_sprite_texture @ 0x44e570 (stdcall, ret 0x4)
 
-extern void* g_sprite_texture_table[];
+#include "sprite.h"
 
 void* __stdcall get_sprite_texture(int texture_id)
 {

@@ -1,8 +1,10 @@
 # Exact - Sprite default initializer
 
-`initialize_sprite` is exact at 33/33 instructions after replacing the old
-`field_*` dwords with the shared Sprite layout recovered from `update_sprite`,
-`draw_sprite_quad`, `allocate_sprite`, and `update_sprite_facing_angle`.
+`initialize_sprite` is exact at 33/33 instructions and now builds against the
+promoted `tools/match/include/sprite.h` layout. The old `field_*` dwords were
+replaced with the shared Sprite fields recovered from `update_sprite`,
+`draw_sprite_quad`, `allocate_sprite`, `update_sprite_facing_angle`,
+`set_sprite_texture_ref`, and exact allocation callers.
 
 Confirmed fields include:
 

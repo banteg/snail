@@ -1,50 +1,6 @@
 // update_sprite @ 0x44df30 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
-
-class SpriteManager {
-public:
-    char paused;
-};
-
-extern SpriteManager g_sprite_manager; // data_790f30
-
-class Sprite {
-public:
-    void update_sprite();
-    void kill_sprite();
-    char* set_sprite_texture_ref(int texture_id, int frame);
-
-    void* object_ref; // +0x00
-    unsigned int flags; // +0x04
-    int owner; // +0x08
-    Sprite* next; // +0x0c
-    Sprite* prev; // +0x10
-    char unknown_14[0x3c - 0x14];
-    Vector3 previous_position; // +0x3c
-    Vector3 position; // +0x48
-    Vector3 velocity; // +0x54
-    float scale_x; // +0x60
-    float scale_y; // +0x64
-    float progress; // +0x68
-    float progress_step; // +0x6c
-    float lifetime; // +0x70
-    float lifetime_step; // +0x74
-    float gravity_step; // +0x78
-    float facing_angle; // +0x7c
-    float facing_angle_step; // +0x80
-    char unknown_84[0x9c - 0x84];
-    int texture_id; // +0x9c
-    int frame_count; // +0xa0
-    int frame; // +0xa4
-    int frame_step; // +0xa8
-    float frame_progress; // +0xac
-    float frame_progress_step; // +0xb0
-};
+#include "sprite.h"
 
 void Sprite::update_sprite()
 {

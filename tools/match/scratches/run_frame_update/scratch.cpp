@@ -1,13 +1,6 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
-struct Color4f {
-    Color4f* set_color_rgba(float r, float g, float b, float a);
-
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "sprite.h"
 
 class AudioBackend {
 public:
@@ -58,16 +51,6 @@ public:
     ActiveBod* next; // +0x0c
 };
 
-class Sprite {
-public:
-    void update_sprite();
-
-    void* object_ref; // +0x00
-    unsigned int flags; // +0x04
-    int owner; // +0x08
-    Sprite* next; // +0x0c
-};
-
 int report_errorf(const char* format, ...);
 int queue_axis_aligned_textured_quad(
     int texture_id,
@@ -82,8 +65,6 @@ int queue_axis_aligned_textured_quad(
 extern AudioBackend g_audio_backend; // 0x753c58
 extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 extern VoiceManager g_voice_manager; // 0x751498
-extern Sprite* g_sprite_active_heads[5]; // data_814c94
-extern Sprite* g_sprite_free_head; // data_814ca8
 
 class GameRoot {
 public:
