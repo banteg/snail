@@ -16,3 +16,8 @@ complete:
 2026-06-13 pin audit: focused matcher still verifies 49.46%, 45/48 insns.
 Keep pinned; the remaining diff is the free-scan loop layout and stack
 staging, not the projectile spawn or audio semantics.
+
+2026-06-15 source-shape note: keep the negative y stagger as a named
+`stagger_y` local. Writing the expression inline lets VC6 rewrite it into
+`fmul +0.01` plus `fsubr origin.y`; the named local preserves target's
+`fmul -0.01` then `fadd origin.y` sequence and clears the masked audit.

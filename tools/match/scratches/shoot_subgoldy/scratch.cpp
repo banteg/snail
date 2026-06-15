@@ -38,7 +38,8 @@ void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
     Vector3 staged;
     float z = origin[2];
     staged.x = origin[0];
-    float y = (float)index * -0.0099999998f + origin[1];
+    float stagger_y = (float)index * -0.0099999998f;
+    float y = stagger_y + origin[1];
     staged.y = y;
     staged.z = z;
     slots[index].spawn_sub_lazer_projectile(&staged, direction);
