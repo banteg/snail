@@ -19,7 +19,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct PathTemplateSample {
+struct AttachmentSampleMatrixView {
     TransformMatrix transform;
     char unknown_40[0x40];
     Vec3 delta_dir_to_next;
@@ -29,7 +29,7 @@ struct PathTemplateSample {
     float rotation_scalar_98;
     float lateral_scale;
     float special_scalar;
-    char unknown_a4[0x4];
+    char unknown_a4[0x04];
 };
 
 struct PathTemplate {
@@ -43,8 +43,8 @@ struct PathTemplate {
     float segment_count_f;
     float width_or_scale;
     unsigned int width_cells;
-    PathTemplateSample* primary_samples;
-    PathTemplateSample* secondary_samples;
+    AttachmentSampleMatrixView* primary_samples;
+    AttachmentSampleMatrixView* secondary_samples;
     char unknown_60[0x98 - 0x60];
     float installed_heading_delta;
     unsigned char special_runtime_flag_9c;
@@ -145,7 +145,7 @@ int FollowState::update_track_attachment_follow_state(
 {
     unsigned int index = sample_index;
     PathTemplate* template_record = this->template_record;
-    PathTemplateSample* secondary_samples = template_record->secondary_samples;
+    AttachmentSampleMatrixView* secondary_samples = template_record->secondary_samples;
     float delta = path_factor * secondary_samples[index].delta_length;
     float alpha;
     float out_angle;
@@ -171,7 +171,7 @@ int FollowState::update_track_attachment_follow_state(
     unsigned int current_index;
     PathTemplate* current_template;
     int terminal_index;
-    PathTemplateSample* primary;
+    AttachmentSampleMatrixView* primary;
     if (delta + progress > secondary_samples[index].delta_length) {
         for (;;) {
             delta -= secondary_samples[index].delta_length - progress;
@@ -226,8 +226,8 @@ int FollowState::update_track_attachment_follow_state(
                     float old_x = out_position->x;
                     unsigned int count = supertramp_template->segment_count;
                     float carry = delta + supertramp_template->width_or_scale;
-                    PathTemplateSample* samples = supertramp_template->secondary_samples;
-                    PathTemplateSample* terminal = &samples[count];
+                    AttachmentSampleMatrixView* samples = supertramp_template->secondary_samples;
+                    AttachmentSampleMatrixView* terminal = &samples[count];
                     Vec3* anchor = &source_cell->anchor_position;
                     float forward_x = carry * terminal[-1].transform.basis_forward.x;
                     float forward_y = carry * terminal[-1].transform.basis_forward.y;
@@ -344,8 +344,8 @@ after_v85:
         *(float*)(g_camera_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
         *(float*)(g_camera_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
     } else {
-        PathTemplateSample* secondary = current_template->secondary_samples;
-        PathTemplateSample* sample = &secondary[current_index];
+        AttachmentSampleMatrixView* secondary = current_template->secondary_samples;
+        AttachmentSampleMatrixView* sample = &secondary[current_index];
         Vec3* anchor = &source_cell->anchor_position;
         v82 = out_angle * sample->delta_dir_to_next.x * v79
             + anchor->x
@@ -415,7 +415,7 @@ after_v85:
         orientation_b = *(float*)((char*)orient_template->primary_samples + offset + 0x98);
         orientation_a = *(float*)((char*)orient_template->primary_samples + offset + 0x94);
     } else {
-        PathTemplateSample* orient_sample = &orient_template->primary_samples[orient_index];
+        AttachmentSampleMatrixView* orient_sample = &orient_template->primary_samples[orient_index];
         float delta_b = orient_sample[1].rotation_scalar_98 - orient_sample->rotation_scalar_98;
         if (delta_b > 3.1415927f) {
             delta_b = delta_b - 6.2831855f;

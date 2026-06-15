@@ -357,9 +357,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 9 type name(s)
+- ready: 10 type name(s)
 - covered: 10 type name(s) with a header plus scratch-local copies
-- divergent: 68 type name(s) with multiple scratch-local shapes
+- divergent: 66 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -420,8 +420,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | HighScoreScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InvincibleShellController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplate | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplateSample | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SaltHazardPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | StarField | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -441,6 +439,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | AttachmentSampleMatrixView | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | Direct3DDevice8 | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

@@ -100,3 +100,9 @@ this scratch's helper declaration as a `PathTemplate` member still regressed
 the focused match from 46.44% to 44.87%, mostly by perturbing the already
 fragile stack/layout alignment. Treat the convention evidence as a future
 shared-type consolidation lead, not a bulk scratch rewrite.
+
+2026-06-15 type consolidation: the sample view is now named
+`AttachmentSampleMatrixView`, matching `calc_path_length_z`. The fields align
+with the shared `AttachmentSample` layout; the local view remains only because
+this scratch needs a `TransformMatrix`-typed transform for interpolation and
+the shared attachment header still uses `AttachmentTransform`.

@@ -101,6 +101,14 @@ helper declaration to a `PathTemplate` member regressed global alignment from
 40.58% to 35.21%. The callsite convention evidence is real, but this large
 scratch needs a more isolated consolidation than a direct local rewrite.
 
+2026-06-15 type consolidation: the local `PathTemplateSample` name is now
+`AttachmentSampleMatrixView`, shared with
+`update_track_attachment_follow_state`. It is the same 0xa8 attachment sample
+shape already represented by `AttachmentSample`; this scratch keeps the local
+view only because its `transform` field needs the local `TransformMatrix`
+methods for interpolation while the shared header still uses
+`AttachmentTransform`.
+
 2026-06-14 recheck: localized diff still shows one broad region dominated by
 the `0xf4`/`0xe0` frame gap, overflow-loop placement, scalar lerp stack slots,
 and matrix-copy layout. Hoisting the `center_x`/`lateral_scale`/`special_scalar`

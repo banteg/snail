@@ -17,13 +17,13 @@ struct TransformMatrix {
     void rotate_matrix_world_z(float angle);
 };
 
-class PathTemplate {
+class AttachmentPathTemplateKind42View {
 public:
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
 };
 
-void PathTemplate::compute_kind42_attachment_transform(
+void AttachmentPathTemplateKind42View::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
     float root = (float)square_root(radius * radius - 16.0f);

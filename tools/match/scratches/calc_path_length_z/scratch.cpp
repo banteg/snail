@@ -24,7 +24,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct PathTemplateSample {
+struct AttachmentSampleMatrixView {
     TransformMatrix transform; // +0x00
     char unknown_40[0x40];
     Vec3 delta_dir_to_next; // +0x80
@@ -77,7 +77,7 @@ int __stdcall compute_kind42_attachment_transform(
 int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, Vec3* velocity)
 {
     AttachmentPathTemplate* current_template = template_record;
-    PathTemplateSample* samples = (PathTemplateSample*)current_template->secondary_samples;
+    AttachmentSampleMatrixView* samples = (AttachmentSampleMatrixView*)current_template->secondary_samples;
     int current_index = sample_index;
     float delta = path_factor * samples[current_index].delta_length;
 
@@ -93,7 +93,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 active = 0;
                 velocity->z =
                     path_factor
-                    * ((PathTemplateSample*)current_template->secondary_samples)[current_template->segment_count - 1]
+                    * ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_template->segment_count - 1]
                           .delta_length;
                 shot->position.x = output_position.x;
                 shot->position.y = output_position.y;
@@ -105,8 +105,8 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     float old_x = position->x;
                     int count = terminal_template->segment_count;
                     float carry = delta + terminal_template->width_or_scale;
-                    PathTemplateSample* terminal =
-                        &((PathTemplateSample*)terminal_template->secondary_samples)[count];
+                    AttachmentSampleMatrixView* terminal =
+                        &((AttachmentSampleMatrixView*)terminal_template->secondary_samples)[count];
                     Vector3* anchor = &source_cell->anchor_position;
 
                     float forward_x = carry * terminal[-1].transform.basis_forward.x;
@@ -125,7 +125,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 } else {
                     float z =
                         delta
-                        + ((PathTemplateSample*)terminal_template->secondary_samples)
+                        + ((AttachmentSampleMatrixView*)terminal_template->secondary_samples)
                               [terminal_template->segment_count - 1]
                               .transform.position.z
                         + source_cell->anchor_position.z
@@ -136,7 +136,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 return 3;
             }
 
-            samples = (PathTemplateSample*)current_template->secondary_samples;
+            samples = (AttachmentSampleMatrixView*)current_template->secondary_samples;
             current_index = sample_index;
             if (delta <= samples[current_index].delta_length)
                 break;
@@ -150,15 +150,15 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     current_template = template_record;
     int terminal_index = current_template->segment_count - 1;
     int sample_offset = 0xa8 * current_index;
-    PathTemplateSample* primary =
-        (PathTemplateSample*)((char*)current_template->primary_samples + sample_offset);
+    AttachmentSampleMatrixView* primary =
+        (AttachmentSampleMatrixView*)((char*)current_template->primary_samples + sample_offset);
 
     float center_x;
     if (current_index == terminal_index) {
         center_x = primary->center_x;
     } else {
         center_x =
-        advanced / ((PathTemplateSample*)current_template->secondary_samples)[current_index].delta_length
+        advanced / ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_index].delta_length
                 * (primary[1].center_x - primary->center_x)
             + primary->center_x;
     }
@@ -168,7 +168,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         lateral_scale = primary->lateral_scale;
     } else {
         lateral_scale =
-        advanced / ((PathTemplateSample*)current_template->secondary_samples)[current_index].delta_length
+        advanced / ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_index].delta_length
                 * (primary[1].lateral_scale - primary->lateral_scale)
             + primary->lateral_scale;
     }
@@ -178,7 +178,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         special_scalar = primary->special_scalar;
     } else {
         special_scalar =
-        advanced / ((PathTemplateSample*)current_template->secondary_samples)[current_index].delta_length
+        advanced / ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_index].delta_length
                 * (primary[1].special_scalar - primary->special_scalar)
             + primary->special_scalar;
     }
@@ -199,8 +199,8 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             &transform,
             &special_scalar);
 
-        PathTemplateSample* active_sample =
-            &((PathTemplateSample*)template_record->secondary_samples)[sample_index];
+        AttachmentSampleMatrixView* active_sample =
+            &((AttachmentSampleMatrixView*)template_record->secondary_samples)[sample_index];
         float z =
             active_sample->delta_dir_to_next.z * progress
             + source_cell->anchor_position.z
@@ -213,8 +213,8 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         output->y = transform.position.y;
         output->z = z;
     } else {
-        PathTemplateSample* secondary = (PathTemplateSample*)current_template->secondary_samples;
-        PathTemplateSample* sample = &secondary[current_index];
+        AttachmentSampleMatrixView* secondary = (AttachmentSampleMatrixView*)current_template->secondary_samples;
+        AttachmentSampleMatrixView* sample = &secondary[current_index];
         Vector3* anchor = &source_cell->anchor_position;
         float base_x =
             advanced * sample->delta_dir_to_next.x * lateral_scale
@@ -241,7 +241,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             to.position.y = 0.0f;
             to.position.x = 0.0f;
             float alpha =
-                advanced / ((PathTemplateSample*)current_template->secondary_samples)[current_index].delta_length;
+                advanced / ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_index].delta_length;
             transform.linear_interpolate_matrix(&from, &to, alpha);
         }
 
