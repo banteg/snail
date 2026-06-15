@@ -1,10 +1,6 @@
 // unhide_star_field @ 0x4346b0 (thiscall, ret int)
 
-class Sprite {
-public:
-    void* vtable; // +0x00
-    int flags;    // +0x04
-};
+#include "sprite.h"
 
 class StarFieldEntry {
 public:

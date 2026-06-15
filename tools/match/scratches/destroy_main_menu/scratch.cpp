@@ -1,18 +1,13 @@
 // destroy_main_menu @ 0x419b30 (cdecl)
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
 
 class BorderManager {
 public:
     void kill_all_borders();
 };
-
-class SpriteManager {
-public:
-    void kill_game_sprites();
-};
-
-extern SpriteManager g_sprite_manager; // data_790f30
 
 void destroy_main_menu()
 {

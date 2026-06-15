@@ -3,14 +3,11 @@
 // kill its sprite, then unlink the slot from the active garbage chain at
 // game+0x359140.
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
-
-class Sprite {
-public:
-    void kill_sprite();
-};
 
 class GarbageHazardSlot;
 

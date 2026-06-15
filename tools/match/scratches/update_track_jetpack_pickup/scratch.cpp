@@ -1,13 +1,10 @@
 // update_track_jetpack_pickup @ 0x43ee50 (thiscall, ret)
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
-
-class Sprite {
-public:
-    void kill_sprite();
-};
 
 struct TrackRuntimeCell {
     char unknown_00[9];

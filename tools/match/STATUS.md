@@ -434,11 +434,11 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TrackRuntimeRow | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Color4f | 23 | 1 | 16 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Sprite | 19 | 1 | 14 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Color4f | 22 | 1 | 16 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 19 | 2 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SpriteManager | 9 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Sprite | 11 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | SpriteManager | 7 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SquidgeState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

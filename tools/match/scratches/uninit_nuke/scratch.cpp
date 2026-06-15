@@ -1,9 +1,6 @@
 // uninit_nuke @ 0x4470e0 (thiscall, ret)
 
-class Sprite {
-public:
-    void kill_sprite();
-};
+#include "sprite.h"
 
 class NukeController {
 public:

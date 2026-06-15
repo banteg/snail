@@ -1,9 +1,6 @@
 // uninit_jet_particles @ 0x43a580 (thiscall, ret)
 
-class Sprite {
-public:
-    void kill_sprite();
-};
+#include "sprite.h"
 
 struct JetParticleSlot {
     Sprite* sprite;        // +0x00

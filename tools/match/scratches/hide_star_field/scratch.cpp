@@ -1,10 +1,6 @@
 // hide_star_field @ 0x434670 (thiscall, ret int)
 
-class Sprite {
-public:
-    void* vtable; // +0x00
-    int flags;    // +0x04
-};
+#include "sprite.h"
 
 class StarFieldEntry {
 public:
