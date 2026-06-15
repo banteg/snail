@@ -357,8 +357,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 |---|---|---:|---:|---:|---|
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TransformMatrix | 35 | 0 | 26 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Sprite | 25 | 0 | 19 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Color4f | 25 | 0 | 16 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Sprite | 25 | 0 | 20 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Color4f | 25 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | ... | 63 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
