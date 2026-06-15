@@ -2,15 +2,22 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**256/665** mapped gameplay functions matched, **15087/326119** bytes (**4.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**263/665** mapped gameplay functions matched, **15377/326119** bytes (**4.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | ✅ | initialize_array_with_constructor | 0x401000 | 42 | 21/21 | 100.00% | 21/21 | - |  |
+| ✅ | hide_border_init | 0x4010e0 | 39 | 9/9 | 100.00% | 9/9 | 1 ok |  |
+| ✅ | unhide_border_init | 0x401110 | 23 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | set_frontend_widget_shortcut_key | 0x402790 | 30 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | stack_widget_below | 0x4027b0 | 48 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | unhighlight_border | 0x4027e0 | 23 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | highlight_border | 0x402800 | 23 | 4/4 | 100.00% | 4/4 | - |  |
+| ✅ | allocate_border | 0x4032a0 | 82 | 23/23 | 100.00% | 23/23 | 3 ok |  |
+| ✅ | activate_all_borders | 0x403300 | 83 | 19/19 | 100.00% | 19/19 | - |  |
+| ✅ | kill_all_borders | 0x4033c0 | 41 | 14/14 | 100.00% | 14/14 | - |  |
+| ✅ | hide_all_borders | 0x4033f0 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | unhide_all_borders | 0x403400 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | border_sprite_extend | 0x404540 | 55 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
@@ -326,9 +333,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 7 type name(s)
+- ready: 8 type name(s)
 - covered: 9 type name(s) with a header plus scratch-local copies
-- divergent: 67 type name(s) with multiple scratch-local shapes
+- divergent: 68 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -337,8 +344,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Color4f | 23 | 0 | 15 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Sprite | 22 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | FrontendWidget | 13 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
-| ... | 61 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| divergent | BorderManager | 18 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
+| ... | 62 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 21 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
@@ -347,9 +354,9 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | ... | 3 more covered finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
 | ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ListHead | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucket | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucketSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SaltListAnchor | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | StarFieldEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ... | 1 more ready finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| ... | 2 more ready finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |

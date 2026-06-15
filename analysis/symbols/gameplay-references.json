@@ -23,6 +23,15 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
+      "address": "0x404360",
+      "name": "apply_all_border_visibility_mode",
+      "kind": "function",
+      "aliases": [
+        "sub_404360"
+      ],
+      "description": "Shared border-manager batch helper called by hide_all_borders and unhide_all_borders to apply a visibility mode to active border records."
+    },
+    {
       "address": "0x408600",
       "name": "initialize_runtime_slot",
       "kind": "function",
