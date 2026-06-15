@@ -8,6 +8,7 @@
 #include "vector3.h"
 
 struct Color4f {
+    Color4f* noop_this_constructor();
     Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
     float store_color4f(float r, float g, float b, float a);      // @ 0x44dbb0
     void set_color_grayscale(float intensity);                    // @ 0x44db90

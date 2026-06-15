@@ -1,14 +1,6 @@
 // draw_twinkle @ 0x404070 (cdecl)
 
-class Color4f {
-public:
-    Color4f* noop_this_constructor();
-
-    float r;
-    float g;
-    float b;
-    float a;
-};
+#include "sprite.h"
 
 void draw_twinkle()
 {
