@@ -1331,6 +1331,17 @@
       "description": "Global sound-effect manager object used by gameplay feedback helpers."
     },
     {
+      "address": "0x78ff90",
+      "name": "g_sprite_texture_table",
+      "kind": "global",
+      "aliases": [
+        "data_78ff90",
+        "unk_78FF90"
+      ],
+      "size": "0xfa0",
+      "description": "1000-entry registered sprite texture table populated by register_sprite_texture and read by sprite texture accessors."
+    },
+    {
       "address": "0x790f30",
       "name": "g_sprite_manager",
       "kind": "global",
