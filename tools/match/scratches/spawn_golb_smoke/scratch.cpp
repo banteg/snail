@@ -7,10 +7,7 @@ struct Game {
     float subgame_rate; // +0x38
 };
 
-struct Player {
-    char unknown_000[0x380];
-    int player_slot; // +0x380
-};
+#include "player.h"
 
 class GolbProjectile {
 public:

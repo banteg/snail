@@ -1,11 +1,7 @@
 // spawn_golb_impact_sprite @ 0x415d80 (thiscall, ret 0x4)
 
 #include "sprite.h"
-
-struct Player {
-    char unknown_000[0x380];
-    int player_slot;       // +0x380
-};
+#include "player.h"
 
 extern unsigned char g_render_effect_flags; // data_4df934
 
