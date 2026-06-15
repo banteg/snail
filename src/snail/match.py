@@ -379,7 +379,10 @@ def _read_printable_c_string(data: bytes, offset: int, *, limit: int = 160) -> s
     if end == -1 or end == offset:
         return None
     raw = data[offset:end]
-    if any(byte < 0x20 or byte > 0x7e for byte in raw):
+    if any(
+        (byte < 0x20 and byte not in b"\t\n\r") or byte > 0x7e
+        for byte in raw
+    ):
         return None
     return raw.decode("ascii")
 

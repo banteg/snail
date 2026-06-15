@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**199/665** mapped gameplay functions matched, **12485/326119** bytes (**3.8%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**201/665** mapped gameplay functions matched, **12707/326119** bytes (**3.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -59,11 +59,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 | 3 ok |  |
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 | - |  |
-| ⚠ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 | 1 unresolved, 7 ok |  |
+| ✅ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 | 8 ok |  |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | request_object_facequad_normals | 0x42f800 | 71 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | request_object_vertex_colours | 0x42f850 | 77 | 30/30 | 100.00% | 30/30 | 2 ok |  |
-| ⚠ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 | 1 unresolved, 4 ok |  |
+| ✅ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 | 5 ok |  |
 | 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 | 4 ok |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
@@ -76,7 +76,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 | - |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | 🚧 | is_neighbor_cell_solid | 0x434b60 | 127 | 46/47 | 68.82% | 11/47 | 1 mismatch, 1 ok |  |
-| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 4 unresolved, 43 ok |  |
+| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 1 mismatch, 3 unresolved, 43 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 | - |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
 | ⚠ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 1 mismatch, 1 unresolved, 1 ok |  |
@@ -124,7 +124,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_slug_hazard | 0x43f8b0 | 128 | 35/35 | 100.00% | 35/35 | 7 ok |  |
 | 🚧 | add_subgoldy_score | 0x4402c0 | 190 | 58/58 | 89.66% | 39/58 | 1 unresolved, 5 ok |  |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
-| 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 unresolved |  |
+| 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 8 unresolved, 8 ok |  |
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | advance_blink_random | 0x4408a0 | 31 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | initialize_blink_random | 0x4408c0 | 74 | 21/21 | 100.00% | 21/21 | 5 ok |  |
@@ -137,7 +137,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | 24/63 | 6 ok |  |
 | 🚧 | deactivate_salt_hazard | 0x441740 | 140 | 39/43 | 41.46% | 0/43 | 1 mismatch, 1 ok |  |
-| 🚧 | update_salt_hazard | 0x4417d0 | 768 | 215/218 | 48.04% | 0/218 | 1 mismatch, 2 unresolved, 14 ok |  |
+| 🚧 | update_salt_hazard | 0x4417d0 | 768 | 215/218 | 48.04% | 0/218 | 2 mismatch, 1 unresolved, 14 ok |  |
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 45/48 | 49.46% | 0/48 | 1 mismatch, 2 ok |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | advance_timer_counters | 0x441b90 | 116 | 38/38 | 100.00% | 38/38 | 7 ok |  |
@@ -174,7 +174,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | 8/8 | 4 ok |  |
 | ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | 20/20 | 6 ok |  |
-| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 2 unresolved, 70 ok |  |
+| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 2 mismatch, 1 unresolved, 70 ok |  |
 | ⚠ | initialize_subgoldy_death | 0x446e30 | 47 | 14/14 | 100.00% | 14/14 | 1 mismatch, 2 ok |  |
 | ⚠ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 | 1 unresolved, 5 ok |  |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 | 2 ok |  |

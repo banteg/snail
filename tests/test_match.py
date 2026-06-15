@@ -315,6 +315,39 @@ def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
     )
 
 
+def test_masked_operand_audit_accepts_matching_string_with_newline() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    mapped[0x2000 : 0x2006] = b"line\n\x00"
+    target = bytes.fromhex("6800204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("6800000000c3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="??_C@line",
+                text='str:"line\\n"',
+                key="str:line\n",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+    assert (
+        result.masked_operand_audit.entries[0].target_references[0].text
+        == 'str:"line\\n"@0x402000'
+    )
+
+
 def test_extract_object_function_maps_reference_symbol_aliases() -> None:
     code = bytes.fromhex("a100000000c3")
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_app", 0)], [(1, 1)]))
