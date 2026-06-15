@@ -1,15 +1,9 @@
 // get_track_cell_row_index @ 0x447040 (thiscall, ret)
 
+#include "track_attachment_types.h"
+
 extern char* g_game_base; // data_4df904
 extern char g_track_row_cells_offset[]; // 0x4340e0
-
-class TrackRowCell {
-public:
-    int get_track_cell_row_index();
-
-    char unknown_00[0x40];
-    int lane_and_flags; // +0x40, low 3 bits are lane
-};
 
 int TrackRowCell::get_track_cell_row_index()
 {

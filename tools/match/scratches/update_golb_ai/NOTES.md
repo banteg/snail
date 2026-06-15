@@ -102,6 +102,12 @@ TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 gameplay owner/projectile/matrix types yet; keep using scratch-local fields
 until more matching islands agree.
 
+2026-06-15 type-header split probe: replacing the tiny local `TrackRowCell`
+view with `track_attachment_types.h` kept the headline score at 49.85%, but
+added a `Player` class/struct warning and an extra masked operand mismatch
+around the late `kill_golb`/grid-cell call region. Keep the compact local
+tile-id view until the surrounding owner/vector scheduling is less fragile.
+
 Measured source-shape rejections:
 
 - before the `TransformMatrix` recovery, replacing the `kind` trail dispatch
