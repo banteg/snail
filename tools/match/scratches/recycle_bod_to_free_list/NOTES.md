@@ -8,7 +8,7 @@ neighbor `prev`/`next` links, updates the list head when removing the first
 node, pushes the node onto `free_top`, clears `0x200`, and returns the recycled
 node pointer.
 
-The exact source shape is the natural typed intrusive-list implementation with
+The exact source shape is the shared typed intrusive-list implementation with
 explicit `next` and `prev` locals. Use this as the small source-of-truth anchor
 for the repeated inline list removal/free-stack blocks in runtime pickup,
 projectile, salt, garbage, fringe, and subgame teardown functions.

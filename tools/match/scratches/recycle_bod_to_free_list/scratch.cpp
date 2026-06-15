@@ -1,22 +1,8 @@
 // recycle_bod_to_free_list @ 0x447290 (thiscall, ret 0x4)
 
+#include "bod_list.h"
+
 int report_errorf(char* format, ...);
-
-struct BodNode {
-    int unknown_00;
-    unsigned int list_flags; // +0x04
-    BodNode* list_prev;      // +0x08
-    BodNode* list_next;      // +0x0c
-};
-
-class BodList {
-public:
-    int recycle_bod_to_free_list(BodNode* node);
-
-    int unknown_00;
-    BodNode* first;    // +0x04
-    BodNode* free_top; // +0x08
-};
 
 int BodList::recycle_bod_to_free_list(BodNode* node)
 {

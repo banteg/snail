@@ -11,6 +11,6 @@ This helper tears down one live Golb projectile:
 - for kind `2`, removes the tertiary BOD at `+0x118` and clears bit `0x1000`
   on the attached sprite at `+0x198`.
 
-The exact source shape uses the same typed `BodNode`/`BodList` intrusive-list
+The exact source shape uses the shared typed `BodNode`/`BodList` intrusive-list
 implementation as exact `recycle_bod_to_free_list`, spells the kind dispatch as
 a `switch`, and calls `kill_sprite` as a sprite member function.

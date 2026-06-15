@@ -1,21 +1,9 @@
 // kill_golb @ 0x414670 (thiscall, ret)
 
+#include "bod_list.h"
 #include "sprite.h"
 
 int report_errorf(char* format, ...);
-
-struct BodNode {
-    int unknown_00;
-    unsigned int list_flags; // +0x04
-    BodNode* list_prev;      // +0x08
-    BodNode* list_next;      // +0x0c
-};
-
-struct BodList {
-    int unknown_00;
-    BodNode* first;    // +0x04
-    BodNode* free_top; // +0x08
-};
 
 extern char* g_game_base; // data_4df904
 

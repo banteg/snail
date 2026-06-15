@@ -357,9 +357,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 9 type name(s)
-- covered: 10 type name(s) with a header plus scratch-local copies
-- divergent: 66 type name(s) with multiple scratch-local shapes
+- ready: 8 type name(s)
+- covered: 11 type name(s) with a header plus scratch-local copies
+- divergent: 65 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -382,7 +382,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | JetpackGaugeController | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugHazardRuntime | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TimerCounters | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BodList | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbProjectile | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -432,6 +431,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Color4f | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | BodList | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vec4 | 2 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
@@ -440,7 +440,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | AttachmentSampleMatrixView | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | Direct3DDevice8 | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ListHead | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
