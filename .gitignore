@@ -7,5 +7,7 @@ zig-pkg/
 zig-out/
 site/
 tools/match/compilers/
+tools/match/bin/wibo
+tools/match/bin/wibo-*
 tools/match/idioms/build/
 tools/match/scratches/*/build/

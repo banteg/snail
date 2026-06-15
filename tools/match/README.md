@@ -32,9 +32,18 @@ tail duplication, register pinning) turned out to be a source idiom.
 
 ## Setup
 
-1. Wine: `brew install --cask wine-stable` (runs x86 win32 under Rosetta).
-   The wrappers use the dedicated prefix `~/.wine-snail`; initialize it once
-   with `WINEPREFIX=~/.wine-snail wineboot -i`.
+1. wibo runner. Put a `wibo` binary on `PATH`, set `WIBO=/path/to/wibo`,
+   or place it at `tools/match/bin/wibo`. On macOS/Apple Silicon, the
+   `wibo-macos` x86_64 release runs under Rosetta 2:
+
+   ```sh
+   mkdir -p tools/match/bin
+   curl -L -o tools/match/bin/wibo \
+     https://github.com/decompals/wibo/releases/download/1.1.0/wibo-macos
+   chmod +x tools/match/bin/wibo
+   ```
+
+   On Linux, use the matching `wibo-i686` or `wibo-x86_64` release asset.
 2. Compilers (gitignored, ~40 MB each) — the decomp.me production bundles:
 
    ```sh
