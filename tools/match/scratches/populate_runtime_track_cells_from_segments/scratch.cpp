@@ -198,8 +198,67 @@ void Game::populate_runtime_track_cells_from_segments()
             *(unsigned char*)(base + 0xa880 + 0x4220 * i) = 0;
     }
 
-    (void)segment_cursor;
+    if (runtime_row_count <= 0)
+        return;
+
+    int segment_row = 0;
+    char* active_segment = 0;
+    for (int build_row = 0; build_row < runtime_row_count; ++build_row) {
+        if (build_row == 0) {
+            active_segment = base + 0x1a7cf8;
+            first_or_last_row = 1;
+            segment_row = 0;
+            *(int*)active_segment = build_row;
+        } else if (build_row == completion_row_start && *(unsigned char*)(base + 0x1b013c) == 0) {
+            active_segment = base + 0x1abf18;
+            first_or_last_row = 1;
+            segment_row = 0;
+            *(int*)active_segment = build_row;
+        } else if (segment_row >= *(int*)(active_segment + 4)) {
+            first_or_last_row = 0;
+            if (*(unsigned char*)(base + 0x1b013c) == 1) {
+                float segment_pick_range;
+                if (level_mode == 1) {
+                    segment_pick_range =
+                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)
+                        * (float)level_segment_count;
+                    int picked = (int)random_float_below(segment_pick_range, "Segdif");
+                    picked = (int)((float)picked * base_subgame_rate);
+                    active_segment = base + 0xa878 + 0x4220 * picked;
+                } else {
+                    segment_pick_range = (float)level_segment_count;
+                    int picked = (int)random_float_below(segment_pick_range, "Segtra");
+                    picked = (int)((float)picked * base_subgame_rate);
+                    active_segment = base + 0xa878 + 0x4220 * picked;
+                }
+                *(unsigned char*)(active_segment + 8) = 1;
+            } else {
+                int picked = segment_cursor;
+                ++segment_cursor;
+                active_segment = base + 0xa878 + 0x4220 * picked;
+                switch_track_mirror();
+            }
+            segment_row = 0;
+            *(int*)active_segment = build_row;
+            if (*(int*)(active_segment + 4) < 0)
+                report_errorf("Negative Segment Length");
+        }
+
+        char* row_record = base + 0xf4 * build_row + 0x5ccac8;
+        if (base[2])
+            *(int*)row_record |= 0x20;
+
+        int authored_flags = *(int*)(active_segment + 0x814 + 0x38 * segment_row);
+        if ((authored_flags & 0x100) != 0)
+            *(int*)row_record |= 0x100;
+        if ((authored_flags & 0x8000) != 0)
+            *(int*)row_record |= 0x8000;
+
+        *(char**)(row_record + 0xec) = active_segment;
+        *(int*)(row_record + 0xf0) = row_event_owner;
+        ++segment_row;
+    }
+
     (void)trampoline_counter;
     (void)first_or_last_row;
-    (void)row_event_owner;
 }
