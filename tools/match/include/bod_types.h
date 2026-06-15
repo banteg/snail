@@ -6,10 +6,13 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
+struct ObjectGeometry;
+
 class BodBase {
 public:
     BodBase* initialize_bod_base();       // @ 0x42f5f0
     int set_bod_object(void* object);     // @ 0x42f5d0
+    ObjectGeometry* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
 
     void* vtable;       // +0x00
     int flags;          // +0x04
