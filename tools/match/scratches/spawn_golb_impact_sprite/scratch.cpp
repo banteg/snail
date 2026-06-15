@@ -33,8 +33,8 @@ void GolbProjectile::spawn_golb_impact_sprite(Vector3* position)
         sprite->gravity_step = 0.0f;
         sprite->progress_step = 0.055555552f;
         sprite->lifetime_step = 0.83333337f;
-        sprite->scale_x = 0.5f;
-        sprite->scale_y = 1.0f;
+        sprite->size_start = 0.5f;
+        sprite->size_end = 1.0f;
         *out_velocity = velocity;
         sprite->position = *position;
     }

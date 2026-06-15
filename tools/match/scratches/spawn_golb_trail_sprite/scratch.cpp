@@ -35,8 +35,8 @@ Sprite* GolbProjectile::spawn_golb_trail_sprite(Vector3* position)
     sprite->progress_step = 0.55555558f;
     sprite->lifetime = 0.0f;
     sprite->lifetime_step = 0.0f;
-    sprite->scale_x = 0.2f;
-    sprite->scale_y = 0.03f;
+    sprite->size_start = 0.2f;
+    sprite->size_end = 0.03f;
     Vector3* velocity = &sprite->velocity;
     velocity->z = 0.0f;
     velocity->y = 0.0f;

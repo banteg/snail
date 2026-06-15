@@ -44,8 +44,8 @@ void GolbProjectile::spawn_golb_smoke(Vector3* position)
 
     Color4f color;
     sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-    sprite->scale_x = 0.1f;
-    sprite->scale_y = 0.5f;
+    sprite->size_start = 0.1f;
+    sprite->size_end = 0.5f;
 
     color.r = velocity.x * 0.40000001f;
     color.g = velocity.y * 0.40000001f;

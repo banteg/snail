@@ -109,8 +109,8 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
                     ((GameRuntime*)(game + 0x74618))->spawn_track_parcel((float*)(game + 0x433f34), game + 0x42fd7c);
                 Sprite* sprite = parcel->sprite;
                 parcel->state = 6;
-                sprite->scale_y = 0.0f;
-                parcel->sprite->scale_x = 0.0f;
+                sprite->size_end = 0.0f;
+                parcel->sprite->size_start = 0.0f;
             }
 
             parcel_target_count = controller->parcel_target_count;

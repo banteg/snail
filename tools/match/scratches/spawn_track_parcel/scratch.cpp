@@ -51,8 +51,8 @@ TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, 
 
         Color4f color;
         parcel->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-        parcel->sprite->scale_x = 1.0f;
-        parcel->sprite->scale_y = 1.0f;
+        parcel->sprite->size_start = 1.0f;
+        parcel->sprite->size_end = 1.0f;
         parcel->sprite->position = parcel->world_position;
 
         if (((int)world_position->z & 1) != 0) {

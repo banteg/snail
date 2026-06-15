@@ -116,8 +116,8 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     D3DXMatrixTranslation(&transform, position->x, position->y, position->z);
     g_d3d_device->vtbl->SetTransform(g_d3d_device, 2, &transform);
 
-    float half_extent = (1.0f - sprite->progress) * sprite->scale_x
-        + sprite->scale_y * sprite->progress;
+    float half_extent = (1.0f - sprite->progress) * sprite->size_start
+        + sprite->size_end * sprite->progress;
     bind_texture_ref(sprite->texture_ref);
     configure_sprite_render_state(sprite);
 

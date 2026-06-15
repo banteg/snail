@@ -52,8 +52,8 @@ int NukeController::initialize_nuke()
 
             (*(slots - 1))->progress = 0.0f;
             (*(slots - 1))->progress_step = 0.0f;
-            (*(slots - 1))->scale_x = 3.0f;
-            (*(slots - 1))->scale_y = 3.0f;
+            (*(slots - 1))->size_start = 3.0f;
+            (*(slots - 1))->size_end = 3.0f;
             Vector3* velocity = &(*(slots - 1))->velocity;
             velocity->z = 0.0f;
             velocity->y = 0.0f;

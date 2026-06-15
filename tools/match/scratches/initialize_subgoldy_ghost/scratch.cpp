@@ -21,8 +21,8 @@ int Player::initialize_subgoldy_ghost(int owner)
     ghost_sprite_a->progress_step = 0.0f;
     ghost_sprite_a->gravity_step = 0.0f;
     ghost_sprite_a->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-    ghost_sprite_a->scale_x = 0.5f;
-    ghost_sprite_a->scale_y = 0.5f;
+    ghost_sprite_a->size_start = 0.5f;
+    ghost_sprite_a->size_end = 0.5f;
     ghost_sprite_a->position.x = 4.5f;
     ghost_sprite_a->position.y = 1.0f;
     ghost_sprite_a->position.z = 0.0f;
@@ -33,8 +33,8 @@ int Player::initialize_subgoldy_ghost(int owner)
     ghost_sprite_b->progress_step = 0.0f;
     ghost_sprite_b->gravity_step = 0.0f;
     ghost_sprite_b->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-    ghost_sprite_b->scale_x = 0.5f;
-    ghost_sprite_b->scale_y = 0.5f;
+    ghost_sprite_b->size_start = 0.5f;
+    ghost_sprite_b->size_end = 0.5f;
     ghost_sprite_b->position.x = -4.5f;
     ghost_sprite_b->position.y = 1.0f;
     ghost_sprite_b->position.z = 0.0f;

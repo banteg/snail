@@ -42,8 +42,8 @@ char GarbageHazardSlot::spawn_garbage_smoke_particle(
 
         Color4f color;
         sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-        sprite->scale_x = 0.30000001f;
-        sprite->scale_y = 1.3f;
+        sprite->size_start = 0.30000001f;
+        sprite->size_end = 1.3f;
 
         color.r = velocity->x * 0.2f;
         color.g = velocity->y * 0.2f;

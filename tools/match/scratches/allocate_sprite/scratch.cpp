@@ -36,7 +36,7 @@ Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a,
         sprite->texture_ref_a = g_sprite_texture_table[texture_a];
     }
 
-    sprite->scale_y = 0.0f;
+    sprite->size_end = 0.0f;
     sprite->texture_id = primary_texture_id;
     sprite->frame_progress = 0.0f;
     sprite->frame_progress_step = 0.0f;
