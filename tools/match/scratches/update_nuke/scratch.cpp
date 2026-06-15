@@ -1,19 +1,6 @@
 // update_nuke @ 0x4471e0 (thiscall, ret)
 
-#include "sprite.h"
-
-class NukeController {
-public:
-    int update_nuke();
-
-    int state; // +0x00
-    void* owner_player; // +0x04
-    float orbit_axis_step; // +0x08
-    float orbit_axis; // +0x0c
-    float phase; // +0x10
-    float phase_step; // +0x14
-    Sprite* sprite_slots[25]; // +0x18
-};
+#include "nuke_controller.h"
 
 float sine(float radians);
 float cosine(float radians);

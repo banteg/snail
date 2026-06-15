@@ -1,6 +1,6 @@
 // initialize_nuke @ 0x447110 (thiscall, ret)
 
-#include "sprite.h"
+#include "nuke_controller.h"
 
 struct Game {
     char unknown_00[0x74650];
@@ -12,20 +12,6 @@ struct Player {
     float world_z; // +0x70
     char unknown_74[0x380 - 0x74];
     int player_slot; // +0x380
-};
-
-class NukeController {
-public:
-    int initialize_nuke();
-    int update_nuke();
-
-    int state; // +0x00
-    Player* owner_player; // +0x04
-    float orbit_axis_step; // +0x08
-    float orbit_axis; // +0x0c
-    float phase; // +0x10
-    float phase_step; // +0x14
-    Sprite* sprite_slots[25]; // +0x18
 };
 
 extern Game* g_game_base; // data_4df904

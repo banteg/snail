@@ -1,15 +1,6 @@
 // uninit_nuke @ 0x4470e0 (thiscall, ret)
 
-#include "sprite.h"
-
-class NukeController {
-public:
-    void uninit_nuke();
-
-    int state; // +0x00
-    char unknown_04[0x18 - 0x04];
-    Sprite* sprite_slots[25]; // +0x18
-};
+#include "nuke_controller.h"
 
 void NukeController::uninit_nuke()
 {
