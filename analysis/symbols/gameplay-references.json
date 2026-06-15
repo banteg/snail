@@ -98,6 +98,24 @@
       "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
+      "address": "0x435e3c",
+      "name": "set_subgame_features_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L314"
+      ],
+      "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
+    },
+    {
+      "address": "0x446e60",
+      "name": "initialize_subgoldy_death_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L307"
+      ],
+      "description": "Compiler-emitted switch jump table that follows initialize_subgoldy_death immediately after the terminal return and padding byte."
+    },
+    {
       "address": "0x44c920",
       "name": "j_rand",
       "kind": "function",
