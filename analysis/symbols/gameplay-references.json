@@ -865,6 +865,16 @@
       "description": "0x800-bucket zero parcel pool initialized by initialize_zero_parcel_bucket_pool."
     },
     {
+      "address": "0x643190",
+      "name": "g_ghost_payload_z",
+      "kind": "global",
+      "aliases": [
+        "flt_643190",
+        "data_643190"
+      ],
+      "description": "Ghost payload z accumulator used while marking level-mode 4 track cells."
+    },
+    {
       "address": "0x643194",
       "name": "g_replay_accum_z",
       "kind": "global",
