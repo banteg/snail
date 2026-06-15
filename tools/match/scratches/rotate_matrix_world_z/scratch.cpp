@@ -1,18 +1,9 @@
 // rotate_matrix_world_z @ 0x44cf50 (thiscall)
 
-#include "vector_types.h"
+#include "transform_matrix.h"
 
 float cosine(float angle);
 float sine(float angle);
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-
-    void rotate_matrix_world_z(float angle);
-};
 
 void TransformMatrix::rotate_matrix_world_z(float angle)
 {

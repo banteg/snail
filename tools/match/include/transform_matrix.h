@@ -7,6 +7,15 @@
 #include "vector_types.h"
 
 struct TransformMatrix {
+    TransformMatrix* initialize_uniform_scale_matrix(float scale); // @ 0x44cde0
+    TransformMatrix* initialize_matrix_from_values(
+        float m00, float m01, float m02, float m03,
+        float m10, float m11, float m12, float m13,
+        float m20, float m21, float m22, float m23,
+        float m30, float m31, float m32, float m33); // @ 0x44cfe0
+    TransformMatrix* multiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1a0
+    TransformMatrix* premultiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1e0
+    TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
     void set_matrix_rotation_identity();              // @ 0x44d250
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0

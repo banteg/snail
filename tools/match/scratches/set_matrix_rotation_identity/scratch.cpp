@@ -1,11 +1,4 @@
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-};
+#include "transform_matrix.h"
 
 void __fastcall set_matrix_rotation_identity(TransformMatrix* transform)
 {
