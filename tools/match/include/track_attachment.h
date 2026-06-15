@@ -8,7 +8,7 @@
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
-#include "golb.h"
+#include "vector3.h"
 #include "vector_types.h"
 
 struct TransformMatrix;

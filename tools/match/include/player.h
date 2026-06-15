@@ -5,7 +5,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "golb.h"
+#include "vector3.h"
 
 struct AttachmentRecord {
     int unknown_00[38];
