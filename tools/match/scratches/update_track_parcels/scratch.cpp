@@ -1,18 +1,10 @@
 // update_track_parcels @ 0x443130 (thiscall, ret)
 
-class TrackParcelSlot {
-public:
-    virtual int update_track_parcel();
-    int update_track_parcels();
+#include "track_parcel_runtime.h"
 
-    char unknown_04[0x38 - 0x04];
-    int state;                 // +0x38
-    char unknown_3c[0x8c - 0x3c];
-};
-
-int TrackParcelSlot::update_track_parcels()
+int TrackParcelPool::update_track_parcels()
 {
-    TrackParcelSlot* slot = this;
+    TrackParcelRuntime* slot = slots;
     int result;
     int count = 50;
     do {
@@ -20,7 +12,7 @@ int TrackParcelSlot::update_track_parcels()
         if (result != 0) {
             result = slot->update_track_parcel();
         }
-        slot = (TrackParcelSlot*)((char*)slot + 0x8c);
+        ++slot;
         --count;
     } while (count != 0);
     return result;

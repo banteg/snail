@@ -2,10 +2,6 @@
 
 #include "track_parcel_runtime.h"
 
-struct TrackParcelPool {
-    TrackParcelRuntime* allocate_track_parcel_slot();
-};
-
 class SubgameRuntime {
 public:
     TrackParcelRuntime* spawn_track_parcel(Vector3* world_position, void* owner_hint);

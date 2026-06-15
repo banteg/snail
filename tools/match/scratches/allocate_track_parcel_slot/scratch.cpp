@@ -1,21 +1,10 @@
 // allocate_track_parcel_slot @ 0x443190 (thiscall, ret)
 
+#include "track_parcel_runtime.h"
+
 int report_errorf(char* format, ...);
 
-struct TrackParcelSlot {
-    char unknown_00[0x38];
-    int state;                 // +0x38
-    char unknown_3c[0x8c - 0x3c];
-};
-
-class TrackParcelSlots {
-public:
-    TrackParcelSlot* allocate_track_parcel_slot();
-
-    TrackParcelSlot slots[50];
-};
-
-TrackParcelSlot* TrackParcelSlots::allocate_track_parcel_slot()
+TrackParcelRuntime* TrackParcelPool::allocate_track_parcel_slot()
 {
     int index = 0;
     int* state = &slots[0].state;
