@@ -5,10 +5,10 @@ struct WarningSampleBackend {
     void stop_warning_sample_handle(int handle);
 };
 
-extern WarningSampleBackend g_warning_sample_backend;
+extern WarningSampleBackend g_sound_effect_manager;
 
 void stop_warning_sample()
 {
-    int handle = g_warning_sample_backend.play_warning_sample_backend(0x32);
-    g_warning_sample_backend.stop_warning_sample_handle(handle);
+    int handle = g_sound_effect_manager.play_warning_sample_backend(0x32);
+    g_sound_effect_manager.stop_warning_sample_handle(handle);
 }

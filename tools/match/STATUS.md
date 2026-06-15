@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**173/665** mapped gameplay functions matched, **11285/326119** bytes (**3.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**185/665** mapped gameplay functions matched, **11519/326119** bytes (**3.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -12,9 +12,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
 | ⚠ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 2 unresolved, 1 ok |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
-| ⚠ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 unresolved |  |
-| ⚠ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 unresolved |  |
-| ⚠ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 unresolved |  |
+| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 ok |  |
+| ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
+| ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
 | ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | 17/17 | 6 ok |  |
@@ -44,7 +44,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 | 1 mismatch, 2 ok |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
-| ⚠ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | 11/11 | 3 unresolved, 4 ok |  |
+| ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | 11/11 | 7 ok |  |
 | ✅ | allocate_path_template_samples | 0x41b0a0 | 72 | 23/23 | 100.00% | 23/23 | 4 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 1 mismatch, 2 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 678/726 | 46.44% | 0/726 | 10 mismatch, 2 unresolved, 33 ok |  |
@@ -66,9 +66,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 | 1 unresolved, 4 ok |  |
 | 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 | 4 ok |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |
-| ⚠ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 unresolved |  |
-| ⚠ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 unresolved |  |
-| ⚠ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 unresolved |  |
+| ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  |
+| ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | 13/13 | - |  |
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 | - |  |
@@ -180,7 +180,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 | 2 ok |  |
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  |
-| ⚠ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% | 7/7 | 2 mismatch, 2 ok |  |
+| ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% | 7/7 | 4 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 57.69% | 0/52 | 6 ok |  |
 | ⚠ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | 22/22 | 1 unresolved, 1 ok |  |
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | 2/2 | - |  |
@@ -223,7 +223,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | 7/7 | - |  |
 | ⚠ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 unresolved |  |
-| ⚠ | initialize_global_identity_matrix | 0x44c880 | 16 | 4/4 | 100.00% | 4/4 | 1 unresolved, 1 ok |  |
+| ✅ | initialize_global_identity_matrix | 0x44c880 | 16 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | convert_math_type32_to_16 | 0x44c890 | 19 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | convert_math_type16_to_32 | 0x44c8b0 | 24 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | initialize_math_random_table | 0x44c8d0 | 36 | 10/10 | 100.00% | 10/10 | 4 ok |  |
@@ -231,7 +231,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | initialize_trigonometry_tables | 0x44c930 | 62 | 18/18 | 100.00% | 18/18 | 2 unresolved, 3 ok |  |
 | ⚠ | set_math_random_seed | 0x44c970 | 12 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
 | ✅ | cosine | 0x44c980 | 80 | 21/21 | 100.00% | 21/21 | 7 ok |  |
-| ⚠ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 | 1 unresolved, 3 ok |  |
+| ✅ | sine | 0x44c9d0 | 34 | 7/7 | 100.00% | 7/7 | 4 ok |  |
 | ⚠ | arccosine | 0x44ca00 | 10 | 3/3 | 100.00% | 3/3 | 1 unresolved |  |
 | ✅ | atan2_positive | 0x44ca10 | 148 | 48/48 | 100.00% | 48/48 | 7 ok |  |
 | ✅ | square_root | 0x44cab0 | 7 | 3/3 | 100.00% | 3/3 | - |  |
@@ -272,8 +272,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | 8/8 | 1 unresolved, 1 ok |  |
 | ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
-| ⚠ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
-| ⚠ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | 5/5 | 1 unresolved |  |
+| ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
+| ✅ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 
 ## Type Consolidation
 

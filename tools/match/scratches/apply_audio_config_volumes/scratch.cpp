@@ -17,5 +17,5 @@ int apply_audio_config_volumes()
 {
     g_audio_backend.set_global_sample_volume_config(g_config_sample_volume);
     return g_audio_backend.set_global_stream_volume_config(
-        g_stream_volume_scale * g_config_stream_volume);
+        g_config_stream_volume * g_stream_volume_scale);
 }

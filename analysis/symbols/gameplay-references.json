@@ -21,6 +21,24 @@
       "description": "Relocatable player block offset added to the live game root."
     },
     {
+      "address": "0x432dd0",
+      "name": "play_registered_warning_sample",
+      "kind": "function",
+      "aliases": [
+        "sub_432dd0"
+      ],
+      "description": "Warning-sample playback helper called by play_warning_sample_backend."
+    },
+    {
+      "address": "0x432de0",
+      "name": "stop_registered_warning_sample",
+      "kind": "function",
+      "aliases": [
+        "sub_432de0"
+      ],
+      "description": "Warning-sample stop helper called by stop_warning_sample_handle."
+    },
+    {
       "address": "0x48b380",
       "name": "ftol",
       "kind": "function",
@@ -261,6 +279,46 @@
       "description": "Completion snapshot suppression flags read by complete_subgame."
     },
     {
+      "address": "0x4b7230",
+      "name": "g_right_mouse_button_latch",
+      "kind": "global",
+      "aliases": [
+        "data_4b7230"
+      ],
+      "size": "0x2",
+      "description": "Right mouse button latch array cleared by read_right_mouse_button_state and updated by the game window procedure."
+    },
+    {
+      "address": "0x4b7234",
+      "name": "g_left_mouse_button_state",
+      "kind": "global",
+      "aliases": [
+        "data_4b7234"
+      ],
+      "size": "0x2",
+      "description": "Left mouse button state array returned by read_left_mouse_button_state and updated by the game window procedure."
+    },
+    {
+      "address": "0x4b7640",
+      "name": "g_right_mouse_button_state",
+      "kind": "global",
+      "aliases": [
+        "data_4b7640"
+      ],
+      "size": "0x2",
+      "description": "Right mouse button state array returned by read_right_mouse_button_state and updated by the game window procedure."
+    },
+    {
+      "address": "0x4b7764",
+      "name": "g_left_mouse_button_latch",
+      "kind": "global",
+      "aliases": [
+        "data_4b7764"
+      ],
+      "size": "0x2",
+      "description": "Left mouse button latch array cleared by read_left_mouse_button_state and updated by the game window procedure."
+    },
+    {
       "address": "0x4df904",
       "name": "g_game_base",
       "kind": "global",
@@ -270,6 +328,34 @@
         "g_game"
       ],
       "description": "Global storage for the live game/application root pointer."
+    },
+    {
+      "address": "0x4df918",
+      "name": "g_config_sample_volume",
+      "kind": "global",
+      "aliases": [
+        "data_4df918"
+      ],
+      "description": "Saved sample-volume config loaded from SnailMail.cfg and applied to the audio backend."
+    },
+    {
+      "address": "0x4df91c",
+      "name": "g_config_stream_volume",
+      "kind": "global",
+      "aliases": [
+        "data_4df91c"
+      ],
+      "description": "Saved stream-volume config loaded from SnailMail.cfg and applied to the audio backend."
+    },
+    {
+      "address": "0x4dfad0",
+      "name": "g_mouse_wheel_delta",
+      "kind": "global",
+      "aliases": [
+        "data_4dfad0"
+      ],
+      "size": "0x8",
+      "description": "Two-slot mouse wheel delta array consumed and cleared by consume_mouse_wheel_delta."
     },
     {
       "address": "0x4dfadc",
@@ -289,6 +375,24 @@
         "data_50331c"
       ],
       "description": "BOD-base constructor counter incremented by initialize_bod_base."
+    },
+    {
+      "address": "0x53c7ec",
+      "name": "g_archive_data_base",
+      "kind": "global",
+      "aliases": [
+        "data_53c7ec"
+      ],
+      "description": "Base pointer for the loaded archive data buffer."
+    },
+    {
+      "address": "0x53c7f8",
+      "name": "g_archive_index_records",
+      "kind": "global",
+      "aliases": [
+        "data_53c7f8"
+      ],
+      "description": "Loaded archive index record table pointer tested by archive and resource-loading helpers."
     },
     {
       "address": "0x53c800",
@@ -528,6 +632,15 @@
       "description": "Shared audio backend object used by voice, sample, and stream helpers."
     },
     {
+      "address": "0x753c64",
+      "name": "g_stream_volume_scale",
+      "kind": "global",
+      "aliases": [
+        "data_753c64"
+      ],
+      "description": "Runtime stream-volume scale multiplied with the saved stream-volume config before applying audio settings."
+    },
+    {
       "address": "0x753c90",
       "name": "g_bass_module",
       "kind": "global",
@@ -580,6 +693,24 @@
         "data_77ff3c"
       ],
       "description": "Gameplay random-table cursor reset by initialize_math_random_table and advanced by next_math_random_value."
+    },
+    {
+      "address": "0x77ff40",
+      "name": "g_identity_matrix",
+      "kind": "global",
+      "aliases": [
+        "data_77ff40"
+      ],
+      "description": "Shared identity transform initialized by initialize_global_identity_matrix."
+    },
+    {
+      "address": "0x77ff8c",
+      "name": "g_sine_table",
+      "kind": "global",
+      "aliases": [
+        "data_77ff8c"
+      ],
+      "description": "Trigonometry sine lookup table initialized at startup and read by sine."
     },
     {
       "address": "0x777f3c",
