@@ -619,6 +619,41 @@ def test_masked_operand_audit_accepts_matching_rdata_constants() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_x87_rdata_float_takes_priority_over_printable_bytes() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<f", mapped, 0x2000, 0.7)
+    target = bytes.fromhex("d80d00204000c3")  # fmul dword [0x402000]; ret
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("d80d00000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="real@4@3ffe99999a0000000000",
+                text="const:f32:0.699999988",
+                key="const:f32:3f333333",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+            sections=(ImageSection(".rdata", 0x402000, 0x402004, 0),),
+        ),
+        target_va=0x401000,
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.text == "const:f32:0.699999988@0x402000"
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
 def test_rdata_image_pointer_is_not_reported_as_string_or_float() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<I", mapped, 0x2000, 0x401000)

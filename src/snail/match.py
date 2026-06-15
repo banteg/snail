@@ -747,6 +747,7 @@ def _resolve_image_reference(
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
     reference_manifest: ReferenceSymbolManifest | None = None,
+    prefer_rdata_float: bool = False,
 ) -> MaskedReference:
     text: str
     key: str | None
@@ -814,6 +815,15 @@ def _resolve_image_reference(
             and section.name == ".rdata"
             and _u32_points_into_range(image.mapped, offset, address_range)
         )
+        if (
+            prefer_rdata_float
+            and section is not None
+            and section.name == ".rdata"
+            and not looks_like_rdata_pointer
+            and (constant := _format_f32_constant(image.mapped, offset, value)) is not None
+        ):
+            text, key = constant
+            return MaskedReference(0, "", "image", value, text, key, True)
         string = None if looks_like_rdata_pointer else _read_printable_c_string(image.mapped, offset)
         if string is not None:
             return MaskedReference(
@@ -846,6 +856,21 @@ def _resolve_image_reference(
 
 
 _OPERAND_SIZE_NAMES = {1: "byte", 2: "word", 4: "dword", 8: "qword", 10: "tword"}
+_X87_F32_MEMORY_MNEMONICS = frozenset(
+    (
+        "fadd",
+        "fcom",
+        "fcomp",
+        "fdiv",
+        "fdivr",
+        "fld",
+        "fmul",
+        "fst",
+        "fstp",
+        "fsub",
+        "fsubr",
+    )
+)
 
 
 def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
@@ -861,6 +886,10 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
         parts.append(f"0x{mem.disp:x}" if mem.disp >= 0 else f"-0x{-mem.disp:x}")
     size = _OPERAND_SIZE_NAMES.get(operand.size, str(operand.size))
     return f"{size} [{'+'.join(parts)}]"
+
+
+def _prefers_rdata_f32(insn, operand) -> bool:
+    return operand.size == 4 and insn.mnemonic in _X87_F32_MEMORY_MNEMONICS
 
 
 def disassemble_normalized_function(
@@ -929,12 +958,14 @@ def disassemble_normalized_function(
         *,
         operand_index: int,
         kind: str,
+        prefer_rdata_float: bool = False,
     ) -> MaskedReference:
         resolved = _resolve_image_reference(
             value,
             image=image,
             manifest=manifest,
             reference_manifest=reference_manifest,
+            prefer_rdata_float=prefer_rdata_float,
         )
         return MaskedReference(
             operand_index=operand_index,
@@ -1009,7 +1040,12 @@ def disassemble_normalized_function(
                     )
                 elif is_masked_value(operand.mem.disp):
                     masked_references.append(
-                        image_reference(operand.mem.disp, operand_index=operand_index, kind="disp")
+                        image_reference(
+                            operand.mem.disp,
+                            operand_index=operand_index,
+                            kind="disp",
+                            prefer_rdata_float=_prefers_rdata_f32(insn, operand),
+                        )
                     )
             else:
                 operands.append("?")
