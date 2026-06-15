@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**201/665** mapped gameplay functions matched, **12707/326119** bytes (**3.9%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**203/665** mapped gameplay functions matched, **12953/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -79,7 +79,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 1 mismatch, 3 unresolved, 43 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 | - |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
-| ⚠ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 1 mismatch, 1 unresolved, 1 ok |  |
+| ⚠ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 1 mismatch, 2 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 218/1245 | 7.52% | 0/1245 | 1 mismatch, 14 ok |  |
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
@@ -166,7 +166,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
-| ⚠ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | 31/31 | 1 unresolved, 5 ok |  |
+| ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | 31/31 | 6 ok |  |
 | ✅ | hide_gameplay_scores | 0x445f10 | 35 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | unhide_gameplay_scores | 0x445f40 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | initialize_snail_skin | 0x445f60 | 27 | 6/6 | 100.00% | 6/6 | 2 ok |  |
@@ -176,7 +176,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | 20/20 | 6 ok |  |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 2 mismatch, 1 unresolved, 70 ok |  |
 | ⚠ | initialize_subgoldy_death | 0x446e30 | 47 | 14/14 | 100.00% | 14/14 | 1 mismatch, 2 ok |  |
-| ⚠ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 | 1 unresolved, 5 ok |  |
+| ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 | 6 ok |  |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 | 2 ok |  |
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  |

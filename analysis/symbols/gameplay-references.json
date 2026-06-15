@@ -2,6 +2,20 @@
   "name": "Snail Mail gameplay reference symbols",
   "symbols": [
     {
+      "address": "0x400002",
+      "name": "k_frontend_text_widget_flags",
+      "kind": "constant",
+      "aliases": [],
+      "description": "Frontend text-widget flag word passed to initialize_frontend_widget by show_times_up_message and other centered text widgets."
+    },
+    {
+      "address": "0x400802",
+      "name": "k_frontend_sprite_button_flags",
+      "kind": "constant",
+      "aliases": [],
+      "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
+    },
+    {
       "address": "0x408600",
       "name": "initialize_runtime_slot",
       "kind": "function",
@@ -772,6 +786,13 @@
         "data_753cc0"
       ],
       "description": "BASS_Pause function pointer used to pause the audio backend."
+    },
+    {
+      "address": "0x75cfff",
+      "name": "k_runtime_flags_mode4",
+      "kind": "constant",
+      "aliases": [],
+      "description": "Subgame runtime feature flag preset assigned by set_subgame_features for level mode 4."
     },
     {
       "address": "0x777d70",
