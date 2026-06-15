@@ -1,10 +1,6 @@
 // initialize_nuke @ 0x447110 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "sprite.h"
 
 struct Game {
     char unknown_00[0x74650];
@@ -16,24 +12,6 @@ struct Player {
     float world_z; // +0x70
     char unknown_74[0x380 - 0x74];
     int player_slot; // +0x380
-};
-
-struct Sprite {
-    int unknown_00;
-    int flags; // +0x04
-    char unknown_08[0x48 - 0x08];
-    Vector3 position; // +0x48
-    Vector3 velocity; // +0x54
-    float scale_x; // +0x60
-    float scale_y; // +0x64
-    int age_or_frame; // +0x68
-    int frame_step; // +0x6c
-    char unknown_70[0x78 - 0x70];
-    int gravity_step; // +0x78
-};
-
-struct SpriteManager {
-    Sprite* allocate_sprite(int owner, int sprite_id, int texture_a, int texture_b);
 };
 
 class NukeController {
@@ -51,7 +29,6 @@ public:
 };
 
 extern Game* g_game_base; // data_4df904
-extern SpriteManager g_sprite_manager; // data_790f30
 
 int NukeController::initialize_nuke()
 {
@@ -73,8 +50,8 @@ int NukeController::initialize_nuke()
             sprite->flags |= 0x800;
             slots++;
 
-            (*(slots - 1))->age_or_frame = zero;
-            (*(slots - 1))->frame_step = zero;
+            (*(slots - 1))->progress = 0.0f;
+            (*(slots - 1))->progress_step = 0.0f;
             (*(slots - 1))->scale_x = 3.0f;
             (*(slots - 1))->scale_y = 3.0f;
             Vector3* velocity = &(*(slots - 1))->velocity;
@@ -85,7 +62,7 @@ int NukeController::initialize_nuke()
             position->z = 0.0f;
             position->y = 0.0f;
             position->x = 0.0f;
-            (*(slots - 1))->gravity_step = zero;
+            (*(slots - 1))->gravity_step = 0.0f;
             count--;
         } while (count);
     }

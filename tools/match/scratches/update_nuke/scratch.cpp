@@ -1,15 +1,6 @@
 // update_nuke @ 0x4471e0 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
-
-struct Sprite {
-    char unknown_00[0x48];
-    Vector3 position; // +0x48
-};
+#include "sprite.h"
 
 class NukeController {
 public:

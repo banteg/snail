@@ -13,7 +13,8 @@ Recovered behavior:
   `owner->interaction_max_z`;
 - all other nonzero states advance the health bob phase, wrap only when the
   phase is strictly greater than `1.0f`, and write
-  `(sine(phase * tau) + 1.0f) * 0.30000001f + world_y` to the sprite y lane.
+  `(sine(phase * tau) + 1.0f) * 0.30000001f + world_y` to
+  `sprite->position.y`.
 
 The unlink source shape intentionally mirrors exact `update_track_jetpack_pickup`
 with duplicated state-1/state-2 blocks. The remaining diff is source-shape and

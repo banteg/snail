@@ -1,18 +1,9 @@
 // update_ring_or_special_effect_particle @ 0x43e780 (thiscall)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "sprite.h"
 
 float sine(float radians);
 float cosine(float radians);
-
-struct Sprite {
-    char unknown_00[0x48];
-    Vector3 position; // +0x48
-};
 
 struct Player {
     char unknown_00[0x380];

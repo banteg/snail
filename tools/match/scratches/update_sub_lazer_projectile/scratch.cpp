@@ -5,6 +5,8 @@
 // update never integrates position. Update-state (+0x38) is distinct
 // from the pool free flag (+0x80) used by the shoot scan.
 
+#include "sprite.h"
+
 struct SubLazerSlot;
 
 struct FreeAnchor {
@@ -21,13 +23,6 @@ struct GameView {
 struct OwnerRecord {
     char unknown_00[0x2980];
     float kill_plane_z; // +0x2980
-};
-
-struct Sprite {
-    void kill_sprite();
-
-    char unknown_00[0x4c];
-    float local_y; // +0x4c
 };
 
 extern char* g_game_base; // data_4df904
@@ -153,5 +148,5 @@ update_bob:
     bob_phase = advanced;
     if (advanced > 1.0f)
         bob_phase = advanced - 1.0f;
-    sprite->local_y = sine(bob_phase * 6.2831855f) * 0.30000001f + bob_base_y;
+    sprite->position.y = sine(bob_phase * 6.2831855f) * 0.30000001f + bob_base_y;
 }

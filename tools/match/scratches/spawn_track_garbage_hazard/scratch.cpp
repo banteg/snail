@@ -3,6 +3,8 @@
 // seed its live body position from the runtime cell, project attachment rows,
 // link it into both active lists, and allocate the sprite presentation.
 
+#include "sprite.h"
+
 typedef unsigned int DWORD;
 
 struct PositionBits {
@@ -15,10 +17,6 @@ struct TransformMatrix {
     float rows[16];
 };
 
-struct SpriteManager {
-    void* allocate_sprite(int owner, int sprite_id, int texture_a, int texture_b);
-};
-
 class Game {
 public:
     DWORD* spawn_track_garbage_hazard(int cell, int player);
@@ -26,7 +24,6 @@ public:
 };
 
 extern char* g_game_base; // data_4df904
-extern SpriteManager g_sprite_manager; // data_790f30
 
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 float random_float_below(float upper_bound, const char* tag);

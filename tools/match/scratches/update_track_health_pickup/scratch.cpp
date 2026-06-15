@@ -1,17 +1,11 @@
 // update_track_health_pickup @ 0x43ecc0 (thiscall, ret)
 
+#include "sprite.h"
+
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 float sine(float radians);
-
-class Sprite {
-public:
-    void kill_sprite();
-
-    char unknown_00[0x4c];
-    float local_y; // +0x4c
-};
 
 struct TrackRuntimeCell {
     char unknown_00[9];
@@ -152,5 +146,5 @@ update_bob:
     bob_phase = advanced;
     if (advanced > 1.0f)
         bob_phase = advanced - 1.0f;
-    sprite->local_y = (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f + world_y;
+    sprite->position.y = (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f + world_y;
 }
