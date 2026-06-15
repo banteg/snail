@@ -5,10 +5,10 @@ extern char g_track_row_cells_offset[]; // 0x4340e0
 
 class TrackRowCell {
 public:
-    int get_row_index();
+    int get_track_cell_row_index();
 };
 
-int TrackRowCell::get_row_index()
+int TrackRowCell::get_track_cell_row_index()
 {
     int lane = *(int*)((char*)this + 0x40) & 7;
     char* row_cell = (char*)this - lane * 0x54;

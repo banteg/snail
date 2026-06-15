@@ -99,7 +99,8 @@ seed:
     ((FollowState*)(g_follow_state_block + (int)player_base))->player =
         (Player*)(g_player_block + (int)player_base);
     FOLLOW->template_record->installed_heading_delta =
-        *(float*)(g_row_heading_table + (int)g_game_base + 4 * (61 * cell->get_row_index()));
+        *(float*)(g_row_heading_table + (int)g_game_base
+                  + 4 * (61 * cell->get_track_cell_row_index()));
     FOLLOW->orientation_b = 0;
     FOLLOW->orientation_a = 0;
     char* update_base = g_game_base;

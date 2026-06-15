@@ -56,7 +56,7 @@ extern Game* g_game; // data_4df904 (this TU caches the base, reloading after ca
 
 struct FringeObject {
     void wall2_emitter_maybe_fire_sub_lazer();
-    int get_row_index(); // get_track_cell_row_index, thiscall
+    int get_track_cell_row_index();
     void destroy_sub_lazer_projectile();
 
     char unknown_00[0x10];
@@ -123,7 +123,7 @@ cull_check:
         }
         float scratch[4];
         int* skirt = get_track_skirt_color(&g_game->skirt_color_owner, scratch);
-        int* record = (int*)((char*)g_game->row_color_records + 244 * get_row_index());
+        int* record = (int*)((char*)g_game->row_color_records + 244 * get_track_cell_row_index());
         record[0] = skirt[0];
         record[1] = skirt[1];
         record[2] = skirt[2];

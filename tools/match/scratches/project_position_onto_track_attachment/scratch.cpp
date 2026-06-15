@@ -43,7 +43,7 @@ struct TrackRowCell {
     char unknown_1c[0x38 - 0x1c];
     PathTemplate* attachment_template_record;
 
-    int get_row_index();
+    int get_track_cell_row_index();
 };
 
 struct TrackRuntimeRow {
@@ -64,7 +64,7 @@ char* Game::project_position_onto_track_attachment(float* position, float* out_a
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->attachment_cell;
         PathTemplate* template_record = cell->attachment_template_record;
-        int sample_index = (int)position[2] - cell->get_row_index();
+        int sample_index = (int)position[2] - cell->get_track_cell_row_index();
         PathTemplateSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {
             TransformMatrix transform;

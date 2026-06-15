@@ -57,7 +57,7 @@ struct TrackRowCell {
     char unknown_1c[0x38 - 0x1c];
     PathTemplate* attachment_template_record;
 
-    int get_row_index();
+    int get_track_cell_row_index();
 };
 
 struct TrackRuntimeRow {
@@ -188,20 +188,20 @@ int FollowState::update_track_attachment_follow_state(
                 int count = (int)current_template->segment_count;
                 int current_index = (int)this->sample_index;
                 if (current_index == count - 1) {
-                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     AttachmentRuntimeRecord* attached = (AttachmentRuntimeRecord*)row->attachment_runtime_record;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_24 = attached->scalar_a4;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_34 = 1.0f;
                 } else if (current_index == (3 * count) / 7) {
-                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->flags |= 0x80;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     AttachmentRuntimeRecord* attached = (AttachmentRuntimeRecord*)row->attachment_runtime_record;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_24 = attached->scalar_a0;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_row_index()].row;
+                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_34 = 0.6f;
                 }
             }

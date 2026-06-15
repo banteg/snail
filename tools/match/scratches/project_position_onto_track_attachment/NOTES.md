@@ -10,7 +10,7 @@ Recovered semantics:
 - clears `*out_angle` before checking the row attachment flag `0x40`;
 - returns the row pointer unchanged when the attachment flag is clear;
 - derives the attachment sample index from `(int)position.z -
-  cell->get_row_index()`;
+  cell->get_track_cell_row_index()`;
 - for template kind `42`, calls the template record's
   `compute_kind42_attachment_transform` with the sample scalar, input x/y, a
   local transform, and `out_angle`, then writes the resulting transform

@@ -2,7 +2,7 @@
 
 class TrackRowCell {
 public:
-    int get_row_index();
+    int get_track_cell_row_index();
 
     char unknown_00[0x3c];
     unsigned char tile_id; // +0x3c
@@ -24,7 +24,7 @@ public:
 
 bool Game::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
 {
-    int row = cell->get_row_index();
+    int row = cell->get_track_cell_row_index();
     int lane = cell->lane_word & 7;
     bool result = false;
     if ((unsigned int)(lane + dx) < 8) {

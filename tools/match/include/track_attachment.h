@@ -50,7 +50,7 @@ struct TrackRowCell {
     char unknown_1c[0x38 - 0x1c];
     AttachmentPathTemplate* attachment_template_record; // +0x38
 
-    int get_row_index(); // get_track_cell_row_index, thiscall
+    int get_track_cell_row_index();
 };
 
 class FollowState {
