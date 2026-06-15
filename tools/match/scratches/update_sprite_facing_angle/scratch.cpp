@@ -1,14 +1,7 @@
 // update_sprite_facing_angle @ 0x44e410 (thiscall, ret 0x4)
 
 #include "sprite.h"
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-};
+#include "transform_matrix.h"
 
 float atan2_positive(float y, float x);
 

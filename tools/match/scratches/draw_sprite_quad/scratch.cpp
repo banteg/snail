@@ -2,19 +2,12 @@
 
 #include "sprite.h"
 #include "direct3d_device8_view.h"
-#include "vector_types.h"
+#include "transform_matrix.h"
 
 struct Vec3 {
     float x;
     float y;
     float z;
-};
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
 };
 
 class ColorBGRA8 {
