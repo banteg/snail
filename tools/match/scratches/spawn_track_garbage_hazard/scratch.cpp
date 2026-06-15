@@ -86,20 +86,20 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
         slot[1] |= 0x200u;
     }
 
-    DWORD* sprite = (DWORD*)g_sprite_manager.allocate_sprite(
+    Sprite* sprite = g_sprite_manager.allocate_sprite(
         *(DWORD*)(((DWORD*)slot_base_words)[877697] + 896),
         114 - (int)((float)next_math_random_value() * -0.00012207031f),
         -1,
         -1);
     ((DWORD*)slot_base_words)[877694] = (DWORD)sprite;
-    sprite[1] |= 0x800u;
-    *(DWORD*)(((DWORD*)slot_base_words)[877694] + 120) = 0;
-    *(DWORD*)(((DWORD*)slot_base_words)[877694] + 104) = 0;
-    *(DWORD*)(((DWORD*)slot_base_words)[877694] + 108) = 0;
-    *(DWORD*)(((DWORD*)slot_base_words)[877694] + 96) = *(DWORD*)scale;
-    *(DWORD*)(((DWORD*)slot_base_words)[877694] + 100) = *(DWORD*)scale;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->flags |= 0x800u;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->gravity_step = 0.0f;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->progress = 0.0f;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->progress_step = 0.0f;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->size_start = *scale;
+    ((Sprite*)((DWORD*)slot_base_words)[877694])->size_end = *scale;
 
-    DWORD* result = (DWORD*)(((DWORD*)slot_base_words)[877694] + 72);
+    DWORD* result = (DWORD*)&((Sprite*)((DWORD*)slot_base_words)[877694])->position;
     result[0] = *(DWORD*)live_position;
     result[1] = *((DWORD*)live_position + 1);
     result[2] = *((DWORD*)live_position + 2);

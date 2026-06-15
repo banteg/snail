@@ -57,3 +57,10 @@ Residuals:
   field-wise live-position copies were tested; only x/z/y staging plus the
   two-step y temporary helped. Do not force the remaining projection order with
   dummy volatile locals.
+- 2026-06-16 Sprite audit: the sprite tail now spells the confirmed `Sprite`
+  fields by name (`gravity_step`, `progress`, `progress_step`,
+  `size_start`, `size_end`, and `position`) while deliberately reloading the
+  sprite through the slot field for each write. A cleaner local `Sprite*`
+  spelling is semantically equivalent but regresses to 77.26% because MSVC keeps
+  the pointer live and collapses the native-looking reloads. Current result
+  remains 92.58%, 140/143 insns.
