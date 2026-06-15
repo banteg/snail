@@ -1,6 +1,7 @@
 // refresh_fringe_object_draw_list @ 0x439b00 (thiscall, ret)
 
 #include "sprite.h"
+#include "bod_list.h"
 
 class SubgameRuntime {
 public:
@@ -20,12 +21,6 @@ struct FringeObject {
     float world_z;           // +0x18
     char unknown_1c[0x28 - 0x1c];
     Color4f skirt_color;     // +0x28
-};
-
-struct BodList {
-    int unknown_00;
-    FringeObject* first;    // +0x04
-    FringeObject* free_top; // +0x08
 };
 
 extern char* g_game_base; // data_4df904
@@ -59,10 +54,10 @@ void FringeObject::refresh_fringe_object_draw_list()
         if (prev != 0)
             prev->list_next = list_next;
         else
-            list->first = list_next;
+            list->first = (BodNode*)list_next;
 
-        list_next = list->free_top;
-        list->free_top = this;
+        list_next = (FringeObject*)list->free_top;
+        list->free_top = (BodNode*)this;
 
         unsigned int updated = list_flags;
         updated &= ~0x200;

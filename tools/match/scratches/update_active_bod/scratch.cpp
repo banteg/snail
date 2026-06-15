@@ -1,5 +1,7 @@
 // update_active_bod @ 0x433e80 (thiscall, ret)
 
+#include "bod_list.h"
+
 int report_errorf(char* format, ...);
 
 struct ActiveBod {
@@ -11,12 +13,6 @@ struct ActiveBod {
     ActiveBod* list_next;    // +0x0c
     char unknown_10[0x38 - 0x10];
     float world_z;           // +0x38
-};
-
-struct BodList {
-    int unknown_00;
-    ActiveBod* first;    // +0x04
-    ActiveBod* free_top; // +0x08
 };
 
 extern char* g_game_base; // data_4df904
@@ -43,10 +39,10 @@ void ActiveBod::update_active_bod()
         if (prev != 0)
             prev->list_next = list_next;
         else
-            list->first = list_next;
+            list->first = (BodNode*)list_next;
 
-        list_next = list->free_top;
-        list->free_top = this;
+        list_next = (ActiveBod*)list->free_top;
+        list->free_top = (BodNode*)this;
 
         unsigned int updated = list_flags;
         updated &= ~0x200;
