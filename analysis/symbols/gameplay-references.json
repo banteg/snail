@@ -425,6 +425,36 @@
       "description": "Statically linked CRT fopen helper used by file and archive-loading wrappers."
     },
     {
+      "address": "0x48b430",
+      "name": "fseek",
+      "kind": "function",
+      "aliases": [
+        "_fseek",
+        "sub_48b430"
+      ],
+      "description": "Statically linked CRT fseek helper used by stream/archive readers that preserve file position."
+    },
+    {
+      "address": "0x48b4bc",
+      "name": "ftell",
+      "kind": "function",
+      "aliases": [
+        "_ftell",
+        "sub_48b4bc"
+      ],
+      "description": "Statically linked CRT ftell helper used by stream/archive readers that preserve file position."
+    },
+    {
+      "address": "0x48b8ab",
+      "name": "remove",
+      "kind": "function",
+      "aliases": [
+        "_remove",
+        "sub_48b8ab"
+      ],
+      "description": "Statically linked CRT remove helper wrapped by delete_file_path and used by delete_file_path_with_directory_walk."
+    },
+    {
       "address": "0x48bfdb",
       "name": "srand",
       "kind": "function",
