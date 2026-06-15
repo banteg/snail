@@ -60,6 +60,25 @@
       "description": "Compiler-emitted state switch jump table used by update_frontend_state_machine."
     },
     {
+      "address": "0x4137b8",
+      "name": "configure_sprite_render_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L317"
+      ],
+      "description": "Compiler-emitted switch target table used by configure_sprite_render_state."
+    },
+    {
+      "address": "0x4137d4",
+      "name": "configure_sprite_render_state_lookup_table",
+      "kind": "global",
+      "aliases": [
+        "$L316"
+      ],
+      "size": "0xe",
+      "description": "Compiler-emitted byte lookup table mapping sparse sprite draw modes to configure_sprite_render_state case indexes."
+    },
+    {
       "address": "0x415270",
       "name": "update_golb_ai_jump_table",
       "kind": "jump_table",
@@ -837,6 +856,15 @@
       "description": "Left mouse button latch array cleared by read_left_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4b7790",
+      "name": "g_texture_refs",
+      "kind": "global",
+      "aliases": [
+        "data_4b7790"
+      ],
+      "description": "Shared TextureRefList backing get_or_create_texture_ref and sprite texture registration."
+    },
+    {
       "address": "0x4df868",
       "name": "g_current_display_mode",
       "kind": "global",
@@ -925,6 +953,15 @@
         "data_4dfadc"
       ],
       "description": "BOD constructor counter incremented by initialize_bod."
+    },
+    {
+      "address": "0x502fec",
+      "name": "g_d3d_device",
+      "kind": "global",
+      "aliases": [
+        "data_502fec"
+      ],
+      "description": "Global IDirect3DDevice8 pointer used by render helpers to program render state and submit primitives."
     },
     {
       "address": "0x50331c",

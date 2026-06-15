@@ -15,6 +15,7 @@ Recovered sprite relationships:
 - `Sprite +0x1c/+0x20/+0x24` are primary/secondary texture-record pointers.
 - `Sprite +0x9c` stores the primary texture id used for metadata lookups.
 - Texture-record flags at `0x2000/0x4000` propagate into sprite flags, and
-  texture metadata at `+0x90/+0x94` populates sprite `+0xa0/+0xb0`.
+  texture metadata at `+0x90/+0x94` populates sprite frame count `+0xa0` and
+  frame-progress step `+0xb0`.
 
 Exact match: 100.00%, 81/81 instructions, with ten masked operands audited.

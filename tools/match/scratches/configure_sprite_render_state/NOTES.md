@@ -1,0 +1,9 @@
+# configure_sprite_render_state
+
+Small sprite-renderer state mapper used only by `draw_sprite_quad`.
+
+- `SpriteTextureRecord +0x28` is the sprite draw/render-state mode.
+- Native modes `0`, `1`, `2`, `10`, `11`, and `13` program D3D render state
+  `0x1b/0x13/0x14`; other modes return the mode unchanged.
+- The native sparse switch lowers through a lookup table before the case jump
+  table, so the repeated default path is intentional.

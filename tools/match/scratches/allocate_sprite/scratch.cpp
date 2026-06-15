@@ -1,13 +1,13 @@
 // allocate_sprite @ 0x44e2a0 (thiscall, ret 0x10)
 
-struct SpriteTextureRecord {
+struct TextureRef {
     unsigned int flags; // +0x00
     char unknown_04[0x90 - 0x04];
-    int field_90;
-    int field_94;
+    int frame_count; // +0x90
+    int frame_progress_step; // +0x94
 };
 
-extern SpriteTextureRecord* g_sprite_texture_table[]; // data_78ff90
+extern TextureRef* g_sprite_texture_table[]; // data_78ff90
 
 class Sprite {
 public:
@@ -19,18 +19,18 @@ public:
     Sprite* next; // +0x0c
     Sprite* prev; // +0x10
     char unknown_14[0x1c - 0x14];
-    SpriteTextureRecord* texture_ref; // +0x1c
-    SpriteTextureRecord* texture_ref_a; // +0x20
-    SpriteTextureRecord* texture_ref_b; // +0x24
+    TextureRef* texture_ref; // +0x1c
+    TextureRef* texture_ref_a; // +0x20
+    TextureRef* texture_ref_b; // +0x24
     char unknown_28[0x64 - 0x28];
     float scale_y; // +0x64
     char unknown_68[0x9c - 0x68];
     int texture_id; // +0x9c
-    int field_a0;
-    int field_a4;
-    int field_a8;
-    int field_ac;
-    int field_b0;
+    int frame_count; // +0xa0
+    int frame; // +0xa4
+    int frame_step; // +0xa8
+    int frame_progress; // +0xac
+    int frame_progress_step; // +0xb0
 };
 
 extern Sprite g_sprite_sentinel; // data_814cb0
@@ -80,13 +80,13 @@ Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a,
 
     sprite->scale_y = 0.0f;
     sprite->texture_id = primary_texture_id;
-    sprite->field_ac = zero;
-    sprite->field_b0 = zero;
-    sprite->field_a0 = g_sprite_texture_table[primary_texture_id]->field_90;
+    sprite->frame_progress = zero;
+    sprite->frame_progress_step = zero;
+    sprite->frame_count = g_sprite_texture_table[primary_texture_id]->frame_count;
 
     if ((g_sprite_texture_table[primary_texture_id]->flags & 0x2000) != 0) {
         sprite->flags |= 0x2000;
-        sprite->field_b0 = g_sprite_texture_table[primary_texture_id]->field_94;
+        sprite->frame_progress_step = g_sprite_texture_table[primary_texture_id]->frame_progress_step;
         if ((g_sprite_texture_table[primary_texture_id]->flags & 0x4000) != 0) {
             sprite->flags |= 0x4000;
         }
