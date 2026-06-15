@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**263/665** mapped gameplay functions matched, **15377/326119** bytes (**4.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**268/665** mapped gameplay functions matched, **15570/326119** bytes (**4.8%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -18,6 +18,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_all_borders | 0x4033c0 | 41 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | hide_all_borders | 0x4033f0 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | unhide_all_borders | 0x403400 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | reset_tooltip | 0x403be0 | 51 | 16/16 | 100.00% | 16/16 | 2 ok |  |
+| ✅ | draw_twinkle | 0x404070 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | border_sprite_extend | 0x404540 | 55 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
@@ -26,6 +28,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
+| ✅ | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
@@ -265,7 +268,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | initialize_font_wave_state | 0x449c70 | 41 | 5/5 | 100.00% | 5/5 | 4 ok |  |
+| ✅ | is_key_pressed_edge | 0x44bb10 | 34 | 11/11 | 100.00% | 11/11 | 2 ok |  |
 | ✅ | initialize_mouse_authored_scale_from_clip_rect | 0x44bbb0 | 30 | 7/7 | 100.00% | 7/7 | 3 ok |  |
+| ✅ | resolve_uncaptured_cursor_sensitivity_scale | 0x44bc20 | 44 | 11/11 | 100.00% | 11/11 | 5 ok |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | is_mouse_captured | 0x44c3b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | release_mouse_cursor | 0x44c400 | 21 | 8/8 | 100.00% | 8/8 | - |  |
@@ -335,17 +340,17 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 8 type name(s)
 - covered: 9 type name(s) with a header plus scratch-local copies
-- divergent: 68 type name(s) with multiple scratch-local shapes
+- divergent: 69 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TransformMatrix | 34 | 0 | 25 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Color4f | 23 | 0 | 15 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Color4f | 24 | 0 | 16 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Sprite | 22 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BorderManager | 18 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
-| ... | 62 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
+| ... | 63 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 21 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
