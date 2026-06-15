@@ -38,6 +38,7 @@ struct AttachmentSample {            // stride 0xa8
 struct TrackRowCell;
 
 struct AttachmentPathTemplate {
+    void allocate_path_template_samples(); // @ 0x41b0a0
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,

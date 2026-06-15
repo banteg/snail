@@ -380,7 +380,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SoundEffectManager | 6 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | JetpackGaugeController | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplate | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugHazardRuntime | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TimerCounters | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BodList | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -388,6 +387,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbProjectile | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplate | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ScoreStats | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -398,7 +398,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRoot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GarbageHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | NukeController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplateSample | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RowEventDisplayController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SaltHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -422,6 +421,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | HighScoreScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InvincibleShellController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplateSample | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeTrackCell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SaltHazardPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
