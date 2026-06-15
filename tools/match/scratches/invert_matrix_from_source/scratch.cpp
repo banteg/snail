@@ -1,15 +1,6 @@
 // invert_matrix_from_source @ 0x44d330 (thiscall)
 
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-
-    TransformMatrix* invert_matrix_from_source(TransformMatrix* source);
-};
+#include "transform_matrix.h"
 
 TransformMatrix* TransformMatrix::invert_matrix_from_source(TransformMatrix* source)
 {

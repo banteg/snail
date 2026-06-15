@@ -16,6 +16,8 @@ struct TransformMatrix {
     TransformMatrix* multiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1a0
     TransformMatrix* premultiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1e0
     TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
+    TransformMatrix* invert_matrix_in_place(); // @ 0x44d280
+    TransformMatrix* invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330
     void set_matrix_rotation_identity();              // @ 0x44d250
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0

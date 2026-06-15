@@ -1,13 +1,6 @@
 // multiply_vector_by_matrix_copy @ 0x44cac0 (thiscall)
 
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-};
+#include "transform_matrix.h"
 
 struct Vec3 {
     float x;

@@ -1,13 +1,6 @@
 // rotate_vector_by_matrix @ 0x44cc20 (thiscall)
 
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-};
+#include "transform_matrix.h"
 
 struct Vec3 {
     float x;

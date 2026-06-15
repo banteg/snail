@@ -1,15 +1,6 @@
 // invert_matrix_in_place @ 0x44d280 (thiscall)
 
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-
-    TransformMatrix* invert_matrix_in_place();
-};
+#include "transform_matrix.h"
 
 TransformMatrix* TransformMatrix::invert_matrix_in_place()
 {
