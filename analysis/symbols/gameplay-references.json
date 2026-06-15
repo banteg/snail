@@ -116,6 +116,15 @@
       "description": "Compiler-emitted switch jump table that follows initialize_subgoldy_death immediately after the terminal return and padding byte."
     },
     {
+      "address": "0x449c00",
+      "name": "debug_report_stub",
+      "kind": "function",
+      "aliases": [
+        "sub_449c00"
+      ],
+      "description": "Release-stripped debug/report helper stub used by score, fringe, salt, and loading callsites."
+    },
+    {
       "address": "0x44c920",
       "name": "j_rand",
       "kind": "function",
@@ -154,6 +163,16 @@
         "sub_44e6c0"
       ],
       "description": "ASCII case-insensitive string comparator used by path, mesh, landscape, and music lookup helpers."
+    },
+    {
+      "address": "0x48b32c",
+      "name": "sprintf",
+      "kind": "function",
+      "aliases": [
+        "_sprintf",
+        "sub_48b32c"
+      ],
+      "description": "Statically linked CRT sprintf helper used by formatted path, HUD, and debug-buffer writers."
     },
     {
       "address": "0x48b380",
@@ -719,6 +738,24 @@
       ],
       "size": "0x330",
       "description": "51-entry track colour bank initialized by build_track_colours."
+    },
+    {
+      "address": "0x751478",
+      "name": "g_time_trial_string",
+      "kind": "global",
+      "aliases": [
+        "data_751478"
+      ],
+      "description": "Shared Time Trial HUD string buffer written by format_time_trial_string and copied into subgame UI records."
+    },
+    {
+      "address": "0x751498",
+      "name": "g_voice_manager",
+      "kind": "global",
+      "aliases": [
+        "unk_751498"
+      ],
+      "description": "Shared voice manager object initialized at startup and used by subgoldy, attachment, cutscene, and damage feedback callsites."
     },
     {
       "address": "0x75165c",
