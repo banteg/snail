@@ -3,29 +3,7 @@
 // envelopes, lane lean, and exit rolls, then blends live toward it at
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
 #include "track_attachment.h"
-
-struct TransformMatrix {
-    float right[3];
-    float pad0;
-    float up[3];
-    float pad1;
-    float forward[3];
-    float pad2;
-    Vector3 position; // +0x30
-    float pad3;
-
-    TransformMatrix* initialize_matrix_from_values(
-        float m00, float m01, float m02, float m03,
-        float m10, float m11, float m12, float m13,
-        float m20, float m21, float m22, float m23,
-        float m30, float m31, float m32, float m33);
-    void orthogonalize_matrix();
-    void rotate_matrix_world_x(float angle);
-    void rotate_matrix_world_z(float angle);
-    void set_matrix_identity();
-    void multiply_matrix_in_place(TransformMatrix* other);
-    void linear_interpolate_matrix(TransformMatrix* from, TransformMatrix* to, float alpha);
-};
+#include "transform_matrix.h"
 
 struct Game {
     char unknown_00[0x38];
@@ -172,7 +150,7 @@ void CameramanState::update_cameraman()
     desired_matrix.rotate_matrix_world_z(lean_roll + steer_roll * 0.17f);
 
     if (player->follow_active == 1) {
-        transform.set_matrix_identity();
+        set_matrix_identity(&transform);
         transform.rotate_matrix_world_z(player->follow_orientation_a);
         desired_matrix.multiply_matrix_in_place(&transform);
         desired_matrix.rotate_matrix_world_z(player->follow_orientation_b);
