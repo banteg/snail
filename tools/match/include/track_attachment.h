@@ -8,15 +8,21 @@
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
+#include "vector_types.h"
 #include "player.h"
 
+struct TransformMatrix;
+
+struct AttachmentTransform {
+    Vector4 basis_right;             // +0x00
+    Vector4 basis_up;                // +0x10
+    Vector4 basis_forward;           // +0x20
+    Vector4 position;                // +0x30
+};
+
 struct AttachmentSample {            // stride 0xa8
-    char unknown_00[0x14];
-    float active;                    // +0x14, sample participates when > 0
-    char unknown_18[0x30 - 0x18];
-    Vector3 offset;                  // +0x30
-    char unknown_3c[0x40 - 0x3c];
-    float matrix[12];                // +0x40, local-frame rotation
+    AttachmentTransform transform;   // +0x00
+    float inverse_matrix[12];        // +0x40, local-frame rotation
     char unknown_70[0x80 - 0x70];
     Vector3 delta_dir_to_next;       // +0x80
     float delta_length;              // +0x8c, segment length (the swept-entry
@@ -36,6 +42,8 @@ struct AttachmentPathTemplate {
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,
         TrackRowCell* cell); // @ 0x42c770
+    int compute_kind42_attachment_transform(
+        float radius, float x, float y, TransformMatrix* transform, float* out_angle);
 
     char unknown_00[0x38];
     int kind;                        // +0x38

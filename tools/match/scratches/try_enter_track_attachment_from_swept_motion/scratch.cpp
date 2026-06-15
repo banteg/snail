@@ -40,8 +40,11 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
         return;
     do {
         AttachmentSample* s = &secondary_samples[idx];
-        if (s->active > 0.0f) {
-            sample_origin = Vector3(v19 + s->offset.x, v20 + s->offset.y, v21 + s->offset.z);
+        if (s->transform.basis_up.y > 0.0f) {
+            sample_origin = Vector3(
+                v19 + s->transform.position.x,
+                v20 + s->transform.position.y,
+                v21 + s->transform.position.z);
             v31 = sample_origin.y;
             v32 = sample_origin.z;
             v22 = px - sample_origin.x;
@@ -50,14 +53,17 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
             v24 = pz;
             v24 -= v32;
             local = Vector3(v22, v23, v24);
-            local.rotate_vector_by_matrix(s->matrix);
+            local.rotate_vector_by_matrix(s->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
                 && local.y >= -0.2
                 && local.z > 0.0f) {
                 AttachmentSample* hit = &secondary_samples[idx];
                 if (local.z < hit->delta_length) {
-                    hit_origin = Vector3(v19 + hit->offset.x, v20 + hit->offset.y, v21 + hit->offset.z);
+                    hit_origin = Vector3(
+                        v19 + hit->transform.position.x,
+                        v20 + hit->transform.position.y,
+                        v21 + hit->transform.position.z);
                     v35 = hit_origin.y;
                     v36 = hit_origin.z;
                     swept_position = Vector3(sweep_x + px, py + sweep_y, pz + sweep_z);
@@ -69,7 +75,7 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
                     v27 = v34;
                     v27 -= v36;
                     probe = Vector3(v25, v26, v27);
-                    probe.rotate_vector_by_matrix(hit->matrix);
+                    probe.rotate_vector_by_matrix(hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;
                 }

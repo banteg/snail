@@ -1,49 +1,11 @@
 // project_position_onto_track_attachment @ 0x4444b0 (thiscall, ret 0x8)
-#include "vector_types.h"
-
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "track_attachment.h"
 
 struct TransformMatrix {
     Vector4 basis_right;
     Vector4 basis_up;
     Vector4 basis_forward;
     Vector4 position;
-};
-
-struct PathTemplateSample {
-    TransformMatrix transform;
-    char unknown_40[0x40];
-    Vector3 delta_dir_to_next;
-    float delta_length;
-    float center_x;
-    float rotation_scalar_94;
-    float rotation_scalar_98;
-    float lateral_scale;
-    float special_scalar;
-    char unknown_a4[0x4];
-};
-
-struct PathTemplate {
-    int compute_kind42_attachment_transform(
-        float radius, float x, float y, TransformMatrix* transform, float* out_angle);
-
-    char unknown_00[0x38];
-    int kind;
-    char unknown_3c[0x1c];
-    PathTemplateSample* primary_samples;
-};
-
-struct TrackRowCell {
-    char unknown_00[0x10];
-    Vector3 anchor_position;
-    char unknown_1c[0x38 - 0x1c];
-    PathTemplate* attachment_template_record;
-
-    int get_track_cell_row_index();
 };
 
 struct TrackRuntimeRow {
@@ -63,9 +25,9 @@ char* Game::project_position_onto_track_attachment(float* position, float* out_a
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->attachment_cell;
-        PathTemplate* template_record = cell->attachment_template_record;
+        AttachmentPathTemplate* template_record = cell->attachment_template_record;
         int sample_index = (int)position[2] - cell->get_track_cell_row_index();
-        PathTemplateSample* sample = &template_record->primary_samples[sample_index];
+        AttachmentSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {
             TransformMatrix transform;
             int result = template_record->compute_kind42_attachment_transform(
