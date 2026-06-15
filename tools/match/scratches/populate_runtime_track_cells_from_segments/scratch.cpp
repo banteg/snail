@@ -3,6 +3,7 @@
 
 struct Color4f {
     void set_color_white();
+    Color4f* store_color4f(float r, float g, float b, float a);
 };
 
 void __fastcall set_matrix_identity(void* transform);
@@ -44,11 +45,13 @@ extern char* g_game_base; // data_4df904
 double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
 int report_errorf(const char* format, ...);
+int debug_report_stub(const char* format, ...);
 
 class Game {
 public:
     void populate_runtime_track_cells_from_segments();
     bool switch_track_mirror();
+    char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
     char unknown_00[0x34];
     float challenge_difficulty_scalar; // +0x34
@@ -337,9 +340,231 @@ void Game::populate_runtime_track_cells_from_segments()
         if ((authored_flags & 0x1000) != 0)
             *(int*)row_record |= 0x1000;
         *(int*)(row_record + 0xe8) = *(int*)(authored_row + 0x34);
+
+        first_or_last_row = 0;
+        for (int lane = 0; lane < 8; ++lane) {
+            int authored_lane;
+            if (base[2])
+                authored_lane = 7 - lane;
+            else
+                authored_lane = lane;
+
+            char* cell = base + 0x54 * (lane + build_row * 8);
+            int cell_word = *(int*)(cell + 0x3bfb08);
+            ((unsigned char*)&cell_word)[0] &= 0xe0;
+            cell_word ^= lane & 7;
+            *(int*)(cell + 0x3bfb08) = cell_word;
+
+            *(int*)(cell + 0x3bfb0c) = 0;
+            *(int*)(cell + 0x3bfb10) = 0;
+            *(int*)(cell + 0x3bfb14) = 0;
+            *(int*)(cell + 0x3bfb18) = 0;
+
+            char edge_row;
+            if (build_row >= first_block_row_count) {
+                edge_row = 0;
+                if (build_row >= completion_row_start)
+                    edge_row = 1;
+            } else {
+                edge_row = 1;
+            }
+
+            ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(0);
+
+            char* glyph_ptr = active_segment + (authored_lane << 8) + lane + 0x14;
+            char glyph = *glyph_ptr;
+            char normalized =
+                normalize_segment_glyph_for_track_flags(glyph, build_row, edge_row);
+            switch (normalized) {
+            case ' ':
+                *(unsigned char*)(cell + 0x3bfb04) = 0;
+                *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                break;
+            case '#':
+                *(unsigned char*)(cell + 0x3bfb04) = 0x20;
+                *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                break;
+            case '$':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x17;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '&':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x22;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '(':
+                ++trampoline_counter;
+                *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                if (trampoline_counter == 15)
+                    trampoline_counter = 0;
+                if (trampoline_counter == 8) {
+                    ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x444dc));
+                    *(int*)(cell + 0x3bfacc) |= 0x20;
+                    ((Color4f*)(base + 0x54 * (lane + build_row * 8 + 0xb6cc)))
+                        ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
+                }
+                *(unsigned char*)(cell + 0x3bfb04) = 0x16;
+                break;
+            case '+':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x18;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case ',':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44124));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x1c;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '-':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x15;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '.':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                *(unsigned char*)(cell + 0x3bfb04) = 1;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '0':
+                if (level_mode == 1) {
+                    *(int*)row_record = (*(int*)row_record & 0xffffbfff) | 1;
+                    *(int*)(row_record + 0x9c) = 0;
+                    *(float*)(row_record + 0x90) = (float)lane - 3.5f;
+                    *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
+                    *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
+                    if (base[2])
+                        *(float*)(row_record + 0x90) *= -1.0f;
+                }
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                if ((*(int*)row_record & 0xc0) == 0) {
+                    ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                    *(unsigned char*)(cell + 0x3bfb04) = 0xf;
+                    *(int*)(cell + 0x3bfacc) |= 0x20;
+                } else {
+                    *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                    *(unsigned char*)(cell + 0x3bfb04) = 0;
+                }
+                break;
+            case '<':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d2c));
+                *(int*)(cell + 0x3bfae4) = 0;
+                *(int*)(cell + 0x3bfae8) = 0;
+                *(unsigned char*)(cell + 0x3bfb04) = 6;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '=':
+            case '|':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x445f4));
+                *(unsigned char*)(cell + 0x3bfb04) = 0xe;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '>':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d2c));
+                *(int*)(cell + 0x3bfae4) = 0;
+                *(int*)(cell + 0x3bfae8) = 0;
+                if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
+                    *(unsigned char*)(cell + 0x3bfb04) = 9;
+                    *(unsigned char*)(cell + 0x3bf864) = 0xc;
+                } else {
+                    *(unsigned char*)(cell + 0x3bfb04) = 3;
+                }
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '@':
+                *(unsigned char*)(cell + 0x3bfb04) = 0;
+                *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                switch_track_mirror();
+                break;
+            case 'F':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x13;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 'G':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x11;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 'J':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x19;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 'M':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x12;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 'R':
+                *(unsigned char*)(cell + 0x3bfb04) = 0x23;
+                *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
+                break;
+            case '[':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44cf4));
+                *(int*)(cell + 0x3bfae4) = 0;
+                *(int*)(cell + 0x3bfae8) = 0;
+                *(unsigned char*)(cell + 0x3bfb04) = 5;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '_':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0xf;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 'o':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x10;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '{':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44cf4));
+                *(int*)(cell + 0x3bfae4) = 0;
+                *(int*)(cell + 0x3bfae8) = 0;
+                if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
+                    *(unsigned char*)(cell + 0x3bfb04) = 8;
+                    *(unsigned char*)(cell + 0x3bf864) = 0xb;
+                } else {
+                    *(unsigned char*)(cell + 0x3bfb04) = 2;
+                }
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case '}':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d64));
+                *(int*)(cell + 0x3bfae4) = 0;
+                *(int*)(cell + 0x3bfae8) = 0;
+                if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
+                    *(unsigned char*)(cell + 0x3bfb04) = 0xa;
+                    *(unsigned char*)(cell + 0x3bf864) = 0xd;
+                } else {
+                    *(unsigned char*)(cell + 0x3bfb04) = 4;
+                }
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            case 's':
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                *(unsigned char*)(cell + 0x3bfb04) = 0x21;
+                *(int*)(cell + 0x3bfacc) |= 0x20;
+                break;
+            default:
+                debug_report_stub(
+                    "TrackError:%c in Segment %s\n",
+                    normalize_segment_glyph_for_track_flags(glyph, build_row, 1),
+                    *(char**)(active_segment + 0x10));
+                break;
+            }
+        }
         ++segment_row;
     }
 
     (void)trampoline_counter;
-    (void)first_or_last_row;
 }

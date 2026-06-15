@@ -7,7 +7,7 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-row-copy slice: 13.51%, 517/1245 instructions (`tools/match/match.sh
+lane/glyph slice: 18.90%, 935/1245 candidate instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -30,7 +30,11 @@ setup before the authored-row/glyph pass:
   row-flag bits (`0x100`/`0x8000`), and row source/owner fields;
 - completion-row segment override/extension and the authored-row payload copy
   before glyph normalization: bod/parcel row payloads, pass-through row flags,
-  and the authored row event id.
+  and the authored row event id;
+- the lane setup and first glyph normalization switch slice: lane word reset,
+  cell payload clear, edge-row classification, bod reset, normalizer dispatch,
+  hidden/floor/wall/ramp/simple bod tiles, digit row payloads, trampoline
+  cadence, mirror glyph, warning tile, and prior-row ramp retags.
 
 2026-06-14 type cleanup: `set_color_white` is now declared as a void mutator,
 matching the exact standalone helper and `build_track_colours`. This removes
@@ -46,10 +50,16 @@ masked operands 26 ok / 0 mismatch. This covers the special completion-row
 segment handoff plus the authored row bod/parcel payload fields and row flag
 pass-through bits.
 
-Residuals: the scratch still stops before the 8-lane glyph normalization switch,
-so most of the function remains unmatched. The accepted source should expand
-next at the lane setup and glyph switch. Do not try to pad the frame or hide the
-missing switch with dummy work.
+2026-06-15 lane/glyph slice: focused score moved from 13.51% to 18.90%, with
+masked operands 46 ok / 0 mismatch and one unresolved jump-table displacement
+on the candidate side. This keeps the switch source honest enough to preserve
+call-target alignment; the earlier long-lived cell bod local regressed into a
+set_bod_object/normalizer call mismatch and was avoided.
+
+Residuals: the scratch now enters the 8-lane glyph normalization switch but
+still stops before the entry attachment (`P`/`p`) install path and the shared
+post-switch anchor, color/skirt, UV, and sub-object placement block. Do not try
+to pad the frame or hide the missing post-switch work with dummy code.
 
 ## Build sequence
 
