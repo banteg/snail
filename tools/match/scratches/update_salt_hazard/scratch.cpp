@@ -129,7 +129,7 @@ void SaltHazardSlot::update_salt_hazard()
         if (position.y >= 0.0f && position.z >= owner_game->salt_kill_plane_z) {
             GridCell* grid = g_game->track_runtime.get_track_grid_cell_at_world_position(&position);
             RuntimeTrackCell* cell = g_game->track_runtime.get_track_runtime_cell_at_world_z(&position);
-            if (grid->tile != 14 || position.y >= 7.0f) {
+            if (grid->tile != 14 || position.y >= 0.0f) {
                 if ((cell->flags & 0x40) == 0
                     || !cell->primary_attachment->body->is_point_inside_track_attachment(
                         Vector3(velocity.x + position.x, velocity.y + position.y, velocity.z + position.z),

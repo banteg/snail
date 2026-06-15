@@ -19,13 +19,15 @@ Layout facts settled by this asm (ledgered 2026-06-12):
   deactivate_salt_hazard, early-return error shape, free-stack at
   game+0x5a8).
 - state 1: progress accumulate, integrate, y >= 0 and
-  z >= game[+0x3be0e4] kill plane, grid-cell tile 14 + y < 7 floor exit,
+  z >= game[+0x3be0e4] kill plane, grid-cell tile 14 + y < 0 floor exit
+  (redundant with the preceding y guard, but present in the target),
   then containment probes: primary (+0xa4) gated on cell flag 0x40,
   secondary (+0xa8) on flag 0x80, thiscall on [template+0x38] with
   by-value Vector3 args (probe = position+velocity, sweep = velocity*1.05),
   miss returns without deactivating; hit calls the 0x449c00 effect with a
   static arg then deactivates.
 
-2026-06-13 pin audit: focused matcher still verifies 48.04%, 215/218 insns.
-Keep pinned; the remaining diff is zero-register scheduling and stack
-materialization around the attachment probes, not recovered behavior.
+2026-06-15 pin audit: focused matcher verifies 48.04%, 215/218 insns, masked
+operands 17 ok / 0 mismatch. Keep pinned; the remaining diff is zero-register
+scheduling and stack materialization around the attachment probes, not recovered
+behavior.
