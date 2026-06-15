@@ -112,7 +112,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 71.88% | 6/128 | 15 ok |  |
 | ✅ | update_track_jetpack_pickup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
-| 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 41.73% | 6/127 | 3 mismatch, 12 ok |  |
+| 🚧 | update_sub_lazer_projectile | 0x43efb0 | 384 | 127/127 | 72.44% | 6/127 | 15 ok |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 | 6 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 20 ok |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 | 1 ok |  |
@@ -286,7 +286,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Game | 38 | 0 | 36 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TransformMatrix | 34 | 0 | 25 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Color4f | 22 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |

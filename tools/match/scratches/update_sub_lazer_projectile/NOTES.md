@@ -1,4 +1,4 @@
-# Pinned — 41.73%, 127/127 insns (exact count, register/layout golf remains)
+# Pinned — 72.44%, 127/127 insns, layout-only residual
 
 Semantics complete; key structural discoveries:
 
@@ -15,6 +15,8 @@ Semantics complete; key structural discoveries:
 - no position integration here — the projectile body motion belongs to
   the renderable-body owner linked at spawn
 
-2026-06-13 pin audit: focused matcher still verifies 41.73%, 127/127 insns.
-Keep pinned; state layout, duplicated remove paths, sprite bob, and body-motion
-ownership are recovered, with only register/layout golf remaining.
+2026-06-15 pin audit: focused matcher verifies 72.44%, 127/127 insns, masked
+operands 15 ok / 0 mismatch. Source now uses the sibling pickup state-machine
+shape, `Sprite::kill_sprite()` member calls, the raw `g_game_base + 0x5a8`
+free-list anchor, and the strict `> 1.0f` bob wrap compare. Keep pinned; the
+remaining diff is block layout/register allocation, not a semantic gap.
