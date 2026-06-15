@@ -7,7 +7,7 @@
   controller `+0x18`.
 - Semantics: inactive state allocates 25 sprite id `0x83` entries for the
   owner's player slot, sets sprite flag `0x800`, clears sprite progress,
-  progress step, gravity, position, and velocity lanes, seeds `3.0f` scale, sets
+  progress step, gravity, position, and velocity lanes, seeds `3.0f` size, sets
   phase step `0.104719758f`, and tail-calls `update_nuke()`. Already-active
   state skips allocation and still tail-calls `update_nuke()`.
 - Residual: four instructions differ after each `allocate_sprite` call. Native

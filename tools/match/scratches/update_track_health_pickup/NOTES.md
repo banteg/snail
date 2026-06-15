@@ -5,7 +5,7 @@ and 128 candidate instructions.
 
 Recovered behavior:
 
-- skip when the source runtime cell is hidden;
+- skip when shared `TrackRuntimeCell +0x09` is hidden;
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;

@@ -10,7 +10,7 @@ Current recovered relationships:
   the native call.
 - `Sprite +0x1c` is the current texture ref, `+0x28` is the draw-mode lane read
   by `configure_sprite_render_state`, `+0x2c..+0x38` is `Color4f`, `+0x60/+0x64`
-  are scale endpoints, `+0x68` is progress, `+0x7c` is facing angle, and
+  are size endpoints, `+0x68` is progress, `+0x7c` is facing angle, and
   `+0x88` is the rotated-corner scale/stretch lane.
 - The 0x60-byte locked buffer is four 0x18-byte vertices:
   `float x, y, z; uint32 color; float u, v`.

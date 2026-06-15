@@ -15,5 +15,5 @@ Golb family:
   attached from the projectile
 
 The typed `Vector3* velocity` local is required for the native store schedule:
-without it, VC6 delays the progress/scale constants until after velocity zeroing
+without it, VC6 delays the progress/size constants until after velocity zeroing
 and lands at 93.62%.
