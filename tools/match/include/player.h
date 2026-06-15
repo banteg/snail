@@ -32,6 +32,7 @@ class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
+    void update_subgoldy_resurrect();      // @ 0x441fd0
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
 

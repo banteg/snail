@@ -1,7 +1,5 @@
 // update_subgoldy_resurrect @ 0x441fd0 (thiscall, ret)
 
-#include "vector3.h"
-
 struct FrontendFade {
     int state; // +0x00
 
@@ -32,23 +30,7 @@ public:
     int subgame_rebuild_selector; // +0x1270fc8
 };
 
-class Player {
-public:
-    void update_subgoldy_resurrect();
-
-    char unknown_0000[0x80];
-    int resurrect_final_loss;       // +0x80
-    unsigned char resurrect_active; // +0x84
-    char unknown_0085[0x8c - 0x85];
-    float resurrect_progress;      // +0x8c
-    float resurrect_progress_step; // +0x90
-    char unknown_0094[0x408 - 0x94];
-    Game* game; // +0x408
-    int movement_mode_selector; // +0x40c
-    Vector3 velocity; // +0x410
-    char unknown_041c[0x4340 - 0x41c];
-    int visible_life_stock; // +0x4340
-};
+#include "player.h"
 
 void Player::update_subgoldy_resurrect()
 {
