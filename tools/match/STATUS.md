@@ -367,18 +367,85 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Color4f | 25 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
-| ... | 64 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| divergent | FrontendWidget | 15 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SpriteManager | 15 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BodBase | 12 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | AudioBackend | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Object | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | VoiceManager | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | VoiceSet | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RenderableBod | 8 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplate | 7 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | WarningActor | 7 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TipManager | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TipSlot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SoundEffectManager | 6 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | JetpackGaugeController | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | MouseCursorState | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplateSample | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SlugHazardRuntime | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TimerCounters | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BodList | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GolbProjectile | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | ScoreStats | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BorderRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | DamageGaugeController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | FringeManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GarbageHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | NukeController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RowEventDisplayController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SaltHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SubLazerSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TimesUpController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TrackParcelSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | VapourTrail | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BlinkRandomTable | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | CameramanState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | ContactTargetRegistry | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GameRoot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | HighScoreBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | HighScoreScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | InvincibleShellController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RuntimeTrackCell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SaltHazardPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | StarField | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SubLazerPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TextureRef | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TooltipState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TrackParcelRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TrackParcelSlots | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TrackRuntimeRow | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 23 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SquidgeState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| ... | 4 more covered finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vec4 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ListHead | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucket | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucketSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SaltListAnchor | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ... | 2 more ready finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| ready | StarFieldEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | TrackRuntimeCell | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

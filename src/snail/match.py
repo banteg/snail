@@ -2425,7 +2425,7 @@ def _type_consolidation_console_summary(findings: list[TypeConsolidationFinding]
 def render_type_consolidation_markdown(
     findings: list[TypeConsolidationFinding],
     *,
-    per_status_limit: int = 6,
+    per_status_limit: int | None = None,
 ) -> list[str]:
     lines = [
         "## Type Consolidation",
@@ -2462,18 +2462,24 @@ def render_type_consolidation_markdown(
             (finding for finding in findings if finding.status == status),
             key=_type_consolidation_sort_key,
         )
-        for finding in status_findings[:per_status_limit]:
+        rendered_findings = (
+            status_findings
+            if per_status_limit is None
+            else status_findings[:per_status_limit]
+        )
+        for finding in rendered_findings:
             lines.append(
                 "| "
                 f"{finding.status} | {finding.name} | {finding.scratch_count} | "
                 f"{finding.header_count} | {finding.signature_count} | "
                 f"{finding.recommendation} |"
             )
-        omitted = len(status_findings) - per_status_limit
-        if omitted > 0:
-            lines.append(
-                f"| ... | {omitted} more {status} finding(s) |  |  |  | "
-                "`uv run snail match types --paths` prints the full list. |"
-            )
+        if per_status_limit is not None:
+            omitted = len(status_findings) - per_status_limit
+            if omitted > 0:
+                lines.append(
+                    f"| ... | {omitted} more {status} finding(s) |  |  |  | "
+                    "`uv run snail match types --paths` prints the full list. |"
+                )
     lines.append("")
     return lines

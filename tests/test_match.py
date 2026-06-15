@@ -851,13 +851,27 @@ def test_render_status_outputs_type_consolidation_summary() -> None:
             recommendation="same scratch-local definition appears repeatedly; consider a header",
         ),
     ]
+    findings.extend(
+        TypeConsolidationFinding(
+            name=f"GameVariant{index}",
+            status="divergent",
+            scratch_count=2,
+            header_count=0,
+            signature_count=2,
+            paths=(),
+            recommendation="same name has multiple scratch-local shapes; do not consolidate yet",
+        )
+        for index in range(7)
+    )
 
     status_table = render_status_table([status], totals, type_findings=findings)
-    assert "types: 1 ready, 1 covered, 1 divergent" in status_table
+    assert "types: 1 ready, 1 covered, 8 divergent" in status_table
 
     markdown = render_status_markdown([status], totals, type_findings=findings)
     assert "## Type Consolidation" in markdown
     assert "| divergent | Game | 5 | 0 | 3 |" in markdown
+    assert "| divergent | GameVariant6 | 2 | 0 | 2 |" in markdown
+    assert "more divergent finding(s)" not in markdown
     assert "`uv run snail match types --paths`" in markdown
 
 
