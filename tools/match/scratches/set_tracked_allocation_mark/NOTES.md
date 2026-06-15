@@ -1,0 +1,8 @@
+# set_tracked_allocation_mark
+
+Small tracked-allocation helper at 0x431cb0. Copies the current tracked
+allocation stack depth at 0x5108c0 into the saved unwind mark at 0x5108c4 and
+returns the copied depth.
+
+Exact match: 100.00%, 3/3 instructions, with both tracked-allocation globals
+resolved through g_tracked_allocation_depth/g_tracked_allocation_mark.
