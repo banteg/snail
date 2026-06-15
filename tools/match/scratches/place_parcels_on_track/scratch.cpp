@@ -32,8 +32,8 @@ struct CandidateEntry {              // 524 bytes (131 dwords)
     int segment_index;               // +0x208
 };
 
-extern CandidateEntry g_parcel_set_candidates[2048];  // 0x6487e8
-extern CandidateEntry g_parcel_zero_candidates[2048]; // 0x53d190
+extern CandidateEntry g_parcel_set_buckets[2048];  // 0x6487e8
+extern CandidateEntry g_zero_parcel_buckets[2048]; // 0x53d190
 
 struct AuthoredParcelRecord { // segment +0x814, one per row, 56 bytes
     int flags;                // bit 1 = flagged parcel
@@ -100,8 +100,8 @@ int Game::place_parcels_on_track()
         return level_mode;
 
     for (int reset = 0; reset < 0x106000; reset += 0x20c) {
-        *(int*)((char*)g_parcel_zero_candidates + reset + 0x200) = 0;
-        *(int*)((char*)g_parcel_set_candidates + reset + 0x200) = 0;
+        *(int*)((char*)g_zero_parcel_buckets + reset + 0x200) = 0;
+        *(int*)((char*)g_parcel_set_buckets + reset + 0x200) = 0;
     }
 
     int min_set_sizes[100];
@@ -114,7 +114,7 @@ int Game::place_parcels_on_track()
         SegmentRecord* record = (SegmentRecord*)((char*)segments + 16928 * segment);
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
-            CandidateEntry* set_entry = &g_parcel_set_candidates[set_entry_count];
+            CandidateEntry* set_entry = &g_parcel_set_buckets[set_entry_count];
             for (int row = 0; row < record->row_count; ++row) {
                 AuthoredParcelRecord* authored =
                     (AuthoredParcelRecord*)((char*)record + 0x814 + 56 * row);
@@ -128,7 +128,7 @@ int Game::place_parcels_on_track()
                         ++set_entry->candidate_count;
                     } else {
                         CandidateEntry* zero_entry =
-                            &g_parcel_zero_candidates[zero_entry_count];
+                            &g_zero_parcel_buckets[zero_entry_count];
                         zero_entry->segment_index = segment;
                         zero_entry->candidates[zero_entry->candidate_count].row = row;
                         zero_entry->candidates[zero_entry->candidate_count].position =
@@ -152,7 +152,7 @@ int Game::place_parcels_on_track()
                             ++set_entry->candidate_count;
                         } else {
                             CandidateEntry* zero_entry =
-                                &g_parcel_zero_candidates[zero_entry_count];
+                                &g_zero_parcel_buckets[zero_entry_count];
                             zero_entry->segment_index = segment;
                             zero_entry->candidates[zero_entry->candidate_count].row = row;
                             zero_entry->candidates[zero_entry->candidate_count].position.x =
@@ -196,7 +196,7 @@ int Game::place_parcels_on_track()
     if (set_target > 0) {
         while (set_entry_count > 0) {
             int picked = (int)random_float_below((float)set_entry_count, "P1");
-            CandidateEntry* entry = &g_parcel_set_candidates[picked];
+            CandidateEntry* entry = &g_parcel_set_buckets[picked];
             placed += entry->candidate_count;
             for (int spot = 0; spot < entry->candidate_count; ++spot) {
                 int absolute_row =
@@ -218,10 +218,10 @@ int Game::place_parcels_on_track()
             }
             int placed_segment = entry->segment_index;
             for (int scan = 0; scan < set_entry_count; ++scan) {
-                if (g_parcel_set_candidates[scan].segment_index == placed_segment) {
+                if (g_parcel_set_buckets[scan].segment_index == placed_segment) {
                     for (int move = scan; move < set_entry_count - 1; ++move) {
-                        CandidateEntry* destination = &g_parcel_set_candidates[move];
-                        CandidateEntry* source = &g_parcel_set_candidates[move + 1];
+                        CandidateEntry* destination = &g_parcel_set_buckets[move];
+                        CandidateEntry* source = &g_parcel_set_buckets[move + 1];
                         for (int copy = 0; copy < source->candidate_count; ++copy)
                             destination->candidates[copy] = source->candidates[copy];
                         destination->candidate_count = source->candidate_count;
@@ -240,7 +240,7 @@ int Game::place_parcels_on_track()
     if (placed < *(int*)((char*)this + 0x1b01e0)) {
         while (zero_entry_count > 0) {
             int picked = (int)random_float_below((float)zero_entry_count, "P2");
-            CandidateEntry* entry = &g_parcel_zero_candidates[picked];
+            CandidateEntry* entry = &g_zero_parcel_buckets[picked];
             placed += entry->candidate_count;
             int absolute_row =
                 entry->candidates[0].row
@@ -257,8 +257,8 @@ int Game::place_parcels_on_track()
             if (*(unsigned char*)row_record & 0x20)
                 payload->x = payload->x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
-                CandidateEntry* destination = &g_parcel_zero_candidates[move];
-                CandidateEntry* source = &g_parcel_zero_candidates[move + 1];
+                CandidateEntry* destination = &g_zero_parcel_buckets[move];
+                CandidateEntry* source = &g_zero_parcel_buckets[move + 1];
                 destination->candidates[0] = source->candidates[0];
                 destination->candidate_count = source->candidate_count;
                 destination->set_id = 0;
