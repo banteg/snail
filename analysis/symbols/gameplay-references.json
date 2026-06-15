@@ -94,6 +94,37 @@
       "description": "MSVC floating-point to integer helper used by timer and placement code."
     },
     {
+      "address": "0x48b3a7",
+      "name": "fclose",
+      "kind": "function",
+      "aliases": [
+        "_fclose",
+        "sub_48b3a7"
+      ],
+      "description": "Statically linked CRT fclose helper used by file and archive-loading wrappers."
+    },
+    {
+      "address": "0x48b41d",
+      "name": "fopen",
+      "kind": "function",
+      "aliases": [
+        "_fopen",
+        "sub_48b41d"
+      ],
+      "description": "Statically linked CRT fopen helper used by file and archive-loading wrappers."
+    },
+    {
+      "address": "0x48bfdb",
+      "name": "srand",
+      "kind": "function",
+      "aliases": [
+        "_srand",
+        "sub_48bfdb",
+        "sub_48BFDB"
+      ],
+      "description": "Statically linked CRT srand helper wrapped by set_math_random_seed."
+    },
+    {
       "address": "0x48bfe5",
       "name": "rand",
       "kind": "function",
@@ -103,6 +134,18 @@
         "j_sub_48bfe5"
       ],
       "description": "CRT rand helper used to seed the gameplay random table and random-float wrappers."
+    },
+    {
+      "address": "0x48c460",
+      "name": "CIacos",
+      "kind": "function",
+      "aliases": [
+        "_CIacos",
+        "acos",
+        "_acos",
+        "sub_48c460"
+      ],
+      "description": "MSVC x87 acos helper wrapped by arccosine."
     },
     {
       "address": "0x497314",
