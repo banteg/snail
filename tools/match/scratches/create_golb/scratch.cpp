@@ -273,31 +273,25 @@ after_movement_flag_source:
     } else {
         words[154] = 0;
         ((float*)self)[155] = *(float*)(words[156] + 0x38) * 0.041666668f;
-        DWORD* sprite = (DWORD*)g_sprite_manager.allocate_sprite(
+        Sprite* sprite = g_sprite_manager.allocate_sprite(
             *(DWORD*)(player + 0x380),
             130,
             -1,
             -1);
         words[146] = (DWORD)sprite;
-        sprite[1] |= 0x800;
-        *(DWORD*)((char*)sprite + 0x68) = 0;
-        *(DWORD*)((char*)sprite + 0x6c) = 0;
-        *(DWORD*)((char*)sprite + 0x78) = 0;
+        sprite->flags |= 0x800;
+        sprite->progress = 0.0f;
+        sprite->progress_step = 0.0f;
+        sprite->gravity_step = 0.0f;
 
         Color4f color;
-        Color4f* color_words = color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-        DWORD* sprite_color = (DWORD*)((char*)sprite + 0x2c);
-        sprite_color[0] = ((DWORD*)color_words)[0];
-        sprite_color[1] = ((DWORD*)color_words)[1];
-        sprite_color[2] = ((DWORD*)color_words)[2];
-        sprite_color[3] = ((DWORD*)color_words)[3];
-        *(DWORD*)((char*)sprite + 0x60) = 1056629064;
-        *(DWORD*)((char*)sprite + 0x64) = 1056629064;
-        Vec3* sprite_position = (Vec3*)((char*)sprite + 0x48);
+        sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        sprite->size_start = 0.49000001f;
+        sprite->size_end = 0.49000001f;
+        Vec3* sprite_position = (Vec3*)&sprite->position;
         *sprite_position = *position;
-        *(float*)((char*)sprite + 0x7c) =
-            ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
-        *(float*)((char*)sprite + 0x80) = *(float*)(words[156] + 0x38) * 0.58177644f;
+        sprite->facing_angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
+        sprite->facing_angle_step = *(float*)(words[156] + 0x38) * 0.58177644f;
         words[157] = emitter_index;
     }
 

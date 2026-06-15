@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 28.63% (`tools/match/match.sh
+- Current matcher result: 30.93% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -71,6 +71,11 @@ Residuals:
   Rewriting the post-direction kind dispatch as a decrementing labeled tree
   regressed to 22.37%. A top-level `zero_byte` local for the initial byte
   clears emitted the same 28.63% code and was reverted as neutral churn.
+- 2026-06-16 Sprite audit: the kind-0 sprite path now uses the shared `Sprite`
+  fields for progress, gravity, color, `size_start`/`size_end`, position, and
+  facing rotation. This keeps the local `Sprite*` shape called out above and
+  improves the scratch from 28.63% to 30.93%, 446/582 instructions, with the
+  same single masked-operand mismatch.
 - The kind-specific setup lanes are complete, but vapour/list insertion,
   sprite color copy, and path-search hit handling still differ in local
   ordering. Do not add dummy temporaries solely to force those byte layouts

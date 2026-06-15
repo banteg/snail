@@ -75,7 +75,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
-| 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 | 1 mismatch, 31 ok |  |
+| 🚧 | create_golb | 0x415280 | 2349 | 446/582 | 30.93% | 3/582 | 1 mismatch, 31 ok |  |
 | ✅ | spawn_golb_trail_sprite | 0x415bb0 | 161 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 69/72 | 82.27% | 34/72 | 8 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 54.55% | 3/45 | 3 ok |  |
