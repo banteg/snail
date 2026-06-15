@@ -16,9 +16,9 @@ TransformMatrix* TransformMatrix::invert_matrix_from_source(TransformMatrix* sou
     basis_forward.x = source->basis_right.z;
     basis_forward.y = source->basis_up.z;
     basis_forward.z = source->basis_forward.z;
-    basis_forward.w = 0.0f;
-    basis_up.w = 0.0f;
-    basis_right.w = 0.0f;
-    position.w = 1.0f;
+    basis_forward_w = 0.0f;
+    basis_up_w = 0.0f;
+    basis_right_w = 0.0f;
+    position_w = 1.0f;
     return 0;
 }

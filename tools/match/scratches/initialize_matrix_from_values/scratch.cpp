@@ -23,18 +23,18 @@ TransformMatrix* TransformMatrix::initialize_matrix_from_values(
     basis_right.x = m00;
     basis_right.y = m01;
     basis_right.z = m02;
-    basis_right.w = m03;
+    basis_right_w = m03;
     basis_up.x = m10;
     basis_up.y = m11;
     basis_up.z = m12;
-    basis_up.w = m13;
+    basis_up_w = m13;
     basis_forward.x = m20;
     basis_forward.y = m21;
     basis_forward.z = m22;
-    basis_forward.w = m23;
+    basis_forward_w = m23;
     position.x = m30;
     position.y = m31;
     position.z = m32;
-    position.w = m33;
+    position_w = m33;
     return this;
 }

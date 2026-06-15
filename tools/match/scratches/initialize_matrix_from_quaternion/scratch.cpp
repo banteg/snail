@@ -30,12 +30,12 @@ TransformMatrix* TransformMatrix::initialize_matrix_from_quaternion(const Quater
     basis_right.z = xz - yw + xz - yw;
     basis_up.z = yz + xw + yz + xw;
     basis_forward.z = 1.0f - (yy + xx + yy + xx);
-    basis_forward.w = 0.0f;
-    basis_up.w = 0.0f;
-    basis_right.w = 0.0f;
+    basis_forward_w = 0.0f;
+    basis_up_w = 0.0f;
+    basis_right_w = 0.0f;
     position.z = 0.0f;
     position.y = 0.0f;
     position.x = 0.0f;
-    position.w = 1.0f;
+    position_w = 1.0f;
     return this;
 }

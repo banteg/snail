@@ -36,10 +36,14 @@ struct TransformMatrix {
     void rotate_matrix_world_z(float angle);          // @ 0x44cf50
     void set_matrix_z_direction(const Vector3* direction); // @ 0x44d410
 
-    Vec4 basis_right;   // +0x00
-    Vec4 basis_up;      // +0x10
-    Vec4 basis_forward; // +0x20
-    Vec4 position;      // +0x30
+    Vector3 basis_right;   // +0x00
+    float basis_right_w;   // +0x0c
+    Vector3 basis_up;      // +0x10
+    float basis_up_w;      // +0x1c
+    Vector3 basis_forward; // +0x20
+    float basis_forward_w; // +0x2c
+    Vector3 position;      // +0x30
+    float position_w;      // +0x3c
 };
 
 typedef char TransformMatrix_must_be_0x40[(sizeof(TransformMatrix) == 0x40) ? 1 : -1];
