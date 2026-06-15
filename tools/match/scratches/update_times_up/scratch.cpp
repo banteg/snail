@@ -1,10 +1,8 @@
 // update_times_up @ 0x445e20 (thiscall, ret)
 
-extern char* g_game_base; // data_4df904
+#include "player.h"
 
-struct Player {
-    int kill_subgoldy();
-};
+extern char* g_game_base; // data_4df904
 
 class TimesUpController {
 public:
