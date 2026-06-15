@@ -1,11 +1,12 @@
-# Pinned — 41.46%, 39/43 insns, layout-only residual
+# Pinned — 62.79%, 43/43 insns, register-allocation residual
 
-Small function, so the two layout deltas weigh heavily on the score:
-the original duplicates both error blocks in full (our build cross-jumps
-the shared `report_errorf` tail), and registers shuffle (flags in eax vs
-ecx, anchor via lea vs add). Same residual class as switch_track_mirror.
-Block ORDER is confirmed early-return style: not-linked error first,
-iteration-guard (0x40) error second, unlink last.
+The IDA-shaped nested `if/else` source keeps the native duplicated error
+blocks and clears the earlier cross-jumped `report_errorf` tail. The
+remaining diff is register/anchor materialization only: target keeps the
+anchor in `ecx` via `lea` from the game-base load and tests flags from
+`eax`, while the scratch uses `eax` for the anchor and `ecx` for flags.
+Block order is confirmed: not-linked error first, iteration-guard
+(0x40) error second, unlink last.
 
 Semantics fully pinned:
 
@@ -19,6 +20,6 @@ Semantics fully pinned:
 - exit writes: state = 0 interleaved between the flags reload and the
   `&= ~0x200` clear
 
-2026-06-13 pin audit: focused matcher still verifies 41.46%, 39/43 insns.
-Keep pinned; the remaining diff is duplicated native error blocks and
+2026-06-15 pin audit: focused matcher verifies 62.79%, 43/43 insns,
+masked operands 4 ok / 0 mismatch. Keep pinned; remaining diff is
 register/anchor materialization, not a semantic gap.
