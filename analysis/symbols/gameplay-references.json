@@ -98,6 +98,37 @@
       "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
+      "address": "0x44c920",
+      "name": "j_rand",
+      "kind": "function",
+      "aliases": [
+        "j_sub_48bfe5",
+        "j__rand",
+        "sub_44c920"
+      ],
+      "description": "Small jump thunk that dispatches random_float_below and random_signed_float_below to the statically linked CRT rand body at 0x48bfe5."
+    },
+    {
+      "address": "0x44cdd0",
+      "name": "destroy_cross_vectors_static_result",
+      "kind": "function",
+      "aliases": [
+        "$E2",
+        "sub_44cdd0"
+      ],
+      "description": "Compiler-generated static-destruction stub registered by cross_vectors for its function-local static result."
+    },
+    {
+      "address": "0x44db50",
+      "name": "noop_this_constructor",
+      "kind": "function",
+      "aliases": [
+        "?0NoopAiCallback",
+        "sub_44db50"
+      ],
+      "description": "No-op this-returning constructor thunk used by initialize_bod_base before the same storage is initialized as Color4f."
+    },
+    {
       "address": "0x48b380",
       "name": "ftol",
       "kind": "function",
@@ -160,6 +191,16 @@
         "sub_48c460"
       ],
       "description": "MSVC x87 acos helper wrapped by arccosine."
+    },
+    {
+      "address": "0x48c7ba",
+      "name": "atexit",
+      "kind": "function",
+      "aliases": [
+        "_atexit",
+        "sub_48c7ba"
+      ],
+      "description": "Statically linked CRT atexit helper used to register compiler-generated static destructors."
     },
     {
       "address": "0x497314",
@@ -829,6 +870,16 @@
         "data_77ff40"
       ],
       "description": "Shared identity transform initialized by initialize_global_identity_matrix."
+    },
+    {
+      "address": "0x77ff80",
+      "name": "cross_vectors_static_result",
+      "kind": "global",
+      "aliases": [
+        "?result@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4U2@A"
+      ],
+      "size": "0xc",
+      "description": "Function-local static Vec3 result storage used by cross_vectors before copying back to the destination vector."
     },
     {
       "address": "0x77ff88",

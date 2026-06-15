@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**203/665** mapped gameplay functions matched, **12953/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**206/665** mapped gameplay functions matched, **13098/326119** bytes (**4.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -55,7 +55,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 6 mismatch, 10 unresolved, 20 ok |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | 6/6 | - |  |
-| ⚠ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 1 unresolved, 4 ok |  |
+| ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 5 ok |  |
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 | 3 ok |  |
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 | - |  |
@@ -243,7 +243,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | normalize_vector | 0x44cca0 | 75 | 29/29 | 100.00% | 29/29 | 5 ok |  |
 | 🚧 | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 94.74% | 17/19 | 1 ok |  |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 | 1 ok |  |
-| ⚠ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 | 4 mismatch, 6 unresolved |  |
+| ⚠ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 | 2 mismatch, 8 ok |  |
 | ✅ | initialize_uniform_scale_matrix | 0x44cde0 | 66 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | rotate_matrix_world_x | 0x44ce30 | 136 | 50/50 | 100.00% | 50/50 | 2 ok |  |
 | ✅ | rotate_matrix_world_y | 0x44cec0 | 133 | 50/50 | 100.00% | 50/50 | 2 ok |  |
@@ -260,7 +260,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_axis | 0x44d530 | 74 | 28/26 | 77.78% | 9/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | 🚧 | initialize_matrix_from_quaternion | 0x44d820 | 247 | 85/82 | 73.05% | 10/82 | 3 ok |  |
-| 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 2 unresolved, 10 ok |  |
+| 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 4 mismatch, 10 ok |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/61 | 51.79% | 0/61 | 6 ok |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
@@ -268,8 +268,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | 9/9 | - |  |
 | ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | 3/3 | 1 ok |  |
-| ⚠ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | 9/9 | 1 unresolved, 2 ok |  |
-| ⚠ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | 8/8 | 1 unresolved, 1 ok |  |
+| ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | 9/9 | 3 ok |  |
+| ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |

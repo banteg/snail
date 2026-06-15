@@ -9,8 +9,9 @@ uncurated static-destructor stub at `0x44cdd0`.
 
 The static guard at `data_777f38` and `result.z` at `data_77ff88` overlap the
 synthetic one-float-before trigonometry init bases named for
-`initialize_trigonometry_tables`; the masked audit should keep treating them as
-compiler-generated static-local operands in this scratch.
+`initialize_trigonometry_tables`; the masked audit should keep treating the
+guard byte as a compiler-generated static-local operand in this scratch. The
+static `result` storage itself is named as a 12-byte range at `data_77ff80`.
 
 It is used by path-template basis construction, matrix orthogonalization, object
 normals, and track/fringe geometry.
