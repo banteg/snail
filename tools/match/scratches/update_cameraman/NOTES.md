@@ -78,6 +78,16 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
   subgame_rate * 0.3) — the audited blend, now mirrored in
   native/matrix_math.zig — then previous_desired = desired
 
+## Type consolidation note (2026-06-15)
+
+The player fields at +0x384..+0x41d are the shared embedded
+`FollowState`, but do not replace the local field spelling with an inline
+`FollowState follow_state` member here yet. The shared C++ class tail-aligns
+to a larger `sizeof(FollowState)` than the raw player slice, which shifts
+`post_follow_exit_roll` and `cached_camera_target_world` by 4 bytes and
+regresses the focused match to 89.13% with a masked call mismatch. Keep the
+local fields until the shared header has an explicit packed/prefix view.
+
 Scratch next: structure is linear with two matrix locals; the matched
 matrix helpers cover every call.
 
