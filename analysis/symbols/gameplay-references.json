@@ -670,6 +670,15 @@
       "description": "Renderable BOD vtable installed by initialize_renderable_bod."
     },
     {
+      "address": "0x4a15d0",
+      "name": "g_x_animation_script_path",
+      "kind": "string",
+      "aliases": [
+        "aXAnimationTxt"
+      ],
+      "description": "XAnimation.txt script path loaded by initialize_directx_loader."
+    },
+    {
       "address": "0x4a34b8",
       "name": "g_intro_credits_script_path",
       "kind": "string",
@@ -847,6 +856,16 @@
         "flt_4df950"
       ],
       "description": "Steering sensitivity lookup table consumed by update_subgoldy based on the live steering selector."
+    },
+    {
+      "address": "0x4df9c0",
+      "name": "g_high_score_selected_bank",
+      "kind": "global",
+      "aliases": [
+        "unk_4df9c0",
+        "data_4df9c0"
+      ],
+      "description": "Saved high-score bank index preserved by destroy_high_score_screen for the next high-score flow."
     },
     {
       "address": "0x4dfad0",
