@@ -358,7 +358,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 9 type name(s)
-- covered: 12 type name(s) with a header plus scratch-local copies
+- covered: 11 type name(s) with a header plus scratch-local copies
 - divergent: 70 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -434,7 +434,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TrackRuntimeRow | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Color4f | 19 | 1 | 16 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Color4f | 18 | 1 | 15 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 13 | 2 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SquidgeState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
@@ -444,7 +444,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Vec4 | 2 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SpriteManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | Direct3DDevice8 | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

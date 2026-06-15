@@ -3,6 +3,8 @@
 // spawn position and velocity from Goldy's movement flag family, then install
 // the sprite, vapour, or path-search presentation path used by update_golb_ai.
 
+#include "sprite.h"
+
 typedef unsigned int DWORD;
 
 struct Vec3 {
@@ -11,20 +13,6 @@ struct Vec3 {
     float z;
 
     float vector_magnitude();
-};
-
-struct Color4f {
-    Color4f* set_color_rgba(float r, float g, float b, float a);
-    float store_color4f(float r, float g, float b, float a);
-
-    float r;
-    float g;
-    float b;
-    float a;
-};
-
-struct SpriteManager {
-    void* allocate_sprite(int owner, int sprite_id, int texture_a, int texture_b);
 };
 
 struct GolbPathSampleBank {
@@ -43,7 +31,6 @@ public:
 };
 
 extern char* g_game_base; // data_4df904
-extern SpriteManager g_sprite_manager; // data_790f30
 
 void __fastcall set_matrix_identity(void* transform);
 int report_errorf(char* format, ...);
