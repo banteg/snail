@@ -7,7 +7,7 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-row-selection slice: 11.10%, 340/1245 instructions (`tools/match/match.sh
+row-copy slice: 13.51%, 517/1245 instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -27,7 +27,10 @@ setup before the authored-row/glyph pass:
 - the first main row-loop slice after the visited reset: empty-row return,
   Start/Last block selection, random or sequential segment choice, per-segment
   row owner store, negative-length report, mirror row flag, first authored
-  row-flag bits (`0x100`/`0x8000`), and row source/owner fields.
+  row-flag bits (`0x100`/`0x8000`), and row source/owner fields;
+- completion-row segment override/extension and the authored-row payload copy
+  before glyph normalization: bod/parcel row payloads, pass-through row flags,
+  and the authored row event id.
 
 2026-06-14 type cleanup: `set_color_white` is now declared as a void mutator,
 matching the exact standalone helper and `build_track_colours`. This removes
@@ -38,10 +41,14 @@ the stale ignored-float signature from the scratch without changing the broad
 with masked operands 24 ok / 0 mismatch. The challenge random segment weighting
 is `0.9 * difficulty + 0.1`, distinct from the earlier row-count scaling.
 
-Residuals: the scratch still stops before most authored row flag copying and
-the 8-lane glyph normalization switch, so most of the function remains
-unmatched. The accepted source should expand next at the remaining row-flag copy
-cluster, then the 8-lane glyph switch. Do not try to pad the frame or hide the
+2026-06-15 row-copy slice: focused score moved from 11.10% to 13.51%, with
+masked operands 26 ok / 0 mismatch. This covers the special completion-row
+segment handoff plus the authored row bod/parcel payload fields and row flag
+pass-through bits.
+
+Residuals: the scratch still stops before the 8-lane glyph normalization switch,
+so most of the function remains unmatched. The accepted source should expand
+next at the lane setup and glyph switch. Do not try to pad the frame or hide the
 missing switch with dummy work.
 
 ## Build sequence

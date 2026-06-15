@@ -5,6 +5,13 @@ struct Color4f {
     void set_color_white();
 };
 
+void __fastcall set_matrix_identity(void* transform);
+
+class TrackRowBodSlot {
+public:
+    int set_bod_object(void* object);
+};
+
 struct HighScoreEntry {
     void initialize_high_score_entry(
         int runtime_build_seed,
@@ -244,6 +251,31 @@ void Game::populate_runtime_track_cells_from_segments()
                 report_errorf("Negative Segment Length");
         }
 
+        if (level_mode != 2 && build_row >= completion_row_start) {
+            if (level_mode == 0 || level_mode == 4 || level_mode == 1 || level_mode == 7) {
+                active_segment = base + 0x1abf18;
+                if (build_row == completion_row_start)
+                    segment_row = 0;
+            } else if (level_mode == 3) {
+                active_segment = base + 0x1b4410;
+            }
+
+            int segment_end = *(int*)(active_segment + 4) - segment_row + build_row;
+            if (segment_end > completion_row_start
+                && active_segment != base + 0x1b4410
+                && active_segment != base + 0x1bc850
+                && active_segment != base + 0x1c0a70
+                && (level_mode == 0
+                    || level_mode == 4
+                    || level_mode == 1
+                    || level_mode == 7
+                    || (level_mode == 3 && active_segment != base + 0x1abf18))) {
+                int extra_rows = *(int*)(active_segment + 4) - completion_row_start - segment_row + build_row;
+                completion_row_start += extra_rows;
+                runtime_row_count += extra_rows;
+            }
+        }
+
         char* row_record = base + 0xf4 * build_row + 0x5ccac8;
         if (base[2])
             *(int*)row_record |= 0x20;
@@ -256,6 +288,55 @@ void Game::populate_runtime_track_cells_from_segments()
 
         *(char**)(row_record + 0xec) = active_segment;
         *(int*)(row_record + 0xf0) = row_event_owner;
+
+        char* authored_row = active_segment + 0x814 + 0x38 * segment_row;
+        if ((authored_flags & 0x2) != 0) {
+            *(int*)row_record |= 0x2;
+            int object_id = *(int*)(authored_row + 0x14);
+            void* object = *(void**)(g_game_base + 0x48e2c + 0xbc * object_id);
+            ((TrackRowBodSlot*)(row_record + 4))->set_bod_object(object);
+            set_matrix_identity(row_record + 0x3c);
+            *(int*)(row_record + 0x6c) = *(int*)(authored_row + 0x18);
+            *(int*)(row_record + 0x70) = *(int*)(authored_row + 0x1c);
+            *(int*)(row_record + 0x74) = *(int*)(authored_row + 0x20);
+            *(float*)(row_record + 0x74) += (float)build_row;
+
+            if ((authored_flags & 0x8) != 0) {
+                *(int*)row_record |= 0x8;
+                *(int*)(row_record + 0x84) = *(int*)(authored_row + 0x24);
+                *(int*)(row_record + 0x88) = *(int*)(authored_row + 0x28);
+                *(int*)(row_record + 0x8c) = *(int*)(authored_row + 0x2c);
+            } else {
+                *(int*)(row_record + 0x84) = 0;
+                *(int*)(row_record + 0x88) = 0;
+                *(int*)(row_record + 0x8c) = 0;
+            }
+        }
+
+        if ((authored_flags & 0x1) != 0) {
+            *(int*)row_record |= 0x4001;
+            *(int*)(row_record + 0x9c) = *(int*)(authored_row + 4);
+            *(int*)(row_record + 0x90) = *(int*)(authored_row + 8);
+            *(int*)(row_record + 0x94) = *(int*)(authored_row + 12);
+            *(int*)(row_record + 0x98) = *(int*)(authored_row + 16);
+        }
+        if ((authored_flags & 0x8) != 0) {
+            *(int*)row_record |= 0x8;
+            *(int*)(row_record + 0xa0) = *(int*)(authored_row + 0x30);
+        }
+        if ((authored_flags & 0x4) != 0)
+            *(int*)row_record |= 0x4;
+        if ((authored_flags & 0x200) != 0)
+            *(int*)row_record |= 0x200;
+        if ((authored_flags & 0x400) != 0)
+            *(int*)row_record |= 0x400;
+        if ((authored_flags & 0x2000) != 0)
+            *(int*)row_record |= 0x2000;
+        if ((authored_flags & 0x800) != 0)
+            *(int*)row_record |= 0x800;
+        if ((authored_flags & 0x1000) != 0)
+            *(int*)row_record |= 0x1000;
+        *(int*)(row_record + 0xe8) = *(int*)(authored_row + 0x34);
         ++segment_row;
     }
 
