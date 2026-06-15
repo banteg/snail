@@ -2,6 +2,7 @@
 // WIP: structure aligned (205/204 insns with /Op), registers still shifted —
 // see NOTES.md for the recovered semantics and remaining deltas.
 #include "track_attachment.h"
+#include "player.h"
 
 // The shared scratch follow state and the player both live at fixed offsets
 // from the relocatable game base; g_game_base is volatile so every statement

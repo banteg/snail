@@ -8,10 +8,11 @@
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
+#include "golb.h"
 #include "vector_types.h"
-#include "player.h"
 
 struct TransformMatrix;
+class Player;
 
 struct AttachmentTransform {
     Vector4 basis_right;             // +0x00

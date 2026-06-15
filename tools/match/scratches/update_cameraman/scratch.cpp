@@ -2,12 +2,7 @@
 // Builds the desired follow-camera matrix from the player pose, attachment
 // envelopes, lane lean, and exit rolls, then blends live toward it at
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
-
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "track_attachment.h"
 
 struct TransformMatrix {
     float right[3];
@@ -32,18 +27,6 @@ struct TransformMatrix {
     void linear_interpolate_matrix(TransformMatrix* from, TransformMatrix* to, float alpha);
 };
 
-struct TrackRowCell {
-    char unknown_00[0x18];
-    float anchor_position_z; // +0x18
-};
-
-struct PathTemplate {
-    char unknown_00[0x38];
-    int kind;             // +0x38
-    char unknown_3c[0x4c - 0x3c];
-    float segment_count_f; // +0x4c
-};
-
 struct Game {
     char unknown_00[0x38];
     float subgame_rate;        // +0x38
@@ -51,7 +34,8 @@ struct Game {
     int first_block_row_count; // +0x50
 };
 
-struct Player {
+class Player {
+public:
     char unknown_00[0x68];
     Vector3 live_position; // +0x68, live-matrix position row
     char unknown_74[0x2dc - 0x74];
@@ -64,7 +48,7 @@ struct Player {
     char unknown_374[0x384 - 0x374];
     unsigned char follow_active; // +0x384 (embedded FollowState)
     char unknown_385[3];
-    PathTemplate* follow_template; // +0x388
+    AttachmentPathTemplate* follow_template; // +0x388
     TrackRowCell* follow_source_cell; // +0x38c
     char unknown_390[0x39c - 0x390];
     float follow_orientation_a; // +0x39c
@@ -128,7 +112,7 @@ void CameramanState::update_cameraman()
     }
 
     Player* lift_player = player;
-    PathTemplate* template_record;
+    AttachmentPathTemplate* template_record;
     int kind;
     if (lift_player->follow_active == 1
         && ((template_record = lift_player->follow_template,
@@ -141,7 +125,7 @@ void CameramanState::update_cameraman()
             || kind == 0x2d
             || kind == 0x24
             || kind == 0xe)) {
-        float phase = (lift_player->live_position.z - lift_player->follow_source_cell->anchor_position_z)
+        float phase = (lift_player->live_position.z - lift_player->follow_source_cell->anchor_position.z)
             / template_record->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;
@@ -199,10 +183,10 @@ void CameramanState::update_cameraman()
     desired_matrix.rotate_matrix_world_z(player->heading_roll);
 
     Player* worm_player = player;
-    PathTemplate* worm_template;
+    AttachmentPathTemplate* worm_template;
     float desired_fov;
     if (worm_player->follow_active == 1 && (worm_template = worm_player->follow_template, worm_template->kind == 0x18)) {
-        float phase = (worm_player->live_position.z - worm_player->follow_source_cell->anchor_position_z)
+        float phase = (worm_player->live_position.z - worm_player->follow_source_cell->anchor_position.z)
             / worm_template->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;
