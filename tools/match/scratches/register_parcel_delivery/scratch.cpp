@@ -1,6 +1,7 @@
 // register_parcel_delivery @ 0x405040 (thiscall, ret)
 
 #include "player.h"
+#include "row_event_display.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -9,21 +10,6 @@ struct SoundEffectManager {
 };
 
 extern SoundEffectManager g_sound_effect_manager;
-
-class RowEventDisplayController {
-public:
-    void register_parcel_delivery();
-
-    char unknown_00[0x14];
-    int state;                  // +0x14
-    char unknown_18[0x4];
-    int parcel_target_count;    // +0x1c
-    int bonus_enabled;          // +0x20
-    char unknown_24[0x4];
-    int delivered_parcel_count; // +0x28
-    char unknown_2c[0x1c];
-    int bonus_score;            // +0x48
-};
 
 void RowEventDisplayController::register_parcel_delivery()
 {
