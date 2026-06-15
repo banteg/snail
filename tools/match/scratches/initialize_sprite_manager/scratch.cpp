@@ -21,18 +21,16 @@ public:
     Sprite* free_head; // +0x83d78
 };
 
+extern "C" void* memset(void* destination, int value, unsigned int count);
+
 void SpriteManager::initialize_sprite_manager()
 {
     char* base = (char*)this;
 
     int zero = 0;
     *base = (char)zero;
-    *(int*)(base + 0x83d64) = zero;
-    *(int*)(base + 0x83d68) = zero;
+    memset(base + 0x83d64, zero, 0x14);
     char* first_sprite = base + 4;
-    *(int*)(base + 0x83d6c) = zero;
-    *(int*)(base + 0x83d70) = zero;
-    *(int*)(base + 0x83d74) = zero;
     *(int*)(base + 0x83d78) = (int)first_sprite;
 
     int index = zero;
