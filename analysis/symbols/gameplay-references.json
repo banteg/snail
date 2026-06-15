@@ -1268,6 +1268,17 @@
       "description": "Global cursor-hide flag initialized by mouse input setup, read by update_mouse, and written by set_hide_system_cursor_flag."
     },
     {
+      "address": "0x777d88",
+      "name": "g_mouse_clip_rect",
+      "kind": "global",
+      "aliases": [
+        "data_777d88",
+        "dword_777b2c_151"
+      ],
+      "size": "0x10",
+      "description": "Cached Win32 clip RECT populated by initialize_mouse_authored_scale_from_clip_rect and consumed by update_mouse_authored_scale."
+    },
+    {
       "address": "0x777f38",
       "name": "g_cosine_table_init_base",
       "kind": "offset",
