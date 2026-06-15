@@ -15,6 +15,15 @@ struct AttachmentRecord {
 class SquidgeState {
 public:
     void start_squidge_y(float amount);   // @ 0x444980
+    void start_squidge_z(float amount);   // @ 0x4449a0
+    void update_squidge();                // @ 0x4449c0
+
+    float y_output;   // +0x00
+    float y_velocity; // +0x04
+    float y_phase;    // +0x08
+    float z_output;   // +0x0c
+    float z_velocity; // +0x10
+    float z_phase;    // +0x14
 };
 
 class Player {

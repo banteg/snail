@@ -358,7 +358,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 9 type name(s)
-- covered: 11 type name(s) with a header plus scratch-local copies
+- covered: 10 type name(s) with a header plus scratch-local copies
 - divergent: 70 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -437,7 +437,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Vector3 | 13 | 2 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 8 | 1 | 8 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Color4f | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SquidgeState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
