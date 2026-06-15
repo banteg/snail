@@ -358,7 +358,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 11 type name(s) with a header plus scratch-local copies
+- covered: 10 type name(s) with a header plus scratch-local copies
 - divergent: 60 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -366,7 +366,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TransformMatrix | 37 | 0 | 26 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Vec3 | 19 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Vec3 | 18 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendWidget | 15 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BodBase | 12 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AudioBackend | 11 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -430,7 +430,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vec4 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
