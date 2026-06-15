@@ -1,6 +1,6 @@
 // update_row_event_display @ 0x404cf0 (fastcall, ret)
 
-#include "sprite.h"
+#include "track_parcel_runtime.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -18,13 +18,6 @@ struct FrontendWidget {
     unsigned int widget_flags; // +0x1a0
     char unknown_1a4[0x128];
     char text_buffer[2];       // +0x2cc
-};
-
-struct TrackParcelRuntime {
-    char unknown_00[0x38];
-    int state; // +0x38
-    char unknown_3c[0x18];
-    Sprite* sprite; // +0x54
 };
 
 struct GameRuntime {
