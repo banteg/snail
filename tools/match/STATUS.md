@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**282/665** mapped gameplay functions matched, **17416/326119** bytes (**5.3%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**283/665** mapped gameplay functions matched, **18367/326119** bytes (**5.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -71,6 +71,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
+| ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 28.63% | 3/582 | 1 mismatch, 31 ok |  |
@@ -355,17 +356,17 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 8 type name(s)
+- ready: 9 type name(s)
 - covered: 10 type name(s) with a header plus scratch-local copies
-- divergent: 70 type name(s) with multiple scratch-local shapes
+- divergent: 71 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | TransformMatrix | 36 | 0 | 26 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Sprite | 29 | 0 | 24 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Color4f | 25 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TransformMatrix | 37 | 0 | 26 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Sprite | 30 | 0 | 25 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Color4f | 26 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Vec3 | 21 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendWidget | 15 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SpriteManager | 15 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -412,6 +413,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | CameramanState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ContactTargetRegistry | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Direct3DDevice8Vtbl | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -438,11 +440,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vec4 | 2 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Vec4 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | BodNode | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | Direct3DDevice8 | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ListHead | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucket | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ParcelBucketSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

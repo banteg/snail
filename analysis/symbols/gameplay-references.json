@@ -404,6 +404,15 @@
       "description": "ASCII case-insensitive string comparator used by path, mesh, landscape, and music lookup helpers."
     },
     {
+      "address": "0x44fd8a",
+      "name": "D3DXMatrixTranslation",
+      "kind": "function",
+      "aliases": [
+        "j_sub_44fd5c"
+      ],
+      "description": "DirectX matrix-translation import thunk (`jmp dword [0x4acea0]`) called by draw_sprite_quad and the renderer setup path before setting the world transform."
+    },
+    {
       "address": "0x48b32c",
       "name": "sprintf",
       "kind": "function",
@@ -955,6 +964,24 @@
       "description": "BOD constructor counter incremented by initialize_bod."
     },
     {
+      "address": "0x4f7450",
+      "name": "g_render_triangle_count",
+      "kind": "global",
+      "aliases": [
+        "data_4f7450"
+      ],
+      "description": "Renderer triangle counter incremented by quad submission helpers after successful or attempted DrawPrimitive calls."
+    },
+    {
+      "address": "0x502fe0",
+      "name": "g_renderer_state",
+      "kind": "global",
+      "aliases": [
+        "data_502fe0"
+      ],
+      "description": "Global renderer state pointer; offset +0x08 is the transient vertex buffer locked by sprite and immediate textured-quad draw paths."
+    },
+    {
       "address": "0x502fec",
       "name": "g_d3d_device",
       "kind": "global",
@@ -962,6 +989,15 @@
         "data_502fec"
       ],
       "description": "Global IDirect3DDevice8 pointer used by render helpers to program render state and submit primitives."
+    },
+    {
+      "address": "0x503170",
+      "name": "g_draw_primitive_call_count",
+      "kind": "global",
+      "aliases": [
+        "data_503170"
+      ],
+      "description": "Renderer DrawPrimitive call counter incremented by sprite and immediate textured-quad submission helpers."
     },
     {
       "address": "0x50331c",
