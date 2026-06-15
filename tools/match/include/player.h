@@ -7,6 +7,8 @@
 
 #include "vector3.h"
 
+class Game;
+
 struct AttachmentRecord {
     int unknown_00[38];
     int installed_heading;            // +0x98
@@ -29,6 +31,8 @@ public:
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
+    void kill_subgoldy();                 // @ 0x445840
+    void show_subgoldy_lives();           // @ 0x43af10
 
     int unknown_00[26];                    // +0x00
     Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)
@@ -43,7 +47,9 @@ public:
     AttachmentRecord* attachment_record;   // +0x388
     char unknown_38c[0x3a0 - 0x38c];
     int follow_orientation_b;              // +0x3a0
-    char unknown_3a4[0x410 - 0x3a4];
+    char unknown_3a4[0x408 - 0x3a4];
+    Game* game;                            // +0x408
+    char unknown_40c[0x410 - 0x40c];
     Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
     unsigned char boost_one_tick;          // +0x41c — DEAD: only ever written 0
                                            // (initialize_subgoldy reg-zero +
@@ -63,6 +69,8 @@ public:
     char unknown_438[0x44c - 0x438];
     unsigned char attachment_exit_gate_a;  // +0x44c
     unsigned char attachment_exit_gate_b;  // +0x44d
+    char unknown_44e[0x4340 - 0x44e];
+    int visible_life_stock;                // +0x4340
 };
 
 #endif
