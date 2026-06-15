@@ -415,7 +415,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TooltipState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Player | 25 | 1 | 20 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Player | 22 | 1 | 18 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

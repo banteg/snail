@@ -1,11 +1,8 @@
 // register_parcel_delivery @ 0x405040 (thiscall, ret)
 
-extern char* g_game_base; // data_4df904
+#include "player.h"
 
-class Player {
-public:
-    void add_subgoldy_score(int score_kind, int bonus_score);
-};
+extern char* g_game_base; // data_4df904
 
 struct SoundEffectManager {
     void play_sound_effect(int sound_id);

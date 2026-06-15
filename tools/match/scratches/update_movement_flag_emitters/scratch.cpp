@@ -1,12 +1,8 @@
 // update_movement_flag_emitters @ 0x43a300 (thiscall, ret 0x4)
 
-typedef unsigned int DWORD;
+#include "player.h"
 
-class Player {
-public:
-    char unknown_000[0x338];
-    DWORD movement_flags; // +0x338
-};
+typedef unsigned int DWORD;
 
 class GolbShot {
 public:
