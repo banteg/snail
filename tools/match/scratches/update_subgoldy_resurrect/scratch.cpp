@@ -1,10 +1,6 @@
 // update_subgoldy_resurrect @ 0x441fd0 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 struct FrontendFade {
     int state; // +0x00

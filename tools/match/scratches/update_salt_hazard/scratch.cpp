@@ -5,14 +5,7 @@
 // the next slot's header dwords, and spawn never initializes them — native
 // layout bug, preserved as-is.
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-
-    Vector3() {}
-    Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
-};
+#include "vector3.h"
 
 struct SaltHazardSlot;
 struct RuntimeTrackCellRef;

@@ -2,11 +2,7 @@
 // Free-scan the 20-slot sub-lazer pool, stagger the spawn y down by
 // index * 0.01, route through the matched spawn, positional fire cue.
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 struct SubLazerSlot {
     void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // matched 98.4%

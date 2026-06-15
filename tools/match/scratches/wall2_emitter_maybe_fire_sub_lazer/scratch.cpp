@@ -3,11 +3,7 @@
 // 4% gate once the active row start passes the player z; tiles 22/29/30
 // and the default lane cull or sync the attachment skirt color.
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 float random_float_below(float maximum, const char* tag);
 float random_signed_float_below(float maximum, const char* tag);

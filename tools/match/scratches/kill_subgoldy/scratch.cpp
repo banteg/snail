@@ -1,10 +1,6 @@
 // kill_subgoldy @ 0x445840 (thiscall, ret)
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 class Player {
 public:

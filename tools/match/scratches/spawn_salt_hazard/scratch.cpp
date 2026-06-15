@@ -1,11 +1,6 @@
 // spawn_salt_hazard @ 0x441560 (thiscall, ret 0x4)
 #include "vector_types.h"
-
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 struct TransformMatrix {
     void set_matrix_rotation_identity();     // @ 0x44d250, thiscall, matched

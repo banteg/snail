@@ -2,11 +2,7 @@
 // Appends one `{kind, position, radius, object}` entry to the per-frame
 // subgame contact registry unless the target object is hidden by flag 0x1000.
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
 struct ContactObject {
     int unknown_00;

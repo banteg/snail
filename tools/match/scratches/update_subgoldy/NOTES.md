@@ -121,6 +121,9 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
   `Vector3*` local (lea-reused base).
 - The steering lerp needs `pull` and `steer_delta` locals to force the
   fxch evaluation order.
+- 2026-06-15 type-consolidation probe: replacing the local `Vector3`
+  with shared `vector3.h` preserved the headline score but introduced a
+  masked operand mismatch, so this scratch keeps its local view for now.
 
 ## Named residuals (all register-allocation / micro-shape class)
 
