@@ -365,7 +365,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 |---|---|---:|---:|---:|---|
 | divergent | Game | 37 | 0 | 35 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Vec3 | 18 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Vec3 | 16 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendWidget | 15 | 0 | 13 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AudioBackend | 11 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VoiceManager | 9 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -416,8 +416,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TooltipState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TransformMatrix | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Color4f | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
