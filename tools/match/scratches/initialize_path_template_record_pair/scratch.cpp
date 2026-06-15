@@ -1,19 +1,14 @@
 // initialize_path_template_record_pair @ 0x4085c0 (thiscall, ret)
 
+#include "bod_types.h"
+
 extern void* g_path_template_record_pair_vtable; // off_497334 / data_497334
-
-class BodBase {
-public:
-    void initialize_bod_base();
-
-    void* vtable; // +0x00
-};
 
 class PathTemplateRecordPair : public BodBase {
 public:
     PathTemplateRecordPair* initialize_path_template_record_pair();
 
-    char unknown_04[0x60 - 0x04];
+    char unknown_38[0x60 - 0x38];
     BodBase second_record; // +0x60
 };
 

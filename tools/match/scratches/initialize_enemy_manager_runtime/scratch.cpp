@@ -1,25 +1,19 @@
 // initialize_enemy_manager_runtime @ 0x4086d0 (thiscall, ret)
 
+#include "bod_types.h"
+
 extern void* g_enemy_manager_vtable;       // off_497354 / data_497354
 extern void* g_enemy_manager_child_vtable; // off_497358 / data_497358
 extern void* g_enemy_group_vtable;         // off_49735c / data_49735c
-
-struct RenderableBod;
 
 typedef RenderableBod* (RenderableBod::*RenderableBodConstructor)();
 
 void __stdcall initialize_array_with_constructor(
     void* base, int stride, int count, RenderableBodConstructor constructor);
 
-struct RenderableBod {
-    RenderableBod* initialize_renderable_bod();
-
-    void* vtable; // +0x00
-};
-
 struct RenderableSlot {
     RenderableBod body; // +0x00
-    char unknown_04[0x80 - 0x04];
+    char unknown_78[0x80 - 0x78];
 };
 
 class IostreamInit {

@@ -60,9 +60,9 @@ int SlugHazardRuntime::explode_slug_hazard()
         position_offset.y = position_scale * velocity->y;
         position_offset.z = position_scale * velocity->z;
         Vector3 staged_position;
-        staged_position.x = position_offset.x + world_position.x;
-        staged_position.y = position_offset.y + world_position.y;
-        staged_position.z = position_offset.z + world_position.z;
+        staged_position.x = position_offset.x + transform.position.x;
+        staged_position.y = position_offset.y + transform.position.y;
+        staged_position.z = position_offset.z + transform.position.z;
         sprite->position = staged_position;
         result = --count;
     } while (result);

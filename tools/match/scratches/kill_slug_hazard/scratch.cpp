@@ -19,7 +19,7 @@ void SlugHazardRuntime::kill_slug_hazard()
     if (state == 1) {
         int variant = (int)((float)next_math_random_value() * -0.000061035156f);
         play_slug_voice(28 - variant);
-        float x = world_position.x;
+        float x = transform.position.x;
         state = 2;
         if (x > 0.0f)
             death_toss_direction = 1;

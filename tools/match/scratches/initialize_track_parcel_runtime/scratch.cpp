@@ -1,13 +1,8 @@
 // initialize_track_parcel_runtime @ 0x408860 (thiscall, ret)
 
+#include "bod_types.h"
+
 extern void* g_track_parcel_vtable; // off_497364 / data_497364
-
-class BodBase {
-public:
-    void initialize_bod_base();
-
-    void* vtable; // +0x00
-};
 
 class TrackParcelRuntime : public BodBase {
 public:

@@ -1,6 +1,6 @@
 // initialize_bod_base @ 0x42f5f0 (thiscall, ret)
 
-#include "sprite.h"
+#include "bod_types.h"
 
 extern void* g_bod_base_vtable; // off_4974fc / data_4974fc
 extern int g_bod_base_init_count; // data_50331c
@@ -10,27 +10,19 @@ public:
     NoopAiCallback();
 };
 
-class BodBase {
-public:
-    BodBase* initialize_bod_base();
-
-    void* vtable; // +0x00
-    int flags;    // +0x04
-};
-
 BodBase* BodBase::initialize_bod_base()
 {
-    NoopAiCallback* callback = (NoopAiCallback*)((char*)this + 0x28);
+    NoopAiCallback* callback = (NoopAiCallback*)&color;
 
     callback->NoopAiCallback::NoopAiCallback();
     vtable = &g_bod_base_vtable;
     flags = 0x2000020;
-    ((Color4f*)callback)->store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     ++g_bod_base_init_count;
-    *(int*)((char*)this + 0x18) = 0;
-    *(int*)((char*)this + 0x14) = 0;
-    *(int*)((char*)this + 0x10) = 0;
-    *(int*)((char*)this + 0x1c) = 0;
-    *(int*)((char*)this + 0x20) = 0;
+    unknown_18 = 0;
+    unknown_14 = 0;
+    unknown_10 = 0;
+    unknown_1c = 0;
+    unknown_20 = 0;
     return this;
 }

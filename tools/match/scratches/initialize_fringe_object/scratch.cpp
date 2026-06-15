@@ -1,13 +1,8 @@
 // initialize_fringe_object @ 0x408650 (thiscall, ret)
 
+#include "bod_types.h"
+
 extern void* g_fringe_object_vtable; // off_497344 / data_497344
-
-class BodBase {
-public:
-    void initialize_bod_base();
-
-    void* vtable; // +0x00
-};
 
 class FringeObject : public BodBase {
 public:

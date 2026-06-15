@@ -3,24 +3,20 @@
 #ifndef SLUG_HAZARD_TYPES_H
 #define SLUG_HAZARD_TYPES_H
 
-#include "vector3.h"
+#include "bod_types.h"
 
 struct Game;
 
-class SlugHazardRuntime {
+class SlugHazardRuntime : public RenderableBod {
 public:
     SlugHazardRuntime* initialize_slug_hazard_runtime(); // @ 0x408530
-    void initialize_renderable_bod();                    // @ 0x42f650
     void update_slug_voice_ai();                         // @ 0x43f520
     void play_slug_voice(int sample_index);              // @ 0x43f560
     void hit_slug_hazard(int damage);                     // @ 0x43f620
     int explode_slug_hazard();                            // @ 0x43f680
     void kill_slug_hazard();                              // @ 0x43f8b0
 
-    void* vtable;                     // +0x00
-    char unknown_04[0x68 - 0x04];
-    Vector3 world_position;           // +0x68
-    char unknown_74[0x80 - 0x74];
+    char unknown_78[0x80 - 0x78];
     int state;                        // +0x80
     int death_toss_direction;         // +0x84
     Game* owner_game;                 // +0x88
