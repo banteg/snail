@@ -780,6 +780,15 @@
       "description": "Left mouse button latch array cleared by read_left_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4df868",
+      "name": "g_current_display_mode",
+      "kind": "global",
+      "aliases": [
+        "data_4df868"
+      ],
+      "description": "Shared DEVMODEA buffer populated by snapshot_current_display_mode before fullscreen and pointer-scaling setup."
+    },
+    {
       "address": "0x4df904",
       "name": "g_game_base",
       "kind": "global",
