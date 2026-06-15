@@ -1,18 +1,9 @@
 // play_slug_voice @ 0x43f560 (thiscall, ret 0x4)
 
+#include "slug_hazard_types.h"
+
 extern char* g_game_base; // data_4df904
 void play_voice_backend(int sample_id, float volume, float pan, float frequency);
-
-class SlugHazardRuntime {
-public:
-    void play_slug_voice(int sample_index);
-
-    char unknown_00[0xd8];
-    unsigned char voice_active; // +0xd8
-    char unknown_d9[3];
-    float voice_progress;      // +0xdc
-    float voice_progress_step; // +0xe0
-};
 
 void SlugHazardRuntime::play_slug_voice(int sample_index)
 {

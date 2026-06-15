@@ -359,7 +359,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 8 type name(s) with a header plus scratch-local copies
-- divergent: 56 type name(s) with multiple scratch-local shapes
+- divergent: 55 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -373,14 +373,13 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | VoiceManager | 9 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VoiceSet | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | RenderableBod | 8 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | WarningActor | 7 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RenderableBod | 7 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TipManager | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TipSlot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SoundEffectManager | 6 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | JetpackGaugeController | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SlugHazardRuntime | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TimerCounters | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |

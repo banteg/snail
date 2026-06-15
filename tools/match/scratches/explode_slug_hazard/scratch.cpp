@@ -1,5 +1,6 @@
 // explode_slug_hazard @ 0x43f680 (thiscall, ret)
 
+#include "slug_hazard_types.h"
 #include "sprite.h"
 
 struct Game {
@@ -7,16 +8,6 @@ struct Game {
     float track_center_x;          // +0x38
     char unknown_3c[0x3bbb7c - 0x3c];
     float slug_explosion_base_z;   // +0x3bbb7c
-};
-
-class SlugHazardRuntime {
-public:
-    int explode_slug_hazard();
-
-    char unknown_00[0x68];
-    Vector3 world_position; // +0x68
-    char unknown_74[0x88 - 0x74];
-    Game* owner_game;       // +0x88
 };
 
 int next_math_random_value();

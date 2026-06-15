@@ -1,17 +1,8 @@
 // hit_slug_hazard @ 0x43f620 (thiscall, ret 0x4)
 
+#include "slug_hazard_types.h"
+
 int next_math_random_value();
-
-class SlugHazardRuntime {
-public:
-    void hit_slug_hazard(int damage);
-    void kill_slug_hazard();
-    void play_slug_voice(int sample_index);
-
-    char unknown_00[0xc8];
-    int hit_points;                  // +0xc8
-    unsigned char hit_flash_pending; // +0xcc
-};
 
 void SlugHazardRuntime::hit_slug_hazard(int damage)
 {
