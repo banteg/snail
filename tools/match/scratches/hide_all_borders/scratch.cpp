@@ -1,9 +1,6 @@
 // hide_all_borders @ 0x4033f0 (thiscall, ret)
 
-class BorderBatchState {
-public:
-    int apply_all_border_visibility_mode(int mode);
-};
+#include "border_batch_state.h"
 
 class BorderManager {
 public:

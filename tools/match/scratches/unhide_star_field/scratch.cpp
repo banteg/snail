@@ -1,13 +1,6 @@
 // unhide_star_field @ 0x4346b0 (thiscall, ret int)
 
-#include "sprite.h"
-
-class StarFieldEntry {
-public:
-    char pad_00[0x1c];
-    Sprite* sprite; // +0x1c
-    char pad_20[0x0c];
-};
+#include "star_field.h"
 
 class StarField {
 public:

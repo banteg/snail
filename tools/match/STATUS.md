@@ -357,7 +357,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 2 type name(s)
+- ready: 0 type name(s)
 - covered: 11 type name(s) with a header plus scratch-local copies
 - divergent: 60 type name(s) with multiple scratch-local shapes
 
@@ -434,5 +434,3 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | GolbPathFollowState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SnailSkinTransition | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | BorderBatchState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | StarFieldEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
