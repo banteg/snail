@@ -275,7 +275,7 @@ int Game::place_parcels_on_track()
             } else {
                 int row_index = live_cell->get_track_cell_row_index();
                 live_cell->attachment_template_record->get_path_position_at_node(
-                    (float*)(row_record + 0x90), node, row_index, (float*)(row_record + 0x90));
+                    (Vector3*)(row_record + 0x90), node, row_index, (float*)(row_record + 0x90));
             }
         }
         result = row + 1;

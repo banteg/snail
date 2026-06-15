@@ -375,12 +375,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | VoiceSet | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RenderableBod | 8 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | WarningActor | 7 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplate | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TipManager | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TipSlot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SoundEffectManager | 6 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | JetpackGaugeController | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplate | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugHazardRuntime | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TimerCounters | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BodList | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -388,7 +388,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbProjectile | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | PathTemplateSample | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ScoreStats | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -399,6 +398,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRoot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GarbageHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | NukeController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | PathTemplateSample | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RowEventDisplayController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SaltHazardSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -434,7 +434,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TrackRuntimeRow | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Vector3 | 11 | 2 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vector3 | 10 | 2 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Color4f | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 6 | 1 | 6 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

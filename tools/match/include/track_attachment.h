@@ -62,7 +62,7 @@ struct AttachmentPathTemplate {
     unsigned char special_runtime_flag_9c; // +0x9c
     char unknown_9d[0xa8 - 0x9d];
 
-    void get_path_position_at_node(float* payload, int node, int row_index, float* out);
+    int get_path_position_at_node(Vector3* out, int node, int row_index, float* local);
 };
 
 struct TrackRowCell {
