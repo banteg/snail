@@ -6,15 +6,9 @@
 // layout bug, preserved as-is.
 
 #include "vector3.h"
+#include "salt_hazard_types.h"
 
-struct SaltHazardSlot;
 struct RuntimeTrackCellRef;
-
-struct SaltListAnchor {
-    char unknown_00[4];
-    SaltHazardSlot* first;    // +0x04
-    SaltHazardSlot* free_top; // +0x08
-};
 
 struct GridCell {
     char unknown_00[0x3c];

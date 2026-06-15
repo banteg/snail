@@ -2,13 +2,7 @@
 // Unlinks the slot from the live list and pushes it onto the free stack
 // anchored at game+0x5a8; clears the live state either way.
 
-struct SaltHazardSlot;
-
-struct SaltListAnchor {
-    char unknown_00[4];
-    SaltHazardSlot* first;    // +0x04
-    SaltHazardSlot* free_top; // +0x08
-};
+#include "salt_hazard_types.h"
 
 struct Game {
     char unknown_00[0x5a8];
