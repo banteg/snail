@@ -869,6 +869,33 @@
       "description": "BOD-base constructor counter incremented by initialize_bod_base."
     },
     {
+      "address": "0x50333c",
+      "name": "g_input_slot0_axis_x",
+      "kind": "global",
+      "aliases": [
+        "data_50333c"
+      ],
+      "description": "Keyboard/controller slot 0 X-axis lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503340",
+      "name": "g_input_slot0_axis_y",
+      "kind": "global",
+      "aliases": [
+        "data_503340"
+      ],
+      "description": "Keyboard/controller slot 0 Y-axis lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503344",
+      "name": "g_input_slot0_buttons",
+      "kind": "global",
+      "aliases": [
+        "data_503344"
+      ],
+      "description": "Keyboard/controller slot 0 button-mask lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+    },
+    {
       "address": "0x5108c0",
       "name": "g_tracked_allocation_depth",
       "kind": "global",
@@ -1257,6 +1284,26 @@
       "kind": "constant",
       "aliases": [],
       "description": "Subgame runtime feature flag preset assigned by set_subgame_features for level mode 4."
+    },
+    {
+      "address": "0x777b4c",
+      "name": "g_keyboard_previous_state",
+      "kind": "global",
+      "aliases": [
+        "data_777b4c"
+      ],
+      "size": "0x100",
+      "description": "Previous DirectInput keyboard state copied from the current buffer by update_keyboard_input and read by is_key_pressed_edge."
+    },
+    {
+      "address": "0x777c4c",
+      "name": "g_keyboard_current_state",
+      "kind": "global",
+      "aliases": [
+        "data_777c4c"
+      ],
+      "size": "0x100",
+      "description": "Current DirectInput keyboard state polled by update_keyboard_input and read by is_key_down and is_key_pressed_edge."
     },
     {
       "address": "0x777d70",
