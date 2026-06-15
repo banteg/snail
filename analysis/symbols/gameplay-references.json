@@ -990,6 +990,15 @@
       "description": "Base pointer for the loaded archive data buffer."
     },
     {
+      "address": "0x53c7f0",
+      "name": "g_archive_file",
+      "kind": "global",
+      "aliases": [
+        "data_53c7f0"
+      ],
+      "description": "Open archive FILE stream closed by uninitialize_game_data_archive and used by archive read helpers."
+    },
+    {
       "address": "0x53c7f8",
       "name": "g_archive_index_records",
       "kind": "global",
