@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**229/665** mapped gameplay functions matched, **14214/326119** bytes (**4.4%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**234/665** mapped gameplay functions matched, **14450/326119** bytes (**4.4%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -13,6 +13,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
+| ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
@@ -39,6 +40,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | ✅ | noop_runtime_callback | 0x40a290 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | ✅ | initialize_frontend_overlay_color_lerp | 0x40ab00 | 63 | 18/18 | 100.00% | 18/18 | 2 ok |  |
+| ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
@@ -50,7 +52,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 | 3 ok |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
+| ✅ | destroy_help_screen | 0x4168c0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
+| ✅ | destroy_main_menu | 0x419b30 | 26 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | apply_audio_config_volumes | 0x41b070 | 43 | 11/11 | 100.00% | 11/11 | 7 ok |  |
 | ✅ | allocate_path_template_samples | 0x41b0a0 | 72 | 23/23 | 100.00% | 23/23 | 4 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |
@@ -138,6 +142,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 | - |  |
+| ✅ | uninit_pause_menu | 0x440600 | 82 | 22/22 | 100.00% | 22/22 | 8 ok |  |
 | ✅ | advance_blink_random | 0x4408a0 | 31 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | initialize_blink_random | 0x4408c0 | 74 | 21/21 | 100.00% | 21/21 | 5 ok |  |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | 5/5 | - |  |
@@ -301,7 +306,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 7 type name(s)
 - covered: 9 type name(s) with a header plus scratch-local copies
-- divergent: 61 type name(s) with multiple scratch-local shapes
+- divergent: 64 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -311,7 +316,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Sprite | 22 | 0 | 17 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 20 | 0 | 11 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BodBase | 12 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
-| ... | 55 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
+| ... | 58 more divergent finding(s) |  |  |  | `uv run snail match types --paths` prints the full list. |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 21 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 14 | 1 | 10 | header exists; consider replacing matching scratch-local copies with includes |
