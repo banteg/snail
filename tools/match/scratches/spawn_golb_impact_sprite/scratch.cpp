@@ -25,7 +25,7 @@ void GolbProjectile::spawn_golb_impact_sprite(Vector3* position)
         Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x21, -1, -1);
         int flags = sprite->flags;
         flags |= 0x800;
-        Vector3 velocity = { 0.0f, 0.05f, 0.0f };
+        Vector3 velocity(0.0f, 0.05f, 0.0f);
         Vector3* out_velocity = &sprite->velocity;
         sprite->flags = flags;
         sprite->progress = 0.0f;

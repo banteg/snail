@@ -5,6 +5,8 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+#include "vector3.h"
+
 struct Color4f {
     Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
     float store_color4f(float r, float g, float b, float a);      // @ 0x44dbb0
@@ -15,16 +17,6 @@ struct Color4f {
     float g; // +0x04
     float b; // +0x08
     float a; // +0x0c
-};
-
-struct TransformMatrix;
-
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-
-    Vector3* rotate_vector_by_matrix(const TransformMatrix* matrix); // @ 0x44cc20
 };
 
 struct TextureRef {
