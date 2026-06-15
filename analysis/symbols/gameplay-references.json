@@ -865,6 +865,15 @@
       "description": "0x800-bucket zero parcel pool initialized by initialize_zero_parcel_bucket_pool."
     },
     {
+      "address": "0x641184",
+      "name": "g_track_runtime_rows",
+      "kind": "offset",
+      "aliases": [
+        "data_641184"
+      ],
+      "description": "Relocatable track-runtime row-slot table offset added to the live game root."
+    },
+    {
       "address": "0x643190",
       "name": "g_ghost_payload_z",
       "kind": "global",
