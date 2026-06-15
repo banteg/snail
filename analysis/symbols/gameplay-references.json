@@ -670,6 +670,24 @@
       "description": "Renderable BOD vtable installed by initialize_renderable_bod."
     },
     {
+      "address": "0x4a34b8",
+      "name": "g_intro_credits_script_path",
+      "kind": "string",
+      "aliases": [
+        "aIntroCreditsTx"
+      ],
+      "description": "Intro-screen script path literal for the credits screen state."
+    },
+    {
+      "address": "0x4a34cc",
+      "name": "g_intro_intro_script_path",
+      "kind": "string",
+      "aliases": [
+        "aIntroIntroTxt"
+      ],
+      "description": "Intro-screen script path literal for the opening intro state."
+    },
+    {
       "address": "0x4a3d6c",
       "name": "g_segment_path_name_0",
       "kind": "global",
@@ -687,6 +705,29 @@
         "aToadpair1"
       ],
       "description": "Sentinel address used as the end comparison for the segment Path= name pointer table; it is also the TOADPAIR1 string address."
+    },
+    {
+      "address": "0x4a4c78",
+      "name": "g_used_fringe_bods_format",
+      "kind": "string",
+      "aliases": [],
+      "description": "Debug-report format string emitted after build_track_fringe_objects counts fringe BOD usage."
+    },
+    {
+      "address": "0x4a4f40",
+      "name": "g_lazer_path2_kill_format",
+      "kind": "string",
+      "aliases": [
+        "g_debug_report_arg"
+      ],
+      "description": "Salt-hazard attachment rejection debug-report string used before deactivation."
+    },
+    {
+      "address": "0x4a5138",
+      "name": "g_worm_fov_report_format",
+      "kind": "string",
+      "aliases": [],
+      "description": "Worm-path camera FOV debug-report format string used by update_cameraman."
     },
     {
       "address": "0x4b2f40",

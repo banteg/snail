@@ -32,7 +32,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
-| 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 3 mismatch, 51 ok |  |
+| 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
@@ -76,7 +76,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 | - |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | 🚧 | is_neighbor_cell_solid | 0x434b60 | 127 | 46/47 | 68.82% | 11/47 | 2 ok |  |
-| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 1 mismatch, 46 ok |  |
+| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 47 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 | - |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  |
@@ -137,7 +137,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | 24/63 | 6 ok |  |
 | 🚧 | deactivate_salt_hazard | 0x441740 | 140 | 39/43 | 41.46% | 0/43 | 1 mismatch, 1 ok |  |
-| 🚧 | update_salt_hazard | 0x4417d0 | 768 | 215/218 | 48.04% | 0/218 | 2 mismatch, 15 ok |  |
+| 🚧 | update_salt_hazard | 0x4417d0 | 768 | 215/218 | 48.04% | 0/218 | 1 mismatch, 16 ok |  |
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 45/48 | 49.46% | 0/48 | 3 ok |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | advance_timer_counters | 0x441b90 | 116 | 38/38 | 100.00% | 38/38 | 7 ok |  |
@@ -174,7 +174,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | change_snail_skin | 0x445fd0 | 69 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | 8/8 | 4 ok |  |
 | ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | 20/20 | 6 ok |  |
-| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 2 mismatch, 71 ok |  |
+| 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 72 ok |  |
 | ✅ | initialize_subgoldy_death | 0x446e30 | 47 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 | 6 ok |  |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 | 2 ok |  |
