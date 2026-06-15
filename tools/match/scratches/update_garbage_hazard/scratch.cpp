@@ -2,9 +2,7 @@
 // cRSubGarbage::AI(): hover/contact registration, nuke/contact burst setup,
 // burst integration, smoke cadence, teardown, and final sprite roll update.
 
-#include "sprite.h"
-
-class GarbageHazardSlot;
+#include "garbage_hazard_slot.h"
 
 struct ContactTargetRegistry {
     void append_subgame_contact_target(
@@ -35,31 +33,6 @@ struct Player {
     float roll_add; // +0x3a0
     char unknown_3a4[0x2980 - 0x3a4];
     float interaction_max_z; // +0x2980
-};
-
-class GarbageHazardSlot {
-public:
-    GarbageHazardSlot* update_garbage_hazard();
-    GarbageHazardSlot* destroy_garbage_hazard();
-    void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
-
-    char unknown_00[0x68];
-    Vector3 world_position; // +0x68
-    char unknown_74[0x80 - 0x74];
-    GarbageHazardSlot* next_active; // +0x80
-    int state; // +0x84
-    int collision_side; // +0x88, 1 right / 2 left
-    Game* game; // +0x8c
-    Vector3 velocity; // +0x90
-    float radius; // +0x9c
-    float sprite_y_offset; // +0xa0
-    int unknown_a4; // +0xa4
-    float burst_rate_step; // +0xa8
-    float smoke_timer; // +0xac
-    float smoke_timer_step; // +0xb0
-    Sprite* sprite; // +0xb4
-    char unknown_b8[0xc0 - 0xb8];
-    Player* player; // +0xc0
 };
 
 double random_signed_float_below(float upper_bound, const char* tag);

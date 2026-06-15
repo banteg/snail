@@ -1,0 +1,40 @@
+// Shared garbage hazard slot view, cross-checked by spawn smoke, update, and
+// destroy paths. Game and Player stay scratch-local context views.
+#ifndef GARBAGE_HAZARD_SLOT_H
+#define GARBAGE_HAZARD_SLOT_H
+
+#include "sprite.h"
+
+struct Game;
+struct Player;
+
+class GarbageHazardSlot {
+public:
+    GarbageHazardSlot* update_garbage_hazard();
+    GarbageHazardSlot* destroy_garbage_hazard();
+    char spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
+
+    int unknown_00;
+    unsigned int list_flags;        // +0x04
+    GarbageHazardSlot* list_prev;   // +0x08
+    GarbageHazardSlot* list_next;   // +0x0c
+    char unknown_10[0x68 - 0x10];
+    Vector3 world_position;         // +0x68
+    char unknown_74[0x80 - 0x74];
+    GarbageHazardSlot* next_active; // +0x80
+    int state;                      // +0x84
+    int collision_side;             // +0x88, 1 right / 2 left
+    Game* game;                     // +0x8c
+    Vector3 velocity;               // +0x90
+    float radius;                   // +0x9c
+    float sprite_y_offset;          // +0xa0
+    int unknown_a4;                 // +0xa4
+    float burst_rate_step;          // +0xa8
+    float smoke_timer;              // +0xac
+    float smoke_timer_step;         // +0xb0
+    Sprite* sprite;                 // +0xb4
+    char unknown_b8[0xc0 - 0xb8];
+    Player* player;                 // +0xc0
+};
+
+#endif
