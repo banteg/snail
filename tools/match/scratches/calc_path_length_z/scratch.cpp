@@ -24,18 +24,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct AttachmentSampleMatrixView {
-    TransformMatrix transform; // +0x00
-    char unknown_40[0x40];
-    Vec3 delta_dir_to_next; // +0x80
-    float delta_length; // +0x8c
-    float center_x; // +0x90
-    float rotation_scalar_94; // +0x94
-    float rotation_scalar_98; // +0x98
-    float lateral_scale; // +0x9c
-    float special_scalar; // +0xa0
-    char unknown_a4[0x04];
-};
+#include "track_attachment_sample_matrix_view.h"
 
 struct GolbShot {
     char unknown_000[0x1c4];

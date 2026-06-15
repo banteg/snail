@@ -19,18 +19,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-struct AttachmentSampleMatrixView {
-    TransformMatrix transform;
-    char unknown_40[0x40];
-    Vec3 delta_dir_to_next;
-    float delta_length;
-    float center_x;
-    float rotation_scalar_94;
-    float rotation_scalar_98;
-    float lateral_scale;
-    float special_scalar;
-    char unknown_a4[0x04];
-};
+#include "track_attachment_sample_matrix_view.h"
 
 struct PathTemplate {
     char unknown_00[0x38];
