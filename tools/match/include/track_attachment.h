@@ -3,8 +3,8 @@
 // UNIFIED (2026-06-12): the "FollowState global at game+0x430100" is the
 // Player's embedded follow sub-struct at player+0x384 (player block at
 // game+0x42fd7c; 0x42fd7c + 0x384 = 0x430100). Accesses past the struct
-// (+0x90/+0x94/+0x99 relative) are adjacent Player fields: velocity.y
-// (+0x414), velocity.z (+0x418), attachment_exit_pending (+0x41d).
+// (+0x8c/+0x90/+0x94/+0x99 relative) are adjacent Player fields:
+// velocity.x/y/z (+0x410/+0x414/+0x418), attachment_exit_pending (+0x41d).
 #ifndef TRACK_ATTACHMENT_H
 #define TRACK_ATTACHMENT_H
 
@@ -58,7 +58,7 @@ public:
     AttachmentPathTemplate* begin_track_attachment_follow_state(
         TrackRowCell* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     void update_track_attachment_follow_state(
-        float rate, int* sample_index, Vector3* position); // @ 0x420cb0
+        float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
@@ -77,9 +77,10 @@ public:
     float orientation_e;         // +0x28
     Vector3 output_position;     // +0x2c
     Player* player;              // +0x38 back-reference (player+0x3bc)
-    char unknown_3c[0x90 - 0x3c];
+    char unknown_3c[0x8c - 0x3c];
     // adjacent Player fields, reachable from the follow base because the
     // struct is embedded at player+0x384 (see header comment):
+    float player_velocity_x;     // +0x8c = player+0x410
     float player_velocity_y;     // +0x90 = player+0x414
     float player_velocity_z;     // +0x94 = player+0x418
     char unknown_98;             // +0x98 = player+0x41c boost byte (dead: never set)
@@ -93,5 +94,7 @@ extern char* volatile g_game_base;
 extern char g_row_heading_table[]; // 0x64118c, 61 dwords per row
 extern char g_follow_state_block[]; // 0x430100 = g_player_block + 0x384
 extern char g_player_block[];       // 0x42fd7c
+extern char g_player_position_offset[]; // 0x42fde4 = g_player_block + 0x68
+extern char g_player_velocity_offset[]; // 0x43018c = g_player_block + 0x410
 
 #endif

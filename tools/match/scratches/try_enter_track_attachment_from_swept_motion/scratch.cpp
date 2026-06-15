@@ -105,6 +105,6 @@ seed:
     char* update_base = g_game_base;
     ((FollowState*)(g_follow_state_block + (int)update_base))->update_track_attachment_follow_state(
         ((FollowState*)(g_follow_state_block + (int)update_base))->player_velocity_z,
-        &((FollowState*)(g_follow_state_block + (int)update_base))->sample_index,
-        &((Player*)(g_player_block + (int)update_base))->position);
+        (Vector3*)(g_player_position_offset + (int)update_base),
+        (Vector3*)(g_player_velocity_offset + (int)update_base));
 }

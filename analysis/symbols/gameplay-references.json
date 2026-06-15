@@ -78,6 +78,16 @@
       "description": "Relocatable player block offset added to the live game root."
     },
     {
+      "address": "0x42fde4",
+      "name": "g_player_position_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fde4"
+      ],
+      "size": "0xc",
+      "description": "Relocatable player position vector offset used by attachment-follow validation and motion probes."
+    },
+    {
       "address": "0x42fde8",
       "name": "g_player_position_y_offset",
       "kind": "offset",
@@ -132,6 +142,16 @@
         "data_430170"
       ],
       "description": "Relocatable damage-warning actor offset used by update_damage_gauge start/stop warning calls."
+    },
+    {
+      "address": "0x43018c",
+      "name": "g_player_velocity_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_43018c"
+      ],
+      "size": "0xc",
+      "description": "Relocatable player velocity vector offset passed to attachment-follow update validation."
     },
     {
       "address": "0x430199",

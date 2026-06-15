@@ -52,4 +52,4 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
   exit-lane squidge idiom in reverse — player position.y snapped to
   rotated local y, heading table write (61-dword row stride), then a
   validating `update_track_attachment_follow_state(player.velocity.z,
-  &sample_index, &player.position)` — thiscall, three args
+  &player.position, &player.velocity)` — thiscall, three args
