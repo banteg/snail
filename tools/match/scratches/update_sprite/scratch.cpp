@@ -35,8 +35,8 @@ public:
     float lifetime; // +0x70
     float lifetime_step; // +0x74
     float gravity_step; // +0x78
-    float local_yaw; // +0x7c
-    float local_yaw_step; // +0x80
+    float facing_angle; // +0x7c
+    float facing_angle_step; // +0x80
     char unknown_84[0x9c - 0x84];
     int texture_id; // +0x9c
     int frame_count; // +0xa0
@@ -86,7 +86,7 @@ void Sprite::update_sprite()
     current->y = next_y;
     current->z += velocity.z;
     velocity.y += gravity_step;
-    local_yaw += local_yaw_step;
+    facing_angle += facing_angle_step;
 
     if (lifetime_step > 0.0f) {
         flags |= 0x200;

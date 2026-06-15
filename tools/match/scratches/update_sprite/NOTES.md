@@ -16,8 +16,8 @@ Recovered sprite relationships:
   exits `[0, 1]`, the sprite is killed unless flag `0x100` is set.
 - `Sprite +0x70/+0x74` are a lifetime accumulator and step; positive lifetime
   step sets flag `0x200`, otherwise it clears that flag.
-- `Sprite +0x78` is gravity applied to velocity Y, and `+0x7c/+0x80` are a
-  local yaw/roll lane and step.
+- `Sprite +0x78` is gravity applied to velocity Y, and `+0x7c/+0x80` are the
+  facing angle and per-frame angle step.
 - `Sprite +0x9c/+0xa0/+0xa4/+0xa8/+0xac/+0xb0` are the primary texture id,
   frame count, current frame, frame step, frame accumulator, and frame rate.
   Flag `0x2000` enables frame animation; flag `0x4000` makes the frame step
