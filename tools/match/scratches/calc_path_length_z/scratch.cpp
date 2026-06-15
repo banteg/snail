@@ -24,7 +24,7 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-#include "track_attachment_sample_matrix_view.h"
+#include "track_attachment_matrix_path_view.h"
 
 struct GolbShot {
     char unknown_000[0x1c4];
@@ -46,7 +46,7 @@ public:
 
     unsigned char active; // +0x00
     char unknown_01[0x04 - 0x01];
-    AttachmentPathTemplate* template_record; // +0x04
+    AttachmentPathTemplateMatrixView* template_record; // +0x04
     TrackRowCell* source_cell; // +0x08
     int sample_index; // +0x0c
     float progress; // +0x10
@@ -65,7 +65,7 @@ int __stdcall compute_kind42_attachment_transform(
 
 int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, Vec3* velocity)
 {
-    AttachmentPathTemplate* current_template = template_record;
+    AttachmentPathTemplateMatrixView* current_template = template_record;
     AttachmentSampleMatrixView* samples = (AttachmentSampleMatrixView*)current_template->secondary_samples;
     int current_index = sample_index;
     float delta = path_factor * samples[current_index].delta_length;
@@ -88,7 +88,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 shot->position.y = output_position.y;
                 shot->position.z = output_position.z;
 
-                AttachmentPathTemplate* terminal_template = template_record;
+                AttachmentPathTemplateMatrixView* terminal_template = template_record;
                 if (terminal_template->kind == 31) {
                     velocity->y = velocity->z * 0.69999999f;
                     float old_x = position->x;
@@ -268,7 +268,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     if (abs_lateral < 0.0f)
         abs_lateral = -abs_lateral;
 
-    AttachmentPathTemplate* exit_template = template_record;
+    AttachmentPathTemplateMatrixView* exit_template = template_record;
     float exit_threshold = (float)exit_template->width_cells * 0.5f + 0.30000001f;
     if (abs_lateral > exit_threshold) {
         active = 0;

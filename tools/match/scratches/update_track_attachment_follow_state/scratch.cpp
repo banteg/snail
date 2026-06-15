@@ -19,32 +19,13 @@ struct TransformMatrix {
     Vec4 position;
 };
 
-#include "track_attachment_sample_matrix_view.h"
-
-struct PathTemplate {
-    char unknown_00[0x38];
-    int kind;
-    unsigned char is_mirrored_x;
-    char unknown_3d[0x40 - 0x3d];
-    unsigned int side_exit_mode;
-    unsigned int segment_count;
-    unsigned int unknown_48;
-    float segment_count_f;
-    float width_or_scale;
-    unsigned int width_cells;
-    AttachmentSampleMatrixView* primary_samples;
-    AttachmentSampleMatrixView* secondary_samples;
-    char unknown_60[0x98 - 0x60];
-    float installed_heading_delta;
-    unsigned char special_runtime_flag_9c;
-    char unknown_9d[0xa8 - 0x9d];
-};
+#include "track_attachment_matrix_path_view.h"
 
 struct TrackRowCell {
     char unknown_00[0x10];
     Vec3 anchor_position;
     char unknown_1c[0x38 - 0x1c];
-    PathTemplate* attachment_template_record;
+    AttachmentPathTemplateMatrixView* attachment_template_record;
 
     int get_track_cell_row_index();
 };
@@ -92,9 +73,9 @@ public:
 
     unsigned char active;
     char unknown_01[0x04 - 0x01];
-    PathTemplate* template_record;
+    AttachmentPathTemplateMatrixView* template_record;
     TrackRowCell* source_cell;
-    unsigned int sample_index;
+    int sample_index;
     float progress;
     float vertical_offset;
     float orientation_a;
@@ -132,8 +113,8 @@ int FollowState::update_track_attachment_follow_state(
     Vec3* out_position,
     Vec3* motion)
 {
-    unsigned int index = sample_index;
-    PathTemplate* template_record = this->template_record;
+    int index = sample_index;
+    AttachmentPathTemplateMatrixView* template_record = this->template_record;
     AttachmentSampleMatrixView* secondary_samples = template_record->secondary_samples;
     float delta = path_factor * secondary_samples[index].delta_length;
     float alpha;
@@ -158,7 +139,7 @@ int FollowState::update_track_attachment_follow_state(
     TransformMatrix to;
 
     unsigned int current_index;
-    PathTemplate* current_template;
+    AttachmentPathTemplateMatrixView* current_template;
     int terminal_index;
     AttachmentSampleMatrixView* primary;
     if (delta + progress > secondary_samples[index].delta_length) {
@@ -172,7 +153,7 @@ int FollowState::update_track_attachment_follow_state(
                 g_voice_manager.play_voice_manager(4, 1, -1);
             }
 
-            PathTemplate* current_template = this->template_record;
+            AttachmentPathTemplateMatrixView* current_template = this->template_record;
             if (current_template->special_runtime_flag_9c) {
                 int count = (int)current_template->segment_count;
                 int current_index = (int)this->sample_index;
@@ -208,10 +189,10 @@ int FollowState::update_track_attachment_follow_state(
                 if (launch_speed > 1.0f)
                     motion->z = 1.0f;
 
-                PathTemplate* final_template = this->template_record;
+                AttachmentPathTemplateMatrixView* final_template = this->template_record;
                 if (final_template->kind == 31) {
                     motion->y = motion->z * 0.69999999f;
-                    PathTemplate* supertramp_template = this->template_record;
+                    AttachmentPathTemplateMatrixView* supertramp_template = this->template_record;
                     float old_x = out_position->x;
                     unsigned int count = supertramp_template->segment_count;
                     float carry = delta + supertramp_template->width_or_scale;
@@ -295,7 +276,7 @@ after_v85:
         arg2 = out_position->x - v85;
         compute_kind42_attachment_transform(arg1, arg2, 0.49000001f, &transform, &out_angle);
         unsigned int active_index = sample_index;
-        if (active_index == 0 || active_index == template_record->segment_count - 1) {
+        if (active_index == 0 || active_index == (unsigned int)(template_record->segment_count - 1)) {
             set_matrix_identity(&from);
             from.position.x = transform.position.x;
             from.position.y = transform.position.y;
@@ -397,10 +378,10 @@ after_v85:
     orientation_d = transform.basis_up.y;
     orientation_e = transform.basis_up.z;
 
-    PathTemplate* orient_template = template_record;
+    AttachmentPathTemplateMatrixView* orient_template = template_record;
     unsigned int orient_index = sample_index;
     int offset = 0xa8 * orient_index;
-    if (orient_index == orient_template->segment_count - 1) {
+    if (orient_index == (unsigned int)(orient_template->segment_count - 1)) {
         orientation_b = *(float*)((char*)orient_template->primary_samples + offset + 0x98);
         orientation_a = *(float*)((char*)orient_template->primary_samples + offset + 0x94);
     } else {
