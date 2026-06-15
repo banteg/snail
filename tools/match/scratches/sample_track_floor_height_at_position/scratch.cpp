@@ -1,13 +1,6 @@
 // sample_track_floor_height_at_position @ 0x43d4d0 (thiscall, ret)
 
-#include "golb.h"
-
-struct TrackRowCell {
-    char unknown_00[0x14];
-    float floor_height;
-    char unknown_18[0x3c - 0x18];
-    unsigned char tile_id;
-};
+#include "track_attachment.h"
 
 class Game {
 public:
@@ -37,7 +30,7 @@ double Game::sample_track_floor_height_at_position(Vector3* position)
     }
 
     if (tile_id == 0x16) {
-        return cell->floor_height;
+        return cell->anchor_position.y;
     }
 
     return kInvalidFloorHeight;

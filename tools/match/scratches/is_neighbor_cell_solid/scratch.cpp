@@ -1,14 +1,6 @@
 // is_neighbor_cell_solid @ 0x434b60 (thiscall, ret 0xc)
 
-class TrackRowCell {
-public:
-    int get_track_cell_row_index();
-
-    char unknown_00[0x3c];
-    unsigned char tile_id; // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int lane_word; // +0x40, low 3 bits are lane
-};
+#include "track_attachment.h"
 
 unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell);
 

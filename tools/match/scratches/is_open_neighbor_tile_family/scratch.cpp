@@ -1,9 +1,6 @@
 // is_open_neighbor_tile_family @ 0x439ab0 (fastcall, ret)
 
-struct TrackRowCell {
-    char unknown_00[0x3c];
-    unsigned char tile_id;
-};
+#include "track_attachment.h"
 
 unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell)
 {

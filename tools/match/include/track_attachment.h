@@ -49,6 +49,10 @@ struct TrackRowCell {
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     char unknown_1c[0x38 - 0x1c];
     AttachmentPathTemplate* attachment_template_record; // +0x38
+    unsigned char tile_id;              // +0x3c
+    unsigned char tile_flags_3d;        // +0x3d
+    char unknown_3e[0x40 - 0x3e];
+    int lane_word;                      // +0x40, low 3 bits are lane
 
     int get_track_cell_row_index();
 };
