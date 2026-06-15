@@ -1,16 +1,6 @@
 // spawn_salt_hazard @ 0x441560 (thiscall, ret 0x4)
 #include "salt_hazard_types.h"
-#include "vector_types.h"
-
-struct TransformMatrix {
-    void set_matrix_rotation_identity();     // @ 0x44d250, thiscall, matched
-    void rotate_matrix_world_y(float angle); // thiscall
-
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-};
+#include "transform_matrix.h"
 
 struct Game {
     char unknown_00[0x74650];

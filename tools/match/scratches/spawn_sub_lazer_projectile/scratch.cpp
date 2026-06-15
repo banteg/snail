@@ -1,15 +1,6 @@
 // spawn_sub_lazer_projectile @ 0x441670 (thiscall, ret 0x8)
 #include "sub_lazer_types.h"
-#include "vector_types.h"
-
-struct TransformMatrix {
-    void set_matrix_z_direction(const Vector3* direction);
-
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-};
+#include "transform_matrix.h"
 
 struct Game {
     char unknown_00[0x38];
@@ -18,7 +9,6 @@ struct Game {
     char sub_lazer_list_head[0x10];
 };
 
-void __fastcall set_matrix_identity(TransformMatrix* transform);
 int report_errorf(char* format, ...);
 
 void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)

@@ -4,6 +4,7 @@
 // link it into both active lists, and allocate the sprite presentation.
 
 #include "sprite.h"
+#include "transform_matrix.h"
 
 typedef unsigned int DWORD;
 
@@ -11,10 +12,6 @@ struct PositionBits {
     int x;
     float y;
     int z;
-};
-
-struct TransformMatrix {
-    float rows[16];
 };
 
 class Game {
@@ -25,7 +22,6 @@ public:
 
 extern char* g_game_base; // data_4df904
 
-void __fastcall set_matrix_identity(TransformMatrix* transform);
 float random_float_below(float upper_bound, const char* tag);
 int next_math_random_value();
 int report_warningf(char* format, ...);
