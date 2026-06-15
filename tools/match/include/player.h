@@ -8,6 +8,7 @@
 #include "vector3.h"
 
 class Game;
+class Sprite;
 
 struct AttachmentRecord {
     int unknown_00[38];
@@ -31,6 +32,7 @@ public:
 class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
+    int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0
     void kill_subgoldy();                 // @ 0x445840
@@ -44,7 +46,10 @@ public:
     char unknown_85[0x8c - 0x85];
     float resurrect_progress;              // +0x8c
     float resurrect_progress_step;         // +0x90
-    char unknown_94[0x384 - 0x94];
+    char unknown_94[0x98 - 0x94];
+    Sprite* ghost_sprite_a;                // +0x98
+    Sprite* ghost_sprite_b;                // +0x9c
+    char unknown_a0[0x384 - 0xa0];
     // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
     // follow_active = FollowState.active, attachment_record =

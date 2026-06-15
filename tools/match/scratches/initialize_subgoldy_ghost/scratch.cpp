@@ -1,15 +1,7 @@
 // initialize_subgoldy_ghost @ 0x43d230 (thiscall, ret 0x4)
 
 #include "sprite.h"
-
-class Player {
-public:
-    int initialize_subgoldy_ghost(int owner);
-
-    char unknown_00[0x98];
-    Sprite* ghost_sprite_a;
-    Sprite* ghost_sprite_b;
-};
+#include "player.h"
 
 int Player::initialize_subgoldy_ghost(int owner)
 {
