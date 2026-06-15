@@ -24,8 +24,10 @@ Current recovered relationships:
 
 Open matching issues:
 
-- The scratch intentionally keeps renderer and `Sprite` layouts local. Promote
-  only after more sprite draw/update callsites agree on names and extents.
+- The scratch still keeps renderer vtable, vector, and matrix windows local.
+  `Direct3DDevice8` is shared only as the one-field `vtbl` wrapper; the vtable
+  shape remains scratch-local because renderer callsites recover different
+  method windows.
 - The no-op color constructor at `0x44db50` is modeled locally as
   `ColorBGRA8::noop_this_constructor`; it is a real identity helper
   (`mov eax, ecx; ret`) already curated as a shared reference symbol.

@@ -1,6 +1,7 @@
 // draw_sprite_quad @ 0x4137f0 (cdecl, ret)
 
 #include "sprite.h"
+#include "direct3d_device8_view.h"
 
 struct Vec3 {
     float x;
@@ -60,8 +61,6 @@ struct RendererState {
     VertexBuffer* sprite_vertex_buffer; // +0x08
 };
 
-struct Direct3DDevice8;
-
 struct Direct3DDevice8Vtbl {
     char unknown_000[0x94];
     int (__stdcall* SetTransform)(Direct3DDevice8* self, int state, TransformMatrix* matrix);
@@ -73,10 +72,6 @@ struct Direct3DDevice8Vtbl {
     char unknown_134[0x14c - 0x134];
     int (__stdcall* SetStreamSource)(Direct3DDevice8* self, int stream, VertexBuffer* buffer,
         int stride);
-};
-
-struct Direct3DDevice8 {
-    Direct3DDevice8Vtbl* vtbl;
 };
 
 extern Direct3DDevice8* g_d3d_device;      // data_502fec
