@@ -60,8 +60,8 @@ public:
     Vector3 previous_position; // +0x3c
     Vector3 position; // +0x48
     Vector3 velocity; // +0x54
-    float size_start; // +0x60
-    float size_end; // +0x64
+    float size_start; // +0x60, interpolated size at progress 0
+    float size_end; // +0x64, interpolated size at progress 1
     float progress; // +0x68
     float progress_step; // +0x6c
     float lifetime; // +0x70
