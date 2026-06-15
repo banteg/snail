@@ -50,7 +50,7 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
             v24 = pz;
             v24 -= v32;
             local = Vector3(v22, v23, v24);
-            local.rotate_by_matrix(s->matrix);
+            local.rotate_vector_by_matrix(s->matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
                 && local.y >= -0.2
@@ -69,7 +69,7 @@ void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
                     v27 = v34;
                     v27 -= v36;
                     probe = Vector3(v25, v26, v27);
-                    probe.rotate_by_matrix(hit->matrix);
+                    probe.rotate_vector_by_matrix(hit->matrix);
                     if (probe.y <= 0.001f)
                         goto seed;
                 }

@@ -35,7 +35,7 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
 - scan template samples backward from `sample_count-1` (+0x44), stride
   0xa8 via base at +0x5c, skipping samples with +0x14 <= 0
 - probe 1: position minus (cell anchor + sample offset), rotated into
-  the sample local frame (`Vector3::rotate_by_matrix`, thiscall)
+  the sample local frame (`Vector3::rotate_vector_by_matrix`, thiscall)
 - gates: `(float)(width_cells / -2) - 0.3f < x < (float)(width_cells / 2)
   + 0.3f` (signed INTEGER division — the 06-10 half-span finding),
   `y >= -0.2` (double constant), `z > 0.0f`, `z < sample depth limit

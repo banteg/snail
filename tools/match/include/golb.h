@@ -12,7 +12,7 @@ struct Vector3 {
     Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
 
     float vector_magnitude(); // @ 0x44ccf0, thiscall, returns st0
-    void rotate_by_matrix(const float* matrix); // thiscall, matrix on stack
+    void rotate_vector_by_matrix(const float* matrix); // thiscall, matrix on stack
 };
 
 // stride 0x18 sample bank entry; only the position triple is typed so far
