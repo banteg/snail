@@ -2,6 +2,7 @@
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
 #include "sprite.h"
+#include "snail_skin.h"
 
 struct WarningActor {
     void start_warning(); // @ 0x446f30, matched
@@ -12,10 +13,6 @@ struct WarningActor {
     float progress;
     float progress_step;
     void* border;
-};
-
-struct SnailSkinTransition {
-    void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, matched
 };
 
 struct VoiceManager {
@@ -39,7 +36,7 @@ struct Game {
     float follow_exit_gate; // +0x4301c0
     char unknown_4301c4[0x434038 - 0x4301c4];
     SnailSkinTransition snail_skin_transition; // +0x434038
-    char unknown_434039[0x434064 - 0x434039];
+    char unknown_434058[0x434064 - 0x434058];
     int drain_exit_word; // +0x434064
 };
 
