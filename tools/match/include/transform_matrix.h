@@ -21,6 +21,10 @@ struct TransformMatrix {
     TransformMatrix* invert_matrix_in_place(); // @ 0x44d280
     TransformMatrix* invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330
     TransformMatrix* initialize_matrix_from_quaternion(const Quaternion* quaternion); // @ 0x44d820
+    void linear_interpolate_matrix(
+        const TransformMatrix* from,
+        const TransformMatrix* to,
+        float alpha); // @ 0x44da90
     void set_matrix_rotation_identity();              // @ 0x44d250
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0

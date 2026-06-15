@@ -1,22 +1,10 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
-#include "vector_types.h"
+#include "transform_matrix.h"
 
 struct Vec3 {
     float x;
     float y;
     float z;
-};
-
-struct TransformMatrix {
-    void linear_interpolate_matrix(
-        const TransformMatrix* from,
-        const TransformMatrix* to,
-        float alpha);
-
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
 };
 
 #include "track_attachment_matrix_path_view.h"

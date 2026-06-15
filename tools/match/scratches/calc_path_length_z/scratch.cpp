@@ -1,24 +1,12 @@
 // calc_path_length_z @ 0x4217b0 (thiscall, ret 0xc)
 // cRPathFollow::CalcPathLengthZ(float, Vec3*, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
-#include "vector_types.h"
+#include "transform_matrix.h"
 #include "golb.h"
 
 typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
-
-struct TransformMatrix {
-    void linear_interpolate_matrix(
-        const TransformMatrix* from,
-        const TransformMatrix* to,
-        float alpha);
-
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-};
 
 #include "track_attachment_matrix_path_view.h"
 #include "track_row_cell_anchor_view.h"
