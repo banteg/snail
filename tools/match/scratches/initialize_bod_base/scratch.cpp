@@ -1,16 +1,13 @@
 // initialize_bod_base @ 0x42f5f0 (thiscall, ret)
 
+#include "sprite.h"
+
 extern void* g_bod_base_vtable; // off_4974fc / data_4974fc
 extern int g_bod_base_init_count; // data_50331c
 
 class NoopAiCallback {
 public:
     NoopAiCallback();
-};
-
-class Color4f {
-public:
-    Color4f* store_color4f(float r, float g, float b, float a);
 };
 
 class BodBase {

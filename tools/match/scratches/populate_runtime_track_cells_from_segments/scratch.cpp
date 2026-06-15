@@ -1,10 +1,7 @@
 // populate_runtime_track_cells_from_segments @ 0x435eb0 (thiscall, ret)
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
-struct Color4f {
-    void set_color_white();
-    Color4f* store_color4f(float r, float g, float b, float a);
-};
+#include "sprite.h"
 
 void __fastcall set_matrix_identity(void* transform);
 
