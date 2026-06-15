@@ -2,18 +2,12 @@
 
 #include "sprite.h"
 #include "direct3d_device8_view.h"
+#include "vector_types.h"
 
 struct Vec3 {
     float x;
     float y;
     float z;
-};
-
-struct Vec4 {
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct TransformMatrix {
