@@ -783,6 +783,15 @@
       "description": "Global cursor-hide flag initialized by mouse input setup, read by update_mouse, and written by set_hide_system_cursor_flag."
     },
     {
+      "address": "0x777f38",
+      "name": "g_cosine_table_init_base",
+      "kind": "offset",
+      "aliases": [
+        "data_777f38"
+      ],
+      "description": "Synthetic one-float-before relocation base used by initialize_trigonometry_tables before the canonical cosine table starts at 0x777f3c."
+    },
+    {
       "address": "0x77ff3c",
       "name": "g_math_random_index",
       "kind": "global",
@@ -799,6 +808,15 @@
         "data_77ff40"
       ],
       "description": "Shared identity transform initialized by initialize_global_identity_matrix."
+    },
+    {
+      "address": "0x77ff88",
+      "name": "g_sine_table_init_base",
+      "kind": "offset",
+      "aliases": [
+        "data_77ff88"
+      ],
+      "description": "Synthetic one-float-before relocation base used by initialize_trigonometry_tables before the canonical sine table starts at 0x77ff8c."
     },
     {
       "address": "0x77ff8c",

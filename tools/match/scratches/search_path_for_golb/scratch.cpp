@@ -16,7 +16,7 @@ GolbPathSample* GolbPathBank::search_path_for_golb(const Vector3* position)
             delta.z = cursor[0] - position->z;
             Vector3 probe = delta;
             if (delta.z > 0.0f && delta.z < 30.0f) {
-                float m = probe.magnitude();
+                float m = probe.vector_magnitude();
                 if (m < best) {
                     best = m;
                     found = (GolbPathSample*)(cursor - 3);
