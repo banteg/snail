@@ -1,8 +1,8 @@
 // configure_sprite_render_state @ 0x413670 (cdecl, ret)
 
-struct SpriteTextureRecord {
+struct SpriteRenderStateView {
     char unknown_00[0x28];
-    int draw_mode; // +0x28
+    int draw_mode; // Sprite +0x28
 };
 
 struct Direct3DDevice8;
@@ -18,9 +18,9 @@ struct Direct3DDevice8 {
 
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
-int configure_sprite_render_state(SpriteTextureRecord* texture)
+int configure_sprite_render_state(SpriteRenderStateView* sprite)
 {
-    switch (texture->draw_mode) {
+    switch (sprite->draw_mode) {
     case 2:
         return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 0);
     case 0:
@@ -45,5 +45,5 @@ int configure_sprite_render_state(SpriteTextureRecord* texture)
         return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 3);
     }
 
-    return texture->draw_mode;
+    return sprite->draw_mode;
 }
