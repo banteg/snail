@@ -7,12 +7,12 @@
 
 #include "sprite.h"
 
-struct SubLazerSlot;
+struct SubLazerRuntime;
 
 struct FreeAnchor {
     char unknown_00[4];
-    SubLazerSlot* first;    // +0x04
-    SubLazerSlot* free_top; // +0x08
+    SubLazerRuntime* first;    // +0x04
+    SubLazerRuntime* free_top; // +0x08
 };
 
 struct GameView {
@@ -29,13 +29,13 @@ extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-struct SubLazerSlot {
+struct SubLazerRuntime {
     void update_sub_lazer_projectile();
 
     int unknown_00;
     unsigned int list_flags;  // +0x04
-    SubLazerSlot* list_prev;  // +0x08
-    SubLazerSlot* list_next;  // +0x0c
+    SubLazerRuntime* list_prev;  // +0x08
+    SubLazerRuntime* list_next;  // +0x0c
     char unknown_10[0x14 - 0x10];
     float bob_base_y;         // +0x14
     float position_z;         // +0x18
@@ -51,13 +51,13 @@ struct SubLazerSlot {
     float bob_phase_step;     // +0x70
 };
 
-void SubLazerSlot::update_sub_lazer_projectile()
+void SubLazerRuntime::update_sub_lazer_projectile()
 {
     int zero = 0;
     unsigned int flags;
     FreeAnchor* anchor;
-    SubLazerSlot* next;
-    SubLazerSlot* prev;
+    SubLazerRuntime* next;
+    SubLazerRuntime* prev;
 
     if (owner_game->paused != zero)
         return;
@@ -91,11 +91,11 @@ state_two:
     }
 
     next = list_next;
-    if (next != (SubLazerSlot*)zero)
+    if (next != (SubLazerRuntime*)zero)
         next->list_prev = list_prev;
 
     prev = list_prev;
-    if (prev != (SubLazerSlot*)zero) {
+    if (prev != (SubLazerRuntime*)zero) {
         prev->list_next = list_next;
     } else {
         anchor->first = list_next;
@@ -127,11 +127,11 @@ state_one:
     }
 
     next = list_next;
-    if (next != (SubLazerSlot*)zero)
+    if (next != (SubLazerRuntime*)zero)
         next->list_prev = list_prev;
 
     prev = list_prev;
-    if (prev != (SubLazerSlot*)zero) {
+    if (prev != (SubLazerRuntime*)zero) {
         prev->list_next = list_next;
     } else {
         anchor->first = list_next;

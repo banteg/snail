@@ -2,24 +2,9 @@
 // Free-scan the 20-slot sub-lazer pool, stagger the spawn y down by
 // index * 0.01, route through the matched spawn, positional fire cue.
 
-#include "vector3.h"
-
-struct SubLazerSlot {
-    void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // matched 98.4%
-
-    char unknown_00[0x80];
-    int state; // +0x80
-    char unknown_84[0xb0 - 0x84];
-};
+#include "sub_lazer_types.h"
 
 void play_sound_effect_at_position(int sound_id, const float* position);
-
-class SubLazerPool {
-public:
-    void shoot_subgoldy(const float* origin, const Vector3* direction);
-
-    SubLazerSlot slots[20];
-};
 
 void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
 {

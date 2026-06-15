@@ -1,6 +1,6 @@
 // spawn_sub_lazer_projectile @ 0x441670 (thiscall, ret 0x8)
+#include "sub_lazer_types.h"
 #include "vector_types.h"
-#include "vector3.h"
 
 struct TransformMatrix {
     void set_matrix_z_direction(const Vector3* direction);
@@ -21,30 +21,12 @@ struct Game {
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 int report_errorf(char* format, ...);
 
-class SubLazerSlot {
-public:
-    void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction);
-
-    int unknown_00;
-    unsigned int list_flags;
-    SubLazerSlot* list_prev;
-    SubLazerSlot* list_next;
-    char unknown_10[0x38 - 0x10];
-    TransformMatrix live_matrix;
-    char unknown_78[0x80 - 0x78];
-    int state;
-    char unknown_84[0x88 - 0x84];
-    Game* owner_game;
-    Vector3 velocity;
-    float sprite_bob_phase;
-    float sprite_bob_phase_step;
-};
-
 void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
 {
     state = 1;
-    set_matrix_identity(&live_matrix);
-    Vector3* position = (Vector3*)&live_matrix.position;
+    TransformMatrix* live_matrix = (TransformMatrix*)((char*)this + 0x38);
+    set_matrix_identity(live_matrix);
+    Vector3* position = &this->position;
     Vector3* velocity_copy = &velocity;
     *position = *origin;
     *velocity_copy = *direction;
@@ -64,5 +46,5 @@ void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vecto
         list_flags |= 0x200;
     }
 
-    live_matrix.set_matrix_z_direction(&velocity);
+    live_matrix->set_matrix_z_direction(&velocity);
 }

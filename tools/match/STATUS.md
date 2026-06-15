@@ -359,7 +359,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 8 type name(s) with a header plus scratch-local copies
-- divergent: 58 type name(s) with multiple scratch-local shapes
+- divergent: 56 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -396,7 +396,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRoot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RowEventDisplayController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SubLazerSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TimesUpController | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VapourTrail | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -418,7 +417,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | StarField | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SubLazerPool | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TooltipState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 31 | 1 | 26 | header exists; consider replacing matching scratch-local copies with includes |
