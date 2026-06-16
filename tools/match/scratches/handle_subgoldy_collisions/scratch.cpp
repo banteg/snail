@@ -11,6 +11,7 @@
 #include "ring_special_effect_types.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
+#include "sub_lazer_types.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
@@ -51,8 +52,8 @@ public:
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
-    char slug_slots[1888]; // +0x3563a0 stride 236: object +0x00, pos +0x68, state +0x80, hit byte +0xd9
-    char lazer_slots[3520]; // +0x356b00 stride 176: pos +0x68, state +0x80
+    SlugHazardRuntime slug_slots[8]; // +0x3563a0, stride 0xec
+    SubLazerSlot lazer_slots[20]; // +0x356b00, stride 0xb0
     SaltHazardSlot salt_slots[40]; // +0x3578c0, live byte is velocity.z low byte
     char unknown_359080[0x359140 - (0x3578c0 + 6080)];
     GarbageHazardSlot* active_garbage_hazards; // +0x359140

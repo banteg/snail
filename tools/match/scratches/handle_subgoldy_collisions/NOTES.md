@@ -41,6 +41,13 @@ matches the target's authored compare chain for kinds `4/5`, `8`, `1`, and
 instructions move from `639` to `648`, and the masked audit rises from
 `70 ok` to `77 ok`. The known slug-block masked call mismatch remains.
 
+2026-06-16 slug/sub-lazer local pool-field pass: the local `Game` window now
+types the slug and sub-lazer pools as `SlugHazardRuntime[8]` and
+`SubLazerSlot[20]`, matching the shared `0xec` and `0xb0` stride assertions.
+The sweep bodies deliberately keep the existing byte-strided loop expressions:
+previous typed-loop probes changed VC6 register ownership. Focused Wibo remains
+`47.99%`, `648/673`, `77 ok / 1 mismatch`.
+
 2026-06-16 shared Player consolidation pass: the scratch now consumes the
 shared `Player` definition instead of carrying a private broad player window.
 This promoted `Player::handle_subgoldy_collisions`, direct
@@ -70,8 +77,9 @@ the collision scratch now emits real thiscall setup at the slug callsites.
 Focused match improves from `45.15%` / 647 candidate insns to `45.36%` / 641.
 The masked mismatch still reports `kill_slug_hazard` vs
 `begin_post_follow_carryover`, so this did not solve the slug-block alignment
-debt. Keep the slug pool byte-strided here: the helper methods are proven, but
-the shared `SlugHazardRuntime` header does not yet prove a 0xec pool stride.
+debt. The later slug runtime consolidation proved the `0xec` pool stride in
+the shared `SlugHazardRuntime` header; keep the slug loop byte-strided here for
+codegen shape, not because the slot layout is uncertain.
 
 - Rejected probe: spelling a local `unsigned char movement_kill_mask = 0x80`
   did not produce native's `bl` mask register reuse. VC6 propagated it back to
@@ -96,11 +104,13 @@ local `Player` window for codegen, so this is a struct consolidation step, not
 a score change.
 
 2026-06-16 typed runtime-pool pass: the scratch now includes the shared
-health, speedup, jetpack, garbage, salt, parcel, and ring/special-effect
-headers in the local `Game` window. This is a relationship/field-certainty
-pass rather than a source-shape win: the score drops from the prior
-proof-shape `48.79%` to `43.33%` because the typed slot views change VC6's
-loop base registers and stack slots. The useful cross-confirmations are:
+health, speedup, jetpack, garbage, salt, slug, sub-lazer, parcel, and
+ring/special-effect headers in the local `Game` window. This is a
+relationship/field-certainty pass rather than a source-shape win: typed loop
+rewrites changed VC6's loop base registers and stack slots, so the slug and
+sub-lazer sweeps still use byte-strided loop expressions even though the local
+pool fields are typed as `SlugHazardRuntime[8]` and `SubLazerSlot[20]`. The
+useful cross-confirmations are:
 
 - `TrackSpeedupRuntime` has a full `world_position` vector at `+0x68..+0x70`
   and `state` at `+0x80`; `update_track_speedup` only needed the z lane, but
