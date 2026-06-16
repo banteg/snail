@@ -10,6 +10,27 @@
 class Game;
 class Sprite;
 
+struct PlayerLiveMatrixRows {
+    float basis_right_x;   // +0x00
+    float basis_right_y;   // +0x04
+    float basis_right_z;   // +0x08
+    float basis_right_w;   // +0x0c
+    float basis_up_x;      // +0x10
+    float basis_up_y;      // +0x14
+    float basis_up_z;      // +0x18
+    float basis_up_w;      // +0x1c
+    float basis_forward_x; // +0x20
+    float basis_forward_y; // +0x24
+    float basis_forward_z; // +0x28
+    float basis_forward_w; // +0x2c
+    float position_x;      // +0x30
+    float position_y;      // +0x34
+    float position_z;      // +0x38
+    float position_w;      // +0x3c
+};
+typedef char PlayerLiveMatrixRows_must_be_0x40[
+    (sizeof(PlayerLiveMatrixRows) == 0x40) ? 1 : -1];
+
 class PlayerPresentationController {
 public:
     void set_snail_weapon(int movement_flags); // @ 0x445920
@@ -47,9 +68,10 @@ public:
     void update_subgoldy_resurrect();      // @ 0x441fd0
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
+    Sprite* mark_current_track_pair_with_payload(int payload); // @ 0x43d3d0
 
-    int unknown_00[26];                    // +0x00
-    Vector3 position;                      // +0x68 (y at +0x6c, z at +0x70)
+    char unknown_00[0x68];                 // +0x00; +0x38..+0x77 is PlayerLiveMatrixRows
+    Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
     char unknown_74[0x80 - 0x74];
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
@@ -57,6 +79,8 @@ public:
     float resurrect_progress;              // +0x8c
     float resurrect_progress_step;         // +0x90
     char unknown_94[0x98 - 0x94];
+    // The ghost pair initialized by initialize_subgoldy_ghost. The same two
+    // sprite slots are updated each tick by mark_current_track_pair_with_payload.
     Sprite* ghost_sprite_a;                // +0x98
     Sprite* ghost_sprite_b;                // +0x9c
     char unknown_a0[0x1cc - 0xa0];

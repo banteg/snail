@@ -15,3 +15,10 @@ expression, an inline `set_payload` member on one or both stores, a pointer to
 the second payload lane, and a reference alias for the second sprite. Keep the
 clear pointer-local baseline unless original-source evidence explains the
 native register copy.
+
+2026-06-16 type correction: the old scratch-local `TrackPairSprite` was only a
+misleading prefix view. The two pointers are the shared `Player::ghost_sprite_a`
+and `Player::ghost_sprite_b` slots initialized by `initialize_subgoldy_ghost`,
+and the payload store is a raw-bit write to `Sprite::position.z` (`+0x50`).
+Rewriting the scratch to shared `player.h` + `sprite.h` keeps the exact same
+91.43% residual.

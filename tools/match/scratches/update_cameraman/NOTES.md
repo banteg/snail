@@ -88,6 +88,13 @@ to a larger `sizeof(FollowState)` than the raw player slice, which shifts
 regresses the focused match to 89.13% with a masked call mismatch. Keep the
 local fields until the shared header has an explicit packed/prefix view.
 
+2026-06-16 Player header consolidation: `player.h` now documents the
+`PlayerLiveMatrixRows` view for the matrix at `Player+0x38`; `Player::position`
+remains the exposed field at `+0x68` because `Vector3`/`TransformMatrix`
+members cannot be safely overlapped in a VC6 union. A union probe failed with
+C2620 before codegen, so the shared header keeps this as an offset-checked
+row-view type plus comments rather than a field alias.
+
 Scratch next: structure is linear with two matrix locals; the matched
 matrix helpers cover every call.
 

@@ -1,27 +1,14 @@
 // mark_current_track_pair_with_payload @ 0x43d3d0 (thiscall, ret 0x4)
 
-struct TrackPairSprite {
-    int unknown_00;
-    unsigned int flags;
-    char unknown_08[0x50 - 0x08];
-    int payload;
-};
+#include "player.h"
+#include "sprite.h"
 
-class Player {
-public:
-    TrackPairSprite* mark_current_track_pair_with_payload(int payload);
-
-    char unknown_00[0x98];
-    TrackPairSprite* first_track_pair_sprite;
-    TrackPairSprite* second_track_pair_sprite;
-};
-
-TrackPairSprite* Player::mark_current_track_pair_with_payload(int payload)
+Sprite* Player::mark_current_track_pair_with_payload(int payload)
 {
-    first_track_pair_sprite->flags |= 0x40;
-    second_track_pair_sprite->flags |= 0x40;
-    first_track_pair_sprite->payload = payload;
-    TrackPairSprite* second = second_track_pair_sprite;
-    second->payload = payload;
+    ghost_sprite_a->flags |= 0x40;
+    ghost_sprite_b->flags |= 0x40;
+    *(int*)&ghost_sprite_a->position.z = payload;
+    Sprite* second = ghost_sprite_b;
+    *(int*)&second->position.z = payload;
     return second;
 }
