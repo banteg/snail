@@ -90,7 +90,7 @@ class FollowState {
 public:
     AttachmentPathTemplate* begin_track_attachment_follow_state(
         TrackRowCell* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
-    void update_track_attachment_follow_state(
+    int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00

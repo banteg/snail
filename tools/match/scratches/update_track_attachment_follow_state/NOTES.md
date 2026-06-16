@@ -106,3 +106,8 @@ shared-type consolidation lead, not a bulk scratch rewrite.
 with the shared `AttachmentSample` layout; the local view remains only because
 this scratch needs a `TransformMatrix`-typed transform for interpolation and
 the shared attachment header still uses `AttachmentTransform`.
+
+2026-06-16 header correction: `FollowState::update_track_attachment_follow_state`
+now returns `int` in `track_attachment_types.h`. The previous `void`
+declaration was invalid; both this scratch and `update_subgoldy` consume the
+mode result.
