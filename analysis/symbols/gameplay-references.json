@@ -815,6 +815,14 @@
       "description": "Worm-path camera FOV debug-report format string used by update_cameraman."
     },
     {
+      "address": "0x4ac5c8",
+      "name": "g_default_tip_message",
+      "kind": "global",
+      "aliases": [],
+      "size": "0x14",
+      "description": "Default TipMessageDefinition used by initialize_tip when the caller passes a null definition; the nearby 0x4ac5f4 string is the Disable button label used by the same initializer."
+    },
+    {
       "address": "0x4b2f40",
       "name": "g_completion_snapshot_flags",
       "kind": "global",

@@ -7,7 +7,9 @@ class Sprite;
 
 struct JetParticleSlot {
     Sprite* sprite; // +0x00
-    char unknown_04[0x10 - 0x04];
+    float wobble_x; // +0x04
+    float wobble_y; // +0x08
+    float wobble_alpha; // +0x0c
 };
 
 class JetpackGaugeController {
