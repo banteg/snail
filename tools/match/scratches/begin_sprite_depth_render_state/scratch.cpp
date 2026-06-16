@@ -1,22 +1,6 @@
 // begin_sprite_depth_render_state @ 0x413540 (cdecl)
 
-#include "transform_matrix.h"
-
-struct RenderStateDevice;
-
-struct RenderStateDeviceVtbl {
-    char unknown_000[0x94];
-    int (__stdcall* SetTransform)(RenderStateDevice* self, int state, TransformMatrix* matrix);
-    int (__stdcall* GetTransform)(RenderStateDevice* self, int state, TransformMatrix* matrix);
-    char unknown_09c[0xfc - 0x9c];
-    int (__stdcall* SetTextureStageState)(RenderStateDevice* self, int stage, int type, int value);
-};
-
-struct RenderStateDevice {
-    RenderStateDeviceVtbl* vtbl;
-};
-
-extern RenderStateDevice* g_d3d_device; // data_502fec
+#include "render_state_device.h"
 extern TransformMatrix g_saved_d3d_view_transform; // data_503178
 
 int begin_sprite_depth_render_state()

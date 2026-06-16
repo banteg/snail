@@ -17,3 +17,7 @@ Recovered relationships:
 
 This helper is not font-only: `initialize_loading_screen` also calls it for
 overlay-style rendering.
+
+2026-06-16 type consolidation: this now uses the shared
+`render_state_device.h` Direct3D device/vtable view, extracted from the
+overlay and sprite-depth render-state helpers. Focused Wibo remains exact.
