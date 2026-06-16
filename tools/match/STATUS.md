@@ -146,7 +146,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 172/187 | 42.34% | 0/187 | 26 ok |  |
-| 🚧 | health_collect_particles | 0x43a010 | 386 | 99/104 | 43.35% | 1/104 | 1 mismatch, 11 ok |  |
+| 🚧 | health_collect_particles | 0x43a010 | 386 | 98/104 | 43.56% | 1/104 | 1 mismatch, 11 ok |  |
 | 🚧 | update_player_movement_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  |
 | ✅ | update_movement_flag_emitters | 0x43a300 | 97 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |

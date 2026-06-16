@@ -59,10 +59,10 @@ char Player::health_collect_particles(TrackHealthPickup* pickup)
             float offset_z = velocity.z * 3.0f;
             position[0] = velocity.x * 3.0f + position[0];
             position[1] = offset_y + position[1];
-            result = index + 1;
-            index++;
+            ++index;
             position[2] = offset_z + position[2];
         } while (index < 8);
+        result = index;
     }
 
     return result;

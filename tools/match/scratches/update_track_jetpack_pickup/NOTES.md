@@ -20,3 +20,8 @@ Layout facts now shared with `track_jetpack_pickup.h`:
 
 The remaining diff is block layout/register allocation in the duplicated
 remove paths and bob tail, not a known semantic gap.
+
+2026-06-16 pickup/Sprite slice: the scratch-local `FreeAnchor` duplicate was
+removed in favor of the shared `BodList` view from `bod_list.h` via
+`track_jetpack_pickup.h`. Focused Wibo remains 72.44%, 127/127 insns, with
+15 masked operands OK and no unresolved or mismatched operands.

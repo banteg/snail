@@ -4,7 +4,7 @@ Live source map for the health-pickup collection burst.
 
 Current match:
 
-- `43.35%`, `99/104` candidate/target instructions, with `11` masked operands
+- `43.56%`, `98/104` candidate/target instructions, with `11` masked operands
   ok and one schedule-induced masked mismatch.
 - The gravity lane is stored with raw bits `0xb951b717` to match the native
   constant exactly.
@@ -40,6 +40,11 @@ Rejected source-shape probes:
 - Spelling the `0x800` sprite flag update through an explicit
   `unsigned int flags` local regressed to 37.81% and still compiled as a byte
   OR, so keep the direct word-lane OR used by the current scratch.
+- 2026-06-16 pickup/Sprite slice: spelling the loop result as a post-loop
+  assignment after `++index` raises the focused match from 43.35% to 43.56%
+  and better reflects native's increment-before-final-z-store order. Explicit
+  burst velocity y/z staging regressed to 42.57%, so keep the direct velocity
+  stores.
 
 Type consolidation:
 

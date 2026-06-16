@@ -7,12 +7,6 @@
 #include "player.h"
 #include "track_jetpack_pickup.h"
 
-struct FreeAnchor {
-    char unknown_00[4];
-    TrackJetpackPickup* first;    // +0x04
-    TrackJetpackPickup* free_top; // +0x08
-};
-
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 float sine(float radians);
@@ -21,7 +15,7 @@ void TrackJetpackPickup::update_track_jetpack_pickup()
 {
     int zero = 0;
     unsigned int flags;
-    FreeAnchor* anchor;
+    BodList* anchor;
     TrackJetpackPickup* next;
     TrackJetpackPickup* prev;
 
@@ -44,7 +38,7 @@ void TrackJetpackPickup::update_track_jetpack_pickup()
 state_two:
     flags = list_flags;
     state = zero;
-    anchor = (FreeAnchor*)(g_game_base + 0x5a8);
+    anchor = (BodList*)(g_game_base + 0x5a8);
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");
         sprite->kill_sprite();
@@ -64,10 +58,10 @@ state_two:
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {
-        anchor->first = (TrackJetpackPickup*)list_next;
+        anchor->first = list_next;
     }
 
-    list_next = anchor->free_top;
+    list_next = (TrackJetpackPickup*)anchor->free_top;
     anchor->free_top = this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
@@ -80,7 +74,7 @@ state_one:
 
     flags = list_flags;
     state = zero;
-    anchor = (FreeAnchor*)(g_game_base + 0x5a8);
+    anchor = (BodList*)(g_game_base + 0x5a8);
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");
         sprite->kill_sprite();
@@ -100,10 +94,10 @@ state_one:
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {
-        anchor->first = (TrackJetpackPickup*)list_next;
+        anchor->first = list_next;
     }
 
-    list_next = anchor->free_top;
+    list_next = (TrackJetpackPickup*)anchor->free_top;
     anchor->free_top = this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
