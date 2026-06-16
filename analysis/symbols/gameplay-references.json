@@ -79,6 +79,46 @@
       "description": "Compiler-emitted byte lookup table mapping object blend preset ids 0..20 to set_blend_mode case indexes."
     },
     {
+      "address": "0x4114b0",
+      "name": "create_object_vertex_buffer_resource",
+      "kind": "function",
+      "aliases": [
+        "sub_4114b0",
+        "create_vertex_buffer"
+      ],
+      "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate the grouped object D3D vertex-buffer wrapper."
+    },
+    {
+      "address": "0x4115d0",
+      "name": "create_object_index_buffer_resource",
+      "kind": "function",
+      "aliases": [
+        "sub_4115d0",
+        "create_index_buffer"
+      ],
+      "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate object D3D index-buffer wrappers."
+    },
+    {
+      "address": "0x5031bc",
+      "name": "g_object_grouped_vertex_cursor",
+      "kind": "global",
+      "aliases": [
+        "data_5031bc"
+      ],
+      "size": "0x4",
+      "description": "Build/render object texture-group vertex cursor reset by build_object_texture_group_buffers, incremented by get_or_append_object_texture_group_vertex, copied to Object+0xc4, and used for D3D vertex-buffer lock sizes."
+    },
+    {
+      "address": "0x5031c4",
+      "name": "g_object_grouped_vertex_scratch",
+      "kind": "global",
+      "aliases": [
+        "data_5031c4"
+      ],
+      "size": "0x4",
+      "description": "Pointer to the 0x1c-byte temporary object render vertex records used while build_object_texture_group_buffers appends/de-duplicates grouped vertices and uploads the D3D vertex buffer."
+    },
+    {
       "address": "0x4137b8",
       "name": "configure_sprite_render_state_jump_table",
       "kind": "jump_table",
@@ -1019,6 +1059,15 @@
       "description": "Global renderer wrapper object; its +0xbb94 device pointer backs the cull-mode wrapper and Direct3D setup helpers."
     },
     {
+      "address": "0x5000fc",
+      "name": "g_object_index_buffer_factory",
+      "kind": "global",
+      "aliases": [
+        "data_5000fc"
+      ],
+      "description": "Renderer-side factory object used by build_object_texture_group_buffers to allocate the primary and optional toon object index-buffer wrappers."
+    },
+    {
       "address": "0x502fe0",
       "name": "g_renderer_state",
       "kind": "global",
@@ -1044,6 +1093,76 @@
         "data_503170"
       ],
       "description": "Renderer DrawPrimitive call counter incremented by sprite and immediate textured-quad submission helpers."
+    },
+    {
+      "address": "0x50316c",
+      "name": "g_render_projection_param_b",
+      "kind": "global",
+      "aliases": [
+        "data_50316c"
+      ],
+      "size": "0x4",
+      "description": "Renderer projection parameter passed as the third argument to build_perspective_projection_matrix by render_camera and render_object_toon."
+    },
+    {
+      "address": "0x5031b8",
+      "name": "g_render_camera_source_matrix",
+      "kind": "global",
+      "aliases": [
+        "data_5031b8"
+      ],
+      "size": "0x4",
+      "description": "Pointer to the active render-camera source matrix; render_object_toon subtracts its position from the object matrix before rotating the view vector into object space."
+    },
+    {
+      "address": "0x5031cc",
+      "name": "g_render_projection_near_z",
+      "kind": "global",
+      "aliases": [
+        "data_5031cc"
+      ],
+      "size": "0x4",
+      "description": "Renderer projection near-z parameter used by render_camera and temporarily expanded by render_object_toon for outline rendering."
+    },
+    {
+      "address": "0x5031d0",
+      "name": "g_render_projection_far_z",
+      "kind": "global",
+      "aliases": [
+        "data_5031d0"
+      ],
+      "size": "0x4",
+      "description": "Renderer projection far-z parameter used by render_camera and temporarily expanded by render_object_toon for outline rendering."
+    },
+    {
+      "address": "0x5031d4",
+      "name": "g_render_projection_param_a",
+      "kind": "global",
+      "aliases": [
+        "data_5031d4"
+      ],
+      "size": "0x4",
+      "description": "Renderer projection parameter passed as the second argument to build_perspective_projection_matrix by render_camera and render_object_toon."
+    },
+    {
+      "address": "0x5031d8",
+      "name": "g_object_texture_transform_matrix",
+      "kind": "global",
+      "aliases": [
+        "data_5031d8"
+      ],
+      "size": "0x40",
+      "description": "Object-render texture transform matrix passed to Direct3D transform state 0x10 when object flag 0x80 enables animated/scrolled UV transform; fields at 0x5031f8 and 0x5031fc receive the render_object scalar arguments."
+    },
+    {
+      "address": "0x503260",
+      "name": "g_object_render_pass_filter",
+      "kind": "global",
+      "aliases": [
+        "data_503260"
+      ],
+      "size": "0x1",
+      "description": "Object render pass/filter byte checked by render_object against its after-sprites argument and texture flags before drawing each texture group."
     },
     {
       "address": "0x503178",
