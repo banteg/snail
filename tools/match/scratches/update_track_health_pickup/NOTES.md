@@ -41,6 +41,12 @@ duplicated unlink blocks and the native final bob-tail placement.
 `TrackHealthPickup` layout from `track_health_pickup.h`, including the shared
 `BodNode` list prefix from `bod_list.h`. Match remains 71.88%.
 
+2026-06-16 initializer consolidation: `initialize_track_health_pickup_runtime`
+now uses this same promoted `TrackHealthPickup` type, while casting through
+`BodBase` for the exact initializer and vtable write. The first `0x38` bytes are
+therefore both the BOD base prefix at initialization time and the pickup
+world/state payload used by spawn/update/collision paths.
+
 Important naming correction: the update hidden check reads
 `visibility_cell +0x44`, while `spawn_track_health_pickup` stores the row/source
 cell at `source_cell +0x68`. Do not collapse those into one `source_cell` field.

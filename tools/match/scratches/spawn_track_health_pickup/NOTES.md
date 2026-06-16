@@ -13,6 +13,10 @@ Current match:
 
 Evidence:
 
+- `initialize_track_health_pickup_runtime` now uses this same promoted
+  `TrackHealthPickup` type, casting through `BodBase` only for the exact base
+  initializer and vtable store. That confirms the shared first `0x38` bytes
+  are the BOD base prefix whose payload is reused as pickup world/state fields.
 - Scans eight health pickup slots at `game + 0x356000`, stride `0x74`. The
   source keeps the native slot-base arithmetic and layers a typed
   `HealthPickupPoolSlotView::pickup` overlay over it, because a direct

@@ -1,6 +1,7 @@
 // Track health pickup runtime slot, partial.
-// Proven by spawn_track_health_pickup, update_track_health_pickup,
-// health_collect_particles, and the health loop in handle_subgoldy_collisions.
+// Proven by initialize_track_health_pickup_runtime, spawn_track_health_pickup,
+// update_track_health_pickup, health_collect_particles, and the health loop in
+// handle_subgoldy_collisions.
 #ifndef TRACK_HEALTH_PICKUP_H
 #define TRACK_HEALTH_PICKUP_H
 
@@ -14,6 +15,7 @@ struct TrackRowCell;
 
 class TrackHealthPickup : public BodNode {
 public:
+    TrackHealthPickup* initialize_track_health_pickup_runtime(); // @ 0x408510
     void update_track_health_pickup(); // @ 0x43ecc0
 
     Vector3 world_position; // +0x10, spawn writes cell anchor with lifted y
