@@ -10,7 +10,6 @@ Small lifecycle state machine around render-feature bit `0x04`:
 
 `fade_step` is the literal `0.020833334f`.
 
-Current match is byte-for-byte 100%, but the switch jump-table operand is still
-reported as one unresolved masked operand (`$L...` candidate table versus the
-native table at `0x4347e8`). Treat the state-machine source as established, but
-do not count it as proof-grade until that relocation audit is resolved.
+Current match is byte-for-byte 100%. The switch jump-table operand now resolves
+through `update_star_field_jump_table` at `0x4347e8`, matching VC6's local
+`$L529` table symbol, so the masked operand audit is clean.

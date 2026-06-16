@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**313/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **23622/326004** bytes (**7.25%**) are proof-grade, and overall fuzzy is **19.03%**.
+**314/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **23886/326004** bytes (**7.33%**) are proof-grade, and overall fuzzy is **19.03%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -156,7 +156,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | open_star_field | 0x4342c0 | 77 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | unhide_star_field | 0x4346b0 | 50 | 23/23 | 100.00% | 23/23 | - |  |
-| ⚠ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 1 unresolved, 12 ok |  |
+| ✅ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 13 ok |  |
 | 🚧 | update_star_positions | 0x434800 | 860 | 101/106 | 32.85% | 1/106 | 11 ok |  |
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 47 ok |  |

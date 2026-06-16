@@ -376,6 +376,15 @@
       "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
+      "address": "0x4347e8",
+      "name": "update_star_field_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L529"
+      ],
+      "description": "Compiler-emitted lifecycle-state switch jump table that follows update_star_field immediately after the terminal return."
+    },
+    {
       "address": "0x435e3c",
       "name": "set_subgame_features_jump_table",
       "kind": "jump_table",
