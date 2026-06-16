@@ -50,6 +50,10 @@ Type consolidation:
 - `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix and
   the active/free anchor is modeled as `RingOrSpecialEffectListAnchor`
   (`BodList`) in `tools/match/include/ring_special_effect_types.h`.
+- 2026-06-16 renderable-prefix correction: the parent carries the
+  `RenderableBod` transform rows at `+0x38..+0x77`; the spawner initializes
+  that matrix at `slot + 0x38`, and the particle/updater consumers read
+  `position` as `transform.position` at `+0x68`.
 - 2026-06-16 lives-snapshot correction: parent `+0x8c` is now named
   `owner_lives_snapshot`. The spawner stores `Player::lives` (`+0x404`) and
   `update_subgoldy_bullet` compares the current lives count against that

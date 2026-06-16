@@ -33,12 +33,22 @@ public:
 // The first 0x10 bytes are the common intrusive BOD list prefix.
 class RingOrSpecialEffectParent : public BodNode {
 public:
+    RingOrSpecialEffectParent* initialize_track_ring_or_special_effect_runtime(); // @ 0x408570
     int initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
     void update_subgoldy_bullet(); // @ 0x43e830
 
-    char unknown_010[0x68 - 0x10];
-    Vector3 position; // +0x68
-    char unknown_074[0x80 - 0x74];
+    char unknown_010[0x38 - 0x10];
+    // RenderableBod transform rows. Kept field-by-field because VC6 rejects a
+    // union containing TransformMatrix's constructors.
+    Vector3 basis_right; // +0x38
+    float basis_right_w; // +0x44
+    Vector3 basis_up; // +0x48
+    float basis_up_w; // +0x54
+    Vector3 basis_forward; // +0x58
+    float basis_forward_w; // +0x64
+    Vector3 position; // +0x68, RenderableBod::transform.position
+    float position_w; // +0x74
+    char unknown_078[0x80 - 0x78];
     int state; // +0x80, 0 inactive; 1 normal; 2..5 transitions
     Player* owner_player; // +0x84
     int kind; // +0x88

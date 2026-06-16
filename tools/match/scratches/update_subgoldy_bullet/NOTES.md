@@ -44,6 +44,10 @@ Type consolidation:
   active/free anchor at `g_game_base + 0x5a8`. The old scratch-local `next`
   (`+0x08`) and `prev` (`+0x0c`) names were corrected to
   `list_prev`/`list_next` to match the shared prefix.
+- 2026-06-16 renderable-prefix correction: the parent `position +0x68` updated
+  by this virtual method is `RenderableBod::transform.position`. The shared
+  parent now exposes the complete `+0x38..+0x77` transform row block instead of
+  treating it as anonymous padding.
 - `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
   `+0x90..+0x1cf` is modeled as `particles[10]`. The particle updater is
   side-effect-only from all known callsites, so it is declared `void`.

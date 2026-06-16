@@ -39,6 +39,9 @@ Rejected source-shape probe:
 - `RingOrSpecialEffectParent` is now promoted to
   `tools/match/include/ring_special_effect_types.h` after corroboration from
   `emit_ring_star_shower` and `initialize_ring_or_special_effect_particles`.
+- Parent `position +0x68` is now understood as
+  `RenderableBod::transform.position`; the runtime initializer and spawner
+  confirm the transform rows live at parent `+0x38..+0x77`.
 - `RingOrSpecialEffectParticle` is now promoted in
   `tools/match/include/ring_special_effect_types.h`. The earlier apparent
   return-type conflict is resolved by treating this updater as a side-effect-only
