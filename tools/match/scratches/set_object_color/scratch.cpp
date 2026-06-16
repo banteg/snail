@@ -1,5 +1,6 @@
 // set_object_color @ 0x4141d0 (cdecl)
 
+#include "object_render_types.h"
 #include "sprite.h"
 
 struct ColorBGRA8 {
@@ -12,31 +13,11 @@ struct ColorBGRA8 {
     unsigned char a;
 };
 
-struct ObjectRenderVertex {
-    float x;
-    float y;
-    float z;
-    unsigned int diffuse;
-    float u;
-    float v;
-};
-
-struct ObjectVertexBuffer;
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
         ObjectRenderVertex** vertices, int flags);
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
-struct ObjectVertexBuffer {
-    ObjectVertexBufferVtbl* vtbl;
-};
-
-struct ObjectRenderBuffers {
-    char unknown_00[0x08];
-    ObjectVertexBuffer* vertex_buffer; // +0x08
 };
 
 struct ObjectColorRenderView {

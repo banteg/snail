@@ -268,6 +268,15 @@
       "description": "Relocatable follow-region exit gate used by update_damage_gauge state-2 drain exit checks."
     },
     {
+      "address": "0x4303f0",
+      "name": "calc_object_texture_groups",
+      "kind": "function",
+      "aliases": [
+        "sub_4303f0"
+      ],
+      "description": "Object facequad texture-group producer that marks split/texture side effects, requests the +0x6c group-end array, and writes cumulative facequad end indices consumed by build_object_texture_group_buffers."
+    },
+    {
       "address": "0x4326fc",
       "name": "g_subgame_cull_plane_z_offset",
       "kind": "offset",

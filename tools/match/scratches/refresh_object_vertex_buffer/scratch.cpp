@@ -1,5 +1,7 @@
 // refresh_object_vertex_buffer @ 0x412250 (cdecl)
 
+#include "object_render_types.h"
+
 struct ObjectRenderGeometry;
 
 struct Vector3 {
@@ -12,15 +14,6 @@ struct ObjectVertex {
     float x;
     float y;
     float z;
-};
-
-struct ObjectRenderVertex {
-    float x;
-    float y;
-    float z;
-    unsigned int diffuse;
-    float u;
-    float v;
 };
 
 struct ObjectUv {
@@ -45,22 +38,11 @@ struct ObjectAnimation {
     float frame_scale;                // +0x0c
 };
 
-struct ObjectVertexBuffer;
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
         ObjectRenderVertex** vertices, int flags);
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
-struct ObjectVertexBuffer {
-    ObjectVertexBufferVtbl* vtbl;
-};
-
-struct ObjectRenderBuffers {
-    char unknown_00[0x08];
-    ObjectVertexBuffer* vertex_buffer; // +0x08
 };
 
 struct ObjectDistort {

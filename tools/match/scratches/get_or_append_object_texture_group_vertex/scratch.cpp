@@ -1,6 +1,7 @@
 // get_or_append_object_texture_group_vertex @ 0x413bb0 (cdecl)
 
 #include "sprite.h"
+#include "object_render_types.h"
 #include "vector3.h"
 
 int report_errorf(char* format, ...);
@@ -12,16 +13,6 @@ struct ColorBGRA8 {
     unsigned char g;
     unsigned char r;
     unsigned char a;
-};
-
-struct ObjectGroupedVertex {
-    float x;              // +0x00
-    float y;              // +0x04
-    float z;              // +0x08
-    unsigned int diffuse; // +0x0c
-    float u;              // +0x10
-    float v;              // +0x14, stored as 1.0 - source v
-    int source_vertex;    // +0x18
 };
 
 struct ObjectTextureGroupVertexView {

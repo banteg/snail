@@ -126,6 +126,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | request_object_vertex_colours | 0x42f850 | 77 | 30/30 | 100.00% | 30/30 | 2 ok |  |
 | ✅ | request_object_facequads | 0x42f8c0 | 108 | 40/40 | 100.00% | 40/40 | 5 ok |  |
 | 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 | 4 ok |  |
+| 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 56/55 | 28.83% | 5/55 | - |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |
 | ✅ | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  |
 | ✅ | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
@@ -408,7 +409,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 6 type name(s)
+- ready: 1 type name(s)
 - covered: 15 type name(s) with a header plus scratch-local copies
 - divergent: 41 type name(s) with multiple scratch-local shapes
 
@@ -417,7 +418,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Game | 41 | 0 | 40 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 20 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 16 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Object | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Object | 9 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -431,6 +432,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | BorderRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ColorBGRA8 | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | ObjectFaceQuad | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VapourTrail | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectIndexBuffer | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -450,7 +452,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | HighScoreBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | HighScoreScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ObjectFaceQuad | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RenderObjectDeviceVtbl | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -470,9 +471,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | ObjectRenderBuffers | 5 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | RenderStateDevice | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | ObjectRenderVertex | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | ObjectVertexBuffer | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | ObjectGroupedVertex | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | RenderObjectDevice | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

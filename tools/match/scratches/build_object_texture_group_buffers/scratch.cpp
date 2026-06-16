@@ -1,6 +1,7 @@
 // build_object_texture_group_buffers @ 0x413d50 (cdecl)
 
 #include "sprite.h"
+#include "object_render_types.h"
 #include "vector3.h"
 
 void* allocate_tracked_memory(int size, char* name);
@@ -9,25 +10,6 @@ int get_archive_data_end();
 void* memcpy(void* destination, const void* source, unsigned int count);
 
 int get_or_append_object_texture_group_vertex(void* object, int vertex_index, float u, float v);
-
-struct ObjectRenderVertex {
-    float x;
-    float y;
-    float z;
-    unsigned int diffuse;
-    float u;
-    float v;
-};
-
-struct ObjectGroupedVertex {
-    float x;              // +0x00
-    float y;              // +0x04
-    float z;              // +0x08
-    unsigned int diffuse; // +0x0c
-    float u;              // +0x10
-    float v;              // +0x14
-    int source_vertex;    // +0x18
-};
 
 struct ObjectFaceQuad {
     unsigned char flags; // +0x00, 0x80 marks the three-index form
@@ -48,22 +30,11 @@ struct ObjectFaceQuad {
     float v3; // +0x2c
 };
 
-struct ObjectVertexBuffer;
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
         void** data, int flags);
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
-struct ObjectVertexBuffer {
-    ObjectVertexBufferVtbl* vtbl;
-};
-
-struct ObjectRenderBuffers {
-    char unknown_00[0x08];
-    ObjectVertexBuffer* vertex_buffer; // +0x08
 };
 
 struct ObjectIndexBuffer {

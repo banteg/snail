@@ -1,22 +1,15 @@
 // render_object @ 0x4126c0 (cdecl)
 
+#include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 
-struct ObjectVertexBuffer;
 struct ObjectIndexBufferResource;
 struct ColorBGRA8;
-
-struct ObjectRenderBuffers {
-    char unknown_00[0x08];
-    ObjectVertexBuffer* vertex_buffer; // +0x08
-};
 
 struct ObjectIndexBuffer {
     ObjectIndexBufferResource* buffer; // +0x00
 };
-
-struct RenderObjectDevice;
 
 struct RenderObjectDeviceVtbl {
     char unknown_000[0x94];
@@ -36,10 +29,6 @@ struct RenderObjectDeviceVtbl {
     char unknown_150[0x154 - 0x150];
     int (__stdcall* SetIndices)(RenderObjectDevice* self,
         ObjectIndexBufferResource* index_buffer, int base_vertex_index);
-};
-
-struct RenderObjectDevice {
-    RenderObjectDeviceVtbl* vtbl;
 };
 
 struct ObjectRenderView {
