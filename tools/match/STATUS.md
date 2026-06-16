@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**305/676** mapped gameplay functions matched, **399/676** mapped gameplay functions have a scratch, **21765/326004** bytes (**6.68%**) are proof-grade, and overall fuzzy is **18.21%**.
+**305/676** mapped gameplay functions matched, **400/676** mapped gameplay functions have a scratch, **21765/326004** bytes (**6.68%**) are proof-grade, and overall fuzzy is **18.30%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -171,6 +171,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | 17/17 | 1 ok |  |
 | ✅ | initialize_jet_particles | 0x43a5b0 | 214 | 73/73 | 100.00% | 73/73 | 3 ok |  |
+| 🚧 | update_jet_particles | 0x43a690 | 670 | 169/181 | 45.14% | 0/181 | 1 mismatch, 12 ok |  |
 | ✅ | initialize_jetpack_gauge | 0x43a930 | 65 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | arm_jetpack_gauge | 0x43a980 | 55 | 18/18 | 100.00% | 18/18 | 4 ok |  |
 | ✅ | show_subgoldy_lives | 0x43af10 | 66 | 23/23 | 100.00% | 23/23 | 2 ok |  |
