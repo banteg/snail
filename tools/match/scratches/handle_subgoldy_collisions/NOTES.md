@@ -11,6 +11,14 @@ raw byte poke. Collision and `update_golb_ai` both prove the pool stride is
 `648/673`, `77 ok / 1 mismatch`; the remaining mismatch is still the known
 slug-block alignment debt.
 
+2026-06-16 sub-lazer renderable-prefix consolidation: `SubLazerSlot` now
+exposes the renderable transform rows at `+0x38..+0x77`, keeping
+`position +0x68` as `RenderableBod::transform.position` while retaining the
+zero-offset `BodNode` list overlay. This collision scratch consumes the same
+sub-lazer position/state lanes as the initializer, spawner, updater, and
+deactivator. Focused Wibo remains `47.99%`, `648/673`, with the same known
+slug-block masked mismatch.
+
 2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
 not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
 source-equivalent `if` / `else if` compare chain removes VC6's jump table and

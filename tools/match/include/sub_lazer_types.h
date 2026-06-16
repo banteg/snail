@@ -22,9 +22,18 @@ public:
     int deactivate_sub_lazer_projectile(); // @ 0x441740
     void update_sub_lazer_projectile(); // @ 0x4417d0
 
-    char unknown_10[0x68 - 0x10];
-    Vector3 position;         // +0x68, live-matrix position row
-    char unknown_74[0x80 - 0x74];
+    char unknown_10[0x38 - 0x10];
+    // RenderableBod transform rows. Kept field-by-field because the slot also
+    // uses the zero-offset BodNode list overlay.
+    Vector3 basis_right;      // +0x38
+    float basis_right_w;      // +0x44
+    Vector3 basis_up;         // +0x48
+    float basis_up_w;         // +0x54
+    Vector3 basis_forward;    // +0x58
+    float basis_forward_w;    // +0x64
+    Vector3 position;         // +0x68, RenderableBod::transform.position
+    float position_w;         // +0x74
+    char unknown_78[0x80 - 0x78];
     int state;                // +0x80, pool free/live state
     char unknown_84[0x88 - 0x84];
     Game* owner_game;         // +0x88

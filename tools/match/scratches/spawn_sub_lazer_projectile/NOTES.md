@@ -45,3 +45,11 @@ still verifies 98.41%, 63/63 insns, with six masked operands OK. This confirms
 the sub-lazer pool uses the same intrusive list prefix as the other BOD-backed
 runtime pools; the remaining residual is still only the velocity-z/phase store
 scheduling noted above.
+
+2026-06-16 renderable-prefix consolidation: the shared `SubLazerSlot` header
+now records the renderable transform rows at `+0x38..+0x77`, with
+`position +0x68` as the matrix position row. The initializer calls
+`initialize_renderable_bod()`, this spawner resets the matrix and copies the
+origin into that row, and the updater/collision paths consume the same field.
+The slot stays `BodNode`-based in the type because the zero-offset list overlay
+is also real and used by the live/free-list helpers.
