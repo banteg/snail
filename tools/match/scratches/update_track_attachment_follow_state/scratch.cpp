@@ -341,8 +341,10 @@ after_v85:
     unsigned int orient_index = sample_index;
     int offset = 0xa8 * orient_index;
     if (orient_index == (unsigned int)(orient_template->segment_count - 1)) {
-        orientation_b = *(float*)((char*)orient_template->primary_samples + offset + 0x98);
-        orientation_a = *(float*)((char*)orient_template->primary_samples + offset + 0x94);
+        AttachmentSampleMatrixView* last_sample =
+            (AttachmentSampleMatrixView*)((char*)orient_template->primary_samples + offset);
+        orientation_b = last_sample->rotation_scalar_98;
+        orientation_a = last_sample->rotation_scalar_94;
     } else {
         AttachmentSampleMatrixView* orient_sample = &orient_template->primary_samples[orient_index];
         float delta_b = orient_sample[1].rotation_scalar_98 - orient_sample->rotation_scalar_98;

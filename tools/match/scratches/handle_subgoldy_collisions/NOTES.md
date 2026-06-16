@@ -130,7 +130,8 @@ useful cross-confirmations are:
   collision consumes x/y/z.
 - `TrackHealthPickup`, `TrackJetpackPickup`, `TrackParcelRuntime`,
   `GarbageHazardSlot`, and `RingOrSpecialEffectParent` all line up with their
-  shared headers at the collision callsites.
+  shared headers at the collision callsites. Ring/special-effect centers now
+  come through inherited `RenderableBod::transform.position`.
 - `GarbageHazardSlot` now inherits the shared zero-offset
   `ContactTargetObject` prefix used by `append_subgame_contact_target`; this
   collision scratch consumes the same state/list node/body fields, while the

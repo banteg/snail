@@ -36,7 +36,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
             } else if (phase < 0.0f) {
                 active_phase = phase + 6.28318548f;
             }
-            position.x = sine(active_phase) * 3.0f;
+            transform.position.x = sine(active_phase) * 3.0f;
         }
 
         {
@@ -49,7 +49,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         } while (count != 0);
         }
 
-        if (position.z < owner_player->interaction_max_z) {
+        if (transform.position.z < owner_player->interaction_max_z) {
             state = 0;
             RingOrSpecialEffectListAnchor* list =
                 (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
@@ -137,22 +137,22 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         } else {
             Vector3 target = owner_player->cached_camera_target_world;
             Vector3 delta;
-            delta.x = target.x - position.x;
-            delta.y = target.y - position.y;
-            delta.z = (target.z + 0.200000003f) - position.z;
+            delta.x = target.x - transform.position.x;
+            delta.y = target.y - transform.position.y;
+            delta.z = (target.z + 0.200000003f) - transform.position.z;
             delta.x *= 0.939999998f;
             delta.y *= 0.939999998f;
             delta.z *= 0.939999998f;
-            position.x += delta.x;
-            position.y += delta.y;
-            position.z += delta.z;
+            transform.position.x += delta.x;
+            transform.position.y += delta.y;
+            transform.position.z += delta.z;
 
             int count = 10;
             RingOrSpecialEffectParticle* particle =
                 particles;
             do {
                 particle->radius *= 0.939999998f;
-                particle->base_position = position;
+                particle->base_position = transform.position;
                 particle++;
                 count--;
             } while (count != 0);
@@ -213,7 +213,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 particles;
             do {
                 particle->radius *= 1.10000002f;
-                particle->base_position = position;
+                particle->base_position = transform.position;
                 particle++;
                 count--;
             } while (count != 0);

@@ -21,7 +21,7 @@ void RingOrSpecialEffectParticle::update_ring_or_special_effect_particle()
     float orbit_x = sine(phase);
     RingOrSpecialEffectParent* live_owner = parent;
     Sprite* live_sprite = sprite;
-    Vector3* owner_position = &live_owner->position;
+    Vector3* owner_position = &live_owner->transform.position;
     Vector3* sprite_position = &live_sprite->position;
     orbit_x *= radius;
     position.x = orbit_x + owner_position->x;

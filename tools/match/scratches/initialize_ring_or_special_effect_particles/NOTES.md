@@ -51,15 +51,15 @@ Rejected/source-shape probes:
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix, carries
-  the initializer-used `state` and `rate_source` fields in the shared header,
-  and asserts the pool stride as `0x1f8`. Known fields end at `0x1f0`, so the
-  final `8` bytes remain explicit tail padding.
-- 2026-06-16 renderable-prefix correction: parent `position +0x68` is the
-  `RenderableBod::transform.position` lane. The shared parent now exposes the
-  transform rows at `+0x38..+0x77`, corroborated by the runtime initializer,
-  spawner identity-matrix write, child initializer, child updater, and parent
-  virtual updater.
+- `RingOrSpecialEffectParent` now inherits shared `RenderableBod`, carries the
+  initializer-used `state` and `rate_source` fields in the shared header, and
+  asserts the pool stride as `0x1f8`. Known fields end at `0x1f0`, so the final
+  `8` bytes remain explicit tail padding.
+- 2026-06-17 renderable inheritance correction: parent `position +0x68` is now
+  consumed as `transform.position` from the inherited `RenderableBod`. The
+  runtime initializer, spawner identity-matrix write, child initializer, child
+  updater, parent virtual updater, and collision consumer all agree on this
+  transform block.
 - `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
   `+0x90..+0x1cf` is modeled as `particles[10]`. The updater method is modeled
   as `void` because its native return is not consumed by any known caller; the

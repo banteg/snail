@@ -129,3 +129,10 @@ dual view in the shared headers. Follow-state math reads it as
 the same 32 bits into player+0x430 via `installed_heading_bits`. This corrects
 the earlier one-type assumption and keeps this scratch at `46.44%`, `678/726`,
 with `45 ok` masked operands.
+
+2026-06-17 cleanup pass: the last-sample orientation branch now names the
+`AttachmentSampleMatrixView::rotation_scalar_94/98` fields instead of loading
+raw `+0x94/+0x98` floats. Hoisting the sample pointer outside the branch
+regressed the pinned shape to `44.99%`, so the source keeps the branch-local
+address formation and remains at `46.44%`, `678/726`, with `45 ok` masked
+operands.

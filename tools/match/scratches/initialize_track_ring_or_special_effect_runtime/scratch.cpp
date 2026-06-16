@@ -8,7 +8,7 @@ extern void* g_track_ring_or_special_effect_vtable; // off_49732c / data_49732c
 RingOrSpecialEffectParent*
 RingOrSpecialEffectParent::initialize_track_ring_or_special_effect_runtime()
 {
-    ((RenderableBod*)this)->initialize_renderable_bod();
-    ((RenderableBod*)this)->vtable = &g_track_ring_or_special_effect_vtable;
+    initialize_renderable_bod();
+    vtable = &g_track_ring_or_special_effect_vtable;
     return this;
 }

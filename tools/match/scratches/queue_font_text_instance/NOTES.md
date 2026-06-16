@@ -18,3 +18,6 @@ Recovered relationships:
   text-wave enable byte (`+0x38`).
 - Copies the input text into `g_font_text_buffer` through `g_font_text_cursor`,
   capped at `0x7fe` bytes before forcing a terminator and advancing the cursor.
+
+2026-06-17 cleanup: the queue writes now use the shared `FontQueueEntry` fields
+instead of re-spelling the same offsets through local byte-pointer casts.

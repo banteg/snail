@@ -268,9 +268,9 @@ void Player::handle_subgoldy_collisions()
         RingOrSpecialEffectParent* effect =
             (RingOrSpecialEffectParent*)((char*)game + jj + 0x35b78c);
         if (effect->state == 1) {
-            probe_salt.x = effect->position.x - cached_camera_target_world.x;
-            probe_salt.y = effect->position.y - cached_camera_target_world.y;
-            probe_salt.z = effect->position.z - cached_camera_target_world.z;
+            probe_salt.x = effect->transform.position.x - cached_camera_target_world.x;
+            probe_salt.y = effect->transform.position.y - cached_camera_target_world.y;
+            probe_salt.z = effect->transform.position.z - cached_camera_target_world.z;
             probe_fx = probe_salt;
             if (probe_salt.z < 1.0f) {
                 if (normalize_vector(&probe_fx) < 0.98000002f) {

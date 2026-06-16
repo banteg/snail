@@ -19,18 +19,18 @@ void queue_font_text_instance(
         int index = g_font_queue_count;
         if (index != 0x400) {
             int offset = index * sizeof(FontQueueEntry);
-            *(unsigned int*)((char*)g_font_queue + offset + 0x00) = flags | 1;
-            *(int*)((char*)g_font_queue + offset + 0x3c) = font_id;
-            *(float*)((char*)g_font_queue + offset + 0x40) = text_scale;
-            *(float*)((char*)g_font_queue + offset + 0x04) = x;
-            *(float*)((char*)g_font_queue + offset + 0x08) = y;
-            *(int*)((char*)g_font_queue + offset + 0x48) = horizontal_align;
-            *(float*)((char*)g_font_queue + offset + 0x4c) = anchor_x;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->flags = flags | 1;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->font_id = font_id;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->text_scale = text_scale;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->x0 = x;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->y0 = y;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->horizontal_align = horizontal_align;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->anchor_x = anchor_x;
             char* cursor = g_font_text_cursor;
-            *(char**)((char*)g_font_queue + offset + 0x44) = cursor;
-            *(Color4f*)((char*)g_font_queue + offset + 0x6c) = *color;
-            *(float*)((char*)g_font_queue + offset + 0x34) = text_wave_amplitude;
-            *(char*)((char*)g_font_queue + offset + 0x38) = text_wave_enabled;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->text = cursor;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->color = *color;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->text_wave_amplitude = text_wave_amplitude;
+            ((FontQueueEntry*)((char*)g_font_queue + offset))->text_wave_enabled = text_wave_enabled;
 
             if (*text != '\0') {
                 do {

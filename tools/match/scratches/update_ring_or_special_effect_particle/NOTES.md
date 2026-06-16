@@ -39,11 +39,12 @@ Rejected source-shape probe:
 - `RingOrSpecialEffectParent` is now promoted to
   `tools/match/include/ring_special_effect_types.h` after corroboration from
   `emit_ring_star_shower` and `initialize_ring_or_special_effect_particles`.
-- Parent `position +0x68` is now understood as
-  `RenderableBod::transform.position`; the runtime initializer and spawner
-  confirm the transform rows live at parent `+0x38..+0x77`.
+- Parent `position +0x68` is now consumed as inherited
+  `RenderableBod::transform.position`; the runtime initializer, spawner, parent
+  updater, and collision consumer confirm the transform rows live at parent
+  `+0x38..+0x77`.
 - `RingOrSpecialEffectParticle` is now promoted in
   `tools/match/include/ring_special_effect_types.h`. The earlier apparent
   return-type conflict is resolved by treating this updater as a side-effect-only
-  `void` helper; the emitter itself remains `char` because native only returns a
-  byte there.
+  `void` helper; `emit_ring_star_shower` is also modeled as `void` because all
+  known callsites ignore the incidental byte result.

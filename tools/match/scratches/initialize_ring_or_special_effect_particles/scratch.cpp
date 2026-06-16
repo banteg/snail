@@ -10,7 +10,7 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
     state = 1;
     star_shower_counter = 0;
 
-    Vector3* parent_position = &position;
+    Vector3* parent_position = &transform.position;
     do {
         RingOrSpecialEffectParticle* particle = &particles[i];
         particle->phase = (float)i * 0.628318548f;
