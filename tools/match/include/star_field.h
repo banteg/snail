@@ -7,10 +7,16 @@
 class StarFieldEntry {
 public:
     int active; // +0x00
-    char pad_04[0x1c - 0x04];
+    Vector3 position; // +0x04
+    Vector3 velocity; // +0x10
     Sprite* sprite; // +0x1c
-    char pad_20[0x0c];
+    float speed; // +0x20
+    float phase; // +0x24
+    float twinkle_scale; // +0x28
 };
+
+typedef char StarFieldEntry_must_be_0x2c[
+    (sizeof(StarFieldEntry) == 0x2c) ? 1 : -1];
 
 class StarField {
 public:
@@ -29,5 +35,7 @@ public:
     float fade; // +0x44
     float fade_step; // +0x48
 };
+
+typedef char StarField_must_be_0x4c[(sizeof(StarField) == 0x4c) ? 1 : -1];
 
 #endif
