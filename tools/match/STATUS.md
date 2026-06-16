@@ -422,12 +422,11 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 15 type name(s) with a header plus scratch-local copies
-- divergent: 39 type name(s) with multiple scratch-local shapes
+- covered: 16 type name(s) with a header plus scratch-local copies
+- divergent: 38 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Game | 41 | 0 | 41 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 21 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -466,6 +465,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| covered | Game | 39 | 1 | 39 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |

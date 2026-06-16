@@ -1,15 +1,6 @@
 // hide_gameplay_scores @ 0x445f10 (thiscall, ret)
 
-#include "frontend_widget.h"
-
-class Game {
-public:
-    void hide_gameplay_scores();
-
-    char unknown_00[0x35bb88];
-    FrontendWidget* score_widget_a; // +0x35bb88
-    FrontendWidget* score_widget_b; // +0x35bb8c
-};
+#include "game.h"
 
 void Game::hide_gameplay_scores()
 {

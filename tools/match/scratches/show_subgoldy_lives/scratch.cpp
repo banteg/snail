@@ -1,12 +1,14 @@
 // show_subgoldy_lives @ 0x43af10 (thiscall, ret)
 
-#include "frontend_widget.h"
+#include "game.h"
 #include "player.h"
 
 void Player::show_subgoldy_lives()
 {
     int live_index = 0;
-    for (int offset = 0x35bb98; offset < 0x35bbbc; offset += 4) {
+    for (int offset = (int)((Game*)0)->life_stock_widgets;
+         offset < (int)(((Game*)0)->life_stock_widgets + 9);
+         offset += sizeof(FrontendWidget*)) {
         if (live_index < visible_life_stock) {
             FrontendWidget* widget = *(FrontendWidget**)((char*)game + offset);
             widget->unhide_border_init();
