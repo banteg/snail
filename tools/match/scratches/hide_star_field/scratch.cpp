@@ -2,16 +2,6 @@
 
 #include "star_field.h"
 
-class StarField {
-public:
-    int hide_star_field();
-
-    char pad_00[0x38];
-    int active;               // +0x38
-    StarFieldEntry* entries;  // +0x3c
-    int count;                // +0x40
-};
-
 int StarField::hide_star_field()
 {
     int result = active;
