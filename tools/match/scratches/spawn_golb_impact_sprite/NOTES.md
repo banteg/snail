@@ -1,6 +1,6 @@
 # spawn_golb_impact_sprite @ 0x415d80
 
-Current match: 54.55%, 43/45 candidate instructions, 3/45 prefix.
+Current match: 63.64%, 43/45 candidate instructions, 3/45 prefix.
 
 This scratch maps the short-lived Golb impact sprite producer used by terminal
 projectile collision paths:
@@ -13,14 +13,14 @@ projectile collision paths:
 - copies the caller-provided impact world position into the sprite position.
 
 The accepted source uses a real `Vector3` velocity temporary because the native
-function reserves a 12-byte stack vector. Now that `sprite.h` shares the
-canonical `Vector3` helper, this temporary must use constructor syntax rather
-than aggregate initialization. The remaining residual is codegen shape: native
-saves `esi`, stores the velocity Y constant through the middle stack lane, uses
-`esi` for the zero velocity lanes, and copies velocity X/Y before the
-progress/size constants while delaying velocity Z. The current VC6 source
-preserves the stack vector but emits a cleaner temporary copy and uses `ecx` for
-the zero lanes.
+function reserves a 12-byte stack vector. Caching the owner slot before
+`allocate_sprite` and spelling the velocity fields explicitly improved the call
+setup and stack-vector locality from 54.55% to 63.64%. The remaining residual is
+codegen shape: native saves `esi`, stores the velocity Y constant through the
+middle stack lane, uses `esi` for the zero velocity lanes, and copies velocity
+X/Y before the progress/size constants while delaying velocity Z. The current
+VC6 source preserves the stack vector but emits a cleaner temporary copy and
+uses `ecx` for the zero lanes.
 
 Rejected source-shaped probes:
 

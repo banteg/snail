@@ -18,11 +18,15 @@ void GolbProjectile::spawn_golb_impact_sprite(Vector3* position)
     unsigned char render_flags = g_render_effect_flags;
 
     if ((render_flags & 0x10) != 0) {
-        Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x21, -1, -1);
+        int owner = owner_player->player_slot;
+        Sprite* sprite = g_sprite_manager.allocate_sprite(owner, 0x21, -1, -1);
         int flags = sprite->flags;
         flags |= 0x800;
-        Vector3 velocity(0.0f, 0.05f, 0.0f);
+        Vector3 velocity;
         Vector3* out_velocity = &sprite->velocity;
+        velocity.x = 0.0f;
+        velocity.y = 0.05f;
+        velocity.z = 0.0f;
         sprite->flags = flags;
         sprite->progress = 0.0f;
         sprite->lifetime = 0.0f;
