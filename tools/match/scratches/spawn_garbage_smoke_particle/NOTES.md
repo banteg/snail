@@ -58,3 +58,8 @@ Rejected source-shape probes:
   path byte reload and improves the focused score from 76.82% to 84.56%.
   The caller `update_garbage_hazard` remains at 80.00%, confirming the return
   value is not part of the gameplay contract.
+- 2026-06-16 smoke velocity retry: hoisting `out_velocity` before the size writes
+  compiled identically and did not fix native's delayed `sprite += 0x48`
+  schedule. Replacing the reused `Color4f` lanes with explicit
+  `scaled_x/scaled_y/scaled_z` locals regressed the focused score to `68.03%`.
+  Keep the color-local velocity staging.

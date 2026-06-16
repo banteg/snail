@@ -150,6 +150,15 @@ Measured source-shape rejections:
   or a post-normalize `normalized_velocity` pointer hoisted the velocity owner
   into `ebx` and regressed to 47.61%-47.76%; keep direct `velocity` fields until
   a source-plausible spelling preserves native's `edi` owner.
+- 2026-06-16 garbage struct typing retry: rewriting the projectile garbage sweep
+  to use the shared `GarbageHazardSlot` fields is semantically consistent with
+  the spawner, updater, destroyer, and player-collision scratches, and an
+  explicit side-branch spelling raised the headline score slightly from
+  `49.85%` to `49.96%`. Reverted anyway because it worsened the masked audit from
+  `52 ok, 1 mismatch` to `51 ok, 2 mismatch` and shifted downstream call
+  alignment (`kill_golb` vs `get_track_grid_cell_at_world_position`). Keep raw
+  garbage offsets here until the surrounding low-score collision/path scheduling
+  is less fragile.
 
 Recovered this pass (full field map in scratch.cpp):
 

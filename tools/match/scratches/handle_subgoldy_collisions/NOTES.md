@@ -39,6 +39,14 @@ the shared `SlugHazardRuntime` header does not yet prove a 0xec pool stride.
   did not produce native's `bl` mask register reuse. VC6 propagated it back to
   literal `test byte [esi+0x338], 0x80`, leaving the match at `43.33%`; keep the
   literal mask tests until the loop/register shape has a real owner.
+- 2026-06-16 sub-lazer typing retry: replacing the raw sub-lazer collision sweep
+  with the shared `SubLazerSlot` view is semantically valid, but both the typed
+  `Game::lazer_slots[20]` field and a narrower cast-only spelling regressed the
+  focused match from `45.43%` to `44.16%` (`636/673` candidate/target
+  instructions) by changing the loop constants/register ownership. Keep the
+  byte-strided sub-lazer sweep in this large scratch until the surrounding frame
+  shape improves; this does not weaken the shared `SubLazerSlot` layout already
+  confirmed by spawn/update/deactivate.
 
 2026-06-16 Player field promotion: `damage_retrigger_timer`/`step`
 (`+0x1d4/+0x1d8`), `control_override_active` (`+0x2d8`), and
