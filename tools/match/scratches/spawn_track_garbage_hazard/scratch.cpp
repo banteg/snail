@@ -6,13 +6,14 @@
 #include "sprite.h"
 #include "player.h"
 #include "position_bits.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 
 typedef unsigned int DWORD;
 
 class Game {
 public:
-    DWORD* spawn_track_garbage_hazard(int cell, Player* player);
+    DWORD* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player);
     char* project_position_onto_track_attachment(float* position, float* out_angle);
 };
 
@@ -23,7 +24,7 @@ int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
-DWORD* Game::spawn_track_garbage_hazard(int cell, Player* player)
+DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
@@ -51,10 +52,10 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, Player* player)
     set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + 877663));
 
     float staged_y = *scale;
-    staged_y += *(float*)(cell + 20);
+    staged_y += cell->anchor_position.y;
     PositionBits staged_position;
-    staged_position.x = *(int*)(cell + 16);
-    staged_position.z = *(int*)(cell + 24);
+    staged_position.x = *(int*)&cell->anchor_position.x;
+    staged_position.z = *(int*)&cell->anchor_position.z;
     staged_position.y = staged_y;
     PositionBits* live_position = (PositionBits*)(slot_base_words + 877675);
     *live_position = staged_position;
@@ -95,7 +96,7 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, Player* player)
     result[0] = *(DWORD*)live_position;
     result[1] = *((DWORD*)live_position + 1);
     result[2] = *((DWORD*)live_position + 2);
-    ((DWORD*)slot_base_words)[877695] = cell;
+    ((DWORD*)slot_base_words)[877695] = (DWORD)cell;
     *((char*)slot_base_words + 3510784) = 0;
     return result;
 }

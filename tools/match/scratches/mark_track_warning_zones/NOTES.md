@@ -1,4 +1,4 @@
-# Pinned — 32.51%, register allocation diverges
+# Pinned — 36.27%, register allocation diverges
 
 Control flow, constants, and operations all line up in the diff; our
 build moves `this` out of ecx and spills differently, so the score is
@@ -22,3 +22,12 @@ read and are what blind spot #6 needs:
 2026-06-13 pin audit: focused matcher still verifies 32.51%, 104/99 insns.
 Keep pinned at semantics; the remaining work would be layout/register golf
 around the nested footprint loops.
+
+2026-06-16 row-lifetime correction: BN/native disassembly mutates the outer row
+local while walking the six backward rows, then restores the saved outer row
+after the footprint. The scratch now spells that directly instead of using an
+independent `r` local. Focused Wibo improves to 36.27% (105/99 insns), but the
+remaining diff is still broad register ownership: VC6 keeps `this` outside
+`ecx` and strength-reduces the two-lane stamp. Adjacent exact
+`is_neighbor_cell_solid` independently confirms the same `TrackRowCell`
+`tile_id +0x3c` and `lane_and_flags +0x40` layout.

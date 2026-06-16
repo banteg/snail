@@ -91,3 +91,8 @@ Residuals:
   remains exact. The spawn scratch intentionally stays raw-offset shaped because
   the earlier typed-slot spelling changed saved-register ownership and
   regressed to 60.56%.
+- 2026-06-16 cell typing pass: the incoming `cRSubLoc*` argument is now typed
+  as `TrackRowCell*`, and the projection staging reads
+  `cell->anchor_position.{x,y,z}`. BN decompile resolves the same anchor fields,
+  and focused Wibo is codegen-neutral at 92.58%, 140/143 instructions, with the
+  same x87/local staging residual.

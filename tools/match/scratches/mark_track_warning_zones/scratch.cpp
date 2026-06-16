@@ -25,17 +25,18 @@ void GameRuntime::mark_track_warning_zones()
                 if (t == 2 || t == 3 || t == 4 || t == 5 || t == 6 || t == 7
                     || t == 8 || t == 9 || t == 10 || t == 11 || t == 12
                     || t == 13 || t == 14 || t == 23 || t == 25 || t == 33) {
-                    int r = row;
+                    int saved_row = row;
                     int idx = col + 8 * row;
                     for (int back = 6; back; --back) {
                         for (int dc = -1; dc < 1; ++dc) {
-                            if (r >= 0 && r < runtime_row_count - 1
+                            if (row >= 0 && row < runtime_row_count - 1
                                 && dc + col >= 0 && dc + col < 8)
                                 cells[idx + dc].lane_and_flags |= 0x18;
                         }
-                        --r;
+                        --row;
                         idx -= 8;
                     }
+                    row = saved_row;
                 }
             }
             ++row;
