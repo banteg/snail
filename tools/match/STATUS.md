@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**301/676** mapped gameplay functions matched, **21290/326004** bytes (**6.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**302/676** mapped gameplay functions matched, **21417/326004** bytes (**6.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -149,7 +149,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninit_thanks_screen | 0x4340c0 | 38 | 8/8 | 100.00% | 8/8 | 3 ok |  |
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | unhide_star_field | 0x4346b0 | 50 | 23/23 | 100.00% | 23/23 | - |  |
-| 🚧 | is_neighbor_cell_solid | 0x434b60 | 127 | 46/47 | 68.82% | 11/47 | 2 ok |  |
+| ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 484/495 | 49.44% | 3/495 | 47 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 104/99 | 32.51% | 0/99 | - |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
