@@ -42,6 +42,11 @@ Recovered relationships:
   `draw_font_text_queue(slot->flags)` after the sprite pass.
 - Post-sprite BODs are staged in the `data_4dfb10` pointer stack and rendered
   after a second `render_camera(..., post_sprite_pass=1)` call.
+- BN decompilation of `render_camera` confirms its ninth argument is stored to
+  `g_object_render_pass_filter` (`data_503260`). The first camera call passes
+  `0`; the post-sprite replay call passes `1`, so the two render-frame calls
+  are the producer side of the object texture-group pass filter consumed by
+  `render_object`.
 
 Expected residuals:
 

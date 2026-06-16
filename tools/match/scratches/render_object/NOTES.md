@@ -14,6 +14,11 @@ Recovered relationships:
   pass. `render_object` then combines that value with the global
   `g_object_render_pass_filter` and texture flag `0x10000` to choose which
   texture groups are drawn in each boundary pass.
+- `render_camera` is the producer for `g_object_render_pass_filter`: BN shows
+  its ninth argument stored to `data_503260`. `render_game_frame` calls it with
+  `post_sprite_pass=0` for the normal world/sprite/text pass and
+  `post_sprite_pass=1` immediately before replaying the staged post-sprite BOD
+  stack.
 - Early exit requires `flags & 0x80000`, rejects `flags & 0x40000`, and rejects
   zero `Object +0x2c` vertex count.
 - Always calls `refresh_object_vertex_buffer` before setting the world transform
