@@ -41,7 +41,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     int slot_index = 0;
     RingOrSpecialEffectParent* scan =
         (RingOrSpecialEffectParent*)((char*)this + 0x35b78c);
-    while (scan->active != 0) {
+    while (scan->state != 0) {
         slot_index++;
         scan = (RingOrSpecialEffectParent*)((char*)scan + 0x1f8);
         if (slot_index >= 2)
@@ -111,7 +111,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     if (result->tile_id != 14) {
         slot->kind = kind;
         slot->owner_context = *(void**)((char*)player + 0x404);
-        slot->active = 1;
+        slot->state = 1;
         if (random_float_below(1.0f, "RT1") > 0.5f)
             slot->active_phase_step = slot->active_phase_step * -1.0f;
 

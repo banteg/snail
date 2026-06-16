@@ -27,3 +27,8 @@ remaining diff is block layout/register allocation, not a semantic gap.
 `Player::interaction_max_z` at `+0x2980`; the match remains 72.44%. BN's
 current `SubLazerSlot*` parameter name for this update is misleading for the
 local matched layout.
+
+2026-06-16 five-target audit: no rename promoted. The update path still proves
+the renderable update object has `state +0x38`, `owner +0x3c`,
+`owner_game +0x44`, `sprite +0x64`, and bob phase/step `+0x6c/+0x70`, separate
+from the spawn pool slot.

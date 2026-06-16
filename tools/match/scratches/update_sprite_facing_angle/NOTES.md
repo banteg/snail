@@ -29,3 +29,7 @@ Rejected source-shaped probes:
 pair). The residual remains only the rotated `z` spill slot after
 `rotate_vector_by_matrix`; it is not evidence for another Sprite field or a
 different matrix type.
+
+2026-06-16 five-target audit: the disassembly confirms flag `0x400` is tested
+through the high byte of `Sprite::flags`, so the current `flags +0x04` lane and
+refresh fields `+0x8c/+0x90` remain the right shared names.

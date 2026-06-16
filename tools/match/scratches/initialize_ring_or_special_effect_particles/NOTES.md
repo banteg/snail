@@ -8,8 +8,8 @@ instructions, with 10 clean masked operands.
 
 Evidence:
 
-- Parent `+0x80` is the active/state word cleared or set by the spawner and
-  initializer.
+- Parent `+0x80` is the state word cleared or set by the spawner, initializer,
+  and updater.
 - Parent `+0x90` starts an inline array of ten `RingOrSpecialEffectParticle`
   entries with stride `0x20`.
 - The child layout matches the updater and emitter scratches:
@@ -22,13 +22,15 @@ Residual:
 
 - MSVC hoists the child pointer setup before the native state stores and keeps
   the child base-position pointer live across loop iterations (`add ebx,
-  0x20`). Native writes `active` and `star_shower_counter` first and recomputes
+  0x20`). Native writes `state` and `star_shower_counter` first and recomputes
   `child + 0x08` inside each iteration.
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent` now carries the initializer-used `active` and
+- `RingOrSpecialEffectParent` now carries the initializer-used `state` and
   `rate_source` fields in the shared header.
 - `RingOrSpecialEffectParticle` still stays local until the method return
   surface is resolved across `update_ring_or_special_effect_particle` and
   `emit_ring_star_shower`.
+- 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
+  updater confirms it is a multi-state lane rather than a boolean.

@@ -19,7 +19,7 @@ public:
 int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(void*)
 {
     int i = 0;
-    active = 1;
+    state = 1;
     star_shower_counter = 0;
 
     Vector3* parent_position = &position;

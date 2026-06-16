@@ -63,6 +63,7 @@ public:
     int update_player_movement_flags();    // @ 0x43a1a0
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
+    int health_collect_particles(void* pickup); // @ 0x43a010
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0

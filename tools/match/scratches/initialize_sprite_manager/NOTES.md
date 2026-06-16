@@ -33,3 +33,7 @@ Rejected/source-neutral probes:
   active-head stores regressed to 47.19% (44/45 instructions). VC6 reused `ebx`
   as the zero source and hoisted the `push edi`, so the `memset`-style source
   remains the better topology-preserving baseline.
+- 2026-06-16 five-target audit: BN's disassembly confirms the manager layout
+  already promoted in `sprite.h`: `paused +0x0`, sprite pool at `+0x4`, active
+  heads `+0x83d64..+0x83d74`, and free head `+0x83d78`. No additional manager
+  fields are proved by this function.
