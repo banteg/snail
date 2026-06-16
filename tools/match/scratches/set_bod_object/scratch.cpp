@@ -5,6 +5,6 @@
 int BodBase::set_bod_object(void* object_)
 {
     object = object_;
-    flags |= 2;
-    return flags;
+    list_flags |= 2;
+    return list_flags;
 }

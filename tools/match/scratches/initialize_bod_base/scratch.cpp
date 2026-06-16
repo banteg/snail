@@ -16,7 +16,7 @@ BodBase* BodBase::initialize_bod_base()
 
     callback->NoopAiCallback::NoopAiCallback();
     vtable = &g_bod_base_vtable;
-    flags = 0x2000020;
+    list_flags = 0x2000020;
     color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     ++g_bod_base_init_count;
     position.z = 0.0f;

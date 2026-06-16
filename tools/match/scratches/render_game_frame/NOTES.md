@@ -49,8 +49,9 @@ Expected residuals:
   locals; this first scratch favors named relationships over stack-slot
   mimicry.
 - The BOD prefix through `RenderableBod +0x78` is now shared through
-  `bod_types.h`: list links, position, render-object pass-through arguments,
-  object, color, and optional embedded transform. `RenderBodView` remains local
-  only for the renderer-specific pointer at `+0x78` and the unknown tail.
+  `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
+  flags, list links, position, render-object pass-through arguments, object,
+  color, and optional embedded transform. `RenderBodView` remains local only for
+  the renderer-specific pointer at `+0x78` and the unknown tail.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.

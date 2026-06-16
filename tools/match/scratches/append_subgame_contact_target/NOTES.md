@@ -32,3 +32,7 @@ Residuals:
   `append_subgame_contact_target`, `recycle_bod_to_free_list`, and the garbage
   init/destroy/update checks are codegen-stable, confirming the shared prefix
   relationship.
+- 2026-06-17 flag signedness check: `ContactTargetObject::list_flags` is now a
+  signed `int`, matching the old `BodBase::flags` source shape. This keeps the
+  exact append helper and nearby exact BOD-list users unchanged, while allowing
+  `is_bod_after_sprites` to emit the native `test byte [ecx+4], 0x80` sequence.

@@ -165,7 +165,7 @@ int GameRoot::render_game_frame()
                 RenderBodView* bod = *(RenderBodView**)(base + 0x5ac);
                 RenderBodView** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
-                    unsigned int bod_flags = bod->flags;
+                    unsigned int bod_flags = bod->list_flags;
                     if ((bod_flags & 0x10) != 0) {
                         debug_report_stub("DEBUG RENDER\n");
                     }
@@ -304,7 +304,7 @@ int GameRoot::render_game_frame()
                 do {
                     --post_cursor;
                     RenderBodView* bod = *post_cursor;
-                    unsigned int bod_flags = bod->flags;
+                    unsigned int bod_flags = bod->list_flags;
                     if ((bod_flags & 0x400) == 0) {
                         transform.position.x = bod->position.x;
                         transform.position.y = bod->position.y;
