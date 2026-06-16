@@ -16,3 +16,8 @@ did not expose the earlier wrong assumption.
 2026-06-13 pin audit: focused matcher still verifies 91.23%, 27/30 insns.
 Keep pinned; the remaining diff is only the duplicated native return tail
 versus VC6 cross-jump merging.
+
+2026-06-16 source-shape recheck: rewriting the tail as `if (streak >= 4)` with
+the non-inversion store/return afterward compiled identically. VC6 still
+cross-jump-merged the two `last_coin = coin; return coin` tails, so keep the
+clear strict-threshold source.

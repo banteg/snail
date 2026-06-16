@@ -25,3 +25,9 @@ remove paths and bob tail, not a known semantic gap.
 removed in favor of the shared `BodList` view from `bod_list.h` via
 `track_jetpack_pickup.h`. Focused Wibo remains 72.44%, 127/127 insns, with
 15 masked operands OK and no unresolved or mismatched operands.
+
+2026-06-16 live BN symbol audit: the open BN database still resolves
+`update_track_jetpack_pickup` by name to `0x43ee50`, which is the exact
+speedup updater by vtable and field window. Use the manifest/dashboard target
+address `0x43efb0` for this jetpack parent updater unless the BN symbols are
+renamed; `0x43efb0` may also appear under the stale sub-lazer name in BN.

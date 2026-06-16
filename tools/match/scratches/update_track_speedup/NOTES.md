@@ -22,3 +22,8 @@ The field window also lines up with `game + 0x355db0`: position at
 `+0x68..+0x70`, state at `+0x80`, owner at `+0x84`, game pointer at
 `+0x8c`, and sprite at `+0xac`. The full position vector is cross-confirmed
 by `handle_subgoldy_collisions`.
+
+Live BN caveat: the current BN symbol table still returns
+`update_track_jetpack_pickup` for `0x43ee50`. Treat that as stale symbol data;
+the vtable and shared `TrackSpeedupRuntime` field evidence identify this
+function as speedup.
