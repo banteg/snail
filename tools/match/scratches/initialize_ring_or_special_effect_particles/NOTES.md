@@ -25,6 +25,14 @@ Residual:
   0x20`). Native writes `state` and `star_shower_counter` first and recomputes
   `child + 0x08` inside each iteration.
 
+Rejected/source-shape probes:
+
+- Splitting the `particle = particles` assignment from its declaration compiled
+  identically; VC6 still hoisted `lea esi, [this + 0x90]` ahead of the state
+  stores.
+- Spelling the state store as `state = i + 1` also compiled identically. The
+  residual is pointer scheduling, not uncertainty about the `state` field.
+
 Type consolidation:
 
 - `RingOrSpecialEffectParent` now carries the initializer-used `state` and

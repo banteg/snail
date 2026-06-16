@@ -4,7 +4,7 @@ Live source map for the star burst emitted by
 `update_ring_or_special_effect_particle` when the parent cadence counter is
 zero.
 
-Current match: 54.69%, 63 candidate instructions versus 65 target instructions,
+Current match: 58.54%, 58 candidate instructions versus 65 target instructions,
 with 9 clean masked operands. The scratch deliberately uses shared `sprite.h`,
 `player.h`, and `ring_special_effect_types.h`, confirming the already-promoted
 Sprite lanes used by this emitter:
@@ -21,9 +21,10 @@ Residual:
   `g_render_flags`, keeps a stack zero lane for `velocity.z`, and stores the
   sine/cosine temporaries through explicit stack slots before writing
   `sprite->velocity`.
-- The current source preserves the field behavior but compiles to a smaller
-  stack frame, direct `velocity.z = 0`, and a different position-copy register
-  schedule.
+- The current source now matches the direct `phase + offset` trig-call argument
+  spelling and computes the unscaled X/Y velocities before the 0.3 scale, but
+  still compiles to a smaller stack frame, direct `velocity.z = 0`, and a
+  different position-copy register schedule.
 
 Rejected/source-shape probes:
 
@@ -35,6 +36,13 @@ Rejected/source-shape probes:
   frame.
 - Adding a staged source-position vector reached 58.27% but moved farther from
   the native direct position copy, so the clearer shared-header source is kept.
+- A direct trig-expression form plus separate unscaled `velocity_x` and
+  `velocity_y` locals improves to the current 58.54% by matching the native call
+  argument and scale order. This is retained because it is a plausible original
+  source spelling and not a dummy scheduling artifact.
+- Widening the local result to `int` to chase the full Z-word return regressed
+  to 56.45% by adding an extra prologue zeroing instruction; keep the byte
+  result shape.
 
 Type consolidation:
 

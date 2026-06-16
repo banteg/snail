@@ -13,6 +13,7 @@ char RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
 {
     char result = g_render_flags;
     if ((result & 0x10) != 0) {
+        float velocity_z = 0.0f;
         Sprite* star = g_sprite_manager.allocate_sprite(
             owner->player_slot,
             parent->star_sprite_id,
@@ -24,16 +25,14 @@ char RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
         star->size_start = 0.40000001f;
         star->size_end = 0.2f;
 
-        float angle = phase + 1.0471976f;
-        float velocity_x = sine(angle) * radius;
-        float angle_2 = phase + 1.0471976f;
+        float velocity_x = sine(phase + 1.0471976f) * radius;
+        float velocity_y = cosine(phase + 1.0471976f) * radius;
         float scaled_x = velocity_x * 0.30000001f;
-        float scaled_y = cosine(angle_2) * radius * 0.30000001f;
-        float zero = 0.0f;
-        float* velocity = &star->velocity.x;
-        velocity[0] = scaled_x;
-        velocity[1] = scaled_y;
-        velocity[2] = zero;
+        float scaled_y = velocity_y * 0.30000001f;
+        Vector3* velocity = &star->velocity;
+        velocity->x = scaled_x;
+        velocity->y = scaled_y;
+        velocity->z = velocity_z;
 
         Vector3* source_position = &sprite->position;
         star->position = *source_position;

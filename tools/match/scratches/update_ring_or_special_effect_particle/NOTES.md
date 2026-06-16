@@ -25,6 +25,9 @@ Rejected source-shape probe:
 - Directly reading `live_owner->position.x` before creating the typed
   `owner_position` pointer regressed to 89.91% because MSVC moved the radius
   multiply before reloading the parent/sprite pointers.
+- Retesting the narrower direct-X-only spelling reproduced the same 89.91%
+  regression; keep the typed parent-position pointer despite the one-instruction
+  materialization-order residual.
 
 2026-06-16 BN cross-check:
 
