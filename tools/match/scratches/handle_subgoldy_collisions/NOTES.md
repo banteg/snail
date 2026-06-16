@@ -1,7 +1,34 @@
-# WIP scratch — 45.71%, 657/673 insns (2026-06-15)
+# WIP scratch — 48.79%, 647/673 insns (2026-06-16)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-06-16 pickup/runtime offset correction pass: corrected the scratch-local
+`Game` and `Player` windows to agree with the already matched/update-spawner
+evidence:
+
+- Game core fields now use `level_mode +0x40`, `level_mode_arg +0x44`,
+  `base_subgame_rate +0x48`, and `runtime_flags +0x4c`, matching
+  `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and
+  `update_subgoldy`.
+- The five collision-adjacent runtime regions are now aligned to the target:
+  health pool `+0x356000`, speedup singleton `position +0x355e18/state
+  +0x355e30`, jetpack singleton `position +0x355e74/state +0x355e9c`,
+  ring/special-effect parents `+0x35b78c`, and the parcel HUD/total lanes
+  `+0x35bb94/+0x1b01e0`.
+- Corrected adjacent pool anchors that had drifted by one region:
+  slug `+0x3563a0`, sub-lazer `+0x356b00`, salt `+0x3578c0`, garbage list
+  head `+0x359140`, and track parcel/ring slots `+0x125e480`.
+- Switched proven helpers back to method-call shape:
+  `Player::add_subgoldy_score`, `Player::health_collect_particles`,
+  `DamageGaugeController::apply_damage_gauge_delta`, and
+  `JetpackGaugeController::arm_jetpack_gauge`.
+
+Matcher impact: score improved from `45.71%` to `48.79%`, and the
+speedup/jetpack/garbage/parcel offsets now agree with the target asm. The
+matcher reports one masked call mismatch in the still-low-score slug block
+(`kill_slug_hazard` vs the nearby carryover call); treat that as alignment
+debt, not proof of the slug branch.
 
 2026-06-13 matcher padding rebaseline: terminal object-padding normalization
 removes untargeted bytes after final `ret` instructions, so the same source now

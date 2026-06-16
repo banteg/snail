@@ -4,24 +4,25 @@
 // pickups, the speedup and jetpack singles, and the ring-effect ladder.
 // Shared idiom: delta z pre-gate < threshold, then normalize_vector distance.
 
+#include "damage_gauge.h"
+#include "jetpack_gauge.h"
+
 struct Vec3 {
     float x;
     float y;
     float z;
 };
 
+class TrackHealthPickup;
+
 float __fastcall normalize_vector(Vec3* vector);
-void apply_damage_gauge_delta(float* state, float amount, int force);
-void add_subgoldy_score(int* player, int event_id, int value);
 void play_sound_effect(int effect_id);
 int next_math_random_value();
 void kill_slug_hazard(int slug);
 void play_slug_voice(int slug, int voice);
 void play_voice_manager(int manager, int voice, unsigned char flag, int arg);
 void firework_shoot(float* position, int player_slot, int a3, int a4);
-void health_collect_particles(int player, int pickup);
 void noop_runtime_ai();
-void arm_jetpack_gauge(int* gauge);
 int initialize_nuke(float* nuke);
 int sprintf(char* buffer, const char* format, ...);
 
@@ -31,66 +32,66 @@ extern char g_parcel_format[];
 struct Game {
     char unknown_00[0x38];
     float subgame_rate; // +0x38
-    char unknown_3c[0x150 - 0x3c];
-    int level_mode; // +0x150
-    char unknown_154[0x1ac - 0x154];
-    unsigned int runtime_flags; // +0x1ac
-    char pool_pad[0x355fb0 - 0x1b0];
-    float speedup_position[3];   // +0x355fb0
-    char unknown_355fbc[0x355fc8 - 0x355fbc];
-    int speedup_state;           // +0x355fc8
-    char unknown_355fcc[0x35600c - 0x355fcc];
-    float jetpack_position[3];   // +0x35600c
-    char unknown_356018[0x356034 - 0x356018];
-    int jetpack_state;           // +0x356034
-    char unknown_356038[0x3561b0 - 0x356038];
-    char health_slots[928];      // +0x3561b0 stride 116: pos +0x10, state +0x38
-    char unknown_356550[0x356a20 - (0x3561b0 + 928)];
-    char slug_slots[1888];       // +0x356a20 stride 236: object +0x00, pos +0x68, state +0x80, hit byte +0xd9
-    char unknown_357180[0x3578c0 - (0x356a20 + 1888)];
-    char salt_slots[6080];       // +0x3578c0 stride 152: pos +0x68, state +0x80, live byte +0x94
-    char unknown_358680[0x35a040 - (0x3578c0 + 6080)];
-    int garbage_list_head;       // +0x35a040
-    char unknown_35a044[0x35cf80 - 0x35a044];
-    char lazer_slots[3520];      // +0x35cf80 stride 176: pos +0x68, state +0x80
-    char unknown_35dd40[0x35ddec - (0x35cf80 + 3520)];
-    int parcel_total;            // +0x35ddec
-    char unknown_35ddf0[0x37b714 - 0x35ddf0];
-    int hud_text_owner;          // +0x37b714
-    char unknown_37b718[0x39ba8c - 0x37b718];
-    char ring_effect_slots[1008]; // +0x39ba8c stride 504: pos +0x18, state +0x30, kind +0x38
-    char unknown_39be7c[0x125e9f4 - (0x39ba8c + 1008)];
-    char track_ring_slots[7000]; // +0x125e9f4 stride 140: pos +0x10, state +0x38
+    char unknown_3c[0x40 - 0x3c];
+    int level_mode; // +0x40
+    int level_mode_arg; // +0x44
+    float base_subgame_rate; // +0x48
+    unsigned int runtime_flags; // +0x4c
+    char unknown_50[0x1b01e0 - 0x50];
+    int parcel_total; // +0x1b01e0
+    char unknown_1b01e4[0x355e18 - 0x1b01e4];
+    float speedup_position[3]; // +0x355e18
+    char unknown_355e24[0x355e30 - 0x355e24];
+    int speedup_state; // +0x355e30
+    char unknown_355e34[0x355e74 - 0x355e34];
+    float jetpack_position[3]; // +0x355e74
+    char unknown_355e80[0x355e9c - 0x355e80];
+    int jetpack_state; // +0x355e9c
+    char unknown_355ea0[0x356000 - 0x355ea0];
+    char health_slots[928]; // +0x356000 stride 116: pos +0x10, state +0x38
+    char slug_slots[1888]; // +0x3563a0 stride 236: object +0x00, pos +0x68, state +0x80, hit byte +0xd9
+    char lazer_slots[3520]; // +0x356b00 stride 176: pos +0x68, state +0x80
+    char salt_slots[6080]; // +0x3578c0 stride 152: pos +0x68, state +0x80, live byte +0x94
+    char unknown_359080[0x359140 - (0x3578c0 + 6080)];
+    int garbage_list_head; // +0x359140
+    char unknown_359144[0x35b78c - 0x359144];
+    char ring_effect_slots[1008]; // +0x35b78c stride 504: pos +0x68, state +0x80, kind +0x88
+    char unknown_35bb7c[0x35bb94 - (0x35b78c + 1008)];
+    int hud_text_owner; // +0x35bb94
+    char unknown_35bb98[0x125e480 - 0x35bb98];
+    char track_ring_slots[7000]; // +0x125e480 stride 140: pos +0x10, state +0x38
 };
 
 struct Player {
     void handle_subgoldy_collisions();
     void begin_post_follow_carryover();
+    void add_subgoldy_score(int event_id, int value);
+    char health_collect_particles(TrackHealthPickup* pickup);
 
     char unknown_00[0x6c];
     float live_position_y; // +0x6c
     char unknown_70[0x150 - 0x70];
-    int player_slot; // +0x150
-    char unknown_154[0x1d4 - 0x154];
+    char nuke_object[0x1d4 - 0x150]; // +0x150
     float damage_retrigger_timer; // +0x1d4
     float damage_retrigger_step;  // +0x1d8
     char unknown_1dc[0x2d8 - 0x1dc];
     // (the nuke fields live lower in the struct: progress 0x374, step 0x378,
-    // and initialize_nuke receives player+0x150 as its this — shared with
-    // the player_slot read; settle the overlap when the nuke port lands)
+    // and initialize_nuke receives player+0x150 as its this; settle that
+    // interior object when the nuke port lands)
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x308 - 0x2d9];
-    float damage_gauge_state; // +0x308
+    int movement_flag_selector; // +0x308
     char unknown_30c[0x338 - 0x30c];
     unsigned char movement_flags; // +0x338
     char unknown_339[0x374 - 0x339];
     float nuke_effect_progress;      // +0x374
     float nuke_effect_progress_step; // +0x378
-    char unknown_37c[0x384 - 0x37c];
+    char unknown_37c[0x380 - 0x37c];
+    int player_slot; // +0x380
     unsigned char follow_active; // +0x384
     char unknown_385[0x3c4 - 0x385];
-    int movement_flag_selector; // +0x3c4
-    char unknown_3c8[0x404 - 0x3c8];
+    DamageGaugeController damage_gauge; // +0x3c4
+    char unknown_3f0[0x404 - 0x3f0];
     int lives; // +0x404
     Game* game; // +0x408
     char unknown_40c[0x410 - 0x40c];
@@ -100,8 +101,7 @@ struct Player {
     char unknown_41e[0x440 - 0x41e];
     unsigned char completion_handoff_active; // +0x440
     char unknown_441[0x2750 - 0x441];
-    int jetpack_gauge; // +0x2750
-    char unknown_2754[0x2964 - 0x2754];
+    JetpackGaugeController jetpack_gauge; // +0x2750
     Vec3 cached_camera_target_world; // +0x2964
     char unknown_2970[0x3f4c - 0x2970];
     float wobble_lift_phase_step; // +0x3f4c
@@ -134,7 +134,7 @@ void Player::handle_subgoldy_collisions()
                         if (damage_retrigger_timer == 0.0f)
                             damage_retrigger_timer = damage_retrigger_step;
                         *(unsigned char*)((char*)game + i + 0x357954) = 0;
-                        apply_damage_gauge_delta(&damage_gauge_state, 0.15000001f, 0);
+                        damage_gauge.apply_damage_gauge_delta(0.15000001f, 0);
                     }
                 }
             }
@@ -148,11 +148,11 @@ void Player::handle_subgoldy_collisions()
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {
                     *(int*)((char*)game + j + 0x356b80) = 2;
-                    apply_damage_gauge_delta(&damage_gauge_state, 0.02f, 0);
+                    damage_gauge.apply_damage_gauge_delta(0.02f, 0);
                 }
             }
         }
-        for (int k = *(int*)((char*)game + 0x35a040); k; k = *(int*)(k + 0x80)) {
+        for (int k = game->garbage_list_head; k; k = *(int*)(k + 0x80)) {
             if (*(int*)(k + 0x84) == 1) {
                 delta.x = *(float*)(k + 0x68) - cached_camera_target_world.x;
                 delta.y = *(float*)(k + 0x6c) - cached_camera_target_world.y;
@@ -168,8 +168,8 @@ void Player::handle_subgoldy_collisions()
                         *(int*)(k + 0x88) = 1;
                     else
                         *(int*)(k + 0x88) = 2;
-                    add_subgoldy_score((int*)this, 0, 0);
-                    apply_damage_gauge_delta(&damage_gauge_state, 0.039999999f, 0);
+                    add_subgoldy_score(0, 0);
+                    damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                 }
             }
@@ -191,7 +191,7 @@ void Player::handle_subgoldy_collisions()
                                 float rate = game->subgame_rate;
                                 float scaled_rate = rate * rate * 0.0040000002f;
                                 velocity.z = scaled_rate * -8.0f;
-                                apply_damage_gauge_delta(&damage_gauge_state, 1.0f, 0);
+                                damage_gauge.apply_damage_gauge_delta(1.0f, 0);
                             } else {
                                 Game* hit_game = game;
                                 control_override_active = 1;
@@ -237,7 +237,7 @@ void Player::handle_subgoldy_collisions()
                 probe_salt.z = *(float*)(slot + 0x125e498) - cached_camera_target_world.z;
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
-                    add_subgoldy_score((int*)this, 3, 0);
+                    add_subgoldy_score(3, 0);
                     play_voice_manager((int)unk_751498, 10, 1, -1);
                     play_sound_effect(27);
                     *(int*)((char*)game + n + 0x125e4b8) = 4;
@@ -270,8 +270,8 @@ void Player::handle_subgoldy_collisions()
                 if (dy < 0.40000001f && normalize_vector(&probe_c) < 0.98000002f) {
                     play_sound_effect(14);
                     *(int*)((char*)game + ii + 0x356038) = 2;
-                    health_collect_particles((int)this, (int)((char*)game + ii + 0x356000));
-                    apply_damage_gauge_delta(&damage_gauge_state, -0.5f, 0);
+                    health_collect_particles((TrackHealthPickup*)((char*)game + ii + 0x356000));
+                    damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
                 }
             }
         }
@@ -305,7 +305,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.z = probe_b.z;
         if (live_position_y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
             game->jetpack_state = 2;
-            arm_jetpack_gauge(&jetpack_gauge);
+            jetpack_gauge.arm_jetpack_gauge();
         }
     }
     for (int jj = 0; jj < 1008; jj += 504) {
@@ -350,7 +350,7 @@ void Player::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         play_sound_effect(effect_index + 1);
-                        add_subgoldy_score((int*)this, 2, 0);
+                        add_subgoldy_score(2, 0);
                         continue;
                     }
                     case 8: {
@@ -365,19 +365,19 @@ void Player::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         play_sound_effect(effect_index + 1);
-                        add_subgoldy_score((int*)this, 2, 0);
+                        add_subgoldy_score(2, 0);
                         continue;
                     }
                     case 1:
-                        add_subgoldy_score((int*)this, 2, 0);
+                        add_subgoldy_score(2, 0);
                         play_sound_effect(1);
                         break;
                     case 2:
                     case 6:
-                        add_subgoldy_score((int*)this, 2, 0);
+                        add_subgoldy_score(2, 0);
                         play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
-                        initialize_nuke((float*)&player_slot);
+                        initialize_nuke((float*)nuke_object);
                         break;
                     }
                 }
