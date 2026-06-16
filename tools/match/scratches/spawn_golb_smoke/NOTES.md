@@ -35,6 +35,10 @@ Rejected source-shaped probes:
   `GolbProjectileGameView`. Codegen stays 82.27%, and this shares the
   projectile `velocity +0x24c`, `game +0x270`, `object_ref +0x274`, and
   `owner_player +0x278` lanes with the trail/impact/teardown helpers.
+- 2026-06-16 position view cleanup: moving the `sprite->position` view down to
+  the final copy site is score-neutral. The compiler still advances the sprite
+  base before native does, but the source no longer exposes that view before it
+  is needed.
 - BN cross-check: this is the same word-index sprite emitter idiom as garbage
   smoke. The confirmed lanes are color at `0xb..0xe`, position at `0x12..0x14`,
   velocity at `0x15..0x17`, `size_start/size_end` at `0x18/0x19`, progress at

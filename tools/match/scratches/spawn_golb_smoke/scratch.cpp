@@ -29,10 +29,10 @@ void GolbProjectile::spawn_golb_smoke(Vector3* position)
     color.g = velocity.y * 0.40000001f;
     color.b = velocity.z * 0.40000001f;
     Vector3* out_velocity = &sprite->velocity;
-    Vector3* out_position = &sprite->position;
     out_velocity->x = color.r;
     sprite->gravity_step = 0.0f;
     out_velocity->y = color.g;
     out_velocity->z = color.b;
+    Vector3* out_position = &sprite->position;
     *out_position = *position;
 }
