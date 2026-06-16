@@ -62,3 +62,8 @@ source-shaped owner changes codegen.
 `damage_gauge.h` with initialize and apply-delta. The +0x24/+0x28 fields keep
 the update-path `hit_flash_progress`/`hit_flash_step` names; apply-delta uses
 the same pair as its retrigger gate. Match remains 80.60%.
+
+2026-06-16 warning actor consolidation: the warning calls now use the shared
+`WarningActor` view. `stop_warning_sample` stays declared as a method view here
+because the native callsite sets `ecx` to `g_game+0x430170`, while the callee
+ignores it. Match remains 80.60%.

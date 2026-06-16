@@ -1,21 +1,11 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
-#include "frontend_widget.h"
+#include "warning_actor.h"
 
 extern char* g_game_base; // data_4df904
 
 struct BorderManager {
     FrontendWidget* allocate_border();
-};
-
-class WarningActor {
-public:
-    void initialize_warning();
-
-    int state;                 // +0x00
-    float progress;            // +0x04
-    float progress_step;       // +0x08
-    FrontendWidget* border;    // +0x0c
 };
 
 void WarningActor::initialize_warning()
@@ -27,7 +17,7 @@ void WarningActor::initialize_warning()
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f), 0.0f, 4);
     border->warning_field = 0;
     border->hide_border_init();
-    progress_step = 0.0833333358f;
-    progress = 0.0f;
+    phase_step = 0.0833333358f;
+    phase = 0.0f;
     state = 0;
 }

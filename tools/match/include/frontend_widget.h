@@ -40,7 +40,8 @@ public:
     int shortcut_key_code; // +0x194
     char unknown_198[0x1a0 - 0x198];
     unsigned int widget_flags; // +0x1a0
-    char unknown_1a4[0x20c - 0x1a4];
+    char unknown_1a4[0x208 - 0x1a4];
+    float warning_overlay_alpha; // +0x208
     float hover_blend_target; // +0x20c
     float hover_blend_current; // +0x210
     float idle_padding; // +0x214

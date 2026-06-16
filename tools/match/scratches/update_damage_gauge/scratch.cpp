@@ -4,17 +4,7 @@
 #include "damage_gauge.h"
 #include "sprite.h"
 #include "snail_skin.h"
-
-struct WarningActor {
-    void start_warning(); // @ 0x446f30, matched
-    void stop_warning();  // @ 0x446f50, matched
-    void stop_warning_sample(); // @ 0x446f60, matched; ecx is ignored
-
-    int state;
-    float progress;
-    float progress_step;
-    void* border;
-};
+#include "warning_actor.h"
 
 struct VoiceManager {
     int play_voice_manager(int set_id, unsigned int mode, int sample_override); // @ 0x4492d0, matched
