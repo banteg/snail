@@ -4,8 +4,8 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `36.83%`, `196/347` candidate/target instructions, with `38` masked
-  operands ok.
+- `49.82%`, `223/347` candidate/target instructions, with `34` masked
+  operands ok and no unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
   by the parent-field offsets below.
@@ -58,3 +58,13 @@ Type consolidation:
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
   updater uses `0` as inactive, `1` as normal orbit, and `2..5` as transition
   states.
+- 2026-06-16 source-shape pass: the free-slot scan now uses the same explicit
+  break/advance/overflow spelling as the garbage pool scans, recovering the
+  native `sub esp, 0x10` prologue and a 22-instruction prefix. The placement
+  switch now stages a local `Vector3` before copying to the parent position,
+  and keeps a scratch-local `slot_position` view at `slot_base +0x35b7f4`
+  because native holds the unadjusted game-relative slot base through the
+  authored placement arms. This improves the score from 36.83% to 49.82%.
+- A delayed `slot_position` declaration reached 50.09%, but introduced an
+  unresolved switch-table operand. Keep the 49.82% spelling because its operand
+  audit is cleaner.

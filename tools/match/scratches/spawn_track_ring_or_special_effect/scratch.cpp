@@ -41,11 +41,14 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     int slot_index = 0;
     RingOrSpecialEffectParent* scan =
         (RingOrSpecialEffectParent*)((char*)this + 0x35b78c);
-    while (scan->state != 0) {
+    while (1) {
+        if (scan->state == 0)
+            break;
         slot_index++;
         scan = (RingOrSpecialEffectParent*)((char*)scan + 0x1f8);
-        if (slot_index >= 2)
-            return (TrackRowCell*)slot_index;
+        if (slot_index < 2)
+            continue;
+        return (TrackRowCell*)slot_index;
     }
 
     float owner_scale = (float)player->movement_flag_selector;
@@ -58,6 +61,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     char* slot_base = (char*)this + slot_index * 0x1f8;
     RingOrSpecialEffectParent* slot =
         (RingOrSpecialEffectParent*)(slot_base + 0x35b78c);
+    Vector3* slot_position = (Vector3*)(slot_base + 0x35b7f4);
     set_matrix_identity((TransformMatrix*)((char*)slot + 0x38));
 
     int kind = requested_kind;
@@ -74,21 +78,25 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     case 1:
     case 3:
     case 4: {
-        slot->position.x = cell->anchor_position.x;
-        slot->position.y = cell->anchor_position.y + 2.5f;
-        slot->position.z = cell->anchor_position.z + 6.0f;
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z + 6.0f;
+        *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR") - 0.5f;
-        slot->position.x = (float)((random_x + random_x) * 3.0);
+        slot_position->x = (float)((random_x + random_x) * 3.0);
         slot->active_phase = random_float_below(1.0f, "RR1") * 6.28318548f;
         slot->active_phase_step = default_phase_step;
         break;
     }
     case 2: {
-        slot->position.x = cell->anchor_position.x;
-        slot->position.y = cell->anchor_position.y + 3.5f;
-        slot->position.z = cell->anchor_position.z + 17.0f;
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 3.5f;
+        staged_position.z = cell->anchor_position.z + 17.0f;
+        *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR4") - 0.5f;
-        slot->position.x = (float)((random_x + random_x) * 3.0);
+        slot_position->x = (float)((random_x + random_x) * 3.0);
         slot->active_phase = random_float_below(1.0f, "RR5") * 6.28318548f;
         slot->active_phase_step = default_phase_step;
         break;
@@ -97,9 +105,11 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     case 6:
     case 7:
     case 8: {
-        slot->position.x = cell->anchor_position.x;
-        slot->position.y = cell->anchor_position.y + 2.5f;
-        slot->position.z = cell->anchor_position.z;
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z;
+        *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR10") * 6.28318548f;
         slot->active_phase_step =
             1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
@@ -107,7 +117,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     }
     }
 
-    TrackRowCell* result = get_track_grid_cell_at_world_position(&slot->position);
+    TrackRowCell* result = get_track_grid_cell_at_world_position(slot_position);
     if (result->tile_id != 14) {
         slot->kind = kind;
         slot->owner_lives_snapshot = player->lives;
