@@ -133,11 +133,14 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
             } while (count != 0);
             return;
         } else {
-            Vector3* target = &owner_player->cached_camera_target_world;
+            Vector3 target = owner_player->cached_camera_target_world;
             Vector3 delta;
-            delta.x = (target->x - position.x) * 0.939999998f;
-            delta.y = (target->y - position.y) * 0.939999998f;
-            delta.z = ((target->z + 0.200000003f) - position.z) * 0.939999998f;
+            delta.x = target.x - position.x;
+            delta.y = target.y - position.y;
+            delta.z = (target.z + 0.200000003f) - position.z;
+            delta.x *= 0.939999998f;
+            delta.y *= 0.939999998f;
+            delta.z *= 0.939999998f;
             position.x += delta.x;
             position.y += delta.y;
             position.z += delta.z;

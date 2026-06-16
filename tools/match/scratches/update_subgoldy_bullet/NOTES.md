@@ -4,7 +4,7 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `69.77%`, `329/336` candidate/target instructions, with `32` masked
+- `71.41%`, `339/336` candidate/target instructions, with `33` masked
   operands ok.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
@@ -60,10 +60,12 @@ Residual:
 - Native duplicates the list-removal/child-kill tail for the three removal
   exits. The scratch now spells those exits explicitly, which raised the match
   from `28.32%` to `68.48%`.
-- A `Vector3 delta` local for the state-3 collapse moves the scratch from
-  `68.48%` to `69.77%` and changes the prologue from a one-slot push to
-  `sub esp, 0x0c`. Native still reserves `0x18` and keeps additional unscaled
-  target-delta temporaries on the stack.
+- A `Vector3 delta` local for the state-3 collapse moved the scratch from
+  `68.48%` to `69.77%`. The current state-3 collapse also stages an immutable
+  local copy of `owner_player->cached_camera_target_world` before computing and
+  scaling the delta. This recovers the native `sub esp, 0x18` frame and improves
+  the scratch to `71.41%`, although native still uses a different x87/stack
+  schedule for the target lanes.
 - Remaining residuals are mostly switch and stack-shape differences: VC6 still
   collapses case `0`/default into a `state - 1` jump table, while native uses a
   direct `0..5` jump table.
@@ -73,3 +75,10 @@ Rejected/source-shape probes:
 - Spelling the collapse as explicit unscaled `target_y`, `target_z`, and
   `delta_*` locals regressed to the previous `68.48%` shape, so keep the
   aggregate `Vector3 delta`.
+- 2026-06-16 collapse staging probes: changing case `0`/default to explicit
+  early returns compiled identically and did not fix the `state - 1` jump table.
+  Staging `rate->paused` in a local byte also compiled identically. Mutating a
+  local `Vector3 target.z` before computing delta improved only to `70.52%`,
+  and a pointer plus scalar `target_y`/`target_z` spelling regressed to
+  `70.55%` with a smaller frame. Keep the immutable local `Vector3 target`
+  plus aggregate `Vector3 delta` form.
