@@ -11,6 +11,7 @@ struct ObjectGeometry;
 class BodBase {
 public:
     BodBase* initialize_bod_base();       // @ 0x42f5f0
+    bool is_bod_after_sprites();          // @ 0x42f5c0
     int set_bod_object(void* object);     // @ 0x42f5d0
     ObjectGeometry* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
 
