@@ -1,20 +1,9 @@
 // refresh_object_vertex_buffer @ 0x412250 (cdecl)
 
+#include "object_animation_types.h"
 #include "object_render_types.h"
 
 struct ObjectRenderGeometry;
-
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
-
-struct ObjectVertex {
-    float x;
-    float y;
-    float z;
-};
 
 struct ObjectUv {
     float u;
@@ -24,18 +13,6 @@ struct ObjectUv {
 struct ObjectFaceQuad {
     char unknown_00[0x10];
     ObjectUv uv[4]; // +0x10
-};
-
-struct ObjectAnimationFrame {
-    ObjectVertex* vertices; // +0x00
-    Vector3* normals;       // +0x04
-};
-
-struct ObjectAnimation {
-    char unknown_00[0x04];
-    int frame_index;                  // +0x04
-    ObjectAnimationFrame** frames;    // +0x08
-    float frame_scale;                // +0x0c
 };
 
 struct ObjectVertexBufferVtbl {
@@ -55,11 +32,11 @@ struct ObjectRenderGeometry {
     char unknown_14[0x2c - 0x14];
     int vertex_count; // +0x2c
     char unknown_30[0x38 - 0x30];
-    ObjectVertex* vertices; // +0x38
-    ObjectVertex* copied_vertices; // +0x3c
+    Vector3* vertices; // +0x38
+    Vector3* copied_vertices; // +0x3c
     char unknown_40[0x5c - 0x40];
     ObjectFaceQuad* facequads; // +0x5c
-    Vector3* vertex_normals; // +0x60
+    void* facequad_normals; // +0x60
     char unknown_64[0xbc - 0x64];
     ObjectAnimation* animation; // +0xbc
     ObjectRenderBuffers* render_buffers; // +0xc0
@@ -71,11 +48,11 @@ void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
     unsigned int flags = object->flags;
     if ((flags & 0x200000) != 0) {
         ObjectAnimation* animation = object->animation;
-        int frame_index = (int)((float)animation->frame_index * animation->frame_scale);
+        int frame_index = (int)((float)animation->generated_frame_count * animation->progress);
         object->vertices = animation->frames[frame_index]->vertices;
 
-        frame_index = (int)((float)animation->frame_index * animation->frame_scale);
-        object->vertex_normals = animation->frames[frame_index]->normals;
+        frame_index = (int)((float)animation->generated_frame_count * animation->progress);
+        object->facequad_normals = animation->frames[frame_index]->facequad_normals;
 
         if ((flags & 0x800000) != 0) {
             ((ObjectDistort*)((char*)object + 0x80))->apply_distort_to_object(object);

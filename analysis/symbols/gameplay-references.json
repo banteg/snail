@@ -277,6 +277,15 @@
       "description": "Object facequad texture-group producer that marks split/texture side effects, requests the +0x6c group-end array, and writes cumulative facequad end indices consumed by build_object_texture_group_buffers."
     },
     {
+      "address": "0x430a70",
+      "name": "request_object_animation",
+      "kind": "function",
+      "aliases": [
+        "sub_430a70"
+      ],
+      "description": "Object X-animation builder that validates 0x80-byte keyframe objects, stores ObjectAnimation at Object+0xbc, generates per-frame vertex and facequad-normal arrays, and refreshes normals through calc_object_facequad_normals."
+    },
+    {
       "address": "0x4326fc",
       "name": "g_subgame_cull_plane_z_offset",
       "kind": "offset",

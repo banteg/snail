@@ -21,7 +21,8 @@ Recovered relationships:
 - Uses `Object +0x70` edge count and `+0x74` 0x24-byte edge records, matching
   exact `request_object_edges`.
 - Edge `+0x04/+0x08` are the two vertex indices written to the toon index
-  buffer. Edge `+0x0c/+0x10` are normal indices into `Object +0x60`.
+  buffer. Edge `+0x0c/+0x10` are normal indices into the facequad-normal array
+  at `Object +0x60`.
 - If edge flag bit `1` is set, the edge is emitted unconditionally. If clear,
   native computes two dot products against the edge normals and emits when
   their product is below `0.00999999978f`.

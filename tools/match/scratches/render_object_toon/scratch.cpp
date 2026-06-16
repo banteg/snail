@@ -64,7 +64,7 @@ struct ObjectToonRenderView {
     char unknown_30[0x38 - 0x30];
     Vector3* vertices; // +0x38
     char unknown_3c[0x60 - 0x3c];
-    Vector3* vertex_normals; // +0x60
+    Vector3* facequad_normals; // +0x60
     char unknown_64[0x70 - 0x64];
     int edge_count; // +0x70
     ObjectToonEdge* edges; // +0x74
@@ -140,9 +140,9 @@ int render_object_toon(ObjectToonRenderView* object, TransformMatrix* matrix)
             delta.z = view_vector.z - vertex->z;
 
             double side_b =
-                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->vertex_normals[edge->normal_b]);
+                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->facequad_normals[edge->normal_b]);
             double side_a =
-                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->vertex_normals[edge->normal_a]);
+                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->facequad_normals[edge->normal_a]);
             if (side_a * side_b < 0.00999999978f) {
                 indices[0] = edge->vertex_a;
                 indices[1] = edge->vertex_b;

@@ -11,10 +11,11 @@ Recovered relationships:
 - Called only by `render_object`.
 - `Object +0x10` is the render/object flags word.
 - `flags & 0x200000` selects the animated/distorted vertex source path.
-- `Object +0xbc` points at an animation/frame source with an integer lane at
-  `+0x04`, a frame pointer table at `+0x08`, and a float scale at `+0x0c`.
+- `Object +0xbc` points at the 0x14-byte `ObjectAnimation` produced by
+  `request_object_animation`: generated frame count at `+0x04`, frame pointer
+  table at `+0x08`, playback progress at `+0x0c`, and progress step at `+0x10`.
 - Animated refresh writes `Object +0x38` from frame `+0x00` vertices and
-  `Object +0x60` from frame `+0x04` normals.
+  `Object +0x60` from frame `+0x04` facequad normals.
 - `flags & 0x800000` dispatches `apply_distort_to_object` on the embedded
   distort state at `Object +0x80`.
 - `Object +0xc0` owns grouped-render buffers; its `+0x08` member is the D3D
@@ -29,6 +30,9 @@ Corrected assumptions:
 - `Object +0x80` is only treated as a subobject call base for
   `apply_distort_to_object`; modeling it as a sized scratch-local field shifted
   the later `+0xbc/+0xc0/+0xc4` renderer fields and was wrong.
+- `ObjectAnimation +0x04/+0x0c` are not a raw frame-index/scale pair. The
+  animation builder proves they are generated frame count and playback
+  progress; their product selects the generated frame.
 
 Expected residuals:
 
