@@ -19,10 +19,10 @@ BodBase* BodBase::initialize_bod_base()
     flags = 0x2000020;
     color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     ++g_bod_base_init_count;
-    unknown_18 = 0;
-    unknown_14 = 0;
-    unknown_10 = 0;
-    unknown_1c = 0;
-    unknown_20 = 0;
+    position.z = 0.0f;
+    position.y = 0.0f;
+    position.x = 0.0f;
+    render_arg_1c = 0;
+    render_arg_20 = 0.0f;
     return this;
 }

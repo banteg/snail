@@ -48,7 +48,9 @@ Expected residuals:
 - The native function has a compact 0x80-byte frame with several overlapping
   locals; this first scratch favors named relationships over stack-slot
   mimicry.
-- BOD/object fields remain a local `RenderBodView`; promote only after
-  renderer, active-list, and object render callees agree.
+- The BOD prefix through `RenderableBod +0x78` is now shared through
+  `bod_types.h`: list links, position, render-object pass-through arguments,
+  object, color, and optional embedded transform. `RenderBodView` remains local
+  only for the renderer-specific pointer at `+0x78` and the unknown tail.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.

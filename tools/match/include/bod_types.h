@@ -17,12 +17,11 @@ public:
 
     void* vtable;       // +0x00
     int flags;          // +0x04
-    char unknown_08[0x10 - 0x08];
-    int unknown_10;     // +0x10, cleared by initialize_bod_base
-    int unknown_14;     // +0x14, cleared by initialize_bod_base
-    int unknown_18;     // +0x18, cleared by initialize_bod_base
-    int unknown_1c;     // +0x1c, cleared by initialize_bod_base
-    int unknown_20;     // +0x20, cleared by initialize_bod_base
+    BodBase* list_prev; // +0x08, intrusive active/free-list link
+    BodBase* list_next; // +0x0c, intrusive active/free-list link
+    Vector3 position;   // +0x10, copied into temporary render matrices
+    int render_arg_1c;  // +0x1c, forwarded to render_object texture scroll bits
+    float render_arg_20; // +0x20, forwarded to render_object texture-v offset
     void* object;       // +0x24
     Color4f color;      // +0x28
 };

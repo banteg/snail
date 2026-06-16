@@ -6,6 +6,9 @@ Recovered relationships:
 
 - This is not a sprite path. It allocates one BOD/object record per registered
   glyph and loads `Objects/Font3D`.
+- The scratch uses the promoted `BodBase` render-object fields: `set_bod_object`
+  fills `object +0x24`, then the font setup clears render arguments `+0x1c` and
+  `+0x20` before populating the object quad.
 - `FontSheet::glyph_width[index] / line_marker_y` is cached in
   `g_font3d_scales[index]` and scales four x-coordinate lanes in the object
   vertex array.

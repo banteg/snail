@@ -19,21 +19,12 @@ struct RenderCameraSourceView {
     int camera_mode;               // +0xc0
 };
 
-class RenderBodView {
-public:
-    int is_bod_after_sprites(); // @ 0x42f5c0
+struct RenderBodTextureOwnerView;
 
-    void* vtable;            // +0x00
-    unsigned int flags;      // +0x04
-    RenderBodView* prev;     // +0x08
-    RenderBodView* next;     // +0x0c
-    Vector3 position;        // +0x10
-    int render_arg_1c;       // +0x1c
-    float render_arg_20;     // +0x20
-    void* object;            // +0x24
-    Color4f color;           // +0x28
-    TransformMatrix matrix;  // +0x38
-    char unknown_78[0xbc - 0x78];
+class RenderBodView : public RenderableBod {
+public:
+    RenderBodTextureOwnerView* texture_owner; // +0x78
+    char unknown_7c[0xbc - 0x7c];
 };
 
 struct RenderBodTextureSinkView {
@@ -189,9 +180,8 @@ int GameRoot::render_game_frame()
                         } else {
                             if ((bod_flags & 0x800) != 0) {
                                 RenderBodParentTextureView* texture_parent =
-                                    *(RenderBodParentTextureView**)((char*)bod + 0x24);
-                                RenderBodTextureOwnerView* texture_owner =
-                                    *(RenderBodTextureOwnerView**)((char*)bod + 0x78);
+                                    (RenderBodParentTextureView*)bod->object;
+                                RenderBodTextureOwnerView* texture_owner = bod->texture_owner;
                                 texture_parent->texture_sink->texture_slot =
                                     texture_owner->texture_slot;
                             }
@@ -209,7 +199,7 @@ int GameRoot::render_game_frame()
                             } else {
                                 render_object(
                                     bod->object,
-                                    &bod->matrix,
+                                    &bod->transform,
                                     bod->render_arg_1c,
                                     bod->render_arg_20,
                                     &bod->color,
@@ -218,7 +208,7 @@ int GameRoot::render_game_frame()
                         }
                     }
 
-                    bod = bod->next;
+                    bod = (RenderBodView*)bod->list_next;
                 }
             }
 
@@ -329,7 +319,7 @@ int GameRoot::render_game_frame()
                     } else {
                         render_object(
                             bod->object,
-                            &bod->matrix,
+                            &bod->transform,
                             bod->render_arg_1c,
                             bod->render_arg_20,
                             &bod->color,

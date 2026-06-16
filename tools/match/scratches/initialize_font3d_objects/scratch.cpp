@@ -47,8 +47,8 @@ int initialize_font3d_objects(short font_id)
 
             Font3DObject* object = (Font3DObject*)bod->object;
             load_object_definition("Objects/Font3D", object);
-            bod->unknown_1c = 0;
-            bod->unknown_20 = 0;
+            bod->render_arg_1c = 0;
+            bod->render_arg_20 = 0.0f;
 
             Font3DFacequad* quad = object->quads;
             TextureRef** textures = &sheet->texture_ref_a;
