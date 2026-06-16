@@ -77,3 +77,8 @@ Type consolidation:
   pickup spawners' native list shape. Focused Wibo improves from `49.82%` to
   `51.23%` with the same 34 clean masked operands and the same eight known
   switch-grouping mismatches.
+- 2026-06-16 rejected owner/kind ordering probe: moving
+  `slot->owner_player = player` before the `kind` local looks closer to the
+  target's immediate owner store, but it changes register ownership and
+  regresses focused Wibo from `51.23%` to `44.99%`. Keep the current
+  `kind`-then-owner source order until the surrounding switch shape changes.
