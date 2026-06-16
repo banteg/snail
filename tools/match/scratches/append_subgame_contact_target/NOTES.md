@@ -23,3 +23,7 @@ Residuals:
   `include/contact_target.h`. The skip bit is named as
   `ContactTargetObject::list_flags & 0x1000`, and the focused match remains
   exact at 100.00%, 34/34 instructions.
+- 2026-06-16 BOD/contact prefix correction: `ContactTargetObject +0x00` is now
+  named as the shared vtable pointer rather than an unknown integer. This keeps
+  the exact append helper unchanged and aligns the contact prefix with
+  `GarbageHazardSlot` initialization through the renderable-BOD path.

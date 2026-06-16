@@ -5,7 +5,7 @@
 #include "vector3.h"
 
 struct ContactTargetObject {
-    int unknown_00;          // +0x00
+    void* vtable;            // +0x00, renderable/contact objects share this prefix
     unsigned int list_flags; // +0x04, 0x1000 suppresses contact appends
 };
 

@@ -84,3 +84,10 @@ Residuals:
   `project_position_onto_track_attachment`. The tail stores `source_cell +0xb8`
   and clears `hidden +0xbc`, so those fields are metadata for later update and
   visibility paths rather than inputs to the projection.
+- 2026-06-16 renderable-prefix consolidation: the shared
+  `GarbageHazardSlot` header now records the renderable transform rows at
+  `+0x38..+0x77`, with `world_position` as the transform position row at
+  `+0x68`. `initialize_garbage_hazard` now uses the same shared slot view and
+  remains exact. The spawn scratch intentionally stays raw-offset shaped because
+  the earlier typed-slot spelling changed saved-register ownership and
+  regressed to 60.56%.

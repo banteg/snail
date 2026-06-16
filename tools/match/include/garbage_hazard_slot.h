@@ -13,15 +13,25 @@ struct TrackRowCell;
 
 class GarbageHazardSlot : public ContactTargetObject {
 public:
+    GarbageHazardSlot* initialize_garbage_hazard();
     GarbageHazardSlot* update_garbage_hazard();
     GarbageHazardSlot* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
     GarbageHazardSlot* list_prev;   // +0x08
     GarbageHazardSlot* list_next;   // +0x0c
-    char unknown_10[0x68 - 0x10];
-    Vector3 world_position;         // +0x68
-    char unknown_74[0x80 - 0x74];
+    char unknown_10[0x38 - 0x10];
+    // RenderableBod transform rows. Kept field-by-field because VC6 rejects a
+    // union containing TransformMatrix's constructors.
+    Vector3 basis_right;            // +0x38
+    float basis_right_w;            // +0x44
+    Vector3 basis_up;               // +0x48
+    float basis_up_w;               // +0x54
+    Vector3 basis_forward;          // +0x58
+    float basis_forward_w;          // +0x64
+    Vector3 world_position;         // +0x68, RenderableBod::transform.position
+    float world_position_w;         // +0x74
+    char unknown_78[0x80 - 0x78];
     GarbageHazardSlot* next_active; // +0x80
     int state;                      // +0x84
     int collision_side;             // +0x88, 1 right / 2 left

@@ -156,3 +156,8 @@ Residuals:
   including the `0x1000` suppress bit consumed by
   `append_subgame_contact_target`. Focused result remains 80.00%, 218/217
   instructions, `19 ok, 1 mismatch`.
+- 2026-06-16 renderable-prefix consolidation: `initialize_garbage_hazard` now
+  uses the shared `GarbageHazardSlot` header and remains exact. The shared slot
+  view records the renderable transform rows at `+0x38..+0x77`; the
+  `world_position` consumed here is the transform position row at `+0x68`.
+  Focused result remains 80.00%, 218/217 instructions, `19 ok, 1 mismatch`.
