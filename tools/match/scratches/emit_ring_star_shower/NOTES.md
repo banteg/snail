@@ -45,4 +45,6 @@ Type consolidation:
   and star-shower counter offsets.
 - `RingOrSpecialEffectParticle` stays local for now because its method
   signatures differ by callsite: this callee is byte-return shaped, while the
-  updater must declare it as `int` to preserve codegen.
+  updater must declare it as `int` to preserve codegen. The initializer now
+  independently corroborates the `0x20` stride and data fields, but not the
+  method return model.

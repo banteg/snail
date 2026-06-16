@@ -35,9 +35,9 @@ Rejected source-shape probe:
   `+0x84`, kind `+0x88`, and star-shower counter `+0x1e8`.
 - `RingOrSpecialEffectParent` is now promoted to
   `tools/match/include/ring_special_effect_types.h` after corroboration from
-  `emit_ring_star_shower`.
+  `emit_ring_star_shower` and `initialize_ring_or_special_effect_particles`.
 - Do not promote `RingOrSpecialEffectParticle` yet: this updater needs
   `emit_ring_star_shower` declared as an `int` return to avoid an extra
-  `movsx eax, al`, while the emitter itself is byte-return shaped. Use
-  `initialize_ring_or_special_effect_particles` as the next corroborating
-  callsite before deciding how to model the method surface.
+  `movsx eax, al`, while the emitter itself is byte-return shaped. The
+  initializer corroborates the data layout but does not resolve that method
+  surface.
