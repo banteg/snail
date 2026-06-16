@@ -248,7 +248,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_squidge | 0x4449c0 | 253 | 84/80 | 84.15% | 6/80 | 14 ok |  |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | 21/21 | 4 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 647/673 | 43.33% | 0/673 | 1 mismatch, 65 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 647/673 | 45.15% | 0/673 | 1 mismatch, 70 ok |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
@@ -457,9 +457,10 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Player | 6 | 1 | 6 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SoundEffectManager | 2 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | VoiceManager | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AnimManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
@@ -468,6 +469,5 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | VoiceManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | RenderStateDevice | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

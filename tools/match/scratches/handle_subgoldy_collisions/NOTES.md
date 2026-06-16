@@ -1,7 +1,21 @@
-# WIP scratch — 43.33%, 647/673 insns (2026-06-16 typed-relationship pass)
+# WIP scratch — 45.15%, 647/673 insns (2026-06-16 audio/voice call-surface pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-06-16 audio/voice call-surface pass: replaced the scratch-local free
+`play_sound_effect`/`play_voice_manager` declarations with compact manager
+method views (`g_sound_effect_manager` and `g_voice_manager`). This matches the
+native global-thiscall call shape without importing the broader shared audio
+headers, improves the focused match from `43.33%` to `45.15%`, and raises the
+masked audit from `65 ok` to `70 ok`. The remaining masked mismatch is still the
+slug-block alignment debt (`kill_slug_hazard` vs `begin_post_follow_carryover`),
+not an audio-symbol problem.
+
+- Rejected probe: spelling a local `unsigned char movement_kill_mask = 0x80`
+  did not produce native's `bl` mask register reuse. VC6 propagated it back to
+  literal `test byte [esi+0x338], 0x80`, leaving the match at `43.33%`; keep the
+  literal mask tests until the loop/register shape has a real owner.
 
 2026-06-16 typed runtime-pool pass: the scratch now includes the shared
 health, speedup, jetpack, garbage, salt, parcel, and ring/special-effect

@@ -21,17 +21,24 @@ struct Vec3 {
 };
 
 float __fastcall normalize_vector(Vec3* vector);
-void play_sound_effect(int effect_id);
 int next_math_random_value();
 void kill_slug_hazard(int slug);
 void play_slug_voice(int slug, int voice);
-void play_voice_manager(int manager, int voice, unsigned char flag, int arg);
 void firework_shoot(float* position, int player_slot, int a3, int a4);
 void noop_runtime_ai();
 int initialize_nuke(float* nuke);
 int sprintf(char* buffer, const char* format, ...);
 
-extern int unk_751498[];
+struct VoiceManager {
+    void play_voice_manager(int voice, unsigned char flag, int arg);
+};
+extern VoiceManager g_voice_manager; // unk_751498
+
+struct SoundEffectManager {
+    void play_sound_effect(int sound_id);
+};
+extern SoundEffectManager g_sound_effect_manager;
+
 extern char g_parcel_format[];
 
 class Game {
@@ -174,7 +181,7 @@ void Player::handle_subgoldy_collisions()
                         garbage->collision_side = 2;
                     add_subgoldy_score(0, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
-                    play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
+                    g_sound_effect_manager.play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                 }
             }
         }
@@ -243,8 +250,8 @@ void Player::handle_subgoldy_collisions()
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
                     add_subgoldy_score(3, 0);
-                    play_voice_manager((int)unk_751498, 10, 1, -1);
-                    play_sound_effect(27);
+                    g_voice_manager.play_voice_manager(10, 1, -1);
+                    g_sound_effect_manager.play_sound_effect(27);
                     parcel->state = 4;
                     Game* parcel_game = game;
                     int collected = parcels_collected + 1;
@@ -274,7 +281,7 @@ void Player::handle_subgoldy_collisions()
                 if (dy < 0.0f)
                     dy = -dy;
                 if (dy < 0.40000001f && normalize_vector(&probe_c) < 0.98000002f) {
-                    play_sound_effect(14);
+                    g_sound_effect_manager.play_sound_effect(14);
                     pickup->state = 2;
                     health_collect_particles(pickup);
                     damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
@@ -330,7 +337,7 @@ void Player::handle_subgoldy_collisions()
                         int kind = effect->kind;
                         if (kind == 3 || kind == 7) {
                             velocity.z = -0.1f;
-                            play_sound_effect(43);
+                            g_sound_effect_manager.play_sound_effect(43);
                         } else {
                             velocity.z = effect_game->subgame_rate * 0.5f;
                         }
@@ -344,7 +351,7 @@ void Player::handle_subgoldy_collisions()
                         if (current_lives < 10) {
                             if ((ladder_game->runtime_flags & 0x10) != 0 && ladder_game->level_mode != 3)
                                 lives = current_lives + 1;
-                            play_voice_manager((int)unk_751498, 5, 1, -1);
+                            g_voice_manager.play_voice_manager(5, 1, -1);
                         }
                         int selector = movement_flag_selector;
                         if (selector >= 8) {
@@ -356,7 +363,7 @@ void Player::handle_subgoldy_collisions()
                         int effect_index = movement_flag_selector - 1;
                         if (effect_index > 6)
                             effect_index = 6;
-                        play_sound_effect(effect_index + 1);
+                        g_sound_effect_manager.play_sound_effect(effect_index + 1);
                         add_subgoldy_score(2, 0);
                         continue;
                     }
@@ -371,18 +378,18 @@ void Player::handle_subgoldy_collisions()
                         int effect_index = movement_flag_selector - 1;
                         if (effect_index > 6)
                             effect_index = 6;
-                        play_sound_effect(effect_index + 1);
+                        g_sound_effect_manager.play_sound_effect(effect_index + 1);
                         add_subgoldy_score(2, 0);
                         continue;
                     }
                     case 1:
                         add_subgoldy_score(2, 0);
-                        play_sound_effect(1);
+                        g_sound_effect_manager.play_sound_effect(1);
                         break;
                     case 2:
                     case 6:
                         add_subgoldy_score(2, 0);
-                        play_sound_effect(42);
+                        g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
                         initialize_nuke((float*)nuke_object);
                         break;
