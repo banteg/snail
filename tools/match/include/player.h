@@ -72,7 +72,7 @@ public:
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
-    char health_collect_particles(TrackHealthPickup* pickup); // @ 0x43a010
+    void health_collect_particles(TrackHealthPickup* pickup); // @ 0x43a010
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0

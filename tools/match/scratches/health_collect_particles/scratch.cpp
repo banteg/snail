@@ -9,10 +9,10 @@ extern unsigned char g_render_flags; // byte_4df934
 float sine(float radians);
 float cosine(float radians);
 
-char Player::health_collect_particles(TrackHealthPickup* pickup)
+void Player::health_collect_particles(TrackHealthPickup* pickup)
 {
-    char result = g_render_flags;
-    if ((result & 0x10) != 0) {
+    char render_flags = g_render_flags;
+    if ((render_flags & 0x10) != 0) {
         int index = 0;
         do {
             Sprite* sprite =
@@ -50,8 +50,5 @@ char Player::health_collect_particles(TrackHealthPickup* pickup)
             ++index;
             position->z = offset_z + position->z;
         } while (index < 8);
-        result = index;
     }
-
-    return result;
 }

@@ -13,8 +13,10 @@ Evidence:
 
 - The function only emits particles when render flag `0x10` is set.
 - It spawns eight sprite `0x80` particles owned by `Player::player_slot`.
-- Native returns `char`, not `int`; the skipped path returns the render-flag
-  byte loaded from `g_render_flags`.
+- The helper is modeled as `void`: the only tracked caller ignores the return.
+  Native still loads `g_render_flags` into `al` for the render gate, and the
+  success path leaves incidental loop/index state in registers, but that is not
+  a gameplay return value.
 - The particles use the shared `Sprite` fields: `flags`, `color`, `position`,
   `velocity`, `size_start`, `size_end`, `progress`, `progress_step`, and
   `gravity_step`.
@@ -29,6 +31,12 @@ Evidence:
   direct field spelling here; this callsite confirms `flags`, `color`,
   `position`, `velocity`, `size_start`, `size_end`, `progress`,
   `progress_step`, and `gravity_step` together.
+- 2026-06-16 return-type correction: changing the shared declaration and
+  scratch implementation from `char` to `void` improves focused Wibo from
+  `62.07%` to `66.34%` while leaving the sole known caller
+  `handle_subgoldy_collisions` unchanged. This matches the garbage smoke and
+  ring star emitter pattern: ignored particle helpers can leave incidental
+  register values without exposing a meaningful source-level return.
 
 Remaining mismatch:
 
