@@ -3,6 +3,9 @@
 #ifndef GOLB_H
 #define GOLB_H
 
+#include "bod_list.h"
+#include "player.h"
+#include "sprite.h"
 #include "vector3.h"
 
 // stride 0x18 sample bank entry; only the position triple is typed so far
@@ -49,6 +52,43 @@ struct GolbPathSourceCell {
 };
 
 struct GolbShot;
+
+class GolbProjectileGameView {
+public:
+    char unknown_00[0x38];
+    float subgame_rate; // +0x38
+};
+
+// Projectile sprite/list view shared by the small Golb helpers. The larger
+// update/create scratches still keep scheduling-sensitive local GolbShot views.
+class GolbProjectile {
+public:
+    void kill_golb(); // @ 0x414670
+    Sprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
+    void spawn_golb_smoke(Vector3* position); // @ 0x415c60
+    void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80
+
+    BodNode primary_body;        // +0x000
+    char unknown_010[0x080 - 0x010];
+    BodNode secondary_body;      // +0x080
+    char unknown_090[0x118 - 0x090];
+    BodNode tertiary_body;       // +0x118
+    char unknown_128[0x198 - 0x128];
+    Sprite* attached_sprite;     // +0x198
+    char unknown_19c[0x1c0 - 0x19c];
+    int kind;                    // +0x1c0
+    char unknown_1c4[0x244 - 0x1c4];
+    int state;                   // +0x244
+    Sprite* body_sprite;         // +0x248, kind-0 presentation sprite
+    Vector3 velocity;            // +0x24c
+    Vector3 direction;           // +0x258
+    float path_factor;           // +0x264
+    float lifetime;              // +0x268
+    float lifetime_step;         // +0x26c
+    GolbProjectileGameView* game; // +0x270
+    void* object_ref;            // +0x274
+    Player* owner_player;        // +0x278
+};
 
 class GolbPathFollowState {
 public:

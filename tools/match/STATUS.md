@@ -367,18 +367,17 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 14 type name(s) with a header plus scratch-local copies
-- divergent: 35 type name(s) with multiple scratch-local shapes
+- divergent: 34 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Game | 41 | 0 | 39 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Game | 40 | 0 | 39 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 19 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 16 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 8 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GolbProjectile | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |

@@ -1,17 +1,8 @@
 // spawn_golb_impact_sprite @ 0x415d80 (thiscall, ret 0x4)
 
-#include "sprite.h"
-#include "player.h"
+#include "golb.h"
 
 extern unsigned char g_render_effect_flags; // data_4df934
-
-class GolbProjectile {
-public:
-    void spawn_golb_impact_sprite(Vector3* position);
-
-    char unknown_000[0x278];
-    Player* owner_player; // +0x278
-};
 
 void GolbProjectile::spawn_golb_impact_sprite(Vector3* position)
 {

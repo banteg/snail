@@ -14,3 +14,10 @@ This helper tears down one live Golb projectile:
 The exact source shape uses the shared typed `BodNode`/`BodList` intrusive-list
 implementation as exact `recycle_bod_to_free_list`, spells the kind dispatch as
 a `switch`, and calls `kill_sprite` as a sprite member function.
+
+Type consolidation:
+
+- `GolbProjectile` is now promoted in `tools/match/include/golb.h` for this
+  teardown and the small trail/smoke/impact sprite emitters. This exact match
+  anchors the primary/secondary/tertiary `BodNode` offsets, `kind +0x1c0`,
+  `state +0x244`, body sprite `+0x248`, and attached sprite `+0x198`.

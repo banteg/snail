@@ -1,16 +1,6 @@
 // spawn_golb_trail_sprite @ 0x415bb0 (thiscall, ret 0x4)
 
-#include "sprite.h"
-#include "player.h"
-
-class GolbProjectile {
-public:
-    Sprite* spawn_golb_trail_sprite(Vector3* position);
-
-    char unknown_000[0x274];
-    void* object_ref; // +0x274
-    Player* owner_player; // +0x278
-};
+#include "golb.h"
 
 Sprite* GolbProjectile::spawn_golb_trail_sprite(Vector3* position)
 {

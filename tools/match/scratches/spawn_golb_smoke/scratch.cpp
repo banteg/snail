@@ -1,26 +1,6 @@
 // spawn_golb_smoke @ 0x415c60 (thiscall, ret 0x4)
 
-#include "sprite.h"
-
-class Game {
-public:
-    char unknown_00[0x38];
-    float subgame_rate; // +0x38
-};
-
-#include "player.h"
-
-class GolbProjectile {
-public:
-    void spawn_golb_smoke(Vector3* position);
-
-    char unknown_000[0x24c];
-    Vector3 velocity;       // +0x24c
-    char unknown_258[0x270 - 0x258];
-    Game* game;             // +0x270
-    void* object_ref;       // +0x274
-    Player* owner_player;   // +0x278
-};
+#include "golb.h"
 
 void GolbProjectile::spawn_golb_smoke(Vector3* position)
 {

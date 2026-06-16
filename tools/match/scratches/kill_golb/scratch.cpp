@@ -1,29 +1,10 @@
 // kill_golb @ 0x414670 (thiscall, ret)
 
-#include "bod_list.h"
-#include "sprite.h"
+#include "golb.h"
 
 int report_errorf(char* format, ...);
 
 extern char* g_game_base; // data_4df904
-
-class GolbProjectile {
-public:
-    void kill_golb();
-
-    BodNode primary_body;        // +0x000
-    char unknown_010[0x080 - 0x010];
-    BodNode secondary_body;      // +0x080
-    char unknown_090[0x118 - 0x090];
-    BodNode tertiary_body;       // +0x118
-    char unknown_128[0x198 - 0x128];
-    Sprite* attached_sprite;     // +0x198
-    char unknown_19c[0x1c0 - 0x19c];
-    int kind;                    // +0x1c0
-    char unknown_1c4[0x244 - 0x1c4];
-    int state;                   // +0x244
-    Sprite* body_sprite;         // +0x248
-};
 
 void GolbProjectile::kill_golb()
 {

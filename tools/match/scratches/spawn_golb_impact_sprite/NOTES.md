@@ -30,12 +30,18 @@ Rejected source-shaped probes:
   scalar-store form; and
 - moving the velocity copy before the progress/size stores regressed
   to 45.45%.
+- a `register` zero-lane spelling to chase native's saved `esi` schedule
+  regressed to 50.57% because VC6 put the flag/velocity pointer in `esi`
+  instead of matching native's zero reuse.
 - 2026-06-16 BN cross-check: the odd `strncpy`-looking decompile is only BN
   grouping adjacent constants for lifetime/progress lanes, not evidence for a
   string or packed subobject. Keep modeling the real stack `Vector3` temporary:
   velocity lands at sprite words `0x15..0x17`, size at `0x18/0x19`, progress at
   `0x1a`, progress/lifetime steps at `0x1b/0x1d`, lifetime at `0x1c`, and
   gravity at `0x1e`.
+- 2026-06-16 Golb type consolidation: the scratch now uses the promoted
+  `GolbProjectile` view in `tools/match/include/golb.h`; codegen stays 63.64%
+  and shares `owner_player +0x278` with the trail/smoke/teardown helpers.
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.
