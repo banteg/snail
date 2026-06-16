@@ -20,9 +20,9 @@ Recovered relationships:
 - `flags & 8` selects `Object +0x18` as an override texture ref; otherwise the
   group texture ref is bound.
 - `flags & 0x80` enables a texture transform: argument 3 is stored into
-  `g_object_texture_transform_matrix +0x20`, and `1.0f - argument4` into
-  `+0x24`, then Direct3D transform state `0x10` and texture-stage state
-  `0x18 = 2` are applied.
+  `g_object_texture_transform_matrix.basis_forward.x`, and `1.0f - argument4`
+  into `.basis_forward.y`, then Direct3D transform state `0x10` and
+  texture-stage state `0x18 = 2` are applied.
 - Alpha/blend path calls `set_blend_mode(Object +0x14)` and, for
   `flags & 0x50`, clears bit `0x40` before exact `set_object_color`.
 - Draw path binds `Object +0xc0` vertex buffer, shader `0x142`, `Object +0xc8`

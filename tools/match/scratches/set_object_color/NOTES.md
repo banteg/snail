@@ -16,6 +16,9 @@ Recovered relationships:
 - `Object +0xc0` is the render-buffer owner and `+0x08` inside it is the D3D
   vertex buffer, matching `refresh_object_vertex_buffer`.
 - The diffuse write loop uses `Object +0xc4` as the grouped vertex count.
+- The locked stream is the shared `ObjectRenderVertex` layout; the loop now
+  writes `vertices[i].diffuse` instead of a raw `+0x0c` vertex offset and still
+  matches byte-for-byte.
 
 Corrected assumptions:
 

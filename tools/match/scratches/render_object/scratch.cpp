@@ -109,8 +109,8 @@ int render_object(
             bind_texture_ref(texture);
 
         if ((object->flags & 0x80) != 0) {
-            *(int*)((char*)&g_object_texture_transform_matrix + 0x20) = texture_scroll_bits;
-            *(float*)((char*)&g_object_texture_transform_matrix + 0x24) = 1.0f - texture_v;
+            *(int*)&g_object_texture_transform_matrix.basis_forward.x = texture_scroll_bits;
+            g_object_texture_transform_matrix.basis_forward.y = 1.0f - texture_v;
             g_d3d_device->vtbl->SetTransform(
                 g_d3d_device, 0x10, &g_object_texture_transform_matrix);
             g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 0x18, 2);

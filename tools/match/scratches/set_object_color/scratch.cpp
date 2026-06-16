@@ -45,12 +45,9 @@ ColorBGRA8* set_object_color(ObjectColorRenderView* object, Color4f color)
 
         int i = 0;
         if (object->grouped_vertex_count > 0) {
-            int offset = 0;
             do {
+                vertices[i].diffuse = *(unsigned int*)&out;
                 ++i;
-                *(unsigned int*)((char*)vertices + offset + 0x0c) =
-                    *(unsigned int*)&out;
-                offset += 0x18;
             } while (i < object->grouped_vertex_count);
         }
 
