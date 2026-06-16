@@ -70,7 +70,7 @@ public:
     void update_subgoldy_resurrect();      // @ 0x441fd0
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
-    Sprite* mark_current_track_pair_with_payload(int payload); // @ 0x43d3d0
+    Sprite* mark_current_track_pair_with_payload(float payload); // @ 0x43d3d0
 
     char unknown_00[0x68];                 // +0x00; +0x38..+0x77 is PlayerLiveMatrixRows
     Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
