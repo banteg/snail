@@ -49,43 +49,41 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         } while (count != 0);
         }
 
-        if (position.z >= owner_player->interaction_max_z) {
+        if (position.z < owner_player->interaction_max_z) {
+            state = 0;
+            RingOrSpecialEffectListAnchor* list =
+                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
+
+            if ((list_flags & 0x200) == 0) {
+                report_errorf("List remove");
+            } else if ((list_flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+            } else {
+                if (list_next != 0)
+                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                if (list_prev != 0)
+                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
+                else
+                    list->first = list_next;
+                list_next = list->free_top;
+                list->free_top = this;
+                list_flags &= ~0x200u;
+            }
+
+            RingOrSpecialEffectParticle* particle =
+                particles;
+            int count = 10;
+            do {
+                particle->sprite->kill_sprite();
+                particle++;
+                count--;
+            } while (count != 0);
+            return;
+        } else {
             int current_lives = owner_player->lives;
             if (current_lives < owner_lives_snapshot)
                 state = 4;
             return;
-        }
-
-        {
-        state = 0;
-        RingOrSpecialEffectListAnchor* list =
-            (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
-
-        if ((list_flags & 0x200) == 0) {
-            report_errorf("List remove");
-        } else if ((list_flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-        } else {
-            if (list_next != 0)
-                ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
-            if (list_prev != 0)
-                ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
-            else
-                list->first = list_next;
-            list_next = list->free_top;
-            list->free_top = this;
-            list_flags &= ~0x200u;
-        }
-
-        RingOrSpecialEffectParticle* particle =
-            particles;
-        int count = 10;
-        do {
-            particle->sprite->kill_sprite();
-            particle++;
-            count--;
-        } while (count != 0);
-        return;
         }
 
     case 2:

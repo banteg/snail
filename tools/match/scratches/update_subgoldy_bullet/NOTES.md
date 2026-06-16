@@ -4,8 +4,8 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `79.53%`, `338/336` candidate/target instructions, with `34` masked
-  operands ok.
+- `86.35%`, `338/336` candidate/target instructions, with `35` masked
+  operands ok and one known jump-table audit mismatch.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
 - The method is modeled as `void`: native exits do not establish a meaningful
@@ -72,13 +72,21 @@ Residual:
   `68.48%` to `69.77%`. The current state-3 collapse also stages an immutable
   local copy of `owner_player->cached_camera_target_world` before computing and
   scaling the delta. This recovers the native `sub esp, 0x18` frame. The later
-  state-switch and Z-threshold corrections raise the scratch to `79.53%`,
-  although native still uses a different x87/stack schedule for the target
-  lanes.
+  state-switch correction raised the scratch to `79.53%`; the state-1 branch
+  shape pass below raises it further to `86.35%`, although native still uses a
+  different x87/stack schedule for the target lanes.
 - Remaining residuals are mostly switch and stack-shape differences: VC6 still
   uses a different stack and x87 schedule for the state-3 collapse and the
   duplicated removal tails. The dispatch itself now matches native's direct
   `0..5` jump table.
+- 2026-06-16 state-1 branch-shape pass: spelling the z-threshold as
+  `position.z < owner_player->interaction_max_z` with the removal path in the
+  taken source block recovers the native physical order for the remove-vs-lives
+  decision. Focused Wibo improves from `79.53%` to `86.35%` while preserving
+  the native `0x18` stack frame. The only new audit debt is the candidate local
+  switch-table symbol (`$L1005`) versus the curated target
+  `update_subgoldy_bullet_state_jump_table`; the dispatch instructions and
+  table shape are otherwise unchanged.
 
 Rejected/source-shape probes:
 
@@ -93,3 +101,8 @@ Rejected/source-shape probes:
   pointer plus scalar `target_y`/`target_z` spelling regressed to `70.55%` with
   a smaller frame. Keep the immutable local `Vector3 target` plus aggregate
   `Vector3 delta` form.
+- 2026-06-16 rechecked after the state-1 branch-shape pass: the pointer plus
+  scalar `target_y`/`target_z` collapse spelling reaches `87.72%`, but it drops
+  the native `sub esp, 0x18` frame to `0x0c` and shrinks the candidate to
+  `332/336` instructions. Reverted; the aggregate `Vector3 target`/`delta`
+  spelling is still the better structural match.
