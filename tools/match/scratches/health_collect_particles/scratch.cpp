@@ -2,58 +2,66 @@
 
 #include "player.h"
 #include "sprite.h"
+#include "track_health_pickup.h"
+
+typedef unsigned int DWORD;
 
 extern unsigned char g_render_flags; // byte_4df934
 
 float sine(float radians);
 float cosine(float radians);
 
-class HealthPickupParticleSource {
-public:
-    char unknown_00[0x64];
-    Sprite* sprite; // +0x64
-};
-
-int Player::health_collect_particles(void* pickup_)
+char Player::health_collect_particles(TrackHealthPickup* pickup)
 {
-    int result = g_render_flags;
+    char result = g_render_flags;
     if ((result & 0x10) != 0) {
-        HealthPickupParticleSource* pickup =
-            (HealthPickupParticleSource*)pickup_;
-
         int index = 0;
         do {
             Sprite* sprite =
                 g_sprite_manager.allocate_sprite(player_slot, 0x80, -1, -1);
+            char* sprite_bytes = (char*)sprite;
+            DWORD* sprite_words = (DWORD*)sprite_bytes;
 
-            sprite->flags |= 0x800;
-            sprite->progress = 0.0f;
-            sprite->progress_step = 0.041666668f;
-            *(int*)&sprite->gravity_step = 0xb951b717;
+            sprite_words[1] |= 0x800u;
+            sprite_words[26] = 0;
+            sprite_words[27] = 0x3d2aaaab;
+            sprite_words[30] = 0xb951b717;
 
             Color4f color;
-            Color4f* color_result =
-                color.set_color_rgba(1.0f, 0.75f, 0.75f, 1.0f);
-            sprite->color.r = color_result->r;
-            sprite->color.g = color_result->g;
-            sprite->color.b = color_result->b;
-            sprite->color.a = color_result->a;
-
-            sprite->size_start = 0.1f;
-            sprite->size_end = 0.5f;
-
-            sprite->position = pickup->sprite->position;
-
+            DWORD* color_words =
+                (DWORD*)color.set_color_rgba(1.0f, 0.75f, 0.75f, 1.0f);
             float angle = (float)index * 0.785398185f;
-            sprite->velocity.z = velocity.z * 0.400000006f;
-            sprite->velocity.y = cosine(angle) * 0.0149999997f;
-            sprite->velocity.x = sine(angle) * 0.0149999997f;
+            sprite_words[11] = color_words[0];
+            float* position = (float*)(sprite_bytes + 0x48);
+            sprite_words[12] = color_words[1];
+            sprite_words[13] = color_words[2];
+            DWORD alpha = color_words[3];
+            sprite_words[24] = 0x3dcccccd;
+            sprite_words[25] = 0x3f000000;
+            sprite_words[14] = alpha;
 
-            sprite->position.x += velocity.x * 3.0f;
-            sprite->position.y += velocity.y * 3.0f;
+            DWORD* source_position = (DWORD*)&pickup->sprite->position;
+            float angle_for_sine = angle;
+            ((DWORD*)position)[0] = source_position[0];
+            ((DWORD*)position)[1] = source_position[1];
+            ((DWORD*)position)[2] = source_position[2];
+
+            float burst_velocity_z = velocity.z * 0.400000006f;
+            float burst_velocity_y = cosine(angle) * 0.0149999997f;
+            sprite_bytes += 0x54;
+            float burst_velocity_x =
+                sine(angle_for_sine) * 0.0149999997f;
+            *(float*)sprite_bytes = burst_velocity_x;
+            *((float*)sprite_bytes + 1) = burst_velocity_y;
+            *((float*)sprite_bytes + 2) = burst_velocity_z;
+
+            float offset_y = velocity.y * 3.0f;
+            float offset_z = velocity.z * 3.0f;
+            position[0] = velocity.x * 3.0f + position[0];
+            position[1] = offset_y + position[1];
             result = index + 1;
             index++;
-            sprite->position.z += velocity.z * 3.0f;
+            position[2] = offset_z + position[2];
         } while (index < 8);
     }
 

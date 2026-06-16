@@ -37,7 +37,12 @@ Rejected source-shaped probes:
 Keep this pinned unless a source-plausible dispatch spelling preserves both the
 duplicated unlink blocks and the native final bob-tail placement.
 
-2026-06-16 type cleanup: this now inherits the shared `BodNode` list prefix
-from `bod_list.h`, matching exact `update_track_jetpack_pickup`. Do not merge
-the two pickups into one full struct: health's bob fields live at +0x6c/+0x70,
-while jetpack uses a different tail layout. Match remains 71.88%.
+2026-06-16 type cleanup: this now uses the shared partial
+`TrackHealthPickup` layout from `track_health_pickup.h`, including the shared
+`BodNode` list prefix from `bod_list.h`. Match remains 71.88%.
+
+Important naming correction: the update hidden check reads
+`visibility_cell +0x44`, while `spawn_track_health_pickup` stores the row/source
+cell at `source_cell +0x68`. Do not collapse those into one `source_cell` field.
+Do not merge health and jetpack into one full pickup struct either: health's bob
+fields live at +0x6c/+0x70, while jetpack uses a different tail layout.

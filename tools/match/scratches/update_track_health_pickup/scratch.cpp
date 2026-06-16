@@ -3,31 +3,12 @@
 #include "player.h"
 #include "sprite.h"
 #include "track_runtime.h"
-#include "bod_list.h"
+#include "track_health_pickup.h"
 
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 float sine(float radians);
-
-class TrackHealthPickup : public BodNode {
-public:
-    void update_track_health_pickup();
-
-    char unknown_10[0x14 - 0x10];
-    float world_y;
-    float world_z;
-    char unknown_1c[0x38 - 0x1c];
-    int state;
-    Player* owner;
-    char unknown_40[0x44 - 0x40];
-    TrackRuntimeCell* source_cell;
-    char unknown_48[0x64 - 0x48];
-    Sprite* sprite;
-    char unknown_68[0x6c - 0x68];
-    float bob_phase;
-    float bob_phase_step;
-};
 
 void TrackHealthPickup::update_track_health_pickup()
 {
@@ -37,7 +18,7 @@ void TrackHealthPickup::update_track_health_pickup()
     TrackHealthPickup* next;
     TrackHealthPickup* prev;
 
-    if (source_cell->hidden != zero) {
+    if (visibility_cell->hidden != zero) {
         return;
     }
 
@@ -88,7 +69,7 @@ state_two:
     return;
 
 state_one:
-    if (world_z >= owner->interaction_max_z) {
+    if (world_position.z >= owner->interaction_max_z) {
         goto update_bob;
     }
 
@@ -129,5 +110,7 @@ update_bob:
     bob_phase = advanced;
     if (advanced > 1.0f)
         bob_phase = advanced - 1.0f;
-    sprite->position.y = (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f + world_y;
+    sprite->position.y =
+        (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f
+        + world_position.y;
 }
