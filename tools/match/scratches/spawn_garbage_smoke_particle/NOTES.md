@@ -12,7 +12,7 @@ Behavior:
 - Seeds white color, scale `(0.30000001, 1.3)`, velocity scaled by `0.2`, and
   position copied from the garbage hazard.
 
-Match status: 76.82% (75 candidate instructions vs 76 target, 5/76 exact
+Match status: 84.56% (73 candidate instructions vs 76 target, 5/76 exact
 prefix). This is source-shaped and useful as a garbage-smoke semantic anchor,
 but not exact.
 
@@ -23,9 +23,10 @@ Residual:
   scaled velocity through stack locals. The best source-shaped aggregate color
   assignment moves `sprite += 0x48` earlier and stores velocity with a different
   x87/local schedule.
-- The native function is typed by IDA as a byte return but leaves the success
-  path's copied `position.z` dword in `eax`; modeling a byte return recovers the
-  native prologue but adds a final `mov al, [position.z]` in the candidate.
+- The helper is modeled as `void`: `update_garbage_hazard` ignores the result,
+  and native simply leaves the success path's copied `position.z` dword in
+  `eax`. Modeling a byte return was an invalid assumption that added a final
+  `mov al, [position.z]` in the candidate.
 
 Rejected source-shape probes:
 
@@ -51,4 +52,9 @@ Rejected source-shape probes:
 - 2026-06-16 sprite-emitter idiom pass: spelling explicit `out_velocity` and
   `out_position` pointers matches the clearer source view kept by
   `spawn_golb_smoke` but compiles identically here. The residual early
-  `sprite += 0x48` remains, so the focused score stays 76.82%.
+  `sprite += 0x48` remained, so the focused score stayed 76.82% at that point.
+- 2026-06-16 return-type correction: changing the shared declaration and
+  scratch implementation from `char` to `void` removes the artificial success
+  path byte reload and improves the focused score from 76.82% to 84.56%.
+  The caller `update_garbage_hazard` remains at 80.00%, confirming the return
+  value is not part of the gameplay contract.

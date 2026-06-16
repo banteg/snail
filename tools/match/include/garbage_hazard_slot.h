@@ -15,7 +15,7 @@ class GarbageHazardSlot : public ContactTargetObject {
 public:
     GarbageHazardSlot* update_garbage_hazard();
     GarbageHazardSlot* destroy_garbage_hazard();
-    char spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
+    void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
     GarbageHazardSlot* list_prev;   // +0x08
     GarbageHazardSlot* list_next;   // +0x0c

@@ -182,7 +182,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | 34/34 | 3 ok |  |
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
-| 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 75/76 | 76.82% | 5/76 | 9 ok |  |
+| 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 73/76 | 84.56% | 5/76 | 9 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 123/122 | 48.98% | 2/122 | 7 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 136/144 | 52.86% | 25/144 | 9 ok |  |

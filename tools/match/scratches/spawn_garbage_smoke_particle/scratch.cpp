@@ -11,7 +11,7 @@ public:
 
 extern unsigned char g_render_flags; // byte_4df934
 
-char GarbageHazardSlot::spawn_garbage_smoke_particle(
+void GarbageHazardSlot::spawn_garbage_smoke_particle(
     Vector3* position,
     Vector3* velocity,
     Player* player)
@@ -45,7 +45,5 @@ char GarbageHazardSlot::spawn_garbage_smoke_particle(
 
         Vector3* out_position = &sprite->position;
         *out_position = *position;
-        result = *(char*)&position->z;
     }
-    return result;
 }
