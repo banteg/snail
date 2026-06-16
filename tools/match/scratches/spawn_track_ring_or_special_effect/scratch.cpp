@@ -132,15 +132,15 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
                 (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
             RingOrSpecialEffectParent** active_head =
                 (RingOrSpecialEffectParent**)&active_list->first;
-            if (*active_head != 0) {
+            if (*active_head == 0) {
+                *active_head = slot;
+                slot->list_prev = 0;
+                (*active_head)->list_next = 0;
+            } else {
                 (*active_head)->list_prev = slot;
                 ((RingOrSpecialEffectParent*)(*active_head)->list_prev)->list_next = *active_head;
                 *active_head = (RingOrSpecialEffectParent*)(*active_head)->list_prev;
                 (*active_head)->list_prev = 0;
-            } else {
-                *active_head = slot;
-                slot->list_prev = 0;
-                (*active_head)->list_next = 0;
             }
             slot->list_flags |= 0x200;
         }

@@ -72,3 +72,8 @@ Type consolidation:
 - A delayed `slot_position` declaration reached 50.09%, but introduced an
   unresolved switch-table operand. Keep the 49.82% spelling because its operand
   audit is cleaner.
+- 2026-06-16 active-list branch-order pass: the shared `g_game_base + 0x5a8`
+  insert now puts the empty-list case first, matching the health and jetpack
+  pickup spawners' native list shape. Focused Wibo improves from `49.82%` to
+  `51.23%` with the same 34 clean masked operands and the same eight known
+  switch-grouping mismatches.

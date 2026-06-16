@@ -31,3 +31,10 @@ removed in favor of the shared `BodList` view from `bod_list.h` via
 speedup updater by vtable and field window. Use the manifest/dashboard target
 address `0x43efb0` for this jetpack parent updater unless the BN symbols are
 renamed; `0x43efb0` may also appear under the stale sub-lazer name in BN.
+
+2026-06-16 bob-tail layout retry: inverting the state-1 z test so the removal
+block was nested under `world_position.z < owner->interaction_max_z` regressed
+to `58.12%` (`107/127`). VC6 merged the two unlink blocks just like the health
+pickup rejection notes warned. Keep the duplicated state-1/state-2 unlink
+source shape; the remaining bob-tail placement is layout debt, not a reason to
+change the semantic branch.
