@@ -1,0 +1,22 @@
+# open_galaxy_route @ 0x409c50
+
+Relationship-first scratch for the galaxy route panel opener.
+
+Current local field evidence:
+- `+0x04` is a route/menu mode checked against `2` before showing the continue
+  widget.
+- `+0x08` is the route panel state; opening writes `1`, while
+  `close_galaxy_route` clears it.
+- Selected route records are accessed with stride `0x2a0` from `this + 0x14`.
+  Known fields are `route_name_index` at record `+0x00`, `map_x/map_y` at
+  `+0x08/+0x0c`, detail text at `+0x1c`, and description text at `+0x9c`.
+- `+0x10930` is a `0xa0`-stride route-name string table.
+- `+0x10f70` is a progress/state table base used with selected-route stride
+  `0x1fac0` and native offset `0x944150`.
+- `+0x10f80` caches the selected record index.
+- `+0x10f8c..+0x10fa0` are the frame/title/detail/description/back/continue
+  widget pointers also used by `close_galaxy_route`.
+
+Do not promote this `GalaxyRoute` layout yet. The record-area size and the
+meaning of the large progress-table offset still need confirmation from
+`initialize_galaxy`, save/progress code, or additional route callsites.
