@@ -1,14 +1,14 @@
-// orthogonalize_matrix @ 0x44d3d0 (fastcall)
+// orthogonalize_matrix @ 0x44d3d0 (thiscall)
 
 #include "transform_matrix.h"
 
 float __fastcall normalize_vector(Vector3* vector);
 
-void __fastcall orthogonalize_matrix(TransformMatrix* transform)
+void TransformMatrix::orthogonalize_matrix()
 {
-    Vector3* right = &transform->basis_right;
-    Vector3* up = &transform->basis_up;
-    Vector3* forward = &transform->basis_forward;
+    Vector3* right = &basis_right;
+    Vector3* up = &basis_up;
+    Vector3* forward = &basis_forward;
 
     normalize_vector(right);
     normalize_vector(up);
