@@ -112,6 +112,13 @@ The remaining `WarningActor` type report hit is therefore an include-boundary
 issue, not evidence for a second warning layout. Promote these only after the
 whole player scratch moves to the shared math/sprite headers.
 
+2026-06-16 player header follow-up: `player.h` now promotes the nuke subobject
+at `Player +0x150` and the presentation cutscene state at
+`presentation +0x1964` (`Player +0x42e8`). This matches the struct facts above
+and the collision scratch's ring-nuke and slug first-hit consumers. The
+`update_subgoldy` scratch still keeps the local controller/presentation views
+for the include-boundary/codegen reason described here.
+
 2026-06-16 follow-up probe: replacing only the local POD `Vector3` with
 `vector3.h` compiles and preserves the instruction count, but regresses the
 masked jump-table audit from `291 ok` to `290 ok, 1 mismatch`

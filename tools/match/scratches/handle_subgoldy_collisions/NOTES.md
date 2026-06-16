@@ -65,6 +65,16 @@ loop base registers and stack slots. The useful cross-confirmations are:
   `*(unsigned char*)&slot->velocity.z`: the byte is cross-confirmed by the
   salt spawner, but the surrounding semantic field is still not named.
 
+2026-06-16 player subobject consolidation: shared `player.h` now records the
+`NukeController nuke` object at `Player +0x150` and
+`PlayerPresentationController::cutscene_ai_state` at presentation `+0x1964`
+(`Player +0x42e8`). This collision scratch consumes both through the ring
+nuke pickup (`initialize_nuke(player+0x150)`) and slug first-hit cutscene state
+`10`; `update_subgoldy` independently drives the nuke update/uninit path and
+sets cutscene state `5` during completion handoff. The scratch keeps its broad
+local `Player` window because replacing it with the shared header would also
+pull in include-sensitive math/sprite/controller views.
+
 2026-06-16 pickup/runtime offset correction pass: corrected the scratch-local
 `Game` and `Player` windows to agree with the already matched/update-spawner
 evidence:

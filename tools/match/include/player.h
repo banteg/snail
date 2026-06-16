@@ -7,6 +7,7 @@
 
 #include "damage_gauge.h"
 #include "jetpack_gauge.h"
+#include "nuke_controller.h"
 #include "vector3.h"
 
 struct AttachmentPathTemplate;
@@ -41,7 +42,9 @@ class PlayerPresentationController {
 public:
     void set_snail_weapon(int movement_flags); // @ 0x445920
 
-    char unknown_00[0x4340 - 0x2984];
+    char unknown_00[0x1964];
+    int cutscene_ai_state;              // +0x1964 (Player +0x42e8)
+    char unknown_1968[0x4340 - 0x2984 - 0x1968];
 };
 
 class SquidgeState {
@@ -85,7 +88,8 @@ public:
     // sprite slots are updated each tick by mark_current_track_pair_with_payload.
     Sprite* ghost_sprite_a;                // +0x98
     Sprite* ghost_sprite_b;                // +0x9c
-    char unknown_a0[0x1cc - 0xa0];
+    char unknown_a0[0x150 - 0xa0];
+    NukeController nuke;                  // +0x150
     int movement_sound_variant_sample;      // +0x1cc
     char unknown_1d0[0x1d4 - 0x1d0];
     float damage_retrigger_timer;           // +0x1d4
