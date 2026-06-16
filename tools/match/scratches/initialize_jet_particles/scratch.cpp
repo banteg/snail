@@ -11,22 +11,25 @@ int __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
         int columns = 2;
         do {
             slot->sprite = g_sprite_manager.allocate_sprite(1, 0x9e, -1, -1);
-            slot->sprite->flags |= 0x800;
+            unsigned int flags = slot->sprite->flags;
+            flags |= 0x800;
+            slot->sprite->flags = flags;
             slot->sprite->progress = 0.0f;
             slot->sprite->progress_step = 0.0f;
             slot->sprite->lifetime = 0.0f;
             slot->sprite->lifetime_step = 0.0f;
             slot->sprite->size_end = 0.0f;
             slot->sprite->size_start = 0.0f;
-            slot->sprite->velocity.x = 0.0f;
-            slot->sprite->velocity.y = 0.0f;
-            slot->sprite->velocity.z = 0.0f;
+            Vector3* velocity = &slot->sprite->velocity;
+            velocity->z = 0.0f;
+            velocity->y = 0.0f;
+            velocity->x = 0.0f;
             slot->sprite->gravity_step = 0.0f;
 
             Color4f color;
             slot->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f);
-            slot->sprite->draw_mode = 0;
             slot->wobble_x = 0.0f;
+            slot->sprite->draw_mode = 0;
             slot->wobble_y = 0.0f;
             slot->wobble_alpha = 0.166666672f;
             slot++;
