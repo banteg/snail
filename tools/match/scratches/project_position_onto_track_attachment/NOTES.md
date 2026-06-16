@@ -44,6 +44,11 @@ Residuals:
   based on the IDA local ordering regressed to 59.41% with a smaller `0x4c`
   frame and reordered final FPU stores. Keep the vector-local spelling unless a
   source-shaped owner for the final stack-slot order is found.
+- 2026-06-16 recheck: naming `final_x/final_y/final_z` locals before the
+  write-back looked like it might match native's final component spills, but it
+  regressed to 73.08% by increasing the frame to `0x74` and shifting both
+  kind-42 transform slots and non-kind42 vector slots. Keep the in-place
+  `projected.x/y/z += vertical` spelling.
 - Remaining diff is source-shape/register allocation rather than a known
   semantic gap: the kind-42 branch target label and local transform offsets
   differ, and the non-kind42 vector locals have different slot ordering around
