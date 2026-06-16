@@ -27,3 +27,12 @@ Live BN caveat: the current BN symbol table still returns
 `update_track_jetpack_pickup` for `0x43ee50`. Treat that as stale symbol data;
 the vtable and shared `TrackSpeedupRuntime` field evidence identify this
 function as speedup.
+
+2026-06-16 renderable-prefix consolidation: the shared
+`TrackSpeedupRuntime` header now records the renderable transform rows at
+`+0x38..+0x77`, with `world_position +0x68` as
+`RenderableBod::transform.position`. The initializer calls
+`initialize_renderable_bod()`, this exact updater consumes `world_position.z`,
+and `handle_subgoldy_collisions` consumes the full x/y/z vector. The type stays
+`BodNode`-based because the zero-offset intrusive list overlay is real and is
+used by both teardown paths.

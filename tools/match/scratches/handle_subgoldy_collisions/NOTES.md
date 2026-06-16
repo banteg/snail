@@ -19,6 +19,13 @@ sub-lazer position/state lanes as the initializer, spawner, updater, and
 deactivator. Focused Wibo remains `47.99%`, `648/673`, with the same known
 slug-block masked mismatch.
 
+2026-06-16 speedup renderable-prefix consolidation: `TrackSpeedupRuntime` now
+exposes the same transform row window, with `world_position +0x68` as
+`RenderableBod::transform.position`. This collision scratch consumes the full
+speedup x/y/z vector, while the exact updater consumes the z lane and the
+initializer proves the renderable constructor path. The singleton still keeps
+the zero-offset `BodNode` list overlay for teardown.
+
 2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
 not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
 source-equivalent `if` / `else if` compare chain removes VC6's jump table and
