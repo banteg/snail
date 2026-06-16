@@ -87,7 +87,12 @@ public:
     Sprite* ghost_sprite_b;                // +0x9c
     char unknown_a0[0x1cc - 0xa0];
     int movement_sound_variant_sample;      // +0x1cc
-    char unknown_1d0[0x2dc - 0x1d0];
+    char unknown_1d0[0x1d4 - 0x1d0];
+    float damage_retrigger_timer;           // +0x1d4
+    float damage_retrigger_step;            // +0x1d8
+    char unknown_1dc[0x2d8 - 0x1dc];
+    unsigned char control_override_active;  // +0x2d8
+    char unknown_2d9[0x2dc - 0x2d9];
     float cutscene_pitch_cycle;             // +0x2dc
     float cutscene_pitch_cycle_step;        // +0x2e0
     // Player-side score producer window. The run score block at game+0x3bb764
@@ -144,7 +149,9 @@ public:
     float post_follow_exit_roll;           // +0x42c (orientation-b carryover)
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_a")
     int attachment_exit_progress;          // +0x434
-    char unknown_438[0x44c - 0x438];
+    char unknown_438[0x440 - 0x438];
+    unsigned char completion_handoff_active; // +0x440
+    char unknown_441[0x44c - 0x441];
     unsigned char attachment_exit_gate_a;  // +0x44c
     unsigned char attachment_exit_gate_b;  // +0x44d
     char unknown_44e[0x2730 - 0x44e];

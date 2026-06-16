@@ -17,6 +17,15 @@ not an audio-symbol problem.
   literal `test byte [esi+0x338], 0x80`, leaving the match at `43.33%`; keep the
   literal mask tests until the loop/register shape has a real owner.
 
+2026-06-16 Player field promotion: `damage_retrigger_timer`/`step`
+(`+0x1d4/+0x1d8`), `control_override_active` (`+0x2d8`), and
+`completion_handoff_active` (`+0x440`) are now promoted in shared
+`player.h`. These are cross-confirmed by this collision scratch and
+`update_subgoldy`; `completion_handoff_active` is also aligned with the
+post-follow carryover/camera exit gate notes. The collision scratch keeps its
+local `Player` window for codegen, so this is a struct consolidation step, not
+a score change.
+
 2026-06-16 typed runtime-pool pass: the scratch now includes the shared
 health, speedup, jetpack, garbage, salt, parcel, and ring/special-effect
 headers in the local `Game` window. This is a relationship/field-certainty
