@@ -5,7 +5,6 @@
 
 #include "sprite.h"
 #include "player.h"
-#include "position_bits.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
@@ -53,11 +52,11 @@ DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
 
     float staged_y = *scale;
     staged_y += cell->anchor_position.y;
-    PositionBits staged_position;
-    staged_position.x = *(int*)&cell->anchor_position.x;
-    staged_position.z = *(int*)&cell->anchor_position.z;
+    Vector3 staged_position;
+    staged_position.x = cell->anchor_position.x;
+    staged_position.z = cell->anchor_position.z;
     staged_position.y = staged_y;
-    PositionBits* live_position = (PositionBits*)(slot_base_words + 877675);
+    Vector3* live_position = (Vector3*)(slot_base_words + 877675);
     *live_position = staged_position;
     project_position_onto_track_attachment((float*)live_position, slot_base_words + 877689);
 
@@ -93,9 +92,9 @@ DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
     ((Sprite*)((DWORD*)slot_base_words)[877694])->size_end = *scale;
 
     DWORD* result = (DWORD*)&((Sprite*)((DWORD*)slot_base_words)[877694])->position;
-    result[0] = *(DWORD*)live_position;
-    result[1] = *((DWORD*)live_position + 1);
-    result[2] = *((DWORD*)live_position + 2);
+    result[0] = *(DWORD*)&live_position->x;
+    result[1] = *(DWORD*)&live_position->y;
+    result[2] = *(DWORD*)&live_position->z;
     ((DWORD*)slot_base_words)[877695] = (DWORD)cell;
     *((char*)slot_base_words + 3510784) = 0;
     return result;

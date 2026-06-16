@@ -50,13 +50,11 @@ Residuals:
 - 2026-06-13 pin audit: a pointer-to-local staging spelling compiled to the
   same 92.58% code, while explicit staged-record field copies changed
   function-wide register ownership and regressed to 52.86%. Revert both forms.
-- Pinned at 92.58%, 140/143 insns. Current residuals are source-shape/register
-  issues, not known semantic gaps: projection staging still differs in x87
-  operand order plus x/z local register allocation. Aggregate initialization,
-  y-first staging, destination-pointer hoisting, pointer-to-local staging, and
-  field-wise live-position copies were tested; only x/z/y staging plus the
-  two-step y temporary helped. Do not force the remaining projection order with
-  dummy volatile locals.
+- Current result after the 2026-06-16 Vector3 correction is 99.30%, 143/143
+  insns. The only remaining focused diff is projection-staging instruction
+  order: native adds the cell y to the scale before loading x/z, while the
+  candidate loads x/z before the same add. Do not force that last scheduling
+  gap with dummy volatile locals.
 - 2026-06-16 Sprite audit: the sprite tail now spells the confirmed `Sprite`
   fields by name (`gravity_step`, `progress`, `progress_step`,
   `size_start`, `size_end`, and `position`) while deliberately reloading the
@@ -96,3 +94,11 @@ Residuals:
   `cell->anchor_position.{x,y,z}`. BN decompile resolves the same anchor fields,
   and focused Wibo is codegen-neutral at 92.58%, 140/143 instructions, with the
   same x87/local staging residual.
+- 2026-06-16 Vector3 staging correction: after the pickup spawner correction,
+  retesting this scratch showed that the raw `PositionBits` view was also the
+  wrong assumption here. Replacing it with a normal `Vector3 staged_position`
+  and copying sprite position through typed `x/y/z` fields improves focused Wibo
+  from 92.58% to 99.30%, candidate size from 140/143 to 143/143, and prefix from
+  the old projection block to 48/143, with all 16 masked operands still OK.
+  Two plausible follow-ups were rejected: assigning the y field before x/z
+  regressed to 97.90%, and adding an `anchor_y` local regressed to 98.60%.
