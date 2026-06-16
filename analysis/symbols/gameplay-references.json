@@ -1427,6 +1427,16 @@
       "description": "BASS_Pause function pointer used to pause the audio backend."
     },
     {
+      "address": "0x753ce8",
+      "name": "g_font_text_buffer",
+      "kind": "global",
+      "aliases": [
+        "data_753ce8"
+      ],
+      "size": "0x800",
+      "description": "Transient font text string buffer reset by update_font_wave_state and appended by queue_font_text_instance before the font queue array."
+    },
+    {
       "address": "0x75cfff",
       "name": "k_runtime_flags_mode4",
       "kind": "constant",
@@ -1454,6 +1464,15 @@
       "description": "Second global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
     },
     {
+      "address": "0x7772f0",
+      "name": "g_font_text_cursor",
+      "kind": "global",
+      "aliases": [
+        "data_7772f0"
+      ],
+      "description": "Cursor into g_font_text_buffer reset by update_font_wave_state and advanced by queue_font_text_instance."
+    },
+    {
       "address": "0x7772f4",
       "name": "g_font_wave_step_b",
       "kind": "global",
@@ -1462,6 +1481,24 @@
         "unk_7772f4"
       ],
       "description": "Second text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
+    },
+    {
+      "address": "0x777b20",
+      "name": "g_registered_font_count",
+      "kind": "global",
+      "aliases": [
+        "data_777b20"
+      ],
+      "description": "Per-frame registered font counter cleared by update_font_wave_state before font records are queued."
+    },
+    {
+      "address": "0x777b24",
+      "name": "g_font_queue_count",
+      "kind": "global",
+      "aliases": [
+        "data_777b24"
+      ],
+      "description": "Live font queue entry count cleared by update_font_wave_state and incremented by font text and quad queue helpers."
     },
     {
       "address": "0x777b28",

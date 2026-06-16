@@ -1,0 +1,71 @@
+#ifndef FONT_SYSTEM_H
+#define FONT_SYSTEM_H
+
+#include "sprite.h"
+
+struct FontSheet {
+    int slot_count;             // +0x000
+    void* texture_ref_a;        // +0x004
+    void* texture_ref_b;        // +0x008
+    float u0[128];              // +0x00c
+    float v0[128];              // +0x20c
+    float glyph_width[128];     // +0x40c
+    int texture_page[128];      // +0x60c
+    float line_marker_y;        // +0x80c
+    float line_step;            // +0x810
+    float line_marker_fraction; // +0x814
+    float spacing_scale;        // +0x818
+    float width_scale;          // +0x81c
+    float height_scale;         // +0x820
+    int font_kind;              // +0x824
+};
+
+typedef char FontSheet_must_be_0x828[
+    (sizeof(FontSheet) == 0x828) ? 1 : -1];
+
+struct FontQueueEntry {
+    unsigned int flags;     // +0x00
+    float x0;               // +0x04
+    float y0;               // +0x08
+    int unknown_0c;         // +0x0c
+    float x1;               // +0x10
+    float y1;               // +0x14
+    int unknown_18;         // +0x18
+    float x2;               // +0x1c
+    float y2;               // +0x20
+    int unknown_24;         // +0x24
+    float x3;               // +0x28
+    float y3;               // +0x2c
+    int unknown_30;         // +0x30
+    int text_align;         // +0x34
+    unsigned char text_wave; // +0x38
+    char pad_39[0x3c - 0x39];
+    int font_id;            // +0x3c
+    float text_scale;       // +0x40
+    char* text;             // +0x44
+    int text_mode_a;        // +0x48
+    int text_mode_b;        // +0x4c
+    int texture_id;         // +0x50
+    float width;            // +0x54
+    float height;           // +0x58
+    float u0;               // +0x5c
+    float v0;               // +0x60
+    float u1;               // +0x64
+    float v1;               // +0x68
+    Color4f color;          // +0x6c
+    int layer;              // +0x7c
+    int blend;              // +0x80
+};
+
+typedef char FontQueueEntry_must_be_0x84[
+    (sizeof(FontQueueEntry) == 0x84) ? 1 : -1];
+
+extern FontSheet g_font_sheets[];        // data_7772f8
+extern FontQueueEntry g_font_queue[];    // data_7544e8
+extern int g_font_queue_count;           // data_777b24
+extern unsigned char g_font_queue_active; // data_4b7236
+
+int report_errorf(const char* format, ...);
+int font_slot_index_for_char(char value); // @ 0x449d20
+
+#endif
