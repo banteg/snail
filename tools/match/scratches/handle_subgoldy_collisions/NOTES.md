@@ -55,6 +55,12 @@ chain, and `spawn_track_garbage_hazard`'s pool scan (`active_head + 50 * 0xc4`
 slots, total `0x264c`). The spawner remains raw-offset shaped because its typed
 slot rewrite was already rejected on saved-register ownership.
 
+2026-06-16 ring parent pool promotion: the local `Game` window now uses the
+shared `RingOrSpecialEffectPool` at `+0x35b78c`, matching the spawner's two
+parent slots and stride `0x1f8` (`0x3f0` total). The collision sweep remains
+byte-strided for codegen shape, but the surrounding `Game` relationship now
+uses the promoted pool view.
+
 2026-06-16 shared Player consolidation pass: the scratch now consumes the
 shared `Player` definition instead of carrying a private broad player window.
 This promoted `Player::handle_subgoldy_collisions`, direct

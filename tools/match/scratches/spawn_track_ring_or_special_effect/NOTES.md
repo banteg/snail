@@ -82,3 +82,8 @@ Type consolidation:
   target's immediate owner store, but it changes register ownership and
   regresses focused Wibo from `51.23%` to `44.99%`. Keep the current
   `kind`-then-owner source order until the surrounding switch shape changes.
+- 2026-06-16 ring pool promotion: the shared header now records
+  `RingOrSpecialEffectPool` as two parent slots at `game+0x35b78c`, stride
+  `0x1f8`, total `0x3f0`. This is promoted from the spawner's pool scan and
+  corroborated by the collision consumer; the spawner source remains
+  raw/base-shaped because that is part of its current best codegen form.

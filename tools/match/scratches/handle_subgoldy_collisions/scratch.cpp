@@ -57,8 +57,8 @@ public:
     SaltHazardSlot salt_slots[40]; // +0x3578c0, live byte is velocity.z low byte
     char unknown_359080[0x359140 - (0x3578c0 + 6080)];
     GarbageHazardPool garbage_hazards; // +0x359140
-    RingOrSpecialEffectParent ring_effects[2]; // +0x35b78c
-    char unknown_35bb7c[0x35bb94 - (0x35b78c + 1008)];
+    RingOrSpecialEffectPool ring_effects; // +0x35b78c
+    char unknown_35bb7c[0x35bb94 - (0x35b78c + 0x3f0)];
     int hud_text_owner; // +0x35bb94
     char unknown_35bb98[0x125e480 - 0x35bb98];
     TrackParcelPool track_parcels; // +0x125e480

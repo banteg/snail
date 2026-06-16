@@ -74,4 +74,12 @@ typedef char RingOrSpecialEffectParent_must_match_pool_stride[
 
 typedef BodList RingOrSpecialEffectListAnchor;
 
+class RingOrSpecialEffectPool {
+public:
+    RingOrSpecialEffectParent slots[2]; // game +0x35b78c, stride 0x1f8
+};
+
+typedef char RingOrSpecialEffectPool_must_be_0x3f0[
+    (sizeof(RingOrSpecialEffectPool) == 0x3f0) ? 1 : -1];
+
 #endif
