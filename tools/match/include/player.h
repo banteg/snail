@@ -42,10 +42,14 @@ class PlayerPresentationController {
 public:
     void set_snail_weapon(int movement_flags); // @ 0x445920
 
-    char unknown_00[0x1964];
+    char unknown_00[0x15c8];
+    float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
+    char unknown_15cc[0x1964 - 0x15cc];
     int cutscene_ai_state;              // +0x1964 (Player +0x42e8)
-    char unknown_1968[0x4340 - 0x2984 - 0x1968];
+    char unknown_1968[0x19b4 - 0x1968];
 };
+typedef char PlayerPresentationController_must_be_0x19b4[
+    (sizeof(PlayerPresentationController) == 0x19b4) ? 1 : -1];
 
 class SquidgeState {
 public:
@@ -67,6 +71,7 @@ public:
     int update_player_movement_flags();    // @ 0x43a1a0
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
+    void handle_subgoldy_collisions();      // @ 0x444cf0
     char health_collect_particles(TrackHealthPickup* pickup); // @ 0x43a010
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
@@ -167,6 +172,8 @@ public:
     char unknown_2970[0x2980 - 0x2970];
     float interaction_max_z;                // +0x2980
     PlayerPresentationController presentation; // +0x2984
+    int parcels_collected;                 // +0x4338
+    char unknown_433c[0x4340 - 0x433c];
     int visible_life_stock;                // +0x4340
 };
 

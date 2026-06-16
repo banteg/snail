@@ -7,6 +7,7 @@
 #include "damage_gauge.h"
 #include "garbage_hazard_slot.h"
 #include "jetpack_gauge.h"
+#include "player.h"
 #include "ring_special_effect_types.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
@@ -15,17 +16,12 @@
 #include "track_parcel_runtime.h"
 #include "track_speedup.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+typedef Vector3 Vec3;
 
 float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
 void firework_shoot(float* position, int player_slot, int a3, int a4);
 void noop_runtime_ai();
-int initialize_nuke(float* nuke);
 int sprintf(char* buffer, const char* format, ...);
 
 struct VoiceManager {
@@ -66,56 +62,6 @@ public:
     int hud_text_owner; // +0x35bb94
     char unknown_35bb98[0x125e480 - 0x35bb98];
     TrackParcelPool track_parcels; // +0x125e480
-};
-
-class Player {
-public:
-    void handle_subgoldy_collisions();
-    void begin_post_follow_carryover();
-    void add_subgoldy_score(int event_id, int value);
-    char health_collect_particles(TrackHealthPickup* pickup);
-
-    char unknown_00[0x6c];
-    float live_position_y; // +0x6c
-    char unknown_70[0x150 - 0x70];
-    char nuke_object[0x1d4 - 0x150]; // +0x150
-    float damage_retrigger_timer; // +0x1d4
-    float damage_retrigger_step;  // +0x1d8
-    char unknown_1dc[0x2d8 - 0x1dc];
-    // (the nuke fields live lower in the struct: progress 0x374, step 0x378,
-    // and initialize_nuke receives player+0x150 as its this; settle that
-    // interior object when the nuke port lands)
-    unsigned char control_override_active; // +0x2d8
-    char unknown_2d9[0x308 - 0x2d9];
-    int movement_flag_selector; // +0x308
-    char unknown_30c[0x338 - 0x30c];
-    unsigned char movement_flags; // +0x338
-    char unknown_339[0x374 - 0x339];
-    float nuke_effect_progress;      // +0x374
-    float nuke_effect_progress_step; // +0x378
-    char unknown_37c[0x380 - 0x37c];
-    int player_slot; // +0x380
-    unsigned char follow_active; // +0x384
-    char unknown_385[0x3c4 - 0x385];
-    DamageGaugeController damage_gauge; // +0x3c4
-    char unknown_3f0[0x404 - 0x3f0];
-    int lives; // +0x404
-    Game* game; // +0x408
-    char unknown_40c[0x410 - 0x40c];
-    Vec3 velocity; // +0x410
-    unsigned char boost_one_tick;          // +0x41c
-    unsigned char attachment_exit_pending; // +0x41d
-    char unknown_41e[0x440 - 0x41e];
-    unsigned char completion_handoff_active; // +0x440
-    char unknown_441[0x2750 - 0x441];
-    JetpackGaugeController jetpack_gauge; // +0x2750
-    Vec3 cached_camera_target_world; // +0x2964
-    char unknown_2970[0x3f4c - 0x2970];
-    float wobble_lift_phase_step; // +0x3f4c
-    char unknown_3f50[0x42e8 - 0x3f50];
-    int cutscene_ai_state; // +0x42e8
-    char unknown_42ec[0x4338 - 0x42ec];
-    int parcels_collected; // +0x4338
 };
 
 void Player::handle_subgoldy_collisions()
@@ -213,12 +159,12 @@ void Player::handle_subgoldy_collisions()
                                 float knockback = rate * -0.2f;
                                 velocity.z = knockback;
                                 begin_post_follow_carryover();
-                                cutscene_ai_state = 10;
+                                presentation.cutscene_ai_state = 10;
                                 *((char*)slug + 0xd9) = 1;
                                 slug->play_slug_voice(
                                     34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                                 float half = distance * 0.5f;
-                                wobble_lift_phase_step = 0.0f;
+                                presentation.wobble_lift_phase_step = 0.0f;
                                 float burst_x = half * probe_b.x;
                                 float burst_y = probe_b.y * half;
                                 probe_salt.x = burst_x + cached_camera_target_world.x;
@@ -273,7 +219,7 @@ void Player::handle_subgoldy_collisions()
             probe_c.y = probe_b.y;
             probe_b.z = pickup->world_position.z - cached_camera_target_world.z;
             probe_c.z = probe_b.z;
-            if (live_position_y >= 0.49000001f && probe_b.z < 1.0f) {
+            if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
                 float dy = probe_b.y;
                 if (dy < 0.0f)
                     dy = -dy;
@@ -294,7 +240,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.y = probe_b.y;
         probe_b.z = speedup->world_position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
-        if (live_position_y >= 0.49000001f && probe_b.z < 1.0f) {
+        if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float dy = probe_b.y;
             if (dy < 0.0f)
                 dy = -dy;
@@ -313,7 +259,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.y = probe_b.y;
         probe_b.z = jetpack->world_position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
-        if (live_position_y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
+        if (position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
             jetpack->state = 2;
             jetpack_gauge.arm_jetpack_gauge();
         }
@@ -388,7 +334,7 @@ void Player::handle_subgoldy_collisions()
                         add_subgoldy_score(2, 0);
                         g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
-                        initialize_nuke((float*)nuke_object);
+                        nuke.initialize_nuke();
                         break;
                     }
                 }

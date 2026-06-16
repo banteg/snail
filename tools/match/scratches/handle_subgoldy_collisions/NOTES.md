@@ -3,6 +3,18 @@
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
 
+2026-06-16 shared Player consolidation pass: the scratch now consumes the
+shared `Player` definition instead of carrying a private broad player window.
+This promoted `Player::handle_subgoldy_collisions`, direct
+`Player::parcels_collected` at `+0x4338`, and
+`PlayerPresentationController::wobble_lift_phase_step` at presentation
+`+0x15c8` (`Player +0x3f4c`). The slug first-hit cutscene write now goes
+through `presentation.cutscene_ai_state`, the ring nuke pickup uses the shared
+`NukeController::initialize_nuke()` method at `Player +0x150`, and the local
+three-float collision probes alias the shared `Vector3` view. Focused match
+moves from `45.36%` / 641 candidate insns to `45.43%` / 639 with the masked
+audit unchanged (`70 ok`, one known slug-block alignment mismatch).
+
 2026-06-16 audio/voice call-surface pass: replaced the scratch-local free
 `play_sound_effect`/`play_voice_manager` declarations with compact manager
 method views (`g_sound_effect_manager` and `g_voice_manager`). This matches the
