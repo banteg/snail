@@ -48,3 +48,7 @@ Rejected source-shape probes:
   `0x18/0x19`, progress `0x1a`, progress/lifetime steps `0x1b/0x1d`,
   lifetime `0x1c`, and gravity `0x1e`; this supports the current shared
   `Sprite` field names but does not unlock a source-shape improvement.
+- 2026-06-16 sprite-emitter idiom pass: spelling explicit `out_velocity` and
+  `out_position` pointers matches the clearer source view kept by
+  `spawn_golb_smoke` but compiles identically here. The residual early
+  `sprite += 0x48` remains, so the focused score stays 76.82%.

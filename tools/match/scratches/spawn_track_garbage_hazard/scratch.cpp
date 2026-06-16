@@ -4,6 +4,7 @@
 // link it into both active lists, and allocate the sprite presentation.
 
 #include "sprite.h"
+#include "player.h"
 #include "position_bits.h"
 #include "transform_matrix.h"
 
@@ -11,7 +12,7 @@ typedef unsigned int DWORD;
 
 class Game {
 public:
-    DWORD* spawn_track_garbage_hazard(int cell, int player);
+    DWORD* spawn_track_garbage_hazard(int cell, Player* player);
     char* project_position_onto_track_attachment(float* position, float* out_angle);
 };
 
@@ -22,7 +23,7 @@ int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
-DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
+DWORD* Game::spawn_track_garbage_hazard(int cell, Player* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
@@ -43,7 +44,7 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     DWORD* slot = (DWORD*)(slot_base_words + 877649);
     self_words[877648] = (DWORD)slot;
 
-    ((DWORD*)slot_base_words)[877697] = player;
+    ((DWORD*)slot_base_words)[877697] = (DWORD)player;
     float* scale = (float*)(self_words + 49 * slot_index + 877688);
     *scale = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
     ((DWORD*)slot_base_words)[877682] = 1;
@@ -78,7 +79,7 @@ DWORD* Game::spawn_track_garbage_hazard(int cell, int player)
     }
 
     Sprite* sprite = g_sprite_manager.allocate_sprite(
-        *(DWORD*)(((DWORD*)slot_base_words)[877697] + 896),
+        ((Player*)((DWORD*)slot_base_words)[877697])->player_slot,
         114 - (int)((float)next_math_random_value() * -0.00012207031f),
         -1,
         -1);

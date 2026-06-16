@@ -37,12 +37,14 @@ char GarbageHazardSlot::spawn_garbage_smoke_particle(
         color.r = velocity->x * 0.2f;
         color.g = velocity->y * 0.2f;
         color.b = velocity->z * 0.2f;
-        sprite->velocity.x = color.r;
+        Vector3* out_velocity = &sprite->velocity;
+        out_velocity->x = color.r;
         sprite->gravity_step = 0.0f;
-        sprite->velocity.y = color.g;
-        sprite->velocity.z = color.b;
+        out_velocity->y = color.g;
+        out_velocity->z = color.b;
 
-        sprite->position = *position;
+        Vector3* out_position = &sprite->position;
+        *out_position = *position;
         result = *(char*)&position->z;
     }
     return result;

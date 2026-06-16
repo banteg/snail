@@ -70,3 +70,7 @@ Residuals:
   scratch regressed to 60.56% by changing saved-register ownership from the
   function prologue, so the scratch keeps the raw offset writes while the
   header carries the recovered fields.
+- 2026-06-16 owner typing pass: the player argument is now a `Player*`, and the
+  sprite allocation still reloads through the slot owner field before reading
+  `Player::player_slot`. This consumes the shared player header with identical
+  codegen: 92.58%, 140/143 instructions, 16 clean masked operands.
