@@ -1,4 +1,4 @@
-# Pinned — 58.20%, 94/95 insns (first-pass scratch, register/volatile golf remains)
+# Pinned — 60.32%, 95 candidate / 94 target insns (register/materialization residuals remain)
 
 Semantics complete and they REFINE the harvested hit-flash plan:
 
@@ -21,7 +21,7 @@ The Zig hit-flash wiring (checklist Phase 4 harvest) should be verified
 against the corrected nesting: the anim dispatches belong inside the
 voice-failure branch, not parallel to it.
 
-2026-06-13 pin audit: focused matcher still verifies 58.20%, 95/94 insns.
+2026-06-13 pin audit: focused matcher verified 58.20%, 95/94 insns.
 Keep pinned; the remaining diff is register/materialization golf, while the
 damage gates, fill clamp, voice fallback, and animation nesting are recovered.
 
@@ -29,4 +29,11 @@ damage gates, fill clamp, voice fallback, and animation nesting are recovered.
 `DamageGaugeController` view from `damage_gauge.h`. The former local
 `retrigger_timer`/`retrigger_step` names are the same +0x24/+0x28
 `hit_flash_progress`/`hit_flash_step` fields initialized and advanced by the
-gauge update path. Match remains 58.20%.
+gauge update path. Focused Wibo now verifies 60.32%, 94 target / 95 candidate
+insns, with 13 masked operands OK and one real constant relocation mismatch
+in the clamp tail (`0.0f`/`1.0f` materialization differs from native).
+
+2026-06-16 source-shape probes rejected: spelling the negative clamp as a
+separate `updated = 0.0f; fill = updated;` local produced identical 60.32%
+code, while hoisting `g_game_base` into an early `game` local regressed the
+score to 59.14%. Keep the shared type view and direct global-offset spelling.

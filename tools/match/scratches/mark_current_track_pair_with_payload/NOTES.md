@@ -22,3 +22,7 @@ and `Player::ghost_sprite_b` slots initialized by `initialize_subgoldy_ghost`,
 and the payload store is a raw-bit write to `Sprite::position.z` (`+0x50`).
 Rewriting the scratch to shared `player.h` + `sprite.h` keeps the exact same
 91.43% residual.
+
+2026-06-16 five-target audit: focused Wibo still verifies 91.43%, 17/18
+candidate/target insns, no masked operands, and the same final
+`mov ecx, edx` residual. No source edit was accepted.

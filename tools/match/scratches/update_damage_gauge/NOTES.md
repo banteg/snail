@@ -67,3 +67,6 @@ the same pair as its retrigger gate. Match remains 80.60%.
 `WarningActor` view. `stop_warning_sample` stays declared as a method view here
 because the native callsite sets `ecx` to `g_game+0x430170`, while the callee
 ignores it. Match remains 80.60%.
+
+2026-06-16 five-target audit: focused Wibo still verifies 80.60%, 268/268
+insns, with 58 masked operands OK and no unresolved or mismatched operands.

@@ -16,15 +16,7 @@ extern Game* volatile g_game; // data_4df904
 void WarningActor::update_warning()
 {
     if (!g_game->suspended && state) {
-        if (state == 1) {
-            *(int*)&border->warning_overlay_alpha = 1065336439;
-            float advanced = phase_step + phase;
-            phase = advanced;
-            if (advanced > 1.0f) {
-                phase = 0.0f;
-                state = 2;
-            }
-        } else if (state == 2) {
+        if (state == 2) {
             if (phase >= 0.5f)
                 border->warning_overlay_alpha = 0;
             else
@@ -35,6 +27,14 @@ void WarningActor::update_warning()
                 phase = 0.0f;
                 state = 1;
                 g_sound_effect_manager.play_sound_effect(50);
+            }
+        } else if (state == 1) {
+            *(int*)&border->warning_overlay_alpha = 1065336439;
+            float advanced = phase_step + phase;
+            phase = advanced;
+            if (advanced > 1.0f) {
+                phase = 0.0f;
+                state = 2;
             }
         }
     }
