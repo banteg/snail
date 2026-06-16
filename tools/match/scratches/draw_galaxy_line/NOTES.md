@@ -1,0 +1,14 @@
+# draw_galaxy_line
+
+Exact scratch for the galaxy route line helper at `0x409b00`.
+
+Relationship notes:
+
+- This is a `__stdcall` helper used by `update_galaxy` to turn two route points
+  into a textured quad through `queue_textured_quad_corners`.
+- The local `Vector3` is a normalized 2D segment with `z = 0`; the perpendicular
+  half-width terms then become the four corner points.
+- The queued quad uses texture ids `0x99/0x9a` at callsites, flags `0x1000000`,
+  UVs `[0,0]..[1,1]`, layer `15`, and blend `0`.
+
+Exact match: 100.00%, 67/67 instructions, with four masked operands audited.

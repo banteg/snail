@@ -5,8 +5,9 @@ Initial scratch for the image-buffer pixel sampler at `0x44e780`.
 Recovered relationships:
 
 - Only called by `register_font_texture_sheet`.
-- Reads a TGA-like buffer with width at `+0x0c`, height at `+0x0e`,
-  bits-per-pixel at `+0x10`, and pixel bytes beginning at `+0x12`.
+- Reads the shared `TgaImageView` from `tools/match/include/tga_image_view.h`:
+  width at `+0x0c`, height at `+0x0e`, bits-per-pixel at `+0x10`, and pixel
+  bytes beginning at `+0x12`.
 - Samples bottom-up rows via `(height - y - 1) * width + x`.
 - For 8-bit images it expands the single byte to grayscale RGB; otherwise it
   returns the first three pixel bytes as packed `0xRRGGBB`.

@@ -1,13 +1,6 @@
 // sample_tga_pixel_rgb @ 0x44e780 (cdecl)
 
-struct TgaImageView {
-    char header[0x0c];
-    unsigned short width;          // +0x0c
-    unsigned short height;         // +0x0e
-    unsigned char bits_per_pixel;  // +0x10
-    unsigned char descriptor;      // +0x11
-    unsigned char pixels[1];       // +0x12
-};
+#include "tga_image_view.h"
 
 int __cdecl sample_tga_pixel_rgb(TgaImageView* image, int x, int y)
 {

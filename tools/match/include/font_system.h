@@ -5,8 +5,8 @@
 
 struct FontSheet {
     int slot_count;             // +0x000
-    void* texture_ref_a;        // +0x004
-    void* texture_ref_b;        // +0x008
+    TextureRef* texture_ref_a;  // +0x004
+    TextureRef* texture_ref_b;  // +0x008
     float u0[128];              // +0x00c
     float v0[128];              // +0x20c
     float glyph_width[128];     // +0x40c
@@ -62,13 +62,18 @@ typedef char FontQueueEntry_must_be_0x84[
 
 extern FontSheet g_font_sheets[];        // data_7772f8
 extern FontQueueEntry g_font_queue[];    // data_7544e8
+extern int g_registered_font_count;       // data_777b20
 extern int g_font_queue_count;           // data_777b24
 extern unsigned char g_render_queue_active; // data_4b7236
 extern char g_font_text_buffer[];         // data_753ce8
 extern char* g_font_text_cursor;          // data_7772f0
+extern float g_font_wave_phase_a;         // data_7772e8
 
 int report_errorf(const char* format, ...);
 int font_slot_index_for_char(char value); // @ 0x449d20
+float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
+float sine(float angle); // @ 0x44c9d0
+float cosine(float angle); // @ 0x44c980
 int draw_textured_quad_immediate(
     TextureRef* texture,
     float x0, float y0,
