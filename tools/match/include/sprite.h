@@ -15,6 +15,7 @@ struct Color4f {
     int set_color_alpha(int alpha_bits);                         // @ 0x44db80, raw-bit alpha
     void set_color_grayscale(float intensity);                    // @ 0x44db90
     void set_color_white();                                      // @ 0x44dc50
+    void set_color_black();                                      // @ 0x44dc60
 
     float r; // +0x00
     float g; // +0x04
