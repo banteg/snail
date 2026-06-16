@@ -19,6 +19,12 @@ pool fields (`paused`, 3000 sprite slots at `+0x04`, five active heads at
 but dropped because VC6 moved `this` to `edi` and reduced the score to 22.22%;
 the retained body keeps the better topology-first shape.
 
+2026-06-16 layout assertion pass: `sprite.h` now asserts `sizeof(Sprite) ==
+0xb4` and `sizeof(SpriteManager) == 0x83d7c`. This is the invariant used by
+the manager loop (`3000 * 0xb4` slots beginning at `+0x04`, then five active
+heads and the free-head word), while the scratch body stays raw-shaped because
+field-access rewrites have already been rejected.
+
 Rejected/source-neutral probes:
 
 - a literal dword-pointer body matching IDA's `this + 45*i` view compiled back

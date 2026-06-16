@@ -94,6 +94,9 @@ public:
     float frame_progress_step; // +0xb0
 };
 
+typedef char Sprite_must_be_0xb4[
+    (sizeof(Sprite) == 0xb4) ? 1 : -1];
+
 class SpriteManager {
 public:
     void initialize_sprite_manager(); // @ 0x44e160
@@ -107,6 +110,9 @@ public:
     Sprite* active_heads[5]; // +0x83d64
     Sprite* free_head; // +0x83d78
 };
+
+typedef char SpriteManager_must_be_0x83d7c[
+    (sizeof(SpriteManager) == 0x83d7c) ? 1 : -1];
 
 extern TextureRef* g_sprite_texture_table[]; // data_78ff90
 extern TextureRefList g_texture_refs;        // data_4b7790
