@@ -23,6 +23,13 @@ Rejected source-shaped probes:
 - keeping the returned `Vector3*`, copying it back into `delta`, and then using
   the pointer for `atan2_positive` forced a full rotated-vector copy and
   regressed the score to 56.67%.
+- 2026-06-17 retest: the minimal `delta = *delta.rotate_vector_by_matrix(...)`
+  spelling and the two-vector receiver/result spelling both regressed to 67.05%
+  by moving the rotate receiver local and adding explicit X/Y stores. Moving
+  `rotated` after the delta locals and putting `delta` first were score-neutral.
+  The remaining mismatch is still only the dead returned-Z spill slot
+  (`[esp+0x20]` native versus `[esp+0x14]` candidate), not evidence for a
+  different `Sprite` field or transform type.
 
 2026-06-16 BN cross-check: the decompile agrees with the current field model
 (`previous_position`, `position`, `facing_angle`, and the refresh progress/step

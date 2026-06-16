@@ -9,6 +9,11 @@ Recovered relationships:
 
 - Called by `render_game_frame` in the world pass and the post-sprite replay
   pass.
+- `render_game_frame` passes `BodBase::is_bod_after_sprites()` into this
+  argument in both the immediate BOD pass and the staged post-sprite replay
+  pass. `render_object` then combines that value with the global
+  `g_object_render_pass_filter` and texture flag `0x10000` to choose which
+  texture groups are drawn in each boundary pass.
 - Early exit requires `flags & 0x80000`, rejects `flags & 0x40000`, and rejects
   zero `Object +0x2c` vertex count.
 - Always calls `refresh_object_vertex_buffer` before setting the world transform

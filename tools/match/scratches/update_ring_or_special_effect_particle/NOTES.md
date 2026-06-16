@@ -28,6 +28,13 @@ Rejected source-shape probe:
 - Retesting the narrower direct-X-only spelling reproduced the same 89.91%
   regression; keep the typed parent-position pointer despite the one-instruction
   materialization-order residual.
+- 2026-06-17 retest: moving `owner_position` after the X assignment, keeping a
+  typed pointer declaration before the X assignment but reading raw
+  `live_owner->transform.position.x`, and swapping the X add operand order all
+  produced the same 89.91% regression. In each case VC6 hoisted
+  `fmul [this+0x1c]` before the parent/sprite reloads. The pinned source keeps
+  the native reload/multiply order and leaves only the `fadd [parent+0x68]`
+  versus `add parent,0x68; fadd [parent]` materialization-order residual.
 
 2026-06-16 BN cross-check:
 
