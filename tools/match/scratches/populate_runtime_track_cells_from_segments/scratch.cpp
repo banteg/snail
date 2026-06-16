@@ -3,6 +3,7 @@
 
 #include "score_stats.h"
 #include "sprite.h"
+#include "timer_counters.h"
 
 void __fastcall set_matrix_identity(void* transform);
 
@@ -19,10 +20,6 @@ struct HighScoreEntry {
         unsigned int runtime_flags,
         int archive_kind,
         int replay_level_arg);
-};
-
-struct TimerCounters {
-    int zero_timer_counters();
 };
 
 struct TextureSetSelector {

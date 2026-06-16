@@ -133,6 +133,10 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
   view with shared `tip_manager.h` preserved the headline score and instruction
   count but changed the masked audit from 291 ok / 0 mismatch to 290 ok / 1
   jump-table mismatch. Keep this scratch's compact local tip view for now.
+- 2026-06-16 timer-counter probe: replacing the local compact
+  `TimerCounters` call view with shared `timer_counters.h` and offset-preserving
+  padding produced the same masked-audit regression. Keep the compact local
+  timer view until the follow-switch layout issue is fixed.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

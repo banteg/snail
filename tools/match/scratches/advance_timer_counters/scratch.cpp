@@ -1,16 +1,6 @@
 // advance_timer_counters @ 0x441b90 (thiscall, ret 0x4)
 
-class TimerCounters {
-public:
-    int advance_timer_counters(float delta_ticks);
-
-    float total_seconds;        // +0x00
-    int minutes;                // +0x04
-    int frames_into_second;     // +0x08
-    int display_hundredths;     // +0x0c
-    int display_thousandths;    // +0x10
-    float second_fraction;      // +0x14
-};
+#include "timer_counters.h"
 
 int TimerCounters::advance_timer_counters(float delta_ticks)
 {
