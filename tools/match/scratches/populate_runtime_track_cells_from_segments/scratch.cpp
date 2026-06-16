@@ -85,25 +85,35 @@ void Game::populate_runtime_track_cells_from_segments()
         }
     }
 
-    int archive_kind;
     int mode = level_mode;
-    if (mode == 0) {
-        archive_kind = 0;
-    } else if (mode == 1) {
-        archive_kind = 1;
-    } else if (mode == 4) {
-        archive_kind = 2;
-    } else {
-        archive_kind = -1;
-    }
-    if (archive_kind != -1) {
+    switch (mode) {
+    case 0:
         ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
             runtime_build_seed,
             level_mode_arg,
             *(int*)(base + 0x30),
             runtime_flags,
-            archive_kind,
+            0,
             level_mode_arg);
+        break;
+    case 1:
+        ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
+            runtime_build_seed,
+            level_mode_arg,
+            *(int*)(base + 0x30),
+            runtime_flags,
+            1,
+            level_mode_arg);
+        break;
+    case 4:
+        ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
+            runtime_build_seed,
+            level_mode_arg,
+            *(int*)(base + 0x30),
+            runtime_flags,
+            2,
+            level_mode_arg);
+        break;
     }
 
     *(int*)(base + 0xff25dc) = 0;

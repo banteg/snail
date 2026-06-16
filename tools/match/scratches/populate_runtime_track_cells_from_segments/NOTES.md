@@ -84,6 +84,14 @@ issues: candidate frame is still `0x40` vs native `0x44`, and the jump-table
 displacement remains unresolved. Do not pad the frame or force switch layout
 with dummy code.
 
+2026-06-16 high-score dispatch slice: replaced the scratch's temporary
+`archive_kind` local with a source-level `switch (level_mode)` that calls
+`initialize_high_score_entry` for modes `0`, `1`, and `4`. This recovers the
+native merged case dispatch (`mode`, `mode-1`, `mode-4`) and moves focused Wibo
+from `27.24%` to `28.20%`; region 2 improves from `38.38%` to `60.78%`.
+Masked operands stay `57 ok / 1 unresolved / 0 mismatch`; the unresolved
+jump-table displacement in the glyph switch is unchanged.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else
