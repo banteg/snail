@@ -30,6 +30,9 @@ Rejected source-shaped probes:
   scalar-store form; and
 - moving the velocity copy before the progress/size stores regressed
   to 45.45%.
+- splitting the velocity copy so x/y are written before the constants and z is
+  delayed looked closer to native's store order, but VC6 collapsed the stack
+  `Vector3` temporary into direct scalar stores and regressed to 61.54%.
 - a `register` zero-lane spelling to chase native's saved `esi` schedule
   regressed to 50.57% because VC6 put the flag/velocity pointer in `esi`
   instead of matching native's zero reuse.
