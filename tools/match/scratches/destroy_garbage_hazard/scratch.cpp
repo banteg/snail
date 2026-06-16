@@ -15,7 +15,8 @@ struct SharedBodListAnchor {
     GarbageHazardSlot* free_top; // +0x08
 };
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x359140];
     GarbageHazardSlot* active_garbage_head; // +0x359140
 };

@@ -1,12 +1,12 @@
 // Shared garbage hazard slot view, cross-checked by spawn smoke, update, and
-// destroy paths. Game and Player stay scratch-local context views.
+// destroy paths. Game stays a scratch-local context view.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
 #include "sprite.h"
 
-struct Game;
-struct Player;
+class Game;
+class Player;
 
 class GarbageHazardSlot {
 public:

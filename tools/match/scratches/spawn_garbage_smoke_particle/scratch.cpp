@@ -1,15 +1,12 @@
 // spawn_garbage_smoke_particle @ 0x43d5a0 (thiscall, ret 0xc)
 
 #include "garbage_hazard_slot.h"
+#include "player.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x38];
     float subgame_rate; // +0x38
-};
-
-struct Player {
-    char unknown_00[0x380];
-    int player_slot; // +0x380
 };
 
 extern unsigned char g_render_flags; // byte_4df934

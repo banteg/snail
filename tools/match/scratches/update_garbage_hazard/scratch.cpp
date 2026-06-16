@@ -3,6 +3,7 @@
 // burst integration, smoke cadence, teardown, and final sprite roll update.
 
 #include "garbage_hazard_slot.h"
+#include "player.h"
 
 struct ContactTargetRegistry {
     void append_subgame_contact_target(
@@ -12,27 +13,14 @@ struct ContactTargetRegistry {
         GarbageHazardSlot* object);
 };
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x09];
     unsigned char paused; // +0x09
     char unknown_0a[0x38 - 0x0a];
     float subgame_rate; // +0x38
     char unknown_3c[0x1270fd4 - 0x3c];
     ContactTargetRegistry contact_targets; // +0x1270fd4
-};
-
-struct Player {
-    void add_subgoldy_score(int event_id, int value);
-
-    char unknown_00[0x370];
-    float heading_roll; // +0x370
-    float nuke_effect_progress; // +0x374
-    char unknown_378[0x384 - 0x378];
-    unsigned char roll_add_enabled; // +0x384
-    char unknown_385[0x3a0 - 0x385];
-    float roll_add; // +0x3a0
-    char unknown_3a4[0x2980 - 0x3a4];
-    float interaction_max_z; // +0x2980
 };
 
 double random_signed_float_below(float upper_bound, const char* tag);
@@ -158,8 +146,8 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         sprite->facing_angle = player->heading_roll + sprite_y_offset;
         Player* roll_result = player;
-        if (roll_result->roll_add_enabled == 1)
-            sprite->facing_angle = roll_result->roll_add + sprite->facing_angle;
+        if (roll_result->follow_active == 1)
+            sprite->facing_angle = roll_result->follow_orientation_b + sprite->facing_angle;
         return (GarbageHazardSlot*)roll_result;
     }
     return (GarbageHazardSlot*)result;

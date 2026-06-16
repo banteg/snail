@@ -71,7 +71,11 @@ public:
     char unknown_328[0x338 - 0x328];
     unsigned int movement_flags;           // +0x338
     unsigned int previous_movement_flags;   // +0x33c
-    char unknown_340[0x380 - 0x340];
+    char unknown_340[0x370 - 0x340];
+    float heading_roll;                     // +0x370
+    float nuke_effect_progress;             // +0x374
+    float nuke_effect_progress_step;        // +0x378
+    char unknown_37c[0x380 - 0x37c];
     int player_slot;                       // +0x380
     // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
@@ -82,7 +86,7 @@ public:
     char unknown_385[3];
     AttachmentRecord* attachment_record;   // +0x388
     char unknown_38c[0x3a0 - 0x38c];
-    int follow_orientation_b;              // +0x3a0
+    float follow_orientation_b;            // +0x3a0
     char unknown_3a4[0x408 - 0x3a4];
     Game* game;                            // +0x408
     char unknown_40c[0x410 - 0x40c];
@@ -99,7 +103,7 @@ public:
     // +0x42c <- follow_orientation_b (the camera exit roll: update_cameraman
     // @ 0x4461d0, pinned, rotates world-z by it while exit_pending);
     // +0x430 <- attachment_record->installed_heading (consumer still open)
-    int post_follow_orientation_carryover; // +0x42c (was "post_follow_value_b")
+    float post_follow_orientation_carryover; // +0x42c (was "post_follow_value_b")
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_a")
     int attachment_exit_progress;          // +0x434
     char unknown_438[0x44c - 0x438];
