@@ -33,18 +33,18 @@ GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
         if ((flags & 0x40) != 0) {
             report_errorf("List remove NEXTBOD");
         } else {
-            GarbageHazardSlot* next = list_next;
+            GarbageHazardSlot* next = (GarbageHazardSlot*)list_next;
             if (next)
-                next->list_prev = list_prev;
+                next->list_prev = (BodNode*)list_prev;
 
-            GarbageHazardSlot* prev = list_prev;
+            GarbageHazardSlot* prev = (GarbageHazardSlot*)list_prev;
             if (prev)
-                prev->list_next = list_next;
+                prev->list_next = (BodNode*)list_next;
             else
-                anchor->first = list_next;
+                anchor->first = (GarbageHazardSlot*)list_next;
 
-            list_next = anchor->free_top;
-            anchor->free_top = this;
+            list_next = (BodNode*)anchor->free_top;
+            anchor->free_top = (GarbageHazardSlot*)this;
 
             int updated = list_flags;
             updated &= ~0x200;

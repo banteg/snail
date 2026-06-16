@@ -12,6 +12,6 @@ TrackJetpackPickup* TrackJetpackPickup::initialize_track_jetpack_pickup_runtime(
     body_a.vtable = &g_track_jetpack_body_vtable;
     body_b.initialize_renderable_bod();
     body_b.vtable = &g_track_jetpack_body_vtable;
-    unknown_00 = (int)&g_track_jetpack_pickup_vtable;
+    vtable = &g_track_jetpack_pickup_vtable;
     return this;
 }

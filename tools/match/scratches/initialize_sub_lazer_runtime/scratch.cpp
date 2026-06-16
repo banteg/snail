@@ -8,6 +8,6 @@ extern void* g_sub_lazer_vtable; // off_49733c / data_49733c
 SubLazerSlot* SubLazerSlot::initialize_sub_lazer_runtime()
 {
     ((RenderableBod*)this)->initialize_renderable_bod();
-    unknown_00 = (int)&g_sub_lazer_vtable;
+    vtable = &g_sub_lazer_vtable;
     return this;
 }

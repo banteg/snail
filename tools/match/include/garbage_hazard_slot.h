@@ -1,25 +1,23 @@
 // Shared garbage hazard slot view, cross-checked by spawn smoke, update,
-// contact-target append, collision, and destroy paths. Game stays a
+// contact-target append, collision, BOD-list, and destroy paths. Game stays a
 // scratch-local context view.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
-#include "contact_target.h"
+#include "bod_list.h"
 #include "sprite.h"
 
 class Game;
 class Player;
 struct TrackRowCell;
 
-class GarbageHazardSlot : public ContactTargetObject {
+class GarbageHazardSlot : public BodNode {
 public:
     GarbageHazardSlot* initialize_garbage_hazard();
     GarbageHazardSlot* update_garbage_hazard();
     GarbageHazardSlot* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
-    GarbageHazardSlot* list_prev;   // +0x08
-    GarbageHazardSlot* list_next;   // +0x0c
     char unknown_10[0x38 - 0x10];
     // RenderableBod transform rows. Kept field-by-field because VC6 rejects a
     // union containing TransformMatrix's constructors.

@@ -27,3 +27,8 @@ Residuals:
   named as the shared vtable pointer rather than an unknown integer. This keeps
   the exact append helper unchanged and aligns the contact prefix with
   `GarbageHazardSlot` initialization through the renderable-BOD path.
+- 2026-06-16 BOD/contact inheritance consolidation: `BodNode` now inherits the
+  `ContactTargetObject` prefix instead of duplicating its first two fields.
+  `append_subgame_contact_target`, `recycle_bod_to_free_list`, and the garbage
+  init/destroy/update checks are codegen-stable, confirming the shared prefix
+  relationship.

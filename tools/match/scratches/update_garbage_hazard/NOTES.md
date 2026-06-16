@@ -156,6 +156,11 @@ Residuals:
   including the `0x1000` suppress bit consumed by
   `append_subgame_contact_target`. Focused result remains 80.00%, 218/217
   instructions, `19 ok, 1 mismatch`.
+- 2026-06-16 BOD/contact inheritance consolidation: `GarbageHazardSlot` now
+  inherits `BodNode`, and `BodNode` inherits `ContactTargetObject`. This keeps
+  the contact append call source-typed through the shared prefix while making
+  the destroy/list semantics agree with the other BOD-list users. Focused
+  result remains 80.00%, 218/217 instructions, `19 ok, 1 mismatch`.
 - 2026-06-16 renderable-prefix consolidation: `initialize_garbage_hazard` now
   uses the shared `GarbageHazardSlot` header and remains exact. The shared slot
   view records the renderable transform rows at `+0x38..+0x77`; the
