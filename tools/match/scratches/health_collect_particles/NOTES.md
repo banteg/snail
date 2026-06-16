@@ -42,6 +42,10 @@ Rejected source-shape probes:
 - Spelling the `0x800` sprite flag update through an explicit
   `unsigned int flags` local regressed to 37.81% and still compiled as a byte
   OR, so keep the direct word-lane OR used by the current scratch.
+- 2026-06-16 retest after Sprite field-name consolidation: the explicit
+  `unsigned int flags` local is now score-neutral at `62.07%`, but it still
+  compiles to the same byte OR and does not recover the native dword OR or
+  frame shape. Keep the direct `sprite->flags |= 0x800u` spelling.
 - 2026-06-16 pickup/Sprite slice: spelling the loop result as a post-loop
   assignment after `++index` raises the focused match from 43.35% to 43.56%
   and better reflects native's increment-before-final-z-store order. Explicit

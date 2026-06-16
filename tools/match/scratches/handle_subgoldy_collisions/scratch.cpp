@@ -287,9 +287,7 @@ void Player::handle_subgoldy_collisions()
                     }
                     Game* ladder_game = game;
                     int effect_kind = effect->kind;
-                    switch (effect_kind) {
-                    case 4:
-                    case 5: {
+                    if (effect_kind == 4 || effect_kind == 5) {
                         int current_lives = lives;
                         if (current_lives < 10) {
                             if ((ladder_game->runtime_flags & 0x10) != 0 && ladder_game->level_mode != 3)
@@ -310,7 +308,7 @@ void Player::handle_subgoldy_collisions()
                         add_subgoldy_score(2, 0);
                         continue;
                     }
-                    case 8: {
+                    if (effect_kind == 8) {
                         int selector = movement_flag_selector;
                         if (selector >= 8) {
                             if (selector == 8)
@@ -325,17 +323,14 @@ void Player::handle_subgoldy_collisions()
                         add_subgoldy_score(2, 0);
                         continue;
                     }
-                    case 1:
+                    if (effect_kind == 1) {
                         add_subgoldy_score(2, 0);
                         g_sound_effect_manager.play_sound_effect(1);
-                        break;
-                    case 2:
-                    case 6:
+                    } else if (effect_kind == 2 || effect_kind == 6) {
                         add_subgoldy_score(2, 0);
                         g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
                         nuke.initialize_nuke();
-                        break;
                     }
                 }
             }

@@ -1,7 +1,15 @@
-# WIP scratch — 45.15%, 647/673 insns (2026-06-16 audio/voice call-surface pass)
+# WIP scratch — 47.99%, 648/673 insns (2026-06-16 ring reward ladder pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
+not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
+source-equivalent `if` / `else if` compare chain removes VC6's jump table and
+matches the target's authored compare chain for kinds `4/5`, `8`, `1`, and
+`2/6`. Focused match improves from `45.43%` to `47.99%`, candidate
+instructions move from `639` to `648`, and the masked audit rises from
+`70 ok` to `77 ok`. The known slug-block masked call mismatch remains.
 
 2026-06-16 shared Player consolidation pass: the scratch now consumes the
 shared `Player` definition instead of carrying a private broad player window.
