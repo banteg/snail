@@ -35,6 +35,12 @@ Remaining mismatch:
   sinks the angle multiply into the lane where native multiplies
   `velocity.z * 0.400000006f`.
 
+Rejected source-shape probes:
+
+- Spelling the `0x800` sprite flag update through an explicit
+  `unsigned int flags` local regressed to 37.81% and still compiled as a byte
+  OR, so keep the direct word-lane OR used by the current scratch.
+
 Type consolidation:
 
 - `Player::health_collect_particles` now takes the promoted partial

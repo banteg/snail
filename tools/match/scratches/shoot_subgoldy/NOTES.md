@@ -21,3 +21,8 @@ staging, not the projectile spawn or audio semantics.
 `stagger_y` local. Writing the expression inline lets VC6 rewrite it into
 `fmul +0.01` plus `fsubr origin.y`; the named local preserves target's
 `fmul -0.01` then `fadd origin.y` sequence and clears the masked audit.
+
+2026-06-16 source-shape note: rewriting the free scan as
+`while (slots[index].state != 0)` compiled identically to the current pointer
+walk, so keep the pointer form because it makes the native state cursor
+relationship explicit.

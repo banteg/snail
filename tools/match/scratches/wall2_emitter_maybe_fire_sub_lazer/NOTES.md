@@ -1,4 +1,4 @@
-# Pinned — 40.43%, 189/187 insns (structure aligned, register golf remains)
+# Pinned — 42.34%, 172/187 insns (structure aligned, register golf remains)
 
 Really the fringe-object update, not just the emitter. Semantics
 complete:
@@ -28,6 +28,6 @@ Notable: this TU CACHES the game base (non-volatile pattern, reload
 after calls) unlike the seed block in the swept entry — base-caching
 behavior is per-function, worth remembering when modeling globals.
 
-2026-06-13 pin audit: focused matcher still verifies 40.43%, 189/187 insns.
+2026-06-16 pin audit: focused matcher verifies 42.34%, 172/187 insns.
 Keep pinned; RNG tags, emitter cadence, projectile spawn direction, and cull
 semantics are recovered, with only source-shape/register golf remaining.

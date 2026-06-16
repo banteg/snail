@@ -35,6 +35,10 @@ Rejected source-shape probes:
   regressed to 63.69%.
 - A separate scaled-velocity aggregate local over-allocated the stack and
   regressed to 67.55%.
+- Rewriting the hot sprite setup as explicit word-lane stores for color, size,
+  velocity, and position regressed to 72.00%. It delayed the early `sprite +=
+  0x48` symptom but disrupted the color and velocity schedule, so keep the
+  aggregate color/position spelling.
 - 2026-06-16 Player consolidation: the owner slot now comes from shared
   `player.h` (`Player::player_slot`) with the same 76.82% score and clean
   `9 ok` masked audit.
