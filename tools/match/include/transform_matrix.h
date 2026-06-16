@@ -35,6 +35,7 @@ struct TransformMatrix {
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0
     void rotate_matrix_world_z(float angle);          // @ 0x44cf50
     void set_matrix_z_direction(const Vector3* direction); // @ 0x44d410
+    void look_at_point(const Vector3* target);             // @ 0x44d4e0
 
     Vector3 basis_right;   // +0x00
     float basis_right_w;   // +0x0c

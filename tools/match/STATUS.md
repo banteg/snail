@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**304/676** mapped gameplay functions matched, **398/676** mapped gameplay functions have a scratch, **21689/326004** bytes (**6.65%**) are proof-grade, and overall fuzzy is **18.19%**.
+**305/676** mapped gameplay functions matched, **399/676** mapped gameplay functions have a scratch, **21765/326004** bytes (**6.68%**) are proof-grade, and overall fuzzy is **18.21%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -363,6 +363,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | invert_matrix_from_source | 0x44d330 | 157 | 55/55 | 100.00% | 55/55 | - |  |
 | ✅ | orthogonalize_matrix | 0x44d3d0 | 58 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | set_matrix_z_direction | 0x44d410 | 196 | 57/57 | 100.00% | 57/57 | 6 ok |  |
+| ✅ | look_at_point | 0x44d4e0 | 76 | 22/22 | 100.00% | 22/22 | 1 ok |  |
 | 🚧 | initialize_quaternion_from_axis | 0x44d530 | 74 | 28/26 | 77.78% | 9/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | 🚧 | initialize_matrix_from_quaternion | 0x44d820 | 247 | 85/82 | 73.05% | 10/82 | 3 ok |  |
