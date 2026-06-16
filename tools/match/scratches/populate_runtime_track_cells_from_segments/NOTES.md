@@ -56,6 +56,21 @@ on the candidate side. This keeps the switch source honest enough to preserve
 call-target alignment; the earlier long-lived cell bod local regressed into a
 set_bod_object/normalizer call mismatch and was avoided.
 
+2026-06-16 attachment-entry cross-check: the native `P`/`p` path was decoded
+but not kept as source yet. It sets tile 0x1e for `P` and 0x1d for `p`, selects
+an attachment-template bank at `game + 0xff2914` or mirrored `game + 0xff29bc`
+with a 0x150 stride from row +0xa0, stores that template at cell +0x38, clears
+the cell visible-bod flag, and uses a separate per-row install latch so only
+the first entry cell arms the row. That first entry cell installs template
+bod pointers from template +0x24 and +0x84, writes row +0xac from
+`active_segment + 0x4014`, and stamps row flags 0x40/0x80 plus
+primary/secondary cell pointers over `AttachmentPathTemplate::row_span_count`
+rows. `AttachmentPathTemplate +0x48` is therefore a runtime row-span count,
+not an unknown field. A standalone source block for this path compiled to
+17.21% because it shifted switch-region alignment before the shared post-switch
+anchor was present, so keep the source unchanged until the entry path and
+post-switch anchor can be landed together.
+
 Residuals: the scratch now enters the 8-lane glyph normalization switch but
 still stops before the entry attachment (`P`/`p`) install path and the shared
 post-switch anchor, color/skirt, UV, and sub-object placement block. Do not try
