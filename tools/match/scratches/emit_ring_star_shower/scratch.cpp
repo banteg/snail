@@ -7,18 +7,6 @@
 float sine(float radians);
 float cosine(float radians);
 
-class RingOrSpecialEffectParticle {
-public:
-    char emit_ring_star_shower(Player* owner);
-
-    Sprite* sprite; // +0x00
-    RingOrSpecialEffectParent* parent; // +0x04
-    Vector3 base_position; // +0x08
-    float phase; // +0x14
-    float phase_step; // +0x18
-    float radius; // +0x1c
-};
-
 extern unsigned char g_render_flags; // byte_4df934
 
 char RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)

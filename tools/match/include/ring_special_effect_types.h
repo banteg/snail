@@ -5,6 +5,21 @@
 #include "vector3.h"
 
 class Player;
+class Sprite;
+class RingOrSpecialEffectParent;
+
+class RingOrSpecialEffectParticle {
+public:
+    void update_ring_or_special_effect_particle(); // @ 0x43e780
+    char emit_ring_star_shower(Player* owner); // @ 0x43e690
+
+    Sprite* sprite; // +0x00
+    RingOrSpecialEffectParent* parent; // +0x04
+    Vector3 base_position; // +0x08
+    float phase; // +0x14
+    float phase_step; // +0x18
+    float radius; // +0x1c
+};
 
 class RingEffectRateSource {
 public:
@@ -30,7 +45,7 @@ public:
     Player* owner_player; // +0x84
     int kind; // +0x88
     void* owner_context; // +0x8c
-    char unknown_090[0x1d0 - 0x90];
+    RingOrSpecialEffectParticle particles[10]; // +0x90
     RingEffectRateSource* rate_source; // +0x1d0
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8

@@ -4,18 +4,6 @@
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 
-class RingOrSpecialEffectParticle {
-public:
-    int update_ring_or_special_effect_particle(); // @ 0x43e780
-
-    Sprite* sprite; // +0x00
-    RingOrSpecialEffectParent* parent; // +0x04
-    Vector3 base_position; // +0x08
-    float phase; // +0x14
-    float phase_step; // +0x18
-    float radius; // +0x1c
-};
-
 int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(void*)
 {
     int i = 0;
@@ -23,8 +11,7 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(void*
     star_shower_counter = 0;
 
     Vector3* parent_position = &position;
-    RingOrSpecialEffectParticle* particle =
-        (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+    RingOrSpecialEffectParticle* particle = particles;
     do {
         particle->phase = (float)i * 0.628318548f;
         particle->phase_step = rate_source->subgame_rate * 0.104719758f;

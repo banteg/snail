@@ -7,20 +7,7 @@
 float sine(float radians);
 float cosine(float radians);
 
-class RingOrSpecialEffectParticle {
-public:
-    int update_ring_or_special_effect_particle();
-    int emit_ring_star_shower(Player* owner); // @ 0x43e690
-
-    Sprite* sprite; // +0x00
-    RingOrSpecialEffectParent* parent; // +0x04
-    Vector3 base_position; // +0x08
-    float phase; // +0x14
-    float phase_step; // +0x18
-    float radius; // +0x1c
-};
-
-int RingOrSpecialEffectParticle::update_ring_or_special_effect_particle()
+void RingOrSpecialEffectParticle::update_ring_or_special_effect_particle()
 {
     RingOrSpecialEffectParent* owner = parent;
     if (owner->kind != 3)
@@ -45,6 +32,5 @@ int RingOrSpecialEffectParticle::update_ring_or_special_effect_particle()
 
     RingOrSpecialEffectParent* result_owner = parent;
     if (result_owner->star_shower_counter == 0)
-        return emit_ring_star_shower(result_owner->owner_player);
-    return (int)result_owner;
+        emit_ring_star_shower(result_owner->owner_player);
 }

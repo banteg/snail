@@ -30,9 +30,9 @@ Type consolidation:
 - `RingOrSpecialEffectParent::state`, `transition_progress`,
   `transition_step`, `oscillate_x`, and `RingEffectRateSource::paused` are now
   in `tools/match/include/ring_special_effect_types.h`.
-- `RingOrSpecialEffectParticle` still stays scratch-local. The layout is
-  consistent, but the method return-type surface is not yet consistent enough
-  across updater/emitter/initializer scratches to promote cleanly.
+- `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
+  `+0x90..+0x1cf` is modeled as `particles[10]`. The particle updater is
+  side-effect-only from all known callsites, so it is declared `void`.
 
 Residual:
 

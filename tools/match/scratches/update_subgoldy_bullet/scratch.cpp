@@ -9,18 +9,6 @@ extern char* g_game_base; // data_4df904
 int report_errorf(const char* format, ...);
 float sine(float radians);
 
-class RingOrSpecialEffectParticle {
-public:
-    int update_ring_or_special_effect_particle(); // @ 0x43e780
-
-    Sprite* sprite; // +0x00
-    RingOrSpecialEffectParent* parent; // +0x04
-    Vector3 base_position; // +0x08
-    float phase; // +0x14
-    float phase_step; // +0x18
-    float radius; // +0x1c
-};
-
 void RingOrSpecialEffectParent::update_subgoldy_bullet()
 {
     if (rate_source->paused != 0)
@@ -47,8 +35,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         }
 
         {
-        RingOrSpecialEffectParticle* particle =
-            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        RingOrSpecialEffectParticle* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -85,7 +72,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         }
 
         RingOrSpecialEffectParticle* particle =
-            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+            particles;
         int count = 10;
         do {
             particle->sprite->kill_sprite();
@@ -103,8 +90,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
 
     case 3:
         {
-        RingOrSpecialEffectParticle* particle =
-            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        RingOrSpecialEffectParticle* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -135,7 +121,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
             }
 
             RingOrSpecialEffectParticle* particle =
-                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+                particles;
             int count = 10;
             do {
                 particle->sprite->kill_sprite();
@@ -154,7 +140,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
 
             int count = 10;
             RingOrSpecialEffectParticle* particle =
-                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+                particles;
             do {
                 particle->radius *= 0.939999998f;
                 particle->base_position = position;
@@ -172,8 +158,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
 
     case 5:
         {
-        RingOrSpecialEffectParticle* particle =
-            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        RingOrSpecialEffectParticle* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -204,7 +189,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
             }
 
             RingOrSpecialEffectParticle* particle =
-                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+                particles;
             int count = 10;
             do {
                 particle->sprite->kill_sprite();
@@ -215,7 +200,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         } else {
             int count = 10;
             RingOrSpecialEffectParticle* particle =
-                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+                particles;
             do {
                 particle->radius *= 1.10000002f;
                 particle->base_position = position;

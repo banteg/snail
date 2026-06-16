@@ -38,13 +38,11 @@ Rejected/source-shape probes:
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent` is promoted in
-  `tools/match/include/ring_special_effect_types.h`; this scratch adds
-  `star_sprite_id +0x1ec`, while
-  `update_ring_or_special_effect_particle` corroborates position, owner, kind,
-  and star-shower counter offsets.
-- `RingOrSpecialEffectParticle` stays local for now because its method
-  signatures differ by callsite: this callee is byte-return shaped, while the
-  updater must declare it as `int` to preserve codegen. The initializer now
-  independently corroborates the `0x20` stride and data fields, but not the
-  method return model.
+- `RingOrSpecialEffectParent` and `RingOrSpecialEffectParticle` are promoted in
+  `tools/match/include/ring_special_effect_types.h`; this scratch confirms the
+  promoted particle `sprite`, `parent`, `phase`, and `radius` fields plus parent
+  `star_sprite_id +0x1ec`.
+- The emitter itself is byte-return shaped (`char`). The child updater is
+  promoted as `void` because every known callsite ignores the helper return;
+  modeling it as `char` or `int` is only a codegen surface, not a meaningful
+  gameplay value.

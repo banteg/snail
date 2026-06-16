@@ -29,8 +29,9 @@ Type consolidation:
 
 - `RingOrSpecialEffectParent` now carries the initializer-used `state` and
   `rate_source` fields in the shared header.
-- `RingOrSpecialEffectParticle` still stays local until the method return
-  surface is resolved across `update_ring_or_special_effect_particle` and
-  `emit_ring_star_shower`.
+- `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
+  `+0x90..+0x1cf` is modeled as `particles[10]`. The updater method is modeled
+  as `void` because its native return is not consumed by any known caller; the
+  emitter remains byte-return shaped.
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
   updater confirms it is a multi-state lane rather than a boolean.
