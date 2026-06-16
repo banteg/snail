@@ -2107,10 +2107,20 @@ class ClusterTotals:
     byte_total: int
     matched_functions: int
     matched_bytes: int
+    scratched_functions: int = 0
+    fuzzy_weighted_bytes: float = 0.0
 
     @property
     def byte_percentage(self) -> float:
         return self.matched_bytes / self.byte_total if self.byte_total else 0.0
+
+    @property
+    def scratch_percentage(self) -> float:
+        return self.scratched_functions / self.function_count if self.function_count else 0.0
+
+    @property
+    def fuzzy_percentage(self) -> float:
+        return self.fuzzy_weighted_bytes / self.byte_total if self.byte_total else 0.0
 
 
 def manifest_cluster_totals(
@@ -2124,7 +2134,9 @@ def manifest_cluster_totals(
     trimmed); the last function ends at the next int3 padding byte.
     """
     image = load_image(image_path, manifest.image_base)
-    addresses = sorted(symbol.address for symbol in manifest.functions)
+    functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
+    addresses = [symbol.address for symbol in functions]
+    function_names = {symbol.name for symbol in functions}
     byte_total = 0
     for start, end in zip(addresses, addresses[1:]):
         byte_total += len(image.function_bytes(start, end))
@@ -2133,12 +2145,32 @@ def manifest_cluster_totals(
     if padding_index != -1:
         byte_total += len(image.function_bytes(last, image.image_base + padding_index))
 
-    matched = [status for status in statuses if status.state == "match"]
+    scratched_functions = {
+        status.config.function for status in statuses if status.config.function in function_names
+    }
+    matched_bytes_by_function: dict[str, int] = {}
+    fuzzy_bytes_by_function: dict[str, float] = {}
+    for status in statuses:
+        function = status.config.function
+        if function not in function_names:
+            continue
+        if status.state == "match":
+            matched_bytes_by_function[function] = max(
+                status.target_size,
+                matched_bytes_by_function.get(function, 0),
+            )
+        if status.ratio is not None:
+            fuzzy_bytes_by_function[function] = max(
+                status.target_size * status.ratio,
+                fuzzy_bytes_by_function.get(function, 0.0),
+            )
     return ClusterTotals(
         function_count=len(addresses),
         byte_total=byte_total,
-        matched_functions=len(matched),
-        matched_bytes=sum(status.target_size for status in matched),
+        matched_functions=len(matched_bytes_by_function),
+        matched_bytes=sum(matched_bytes_by_function.values()),
+        scratched_functions=len(scratched_functions),
+        fuzzy_weighted_bytes=sum(fuzzy_bytes_by_function.values()),
     )
 
 
@@ -2204,11 +2236,14 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
 
 
 def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> str:
+    exact_scratches = sum(status.state == "match" for status in statuses)
     return (
-        f"cluster: {totals.matched_functions}/{totals.function_count} functions, "
+        f"cluster: {totals.matched_functions}/{totals.function_count} functions proof-grade, "
         f"{totals.matched_bytes}/{totals.byte_total} bytes "
-        f"({totals.byte_percentage:.1%}) matched; "
-        f"{totals.matched_functions}/{len(statuses)} scratches at proof-grade 100%"
+        f"({totals.byte_percentage:.2%}) proof-grade; "
+        f"{totals.scratched_functions}/{totals.function_count} functions have scratches; "
+        f"overall fuzzy {totals.fuzzy_percentage:.2%}; "
+        f"{exact_scratches}/{len(statuses)} scratches at proof-grade 100%"
     )
 
 
@@ -2240,10 +2275,10 @@ def render_status_markdown(
         "Regenerate with `uv run snail match status --write tools/match/STATUS.md`.",
         "",
         f"**{totals.matched_functions}/{totals.function_count}** mapped gameplay "
-        f"functions matched, **{totals.matched_bytes}/{totals.byte_total}** bytes "
-        f"(**{totals.byte_percentage:.1%}**). Byte totals are curated-extent "
-        "upper bounds: uncurated code between manifest functions counts toward "
-        "the preceding extent.",
+        f"functions matched, **{totals.scratched_functions}/{totals.function_count}** "
+        f"mapped gameplay functions have a scratch, **{totals.matched_bytes}/"
+        f"{totals.byte_total}** bytes (**{totals.byte_percentage:.2%}**) are "
+        f"proof-grade, and overall fuzzy is **{totals.fuzzy_percentage:.2%}**.",
         "",
         "| | function | address | bytes | insns | match | prefix | masked | build |",
         "|---|---|---|---|---|---|---|---|---|",

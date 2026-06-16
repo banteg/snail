@@ -797,6 +797,69 @@ def test_render_status_rows_includes_prefix() -> None:
     assert render_status_rows([status])[0][6] == "2/4"
 
 
+def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
+    exact_config = ScratchConfig(
+        directory=Path("scratch/exact"),
+        function="exact",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    wip_config = ScratchConfig(
+        directory=Path("scratch/wip"),
+        function="wip",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    statuses = [
+        ScratchStatus(
+            config=exact_config,
+            address=0x401000,
+            target_size=20,
+            ratio=1.0,
+            prefix_instructions=4,
+            target_instructions=4,
+            candidate_instructions=4,
+            error=None,
+        ),
+        ScratchStatus(
+            config=wip_config,
+            address=0x401100,
+            target_size=40,
+            ratio=0.5,
+            prefix_instructions=2,
+            target_instructions=4,
+            candidate_instructions=5,
+            error=None,
+        ),
+    ]
+    totals = ClusterTotals(
+        function_count=4,
+        byte_total=100,
+        matched_functions=1,
+        matched_bytes=20,
+        scratched_functions=2,
+        fuzzy_weighted_bytes=40.0,
+    )
+
+    assert totals.scratch_percentage == pytest.approx(0.5)
+    assert totals.fuzzy_percentage == pytest.approx(0.4)
+
+    status_table = render_status_table(statuses, totals)
+    assert "1/4 functions proof-grade" in status_table
+    assert "2/4 functions have scratches" in status_table
+    assert "overall fuzzy 40.00%" in status_table
+    assert "1/2 scratches at proof-grade 100%" in status_table
+
+    markdown = render_status_markdown(statuses, totals)
+    assert "**2/4** mapped gameplay functions have a scratch" in markdown
+    assert "overall fuzzy is **40.00%**" in markdown
+    assert "Byte totals are curated-extent upper bounds" not in markdown
+
+
 def test_render_status_outputs_type_consolidation_summary() -> None:
     config = ScratchConfig(
         directory=Path("scratch"),
@@ -821,6 +884,8 @@ def test_render_status_outputs_type_consolidation_summary() -> None:
         byte_total=10,
         matched_functions=1,
         matched_bytes=10,
+        scratched_functions=1,
+        fuzzy_weighted_bytes=10.0,
     )
     findings = [
         TypeConsolidationFinding(

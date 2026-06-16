@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**303/676** mapped gameplay functions matched, **21631/326004** bytes (**6.6%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**303/676** mapped gameplay functions matched, **398/676** mapped gameplay functions have a scratch, **21631/326004** bytes (**6.64%**) are proof-grade, and overall fuzzy is **18.18%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
