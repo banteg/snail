@@ -4,15 +4,10 @@
 // link it into both active lists, and allocate the sprite presentation.
 
 #include "sprite.h"
+#include "position_bits.h"
 #include "transform_matrix.h"
 
 typedef unsigned int DWORD;
-
-struct PositionBits {
-    int x;
-    float y;
-    int z;
-};
 
 class Game {
 public:

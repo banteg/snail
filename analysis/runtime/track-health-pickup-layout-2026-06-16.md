@@ -14,7 +14,9 @@ Evidence anchors:
   after the shared bod base initializer.
 - `spawn_track_health_pickup` scans the eight-slot pool at `game + 0x356000`,
   stride `0x74`, seeds `world_position +0x10`, `state +0x38`, `owner +0x3c`,
-  `sprite +0x64`, `source_cell +0x68`, and bob fields `+0x6c/+0x70`.
+  `sprite +0x64`, `source_cell +0x68`, and bob fields `+0x6c/+0x70`. Its live
+  scratch stages the row-cell position through shared `PositionBits`, matching
+  the native stack-frame shape.
 - `update_track_health_pickup` reads `visibility_cell +0x44`, `state +0x38`,
   `owner +0x3c`, `sprite +0x64`, `world_position.y/z`, and bob fields
   `+0x6c/+0x70`.
