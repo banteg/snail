@@ -50,4 +50,15 @@ public:
 typedef char GarbageHazardSlot_must_be_0xc4[
     (sizeof(GarbageHazardSlot) == 0xc4) ? 1 : -1];
 
+typedef BodList GarbageHazardListAnchor;
+
+class GarbageHazardPool {
+public:
+    GarbageHazardSlot* active_head; // +0x00, game +0x359140
+    GarbageHazardSlot slots[50];    // +0x04, game +0x359144
+};
+
+typedef char GarbageHazardPool_must_be_0x264c[
+    (sizeof(GarbageHazardPool) == 0x264c) ? 1 : -1];
+
 #endif

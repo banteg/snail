@@ -48,6 +48,13 @@ The sweep bodies deliberately keep the existing byte-strided loop expressions:
 previous typed-loop probes changed VC6 register ownership. Focused Wibo remains
 `47.99%`, `648/673`, `77 ok / 1 mismatch`.
 
+2026-06-16 garbage pool promotion: the local `Game` window now uses the shared
+`GarbageHazardPool` at `+0x359140` instead of split local active-head/slot
+fields. This agrees with exact `destroy_garbage_hazard`, the collision active
+chain, and `spawn_track_garbage_hazard`'s pool scan (`active_head + 50 * 0xc4`
+slots, total `0x264c`). The spawner remains raw-offset shaped because its typed
+slot rewrite was already rejected on saved-register ownership.
+
 2026-06-16 shared Player consolidation pass: the scratch now consumes the
 shared `Player` definition instead of carrying a private broad player window.
 This promoted `Player::handle_subgoldy_collisions`, direct

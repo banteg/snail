@@ -19,3 +19,9 @@ Residuals:
   configuration. The final loop source uses the native assign-then-test shape:
   probe `result->next_active` for `this`, then assign `result =
   result->next_active` and test `result` for the end of the chain.
+- 2026-06-16 garbage-pool consolidation: the scratch now consumes
+  `GarbageHazardPool` for the game slice at `+0x359140` and
+  `GarbageHazardListAnchor` for the shared BOD anchor at `data_4df904+0x5a8`.
+  This records the cross-function evidence from destroy, collision, and spawn:
+  active garbage head at `+0x359140`, 50 slots at `+0x359144`, total pool view
+  size `0x264c`. Focused Wibo remains exact.

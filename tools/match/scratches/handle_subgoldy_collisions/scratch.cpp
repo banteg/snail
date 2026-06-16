@@ -56,8 +56,7 @@ public:
     SubLazerSlot lazer_slots[20]; // +0x356b00, stride 0xb0
     SaltHazardSlot salt_slots[40]; // +0x3578c0, live byte is velocity.z low byte
     char unknown_359080[0x359140 - (0x3578c0 + 6080)];
-    GarbageHazardSlot* active_garbage_hazards; // +0x359140
-    GarbageHazardSlot garbage_hazards[50]; // +0x359144
+    GarbageHazardPool garbage_hazards; // +0x359140
     RingOrSpecialEffectParent ring_effects[2]; // +0x35b78c
     char unknown_35bb7c[0x35bb94 - (0x35b78c + 1008)];
     int hud_text_owner; // +0x35bb94
@@ -107,7 +106,7 @@ void Player::handle_subgoldy_collisions()
                 }
             }
         }
-        for (GarbageHazardSlot* garbage = game->active_garbage_hazards;
+        for (GarbageHazardSlot* garbage = game->garbage_hazards.active_head;
              garbage;
              garbage = garbage->next_active) {
             if (garbage->state == 1) {
