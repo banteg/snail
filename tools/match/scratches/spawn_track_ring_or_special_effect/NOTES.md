@@ -23,7 +23,7 @@ Evidence:
   active-list bit is `0x200`. The older scratch-local `next`/`prev` labels
   were offset-correct but directionally misleading against `BodNode`.
 - The spawner writes parent `owner_player +0x84`, `kind +0x88`,
-  `owner_context +0x8c`, `state +0x80`, `active_phase +0x1e0`, and
+  `owner_lives_snapshot +0x8c`, `state +0x80`, `active_phase +0x1e0`, and
   `active_phase_step +0x1e4`.
 - Parent `+0x1d0` is not installed here; prior runtime notes and the
   initializer show that rate source is already present by the time child
@@ -50,9 +50,11 @@ Type consolidation:
 - `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix and
   the active/free anchor is modeled as `RingOrSpecialEffectListAnchor`
   (`BodList`) in `tools/match/include/ring_special_effect_types.h`.
-- `owner_context +0x8c` is intentionally generic: this spawner stores
-  `*(player + 0x404)`, but that player-side field is not named confidently
-  enough to promote here.
+- 2026-06-16 lives-snapshot correction: parent `+0x8c` is now named
+  `owner_lives_snapshot`. The spawner stores `Player::lives` (`+0x404`) and
+  `update_subgoldy_bullet` compares the current lives count against that
+  snapshot before entering state `4`; the same player lane is also used by
+  `handle_subgoldy_collisions` and `update_subgoldy`.
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
   updater uses `0` as inactive, `1` as normal orbit, and `2..5` as transition
   states.

@@ -4,15 +4,19 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `52.89%`, `120/122` candidate/target instructions, with `7` masked operands
+- `48.98%`, `123/122` candidate/target instructions, with `7` masked operands
   ok.
-- The first `16` target instructions now match. The key source-shape fix was
-  staging the cell position through the shared `PositionBits` local, which
-  recovers the native `0x10` byte stack frame.
+- The scratch now uses the promoted `TrackHealthPickup` field names for slot
+  initialization and sprite ownership. The key source-shape fix from the prior
+  version, staging the cell position through the shared `PositionBits` local,
+  is still present.
 
 Evidence:
 
-- Scans eight health pickup slots at `game + 0x356000`, stride `0x74`.
+- Scans eight health pickup slots at `game + 0x356000`, stride `0x74`. The
+  source keeps the native slot-base arithmetic and layers typed
+  `TrackHealthPickup` field views over it, because a direct `Game` pool member
+  made VC6 choose the wrong base register.
 - Seeds the promoted partial `TrackHealthPickup` fields: `world_position +0x10`,
   `state +0x38`, `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`,
   `bob_phase +0x6c`, and `bob_phase_step +0x70`.
@@ -25,12 +29,14 @@ Evidence:
   `world_position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.
 
-This scratch intentionally keeps the game health pool as word-indexed pointer
-math until a shared `Game` health-pool layout is recovered.
+This scratch intentionally keeps the game health pool base scratch-local until
+the shared `Game` layout is recovered across health, jetpack, speedup, and the
+collision walker.
 
 Remaining mismatch:
 
-- Native schedules `sub eax, ebx` before loading `cell` into `ebp`; current VC6
-  source loads `cell` first.
-- The active-list splice and sprite initialization use the same offsets but
-  still differ in register allocation and local zero/constant choices.
+- The typed `TrackHealthPickup` field view makes VC6 preserve `this` in `esi`
+  near the prologue instead of using the original stack spill, so the prefix is
+  shorter than the earlier word-indexed scratch.
+- The active-list splice is now expressed through `BodList`/`BodNode`, but it
+  still differs in register allocation and branch layout from the native splice.

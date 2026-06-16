@@ -1,14 +1,15 @@
 // begin_post_follow_carryover @ 0x43af60 (thiscall, ret)
 #include "player.h"
+#include "track_attachment_types.h"
 
 void Player::begin_post_follow_carryover()
 {
     if (follow_active) {
-        post_follow_heading_carryover = attachment_record->installed_heading;
-        post_follow_orientation_carryover = follow_orientation_b;
+        post_follow_heading_carryover = follow_template->installed_heading_bits;
+        post_follow_exit_roll = follow_orientation_b;
     } else {
         post_follow_heading_carryover = 0;
-        post_follow_orientation_carryover = 0;
+        post_follow_exit_roll = 0;
     }
     follow_active = 0;
     attachment_exit_pending = 1;

@@ -1,22 +1,22 @@
-// Shared garbage hazard slot view, cross-checked by spawn smoke, update, and
-// destroy paths. Game stays a scratch-local context view.
+// Shared garbage hazard slot view, cross-checked by spawn smoke, update,
+// contact-target append, collision, and destroy paths. Game stays a
+// scratch-local context view.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
+#include "contact_target.h"
 #include "sprite.h"
 
 class Game;
 class Player;
 struct TrackRowCell;
 
-class GarbageHazardSlot {
+class GarbageHazardSlot : public ContactTargetObject {
 public:
     GarbageHazardSlot* update_garbage_hazard();
     GarbageHazardSlot* destroy_garbage_hazard();
     char spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
-    int unknown_00;
-    unsigned int list_flags;        // +0x04
     GarbageHazardSlot* list_prev;   // +0x08
     GarbageHazardSlot* list_next;   // +0x0c
     char unknown_10[0x68 - 0x10];
@@ -39,5 +39,7 @@ public:
     char unknown_bd[0xc0 - 0xbd];
     Player* player;                 // +0xc0
 };
+typedef char GarbageHazardSlot_must_be_0xc4[
+    (sizeof(GarbageHazardSlot) == 0xc4) ? 1 : -1];
 
 #endif

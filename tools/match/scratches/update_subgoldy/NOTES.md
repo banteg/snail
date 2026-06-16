@@ -118,6 +118,15 @@ masked jump-table audit from `291 ok` to `290 ok, 1 mismatch`
 (`update_subgoldy_follow_jump_table` vs `$L1508`). Keep the local vector too;
 the blocker is relocation shape, not just a duplicate type definition.
 
+2026-06-16 row-record consolidation probe: adding a local
+`TrackAttachmentRuntimeRow` mirror and using `row_record->row_event_id` in the
+row-event block also preserved the headline score but regressed the masked
+jump-table audit to `290 ok, 1 mismatch`. Reverted for the same reason as the
+`Vector3` probe. The row-record layout is already cross-confirmed by
+`place_parcels_on_track` and the exact `get_track_runtime_cell_at_world_z`
+helper; do not rewrite this scratch's row-event block until the broader
+source-shape issue is solved.
+
 ## Source-shape idioms that mattered
 
 - Doubled quantum is `quantum + quantum` via a named local (fadd st0,st0),

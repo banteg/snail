@@ -116,3 +116,16 @@ mode result.
 `JetpackGaugeController` view now uses shared `jetpack_gauge.h`. This scratch
 only reads `player->jetpack_gauge.state` at +0x0c, and the shared full-size
 view keeps the pinned 46.44%/678-insn result.
+
+2026-06-16 Player consolidation: the scratch now includes shared `player.h`
+instead of carrying a local four-field `Player` slice. The header now carries
+the cutscene pitch pair at `+0x2dc/+0x2e0`, `heading_roll +0x370`, and the
+full `JetpackGaugeController` at `+0x2750`; the focused match remains
+`46.44%`, `678/726`, with `45 ok` masked operands.
+
+2026-06-16 attachment-template slot correction: template `+0x98` is now a
+dual view in the shared headers. Follow-state math reads it as
+`installed_heading_delta` (`float`), while `begin_post_follow_carryover` copies
+the same 32 bits into player+0x430 via `installed_heading_bits`. This corrects
+the earlier one-type assumption and keeps this scratch at `46.44%`, `678/726`,
+with `45 ok` masked operands.

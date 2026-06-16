@@ -165,7 +165,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 172/187 | 42.34% | 0/187 | 26 ok |  |
-| 🚧 | health_collect_particles | 0x43a010 | 386 | 98/104 | 43.56% | 1/104 | 1 mismatch, 11 ok |  |
+| 🚧 | health_collect_particles | 0x43a010 | 386 | 99/104 | 62.07% | 1/104 | 13 ok |  |
 | 🚧 | update_player_movement_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  |
 | ✅ | update_movement_flag_emitters | 0x43a300 | 97 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
@@ -183,9 +183,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 75/76 | 76.82% | 5/76 | 9 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 52.89% | 16/122 | 7 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 123/122 | 48.98% | 2/122 | 7 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
-| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 137/144 | 55.52% | 1/144 | 8 ok |  |
+| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 136/144 | 52.86% | 25/144 | 9 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 | 16 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 196/347 | 36.83% | 0/347 | 5 mismatch, 38 ok |  |
 | 🚧 | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 154/153 | 96.42% | 8/153 | 10 ok |  |
@@ -248,7 +248,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_squidge | 0x4449c0 | 253 | 84/80 | 84.15% | 6/80 | 14 ok |  |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | 21/21 | 4 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 647/673 | 48.79% | 0/673 | 1 mismatch, 65 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 647/673 | 43.33% | 0/673 | 1 mismatch, 65 ok |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
@@ -412,11 +412,11 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 1 type name(s)
 - covered: 15 type name(s) with a header plus scratch-local copies
-- divergent: 41 type name(s) with multiple scratch-local shapes
+- divergent: 39 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Game | 41 | 0 | 40 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Game | 41 | 0 | 41 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderManager | 20 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 16 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -442,10 +442,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | CameramanState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CheatState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ContactTargetRegistry | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendOverlayColorLerp | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -457,7 +455,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Player | 8 | 1 | 8 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Player | 6 | 1 | 6 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

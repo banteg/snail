@@ -8,6 +8,10 @@
 
 typedef unsigned int DWORD;
 
+#define HEALTH_PICKUP(field) \
+    (((TrackHealthPickup*)(slot_base + 874496))->field)
+#define HEALTH_NODE ((BodNode*)(slot_base + 874496))
+
 class Game {
 public:
     DWORD* spawn_track_health_pickup(TrackRowCell* cell, Player* player);
@@ -21,7 +25,7 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
-    DWORD* scan = game_words + 874510; // game + 0x356038
+    DWORD* scan = game_words + 874510; // health_pickups[0].state
     while (1) {
         if (*scan == 0)
             break;
@@ -29,62 +33,65 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
         scan += 29;
         if (slot_index < 8)
             continue;
-        return scan;
+        return (DWORD*)scan;
     }
 
     DWORD* slot_base = game_words + 29 * slot_index;
-    DWORD* slot = slot_base + 874496; // game + 0x356000 + slot_index * 0x74
-    slot_base[874510] = 1;            // TrackHealthPickup::state
-    slot_base[874511] = (DWORD)player; // TrackHealthPickup::owner
+    HEALTH_PICKUP(state) = 1;
+    HEALTH_PICKUP(owner) = player;
 
     PositionBits staged_position;
     staged_position.z = *(int*)&cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 0.60000002f;
     staged_position.x = *(int*)&cell->anchor_position.x;
-    PositionBits* live_position = (PositionBits*)(slot_base + 874500);
+    PositionBits* live_position = (PositionBits*)&HEALTH_PICKUP(world_position);
     *live_position = staged_position;
 
-    if ((slot_base[874497] & 0x200) != 0) {
+    BodNode* node = HEALTH_NODE;
+    if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
-        DWORD* first_ref = (DWORD*)(g_game_base + 0x5ac);
-        DWORD first = *first_ref;
+        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode* first = *first_ref;
         if (first != 0) {
-            *(DWORD*)(first + 8) = (DWORD)slot;
-            *(DWORD*)(*(DWORD*)(*first_ref + 8) + 12) = *first_ref;
-            DWORD new_first = *(DWORD*)(*first_ref + 8);
+            first->list_prev = node;
+            (*first_ref)->list_prev->list_next = *first_ref;
+            BodNode* new_first = (*first_ref)->list_prev;
             *first_ref = new_first;
-            *(DWORD*)(new_first + 8) = 0;
+            new_first->list_prev = 0;
         } else {
-            *first_ref = (DWORD)slot;
-            slot_base[874498] = 0;
-            *(DWORD*)(*first_ref + 12) = 0;
+            *first_ref = node;
+            node->list_prev = 0;
+            (*first_ref)->list_next = 0;
         }
-        slot_base[874497] |= 0x200;
+        node->list_flags |= 0x200;
     }
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);
-    slot_base[874521] = (DWORD)sprite;
+    HEALTH_PICKUP(sprite) = sprite;
     unsigned int flags = sprite->flags;
     flags |= 0x800;
     sprite->flags = flags;
-    ((Sprite*)slot_base[874521])->gravity_step = 0.0f;
-    ((Sprite*)slot_base[874521])->progress = 0.0f;
-    ((Sprite*)slot_base[874521])->progress_step = 0.0f;
-    ((Sprite*)slot_base[874521])->size_start = 0.60000002f;
-    ((Sprite*)slot_base[874521])->size_end = 0.60000002f;
+    HEALTH_PICKUP(sprite)->gravity_step = 0.0f;
+    HEALTH_PICKUP(sprite)->progress = 0.0f;
+    HEALTH_PICKUP(sprite)->progress_step = 0.0f;
+    HEALTH_PICKUP(sprite)->size_start = 0.60000002f;
+    HEALTH_PICKUP(sprite)->size_end = 0.60000002f;
 
-    DWORD* out_position = (DWORD*)&((Sprite*)slot_base[874521])->position;
+    DWORD* out_position = (DWORD*)&HEALTH_PICKUP(sprite)->position;
     out_position[0] = *(DWORD*)live_position;
     out_position[1] = *((DWORD*)live_position + 1);
     out_position[2] = *((DWORD*)live_position + 2);
-    slot_base[874522] = (DWORD)cell; // TrackHealthPickup::source_cell
-    slot_base[874523] = 0;
-    if (((int)*(float*)&slot_base[874502] & 1) == 0)
-        slot_base[874523] = 0x3f000000;
+    HEALTH_PICKUP(source_cell) = cell;
+    HEALTH_PICKUP(bob_phase) = 0.0f;
+    if (((int)HEALTH_PICKUP(world_position).z & 1) == 0)
+        HEALTH_PICKUP(bob_phase) = 0.5f;
 
     int step_index = slot_index + 30156;
     game_words[29 * step_index] = 0x3c520d21;
     return (DWORD*)(7 * step_index);
 }
+
+#undef HEALTH_PICKUP
+#undef HEALTH_NODE

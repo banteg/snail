@@ -1,13 +1,13 @@
 // get_track_runtime_cell_at_world_z @ 0x43d480 (thiscall, ret)
 
-#include "golb.h"
+#include "track_attachment_types.h"
 
 class Game {
 public:
-    void* get_track_runtime_cell_at_world_z(Vector3* position);
+    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
 };
 
-void* Game::get_track_runtime_cell_at_world_z(Vector3* position)
+TrackAttachmentRuntimeRow* Game::get_track_runtime_cell_at_world_z(Vector3* position)
 {
     int row = (int)position->z;
 
@@ -17,5 +17,5 @@ void* Game::get_track_runtime_cell_at_world_z(Vector3* position)
         row = 3199;
     }
 
-    return (char*)this + 0x5ccac8 + row * 0xf4;
+    return (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + row * 0xf4);
 }

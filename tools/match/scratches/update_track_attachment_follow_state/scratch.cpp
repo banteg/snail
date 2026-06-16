@@ -1,5 +1,5 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
-#include "jetpack_gauge.h"
+#include "player.h"
 #include "transform_matrix.h"
 #include "voice_manager.h"
 
@@ -31,17 +31,6 @@ struct AttachmentRuntimeRecord {
     char unknown_00[0xa0];
     float scalar_a0;
     float scalar_a4;
-};
-
-class Player {
-public:
-    char unknown_00[0x2dc];
-    float cutscene_pitch_cycle;
-    float cutscene_pitch_cycle_step;
-    char unknown_2e4[0x370 - 0x2e4];
-    float heading_roll;
-    char unknown_374[0x2750 - 0x374];
-    JetpackGaugeController jetpack_gauge;
 };
 
 class FollowState {

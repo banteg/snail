@@ -6,6 +6,7 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
+#include "vector3.h"
 
 class Player;
 class Sprite;
@@ -20,8 +21,8 @@ public:
     TrackSpeedupRuntime* initialize_track_speedup_runtime(); // @ 0x4084b0
     void update_track_speedup(); // @ 0x43ee50
 
-    char unknown_10[0x70 - 0x10];
-    float world_z; // +0x70
+    char unknown_10[0x68 - 0x10];
+    Vector3 world_position; // +0x68, collision uses x/y/z; updater culls on z
     char unknown_74[0x80 - 0x74];
     int state; // +0x80
     Player* owner; // +0x84

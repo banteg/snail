@@ -68,9 +68,10 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
 - when follow active: world-z rotate by orientation_a (via identity
   matrix multiply) THEN by orientation_b — the orientation lanes'
   consumers
-- when attachment_exit_pending: world-z rotate by post_follow_value_a —
-  ITS consumer (checklist Phase 3 open item; value_b consumer still
-  unknown)
+- when attachment_exit_pending: world-z rotate by `post_follow_exit_roll`
+  at player+0x42c — the orientation-b carryover written by
+  `begin_post_follow_carryover`; the raw heading dword at +0x430 still has
+  no known consumer
 - heading_roll rotates last before the WORM FOV envelope
   (110 + 50 * cos envelope, debug stub call inside) and the 0.3 FOV
   smoothing
@@ -104,7 +105,27 @@ gameplay/camera.zig already carries the full recorded pipeline: base
 rows, pitch formula with the +/-1.22149992 clamp, z-deadzone [1.7, 3.0],
 FOV 110 + 50*envelope WORM lane with 0.3 blend, lateral roll
 -8*0.0174499992*0.17, orientation_a (local z) then orientation_b
-(world z) sequence, and the post_follow_value_a exit roll. The camera
+(world z) sequence, and the player+0x42c post-follow exit roll. The camera
 model is sound; the full match is proof-polish and drops in priority
 like collisions. The orientation_a SOURCE remains the basis-derived
 proxy (builder rotation scalars still unstored — checklist item).
+
+## Player header consolidation (2026-06-16)
+
+The scratch now includes shared `player.h` instead of carrying a local
+`Player` slice. The promoted fields are the lane-lean window at
+`+0x350..+0x35c`, flattened FollowState prefix fields
+`follow_template +0x388`, `follow_source_cell +0x38c`,
+`follow_orientation_a +0x39c`, `follow_orientation_b +0x3a0`, and
+`post_follow_exit_roll +0x42c`. Do not inline `FollowState` as a Player
+member yet; the flattened prefix keeps the focused match at `92.55%`,
+`322/322`, with the same single masked call mismatch.
+
+## Cameraman header consolidation (2026-06-16)
+
+`CameramanState` now lives in `include/cameraman_state.h` and is shared with
+`initialize_cameraman`. The initializer is exact (`100%`, `20/20`) and this
+updater remains at `92.55%`, `322/322`, with the same single masked call
+mismatch. The shared layout is live/desired/previous matrices at
+`0x00/0x40/0x80`, `player +0xc0`, `game +0xc4`, `fov_degrees +0xc8`, scratch
+byte `+0xcc`, and lift envelope fields `+0xd0/+0xd4`.

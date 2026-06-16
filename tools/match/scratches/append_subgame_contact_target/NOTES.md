@@ -18,3 +18,8 @@ Residuals:
   member access instead of caching `count` or an entry pointer; that matches
   the native reloads of the registry count before the kind, position, radius,
   object, and final increment stores.
+- 2026-06-16 contact-target consolidation: `ContactTargetObject`,
+  `ContactTargetEntry`, and `ContactTargetRegistry` now live in
+  `include/contact_target.h`. The skip bit is named as
+  `ContactTargetObject::list_flags & 0x1000`, and the focused match remains
+  exact at 100.00%, 34/34 instructions.

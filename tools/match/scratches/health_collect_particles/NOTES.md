@@ -4,10 +4,10 @@ Live source map for the health-pickup collection burst.
 
 Current match:
 
-- `43.56%`, `98/104` candidate/target instructions, with `11` masked operands
-  ok and one schedule-induced masked mismatch.
-- The gravity lane is stored with raw bits `0xb951b717` to match the native
-  constant exactly.
+- `62.07%`, `99/104` candidate/target instructions, with `13` masked operands
+  ok and no masked mismatch.
+- The burst now spells the shared `Sprite` fields directly; VC6 still emits
+  the exact `0xb951b717` gravity constant for `-0.00019999999f`.
 
 Evidence:
 
@@ -23,17 +23,19 @@ Evidence:
 - The stale build-only draft used `scale_x/scale_y`; this live scratch uses the
   corrected `size_start/size_end` names because those fields are interpolated
   by `draw_sprite_quad`.
-- The current source uses word-copy lanes in the hot sprite initialization block
-  to keep VC6 closer to native scheduling while preserving the typed
-  `TrackHealthPickup*` and allocated `Sprite*` relationships.
+- 2026-06-16 Sprite-field consolidation: rewriting the hot initialization block
+  from raw word/byte lanes to direct `Sprite` fields raised the focused match
+  from `43.56%` to `62.07%` and removed the lone masked mismatch. Keep the
+  direct field spelling here; this callsite confirms `flags`, `color`,
+  `position`, `velocity`, `size_start`, `size_end`, `progress`,
+  `progress_step`, and `gravity_step` together.
 
 Remaining mismatch:
 
 - Native uses a `0x34` byte stack frame, keeps `this` in `ebx`, and updates the
   loop index through the stack slot. The current candidate uses a `0x1c` byte
-  frame, keeps `this` in `ebp`, and keeps the loop index in `ebx`, so VC6 still
-  sinks the angle multiply into the lane where native multiplies
-  `velocity.z * 0.400000006f`.
+  frame, keeps `this` in `ebp`, and keeps the loop index in `ebx`. The mismatch
+  is now mostly prologue/register allocation and stack-frame shape.
 
 Rejected source-shape probes:
 

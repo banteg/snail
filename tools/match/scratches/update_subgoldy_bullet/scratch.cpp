@@ -46,8 +46,8 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         }
 
         if (position.z < owner_player->interaction_max_z) {
-            int owner_context_now = *(int*)((char*)owner_player + 0x404);
-            if (owner_context_now < (int)owner_context)
+            int current_lives = owner_player->lives;
+            if (current_lives < owner_lives_snapshot)
                 state = 4;
             return;
         }
@@ -133,7 +133,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
             } while (count != 0);
             return;
         } else {
-            Vector3* target = (Vector3*)((char*)owner_player + 0x2964);
+            Vector3* target = &owner_player->cached_camera_target_world;
             Vector3 delta;
             delta.x = (target->x - position.x) * 0.939999998f;
             delta.y = (target->y - position.y) * 0.939999998f;

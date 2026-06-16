@@ -1,13 +1,13 @@
 // get_track_grid_cell_at_world_position @ 0x43d410 (thiscall, ret)
 
-#include "golb.h"
+#include "track_attachment_types.h"
 
 class Game {
 public:
-    void* get_track_grid_cell_at_world_position(Vector3* position);
+    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
 };
 
-void* Game::get_track_grid_cell_at_world_position(Vector3* position)
+TrackRowCell* Game::get_track_grid_cell_at_world_position(Vector3* position)
 {
     int lane = (int)(position->x + 4.0f);
     int row = (int)position->z;
@@ -24,5 +24,5 @@ void* Game::get_track_grid_cell_at_world_position(Vector3* position)
         row = 3199;
     }
 
-    return (char*)this + 0x3bfac8 + (lane + row * 8) * 0x54;
+    return (TrackRowCell*)((char*)this + 0x3bfac8 + (lane + row * 8) * 0x54);
 }

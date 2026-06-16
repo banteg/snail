@@ -5,14 +5,6 @@
 #include "garbage_hazard_slot.h"
 #include "player.h"
 
-struct ContactTargetRegistry {
-    void append_subgame_contact_target(
-        Vector3* position,
-        float radius,
-        int kind,
-        GarbageHazardSlot* object);
-};
-
 class Game {
 public:
     char unknown_00[0x09];

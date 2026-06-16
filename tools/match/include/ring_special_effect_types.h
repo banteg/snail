@@ -33,7 +33,7 @@ public:
 // The first 0x10 bytes are the common intrusive BOD list prefix.
 class RingOrSpecialEffectParent : public BodNode {
 public:
-    int initialize_ring_or_special_effect_particles(void* unused_rate_source); // @ 0x43e470
+    int initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
     void update_subgoldy_bullet(); // @ 0x43e830
 
     char unknown_010[0x68 - 0x10];
@@ -42,7 +42,7 @@ public:
     int state; // +0x80, 0 inactive; 1 normal; 2..5 transitions
     Player* owner_player; // +0x84
     int kind; // +0x88
-    void* owner_context; // +0x8c
+    int owner_lives_snapshot; // +0x8c
     RingOrSpecialEffectParticle particles[10]; // +0x90
     RingEffectRateSource* rate_source; // +0x1d0
     float transition_progress; // +0x1d4

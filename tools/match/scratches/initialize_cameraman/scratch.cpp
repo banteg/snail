@@ -1,23 +1,7 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
-#include "transform_matrix.h"
+#include "cameraman_state.h"
 
 extern int g_game_base; // data_4df904
-
-class CameramanState {
-public:
-    void initialize_cameraman();
-
-    TransformMatrix live_matrix;             // +0x00
-    TransformMatrix desired_matrix;          // +0x40
-    TransformMatrix previous_desired_matrix; // +0x80
-    char* player;                            // +0xc0
-    char* game;                              // +0xc4
-    float fov_degrees;                       // +0xc8
-    unsigned char unresolved_cc;             // +0xcc
-    char unknown_cd[0xd0 - 0xcd];
-    float attachment_lift_envelope;          // +0xd0
-    float smoothed_attachment_lift_envelope; // +0xd4
-};
 
 void CameramanState::initialize_cameraman()
 {

@@ -2,56 +2,16 @@
 // Builds the desired follow-camera matrix from the player pose, attachment
 // envelopes, lane lean, and exit rolls, then blends live toward it at
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
+#include "cameraman_state.h"
+#include "player.h"
 #include "track_attachment.h"
-#include "transform_matrix.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x38];
     float subgame_rate;        // +0x38
     char unknown_3c[0x50 - 0x3c];
     int first_block_row_count; // +0x50
-};
-
-class Player {
-public:
-    char unknown_00[0x68];
-    Vector3 live_position; // +0x68, live-matrix position row
-    char unknown_74[0x2dc - 0x74];
-    float cutscene_pitch_cycle; // +0x2dc
-    char unknown_2e0[0x354 - 0x2e0];
-    float lane_lean_amplitude; // +0x354
-    float lane_lean_progress;  // +0x358
-    char unknown_35c[0x370 - 0x35c];
-    float heading_roll; // +0x370
-    char unknown_374[0x384 - 0x374];
-    unsigned char follow_active; // +0x384 (embedded FollowState)
-    char unknown_385[3];
-    AttachmentPathTemplate* follow_template; // +0x388
-    TrackRowCell* follow_source_cell; // +0x38c
-    char unknown_390[0x39c - 0x390];
-    float follow_orientation_a; // +0x39c
-    float follow_orientation_b; // +0x3a0
-    char unknown_3a4[0x41d - 0x3a4];
-    unsigned char attachment_exit_pending; // +0x41d
-    char unknown_41e[0x42c - 0x41e];
-    float post_follow_exit_roll; // +0x42c (player.h post_follow_value_b lane)
-    char unknown_430[0x2964 - 0x430];
-    Vector3 cached_camera_target_world; // +0x2964
-};
-
-struct CameramanState {
-    void update_cameraman();
-
-    TransformMatrix live_matrix;             // +0x00
-    TransformMatrix desired_matrix;          // +0x40
-    TransformMatrix previous_desired_matrix; // +0x80
-    Player* player;                          // +0xc0
-    Game* game;                              // +0xc4
-    float fov_degrees;                       // +0xc8
-    unsigned char unresolved_cc;             // +0xcc
-    char unknown_cd[3];
-    float attachment_lift_envelope;          // +0xd0
-    float smoothed_attachment_lift_envelope; // +0xd4
 };
 
 float cosine(float angle);
@@ -103,7 +63,7 @@ void CameramanState::update_cameraman()
             || kind == 0x2d
             || kind == 0x24
             || kind == 0xe)) {
-        float phase = (lift_player->live_position.z - lift_player->follow_source_cell->anchor_position.z)
+        float phase = (lift_player->position.z - lift_player->follow_source_cell->anchor_position.z)
             / template_record->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;
@@ -164,7 +124,7 @@ void CameramanState::update_cameraman()
     AttachmentPathTemplate* worm_template;
     float desired_fov;
     if (worm_player->follow_active == 1 && (worm_template = worm_player->follow_template, worm_template->kind == 0x18)) {
-        float phase = (worm_player->live_position.z - worm_player->follow_source_cell->anchor_position.z)
+        float phase = (worm_player->position.z - worm_player->follow_source_cell->anchor_position.z)
             / worm_template->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;

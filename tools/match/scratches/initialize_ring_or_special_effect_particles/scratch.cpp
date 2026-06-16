@@ -4,7 +4,7 @@
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 
-int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(void*)
+int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
 {
     int i = 0;
     state = 1;

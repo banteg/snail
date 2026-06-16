@@ -4,11 +4,12 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `55.52%`, `137/144` candidate/target instructions, with `8` masked
+- `52.86%`, `136/144` candidate/target instructions, with `9` masked
   operands ok.
-- This is a first live scratch. The offsets below are useful; the remaining
-  mismatch is mostly scheduling/register shape in the scan, position staging,
-  list splice, and parity tail.
+- The scratch now uses the promoted `TrackJetpackPickup` field names and the
+  shared `BodList`/`BodNode` active-list shape. Prefix improves to `25/144`;
+  the remaining mismatch is mostly the choice to base `esi` at the pickup slot
+  rather than at `game + slot_index * 0x19c`.
 
 Evidence:
 
@@ -27,6 +28,9 @@ Evidence:
   mirrored neighbors.
 - Sprite texture `124` is allocated at size `1.5`, and the bob phase uses the
   same numeric float-to-int parity test seen in the health pickup spawner.
+- The active-list add path matches the same insertion semantics as health:
+  insert the pickup before the old first node, clear the new head's prev link,
+  and set the `0x200` linked bit.
 
 2026-06-16 vtable correction: the earlier "different local view" was a shifted
 symbol assumption. `0x43efb0` is the jetpack pickup updater installed by the

@@ -18,15 +18,21 @@ Evidence:
   inactive, `1` normal orbit/update, `2 -> 3` target-collapse transition, and
   `4 -> 5` expansion/removal transition.
 - Parent `+0x1d4/+0x1d8` are transition progress and transition step.
+- Parent `+0x8c` is the owner's lives snapshot. State `1` compares
+  `owner_player->lives` against it after the effect passes the player's
+  interaction z limit; losing lives while the effect is behind the player
+  drives the `4 -> 5` expansion/removal transition instead of immediate
+  teardown.
 - Parent `+0x1dc` gates the sine-driven `position.x` oscillation using
   `active_phase +0x1e0` and `active_phase_step +0x1e4`.
-- The state-3 collapse uses a real `Vector3 delta` toward the owner target
-  vector at `owner_player +0x2964`, with target Z biased by `+0.2` before the
-  `0.939999998` scale.
+- The state-3 collapse uses a real `Vector3 delta` toward
+  `owner_player->cached_camera_target_world` (`+0x2964`), with target Z biased
+  by `+0.2` before the `0.939999998` scale.
 - The parent child-array evidence remains consistent with the other ring
   scratches: ten particles at `+0x90`, stride `0x20`.
-- The updater reads owner `+0x2964` as a target vector during state `3`, but
-  that player-side field is intentionally not promoted from this single use.
+- The updater reads owner `+0x2964` as a target vector during state `3`; this
+  is the same `cached_camera_target_world` field produced by the camera block in
+  `update_subgoldy`.
 
 Type consolidation:
 
@@ -41,6 +47,13 @@ Type consolidation:
 - `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
   `+0x90..+0x1cf` is modeled as `particles[10]`. The particle updater is
   side-effect-only from all known callsites, so it is declared `void`.
+- `Player::lives` is promoted in `tools/match/include/player.h` at `+0x404`;
+  this updater and `spawn_track_ring_or_special_effect` now use the shared
+  field instead of raw `player + 0x404` loads. Focused score remains
+  `69.77%`.
+- `Player::cached_camera_target_world` is promoted at `+0x2964` after
+  cross-confirmation from the `update_subgoldy` producer and this ring
+  transition consumer. Focused score and masked audit remain `69.77%`, `32 ok`.
 
 Residual:
 

@@ -5,7 +5,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "damage_gauge.h"
+#include "jetpack_gauge.h"
 #include "vector3.h"
+
+struct AttachmentPathTemplate;
+struct TrackRowCell;
 
 class Game;
 class Sprite;
@@ -37,11 +42,6 @@ public:
     void set_snail_weapon(int movement_flags); // @ 0x445920
 
     char unknown_00[0x4340 - 0x2984];
-};
-
-struct AttachmentRecord {
-    int unknown_00[38];
-    int installed_heading;            // +0x98
 };
 
 class SquidgeState {
@@ -87,7 +87,9 @@ public:
     Sprite* ghost_sprite_b;                // +0x9c
     char unknown_a0[0x1cc - 0xa0];
     int movement_sound_variant_sample;      // +0x1cc
-    char unknown_1d0[0x2e4 - 0x1d0];
+    char unknown_1d0[0x2dc - 0x1d0];
+    float cutscene_pitch_cycle;             // +0x2dc
+    float cutscene_pitch_cycle_step;        // +0x2e0
     // Player-side score producer window. The run score block at game+0x3bb764
     // has matching inner offsets but is represented separately by RunScoreStats.
     int total_score;                        // +0x2e4
@@ -98,23 +100,32 @@ public:
     char unknown_328[0x338 - 0x328];
     unsigned int movement_flags;           // +0x338
     unsigned int previous_movement_flags;   // +0x33c
-    char unknown_340[0x370 - 0x340];
+    char unknown_340[0x350 - 0x340];
+    int lane_lean_state;                   // +0x350
+    float lane_lean_amplitude;             // +0x354
+    float lane_lean_progress;              // +0x358
+    float lane_lean_progress_step;         // +0x35c
+    char unknown_360[0x370 - 0x360];
     float heading_roll;                     // +0x370
     float nuke_effect_progress;             // +0x374
     float nuke_effect_progress_step;        // +0x378
     char unknown_37c[0x380 - 0x37c];
     int player_slot;                       // +0x380
-    // +0x384..+0x3bf is the embedded FollowState (track_attachment.h):
+    // +0x384..+0x3bf is the embedded FollowState prefix (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
-    // follow_active = FollowState.active, attachment_record =
-    // FollowState.template_record, follow_orientation_b =
-    // FollowState.orientation_b (+0x1c).
+    // Keep the fields flattened here: the full FollowState view currently
+    // reaches adjacent Player lanes and is too large for a direct member.
     unsigned char follow_active;           // +0x384
     char unknown_385[3];
-    AttachmentRecord* attachment_record;   // +0x388
-    char unknown_38c[0x3a0 - 0x38c];
+    AttachmentPathTemplate* follow_template; // +0x388
+    TrackRowCell* follow_source_cell;      // +0x38c
+    char unknown_390[0x39c - 0x390];
+    float follow_orientation_a;            // +0x39c
     float follow_orientation_b;            // +0x3a0
-    char unknown_3a4[0x408 - 0x3a4];
+    char unknown_3a4[0x3c4 - 0x3a4];
+    DamageGaugeController damage_gauge;     // +0x3c4
+    char unknown_3f0[0x404 - 0x3f0];
+    int lives;                            // +0x404
     Game* game;                            // +0x408
     char unknown_40c[0x410 - 0x40c];
     Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
@@ -127,10 +138,10 @@ public:
     float attachment_exit_anchor_z;        // +0x424
     char unknown_428[0x42c - 0x428];
     // carryover pair written by begin_post_follow_carryover (matched 100%):
-    // +0x42c <- follow_orientation_b (the camera exit roll: update_cameraman
-    // @ 0x4461d0, pinned, rotates world-z by it while exit_pending);
-    // +0x430 <- attachment_record->installed_heading (consumer still open)
-    float post_follow_orientation_carryover; // +0x42c (was "post_follow_value_b")
+    // +0x42c <- follow_orientation_b, consumed by update_cameraman as the
+    // exit roll while attachment_exit_pending is set.
+    // +0x430 <- follow_template->installed_heading_bits (consumer still open)
+    float post_follow_exit_roll;           // +0x42c (orientation-b carryover)
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_a")
     int attachment_exit_progress;          // +0x434
     char unknown_438[0x44c - 0x438];
@@ -139,7 +150,10 @@ public:
     char unknown_44e[0x2730 - 0x44e];
     float movement_fire_progress;           // +0x2730
     float movement_fire_progress_step;      // +0x2734
-    char unknown_2738[0x2980 - 0x2738];
+    char unknown_2738[0x2750 - 0x2738];
+    JetpackGaugeController jetpack_gauge;   // +0x2750
+    Vector3 cached_camera_target_world;     // +0x2964, produced by update_subgoldy camera block
+    char unknown_2970[0x2980 - 0x2970];
     float interaction_max_z;                // +0x2980
     PlayerPresentationController presentation; // +0x2984
     int visible_life_stock;                // +0x4340

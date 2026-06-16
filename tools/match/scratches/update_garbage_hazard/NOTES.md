@@ -150,3 +150,9 @@ Residuals:
   lane used by camera and attachment carryover, so it is intentionally spelled
   `follow_active` / `follow_orientation_b`, not garbage-specific field names.
   The focused score and masked audit remain 80.00%, `19 ok, 1 mismatch`.
+- 2026-06-16 contact-target consolidation: this scratch now uses the shared
+  `ContactTargetRegistry` from `contact_target.h`. `GarbageHazardSlot` carries
+  the zero-offset `ContactTargetObject` prefix, with `list_flags +0x04`
+  including the `0x1000` suppress bit consumed by
+  `append_subgame_contact_target`. Focused result remains 80.00%, 218/217
+  instructions, `19 ok, 1 mismatch`.

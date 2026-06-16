@@ -4,6 +4,7 @@
 #include "position_bits.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
+#include "track_jetpack_pickup.h"
 
 typedef unsigned int DWORD;
 
@@ -20,7 +21,7 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
-    DWORD* scan = game_words + 874407; // game + 0x355e9c
+    DWORD* scan = game_words + 874407; // jetpack_pickup.state
     while (1) {
         if (*scan == 0)
             break;
@@ -32,15 +33,16 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
     }
 
     DWORD* slot_base = game_words + 103 * slot_index;
-    DWORD* slot = slot_base + 874393; // game + 0x355e64 + slot_index * 0x19c
-    slot_base[874407] = 1;            // parent state
-    slot_base[874408] = (DWORD)player;
+    TrackJetpackPickup* pickup =
+        (TrackJetpackPickup*)(slot_base + 874393);
+    pickup->state = 1;
+    pickup->owner = player;
 
     PositionBits staged_position;
     staged_position.z = *(int*)&cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 1.5f;
     staged_position.x = *(int*)&cell->anchor_position.x;
-    PositionBits* live_position = (PositionBits*)(slot_base + 874397);
+    PositionBits* live_position = (PositionBits*)&pickup->world_position;
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & 7;
@@ -52,48 +54,49 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
         ((float*)live_position)[0] = ((float*)live_position)[0] - 0.5f;
     }
 
-    if ((slot_base[874394] & 0x200) != 0) {
+    BodNode* node = (BodNode*)pickup;
+    if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
-        DWORD* first_ref = (DWORD*)(g_game_base + 0x5ac);
-        DWORD first = *first_ref;
+        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode* first = *first_ref;
         if (first != 0) {
-            *(DWORD*)(first + 8) = (DWORD)slot;
-            *(DWORD*)(*(DWORD*)(*first_ref + 8) + 12) = *first_ref;
-            DWORD new_first = *(DWORD*)(*first_ref + 8);
+            first->list_prev = node;
+            (*first_ref)->list_prev->list_next = *first_ref;
+            BodNode* new_first = (*first_ref)->list_prev;
             *first_ref = new_first;
-            *(DWORD*)(new_first + 8) = 0;
+            new_first->list_prev = 0;
         } else {
-            *first_ref = (DWORD)slot;
-            slot_base[874395] = 0;
-            *(DWORD*)(*first_ref + 12) = 0;
+            *first_ref = node;
+            node->list_prev = 0;
+            (*first_ref)->list_next = 0;
         }
-        slot_base[874394] |= 0x200;
+        node->list_flags |= 0x200;
     }
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 124, -1, -1);
-    slot_base[874418] = (DWORD)sprite;
+    pickup->sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= 0x800;
     sprite->flags = flags;
-    ((Sprite*)slot_base[874418])->gravity_step = 0.0f;
-    ((Sprite*)slot_base[874418])->progress = 0.0f;
-    ((Sprite*)slot_base[874418])->progress_step = 0.0f;
-    ((Sprite*)slot_base[874418])->size_start = 1.5f;
-    ((Sprite*)slot_base[874418])->size_end = 1.5f;
+    pickup->sprite->gravity_step = 0.0f;
+    pickup->sprite->progress = 0.0f;
+    pickup->sprite->progress_step = 0.0f;
+    pickup->sprite->size_start = 1.5f;
+    pickup->sprite->size_end = 1.5f;
 
-    DWORD* out_position = (DWORD*)&((Sprite*)slot_base[874418])->position;
+    DWORD* out_position = (DWORD*)&pickup->sprite->position;
     out_position[0] = *(DWORD*)live_position;
     out_position[1] = *((DWORD*)live_position + 1);
     out_position[2] = *((DWORD*)live_position + 2);
-    slot_base[874419] = (DWORD)cell;
-    slot_base[874420] = 0;
+    pickup->source_cell = cell;
+    pickup->bob_phase = 0.0f;
 
-    int z_as_int = (int)*(float*)&slot_base[874399];
+    int z_as_int = (int)pickup->world_position.z;
     if ((z_as_int & 1) == 0)
-        slot_base[874420] = 0x3f000000;
+        pickup->bob_phase = 0.5f;
 
-    slot_base[874421] = 0x3c520d21;
+    pickup->bob_phase_step = 0.012820513f;
     return z_as_int;
 }

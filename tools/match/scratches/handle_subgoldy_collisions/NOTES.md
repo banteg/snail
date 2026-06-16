@@ -1,7 +1,35 @@
-# WIP scratch — 48.79%, 647/673 insns (2026-06-16)
+# WIP scratch — 43.33%, 647/673 insns (2026-06-16 typed-relationship pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-06-16 typed runtime-pool pass: the scratch now includes the shared
+health, speedup, jetpack, garbage, salt, parcel, and ring/special-effect
+headers in the local `Game` window. This is a relationship/field-certainty
+pass rather than a source-shape win: the score drops from the prior
+proof-shape `48.79%` to `43.33%` because the typed slot views change VC6's
+loop base registers and stack slots. The useful cross-confirmations are:
+
+- `TrackSpeedupRuntime` has a full `world_position` vector at `+0x68..+0x70`
+  and `state` at `+0x80`; `update_track_speedup` only needed the z lane, but
+  collision consumes x/y/z.
+- `TrackHealthPickup`, `TrackJetpackPickup`, `TrackParcelRuntime`,
+  `GarbageHazardSlot`, and `RingOrSpecialEffectParent` all line up with their
+  shared headers at the collision callsites.
+- `GarbageHazardSlot` now inherits the shared zero-offset
+  `ContactTargetObject` prefix used by `append_subgame_contact_target`; this
+  collision scratch consumes the same state/list node/body fields, while the
+  per-frame registry append path consumes the prefix flags.
+- `Player +0x404` is the lives counter used by the ring/special-effect reward
+  ladder; this cross-confirms the shared `Player::lives` promotion.
+- `Player::damage_gauge` at `+0x3c4`, `Player::jetpack_gauge` at `+0x2750`,
+  and `Player::cached_camera_target_world` at `+0x2964` are now promoted in
+  `player.h`. This collision scratch still keeps a broad local `Player` window
+  because it touches several not-yet-promoted lanes, but these three fields are
+  no longer scratch-only evidence.
+- The salt collision live byte remains deliberately spelled as
+  `*(unsigned char*)&slot->velocity.z`: the byte is cross-confirmed by the
+  salt spawner, but the surrounding semantic field is still not named.
 
 2026-06-16 pickup/runtime offset correction pass: corrected the scratch-local
 `Game` and `Player` windows to agree with the already matched/update-spawner

@@ -110,7 +110,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
     TrackRowCell* result = get_track_grid_cell_at_world_position(&slot->position);
     if (result->tile_id != 14) {
         slot->kind = kind;
-        slot->owner_context = *(void**)((char*)player + 0x404);
+        slot->owner_lives_snapshot = player->lives;
         slot->state = 1;
         if (random_float_below(1.0f, "RT1") > 0.5f)
             slot->active_phase_step = slot->active_phase_step * -1.0f;
@@ -135,8 +135,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
             slot->list_flags |= 0x200;
         }
 
-        slot->initialize_ring_or_special_effect_particles(
-            *(void**)((char*)player + 0x404));
+        slot->initialize_ring_or_special_effect_particles(player->lives);
         return ((RingOrSpecialEffectVirtual*)slot)->update_subgoldy_bullet();
     }
 

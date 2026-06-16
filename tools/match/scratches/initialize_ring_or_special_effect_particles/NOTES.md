@@ -45,3 +45,7 @@ Type consolidation:
   emitter remains byte-return shaped.
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
   updater confirms it is a multi-state lane rather than a boolean.
+- 2026-06-16 lives-snapshot correction: the ignored `ret 0x4` argument is the
+  same `Player::lives` snapshot passed by the ring spawner. The initializer
+  still does not consume it, but the signature is now an ignored integer rather
+  than a fake pointer. Focused score remains `96.42%`.
