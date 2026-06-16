@@ -19,8 +19,9 @@ Evidence:
 - The ring/special-effect runtime bank is two parent slots at
   `game + 0x35b78c`, stride `0x1f8`.
 - Parent list fields are the usual bod/list header lanes:
-  `flags +0x04`, `next +0x08`, and `prev +0x0c`; the active-list bit is
-  `0x200`.
+  `list_flags +0x04`, `list_prev +0x08`, and `list_next +0x0c`; the
+  active-list bit is `0x200`. The older scratch-local `next`/`prev` labels
+  were offset-correct but directionally misleading against `BodNode`.
 - The spawner writes parent `owner_player +0x84`, `kind +0x88`,
   `owner_context +0x8c`, `state +0x80`, `active_phase +0x1e0`, and
   `active_phase_step +0x1e4`.
@@ -46,8 +47,9 @@ Native switch map:
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent` now carries the list header and active phase
-  lanes in `tools/match/include/ring_special_effect_types.h`.
+- `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix and
+  the active/free anchor is modeled as `RingOrSpecialEffectListAnchor`
+  (`BodList`) in `tools/match/include/ring_special_effect_types.h`.
 - `owner_context +0x8c` is intentionally generic: this spawner stores
   `*(player + 0x404)`, but that player-side field is not named confidently
   enough to promote here.

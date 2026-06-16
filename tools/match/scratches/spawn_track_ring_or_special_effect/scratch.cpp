@@ -115,22 +115,24 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
         if (random_float_below(1.0f, "RT1") > 0.5f)
             slot->active_phase_step = slot->active_phase_step * -1.0f;
 
-        if ((slot->flags & 0x200) != 0) {
+        if ((slot->list_flags & 0x200) != 0) {
             report_errorf("List ADD");
         } else {
+            RingOrSpecialEffectListAnchor* active_list =
+                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
             RingOrSpecialEffectParent** active_head =
-                (RingOrSpecialEffectParent**)(g_game_base + 0x5ac);
+                (RingOrSpecialEffectParent**)&active_list->first;
             if (*active_head != 0) {
-                (*active_head)->next = slot;
-                (*active_head)->next->prev = *active_head;
-                *active_head = (*active_head)->next;
-                (*active_head)->next = 0;
+                (*active_head)->list_prev = slot;
+                ((RingOrSpecialEffectParent*)(*active_head)->list_prev)->list_next = *active_head;
+                *active_head = (RingOrSpecialEffectParent*)(*active_head)->list_prev;
+                (*active_head)->list_prev = 0;
             } else {
                 *active_head = slot;
-                slot->next = 0;
-                (*active_head)->prev = 0;
+                slot->list_prev = 0;
+                (*active_head)->list_next = 0;
             }
-            slot->flags |= 0x200;
+            slot->list_flags |= 0x200;
         }
 
         slot->initialize_ring_or_special_effect_particles(

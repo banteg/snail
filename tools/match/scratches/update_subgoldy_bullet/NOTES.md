@@ -33,6 +33,11 @@ Type consolidation:
 - `RingOrSpecialEffectParent::state`, `transition_progress`,
   `transition_step`, `oscillate_x`, and `RingEffectRateSource::paused` are now
   in `tools/match/include/ring_special_effect_types.h`.
+- `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix, and
+  the remover uses `RingOrSpecialEffectListAnchor` (`BodList`) for the
+  active/free anchor at `g_game_base + 0x5a8`. The old scratch-local `next`
+  (`+0x08`) and `prev` (`+0x0c`) names were corrected to
+  `list_prev`/`list_next` to match the shared prefix.
 - `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
   `+0x90..+0x1cf` is modeled as `particles[10]`. The particle updater is
   side-effect-only from all known callsites, so it is declared `void`.

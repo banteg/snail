@@ -54,22 +54,23 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
 
         {
         state = 0;
-        char* list = g_game_base + 0x5a8;
+        RingOrSpecialEffectListAnchor* list =
+            (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
 
-        if ((flags & 0x200) == 0) {
+        if ((list_flags & 0x200) == 0) {
             report_errorf("List remove");
-        } else if ((flags & 0x40) != 0) {
+        } else if ((list_flags & 0x40) != 0) {
             report_errorf("List remove NEXTBOD");
         } else {
-            if (prev != 0)
-                prev->next = next;
-            if (next != 0)
-                next->prev = prev;
+            if (list_next != 0)
+                ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+            if (list_prev != 0)
+                ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
             else
-                *(RingOrSpecialEffectParent**)(list + 4) = prev;
-            prev = *(RingOrSpecialEffectParent**)(list + 8);
-            *(RingOrSpecialEffectParent**)(list + 8) = this;
-            flags &= ~0x200u;
+                list->first = list_next;
+            list_next = list->free_top;
+            list->free_top = this;
+            list_flags &= ~0x200u;
         }
 
         RingOrSpecialEffectParticle* particle =
@@ -103,22 +104,23 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            char* list = g_game_base + 0x5a8;
+            RingOrSpecialEffectListAnchor* list =
+                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
 
-            if ((flags & 0x200) == 0) {
+            if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
-            } else if ((flags & 0x40) != 0) {
+            } else if ((list_flags & 0x40) != 0) {
                 report_errorf("List remove NEXTBOD");
             } else {
-                if (prev != 0)
-                    prev->next = next;
-                if (next != 0)
-                    next->prev = prev;
+                if (list_next != 0)
+                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                if (list_prev != 0)
+                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
                 else
-                    *(RingOrSpecialEffectParent**)(list + 4) = prev;
-                prev = *(RingOrSpecialEffectParent**)(list + 8);
-                *(RingOrSpecialEffectParent**)(list + 8) = this;
-                flags &= ~0x200u;
+                    list->first = list_next;
+                list_next = list->free_top;
+                list->free_top = this;
+                list_flags &= ~0x200u;
             }
 
             RingOrSpecialEffectParticle* particle =
@@ -172,22 +174,23 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            char* list = g_game_base + 0x5a8;
+            RingOrSpecialEffectListAnchor* list =
+                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
 
-            if ((flags & 0x200) == 0) {
+            if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
-            } else if ((flags & 0x40) != 0) {
+            } else if ((list_flags & 0x40) != 0) {
                 report_errorf("List remove NEXTBOD");
             } else {
-                if (prev != 0)
-                    prev->next = next;
-                if (next != 0)
-                    next->prev = prev;
+                if (list_next != 0)
+                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                if (list_prev != 0)
+                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
                 else
-                    *(RingOrSpecialEffectParent**)(list + 4) = prev;
-                prev = *(RingOrSpecialEffectParent**)(list + 8);
-                *(RingOrSpecialEffectParent**)(list + 8) = this;
-                flags &= ~0x200u;
+                    list->first = list_next;
+                list_next = list->free_top;
+                list->free_top = this;
+                list_flags &= ~0x200u;
             }
 
             RingOrSpecialEffectParticle* particle =

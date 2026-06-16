@@ -35,8 +35,10 @@ Rejected/source-shape probes:
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent` now carries the initializer-used `state` and
-  `rate_source` fields in the shared header.
+- `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix, carries
+  the initializer-used `state` and `rate_source` fields in the shared header,
+  and asserts the pool stride as `0x1f8`. Known fields end at `0x1f0`, so the
+  final `8` bytes remain explicit tail padding.
 - `RingOrSpecialEffectParticle` is now promoted in the shared header, and parent
   `+0x90..+0x1cf` is modeled as `particles[10]`. The updater method is modeled
   as `void` because its native return is not consumed by any known caller; the
