@@ -26,11 +26,26 @@ struct Color4f {
 struct TextureRef {
     unsigned int flags; // +0x00
     char unknown_04[0x0c - 0x04];
-    char name[0x90 - 0x0c]; // +0x0c, inline name used by kill_sprite error path
+    char name[0x8c - 0x0c]; // +0x0c, inline path/name used by kill_sprite error path
+    int slot_index;         // +0x8c, texture-list slot id
     int frame_count;        // +0x90
     float frame_progress_step; // +0x94
     void* texture_ref;      // +0x98
-    char unknown_9c[0xa4 - 0x9c];
+    char unknown_9c[0xa0 - 0x9c];
+    int unknown_a0;         // +0xa0, initialized to 1 by get_or_create_texture_ref
+};
+
+typedef char TextureRef_must_be_0xa4[
+    (sizeof(TextureRef) == 0xa4) ? 1 : -1];
+
+class TextureRefList {
+public:
+    int initialize_texture_list(int capacity); // @ 0x44e800
+    TextureRef* get_or_create_texture_ref(char* texture_path, int arg3, int flags); // @ 0x44e810
+
+    int count;             // +0x00
+    int capacity;          // +0x04
+    TextureRef entries[1]; // +0x08, variable-capacity backing store
 };
 
 class Sprite {
@@ -94,6 +109,7 @@ public:
 };
 
 extern TextureRef* g_sprite_texture_table[]; // data_78ff90
+extern TextureRefList g_texture_refs;        // data_4b7790
 extern SpriteManager g_sprite_manager;       // data_790f30
 extern Sprite* g_sprite_active_heads[5];     // data_814c94
 extern Sprite* g_sprite_free_head;           // data_814ca8

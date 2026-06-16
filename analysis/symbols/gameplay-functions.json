@@ -3070,7 +3070,8 @@
     },
     {
       "address": "0x44e810",
-      "name": "get_or_create_texture_ref"
+      "name": "get_or_create_texture_ref",
+      "description": "Looks up or allocates one TextureRefList entry, using the 0xa4-byte TextureRef stride, 0x80-byte inline path, no-reuse flag, and slot-index/count bookkeeping behind sprite texture registration."
     },
     {
       "address": "0x44fd90",

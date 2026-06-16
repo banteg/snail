@@ -143,6 +143,7 @@ These are medium blast-radius systems already partly understood.
 | `initialize_cameraman` | `0x446160` | 100% | Camera init baseline. | Done; keep as dependency. |
 | `initialize_snail_skin` / `update_snail_skin_transition` / `change_snail_skin` | `0x445f60` / `0x445f80` / `0x445fd0` | 100% | Skin state is matched; renderer consumer still missing. | No matching work unless renderer callsites demand more. |
 | `initialize_anim_manager` / `update_anim_manager` | `0x4447c0` / `0x4447d0` | 100% / 43.68% | Presentation animation manager reset/update pair used by player, weapon, jetpack, and cutscene animation channels. | Init is exact and pins the prefix; update maps queue and target animation ownership, with remaining zero-lane/register scheduling documented in NOTES. |
+| `get_or_create_texture_ref` | `0x44e810` | 76.07%, source-shaped | Shared texture-reference list lookup/allocator behind sprite texture registration, mesh/path textures, and sprite runtime texture refs. | `TextureRefList` and `TextureRef` stride/name/slot fields are corrected; remaining residual is scan-found return block layout and final count-increment scheduling documented in NOTES. |
 
 ### P4 - Track Build, Row Events, And Outer Bridge
 
