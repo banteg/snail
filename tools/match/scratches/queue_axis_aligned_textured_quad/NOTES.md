@@ -3,13 +3,16 @@
 Initial scratch for the default-UV 2D textured quad queue helper at
 `0x44a8b0`.
 
-Wibo result: 69.70%, 65 target instructions versus 67 candidate instructions.
+Wibo result: 69.70%, 65 target instructions versus 67 candidate instructions,
+masked operands 13 ok.
 The branch gates and queue write layout are source-shaped; the remaining
 residual is shared-zero epilogue distance, color alpha/count store scheduling,
 and stack argument register choice after the `Color4f` copy.
 
 Recovered relationships:
 
+- The active byte at `data_4b7236` is the broader render queue gate, not a
+  font-only flag.
 - Appends records into the shared `FontQueueEntry` array at `data_7544e8`.
 - Record stride is `0x84`; the helper leaves the byte offset in `eax`.
 - Skips when the queue is inactive, full, or width/height compare equal to

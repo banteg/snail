@@ -37,14 +37,14 @@ struct FontQueueEntry {
     float x3;               // +0x28
     float y3;               // +0x2c
     int unknown_30;         // +0x30
-    int text_align;         // +0x34
-    unsigned char text_wave; // +0x38
+    float text_wave_amplitude; // +0x34
+    unsigned char text_wave_enabled; // +0x38
     char pad_39[0x3c - 0x39];
     int font_id;            // +0x3c
     float text_scale;       // +0x40
     char* text;             // +0x44
-    int text_mode_a;        // +0x48
-    int text_mode_b;        // +0x4c
+    int horizontal_align;   // +0x48
+    float anchor_x;         // +0x4c
     int texture_id;         // +0x50
     float width;            // +0x54
     float height;           // +0x58
@@ -63,9 +63,37 @@ typedef char FontQueueEntry_must_be_0x84[
 extern FontSheet g_font_sheets[];        // data_7772f8
 extern FontQueueEntry g_font_queue[];    // data_7544e8
 extern int g_font_queue_count;           // data_777b24
-extern unsigned char g_font_queue_active; // data_4b7236
+extern unsigned char g_render_queue_active; // data_4b7236
+extern char g_font_text_buffer[];         // data_753ce8
+extern char* g_font_text_cursor;          // data_7772f0
 
 int report_errorf(const char* format, ...);
 int font_slot_index_for_char(char value); // @ 0x449d20
+int draw_textured_quad_immediate(
+    TextureRef* texture,
+    float x0, float y0,
+    float x1, float y1,
+    float x2, float y2,
+    float x3, float y3,
+    float width, float height,
+    float u0, float v0,
+    float u1, float v1,
+    Color4f* color,
+    int layer,
+    int blend); // @ 0x413030
+int draw_font_text_instance(FontQueueEntry* entry); // @ 0x44a360
+int draw_queued_font_quad_instance(FontQueueEntry* entry); // @ 0x44a6d0
+void queue_font_text_instance(
+    char* text,
+    int font_id,
+    float text_scale,
+    float x,
+    float y,
+    int horizontal_align,
+    float anchor_x,
+    unsigned int flags,
+    Color4f* color,
+    float text_wave_amplitude,
+    char text_wave_enabled); // @ 0x44a790
 
 #endif

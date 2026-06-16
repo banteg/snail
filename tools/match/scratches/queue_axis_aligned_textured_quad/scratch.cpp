@@ -12,7 +12,7 @@ int queue_axis_aligned_textured_quad(
     Color4f* color,
     int layer)
 {
-    if (g_font_queue_active != 0) {
+    if (g_render_queue_active != 0) {
         int index = g_font_queue_count;
         if (index == 0x400)
             return report_errorf("Font print buffer overflow Increase RFONT_PRINT_MAX in font.h");
