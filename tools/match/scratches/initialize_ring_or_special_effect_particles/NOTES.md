@@ -3,8 +3,7 @@
 Live source map for the ten child halo sprites attached to a
 `RingOrSpecialEffectParent`.
 
-Current match: 99.35%, 153 candidate instructions versus 153 target
-instructions, with 10 clean masked operands.
+Current match: 100.00%, 153/153 instructions, with 10 clean masked operands.
 
 Evidence:
 
@@ -29,11 +28,10 @@ Source-shape win:
   `Vector3* base_position = &particle->base_position`, recovers native's
   copy-before-radius schedule and improves the focused match from 98.69% to
   99.35%.
-
-Residual:
-
-- Native stores `phase_step` before `parent`, while VC6 schedules the parent
-  pointer store before the x87 `fstp`. This is the only remaining focused diff.
+- Spelling `phase_step` through a pointer-to-field local (`float* phase_step =
+  &particle->phase_step; *phase_step = ...`) forces the native x87 spill before
+  the parent pointer store without changing semantics. Focused Wibo is now
+  100.00%, 153/153, with 10 clean masked operands.
 
 Rejected/source-shape probes:
 
