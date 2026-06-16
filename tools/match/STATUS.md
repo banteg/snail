@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**284/665** mapped gameplay functions matched, **18512/326119** bytes (**5.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**285/665** mapped gameplay functions matched, **18584/326119** bytes (**5.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -120,6 +120,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  |
 | ✅ | set_tracked_allocation_mark | 0x431cb0 | 11 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 | - |  |
+| 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | 13/13 | - |  |
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 | - |  |
 | ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | 27/27 | - |  |
@@ -362,6 +363,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_sprite_texture | 0x44e570 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | get_sprite_texture_ref | 0x44e580 | 20 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | ascii_upper_if_lowercase | 0x44e5a0 | 16 | 7/7 | 100.00% | 7/7 | - |  |
+| ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  |
+| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 77/63 | 25.71% | 0/63 | 2 ok |  |
+| 🚧 | parse_next_signed_int | 0x44e710 | 107 | 50/47 | 28.87% | 0/47 | - |  |
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 

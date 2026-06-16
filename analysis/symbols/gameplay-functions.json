@@ -1402,7 +1402,7 @@
     {
       "address": "0x431dc0",
       "name": "strings_equal_case_insensitive",
-      "description": "Compares two NUL-terminated strings case-insensitively and returns true only when both terminate together after matching."
+      "description": "Compares two strings case-insensitively and returns true when the right-hand string terminates after matching, making it a prefix-friendly tag/path comparator."
     },
     {
       "address": "0x431e30",
