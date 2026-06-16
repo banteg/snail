@@ -1,5 +1,7 @@
 // start_invincible_shell @ 0x444ae0 (thiscall, ret)
 
+#include "invincible_shell.h"
+
 extern char* g_game_base; // data_4df904
 
 struct AudioBackend {
@@ -7,18 +9,6 @@ struct AudioBackend {
 };
 
 extern AudioBackend g_audio_backend; // 0x753c58
-
-class InvincibleShellController {
-public:
-    void start_invincible_shell();
-
-    char unknown_00[0x80];
-    int state;                 // +0x80
-    float spin_phase;          // +0x84
-    float spin_phase_step;     // +0x88
-    float fade_progress;       // +0x8c
-    float fade_step;           // +0x90
-};
 
 void InvincibleShellController::start_invincible_shell()
 {
