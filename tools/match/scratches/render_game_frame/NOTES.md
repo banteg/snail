@@ -2,10 +2,11 @@
 
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
-Wibo result: 35.31%, 422 candidate instructions versus 439 target
-instructions, with no masked mismatches. The remaining masked operands are
-unresolved local names for renderer-state helper calls at `0x414650`,
-`0x413540`, `0x413650`, `0x411e10`, and `0x411de0`.
+Current Wibo result after the renderer-helper slice: 35.31%, 422 candidate
+instructions versus 439 target instructions, with 21 masked operands ok, 0
+unresolved, and 0 mismatch. The helper calls at `0x414650`, `0x413540`,
+`0x413650`, `0x411e10`, and `0x411de0` now resolve to standalone exact
+scratches.
 
 This is deliberately not a promoted `GameRoot` or renderer layout yet. The
 scratch keeps the large game owner as raw offsets while using established
@@ -46,5 +47,5 @@ Expected residuals:
   mimicry.
 - BOD/object fields remain a local `RenderBodView`; promote only after
   renderer, active-list, and object render callees agree.
-- Helper names for the renderer state wrappers are local descriptive names
-  until their standalone scratches are recovered.
+- The five renderer state wrapper calls are named through exact standalone
+  scratches; remaining work is the larger frame/register/data-owner shape.

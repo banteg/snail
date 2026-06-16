@@ -610,6 +610,16 @@
       "description": "Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles."
     },
     {
+      "address": "0x411de0",
+      "name": "end_overlay_render_state",
+      "description": "Restores the saved Direct3D projection and view transforms after an orthographic overlay/font render pass."
+    },
+    {
+      "address": "0x411e10",
+      "name": "begin_overlay_render_state",
+      "description": "Saves the current Direct3D projection and view transforms, installs an orthographic overlay projection and translated view matrix, and disables depth/fog state before overlay or font rendering."
+    },
+    {
       "address": "0x411fa0",
       "name": "render_camera",
       "description": "Configures one 3D scene viewport, projection, view transform, depth state, fog state, and the after-sprites lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`."
@@ -645,6 +655,16 @@
       "description": "Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive."
     },
     {
+      "address": "0x413540",
+      "name": "begin_sprite_depth_render_state",
+      "description": "Saves the active Direct3D view transform, installs identity view and texture transforms, and prepares texture-stage state before render_game_frame depth-sorts sprites."
+    },
+    {
+      "address": "0x413650",
+      "name": "end_sprite_depth_render_state",
+      "description": "Restores the Direct3D view transform saved by begin_sprite_depth_render_state after the sprite depth bucket pass."
+    },
+    {
       "address": "0x413670",
       "name": "configure_sprite_render_state",
       "description": "Chooses the sprite render-state preset from the sprite draw-mode lane at `+0x28` before one sprite quad is submitted."
@@ -678,6 +698,11 @@
       "address": "0x414500",
       "name": "bind_texture_ref",
       "description": "Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`."
+    },
+    {
+      "address": "0x414650",
+      "name": "reset_render_counters",
+      "description": "Clears the per-frame renderer counters for submitted triangles, DrawPrimitive calls, and texture binds before render_game_frame starts."
     },
     {
       "address": "0x414670",

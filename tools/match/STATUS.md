@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**293/670** mapped gameplay functions matched, **19591/326073** bytes (**6.0%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**298/675** mapped gameplay functions matched, **20330/326015** bytes (**6.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -63,7 +63,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_overlay | 0x40a240 | 70 | 17/17 | 100.00% | 17/17 | 3 ok |  |
 | ✅ | noop_runtime_callback | 0x40a290 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
-| 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 5 unresolved, 16 ok |  |
+| 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | ✅ | initialize_input | 0x40aa50 | 45 | 12/12 | 100.00% | 12/12 | - |  |
 | ✅ | initialize_frontend_overlay_color_lerp | 0x40ab00 | 63 | 18/18 | 100.00% | 18/18 | 2 ok |  |
 | ✅ | begin_frontend_fade_out | 0x40abc0 | 23 | 5/5 | 100.00% | 5/5 | - |  |
@@ -73,8 +73,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
+| ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
+| ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
+| ✅ | begin_sprite_depth_render_state | 0x413540 | 261 | 60/60 | 100.00% | 60/60 | 7 ok |  |
+| ✅ | end_sprite_depth_render_state | 0x413650 | 22 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
 | ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
+| ✅ | reset_render_counters | 0x414650 | 18 | 5/5 | 100.00% | 5/5 | 3 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 30.96% | 3/582 | 1 mismatch, 31 ok |  |
@@ -394,9 +399,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 0 type name(s)
+- ready: 1 type name(s)
 - covered: 15 type name(s) with a header plus scratch-local copies
-- divergent: 34 type name(s) with multiple scratch-local shapes
+- divergent: 35 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -411,6 +416,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RenderStateDeviceVtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -449,3 +455,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | RenderStateDevice | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

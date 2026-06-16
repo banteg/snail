@@ -404,6 +404,15 @@
       "description": "DirectX matrix-translation import thunk (`jmp dword [0x4acea0]`) called by draw_sprite_quad and the renderer setup path before setting the world transform."
     },
     {
+      "address": "0x4503a8",
+      "name": "build_orthographic_projection_matrix",
+      "kind": "function",
+      "aliases": [
+        "sub_4503a8"
+      ],
+      "description": "Builds the simple Direct3D orthographic projection matrix used by begin_overlay_render_state for authored 640x480 overlay/font rendering."
+    },
+    {
       "address": "0x48b32c",
       "name": "sprintf",
       "kind": "function",
@@ -1007,6 +1016,35 @@
         "data_503170"
       ],
       "description": "Renderer DrawPrimitive call counter incremented by sprite and immediate textured-quad submission helpers."
+    },
+    {
+      "address": "0x503178",
+      "name": "g_saved_d3d_view_transform",
+      "kind": "global",
+      "aliases": [
+        "data_503178"
+      ],
+      "size": "0x40",
+      "description": "Saved Direct3D view transform used around sprite-depth and overlay/font render-state passes."
+    },
+    {
+      "address": "0x5031c0",
+      "name": "g_texture_bind_call_count",
+      "kind": "global",
+      "aliases": [
+        "data_5031c0"
+      ],
+      "description": "Per-frame SetTexture/bind counter incremented by bind_texture_ref and cleared by reset_render_counters."
+    },
+    {
+      "address": "0x503220",
+      "name": "g_saved_d3d_projection_transform",
+      "kind": "global",
+      "aliases": [
+        "data_503220"
+      ],
+      "size": "0x40",
+      "description": "Saved Direct3D projection transform restored after overlay/font render-state passes."
     },
     {
       "address": "0x50331c",

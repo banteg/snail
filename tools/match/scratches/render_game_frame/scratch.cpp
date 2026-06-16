@@ -58,11 +58,11 @@ struct SpriteDepthNode {
     Sprite* sprite;        // +0x14
 };
 
-void reset_render_state_before_frame(); // @ 0x414650
-void begin_sprite_depth_pass();         // @ 0x413540
-void end_sprite_depth_pass();           // @ 0x413650
-void begin_font_quad_render_state();    // @ 0x411e10
-void end_font_quad_render_state();      // @ 0x411de0
+void reset_render_counters();                // @ 0x414650
+void begin_sprite_depth_render_state();      // @ 0x413540
+void end_sprite_depth_render_state();        // @ 0x413650
+void begin_overlay_render_state();           // @ 0x411e10
+void end_overlay_render_state();             // @ 0x411de0
 void noop_runtime_ai();                 // @ 0x407b50
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in release
@@ -100,7 +100,7 @@ int GameRoot::render_game_frame()
         return skip_count;
     }
 
-    reset_render_state_before_frame();
+    reset_render_counters();
 
     int rendered_sprite_count = 0;
     TransformMatrix transform;
@@ -224,7 +224,7 @@ int GameRoot::render_game_frame()
 
             Sprite* sprite = g_sprite_active_heads[camera_index];
             SpriteDepthNode* next_depth_node = g_sprite_depth_nodes;
-            begin_sprite_depth_pass();
+            begin_sprite_depth_render_state();
 
             while (sprite != 0) {
                 ++rendered_sprite_count;
@@ -293,10 +293,10 @@ int GameRoot::render_game_frame()
                 g_sprite_depth_buckets[bucket] = node;
             }
 
-            end_sprite_depth_pass();
-            begin_font_quad_render_state();
+            end_sprite_depth_render_state();
+            begin_overlay_render_state();
             draw_font_text_queue(slot->flags);
-            end_font_quad_render_state();
+            end_overlay_render_state();
 
             if ((slot->flags & 2) == 0 && post_sprite_count != 0) {
                 render_camera(
