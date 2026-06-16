@@ -1,17 +1,12 @@
 // initialize_nuke @ 0x447110 (thiscall, ret)
 
 #include "nuke_controller.h"
+#include "player.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x74650];
     float subgame_rate; // +0x74650
-};
-
-struct Player {
-    char unknown_00[0x70];
-    float world_z; // +0x70
-    char unknown_74[0x380 - 0x74];
-    int player_slot; // +0x380
 };
 
 extern Game* g_game_base; // data_4df904
@@ -23,7 +18,7 @@ int NukeController::initialize_nuke()
         Sprite** slots = sprite_slots;
         int count = 25;
 
-        orbit_axis = owner_player->world_z - 5.0f;
+        orbit_axis = owner_player->position.z - 5.0f;
         float rate = g_game_base->subgame_rate;
         phase = 0.0f;
         phase_step = 0.104719758f;

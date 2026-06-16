@@ -5,7 +5,7 @@
 
 #include "sprite.h"
 
-struct Player;
+class Player;
 
 class NukeController {
 public:
