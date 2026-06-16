@@ -25,9 +25,14 @@ public:
     unsigned char hit_flash_pending;  // +0xcc
     char unknown_cd[0xd8 - 0xcd];
     unsigned char voice_active;       // +0xd8
-    char unknown_d9[3];
+    unsigned char player_hit_latched; // +0xd9, set by first player-hit cutscene path
+    char unknown_da[0xdc - 0xda];
     float voice_progress;             // +0xdc
     float voice_progress_step;        // +0xe0
+    char unknown_e4[0xec - 0xe4];
 };
+
+typedef char SlugHazardRuntime_must_be_0xec[
+    (sizeof(SlugHazardRuntime) == 0xec) ? 1 : -1];
 
 #endif

@@ -3,6 +3,14 @@
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
 
+2026-06-16 slug runtime consolidation: the first-hit/cutscene branch now uses
+the shared `SlugHazardRuntime::player_hit_latched` byte at `+0xd9` instead of a
+raw byte poke. Collision and `update_golb_ai` both prove the pool stride is
+`0xec`, so `slug_hazard_types.h` now carries explicit tail padding and a
+`sizeof(SlugHazardRuntime) == 0xec` assertion. Focused Wibo remains `47.99%`,
+`648/673`, `77 ok / 1 mismatch`; the remaining mismatch is still the known
+slug-block alignment debt.
+
 2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
 not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
 source-equivalent `if` / `else if` compare chain removes VC6's jump table and

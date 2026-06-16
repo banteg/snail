@@ -27,6 +27,20 @@ Known residuals:
 - final position y/z scheduling and the loop return differ; VC6 still emits a
   final `xor eax, eax` instead of returning the already-zero loop counter.
 
+2026-06-16 consolidation/rejection pass:
+
+- `SlugHazardRuntime` now carries the proven `0xec` pool stride and the
+  `player_hit_latched` byte at `+0xd9`; this explosion scratch still verifies
+  at `73.22%`, `148/147`, with `32` masked operands OK.
+- Rewriting the loop tail as `while (--count != 0); return count;` compiled
+  identically and did not remove VC6's final `xor eax, eax`, so the scratch
+  keeps the previous result-local spelling.
+- Direct `sprite->position` field stores regressed to `70.83%` and shrank the
+  frame to `0x2c`; direct `sprite->velocity` component stores regressed to
+  `69.69%`. Keep the aggregate `Vector3 staged_velocity`,
+  `position_offset`, and `staged_position` locals because they preserve the
+  closest native stack shape.
+
 Do not force the remaining frame/register residuals with volatile, dummy
 locals, or raw offset macros. This scratch is useful as a semantic map for the
 slug death particle burst; exact matching needs a concrete source-shape lead.
