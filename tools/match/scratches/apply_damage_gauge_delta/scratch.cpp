@@ -3,6 +3,8 @@
 // game+0x4300b4 (unforced only); state 2 blocks unforced positive deltas
 // and blocks unforced negative ones while game+0x42ff60 == 1.
 
+#include "damage_gauge.h"
+
 struct SnailSkinTransition;
 struct VoiceManager;
 struct AnimDispatcher;
@@ -27,31 +29,20 @@ struct AnimDispatcherApi {
     void dispatch_cutscene_animation(int animation, int immediate, int initial_frame);
 };
 
-struct DamageGaugeController {
-    void apply_damage_gauge_delta(float delta, char force);
-
-    int state;          // +0x00
-    char unknown_04[0x1c - 0x04];
-    float fill;         // +0x1c (this + 7 dwords)
-    char unknown_20[0x24 - 0x20];
-    float retrigger_timer; // +0x24 (this + 9)
-    float retrigger_step;  // +0x28 (this + 10)
-};
-
 void DamageGaugeController::apply_damage_gauge_delta(float delta, char force)
 {
     if (((*(unsigned char*)(g_damage_gate_byte + (int)g_game_base) & 0x80) == 0 || force)
         && (state != 2
             || (delta <= 0.0f
                 && (delta >= 0.0f || *(g_negative_delta_block_byte + (int)g_game_base) != 1)))) {
-        if (retrigger_timer == 0.0f && delta > 0.0f) {
+        if (hit_flash_progress == 0.0f && delta > 0.0f) {
             ((SnailSkinTransitionApi*)(g_snail_skin_transition + (int)g_game_base))
                 ->change_snail_skin(1, 0.2f);
             if (g_voice_manager.play_voice_manager(0, 1, -1)) {
-                retrigger_timer = retrigger_step;
+                hit_flash_progress = hit_flash_step;
             } else {
                 if (g_voice_manager.play_voice_manager(9, 0, -1))
-                    retrigger_timer = retrigger_step;
+                    hit_flash_progress = hit_flash_step;
                 if (!*(g_anim_suppress_byte + (int)g_game_base)) {
                     ((AnimDispatcherApi*)(g_player_presentation_offset + (int)g_game_base))
                         ->dispatch_cutscene_animation(6, 1, -1);

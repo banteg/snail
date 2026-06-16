@@ -24,3 +24,9 @@ voice-failure branch, not parallel to it.
 2026-06-13 pin audit: focused matcher still verifies 58.20%, 95/94 insns.
 Keep pinned; the remaining diff is register/materialization golf, while the
 damage gates, fill clamp, voice fallback, and animation nesting are recovered.
+
+2026-06-16 type consolidation: this now uses the shared
+`DamageGaugeController` view from `damage_gauge.h`. The former local
+`retrigger_timer`/`retrigger_step` names are the same +0x24/+0x28
+`hit_flash_progress`/`hit_flash_step` fields initialized and advanced by the
+gauge update path. Match remains 58.20%.

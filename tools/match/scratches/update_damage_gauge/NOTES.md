@@ -57,3 +57,8 @@ layouts.
 though the addressed dump shows those two stack slots are swapped versus
 native. Treat the render-slot mismatch as allocation/scheduling until a
 source-shaped owner changes codegen.
+
+2026-06-16 type consolidation: `DamageGaugeController` is now shared through
+`damage_gauge.h` with initialize and apply-delta. The +0x24/+0x28 fields keep
+the update-path `hit_flash_progress`/`hit_flash_step` names; apply-delta uses
+the same pair as its retrigger gate. Match remains 80.60%.

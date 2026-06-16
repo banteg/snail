@@ -1,6 +1,7 @@
 // update_damage_gauge @ 0x440fd0 (thiscall, ret)
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
+#include "damage_gauge.h"
 #include "sprite.h"
 #include "snail_skin.h"
 
@@ -58,23 +59,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int layer,
     int blend);
-
-struct DamageGaugeController {
-    void update_damage_gauge();
-    void apply_damage_gauge_delta(float delta, char force); // @ 0x4413f0
-
-    int state;                         // +0x00
-    float pulse_progress;              // +0x04
-    float pulse_step;                  // +0x08
-    char unknown_0c[0x10 - 0x0c];
-    float warning_transition_progress; // +0x10
-    float warning_transition_step;     // +0x14
-    int skin_hold_ticks;               // +0x18
-    float fill;                        // +0x1c
-    float display_fill;                // +0x20
-    float hit_flash_progress;          // +0x24
-    float hit_flash_step;              // +0x28
-};
 
 void DamageGaugeController::update_damage_gauge()
 {
