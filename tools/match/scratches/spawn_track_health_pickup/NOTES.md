@@ -50,3 +50,10 @@ Remaining mismatch:
   shorter than the earlier word-indexed scratch.
 - The active-list splice is now expressed through `BodList`/`BodNode`, but it
   still differs in register allocation and branch layout from the native splice.
+
+2026-06-16 list-splice branch-order pass: reordered the shared active-list
+insert source so the empty-list case is the fallthrough and the non-empty insert
+is the taken branch. This matches the native splice direction also recovered in
+the jetpack pickup spawner, improves focused Wibo from `48.98%` (`123/122`) to
+`50.00%` (`122/122`), and keeps the `7` masked operands clean. The prologue and
+staged-position copy remain the main residuals.

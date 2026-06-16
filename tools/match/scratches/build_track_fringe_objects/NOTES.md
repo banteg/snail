@@ -63,3 +63,12 @@ Main residuals from `--regions`:
 - marked-row render-flag clearing is semantic but differs as `cmp eax, ebx`
   versus `test eax, eax` and has shifted labels from the earlier register
   allocation split.
+
+## 2026-06-16 TrackRowCell consolidation
+
+`TrackRowCell` now exposes the four fringe object pointers at
+`+0x44..+0x50` in the shared attachment header. This scratch consumes that
+shared view directly instead of carrying a private `RuntimeCell` clone, while
+keeping `FringeObject` local because the type scanner still reports divergent
+scratch-local shapes. Focused Wibo is codegen-neutral at `49.44%`, with the
+same `47` clean masked operands.
