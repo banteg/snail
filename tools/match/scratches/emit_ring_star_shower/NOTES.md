@@ -4,7 +4,7 @@ Live source map for the star burst emitted by
 `update_ring_or_special_effect_particle` when the parent cadence counter is
 zero.
 
-Current match: 71.21%, 67 candidate instructions versus 65 target instructions,
+Current match: 74.42%, 64 candidate instructions versus 65 target instructions,
 with 9 clean masked operands. The scratch deliberately uses shared `sprite.h`,
 `player.h`, and `ring_special_effect_types.h`, confirming the already-promoted
 Sprite lanes used by this emitter:
@@ -19,10 +19,13 @@ Residual:
 
 - Native reserves a `0x18` stack frame immediately after loading
   `g_render_flags`. The current source still compiles to a smaller `0x0c`
-  frame and a different position-copy register schedule, but now matches the
-  native idea of filling a local velocity vector with unscaled orbit components
-  before applying the `0.30000001f` velocity scale and copying the vector to
-  `sprite->velocity`.
+  frame, but now matches the native idea of filling a local velocity vector
+  with unscaled orbit components before applying the `0.30000001f` velocity
+  scale and copying the vector to `sprite->velocity`.
+- The position copy is intentionally dword-shaped: native copies x/y/z from
+  the parent sprite position, stores gravity zero before writing z, and returns
+  the low byte of the copied z dword. The `int*` spelling keeps that
+  relationship explicit and removes the earlier extra source-z byte reload.
 
 Rejected/source-shape probes:
 
@@ -48,6 +51,12 @@ Rejected/source-shape probes:
   58.54% to 71.21%. A separate `scaled_x` / `scaled_y` spelling compiled
   identically to the earlier 67.69% vector-copy variant, so the in-place vector
   scaling is kept as the better source-shaped form.
+- 2026-06-16 dword position-copy correction: spelling the parent sprite
+  position copy as three dword lanes improves the focused match from 71.21% to
+  74.42% and removes three candidate instructions at the tail. Explicit
+  unscaled velocity x/y locals regressed to 70.87%, and an explicit sprite
+  flag read-modify-write compiled identically to the simple `flags |= 0x800`
+  source, so neither variant is kept.
 
 Type consolidation:
 
