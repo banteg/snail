@@ -7,7 +7,7 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-lane/glyph slice: 18.90%, 935/1245 candidate instructions (`tools/match/match.sh
+entry/anchor slice: 27.24%, 1185/1245 candidate instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -34,7 +34,9 @@ setup before the authored-row/glyph pass:
 - the lane setup and first glyph normalization switch slice: lane word reset,
   cell payload clear, edge-row classification, bod reset, normalizer dispatch,
   hidden/floor/wall/ramp/simple bod tiles, digit row payloads, trampoline
-  cadence, mirror glyph, warning tile, and prior-row ramp retags.
+  cadence, mirror glyph, warning tile, prior-row ramp retags, `P`/`p`
+  attachment entry install, and shared post-switch anchor/color/UV/sub-object
+  placement.
 
 2026-06-14 type cleanup: `set_color_white` is now declared as a void mutator,
 matching the exact standalone helper and `build_track_colours`. This removes
@@ -71,10 +73,16 @@ not an unknown field. A standalone source block for this path compiled to
 anchor was present, so keep the source unchanged until the entry path and
 post-switch anchor can be landed together.
 
-Residuals: the scratch now enters the 8-lane glyph normalization switch but
-still stops before the entry attachment (`P`/`p`) install path and the shared
-post-switch anchor, color/skirt, UV, and sub-object placement block. Do not try
-to pad the frame or hide the missing post-switch work with dummy code.
+2026-06-16 entry/anchor slice: `P`/`p` plus the shared post-switch
+anchor/color/UV/sub-object block are now in source. Focused score moved from
+18.90% to 27.24%, with masked operands 57 ok / 1 unresolved / 0 mismatch. The
+lane correction matters: anchor/UV math uses the runtime lane loop counter,
+while glyph lookup uses the mirrored authored lane. The native entry-tile
+anchor also puts `cell->anchor_position.z` at the row boundary (`row + 0.0`),
+not the non-entry `row + 0.5` center. Remaining residuals are source-shape
+issues: candidate frame is still `0x40` vs native `0x44`, and the jump-table
+displacement remains unresolved. Do not pad the frame or force switch layout
+with dummy code.
 
 ## Build sequence
 
@@ -139,16 +147,17 @@ to pad the frame or hide the missing post-switch work with dummy code.
 
 ## Cell anchor math (grid-audit ground truth)
 
-- non-entry tiles: anchor.x = (float)(mirrored lane) - 4.0 + 0.5
+- non-entry tiles: anchor.x = (float)(runtime lane) - 4.0 + 0.5
   (lane CENTER, [-3.5 .. 3.5]); anchor.y = 0 except ramp-tops 8/9/10
   (= 0.5), rows < 4 non-mode-2 (start platform global), tile 28
   (y -= c), tile 22 keeps y = -1.5-ish const (-1069547520 = -1.5)
   outside mode 3 unless flags & 0x400; anchor.z = row + 0.5.
 - entry tiles 29/30: anchor.x = 0.0 (CENTERED — the whole row is the
-  attachment), anchor.z = row + 0.5 with a second field at row + 0.0;
-  skirt-color object variant under byte_4DF934 & 0x20.
+  attachment), anchor.z = row + 0.0; the row projection/skirt branch also uses
+  row + 0.0. The local row + 0.5 value is not the entry cell anchor.
+  Skirt-color object variant under byte_4DF934 & 0x20.
 - floor family checkerboard uvs: tiles {1,15..27,33,34} get
-  (8-lane)*c and (row%8)*c uv scalars.
+  (8-runtime-lane)*c and (row%8)*c uv scalars.
 - tile 31 anchor.x *= c (497434).
 - 4 sub-object slots at cell+0x4c..: position row copied, vec zeroed.
 
