@@ -1,5 +1,6 @@
 // Shared parcel runtime view, cross-checked by parcel pool management,
-// spawn_track_parcel, and update_row_event_display.
+// spawn_track_parcel, update_track_parcels, update_row_event_display, and
+// handle_subgoldy_collisions.
 #ifndef TRACK_PARCEL_RUNTIME_H
 #define TRACK_PARCEL_RUNTIME_H
 
@@ -22,6 +23,9 @@ struct TrackParcelRuntime {
     char unknown_68[0x8c - 0x68];
 };
 
+typedef char TrackParcelRuntime_must_be_0x8c[
+    (sizeof(TrackParcelRuntime) == 0x8c) ? 1 : -1];
+
 struct TrackParcelPool {
     TrackParcelRuntime* allocate_track_parcel_slot();
     void initialize_track_parcel_slots();
@@ -29,5 +33,8 @@ struct TrackParcelPool {
 
     TrackParcelRuntime slots[50];
 };
+
+typedef char TrackParcelPool_must_be_0x1b58[
+    (sizeof(TrackParcelPool) == 0x1b58) ? 1 : -1];
 
 #endif
