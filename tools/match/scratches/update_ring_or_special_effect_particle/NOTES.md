@@ -33,7 +33,11 @@ Rejected source-shape probe:
   phase_step at `+0x18`, and radius at `+0x1c`.
 - The parent offsets used here are position `+0x68/+0x6c/+0x70`, owner player
   `+0x84`, kind `+0x88`, and star-shower counter `+0x1e8`.
-- Do not promote the ring/special-effect structs from this scratch alone; use
-  `spawn_track_ring_or_special_effect` and
+- `RingOrSpecialEffectParent` is now promoted to
+  `tools/match/include/ring_special_effect_types.h` after corroboration from
+  `emit_ring_star_shower`.
+- Do not promote `RingOrSpecialEffectParticle` yet: this updater needs
+  `emit_ring_star_shower` declared as an `int` return to avoid an extra
+  `movsx eax, al`, while the emitter itself is byte-return shaped. Use
   `initialize_ring_or_special_effect_particles` as the next corroborating
-  callsites.
+  callsite before deciding how to model the method surface.

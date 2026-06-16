@@ -1,21 +1,11 @@
 // update_ring_or_special_effect_particle @ 0x43e780 (thiscall)
 
 #include "player.h"
+#include "ring_special_effect_types.h"
 #include "sprite.h"
 
 float sine(float radians);
 float cosine(float radians);
-
-class RingOrSpecialEffectParent {
-public:
-    char unknown_000[0x68];
-    Vector3 position; // +0x68
-    char unknown_074[0x84 - 0x74];
-    Player* owner_player; // +0x84
-    int kind; // +0x88
-    char unknown_08c[0x1e8 - 0x8c];
-    int star_shower_counter; // +0x1e8
-};
 
 class RingOrSpecialEffectParticle {
 public:
