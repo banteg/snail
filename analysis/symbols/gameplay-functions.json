@@ -3060,9 +3060,24 @@
       "description": "Parser-side metadata matcher used for case-insensitive, prefix-friendly tag probes."
     },
     {
+      "address": "0x44e690",
+      "name": "advance_to_next_crlf_line",
+      "description": "Resource-loader text helper that returns the first byte after the next CRLF pair, or null when there is no following non-empty line."
+    },
+    {
+      "address": "0x44e6c0",
+      "name": "strings_equal_case_insensitive_path",
+      "description": "ASCII case-insensitive equality comparator used by path, mesh, landscape, and music lookup helpers. Unlike the earlier parser comparator, both strings must terminate after the folded match."
+    },
+    {
       "address": "0x44e710",
       "name": "parse_next_signed_int",
       "description": "Advances a text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers."
+    },
+    {
+      "address": "0x44e780",
+      "name": "sample_tga_pixel_rgb",
+      "description": "Samples one bottom-up TGA-style pixel from the loaded font texture sheet buffer, expanding 8-bit grayscale pixels or returning packed 24-bit RGB."
     },
     {
       "address": "0x44e800",
@@ -3072,6 +3087,16 @@
       "address": "0x44e810",
       "name": "get_or_create_texture_ref",
       "description": "Looks up or allocates one TextureRefList entry, using the 0xa4-byte TextureRef stride, 0x80-byte inline path, no-reuse flag, and slot-index/count bookkeeping behind sprite texture registration."
+    },
+    {
+      "address": "0x44e900",
+      "name": "attach_render_camera_source",
+      "description": "Attaches a source render object to one runtime camera/render slot and marks the slot active through flag bit 0."
+    },
+    {
+      "address": "0x44e920",
+      "name": "initialize_render_camera_slot",
+      "description": "Initializes one 0x28-byte runtime camera/render slot used by render_game_frame, seeding viewport lanes, draw-world state, and the default 0.8725f lane while leaving owner fields for later setup."
     },
     {
       "address": "0x44fd90",

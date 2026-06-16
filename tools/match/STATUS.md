@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**285/665** mapped gameplay functions matched, **18584/326119** bytes (**5.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**288/670** mapped gameplay functions matched, **18707/326073** bytes (**5.7%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -365,9 +365,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | ascii_upper_if_lowercase | 0x44e5a0 | 16 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 77/63 | 25.71% | 0/63 | 2 ok |  |
+| 🚧 | advance_to_next_crlf_line | 0x44e690 | 47 | 21/22 | 79.07% | 3/22 | - |  |
+| ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  |
 | 🚧 | parse_next_signed_int | 0x44e710 | 107 | 50/47 | 28.87% | 0/47 | - |  |
+| 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
+| ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
+| ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
 ## Type Consolidation
 

@@ -395,15 +395,6 @@
       "description": "No-op this-returning constructor thunk reused by trivial default constructors before later real initialization."
     },
     {
-      "address": "0x44e6c0",
-      "name": "strings_equal_case_insensitive_path",
-      "kind": "function",
-      "aliases": [
-        "sub_44e6c0"
-      ],
-      "description": "ASCII case-insensitive string comparator used by path, mesh, landscape, and music lookup helpers."
-    },
-    {
       "address": "0x44fd8a",
       "name": "D3DXMatrixTranslation",
       "kind": "function",
