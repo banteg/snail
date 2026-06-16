@@ -63,7 +63,7 @@ void SaltHazardSlot::update_salt_hazard()
             alpha = 1.0f;
         }
         *(float*)((char*)this + 0x8c) = alpha;
-        ((Color4f*)((char*)this + 0x28))->set_color_alpha(0x3f666666);
+        color.set_color_alpha(0x3f666666);
         if (position.z < owner_game->salt_kill_plane_z)
             state = 2;
         return;

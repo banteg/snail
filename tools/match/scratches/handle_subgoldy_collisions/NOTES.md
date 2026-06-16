@@ -26,6 +26,13 @@ speedup x/y/z vector, while the exact updater consumes the z lane and the
 initializer proves the renderable constructor path. The singleton still keeps
 the zero-offset `BodNode` list overlay for teardown.
 
+2026-06-16 salt BOD/renderable consolidation: `SaltHazardSlot` now uses the
+shared `BodNode` prefix and `BodList` anchor, and exposes the BodBase/renderable
+fields through `position +0x68`. This collision scratch consumes the salt
+position vector and the low byte at `+0x94`; the latter remains represented as
+`*(unsigned char*)&slot->velocity.z` because spawn and collision prove the
+byte latch but not a clean source-level field name.
+
 2026-06-16 ring reward ladder pass: the ring/special-effect reward ladder is
 not a native `switch`. Replacing the scratch `switch (effect_kind)` with a
 source-equivalent `if` / `else if` compare chain removes VC6's jump table and

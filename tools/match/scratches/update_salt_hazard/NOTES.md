@@ -18,3 +18,11 @@ Recovered behavior:
 
 This replaces the previous salt interpretation of `0x4417d0`; that function is
 now correctly owned by the sub-lazer vtable.
+
+2026-06-16 BOD/renderable consolidation: the shared `SaltHazardSlot` header now
+uses the promoted `BodNode` prefix and `BodList` anchor, and records the
+BodBase/renderable rows through `+0x77`. This updater now calls
+`color.set_color_alpha(...)` through the promoted `Color4f color +0x28` field
+instead of a raw cast, while spawn/initializer/collision prove the position
+row at `+0x68`. Focused Wibo remains `62.96%`, `79/83`, with the same known
+state-2 error-string tail merge mismatch.

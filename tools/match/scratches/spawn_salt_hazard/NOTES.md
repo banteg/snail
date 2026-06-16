@@ -26,3 +26,12 @@ pass ordering. All semantics verified in the diff body:
 2026-06-13 pin audit: focused matcher still verifies 74.07%, 68/67 insns.
 Keep pinned; the remaining diff is free-scan loop rotation plus scheduling,
 while the velocity.z low-byte poke and list-link semantics are recovered.
+
+2026-06-16 BOD/renderable consolidation: `SaltHazardSlot` now inherits the
+shared `BodNode` prefix, aliases the free-list anchor to `BodList`, and exposes
+the renderable/BodBase fields used by salt. This spawn path proves the
+zero-offset live-list overlay and writes the matrix position row at `+0x68`;
+`initialize_salt_hazard_runtime` calls `initialize_renderable_bod()`, and the
+updater drives `color +0x28`. Focused Wibo remains `74.07%`, with `8` masked
+operands OK. The `+0x94` low-byte poke remains spelled as an overlay on
+`velocity.z` until more source evidence gives it a better semantic name.
