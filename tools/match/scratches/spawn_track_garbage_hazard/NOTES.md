@@ -74,3 +74,13 @@ Residuals:
   sprite allocation still reloads through the slot owner field before reading
   `Player::player_slot`. This consumes the shared player header with identical
   codegen: 92.58%, 140/143 instructions, 16 clean masked operands.
+- 2026-06-16 projection-staging retry: assigning `staged_position.y` before
+  x/z is semantically valid, but regresses to 89.75% by moving `fld [scale]`
+  before the native cell reload and still does not recover the native x/z stack
+  spills. Keep the two-step `staged_y` temporary.
+- Native relationship evidence: the projected position block writes
+  `GarbageHazardSlot::world_position +0x68` from the cell anchor plus
+  `radius +0x9c`, then passes `sprite_y_offset +0xa0` to
+  `project_position_onto_track_attachment`. The tail stores `source_cell +0xb8`
+  and clears `hidden +0xbc`, so those fields are metadata for later update and
+  visibility paths rather than inputs to the projection.
