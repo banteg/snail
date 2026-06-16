@@ -113,6 +113,12 @@ fields consumed by `begin_track_attachment_follow_state`,
 `project_position_onto_track_attachment`, `place_parcels_on_track`, and the
 player attachment-entry path.
 
+2026-06-16 layout assertion pass: `AttachmentPathTemplate` now carries
+explicit tail padding and asserts `sizeof(AttachmentPathTemplate) == 0x150`.
+The builder's `P`/`p` path selects from both template banks with that stride,
+while earlier fields through `+0xa8` remain the shared path-follow template
+view consumed by attachment entry/projection/follow scratches.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else

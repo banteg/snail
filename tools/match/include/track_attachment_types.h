@@ -31,6 +31,9 @@ struct AttachmentSample {            // stride 0xa8
     float lateral_source;            // +0xa4
 };
 
+typedef char AttachmentSample_must_be_0xa8[
+    (sizeof(AttachmentSample) == 0xa8) ? 1 : -1];
+
 struct TrackRowCell;
 
 struct AttachmentPathTemplate {
@@ -61,9 +64,13 @@ struct AttachmentPathTemplate {
     };                               // +0x98
     unsigned char special_runtime_flag_9c; // +0x9c
     char unknown_9d[0xa8 - 0x9d];
+    char unknown_a8[0x150 - 0xa8];
 
     int get_path_position_at_node(Vector3* out, int node, int row_index, float* local);
 };
+
+typedef char AttachmentPathTemplate_must_be_0x150[
+    (sizeof(AttachmentPathTemplate) == 0x150) ? 1 : -1];
 
 struct TrackRowCell {
     char unknown_00[0x10];
@@ -82,6 +89,9 @@ struct TrackRowCell {
     int get_track_cell_row_index();
 };
 
+typedef char TrackRowCell_must_be_0x54[
+    (sizeof(TrackRowCell) == 0x54) ? 1 : -1];
+
 struct TrackAttachmentRuntimeRow {       // stride 0xf4
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
     char unknown_04[0x90 - 0x04];
@@ -96,6 +106,9 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     char unknown_ac[0xf0 - 0xac];
     int row_event_id;                    // +0xf0
 };
+
+typedef char TrackAttachmentRuntimeRow_must_be_0xf4[
+    (sizeof(TrackAttachmentRuntimeRow) == 0xf4) ? 1 : -1];
 
 class FollowState {
 public:
