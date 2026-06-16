@@ -1,7 +1,6 @@
 // spawn_track_health_pickup @ 0x43d6c0 (thiscall, ret 0x8)
 
 #include "player.h"
-#include "position_bits.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "track_health_pickup.h"
@@ -42,11 +41,11 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
     slot->pickup.state = 1;
     slot->pickup.owner = player;
 
-    PositionBits staged_position;
-    staged_position.z = *(int*)&cell->anchor_position.z;
+    Vector3 staged_position;
+    staged_position.x = cell->anchor_position.x;
+    staged_position.z = cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 0.60000002f;
-    staged_position.x = *(int*)&cell->anchor_position.x;
-    PositionBits* live_position = (PositionBits*)&slot->pickup.world_position;
+    Vector3* live_position = &slot->pickup.world_position;
     *live_position = staged_position;
 
     BodNode* node = (BodNode*)&slot->pickup;
@@ -82,9 +81,9 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
     slot->pickup.sprite->size_end = 0.60000002f;
 
     DWORD* out_position = (DWORD*)&slot->pickup.sprite->position;
-    out_position[0] = *(DWORD*)live_position;
-    out_position[1] = *((DWORD*)live_position + 1);
-    out_position[2] = *((DWORD*)live_position + 2);
+    out_position[0] = *(DWORD*)&live_position->x;
+    out_position[1] = *(DWORD*)&live_position->y;
+    out_position[2] = *(DWORD*)&live_position->z;
     slot->pickup.source_cell = cell;
     slot->pickup.bob_phase = 0.0f;
     if (((int)slot->pickup.world_position.z & 1) == 0)

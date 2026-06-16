@@ -183,9 +183,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 73/76 | 84.56% | 5/76 | 9 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 50.00% | 2/122 | 7 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 72.95% | 16/122 | 7 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
-| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 138/144 | 73.76% | 31/144 | 9 ok |  |
+| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 141/144 | 79.30% | 44/144 | 9 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 | 16 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 223/347 | 51.23% | 22/347 | 8 mismatch, 34 ok |  |
 | 🚧 | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 99.35% | 21/153 | 10 ok |  |

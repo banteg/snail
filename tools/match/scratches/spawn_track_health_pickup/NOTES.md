@@ -4,12 +4,12 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `48.98%`, `123/122` candidate/target instructions, with `7` masked operands
+- `72.95%`, `122/122` candidate/target instructions, with `7` masked operands
   ok.
 - The scratch now uses the promoted `TrackHealthPickup` field names for slot
-  initialization and sprite ownership. The key source-shape fix from the prior
-  version, staging the cell position through the shared `PositionBits` local,
-  is still present.
+  initialization and sprite ownership. The key source-shape fix is staging the
+  cell position through a normal `Vector3` local, not the older raw-bit
+  `PositionBits` view.
 
 Evidence:
 
@@ -45,9 +45,9 @@ Remaining mismatch:
   `[slot_base + 0x356000 + field]` addressing into small member offsets. The
   padded scratch-local pool-slot view keeps the real struct visible without
   making that invalid register-ownership assumption.
-- The typed `TrackHealthPickup` field view makes VC6 preserve `this` in `esi`
-  near the prologue instead of using the original stack spill, so the prefix is
-  shorter than the earlier word-indexed scratch.
+- The `Vector3` staging correction recovers the native position-local stack
+  materialization. The remaining prefix break is now the order of the slot-index
+  multiply/subtract versus the late `cell` reload.
 - The active-list splice is now expressed through `BodList`/`BodNode`, but it
   still differs in register allocation and branch layout from the native splice.
 
@@ -57,3 +57,10 @@ is the taken branch. This matches the native splice direction also recovered in
 the jetpack pickup spawner, improves focused Wibo from `48.98%` (`123/122`) to
 `50.00%` (`122/122`), and keeps the `7` masked operands clean. The prologue and
 staged-position copy remain the main residuals.
+
+2026-06-16 Vector3 staging correction: BN and the target asm both show three
+float-sized position locals before copying into `world_position`. Replacing the
+raw `PositionBits` staging with an ordinary `Vector3 staged_position` recovers
+that stack-local copy and corrects the earlier assumption that x/z needed a
+raw-bit struct here. Focused Wibo improves from `50.00%` to `72.95%`, prefix
+from `2/122` to `16/122`, with all `7` masked operands still OK.

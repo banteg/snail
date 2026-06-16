@@ -4,12 +4,12 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `52.86%`, `136/144` candidate/target instructions, with `9` masked
+- `79.30%`, `141/144` candidate/target instructions, with `9` masked
   operands ok.
 - The scratch now uses the promoted `TrackJetpackPickup` field names and the
-  shared `BodList`/`BodNode` active-list shape. Prefix improves to `25/144`;
-  the remaining mismatch is mostly the choice to base `esi` at the pickup slot
-  rather than at `game + slot_index * 0x19c`.
+  shared `BodList`/`BodNode` active-list shape. Prefix improves to `44/144`;
+  the first remaining mismatch is the lane-wall tile compare spelling
+  (`mov cl, 0xe` in native versus the current byte-load/constant compare).
 
 Evidence:
 
@@ -48,3 +48,12 @@ Rejected follow-ups: pointer-to-local staging for the initial `PositionBits`
 copy compiled identically, a local wall-tile byte compiled identically, and an
 explicit odd-z bob-phase `else` regressed to `72.22%` by reversing the tail
 block order.
+
+2026-06-16 Vector3 staging correction: same correction as health. The native
+function materializes float-sized `x/y/z` locals before storing the pickup
+`world_position`, so the scratch now uses `Vector3 staged_position` instead of
+the raw `PositionBits` view. Focused Wibo improves from `73.76%` to `79.30%`,
+candidate size from `138/144` to `141/144`, and prefix from `31/144` to
+`44/144`, with all `9` masked operands still OK. Retesting signed/named
+wall-tile constants remained codegen-neutral and did not recover the native
+`mov cl, 0xe` ordering, so the source keeps direct tile-id comparisons.

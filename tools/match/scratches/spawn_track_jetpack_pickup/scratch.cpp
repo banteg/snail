@@ -1,7 +1,6 @@
 // spawn_track_jetpack_pickup @ 0x43d890 (thiscall, ret 0x8)
 
 #include "player.h"
-#include "position_bits.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "track_jetpack_pickup.h"
@@ -42,20 +41,20 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
     slot->pickup.state = 1;
     slot->pickup.owner = player;
 
-    PositionBits staged_position;
-    staged_position.z = *(int*)&cell->anchor_position.z;
+    Vector3 staged_position;
+    staged_position.x = cell->anchor_position.x;
+    staged_position.z = cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 1.5f;
-    staged_position.x = *(int*)&cell->anchor_position.x;
-    PositionBits* live_position = (PositionBits*)&slot->pickup.world_position;
+    Vector3* live_position = &slot->pickup.world_position;
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & 7;
     if (lane == 3 && *((unsigned char*)cell - 24) == 14
         && *((unsigned char*)cell + 228) == 14) {
-        ((float*)live_position)[0] = ((float*)live_position)[0] + 0.5f;
+        live_position->x = live_position->x + 0.5f;
     } else if (lane == 4 && *((unsigned char*)cell - 108) == 14
         && *((unsigned char*)cell + 144) == 14) {
-        ((float*)live_position)[0] = ((float*)live_position)[0] - 0.5f;
+        live_position->x = live_position->x - 0.5f;
     }
 
     BodNode* node = (BodNode*)&slot->pickup;
@@ -91,9 +90,9 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
     slot->pickup.sprite->size_end = 1.5f;
 
     DWORD* out_position = (DWORD*)&slot->pickup.sprite->position;
-    out_position[0] = *(DWORD*)live_position;
-    out_position[1] = *((DWORD*)live_position + 1);
-    out_position[2] = *((DWORD*)live_position + 2);
+    out_position[0] = *(DWORD*)&live_position->x;
+    out_position[1] = *(DWORD*)&live_position->y;
+    out_position[2] = *(DWORD*)&live_position->z;
     slot->pickup.source_cell = cell;
     slot->pickup.bob_phase = 0.0f;
 
