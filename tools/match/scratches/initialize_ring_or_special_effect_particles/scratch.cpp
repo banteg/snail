@@ -16,7 +16,8 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
         particle->phase = (float)i * 0.628318548f;
         particle->phase_step = rate_source->subgame_rate * 0.104719758f;
         particle->parent = this;
-        particle->base_position = *parent_position;
+        Vector3* base_position = &particle->base_position;
+        *base_position = *parent_position;
         particle->radius = 1.2f;
 
         int effect_kind = kind;

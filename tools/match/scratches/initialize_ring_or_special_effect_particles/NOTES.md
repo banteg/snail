@@ -3,7 +3,7 @@
 Live source map for the ten child halo sprites attached to a
 `RingOrSpecialEffectParent`.
 
-Current match: 98.69%, 153 candidate instructions versus 153 target
+Current match: 99.35%, 153 candidate instructions versus 153 target
 instructions, with 10 clean masked operands.
 
 Evidence:
@@ -25,14 +25,15 @@ Source-shape win:
   state/counter stores before the particle setup and removes the extra carried
   `ebx += 0x20` induction update. This improves the focused match from 96.42%
   to 98.69% and raises the prefix from 8 to 21 instructions.
+- Spelling the `base_position` copy through a local destination pointer,
+  `Vector3* base_position = &particle->base_position`, recovers native's
+  copy-before-radius schedule and improves the focused match from 98.69% to
+  99.35%.
 
 Residual:
 
 - Native stores `phase_step` before `parent`, while VC6 schedules the parent
-  pointer store before the x87 `fstp`.
-- Native copies all three `base_position` lanes before storing `radius`; VC6
-  schedules the radius store before the final z-lane copy. The data flow and
-  instruction count otherwise align.
+  pointer store before the x87 `fstp`. This is the only remaining focused diff.
 
 Rejected/source-shape probes:
 
@@ -45,6 +46,8 @@ Rejected/source-shape probes:
   fix, so it was reverted as source-neutral churn.
 - Rewriting `base_position = *parent_position` as explicit x/y/z field copies
   regressed to 50.33% by changing register ownership across the whole loop.
+- Moving the `parent` assignment after the local `base_position` pointer
+  declaration compiled identically at 99.35%, so keep the clearer source order.
 
 Type consolidation:
 
@@ -61,4 +64,4 @@ Type consolidation:
 - 2026-06-16 lives-snapshot correction: the ignored `ret 0x4` argument is the
   same `Player::lives` snapshot passed by the ring spawner. The initializer
   still does not consume it, but the signature is now an ignored integer rather
-  than a fake pointer. Focused score remains `96.42%`.
+  than a fake pointer.
