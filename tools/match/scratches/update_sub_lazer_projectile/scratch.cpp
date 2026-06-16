@@ -59,6 +59,8 @@ void SubLazerSlot::update_sub_lazer_projectile()
     case 2: {
         SubLazerListAnchor* anchor = &g_game->sub_lazer_free_anchor;
         int flags = list_flags;
+        BodNode* next;
+        BodNode* prev;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
             state = 0;
@@ -69,10 +71,12 @@ void SubLazerSlot::update_sub_lazer_projectile()
             state = 0;
             return;
         }
-        if (list_next)
-            list_next->list_prev = list_prev;
-        if (list_prev)
-            list_prev->list_next = list_next;
+        next = list_next;
+        if (next)
+            next->list_prev = list_prev;
+        prev = list_prev;
+        if (prev)
+            prev->list_next = list_next;
         else
             anchor->first = list_next;
         list_next = anchor->free_top;

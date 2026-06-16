@@ -30,3 +30,9 @@ Semantics fully pinned:
 2026-06-15 pin audit: focused matcher verifies 62.79%, 43/43 insns,
 masked operands 4 ok / 0 mismatch. Keep pinned; remaining diff is
 register/anchor materialization, not a semantic gap.
+
+2026-06-16 BOD-list consolidation: this now uses the shared `BodNode` prefix
+and `BodList` anchor through `sub_lazer_types.h`. Focused Wibo remains 62.79%,
+43/43 insns, with four masked operands OK. The typed consolidation confirms
+the helper is a specialized spelling of the common live/free-list teardown, not
+a distinct sub-lazer-only list layout.

@@ -38,3 +38,10 @@ aliases; the current source is the closest honest shape found.
 jetpack pickup parent updater at `0x43efb0`. A raw-word staging probe for the
 velocity-z/phase store order regressed to 72.00% by changing register
 ownership, so the vector-copy spelling remains pinned.
+
+2026-06-16 BOD-list consolidation: `SubLazerSlot` now inherits the shared
+`BodNode` prefix, and `SubLazerListAnchor` aliases `BodList`. Focused Wibo
+still verifies 98.41%, 63/63 insns, with six masked operands OK. This confirms
+the sub-lazer pool uses the same intrusive list prefix as the other BOD-backed
+runtime pools; the remaining residual is still only the velocity-z/phase store
+scheduling noted above.

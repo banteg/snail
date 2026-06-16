@@ -25,3 +25,10 @@ progress, integrates `position += velocity`, bounds-checks against the
 game kill plane, tests track attachment containment, and deactivates on hit
 or exit. The remaining diff is zero/register scheduling around the attachment
 probes, not a known semantic gap.
+
+2026-06-16 BOD-list consolidation: `SubLazerSlot` now shares the promoted
+`BodNode` prefix and `SubLazerListAnchor` aliases `BodList`. The updater still
+verifies at 48.39%, 216/218 candidate/target insns, with 17 masked operands OK.
+The state-2 inline teardown is therefore confirmed as the same list topology as
+the exact `recycle_bod_to_free_list` helper, even though this function keeps its
+own inlined removal body.
