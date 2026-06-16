@@ -9,9 +9,10 @@ Current match:
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
   by the parent-field offsets below.
-- A fully duplicated switch version was rejected because MSVC failed while
-  compiling the scratch. Keeping the grouped switch preserves useful struct
-  evidence without adding source clutter.
+- A fully duplicated switch version was rejected because MSVC failed before
+  emitting `scratch.obj`. Even splitting only kind `1` into its native
+  `RR2`/`RR3` path hit the same no-object failure, so the source keeps grouped
+  cases for compilability.
 
 Evidence:
 
@@ -26,6 +27,22 @@ Evidence:
 - Parent `+0x1d0` is not installed here; prior runtime notes and the
   initializer show that rate source is already present by the time child
   particles are initialized.
+
+Native switch map:
+
+- Kinds `0..4` are semantically similar orbiting track effects but native keeps
+  separate authored RNG tags and duplicated position setup:
+  `0 -> RR/RR1`, `1 -> RR2/RR3`, `2 -> RR4/RR5`, `3 -> RR6/RR7`,
+  `4 -> RR8/RR9`.
+- Kind `2` is the taller/deeper placement (`y + 3.5`, `z + 17.0`); kinds
+  `0`, `1`, `3`, and `4` use `y + 2.5`, `z + 6.0`.
+- Kinds `5..8` are also separate in native for RNG tags:
+  `5 -> RR10`, `8 -> RR11`, `6 -> RR12`, `7 -> RR13`. All use the
+  ring-speed-derived `active_phase_step`.
+- The current grouped source intentionally uses only representative tags
+  (`RR`/`RR1`, `RR4`/`RR5`, `RR10`) so it can compile; the masked operand audit
+  mismatches around `RR2`/`RR3` are this known source grouping, not field-layout
+  evidence.
 
 Type consolidation:
 

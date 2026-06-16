@@ -11,7 +11,8 @@ float sine(float radians);
 
 void RingOrSpecialEffectParent::update_subgoldy_bullet()
 {
-    if (rate_source->paused != 0)
+    RingEffectRateSource* rate = rate_source;
+    if (rate->paused != 0)
         return;
 
     star_shower_counter++;
@@ -85,7 +86,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
     case 2:
         state = 3;
         transition_progress = 0.0f;
-        transition_step = rate_source->subgame_rate * 0.0694444478f;
+        transition_step = rate->subgame_rate * 0.0694444478f;
         // fall through
 
     case 3:
@@ -131,12 +132,13 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
             return;
         } else {
             Vector3* target = (Vector3*)((char*)owner_player + 0x2964);
-            float delta_x = (target->x - position.x) * 0.939999998f;
-            float delta_y = (target->y - position.y) * 0.939999998f;
-            float delta_z = ((target->z + 0.200000003f) - position.z) * 0.939999998f;
-            position.x += delta_x;
-            position.y += delta_y;
-            position.z += delta_z;
+            Vector3 delta;
+            delta.x = (target->x - position.x) * 0.939999998f;
+            delta.y = (target->y - position.y) * 0.939999998f;
+            delta.z = ((target->z + 0.200000003f) - position.z) * 0.939999998f;
+            position.x += delta.x;
+            position.y += delta.y;
+            position.z += delta.z;
 
             int count = 10;
             RingOrSpecialEffectParticle* particle =
@@ -153,7 +155,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
     case 4:
         state = 5;
         transition_progress = 0.0f;
-        transition_step = rate_source->subgame_rate * 0.0694444478f;
+        transition_step = rate->subgame_rate * 0.0694444478f;
         // fall through
 
     case 5:
