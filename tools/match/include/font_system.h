@@ -95,5 +95,19 @@ void queue_font_text_instance(
     Color4f* color,
     float text_wave_amplitude,
     char text_wave_enabled); // @ 0x44a790
+int queue_textured_quad_corners(
+    int texture_id,
+    float x0, float y0,
+    float x1, float y1,
+    float x2, float y2,
+    float x3, float y3,
+    int unused_28,
+    int unused_2c,
+    unsigned int flags,
+    Color4f* color,
+    float u0, float v0,
+    float u1, float v1,
+    int layer,
+    int blend); // @ 0x44aac0
 
 #endif

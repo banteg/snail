@@ -300,6 +300,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_font_text_instance | 0x44a790 | 277 | 79/73 | 61.84% | 1/73 | 19 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 69.70% | 3/65 | 13 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 76.12% | 2/66 | 4 mismatch, 11 ok |  |
+| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | ✅ | is_key_pressed_edge | 0x44bb10 | 34 | 11/11 | 100.00% | 11/11 | 2 ok |  |
 | ✅ | initialize_mouse_authored_scale_from_clip_rect | 0x44bbb0 | 30 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | resolve_uncaptured_cursor_sensitivity_scale | 0x44bc20 | 44 | 11/11 | 100.00% | 11/11 | 5 ok |  |
