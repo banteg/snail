@@ -1,13 +1,8 @@
 // show_times_up_message @ 0x445e90 (thiscall, ret)
 
-#include "sprite.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
-
-struct FrontendWidget {
-    void initialize_frontend_widget(int flags, char* text, int widget_type, float x, float y,
-        Color4f* color, int alignment, float anchor_x);
-};
 
 struct BorderManager {
     FrontendWidget* allocate_border();

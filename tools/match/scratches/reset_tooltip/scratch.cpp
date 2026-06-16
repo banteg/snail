@@ -1,22 +1,12 @@
 // reset_tooltip @ 0x403be0 (thiscall, ret)
 
-extern char* g_game_base; // data_4df904
+#include "frontend_widget.h"
 
-class BorderRecord;
+extern char* g_game_base; // data_4df904
 
 class BorderManager {
 public:
     int kill_border(BorderRecord* border);
-};
-
-class TooltipState {
-public:
-    int reset_tooltip();
-
-    int field_00;
-    int state; // +0x04
-    char unknown_008[0x18 - 0x008];
-    BorderRecord* tooltip_widget; // +0x18
 };
 
 int TooltipState::reset_tooltip()

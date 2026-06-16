@@ -64,3 +64,8 @@ behavior.
 Pinned at 99.53%. Do not churn this scratch for percentage unless new source
 evidence explains the call setup order without introducing a fake helper or
 dummy temporary.
+
+2026-06-16 type consolidation: `FrontendWidget` moved out of
+`row_event_display.h` into `frontend_widget.h`. The row-event widgets still use
+the shared +0x1a0 `widget_flags` and +0x2cc `text_buffer` fields; focused match
+remains pinned.

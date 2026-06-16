@@ -1,10 +1,6 @@
 // show_subgoldy_lives @ 0x43af10 (thiscall, ret)
 
-struct FrontendWidget {
-    void hide_border_init();
-    void unhide_border_init();
-};
-
+#include "frontend_widget.h"
 #include "player.h"
 
 void Player::show_subgoldy_lives()

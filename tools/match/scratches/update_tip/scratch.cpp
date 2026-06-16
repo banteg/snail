@@ -1,14 +1,8 @@
 // update_tip @ 0x448c40 (fastcall, ret)
 
+#include "frontend_widget.h"
+
 extern char* g_game_base; // data_4df904
-
-struct FrontendWidget {
-    char unknown_00[0x1a0];
-    unsigned int widget_flags; // +0x1a0
-
-    void hide_border_init();
-    void unhide_border_init();
-};
 
 struct BorderManager {
     void unhide_all_borders();

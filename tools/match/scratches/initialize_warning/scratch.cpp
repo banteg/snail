@@ -1,17 +1,8 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
-#include "sprite.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
-
-struct FrontendWidget {
-    void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
-        Color4f* color, float z, int layer);
-    void hide_border_init();
-
-    char unknown_00[0x178];
-    int warning_field; // +0x178
-};
 
 struct BorderManager {
     FrontendWidget* allocate_border();

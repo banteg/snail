@@ -1,8 +1,6 @@
 // hide_gameplay_scores @ 0x445f10 (thiscall, ret)
 
-struct FrontendWidget {
-    void hide_border_init();
-};
+#include "frontend_widget.h"
 
 class Game {
 public:

@@ -32,3 +32,7 @@ Rejected source-shaped probes:
   branch-local `slot->widget_main` is the accepted source shape.
 
 Keep pinned unless a new source idiom explains the button pointer ownership.
+
+2026-06-16 type consolidation: the local `FrontendWidget` view was replaced by
+`frontend_widget.h`. The matcher remains at 73.08%, preserving the known
+button-pointer residual described above.

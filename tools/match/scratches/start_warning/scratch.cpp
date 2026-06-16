@@ -1,8 +1,6 @@
 // start_warning @ 0x446f30 (thiscall, tailcall)
 
-struct FrontendWidget {
-    void unhide_border_init();
-};
+#include "frontend_widget.h"
 
 class WarningActor {
 public:

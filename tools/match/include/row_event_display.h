@@ -2,15 +2,7 @@
 #ifndef ROW_EVENT_DISPLAY_H
 #define ROW_EVENT_DISPLAY_H
 
-struct FrontendWidget {
-    void hide_border_init();
-    void unhide_border_init();
-
-    char unknown_00[0x1a0];
-    unsigned int widget_flags; // +0x1a0
-    char unknown_1a4[0x128];
-    char text_buffer[2];       // +0x2cc
-};
+#include "frontend_widget.h"
 
 class RowEventDisplayController {
 public:
