@@ -30,6 +30,12 @@ Rejected source-shaped probes:
   scalar-store form; and
 - moving the velocity copy before the progress/size stores regressed
   to 45.45%.
+- 2026-06-16 BN cross-check: the odd `strncpy`-looking decompile is only BN
+  grouping adjacent constants for lifetime/progress lanes, not evidence for a
+  string or packed subobject. Keep modeling the real stack `Vector3` temporary:
+  velocity lands at sprite words `0x15..0x17`, size at `0x18/0x19`, progress at
+  `0x1a`, progress/lifetime steps at `0x1b/0x1d`, lifetime at `0x1c`, and
+  gravity at `0x1e`.
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.

@@ -29,3 +29,7 @@ Rejected/source-neutral probes:
   `xor edi, edi` point; it did not recover the target's `eax` zero/direct-store
   sequence;
 - result temporaries for the first/middle/last link writes were optimized away.
+- 2026-06-16 recheck: replacing the fixed-size clear with explicit direct
+  active-head stores regressed to 47.19% (44/45 instructions). VC6 reused `ebx`
+  as the zero source and hoisted the `push edi`, so the `memset`-style source
+  remains the better topology-preserving baseline.

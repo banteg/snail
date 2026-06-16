@@ -25,3 +25,15 @@ Rejected source-shape probe:
 - Directly reading `live_owner->position.x` before creating the typed
   `owner_position` pointer regressed to 89.91% because MSVC moved the radius
   multiply before reloading the parent/sprite pointers.
+
+2026-06-16 BN cross-check:
+
+- The particle layout used here is compact and consistent with the source:
+  sprite pointer at `+0x00`, parent pointer at `+0x04`, phase at `+0x14`,
+  phase_step at `+0x18`, and radius at `+0x1c`.
+- The parent offsets used here are position `+0x68/+0x6c/+0x70`, owner player
+  `+0x84`, kind `+0x88`, and star-shower counter `+0x1e8`.
+- Do not promote the ring/special-effect structs from this scratch alone; use
+  `spawn_track_ring_or_special_effect` and
+  `initialize_ring_or_special_effect_particles` as the next corroborating
+  callsites.

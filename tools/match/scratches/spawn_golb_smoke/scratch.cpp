@@ -2,7 +2,8 @@
 
 #include "sprite.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x38];
     float subgame_rate; // +0x38
 };

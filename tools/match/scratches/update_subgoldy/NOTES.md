@@ -112,6 +112,12 @@ The remaining `WarningActor` type report hit is therefore an include-boundary
 issue, not evidence for a second warning layout. Promote these only after the
 whole player scratch moves to the shared math/sprite headers.
 
+2026-06-16 follow-up probe: replacing only the local POD `Vector3` with
+`vector3.h` compiles and preserves the instruction count, but regresses the
+masked jump-table audit from `291 ok` to `290 ok, 1 mismatch`
+(`update_subgoldy_follow_jump_table` vs `$L1508`). Keep the local vector too;
+the blocker is relocation shape, not just a duplicate type definition.
+
 ## Source-shape idioms that mattered
 
 - Doubled quantum is `quantum + quantum` via a named local (fadd st0,st0),

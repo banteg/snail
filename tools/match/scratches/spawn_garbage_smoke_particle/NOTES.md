@@ -38,3 +38,9 @@ Rejected source-shape probes:
 - 2026-06-16 Player consolidation: the owner slot now comes from shared
   `player.h` (`Player::player_slot`) with the same 76.82% score and clean
   `9 ok` masked audit.
+- 2026-06-16 BN cross-check: the field schedule is the same sprite emitter
+  idiom as `spawn_golb_smoke`. The confirmed word lanes are color `0xb..0xe`,
+  position `0x12..0x14`, velocity `0x15..0x17`, `size_start/size_end`
+  `0x18/0x19`, progress `0x1a`, progress/lifetime steps `0x1b/0x1d`,
+  lifetime `0x1c`, and gravity `0x1e`; this supports the current shared
+  `Sprite` field names but does not unlock a source-shape improvement.

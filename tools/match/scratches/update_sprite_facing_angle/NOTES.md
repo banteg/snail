@@ -23,3 +23,9 @@ Rejected source-shaped probes:
 - keeping the returned `Vector3*`, copying it back into `delta`, and then using
   the pointer for `atan2_positive` forced a full rotated-vector copy and
   regressed the score to 56.67%.
+
+2026-06-16 BN cross-check: the decompile agrees with the current field model
+(`previous_position`, `position`, `facing_angle`, and the refresh progress/step
+pair). The residual remains only the rotated `z` spill slot after
+`rotate_vector_by_matrix`; it is not evidence for another Sprite field or a
+different matrix type.
