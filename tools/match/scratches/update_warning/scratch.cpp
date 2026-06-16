@@ -3,6 +3,7 @@
 // (0.99748... bits 1065336439) while the phase fills; state 2 fades the
 // first half then holds zero, replaying sound 50 on wrap back to 1.
 
+#include "audio_system.h"
 #include "warning_actor.h"
 
 struct Game {
@@ -11,11 +12,6 @@ struct Game {
 };
 
 extern Game* volatile g_game; // data_4df904
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-};
-extern SoundEffectManager g_sound_effect_manager;
 
 void WarningActor::update_warning()
 {

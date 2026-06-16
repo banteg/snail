@@ -1,14 +1,9 @@
 // start_invincible_shell @ 0x444ae0 (thiscall, ret)
 
+#include "audio_system.h"
 #include "invincible_shell.h"
 
 extern char* g_game_base; // data_4df904
-
-struct AudioBackend {
-    void play_registered_sound_sample_scaled(int sample_id, float volume);
-};
-
-extern AudioBackend g_audio_backend; // 0x753c58
 
 void InvincibleShellController::start_invincible_shell()
 {

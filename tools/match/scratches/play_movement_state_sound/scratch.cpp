@@ -1,18 +1,12 @@
 // play_movement_state_sound @ 0x43afd0 (thiscall, ret)
 
+#include "audio_system.h"
 #include "player.h"
 
 extern char* g_game_base; // data_4df904
 
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-    void play_sound_effect_scaled(int sound_id, float volume);
-};
-
-extern SoundEffectManager g_sound_effect_manager;
 
 void Player::play_movement_state_sound()
 {

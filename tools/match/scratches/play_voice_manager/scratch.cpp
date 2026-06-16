@@ -1,12 +1,7 @@
 // play_voice_manager @ 0x4492d0 (thiscall, ret 0xc)
 
+#include "audio_system.h"
 #include "voice_manager.h"
-
-struct AudioBackend {
-    void stop_registered_sound_sample(int sample_id);
-};
-
-extern AudioBackend g_audio_backend; // 0x753c58
 
 bool VoiceManager::play_voice_manager(int set_id, unsigned int mode, int sample_override)
 {

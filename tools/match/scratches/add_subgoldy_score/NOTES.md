@@ -29,3 +29,6 @@ Current match: 80.62%, source-shaped.
   `6 ok` to `5 ok, 1 mismatch` (`$L460` instead of
   `add_subgoldy_score_jump_table`). Keep the compact local shell until that
   symbol-shape issue has a targeted fix.
+- 2026-06-16 shared-audio probe: replacing the local `SoundEffectManager`
+  call view with `audio_system.h` produced the same switch-table audit
+  regression (`5 ok, 1 mismatch`). Keep the compact local sound view here too.

@@ -1,12 +1,8 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
+#include "audio_system.h"
 #include "sprite.h"
 #include "voice_manager.h"
-
-class AudioBackend {
-public:
-    void noop_runtime_ai();
-};
 
 class CheatState {
 public:
@@ -58,7 +54,6 @@ int queue_axis_aligned_textured_quad(
     Color4f* tint,
     int layer);
 
-extern AudioBackend g_audio_backend; // 0x753c58
 extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 class GameRoot {
 public:

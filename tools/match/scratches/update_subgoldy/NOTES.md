@@ -142,6 +142,10 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
   score but produced the same 290 ok / 1 jump-table masked-audit regression.
   Keep the compact local voice view until the follow-switch layout issue is
   fixed.
+- 2026-06-16 audio-system probe: replacing the local compact
+  `SoundEffectManager` call view with shared `audio_system.h` produced the same
+  290 ok / 1 jump-table masked-audit regression. Keep the compact local sound
+  view until the follow-switch layout issue is fixed.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

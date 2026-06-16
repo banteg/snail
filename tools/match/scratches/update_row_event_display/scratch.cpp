@@ -1,5 +1,6 @@
 // update_row_event_display @ 0x404cf0 (fastcall, ret)
 
+#include "audio_system.h"
 #include "player.h"
 #include "row_event_display.h"
 #include "track_parcel_runtime.h"
@@ -15,11 +16,6 @@ struct Vec3 {
 struct GameRuntime {
     TrackParcelRuntime* spawn_track_parcel(float* world_position, void* owner);
 };
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id); // thiscall on the global manager
-};
-extern SoundEffectManager g_sound_effect_manager;
 
 struct InputState {
     char unknown_00[0x3c];

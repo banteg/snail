@@ -1,15 +1,10 @@
 // register_parcel_delivery @ 0x405040 (thiscall, ret)
 
+#include "audio_system.h"
 #include "player.h"
 #include "row_event_display.h"
 
 extern char* g_game_base; // data_4df904
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-};
-
-extern SoundEffectManager g_sound_effect_manager;
 
 void RowEventDisplayController::register_parcel_delivery()
 {
