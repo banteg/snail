@@ -1,27 +1,12 @@
 // play_voice_manager @ 0x4492d0 (thiscall, ret 0xc)
 
+#include "voice_manager.h"
+
 struct AudioBackend {
     void stop_registered_sound_sample(int sample_id);
 };
 
 extern AudioBackend g_audio_backend; // 0x753c58
-
-class VoiceSet {
-public:
-    bool play_voice_set(int sample_override);
-
-    char unknown_00[0x18];
-};
-
-class VoiceManager {
-public:
-    bool play_voice_manager(int set_id, unsigned int mode, int sample_override);
-    int is_voice_playing();
-
-    VoiceSet sets[16];              // +0x000
-    float global_progress;           // +0x180
-    float global_frequency_seconds;  // +0x184
-};
 
 bool VoiceManager::play_voice_manager(int set_id, unsigned int mode, int sample_override)
 {

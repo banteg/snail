@@ -1,18 +1,8 @@
 // play_voice_set @ 0x449390 (thiscall, ret 0x4)
 
+#include "voice_manager.h"
+
 void play_voice_backend(int sample_id, float volume, float pan, float frequency);
-
-class VoiceSet {
-public:
-    bool play_voice_set(int sample_override);
-
-    int sample_count;          // +0x00
-    int next_index;            // +0x04
-    int* playlist;             // +0x08
-    int* bites;                // +0x0c
-    float cooldown;            // +0x10
-    float cooldown_step;       // +0x14
-};
 
 bool VoiceSet::play_voice_set(int sample_override)
 {

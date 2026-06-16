@@ -137,6 +137,11 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
   `TimerCounters` call view with shared `timer_counters.h` and offset-preserving
   padding produced the same masked-audit regression. Keep the compact local
   timer view until the follow-switch layout issue is fixed.
+- 2026-06-16 voice-manager probe: replacing the local compact
+  `VoiceManager` call view with shared `voice_manager.h` preserved the headline
+  score but produced the same 290 ok / 1 jump-table masked-audit regression.
+  Keep the compact local voice view until the follow-switch layout issue is
+  fixed.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

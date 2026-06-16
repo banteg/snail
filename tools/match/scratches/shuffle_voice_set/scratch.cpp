@@ -1,18 +1,8 @@
 // shuffle_voice_set @ 0x448e60 (thiscall, ret)
 
+#include "voice_manager.h"
+
 int next_math_random_value();
-
-class VoiceSet {
-public:
-    int shuffle_voice_set();
-
-    int sample_count;          // +0x00
-    int next_index;            // +0x04
-    int* playlist;             // +0x08
-    int* bites;                // +0x0c
-    float cooldown;            // +0x10
-    float cooldown_step;       // +0x14
-};
 
 int VoiceSet::shuffle_voice_set()
 {

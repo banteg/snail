@@ -1,6 +1,7 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
 #include "sprite.h"
+#include "voice_manager.h"
 
 class AudioBackend {
 public:
@@ -10,11 +11,6 @@ public:
 class CheatState {
 public:
     void update_cheat();
-};
-
-class VoiceManager {
-public:
-    void update_voice_manager();
 };
 
 class MouseCursorState {
@@ -64,8 +60,6 @@ int queue_axis_aligned_textured_quad(
 
 extern AudioBackend g_audio_backend; // 0x753c58
 extern CheatState g_completion_snapshot_flags; // byte_4b2f40
-extern VoiceManager g_voice_manager; // 0x751498
-
 class GameRoot {
 public:
     int run_frame_update();

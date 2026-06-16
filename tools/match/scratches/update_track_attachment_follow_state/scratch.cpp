@@ -1,6 +1,7 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
 #include "jetpack_gauge.h"
 #include "transform_matrix.h"
+#include "voice_manager.h"
 
 struct Vec3 {
     float x;
@@ -76,13 +77,6 @@ int __stdcall compute_kind42_attachment_transform(
     float y,
     TransformMatrix* transform,
     float* out_angle);
-
-class VoiceManager {
-public:
-    bool play_voice_manager(int set_id, unsigned int mode, int sample_override);
-};
-
-extern VoiceManager g_voice_manager; // 0x751498
 
 int FollowState::update_track_attachment_follow_state(
     float path_factor,

@@ -4,9 +4,9 @@
 // and blocks unforced negative ones while game+0x42ff60 == 1.
 
 #include "damage_gauge.h"
+#include "voice_manager.h"
 
 struct SnailSkinTransition;
-struct VoiceManager;
 struct AnimDispatcher;
 
 extern char* volatile g_game_base; // data_4df904
@@ -15,14 +15,9 @@ extern char g_negative_delta_block_byte[]; // 0x42ff60
 extern char g_anim_suppress_byte[];        // 0x42ffd4
 extern char g_snail_skin_transition[];     // 0x430938
 extern char g_player_presentation_offset[]; // 0x432700
-extern VoiceManager g_voice_manager;       // 0x751498
 
 struct SnailSkinTransitionApi {
     void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, matched
-};
-
-struct VoiceManager {
-    int play_voice_manager(int voice, unsigned int mode, int sample); // matched
 };
 
 struct AnimDispatcherApi {

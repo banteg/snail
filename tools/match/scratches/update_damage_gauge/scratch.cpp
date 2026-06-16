@@ -4,11 +4,8 @@
 #include "damage_gauge.h"
 #include "sprite.h"
 #include "snail_skin.h"
+#include "voice_manager.h"
 #include "warning_actor.h"
-
-struct VoiceManager {
-    int play_voice_manager(int set_id, unsigned int mode, int sample_override); // @ 0x4492d0, matched
-};
 
 struct Game {
     char unknown_000000[0x74621];
@@ -32,7 +29,6 @@ struct Game {
 };
 
 extern Game* volatile g_game; // data_4df904
-extern VoiceManager g_voice_manager; // 0x751498
 
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(

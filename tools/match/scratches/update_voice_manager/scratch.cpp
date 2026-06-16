@@ -1,19 +1,6 @@
 // update_voice_manager @ 0x4492a0 (thiscall, ret)
 
-class VoiceSet {
-public:
-    int update_voice_set();
-
-    char unknown_00[0x18];
-};
-
-class VoiceManager {
-public:
-    void update_voice_manager();
-
-    VoiceSet sets[16];         // +0x000
-    float global_progress;      // +0x180
-};
+#include "voice_manager.h"
 
 void VoiceManager::update_voice_manager()
 {

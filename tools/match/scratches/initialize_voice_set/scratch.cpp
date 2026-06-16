@@ -1,19 +1,8 @@
 // initialize_voice_set @ 0x448df0 (thiscall, ret 0x4)
 
+#include "voice_manager.h"
+
 void* allocate_tracked_memory(int size, char* label);
-
-class VoiceSet {
-public:
-    int initialize_voice_set(int count);
-    int shuffle_voice_set();
-
-    int sample_count;          // +0x00
-    int next_index;            // +0x04
-    int* playlist;             // +0x08
-    int* bites;                // +0x0c
-    float cooldown;            // +0x10
-    float cooldown_step;       // +0x14
-};
 
 int VoiceSet::initialize_voice_set(int count)
 {
