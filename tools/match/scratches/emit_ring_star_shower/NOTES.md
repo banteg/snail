@@ -57,6 +57,11 @@ Rejected/source-shape probes:
   unscaled velocity x/y locals regressed to 70.87%, and an explicit sprite
   flag read-modify-write compiled identically to the simple `flags |= 0x800`
   source, so neither variant is kept.
+- 2026-06-16 direct destination retry: removing the `star_position_words`
+  destination pointer and writing `((int*)&star->position)[0..2]` directly
+  compiled identically at 74.42%. This confirms the remaining tail residual is
+  not solved by the destination pointer spelling; keep the current clearer
+  dword-position-copy source.
 
 Type consolidation:
 

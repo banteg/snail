@@ -4,8 +4,8 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `49.82%`, `223/347` candidate/target instructions, with `34` masked
-  operands ok and no unresolved operands.
+- `51.23%`, `223/347` candidate/target instructions, with `34` masked
+  operands ok, `8` known switch-grouping mismatches, and no unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
   by the parent-field offsets below.

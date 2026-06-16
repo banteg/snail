@@ -64,3 +64,9 @@ raw `PositionBits` staging with an ordinary `Vector3 staged_position` recovers
 that stack-local copy and corrects the earlier assumption that x/z needed a
 raw-bit struct here. Focused Wibo improves from `50.00%` to `72.95%`, prefix
 from `2/122` to `16/122`, with all `7` masked operands still OK.
+
+2026-06-16 bob-phase if/else retry: replacing the default-zero plus even-z
+override with a natural `if even -> 0.5f else -> 0.0f` branch regressed focused
+Wibo from `72.95%` to `71.02%` and grew the candidate to `123/122`
+instructions. The target's odd/even tail residual is not evidence for that
+source shape; keep the current default-zero spelling.
