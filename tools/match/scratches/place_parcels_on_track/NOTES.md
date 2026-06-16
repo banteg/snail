@@ -80,7 +80,7 @@ Golf leads (next pass):
    re-anchored; reconcile the two shapes region by region instead of
    wholesale).
 2. The original keeps more loop state in registers (pushes
-   ebx/ebp/edi early; frame 0x214 vs 0x204) — the scan loop's
+   ebx/ebp/edi early; frame 0x214 vs 0x208) — the scan loop's
    row/lane/set counters live in a different spill pattern.
 3. The grid-scan zero-entry append maintains `131*entry` incrementally
    (add 0x20c inside the lane loop) while the authored append recomputes
@@ -104,3 +104,18 @@ That makes +0x90..+0x9b an overloaded parcel projection payload rather than a
 simple position. Keep it as `Vector3 projection_payload` for now because the
 tail still treats it as vector-shaped storage; promote to a union only after
 another row consumer agrees on the lane meanings.
+
+## Rejected projection-tail probes (2026-06-16)
+
+Two source-shape probes tried to chase the native projection tail order and both
+regressed, so neither should be kept as an assumed fix:
+
+- A raw `char*` row cursor for the projection loop made the disasm start from
+  the row-record base more like the target, but regressed the scratch from
+  23.40% to 22.72% and expanded the candidate to 646 insns.
+- Inlining `live_cell->get_track_cell_row_index()` directly in the
+  `get_path_position_at_node` argument list produced the same 22.72% / 646-insn
+  regression. The target does push the payload pointer before the row-index
+  call in the non-kind42 path, but the typed `TrackAttachmentRuntimeRow` source
+  remains the better baseline until another code-shape constraint explains that
+  ordering.
