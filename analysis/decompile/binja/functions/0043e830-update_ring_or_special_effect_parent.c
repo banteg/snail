@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: update_subgoldy_bullet @ 0x43e830 */
+/* function: update_ring_or_special_effect_parent @ 0x43e830 */
 
 0043e836        void* esi = arg1
 0043e839        float* eax = *(esi + 0x1d0)

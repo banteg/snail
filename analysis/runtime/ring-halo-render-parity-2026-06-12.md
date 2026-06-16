@@ -5,7 +5,7 @@ Targeted re-check of the runtime ring effect (the ten-sprite halo for
 looking wrong in the port. The native owner chain is
 `spawn_track_ring_or_special_effect` @ 0x43df10 →
 `initialize_ring_or_special_effect_particles` @ 0x43e470 →
-`update_subgoldy_bullet` @ 0x43e830 →
+`update_ring_or_special_effect_parent` @ 0x43e830 →
 `update_ring_or_special_effect_particle` @ 0x43e780 →
 `emit_ring_star_shower` @ 0x43e690.
 
@@ -19,7 +19,7 @@ looking wrong in the port. The native owner chain is
   the child update freezes it when the parent kind (`+0x88`) is `3`.
 - The parent's random lanes at `+0x1e0`/`+0x1e4` (random start angle, the
   ramp-cycle-derived step with a random sign flip) are only consumed inside
-  `update_subgoldy_bullet` behind the byte flag at `+0x1dc`. No instruction
+  `update_ring_or_special_effect_parent` behind the byte flag at `+0x1dc`. No instruction
   in the binary writes that flag (checked via MLIL scan plus a raw disp32
   byte-pattern sweep; the slot constructors and `reset_subgame` never touch
   it, and the 19 MB `cRGame` allocation comes from fresh zeroed pages). The

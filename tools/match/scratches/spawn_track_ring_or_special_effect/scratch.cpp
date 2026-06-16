@@ -29,7 +29,7 @@ public:
 
 class RingOrSpecialEffectVirtual {
 public:
-    virtual TrackRowCell* update_subgoldy_bullet(); // vtable slot 0
+    virtual TrackRowCell* update_ring_or_special_effect_parent(); // vtable slot 0
 };
 
 TrackRowCell* Game::spawn_track_ring_or_special_effect(
@@ -146,7 +146,7 @@ TrackRowCell* Game::spawn_track_ring_or_special_effect(
         }
 
         slot->initialize_ring_or_special_effect_particles(player->lives);
-        return ((RingOrSpecialEffectVirtual*)slot)->update_subgoldy_bullet();
+        return ((RingOrSpecialEffectVirtual*)slot)->update_ring_or_special_effect_parent();
     }
 
     return result;

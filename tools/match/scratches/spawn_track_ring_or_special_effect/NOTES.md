@@ -56,7 +56,7 @@ Type consolidation:
   `position` as `transform.position` at `+0x68`.
 - 2026-06-16 lives-snapshot correction: parent `+0x8c` is now named
   `owner_lives_snapshot`. The spawner stores `Player::lives` (`+0x404`) and
-  `update_subgoldy_bullet` compares the current lives count against that
+  `update_ring_or_special_effect_parent` compares the current lives count against that
   snapshot before entering state `4`; the same player lane is also used by
   `handle_subgoldy_collisions` and `update_subgoldy`.
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual

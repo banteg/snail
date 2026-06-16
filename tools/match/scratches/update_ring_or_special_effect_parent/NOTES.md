@@ -1,4 +1,4 @@
-# update_subgoldy_bullet @ 0x43e830
+# update_ring_or_special_effect_parent @ 0x43e830
 
 Live source map for the ring/special-effect parent virtual updater.
 
@@ -39,6 +39,13 @@ Type consolidation:
 - `RingOrSpecialEffectParent::state`, `transition_progress`,
   `transition_step`, `oscillate_x`, and `RingEffectRateSource::paused` are now
   in `tools/match/include/ring_special_effect_types.h`.
+- 2026-06-16 naming correction: the old exported name
+  `update_subgoldy_bullet` was stale. The function is the virtual updater for
+  `RingOrSpecialEffectParent`, cross-confirmed by the ring/special-effect
+  runtime initializer, spawner, child-particle initializer/updater, and
+  collision consumer. The reference manifest keeps the old jump-table name as
+  an alias only. Focused Wibo remains unchanged at `86.35%`, and the direct
+  spawner caller remains unchanged at `51.23%`.
 - `RingOrSpecialEffectParent` now inherits the shared `BodNode` prefix, and
   the remover uses `RingOrSpecialEffectListAnchor` (`BodList`) for the
   active/free anchor at `g_game_base + 0x5a8`. The old scratch-local `next`
@@ -61,7 +68,8 @@ Type consolidation:
   `current_state > 5` guard and `case 0: return` recovers native's direct
   `0..5` state jump table instead of VC6's optimized `state - 1` table. The
   corresponding compiler-emitted table at `0x43ec9c` is named
-  `update_subgoldy_bullet_state_jump_table` in the gameplay reference manifest.
+  `update_ring_or_special_effect_parent_state_jump_table` in the gameplay
+  reference manifest.
 
 Residual:
 
@@ -85,8 +93,8 @@ Residual:
   decision. Focused Wibo improves from `79.53%` to `86.35%` while preserving
   the native `0x18` stack frame. The only new audit debt is the candidate local
   switch-table symbol (`$L1005`) versus the curated target
-  `update_subgoldy_bullet_state_jump_table`; the dispatch instructions and
-  table shape are otherwise unchanged.
+  `update_ring_or_special_effect_parent_state_jump_table`; the dispatch
+  instructions and table shape are otherwise unchanged.
 
 Rejected/source-shape probes:
 

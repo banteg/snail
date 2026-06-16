@@ -1861,7 +1861,8 @@
     },
     {
       "address": "0x43e830",
-      "name": "update_subgoldy_bullet"
+      "name": "update_ring_or_special_effect_parent",
+      "description": "Virtual updater for an active ring/special-effect parent slot: advances the child halo, handles collect/miss transitions, removes inactive parents from the active list, and tears down child sprites."
     },
     {
       "address": "0x43ecc0",

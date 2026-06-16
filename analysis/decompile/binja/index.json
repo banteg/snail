@@ -1980,8 +1980,8 @@
     },
     {
       "address": "0x43e830",
-      "name": "update_subgoldy_bullet",
-      "artifact": "analysis/decompile/binja/functions/0043e830-update_subgoldy_bullet.c"
+      "name": "update_ring_or_special_effect_parent",
+      "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c"
     },
     {
       "address": "0x43ecc0",

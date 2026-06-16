@@ -894,7 +894,7 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
-- on hit, the slot does not die immediately: `handle_subgoldy_collisions` flips it into the shared post-hit lane, and the slot's `update_subgoldy_bullet` vtable advances the recovered `2 -> 3` follow/collapse animation before teardown
+- on hit, the slot does not die immediately: `handle_subgoldy_collisions` flips it into the shared post-hit lane, and the slot's `update_ring_or_special_effect_parent` vtable advances the recovered `2 -> 3` follow/collapse animation before teardown
 - the post-hit `2 -> 3` follow and `4 -> 5` miss-expand lanes seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
 - the same vtable also owns the missed-pickup `4 -> 5` expand-and-teardown lane keyed from `movement_flag_selector_snapshot`
 - the collision switch owns the ring-kind ladder:

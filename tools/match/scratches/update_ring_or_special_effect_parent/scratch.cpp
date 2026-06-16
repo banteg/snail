@@ -1,4 +1,4 @@
-// update_subgoldy_bullet @ 0x43e830 (thiscall, void)
+// update_ring_or_special_effect_parent @ 0x43e830 (thiscall, void)
 
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -9,7 +9,7 @@ extern char* g_game_base; // data_4df904
 int report_errorf(const char* format, ...);
 float sine(float radians);
 
-void RingOrSpecialEffectParent::update_subgoldy_bullet()
+void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
 {
     RingEffectRateSource* rate = rate_source;
     if (rate->paused != 0)

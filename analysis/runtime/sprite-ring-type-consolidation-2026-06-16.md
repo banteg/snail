@@ -50,10 +50,10 @@ sprite/ring runtime views without making unsupported field claims.
 - `RingOrSpecialEffectParent` keeps the corroborated state/rate/transition
   lanes in the shared header.
 - The parent active-list removal tail is still local source in
-  `update_subgoldy_bullet`; it should be extracted only after another active-list
+  `update_ring_or_special_effect_parent`; it should be extracted only after another active-list
   owner agrees on the same base shape.
 - The player target vector read at `Player +0x2964` is still single-use evidence
-  from `update_subgoldy_bullet`, so it is not promoted yet.
+  from `update_ring_or_special_effect_parent`, so it is not promoted yet.
 
 Validation after this pass:
 

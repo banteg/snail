@@ -404,10 +404,11 @@
     },
     {
       "address": "0x43ec9c",
-      "name": "update_subgoldy_bullet_state_jump_table",
+      "name": "update_ring_or_special_effect_parent_state_jump_table",
       "kind": "jump_table",
       "aliases": [
-        "$L1004"
+        "$L1004",
+        "update_subgoldy_bullet_state_jump_table"
       ],
       "description": "Compiler-emitted state switch jump table used by the ring/special-effect parent updater."
     },

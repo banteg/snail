@@ -2751,10 +2751,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_subgoldy_bullet",
+      "selector": "update_ring_or_special_effect_parent",
       "address": "0x43e830",
-      "name": "update_subgoldy_bullet",
-      "artifact": "analysis/decompile/ida/functions/0043e830-update_subgoldy_bullet.c",
+      "name": "update_ring_or_special_effect_parent",
+      "artifact": "analysis/decompile/ida/functions/0043e830-update_ring_or_special_effect_parent.c",
       "removed_stale_artifacts": []
     },
     {

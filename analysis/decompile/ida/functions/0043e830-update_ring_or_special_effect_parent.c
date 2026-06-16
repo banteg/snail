@@ -1,6 +1,6 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_subgoldy_bullet @ 0x43e830 */
-/* selector: update_subgoldy_bullet */
+/* function: update_ring_or_special_effect_parent @ 0x43e830 */
+/* selector: update_ring_or_special_effect_parent */
 
 void __thiscall sub_43E830(int this)
 {
@@ -310,4 +310,3 @@ LABEL_50:
     }
   }
 }
-
