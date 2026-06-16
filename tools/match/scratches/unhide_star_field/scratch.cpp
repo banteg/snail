@@ -4,7 +4,7 @@
 
 int StarField::unhide_star_field()
 {
-    int result = active;
+    int result = state;
     if (result != 0) {
         result = count;
         for (int i = 0; i < result; ++i) {
