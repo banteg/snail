@@ -100,7 +100,7 @@ These should turn current verified port behavior into matched proof.
 
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
-| `handle_subgoldy_collisions` | `0x444cf0` | 45.15%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Proof-polish: local staging, mask register reuse, per-loop delta/probe shape. |
+| `handle_subgoldy_collisions` | `0x444cf0` | 45.36%, structure complete | Contact gates for salt, sub-lazer, garbage, slug, rings, health, jetpack, parcel. | Slug helper calls now use real `SlugHazardRuntime` methods; remaining proof-polish is local staging, mask register reuse, per-loop delta/probe shape, and proving the 0xec slug pool stride before promoting it. |
 | `recycle_bod_to_free_list` | `0x447290` | 100% | Exact shared active-list teardown/free-stack helper for BOD nodes used by runtime pickup, projectile, salt, garbage, fringe, and subgame teardown paths. | Done; use as the source-of-truth anchor before consolidating duplicated inline list-removal blocks in larger scratches. |
 | `update_active_bod` | `0x433e80` | 100% | Exact default active-bod updater: culls nodes once `world_z + 24.0f` falls behind the live threshold and recycles them through the shared active/free list. | Done; use with exact `recycle_bod_to_free_list` and `refresh_fringe_object_draw_list` as the active/free-list lifecycle anchor. |
 | `apply_bod_position` | `0x42f680` | 100% | Exact object-geometry vertex transform loop for BOD/object presentation paths, using exact `multiply_vector_by_matrix_copy`. | Done; keep `END=0x42f6d9` because the manifest gap includes seven nops plus an adjacent uncurated thunk. |

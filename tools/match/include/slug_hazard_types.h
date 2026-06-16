@@ -5,7 +5,7 @@
 
 #include "bod_types.h"
 
-struct Game;
+class Game;
 
 class SlugHazardRuntime : public RenderableBod {
 public:

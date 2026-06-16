@@ -9,6 +9,7 @@
 #include "jetpack_gauge.h"
 #include "ring_special_effect_types.h"
 #include "salt_hazard_types.h"
+#include "slug_hazard_types.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
@@ -22,8 +23,6 @@ struct Vec3 {
 
 float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
-void kill_slug_hazard(int slug);
-void play_slug_voice(int slug, int voice);
 void firework_shoot(float* position, int player_slot, int a3, int a4);
 void noop_runtime_ai();
 int initialize_nuke(float* nuke);
@@ -186,13 +185,13 @@ void Player::handle_subgoldy_collisions()
             }
         }
         for (int m = 0; m < 1888; m += 236) {
-            Game* slug_game = game;
-            int state = *(int*)((char*)slug_game + m + 0x356420);
-            char* slot = (char*)slug_game + m;
+            SlugHazardRuntime* slug =
+                (SlugHazardRuntime*)((char*)game + m + 0x3563a0);
+            int state = slug->state;
             if (state == 1 || state == 4) {
-                delta.x = *(float*)(slot + 0x356408) - cached_camera_target_world.x;
-                delta.y = *(float*)(slot + 0x35640c) - cached_camera_target_world.y;
-                delta.z = *(float*)(slot + 0x356410) - cached_camera_target_world.z;
+                delta.x = slug->transform.position.x - cached_camera_target_world.x;
+                delta.y = slug->transform.position.y - cached_camera_target_world.y;
+                delta.z = slug->transform.position.z - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
@@ -214,11 +213,9 @@ void Player::handle_subgoldy_collisions()
                                 float knockback = rate * -0.2f;
                                 velocity.z = knockback;
                                 begin_post_follow_carryover();
-                                Game* voice_game = game;
                                 cutscene_ai_state = 10;
-                                *((char*)voice_game + m + 0x356479) = 1;
-                                play_slug_voice(
-                                    (int)((char*)game + m + 0x3563a0),
+                                *((char*)slug + 0xd9) = 1;
+                                slug->play_slug_voice(
                                     34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                                 float half = distance * 0.5f;
                                 wobble_lift_phase_step = 0.0f;
@@ -234,7 +231,7 @@ void Player::handle_subgoldy_collisions()
                                 firework_shoot(burst_position, slot_id, 92, 80);
                             }
                         } else {
-                            kill_slug_hazard((int)((char*)game + m + 0x3563a0));
+                            slug->kill_slug_hazard();
                         }
                     }
                 }

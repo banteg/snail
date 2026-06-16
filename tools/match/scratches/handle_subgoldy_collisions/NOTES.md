@@ -12,6 +12,17 @@ masked audit from `65 ok` to `70 ok`. The remaining masked mismatch is still the
 slug-block alignment debt (`kill_slug_hazard` vs `begin_post_follow_carryover`),
 not an audio-symbol problem.
 
+2026-06-16 slug method call-surface pass: replaced the scratch-local free
+`kill_slug_hazard(int)` / `play_slug_voice(int, int)` declarations with the
+shared `SlugHazardRuntime` method declarations. BN prototypes and the exact
+`kill_slug_hazard` / `play_slug_voice` scratches agree these are methods, and
+the collision scratch now emits real thiscall setup at the slug callsites.
+Focused match improves from `45.15%` / 647 candidate insns to `45.36%` / 641.
+The masked mismatch still reports `kill_slug_hazard` vs
+`begin_post_follow_carryover`, so this did not solve the slug-block alignment
+debt. Keep the slug pool byte-strided here: the helper methods are proven, but
+the shared `SlugHazardRuntime` header does not yet prove a 0xec pool stride.
+
 - Rejected probe: spelling a local `unsigned char movement_kill_mask = 0x80`
   did not produce native's `bl` mask register reuse. VC6 propagated it back to
   literal `test byte [esi+0x338], 0x80`, leaving the match at `43.33%`; keep the

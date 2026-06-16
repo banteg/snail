@@ -3,7 +3,8 @@
 #include "slug_hazard_types.h"
 #include "sprite.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x38];
     float track_center_x;          // +0x38
     char unknown_3c[0x3bbb7c - 0x3c];
