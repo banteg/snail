@@ -23,8 +23,9 @@ Residual:
   with unscaled orbit components before applying the `0.30000001f` velocity
   scale and copying the vector to `sprite->velocity`.
 - The position copy is intentionally dword-shaped: native copies x/y/z from
-  the parent sprite position, stores gravity zero before writing z, and returns
-  the low byte of the copied z dword. The `int*` spelling keeps that
+  the parent sprite position and stores gravity zero before writing z. Native
+  leaves the low byte of the copied z dword in `al`, but the only known caller
+  ignores it. The `int*` spelling keeps that
   relationship explicit and removes the earlier extra source-z byte reload.
 
 Rejected/source-shape probes:
@@ -42,9 +43,9 @@ Rejected/source-shape probes:
   native call argument and scale order. The current vector-fill form preserves
   that source-level idea while recovering more of the native velocity copy
   shape.
-- Widening the local result to `int` to chase the full Z-word return regressed
+- Widening the old local result to `int` to chase the full Z-word return regressed
   to 56.45% by adding an extra prologue zeroing instruction; keep the byte
-  result shape.
+  result shape if a return-typed probe is ever needed again.
 - 2026-06-16 vector-fill correction: combining the direct trig-expression form
   with a local `Vector3 velocity`, then scaling `velocity.x` and `velocity.y`
   in place before `star->velocity = velocity`, improves the focused match from
@@ -69,7 +70,7 @@ Type consolidation:
   `tools/match/include/ring_special_effect_types.h`; this scratch confirms the
   promoted particle `sprite`, `parent`, `phase`, and `radius` fields plus parent
   `star_sprite_id +0x1ec`.
-- The emitter itself is byte-return shaped (`char`). The child updater is
-  promoted as `void` because every known callsite ignores the helper return;
-  modeling it as `char` or `int` is only a codegen surface, not a meaningful
-  gameplay value.
+- 2026-06-16 return-type correction: the emitter itself is now modeled as
+  `void`. Every known callsite ignores the helper return; the native low-byte
+  `al` result is an incidental position-copy artifact, not a meaningful
+  gameplay value. Focused Wibo remains 74.42%, and the caller remains 96.36%.

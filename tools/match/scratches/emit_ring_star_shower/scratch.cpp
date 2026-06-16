@@ -9,10 +9,9 @@ float cosine(float radians);
 
 extern unsigned char g_render_flags; // byte_4df934
 
-char RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
+void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
 {
-    char result = g_render_flags;
-    if ((result & 0x10) != 0) {
+    if ((g_render_flags & 0x10) != 0) {
         Vector3 velocity;
         velocity.z = 0.0f;
         Sprite* star = g_sprite_manager.allocate_sprite(
@@ -39,7 +38,5 @@ char RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
         int source_z = source_position_words[2];
         star->gravity_step = 0.0f;
         star_position_words[2] = source_z;
-        result = (char)source_z;
     }
-    return result;
 }

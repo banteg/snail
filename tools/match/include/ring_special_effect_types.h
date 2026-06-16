@@ -12,7 +12,7 @@ class RingOrSpecialEffectParent;
 class RingOrSpecialEffectParticle {
 public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
-    char emit_ring_star_shower(Player* owner); // @ 0x43e690
+    void emit_ring_star_shower(Player* owner); // @ 0x43e690
 
     Sprite* sprite; // +0x00
     RingOrSpecialEffectParent* parent; // +0x04
