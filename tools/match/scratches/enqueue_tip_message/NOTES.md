@@ -16,3 +16,7 @@ Rejected source-shaped probes:
   redundant compare before the error call.
 
 Keep the current `while (1)` form as the tip-slot allocator idiom.
+
+2026-06-16 type consolidation: `TipManager`, `TipSlot`, and
+`TipMessageDefinition` now come from shared `tip_manager.h`. The allocator keeps
+the exact 26/26-instruction match.

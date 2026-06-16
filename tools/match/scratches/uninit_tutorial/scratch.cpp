@@ -1,11 +1,8 @@
 // uninit_tutorial @ 0x448dd0 (cdecl, ret)
 
-extern char* g_game_base; // data_4df904
+#include "tip_manager.h"
 
-class TipManager {
-public:
-    void uninit_tips();
-};
+extern char* g_game_base; // data_4df904
 
 void uninit_tutorial()
 {

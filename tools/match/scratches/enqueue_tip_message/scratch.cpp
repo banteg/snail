@@ -1,23 +1,8 @@
 // enqueue_tip_message @ 0x448d30 (thiscall, ret 0x8)
 
-struct TipMessageDefinition;
+#include "tip_manager.h"
 
 int report_errorf(char* format, ...);
-
-struct TipSlot {
-    void initialize_tip(TipMessageDefinition* definition, int show_disable_button);
-
-    int active;                // +0x00
-    char unknown_04[0x20 - 0x04];
-};
-
-class TipManager {
-public:
-    TipSlot* enqueue_tip_message(TipMessageDefinition* definition, int show_disable_button);
-
-    char unknown_00[0x38];
-    TipSlot slots[3];          // +0x38
-};
 
 TipSlot* TipManager::enqueue_tip_message(
     TipMessageDefinition* definition,

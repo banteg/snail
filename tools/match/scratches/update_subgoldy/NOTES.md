@@ -129,6 +129,10 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
   shared-header field names also preserved the headline score but shrank the
   stack frame and introduced the same jump-table masked mismatch. Keep the
   compact local attachment view until a source-shape fix explains the frame.
+- 2026-06-16 tip-manager probe: replacing the local `TipDefinition`/`TipManager`
+  view with shared `tip_manager.h` preserved the headline score and instruction
+  count but changed the masked audit from 291 ok / 0 mismatch to 290 ok / 1
+  jump-table mismatch. Keep this scratch's compact local tip view for now.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

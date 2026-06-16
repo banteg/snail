@@ -36,3 +36,8 @@ Keep pinned unless a new source idiom explains the button pointer ownership.
 2026-06-16 type consolidation: the local `FrontendWidget` view was replaced by
 `frontend_widget.h`. The matcher remains at 73.08%, preserving the known
 button-pointer residual described above.
+
+2026-06-16 type consolidation: the local `TipSlot` and
+`TipMessageDefinition` views were replaced by shared `tip_manager.h`. The
+matcher still reports 73.08%, 51 target instructions versus 53 candidate
+instructions, preserving the same button-pointer residual.
