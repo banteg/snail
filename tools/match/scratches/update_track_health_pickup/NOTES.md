@@ -16,7 +16,7 @@ Recovered behavior:
   `(sine(phase * tau) + 1.0f) * 0.30000001f + world_y` to
   `sprite->position.y`.
 
-The unlink source shape intentionally mirrors exact `update_track_jetpack_pickup`
+The unlink source shape intentionally mirrors exact `update_track_speedup`
 with duplicated state-1/state-2 blocks. The remaining diff is source-shape and
 layout: native branches the state-1 non-removal path to a final bob tail, while
 the current switch spelling places the bob tail before the state-1 duplicated
@@ -44,5 +44,6 @@ duplicated unlink blocks and the native final bob-tail placement.
 Important naming correction: the update hidden check reads
 `visibility_cell +0x44`, while `spawn_track_health_pickup` stores the row/source
 cell at `source_cell +0x68`. Do not collapse those into one `source_cell` field.
-Do not merge health and jetpack into one full pickup struct either: health's bob
-fields live at +0x6c/+0x70, while jetpack uses a different tail layout.
+Do not merge health and jetpack into one full pickup struct either: health has
+a visibility-cell gate at `+0x44`, while jetpack uses that lane for the owner
+game/paused view and has embedded renderable bodies below `+0x74`.

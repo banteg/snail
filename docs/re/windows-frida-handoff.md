@@ -83,8 +83,9 @@ The script currently hooks these points:
 - `0x43d890` `spawn_track_jetpack_pickup`
 - `0x43df10` `spawn_track_ring_or_special_effect`
 - `0x441560` `spawn_salt_runtime_entity`
-- `0x4417d0` `update_salt_hazard`
-- `0x441740` `deactivate_salt_runtime_entity`
+- `0x4417d0` `update_sub_lazer_projectile`
+- `0x441740` `deactivate_sub_lazer_projectile`
+- `0x441c10` `update_salt_hazard`
 - `0x43dc80` `spawn_slug_runtime_entity`
 - `0x447040` `get_track_cell_row_index` for row tagging when safe
 

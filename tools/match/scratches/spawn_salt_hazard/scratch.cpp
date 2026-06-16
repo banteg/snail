@@ -2,7 +2,8 @@
 #include "salt_hazard_types.h"
 #include "transform_matrix.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x74650];
     float salt_speed_base;      // +0x74650
     char unknown_74654[0x3ca224 - 0x74654];

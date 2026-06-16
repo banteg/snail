@@ -1,6 +1,5 @@
-// Shared sub-lazer views. SubLazerSlot is the pool-spawn object, while
-// SubLazerRuntime is the renderable-body update object whose state lives at
-// +0x38. Keep the two views separate: the pool free/live flag is at slot+0x80.
+// Shared sub-lazer slot view. The spawn, update, and deactivate paths all use
+// this 0xb0 slot; an earlier split update object was a shifted jetpack name.
 #ifndef SUB_LAZER_TYPES_H
 #define SUB_LAZER_TYPES_H
 
@@ -16,7 +15,10 @@ struct SubLazerGameView {
 
 class SubLazerSlot {
 public:
+    SubLazerSlot* initialize_sub_lazer_runtime(); // @ 0x408610
     void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // @ 0x441670
+    int deactivate_sub_lazer_projectile(); // @ 0x441740
+    void update_sub_lazer_projectile(); // @ 0x4417d0
 
     int unknown_00;
     unsigned int list_flags;  // +0x04
@@ -37,34 +39,18 @@ public:
 typedef char SubLazerSlot_must_match_pool_stride[
     (sizeof(SubLazerSlot) == 0xb0) ? 1 : -1];
 
+struct SubLazerListAnchor {
+    char unknown_00[4];
+    SubLazerSlot* first;    // +0x04
+    SubLazerSlot* free_top; // +0x08
+};
+
 class SubLazerPool {
 public:
     int* initialize_sub_lazer_pool(); // @ 0x441650
     void shoot_subgoldy(const float* origin, const Vector3* direction); // @ 0x441ad0
 
     SubLazerSlot slots[20];
-};
-
-struct SubLazerRuntime {
-    void update_sub_lazer_projectile(); // @ 0x43efb0
-
-    int unknown_00;
-    unsigned int list_flags;     // +0x04
-    SubLazerRuntime* list_prev;  // +0x08
-    SubLazerRuntime* list_next;  // +0x0c
-    char unknown_10[0x14 - 0x10];
-    float bob_base_y;            // +0x14
-    float position_z;            // +0x18
-    char unknown_1c[0x38 - 0x1c];
-    int state;                   // +0x38: 1 live, 2 remove
-    Player* owner;               // +0x3c
-    char unknown_40[0x44 - 0x40];
-    SubLazerGameView* owner_game; // +0x44
-    char unknown_48[0x64 - 0x48];
-    Sprite* sprite;              // +0x64
-    char unknown_68[0x6c - 0x68];
-    float bob_phase;             // +0x6c
-    float bob_phase_step;        // +0x70
 };
 
 #endif

@@ -195,10 +195,12 @@ Current hooks in the script:
   - logs ring and special-effect dispatch with the chosen runtime cell and effect kind
 - `0x441560` `spawn_salt_runtime_entity`
   - logs salt-pool spawns with the world position passed in
-- `0x4417d0` `update_salt_hazard`
-  - emits sampled live salt-slot positions and velocities so hazard motion can be reconstructed
-- `0x441740` `deactivate_salt_runtime_entity`
-  - logs the salt slot position and velocity when a live salt object is removed
+- `0x4417d0` `update_sub_lazer_projectile`
+  - emits sampled live sub-lazer positions and velocities so projectile motion can be reconstructed
+- `0x441740` `deactivate_sub_lazer_projectile`
+  - logs the sub-lazer slot position and velocity when a live projectile is removed
+- `0x441c10` `update_salt_hazard`
+  - logs salt fade/retire state from the constructor-owned salt vtable
 - `0x43dc80` `spawn_slug_runtime_entity`
   - logs slug spawns with the chosen runtime cell
 

@@ -103,7 +103,7 @@ These should turn current verified port behavior into matched proof.
 | `recycle_bod_to_free_list` | `0x447290` | 100% | Exact shared active-list teardown/free-stack helper for BOD nodes used by runtime pickup, projectile, salt, garbage, fringe, and subgame teardown paths. | Done; use as the source-of-truth anchor before consolidating duplicated inline list-removal blocks in larger scratches. |
 | `update_active_bod` | `0x433e80` | 100% | Exact default active-bod updater: culls nodes once `world_z + 24.0f` falls behind the live threshold and recycles them through the shared active/free list. | Done; use with exact `recycle_bod_to_free_list` and `refresh_fringe_object_draw_list` as the active/free-list lifecycle anchor. |
 | `apply_bod_position` | `0x42f680` | 100% | Exact object-geometry vertex transform loop for BOD/object presentation paths, using exact `multiply_vector_by_matrix_copy`. | Done; keep `END=0x42f6d9` because the manifest gap includes seven nops plus an adjacent uncurated thunk. |
-| `update_track_health_pickup` | `0x43ecc0` | 71.88%, source-shaped | Health pickup runtime update: source-cell hidden gate, state-1 cull, state-2 teardown, and sprite-only sine bob lane. | Semantics are mapped against exact `update_track_jetpack_pickup`; remaining state-1 bob-tail placement and x87/epilogue scheduling residuals are documented in NOTES. |
+| `update_track_health_pickup` | `0x43ecc0` | 71.88%, source-shaped | Health pickup runtime update: source-cell hidden gate, state-1 cull, state-2 teardown, and sprite-only sine bob lane. | Semantics are mapped against exact `update_track_speedup`; remaining state-1 bob-tail placement and x87/epilogue scheduling residuals are documented in NOTES. |
 | `add_subgoldy_score` | `0x4402c0` | 80.62%, source-shaped | Shared score award helper for collisions, hazards, row-event parcels, bonus payouts, life thresholds, and score sound gating. | Semantics and arithmetic prefix are pinned; remaining residual is saved-register epilogue scheduling at the final sound gate, documented with `gated-tail-member-*` idiom probes in NOTES. |
 | `uninit_nuke` | `0x4470e0` | 100% | Exact teardown for the 25-sprite ring/special-effect controller armed by ring and special-effect collisions. | Done; use as the lifecycle anchor before matching `initialize_nuke` and `update_nuke`. |
 | `initialize_nuke` | `0x447110` | 93.75%, source-shaped | Initializes the 25-sprite ring/special-effect controller, seeds orbit phase/rate state, and immediately dispatches the first update. | Semantics and layout are pinned; remaining residual is flag-temp register choice plus neighboring size-constant scheduling documented in NOTES. |
@@ -111,13 +111,14 @@ These should turn current verified port behavior into matched proof.
 | `update_ring_or_special_effect_particle` | `0x43e780` | 96.36%, pinned | Child halo updater for ring and special-effect sprites, including phase advance, sprite orbit position, and star-shower cadence dispatch. | Semantics are pinned; remaining residual is one parent-position address materialization ordering difference documented in NOTES. |
 | `wall2_emitter_maybe_fire_sub_lazer` | `0x439d50` | 40.43%, pinned | Wall2 fire cadence and 4% RNG gate. | Semantics are pinned; RNG tags, emitter cadence, and source-shape residuals are documented in NOTES. |
 | `spawn_sub_lazer_projectile` | `0x441670` | 98.41%, pinned | SubLazer body/sprite spawn and y stagger. | Semantics and instruction count are pinned; remaining residual is store scheduling around velocity z versus bob phase, documented in NOTES. |
-| `update_sub_lazer_projectile` | `0x43efb0` | 41.73%, pinned | SubLazer body flight, nested sprite bob, teardown. | Semantics are pinned; body-motion ownership and register/layout residuals are documented in NOTES. |
+| `update_track_jetpack_pickup` | `0x43efb0` | 72.44%, pinned | Jetpack pickup parent teardown and nested sprite bob. | Vtable ownership is pinned to `initialize_track_jetpack_pickup_runtime`; remaining register/layout residuals are documented in NOTES. |
 | `shoot_subgoldy` | `0x441ad0` | 49.46%, pinned | Weapon/sub-lazer spawn callsite and audio cue. | Semantics are pinned; free-scan loop residual and unstaggered audio origin are documented in NOTES. |
 | `explode_slug_hazard` | `0x43f680` | 73.22%, structure-first | Slug death particle burst spawned by the exact `kill_slug_hazard` helper. | Semantics are mapped; remaining frame/register/x87 scheduling residuals are documented in NOTES. |
 | `initialize_blink_random` / `advance_blink_random` | `0x4408c0` / `0x4408a0` | 100% | Exact 24-entry blink cadence table initialization and advance helper used by slug hazard AI. | Done; use as the RNG cadence source-of-truth before expanding `update_slug_hazard_ai`. |
 | `spawn_salt_hazard` | `0x441560` | 74.07%, pinned | Salt slot layout, velocity byte-poke bug, yaw RNG. | Semantics are pinned; free-scan layout residual and velocity.z byte-poke finding are documented in NOTES. |
-| `update_salt_hazard` | `0x4417d0` | 48.04%, pinned | Salt integrate/removal state. | Semantics are pinned; overlapping progress fields, velocity-z byte-poke fallout, and probe residuals are documented in NOTES. |
-| `deactivate_salt_hazard` | `0x441740` | 41.46%, pinned | Salt collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
+| `update_sub_lazer_projectile` | `0x4417d0` | 48.39%, pinned | Sub-lazer projectile integrate/removal state and attachment containment probes. | Semantics are pinned; velocity, bob phase, and probe residuals are documented in NOTES. |
+| `deactivate_sub_lazer_projectile` | `0x441740` | 62.79%, pinned | Sub-lazer collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
+| `update_salt_hazard` | `0x441c10` | 62.96%, pinned | Salt fade/update state installed by `initialize_salt_hazard_runtime`. | Field offsets are pinned; remaining residual is the state-2 error-string tail merge documented in NOTES. |
 
 ### P3 - Damage, Warning, Camera, And Presentation Control
 
@@ -217,7 +218,7 @@ These are not gameplay owners, but several mirrors depend on them.
   `initialize_path_follow_golb`, `begin_post_follow_carryover`,
   `compute_kind42_attachment_transform`,
   `get_track_grid_cell_at_world_position`, `sample_track_floor_height_at_position`,
-  `initialize_subgoldy_ghost`, `update_track_jetpack_pickup`,
+  `initialize_subgoldy_ghost`, `update_track_speedup`,
   `apply_bod_position`,
   `update_subgoldy_resurrect`,
   `set_backdrop_progress_fraction`,

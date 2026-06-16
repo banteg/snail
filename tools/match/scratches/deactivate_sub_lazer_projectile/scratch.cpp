@@ -1,20 +1,21 @@
-// deactivate_salt_hazard @ 0x441740 (thiscall, ret)
+// deactivate_sub_lazer_projectile @ 0x441740 (thiscall, ret)
 // Unlinks the slot from the live list and pushes it onto the free stack
 // anchored at game+0x5a8; clears the live state either way.
 
-#include "salt_hazard_types.h"
+#include "sub_lazer_types.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x5a8];
-    SaltListAnchor salt_free_anchor; // +0x5a8
+    SubLazerListAnchor sub_lazer_free_anchor; // +0x5a8
 };
 
 extern Game* volatile g_game; // data_4df904
 int report_errorf(char* format, ...);
 
-int SaltHazardSlot::deactivate_salt_hazard()
+int SubLazerSlot::deactivate_sub_lazer_projectile()
 {
-    SaltListAnchor* anchor = &g_game->salt_free_anchor;
+    SubLazerListAnchor* anchor = &g_game->sub_lazer_free_anchor;
     int flags = list_flags;
     int result;
     if ((flags & 0x200) == 0) {

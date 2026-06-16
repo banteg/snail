@@ -232,14 +232,17 @@ Recovered salt-slot lifecycle:
   - `slot + 0x68/+0x6c/+0x70 = spawn xyz`
 - the slot also enters a linked list and sets runtime flag `0x200`
 
-Recovered update and teardown:
+2026-06-16 correction:
 
-- `update_salt_hazard` advances an arming factor at `slot + 0x98` by `slot + 0x9c`
-- once armed, it integrates position by adding velocity at:
-  - `slot + 0x8c` -> `x`
-  - `slot + 0x90` -> `y`
-  - `slot + 0x94` -> `z`
-- `deactivate_salt_hazard` removes the slot from the active list and clears state back to `0`
+- the integrating/attachment-probe updater at `0x4417d0` belongs to the
+  sub-lazer vtable, not the salt vtable
+- `0x441740` is the paired sub-lazer deactivate helper
+- the salt vtable installed by `initialize_salt_hazard_runtime` points at
+  `0x441c10`; that updater computes a fade fraction at `slot + 0x8c`,
+  updates alpha, and moves the slot to state `2` after the z cutoff
+
+The older claim that salt update integrates `slot +0x8c/+0x90/+0x94` as
+velocity came from the shifted `0x4417d0` label.
 
 Recovered deactivation conditions:
 

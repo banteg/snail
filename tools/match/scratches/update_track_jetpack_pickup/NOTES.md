@@ -1,20 +1,22 @@
-# update_track_jetpack_pickup @ 0x43ee50
+# update_track_jetpack_pickup @ 0x43efb0
 
-Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
+Pinned at `72.44%`, `127/127` candidate/target instructions, masked operands
+`15 ok / 0 mismatch`.
 
-Recovered behavior:
+2026-06-16 vtable correction: this is the jetpack pickup parent updater, not
+the sub-lazer projectile updater. `initialize_track_jetpack_pickup_runtime`
+installs parent vtable `data_497318`, and `data_497318` points at `0x43efb0`.
+The same parent slot starts at `game + 0x355e64`.
 
-- skip when shared `TrackRuntimeCell +0x09` is hidden;
-- state `0` returns immediately;
-- state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
-  pushes it onto the free stack, clears `0x200`, and kills the sprite;
-- state `1` performs the same teardown once `world_z` falls behind
-  `owner->interaction_max_z`.
+Layout facts now shared with `track_jetpack_pickup.h`:
 
-The local source shape intentionally keeps the state-1 and state-2 unlink
-blocks duplicated. VC6 otherwise merges the error tails and loses the exact
-native layout.
+- parent list prefix at `+0x00`, with live/free-list flags at `+0x04`
+- world position at `+0x10`; the updater uses y as the sprite bob base and
+  z for the owner kill-plane compare
+- state `+0x38`, owner `+0x3c`, owner game/paused view `+0x44`
+- sprite `+0x64`, source row cell `+0x68`, bob phase/step `+0x6c/+0x70`
+- embedded renderable bodies at `+0x74` and `+0x108`, initialized by the
+  constructor but not directly advanced by this updater
 
-2026-06-16 type cleanup: this now inherits the shared `BodNode` list prefix
-from `bod_list.h`, the same prefix used by `update_track_health_pickup`. The
-full jetpack tail remains separate from health; match stays exact.
+The remaining diff is block layout/register allocation in the duplicated
+remove paths and bob tail, not a known semantic gap.

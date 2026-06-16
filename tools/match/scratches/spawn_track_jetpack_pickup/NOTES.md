@@ -12,7 +12,8 @@ Current match:
 
 Evidence:
 
-- Allocates the single jetpack pickup runtime at `game + 0x355e64`.
+- Allocates the single jetpack pickup runtime at `game + 0x355e64`; the
+  shared parent layout now lives in `track_jetpack_pickup.h`.
 - The collision-visible lanes are `position +0x10`, `state +0x38`,
   `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`, `bob_phase +0x6c`,
   and `bob_phase_step +0x70`, matching the corrected
@@ -27,6 +28,7 @@ Evidence:
 - Sprite texture `124` is allocated at size `1.5`, and the bob phase uses the
   same numeric float-to-int parity test seen in the health pickup spawner.
 
-Do not promote a full `TrackJetpackPickup` header from this alone. The exact
-`update_track_jetpack_pickup` scratch is still modeled from a different local
-view and needs reconciliation with this spawn/initializer prefix.
+2026-06-16 vtable correction: the earlier "different local view" was a shifted
+symbol assumption. `0x43efb0` is the jetpack pickup updater installed by the
+parent vtable, while the exact `0x43ee50` updater belongs to the speedup
+singleton.

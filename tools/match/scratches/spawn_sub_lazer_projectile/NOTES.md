@@ -33,14 +33,8 @@ Rejected source-plausible variants:
 Do not force the remaining store scheduling with volatile fields or dummy
 aliases; the current source is the closest honest shape found.
 
-2026-06-16 type split: `sub_lazer_types.h` now carries both views. This spawn
-scratch still uses `SubLazerSlot`, while `update_sub_lazer_projectile` uses
-the separate `SubLazerRuntime`; the shared header change keeps this scratch at
-98.41%. A raw-word staging probe for the velocity-z/phase store order regressed
-to 72.00% by changing register ownership, so the vector-copy spelling remains
-pinned.
-
-2026-06-16 five-target audit: BN still supports the split view. This spawn path
-uses the pool slot's `state +0x80`, `owner_game +0x88`, `velocity +0x8c`, and
-`sprite_bob_phase/step +0x98/+0x9c`; it should not be merged with the update
-object's `state +0x38` layout.
+2026-06-16 vtable correction: `update_sub_lazer_projectile` is also a
+`SubLazerSlot` view. The earlier separate `SubLazerRuntime` view was the
+jetpack pickup parent updater at `0x43efb0`. A raw-word staging probe for the
+velocity-z/phase store order regressed to 72.00% by changing register
+ownership, so the vector-copy spelling remains pinned.

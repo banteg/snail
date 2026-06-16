@@ -1,34 +1,27 @@
-# Pinned — 72.44%, 127/127 insns, layout-only residual
+# update_sub_lazer_projectile @ 0x4417d0
 
-Semantics complete; key structural discoveries:
+Pinned at `48.39%`, `216/218` target instructions, masked operands
+`17 ok / 0 mismatch`.
 
-- the UPDATE state machine lives at +0x38 (1 live, 2 remove), distinct
-  from the +0x80 pool-free flag the shoot scan tests — earlier reads
-  conflated them
-- both removal paths (state 2, and state 1 culled behind the owner kill
-  plane at owner+0x2980) run the full list-remove + free-stack push
-  (the same game+0x5a8 anchor the salt pool uses) and kill_sprite on
-  the +0x64 handle — the remove block is duplicated in source
-- the live path advances the wrapped sine bob: phase (+0x6c) += step
-  (+0x70), wrap at 1.0, `sprite->position.y` (+0x4c) =
-  sin(phase*2pi)*0.3 + base (+0x14)
-- no position integration here — the projectile body motion belongs to
-  the renderable-body owner linked at spawn
+2026-06-16 vtable correction: this is the sub-lazer projectile updater, not
+the salt hazard updater. `initialize_sub_lazer_runtime` installs vtable
+`data_49733c`, and `data_49733c` points at `0x4417d0`. The paired helper
+at `0x441740` is therefore `deactivate_sub_lazer_projectile`.
 
-2026-06-15 pin audit: focused matcher verifies 72.44%, 127/127 insns, masked
-operands 15 ok / 0 mismatch. Source now uses the sibling pickup state-machine
-shape, `Sprite::kill_sprite()` member calls, the raw `g_game_base + 0x5a8`
-free-list anchor, and the strict `> 1.0f` bob wrap compare. Keep pinned; the
-remaining diff is block layout/register allocation, not a semantic gap.
+Layout facts settled by this asm and `spawn_sub_lazer_projectile`:
 
-2026-06-16 type split: promoted the update object into
-`SubLazerRuntime` in `sub_lazer_types.h` and kept it distinct from the
-`SubLazerSlot` pool-spawn view. The cull plane now reads shared
-`Player::interaction_max_z` at `+0x2980`; the match remains 72.44%. BN's
-current `SubLazerSlot*` parameter name for this update is misleading for the
-local matched layout.
+- pool stride is `0xb0`; state is `+0x80`
+- position is the renderable transform position row at `+0x68`
+- owner game is `+0x88`
+- velocity is a real `Vector3` at `+0x8c/+0x90/+0x94`
+- sprite bob phase/step are `+0x98/+0x9c`, inside the sub-lazer slot
 
-2026-06-16 five-target audit: no rename promoted. The update path still proves
-the renderable update object has `state +0x38`, `owner +0x3c`,
-`owner_game +0x44`, `sprite +0x64`, and bob phase/step `+0x6c/+0x70`, separate
-from the spawn pool slot.
+The old salt interpretation made `+0x98/+0x9c` look like off-stride overlap
+because the salt pool stride is `0x98`; that was a naming/type error, not a
+confirmed native salt bug.
+
+State `2` inlines the full live-list removal. State `1` accumulates bob
+progress, integrates `position += velocity`, bounds-checks against the
+game kill plane, tests track attachment containment, and deactivates on hit
+or exit. The remaining diff is zero/register scheduling around the attachment
+probes, not a known semantic gap.

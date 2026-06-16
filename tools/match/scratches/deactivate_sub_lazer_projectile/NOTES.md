@@ -1,4 +1,11 @@
-# Pinned — 62.79%, 43/43 insns, register-allocation residual
+# deactivate_sub_lazer_projectile @ 0x441740
+
+Pinned at `62.79%`, `43/43` target instructions, masked operands
+`4 ok / 0 mismatch`.
+
+2026-06-16 vtable correction: this helper belongs to the sub-lazer projectile
+slot. Its only known direct caller is `update_sub_lazer_projectile` at
+`0x4417d0`, the updater installed by `initialize_sub_lazer_runtime`.
 
 The IDA-shaped nested `if/else` source keeps the native duplicated error
 blocks and clears the earlier cross-jumped `report_errorf` tail. The
@@ -10,9 +17,9 @@ Block order is confirmed: not-linked error first, iteration-guard
 
 Semantics fully pinned:
 
-- guard bits on +0x04: 0x200 = linked (error "List remove" when clear),
-  0x40 = iteration guard (error "List remove NEXTBOD" when set); both error
-  paths still clear state (+0x80)
+- guard bits on `+0x04`: `0x200` = linked (error "List remove" when clear),
+  `0x40` = iteration guard (error "List remove NEXTBOD" when set); both error
+  paths still clear state (`+0x80`)
 - unlink: next->prev = prev; prev ? prev->next = next : anchor->first
   (+0x04 of the anchor at game+0x5a8) = next
 - freed slot pushes onto the free stack: this->next = anchor->free_top

@@ -25,7 +25,7 @@ Related pool anchors corrected in the collision scratch:
 - track parcel/ring slots: base `game + 0x125e480`, position `+0x10`,
   state `+0x38`
 
-The `spawn_track_jetpack_pickup` scratch is deliberately not promoted to a
-full shared header yet. It proves the spawn/collision prefix and the embedded
-sprite fields, but `update_track_jetpack_pickup` is exact with a different
-local view that still needs reconciliation.
+Follow-up vtable check corrected a shifted symbol assumption:
+`0x43ee50` is the speedup singleton updater, while `0x43efb0` is the jetpack
+pickup parent updater installed by `initialize_track_jetpack_pickup_runtime`.
+The shared jetpack parent layout now lives in `track_jetpack_pickup.h`.

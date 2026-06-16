@@ -206,10 +206,10 @@ typedef struct VoiceManager {
 
 /*
  * Salt hazard runtime slot. Pool lives at `game + 0x3578c0` with 40 slots and
- * stride 0x98. Each slot carries world position, velocity, owner attachment
- * template, and an armed-substate flag that collision resolves to zero.
+ * stride 0x98. The real updater uses the owner-game pointer plus an in-slot
+ * fade alpha; spawn still seeds the y velocity lane and low armed byte.
  * Native functions: initialize_salt_hazard_pool @ 0x441540, spawn_salt_hazard
- * @ 0x441560, deactivate_salt_hazard @ 0x441740, update_salt_hazard @ 0x4417d0.
+ * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
 typedef struct SaltHazardSlot {
     uint8_t _pad_00[0x68];
@@ -217,9 +217,9 @@ typedef struct SaltHazardSlot {
     uint8_t _pad_74[0xc];
     uint32_t active;
     uint8_t _pad_84[0x4];
-    struct PathTemplate* owner_template;
-    float velocity_x;
-    float velocity_y;
+    struct Game* owner_game;
+    float fade_alpha;
+    float spawn_velocity_y;
     uint32_t armed_substate;
 } SaltHazardSlot;
 
@@ -228,8 +228,8 @@ typedef struct SaltHazardSlot {
  * slots and stride 0xb0. Each slot is a live projectile fired by Wall2 tile
  * emitters via `shoot_subgoldy`. Native functions: initialize_sub_lazer_pool
  * @ 0x441650, spawn_sub_lazer_projectile @ 0x441670,
- * update_sub_lazer_projectile @ 0x43efb0, destroy_sub_lazer_projectile
- * @ 0x439bc0.
+ * deactivate_sub_lazer_projectile @ 0x441740, update_sub_lazer_projectile
+ * @ 0x4417d0.
  */
 typedef struct SubLazerSlot {
     uint8_t _pad_00[0x14];

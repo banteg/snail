@@ -1,62 +1,28 @@
-// update_salt_hazard @ 0x4417d0 (thiscall, ret)
-// State 2 inlines the live-list removal; state 1 integrates, bounds-checks,
-// and runs the two attachment containment probes before deactivating.
-// NOTE: progress/step at +0x98/+0x9c reach past the 0x98 pool stride into
-// the next slot's header dwords, and spawn never initializes them — native
-// layout bug, preserved as-is.
+// update_salt_hazard @ 0x441c10 (thiscall, ret)
 
-#include "vector3.h"
 #include "salt_hazard_types.h"
+#include "sprite.h"
 
-struct RuntimeTrackCellRef;
-
-struct GridCell {
-    char unknown_00[0x3c];
-    unsigned char tile; // +0x3c
-};
-
-struct AttachmentBody {
-    bool is_point_inside_track_attachment(
-        Vector3 probe, Vector3 scaled_velocity, RuntimeTrackCellRef* owner);
-};
-
-struct AttachmentTemplateRecord {
-    char unknown_00[0x38];
-    AttachmentBody* body; // +0x38
-};
-
-struct RuntimeTrackCell {
-    unsigned char flags; // +0x00, 0x40 primary attachment, 0x80 secondary
-    char unknown_01[0xa4 - 0x01];
-    AttachmentTemplateRecord* primary_attachment;   // +0xa4
-    AttachmentTemplateRecord* secondary_attachment; // +0xa8
-};
-
-struct TrackRuntime {
-    GridCell* get_track_grid_cell_at_world_position(Vector3* position);
-    RuntimeTrackCell* get_track_runtime_cell_at_world_z(Vector3* position);
-};
-
-struct Game {
-    char unknown_00[0x9];
+class Game {
+public:
+    char unknown_00[0x09];
     unsigned char paused; // +0x09
     char unknown_0a[0x5a8 - 0x0a];
     SaltListAnchor salt_free_anchor; // +0x5a8
-    char unknown_5b8[0x74618 - 0x5b8];
-    TrackRuntime track_runtime; // +0x74618
-    char unknown_74619[0x3be0e4 - 0x74619];
+    char unknown_5b4[0x3bb7d4 - 0x5b4];
+    float salt_fade_start_z; // +0x3bb7d4
+    char unknown_3bb7d8[0x3be0e4 - 0x3bb7d8];
     float salt_kill_plane_z; // +0x3be0e4
 };
 
 extern Game* volatile g_game; // data_4df904
-extern char g_debug_report_arg[];
-int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
 void SaltHazardSlot::update_salt_hazard()
 {
     if (owner_game->paused)
         return;
+
     switch (state) {
     case 2: {
         SaltListAnchor* anchor = &g_game->salt_free_anchor;
@@ -65,60 +31,41 @@ void SaltHazardSlot::update_salt_hazard()
             report_errorf("List remove");
             state = 0;
             return;
+        } else {
+            if ((flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+                state = 0;
+                return;
+            } else {
+                if (list_next)
+                    list_next->list_prev = list_prev;
+                if (list_prev)
+                    list_prev->list_next = list_next;
+                else
+                    anchor->first = list_next;
+                list_next = anchor->free_top;
+                anchor->free_top = this;
+                int updated = list_flags;
+                state = 0;
+                updated &= ~0x200;
+                list_flags = updated;
+            }
         }
-        if ((flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-            state = 0;
-            return;
-        }
-        if (list_next)
-            list_next->list_prev = list_prev;
-        if (list_prev)
-            list_prev->list_next = list_next;
-        else
-            anchor->first = list_next;
-        list_next = anchor->free_top;
-        anchor->free_top = this;
-        int updated = list_flags;
-        state = 0;
-        updated &= ~0x200;
-        list_flags = updated;
         return;
     }
     case 1: {
-        float* progress = (float*)((char*)this + 0x98);
-        float* progress_step = (float*)((char*)this + 0x9c);
-        *progress = *progress_step + *progress;
-        if (*progress > 1.0f) {
+        float alpha =
+            1.0f - (position.z - owner_game->salt_fade_start_z) * 0.021739131f;
+        *(float*)((char*)this + 0x8c) = alpha;
+        if (alpha < 0.0f) {
+            alpha = 0.0f;
+        } else if (alpha > 1.0f) {
+            alpha = 1.0f;
+        }
+        *(float*)((char*)this + 0x8c) = alpha;
+        ((Color4f*)((char*)this + 0x28))->set_color_alpha(0x3f666666);
+        if (position.z < owner_game->salt_kill_plane_z)
             state = 2;
-            return;
-        }
-        position.x = velocity.x + position.x;
-        position.y = velocity.y + position.y;
-        position.z = velocity.z + position.z;
-        if (position.y >= 0.0f && position.z >= owner_game->salt_kill_plane_z) {
-            GridCell* grid = g_game->track_runtime.get_track_grid_cell_at_world_position(&position);
-            RuntimeTrackCell* cell = g_game->track_runtime.get_track_runtime_cell_at_world_z(&position);
-            if (grid->tile != 14 || position.y >= 0.0f) {
-                if ((cell->flags & 0x40) == 0
-                    || !cell->primary_attachment->body->is_point_inside_track_attachment(
-                        Vector3(velocity.x + position.x, velocity.y + position.y, velocity.z + position.z),
-                        Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
-                        (RuntimeTrackCellRef*)cell->primary_attachment)) {
-                    if ((cell->flags & 0x80) == 0)
-                        return;
-                    if (!cell->secondary_attachment->body->is_point_inside_track_attachment(
-                            Vector3(velocity.x + position.x, velocity.y + position.y, velocity.z + position.z),
-                            Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
-                            (RuntimeTrackCellRef*)cell->secondary_attachment))
-                        return;
-                }
-                debug_report_stub(g_debug_report_arg);
-                deactivate_salt_hazard();
-                return;
-            }
-        }
-        deactivate_salt_hazard();
         return;
     }
     }

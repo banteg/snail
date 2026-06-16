@@ -13,9 +13,11 @@ pass ordering. All semantics verified in the diff body:
   position row (+0x68), `set_matrix_rotation_identity` on +0x38,
   random world-y rotation `(rand() - 16384) * 0.0001917476` (±π),
   then a one-byte write to velocity.z +0x94
-- **+0x94 is velocity.z, not an armed flag** — spawn only pokes its low
-  byte to `1`, leaving the float as a tiny denormal; update_salt_hazard
-  confirms position integration reads +0x8c/+0x90/+0x94 as a float triple.
+- `+0x8c..+0x94` is still a spawn-time velocity-looking lane, and spawn only
+  pokes the low byte of `+0x94` to `1`. The earlier claim that
+  `update_salt_hazard` proves integration was based on the shifted
+  `0x4417d0` name; the actual salt updater at `0x441c10` uses `+0x8c` as a
+  fade fraction and does not read `+0x90/+0x94`.
 - live-list add-after onto the node-shaped anchor at game+0x3ca224,
   flag 0x200, prev/next at +0x08/+0x0c, returns `list_flags |= 0x200`
 - spawn's true extent ends at 0x44164c; an uncurated 20-slot pool

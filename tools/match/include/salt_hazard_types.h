@@ -1,17 +1,16 @@
-// Shared salt hazard list-anchor and pool-slot views. The pool stride is 0x98;
-// update_salt_hazard intentionally reads progress/step at +0x98/+0x9c as
-// off-stride overlap, so those fields do not belong to SaltHazardSlot.
+// Shared salt hazard list-anchor and pool-slot views. The pool stride is 0x98.
 #ifndef SALT_HAZARD_TYPES_H
 #define SALT_HAZARD_TYPES_H
 
+#include "bod_types.h"
 #include "vector3.h"
 
-struct Game;
+class Game;
 
 class SaltHazardSlot {
 public:
-    void update_salt_hazard();    // @ 0x4417d0
-    int deactivate_salt_hazard(); // @ 0x441740
+    SaltHazardSlot* initialize_salt_hazard_runtime(); // @ 0x408630
+    void update_salt_hazard();    // @ 0x441c10
 
     int unknown_00;
     unsigned int list_flags;   // +0x04, 0x200 = linked, 0x40 = iteration guard
@@ -23,7 +22,7 @@ public:
     int state;                 // +0x80
     char unknown_84[0x88 - 0x84];
     Game* owner_game;          // +0x88
-    Vector3 velocity;          // +0x8c (z low byte poked by spawn)
+    Vector3 velocity;          // +0x8c, spawn-time velocity; updater reuses +0x8c as fade alpha
 };
 
 typedef char SaltHazardSlot_must_match_pool_stride[
