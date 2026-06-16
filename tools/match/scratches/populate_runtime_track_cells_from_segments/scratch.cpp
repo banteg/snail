@@ -1,6 +1,7 @@
 // populate_runtime_track_cells_from_segments @ 0x435eb0 (thiscall, ret)
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
+#include "score_stats.h"
 #include "sprite.h"
 
 void __fastcall set_matrix_identity(void* transform);
@@ -18,10 +19,6 @@ struct HighScoreEntry {
         unsigned int runtime_flags,
         int archive_kind,
         int replay_level_arg);
-};
-
-struct ScoreStats {
-    void clear_subgoldy_score_buckets();
 };
 
 struct TimerCounters {
@@ -107,7 +104,7 @@ void Game::populate_runtime_track_cells_from_segments()
     if (*(int*)(base + 0x1270fc8) == 3) {
         *(int*)(base + 0x1270fc8) = 1;
         *(int*)(base + 0x3bba48) = 0;
-        ((ScoreStats*)(base + 0x3bb764))->clear_subgoldy_score_buckets();
+        ((RunScoreStats*)(base + 0x3bb764))->clear_subgoldy_score_buckets();
         *(int*)(base + 0x3bfaa4) = 3;
     }
 

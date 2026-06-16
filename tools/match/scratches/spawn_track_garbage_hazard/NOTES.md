@@ -64,3 +64,9 @@ Residuals:
   spelling is semantically equivalent but regresses to 77.26% because MSVC keeps
   the pointer live and collapses the native-looking reloads. Current result
   remains 92.58%, 140/143 insns.
+- 2026-06-16 garbage slot audit: the spawn tail confirms
+  `GarbageHazardSlot::source_cell` at `+0xb8` and `hidden` at `+0xbc`, now
+  recorded in the shared header. A typed `GarbageHazardSlot*` spelling in this
+  scratch regressed to 60.56% by changing saved-register ownership from the
+  function prologue, so the scratch keeps the raw offset writes while the
+  header carries the recovered fields.

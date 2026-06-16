@@ -1,11 +1,7 @@
 // complete_subgame @ 0x438700 (thiscall, ret 0x4)
 // cRSubGame::Complete(bool): snapshot the finished run and route high-score writes.
 
-struct ScoreStats {
-    void display_score_stats(); // @ 0x4403c0
-
-    char unknown_000[0x2e4];
-};
+#include "score_stats.h"
 
 struct RunRecord {
     unsigned char flags;
@@ -53,7 +49,7 @@ public:
     int level_mode; // +0x40
     int level_arg; // +0x44
     char unknown_000048[0x3bb764 - 0x48];
-    ScoreStats score_stats; // +0x3bb764
+    char score_stats_block[0x2e4]; // +0x3bb764, RunScoreStats pointer view
     int source_score; // +0x3bba48
     SixDwords source_stats; // +0x3bba4c
     int source_score_tail; // +0x3bba64
@@ -81,7 +77,7 @@ public:
 
 void Game::complete_subgame(unsigned char completed)
 {
-    score_stats.display_score_stats();
+    ((RunScoreStats*)score_stats_block)->display_score_stats();
 
     run_records[replay_update_cursor].flags |= 0x08;
     ++completion_count;

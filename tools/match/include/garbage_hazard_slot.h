@@ -7,6 +7,7 @@
 
 class Game;
 class Player;
+struct TrackRowCell;
 
 class GarbageHazardSlot {
 public:
@@ -33,7 +34,9 @@ public:
     float smoke_timer;              // +0xac
     float smoke_timer_step;         // +0xb0
     Sprite* sprite;                 // +0xb4
-    char unknown_b8[0xc0 - 0xb8];
+    TrackRowCell* source_cell;       // +0xb8
+    unsigned char hidden;            // +0xbc
+    char unknown_bd[0xc0 - 0xbd];
     Player* player;                 // +0xc0
 };
 

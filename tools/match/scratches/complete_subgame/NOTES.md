@@ -106,6 +106,12 @@ Rejected experiments:
   as `g_high_score_bank`, clearing the masked operand audit without changing the
   normalized score. The remaining residual is still the byte-OR and snapshot
   scheduling shape below.
+- 2026-06-16 score-view split: the display call now uses the shared
+  `RunScoreStats` pointer view at `game+0x3bb764`. Do not embed the full view
+  directly as a `Game` member: its fields overlap the following `Game` fields
+  (`source_score` at `+0x3bba48`, etc.), so the scratch keeps a fixed-size
+  `score_stats_block` and casts that storage for the call. This preserves the
+  75.28% pinned match.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register
