@@ -4,10 +4,13 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `28.32%`, `229/336` candidate/target instructions, with `12` masked
+- `68.48%`, `327/336` candidate/target instructions, with `33` masked
   operands ok.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
+- The method is modeled as `void`: native exits do not establish a meaningful
+  return value, and the earlier `void*` surface forced extra return-value
+  cleanup in the candidate.
 
 Evidence:
 
@@ -33,6 +36,10 @@ Type consolidation:
 
 Residual:
 
-- This is intentionally a first live source map. The native function duplicates
-  the list-removal/child-kill tail for several state exits, while this scratch
-  currently keeps one shared removal tail for readability.
+- Native duplicates the list-removal/child-kill tail for the three removal
+  exits. The scratch now spells those exits explicitly, which raised the match
+  from `28.32%` to `68.48%`.
+- Remaining residuals are mostly switch and stack-shape differences: VC6 still
+  collapses case `0`/default into a `state - 1` jump table, while native uses a
+  direct `0..5` jump table; the transition-vector interpolation also uses fewer
+  stack temporaries than native.

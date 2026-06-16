@@ -17,7 +17,7 @@ public:
 class RingOrSpecialEffectParent {
 public:
     int initialize_ring_or_special_effect_particles(void* unused_rate_source); // @ 0x43e470
-    void* update_subgoldy_bullet(); // @ 0x43e830
+    void update_subgoldy_bullet(); // @ 0x43e830
 
     void* vtable; // +0x00
     unsigned int flags; // +0x04

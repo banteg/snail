@@ -1,4 +1,4 @@
-// update_subgoldy_bullet @ 0x43e830 (thiscall, ret)
+// update_subgoldy_bullet @ 0x43e830 (thiscall, void)
 
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -21,20 +21,19 @@ public:
     float radius; // +0x1c
 };
 
-void* RingOrSpecialEffectParent::update_subgoldy_bullet()
+void RingOrSpecialEffectParent::update_subgoldy_bullet()
 {
     if (rate_source->paused != 0)
-        return 0;
+        return;
 
     star_shower_counter++;
     if (star_shower_counter == 3)
         star_shower_counter = 0;
 
-    RingOrSpecialEffectParticle* particle =
-        (RingOrSpecialEffectParticle*)((char*)this + 0x90);
-    int count;
-
     switch (state) {
+    case 0:
+        break;
+
     case 1:
         if (oscillate_x != 0) {
             float phase = active_phase + active_phase_step;
@@ -47,20 +46,54 @@ void* RingOrSpecialEffectParent::update_subgoldy_bullet()
             position.x = sine(active_phase) * 3.0f;
         }
 
-        count = 10;
+        {
+        RingOrSpecialEffectParticle* particle =
+            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
             count--;
         } while (count != 0);
+        }
 
         if (position.z < owner_player->interaction_max_z) {
             int owner_context_now = *(int*)((char*)owner_player + 0x404);
             if (owner_context_now < (int)owner_context)
                 state = 4;
-            return 0;
+            return;
         }
-        break;
+
+        {
+        state = 0;
+        char* list = g_game_base + 0x5a8;
+
+        if ((flags & 0x200) == 0) {
+            report_errorf("List remove");
+        } else if ((flags & 0x40) != 0) {
+            report_errorf("List remove NEXTBOD");
+        } else {
+            if (prev != 0)
+                prev->next = next;
+            if (next != 0)
+                next->prev = prev;
+            else
+                *(RingOrSpecialEffectParent**)(list + 4) = prev;
+            prev = *(RingOrSpecialEffectParent**)(list + 8);
+            *(RingOrSpecialEffectParent**)(list + 8) = this;
+            flags &= ~0x200u;
+        }
+
+        RingOrSpecialEffectParticle* particle =
+            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        int count = 10;
+        do {
+            particle->sprite->kill_sprite();
+            particle++;
+            count--;
+        } while (count != 0);
+        return;
+        }
 
     case 2:
         state = 3;
@@ -69,15 +102,48 @@ void* RingOrSpecialEffectParent::update_subgoldy_bullet()
         // fall through
 
     case 3:
-        count = 10;
+        {
+        RingOrSpecialEffectParticle* particle =
+            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
             count--;
         } while (count != 0);
+        }
 
         transition_progress += transition_step;
-        if (transition_progress <= 1.0f) {
+        if (transition_progress > 1.0f) {
+            state = 0;
+            char* list = g_game_base + 0x5a8;
+
+            if ((flags & 0x200) == 0) {
+                report_errorf("List remove");
+            } else if ((flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+            } else {
+                if (prev != 0)
+                    prev->next = next;
+                if (next != 0)
+                    next->prev = prev;
+                else
+                    *(RingOrSpecialEffectParent**)(list + 4) = prev;
+                prev = *(RingOrSpecialEffectParent**)(list + 8);
+                *(RingOrSpecialEffectParent**)(list + 8) = this;
+                flags &= ~0x200u;
+            }
+
+            RingOrSpecialEffectParticle* particle =
+                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+            int count = 10;
+            do {
+                particle->sprite->kill_sprite();
+                particle++;
+                count--;
+            } while (count != 0);
+            return;
+        } else {
             Vector3* target = (Vector3*)((char*)owner_player + 0x2964);
             float delta_x = (target->x - position.x) * 0.939999998f;
             float delta_y = (target->y - position.y) * 0.939999998f;
@@ -86,17 +152,17 @@ void* RingOrSpecialEffectParent::update_subgoldy_bullet()
             position.y += delta_y;
             position.z += delta_z;
 
-            count = 10;
-            particle = (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+            int count = 10;
+            RingOrSpecialEffectParticle* particle =
+                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
             do {
                 particle->radius *= 0.939999998f;
                 particle->base_position = position;
                 particle++;
                 count--;
             } while (count != 0);
-            return &position;
+            return;
         }
-        break;
 
     case 4:
         state = 5;
@@ -105,57 +171,63 @@ void* RingOrSpecialEffectParent::update_subgoldy_bullet()
         // fall through
 
     case 5:
-        count = 10;
+        {
+        RingOrSpecialEffectParticle* particle =
+            (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
             count--;
         } while (count != 0);
+        }
 
         transition_progress += transition_step;
-        if (transition_progress <= 1.0f) {
-            count = 10;
-            particle = (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+        if (transition_progress > 1.0f) {
+            state = 0;
+            char* list = g_game_base + 0x5a8;
+
+            if ((flags & 0x200) == 0) {
+                report_errorf("List remove");
+            } else if ((flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+            } else {
+                if (prev != 0)
+                    prev->next = next;
+                if (next != 0)
+                    next->prev = prev;
+                else
+                    *(RingOrSpecialEffectParent**)(list + 4) = prev;
+                prev = *(RingOrSpecialEffectParent**)(list + 8);
+                *(RingOrSpecialEffectParent**)(list + 8) = this;
+                flags &= ~0x200u;
+            }
+
+            RingOrSpecialEffectParticle* particle =
+                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
+            int count = 10;
+            do {
+                particle->sprite->kill_sprite();
+                particle++;
+                count--;
+            } while (count != 0);
+            return;
+        } else {
+            int count = 10;
+            RingOrSpecialEffectParticle* particle =
+                (RingOrSpecialEffectParticle*)((char*)this + 0x90);
             do {
                 particle->radius *= 1.10000002f;
                 particle->base_position = position;
                 particle++;
                 count--;
             } while (count != 0);
-            return particle;
+            return;
         }
-        break;
 
     default:
-        return 0;
+        break;
     }
 
-    state = 0;
-    char* list = g_game_base + 0x5a8;
-
-    if ((flags & 0x200) == 0) {
-        report_errorf("List remove");
-    } else if ((flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-    } else {
-        if (prev != 0)
-            prev->next = next;
-        if (next != 0)
-            next->prev = prev;
-        else
-            *(RingOrSpecialEffectParent**)(list + 4) = prev;
-        prev = *(RingOrSpecialEffectParent**)(list + 8);
-        *(RingOrSpecialEffectParent**)(list + 8) = this;
-        flags &= ~0x200u;
-    }
-
-    particle = (RingOrSpecialEffectParticle*)((char*)this + 0x90);
-    count = 10;
-    do {
-        particle->sprite->kill_sprite();
-        particle++;
-        count--;
-    } while (count != 0);
-
-    return 0;
+    return;
 }
