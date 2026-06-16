@@ -4,9 +4,9 @@ Best current source-shaped baseline for the native attachment-follow update help
 
 Current matcher result:
 
-- 42.71% match
+- 46.44% match
 - target: 726 instructions
-- candidate: 646 instructions
+- candidate: 678 instructions
 
 Recovered shape:
 
@@ -20,7 +20,7 @@ Recovered shape:
 
 Known residuals after the current source shape:
 
-- stack layout still differs (`sub esp, 0x180` target vs `sub esp, 0x15c` candidate)
+- stack layout still differs (`sub esp, 0x180` target vs `sub esp, 0x160` candidate)
 - the overflow loop still uses a different x87 subtract shape and keeps the template record in `ebx` instead of freeing `ebx` for the `0x80` row flag constant
 - special-runtime row writes are semantically typed, but row lookup/store ordering and registers still differ in both milestone branches
 - normal interpolation now follows the target's scalar and output temporary flow, but matrix-copy stack offsets and camera-basis stores remain different
@@ -111,3 +111,8 @@ the shared attachment header still uses `AttachmentTransform`.
 now returns `int` in `track_attachment_types.h`. The previous `void`
 declaration was invalid; both this scratch and `update_subgoldy` consume the
 mode result.
+
+2026-06-16 type consolidation: the former local state-only
+`JetpackGaugeController` view now uses shared `jetpack_gauge.h`. This scratch
+only reads `player->jetpack_gauge.state` at +0x0c, and the shared full-size
+view keeps the pinned 46.44%/678-insn result.

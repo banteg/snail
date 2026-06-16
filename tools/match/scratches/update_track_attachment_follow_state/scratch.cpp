@@ -1,4 +1,5 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
+#include "jetpack_gauge.h"
 #include "transform_matrix.h"
 
 struct Vec3 {
@@ -29,11 +30,6 @@ struct AttachmentRuntimeRecord {
     char unknown_00[0xa0];
     float scalar_a0;
     float scalar_a4;
-};
-
-struct JetpackGaugeController {
-    char unknown_00[0x0c];
-    unsigned int state;
 };
 
 class Player {
