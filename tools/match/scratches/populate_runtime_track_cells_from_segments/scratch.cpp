@@ -4,6 +4,7 @@
 #include "score_stats.h"
 #include "sprite.h"
 #include "timer_counters.h"
+#include "track_attachment_types.h"
 
 void __fastcall set_matrix_identity(void* transform);
 
@@ -519,45 +520,46 @@ void Game::populate_runtime_track_cells_from_segments()
                 break;
             case 'P':
             case 'p': {
+                TrackRowCell* runtime_cell = (TrackRowCell*)(cell + 0x3bfac8);
                 if (glyph == 'P')
                     *(unsigned char*)(cell + 0x3bfb04) = 0x1e;
                 if (glyph == 'p')
                     *(unsigned char*)(cell + 0x3bfb04) = 0x1d;
 
                 int template_index = *(int*)(row_record + 0xa0);
-                char* template_record;
+                AttachmentPathTemplate* template_record;
                 if (base[2] == 0)
-                    template_record = base + 0xff2914 + template_index * 0x150;
+                    template_record = (AttachmentPathTemplate*)(base + 0xff2914 + template_index * 0x150);
                 else
-                    template_record = base + 0xff29bc + template_index * 0x150;
+                    template_record = (AttachmentPathTemplate*)(base + 0xff29bc + template_index * 0x150);
 
-                *(char**)(cell + 0x3bfb00) = template_record;
+                runtime_cell->attachment_template_record = template_record;
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 if (attachment_entry_installed == 0) {
                     attachment_entry_installed = 1;
                     ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(
-                        *(void**)(template_record + 0x24));
+                        *(void**)((char*)template_record + 0x24));
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                     ((TrackRowBodSlot*)(row_record + 0xb0))->set_bod_object(
-                        *(void**)(template_record + 0x84));
+                        *(void**)((char*)template_record + 0x84));
                     *(int*)(row_record + 0xb4) |= 0x20;
                     *(int*)(row_record + 0xac) = *(int*)(active_segment + 0x4014);
 
-                    char* stamped_row = row_record;
+                    TrackAttachmentRuntimeRow* stamped_row = (TrackAttachmentRuntimeRow*)row_record;
                     int span_index = 0;
-                    if (*(int*)(template_record + 0x48) > 0) {
+                    if (template_record->row_span_count > 0) {
                         do {
-                            int stamped_flags = *(int*)stamped_row;
+                            int stamped_flags = stamped_row->flags;
                             if ((stamped_flags & 0x40) == 0) {
-                                *(int*)stamped_row = stamped_flags | 0x40;
-                                *(char**)(stamped_row + 0xa4) = cell + 0x3bfac8;
+                                stamped_row->flags = stamped_flags | 0x40;
+                                stamped_row->primary_attachment_cell = runtime_cell;
                             } else {
-                                *(int*)stamped_row = stamped_flags | 0x80;
-                                *(char**)(stamped_row + 0xa8) = cell + 0x3bfac8;
+                                stamped_row->flags = stamped_flags | 0x80;
+                                stamped_row->secondary_attachment_cell = runtime_cell;
                             }
                             ++span_index;
-                            stamped_row += 0xf4;
-                        } while (span_index < *(int*)(template_record + 0x48));
+                            ++stamped_row;
+                        } while (span_index < template_record->row_span_count);
                     }
                 }
                 break;

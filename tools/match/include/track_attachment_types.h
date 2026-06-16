@@ -48,7 +48,7 @@ struct AttachmentPathTemplate {
     char unknown_3d[0x40 - 0x3d];
     int side_exit_mode;              // +0x40
     int segment_count;               // +0x44
-    int row_span_count;              // +0x48, runtime rows stamped by entry tiles
+    int row_span_count;              // +0x48, runtime rows stamped by P/p entry tiles
     float segment_count_f;           // +0x4c
     float width_or_scale;            // +0x50
     int width_cells;                 // +0x54, integer half-span source
@@ -69,7 +69,7 @@ struct TrackRowCell {
     char unknown_00[0x10];
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     char unknown_1c[0x38 - 0x1c];
-    AttachmentPathTemplate* attachment_template_record; // +0x38
+    AttachmentPathTemplate* attachment_template_record; // +0x38, installed by P/p entry tiles
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
@@ -91,8 +91,8 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     // tail consumes the same vector-shaped storage.
     Vector3 projection_payload;          // +0x90, parcel/path projection payload
     char unknown_9c[0xa4 - 0x9c];
-    TrackRowCell* primary_attachment_cell; // +0xa4
-    TrackRowCell* secondary_attachment_cell; // +0xa8
+    TrackRowCell* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
+    TrackRowCell* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
     char unknown_ac[0xf0 - 0xac];
     int row_event_id;                    // +0xf0
 };

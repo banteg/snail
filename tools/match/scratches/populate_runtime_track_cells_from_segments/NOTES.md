@@ -102,6 +102,17 @@ moves focused Wibo from `28.20%` to `28.25%`, with candidate instructions
 vs the `+0x48` store) is compiler scheduling, and the equivalent raw field
 write did not improve the match.
 
+2026-06-16 entry shared-field pass: the `P`/`p` path now writes the shared
+`TrackRowCell::attachment_template_record`, uses
+`AttachmentPathTemplate::row_span_count`, and stamps
+`TrackAttachmentRuntimeRow::primary_attachment_cell` /
+`secondary_attachment_cell` over the template span. Focused Wibo remains
+`28.25%`, `1190/1245`, with `57 ok / 1 unresolved / 0 mismatch`. This is
+relationship evidence rather than a score slice: the builder produces the same
+fields consumed by `begin_track_attachment_follow_state`,
+`project_position_onto_track_attachment`, `place_parcels_on_track`, and the
+player attachment-entry path.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else
