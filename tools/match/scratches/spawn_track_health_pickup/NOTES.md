@@ -14,9 +14,9 @@ Current match:
 Evidence:
 
 - Scans eight health pickup slots at `game + 0x356000`, stride `0x74`. The
-  source keeps the native slot-base arithmetic and layers typed
-  `TrackHealthPickup` field views over it, because a direct `Game` pool member
-  made VC6 choose the wrong base register.
+  source keeps the native slot-base arithmetic and layers a typed
+  `HealthPickupPoolSlotView::pickup` overlay over it, because a direct
+  `Game` pool member made VC6 choose the wrong base register.
 - Seeds the promoted partial `TrackHealthPickup` fields: `world_position +0x10`,
   `state +0x38`, `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`,
   `bob_phase +0x6c`, and `bob_phase_step +0x70`.
@@ -35,6 +35,12 @@ collision walker.
 
 Remaining mismatch:
 
+- A plain `TrackHealthPickup* pickup = (TrackHealthPickup*)(slot_base + 874496)`
+  local is source-plausible but wrong for this scratch: it rebases `esi` at the
+  pickup object, drops the focused score to 40.00%, and changes the native
+  `[slot_base + 0x356000 + field]` addressing into small member offsets. The
+  padded scratch-local pool-slot view keeps the real struct visible without
+  making that invalid register-ownership assumption.
 - The typed `TrackHealthPickup` field view makes VC6 preserve `this` in `esi`
   near the prologue instead of using the original stack spill, so the prefix is
   shorter than the earlier word-indexed scratch.

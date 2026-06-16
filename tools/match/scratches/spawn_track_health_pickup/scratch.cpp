@@ -8,9 +8,10 @@
 
 typedef unsigned int DWORD;
 
-#define HEALTH_PICKUP(field) \
-    (((TrackHealthPickup*)(slot_base + 874496))->field)
-#define HEALTH_NODE ((BodNode*)(slot_base + 874496))
+struct HealthPickupPoolSlotView {
+    char pool_offset[0x356000];
+    TrackHealthPickup pickup;
+};
 
 class Game {
 public:
@@ -37,17 +38,18 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
     }
 
     DWORD* slot_base = game_words + 29 * slot_index;
-    HEALTH_PICKUP(state) = 1;
-    HEALTH_PICKUP(owner) = player;
+    HealthPickupPoolSlotView* slot = (HealthPickupPoolSlotView*)slot_base;
+    slot->pickup.state = 1;
+    slot->pickup.owner = player;
 
     PositionBits staged_position;
     staged_position.z = *(int*)&cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 0.60000002f;
     staged_position.x = *(int*)&cell->anchor_position.x;
-    PositionBits* live_position = (PositionBits*)&HEALTH_PICKUP(world_position);
+    PositionBits* live_position = (PositionBits*)&slot->pickup.world_position;
     *live_position = staged_position;
 
-    BodNode* node = HEALTH_NODE;
+    BodNode* node = (BodNode*)&slot->pickup;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
@@ -69,29 +71,26 @@ DWORD* Game::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);
-    HEALTH_PICKUP(sprite) = sprite;
+    slot->pickup.sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= 0x800;
     sprite->flags = flags;
-    HEALTH_PICKUP(sprite)->gravity_step = 0.0f;
-    HEALTH_PICKUP(sprite)->progress = 0.0f;
-    HEALTH_PICKUP(sprite)->progress_step = 0.0f;
-    HEALTH_PICKUP(sprite)->size_start = 0.60000002f;
-    HEALTH_PICKUP(sprite)->size_end = 0.60000002f;
+    slot->pickup.sprite->gravity_step = 0.0f;
+    slot->pickup.sprite->progress = 0.0f;
+    slot->pickup.sprite->progress_step = 0.0f;
+    slot->pickup.sprite->size_start = 0.60000002f;
+    slot->pickup.sprite->size_end = 0.60000002f;
 
-    DWORD* out_position = (DWORD*)&HEALTH_PICKUP(sprite)->position;
+    DWORD* out_position = (DWORD*)&slot->pickup.sprite->position;
     out_position[0] = *(DWORD*)live_position;
     out_position[1] = *((DWORD*)live_position + 1);
     out_position[2] = *((DWORD*)live_position + 2);
-    HEALTH_PICKUP(source_cell) = cell;
-    HEALTH_PICKUP(bob_phase) = 0.0f;
-    if (((int)HEALTH_PICKUP(world_position).z & 1) == 0)
-        HEALTH_PICKUP(bob_phase) = 0.5f;
+    slot->pickup.source_cell = cell;
+    slot->pickup.bob_phase = 0.0f;
+    if (((int)slot->pickup.world_position.z & 1) == 0)
+        slot->pickup.bob_phase = 0.5f;
 
     int step_index = slot_index + 30156;
     game_words[29 * step_index] = 0x3c520d21;
     return (DWORD*)(7 * step_index);
 }
-
-#undef HEALTH_PICKUP
-#undef HEALTH_NODE
