@@ -12,5 +12,6 @@ struct Vec3 {
 
 float Vec3::vector_magnitude()
 {
-    return square_root(x * x + y * y + z * z);
+    float magnitude = square_root(x * x + y * y + z * z);
+    return magnitude;
 }

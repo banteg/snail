@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**308/676** mapped gameplay functions matched, **403/676** mapped gameplay functions have a scratch, **22296/326004** bytes (**6.84%**) are proof-grade, and overall fuzzy is **18.46%**.
+**309/676** mapped gameplay functions matched, **403/676** mapped gameplay functions have a scratch, **22339/326004** bytes (**6.85%**) are proof-grade, and overall fuzzy is **18.46%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -351,7 +351,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | ✅ | rotate_vector_by_matrix | 0x44cc20 | 117 | 38/38 | 100.00% | 38/38 | - |  |
 | ✅ | normalize_vector | 0x44cca0 | 75 | 29/29 | 100.00% | 29/29 | 5 ok |  |
-| 🚧 | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 94.74% | 17/19 | 1 ok |  |
+| ✅ | vector_magnitude | 0x44ccf0 | 43 | 19/19 | 100.00% | 19/19 | 1 ok |  |
 | ✅ | normalize_vector_from_source | 0x44cd20 | 32 | 12/12 | 100.00% | 12/12 | 1 ok |  |
 | ✅ | cross_vectors | 0x44cd40 | 131 | 40/40 | 100.00% | 40/40 | 10 ok |  |
 | ✅ | initialize_uniform_scale_matrix | 0x44cde0 | 66 | 21/21 | 100.00% | 21/21 | - |  |
