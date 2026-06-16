@@ -236,6 +236,7 @@ void Game::populate_runtime_track_cells_from_segments()
             *(int*)active_segment = build_row;
         } else if (segment_row >= *(int*)(active_segment + 4)) {
             first_or_last_row = 0;
+            base_subgame_rate = 1.0f;
             if (*(unsigned char*)(base + 0x1b013c) == 1) {
                 float segment_pick_range;
                 if (level_mode == 1) {

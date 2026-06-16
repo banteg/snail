@@ -7,7 +7,8 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-entry/anchor slice: 27.24%, 1185/1245 candidate instructions (`tools/match/match.sh
+runtime-grid high-score and segment-rate slices: 28.25%, 1190/1245 candidate
+instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -92,6 +93,15 @@ from `27.24%` to `28.20%`; region 2 improves from `38.38%` to `60.78%`.
 Masked operands stay `57 ok / 1 unresolved / 0 mismatch`; the unresolved
 jump-table displacement in the glyph switch is unchanged.
 
+2026-06-16 segment-rate reset slice: the native random/sequential next-segment
+handoff writes `Game::base_subgame_rate` (`+0x48`) back to `1.0f` before
+selecting the next active segment. Landing that as a typed member assignment
+moves focused Wibo from `28.20%` to `28.25%`, with candidate instructions
+`1188/1245 -> 1190/1245`. Masked operands stay `57 ok / 1 unresolved /
+0 mismatch`; the remaining local order difference (`random segment flag` load
+vs the `+0x48` store) is compiler scheduling, and the equivalent raw field
+write did not improve the match.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else
@@ -112,7 +122,9 @@ jump-table displacement in the glyph switch is unchanged.
    cell-672 = previous row) get flags &= 0x5F / &= 0xFFFFAFA7 masks,
    color white, vec4 zero at +0x40.
 6. Authored copy per row: segment cursor walk with the mode-1 random
-   segment pick: `random_float_below(mode==1 ? rate*c3+c4 scaled count :
+   segment pick. Crossing a segment boundary clears the first/last-row latch,
+   resets `base_subgame_rate` to `1.0f`, then picks
+   `random_float_below(mode==1 ? rate*c3+c4 scaled count :
    (float)segment_count)` -> 16928-stride segment, marks +8 visited;
    start rows use the Start block, completion rows the Last block (and
    mode 3 the special block at +1786896). Mirror byte (game+2) ORs row
