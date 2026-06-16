@@ -18,8 +18,8 @@ int NukeController::update_nuke()
             if (advanced_phase > 6.2831855f)
                 self->phase = advanced_phase - 6.2831855f;
 
-            Sprite** slots = self->sprite_slots;
             int i = 0;
+            Sprite** slots = self->sprite_slots;
             do {
                 float angle_base = (float)i * 0.039999999f;
                 float angle = angle_base * 6.2831855f + self->phase;

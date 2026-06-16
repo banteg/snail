@@ -251,7 +251,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | allocate_fringe_object | 0x4470a0 | 50 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | uninit_nuke | 0x4470e0 | 41 | 18/18 | 100.00% | 18/18 | 1 ok |  |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
-| 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 88.14% | 4/59 | 8 ok |  |
+| 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 89.83% | 4/59 | 8 ok |  |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  |
 | 🚧 | format_time_trial_string | 0x448960 | 113 | 37/36 | 95.89% | 26/36 | 12 ok |  |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 | 6 ok |  |
