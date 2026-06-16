@@ -9,14 +9,10 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-class TrackJetpackPickup {
+class TrackJetpackPickup : public BodNode {
 public:
     void update_track_jetpack_pickup();
 
-    int unknown_00;
-    unsigned int list_flags;
-    TrackJetpackPickup* list_prev;
-    TrackJetpackPickup* list_next;
     char unknown_10[0x70 - 0x10];
     float world_z;
     char unknown_74[0x80 - 0x74];
@@ -68,12 +64,12 @@ state_two:
         return;
     }
 
-    next = list_next;
+    next = (TrackJetpackPickup*)list_next;
     if (next != (TrackJetpackPickup*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = list_prev;
+    prev = (TrackJetpackPickup*)list_prev;
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {
@@ -105,12 +101,12 @@ state_one:
         return;
     }
 
-    next = list_next;
+    next = (TrackJetpackPickup*)list_next;
     if (next != (TrackJetpackPickup*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = list_prev;
+    prev = (TrackJetpackPickup*)list_prev;
     if (prev != (TrackJetpackPickup*)zero) {
         prev->list_next = list_next;
     } else {

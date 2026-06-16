@@ -36,3 +36,8 @@ Rejected source-shaped probes:
 
 Keep this pinned unless a source-plausible dispatch spelling preserves both the
 duplicated unlink blocks and the native final bob-tail placement.
+
+2026-06-16 type cleanup: this now inherits the shared `BodNode` list prefix
+from `bod_list.h`, matching exact `update_track_jetpack_pickup`. Do not merge
+the two pickups into one full struct: health's bob fields live at +0x6c/+0x70,
+while jetpack uses a different tail layout. Match remains 71.88%.

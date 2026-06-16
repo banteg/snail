@@ -14,3 +14,7 @@ Recovered behavior:
 The local source shape intentionally keeps the state-1 and state-2 unlink
 blocks duplicated. VC6 otherwise merges the error tails and loses the exact
 native layout.
+
+2026-06-16 type cleanup: this now inherits the shared `BodNode` list prefix
+from `bod_list.h`, the same prefix used by `update_track_health_pickup`. The
+full jetpack tail remains separate from health; match stays exact.

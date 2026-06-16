@@ -10,14 +10,10 @@ extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-class TrackHealthPickup {
+class TrackHealthPickup : public BodNode {
 public:
     void update_track_health_pickup();
 
-    int unknown_00;
-    unsigned int list_flags;
-    TrackHealthPickup* list_prev;
-    TrackHealthPickup* list_next;
     char unknown_10[0x14 - 0x10];
     float world_y;
     float world_z;
@@ -73,12 +69,12 @@ state_two:
         return;
     }
 
-    next = list_next;
+    next = (TrackHealthPickup*)list_next;
     if (next != (TrackHealthPickup*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = list_prev;
+    prev = (TrackHealthPickup*)list_prev;
     if (prev != (TrackHealthPickup*)zero) {
         prev->list_next = list_next;
     } else {
@@ -110,12 +106,12 @@ state_one:
         return;
     }
 
-    next = list_next;
+    next = (TrackHealthPickup*)list_next;
     if (next != (TrackHealthPickup*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = list_prev;
+    prev = (TrackHealthPickup*)list_prev;
     if (prev != (TrackHealthPickup*)zero) {
         prev->list_next = list_next;
     } else {
