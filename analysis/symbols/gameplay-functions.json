@@ -596,6 +596,11 @@
       "description": "Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
     },
     {
+      "address": "0x411700",
+      "name": "direct3d_renderer_set_cull_mode",
+      "description": "Renderer-wrapper method that maps the one-bit cull selector to Direct3D render state 0x16 values before object rendering."
+    },
+    {
       "address": "0x411730",
       "name": "initialize_d3d8_device"
     },

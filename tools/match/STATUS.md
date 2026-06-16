@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**298/675** mapped gameplay functions matched, **20330/326015** bytes (**6.2%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
+**300/676** mapped gameplay functions matched, **21151/326004** bytes (**6.5%**). Byte totals are curated-extent upper bounds: uncurated code between manifest functions counts toward the preceding extent.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -73,8 +73,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
+| ✅ | direct3d_renderer_set_cull_mode | 0x411700 | 46 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
 | ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
+| ✅ | set_cull_mode | 0x4129f0 | 775 | 5/5 | 100.00% | 5/5 | 2 ok |  |
+| 🚧 | set_blend_mode | 0x412d00 | 808 | 92/92 | 81.52% | 14/92 | 2 mismatch, 13 ok |  |
 | ✅ | begin_sprite_depth_render_state | 0x413540 | 261 | 60/60 | 100.00% | 60/60 | 7 ok |  |
 | ✅ | end_sprite_depth_render_state | 0x413650 | 22 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
@@ -401,7 +404,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 1 type name(s)
 - covered: 15 type name(s) with a header plus scratch-local copies
-- divergent: 35 type name(s) with multiple scratch-local shapes
+- divergent: 36 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -415,6 +418,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GolbShot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RenderStateDeviceVtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -430,7 +434,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | CheatState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ContactTargetRegistry | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Direct3DDevice8Vtbl | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendOverlayColorLerp | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |

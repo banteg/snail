@@ -60,6 +60,25 @@
       "description": "Compiler-emitted state switch jump table used by update_frontend_state_machine."
     },
     {
+      "address": "0x412e18",
+      "name": "set_blend_mode_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L246"
+      ],
+      "description": "Compiler-emitted switch target table used by set_blend_mode after the blend preset lookup."
+    },
+    {
+      "address": "0x412e30",
+      "name": "set_blend_mode_lookup_table",
+      "kind": "global",
+      "aliases": [
+        "$L245"
+      ],
+      "size": "0x15",
+      "description": "Compiler-emitted byte lookup table mapping object blend preset ids 0..20 to set_blend_mode case indexes."
+    },
+    {
       "address": "0x4137b8",
       "name": "configure_sprite_render_state_jump_table",
       "kind": "jump_table",
@@ -989,6 +1008,15 @@
         "data_4f7450"
       ],
       "description": "Renderer triangle counter incremented by quad submission helpers after successful or attempted DrawPrimitive calls."
+    },
+    {
+      "address": "0x4f7458",
+      "name": "g_direct3d_renderer",
+      "kind": "global",
+      "aliases": [
+        "data_4f7458"
+      ],
+      "description": "Global renderer wrapper object; its +0xbb94 device pointer backs the cull-mode wrapper and Direct3D setup helpers."
     },
     {
       "address": "0x502fe0",
