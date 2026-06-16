@@ -1,21 +1,11 @@
 // show_times_up_message @ 0x445e90 (thiscall, ret)
 
-#include "frontend_widget.h"
+#include "times_up_controller.h"
 
 extern char* g_game_base; // data_4df904
 
 struct BorderManager {
     FrontendWidget* allocate_border();
-};
-
-class TimesUpController {
-public:
-    void show_times_up_message();
-
-    int state;                 // +0x00
-    FrontendWidget* border;    // +0x04
-    float progress;            // +0x08
-    float progress_step;       // +0x0c
 };
 
 void TimesUpController::show_times_up_message()

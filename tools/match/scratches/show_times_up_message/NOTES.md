@@ -5,3 +5,7 @@ Exact match: 100.00%, 31/31 instructions.
 When the message is inactive, this allocates a border widget, initializes the
 centered `"Time's Up"` text with frontend flag word `0x400002`, seeds the fade
 progress, and marks the controller active.
+
+2026-06-16 type consolidation: `TimesUpController` is now shared through
+`times_up_controller.h` across show/update/uninit; the border at +0x04 is the
+shared `FrontendWidget*`. This scratch remains exact.
