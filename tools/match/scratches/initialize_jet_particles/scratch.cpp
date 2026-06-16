@@ -1,9 +1,9 @@
-// initialize_jet_particles @ 0x43a5b0 (fastcall, returns 0)
+// initialize_jet_particles @ 0x43a5b0 (fastcall)
 
 #include "jetpack_gauge.h"
 #include "sprite.h"
 
-int __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
+void __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
 {
     JetParticleSlot* slot = &gauge->particle_slots[0][0];
     int rows = 15;
@@ -28,7 +28,8 @@ int __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
 
             Color4f color;
             slot->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f);
-            slot->wobble_x = 0.0f;
+            float* wobble_x = &slot->wobble_x;
+            *wobble_x = 0.0f;
             slot->sprite->draw_mode = 0;
             slot->wobble_y = 0.0f;
             slot->wobble_alpha = 0.166666672f;
@@ -37,5 +38,4 @@ int __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
         } while (columns != 0);
         rows--;
     } while (rows != 0);
-    return rows;
 }
