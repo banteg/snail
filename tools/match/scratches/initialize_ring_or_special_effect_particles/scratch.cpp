@@ -11,8 +11,8 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
     star_shower_counter = 0;
 
     Vector3* parent_position = &position;
-    RingOrSpecialEffectParticle* particle = particles;
     do {
+        RingOrSpecialEffectParticle* particle = &particles[i];
         particle->phase = (float)i * 0.628318548f;
         particle->phase_step = rate_source->subgame_rate * 0.104719758f;
         particle->parent = this;
@@ -67,7 +67,6 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
             particle->sprite->facing_angle_step = -particle->phase_step;
 
         particle->update_ring_or_special_effect_particle();
-        particle++;
         i++;
     } while (i < 10);
 

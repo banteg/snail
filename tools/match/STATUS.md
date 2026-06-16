@@ -188,7 +188,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 136/144 | 52.86% | 25/144 | 9 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 140/143 | 92.58% | 48/143 | 16 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 196/347 | 36.83% | 0/347 | 5 mismatch, 38 ok |  |
-| 🚧 | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 154/153 | 96.42% | 8/153 | 10 ok |  |
+| 🚧 | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 98.69% | 21/153 | 10 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 67/65 | 71.21% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_subgoldy_bullet | 0x43e830 | 1156 | 339/336 | 71.41% | 6/336 | 33 ok |  |

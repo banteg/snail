@@ -3,7 +3,7 @@
 Live source map for the ten child halo sprites attached to a
 `RingOrSpecialEffectParent`.
 
-Current match: 96.42%, 154 candidate instructions versus 153 target
+Current match: 98.69%, 153 candidate instructions versus 153 target
 instructions, with 10 clean masked operands.
 
 Evidence:
@@ -18,12 +18,21 @@ Evidence:
 - Parent `+0x1d0` is a rate source pointer whose `+0x38` float feeds child
   orbit phase step as `rate * 0.104719758`.
 
+Source-shape win:
+
+- Spelling the loop as `RingOrSpecialEffectParticle* particle = &particles[i]`
+  inside the body, instead of holding a `particle++` cursor, matches the native
+  state/counter stores before the particle setup and removes the extra carried
+  `ebx += 0x20` induction update. This improves the focused match from 96.42%
+  to 98.69% and raises the prefix from 8 to 21 instructions.
+
 Residual:
 
-- MSVC hoists the child pointer setup before the native state stores and keeps
-  the child base-position pointer live across loop iterations (`add ebx,
-  0x20`). Native writes `state` and `star_shower_counter` first and recomputes
-  `child + 0x08` inside each iteration.
+- Native stores `phase_step` before `parent`, while VC6 schedules the parent
+  pointer store before the x87 `fstp`.
+- Native copies all three `base_position` lanes before storing `radius`; VC6
+  schedules the radius store before the final z-lane copy. The data flow and
+  instruction count otherwise align.
 
 Rejected/source-shape probes:
 
@@ -32,6 +41,10 @@ Rejected/source-shape probes:
   stores.
 - Spelling the state store as `state = i + 1` also compiled identically. The
   residual is pointer scheduling, not uncertainty about the `state` field.
+- Introducing a local `phase_step` compiled identically after the indexed-loop
+  fix, so it was reverted as source-neutral churn.
+- Rewriting `base_position = *parent_position` as explicit x/y/z field copies
+  regressed to 50.33% by changing register ownership across the whole loop.
 
 Type consolidation:
 
