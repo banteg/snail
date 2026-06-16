@@ -22,6 +22,9 @@ public:
     float radius; // +0x1c
 };
 
+typedef char RingOrSpecialEffectParticle_must_be_0x20[
+    (sizeof(RingOrSpecialEffectParticle) == 0x20) ? 1 : -1];
+
 class RingEffectRateSource {
 public:
     char unknown_00[0x09];

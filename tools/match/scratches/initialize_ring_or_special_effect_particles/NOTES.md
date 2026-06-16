@@ -64,6 +64,9 @@ Type consolidation:
   `+0x90..+0x1cf` is modeled as `particles[10]`. The updater method is modeled
   as `void` because its native return is not consumed by any known caller; the
   emitter remains byte-return shaped.
+- 2026-06-16 child-stride assertion: the shared header now asserts
+  `sizeof(RingOrSpecialEffectParticle) == 0x20`, matching this initializer's
+  ten-entry loop and the updater/emitter consumers.
 - 2026-06-16 correction: `+0x80` is named `state`, not `active`; the virtual
   updater confirms it is a multi-state lane rather than a boolean.
 - 2026-06-16 lives-snapshot correction: the ignored `ret 0x4` argument is the
