@@ -18,9 +18,8 @@ void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vecto
     TransformMatrix* live_matrix = (TransformMatrix*)((char*)this + 0x38);
     set_matrix_identity(live_matrix);
     Vector3* position = &this->position;
-    Vector3* velocity_copy = &velocity;
     *position = *origin;
-    *velocity_copy = *direction;
+    velocity = *direction;
     sprite_bob_phase = 0.0f;
     sprite_bob_phase_step = owner_game->track_center_x * 0.0055555557f;
 

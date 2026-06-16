@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**315/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **24421/326004** bytes (**7.49%**) are proof-grade, and overall fuzzy is **19.03%**.
+**316/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **24616/326004** bytes (**7.55%**) are proof-grade, and overall fuzzy is **19.03%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -229,7 +229,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 74.07% | 0/67 | 8 ok |  |
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  |
-| 🚧 | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 98.41% | 24/63 | 6 ok |  |
+| ✅ | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 100.00% | 63/63 | 6 ok |  |
 | 🚧 | deactivate_sub_lazer_projectile | 0x441740 | 140 | 43/43 | 62.79% | 0/43 | 4 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 48.39% | 0/218 | 17 ok |  |
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 45/48 | 49.46% | 0/48 | 3 ok |  |
