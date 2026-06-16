@@ -32,3 +32,10 @@ Rejected source-plausible variants:
 
 Do not force the remaining store scheduling with volatile fields or dummy
 aliases; the current source is the closest honest shape found.
+
+2026-06-16 type split: `sub_lazer_types.h` now carries both views. This spawn
+scratch still uses `SubLazerSlot`, while `update_sub_lazer_projectile` uses
+the separate `SubLazerRuntime`; the shared header change keeps this scratch at
+98.41%. A raw-word staging probe for the velocity-z/phase store order regressed
+to 72.00% by changing register ownership, so the vector-copy spelling remains
+pinned.

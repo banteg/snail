@@ -20,3 +20,10 @@ operands 15 ok / 0 mismatch. Source now uses the sibling pickup state-machine
 shape, `Sprite::kill_sprite()` member calls, the raw `g_game_base + 0x5a8`
 free-list anchor, and the strict `> 1.0f` bob wrap compare. Keep pinned; the
 remaining diff is block layout/register allocation, not a semantic gap.
+
+2026-06-16 type split: promoted the update object into
+`SubLazerRuntime` in `sub_lazer_types.h` and kept it distinct from the
+`SubLazerSlot` pool-spawn view. The cull plane now reads shared
+`Player::interaction_max_z` at `+0x2980`; the match remains 72.44%. BN's
+current `SubLazerSlot*` parameter name for this update is misleading for the
+local matched layout.

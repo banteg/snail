@@ -2,7 +2,8 @@
 #include "sub_lazer_types.h"
 #include "transform_matrix.h"
 
-struct Game {
+class Game {
+public:
     char unknown_00[0x38];
     float track_center_x;
     char unknown_3c[0x355bd4 - 0x3c];

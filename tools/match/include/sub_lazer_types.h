@@ -1,11 +1,18 @@
-// Shared sub-lazer pool-slot view. This is distinct from SubLazerRuntime,
-// whose update state lives at +0x38 in the renderable-body runtime object.
+// Shared sub-lazer views. SubLazerSlot is the pool-spawn object, while
+// SubLazerRuntime is the renderable-body update object whose state lives at
+// +0x38. Keep the two views separate: the pool free/live flag is at slot+0x80.
 #ifndef SUB_LAZER_TYPES_H
 #define SUB_LAZER_TYPES_H
 
+#include "player.h"
+#include "sprite.h"
 #include "vector3.h"
 
-struct Game;
+class Game;
+struct SubLazerGameView {
+    char unknown_00[0x09];
+    unsigned char paused; // +0x09
+};
 
 class SubLazerSlot {
 public:
@@ -36,6 +43,28 @@ public:
     void shoot_subgoldy(const float* origin, const Vector3* direction); // @ 0x441ad0
 
     SubLazerSlot slots[20];
+};
+
+struct SubLazerRuntime {
+    void update_sub_lazer_projectile(); // @ 0x43efb0
+
+    int unknown_00;
+    unsigned int list_flags;     // +0x04
+    SubLazerRuntime* list_prev;  // +0x08
+    SubLazerRuntime* list_next;  // +0x0c
+    char unknown_10[0x14 - 0x10];
+    float bob_base_y;            // +0x14
+    float position_z;            // +0x18
+    char unknown_1c[0x38 - 0x1c];
+    int state;                   // +0x38: 1 live, 2 remove
+    Player* owner;               // +0x3c
+    char unknown_40[0x44 - 0x40];
+    SubLazerGameView* owner_game; // +0x44
+    char unknown_48[0x64 - 0x48];
+    Sprite* sprite;              // +0x64
+    char unknown_68[0x6c - 0x68];
+    float bob_phase;             // +0x6c
+    float bob_phase_step;        // +0x70
 };
 
 #endif
