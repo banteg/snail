@@ -4,18 +4,6 @@
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-class GalaxyWidgetBoundsView {
-public:
-    char unknown_000[0x238];
-    float x; // +0x238
-    float y; // +0x23c
-    char unknown_240[0x248 - 0x240];
-    float width; // +0x248
-    float height; // +0x24c
-    char unknown_250[0x25c - 0x250];
-    int mode; // +0x25c
-};
-
 class GalaxyRouteRecord {
 public:
     int route_name_index; // +0x00, indexes route_name_table
@@ -35,7 +23,7 @@ public:
         float* max_x,
         float* min_y,
         float* max_y,
-        GalaxyWidgetBoundsView* widget);
+        FrontendWidget* widget);
 
     int unknown_000; // +0x00
     int route_mode; // +0x04
@@ -55,14 +43,6 @@ public:
     FrontendWidget* back_widget; // +0x10f9c
     FrontendWidget* continue_widget; // +0x10fa0
 };
-
-#define WIDGET_FRAME_X(widget) (*(float*)((char*)(widget) + 0x4c))
-#define WIDGET_FRAME_Y(widget) (*(float*)((char*)(widget) + 0x50))
-#define WIDGET_FRAME_WIDTH(widget) (*(float*)((char*)(widget) + 0x54))
-#define WIDGET_FRAME_HEIGHT(widget) (*(float*)((char*)(widget) + 0x58))
-#define WIDGET_LAYOUT_X(widget) (*(float*)((char*)(widget) + 0x238))
-#define WIDGET_LAYOUT_WIDTH(widget) (*(float*)((char*)(widget) + 0x248))
-#define WIDGET_CENTER_X(widget) (*(float*)((char*)(widget) + 0x260))
 
 FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
 {
@@ -88,14 +68,14 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
         description_widget->stack_widget_below(detail_widget);
 
         back_widget->unhide_border_init();
-        WIDGET_CENTER_X(back_widget) =
-            WIDGET_LAYOUT_WIDTH(title_widget) * 0.5f + WIDGET_LAYOUT_X(title_widget) - 320.0f;
+        back_widget->layout_center_x =
+            title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;
         back_widget->stack_widget_below(description_widget);
 
         if (*(int*)(level_progress_base + selected_index * 0x1fac0 + 0x944150) == 1 && route_mode == 2) {
             continue_widget->unhide_border_init();
-            WIDGET_CENTER_X(continue_widget) =
-                WIDGET_LAYOUT_WIDTH(title_widget) * 0.5f + WIDGET_LAYOUT_X(title_widget) - 320.0f;
+            continue_widget->layout_center_x =
+                title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;
             continue_widget->stack_widget_below(description_widget);
             back_widget->stack_widget_below(continue_widget);
         } else {
@@ -109,14 +89,10 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
         float min_y = 1000.0f;
         float max_y = -1000.0f;
 
-        galaxy_border_bound(
-            &min_x, &max_x, &min_y, &max_y, (GalaxyWidgetBoundsView*)title_widget);
-        galaxy_border_bound(
-            &min_x, &max_x, &min_y, &max_y, (GalaxyWidgetBoundsView*)detail_widget);
-        galaxy_border_bound(
-            &min_x, &max_x, &min_y, &max_y, (GalaxyWidgetBoundsView*)description_widget);
-        galaxy_border_bound(
-            &min_x, &max_x, &min_y, &max_y, (GalaxyWidgetBoundsView*)back_widget);
+        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, title_widget);
+        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, detail_widget);
+        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, description_widget);
+        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, back_widget);
 
         max_y += 8.0f;
         min_x -= 8.0f;
@@ -143,17 +119,16 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
             continue;
         }
 
-        WIDGET_FRAME_WIDTH(bounds_frame_widget) = max_x - min_x;
-        WIDGET_FRAME_HEIGHT(bounds_frame_widget) = max_y - min_y;
-        WIDGET_FRAME_X(bounds_frame_widget) = min_x;
-        WIDGET_FRAME_Y(bounds_frame_widget) = min_y;
+        bounds_frame_widget->frame_width = max_x - min_x;
+        bounds_frame_widget->frame_height = max_y - min_y;
+        bounds_frame_widget->frame_x = min_x;
+        bounds_frame_widget->frame_y = min_y;
 
-        WIDGET_CENTER_X(back_widget) =
-            WIDGET_FRAME_WIDTH(bounds_frame_widget) * 0.5f + WIDGET_FRAME_X(bounds_frame_widget)
-            - 320.0f;
+        back_widget->layout_center_x =
+            bounds_frame_widget->frame_width * 0.5f + bounds_frame_widget->frame_x - 320.0f;
         FrontendWidget* result = bounds_frame_widget;
-        WIDGET_CENTER_X(continue_widget) =
-            WIDGET_FRAME_WIDTH(result) * 0.5f + WIDGET_FRAME_X(result) - 320.0f;
+        continue_widget->layout_center_x =
+            result->frame_width * 0.5f + result->frame_x - 320.0f;
         return result;
     }
 }

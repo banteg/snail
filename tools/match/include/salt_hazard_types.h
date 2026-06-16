@@ -12,6 +12,7 @@ class SaltHazardSlot : public BodNode {
 public:
     SaltHazardSlot* initialize_salt_hazard_runtime(); // @ 0x408630
     void update_salt_hazard();    // @ 0x441c10
+    float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
 
     char unknown_10[0x24 - 0x10];
     void* object;              // +0x24

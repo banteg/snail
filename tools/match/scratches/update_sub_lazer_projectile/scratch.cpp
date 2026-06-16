@@ -88,8 +88,8 @@ void SubLazerSlot::update_sub_lazer_projectile()
         return;
     }
     case 1: {
-        float* progress = (float*)((char*)this + 0x98);
-        float* progress_step = (float*)((char*)this + 0x9c);
+        float* progress = &sprite_bob_phase;
+        float* progress_step = &sprite_bob_phase_step;
         *progress = *progress_step + *progress;
         if (*progress > 1.0f) {
             state = 2;

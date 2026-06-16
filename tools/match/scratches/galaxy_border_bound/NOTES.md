@@ -9,8 +9,9 @@ Semantics:
 
 - The first four arguments are in/out bounds: `min_x`, `max_x`, `min_y`,
   `max_y`.
-- The fifth argument is a frontend-widget-like record. The helper reads
-  `x +0x238`, `y +0x23c`, `width +0x248`, `height +0x24c`, and `mode +0x25c`.
+- The fifth argument is a `FrontendWidget*`. The helper reads `layout_x +0x238`,
+  `layout_y +0x23c`, `layout_width +0x248`, `layout_height +0x24c`, and
+  `layout_mode +0x25c`.
 - Normal mode expands the aggregate bounds to include the widget rectangle.
 - Mode `2` has a special horizontal clamp/centering path before the vertical
   bound expansion.
@@ -20,6 +21,6 @@ Semantics:
   adjustment. Without that, MSVC emits an equivalent shorter `fsubr mem`
   sequence instead of the native `fld width; fld max; fsub; fsubp` x87 shape.
 
-The widget rect view is intentionally scratch-local. `frontend_widget.h`
-currently has some nearby layout fields but does not yet have enough
-cross-function evidence to name/promote these exact offsets globally.
+`open_galaxy_route` independently uses the same widget geometry fields plus the
+frame rect at `+0x4c..+0x58` and `layout_center_x +0x260`, so those offsets now
+live in `frontend_widget.h` rather than a scratch-local duplicate view.

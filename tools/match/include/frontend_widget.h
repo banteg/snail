@@ -34,7 +34,12 @@ public:
 
     char unknown_000[0x44];
     float hide_blend; // +0x44
-    char unknown_048[0x178 - 0x048];
+    char unknown_048[0x4c - 0x048];
+    float frame_x; // +0x4c
+    float frame_y; // +0x50
+    float frame_width; // +0x54
+    float frame_height; // +0x58
+    char unknown_05c[0x178 - 0x05c];
     int warning_field; // +0x178
     char unknown_17c[0x194 - 0x17c];
     int shortcut_key_code; // +0x194
@@ -47,9 +52,16 @@ public:
     float idle_padding; // +0x214
     float hot_padding; // +0x218
     float target_padding; // +0x21c
-    char unknown_220[0x24c - 0x220];
+    char unknown_220[0x238 - 0x220];
+    float layout_x; // +0x238
+    float layout_y; // +0x23c
+    char unknown_240[0x248 - 0x240];
+    float layout_width; // +0x248
     float layout_height; // +0x24c
-    char unknown_250[0x26c - 0x250];
+    char unknown_250[0x25c - 0x250];
+    int layout_mode; // +0x25c
+    float layout_center_x; // +0x260
+    char unknown_264[0x26c - 0x264];
     float stack_gap; // +0x26c
     char unknown_270[0x28c - 0x270];
     TooltipState tooltip; // +0x28c

@@ -16,6 +16,9 @@ Current local field evidence:
 - `+0x10f80` caches the selected record index.
 - `+0x10f8c..+0x10fa0` are the frame/title/detail/description/back/continue
   widget pointers also used by `close_galaxy_route`.
+- `open_galaxy_route` and `galaxy_border_bound` now agree on frontend-widget
+  geometry fields at `+0x4c..+0x58`, `+0x238..+0x260`, so these are promoted
+  into `frontend_widget.h` instead of being accessed through raw casts.
 
 Do not promote this `GalaxyRoute` layout yet. The record-area size and the
 meaning of the large progress-table offset still need confirmation from
