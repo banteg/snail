@@ -25,7 +25,7 @@ void Sprite::initialize_sprite()
     velocity.z = 0.0f;
     velocity.y = 0.0f;
     velocity.x = 0.0f;
-    unknown_98 = zero;
+    *(int*)&depth_bias = zero;
     object_ref = (void*)-1;
     texture_id = zero;
     frame_count = zero;

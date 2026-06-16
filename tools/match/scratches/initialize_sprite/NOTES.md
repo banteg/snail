@@ -15,6 +15,8 @@ Confirmed fields include:
   rather than X/Y scale axes, plus progress/lifetime/gravity/facing lanes
   through `+0x90`;
 - `depth_offset` default `-500.0f` at `+0x94`;
+- `depth_bias` at `+0x98`, consumed by `render_game_frame` when computing the
+  projected sprite depth bucket;
 - animation fields `texture_id`, `frame_count`, `frame`, `frame_step`,
   `frame_progress`, and `frame_progress_step` through `+0xb0`.
 

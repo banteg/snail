@@ -240,7 +240,7 @@ int GameRoot::render_game_frame()
                     projected.x = -projected.x;
                     projected.z = -projected.z;
 
-                    float depth_key = projected.z * 4.19672108f + *(float*)((char*)sprite + 0x98);
+                    float depth_key = projected.z * 4.19672108f + sprite->depth_bias;
                     int bucket_index = (int)depth_key;
                     if (bucket_index >= 0x100) {
                         bucket_index = 0xff;
@@ -271,8 +271,8 @@ int GameRoot::render_game_frame()
                         next_depth_node->position = projected;
                         next_depth_node->depth_key = depth_key;
                         next_depth_node->sprite = sprite;
-                        sprite->unknown_14 = bucket_index;
-                        *(float*)&sprite->unknown_18 = depth_key;
+                        sprite->render_bucket_index = bucket_index;
+                        sprite->render_depth_key = depth_key;
                         ++next_depth_node;
                     }
                 }

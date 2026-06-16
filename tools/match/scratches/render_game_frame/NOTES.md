@@ -33,6 +33,9 @@ Recovered relationships:
   sprite and camera high render-mask bytes, depth-sorts visible sprites into
   the `data_4f7050` bucket heads with nodes from `data_4e5510`, then calls
   `update_sprite_facing_angle` for `flags & 2` sprites before `draw_sprite_quad`.
+- Sprite depth sorting caches the selected depth bucket at `Sprite +0x14` and
+  the computed float depth key at `Sprite +0x18`; the projected depth also adds
+  the sprite-local `depth_bias` at `+0x98`.
 - Sprite depth projection uses the affine by-value `multiply_vector_by_matrix`
   path, not the rotation-only helper.
 - The queued font/textured-quad pass is inside the camera slot and is gated by

@@ -61,8 +61,8 @@ public:
     int owner; // +0x08
     Sprite* next; // +0x0c
     Sprite* prev; // +0x10
-    int unknown_14; // +0x14
-    int unknown_18; // +0x18
+    int render_bucket_index; // +0x14, cached by render_game_frame depth sort
+    float render_depth_key; // +0x18, cached by render_game_frame depth sort
     TextureRef* texture_ref; // +0x1c
     TextureRef* texture_ref_a; // +0x20
     TextureRef* texture_ref_b; // +0x24
@@ -85,7 +85,7 @@ public:
     float facing_refresh_progress; // +0x8c
     float facing_refresh_step; // +0x90
     float depth_offset; // +0x94
-    int unknown_98; // +0x98
+    float depth_bias; // +0x98, added to projected sprite depth before bucketing
     int texture_id; // +0x9c
     int frame_count; // +0xa0
     int frame; // +0xa4
