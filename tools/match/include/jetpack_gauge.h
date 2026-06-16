@@ -12,6 +12,9 @@ struct JetParticleSlot {
     float wobble_alpha; // +0x0c
 };
 
+typedef char JetParticleSlot_must_be_0x10[
+    (sizeof(JetParticleSlot) == 0x10) ? 1 : -1];
+
 class JetpackGaugeController {
 public:
     int initialize_jetpack_gauge(int player_slot); // @ 0x43a930

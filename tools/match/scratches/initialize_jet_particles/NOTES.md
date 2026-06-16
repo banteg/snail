@@ -21,6 +21,9 @@ Recovered relationships:
   meaningful return value. `arm_jetpack_gauge` still has a local `int`
   declaration for this helper because that exact caller forwards the incidental
   `eax` value left by the call.
+- 2026-06-16 layout assertion pass: `jetpack_gauge.h` now asserts
+  `sizeof(JetParticleSlot) == 0x10`. This matches the exact initializer's
+  30-slot walk and the exact uninitializer's kill loop.
 
 Rejected/source-shaped probes:
 
