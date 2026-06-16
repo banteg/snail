@@ -81,6 +81,10 @@ struct TrackRowCell {
 struct TrackAttachmentRuntimeRow {       // stride 0xf4
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
     char unknown_04[0x90 - 0x04];
+    // place_parcels_on_track uses this as an overloaded parcel projection
+    // payload: x is lateral/local x, y is incremented as a claim/count lane,
+    // and z accumulates absolute row + 0.5 before the attachment projection
+    // tail consumes the same vector-shaped storage.
     Vector3 projection_payload;          // +0x90, parcel/path projection payload
     char unknown_9c[0xa4 - 0x9c];
     TrackRowCell* primary_attachment_cell; // +0xa4

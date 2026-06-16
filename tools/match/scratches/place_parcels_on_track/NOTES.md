@@ -85,3 +85,22 @@ Golf leads (next pass):
 3. The grid-scan zero-entry append maintains `131*entry` incrementally
    (add 0x20c inside the lane loop) while the authored append recomputes
    it — split the two append helpers accordingly.
+
+## Row projection payload cross-check (2026-06-16)
+
+No codegen change kept here; baseline remains 23.40%. The useful finding is
+type/layout evidence for `TrackAttachmentRuntimeRow::projection_payload`.
+
+The parcel claim path writes the candidate lateral/local lane to row +0x90,
+increments row +0x94 by 1.0 as a claim/count lane, and accumulates
+`absolute_row + 0.5` into row +0x98. It also mirrors +0x90 when the row's
+0x20 flag is set. The later attachment-projection tail consumes the same
+vector-shaped storage: kind 42 passes payload.x and payload.y into
+`compute_kind42_attachment_transform` and writes the resulting transform x/y
+back into the payload, while the non-kind42 path passes the payload to
+`get_path_position_at_node` as both input and output.
+
+That makes +0x90..+0x9b an overloaded parcel projection payload rather than a
+simple position. Keep it as `Vector3 projection_payload` for now because the
+tail still treats it as vector-shaped storage; promote to a union only after
+another row consumer agrees on the lane meanings.
