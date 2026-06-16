@@ -403,6 +403,15 @@
       "description": "Compiler-emitted switch jump table used by update_subgoldy in the attachment-follow handling region."
     },
     {
+      "address": "0x43ec9c",
+      "name": "update_subgoldy_bullet_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1004"
+      ],
+      "description": "Compiler-emitted state switch jump table used by the ring/special-effect parent updater."
+    },
+    {
       "address": "0x43f50c",
       "name": "update_garbage_hazard_jump_table",
       "kind": "jump_table",

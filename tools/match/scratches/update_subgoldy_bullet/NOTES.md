@@ -4,7 +4,7 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `71.41%`, `339/336` candidate/target instructions, with `33` masked
+- `79.53%`, `338/336` candidate/target instructions, with `34` masked
   operands ok.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
@@ -19,10 +19,10 @@ Evidence:
   `4 -> 5` expansion/removal transition.
 - Parent `+0x1d4/+0x1d8` are transition progress and transition step.
 - Parent `+0x8c` is the owner's lives snapshot. State `1` compares
-  `owner_player->lives` against it after the effect passes the player's
-  interaction z limit; losing lives while the effect is behind the player
-  drives the `4 -> 5` expansion/removal transition instead of immediate
-  teardown.
+  `owner_player->lives` against it only when parent `position.z` is at or beyond
+  the player's interaction Z limit. If the parent falls below that limit, native
+  immediately removes the parent and kills the ten child sprites. This corrects
+  the earlier inverted `position.z < interaction_max_z` interpretation.
 - Parent `+0x1dc` gates the sine-driven `position.x` oscillation using
   `active_phase +0x1e0` and `active_phase_step +0x1e4`.
 - The state-3 collapse uses a real `Vector3 delta` toward
@@ -53,11 +53,15 @@ Type consolidation:
   side-effect-only from all known callsites, so it is declared `void`.
 - `Player::lives` is promoted in `tools/match/include/player.h` at `+0x404`;
   this updater and `spawn_track_ring_or_special_effect` now use the shared
-  field instead of raw `player + 0x404` loads. Focused score remains
-  `69.77%`.
+  field instead of raw `player + 0x404` loads.
 - `Player::cached_camera_target_world` is promoted at `+0x2964` after
   cross-confirmation from the `update_subgoldy` producer and this ring
-  transition consumer. Focused score and masked audit remain `69.77%`, `32 ok`.
+  transition consumer.
+- 2026-06-16 state-switch correction: spelling an explicit unsigned
+  `current_state > 5` guard and `case 0: return` recovers native's direct
+  `0..5` state jump table instead of VC6's optimized `state - 1` table. The
+  corresponding compiler-emitted table at `0x43ec9c` is named
+  `update_subgoldy_bullet_state_jump_table` in the gameplay reference manifest.
 
 Residual:
 
@@ -67,12 +71,14 @@ Residual:
 - A `Vector3 delta` local for the state-3 collapse moved the scratch from
   `68.48%` to `69.77%`. The current state-3 collapse also stages an immutable
   local copy of `owner_player->cached_camera_target_world` before computing and
-  scaling the delta. This recovers the native `sub esp, 0x18` frame and improves
-  the scratch to `71.41%`, although native still uses a different x87/stack
-  schedule for the target lanes.
+  scaling the delta. This recovers the native `sub esp, 0x18` frame. The later
+  state-switch and Z-threshold corrections raise the scratch to `79.53%`,
+  although native still uses a different x87/stack schedule for the target
+  lanes.
 - Remaining residuals are mostly switch and stack-shape differences: VC6 still
-  collapses case `0`/default into a `state - 1` jump table, while native uses a
-  direct `0..5` jump table.
+  uses a different stack and x87 schedule for the state-3 collapse and the
+  duplicated removal tails. The dispatch itself now matches native's direct
+  `0..5` jump table.
 
 Rejected/source-shape probes:
 
@@ -80,9 +86,10 @@ Rejected/source-shape probes:
   `delta_*` locals regressed to the previous `68.48%` shape, so keep the
   aggregate `Vector3 delta`.
 - 2026-06-16 collapse staging probes: changing case `0`/default to explicit
-  early returns compiled identically and did not fix the `state - 1` jump table.
-  Staging `rate->paused` in a local byte also compiled identically. Mutating a
-  local `Vector3 target.z` before computing delta improved only to `70.52%`,
-  and a pointer plus scalar `target_y`/`target_z` spelling regressed to
-  `70.55%` with a smaller frame. Keep the immutable local `Vector3 target`
-  plus aggregate `Vector3 delta` form.
+  early returns alone compiled identically and did not fix the jump table;
+  the winning shape required the explicit unsigned range guard. Staging
+  `rate->paused` in a local byte also compiled identically. Mutating a local
+  `Vector3 target.z` before computing delta improved only to `70.52%`, and a
+  pointer plus scalar `target_y`/`target_z` spelling regressed to `70.55%` with
+  a smaller frame. Keep the immutable local `Vector3 target` plus aggregate
+  `Vector3 delta` form.

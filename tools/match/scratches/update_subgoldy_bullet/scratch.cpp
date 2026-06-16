@@ -19,9 +19,13 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
     if (star_shower_counter == 3)
         star_shower_counter = 0;
 
-    switch (state) {
+    int current_state = state;
+    if ((unsigned int)current_state > 5)
+        return;
+
+    switch (current_state) {
     case 0:
-        break;
+        return;
 
     case 1:
         if (oscillate_x != 0) {
@@ -45,7 +49,7 @@ void RingOrSpecialEffectParent::update_subgoldy_bullet()
         } while (count != 0);
         }
 
-        if (position.z < owner_player->interaction_max_z) {
+        if (position.z >= owner_player->interaction_max_z) {
             int current_lives = owner_player->lives;
             if (current_lives < owner_lives_snapshot)
                 state = 4;
