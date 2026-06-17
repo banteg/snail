@@ -16,3 +16,10 @@ The flag families are `(flags & 0x69) -> 1`, `(flags & 0x12) -> 2`, and
 The exact source shape uses nested false-body loops for the flag classifier.
 That gives VC6 the native `test; jne out-of-line assignment` layout for the
 one-shot and two-shot families while keeping the shared spawn loop readable.
+
+2026-06-17 naming correction: the method owner is now
+`PlayerGolbEmitterView`, with compact `GolbEmitterSlot` entries at
+`this+0x450`. The previous local `GolbShot` owner name made the type report
+look worse than the evidence: this helper proves the projectile slot stride and
+`state +0x244`, but `this` is the player-side emitter bank. Focused Wibo stays
+exact at 39/39 instructions.

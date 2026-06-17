@@ -4,9 +4,8 @@
 
 typedef unsigned int DWORD;
 
-class GolbShot {
+class GolbEmitterSlot {
 public:
-    void update_movement_flag_emitters(Player* player);
     int create_golb(Player* player, int spawn_selector, int emitter_index);
 
     char unknown_000[0x244];
@@ -14,7 +13,15 @@ public:
     char unknown_248[0x2e8 - 0x248];
 };
 
-void GolbShot::update_movement_flag_emitters(Player* player)
+class PlayerGolbEmitterView {
+public:
+    void update_movement_flag_emitters(Player* player);
+
+    char unknown_000[0x450];
+    GolbEmitterSlot golb_slots[12]; // +0x450, stride 0x2e8
+};
+
+void PlayerGolbEmitterView::update_movement_flag_emitters(Player* player)
 {
     DWORD flags = player->movement_flags;
     Player* owner = (Player*)this;
@@ -34,7 +41,7 @@ void GolbShot::update_movement_flag_emitters(Player* player)
 
 spawn:
     int index = 0;
-    GolbShot* slot = (GolbShot*)((char*)this + 0x450);
+    GolbEmitterSlot* slot = golb_slots;
     do {
         if (slot->state == 0) {
             slot->create_golb(owner, spawn_count, index);
