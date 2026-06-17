@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**347/678** mapped gameplay functions matched, **466/678** mapped gameplay functions have a scratch, **31282/325983** bytes (**9.60%**) are proof-grade, and overall fuzzy is **23.79%**.
+**348/678** mapped gameplay functions matched, **467/678** mapped gameplay functions have a scratch, **31411/325983** bytes (**9.64%**) are proof-grade, and overall fuzzy is **23.83%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -263,6 +263,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | advance_timer_counters | 0x441b90 | 116 | 38/38 | 100.00% | 38/38 | 7 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 62.96% | 5/83 | 1 mismatch, 9 ok |  |
+| ✅ | update_banner | 0x441d40 | 129 | 44/44 | 100.00% | 44/44 | 7 ok |  |
 | ✅ | update_smtracks | 0x441f60 | 56 | 19/19 | 100.00% | 19/19 | 2 ok |  |
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | update_subgoldy_resurrect | 0x441fd0 | 332 | 76/76 | 100.00% | 76/76 | 13 ok |  |
