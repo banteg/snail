@@ -13,6 +13,7 @@
 #include "vector3.h"
 
 struct AttachmentPathTemplate;
+struct Object;
 struct TrackRowCell;
 
 class Game;
@@ -45,6 +46,7 @@ public:
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
     void update_snail_skin();               // @ 0x445cd0
+    void build_snail_hotspots();            // @ 0x445d50
 
     char unknown_00[0x64c];
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
@@ -55,7 +57,9 @@ public:
     float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
     char unknown_15cc[0x1604 - 0x15cc];
     TransformMatrix snail_hotspot_source_matrix_a; // +0x1604
-    char unknown_1644[0x1684 - 0x1644];
+    char unknown_1644[0x1670 - 0x1644];
+    Object* snail_hotspot_model;            // +0x1670
+    char unknown_1674[0x1684 - 0x1674];
     TransformMatrix snail_hotspot_source_matrix_b; // +0x1684
     char unknown_16c4[0x16cc - 0x16c4];
     Vector3 snail_hotspots_local[19];   // +0x16cc
