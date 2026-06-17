@@ -76,6 +76,11 @@ Residuals:
   facing rotation. This keeps the local `Sprite*` shape called out above and
   improves the scratch from 28.63% to 30.93%, 446/582 instructions, with the
   same single masked-operand mismatch.
+- 2026-06-17 VapourTrail consolidation: the kind-1 vapour path now uses the
+  shared `vapour_trail.h` method surface. `initialize_vapour` and
+  `reset_vapour` pin flags `+0x04`, owner `+0x24`, point count/capacity/stride
+  and mode at `+0x80..+0x8c`, and points `+0x90`; `create_golb` remains
+  unchanged at 30.96%, 445/582 instructions.
 - The kind-specific setup lanes are complete, but vapour/list insertion,
   sprite color copy, and path-search hit handling still differ in local
   ordering. Do not add dummy temporaries solely to force those byte layouts

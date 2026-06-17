@@ -4,6 +4,7 @@
 // the sprite, vapour, or path-search presentation path used by update_golb_ai.
 
 #include "sprite.h"
+#include "vapour_trail.h"
 
 typedef unsigned int DWORD;
 
@@ -17,11 +18,6 @@ struct Vec3 {
 
 struct GolbPathSampleBank {
     void* search_path_for_golb(Vec3* position);
-};
-
-struct VapourTrail {
-    virtual int update_vapour();
-    int reset_vapour(int mode);
 };
 
 class GolbShot {

@@ -423,7 +423,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 18 type name(s) with a header plus scratch-local copies
-- divergent: 31 type name(s) with multiple scratch-local shapes
+- divergent: 30 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -441,7 +441,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | ColorBGRA8 | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | VapourTrail | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
