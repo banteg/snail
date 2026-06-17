@@ -1,11 +1,8 @@
 // destroy_help_screen @ 0x4168c0 (cdecl)
 
-extern char* g_game_base; // data_4df904
+#include "border_manager.h"
 
-class BorderManager {
-public:
-    int kill_all_borders();
-};
+extern char* g_game_base; // data_4df904
 
 int destroy_help_screen()
 {

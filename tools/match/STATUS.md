@@ -422,12 +422,11 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 16 type name(s) with a header plus scratch-local copies
-- divergent: 38 type name(s) with multiple scratch-local shapes
+- covered: 17 type name(s) with a header plus scratch-local copies
+- divergent: 36 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | BorderManager | 21 | 0 | 14 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -440,7 +439,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BorderRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ColorBGRA8 | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectFaceQuad | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -467,6 +465,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 39 | 1 | 39 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | BorderManager | 5 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

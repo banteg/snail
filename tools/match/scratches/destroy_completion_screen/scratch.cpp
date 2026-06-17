@@ -1,14 +1,8 @@
 // destroy_completion_screen @ 0x406060 (thiscall, ret)
 
+#include "border_manager.h"
+
 extern char* g_game_base; // data_4df904
-
-struct FrontendWidget;
-
-class BorderManager {
-public:
-    void kill_border(FrontendWidget* border);
-    int unhide_all_borders();
-};
 
 class CompletionScreen {
 public:

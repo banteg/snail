@@ -1,13 +1,8 @@
 // uninit_pause_menu @ 0x440600 (thiscall, ret)
 
+#include "border_manager.h"
+
 extern char* g_game_base; // data_4df904
-
-struct FrontendWidget;
-
-class BorderManager {
-public:
-    void kill_border(FrontendWidget* border);
-};
 
 class MouseCursorState {
 public:

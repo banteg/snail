@@ -1,12 +1,9 @@
 // kill_tip_widgets @ 0x4489e0 (thiscall, ret)
 
+#include "border_manager.h"
 #include "tip_manager.h"
 
 extern char* g_game_base; // data_4df904
-
-struct BorderManager {
-    void kill_border(FrontendWidget* border);
-};
 
 void TipSlot::kill_tip_widgets()
 {

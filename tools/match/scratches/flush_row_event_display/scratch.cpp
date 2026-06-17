@@ -1,13 +1,10 @@
 // flush_row_event_display @ 0x404830 (thiscall, ret)
 
+#include "border_manager.h"
 #include "player.h"
 #include "row_event_display.h"
 
 extern char* g_game_base; // data_4df904
-
-struct BorderManager {
-    void kill_border(FrontendWidget* border);
-};
 
 void RowEventDisplayController::flush_row_event_display()
 {

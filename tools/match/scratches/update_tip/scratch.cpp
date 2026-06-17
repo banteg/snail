@@ -1,13 +1,10 @@
 // update_tip @ 0x448c40 (fastcall, ret)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 #include "tip_manager.h"
 
 extern char* g_game_base; // data_4df904
-
-struct BorderManager {
-    void unhide_all_borders();
-};
 
 void __fastcall update_tip(TipSlot* slot)
 {

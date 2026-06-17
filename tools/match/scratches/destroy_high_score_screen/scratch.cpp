@@ -1,12 +1,9 @@
 // destroy_high_score_screen @ 0x417220 (thiscall, ret)
 
+#include "border_manager.h"
+
 extern char* g_game_base; // data_4df904
 extern int g_high_score_selected_bank; // data_4df9c0
-
-class BorderManager {
-public:
-    int kill_all_borders();
-};
 
 class HighScoreScreen {
 public:

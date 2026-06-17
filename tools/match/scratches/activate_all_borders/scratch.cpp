@@ -1,26 +1,6 @@
 // activate_all_borders @ 0x403300 (thiscall, ret)
 
-class BorderRecord {
-public:
-    char unknown_000[0x1a0];
-    int flags; // +0x1a0
-    char unknown_1a4[0x20c - 0x1a4];
-    float hover_blend_target; // +0x20c
-    float hover_blend_current; // +0x210
-    float idle_padding; // +0x214
-    float hot_padding; // +0x218
-    float target_padding; // +0x21c
-    float active_padding; // +0x220
-    char unknown_224[0x724 - 0x224];
-};
-
-class BorderManager {
-public:
-    void activate_all_borders();
-
-    char unknown_000[0x684];
-    BorderRecord borders[150]; // +0x684
-};
+#include "border_manager.h"
 
 void BorderManager::activate_all_borders()
 {
