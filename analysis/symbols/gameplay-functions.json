@@ -2719,7 +2719,8 @@
     },
     {
       "address": "0x44c060",
-      "name": "click_mouse_screen"
+      "name": "click_mouse_screen",
+      "description": "Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw and authored mouse coordinates for the selected mouse slot."
     },
     {
       "address": "0x44c100",

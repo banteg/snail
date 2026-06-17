@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**323/676** mapped gameplay functions matched, **416/676** mapped gameplay functions have a scratch, **24997/326004** bytes (**7.67%**) are proof-grade, and overall fuzzy is **19.19%**.
+**324/676** mapped gameplay functions matched, **417/676** mapped gameplay functions have a scratch, **25153/326004** bytes (**7.72%**) are proof-grade, and overall fuzzy is **19.23%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -342,6 +342,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_mouse_authored_scale | 0x44bbd0 | 65 | 17/17 | 100.00% | 17/17 | 6 ok |  |
 | ✅ | resolve_uncaptured_cursor_sensitivity_scale | 0x44bc20 | 44 | 11/11 | 100.00% | 11/11 | 5 ok |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
+| ✅ | click_mouse_screen | 0x44c060 | 156 | 43/43 | 100.00% | 43/43 | 13 ok |  |
 | ✅ | release_mouse_input | 0x44c2c0 | 66 | 21/21 | 100.00% | 21/21 | 5 ok |  |
 | ✅ | is_mouse_captured | 0x44c3b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | capture_mouse_cursor | 0x44c3c0 | 51 | 19/19 | 100.00% | 19/19 | 3 ok |  |

@@ -979,6 +979,17 @@
       "description": "Right mouse button state array returned by read_right_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4b7654",
+      "name": "g_window_deactivated",
+      "kind": "global",
+      "aliases": [
+        "data_4b7654",
+        "unk_4b7654"
+      ],
+      "size": "0x1",
+      "description": "Window deactivation latch set by activate/deactivate handling, read by click_mouse_screen and subgame update paths."
+    },
+    {
       "address": "0x4b7764",
       "name": "g_left_mouse_button_latch",
       "kind": "global",
@@ -1086,6 +1097,27 @@
         "data_4dfadc"
       ],
       "description": "BOD constructor counter incremented by initialize_bod."
+    },
+    {
+      "address": "0x4dfaf0",
+      "name": "g_main_window",
+      "kind": "global",
+      "aliases": [
+        "data_4dfaf0"
+      ],
+      "size": "0x4",
+      "description": "Main game window handle compared against GetActiveWindow before recentering or forwarding mouse cursor positions."
+    },
+    {
+      "address": "0x4dfaf4",
+      "name": "g_fullscreen_active",
+      "kind": "global",
+      "aliases": [
+        "data_4dfaf4",
+        "unk_4dfaf4"
+      ],
+      "size": "0x1",
+      "description": "Fullscreen-mode flag initialized by game-window setup and read by mouse cursor conversion and click forwarding."
     },
     {
       "address": "0x4f7450",
@@ -1803,6 +1835,28 @@
       "description": "DirectInput keyboard device handle polled by update_keyboard_input and unacquired/released by release_keyboard_input."
     },
     {
+      "address": "0x777d58",
+      "name": "g_mouse_live_x",
+      "kind": "global",
+      "aliases": [
+        "data_777d58",
+        "dword_777b2c_139"
+      ],
+      "size": "0x8",
+      "description": "Two-slot authored/live mouse X coordinate array updated by click_mouse_screen and consumed by update_mouse."
+    },
+    {
+      "address": "0x777d60",
+      "name": "g_mouse_live_y",
+      "kind": "global",
+      "aliases": [
+        "data_777d60",
+        "dword_777b2c_141"
+      ],
+      "size": "0x8",
+      "description": "Two-slot authored/live mouse Y coordinate array updated by click_mouse_screen and consumed by update_mouse."
+    },
+    {
       "address": "0x777d68",
       "name": "g_mouse_screen_to_authored_y_scale",
       "kind": "global",
@@ -1832,6 +1886,28 @@
         "data_777d70"
       ],
       "description": "Global cursor-hide flag initialized by mouse input setup, read by update_mouse, and written by set_hide_system_cursor_flag."
+    },
+    {
+      "address": "0x777d74",
+      "name": "g_mouse_screen_y",
+      "kind": "global",
+      "aliases": [
+        "data_777d74",
+        "dword_777b2c_146"
+      ],
+      "size": "0x8",
+      "description": "Two-slot raw mouse screen Y coordinate array written by click_mouse_screen."
+    },
+    {
+      "address": "0x777d7c",
+      "name": "g_mouse_screen_x",
+      "kind": "global",
+      "aliases": [
+        "data_777d7c",
+        "dword_777b2c_148"
+      ],
+      "size": "0x8",
+      "description": "Two-slot raw mouse screen X coordinate array written by click_mouse_screen."
     },
     {
       "address": "0x777d88",
