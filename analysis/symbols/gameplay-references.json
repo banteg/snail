@@ -1412,6 +1412,46 @@
       "description": "Input-controller auxiliary pointer lane array with slot 0 at this address and slot 1 at +0x38; copied by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
     },
     {
+      "address": "0x508890",
+      "name": "g_input_region_top",
+      "kind": "global",
+      "aliases": [
+        "data_508890"
+      ],
+      "size": "0x8",
+      "description": "Two-slot input-controller pointer-region top-bound array used by update_input_controller_pointer_region and set_input_controller_pointer_authored_xy."
+    },
+    {
+      "address": "0x508898",
+      "name": "g_input_region_bottom",
+      "kind": "global",
+      "aliases": [
+        "data_508898"
+      ],
+      "size": "0x8",
+      "description": "Two-slot input-controller pointer-region bottom-bound array used by update_input_controller_pointer_region and set_input_controller_pointer_authored_xy."
+    },
+    {
+      "address": "0x5088a0",
+      "name": "g_input_region_left",
+      "kind": "global",
+      "aliases": [
+        "data_5088a0"
+      ],
+      "size": "0x8",
+      "description": "Two-slot input-controller pointer-region left-bound array used by update_input_controller_pointer_region and set_input_controller_pointer_authored_xy."
+    },
+    {
+      "address": "0x5088a8",
+      "name": "g_input_region_right",
+      "kind": "global",
+      "aliases": [
+        "data_5088a8"
+      ],
+      "size": "0x8",
+      "description": "Two-slot input-controller pointer-region right-bound array used by update_input_controller_pointer_region and set_input_controller_pointer_authored_xy."
+    },
+    {
       "address": "0x5108c0",
       "name": "g_tracked_allocation_depth",
       "kind": "global",
