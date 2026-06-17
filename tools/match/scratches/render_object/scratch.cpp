@@ -4,32 +4,7 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-struct ObjectIndexBufferResource;
 struct ColorBGRA8;
-
-struct ObjectIndexBuffer {
-    ObjectIndexBufferResource* buffer; // +0x00
-};
-
-struct RenderObjectDeviceVtbl {
-    char unknown_000[0x94];
-    int (__stdcall* SetTransform)(RenderObjectDevice* self, int state, TransformMatrix* matrix);
-    char unknown_098[0xc8 - 0x98];
-    int (__stdcall* SetRenderState)(RenderObjectDevice* self, int state, int value);
-    char unknown_0cc[0xfc - 0xcc];
-    int (__stdcall* SetTextureStageState)(RenderObjectDevice* self, int stage, int type, int value);
-    char unknown_100[0x11c - 0x100];
-    int (__stdcall* DrawIndexedPrimitive)(RenderObjectDevice* self, int primitive_type,
-        int min_vertex_index, int vertex_count, int start_index, int primitive_count);
-    char unknown_120[0x130 - 0x120];
-    int (__stdcall* SetVertexShader)(RenderObjectDevice* self, int shader);
-    char unknown_134[0x14c - 0x134];
-    int (__stdcall* SetStreamSource)(RenderObjectDevice* self, int stream,
-        ObjectVertexBuffer* vertex_buffer, int stride);
-    char unknown_150[0x154 - 0x150];
-    int (__stdcall* SetIndices)(RenderObjectDevice* self,
-        ObjectIndexBufferResource* index_buffer, int base_vertex_index);
-};
 
 struct ObjectRenderView {
     char unknown_00[0x10];

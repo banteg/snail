@@ -49,3 +49,13 @@ Expected residuals:
 - The source is intentionally clear rather than native-shaped. Expected
   residuals are pass-filter branch layout, stack copying of the `Color4f`
   argument before `set_object_color`, and per-call D3D device reload scheduling.
+
+## Type consolidation (2026-06-17)
+
+`ObjectFaceQuad`, `ObjectIndexBuffer`, `ObjectIndexBufferResource`, and the
+`RenderObjectDeviceVtbl` slot window now live in `object_render_types.h`.
+Focused checks for `render_object`, `render_object_toon`,
+`refresh_object_vertex_buffer`, `calc_object_texture_groups`, and
+`build_object_texture_group_buffers` keep their previous match ratios. The
+full `Object` views remain scratch-local because allocation, build, and render
+paths still expose different validated windows into the larger object layout.

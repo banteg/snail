@@ -11,34 +11,11 @@ void* memcpy(void* destination, const void* source, unsigned int count);
 
 int get_or_append_object_texture_group_vertex(void* object, int vertex_index, float u, float v);
 
-struct ObjectFaceQuad {
-    unsigned char flags; // +0x00, 0x80 marks the three-index form
-    char unknown_01;
-    unsigned short vertex_0; // +0x02
-    unsigned short vertex_1; // +0x04
-    unsigned short vertex_2; // +0x06
-    unsigned short vertex_3; // +0x08
-    char unknown_0a[0x0c - 0x0a];
-    void* texture_ref; // +0x0c
-    float u0; // +0x10
-    float v0; // +0x14
-    float u1; // +0x18
-    float v1; // +0x1c
-    float u2; // +0x20
-    float v2; // +0x24
-    float u3; // +0x28
-    float v3; // +0x2c
-};
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
         void** data, int flags);
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
-struct ObjectIndexBuffer {
-    ObjectVertexBuffer* buffer; // +0x00
 };
 
 struct VertexBufferFactory {
@@ -67,7 +44,7 @@ struct ObjectTextureGroupBuildView {
     int grouped_vertex_count; // +0xc4
     ObjectIndexBuffer* index_buffer; // +0xc8
     int* group_index_starts; // +0xcc
-    void** group_texture_refs; // +0xd0
+    TextureRef** group_texture_refs; // +0xd0
     int* group_primitive_counts; // +0xd4
     ObjectIndexBuffer* toon_index_buffer; // +0xd8
 };
@@ -92,7 +69,7 @@ void* build_object_texture_group_buffers(ObjectTextureGroupBuildView* object)
     object->group_index_starts =
         (int*)allocate_tracked_memory(object->texture_group_count << 2, "DX TextureGroups");
     object->group_texture_refs =
-        (void**)allocate_tracked_memory(object->texture_group_count << 2,
+        (TextureRef**)allocate_tracked_memory(object->texture_group_count << 2,
             "DX TextureGroupsTexture Ref");
     object->group_primitive_counts =
         (int*)allocate_tracked_memory(object->texture_group_count << 2,
@@ -107,13 +84,17 @@ void* build_object_texture_group_buffers(ObjectTextureGroupBuildView* object)
             for (int face_index = 0; face_index < object->facequad_count; ++face_index) {
                 ObjectFaceQuad* quad = &object->facequads[face_index];
                 if (quad->vertex_0 == vertex_index)
-                    get_or_append_object_texture_group_vertex(object, vertex_index, quad->u0, quad->v0);
+                    get_or_append_object_texture_group_vertex(
+                        object, vertex_index, quad->uv[0].u, quad->uv[0].v);
                 if (quad->vertex_1 == vertex_index)
-                    get_or_append_object_texture_group_vertex(object, vertex_index, quad->u1, quad->v1);
+                    get_or_append_object_texture_group_vertex(
+                        object, vertex_index, quad->uv[1].u, quad->uv[1].v);
                 if (quad->vertex_2 == vertex_index)
-                    get_or_append_object_texture_group_vertex(object, vertex_index, quad->u2, quad->v2);
+                    get_or_append_object_texture_group_vertex(
+                        object, vertex_index, quad->uv[2].u, quad->uv[2].v);
                 if ((quad->flags & 0x80) == 0 && quad->vertex_3 == vertex_index)
-                    get_or_append_object_texture_group_vertex(object, vertex_index, quad->u3, quad->v3);
+                    get_or_append_object_texture_group_vertex(
+                        object, vertex_index, quad->uv[3].u, quad->uv[3].v);
             }
         }
     }
@@ -130,11 +111,11 @@ void* build_object_texture_group_buffers(ObjectTextureGroupBuildView* object)
             unsigned short* out = &index_scratch[index_count];
 
             out[0] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_0, quad->u0, quad->v0);
+                object, quad->vertex_0, quad->uv[0].u, quad->uv[0].v);
             out[1] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_1, quad->u1, quad->v1);
+                object, quad->vertex_1, quad->uv[1].u, quad->uv[1].v);
             out[2] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_2, quad->u2, quad->v2);
+                object, quad->vertex_2, quad->uv[2].u, quad->uv[2].v);
 
             if ((quad->flags & 0x80) != 0) {
                 index_count += 3;
@@ -143,7 +124,7 @@ void* build_object_texture_group_buffers(ObjectTextureGroupBuildView* object)
                 out[3] = out[0];
                 out[4] = out[2];
                 out[5] = (unsigned short)get_or_append_object_texture_group_vertex(
-                    object, quad->vertex_3, quad->u3, quad->v3);
+                    object, quad->vertex_3, quad->uv[3].u, quad->uv[3].v);
                 index_count += 6;
                 primitive_count += 2;
             }

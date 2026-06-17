@@ -5,37 +5,6 @@
 #include "transform_matrix.h"
 #include "vector3.h"
 
-struct ObjectIndexBufferResource;
-
-struct ObjectIndexBufferResourceVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectIndexBufferResource* self, int offset, int size,
-        void** data, int flags);
-    int (__stdcall* Unlock)(ObjectIndexBufferResource* self);
-};
-
-struct ObjectIndexBufferResource {
-    ObjectIndexBufferResourceVtbl* vtbl;
-};
-
-struct ObjectIndexBuffer {
-    ObjectIndexBufferResource* buffer; // +0x00
-};
-
-struct RenderObjectDeviceVtbl {
-    char unknown_000[0x94];
-    int (__stdcall* SetTransform)(RenderObjectDevice* self, int state, TransformMatrix* matrix);
-    char unknown_098[0x11c - 0x98];
-    int (__stdcall* DrawIndexedPrimitive)(RenderObjectDevice* self, int primitive_type,
-        int min_vertex_index, int vertex_count, int start_index, int primitive_count);
-    char unknown_120[0x14c - 0x120];
-    int (__stdcall* SetStreamSource)(RenderObjectDevice* self, int stream,
-        ObjectVertexBuffer* vertex_buffer, int stride);
-    char unknown_150[0x154 - 0x150];
-    int (__stdcall* SetIndices)(RenderObjectDevice* self,
-        ObjectIndexBufferResource* index_buffer, int base_vertex_index);
-};
-
 struct ToonVector3 {
     float x;
     float y;

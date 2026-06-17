@@ -1,13 +1,7 @@
 // calc_object_texture_groups @ 0x4303f0 (thiscall)
 
+#include "object_render_types.h"
 #include "sprite.h"
-
-struct ObjectFaceQuad {
-    unsigned char flags; // +0x00, bit 0x10 starts a new texture group
-    char unknown_01[0x0c - 0x01];
-    TextureRef* texture_ref; // +0x0c
-    char unknown_10[0x30 - 0x10];
-};
 
 class Object {
 public:

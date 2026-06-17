@@ -5,16 +5,6 @@
 
 struct ObjectRenderGeometry;
 
-struct ObjectUv {
-    float u;
-    float v;
-};
-
-struct ObjectFaceQuad {
-    char unknown_00[0x10];
-    ObjectUv uv[4]; // +0x10
-};
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
