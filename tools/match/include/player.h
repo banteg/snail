@@ -84,7 +84,8 @@ public:
     TransformMatrix cached_cutscene_matrix; // +0xc0
     Player* owner_player;                   // +0x100
     AnimManager anim_manager;               // +0x104
-    char unknown_14c[0x64c - 0x14c];
+    char unknown_14c[0x170 - 0x14c];
+    char cutscene_animation_slot_table[0x64c - 0x170]; // +0x170, 0x80-byte records
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
     PresentationAnimationChannel jetpack_channel;     // +0x11e0
     float wobble_roll_phase;            // +0x15bc
