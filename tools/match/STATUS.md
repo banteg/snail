@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**339/678** mapped gameplay functions matched, **445/678** mapped gameplay functions have a scratch, **28063/325983** bytes (**8.61%**) are proof-grade, and overall fuzzy is **21.13%**.
+**340/678** mapped gameplay functions matched, **447/678** mapped gameplay functions have a scratch, **28340/325983** bytes (**8.69%**) are proof-grade, and overall fuzzy is **21.27%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -259,6 +259,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_subgoldy_resurrect | 0x441fa0 | 40 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | update_subgoldy_resurrect | 0x441fd0 | 332 | 76/76 | 100.00% | 76/76 | 13 ok |  |
 | ✅ | get_track_skirt_color | 0x442120 | 76 | 25/25 | 100.00% | 25/25 | 1 ok |  |
+| ✅ | initialize_click_start | 0x442170 | 277 | 79/79 | 100.00% | 79/79 | 13 ok |  |
+| 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
@@ -489,7 +491,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 40 | 1 | 40 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | BorderManager | 5 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | BorderManager | 5 | 2 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |

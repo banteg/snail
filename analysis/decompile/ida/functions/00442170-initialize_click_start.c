@@ -3,25 +3,25 @@
 /* selector: initialize_click_start */
 
 // Initializes the `Click to Start` prompt owner for the subgame intro and hides that prompt immediately when the app-side replay-launch active bit is already set, so persistent replay starts skip the normal click gate.
-void __thiscall sub_442170(int this, int a2)
+void __thiscall initialize_click_start(ClickStartController *controller, ClickStartPlayer *player)
 {
-  _DWORD *v3; // eax
-  int v4; // eax
+  Color4f *v3; // eax
+  int32_t list_flags; // eax
   char *v5; // eax
   int v6; // ecx
   int v7; // ecx
-  int v8; // edx
-  _DWORD *v9; // ecx
-  _DWORD v10[4]; // [esp+8h] [ebp-10h] BYREF
+  ClickStartPlayer *v8; // edx
+  FrontendWidget *prompt; // ecx
+  Color4f color; // [esp+8h] [ebp-10h] BYREF
 
-  *(_DWORD *)(this + 132) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v3 = set_color_rgba(v10, 1065353216, 1065353216, 1065353216, 1022739087);
-  initialize_frontend_widget(*(_DWORD *)(this + 132), 4194306, aClickToStart, 20, 0, 200.0, (int)v3, 2, 0.0);
-  hide_border_init(*(_DWORD **)(this + 132));
-  v4 = *(_DWORD *)(this + 4);
-  *(_BYTE *)(this + 168) = 1;
-  *(_DWORD *)(this + 152) = a2;
-  if ( (v4 & 0x200) != 0 )
+  controller->prompt = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+  v3 = set_color_rgba(&color, 1.0, 1.0, 1.0, 0.029999999);
+  initialize_frontend_widget(controller->prompt, 0x400002u, aClickToStart, 20, 0.0, 200.0, v3, 2, 0.0);
+  hide_border_init(controller->prompt->_pad_00);
+  list_flags = controller->list_flags;
+  controller->hide_prompt = 1;
+  controller->player = player;
+  if ( (list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -31,7 +31,7 @@ void __thiscall sub_442170(int this, int a2)
     v6 = *((_DWORD *)MEMORY[0x4DF904] + 363);
     if ( v6 )
     {
-      *(_DWORD *)(v6 + 8) = this;
+      *(_DWORD *)(v6 + 8) = controller;
       *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v5 + 8) + 12) = *(_DWORD *)v5;
       v7 = *(_DWORD *)(*(_DWORD *)v5 + 8);
       *(_DWORD *)v5 = v7;
@@ -39,21 +39,21 @@ void __thiscall sub_442170(int this, int a2)
     }
     else
     {
-      *(_DWORD *)v5 = this;
-      *(_DWORD *)(this + 8) = 0;
+      *(_DWORD *)v5 = controller;
+      controller->list_prev = nullptr;
       *(_DWORD *)(*(_DWORD *)v5 + 12) = 0;
     }
-    *(_DWORD *)(this + 4) |= 0x200u;
+    controller->list_flags |= 0x200u;
   }
-  v8 = *(_DWORD *)(this + 152);
-  *(_DWORD *)(this + 128) = 2;
-  *(_DWORD *)(v8 + 772) = 0;
-  *(_DWORD *)(this + 28) = 0;
-  *(_DWORD *)(this + 32) = 0;
-  v9 = *(_DWORD **)(this + 132);
+  v8 = controller->player;
+  controller->state = 2;
+  v8->startup_track_index = 0;
+  controller->render_arg_1c = 0;
+  controller->render_arg_20 = 0.0;
+  prompt = controller->prompt;
   if ( *((_BYTE *)MEMORY[0x4DF904] + 17198056) )
-    hide_border_init(v9);
+    hide_border_init(prompt);
   else
-    unhide_border_init(v9);
+    unhide_border_init(prompt);
 }
 
