@@ -7,6 +7,6 @@
 0044bbd0        int32_t var_4_1 = ecx
 0044bbe8        int32_t result = data_777d8c
 0044bbf1        float ecx_3 = data_777d94 - result
-0044bbfb        data_777d6c = fconvert.s(fconvert.t(arg1) / float.t(data_777d90 - data_777d88))
-0044bc09        data_777d68 = fconvert.s(fconvert.t(arg2) / float.t(ecx_3))
+0044bbfb        g_mouse_screen_to_authored_x_scale = fconvert.s(fconvert.t(arg1) / float.t(data_777d90 - data_777d88))
+0044bc09        g_mouse_screen_to_authored_y_scale = fconvert.s(fconvert.t(arg2) / float.t(ecx_3))
 0044bc10        return result

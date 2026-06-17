@@ -30,8 +30,8 @@ int __cdecl convert_mouse_screen_xy(int a1, float *a2, float *a3)
   {
     if ( ((int (__stdcall *)(int *))GetCursorPos)(&Point) )
     {
-      *a2 = ((double)Point - unk_4DF85C * 0.5) * *(float *)&dword_777B2C[144] + *a2;
-      *a3 = ((double)Point_4 - unk_4B7760 * 0.5) * *(float *)&dword_777B2C[143] + *a3;
+      *a2 = ((double)Point - unk_4DF85C * 0.5) * g_mouse_screen_to_authored_x_scale + *a2;
+      *a3 = ((double)Point_4 - unk_4B7760 * 0.5) * g_mouse_screen_to_authored_y_scale + *a3;
     }
     else
     {
@@ -47,9 +47,9 @@ int __cdecl convert_mouse_screen_xy(int a1, float *a2, float *a3)
     if ( ((int (__stdcall *)(int *))GetCursorPos)(&Point) )
     {
       v4 = resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[a1]);
-      *a2 = v4 * ((double)Point - unk_4DF85C * 0.5) * *(float *)&dword_777B2C[144] + *a2;
+      *a2 = v4 * ((double)Point - unk_4DF85C * 0.5) * g_mouse_screen_to_authored_x_scale + *a2;
       v5 = resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[a1]);
-      *a3 = v5 * ((double)Point_4 - unk_4B7760 * 0.5) * *(float *)&dword_777B2C[143] + *a3;
+      *a3 = v5 * ((double)Point_4 - unk_4B7760 * 0.5) * g_mouse_screen_to_authored_y_scale + *a3;
     }
     else
     {
@@ -62,4 +62,3 @@ int __cdecl convert_mouse_screen_xy(int a1, float *a2, float *a3)
   }
   return result;
 }
-

@@ -1803,6 +1803,28 @@
       "description": "DirectInput keyboard device handle polled by update_keyboard_input and unacquired/released by release_keyboard_input."
     },
     {
+      "address": "0x777d68",
+      "name": "g_mouse_screen_to_authored_y_scale",
+      "kind": "global",
+      "aliases": [
+        "data_777d68",
+        "dword_777b2c_143"
+      ],
+      "size": "0x4",
+      "description": "Screen-to-authored mouse Y scale computed from the cached clip rectangle by update_mouse_authored_scale and consumed by convert_mouse_screen_xy."
+    },
+    {
+      "address": "0x777d6c",
+      "name": "g_mouse_screen_to_authored_x_scale",
+      "kind": "global",
+      "aliases": [
+        "data_777d6c",
+        "dword_777b2c_144"
+      ],
+      "size": "0x4",
+      "description": "Screen-to-authored mouse X scale computed from the cached clip rectangle by update_mouse_authored_scale and consumed by convert_mouse_screen_xy."
+    },
+    {
       "address": "0x777d70",
       "name": "g_hide_system_cursor_flag",
       "kind": "global",
