@@ -1,0 +1,29 @@
+# update_completion_screen
+
+`update_completion_screen` @ `0x4067e0` is the Yes/No completion prompt state
+machine. It is driven by `update_frontend_state_machine` on the prompt object at
+`game+0x4f3ac`, while `initialize_completion_screen` initializes the separate
+delivery-complete result object at `game+0x12e6df0`.
+
+Exact match: 100.00%, 207/207 instructions, 69 masked operands all resolved.
+
+Source-shape notes:
+
+- The native switch subtracts 2 from `state` and uses the jump table at
+  `0x406b90`.
+- VC6 only matched after the case bodies were ordered by native block layout:
+  states `9, 10, 11, 2, 7, 3, 4, 8`.
+- `destroy_main_menu` still wants member-call spelling at this callsite so that
+  `ecx` is prepared with the main-menu owner even though the helper itself
+  ignores `this`.
+
+Recovered relationships:
+
+- State 2 completes the active subgame and either returns to a dirty frontend
+  state or restarts challenge/time-trial style modes.
+- State 3 returns through `game+0x1066bf0`, matching the replay-launch return
+  state recovered from high-score and new-game menu paths.
+- State 8 launches the outbound `Alpha72.url` resource helper, clears
+  `game+0x568`, and returns to frontend state 0.
+- The trailing No button always restores `previous_frontend_state` and clears
+  `game+0x568`.

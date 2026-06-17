@@ -16,6 +16,13 @@
       "description": "Frontend text-widget flag word passed to initialize_frontend_widget by show_times_up_message and other centered text widgets."
     },
     {
+      "address": "0x400800",
+      "name": "k_completion_bonus_sprite_button_flags",
+      "kind": "constant",
+      "aliases": [],
+      "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button for the completion-screen bonus icon."
+    },
+    {
       "address": "0x400802",
       "name": "k_frontend_sprite_button_flags",
       "kind": "constant",
@@ -49,6 +56,15 @@
         "$L463"
       ],
       "description": "Compiler-emitted state switch jump table used by update_row_event_display."
+    },
+    {
+      "address": "0x406b90",
+      "name": "update_completion_screen_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L922"
+      ],
+      "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
       "address": "0x410b74",
@@ -304,6 +320,15 @@
         "sub_430a70"
       ],
       "description": "Object X-animation builder that validates 0x80-byte keyframe objects, stores ObjectAnimation at Object+0xbc, generates per-frame vertex and facequad-normal arrays, and refreshes normals through calc_object_facequad_normals."
+    },
+    {
+      "address": "0x433050",
+      "name": "launch_alpha72_url",
+      "kind": "function",
+      "aliases": [
+        "sub_433050"
+      ],
+      "description": "Tiny cdecl outbound-link helper reached from update_completion_screen after pushing the Alpha72.url resource literal; the helper ignores the argument and sets the launch latch."
     },
     {
       "address": "0x4326fc",
@@ -903,6 +928,37 @@
       "description": "DirectInput keyboard data format passed to IDirectInputDevice8A::SetDataFormat by initialize_keyboard_input."
     },
     {
+      "address": "0x4a1194",
+      "name": "g_completion_bonus_y_table",
+      "kind": "global",
+      "aliases": [
+        "data_4a1194",
+        "dword_4a1194"
+      ],
+      "size": "0x18",
+      "description": "Six-entry completion-screen challenge bonus table indexed by the clamped y-source value divided by 20."
+    },
+    {
+      "address": "0x4a11ac",
+      "name": "g_completion_bonus_x_table",
+      "kind": "global",
+      "aliases": [
+        "data_4a11ac",
+        "dword_4a11ac"
+      ],
+      "size": "0x18",
+      "description": "Six-entry completion-screen challenge bonus table indexed by the clamped x-source value divided by 20."
+    },
+    {
+      "address": "0x4a11c4",
+      "name": "g_click_to_continue_text",
+      "kind": "string",
+      "aliases": [
+        "aClickToContinu"
+      ],
+      "description": "Completion-screen continue prompt string literal following the x-axis bonus table."
+    },
+    {
       "address": "0x4a15d0",
       "name": "g_x_animation_script_path",
       "kind": "string",
@@ -1138,6 +1194,28 @@
         "flt_4df950"
       ],
       "description": "Steering sensitivity lookup table consumed by update_subgoldy based on the live steering selector."
+    },
+    {
+      "address": "0x4df958",
+      "name": "g_completion_bonus_x_source",
+      "kind": "global",
+      "aliases": [
+        "data_4df958",
+        "unk_4df958"
+      ],
+      "size": "0x4",
+      "description": "Challenge setup slider source copied into the subgame and used by initialize_completion_screen as the x-axis completion bonus input."
+    },
+    {
+      "address": "0x4df960",
+      "name": "g_completion_bonus_y_source",
+      "kind": "global",
+      "aliases": [
+        "data_4df960",
+        "unk_4df960"
+      ],
+      "size": "0x4",
+      "description": "Challenge setup slider source copied into the subgame and used by initialize_completion_screen as the y-axis completion bonus input."
     },
     {
       "address": "0x4df978",

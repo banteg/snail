@@ -12,7 +12,10 @@ public:
     int active; // +0x00
     char unknown_04[0x2c - 0x04];
     int level_mode; // +0x2c, copied to the subgame launch mode
-    char unknown_30[0x54 - 0x30];
+    char unknown_30[0x48 - 0x30];
+    int level_arg_tail; // +0x48
+    int source_arg_tail; // +0x4c, replay completion bonus x source
+    int level_index_tail; // +0x50, replay completion bonus y source
     char player_name[2]; // +0x54, variable text buffer view
 };
 

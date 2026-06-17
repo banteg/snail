@@ -130,7 +130,7 @@ LABEL_8:
         -180.0);
       if ( v40 == *(_DWORD *)(this + 20) )
       {
-        border_input_text_init(*v10, 16, &unk_4DF978, 16);
+        border_input_text_init(*v10, 16, &byte_4DF978, 16);
         v16 = *(_DWORD *)(*v10 + 416);
         BYTE1(v16) |= 0x20u;
         *(_DWORD *)(*v10 + 416) = v16;
@@ -174,7 +174,7 @@ LABEL_8:
         -180.0);
       if ( v40 == *(_DWORD *)(this + 20) )
       {
-        border_input_text_init(*v10, 16, &unk_4DF978, 16);
+        border_input_text_init(*v10, 16, &byte_4DF978, 16);
         v22 = *(_DWORD *)(*v10 + 416);
         BYTE1(v22) |= 0x20u;
         *(_DWORD *)(*v10 + 416) = v22;

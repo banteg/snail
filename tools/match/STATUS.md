@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**340/678** mapped gameplay functions matched, **449/678** mapped gameplay functions have a scratch, **28340/325983** bytes (**8.69%**) are proof-grade, and overall fuzzy is **21.62%**.
+**341/678** mapped gameplay functions matched, **451/678** mapped gameplay functions have a scratch, **29409/325983** bytes (**9.02%**) are proof-grade, and overall fuzzy is **22.14%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -26,6 +26,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | 🚧 | flush_row_event_display | 0x404830 | 233 | 65/67 | 89.39% | 4/67 | 18 ok |  |
+| 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
@@ -36,6 +37,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
+| ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
@@ -462,14 +464,13 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 23 type name(s) with a header plus scratch-local copies
-- divergent: 22 type name(s) with multiple scratch-local shapes
+- covered: 26 type name(s) with a header plus scratch-local copies
+- divergent: 20 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GalaxyRoute | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -481,7 +482,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CheatState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -491,7 +491,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 40 | 1 | 40 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | BorderManager | 5 | 2 | 3 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
@@ -505,8 +506,10 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Object | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | PauseMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PlayerPresentationController | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
