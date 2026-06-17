@@ -1,0 +1,160 @@
+// initialize_cutscene @ 0x4428d0 (thiscall, ret)
+
+#include "player.h"
+
+extern char* g_game_base; // data_4df904
+
+float sine(float angle);
+
+void PlayerPresentationController::initialize_cutscene()
+{
+    if (*(unsigned char*)(g_game_base + 0x74621) != 0)
+        return;
+
+    snail_skin_transition.update_snail_skin_transition();
+
+    PlayerPresentationController* presentation = this;
+    Player* player = owner_player;
+    TransformMatrix* player_matrix = (TransformMatrix*)((char*)player + 0x38);
+
+    TransformMatrix scratch_matrix;
+    TransformMatrix source_matrix;
+    TransformMatrix roll_matrix;
+    TransformMatrix inverse_live;
+    TransformMatrix base_matrix;
+    if (player->cutscene_pitch_cycle > 0.0f) {
+        player->cutscene_pitch_cycle =
+            player->cutscene_pitch_cycle_step + player->cutscene_pitch_cycle;
+        if (player->cutscene_pitch_cycle > 1.0f)
+            player->cutscene_pitch_cycle = 0.0f;
+
+        scratch_matrix = *player_matrix;
+        source_matrix = *player_matrix;
+        scratch_matrix.set_matrix_rotation_identity();
+
+        float angle =
+            (-0.785398185f - player->cutscene_pitch_cycle * 6.28318548f)
+            * 1.39999998f;
+        if (angle < -6.28318548f)
+            angle = -6.28318548f;
+        scratch_matrix.rotate_matrix_world_x(angle);
+        player_matrix->linear_interpolate_matrix(&scratch_matrix, &source_matrix, 0.939999998f);
+    } else {
+        if (player->attachment_exit_pending != 0) {
+            scratch_matrix = *player_matrix;
+            source_matrix = *player_matrix;
+            scratch_matrix.set_matrix_rotation_identity();
+            player_matrix->linear_interpolate_matrix(&scratch_matrix, &source_matrix, 0.970000029f);
+        }
+    }
+
+    live_matrix = *player_matrix;
+    live_matrix.position.x = player->cached_camera_target_world.x;
+    live_matrix.position.y = player->cached_camera_target_world.y;
+    live_matrix.position.z = player->cached_camera_target_world.z;
+
+    scratch_matrix = live_matrix;
+    live_matrix.linear_interpolate_matrix(
+        &scratch_matrix,
+        &cached_cutscene_matrix,
+        0.699999988f);
+    live_matrix.position.x = scratch_matrix.position.x;
+    live_matrix.position.y = scratch_matrix.position.y;
+    live_matrix.position.z = scratch_matrix.position.z;
+
+    if (live_matrix.basis_up.y > 0.0f) {
+        float yaw = (live_matrix.position.x - cached_cutscene_matrix.position.x)
+            * 0.800000012f;
+        live_matrix.rotate_matrix_world_y(yaw);
+    }
+
+    wobble_roll_phase = wobble_roll_phase_step + wobble_roll_phase;
+    if (wobble_roll_phase > 1.0f)
+        wobble_roll_phase = wobble_roll_phase - 1.0f;
+
+    wobble_lift_phase = wobble_lift_phase_step + wobble_lift_phase;
+    if (wobble_lift_phase > 1.0f)
+        wobble_lift_phase = wobble_lift_phase - 1.0f;
+
+    base_matrix = live_matrix;
+    set_matrix_identity(&roll_matrix);
+    float roll_angle = sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f;
+    roll_matrix.rotate_matrix_world_z(roll_angle);
+
+    inverse_live.invert_matrix_from_source(&live_matrix);
+    live_matrix.multiply_matrix_in_place(&inverse_live);
+    live_matrix.position.y = live_matrix.position.y + 1.29999995f;
+    live_matrix.multiply_matrix_in_place(&roll_matrix);
+    live_matrix.position.y = live_matrix.position.y - 1.29999995f;
+    live_matrix.multiply_matrix_in_place(&base_matrix);
+
+    float lift_sine = sine(wobble_lift_phase * 6.28318548f);
+    live_matrix.position.x =
+        lift_sine * live_matrix.basis_up.x * 0.0299999993f + live_matrix.position.x;
+    live_matrix.position.y =
+        lift_sine * live_matrix.basis_up.y * 0.0299999993f + live_matrix.position.y;
+    live_matrix.position.z =
+        lift_sine * live_matrix.basis_up.z * 0.0299999993f + live_matrix.position.z;
+
+    cached_cutscene_matrix = live_matrix;
+
+    if (invincible_shell.cutscene_roll_progress > 0.0f) {
+        float shell_yaw = invincible_shell.cutscene_roll_progress * -2.09439516f;
+        live_matrix.rotate_matrix_world_y(shell_yaw);
+        invincible_shell.cutscene_roll_progress =
+            invincible_shell.cutscene_roll_step + invincible_shell.cutscene_roll_progress;
+        if (invincible_shell.cutscene_roll_progress > 1.0f)
+            invincible_shell.cutscene_roll_progress = 1.0f;
+    }
+
+    if (invincible_shell.channel_release_steps_active != 0) {
+        jetpack_channel.live_matrix.position.x =
+            jetpack_channel.release_step.x + jetpack_channel.live_matrix.position.x;
+        jetpack_channel.live_matrix.position.y =
+            jetpack_channel.release_step.y + jetpack_channel.live_matrix.position.y;
+        jetpack_channel.live_matrix.position.z =
+            jetpack_channel.release_step.z + jetpack_channel.live_matrix.position.z;
+
+        weapon_channels[0].live_matrix.position.x =
+            weapon_channels[0].release_step.x + weapon_channels[0].live_matrix.position.x;
+        weapon_channels[0].live_matrix.position.y =
+            weapon_channels[0].release_step.y + weapon_channels[0].live_matrix.position.y;
+        weapon_channels[0].live_matrix.position.z =
+            weapon_channels[0].release_step.z + weapon_channels[0].live_matrix.position.z;
+
+        weapon_channels[2].live_matrix.position.x =
+            weapon_channels[2].release_step.x + weapon_channels[2].live_matrix.position.x;
+        weapon_channels[2].live_matrix.position.y =
+            weapon_channels[2].release_step.y + weapon_channels[2].live_matrix.position.y;
+        weapon_channels[2].live_matrix.position.z =
+            weapon_channels[2].release_step.z + weapon_channels[2].live_matrix.position.z;
+
+        weapon_channels[1].live_matrix.position.x =
+            weapon_channels[1].release_step.x + weapon_channels[1].live_matrix.position.x;
+        weapon_channels[1].live_matrix.position.y =
+            weapon_channels[1].release_step.y + weapon_channels[1].live_matrix.position.y;
+        weapon_channels[1].live_matrix.position.z =
+            weapon_channels[1].release_step.z + weapon_channels[1].live_matrix.position.z;
+    } else {
+        jetpack_channel.live_matrix = live_matrix;
+        weapon_channels[0].live_matrix = live_matrix;
+        weapon_channels[2].live_matrix = live_matrix;
+        weapon_channels[1].live_matrix = live_matrix;
+    }
+
+    snail_hotspot_source_matrix_a = live_matrix;
+    snail_hotspot_source_matrix_b = *player_matrix;
+    snail_hotspot_source_matrix_b.position.x = player->cached_camera_target_world.x;
+    snail_hotspot_source_matrix_b.position.y = player->cached_camera_target_world.y;
+    snail_hotspot_source_matrix_b.position.z = player->cached_camera_target_world.z;
+
+    update_snail_skin();
+
+    if (cutscene_ai.state != 0) {
+        cutscene_ai.update_cutscene();
+    } else if (anim_manager.queue_count == 0 && player->control_override_active == 0) {
+        dispatch_cutscene_animation(1, 0, -1);
+    }
+
+    player->jetpack_gauge.update_jet_particles();
+}

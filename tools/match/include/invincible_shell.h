@@ -20,7 +20,11 @@ public:
     float spin_phase_step; // +0x88
     float fade_progress; // +0x8c
     float fade_step; // +0x90
-    char unknown_94[0xa4 - 0x94];
+    char unknown_94[0x98 - 0x94];
+    float cutscene_roll_progress; // +0x98
+    float cutscene_roll_step; // +0x9c
+    unsigned char channel_release_steps_active; // +0xa0
+    char unknown_a1[0xa4 - 0xa1];
 };
 
 typedef char InvincibleShellController_must_be_0xa4[

@@ -2,6 +2,7 @@
 #define PRESENTATION_ANIMATION_CHANNEL_H
 
 #include "anim_manager.h"
+#include "transform_matrix.h"
 #include "vector3.h"
 
 struct PresentationAnimationVisualRoot {
@@ -20,7 +21,9 @@ public:
 
     char unknown_000[0x24];
     PresentationAnimationVisualRoot* visual_root; // +0x24
-    char unknown_028[0x104 - 0x28];
+    char unknown_028[0x38 - 0x28];
+    TransformMatrix live_matrix; // +0x38
+    char unknown_078[0x104 - 0x78];
     int selected_state; // +0x104
     AnimManager anim_manager; // +0x108
     char unknown_150[0x174 - 0x150];

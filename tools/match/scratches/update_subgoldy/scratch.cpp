@@ -10,19 +10,6 @@
 
 #include "presentation_animation_channel.h"
 
-struct TransformMatrix {
-    Vector3 basis_right;   // +0x00
-    float pad_right;
-    Vector3 basis_up;      // +0x10
-    float pad_up;
-    Vector3 basis_forward; // +0x20
-    float pad_forward;
-    Vector3 position;      // +0x30
-    float pad_position;
-
-    void set_matrix_rotation_identity();
-};
-
 float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);

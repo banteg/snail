@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**342/678** mapped gameplay functions matched, **459/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.75%**.
+**342/678** mapped gameplay functions matched, **460/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **23.02%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -270,6 +270,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
+| 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 323/339 | 64.05% | 1/339 | 1 mismatch, 39 ok |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
 | ✅ | allocate_track_parcel_slot | 0x443190 | 54 | 18/18 | 100.00% | 18/18 | 2 ok |  |
@@ -502,13 +503,13 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PlayerPresentationController | 4 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | TransformMatrix | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
