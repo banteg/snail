@@ -4,7 +4,7 @@ Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
 
 2026-06-16 slug runtime consolidation: the first-hit/cutscene branch now uses
-the shared `SlugHazardRuntime::player_hit_latched` byte at `+0xd9` instead of a
+the shared `SlugHazardRuntime::player_encounter_latched` byte at `+0xd9` instead of a
 raw byte poke. Collision and `update_golb_ai` both prove the pool stride is
 `0xec`, so `slug_hazard_types.h` now carries explicit tail padding and a
 `sizeof(SlugHazardRuntime) == 0xec` assertion. Focused Wibo remains `47.99%`,

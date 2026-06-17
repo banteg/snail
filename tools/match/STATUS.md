@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**339/678** mapped gameplay functions matched, **441/678** mapped gameplay functions have a scratch, **28063/325983** bytes (**8.61%**) are proof-grade, and overall fuzzy is **20.66%**.
+**339/678** mapped gameplay functions matched, **442/678** mapped gameplay functions have a scratch, **28063/325983** bytes (**8.61%**) are proof-grade, and overall fuzzy is **20.83%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -215,6 +215,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 141/144 | 79.30% | 44/144 | 9 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
+| 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 86.52% | 23/160 | 15 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 223/347 | 51.23% | 22/347 | 8 mismatch, 34 ok |  |
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 64/65 | 74.42% | 1/65 | 9 ok |  |
@@ -483,7 +484,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 39 | 1 | 39 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 40 | 1 | 40 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |

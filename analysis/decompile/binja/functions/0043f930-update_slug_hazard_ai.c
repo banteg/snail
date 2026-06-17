@@ -86,8 +86,8 @@
 0043fb26        long double temp11_1 = fconvert.t(slot->world_position.z)
 0043fb26        x87_r6_5 - temp11_1
 0043fb29        eax_1.w = (x87_r6_5 < temp11_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_5, temp11_1) ? 1 : 0) << 0xa | (x87_r6_5 == temp11_1 ? 1 : 0) << 0xe | 0x3800
-0043fb36        if ((eax_1:1.b & 0x41) == 0 && slot->ambient_alert_checked == 0)
-0043fb38        slot->ambient_alert_checked = 1
+0043fb36        if ((eax_1:1.b & 0x41) == 0 && slot->player_encounter_latched == 0)
+0043fb38        slot->player_encounter_latched = 1
 0043fb3f        int32_t edx_6
 0043fb3f        eax_1, edx_6 = next_math_random_value()
 0043fb4c        long double x87_r6_7 = float.t(eax_1) * fconvert.t(3.05175781e-05f)

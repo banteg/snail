@@ -30,7 +30,7 @@ Known residuals:
 2026-06-16 consolidation/rejection pass:
 
 - `SlugHazardRuntime` now carries the proven `0xec` pool stride and the
-  `player_hit_latched` byte at `+0xd9`; this explosion scratch still verifies
+  `player_encounter_latched` byte at `+0xd9`; this explosion scratch still verifies
   at `73.22%`, `148/147`, with `32` masked operands OK.
 - Rewriting the loop tail as `while (--count != 0); return count;` compiled
   identically and did not remove VC6's final `xor eax, eax`, so the scratch

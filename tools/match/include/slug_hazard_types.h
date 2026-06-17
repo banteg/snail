@@ -6,6 +6,9 @@
 #include "bod_types.h"
 
 class Game;
+class Player;
+class Sprite;
+struct TrackRowCell;
 
 class SlugHazardRuntime : public RenderableBod {
 public:
@@ -17,19 +20,31 @@ public:
     void kill_slug_hazard();                              // @ 0x43f8b0
 
     char unknown_78[0x80 - 0x78];
-    int state;                        // +0x80
-    int death_toss_direction;         // +0x84
-    Game* owner_game;                 // +0x88
-    char unknown_8c[0xc8 - 0x8c];
-    int hit_points;                   // +0xc8
-    unsigned char hit_flash_pending;  // +0xcc
-    char unknown_cd[0xd8 - 0xcd];
-    unsigned char voice_active;       // +0xd8
-    unsigned char player_hit_latched; // +0xd9, set by first player-hit cutscene path
+    int state;                         // +0x80
+    int death_toss_direction;          // +0x84
+    Game* owner_game;                  // +0x88
+    Vector3 velocity;                  // +0x8c
+    char unknown_98[0xac - 0x98];
+    Sprite* sprite;                    // +0xac
+    TrackRowCell* source_cell;         // +0xb0
+    unsigned char passed_player;       // +0xb4
+    char unknown_b5[0xb8 - 0xb5];
+    float lateral_phase;               // +0xb8
+    float lateral_phase_step;          // +0xbc
+    Player* player;                    // +0xc0
+    int engagement_voice_gate;         // +0xc4
+    int hit_points;                    // +0xc8
+    unsigned char hit_flash_pending;   // +0xcc
+    char unknown_cd[0xd0 - 0xcd];
+    float hit_flash_progress;          // +0xd0
+    float hit_flash_progress_step;     // +0xd4
+    unsigned char voice_active;        // +0xd8
+    unsigned char player_encounter_latched; // +0xd9, proximity voice / first-hit latch
     char unknown_da[0xdc - 0xda];
-    float voice_progress;             // +0xdc
-    float voice_progress_step;        // +0xe0
-    char unknown_e4[0xec - 0xe4];
+    float voice_progress;              // +0xdc
+    float voice_progress_step;         // +0xe0
+    float blink_progress;              // +0xe4
+    float blink_step;                  // +0xe8
 };
 
 typedef char SlugHazardRuntime_must_be_0xec[
