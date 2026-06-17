@@ -7,8 +7,7 @@ BOOL __stdcall append_enumerated_input_controller_callback(int a1, int a2)
 {
   int v3; // [esp-8h] [ebp-8h]
 
-  v3 = 4 * dword_777B2C[0]++ + 7830324;
-  return (*(int (__stdcall **)(int, int, int, _DWORD))(*(_DWORD *)dword_777B2C[1] + 12))(dword_777B2C[1], a1 + 4, v3, 0) < 0
-      || dword_777B2C[0] < 4;
+  v3 = (int)&g_joystick_devices[g_joystick_count++];
+  return (*(int (__stdcall **)(int, int, int, _DWORD))(*(_DWORD *)g_joystick_input + 12))(g_joystick_input, a1 + 4, v3, 0) < 0
+      || g_joystick_count < 4;
 }
-

@@ -4,18 +4,18 @@
 /* function: update_joystick_input @ 0x44b570 */
 
 0044b57d        int32_t ebx = 0
-0044b583        if (data_777b2c s> 0)
-0044b589        int32_t* esi_1 = &data_777b34
-0044b58e        int32_t* var_114_1 = &data_777b34
+0044b583        if (g_joystick_count s> 0)
+0044b589        int32_t* esi_1 = &g_joystick_devices
+0044b58e        int32_t* var_114_1 = &g_joystick_devices
 0044b598        while (true)
 0044b598        int32_t* eax = *esi_1
 0044b59c        if (eax == 0)
 0044b59c        break
 0044b5aa        if ((*(*eax + 0x64))(eax) s< 0)
-0044b730        int32_t* eax_5 = (&data_777b34)[ebx]
+0044b730        int32_t* eax_5 = (&g_joystick_devices)[ebx]
 0044b742        if ((*(*eax_5 + 0x1c))(eax_5) == 0x8007001e)
 0044b756        int32_t i
-0044b744        int32_t* eax_7 = (&data_777b34)[ebx]
+0044b744        int32_t* eax_7 = (&g_joystick_devices)[ebx]
 0044b74e        i = (*(*eax_7 + 0x1c))(eax_7)
 0044b756        do while (i == 0x8007001e)
 0044b742        break
@@ -99,7 +99,7 @@
 0044b702        update_input_controller_slot_button_axes(1, esi_2, var_11c_1, var_118_1)
 0044b713        ebx += 1
 0044b719        var_114_1 = &var_114_1[1]
-0044b71d        if (ebx s>= data_777b2c)
+0044b71d        if (ebx s>= g_joystick_count)
 0044b72f        return 0
 0044b594        esi_1 = var_114_1
 0044b758        return 0

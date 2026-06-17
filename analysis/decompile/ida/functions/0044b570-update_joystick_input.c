@@ -3,7 +3,7 @@
 /* selector: update_joystick_input */
 
 // Polls each enumerated DirectInput joystick device, reacquires on transient loss, normalizes its primary X/Y axes into the shared [-1000, 1000] range, packs the sampled buttons into the game's bitmask format, and publishes the result through the input-controller slot writer.
-int sub_44B570()
+int update_joystick_input()
 {
   int v0; // ebx
   int *v1; // esi
@@ -31,15 +31,15 @@ int sub_44B570()
   char v23; // [esp+5Bh] [ebp-D1h]
 
   v0 = 0;
-  if ( dword_777B2C > 0 )
+  if ( g_joystick_count > 0 )
   {
-    v1 = MEMORY[0x777B34];
-    v8 = MEMORY[0x777B34];
+    v1 = g_joystick_devices;
+    v8 = g_joystick_devices;
     while ( *v1 )
     {
       if ( (*(int (__stdcall **)(int))(*(_DWORD *)*v1 + 100))(*v1) < 0 )
       {
-        while ( (*(int (__stdcall **)(int))(*(_DWORD *)MEMORY[0x777B34][v0] + 28))(MEMORY[0x777B34][v0]) == -2147024866 )
+        while ( (*(int (__stdcall **)(int))(*(_DWORD *)g_joystick_devices[v0] + 28))(g_joystick_devices[v0]) == -2147024866 )
           ;
         return 0;
       }
@@ -99,11 +99,10 @@ int sub_44B570()
       update_input_controller_slot_button_axes(1, v5, v6, v7);
       ++v0;
       ++v8;
-      if ( v0 >= dword_777B2C )
+      if ( v0 >= g_joystick_count )
         return 0;
       v1 = v8;
     }
   }
   return 0;
 }
-

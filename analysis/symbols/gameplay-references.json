@@ -1836,6 +1836,36 @@
       "description": "First text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
     },
     {
+      "address": "0x777b2c",
+      "name": "g_joystick_count",
+      "kind": "global",
+      "aliases": [
+        "data_777b2c"
+      ],
+      "size": "0x4",
+      "description": "Number of enumerated DirectInput joystick devices appended by append_enumerated_input_controller_callback and consumed by joystick update/release paths."
+    },
+    {
+      "address": "0x777b30",
+      "name": "g_joystick_input",
+      "kind": "global",
+      "aliases": [
+        "data_777b30"
+      ],
+      "size": "0x4",
+      "description": "DirectInput parent object used while enumerating joystick devices in enumerate_input_controllers."
+    },
+    {
+      "address": "0x777b34",
+      "name": "g_joystick_devices",
+      "kind": "global",
+      "aliases": [
+        "data_777b34"
+      ],
+      "size": "0x10",
+      "description": "Four-entry DirectInput joystick device array populated during controller enumeration, polled by update_joystick_input, and released by release_input_controllers."
+    },
+    {
       "address": "0x777b4c",
       "name": "g_keyboard_previous_state",
       "kind": "global",

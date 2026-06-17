@@ -9,24 +9,24 @@ int __cdecl enumerate_input_controllers(int a1, _DWORD *a2)
   int v4; // ebx
   int *i; // esi
 
-  dword_777B2C[0] = 0;
+  g_joystick_count = 0;
   *a2 = 0;
   v2 = ((int (__stdcall *)(_DWORD))GetModuleHandleA)(0);
-  result = DirectInput8Create(v2, 2048, &riidltf, &dword_777B2C[1], 0);
+  result = DirectInput8Create(v2, 2048, &riidltf, &g_joystick_input, 0);
   if ( result >= 0 )
   {
-    result = (*(int (__stdcall **)(int, int, int (__stdcall *)(int, int), _DWORD, int))(*(_DWORD *)dword_777B2C[1] + 16))(
-               dword_777B2C[1],
+    result = (*(int (__stdcall **)(int, int, int (__stdcall *)(int, int), _DWORD, int))(*(_DWORD *)g_joystick_input + 16))(
+               g_joystick_input,
                4,
                append_enumerated_input_controller_callback,
                0,
                1);
     if ( result >= 0 )
     {
-      *a2 = dword_777B2C[0];
-      if ( dword_777B2C[2] && (v4 = 0, dword_777B2C[0] > 0) )
+      *a2 = g_joystick_count;
+      if ( g_joystick_devices[0] && (v4 = 0, g_joystick_count > 0) )
       {
-        for ( i = &dword_777B2C[2]; ; ++i )
+        for ( i = g_joystick_devices; ; ++i )
         {
           result = (*(int (__stdcall **)(int, void *))(*(_DWORD *)*i + 44))(*i, &unk_49B2FC);
           if ( result < 0 )
@@ -41,7 +41,7 @@ int __cdecl enumerate_input_controllers(int a1, _DWORD *a2)
                      0);
           if ( result < 0 )
             break;
-          if ( ++v4 >= dword_777B2C[0] )
+          if ( ++v4 >= g_joystick_count )
             return 0;
         }
       }
@@ -53,4 +53,3 @@ int __cdecl enumerate_input_controllers(int a1, _DWORD *a2)
   }
   return result;
 }
-

@@ -10,9 +10,9 @@ int release_input_controllers()
   int result; // eax
 
   v0 = 0;
-  if ( dword_777B2C[0] > 0 )
+  if ( g_joystick_count > 0 )
   {
-    v1 = &dword_777B2C[2];
+    v1 = g_joystick_devices;
     do
     {
       if ( *v1 )
@@ -25,14 +25,13 @@ int release_input_controllers()
       ++v0;
       ++v1;
     }
-    while ( v0 < dword_777B2C[0] );
+    while ( v0 < g_joystick_count );
   }
-  result = dword_777B2C[1];
-  if ( dword_777B2C[1] )
+  result = g_joystick_input;
+  if ( g_joystick_input )
   {
-    result = (*(int (__stdcall **)(int))(*(_DWORD *)dword_777B2C[1] + 8))(dword_777B2C[1]);
-    dword_777B2C[1] = 0;
+    result = (*(int (__stdcall **)(int))(*(_DWORD *)g_joystick_input + 8))(g_joystick_input);
+    g_joystick_input = 0;
   }
   return result;
 }
-

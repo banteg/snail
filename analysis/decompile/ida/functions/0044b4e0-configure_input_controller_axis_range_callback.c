@@ -18,13 +18,12 @@ int __stdcall sub_44B4E0(int a1, int a2)
   v5[3] = 2;
   v5[4] = -1000;
   v5[5] = 1000;
-  if ( dword_777B2C <= 0 )
+  if ( g_joystick_count <= 0 )
     return 1;
-  for ( i = &MEMORY[0x777B34]; (*(int (__stdcall **)(int, int, _DWORD *))(*(_DWORD *)*i + 24))(*i, 4, v5) >= 0; ++i )
+  for ( i = g_joystick_devices; (*(int (__stdcall **)(int, int, _DWORD *))(*(_DWORD *)*i + 24))(*i, 4, v5) >= 0; ++i )
   {
-    if ( ++v2 >= dword_777B2C )
+    if ( ++v2 >= g_joystick_count )
       return 1;
   }
   return 0;
 }
-
