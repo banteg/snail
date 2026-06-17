@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**344/678** mapped gameplay functions matched, **463/678** mapped gameplay functions have a scratch, **30327/325983** bytes (**9.30%**) are proof-grade, and overall fuzzy is **23.48%**.
+**345/678** mapped gameplay functions matched, **463/678** mapped gameplay functions have a scratch, **30624/325983** bytes (**9.39%**) are proof-grade, and overall fuzzy is **23.50%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -242,7 +242,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 | - |  |
-| 🚧 | calc_subgame_rate | 0x4404d0 | 297 | 84/84 | 84.52% | 5/84 | 14 ok |  |
+| ✅ | calc_subgame_rate | 0x4404d0 | 297 | 84/84 | 100.00% | 84/84 | 16 ok |  |
 | ✅ | uninit_pause_menu | 0x440600 | 82 | 22/22 | 100.00% | 22/22 | 8 ok |  |
 | ✅ | advance_blink_random | 0x4408a0 | 31 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | initialize_blink_random | 0x4408c0 | 74 | 21/21 | 100.00% | 21/21 | 5 ok |  |

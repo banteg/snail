@@ -45,15 +45,21 @@ void Game::calc_subgame_rate()
         }
 
         if (bonus_rate_state == 2) {
-            float bonus = 0.600000024f;
-            if (mode == 1 || mode == 4)
+            float bonus;
+            if (mode == 1) {
                 bonus = 0.400000006f;
-            float phase = bonus_rate_phase;
-            if (phase < 0.25 || phase > 0.75) {
-                bonus = (1.0f - sine(phase * 12.566371f + 1.57079637f))
-                    * 0.5f * bonus;
+            } else {
+                bonus = 0.600000024f;
+                if (mode == 4)
+                    bonus = 0.400000006f;
             }
-            subgame_rate += bonus;
+            if (bonus_rate_phase >= 0.25 && bonus_rate_phase <= 0.75) {
+                subgame_rate += bonus;
+            } else {
+                float envelope = (1.0f - sine(bonus_rate_phase * 12.566371f + 1.57079637f))
+                    * 0.5f;
+                subgame_rate += envelope * bonus;
+            }
         }
 
         if (nuke_rate_state == 1)
