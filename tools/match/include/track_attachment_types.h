@@ -46,6 +46,8 @@ struct AttachmentPathTemplate {
     // caller scratches that still model the stale EAX value after the call.
     int compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
+    bool is_point_inside_track_attachment(
+        Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90
 
     char unknown_00[0x38];
     int kind;                        // +0x38
