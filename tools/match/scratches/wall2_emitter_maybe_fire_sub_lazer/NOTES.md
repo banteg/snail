@@ -1,6 +1,8 @@
 # Pinned — 42.34%, 172/187 insns (structure aligned, register golf remains)
 
-Really the fringe-object update, not just the emitter. Semantics
+Really a fringe runtime object update, not just the emitter. It shares the
+BOD/color prefix used by pooled `FringeObject`, but extends past the pooled
+`0x38` object with owner/tile/runtime flags, so keep it separate. Semantics
 complete:
 
 - gate: flags & 0x2000 plus the suspend byte

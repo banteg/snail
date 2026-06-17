@@ -68,7 +68,24 @@ Main residuals from `--regions`:
 
 `TrackRowCell` now exposes the four fringe object pointers at
 `+0x44..+0x50` in the shared attachment header. This scratch consumes that
-shared view directly instead of carrying a private `RuntimeCell` clone, while
-keeping `FringeObject` local because the type scanner still reports divergent
-scratch-local shapes. Focused Wibo is codegen-neutral at `49.44%`, with the
-same `47` clean masked operands.
+shared view directly instead of carrying a private `RuntimeCell` clone. At this
+point `FringeObject` stayed local because the type scanner still reported
+divergent scratch-local shapes. Focused Wibo was codegen-neutral at `49.44%`,
+with the same `47` clean masked operands.
+
+## 2026-06-17 FringeObject consolidation
+
+The pooled visual fringe object is now promoted in
+`tools/match/include/fringe_object.h` as a plain `BodBase`-sized object. This
+pins the `0x38` allocator stride, BOD list flags at `+0x04`, position at
+`+0x10`, object pointer at `+0x24`, and skirt color at `+0x28` against the
+initializer, manager reset, allocator, exact draw-list refresh, and this
+builder. The wall2/sub-lazer runtime scratch was renamed away from
+`FringeObject` because it extends past the pooled object with owner/tile/runtime
+flags at `+0x38/+0x3c/+0x40`.
+
+Focused Wibo improved to `53.76%`, `476/495`; masked operands remain `47 ok`.
+The remaining diff is still source-shape/register ownership: native keeps the
+game pointer in `ebp` and uses the longer `cmp al, 1` bool-to-1/2 idiom, while
+the current scratch keeps the now-clearer shared object fields and emits a
+shorter `test al` variant.

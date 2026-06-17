@@ -2,6 +2,7 @@
 // Structure-first scratch for directional runtime fringe object emission.
 
 #include "track_attachment_types.h"
+#include "fringe_object.h"
 
 extern char* g_game_base; // data_4df904
 extern unsigned char g_track_render_flags; // byte_4df934
@@ -15,36 +16,11 @@ struct Vec3Bits {
     int z;
 };
 
-struct ColorBits {
-    int r;
-    int g;
-    int b;
-    int a;
-};
-
-class FringeObject {
-public:
-    int set_bod_object(void* object);
-
-    void* vtable; // +0x00
-    unsigned int flags; // +0x04
-    char unknown_08[0x10 - 0x08];
-    Vector3 position; // +0x10
-    char unknown_1c[0x28 - 0x1c];
-    ColorBits color; // +0x28
-};
-
-class FringeManager {
-public:
-    void initialize_fringe_manager();
-    FringeObject* allocate_fringe_object();
-};
-
 class Game {
 public:
     int build_track_fringe_objects();
     bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
-    int* get_track_skirt_color(int* scratch);
+    Color4f* get_track_skirt_color(Color4f* scratch);
 
     char unknown_00[0x54];
     int runtime_row_count; // +0x54
@@ -112,16 +88,13 @@ int Game::build_track_fringe_objects()
                             ((FringeManager*)(g_game_base + 0x3d01d4))->allocate_fringe_object();
                         cell->fringe_front = object;
                         object->set_bod_object(FRINGE_BOD(0x44dd4, family, edge_a, edge_b));
-                        cell->fringe_front->flags |= 0x20;
+                        cell->fringe_front->list_flags |= 0x20;
                         cell->fringe_front->position = cell->anchor_position;
-                        int color0[4];
-                        int* color = game->get_track_skirt_color(color0);
+                        Color4f color0;
+                        Color4f* skirt_color = game->get_track_skirt_color(&color0);
                         game = original_game;
                         edge_a = 0;
-                        cell->fringe_front->color.r = color[0];
-                        cell->fringe_front->color.g = color[1];
-                        cell->fringe_front->color.b = color[2];
-                        cell->fringe_front->color.a = color[3];
+                        cell->fringe_front->color = *skirt_color;
                     }
 
                     if (game->is_neighbor_cell_solid(cell, 1, 0)) {
@@ -139,16 +112,13 @@ int Game::build_track_fringe_objects()
                             ((FringeManager*)(g_game_base + 0x3d01d4))->allocate_fringe_object();
                         cell->fringe_right = object;
                         object->set_bod_object(FRINGE_BOD(0x44fcc, family, edge_a, edge_b));
-                        cell->fringe_right->flags |= 0x20;
+                        cell->fringe_right->list_flags |= 0x20;
                         cell->fringe_right->position = cell->anchor_position;
-                        int color1[4];
-                        int* color = game->get_track_skirt_color(color1);
+                        Color4f color1;
+                        Color4f* skirt_color = game->get_track_skirt_color(&color1);
                         game = original_game;
                         edge_a = 0;
-                        cell->fringe_right->color.r = color[0];
-                        cell->fringe_right->color.g = color[1];
-                        cell->fringe_right->color.b = color[2];
-                        cell->fringe_right->color.a = color[3];
+                        cell->fringe_right->color = *skirt_color;
                     }
 
                     if (game->is_neighbor_cell_solid(cell, -1, 0)) {
@@ -166,16 +136,13 @@ int Game::build_track_fringe_objects()
                             ((FringeManager*)(g_game_base + 0x3d01d4))->allocate_fringe_object();
                         cell->fringe_left = object;
                         object->set_bod_object(FRINGE_BOD(0x451c4, family, edge_a, edge_b));
-                        cell->fringe_left->flags |= 0x20;
+                        cell->fringe_left->list_flags |= 0x20;
                         cell->fringe_left->position = cell->anchor_position;
-                        int color2[4];
-                        int* color = game->get_track_skirt_color(color2);
+                        Color4f color2;
+                        Color4f* skirt_color = game->get_track_skirt_color(&color2);
                         game = original_game;
                         edge_a = 0;
-                        cell->fringe_left->color.r = color[0];
-                        cell->fringe_left->color.g = color[1];
-                        cell->fringe_left->color.b = color[2];
-                        cell->fringe_left->color.a = color[3];
+                        cell->fringe_left->color = *skirt_color;
                     }
 
                     if (game->is_neighbor_cell_solid(cell, 0, -1)) {
@@ -193,16 +160,13 @@ int Game::build_track_fringe_objects()
                             ((FringeManager*)(g_game_base + 0x3d01d4))->allocate_fringe_object();
                         cell->fringe_back = object;
                         object->set_bod_object(FRINGE_BOD(0x453bc, family, edge_a, edge_b));
-                        cell->fringe_back->flags |= 0x20;
+                        cell->fringe_back->list_flags |= 0x20;
                         cell->fringe_back->position = cell->anchor_position;
-                        int color3[4];
-                        int* color = game->get_track_skirt_color(color3);
+                        Color4f color3;
+                        Color4f* skirt_color = game->get_track_skirt_color(&color3);
                         game = original_game;
                         edge_a = 0;
-                        cell->fringe_back->color.r = color[0];
-                        cell->fringe_back->color.g = color[1];
-                        cell->fringe_back->color.b = color[2];
-                        cell->fringe_back->color.a = color[3];
+                        cell->fringe_back->color = *skirt_color;
                     }
                 }
 
@@ -210,16 +174,16 @@ int Game::build_track_fringe_objects()
                 if ((*row_flags_head & 4) != 0) {
                     FringeObject* object = cell->fringe_front;
                     if (object != 0)
-                        object->flags &= ~0x20;
+                        object->list_flags &= ~0x20;
                     object = cell->fringe_back;
                     if (object != 0)
-                        object->flags &= ~0x20;
+                        object->list_flags &= ~0x20;
                     object = cell->fringe_right;
                     if (object != 0)
-                        object->flags &= ~0x20;
+                        object->list_flags &= ~0x20;
                     object = cell->fringe_left;
                     if (object != 0)
-                        object->flags &= ~0x20;
+                        object->list_flags &= ~0x20;
                 }
 
                 ++cell;

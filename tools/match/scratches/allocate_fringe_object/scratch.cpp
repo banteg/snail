@@ -1,18 +1,8 @@
+#include "fringe_object.h"
+
 // allocate_fringe_object @ 0x4470a0 (thiscall, ret)
 
 int report_errorf(char* format, ...);
-
-struct FringeObject {
-    char unknown_00[0x38];
-};
-
-class FringeManager {
-public:
-    FringeObject* allocate_fringe_object();
-
-    FringeObject objects[7000];
-    int count; // +0x5fb40
-};
 
 FringeObject* FringeManager::allocate_fringe_object()
 {

@@ -50,7 +50,7 @@ struct Game {
 
 extern Game* g_game; // data_4df904 (this TU caches the base, reloading after calls)
 
-struct FringeObject {
+struct FringeRuntimeObject {
     void wall2_emitter_maybe_fire_sub_lazer();
     int get_track_cell_row_index();
     void destroy_sub_lazer_projectile();
@@ -67,7 +67,7 @@ struct FringeObject {
     unsigned int flags; // +0x40, 0x2000 = live emitter, lane nibble at >>8
 };
 
-void FringeObject::wall2_emitter_maybe_fire_sub_lazer()
+void FringeRuntimeObject::wall2_emitter_maybe_fire_sub_lazer()
 {
     if ((flags & 0x2000) == 0)
         return;
