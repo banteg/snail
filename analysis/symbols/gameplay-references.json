@@ -1338,7 +1338,8 @@
       "aliases": [
         "data_50333c"
       ],
-      "description": "Keyboard/controller slot 0 X-axis lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+      "size": "0x3c",
+      "description": "Input-controller X-axis lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
     },
     {
       "address": "0x503340",
@@ -1347,7 +1348,8 @@
       "aliases": [
         "data_503340"
       ],
-      "description": "Keyboard/controller slot 0 Y-axis lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+      "size": "0x3c",
+      "description": "Input-controller Y-axis lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
     },
     {
       "address": "0x503344",
@@ -1356,7 +1358,58 @@
       "aliases": [
         "data_503344"
       ],
-      "description": "Keyboard/controller slot 0 button-mask lane written by set_input_controller_slot0_button_axes and read by copy_active_input_controller_state."
+      "size": "0x3c",
+      "description": "Input-controller button-mask lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503348",
+      "name": "g_input_slot0_pointer_x",
+      "kind": "global",
+      "aliases": [
+        "data_503348"
+      ],
+      "size": "0x3c",
+      "description": "Input-controller pointer X lane array with slot 0 at this address and slot 1 at +0x38; copied into the runtime input buffer by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x50334c",
+      "name": "g_input_slot0_pointer_y",
+      "kind": "global",
+      "aliases": [
+        "data_50334c"
+      ],
+      "size": "0x3c",
+      "description": "Input-controller pointer Y lane array with slot 0 at this address and slot 1 at +0x38; copied into the runtime input buffer by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503350",
+      "name": "g_input_slot0_authored_x",
+      "kind": "global",
+      "aliases": [
+        "data_503350"
+      ],
+      "size": "0x3c",
+      "description": "Input-controller authored X lane array with slot 0 at this address and slot 1 at +0x38; updated by pointer-region helpers and copied by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503354",
+      "name": "g_input_slot0_authored_y",
+      "kind": "global",
+      "aliases": [
+        "data_503354"
+      ],
+      "size": "0x3c",
+      "description": "Input-controller authored Y lane array with slot 0 at this address and slot 1 at +0x38; updated by pointer-region helpers and copied by copy_active_input_controller_state."
+    },
+    {
+      "address": "0x503358",
+      "name": "g_input_slot0_pointer_value",
+      "kind": "global",
+      "aliases": [
+        "data_503358"
+      ],
+      "size": "0x3c",
+      "description": "Input-controller auxiliary pointer lane array with slot 0 at this address and slot 1 at +0x38; copied by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
     },
     {
       "address": "0x5108c0",
