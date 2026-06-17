@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**342/678** mapped gameplay functions matched, **455/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.54%**.
+**342/678** mapped gameplay functions matched, **456/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.66%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -291,6 +291,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_invincible_shell | 0x444b50 | 416 | 98/98 | 100.00% | 98/98 | 28 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 648/673 | 47.99% | 0/673 | 1 mismatch, 77 ok |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
+| 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 1 unresolved, 14 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | 31/31 | 6 ok |  |

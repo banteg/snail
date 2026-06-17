@@ -8,6 +8,7 @@
 #include "damage_gauge.h"
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
+#include "presentation_animation_channel.h"
 #include "vector3.h"
 
 struct AttachmentPathTemplate;
@@ -42,7 +43,10 @@ class PlayerPresentationController {
 public:
     void set_snail_weapon(int movement_flags); // @ 0x445920
 
-    char unknown_00[0x15c8];
+    char unknown_00[0x64c];
+    PresentationAnimationChannel weapon_channels[3]; // +0x64c
+    PresentationAnimationChannel jetpack_channel;     // +0x11e0
+    char unknown_15bc[0x15c8 - 0x15bc];
     float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
     char unknown_15cc[0x1964 - 0x15cc];
     int cutscene_ai_state;              // +0x1964 (Player +0x42e8)
