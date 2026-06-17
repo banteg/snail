@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**345/678** mapped gameplay functions matched, **463/678** mapped gameplay functions have a scratch, **30624/325983** bytes (**9.39%**) are proof-grade, and overall fuzzy is **23.50%**.
+**345/678** mapped gameplay functions matched, **464/678** mapped gameplay functions have a scratch, **30624/325983** bytes (**9.39%**) are proof-grade, and overall fuzzy is **23.59%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -187,6 +187,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 unresolved, 57 ok |  |
+| 🚧 | reset_subgame | 0x437b10 | 291 | 75/75 | 98.67% | 44/75 | 2 ok |  |
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | 11/11 | 4 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
@@ -501,7 +502,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 43 | 1 | 43 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
