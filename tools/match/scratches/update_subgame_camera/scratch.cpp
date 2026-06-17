@@ -6,7 +6,7 @@
 
 class Game {
 public:
-    char update_subgame_camera();
+    void update_subgame_camera();
 
     char unknown_00[0x01];
     unsigned char camera_snap_requested; // +0x01, transient source switch flag
@@ -23,7 +23,7 @@ public:
 
 extern int g_game_base; // data_4df904
 
-char Game::update_subgame_camera()
+void Game::update_subgame_camera()
 {
     int state = subgame_state;
     TransformMatrix from = *(TransformMatrix*)(g_game_base + 0x15c);
@@ -52,10 +52,9 @@ char Game::update_subgame_camera()
     if (result != 0) {
         *(TransformMatrix*)(g_game_base + 0x15c) = target;
         camera_snap_requested = 0;
-        return result;
+        return;
     }
 
     ((TransformMatrix*)(g_game_base + 0x15c))->linear_interpolate_matrix(
         &from, &target, 0.89999998f);
-    return camera_snap_requested;
 }
