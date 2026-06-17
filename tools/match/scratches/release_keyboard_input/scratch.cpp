@@ -1,0 +1,28 @@
+// release_keyboard_input @ 0x44bb60 (cdecl)
+
+#include "direct_input_view.h"
+
+extern DirectInput* volatile g_keyboard_input; // data_777d4c
+extern DirectInputDevice* volatile g_keyboard_device; // data_777d50
+
+int release_keyboard_input()
+{
+    DirectInputDevice* device = g_keyboard_device;
+    if (device != 0) {
+        device->vtbl->Unacquire(device);
+
+        device = g_keyboard_device;
+        if (device != 0) {
+            device->vtbl->Release(device);
+            g_keyboard_device = 0;
+        }
+    }
+
+    DirectInput* input = g_keyboard_input;
+    int result = (int)input;
+    if (input != 0) {
+        result = input->vtbl->Release(input);
+        g_keyboard_input = 0;
+    }
+    return result;
+}

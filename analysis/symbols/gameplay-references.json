@@ -1773,6 +1773,26 @@
       "description": "Current DirectInput keyboard state polled by update_keyboard_input and read by is_key_down and is_key_pressed_edge."
     },
     {
+      "address": "0x777d4c",
+      "name": "g_keyboard_input",
+      "kind": "global",
+      "aliases": [
+        "data_777d4c"
+      ],
+      "size": "0x4",
+      "description": "DirectInput parent object handle created by initialize_keyboard_input and released by release_keyboard_input."
+    },
+    {
+      "address": "0x777d50",
+      "name": "g_keyboard_device",
+      "kind": "global",
+      "aliases": [
+        "data_777d50"
+      ],
+      "size": "0x4",
+      "description": "DirectInput keyboard device handle polled by update_keyboard_input and unacquired/released by release_keyboard_input."
+    },
+    {
       "address": "0x777d70",
       "name": "g_hide_system_cursor_flag",
       "kind": "global",
@@ -1791,6 +1811,26 @@
       ],
       "size": "0x10",
       "description": "Cached Win32 clip RECT populated by initialize_mouse_authored_scale_from_clip_rect and consumed by update_mouse_authored_scale."
+    },
+    {
+      "address": "0x777d98",
+      "name": "g_mouse_input",
+      "kind": "global",
+      "aliases": [
+        "data_777d98"
+      ],
+      "size": "0x4",
+      "description": "DirectInput parent object handle created by initialize_mouse_input and released by release_mouse_input."
+    },
+    {
+      "address": "0x777d9c",
+      "name": "g_mouse_device",
+      "kind": "global",
+      "aliases": [
+        "data_777d9c"
+      ],
+      "size": "0x4",
+      "description": "DirectInput mouse device handle polled by update_mouse and unacquired/released by release_mouse_input."
     },
     {
       "address": "0x777f38",
