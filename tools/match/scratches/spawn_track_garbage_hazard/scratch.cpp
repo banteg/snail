@@ -13,7 +13,7 @@ typedef unsigned int DWORD;
 class Game {
 public:
     DWORD* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player);
-    char* project_position_onto_track_attachment(float* position, float* out_angle);
+    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
 };
 
 extern char* g_game_base; // data_4df904
@@ -58,7 +58,7 @@ DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
     staged_position.y = staged_y;
     Vector3* live_position = (Vector3*)(slot_base_words + 877675);
     *live_position = staged_position;
-    project_position_onto_track_attachment((float*)live_position, slot_base_words + 877689);
+    project_position_onto_track_attachment(live_position, slot_base_words + 877689);
 
     float* tail = (float*)(self_words + 978393);
     char* anchor = g_game_base + 1448;

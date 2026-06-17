@@ -49,6 +49,10 @@ Residuals:
   regressed to 73.08% by increasing the frame to `0x74` and shifting both
   kind-42 transform slots and non-kind42 vector slots. Keep the in-place
   `projected.x/y/z += vertical` spelling.
+- 2026-06-17 API cleanup: the mutable projection argument is now spelled as
+  `Vector3*` instead of `float*`, and the garbage-hazard caller passes its live
+  `Vector3` without a cast. Focused Wibo is unchanged at 81.16%, 101/106
+  instructions, with masked operands 5 ok / 0 unresolved / 0 mismatch.
 - Remaining diff is source-shape/register allocation rather than a known
   semantic gap: the kind-42 branch target label and local transform offsets
   differ, and the non-kind42 vector locals have different slot ordering around

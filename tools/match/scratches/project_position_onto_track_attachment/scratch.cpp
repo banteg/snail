@@ -3,39 +3,39 @@
 #include "transform_matrix.h"
 
 struct Game {
-    char* project_position_onto_track_attachment(float* position, float* out_angle);
+    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
 };
 
-char* Game::project_position_onto_track_attachment(float* position, float* out_angle)
+char* Game::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
     TrackAttachmentRuntimeRow* row =
-        (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position[2]);
+        (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position->z);
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->primary_attachment_cell;
         AttachmentPathTemplate* template_record = cell->attachment_template_record;
-        int sample_index = (int)position[2] - cell->get_track_cell_row_index();
+        int sample_index = (int)position->z - cell->get_track_cell_row_index();
         AttachmentSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {
             TransformMatrix transform;
             int result = template_record->compute_kind42_attachment_transform(
                 sample->special_scalar,
-                position[0],
-                position[1],
+                position->x,
+                position->y,
                 &transform,
                 out_angle);
             int y = *(int*)&transform.position.y;
-            *(int*)position = *(int*)&transform.position.x;
-            *((int*)position + 1) = y;
+            *(int*)&position->x = *(int*)&transform.position.x;
+            *(int*)&position->y = y;
             return (char*)result;
         } else {
-            float vertical = position[1];
+            float vertical = position->y;
             Vector3 vertical_contribution;
             vertical_contribution.x = vertical * sample->transform.basis_up.x;
             vertical_contribution.y = vertical * sample->transform.basis_up.y;
             vertical_contribution.z = vertical * sample->transform.basis_up.z;
 
-            float lateral = position[0] - sample->center_x;
+            float lateral = position->x - sample->center_x;
             Vector3 lateral_contribution;
             lateral_contribution.x = lateral * sample->transform.basis_right.x;
             lateral_contribution.y = lateral * sample->transform.basis_right.y;
@@ -52,11 +52,11 @@ char* Game::project_position_onto_track_attachment(float* position, float* out_a
             projected.z = anchored_base.z + lateral_contribution.z;
 
             projected.x += vertical_contribution.x;
-            position[0] = projected.x;
+            position->x = projected.x;
             projected.y += vertical_contribution.y;
-            position[1] = projected.y;
+            position->y = projected.y;
             projected.z += vertical_contribution.z;
-            position[2] = projected.z;
+            position->z = projected.z;
             return (char*)*(int*)&projected.x;
         }
     }

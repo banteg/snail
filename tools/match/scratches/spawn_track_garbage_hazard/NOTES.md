@@ -102,3 +102,7 @@ Residuals:
   the old projection block to 48/143, with all 16 masked operands still OK.
   Two plausible follow-ups were rejected: assigning the y field before x/z
   regressed to 97.90%, and adding an `anchor_y` local regressed to 98.60%.
+- 2026-06-17 projection API cleanup: the local projection prototype now accepts
+  `Vector3*`, matching the live slot position. Removing the `(float*)` cast is
+  codegen-neutral: focused Wibo remains 99.30%, 143/143, with the same single
+  projection-staging scheduling residual and 16 clean masked operands.

@@ -55,8 +55,10 @@ offsets onto generated track rows" pass.
 Verify: the Zig grid builder consumes randoms per kept parcel (the
 challenge test pins one draw per parcel); a deeper diff of the
 candidate-bank reset and the row-record accumulator lanes against
-buildRuntimeParcelPlacementGrid is the next verify step once the row
-record struct (game+0x641184 region) is typed end-to-end.
+buildRuntimeParcelPlacementGrid is the next verify step now that the
+`game+0x5ccac8` row-record table is typed. The separate `game+0x641184`
+table is the follow-runtime row-slot table used by
+`update_track_attachment_follow_state`, not this parcel row table.
 
 ## WIP scratch — 23.40%, 643/639 insns (2026-06-13)
 
