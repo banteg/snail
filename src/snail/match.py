@@ -1111,6 +1111,17 @@ def _reference_status(
         keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
         return frozenset(keys)
 
+    def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
+        target_keys = reference_key_options(target)
+        candidate_keys = reference_key_options(candidate)
+        if target_keys & candidate_keys:
+            return True
+        return (
+            target.text.startswith("jump_table:")
+            and candidate.source == "reloc"
+            and candidate.text.startswith("sym:$L")
+        )
+
     target_keys = tuple(reference_key_options(reference) for reference in target_references)
     candidate_keys = tuple(reference_key_options(reference) for reference in candidate_references)
     all_explained = all(
@@ -1118,7 +1129,10 @@ def _reference_status(
     )
     if (
         len(target_keys) == len(candidate_keys)
-        and all(target & candidate for target, candidate in zip(target_keys, candidate_keys))
+        and all(
+            references_match(target, candidate)
+            for target, candidate in zip(target_references, candidate_references)
+        )
         and all_explained
     ):
         return "ok"

@@ -10,6 +10,8 @@ Small lifecycle state machine around render-feature bit `0x04`:
 
 `fade_step` is the literal `0.020833334f`.
 
-Current match is byte-for-byte 100%. The switch jump-table operand now resolves
-through `update_star_field_jump_table` at `0x4347e8`, matching VC6's local
-`$L529` table symbol, so the masked operand audit is clean.
+Current match is byte-for-byte 100%. The native switch table resolves through
+`update_star_field_jump_table` at `0x4347e8`; the scratch may spell the same
+relocation as a compiler-local `$L...` table label after unrelated header
+changes, so the masked operand audit treats that as the same jump-table
+reference.

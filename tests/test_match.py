@@ -447,6 +447,49 @@ def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_masked_operand_audit_accepts_local_jump_table_label() -> None:
+    # target: jmp dword [eax*4+0x402000]; candidate: same shape through a
+    # compiler-local switch-table label. VC6 may renumber that local label after
+    # unrelated source/header changes.
+    target = bytes.fromhex("ff248500204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("ff248500000000c3"),
+        relocation_offsets=frozenset({3}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=3,
+                symbol_name="$L123",
+                text="sym:$L123",
+                key="name:$L123",
+                explained=True,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                ),
+            ),
+        ),
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.target_references[0].text == "jump_table:foo_jump_table@0x402000"
+    assert entry.candidate_references[0].text == "sym:$L123"
+
+
 def test_masked_operand_audit_accepts_same_address_reference_alternate() -> None:
     # target: mov cl, [0x402000]; ret. 0x402000 is the display name for one
     # global, but the candidate relocation can still honestly name a separate

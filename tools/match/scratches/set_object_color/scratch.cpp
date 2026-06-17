@@ -3,16 +3,6 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-struct ColorBGRA8 {
-    ColorBGRA8* noop_this_constructor();       // @ 0x44db50
-    ColorBGRA8* pack_color_rgba_u8(Color4f*);  // @ 0x44dbf0
-
-    unsigned char b;
-    unsigned char g;
-    unsigned char r;
-    unsigned char a;
-};
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,

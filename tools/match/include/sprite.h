@@ -23,6 +23,16 @@ struct Color4f {
     float a; // +0x0c
 };
 
+struct ColorBGRA8 {
+    ColorBGRA8* noop_this_constructor();
+    ColorBGRA8* pack_color_rgba_u8(Color4f* color); // @ 0x44dbf0
+
+    unsigned char b; // +0x00
+    unsigned char g; // +0x01
+    unsigned char r; // +0x02
+    unsigned char a; // +0x03
+};
+
 struct TextureRef {
     unsigned int flags; // +0x00
     char unknown_04[0x0c - 0x04];

@@ -6,15 +6,6 @@
 
 int report_errorf(char* format, ...);
 
-struct ColorBGRA8 {
-    ColorBGRA8* pack_color_rgba_u8(Color4f*); // @ 0x44dbf0
-
-    unsigned char b;
-    unsigned char g;
-    unsigned char r;
-    unsigned char a;
-};
-
 struct ObjectTextureGroupVertexView {
     char unknown_00[0x10];
     unsigned int flags; // +0x10

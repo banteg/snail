@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**334/676** mapped gameplay functions matched, **427/676** mapped gameplay functions have a scratch, **27554/326004** bytes (**8.45%**) are proof-grade, and overall fuzzy is **19.97%**.
+**335/676** mapped gameplay functions matched, **428/676** mapped gameplay functions have a scratch, **27635/326004** bytes (**8.48%**) are proof-grade, and overall fuzzy is **19.99%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -26,7 +26,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | 🚧 | flush_row_event_display | 0x404830 | 233 | 65/67 | 89.39% | 4/67 | 18 ok |  |
-| 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 1 mismatch, 36 ok |  |
+| 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | get_stream_length_preserve_position | 0x405170 | 51 | 24/24 | 100.00% | 24/24 | 4 ok |  |
@@ -86,7 +86,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | render_object | 0x4126c0 | 815 | 197/196 | 69.72% | 8/196 | 21 ok |  |
 | ✅ | set_cull_mode | 0x4129f0 | 775 | 5/5 | 100.00% | 5/5 | 2 ok |  |
-| 🚧 | set_blend_mode | 0x412d00 | 808 | 92/92 | 81.52% | 14/92 | 2 mismatch, 13 ok |  |
+| 🚧 | set_blend_mode | 0x412d00 | 808 | 92/92 | 81.52% | 14/92 | 1 mismatch, 14 ok |  |
 | ✅ | begin_sprite_depth_render_state | 0x413540 | 261 | 60/60 | 100.00% | 60/60 | 7 ok |  |
 | ✅ | end_sprite_depth_render_state | 0x413650 | 22 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
@@ -206,12 +206,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 64/65 | 74.42% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 338/336 | 86.35% | 9/336 | 1 mismatch, 35 ok |  |
+| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 338/336 | 86.35% | 9/336 | 36 ok |  |
 | 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 71.88% | 6/128 | 15 ok |  |
 | ✅ | update_track_speedup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
 | 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 127/127 | 72.44% | 6/127 | 15 ok |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 | 6 ok |  |
-| 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |
+| 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 20 ok |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 | 1 ok |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | 22/22 | 3 ok |  |
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 18 | 4/4 | 100.00% | 4/4 | - |  |
@@ -401,6 +401,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | 9/9 | - |  |
+| ✅ | pack_color_rgba_u8 | 0x44dbf0 | 81 | 24/24 | 100.00% | 24/24 | 8 ok |  |
 | ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | 9/9 | 3 ok |  |
@@ -441,7 +442,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 19 type name(s) with a header plus scratch-local copies
-- divergent: 26 type name(s) with multiple scratch-local shapes
+- divergent: 25 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -453,7 +454,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ColorBGRA8 | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |

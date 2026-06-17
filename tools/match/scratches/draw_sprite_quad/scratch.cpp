@@ -10,17 +10,6 @@ struct Vec3 {
     float z;
 };
 
-class ColorBGRA8 {
-public:
-    ColorBGRA8* noop_this_constructor();
-    ColorBGRA8* pack_color_rgba_u8(Color4f* color);
-
-    unsigned char b;
-    unsigned char g;
-    unsigned char r;
-    unsigned char a;
-};
-
 struct SpriteVertex {
     float x;
     float y;
