@@ -4,6 +4,16 @@
 
 #include "landscape_script.h"
 
+struct BackdropDistortCell {
+    float phase; // +0x00
+    float phase_step; // +0x04
+    float x_offset; // +0x08
+    float y_offset; // +0x0c
+    char unknown_10[0x18 - 0x10];
+};
+typedef char BackdropDistortCell_must_be_0x18[
+    (sizeof(BackdropDistortCell) == 0x18) ? 1 : -1];
+
 class Backdrop {
 public:
     void set_backdrop_progress_fraction(float fraction); // @ 0x410c30
@@ -26,7 +36,8 @@ public:
     float pending_distort; // +0x50
     unsigned char pending_flip; // +0x54
     unsigned char active_flip; // +0x55
-    char unknown_056[0x658 - 0x56];
+    char unknown_056[0x58 - 0x56];
+    BackdropDistortCell distort_cells[64]; // +0x58
     int backdrop_refresh_pending; // +0x658
     char unknown_65c[0x68c - 0x65c];
     float primary_blend; // +0x68c
