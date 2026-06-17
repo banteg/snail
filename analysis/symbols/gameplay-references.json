@@ -519,6 +519,15 @@
       "description": "Builds the simple Direct3D orthographic projection matrix used by begin_overlay_render_state for authored 640x480 overlay/font rendering."
     },
     {
+      "address": "0x47c840",
+      "name": "DirectInput8Create",
+      "kind": "function",
+      "aliases": [
+        "sub_47c840"
+      ],
+      "description": "Linked DirectInput8Create thunk used by controller, keyboard, and mouse DirectInput initialization."
+    },
+    {
       "address": "0x48b32c",
       "name": "sprintf",
       "kind": "function",
@@ -841,6 +850,38 @@
         "data_497500"
       ],
       "description": "Renderable BOD vtable installed by initialize_renderable_bod."
+    },
+    {
+      "address": "0x49b010",
+      "name": "g_directinput_keyboard_guid",
+      "kind": "global",
+      "aliases": [
+        "data_49b010",
+        "unk_49b010"
+      ],
+      "size": "0x10",
+      "description": "DirectInput keyboard device GUID passed to IDirectInput8A::CreateDevice by initialize_keyboard_input."
+    },
+    {
+      "address": "0x49b0c0",
+      "name": "g_directinput8_iid",
+      "kind": "global",
+      "aliases": [
+        "data_49b0c0",
+        "riidltf"
+      ],
+      "size": "0x10",
+      "description": "IDirectInput8A interface IID passed to DirectInput8Create by controller, keyboard, and mouse DirectInput initialization."
+    },
+    {
+      "address": "0x49b504",
+      "name": "g_directinput_keyboard_data_format",
+      "kind": "global",
+      "aliases": [
+        "data_49b504",
+        "unk_49b504"
+      ],
+      "description": "DirectInput keyboard data format passed to IDirectInputDevice8A::SetDataFormat by initialize_keyboard_input."
     },
     {
       "address": "0x4a15d0",

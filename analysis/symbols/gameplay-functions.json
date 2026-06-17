@@ -2671,7 +2671,8 @@
     },
     {
       "address": "0x44b7d0",
-      "name": "initialize_keyboard_input"
+      "name": "initialize_keyboard_input",
+      "description": "Initializes the DirectInput keyboard device, sets its data format/cooperative level, acquires it, and clears the previous/current key-state buffers."
     },
     {
       "address": "0x44b870",

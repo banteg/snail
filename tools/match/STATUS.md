@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**324/676** mapped gameplay functions matched, **417/676** mapped gameplay functions have a scratch, **25153/326004** bytes (**7.72%**) are proof-grade, and overall fuzzy is **19.23%**.
+**325/676** mapped gameplay functions matched, **418/676** mapped gameplay functions have a scratch, **25313/326004** bytes (**7.76%**) are proof-grade, and overall fuzzy is **19.28%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -335,6 +335,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 2 unresolved, 7 ok |  |
+| ✅ | initialize_keyboard_input | 0x44b7d0 | 160 | 55/55 | 100.00% | 55/55 | 15 ok |  |
 | ✅ | is_key_pressed_edge | 0x44bb10 | 34 | 11/11 | 100.00% | 11/11 | 2 ok |  |
 | ✅ | is_key_down | 0x44bb40 | 20 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | release_keyboard_input | 0x44bb60 | 66 | 21/21 | 100.00% | 21/21 | 5 ok |  |

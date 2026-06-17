@@ -10,25 +10,25 @@ int __cdecl initialize_keyboard_input(int hWnd)
   ((void (__stdcall *)(int, int))GetWindowLongA)(hWnd, -6);
   release_input_controllers();
   v1 = ((int (__stdcall *)(_DWORD))GetModuleHandleA)(0);
-  result = DirectInput8Create(v1, 2048, &riidltf, &dword_777B2C[136], 0);
+  result = DirectInput8Create(v1, 2048, &g_directinput8_iid, &g_keyboard_input, 0);
   if ( result >= 0 )
   {
-    result = (*(int (__stdcall **)(int, void *, int *, _DWORD))(*(_DWORD *)dword_777B2C[136] + 12))(
-               dword_777B2C[136],
-               &unk_49B010,
-               &dword_777B2C[137],
+    result = (*(int (__stdcall **)(int, void *, int *, _DWORD))(*(_DWORD *)g_keyboard_input + 12))(
+               g_keyboard_input,
+               &g_directinput_keyboard_guid,
+               &g_keyboard_device,
                0);
     if ( result >= 0 )
     {
-      result = (*(int (__stdcall **)(int, void *))(*(_DWORD *)dword_777B2C[137] + 44))(dword_777B2C[137], &unk_49B504);
+      result = (*(int (__stdcall **)(int, void *))(*(_DWORD *)g_keyboard_device + 44))(g_keyboard_device, &g_directinput_keyboard_data_format);
       if ( result >= 0 )
       {
-        result = (*(int (__stdcall **)(int, int, int))(*(_DWORD *)dword_777B2C[137] + 52))(dword_777B2C[137], hWnd, 5);
+        result = (*(int (__stdcall **)(int, int, int))(*(_DWORD *)g_keyboard_device + 52))(g_keyboard_device, hWnd, 5);
         if ( result >= 0 )
         {
-          (*(void (__stdcall **)(int))(*(_DWORD *)dword_777B2C[137] + 28))(dword_777B2C[137]);
-          memset(&dword_777B2C[8], 0, 0x100u);
-          memset(&dword_777B2C[72], 0, 0x100u);
+          (*(void (__stdcall **)(int))(*(_DWORD *)g_keyboard_device + 28))(g_keyboard_device);
+          memset(g_keyboard_previous_state, 0, 0x100u);
+          memset(g_keyboard_current_state, 0, 0x100u);
           return 0;
         }
       }
@@ -36,4 +36,3 @@ int __cdecl initialize_keyboard_input(int hWnd)
   }
   return result;
 }
-
