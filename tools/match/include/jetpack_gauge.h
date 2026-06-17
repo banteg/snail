@@ -22,7 +22,7 @@ public:
     void end_jetpack_hover(); // @ 0x43a370
     void uninit_jet_particles(); // @ 0x43a580
     void update_jet_particles(); // @ 0x43a690
-    void update_jetpack_gauge(); // called by update_subgoldy, scratch pending
+    void update_jetpack_gauge(); // @ 0x43a390
 
     float progress; // +0x00
     float progress_step; // +0x04

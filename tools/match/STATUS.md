@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**342/678** mapped gameplay functions matched, **453/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.35%**.
+**342/678** mapped gameplay functions matched, **454/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.48%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -200,6 +200,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_player_movement_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  |
 | ✅ | update_movement_flag_emitters | 0x43a300 | 97 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
+| 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 130/131 | 85.82% | 4/131 | 34 ok |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | 17/17 | 1 ok |  |
 | ✅ | initialize_jet_particles | 0x43a5b0 | 214 | 73/73 | 100.00% | 73/73 | 3 ok |  |
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 169/181 | 45.14% | 0/181 | 1 mismatch, 12 ok |  |
@@ -465,7 +466,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 0 type name(s)
+- ready: 1 type name(s)
 - covered: 26 type name(s) with a header plus scratch-local copies
 - divergent: 20 type name(s) with multiple scratch-local shapes
 
@@ -491,7 +492,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 41 | 1 | 41 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
@@ -517,3 +518,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | GlobalJetpackPresentationController | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
