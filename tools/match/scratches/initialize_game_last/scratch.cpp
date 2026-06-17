@@ -4,10 +4,10 @@
 
 class GameRoot {
 public:
-    void* initialize_game_last();
+    void initialize_game_last();
 };
 
-void* GameRoot::initialize_game_last()
+void GameRoot::initialize_game_last()
 {
-    return ((Backdrop*)((char*)this + 0x4ec10))->initialize_backdrop(1);
+    ((Backdrop*)((char*)this + 0x4ec10))->initialize_backdrop(1);
 }

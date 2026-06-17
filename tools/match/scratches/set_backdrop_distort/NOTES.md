@@ -11,6 +11,9 @@ Recovered layout:
 - each `BackdropDistortCell` has stride `0x18`.
 - the helper writes `phase +0x00`, `phase_step +0x04`, `x_offset +0x08`, and
   `y_offset +0x0c`.
+- `update_backdrop` writes the derived per-frame `current_x_offset +0x10` and
+  `current_y_offset +0x14` terms from sine/cosine, and `render_backdrop`
+  consumes those values as warped quad corner offsets.
 - border cells (`row == 0`, `row == 7`, `column == 0`, or `column == 7`) are
   hard-zeroed.
 
