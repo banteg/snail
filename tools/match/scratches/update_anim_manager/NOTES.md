@@ -4,18 +4,19 @@ Initial source-shaped scratch for the presentation animation manager updater.
 
 Recovered relationships:
 
-- `state +0x00`, `progress +0x04`, `progress_step +0x08`, current frame
-  flags pointer `+0x0c`, completion byte `+0x10`.
+- `state +0x00`, `progress +0x04`, `progress_step +0x08`, active
+  `ObjectAnimation*` `+0x0c`, completion byte `+0x10`.
 - queued animation ids begin at `+0x14`; `queue_count` is `+0x3c`.
 - `target_model +0x40` receives/clears bit `0x20` and stores the selected
   animation pointer at target `+0x24`.
 - `animation_table +0x44` indexes 0x80-byte animation records; record `+0x24`
-  points to the model animation whose `+0x10` value becomes `progress_step`.
+  points to the active `ObjectAnimation` whose `+0x10` value becomes
+  `progress_step`.
 
 This first pass is intended as a struct map; Wibo score decides whether later
 source-shape work is worthwhile.
 
-Focused Wibo result: 43.68%, 127/134 candidate/target instructions, with
+Focused Wibo result: 46.15%, 126/134 candidate/target instructions, with
 11 masked operands OK and no unresolved or mismatched operands. The first
 residual is source-shape register ownership: native zeroes `edx` before saving
 `ebx`, while the current source lets VC6 use `ebx` as the zero/one lane.

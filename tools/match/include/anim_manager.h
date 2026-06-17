@@ -3,6 +3,8 @@
 #ifndef ANIM_MANAGER_H
 #define ANIM_MANAGER_H
 
+#include "object_animation_types.h"
+
 class AnimManager {
 public:
     int initialize_anim_manager(); // @ 0x4447c0
@@ -11,7 +13,7 @@ public:
     int state;              // +0x00
     float progress;         // +0x04
     float progress_step;    // +0x08
-    unsigned int* flags;    // +0x0c, current animation flags
+    ObjectAnimation* active_animation; // +0x0c
     unsigned char completed; // +0x10
     char unknown_11[0x14 - 0x11];
     int queued_animations[10]; // +0x14

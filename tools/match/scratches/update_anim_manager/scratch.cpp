@@ -29,7 +29,7 @@ void AnimManager::update_anim_manager()
         progress = next_progress;
 
         if (next_progress >= 1.0f) {
-            unsigned int frame_flags = *flags;
+            unsigned short frame_flags = active_animation->flags;
             if ((frame_flags & 1) != 0) {
                 completed = 1;
                 progress = next_progress - 1.0f;
@@ -46,7 +46,7 @@ void AnimManager::update_anim_manager()
         }
 
         if (progress < 0.0f) {
-            unsigned int frame_flags = *flags;
+            unsigned short frame_flags = active_animation->flags;
             if ((frame_flags & 2) != 0) {
                 progress = -progress;
                 completed = 1;
@@ -76,8 +76,8 @@ void AnimManager::update_anim_manager()
             AnimationRecord* record =
                 (AnimationRecord*)(animation_table + next_animation * sizeof(AnimationRecord));
             progress = 0.0f;
-            flags = (unsigned int*)record->model_animation;
-            progress_step = *(float*)((char*)record->model_animation + 0x10);
+            active_animation = (ObjectAnimation*)record->model_animation;
+            progress_step = active_animation->progress_step;
             ((ModelInstance*)target_model)->active_animation = record->model_animation;
         }
 

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**342/678** mapped gameplay functions matched, **454/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.48%**.
+**342/678** mapped gameplay functions matched, **455/678** mapped gameplay functions have a scratch, **29825/325983** bytes (**9.15%**) are proof-grade, and overall fuzzy is **22.54%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -279,8 +279,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 | 5 ok |  |
+| 🚧 | set_weapon_animation | 0x4446e0 | 221 | 54/55 | 88.07% | 2/55 | 3 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
-| 🚧 | update_anim_manager | 0x4447d0 | 399 | 127/134 | 43.68% | 2/134 | 11 ok |  |
+| 🚧 | update_anim_manager | 0x4447d0 | 399 | 126/134 | 46.15% | 2/134 | 11 ok |  |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | 6/6 | 1 ok |  |
@@ -468,7 +469,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 1 type name(s)
 - covered: 26 type name(s) with a header plus scratch-local copies
-- divergent: 20 type name(s) with multiple scratch-local shapes
+- divergent: 21 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -492,6 +493,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | WeaponChannel | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
