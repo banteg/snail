@@ -4,7 +4,7 @@
 
 extern char* g_game_base; // data_4df904
 
-class GlobalJetpackPresentationController {
+class PlayerPresentationController {
 public:
     void set_snail_jetpack(int state);
 };
@@ -22,7 +22,7 @@ int JetpackGaugeController::arm_jetpack_gauge()
         wobble_y = 0.0f;
         wobble_x = 0.0f;
 
-        ((GlobalJetpackPresentationController*)(g_game_base + 0x432700))->set_snail_jetpack(1);
+        ((PlayerPresentationController*)(g_game_base + 0x432700))->set_snail_jetpack(1);
         result = initialize_jet_particles(this);
     }
 

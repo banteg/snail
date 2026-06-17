@@ -21,7 +21,7 @@ public:
     float position_z; // +0x70
 };
 
-class GlobalJetpackPresentationController {
+class PlayerPresentationController {
 public:
     void set_snail_jetpack(int state);
 };
@@ -64,7 +64,7 @@ void JetpackGaugeController::update_jetpack_gauge()
         } else if (next_progress > 0.94f) {
             warning_intensity = (1.0f - next_progress) * 16.6666679f;
             if (next_progress - progress_step <= 0.94f) {
-                ((GlobalJetpackPresentationController*)(g_game_base + 0x432700))
+                ((PlayerPresentationController*)(g_game_base + 0x432700))
                     ->set_snail_jetpack(0);
                 uninit_jet_particles();
             }
@@ -97,7 +97,7 @@ void JetpackGaugeController::update_jetpack_gauge()
 finish_hover:
     end_jetpack_hover();
     if (progress <= 0.94f)
-        ((GlobalJetpackPresentationController*)(g_game_base + 0x432700))
+        ((PlayerPresentationController*)(g_game_base + 0x432700))
             ->set_snail_jetpack(0);
     state = zero;
     wobble_alpha = (float)zero;

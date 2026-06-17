@@ -41,6 +41,7 @@ typedef char PlayerLiveMatrixRows_must_be_0x40[
 
 class PlayerPresentationController {
 public:
+    void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
 
     char unknown_00[0x64c];
