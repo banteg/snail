@@ -1,18 +1,6 @@
 // spawn_track_parcel @ 0x443730 (thiscall, ret 8)
 
-#include "track_parcel_runtime.h"
-
-class SubgameRuntime {
-public:
-    TrackParcelRuntime* spawn_track_parcel(Vector3* world_position, void* owner_hint);
-
-    char unknown_000000[0x3bb764];
-    char score_stats; // root game +0x3bb764
-    char unknown_3bb765[0x3bbae4 - 0x3bb765];
-    int parcel_sprite_owner; // root game +0x3bbae4
-    char unknown_3bbae8[0x125e480 - 0x3bbae8];
-    TrackParcelPool parcel_pool; // root game +0x125e480
-};
+#include "subgame_runtime.h"
 
 TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, void*)
 {

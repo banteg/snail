@@ -88,8 +88,10 @@ Golf leads (next pass):
 
 ## Row projection payload cross-check (2026-06-16)
 
-No codegen change kept here; baseline remains 23.40%. The useful finding is
-type/layout evidence for `TrackAttachmentRuntimeRow::projection_payload`.
+The claim loops now use the shared `TrackAttachmentRuntimeRow` view. Focused
+Wibo moves from 23.40% to 26.30%, 646/639 candidate instructions, with masked
+operands 26 ok / 0 unresolved / 5 mismatch. The useful finding is type/layout
+evidence for `TrackAttachmentRuntimeRow::projection_payload`.
 
 The parcel claim path writes the candidate lateral/local lane to row +0x90,
 increments row +0x94 by 1.0 as a claim/count lane, and accumulates

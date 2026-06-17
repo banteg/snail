@@ -99,8 +99,9 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     // payload: x is lateral/local x, y is incremented as a claim/count lane,
     // and z accumulates absolute row + 0.5 before the attachment projection
     // tail consumes the same vector-shaped storage.
-    Vector3 projection_payload;          // +0x90, parcel/path projection payload
-    char unknown_9c[0xa4 - 0x9c];
+    Vector3 projection_payload;          // +0x90, x/y/z = local/count/row-center during parcel placement
+    int parcel_set_id;                   // +0x9c, authored parcel set/payload id
+    int attachment_template_index;       // +0xa0, P/p template bank index
     TrackRowCell* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
     TrackRowCell* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
     char unknown_ac[0xf0 - 0xac];

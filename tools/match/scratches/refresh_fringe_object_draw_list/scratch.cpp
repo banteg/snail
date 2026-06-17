@@ -2,11 +2,7 @@
 
 #include "fringe_object.h"
 #include "bod_list.h"
-
-class SubgameRuntime {
-public:
-    Color4f* get_track_skirt_color(Color4f* out);
-};
+#include "subgame_runtime.h"
 
 int report_errorf(char* format, ...);
 

@@ -19,3 +19,8 @@ equivalent, but it left a 68.00% scheduler residual around the 16-byte copy:
 VC6 loaded `out` into `ecx` first and returned it with a final `mov eax, ecx`.
 The direct expression reproduces native's `mov ecx, eax; mov eax, [esp+...]`
 copy order without register forcing.
+
+The shared sparse `SubgameRuntime` root now carries the track skirt RGB fields
+at +0x1b0140..+0x1b0148. This helper remains exact after moving those fields to
+the header, so the larger track-runtime scratches can reference the same root
+view without duplicating a local class.

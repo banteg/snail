@@ -1,6 +1,6 @@
 // rebuild_track_runtime_from_segments @ 0x437de0 (thiscall, ret 0x4)
 
-#include "sprite.h"
+#include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -21,10 +21,6 @@ public:
     char unknown_00[0x44];
     int level_mode_arg; // +0x44
     char unknown_48[0x5c - 0x48];
-};
-
-struct SubgameRuntime {
-    Color4f* get_track_skirt_color(Color4f* out);
 };
 
 struct TrackRenderCacheManager {

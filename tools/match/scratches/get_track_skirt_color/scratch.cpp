@@ -1,16 +1,6 @@
 // get_track_skirt_color @ 0x442120 (thiscall, ret 0x4)
 
-#include "sprite.h"
-
-class SubgameRuntime {
-public:
-    Color4f* get_track_skirt_color(Color4f* out);
-
-    char unknown_00[0x1b0140];
-    float track_skirt_r; // +0x1b0140
-    float track_skirt_g; // +0x1b0144
-    float track_skirt_b; // +0x1b0148
-};
+#include "subgame_runtime.h"
 
 Color4f* SubgameRuntime::get_track_skirt_color(Color4f* out)
 {

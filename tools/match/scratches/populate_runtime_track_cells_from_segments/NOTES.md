@@ -119,6 +119,16 @@ The builder's `P`/`p` path selects from both template banks with that stride,
 while earlier fields through `+0xa8` remain the shared path-follow template
 view consumed by attachment entry/projection/follow scratches.
 
+2026-06-17 runtime/root consolidation: the scratch now uses the shared sparse
+`SubgameRuntime` root and the named `TrackAttachmentRuntimeRow` fields
+`parcel_set_id` and `attachment_template_index`. Focused Wibo remains 28.25%,
+1190/1245 candidate instructions, with masked operands 57 ok / 1 unresolved /
+0 mismatch. This is a field-evidence pass, not a source-shape fix: the exact
+helpers `get_track_skirt_color`, `spawn_track_parcel`,
+`rebuild_track_runtime_from_segments`, and `refresh_fringe_object_draw_list`
+prove the root offsets kept in `subgame_runtime.h`, while populate still needs
+separate source-shape work for the frame and glyph-switch residuals.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else

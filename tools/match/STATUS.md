@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**316/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **24616/326004** bytes (**7.55%**) are proof-grade, and overall fuzzy is **19.05%**.
+**316/676** mapped gameplay functions matched, **409/676** mapped gameplay functions have a scratch, **24616/326004** bytes (**7.55%**) are proof-grade, and overall fuzzy is **19.07%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -248,7 +248,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 | 5 ok |  |
 | ✅ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 643/639 | 23.40% | 0/639 | 5 mismatch, 25 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 | 5 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 127/134 | 43.68% | 2/134 | 11 ok |  |
@@ -423,13 +423,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 19 type name(s) with a header plus scratch-local copies
-- divergent: 27 type name(s) with multiple scratch-local shapes
+- divergent: 26 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SubgameRuntime | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRoute | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |

@@ -3,6 +3,7 @@
 
 #include "score_stats.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
 
@@ -13,11 +14,6 @@ struct ColorBGRA8;
 class TrackRowBodSlot {
 public:
     int set_bod_object(void* object);
-};
-
-class SubgameRuntime {
-public:
-    Color4f* get_track_skirt_color(Color4f* out);
 };
 
 struct HighScoreEntry {
@@ -330,14 +326,15 @@ void Game::populate_runtime_track_cells_from_segments()
 
         if ((authored_flags & 0x1) != 0) {
             *(int*)row_record |= 0x4001;
-            *(int*)(row_record + 0x9c) = *(int*)(authored_row + 4);
+            ((TrackAttachmentRuntimeRow*)row_record)->parcel_set_id = *(int*)(authored_row + 4);
             *(int*)(row_record + 0x90) = *(int*)(authored_row + 8);
             *(int*)(row_record + 0x94) = *(int*)(authored_row + 12);
             *(int*)(row_record + 0x98) = *(int*)(authored_row + 16);
         }
         if ((authored_flags & 0x8) != 0) {
             *(int*)row_record |= 0x8;
-            *(int*)(row_record + 0xa0) = *(int*)(authored_row + 0x30);
+            ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index =
+                *(int*)(authored_row + 0x30);
         }
         if ((authored_flags & 0x4) != 0)
             *(int*)row_record |= 0x4;
@@ -443,7 +440,7 @@ void Game::populate_runtime_track_cells_from_segments()
             case '0':
                 if (level_mode == 1) {
                     *(int*)row_record = (*(int*)row_record & 0xffffbfff) | 1;
-                    *(int*)(row_record + 0x9c) = 0;
+                    ((TrackAttachmentRuntimeRow*)row_record)->parcel_set_id = 0;
                     *(float*)(row_record + 0x90) = (float)lane - 3.5f;
                     *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
                     *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
@@ -526,7 +523,8 @@ void Game::populate_runtime_track_cells_from_segments()
                 if (glyph == 'p')
                     *(unsigned char*)(cell + 0x3bfb04) = 0x1d;
 
-                int template_index = *(int*)(row_record + 0xa0);
+                int template_index =
+                    ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index;
                 AttachmentPathTemplate* template_record;
                 if (base[2] == 0)
                     template_record = (AttachmentPathTemplate*)(base + 0xff2914 + template_index * 0x150);

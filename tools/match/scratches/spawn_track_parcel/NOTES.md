@@ -15,3 +15,7 @@ Exact match.
   return.
 - The exact source shape keeps the non-null body explicit, returns from both
   bob-phase branches, and leaves the null return as the final tail block.
+- The shared sparse `SubgameRuntime` root now carries the parcel pool at
+  +0x125e480, the score-stats owner anchor at +0x3bb764, and the sprite owner
+  handle at +0x3bbae4. Keeping this scratch exact proves those offsets for the
+  larger track-runtime builders.

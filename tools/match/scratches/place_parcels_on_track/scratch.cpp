@@ -172,18 +172,18 @@ int Game::place_parcels_on_track()
                     entry->candidates[spot].row
                     + ((SegmentRecord*)((char*)segments + 16928 * entry->segment_index))
                           ->row_base;
-                char* row_record = (char*)this + 244 * absolute_row + 0x5ccac8;
-                if (*(unsigned char*)row_record & 0x10)
+                TrackAttachmentRuntimeRow* row_record =
+                    (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
+                if (row_record->flags & 0x10)
                     report_errorf("Duplicate Parcel Request in %s.",
                                   (char*)this + 0x1b0150);
-                *(int*)row_record |= 0x11;
-                Vector3* payload = (Vector3*)(row_record + 0x90);
-                *payload = entry->candidates[spot].position;
-                *(float*)(row_record + 0x98) =
-                    (float)((double)absolute_row + *(float*)(row_record + 0x98) + 0.5);
-                *(float*)(row_record + 0x94) = *(float*)(row_record + 0x94) + 1.0f;
-                if (*(unsigned char*)row_record & 0x20)
-                    payload->x = payload->x * -1.0f;
+                row_record->flags |= 0x11;
+                row_record->projection_payload = entry->candidates[spot].position;
+                row_record->projection_payload.z =
+                    (float)((double)absolute_row + row_record->projection_payload.z + 0.5);
+                row_record->projection_payload.y = row_record->projection_payload.y + 1.0f;
+                if (row_record->flags & 0x20)
+                    row_record->projection_payload.x = row_record->projection_payload.x * -1.0f;
             }
             int placed_segment = entry->segment_index;
             for (int scan = 0; scan < set_entry_count; ++scan) {
@@ -214,17 +214,17 @@ int Game::place_parcels_on_track()
             int absolute_row =
                 entry->candidates[0].row
                 + ((SegmentRecord*)((char*)segments + 16928 * entry->segment_index))->row_base;
-            char* row_record = (char*)this + 244 * absolute_row + 0x5ccac8;
-            if (*(unsigned char*)row_record & 0x10)
+            TrackAttachmentRuntimeRow* row_record =
+                (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
+            if (row_record->flags & 0x10)
                 report_errorf("Duplicate Parcel Request in %s.", (char*)this + 0x1b0150);
-            *(int*)row_record |= 0x11;
-            Vector3* payload = (Vector3*)(row_record + 0x90);
-            *payload = entry->candidates[0].position;
-            *(float*)(row_record + 0x98) =
-                (float)((double)absolute_row + *(float*)(row_record + 0x98) + 0.5);
-            *(float*)(row_record + 0x94) = *(float*)(row_record + 0x94) + 1.0f;
-            if (*(unsigned char*)row_record & 0x20)
-                payload->x = payload->x * -1.0f;
+            row_record->flags |= 0x11;
+            row_record->projection_payload = entry->candidates[0].position;
+            row_record->projection_payload.z =
+                (float)((double)absolute_row + row_record->projection_payload.z + 0.5);
+            row_record->projection_payload.y = row_record->projection_payload.y + 1.0f;
+            if (row_record->flags & 0x20)
+                row_record->projection_payload.x = row_record->projection_payload.x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
                 CandidateEntry* destination = &g_zero_parcel_buckets[move];
                 CandidateEntry* source = &g_zero_parcel_buckets[move + 1];
