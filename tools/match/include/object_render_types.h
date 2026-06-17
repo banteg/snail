@@ -99,7 +99,10 @@ struct RenderObjectDevice {
 struct Object {
     int initialize_object(); // @ 0x42f6f0
     void* request_object_texture_groups(int group_count); // @ 0x42f930
+    void calc_object_bounding_box(); // @ 0x42fb10
+    void calc_object_facequad_normals(); // @ 0x42fcb0
     void calc_object_texture_groups(); // @ 0x4303f0
+    void calc_object_edges(); // @ 0x4308b0
 
     char unknown_00[0x10];
     unsigned int flags; // +0x10
@@ -132,6 +135,7 @@ typedef char Object_must_be_0xdc[(sizeof(Object) == 0xdc) ? 1 : -1];
 
 struct ObjectList {
     void initialize_object_list(int capacity); // @ 0x42f990
+    void build_all_objects(); // @ 0x42f9e0
     Object* add_object_to_list(); // @ 0x42fad0
     void replace_object_list_texture_refs(TextureRef* new_texture, TextureRef* old_texture);
 

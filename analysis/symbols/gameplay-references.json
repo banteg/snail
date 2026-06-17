@@ -129,6 +129,16 @@
       "description": "Pointer to the 0x1c-byte temporary object render vertex records used while build_object_texture_group_buffers appends/de-duplicates grouped vertices and uploads the D3D vertex buffer."
     },
     {
+      "address": "0x503290",
+      "name": "g_loading_screen",
+      "kind": "global",
+      "aliases": [
+        "data_503290"
+      ],
+      "size": "0xc",
+      "description": "Loading-screen progress state initialized by initialize_loading_screen and ticked during archive/object build loading passes."
+    },
+    {
       "address": "0x4137b8",
       "name": "configure_sprite_render_state_jump_table",
       "kind": "jump_table",
