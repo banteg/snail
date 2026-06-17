@@ -1,15 +1,7 @@
 // set_snail_jetpack @ 0x445860 (thiscall, ret 0x4)
 
 #include "audio_system.h"
-#include "presentation_animation_channel.h"
-
-class PlayerPresentationController {
-public:
-    void set_snail_jetpack(int state);
-
-    char unknown_000[0x11e0];
-    PresentationAnimationChannel jetpack_channel; // +0x11e0
-};
+#include "player.h"
 
 void PlayerPresentationController::set_snail_jetpack(int state)
 {
