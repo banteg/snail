@@ -304,6 +304,15 @@
       "description": "Relocatable follow-region exit gate used by update_damage_gauge state-2 drain exit checks."
     },
     {
+      "address": "0x4300b4",
+      "name": "g_invincible_damage_gate_flags_offset",
+      "kind": "offset",
+      "aliases": [
+        "loc_4300b4"
+      ],
+      "description": "Relocatable gameplay flags byte whose sign bit gates invincible-shell activity and blocks unforced damage-gauge deltas."
+    },
+    {
       "address": "0x4303f0",
       "name": "calc_object_texture_groups",
       "kind": "function",
@@ -347,6 +356,16 @@
         "loc_432700"
       ],
       "description": "Relocatable player presentation/render-owner offset used by cutscene AI, snail skin, and jetpack presentation helpers."
+    },
+    {
+      "address": "0x432738",
+      "name": "g_live_snail_matrix_offset",
+      "kind": "offset",
+      "aliases": [
+        "loc_432738"
+      ],
+      "size": "0x40",
+      "description": "Relocatable live snail transform matrix copied by update_invincible_shell before applying the shell spin."
     },
     {
       "address": "0x433f98",
@@ -483,6 +502,15 @@
         "$L327"
       ],
       "description": "Compiler-emitted score-kind switch jump table used by add_subgoldy_score."
+    },
+    {
+      "address": "0x444ce0",
+      "name": "update_invincible_shell_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L683"
+      ],
+      "description": "Compiler-emitted state switch jump table used by update_invincible_shell."
     },
     {
       "address": "0x446e60",
