@@ -1,12 +1,15 @@
 #ifndef OBJECT_RENDER_TYPES_H
 #define OBJECT_RENDER_TYPES_H
 
+#include "vector3.h"
+
 struct TextureRef;
 struct TransformMatrix;
-struct Vector3;
+struct Color4f;
 struct RenderObjectDevice;
 struct ObjectVertexBufferVtbl;
 struct ObjectToonFaceQuadNormal;
+struct ObjectToonEdge;
 
 struct ObjectVertexBuffer {
     ObjectVertexBufferVtbl* vtbl;
@@ -100,11 +103,16 @@ struct RenderObjectDevice {
 
 struct Object {
     int initialize_object(); // @ 0x42f6f0
+    void request_object_vertices(int vertex_count); // @ 0x42f710
+    int request_object_vertices_copy(); // @ 0x42f7d0
+    int copy_object_vertices(); // @ 0x42f790
+    void* request_object_facequad_normals(); // @ 0x42f800
     void* request_object_texture_groups(int group_count); // @ 0x42f930
     void* apply_object_toon(int toon_flags); // @ 0x42fa80
-    void calc_object_bounding_box(); // @ 0x42fb10
+    int calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     void calc_object_texture_groups(); // @ 0x4303f0
+    void* request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
 
     char unknown_00[0x08];
@@ -115,18 +123,28 @@ struct Object {
     TextureRef* override_texture_ref; // +0x18
     char unknown_1c[0x2c - 0x1c];
     int vertex_count; // +0x2c
-    char unknown_30[0x40 - 0x30];
+    char unknown_30[0x38 - 0x30];
+    Vector3* vertices; // +0x38
+    Vector3* copied_vertices; // +0x3c
     int field_40; // +0x40
-    void* vertex_normals; // +0x44
-    char unknown_48[0x54 - 0x48];
+    Vector3* vertex_normals; // +0x44
+    Color4f* vertex_colours; // +0x48
+    char unknown_4c[0x54 - 0x4c];
     int facequad_count; // +0x54
     int facequad_capacity; // +0x58
     ObjectFaceQuad* facequads; // +0x5c
-    char unknown_60[0x64 - 0x60];
+    Vector3* facequad_normals; // +0x60
     int texture_group_count; // +0x64
     int texture_group_capacity; // +0x68
     int* texture_group_ends; // +0x6c, cumulative facequad ends
-    char unknown_70[0xc0 - 0x70];
+    int edge_count; // +0x70
+    ObjectToonEdge* edges; // +0x74
+    char unknown_78[0x94 - 0x78];
+    float bounding_radius; // +0x94
+    char unknown_98[0xa4 - 0x98];
+    Vector3 bounds_min; // +0xa4
+    Vector3 bounds_max; // +0xb0
+    char unknown_bc[0xc0 - 0xbc];
     ObjectRenderBuffers* render_buffers; // +0xc0
     int grouped_vertex_count; // +0xc4
     ObjectIndexBuffer* index_buffer; // +0xc8

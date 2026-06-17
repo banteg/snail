@@ -1,16 +1,9 @@
 // request_object_vertex_colours @ 0x42f850 (fastcall, ret)
 
+#include "object_render_types.h"
 #include "sprite.h"
 
 void* allocate_tracked_memory(int size, char* name);
-
-class Object {
-public:
-    char unknown_00[0x2c];
-    int vertex_count; // +0x2c
-    char unknown_30[0x48 - 0x30];
-    Color4f* vertex_colours; // +0x48
-};
 
 void __fastcall request_object_vertex_colours(Object* mesh)
 {
