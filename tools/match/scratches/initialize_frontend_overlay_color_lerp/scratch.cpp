@@ -1,15 +1,6 @@
 // initialize_frontend_overlay_color_lerp @ 0x40ab00 (thiscall, ret 0x4)
 
-#include "sprite.h"
-
-class FrontendOverlayColorLerp {
-public:
-    int initialize_frontend_overlay_color_lerp(int state);
-
-    int state;        // +0x00
-    Color4f current;  // +0x04
-    Color4f target;   // +0x14
-};
+#include "frontend_overlay_color_lerp.h"
 
 int FrontendOverlayColorLerp::initialize_frontend_overlay_color_lerp(int state_)
 {

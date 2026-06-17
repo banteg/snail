@@ -422,14 +422,13 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 17 type name(s) with a header plus scratch-local copies
-- divergent: 36 type name(s) with multiple scratch-local shapes
+- covered: 18 type name(s) with a header plus scratch-local copies
+- divergent: 34 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | MouseCursorState | 6 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SubgameRuntime | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FringeObject | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -454,7 +453,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | CompletionScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | FrontendOverlayColorLerp | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | HighScoreBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | HighScoreScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -469,6 +467,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | MouseCursorState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AnimManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |

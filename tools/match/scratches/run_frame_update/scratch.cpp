@@ -1,6 +1,8 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "frontend_overlay_color_lerp.h"
+#include "mouse_cursor_state.h"
 #include "sprite.h"
 #include "voice_manager.h"
 
@@ -9,19 +11,9 @@ public:
     void update_cheat();
 };
 
-class MouseCursorState {
-public:
-    unsigned char is_mouse_captured();
-};
-
 class FrontendTransitionOverlay {
 public:
     void update_frontend_transition_overlay();
-};
-
-class FrontendOverlayColorLerp {
-public:
-    void draw_frontend_overlay_color_lerp();
 };
 
 class RuntimeCallback {

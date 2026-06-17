@@ -25,3 +25,17 @@ The main Sprite evidence is the active-bucket traversal:
 
 This mirrors the exact `kill_game_sprites` bucket topology but calls
 `Sprite::update_sprite` instead of conditionally killing `0x800` sprites.
+
+## Type consolidation (2026-06-17)
+
+`MouseCursorState` and `FrontendOverlayColorLerp` now live in shared headers.
+`run_frame_update`, `is_mouse_captured`,
+`release_mouse_cursor`, `resolve_uncaptured_cursor_sensitivity_scale`, and
+`initialize_frontend_overlay_color_lerp` all keep their previous focused match
+results with those headers.
+
+Two mouse callsites remain local on purpose: `uninit_pause_menu` declares
+`release_mouse_cursor` as returning `int` to preserve the native tail-return
+shape, while `update_frontend_state_machine` keeps the compact
+`capture_mouse_cursor` declaration because including the full header dirties
+the jump-table/global masked operand audit without improving structure.

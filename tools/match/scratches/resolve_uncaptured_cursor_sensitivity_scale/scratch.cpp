@@ -1,11 +1,8 @@
 // resolve_uncaptured_cursor_sensitivity_scale @ 0x44bc20 (cdecl)
 
-extern char* g_game_base; // data_4df904
+#include "mouse_cursor_state.h"
 
-class MouseCursorState {
-public:
-    unsigned char is_mouse_captured();
-};
+extern char* g_game_base; // data_4df904
 
 float resolve_uncaptured_cursor_sensitivity_scale(float scale)
 {
