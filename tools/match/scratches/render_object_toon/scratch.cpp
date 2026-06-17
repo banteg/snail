@@ -13,18 +13,6 @@ struct ToonVector3 {
     double dot_vector(ToonVector3* rhs); // @ 0x44cb70
 };
 
-struct ObjectToonEdge {
-    unsigned char flags; // +0x00, bit 0 enables silhouette-normal test
-    char unknown_01[0x04 - 0x01];
-    unsigned short vertex_a; // +0x04
-    char unknown_06[0x08 - 0x06];
-    unsigned short vertex_b; // +0x08
-    char unknown_0a[0x0c - 0x0a];
-    int normal_a; // +0x0c
-    int normal_b; // +0x10
-    char unknown_14[0x24 - 0x14];
-};
-
 struct ObjectToonRenderView {
     char unknown_00[0x10];
     unsigned int flags; // +0x10

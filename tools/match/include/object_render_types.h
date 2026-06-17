@@ -59,6 +59,21 @@ struct ObjectFaceQuad {
 typedef char ObjectFaceQuad_must_be_0x30[
     (sizeof(ObjectFaceQuad) == 0x30) ? 1 : -1];
 
+struct ObjectToonEdge {
+    unsigned int flags; // +0x00, bit 0 is boundary-only, bit 1 is shared edge
+    unsigned short vertex_a; // +0x04
+    char unknown_06[0x08 - 0x06];
+    unsigned short vertex_b; // +0x08
+    char unknown_0a[0x0c - 0x0a];
+    int normal_a; // +0x0c
+    int normal_b; // +0x10
+    Vector3 direction; // +0x14
+    float length; // +0x20
+};
+
+typedef char ObjectToonEdge_must_be_0x24[
+    (sizeof(ObjectToonEdge) == 0x24) ? 1 : -1];
+
 struct ObjectIndexBufferResource;
 struct Object;
 
@@ -113,6 +128,7 @@ struct Object {
     int calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     void calc_object_texture_groups(); // @ 0x4303f0
+    void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
     void* request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
 

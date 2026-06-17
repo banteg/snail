@@ -20,6 +20,8 @@ Recovered relationships:
   `build_object_texture_group_buffers`.
 - Uses `Object +0x70` edge count and `+0x74` 0x24-byte edge records, matching
   exact `request_object_edges`.
+- `ObjectToonEdge` now lives in `object_render_types.h`; focused Wibo remains
+  57.76%, so the consolidation is codegen-neutral.
 - Edge `+0x04/+0x08` are the two vertex indices written to the toon index
   buffer. Edge `+0x0c/+0x10` are normal indices into the facequad-normal array
   at `Object +0x60`.

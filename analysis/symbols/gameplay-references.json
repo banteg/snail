@@ -1315,6 +1315,26 @@
       "description": "Object render pass/filter byte checked by render_object against its after-sprites argument and texture flags before drawing each texture group."
     },
     {
+      "address": "0x503300",
+      "name": "g_object_edge_build_edges",
+      "kind": "global",
+      "aliases": [
+        "data_503300"
+      ],
+      "size": "0x4",
+      "description": "Temporary ObjectToonEdge array pointer used by calc_object_edges and add_object_edge while building the final toon outline edge list."
+    },
+    {
+      "address": "0x503318",
+      "name": "g_object_edge_build_count",
+      "kind": "global",
+      "aliases": [
+        "data_503318"
+      ],
+      "size": "0x4",
+      "description": "Temporary ObjectToonEdge count used by calc_object_edges and add_object_edge before the packed edge list is copied into the object."
+    },
+    {
       "address": "0x503178",
       "name": "g_saved_d3d_view_transform",
       "kind": "global",
