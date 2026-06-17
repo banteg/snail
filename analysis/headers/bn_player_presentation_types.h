@@ -18,6 +18,7 @@ struct Player;
 struct SnailVisual;
 struct PathTemplate;
 struct TrackRowCell;
+struct TrackAttachmentRuntimeRow;
 struct PlayerControlSource;
 struct PlayerPresentationController;
 struct Game;
@@ -148,7 +149,10 @@ typedef struct CameramanState {
 typedef struct PathTemplate {
     uint8_t _pad_00[0x38];
     int32_t kind;
-    uint8_t _pad_3c[0x10];
+    uint8_t _pad_3c[0x4];
+    uint32_t side_exit_mode;
+    uint32_t segment_count;
+    uint32_t row_span_count;
     float segment_count_f;
 } PathTemplate;
 
@@ -166,6 +170,18 @@ typedef struct TrackRowCell {
     void* fringe_object_2;
     void* fringe_object_3;
 } TrackRowCell;
+
+typedef struct TrackAttachmentRuntimeRow {
+    uint32_t flags;
+    uint8_t _pad_04[0x8c];
+    Vec3 projection_payload;
+    int32_t parcel_set_id;
+    int32_t attachment_template_index;
+    TrackRowCell* primary_attachment_cell;
+    TrackRowCell* secondary_attachment_cell;
+    uint8_t _pad_ac[0x44];
+    int32_t row_event_id;
+} TrackAttachmentRuntimeRow;
 
 typedef struct PlayerControlSource {
     uint8_t _pad_00[0x4];

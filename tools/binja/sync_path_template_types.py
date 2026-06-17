@@ -14,6 +14,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Game",
     "SnailVisual",
     "TrackRowCell",
+    "TrackAttachmentRuntimeRow",
     "PathTemplate",
     "Player",
     "TutorialController",
@@ -144,6 +145,7 @@ PATH_TEMPLATE_FIELD_UPDATES = (
     ("0x3c", "is_mirrored_x", "uint8_t"),
     ("0x40", "side_exit_mode", "uint32_t"),
     ("0x44", "segment_count", "uint32_t"),
+    ("0x48", "row_span_count", "uint32_t"),
     ("0x4c", "segment_count_f", "float"),
     ("0x50", "width_or_scale", "float"),
     ("0x54", "width_cells", "uint32_t"),
@@ -190,6 +192,14 @@ PROTO_UPDATES = (
     (
         "interpolate_matrix_rotation",
         "TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha)",
+    ),
+    (
+        "compute_kind42_attachment_transform",
+        "void __thiscall compute_kind42_attachment_transform(PathTemplate* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)",
+    ),
+    (
+        "get_track_runtime_cell_at_world_z",
+        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position)",
     ),
     (
         "set_weapon_animation",

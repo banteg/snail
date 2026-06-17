@@ -134,7 +134,7 @@ LABEL_11:
     {
       v38 = out_position;
       arg2 = out_position->x - v85;
-      compute_kind42_attachment_transform(arg1, arg2, 0.49000001, &transform, &out_angle);
+      compute_kind42_attachment_transform(v19, arg1, arg2, 0.49000001, &transform, &out_angle);
       v39 = follow_state->sample_index;
       if ( !v39 || v39 == follow_state->template_record->segment_count - 1 )
       {

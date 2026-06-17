@@ -303,6 +303,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
         if ( v33 != self->segment_count )
           v45 = v33;
         compute_kind42_attachment_transform(
+          self,
           self->primary_samples[v45].special_scalar,
           vertices[v36 + v33 * (self->width_cells + 1)].x,
           0.0,

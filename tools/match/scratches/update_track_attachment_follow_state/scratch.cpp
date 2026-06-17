@@ -12,7 +12,7 @@ struct Vec3 {
 #include "track_attachment_matrix_path_view.h"
 #include "track_row_cell_anchor_view.h"
 
-struct TrackRuntimeRow {
+struct AttachmentFollowRuntimeRow {
     char unknown_00[0x04];
     unsigned int flags;
     char unknown_08[0x24 - 0x08];
@@ -22,8 +22,8 @@ struct TrackRuntimeRow {
     void* attachment_runtime_record;
 };
 
-struct TrackRuntimeRowSlot {
-    TrackRuntimeRow* row;
+struct AttachmentFollowRuntimeRowSlot {
+    AttachmentFollowRuntimeRow* row;
     char unknown_04[0xf4 - 0x04];
 };
 
@@ -54,7 +54,7 @@ public:
 };
 
 extern char* g_game_base; // data_4df904
-extern TrackRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
+extern AttachmentFollowRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
 extern char g_camera_basis_right[]; // 0x42fdb4
 extern char g_camera_basis_up[]; // 0x42fdc4
 extern char g_camera_basis_forward[]; // 0x42fdd4
@@ -117,20 +117,20 @@ int FollowState::update_track_attachment_follow_state(
                 int count = (int)current_template->segment_count;
                 int current_index = (int)this->sample_index;
                 if (current_index == count - 1) {
-                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    AttachmentFollowRuntimeRow* row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     AttachmentRuntimeRecord* attached = (AttachmentRuntimeRecord*)row->attachment_runtime_record;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_24 = attached->scalar_a4;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_34 = 1.0f;
                 } else if (current_index == (3 * count) / 7) {
-                    TrackRuntimeRow* row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    AttachmentFollowRuntimeRow* row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->flags |= 0x80;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     AttachmentRuntimeRecord* attached = (AttachmentRuntimeRecord*)row->attachment_runtime_record;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_24 = attached->scalar_a0;
-                    row = ((TrackRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
+                    row = ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row;
                     row->runtime_value_34 = 0.6f;
                 }
             }

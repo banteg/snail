@@ -96,7 +96,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "compute_kind42_attachment_transform",
-        "int32_t __stdcall compute_kind42_attachment_transform(float arg1, float arg2, float arg3, TransformMatrix* transform, float* out_angle);",
+        "void __thiscall compute_kind42_attachment_transform(PathTemplate* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
     ),
     (
         "load_x_mesh",
@@ -348,7 +348,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "TrackRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);",
+        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);",
     ),
     (
         "sample_track_floor_height_at_position",

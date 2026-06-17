@@ -16,7 +16,7 @@ struct AttachmentPathTemplateMatrixView {
     char unknown_3d[0x40 - 0x3d];
     int side_exit_mode;                    // +0x40
     int segment_count;                     // +0x44
-    unsigned int unknown_48;               // +0x48
+    unsigned int row_span_count;           // +0x48, runtime rows stamped by entry tiles
     float segment_count_f;                 // +0x4c
     float width_or_scale;                  // +0x50
     int width_cells;                       // +0x54

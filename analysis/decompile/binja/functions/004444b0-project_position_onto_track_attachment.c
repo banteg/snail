@@ -17,7 +17,7 @@
 0044451d        float* eax_6 = attachment_template_record->primary_samples + ecx_5 * 0x18
 00444520        if (attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42)
 0044453f        struct TransformMatrix transform
-0044453f        int32_t eax_8 = compute_kind42_attachment_transform(eax_6[0x28], *arg2, arg2[1], &transform, arg3)
+0044453f        int32_t eax_8 = compute_kind42_attachment_transform(attachment_template_record, eax_6[0x28], *arg2, arg2[1], &transform, arg3)
 00444548        float y = transform.position.y
 0044454c        *arg2 = transform.position.x
 0044454e        arg2[1] = y

@@ -83,7 +83,7 @@
 00444471        int32_t eax_13 = get_track_cell_row_index(cell)
 00444482        get_path_position_at_node(*(esi_1[0x29] + 0x38), &esi_1[0x24], edi_4, eax_13, &esi_1[0x24])
 0044444f        struct TransformMatrix transform
-0044444f        x87control_1 = compute_kind42_attachment_transform((&attachment_template_record->primary_samples->special_scalar)[edi_4 * 0x2a], esi_1[0x24], esi_1[0x25], &transform, &out_angle)
+0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[edi_4 * 0x2a], esi_1[0x24], esi_1[0x25], &transform, &out_angle)
 00444458        float y = transform.position.y
 0044445c        esi_1[0x24] = transform.position.x
 00444462        esi_1[0x25] = y

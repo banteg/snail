@@ -21,9 +21,9 @@
 00443945        int32_t var_208
 00443945        int32_t var_190[0x64]
 00443945        if (game->level_segment_count s> 0)
-00443952        void* __offset(Game, 0xa87c) ebx_1 = &game->__offset(0xa87c).d
+00443952        uint8_t* ebx_1 = &game->_pad_a878[4]
 00443958        int32_t (* var_1f4_1)[0x64] = &var_190
-0044395c        void* __offset(Game, 0xa87c) var_214_1 = ebx_1
+0044395c        uint8_t* var_214_1 = ebx_1
 00443964        int32_t eax_2 = 0
 00443966        var_208 = 0
 0044396a        int32_t var_200_1 = 0
@@ -32,37 +32,72 @@
 0044396e        *(var_1f4_1 + 2) = 0
 0044396e        *(var_1f4_1 + 3) = 0
 00443982        int32_t ecx_3 = i_8 * 0x20c
-0044398d        while (true)
+0044398b        while (true)
+0044398b        int32_t edi_1
+0044398b        edi_1.b = (ebx_1 - 0xa87c)->_pad_a878[4]
+0044398b        edi_1:1.b = (ebx_1 - 0xa87c)->_pad_a878[5]
+0044398b        edi_1:2.b = (ebx_1 - 0xa87c)->_pad_a878[6]
+0044398b        edi_1:3.b = (ebx_1 - 0xa87c)->_pad_a878[7]
 0044398d        int32_t edx_4 = 0
-00443991        if ((ebx_1 - 0xa87c)->__offset(0xa87c).d s> 0)
-0044399a        void* __offset(Game, 0xa88c) var_1f0_1 = ebx_1 + 0x10
-0044399e        void* __offset(Game, 0xb094) out_angle_5 = ebx_1 + 0x818
+00443991        if (edi_1 s> 0)
+0044399a        uint8_t* var_1f0_1 = &ebx_1[0x10]
+0044399e        uint8_t* out_angle_5 = &ebx_1[0x818]
 004439a4        out_angle = out_angle_5
 004439bb        while (true)
-004439bb        if (((out_angle_5 - 0xb094)->:0xb08c.b & 1) != 0 && (out_angle_5 - 0xb094)->__offset(0xb090).d == eax_2)
+004439bb        if (((out_angle_5 - 0xb094)->:0xb08c.b & 1) != 0 && (out_angle_5 - 0xb094)->_pad_a878[0x818].d == eax_2)
 004439c3        if (eax_2 != 0)
 00443a34        *(ecx_3 + &data_6489f0) = i_1
 00443a43        *((*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487e8) = edx_4
+00443a50        int32_t ebx_9
+00443a50        ebx_9.b = (out_angle_5 - 0xb094)->_pad_a878[0x81c]
+00443a50        ebx_9:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x81d]
+00443a50        ebx_9:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x81e]
+00443a50        ebx_9:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x81f]
 00443a55        int32_t* eax_14 = (*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487ec
-00443a5c        *eax_14 = (out_angle_5 - 0xb094)->__offset(0xb094).d
-00443a61        eax_14[1] = (out_angle_5 - 0xb094)->__offset(0xb098).d
-00443a67        eax_14[2] = (out_angle_5 - 0xb094)->__offset(0xb09c).d
+00443a5c        *eax_14 = ebx_9
+00443a5e        int32_t ebx_10
+00443a5e        ebx_10.b = (out_angle_5 - 0xb094)->_pad_a878[0x820]
+00443a5e        ebx_10:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x821]
+00443a5e        ebx_10:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x822]
+00443a5e        ebx_10:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x823]
+00443a61        eax_14[1] = ebx_10
+00443a64        int32_t edi_4
+00443a64        edi_4.b = (out_angle_5 - 0xb094)->_pad_a878[0x824]
+00443a64        edi_4:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x825]
+00443a64        edi_4:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x826]
+00443a64        edi_4:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x827]
+00443a67        eax_14[2] = edi_4
 00443a6e        *(ecx_3 + 0x6489ec) = var_200_1
 00443a7b        *(ecx_3 + 0x6489e8) += 1
 004439d0        int32_t eax_7 = i_3 * 0x20c
 004439d3        *(eax_7 + 0x53d398) = i_1
 004439e2        *((*(eax_7 + &data_53d390) << 4) + eax_7 + 0x53d190) = edx_4
+004439ef        int32_t ebp_1
+004439ef        ebp_1.b = (out_angle_5 - 0xb094)->_pad_a878[0x81c]
+004439ef        ebp_1:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x81d]
+004439ef        ebp_1:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x81e]
+004439ef        ebp_1:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x81f]
 004439f4        int32_t* ebx_6 = (*(eax_7 + &data_53d390) << 4) + eax_7 + 0x53d194
-004439fb        *ebx_6 = (out_angle_5 - 0xb094)->__offset(0xb094).d
-00443a00        ebx_6[1] = (out_angle_5 - 0xb094)->__offset(0xb098).d
-00443a0a        ebx_6[2] = (out_angle_5 - 0xb094)->__offset(0xb09c).d
+004439fb        *ebx_6 = ebp_1
+004439fd        int32_t ebp_2
+004439fd        ebp_2.b = (out_angle_5 - 0xb094)->_pad_a878[0x820]
+004439fd        ebp_2:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x821]
+004439fd        ebp_2:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x822]
+004439fd        ebp_2:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x823]
+00443a00        ebx_6[1] = ebp_2
+00443a03        int32_t edi_3
+00443a03        edi_3.b = (out_angle_5 - 0xb094)->_pad_a878[0x824]
+00443a03        edi_3:1.b = (out_angle_5 - 0xb094)->_pad_a878[0x825]
+00443a03        edi_3:2.b = (out_angle_5 - 0xb094)->_pad_a878[0x826]
+00443a03        edi_3:3.b = (out_angle_5 - 0xb094)->_pad_a878[0x827]
+00443a0a        ebx_6[2] = edi_3
 00443a0d        *(eax_7 + 0x53d394) = 0
 00443a1e        i_3 = i_6 + 1
 00443a1f        *(eax_7 + &data_53d390) += 1
 00443a2a        int32_t i_7 = i_3
 00443a2e        out_angle_1 += 1
 00443a8c        int32_t var_204_1 = 0
-00443a94        void* __offset(Game, 0xa88c) var_1ec_1 = var_1f0_1
+00443a94        uint8_t* var_1ec_1 = var_1f0_1
 00443a9c        int32_t eax_22 = i_3 * 0x20c
 00443bd6        bool cond:8_1
 00443aaf        if (sx.d((var_1ec_1 - 0xa88c)->:0xa88c.b) == var_200_1 + 0x30)
@@ -92,15 +127,15 @@
 00443b41        out_angle_1 += 1
 00443bcb        cond:8_1 = var_204_1 + 1 s< 8
 00443bce        var_204_1 += 1
-00443bd2        var_1ec_1 += 0x100
+00443bd2        var_1ec_1 = &var_1ec_1[0x100]
 00443bd6        do while (cond:8_1)
 00443be4        edx_4 += 1
 00443be5        out_angle_5 = out_angle i+ 0x38
 00443be9        i_6 = i_3
-00443bed        var_1f0_1 += 1
+00443bed        var_1f0_1 = &var_1f0_1[1]
 00443bf1        ebx_1 = var_214_1
 00443bf5        out_angle = out_angle_5
-00443bfb        if (edx_4 s>= (ebx_1 - 0xa87c)->__offset(0xa87c).d)
+00443bfb        if (edx_4 s>= (ebx_1 - 0xa87c)->_pad_a878[4].d)
 00443bfb        break
 004439aa        eax_2 = var_200_1
 00443c01        int32_t eax_23 = *(ecx_3 + 0x6489e8)
@@ -119,7 +154,7 @@
 00443c4a        break
 00443987        eax_2 = var_200_1
 00443c58        i_1 += 1
-00443c62        ebx_1 += 0x4220
+00443c62        ebx_1 = &ebx_1[0x4220]
 00443c6a        var_1f4_1 = &(*var_1f4_1)[1]
 00443c6e        var_214_1 = ebx_1
 00443c72        do while (i_1 s< game->level_segment_count)
@@ -163,7 +198,7 @@
 00443d79        if (eax_31 s> 0)
 00443d7f        int32_t* ebx_28 = edi_33 + 0x6487ec
 00443e59        bool cond:14_1
-00443da8        float out_angle_3 = *(*(edi_33 + &data_6489f0) * 0x4220 + game + 0xa878) + ebx_28[-1]
+00443da8        float out_angle_3 = *(&game->_pad_a878 + *(edi_33 + &data_6489f0) * 0x4220) + ebx_28[-1]
 00443daa        out_angle = out_angle_3
 00443db7        void* esi_3 = &game->_pad_00[out_angle_3 i* 0xf4]
 00443dc1        if ((*(esi_3 + 0x5ccac8) & 0x10) != 0)
@@ -256,12 +291,10 @@
 00443fee        edx_38:1.b = *(esi_10 + 0x53d191)
 00443fee        edx_38:2.b = *(esi_10 + 0x53d192)
 00443fee        edx_38:3.b = *(esi_10 + 0x53d193)
-00443ff0        int32_t eax_46 = *(eax_44 * 0x4220 + game + 0xa878) + edx_38
-00443ff2        int32_t var_214_4 = eax_46
+00443ff0        int32_t eax_46 = *(&game->_pad_a878 + eax_44 * 0x4220) + edx_38
 00443ffc        int32_t edx_39 = eax_46 * 0x3d
-00443fff        eax_46.b = game->_pad_00[(edx_39 << 2) + 0x5ccac8]
 00444008        void* edi_36 = &game->_pad_00[edx_39 << 2]
-0044400b        if ((eax_46.b & 0x10) != 0)
+0044400b        if ((game->_pad_00[(edx_39 << 2) + 0x5ccac8] & 0x10) != 0)
 0044401c        report_errorf("Duplicate Parcel Request in %s.", &game->__offset(0x1b0150).d)
 0044403d        *(edi_36 + 0x5ccac8) |= 0x11
 00444043        float esi_11
@@ -282,7 +315,7 @@
 0044404f        ecx_38:2.b = *(esi_10 + 0x53d19e)
 0044404f        ecx_38:3.b = *(esi_10 + 0x53d19f)
 00444052        *(edi_36 + 0x5ccb60) = ecx_38
-00444061        *(edi_36 + 0x5ccb60) = fconvert.s(float.t(var_214_4) + fconvert.t(*(edi_36 + 0x5ccb60)) + fconvert.t(0.5f))
+00444061        *(edi_36 + 0x5ccb60) = fconvert.s(float.t(eax_46) + fconvert.t(*(edi_36 + 0x5ccb60)) + fconvert.t(0.5f))
 00444073        *(edi_36 + 0x5ccb5c) = fconvert.s(fconvert.t(*(edi_36 + 0x5ccb5c)) + fconvert.t(1f))
 00444080        if ((*(edi_36 + 0x5ccac8) & 0x20) != 0)
 0044408a        *(edi_36 + 0x5ccb58) = fconvert.s(fconvert.t(*(edi_36 + 0x5ccb58)) * fconvert.t(-1f))
@@ -307,9 +340,9 @@
 004440f9        i_6 = i_3
 004440ff        if (var_210_1 s>= ecx_31)
 004440ff        break
-0044410d        int32_t eax_51 = game->__offset(0x1b01e0).d
-00444115        if (var_210_1 != eax_51)
-00444124        report_errorf("Did not generate required Parcels(%i) in %s", eax_51, &game->__offset(0x1b0150).d)
+0044410d        int32_t eax_52 = game->__offset(0x1b01e0).d
+00444115        if (var_210_1 != eax_52)
+00444124        report_errorf("Did not generate required Parcels(%i) in %s", eax_52, &game->__offset(0x1b0150).d)
 00444129        int32_t ecx_41 = game->__offset(0x1b01e8).d
 00444134        if (ecx_41 != 0)
 00444142        game->__offset(0x1b01e8).d = divs.dp.d(sx.q(game->__offset(0x1b01e0).d * var_210_1), ecx_41)
@@ -318,21 +351,21 @@
 00444153        int32_t i_5 = 0
 0044415b        if (i_4 s> 0)
 00444161        void* __offset(Game, 0x5ccac8) esi_18 = &game->__offset(0x5ccac8).d
-00444167        char eax_56 = ((esi_18 - 0x5ccac8)->__offset(0x5ccac8).d).b
-00444173        if ((eax_56 & 1) != 0 && (eax_56 & 0x40) != 0)
-0044417f        int32_t eax_57 = get_track_cell_row_index((esi_18 - 0x5ccac8)->__offset(0x5ccb6c).d)
-0044418c        int32_t eax_58
-0044418c        eax_58, x87control = __ftol(x87control, fconvert.t((esi_18 - 0x5ccac8)->__offset(0x5ccb60).d))
-00444193        int32_t edi_39 = eax_58 - eax_57
-00444195        if (eax_58 - eax_57 s< 0)
+00444167        char eax_57 = ((esi_18 - 0x5ccac8)->__offset(0x5ccac8).d).b
+00444173        if ((eax_57 & 1) != 0 && (eax_57 & 0x40) != 0)
+0044417f        int32_t eax_58 = get_track_cell_row_index((esi_18 - 0x5ccac8)->__offset(0x5ccb6c).d)
+0044418c        int32_t eax_59
+0044418c        eax_59, x87control = __ftol(x87control, fconvert.t((esi_18 - 0x5ccac8)->__offset(0x5ccb60).d))
+00444193        int32_t edi_39 = eax_59 - eax_58
+00444195        if (eax_59 - eax_58 s< 0)
 00444197        edi_39 = 0
 00444199        struct TrackRowCell* cell = (esi_18 - 0x5ccac8)->__offset(0x5ccb6c).d
 0044419f        struct PathTemplate* attachment_template_record = cell->attachment_template_record
 004441a6        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
-00444201        int32_t eax_64 = get_track_cell_row_index(cell)
-00444212        get_path_position_at_node(*((esi_18 - 0x5ccac8)->__offset(0x5ccb6c).d + 0x38), esi_18 + 0x90, edi_39, eax_64, esi_18 + 0x90)
+00444201        int32_t eax_65 = get_track_cell_row_index(cell)
+00444212        get_path_position_at_node(*((esi_18 - 0x5ccac8)->__offset(0x5ccb6c).d + 0x38), esi_18 + 0x90, edi_39, eax_65, esi_18 + 0x90)
 004441d9        struct TransformMatrix transform
-004441d9        x87control = compute_kind42_attachment_transform((&attachment_template_record->primary_samples->special_scalar)[edi_39 * 0x2a], (esi_18 - 0x5ccac8)->__offset(0x5ccb58).d, (esi_18 - 0x5ccac8)->__offset(0x5ccb5c).d, &transform, &out_angle)
+004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[edi_39 * 0x2a], (esi_18 - 0x5ccac8)->__offset(0x5ccb58).d, (esi_18 - 0x5ccac8)->__offset(0x5ccb5c).d, &transform, &out_angle)
 004441e5        float y = transform.position.y
 004441ec        (esi_18 - 0x5ccac8)->__offset(0x5ccb58).d = transform.position.x
 004441f2        (esi_18 - 0x5ccac8)->__offset(0x5ccb5c).d = y

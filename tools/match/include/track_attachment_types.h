@@ -42,6 +42,8 @@ struct AttachmentPathTemplate {
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,
         TrackRowCell* cell); // @ 0x42c770
+    // Semantically void/thiscall; the non-void return is preserved only for
+    // caller scratches that still model the stale EAX value after the call.
     int compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
 

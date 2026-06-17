@@ -269,12 +269,17 @@ typedef struct TrackRowCell {
     void* fringe_object_3;
 } TrackRowCell;
 
-typedef struct TrackRuntimeRow {
+typedef struct TrackAttachmentRuntimeRow {
     uint32_t flags;
-    uint8_t _pad_04[0xe4];
-    float ring_speed;
-    uint8_t _pad_ec[0x8];
-} TrackRuntimeRow;
+    uint8_t _pad_04[0x8c];
+    Vec3 projection_payload;
+    int32_t parcel_set_id;
+    int32_t attachment_template_index;
+    TrackRowCell* primary_attachment_cell;
+    TrackRowCell* secondary_attachment_cell;
+    uint8_t _pad_ac[0x44];
+    int32_t row_event_id;
+} TrackAttachmentRuntimeRow;
 
 typedef enum PathTemplateStripMeshFlags {
     PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,
@@ -725,7 +730,7 @@ typedef struct PathTemplate {
     uint8_t _pad_3d[0x3];
     uint32_t side_exit_mode;
     uint32_t segment_count;
-    uint32_t _pad_48;
+    uint32_t row_span_count;
     float segment_count_f;
     float width_or_scale;
     uint32_t width_cells;
@@ -894,10 +899,11 @@ void __thiscall linear_interpolate_matrix(
     const TransformMatrix* to,
     float alpha
 );
-int32_t __stdcall compute_kind42_attachment_transform(
-    float arg1,
-    float arg2,
-    float arg3,
+void __thiscall compute_kind42_attachment_transform(
+    PathTemplate* self,
+    float radius,
+    float x,
+    float y,
     TransformMatrix* transform,
     float* out_angle
 );
@@ -946,7 +952,7 @@ int32_t __thiscall initialize_nuke(NukeController* nuke);
 int32_t __thiscall update_nuke(NukeController* nuke);
 void __thiscall uninit_nuke(NukeController* nuke);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);
-TrackRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);
+TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);
 double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);
 PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);

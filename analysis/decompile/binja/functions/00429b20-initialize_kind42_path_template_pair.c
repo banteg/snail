@@ -172,7 +172,7 @@
 0042a24c        int32_t i_6 = i_4 - 1
 0042a24f        if (i_4 != self->segment_count)
 0042a251        i_6 = i_4
-0042a288        compute_kind42_attachment_transform((&self->primary_samples->special_scalar)[i_6 * 0x2a], vertices[(self->width_cells + 1) * i_4 + ebx].x, 0f, &transform, &out_angle)
+0042a288        compute_kind42_attachment_transform(self, (&self->primary_samples->special_scalar)[i_6 * 0x2a], vertices[(self->width_cells + 1) * i_4 + ebx].x, 0f, &transform, &out_angle)
 0042a29a        if (var_84_1 s> 0xa8 && i_4 != self->segment_count)
 0042a2af        vertices[(self->width_cells + 1) * i_4 + ebx].x = fconvert.s(fconvert.t(transform.position.x))
 0042a2c5        vertices[(self->width_cells + 1) * i_4 + ebx].y = fconvert.s(fconvert.t(transform.position.y))
@@ -203,15 +203,15 @@
 0042a380        while (true)
 0042a380        int32_t eax_91 = ecx_55 + ((self->width_cells * i_5 + j) << 1)
 0042a383        if (ecx_55 != 0)
-0042a44f        int16_t* edi_4 = &facequads[eax_91]
+0042a444        struct ObjectFaceQuad* facequads_1 = facequads
+0042a44f        int16_t* edi_4 = &facequads_1[eax_91]
 0042a452        *edi_4 = 0
 0042a457        ecx_55.w = self->width_cells.w
 0042a45b        ecx_55.w += 1
 0042a464        edi_4[1] = ecx_55.w * i_5.w + j.w + 1
-0042a468        struct ObjectFaceQuad* eax_99
-0042a468        eax_99.w = self->width_cells.w
-0042a46c        eax_99.w += 1
-0042a473        edi_4[2] = eax_99.w * i_5.w + j.w
+0042a468        facequads_1.w = self->width_cells.w
+0042a46c        facequads_1.w += 1
+0042a473        edi_4[2] = facequads_1.w * i_5.w + j.w
 0042a485        edi_4[3] = (self->width_cells.w + 1) * (i_5.w + 1) + j.w
 0042a49d        edi_4[4] = (self->width_cells.w + 1) * (i_5.w + 1) + j.w + 1
 0042a4a1        char* texture_path_1
@@ -228,12 +228,12 @@
 0042a4e3        *(edi_4 + 0x24) = var_94_2
 0042a4e8        *(edi_4 + 0x28) = var_74_1
 0042a4eb        *(edi_4 + 0x2c) = var_94_2
-0042a397        int16_t* edi_3 = &facequads[eax_91]
+0042a390        int32_t ecx_57 = eax_91 * 0x30
+0042a397        int16_t* edi_3 = ecx_57 + facequads
 0042a39a        *edi_3 = 0
 0042a39f        eax_91.w = self->width_cells.w
 0042a3a3        eax_91.w += 1
 0042a3aa        edi_3[1] = eax_91.w * i_5.w + j.w
-0042a3ae        int32_t ecx_57
 0042a3ae        ecx_57.w = self->width_cells.w
 0042a3b2        ecx_57.w += 1
 0042a3be        edi_3[2] = ecx_57.w * i_5.w + j.w + 1
