@@ -9,6 +9,7 @@
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
 #include "presentation_animation_channel.h"
+#include "transform_matrix.h"
 #include "vector3.h"
 
 struct AttachmentPathTemplate;
@@ -43,13 +44,23 @@ class PlayerPresentationController {
 public:
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
+    void update_snail_skin();               // @ 0x445cd0
 
     char unknown_00[0x64c];
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
     PresentationAnimationChannel jetpack_channel;     // +0x11e0
-    char unknown_15bc[0x15c8 - 0x15bc];
+    float wobble_roll_phase;            // +0x15bc
+    float wobble_roll_phase_step;       // +0x15c0
+    float wobble_lift_phase;            // +0x15c4
     float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
-    char unknown_15cc[0x1964 - 0x15cc];
+    char unknown_15cc[0x1604 - 0x15cc];
+    TransformMatrix snail_hotspot_source_matrix_a; // +0x1604
+    char unknown_1644[0x1684 - 0x1644];
+    TransformMatrix snail_hotspot_source_matrix_b; // +0x1684
+    char unknown_16c4[0x16cc - 0x16c4];
+    Vector3 snail_hotspots_local[19];   // +0x16cc
+    Vector3 snail_hotspots_world[19];   // +0x17b0
+    char unknown_1894[0x1964 - 0x1894];
     int cutscene_ai_state;              // +0x1964 (Player +0x42e8)
     char unknown_1968[0x19b4 - 0x1968];
 };
