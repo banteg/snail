@@ -17,9 +17,10 @@ void RowEventDisplayController::flush_row_event_display()
 
             if (bonus_enabled != 0) {
                 ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(bonus_score, 0);
-                delivered_parcel_count += 1;
             }
         }
+
+        delivered_parcel_count += 1;
 
         ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_a);
         ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_b);
@@ -30,6 +31,6 @@ void RowEventDisplayController::flush_row_event_display()
         if (*(int*)(g_game_base + 0x430060) != display_token)
             *(int*)(g_game_base + 0x430060) = display_token;
 
-        state = 0;
     }
+    state = 0;
 }
