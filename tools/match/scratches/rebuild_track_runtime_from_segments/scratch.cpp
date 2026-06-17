@@ -1,6 +1,7 @@
 // rebuild_track_runtime_from_segments @ 0x437de0 (thiscall, ret 0x4)
 
 #include "subgame_runtime.h"
+#include "track_render_cache.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -21,10 +22,6 @@ public:
     char unknown_00[0x44];
     int level_mode_arg; // +0x44
     char unknown_48[0x5c - 0x48];
-};
-
-struct TrackRenderCacheManager {
-    int build_track_render_caches(Color4f skirt_color);
 };
 
 int Game::rebuild_track_runtime_from_segments(int level_index)
