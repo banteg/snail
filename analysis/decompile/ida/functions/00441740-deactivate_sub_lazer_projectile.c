@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: deactivate_salt_hazard @ 0x441740 */
-/* selector: deactivate_salt_hazard */
+/* function: deactivate_sub_lazer_projectile @ 0x441740 */
+/* selector: deactivate_sub_lazer_projectile */
 
-// Marks a salt hazard slot inactive after collision or after it leaves the supported path.
+// Marks a sub-lazer projectile slot inactive after collision or after it leaves the supported path.
 __int16 __thiscall sub_441740(_DWORD *this)
 {
   char *v2; // ecx

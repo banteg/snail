@@ -2779,17 +2779,17 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_track_jetpack_pickup",
+      "selector": "update_track_speedup",
       "address": "0x43ee50",
-      "name": "update_track_jetpack_pickup",
-      "artifact": "analysis/decompile/ida/functions/0043ee50-update_track_jetpack_pickup.c",
+      "name": "update_track_speedup",
+      "artifact": "analysis/decompile/ida/functions/0043ee50-update_track_speedup.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_sub_lazer_projectile",
+      "selector": "update_track_jetpack_pickup",
       "address": "0x43efb0",
-      "name": "update_sub_lazer_projectile",
-      "artifact": "analysis/decompile/ida/functions/0043efb0-update_sub_lazer_projectile.c",
+      "name": "update_track_jetpack_pickup",
+      "artifact": "analysis/decompile/ida/functions/0043efb0-update_track_jetpack_pickup.c",
       "removed_stale_artifacts": []
     },
     {
@@ -3010,17 +3010,17 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "deactivate_salt_hazard",
+      "selector": "deactivate_sub_lazer_projectile",
       "address": "0x441740",
-      "name": "deactivate_salt_hazard",
-      "artifact": "analysis/decompile/ida/functions/00441740-deactivate_salt_hazard.c",
+      "name": "deactivate_sub_lazer_projectile",
+      "artifact": "analysis/decompile/ida/functions/00441740-deactivate_sub_lazer_projectile.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_salt_hazard",
+      "selector": "update_sub_lazer_projectile",
       "address": "0x4417d0",
-      "name": "update_salt_hazard",
-      "artifact": "analysis/decompile/ida/functions/004417d0-update_salt_hazard.c",
+      "name": "update_sub_lazer_projectile",
+      "artifact": "analysis/decompile/ida/functions/004417d0-update_sub_lazer_projectile.c",
       "removed_stale_artifacts": []
     },
     {
@@ -3045,10 +3045,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_fringe_object",
+      "selector": "update_salt_hazard",
       "address": "0x441c10",
-      "name": "update_fringe_object",
-      "artifact": "analysis/decompile/ida/functions/00441c10-update_fringe_object.c",
+      "name": "update_salt_hazard",
+      "artifact": "analysis/decompile/ida/functions/00441c10-update_salt_hazard.c",
       "removed_stale_artifacts": []
     },
     {

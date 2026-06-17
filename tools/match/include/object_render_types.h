@@ -138,7 +138,7 @@ struct Object {
     void* apply_object_toon(int toon_flags); // @ 0x42fa80
     int calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
-    void calc_object_facequad_normals_simple(); // @ 0x430230
+    int calc_object_facequad_normals_simple(); // @ 0x430230
     void calc_object_texture_groups(); // @ 0x4303f0
     void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
     void* request_object_edges(int edge_count); // @ 0x430570

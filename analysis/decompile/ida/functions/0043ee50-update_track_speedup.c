@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_track_jetpack_pickup @ 0x43ee50 */
-/* selector: update_track_jetpack_pickup */
+/* function: update_track_speedup @ 0x43ee50 */
+/* selector: update_track_speedup */
 
-void __thiscall update_track_jetpack_pickup(int this)
+void __thiscall update_track_speedup(int this)
 {
   int v2; // eax
   int v3; // eax

@@ -1,9 +1,10 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_sub_lazer_projectile @ 0x43efb0 */
-/* selector: update_sub_lazer_projectile */
+/* function: update_track_jetpack_pickup @ 0x43efb0 */
+/* selector: update_track_jetpack_pickup */
 
-// Updates one live SubLazer projectile slot: handles state 1→2→cleanup via list-remove and `kill_sprite`, advances the nested-sprite bob phase (`+0x98 += +0x9c`), and writes sprite-local y as `sin(phase*2π)*0.3 + +0x14`. Body motion is set up by the renderable-body/list owner linked during spawn; the sine bob is not the collision body position sampled by `handle_subgoldy_collisions`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
-void __thiscall update_wall2_ambient_hazard(int this)
+// Updates one live track jetpack pickup: handles state 1/2 removal, kills the
+// nested sprite on cleanup, and advances the sine bob while the pickup is live.
+void __thiscall update_track_jetpack_pickup(int this)
 {
   int v2; // eax
   int v3; // eax
@@ -99,4 +100,3 @@ LABEL_20:
     }
   }
 }
-

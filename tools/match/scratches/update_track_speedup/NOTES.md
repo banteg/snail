@@ -23,10 +23,9 @@ The field window also lines up with `game + 0x355db0`: position at
 `+0x8c`, and sprite at `+0xac`. The full position vector is cross-confirmed
 by `handle_subgoldy_collisions`.
 
-Live BN caveat: the current BN symbol table still returns
-`update_track_jetpack_pickup` for `0x43ee50`. Treat that as stale symbol data;
-the vtable and shared `TrackSpeedupRuntime` field evidence identify this
-function as speedup.
+2026-06-17 symbol sync: the tracked IDA/BN decompile exports and the live BN
+session now name `0x43ee50` as `update_track_speedup`, matching the gameplay
+manifest and this exact scratch.
 
 2026-06-16 renderable-prefix consolidation: the shared
 `TrackSpeedupRuntime` header now records the renderable transform rows at

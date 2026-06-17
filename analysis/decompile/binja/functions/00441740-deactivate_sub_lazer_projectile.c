@@ -1,18 +1,18 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: deactivate_salt_hazard @ 0x441740 */
+/* function: deactivate_sub_lazer_projectile @ 0x441740 */
 
 00441748        void* ecx = data_4df904 + 0x5a8
 0044174e        int16_t eax = (slot->_pad_00[4].d).w
 00441754        if ((eax:1.b & 2) == 0)
 0044175b        report_errorf("List remove")
-00441763        slot->active = 0
-0044176e        return 
+00441763        slot->state = 0
+0044176e        return 0
 00441771        if ((eax.b & 0x40) != 0)
 00441778        report_errorf("List remove NEXTBOD")
-00441780        slot->active = 0
-0044178b        return 
+00441780        slot->state = 0
+0044178b        return 0
 0044178c        void* eax_1
 0044178c        eax_1.b = slot->_pad_00[0xc]
 0044178c        eax_1:1.b = slot->_pad_00[0xd]
@@ -59,15 +59,15 @@
 004417b4        *(ecx + 9) = slot:1.b
 004417b4        *(ecx + 0xa) = slot:2.b
 004417b4        *(ecx + 0xb) = slot:3.b
-004417b7        int32_t eax_4
-004417b7        eax_4.b = slot->_pad_00[4]
-004417b7        eax_4:1.b = slot->_pad_00[5]
-004417b7        eax_4:2.b = slot->_pad_00[6]
-004417b7        eax_4:3.b = slot->_pad_00[7]
-004417ba        slot->active = 0
-004417c4        eax_4:1.b &= 0xfd
-004417c7        slot->_pad_00[4] = eax_4.b
-004417c7        slot->_pad_00[5] = eax_4:1.b
-004417c7        slot->_pad_00[6] = eax_4:2.b
-004417c7        slot->_pad_00[7] = eax_4:3.b
-004417cb        return
+004417b7        int32_t result
+004417b7        result.b = slot->_pad_00[4]
+004417b7        result:1.b = slot->_pad_00[5]
+004417b7        result:2.b = slot->_pad_00[6]
+004417b7        result:3.b = slot->_pad_00[7]
+004417ba        slot->state = 0
+004417c4        result:1.b &= 0xfd
+004417c7        slot->_pad_00[4] = result.b
+004417c7        slot->_pad_00[5] = result:1.b
+004417c7        slot->_pad_00[6] = result:2.b
+004417c7        slot->_pad_00[7] = result:3.b
+004417cb        return result

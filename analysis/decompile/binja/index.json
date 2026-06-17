@@ -2000,13 +2000,13 @@
     },
     {
       "address": "0x43ee50",
-      "name": "update_track_jetpack_pickup",
-      "artifact": "analysis/decompile/binja/functions/0043ee50-update_track_jetpack_pickup.c"
+      "name": "update_track_speedup",
+      "artifact": "analysis/decompile/binja/functions/0043ee50-update_track_speedup.c"
     },
     {
       "address": "0x43efb0",
-      "name": "update_sub_lazer_projectile",
-      "artifact": "analysis/decompile/binja/functions/0043efb0-update_sub_lazer_projectile.c"
+      "name": "update_track_jetpack_pickup",
+      "artifact": "analysis/decompile/binja/functions/0043efb0-update_track_jetpack_pickup.c"
     },
     {
       "address": "0x43f130",
@@ -2165,13 +2165,13 @@
     },
     {
       "address": "0x441740",
-      "name": "deactivate_salt_hazard",
-      "artifact": "analysis/decompile/binja/functions/00441740-deactivate_salt_hazard.c"
+      "name": "deactivate_sub_lazer_projectile",
+      "artifact": "analysis/decompile/binja/functions/00441740-deactivate_sub_lazer_projectile.c"
     },
     {
       "address": "0x4417d0",
-      "name": "update_salt_hazard",
-      "artifact": "analysis/decompile/binja/functions/004417d0-update_salt_hazard.c"
+      "name": "update_sub_lazer_projectile",
+      "artifact": "analysis/decompile/binja/functions/004417d0-update_sub_lazer_projectile.c"
     },
     {
       "address": "0x441ad0",
@@ -2190,8 +2190,8 @@
     },
     {
       "address": "0x441c10",
-      "name": "update_fringe_object",
-      "artifact": "analysis/decompile/binja/functions/00441c10-update_fringe_object.c"
+      "name": "update_salt_hazard",
+      "artifact": "analysis/decompile/binja/functions/00441c10-update_salt_hazard.c"
     },
     {
       "address": "0x441d40",

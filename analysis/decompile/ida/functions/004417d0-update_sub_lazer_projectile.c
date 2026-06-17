@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_salt_hazard @ 0x4417d0 */
-/* selector: update_salt_hazard */
+/* function: update_sub_lazer_projectile @ 0x4417d0 */
+/* selector: update_sub_lazer_projectile */
 
-// Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit.
+// Integrates one active sub-lazer projectile, tests track attachment intersection, and deactivates it after collision or exit.
 void __thiscall sub_4417D0(int this)
 {
   int v2; // eax
@@ -88,7 +88,7 @@ void __thiscall sub_4417D0(int this)
         sub_449C00();
       }
     }
-    deactivate_salt_hazard((_DWORD *)this);
+    deactivate_sub_lazer_projectile((_DWORD *)this);
     return;
   }
   if ( *(_DWORD *)(this + 128) == 2 )

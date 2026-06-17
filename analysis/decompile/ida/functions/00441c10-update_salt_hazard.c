@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_fringe_object @ 0x441c10 */
-/* selector: update_fringe_object */
+/* function: update_salt_hazard @ 0x441c10 */
+/* selector: update_salt_hazard */
 
-// Advances one live fringe object's fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff.
-void __thiscall update_fringe_object(int this)
+// Advances one live salt hazard's fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff.
+void __thiscall update_salt_hazard(int this)
 {
   int v2; // eax
   int v3; // ecx

@@ -26,11 +26,10 @@ removed in favor of the shared `BodList` view from `bod_list.h` via
 `track_jetpack_pickup.h`. Focused Wibo remains 72.44%, 127/127 insns, with
 15 masked operands OK and no unresolved or mismatched operands.
 
-2026-06-16 live BN symbol audit: the open BN database still resolves
-`update_track_jetpack_pickup` by name to `0x43ee50`, which is the exact
-speedup updater by vtable and field window. Use the manifest/dashboard target
-address `0x43efb0` for this jetpack parent updater unless the BN symbols are
-renamed; `0x43efb0` may also appear under the stale sub-lazer name in BN.
+2026-06-17 symbol sync: the tracked IDA/BN decompile exports and the live BN
+session now name `0x43efb0` as `update_track_jetpack_pickup`, matching the
+gameplay manifest and this scratch. The old shifted labels at `0x43ee50` and
+`0x43efb0` were corrected as part of the pickup/sub-lazer vtable cleanup.
 
 2026-06-16 bob-tail layout retry: inverting the state-1 z test so the removal
 block was nested under `world_position.z < owner->interaction_max_z` regressed
