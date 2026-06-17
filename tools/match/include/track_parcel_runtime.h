@@ -7,7 +7,7 @@
 #include "sprite.h"
 
 struct TrackParcelRuntime {
-    virtual int update_track_parcel();
+    virtual void update_track_parcel();
 
     char unknown_04[0x10 - 0x04];
     Vector3 world_position; // +0x10
@@ -20,7 +20,11 @@ struct TrackParcelRuntime {
     float bob_phase; // +0x5c
     float bob_phase_step; // +0x60
     void* owner; // +0x64
-    char unknown_68[0x8c - 0x68];
+    float progress; // +0x68
+    float progress_step; // +0x6c
+    float target_distance; // +0x70
+    Vector3 travel_dir; // +0x74
+    Vector3 delivery_offset; // +0x80
 };
 
 typedef char TrackParcelRuntime_must_be_0x8c[
@@ -29,7 +33,7 @@ typedef char TrackParcelRuntime_must_be_0x8c[
 struct TrackParcelPool {
     TrackParcelRuntime* allocate_track_parcel_slot();
     void initialize_track_parcel_slots();
-    int update_track_parcels();
+    void update_track_parcels();
 
     TrackParcelRuntime slots[50];
 };

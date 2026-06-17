@@ -2,18 +2,15 @@
 
 #include "track_parcel_runtime.h"
 
-int TrackParcelPool::update_track_parcels()
+void TrackParcelPool::update_track_parcels()
 {
     TrackParcelRuntime* slot = slots;
-    int result;
     int count = 50;
     do {
-        result = slot->state;
-        if (result != 0) {
-            result = slot->update_track_parcel();
+        if (slot->state != 0) {
+            slot->update_track_parcel();
         }
         ++slot;
         --count;
     } while (count != 0);
-    return result;
 }
