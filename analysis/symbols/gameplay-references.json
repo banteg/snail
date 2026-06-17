@@ -1029,6 +1029,17 @@
       "description": "Right mouse button state array returned by read_right_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4b7648",
+      "name": "g_object_list",
+      "kind": "global",
+      "aliases": [
+        "data_4b7648",
+        "unk_4b7648"
+      ],
+      "size": "0xc",
+      "description": "Global ObjectList backing add_object_to_list and the level texture-reference replacement pass."
+    },
+    {
       "address": "0x4b7654",
       "name": "g_window_deactivated",
       "kind": "global",

@@ -31,8 +31,8 @@ int __thiscall sub_410730(int *this, int a2)
   result = *(this + 8);
   if ( v3 != result )
   {
-    sub_430D90(unk_4B7648, *(this + v3), *(this + result));
-    result = sub_430D90(unk_4B7648, *(this + v3 + 4), *(this + *(this + 8) + 4));
+    replace_object_list_texture_refs(unk_4B7648, *(this + v3), *(this + result));
+    result = replace_object_list_texture_refs(unk_4B7648, *(this + v3 + 4), *(this + *(this + 8) + 4));
     *(this + 8) = v3;
   }
   return result;

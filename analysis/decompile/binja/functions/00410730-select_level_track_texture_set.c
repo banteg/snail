@@ -20,7 +20,7 @@
 00410775        edi = arg2
 00410779        int32_t result = *(arg1 + 0x20)
 0041077e        if (edi != result)
-0041078d        sub_430d90(0x4b7648, *(arg1 + (edi << 2)), *(arg1 + (result << 2)))
-004107a4        result = sub_430d90(0x4b7648, *(arg1 + (edi << 2) + 0x10), *(arg1 + (*(arg1 + 0x20) << 2) + 0x10))
+0041078d        replace_object_list_texture_refs(&g_object_list, *(arg1 + (edi << 2)), *(arg1 + (result << 2)))
+004107a4        result = replace_object_list_texture_refs(&g_object_list, *(arg1 + (edi << 2) + 0x10), *(arg1 + (*(arg1 + 0x20) << 2) + 0x10))
 004107a9        *(arg1 + 0x20) = edi
 004107ae        return result

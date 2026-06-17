@@ -55,6 +55,7 @@ typedef char ObjectFaceQuad_must_be_0x30[
     (sizeof(ObjectFaceQuad) == 0x30) ? 1 : -1];
 
 struct ObjectIndexBufferResource;
+struct Object;
 
 struct ObjectIndexBufferResourceVtbl {
     char unknown_00[0x2c];
@@ -94,5 +95,53 @@ struct RenderObjectDeviceVtbl {
 struct RenderObjectDevice {
     RenderObjectDeviceVtbl* vtbl;
 };
+
+struct Object {
+    int initialize_object(); // @ 0x42f6f0
+    void* request_object_texture_groups(int group_count); // @ 0x42f930
+    void calc_object_texture_groups(); // @ 0x4303f0
+
+    char unknown_00[0x10];
+    unsigned int flags; // +0x10
+    int field_14; // +0x14
+    TextureRef* override_texture_ref; // +0x18
+    char unknown_1c[0x2c - 0x1c];
+    int vertex_count; // +0x2c
+    char unknown_30[0x40 - 0x30];
+    int field_40; // +0x40
+    void* vertex_normals; // +0x44
+    char unknown_48[0x54 - 0x48];
+    int facequad_count; // +0x54
+    int facequad_capacity; // +0x58
+    ObjectFaceQuad* facequads; // +0x5c
+    char unknown_60[0x64 - 0x60];
+    int texture_group_count; // +0x64
+    int texture_group_capacity; // +0x68
+    int* texture_group_ends; // +0x6c, cumulative facequad ends
+    char unknown_70[0xc0 - 0x70];
+    ObjectRenderBuffers* render_buffers; // +0xc0
+    int grouped_vertex_count; // +0xc4
+    ObjectIndexBuffer* index_buffer; // +0xc8
+    int* group_index_starts; // +0xcc
+    TextureRef** group_texture_refs; // +0xd0
+    int* group_primitive_counts; // +0xd4
+    ObjectIndexBuffer* toon_index_buffer; // +0xd8
+};
+
+typedef char Object_must_be_0xdc[(sizeof(Object) == 0xdc) ? 1 : -1];
+
+struct ObjectList {
+    Object* add_object_to_list(); // @ 0x42fad0
+    void replace_object_list_texture_refs(TextureRef* new_texture, TextureRef* old_texture);
+
+    int count; // +0x00
+    int capacity; // +0x04
+    Object* objects; // +0x08
+};
+
+void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
+    TextureRef* old_texture); // @ 0x4145c0
+
+extern ObjectList g_object_list; // data_4b7648
 
 #endif

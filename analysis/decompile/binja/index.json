@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 664,
-  "function_count": 664,
+  "selected_count": 666,
+  "function_count": 666,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -739,6 +739,11 @@
       "artifact": "analysis/decompile/binja/functions/00414500-bind_texture_ref.c"
     },
     {
+      "address": "0x4145c0",
+      "name": "replace_object_group_texture_refs",
+      "artifact": "analysis/decompile/binja/functions/004145c0-replace_object_group_texture_refs.c"
+    },
+    {
       "address": "0x414670",
       "name": "kill_golb",
       "artifact": "analysis/decompile/binja/functions/00414670-kill_golb.c"
@@ -1387,6 +1392,11 @@
       "address": "0x430a70",
       "name": "request_object_animation",
       "artifact": "analysis/decompile/binja/functions/00430a70-request_object_animation.c"
+    },
+    {
+      "address": "0x430d90",
+      "name": "replace_object_list_texture_refs",
+      "artifact": "analysis/decompile/binja/functions/00430d90-replace_object_list_texture_refs.c"
     },
     {
       "address": "0x430e40",

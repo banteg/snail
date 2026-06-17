@@ -3,23 +3,6 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-class Object {
-public:
-    void* request_object_texture_groups(int group_count); // @ 0x42f930
-    void calc_object_texture_groups();
-
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0x54 - 0x14];
-    int facequad_count; // +0x54
-    char unknown_58[0x5c - 0x58];
-    ObjectFaceQuad* facequads; // +0x5c
-    char unknown_60[0x64 - 0x60];
-    int texture_group_count; // +0x64
-    int texture_group_capacity; // +0x68
-    int* texture_group_ends; // +0x6c, cumulative facequad ends
-};
-
 void Object::calc_object_texture_groups()
 {
     for (int pass = 0; pass < 2; ++pass) {

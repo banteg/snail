@@ -6,6 +6,7 @@
 #include "subgame_runtime.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
+#include "texture_set_selector.h"
 
 void __fastcall set_matrix_identity(void* transform);
 
@@ -24,10 +25,6 @@ struct HighScoreEntry {
         unsigned int runtime_flags,
         int archive_kind,
         int replay_level_arg);
-};
-
-struct TextureSetSelector {
-    int select_level_track_texture_set(int texture_set);
 };
 
 struct SelectedLevelRecord {

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**335/676** mapped gameplay functions matched, **430/676** mapped gameplay functions have a scratch, **27635/326004** bytes (**8.48%**) are proof-grade, and overall fuzzy is **20.11%**.
+**336/678** mapped gameplay functions matched, **433/678** mapped gameplay functions have a scratch, **27764/325983** bytes (**8.52%**) are proof-grade, and overall fuzzy is **20.20%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -75,6 +75,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | begin_frontend_fade_in | 0x40abe0 | 14 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
@@ -94,6 +95,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 126/127 | 45.85% | 16/127 | 8 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 330/373 | 20.20% | 0/373 | 21 ok |  |
 | ✅ | set_object_color | 0x4141d0 | 139 | 47/47 | 100.00% | 47/47 | 3 ok |  |
+| ✅ | replace_object_group_texture_refs | 0x4145c0 | 129 | 26/26 | 100.00% | 26/26 | - |  |
 | ✅ | reset_render_counters | 0x414650 | 18 | 5/5 | 100.00% | 5/5 | 3 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
@@ -136,7 +138,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 | 4 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 56/55 | 28.83% | 5/55 | - |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |
-| 🚧 | request_object_animation | 0x430a70 | 971 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
+| 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
+| 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 55/53 | 51.85% | 5/53 | 1 ok |  |
 | ✅ | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  |
 | ✅ | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
@@ -339,7 +342,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 76.12% | 2/66 | 4 mismatch, 11 ok |  |
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
-| 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 2 unresolved, 7 ok |  |
+| 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 1 unresolved, 8 ok |  |
 | ✅ | enumerate_input_controllers | 0x44b3c0 | 196 | 71/71 | 100.00% | 71/71 | 14 ok |  |
 | ✅ | append_enumerated_input_controller_callback | 0x44b490 | 69 | 22/22 | 100.00% | 22/22 | 5 ok |  |
 | ✅ | configure_input_controller_axis_range_callback | 0x44b4e0 | 131 | 42/42 | 100.00% | 42/42 | 3 ok |  |
@@ -443,13 +446,12 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 19 type name(s) with a header plus scratch-local copies
-- divergent: 25 type name(s) with multiple scratch-local shapes
+- covered: 20 type name(s) with a header plus scratch-local copies
+- divergent: 24 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 15 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Object | 10 | 0 | 10 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRoute | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -474,6 +476,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TutorialController | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 39 | 1 | 39 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Object | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TransformMatrix | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |

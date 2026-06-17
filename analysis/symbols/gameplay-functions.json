@@ -4,7 +4,6 @@
   "reference_target": "artifacts/bin/SnailMail.RWG",
   "image_base": "0x400000",
   "unwrapped_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
-  "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
       "address": "0x401000",
@@ -705,6 +704,11 @@
       "description": "Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`."
     },
     {
+      "address": "0x4145c0",
+      "name": "replace_object_group_texture_refs",
+      "description": "Rewrites one built object's grouped-render texture-ref table from an old texture reference to a replacement after grouped buffers have been built."
+    },
+    {
       "address": "0x414650",
       "name": "reset_render_counters",
       "description": "Clears the per-frame renderer counters for submitted triangles, DrawPrimitive calls, and texture binds before render_game_frame starts."
@@ -1299,6 +1303,11 @@
     {
       "address": "0x430a70",
       "name": "request_object_animation"
+    },
+    {
+      "address": "0x430d90",
+      "name": "replace_object_list_texture_refs",
+      "description": "Walks the global object list and replaces one texture reference with another across face quads and any already-built grouped-render texture tables."
     },
     {
       "address": "0x430e40",
@@ -3146,5 +3155,6 @@
       "name": "build_camera_view_matrix",
       "description": "Builds the view matrix from camera eye, target, and up vectors by normalizing the look, right, and up axes and storing translated dot products. Called by `render_camera`."
     }
-  ]
+  ],
+  "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb"
 }
