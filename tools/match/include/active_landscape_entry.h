@@ -15,6 +15,7 @@ struct LandscapeObjectBounds {
 class ActiveLandscapeEntry : public RenderableBod {
 public:
     ActiveLandscapeEntry* initialize_active_landscape_entry(); // @ 0x408820
+    void clear_active_landscape_entries(); // @ 0x418a30, first slot clears all 10
     void update_active_landscape_entry(); // @ 0x418ac0
 
     char unknown_078[0x80 - 0x78];

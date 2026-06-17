@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**349/678** mapped gameplay functions matched, **468/678** mapped gameplay functions have a scratch, **31541/325983** bytes (**9.68%**) are proof-grade, and overall fuzzy is **23.87%**.
+**350/678** mapped gameplay functions matched, **469/678** mapped gameplay functions have a scratch, **31682/325983** bytes (**9.72%**) are proof-grade, and overall fuzzy is **23.91%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -114,6 +114,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
+| ✅ | clear_active_landscape_entries | 0x418a30 | 141 | 49/49 | 100.00% | 49/49 | 5 ok |  |
 | ✅ | update_active_landscape_entry | 0x418ac0 | 130 | 41/41 | 100.00% | 41/41 | 4 ok |  |
 | ✅ | destroy_main_menu | 0x419b30 | 26 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | initialize_duplicate_vertices | 0x419f50 | 39 | 13/13 | 100.00% | 13/13 | 2 ok |  |
