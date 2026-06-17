@@ -11,10 +11,11 @@ public:
 
     unsigned char captured; // +0x00
     char pad_01[3];
-    int live_x; // +0x04
-    int live_y; // +0x08
-    int saved_x; // +0x0c
-    int saved_y; // +0x10
+    float live_x; // +0x04
+    float live_y; // +0x08
+    float saved_x; // +0x0c
+    float saved_y; // +0x10
+    unsigned char suppress_next_draw; // +0x14
 };
 
 #endif

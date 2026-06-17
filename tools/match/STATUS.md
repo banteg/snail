@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**318/676** mapped gameplay functions matched, **411/676** mapped gameplay functions have a scratch, **24729/326004** bytes (**7.59%**) are proof-grade, and overall fuzzy is **19.10%**.
+**319/676** mapped gameplay functions matched, **412/676** mapped gameplay functions have a scratch, **24780/326004** bytes (**7.60%**) are proof-grade, and overall fuzzy is **19.12%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -340,6 +340,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | resolve_uncaptured_cursor_sensitivity_scale | 0x44bc20 | 44 | 11/11 | 100.00% | 11/11 | 5 ok |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | is_mouse_captured | 0x44c3b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
+| ✅ | capture_mouse_cursor | 0x44c3c0 | 51 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | release_mouse_cursor | 0x44c400 | 21 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | initialize_global_identity_matrix | 0x44c880 | 16 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | convert_math_type32_to_16 | 0x44c890 | 19 | 4/4 | 100.00% | 4/4 | 2 ok |  |
