@@ -38,9 +38,10 @@ int Game::build_track_fringe_objects()
     int edge_a = 0;
     int row = 0;
     if (game->runtime_row_count > 0) {
-        unsigned char* row_flags = (unsigned char*)((char*)game + 0x5ccac8);
+        TrackAttachmentRuntimeRow* row_record =
+            (TrackAttachmentRuntimeRow*)((char*)game + 0x5ccac8);
         TrackRowCell* cell = (TrackRowCell*)((char*)game + 0x3bfac8);
-        unsigned char* row_flags_head = row_flags;
+        TrackAttachmentRuntimeRow* row_record_head = row_record;
 
         do {
             int lane_count = 8;
@@ -66,7 +67,7 @@ int Game::build_track_fringe_objects()
                 if (tile_id == 4 || tile_id == 10 || tile_id == 7)
                     family = 7;
 
-                if ((*row_flags & 4) != 0 || edge_id == 0 || tile_id == 0x20
+                if ((row_record->flags & 4) != 0 || edge_id == 0 || tile_id == 0x20
                     || (g_track_render_flags & 0x20) == 0) {
                     cell->fringe_front = 0;
                     cell->fringe_right = 0;
@@ -170,8 +171,8 @@ int Game::build_track_fringe_objects()
                     }
                 }
 
-                row_flags = row_flags_head;
-                if ((*row_flags_head & 4) != 0) {
+                row_record = row_record_head;
+                if ((row_record_head->flags & 4) != 0) {
                     FringeObject* object = cell->fringe_front;
                     if (object != 0)
                         object->list_flags &= ~0x20;
@@ -190,9 +191,9 @@ int Game::build_track_fringe_objects()
                 --lane_count;
             } while (lane_count);
 
-            row_flags = row_flags_head + 0xf4;
+            row_record = row_record_head + 1;
             ++row;
-            row_flags_head = row_flags;
+            row_record_head = row_record;
         } while (row < game->runtime_row_count);
     }
 
