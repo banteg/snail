@@ -1,36 +1,16 @@
 // set_weapon_animation @ 0x4446e0 (thiscall, ret 0xc)
 
-#include "anim_manager.h"
+#include "object_animation_types.h"
+#include "presentation_animation_channel.h"
 
-struct WeaponVisualRoot {
-    char unknown_000[0xbc];
-    ObjectAnimation* active_animation; // +0xbc
-};
-
-struct WeaponAnimationSlot {
-    WeaponVisualRoot* visual_root; // +0x00
-    char unknown_04[0x80 - 0x04];
-};
-
-class WeaponChannel {
-public:
-    int set_weapon_animation(int animation_id, unsigned char immediate, int initial_frame);
-
-    char unknown_000[0x24];
-    WeaponVisualRoot* visual_root; // +0x24
-    char unknown_028[0x108 - 0x028];
-    AnimManager anim_manager; // +0x108
-    char unknown_150[0x174 - 0x150];
-    WeaponAnimationSlot animation_slots[1]; // +0x174, indexed by animation_id
-};
-
-int WeaponChannel::set_weapon_animation(
+int PresentationAnimationChannel::set_weapon_animation(
     int animation_id,
     unsigned char immediate,
     int initial_frame)
 {
     if (immediate != 0) {
-        WeaponAnimationSlot* slot = &animation_slots[animation_id];
+        PresentationAnimationSlot* slot =
+            (PresentationAnimationSlot*)(animation_slot_table + animation_id * 0x80);
         ObjectAnimation* active_animation = slot->visual_root->active_animation;
         anim_manager.active_animation = active_animation;
         if (initial_frame != -1)
@@ -57,7 +37,7 @@ int WeaponChannel::set_weapon_animation(
             anim_manager.progress_step = step;
         }
 
-        WeaponVisualRoot* root = slot->visual_root;
+        PresentationAnimationVisualRoot* root = slot->visual_root;
         anim_manager.queue_count = 0;
         visual_root = root;
         int flags = *(int*)((char*)anim_manager.target_model + 4);

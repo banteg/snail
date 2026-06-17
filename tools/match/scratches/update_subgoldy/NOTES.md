@@ -1,4 +1,4 @@
-# update_subgoldy @ 0x43b120 — 72.44%, 2067/2091 insns, structure complete
+# update_subgoldy @ 0x43b120 — 72.51%, 2067/2087 insns, structure complete
 
 The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
 of the function is transcribed and the diff is dominated by
@@ -7,9 +7,9 @@ track-mode slice (steering, replay record/playback, completion handoff,
 ghost marking, emitters) is now pinned.
 
 2026-06-13 matcher padding rebaseline: terminal object-padding normalization
-removes untargeted bytes after final `ret` instructions, so the same source now
-reports 72.44%, 2067/2091 instructions. This is a measurement correction, not
-a source-shape change.
+removes untargeted bytes after final `ret` instructions. Current Wibo status
+reports 72.51%, 2067/2087 normalized instructions. This is a measurement
+correction, not a source-shape change.
 
 ## Semantics recovered beyond the old dossier
 
@@ -68,7 +68,8 @@ scratch additionally pins:
   z = trunc(z+0.49) - 0.5, squidge z -0.33 (sound 47 on first), stall
   timer at +0x328 → carryover when it wraps past 1.0.
 - **Tail**: collisions, 5 anim managers (presentation +0x104, jetpack
-  channel +0x12e8, weapon channels +0x754 stride 0x3dc), track parcels
+  channel base +0x11e0 with manager +0x12e8, weapon channel bases
+  +0x64c/+0xa28/+0xe04 stride 0x3dc with managers at base +0x108), track parcels
   (game+0x125e480), initialize_cutscene, update_player_movement_flags,
   row event display, frame counter game+0xfd2b7c++, cursor++ == 21000 →
   times-up (game+0x1272828).
@@ -178,6 +179,12 @@ source-shape issue is solved.
   `SoundEffectManager` call view with shared `audio_system.h` produced the same
   290 ok / 1 jump-table masked-audit regression. Keep the compact local sound
   view until the follow-switch layout issue is fixed.
+- 2026-06-17 animation-channel correction: the repeated weapon/jetpack
+  presentation blocks are full `PresentationAnimationChannel` objects, not
+  manager-starting lanes. `selected_state` lives at channel `+0x104`, the
+  `AnimManager` at channel `+0x108`, and the channel stride is `0x3dc`.
+  `update_subgoldy` can use the shared channel header without changing its
+  headline score; this replaces the stale local `WeaponChannel` view.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

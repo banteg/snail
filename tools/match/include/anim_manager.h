@@ -3,7 +3,7 @@
 #ifndef ANIM_MANAGER_H
 #define ANIM_MANAGER_H
 
-#include "object_animation_types.h"
+struct ObjectAnimation;
 
 class AnimManager {
 public:

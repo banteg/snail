@@ -8,6 +8,8 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "presentation_animation_channel.h"
+
 struct Vector3 {
     float x;
     float y;
@@ -107,11 +109,6 @@ struct TimesUp {
 struct TrackParcels {
     int state;
     void update_track_parcels();
-};
-
-struct AnimManager {
-    int state;
-    void update_anim_manager();
 };
 
 struct Nuke {
@@ -243,11 +240,6 @@ struct VisualRoot {
     float squidge_secondary;       // +0x88
 };
 
-struct WeaponChannel {
-    AnimManager anim_manager; // +0x00
-    char unknown_04[0x3dc - 0x04];
-};
-
 struct Presentation {
     char unknown_00[0x24];
     VisualRoot* visual_root; // +0x24
@@ -255,10 +247,10 @@ struct Presentation {
     float live_basis_up_x; // +0x48
     char unknown_4c[0x104 - 0x4c];
     AnimManager anim_manager; // +0x104
-    char unknown_108[0x754 - 0x108];
-    WeaponChannel weapon_channels[3]; // +0x754, stride 0x3dc
-    AnimManager jetpack_anim_manager; // +0x12e8
-    char unknown_12ec[0x1964 - 0x12ec];
+    char unknown_14c[0x64c - 0x14c];
+    PresentationAnimationChannel weapon_channels[3]; // +0x64c, stride 0x3dc
+    PresentationAnimationChannel jetpack_channel; // +0x11e0
+    char unknown_15bc[0x1964 - 0x15bc];
     int cutscene_ai_state; // +0x1964
     char unknown_1968[0x19c0 - 0x1968];
 
@@ -1229,7 +1221,7 @@ steering_stored:
 
     handle_subgoldy_collisions();
     presentation.anim_manager.update_anim_manager();
-    presentation.jetpack_anim_manager.update_anim_manager();
+    presentation.jetpack_channel.anim_manager.update_anim_manager();
     presentation.weapon_channels[0].anim_manager.update_anim_manager();
     presentation.weapon_channels[1].anim_manager.update_anim_manager();
     presentation.weapon_channels[2].anim_manager.update_anim_manager();

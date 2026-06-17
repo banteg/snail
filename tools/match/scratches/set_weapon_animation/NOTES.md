@@ -23,5 +23,9 @@ Focused Wibo result: 88.07%, 54/55 candidate/target instructions. The
 remaining shape debt is one native reload of `active_animation` in the
 non-reverse branch plus register selection in the queued-animation tail.
 
-The channel layout stays local until `set_snail_jetpack` and the larger
-presentation dispatcher agree on the surrounding owner structure.
+2026-06-17 consolidation: `PresentationAnimationChannel` is now shared in
+`tools/match/include/presentation_animation_channel.h`. The repeated
+presentation blocks start at the full channel bases (`+0x64c`, `+0xa28`,
+`+0xe04`, and jetpack `+0x11e0`), with `selected_state` at channel `+0x104`
+and the `AnimManager` at channel `+0x108`. Earlier local views that started at
+the manager lane were shifted and should not be reused.

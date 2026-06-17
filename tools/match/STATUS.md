@@ -468,8 +468,8 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 1 type name(s)
-- covered: 26 type name(s) with a header plus scratch-local copies
-- divergent: 21 type name(s) with multiple scratch-local shapes
+- covered: 25 type name(s) with a header plus scratch-local copies
+- divergent: 20 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -493,7 +493,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Subgame | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | WeaponChannel | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
@@ -507,7 +506,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AnimManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |

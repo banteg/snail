@@ -1,5 +1,6 @@
 // update_anim_manager @ 0x4447d0 (thiscall, ret)
 
+#include "object_animation_types.h"
 #include "anim_manager.h"
 
 extern char* g_game_base; // data_4df904
