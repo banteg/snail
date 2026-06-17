@@ -6,9 +6,11 @@
 #define PLAYER_H
 
 #include "damage_gauge.h"
+#include "invincible_shell.h"
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
 #include "presentation_animation_channel.h"
+#include "snail_skin.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 
@@ -17,6 +19,7 @@ struct Object;
 struct TrackRowCell;
 
 class Game;
+class Player;
 class Sprite;
 class TrackHealthPickup;
 
@@ -41,6 +44,26 @@ struct PlayerLiveMatrixRows {
 typedef char PlayerLiveMatrixRows_must_be_0x40[
     (sizeof(PlayerLiveMatrixRows) == 0x40) ? 1 : -1];
 
+class PlayerPresentationController;
+
+class CutsceneAI {
+public:
+    int initialize_cutscene_ai(); // @ 0x446130
+    void update_cutscene();       // @ 0x4466d0
+
+    PlayerPresentationController* presentation; // +0x00
+    Player* player;                             // +0x04
+    int camera_mode;                            // +0x08
+    int state;                                  // +0x0c
+    TransformMatrix live_matrix;                // +0x10
+    float progress;                             // +0x50
+    float progress_step;                        // +0x54
+    unsigned char force_camera_update;          // +0x58
+    char unknown_59[0x5c - 0x59];
+};
+typedef char CutsceneAI_must_be_0x5c[
+    (sizeof(CutsceneAI) == 0x5c) ? 1 : -1];
+
 class PlayerPresentationController {
 public:
     void set_snail_jetpack(int state);      // @ 0x445860
@@ -48,7 +71,18 @@ public:
     void update_snail_skin();               // @ 0x445cd0
     void build_snail_hotspots();            // @ 0x445d50
 
-    char unknown_00[0x64c];
+    char unknown_00[0x04];
+    unsigned int visual_flags;              // +0x04
+    char unknown_08[0x24 - 0x08];
+    PresentationAnimationVisualRoot* visual_root; // +0x24
+    char unknown_28[0x38 - 0x28];
+    TransformMatrix live_matrix;            // +0x38
+    char unknown_78[0x80 - 0x78];
+    TransformMatrix previous_live_matrix;   // +0x80
+    TransformMatrix cached_cutscene_matrix; // +0xc0
+    Player* owner_player;                   // +0x100
+    AnimManager anim_manager;               // +0x104
+    char unknown_14c[0x64c - 0x14c];
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
     PresentationAnimationChannel jetpack_channel;     // +0x11e0
     float wobble_roll_phase;            // +0x15bc
@@ -64,9 +98,9 @@ public:
     char unknown_16c4[0x16cc - 0x16c4];
     Vector3 snail_hotspots_local[19];   // +0x16cc
     Vector3 snail_hotspots_world[19];   // +0x17b0
-    char unknown_1894[0x1964 - 0x1894];
-    int cutscene_ai_state;              // +0x1964 (Player +0x42e8)
-    char unknown_1968[0x19b4 - 0x1968];
+    InvincibleShellController invincible_shell; // +0x1894
+    SnailSkinTransition snail_skin_transition;  // +0x1938
+    CutsceneAI cutscene_ai;                     // +0x1958
 };
 typedef char PlayerPresentationController_must_be_0x19b4[
     (sizeof(PlayerPresentationController) == 0x19b4) ? 1 : -1];

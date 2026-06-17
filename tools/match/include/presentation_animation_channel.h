@@ -2,6 +2,7 @@
 #define PRESENTATION_ANIMATION_CHANNEL_H
 
 #include "anim_manager.h"
+#include "vector3.h"
 
 struct PresentationAnimationVisualRoot {
     char unknown_000[0xbc];
@@ -24,7 +25,7 @@ public:
     AnimManager anim_manager; // +0x108
     char unknown_150[0x174 - 0x150];
     char animation_slot_table[0x25c]; // +0x174, 0x80-byte records
-    char unknown_3d0[0x3dc - 0x3d0];
+    Vector3 release_step; // +0x3d0, additive offset when release flag is active
 };
 
 typedef char PresentationAnimationChannel_must_be_0x3dc[

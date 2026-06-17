@@ -159,7 +159,7 @@ void Player::handle_subgoldy_collisions()
                                 float knockback = rate * -0.2f;
                                 velocity.z = knockback;
                                 begin_post_follow_carryover();
-                                presentation.cutscene_ai_state = 10;
+                                presentation.cutscene_ai.state = 10;
                                 slug->player_encounter_latched = 1;
                                 slug->play_slug_voice(
                                     34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));

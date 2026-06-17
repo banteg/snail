@@ -10,12 +10,6 @@
 
 #include "presentation_animation_channel.h"
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-};
-
 struct TransformMatrix {
     Vector3 basis_right;   // +0x00
     float pad_right;
@@ -240,6 +234,12 @@ struct VisualRoot {
     float squidge_secondary;       // +0x88
 };
 
+struct CutsceneAI {
+    char unknown_00[0x0c];
+    int state; // +0x0c (presentation +0x1964)
+    char unknown_10[0x5c - 0x10];
+};
+
 struct Presentation {
     char unknown_00[0x24];
     VisualRoot* visual_root; // +0x24
@@ -250,9 +250,9 @@ struct Presentation {
     char unknown_14c[0x64c - 0x14c];
     PresentationAnimationChannel weapon_channels[3]; // +0x64c, stride 0x3dc
     PresentationAnimationChannel jetpack_channel; // +0x11e0
-    char unknown_15bc[0x1964 - 0x15bc];
-    int cutscene_ai_state; // +0x1964
-    char unknown_1968[0x19c0 - 0x1968];
+    char unknown_15bc[0x1958 - 0x15bc];
+    CutsceneAI cutscene_ai; // +0x1958, state at +0x1964
+    char unknown_19b4[0x19c0 - 0x19b4];
 
     void dispatch_cutscene_animation(int animation, unsigned char flag, int arg);
     void initialize_cutscene();
@@ -975,7 +975,7 @@ steering_stored:
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
             jetpack_gauge.end_jetpack_hover();
-            presentation.cutscene_ai_state = 5;
+            presentation.cutscene_ai.state = 5;
             g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
         }

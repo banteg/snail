@@ -29,4 +29,7 @@ public:
     float progress_step;           // +0x1c
 };
 
+typedef char SnailSkinTransition_must_be_0x20[
+    (sizeof(SnailSkinTransition) == 0x20) ? 1 : -1];
+
 #endif

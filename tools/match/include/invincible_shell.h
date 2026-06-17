@@ -20,6 +20,10 @@ public:
     float spin_phase_step; // +0x88
     float fade_progress; // +0x8c
     float fade_step; // +0x90
+    char unknown_94[0xa4 - 0x94];
 };
+
+typedef char InvincibleShellController_must_be_0xa4[
+    (sizeof(InvincibleShellController) == 0xa4) ? 1 : -1];
 
 #endif
