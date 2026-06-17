@@ -188,5 +188,7 @@ void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     TextureRef* old_texture); // @ 0x4145c0
 
 extern ObjectList g_object_list; // data_4b7648
+extern ObjectToonEdge* g_object_edge_build_edges; // data_503300
+extern int g_object_edge_build_count; // data_503318
 
 #endif

@@ -6,9 +6,6 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 
 void* get_archive_data_base();
 
-extern ObjectToonEdge* g_object_edge_build_edges; // data_503300
-extern int g_object_edge_build_count; // data_503318
-
 void Object::calc_object_edges()
 {
     if ((flags & 1) == 0) {
