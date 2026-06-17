@@ -131,6 +131,7 @@ struct Object {
 typedef char Object_must_be_0xdc[(sizeof(Object) == 0xdc) ? 1 : -1];
 
 struct ObjectList {
+    void initialize_object_list(int capacity); // @ 0x42f990
     Object* add_object_to_list(); // @ 0x42fad0
     void replace_object_list_texture_refs(TextureRef* new_texture, TextureRef* old_texture);
 
