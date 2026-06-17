@@ -1,0 +1,47 @@
+// Shared backdrop renderer state, partial.
+#ifndef BACKDROP_H
+#define BACKDROP_H
+
+#include "landscape_script.h"
+
+class Backdrop {
+public:
+    void set_backdrop_progress_fraction(float fraction); // @ 0x410c30
+    void set_backdrop_distort(float distort); // @ 0x410c40
+    void change_backdrop(LandscapeScriptRecord* record, char flip); // @ 0x410d50
+    void change_backdrop_real(); // @ 0x410dc0
+    void* initialize_backdrop(int last_mode); // @ 0x410e20
+    int set_backdrop_texture_target(int texture_id); // @ 0x410f40
+
+    char unknown_000[0x38];
+    unsigned char active_split_backdrop_pair; // +0x38
+    unsigned char pending_split_backdrop_pair; // +0x39
+    char unknown_03a[0x3c - 0x3a];
+    int active_primary_texture_id; // +0x3c
+    int pending_primary_texture_id; // +0x40
+    int active_secondary_texture_id; // +0x44
+    int pending_secondary_texture_id; // +0x48
+    unsigned char backdrop_change_queued; // +0x4c
+    char unknown_04d[0x50 - 0x4d];
+    float pending_distort; // +0x50
+    unsigned char pending_flip; // +0x54
+    unsigned char active_flip; // +0x55
+    char unknown_056[0x658 - 0x56];
+    int backdrop_refresh_pending; // +0x658
+    char unknown_65c[0x68c - 0x65c];
+    float primary_blend; // +0x68c
+    int primary_blend_step_bits; // +0x690
+    int previous_primary_texture; // +0x694
+    int current_primary_texture; // +0x698
+    char unknown_69c[0x6ac - 0x69c];
+    float secondary_blend; // +0x6ac
+    int secondary_blend_step_bits; // +0x6b0
+    int previous_secondary_texture; // +0x6b4
+    int current_secondary_texture; // +0x6b8
+    char unknown_6bc[0x6c8 - 0x6bc];
+    float progress_fraction; // +0x6c8
+};
+
+typedef char Backdrop_must_cover_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
+
+#endif

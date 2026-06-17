@@ -2,17 +2,13 @@
 // Activates the ten repeated landscape slices for the selected script record.
 
 #include "active_landscape_entry.h"
+#include "backdrop.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_landscape_backdrop_variant_selector; // data_4df9bc, from level_mode_arg
 
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
-
-class BackdropRuntime {
-public:
-    void change_backdrop(LandscapeScriptRecord* record, char flip);
-};
 
 class BorderRuntime {
 public:
@@ -80,12 +76,12 @@ void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
         staged_index = index;
     } while (index < 10);
 
-    ((BackdropRuntime*)(g_game_base + 0x4ec10))->change_backdrop(
+    ((Backdrop*)(g_game_base + 0x4ec10))->change_backdrop(
         &selection->record,
         flip);
     ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
-    Color4f* source = (Color4f*)((char*)selection + 0x6b4);
+    Color4f* source = &selection->record.fog_color;
     Color4f* destination = (Color4f*)(g_game_base + 0x14);
     *destination = *source;
 }

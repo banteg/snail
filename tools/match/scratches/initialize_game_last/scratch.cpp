@@ -1,9 +1,6 @@
 // initialize_game_last @ 0x410720 (thiscall, ret)
 
-class Backdrop {
-public:
-    void* initialize_backdrop(int last_mode);
-};
+#include "backdrop.h"
 
 class GameRoot {
 public:

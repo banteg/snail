@@ -11,15 +11,16 @@ Recovered layout evidence:
 - script record data is reached through a `+0x5a4` window from the entries
   base.
 - `record +0x10c` is the landscape object index, or `-1` for no object.
-- `record +0x110..+0x11c` are copied to `Game+0x14` after backdrop activation.
-  `load_landscape_script_by_name` writes the first three words from the script
-  `Fog:` values, so the local name is `fog_render_words` until the fourth writer
-  is pinned.
+- `record +0x110..+0x11c` is the 16-byte `fog_color` block copied to
+  `Game+0x14` after backdrop activation. `load_landscape_script_by_name` writes
+  RGB from `Fog:` and the missing-Fog fallback writes the full `Color4f`.
 - active slots are inserted after the landscape active-list head at
   `Game+0x3ca25c`.
 - `data_4df9bc` is a landscape backdrop variant selector fed from
   `Game::level_mode_arg`; activator consumes its low bit outside tutorial and
   random challenge modes.
+- `record +0x120` is the script `Distort:` scalar consumed by
+  `change_backdrop`.
 - object slots at `Game+0x48e2c` have a `0xbc` stride and provide the
   `LandscapeObjectBounds*` used for each repeated slice.
 - each live slice records `repeat_z_span = max_z - min_z`, resets its inherited

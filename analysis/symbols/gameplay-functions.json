@@ -864,7 +864,7 @@
     {
       "address": "0x418870",
       "name": "activate_landscape_entry",
-      "description": "Selects one cached landscape script, activates up to ten repeated 0x90-byte landscape BOD slices for its object index, chooses the backdrop variant flag, and copies the script fog/render words into global state."
+      "description": "Selects one cached landscape script, activates up to ten repeated 0x90-byte landscape BOD slices for its object index, chooses the backdrop variant flag, and copies the script fog color into global render state."
     },
     {
       "address": "0x418a30",

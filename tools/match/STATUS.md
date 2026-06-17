@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**351/678** mapped gameplay functions matched, **470/678** mapped gameplay functions have a scratch, **32124/325983** bytes (**9.85%**) are proof-grade, and overall fuzzy is **24.05%**.
+**352/678** mapped gameplay functions matched, **472/678** mapped gameplay functions have a scratch, **32211/325983** bytes (**9.88%**) are proof-grade, and overall fuzzy is **24.09%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -80,6 +80,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 1 mismatch, 53 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
+| 🚧 | change_backdrop | 0x410d50 | 111 | 38/34 | 63.89% | 2/34 | - |  |
+| ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | direct3d_renderer_set_cull_mode | 0x411700 | 46 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | uninitialize_input_devices | 0x411d80 | 20 | 4/4 | 100.00% | 4/4 | 4 ok |  |
@@ -483,8 +485,8 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 25 type name(s) with a header plus scratch-local copies
-- divergent: 22 type name(s) with multiple scratch-local shapes
+- covered: 26 type name(s) with a header plus scratch-local copies
+- divergent: 21 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -493,7 +495,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Backdrop | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -526,6 +527,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | VoiceManager | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Backdrop | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | CutsceneAI | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
