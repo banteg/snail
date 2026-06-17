@@ -3,21 +3,21 @@
 /* selector: update_keyboard_input */
 
 // Polls the DirectInput keyboard device into the current and previous 0x100-byte key-state tables, retries reacquisition on transient failures, and publishes the derived digital input flags and directional axes into the shared input-controller lanes.
-int sub_44B870()
+int update_keyboard_input()
 {
   int i; // eax
   int v2; // esi
   float v3; // [esp+Ch] [ebp-8h]
   float v4; // [esp+10h] [ebp-4h]
 
-  if ( MEMORY[0x777D50] )
+  if ( g_keyboard_device )
   {
-    qmemcpy(MEMORY[0x777B4C], MEMORY[0x777C4C], sizeof(MEMORY[0x777B4C]));
-    memset(MEMORY[0x777C4C], 0, sizeof(MEMORY[0x777C4C]));
-    if ( (*(int (__stdcall **)(int, int, char *))(*(_DWORD *)MEMORY[0x777D50] + 36))(
-           MEMORY[0x777D50],
+    qmemcpy(g_keyboard_previous_state, g_keyboard_current_state, 0x100u);
+    memset(g_keyboard_current_state, 0, 0x100u);
+    if ( (*(int (__stdcall **)(int, int, char *))(*(_DWORD *)g_keyboard_device + 36))(
+           g_keyboard_device,
            256,
-           MEMORY[0x777C4C]) >= 0 )
+           g_keyboard_current_state) >= 0 )
     {
       v2 = 0;
       v4 = 0.0;
@@ -82,20 +82,19 @@ int sub_44B870()
     }
     else
     {
-      for ( i = (*(int (__stdcall **)(int))(*(_DWORD *)MEMORY[0x777D50] + 28))(MEMORY[0x777D50]);
+      for ( i = (*(int (__stdcall **)(int))(*(_DWORD *)g_keyboard_device + 28))(g_keyboard_device);
             i == -2147024866;
-            i = (*(int (__stdcall **)(int))(*(_DWORD *)MEMORY[0x777D50] + 28))(MEMORY[0x777D50]) )
+            i = (*(int (__stdcall **)(int))(*(_DWORD *)g_keyboard_device + 28))(g_keyboard_device) )
       {
         ;
       }
       if ( i == -2147024891 || i == -2147024884 )
       {
-        memset(MEMORY[0x777C4C], 0, sizeof(MEMORY[0x777C4C]));
-        memset(MEMORY[0x777B4C], 0, sizeof(MEMORY[0x777B4C]));
+        memset(g_keyboard_current_state, 0, 0x100u);
+        memset(g_keyboard_previous_state, 0, 0x100u);
         return 0;
       }
     }
   }
   return 0;
 }
-

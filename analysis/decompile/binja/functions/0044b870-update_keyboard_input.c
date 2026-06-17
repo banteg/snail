@@ -3,11 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_keyboard_input @ 0x44b870 */
 
-0044b870        int32_t* edx_1 = data_777d50
+0044b870        int32_t* edx_1 = g_keyboard_device
 0044b87d        if (edx_1 != 0)
-0044b894        __builtin_memcpy(0x777b4c, 0x777c4c, 0x100)
-0044b8a0        __builtin_memset(0x777c4c, 0, 0x100)
-0044b8b4        if ((*(*edx_1 + 0x24))(edx_1, 0x100, 0x777c4c) s>= 0)
+0044b894        __builtin_memcpy(&g_keyboard_previous_state, &g_keyboard_current_state, 0x100)
+0044b8a0        __builtin_memset(&g_keyboard_current_state, 0, 0x100)
+0044b8b4        if ((*(*edx_1 + 0x24))(edx_1, 0x100, &g_keyboard_current_state) s>= 0)
 0044b90c        int32_t esi_1 = 0
 0044b913        int32_t var_4_1 = 0
 0044b917        int32_t var_8_1 = 0
@@ -60,14 +60,14 @@
 0044badf        if (is_key_down(0x2a) != 0)
 0044bae1        esi_1 |= 0x2000000
 0044baf2        set_input_controller_slot0_button_axes(esi_1, var_4_1, var_8_1)
-0044b8b6        int32_t* eax_3 = data_777d50
+0044b8b6        int32_t* eax_3 = g_keyboard_device
 0044b8c6        int32_t i
 0044b8c6        int32_t* eax_4
 0044b8be        i = (*(*eax_3 + 0x1c))(eax_3)
 0044b8c6        while (i == 0x8007001e)
-0044b8c8        eax_4 = data_777d50
+0044b8c8        eax_4 = g_keyboard_device
 0044b8d0        i = (*(*eax_4 + 0x1c))(eax_4)
 0044b8e6        if (i == 0x80070005 || i == 0x8007000c)
-0044b8f8        __builtin_memset(0x777c4c, 0, 0x100)
-0044b904        __builtin_memset(0x777b4c, 0, 0x100)
+0044b8f8        __builtin_memset(&g_keyboard_current_state, 0, 0x100)
+0044b904        __builtin_memset(&g_keyboard_previous_state, 0, 0x100)
 0044bb01        return 0
