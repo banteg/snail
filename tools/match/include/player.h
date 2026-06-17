@@ -66,6 +66,7 @@ typedef char CutsceneAI_must_be_0x5c[
 
 class PlayerPresentationController {
 public:
+    void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
     void initialize_cutscene();             // @ 0x4428d0
@@ -133,6 +134,7 @@ public:
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0
+    int initialize_subgoldy_death();       // @ 0x446e30
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
     Sprite* mark_current_track_pair_with_payload(float payload); // @ 0x43d3d0

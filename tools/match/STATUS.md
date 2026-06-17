@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**343/678** mapped gameplay functions matched, **461/678** mapped gameplay functions have a scratch, **30094/325983** bytes (**9.23%**) are proof-grade, and overall fuzzy is **23.08%**.
+**343/678** mapped gameplay functions matched, **462/678** mapped gameplay functions have a scratch, **30094/325983** bytes (**9.23%**) are proof-grade, and overall fuzzy is **23.34%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -309,6 +309,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_cutscene_ai | 0x446130 | 35 | 8/8 | 100.00% | 8/8 | 4 ok |  |
 | ✅ | initialize_cameraman | 0x446160 | 102 | 20/20 | 100.00% | 20/20 | 6 ok |  |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 72 ok |  |
+| 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 44.67% | 0/505 | 1 mismatch, 2 unresolved, 33 ok |  |
 | ✅ | initialize_subgoldy_death | 0x446e30 | 47 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | initialize_warning | 0x446e80 | 130 | 32/32 | 100.00% | 32/32 | 6 ok |  |
 | ✅ | uninit_warning | 0x446f10 | 22 | 6/6 | 100.00% | 6/6 | 2 ok |  |
