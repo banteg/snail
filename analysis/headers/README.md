@@ -59,6 +59,8 @@ Current checked-in example:
 - `uv run python tools/ida/sync_path_template_types.py`
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
+- `frontend_replay_types.h`
+- `uv run python tools/ida/sync_frontend_replay_types.py`
 - `vapour_trail_types.h`
 - `uv run python tools/ida/sync_vapour_trail_types.py`
 

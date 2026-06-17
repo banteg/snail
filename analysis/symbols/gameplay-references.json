@@ -1140,6 +1140,16 @@
       "description": "Steering sensitivity lookup table consumed by update_subgoldy based on the live steering selector."
     },
     {
+      "address": "0x4df978",
+      "name": "g_last_entered_player_name",
+      "kind": "global",
+      "aliases": [
+        "data_4df978",
+        "unk_4df978"
+      ],
+      "description": "Small persistent player-name buffer used to seed high-score entry widgets and updated on name submission."
+    },
+    {
       "address": "0x4df9c0",
       "name": "g_high_score_selected_bank",
       "kind": "global",
@@ -1148,6 +1158,16 @@
         "data_4df9c0"
       ],
       "description": "Saved high-score bank index preserved by destroy_high_score_screen for the next high-score flow."
+    },
+    {
+      "address": "0x4df9d8",
+      "name": "g_new_game_tutorial_started",
+      "kind": "global",
+      "aliases": [
+        "data_4df9d8",
+        "unk_4df9d8"
+      ],
+      "description": "Tutorial-start latch set by the New Game tutorial button and consumed by initialize_new_game_menu."
     },
     {
       "address": "0x4dfad0",

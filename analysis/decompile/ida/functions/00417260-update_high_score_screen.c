@@ -3,143 +3,140 @@
 /* selector: update_high_score_screen */
 
 // Runs the high-score screen state machine, including replay launch, bank toggling, inline name submission, and back or exit actions. Cross-port Android and iOS symbols match this helper to `cRHighScore::AI()`.
-int __thiscall sub_417260(int this)
+int __thiscall update_high_score_screen(HighScoreScreen *screen)
 {
-  int v2; // ecx
-  int v3; // eax
+  FrontendWidget *v2; // ecx
+  uint32_t widget_flags; // eax
   int result; // eax
-  int v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // ecx
-  int v9; // ecx
-  int v10; // eax
-  int v11; // eax
-  int v12; // ecx
-  int v13; // eax
-  int v14; // eax
+  FrontendWidget *cancel_name_button; // ecx
+  uint32_t v6; // eax
+  FrontendWidget *v7; // eax
+  FrontendWidget *submit_name_button; // ecx
+  FrontendWidget *bank_toggle_button; // ecx
+  uint32_t v10; // eax
+  int32_t selected_bank; // eax
+  FrontendWidget *back_button; // ecx
+  uint32_t v13; // eax
+  int32_t mode; // eax
   void *v15; // edx
   int v16; // ebp
   int v17; // edi
-  int v18; // ecx
-  int v19; // eax
-  int *v20; // [esp+Ch] [ebp-4h]
+  FrontendWidget *v18; // ecx
+  uint32_t v19; // eax
+  FrontendWidget **replay_row_widgets; // [esp+Ch] [ebp-4h]
 
-  if ( *(_BYTE *)(this + 16) )
+  if ( screen->entering_name )
   {
-    v2 = *(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124);
-    v3 = *(_DWORD *)(v2 + 416);
-    if ( (v3 & 0x4000) != 0 )
+    v2 = screen->name_row_widgets[screen->selected_rank];
+    widget_flags = v2->widget_flags;
+    if ( (widget_flags & 0x4000) != 0 )
     {
-      BYTE1(v3) &= ~0x40u;
-      *(_DWORD *)(v2 + 416) = v3;
-      destroy_high_score_screen((_DWORD *)this);
+      BYTE1(widget_flags) &= ~0x40u;
+      v2->widget_flags = widget_flags;
+      destroy_high_score_screen(screen);
       kill_game_sprites();
       rstrcpy_checked_ascii(
-        (char *)(*(int *)((char *)&byte_6FFAE0 + (_DWORD)MEMORY[0x4DF904]) + 129728 * *(_DWORD *)(this + 20) + 84),
-        (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
+        (char *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)MEMORY[0x4DF904]] + 129728 * screen->selected_rank + 84),
+        (char *)&screen->name_row_widgets[screen->selected_rank]->text_buffer);
       rstrcpy_checked_ascii(
         (char *)MEMORY[0x4DF904] + 420,
-        (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
-      rstrcpy_checked_ascii(&unk_4DF978, (char *)(*(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124) + 716));
+        (char *)&screen->name_row_widgets[screen->selected_rank]->text_buffer);
+      rstrcpy_checked_ascii(byte_4DF978, (char *)&screen->name_row_widgets[screen->selected_rank]->text_buffer);
       return (int)exit_high_score_screen();
     }
     else
     {
-      v5 = *(_DWORD *)(this + 40);
-      v6 = *(_DWORD *)(v5 + 416);
+      cancel_name_button = screen->cancel_name_button;
+      v6 = cancel_name_button->widget_flags;
       if ( (v6 & 0x20) != 0 )
       {
         LOBYTE(v6) = v6 & 0xDF;
-        *(_DWORD *)(v5 + 416) = v6;
-        v7 = *(_DWORD *)(this + 4 * *(_DWORD *)(this + 20) + 124);
-        *(_DWORD *)(v7 + 416) |= 0x8000000u;
+        cancel_name_button->widget_flags = v6;
+        v7 = screen->name_row_widgets[screen->selected_rank];
+        v7->widget_flags |= 0x8000000u;
       }
-      v8 = *(_DWORD *)(this + 36);
-      result = *(_DWORD *)(v8 + 416);
+      submit_name_button = screen->submit_name_button;
+      result = submit_name_button->widget_flags;
       if ( (result & 0x20) != 0 )
       {
         LOBYTE(result) = result & 0xDF;
-        *(_DWORD *)(v8 + 416) = result;
-        destroy_high_score_screen((_DWORD *)this);
+        submit_name_button->widget_flags = result;
+        destroy_high_score_screen(screen);
         kill_game_sprites();
-        commit_high_score_entry_into_top_ten(
-          (int *)((char *)&byte_6FFAE0 + (_DWORD)MEMORY[0x4DF904]),
-          *(_DWORD *)(this + 20));
+        commit_high_score_entry_into_top_ten(&byte_6FFAE0[(_DWORD)MEMORY[0x4DF904]], screen->selected_rank);
         return (int)exit_high_score_screen();
       }
     }
   }
   else
   {
-    v9 = *(_DWORD *)(this + 32);
-    v10 = *(_DWORD *)(v9 + 416);
+    bank_toggle_button = screen->bank_toggle_button;
+    v10 = bank_toggle_button->widget_flags;
     if ( (v10 & 0x20) != 0 )
     {
       LOBYTE(v10) = v10 & 0xDF;
-      *(_DWORD *)(v9 + 416) = v10;
-      destroy_high_score_screen((_DWORD *)this);
-      v11 = *(_DWORD *)(this + 8);
-      if ( v11 )
+      bank_toggle_button->widget_flags = v10;
+      destroy_high_score_screen(screen);
+      selected_bank = screen->selected_bank;
+      if ( selected_bank )
       {
-        if ( v11 == 1 )
-          *(_DWORD *)(this + 8) = 0;
+        if ( selected_bank == 1 )
+          screen->selected_bank = 0;
       }
       else
       {
-        *(_DWORD *)(this + 8) = 1;
+        screen->selected_bank = 1;
       }
-      unk_4DF9C0 = *(_DWORD *)(this + 8);
-      return (int)initialize_high_score_screen(this, *(_DWORD *)(this + 8), -1);
+      unk_4DF9C0 = screen->selected_bank;
+      return (int)initialize_high_score_screen((int)screen, screen->selected_bank, -1);
     }
     else
     {
-      v12 = *(_DWORD *)(this + 28);
-      v13 = *(_DWORD *)(v12 + 416);
+      back_button = screen->back_button;
+      v13 = back_button->widget_flags;
       if ( (v13 & 0x20) != 0 )
       {
         LOBYTE(v13) = v13 & 0xDF;
-        *(_DWORD *)(v12 + 416) = v13;
-        v14 = *(_DWORD *)(this + 4);
-        if ( v14 == 1 )
+        back_button->widget_flags = v13;
+        mode = screen->mode;
+        if ( mode == 1 )
         {
           *((_DWORD *)MEMORY[0x4DF904] + 110) = 10;
           *((_BYTE *)MEMORY[0x4DF904] + 780) = 1;
-          return destroy_high_score_screen((_DWORD *)this);
+          return destroy_high_score_screen(screen);
         }
         else
         {
-          if ( !v14 )
+          if ( !mode )
             *((_DWORD *)MEMORY[0x4DF904] + 110) = 4;
-          return destroy_high_score_screen((_DWORD *)this);
+          return destroy_high_score_screen(screen);
         }
       }
       else
       {
         v15 = MEMORY[0x4DF904];
         v16 = 0;
-        result = *(int *)((char *)&unk_6FFAE4 + (_DWORD)MEMORY[0x4DF904]);
+        result = *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)MEMORY[0x4DF904]);
         if ( result > 0 )
         {
           v17 = 0;
-          v20 = (int *)(this + 204);
+          replay_row_widgets = screen->replay_row_widgets;
           do
           {
-            if ( *(_DWORD *)(*(int *)((char *)&byte_6FFAE0 + (_DWORD)v15) + v17) == 1 )
+            if ( *(_DWORD *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)v15] + v17) == 1 )
             {
-              v18 = *v20;
-              if ( *v20 )
+              v18 = *replay_row_widgets;
+              if ( *replay_row_widgets )
               {
-                v19 = *(_DWORD *)(v18 + 416);
+                v19 = v18->widget_flags;
                 if ( (v19 & 0x20) != 0 )
                 {
                   LOBYTE(v19) = v19 & 0xDF;
-                  *(_DWORD *)(v18 + 416) = v19;
+                  v18->widget_flags = v19;
                   *((_DWORD *)MEMORY[0x4DF904] + 110) = 10;
                   *((_BYTE *)MEMORY[0x4DF904] + 780) = 1;
-                  destroy_high_score_screen((_DWORD *)this);
-                  *((_DWORD *)MEMORY[0x4DF904] + 4299515) = v17
-                                                          + *(int *)((char *)&byte_6FFAE0 + (_DWORD)MEMORY[0x4DF904]);
+                  destroy_high_score_screen(screen);
+                  *((_DWORD *)MEMORY[0x4DF904] + 4299515) = v17 + *(_DWORD *)&byte_6FFAE0[(_DWORD)MEMORY[0x4DF904]];
                   *((_BYTE *)MEMORY[0x4DF904] + 17198056) = 1;
                   *((_BYTE *)MEMORY[0x4DF904] + 17198057) = 1;
                   *((_DWORD *)MEMORY[0x4DF904] + 4299516) = 18;
@@ -150,8 +147,8 @@ int __thiscall sub_417260(int this)
             }
             ++v16;
             v17 += 129728;
-            ++v20;
-            result = *(int *)((char *)&unk_6FFAE4 + (_DWORD)v15);
+            ++replay_row_widgets;
+            result = *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)v15);
           }
           while ( v16 < result );
         }
