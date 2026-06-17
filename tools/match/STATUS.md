@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**338/678** mapped gameplay functions matched, **436/678** mapped gameplay functions have a scratch, **27990/325983** bytes (**8.59%**) are proof-grade, and overall fuzzy is **20.28%**.
+**339/678** mapped gameplay functions matched, **437/678** mapped gameplay functions have a scratch, **28063/325983** bytes (**8.61%**) are proof-grade, and overall fuzzy is **20.30%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -138,6 +138,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | request_object_texture_groups | 0x42f930 | 82 | 29/29 | 96.55% | 18/29 | 4 ok |  |
 | ✅ | initialize_object_list | 0x42f990 | 80 | 30/30 | 100.00% | 30/30 | 3 ok |  |
 | ✅ | build_all_objects | 0x42f9e0 | 146 | 54/54 | 100.00% | 54/54 | 8 ok |  |
+| ✅ | apply_object_toon | 0x42fa80 | 73 | 24/24 | 100.00% | 24/24 | 4 ok |  |
 | 🚧 | add_object_to_list | 0x42fad0 | 58 | 22/24 | 73.91% | 2/24 | 3 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 56/55 | 28.83% | 5/55 | - |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |

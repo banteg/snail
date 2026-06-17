@@ -3,8 +3,10 @@
 
 struct TextureRef;
 struct TransformMatrix;
+struct Vector3;
 struct RenderObjectDevice;
 struct ObjectVertexBufferVtbl;
+struct ObjectToonFaceQuadNormal;
 
 struct ObjectVertexBuffer {
     ObjectVertexBufferVtbl* vtbl;
@@ -99,12 +101,15 @@ struct RenderObjectDevice {
 struct Object {
     int initialize_object(); // @ 0x42f6f0
     void* request_object_texture_groups(int group_count); // @ 0x42f930
+    void* apply_object_toon(int toon_flags); // @ 0x42fa80
     void calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     void calc_object_texture_groups(); // @ 0x4303f0
     void calc_object_edges(); // @ 0x4308b0
 
-    char unknown_00[0x10];
+    char unknown_00[0x08];
+    Vector3* toon_vertices; // +0x08, 12 bytes per source vertex
+    ObjectToonFaceQuadNormal* toon_facequad_normals; // +0x0c, 24 bytes per facequad
     unsigned int flags; // +0x10
     int field_14; // +0x14
     TextureRef* override_texture_ref; // +0x18
