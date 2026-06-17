@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**317/676** mapped gameplay functions matched, **410/676** mapped gameplay functions have a scratch, **24709/326004** bytes (**7.58%**) are proof-grade, and overall fuzzy is **19.10%**.
+**318/676** mapped gameplay functions matched, **411/676** mapped gameplay functions have a scratch, **24729/326004** bytes (**7.59%**) are proof-grade, and overall fuzzy is **19.10%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -335,6 +335,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 2 unresolved, 7 ok |  |
 | ✅ | is_key_pressed_edge | 0x44bb10 | 34 | 11/11 | 100.00% | 11/11 | 2 ok |  |
+| ✅ | is_key_down | 0x44bb40 | 20 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | initialize_mouse_authored_scale_from_clip_rect | 0x44bbb0 | 30 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | resolve_uncaptured_cursor_sensitivity_scale | 0x44bc20 | 44 | 11/11 | 100.00% | 11/11 | 5 ok |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
