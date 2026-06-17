@@ -43,7 +43,7 @@ Rejected source-shaped probes:
   `0x1a`, progress/lifetime steps at `0x1b/0x1d`, lifetime at `0x1c`, and
   gravity at `0x1e`.
 - 2026-06-16 Golb type consolidation: the scratch now uses the promoted
-  `GolbProjectile` view in `tools/match/include/golb.h`; codegen stays 63.64%
+  `GolbShot` view in `tools/match/include/golb.h`; codegen stays 63.64%
   and shares `owner_player +0x278` with the trail/smoke/teardown helpers.
 
 Keep this as a structure-first map unless a stronger source idiom explains the

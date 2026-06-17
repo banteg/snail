@@ -2,7 +2,7 @@
 
 #include "golb.h"
 
-Sprite* GolbProjectile::spawn_golb_trail_sprite(Vector3* position)
+Sprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
 {
     Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x21, -1, -1);
     int flags = sprite->flags;

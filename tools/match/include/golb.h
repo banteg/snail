@@ -51,25 +51,26 @@ struct GolbPathSourceCell {
     GolbPathTemplate* path_template; // +0x38
 };
 
-struct GolbShot;
-
-class GolbProjectileGameView {
+class GolbShotGameView {
 public:
     char unknown_00[0x38];
     float subgame_rate; // +0x38
 };
 
-// Projectile sprite/list view shared by the small Golb helpers. The larger
+// Shot sprite/list view shared by the small Golb helpers. The larger
 // update/create scratches still keep scheduling-sensitive local GolbShot views.
-class GolbProjectile {
+class GolbShot {
 public:
     void kill_golb(); // @ 0x414670
+    void update_golb_ai(); // @ 0x414820
+    int create_golb(Player* player, int spawn_selector, int emitter_index); // @ 0x415280
     Sprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80
 
     BodNode primary_body;        // +0x000
     char unknown_010[0x080 - 0x010];
+    // Kind-1 also treats this subobject as the VapourTrail body prefix.
     BodNode secondary_body;      // +0x080
     char unknown_090[0x118 - 0x090];
     BodNode tertiary_body;       // +0x118
@@ -77,7 +78,16 @@ public:
     Sprite* attached_sprite;     // +0x198
     char unknown_19c[0x1c0 - 0x19c];
     int kind;                    // +0x1c0
-    char unknown_1c4[0x244 - 0x1c4];
+    Vector3 basis_right_scratch;  // +0x1c4
+    char unknown_1d0[0x1d4 - 0x1d0];
+    Vector3 basis_up_scratch;     // +0x1d4
+    char unknown_1e0[0x1e4 - 0x1e0];
+    Vector3 basis_forward_scratch; // +0x1e4
+    char unknown_1f0[0x1f4 - 0x1f0];
+    Vector3 position;             // +0x1f4
+    char unknown_200[0x234 - 0x200];
+    Vector3 previous_output;      // +0x234
+    char unknown_240[0x244 - 0x240];
     int state;                   // +0x244
     Sprite* body_sprite;         // +0x248, kind-0 presentation sprite
     Vector3 velocity;            // +0x24c
@@ -85,7 +95,7 @@ public:
     float path_factor;           // +0x264
     float lifetime;              // +0x268
     float lifetime_step;         // +0x26c
-    GolbProjectileGameView* game; // +0x270
+    GolbShotGameView* game;      // +0x270
     void* object_ref;            // +0x274
     Player* owner_player;        // +0x278
 };

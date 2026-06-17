@@ -31,7 +31,7 @@ Rejected source-shaped probes:
   `player.h` and remove C4099; codegen stays 82.27%, 69/72, with 8 clean
   masked operands.
 - 2026-06-16 Golb type consolidation: the local projectile and game-rate views
-  moved into `tools/match/include/golb.h` as `GolbProjectile` and
+  moved into `tools/match/include/golb.h` as `GolbShot` and
   `GolbProjectileGameView`. Codegen stays 82.27%, and this shares the
   projectile `velocity +0x24c`, `game +0x270`, `object_ref +0x274`, and
   `owner_player +0x278` lanes with the trail/impact/teardown helpers.

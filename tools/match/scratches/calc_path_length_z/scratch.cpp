@@ -11,20 +11,6 @@ typedef Vector3 Vec3;
 #include "track_attachment_matrix_path_view.h"
 #include "track_row_cell_anchor_view.h"
 
-struct GolbShot {
-    char unknown_000[0x1c4];
-    Vec3 basis_right_scratch; // +0x1c4
-    char unknown_1d0[0x1d4 - 0x1d0];
-    Vec3 basis_up_scratch; // +0x1d4
-    char unknown_1e0[0x1e4 - 0x1e0];
-    Vec3 basis_forward_scratch; // +0x1e4
-    char unknown_1f0[0x1f4 - 0x1f0];
-    Vec3 position; // +0x1f4
-    char unknown_200[0x24c - 0x200];
-    Vec3 velocity; // +0x24c
-    Vec3 direction; // +0x258
-};
-
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 int __stdcall compute_kind42_attachment_transform(
     float radius,

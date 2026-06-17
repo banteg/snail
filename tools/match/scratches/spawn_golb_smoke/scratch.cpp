@@ -2,7 +2,7 @@
 
 #include "golb.h"
 
-void GolbProjectile::spawn_golb_smoke(Vector3* position)
+void GolbShot::spawn_golb_smoke(Vector3* position)
 {
     Sprite* sprite = g_sprite_manager.allocate_sprite(
         owner_player->player_slot,

@@ -4,7 +4,7 @@
 
 extern unsigned char g_render_effect_flags; // data_4df934
 
-void GolbProjectile::spawn_golb_impact_sprite(Vector3* position)
+void GolbShot::spawn_golb_impact_sprite(Vector3* position)
 {
     unsigned char render_flags = g_render_effect_flags;
 

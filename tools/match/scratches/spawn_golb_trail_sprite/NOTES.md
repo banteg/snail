@@ -20,7 +20,7 @@ and lands at 93.62%.
 
 Type consolidation:
 
-- This scratch now uses the promoted `GolbProjectile` view in
+- This scratch now uses the promoted `GolbShot` view in
   `tools/match/include/golb.h`, sharing `object_ref +0x274` and
   `owner_player +0x278` with `spawn_golb_smoke`,
   `spawn_golb_impact_sprite`, and `kill_golb`. The match stays exact.

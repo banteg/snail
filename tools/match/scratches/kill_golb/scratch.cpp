@@ -6,7 +6,7 @@ int report_errorf(char* format, ...);
 
 extern char* g_game_base; // data_4df904
 
-void GolbProjectile::kill_golb()
+void GolbShot::kill_golb()
 {
     BodList* list = (BodList*)(g_game_base + 0x5a8);
     unsigned int flags = primary_body.list_flags;

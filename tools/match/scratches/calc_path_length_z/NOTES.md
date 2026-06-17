@@ -109,6 +109,13 @@ view only because its `transform` field needs the local `TransformMatrix`
 methods for interpolation while the shared header still uses
 `AttachmentTransform`.
 
+2026-06-17 GolbShot consolidation: the local shot window moved into the shared
+`golb.h` view. This pins the basis scratch vectors at `+0x1c4`, `+0x1d4`, and
+`+0x1e4`, live position `+0x1f4`, previous output `+0x234`, velocity `+0x24c`,
+and direction `+0x258` against the exact small Golb helpers and this path-follow
+updater. Focused Wibo remains `40.58%`, `408/425`; the remaining diff is still
+the known stack/layout issue, not field uncertainty.
+
 2026-06-14 recheck: localized diff still shows one broad region dominated by
 the `0xf4`/`0xe0` frame gap, overflow-loop placement, scalar lerp stack slots,
 and matrix-copy layout. Hoisting the `center_x`/`lateral_scale`/`special_scalar`
