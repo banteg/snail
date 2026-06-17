@@ -124,13 +124,13 @@ LABEL_16:
   MEMORY[0x4DFAF0] = v7;
   if ( !v7 )
   {
-    unknown_libname_2();
+    release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
   unk_4DFAEC = ((int (__stdcall *)(int))GetDC)(v7);
   if ( !unk_4DFAEC )
   {
-    unknown_libname_2();
+    release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
   ((void (__stdcall *)(_DWORD, int))ShowWindow)(MEMORY[0x4DFAF0], 5);
@@ -138,7 +138,7 @@ LABEL_16:
   ((void (__stdcall *)(_DWORD))SetFocus)(MEMORY[0x4DFAF0]);
   if ( !sub_4129C0() )
   {
-    unknown_libname_2();
+    release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();
   }
   if ( (int)initialize_keyboard_input(MEMORY[0x4DFAF0]) < 0 )
@@ -151,4 +151,3 @@ LABEL_16:
   set_cull_mode(1);
   return 1;
 }
-

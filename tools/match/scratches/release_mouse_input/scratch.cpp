@@ -9,11 +9,11 @@ int release_mouse_input()
 {
     DirectInputDevice* device = g_mouse_device;
     if (device != 0) {
-        device->vtbl->Unacquire(device);
+        device->Unacquire();
 
         device = g_mouse_device;
         if (device != 0) {
-            device->vtbl->Release(device);
+            device->Release();
             g_mouse_device = 0;
         }
     }
@@ -21,7 +21,7 @@ int release_mouse_input()
     DirectInput* input = g_mouse_input;
     int result = (int)input;
     if (input != 0) {
-        result = input->vtbl->Release(input);
+        result = input->Release();
         g_mouse_input = 0;
     }
     return result;

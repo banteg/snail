@@ -9,11 +9,11 @@ int release_keyboard_input()
 {
     DirectInputDevice* device = g_keyboard_device;
     if (device != 0) {
-        device->vtbl->Unacquire(device);
+        device->Unacquire();
 
         device = g_keyboard_device;
         if (device != 0) {
-            device->vtbl->Release(device);
+            device->Release();
             g_keyboard_device = 0;
         }
     }
@@ -21,7 +21,7 @@ int release_keyboard_input()
     DirectInput* input = g_keyboard_input;
     int result = (int)input;
     if (input != 0) {
-        result = input->vtbl->Release(input);
+        result = input->Release();
         g_keyboard_input = 0;
     }
     return result;

@@ -60,6 +60,16 @@
       "description": "Compiler-emitted state switch jump table used by update_frontend_state_machine."
     },
     {
+      "address": "0x411d70",
+      "name": "release_global_direct3d_renderer_resources",
+      "kind": "function",
+      "aliases": [
+        "sub_411d70",
+        "unknown_libname_2"
+      ],
+      "description": "Tiny wrapper that loads g_direct3d_renderer into ecx and tail-calls the renderer resource teardown used by input/window shutdown paths."
+    },
+    {
       "address": "0x412e18",
       "name": "set_blend_mode_jump_table",
       "kind": "jump_table",

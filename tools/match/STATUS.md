@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**321/676** mapped gameplay functions matched, **414/676** mapped gameplay functions have a scratch, **24912/326004** bytes (**7.64%**) are proof-grade, and overall fuzzy is **19.16%**.
+**322/676** mapped gameplay functions matched, **415/676** mapped gameplay functions have a scratch, **24932/326004** bytes (**7.65%**) are proof-grade, and overall fuzzy is **19.17%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -79,6 +79,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | direct3d_renderer_set_cull_mode | 0x411700 | 46 | 16/16 | 100.00% | 16/16 | - |  |
+| ✅ | uninitialize_input_devices | 0x411d80 | 20 | 4/4 | 100.00% | 4/4 | 4 ok |  |
 | ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
 | ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 135/139 | 59.85% | 7/139 | 4 ok |  |

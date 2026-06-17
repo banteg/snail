@@ -5,9 +5,8 @@
 // Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles.
 int uninitialize_input_devices()
 {
-  unknown_libname_2();
+  release_global_direct3d_renderer_resources();
   release_input_controllers();
   release_keyboard_input();
   return release_mouse_input();
 }
-

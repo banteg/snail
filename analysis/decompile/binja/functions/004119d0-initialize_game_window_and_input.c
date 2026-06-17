@@ -99,20 +99,20 @@
 00411bb8        HWND hWnd = CreateWindowExA(dwExStyle, "SnailMailWindowClass", arg1, dwStyle | 0x6000000, X, Y, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, data_50327c, 0)
 00411bc0        data_4dfaf0 = hWnd
 00411bc5        if (hWnd == 0)
-00411bc7        sub_411d70()
+00411bc7        release_global_direct3d_renderer_resources()
 00411bcc        abort_startup_with_3d_error()
 00411bdd        return 0
 00411c25        HDC eax_9 = GetDC(hWnd)
 00411c2d        data_4dfaec = eax_9
 00411c32        if (eax_9 == 0)
-00411c34        sub_411d70()
+00411c34        release_global_direct3d_renderer_resources()
 00411c39        abort_startup_with_3d_error()
 00411c4a        return 0
 00411c53        ShowWindow(data_4dfaf0, SW_SHOW)
 00411c60        SetForegroundWindow(data_4dfaf0)
 00411c73        SetFocus(data_4dfaf0)
 00411c7c        if (sub_4129c0() == 0)
-00411c7e        sub_411d70()
+00411c7e        release_global_direct3d_renderer_resources()
 00411c83        abort_startup_with_3d_error()
 00411c94        return 0
 00411ca5        if (initialize_keyboard_input(data_4dfaf0) s< 0)
