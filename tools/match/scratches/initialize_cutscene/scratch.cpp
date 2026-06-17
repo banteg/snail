@@ -13,34 +13,32 @@ void PlayerPresentationController::initialize_cutscene()
 
     snail_skin_transition.update_snail_skin_transition();
 
-    PlayerPresentationController* presentation = this;
-    Player* player = owner_player;
-    TransformMatrix* player_matrix = (TransformMatrix*)((char*)player + 0x38);
-
     TransformMatrix scratch_matrix;
     TransformMatrix source_matrix;
     TransformMatrix roll_matrix;
     TransformMatrix inverse_live;
     TransformMatrix base_matrix;
-    if (player->cutscene_pitch_cycle > 0.0f) {
-        player->cutscene_pitch_cycle =
-            player->cutscene_pitch_cycle_step + player->cutscene_pitch_cycle;
-        if (player->cutscene_pitch_cycle > 1.0f)
-            player->cutscene_pitch_cycle = 0.0f;
+    if (owner_player->cutscene_pitch_cycle > 0.0f) {
+        owner_player->cutscene_pitch_cycle =
+            owner_player->cutscene_pitch_cycle_step + owner_player->cutscene_pitch_cycle;
+        if (owner_player->cutscene_pitch_cycle > 1.0f)
+            owner_player->cutscene_pitch_cycle = 0.0f;
 
+        TransformMatrix* player_matrix = (TransformMatrix*)((char*)owner_player + 0x38);
         scratch_matrix = *player_matrix;
         source_matrix = *player_matrix;
         scratch_matrix.set_matrix_rotation_identity();
 
         float angle =
-            (-0.785398185f - player->cutscene_pitch_cycle * 6.28318548f)
+            (-0.785398185f - owner_player->cutscene_pitch_cycle * 6.28318548f)
             * 1.39999998f;
         if (angle < -6.28318548f)
             angle = -6.28318548f;
         scratch_matrix.rotate_matrix_world_x(angle);
         player_matrix->linear_interpolate_matrix(&scratch_matrix, &source_matrix, 0.939999998f);
     } else {
-        if (player->attachment_exit_pending != 0) {
+        if (owner_player->attachment_exit_pending != 0) {
+            TransformMatrix* player_matrix = (TransformMatrix*)((char*)owner_player + 0x38);
             scratch_matrix = *player_matrix;
             source_matrix = *player_matrix;
             scratch_matrix.set_matrix_rotation_identity();
@@ -48,10 +46,11 @@ void PlayerPresentationController::initialize_cutscene()
         }
     }
 
-    live_matrix = *player_matrix;
-    live_matrix.position.x = player->cached_camera_target_world.x;
-    live_matrix.position.y = player->cached_camera_target_world.y;
-    live_matrix.position.z = player->cached_camera_target_world.z;
+    live_matrix = *(TransformMatrix*)((char*)owner_player + 0x38);
+    Vector3* camera_target = &owner_player->cached_camera_target_world;
+    live_matrix.position.x = camera_target->x;
+    live_matrix.position.y = camera_target->y;
+    live_matrix.position.z = camera_target->z;
 
     scratch_matrix = live_matrix;
     live_matrix.linear_interpolate_matrix(
@@ -143,18 +142,19 @@ void PlayerPresentationController::initialize_cutscene()
     }
 
     snail_hotspot_source_matrix_a = live_matrix;
-    snail_hotspot_source_matrix_b = *player_matrix;
-    snail_hotspot_source_matrix_b.position.x = player->cached_camera_target_world.x;
-    snail_hotspot_source_matrix_b.position.y = player->cached_camera_target_world.y;
-    snail_hotspot_source_matrix_b.position.z = player->cached_camera_target_world.z;
+    snail_hotspot_source_matrix_b = *(TransformMatrix*)((char*)owner_player + 0x38);
+    camera_target = &owner_player->cached_camera_target_world;
+    snail_hotspot_source_matrix_b.position.x = camera_target->x;
+    snail_hotspot_source_matrix_b.position.y = camera_target->y;
+    snail_hotspot_source_matrix_b.position.z = camera_target->z;
 
     update_snail_skin();
 
     if (cutscene_ai.state != 0) {
         cutscene_ai.update_cutscene();
-    } else if (anim_manager.queue_count == 0 && player->control_override_active == 0) {
+    } else if (anim_manager.queue_count == 0 && owner_player->control_override_active == 0) {
         dispatch_cutscene_animation(1, 0, -1);
     }
 
-    player->jetpack_gauge.update_jet_particles();
+    owner_player->jetpack_gauge.update_jet_particles();
 }

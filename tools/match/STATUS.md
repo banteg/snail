@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**344/678** mapped gameplay functions matched, **463/678** mapped gameplay functions have a scratch, **30327/325983** bytes (**9.30%**) are proof-grade, and overall fuzzy is **23.44%**.
+**344/678** mapped gameplay functions matched, **463/678** mapped gameplay functions have a scratch, **30327/325983** bytes (**9.30%**) are proof-grade, and overall fuzzy is **23.48%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -270,7 +270,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
-| 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 323/339 | 64.05% | 1/339 | 1 mismatch, 39 ok |  |
+| 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 97/125 | 49.55% | 0/125 | 28 ok |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |

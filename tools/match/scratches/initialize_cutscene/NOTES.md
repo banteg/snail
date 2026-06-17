@@ -14,13 +14,21 @@ and layout validation, not a final register-perfect reconstruction.
 
 Current focused result:
 
-- 64.05% fuzzy match, 323 candidate insns / 339 native insns
+- 73.95% fuzzy match, 329 candidate insns / 339 native insns
 - prefix 1/339
-- masked comparison: 39 ok, 1 mismatch
+- masked comparison: 42 ok, 0 unresolved, 0 mismatch
 
 Remaining known shape issues:
 
-- native stack frame is `0x15c`; current candidate frame is `0x14c`
-- the pitch-cycle compare still schedules differently near the first masked mismatch
+- native stack frame is `0x15c`; current candidate frame is `0x144`
 - `Player` still needs a careful `live_matrix` promotion at `+0x38`; this scratch
   uses a pointer view to avoid breaking existing `Player::position` users
+- 2026-06-18 source-shape correction: the early persistent `Player* player` /
+  `player_matrix` assumption was wrong for this function. Native reloads
+  `owner_player` through the pitch/exit gates, then uses short-lived player
+  matrix and cached-camera-target views in the steady path. Spelling those
+  lifetimes in source raises the match from 64.05% to 73.95% and clears the
+  previous masked constant mismatch.
+- A destination-position pointer probe compiled identically at 73.95%, so the
+  scratch keeps the simpler direct `live_matrix.position` and
+  `snail_hotspot_source_matrix_b.position` assignments.
