@@ -2,16 +2,16 @@
 /* function: initialize_vapour @ 0x442500 */
 /* selector: initialize_vapour */
 
-char __thiscall sub_442500(_DWORD *this, int a2, int a3)
+int32_t __thiscall initialize_vapour(VapourTrail *trail, int32_t unused, int32_t half_width_bits)
 {
-  int v4; // ecx
-  int v5; // eax
+  VapourTrailOwner *owner; // ecx
+  int32_t v5; // eax
 
-  v4 = *(this + 9);
-  *(this + 34) = a3;
-  v5 = *(_DWORD *)(v4 + 84) + 1;
-  *(this + 33) = v5;
-  *(this + 36) = allocate_tracked_memory(v5 << 6, (int)aVapourTrail);
-  return reset_vapour(this, 0);
+  owner = trail->owner;
+  LODWORD(trail->half_width) = half_width_bits;
+  v5 = owner->max_points + 1;
+  trail->capacity = v5;
+  trail->points = (TransformMatrix *)allocate_tracked_memory(v5 << 6, (int)aVapourTrail);
+  return reset_vapour(trail, 0);
 }
 

@@ -2,170 +2,144 @@
 /* function: update_vapour @ 0x4425f0 */
 /* selector: update_vapour */
 
-char __thiscall sub_4425F0(int this)
+int32_t __thiscall update_vapour(VapourTrail *trail)
 {
-  int v1; // eax
-  int v2; // eax
-  int v3; // ebx
+  int32_t point_count; // eax
+  int32_t result; // eax
+  int32_t v3; // ebx
   int v4; // edi
-  float *v5; // esi
-  float *v6; // edx
-  int v7; // edi
-  double v8; // st7
-  float *v9; // eax
+  float *z_floor; // esi
+  float *p_z; // edx
+  int i; // edi
+  double half_width; // st7
+  TransformMatrix *v9; // eax
   double v10; // st7
   int v11; // eax
-  float *v12; // esi
+  VapourQuadVertices *v12; // esi
   double v13; // st7
-  float *v14; // esi
-  float *v15; // esi
-  double v16; // st7
-  float *v17; // esi
-  float *v18; // esi
-  double v19; // st7
-  float *v20; // edx
-  float *v21; // edx
-  int v22; // edx
-  int v23; // edx
-  bool v24; // zf
-  float v26; // [esp+0h] [ebp-60h]
-  float v27; // [esp+4h] [ebp-5Ch]
-  float v28; // [esp+8h] [ebp-58h]
-  float v29; // [esp+Ch] [ebp-54h]
-  float v30; // [esp+10h] [ebp-50h]
-  float v31; // [esp+14h] [ebp-4Ch]
-  float v32; // [esp+18h] [ebp-48h]
-  float v33; // [esp+1Ch] [ebp-44h]
-  float v34; // [esp+20h] [ebp-40h]
-  float v35; // [esp+24h] [ebp-3Ch]
-  float v36; // [esp+28h] [ebp-38h]
-  float v37; // [esp+2Ch] [ebp-34h]
-  float v38; // [esp+30h] [ebp-30h]
-  float v39; // [esp+34h] [ebp-2Ch]
-  float v40; // [esp+3Ch] [ebp-24h]
-  float v41; // [esp+40h] [ebp-20h]
-  float v42; // [esp+48h] [ebp-18h]
-  float v43; // [esp+4Ch] [ebp-14h]
-  float v44; // [esp+54h] [ebp-Ch]
-  float v45; // [esp+58h] [ebp-8h]
+  TransformMatrix *v14; // esi
+  double v15; // st7
+  TransformMatrix *v16; // esi
+  double v17; // st7
+  TransformMatrix *v18; // edx
+  int32_t v19; // edx
+  VapourTrailOwner *owner; // edx
+  bool v21; // zf
+  float v22; // [esp+0h] [ebp-60h]
+  float v23; // [esp+4h] [ebp-5Ch]
+  float v24; // [esp+8h] [ebp-58h]
+  float v25; // [esp+30h] [ebp-30h]
+  float v26; // [esp+34h] [ebp-2Ch]
+  float v27; // [esp+3Ch] [ebp-24h]
+  float v28; // [esp+40h] [ebp-20h]
+  float v29; // [esp+48h] [ebp-18h]
+  float v30; // [esp+4Ch] [ebp-14h]
+  float v31; // [esp+54h] [ebp-Ch]
+  float v32; // [esp+58h] [ebp-8h]
+  Vec3 v33; // 0:^1C.12
+  Vec3 v34; // 0:^28.12
+  Vec3 v35; // 0:^34.12
 
-  v1 = *(_DWORD *)(this + 128);
-  if ( v1 >= 2 )
+  point_count = trail->point_count;
+  if ( point_count < 2 )
   {
-    *(_DWORD *)(this + 4) |= 0x20u;
-    *(_DWORD *)(*(_DWORD *)(this + 36) + 44) = 4 * v1 - 4;
-    if ( *(_DWORD *)(this + 140) )
+    result = trail->flags;
+    LOBYTE(result) = result & 0xDF;
+    trail->flags = result;
+    return result;
+  }
+  trail->flags |= 0x20u;
+  trail->owner->vertex_count = 4 * point_count - 4;
+  if ( trail->z_floor )
+  {
+    v3 = 0;
+    if ( trail->point_count > 0 )
     {
-      v3 = 0;
-      if ( *(int *)(this + 128) > 0 )
+      v4 = 0;
+      do
       {
-        v4 = 0;
-        do
-        {
-          v5 = *(float **)(this + 140);
-          v6 = (float *)(v4 + *(_DWORD *)(this + 144) + 56);
-          if ( *v6 < (double)*v5 )
-            *v6 = *v5;
-          ++v3;
-          v4 += 64;
-        }
-        while ( v3 < *(_DWORD *)(this + 128) );
+        z_floor = (float *)trail->z_floor;
+        p_z = &trail->points[v4].position.z;
+        if ( *p_z < (double)*z_floor )
+          *p_z = *z_floor;
+        ++v3;
+        ++v4;
       }
-    }
-    v7 = 0;
-    if ( *(_DWORD *)(this + 128) - 1 <= 0 )
-    {
-LABEL_18:
-      v2 = 2 * *(_DWORD *)(this + 128) - 2;
-      **(_DWORD **)(*(_DWORD *)(this + 36) + 212) = v2;
-      return v2;
-    }
-    while ( 1 )
-    {
-      v8 = *(float *)(this + 136);
-      v9 = (float *)((v7 << 6) + *(_DWORD *)(this + 144));
-      v38 = v8 * *v9;
-      v39 = v8 * v9[1];
-      v26 = v38 + v9[12];
-      v27 = v39 + v9[13];
-      v10 = v8 * v9[2] + v9[14];
-      v11 = 48 * v7;
-      v12 = (float *)(48 * v7 + *(_DWORD *)(*(_DWORD *)(this + 36) + 56));
-      v28 = v10;
-      *v12 = v26;
-      v12[1] = v27;
-      v12[2] = v28;
-      v13 = -*(float *)(this + 136);
-      v14 = (float *)((v7 << 6) + *(_DWORD *)(this + 144));
-      v40 = v13 * *v14;
-      v41 = v13 * v14[1];
-      v29 = v40 + v14[12];
-      v30 = v41 + v14[13];
-      v31 = v13 * v14[2] + v14[14];
-      v15 = (float *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 56) + 48 * v7 + 12);
-      *v15 = v29;
-      v15[1] = v30;
-      v15[2] = v31;
-      v16 = -*(float *)(this + 136);
-      v17 = (float *)((v7 << 6) + *(_DWORD *)(this + 144));
-      v42 = v16 * *v17;
-      v43 = v16 * v17[1];
-      v32 = v42 + v17[28];
-      v33 = v43 + v17[29];
-      v34 = v16 * v17[2] + v17[30];
-      v18 = (float *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 56) + 48 * v7 + 24);
-      *v18 = v32;
-      v18[1] = v33;
-      v18[2] = v34;
-      v19 = *(float *)(this + 136);
-      v20 = (float *)(*(_DWORD *)(this + 144) + (v7 << 6));
-      v44 = v19 * *v20;
-      v45 = v19 * v20[1];
-      v35 = v44 + v20[28];
-      v36 = v45 + v20[29];
-      v37 = v19 * v20[2] + v20[30];
-      v21 = (float *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 56) + 48 * v7 + 36);
-      *v21 = v35;
-      v21[1] = v36;
-      v21[2] = v37;
-      v22 = *(_DWORD *)(this + 128);
-      if ( v22 == 2 )
-      {
-        *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 20) = 0;
-        *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 28) = 0;
-        v23 = *(_DWORD *)(this + 36);
-      }
-      else
-      {
-        if ( !v7 )
-        {
-          *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + 20) = 0;
-          *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + 28) = 0;
-          *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + 36) = 1056964608;
-          *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + 44) = 1056964608;
-          goto LABEL_17;
-        }
-        v24 = v7 == v22 - 2;
-        *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 20) = 1056964608;
-        *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 28) = 1056964608;
-        v23 = *(_DWORD *)(this + 36);
-        if ( !v24 )
-        {
-          *(_DWORD *)(*(_DWORD *)(v23 + 92) + v11 + 36) = 1056964608;
-          *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 44) = 1056964608;
-          goto LABEL_17;
-        }
-      }
-      *(_DWORD *)(*(_DWORD *)(v23 + 92) + v11 + 36) = 1065353216;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(this + 36) + 92) + v11 + 44) = 1065353216;
-LABEL_17:
-      if ( ++v7 >= *(_DWORD *)(this + 128) - 1 )
-        goto LABEL_18;
+      while ( v3 < trail->point_count );
     }
   }
-  v2 = *(_DWORD *)(this + 4);
-  LOBYTE(v2) = v2 & 0xDF;
-  *(_DWORD *)(this + 4) = v2;
-  return v2;
+  for ( i = 0; i < trail->point_count - 1; ++i )
+  {
+    half_width = trail->half_width;
+    v9 = &trail->points[i];
+    v25 = half_width * v9->basis_right.x;
+    v26 = half_width * v9->basis_right.y;
+    v22 = v25 + v9->position.x;
+    v23 = v26 + v9->position.y;
+    v10 = half_width * v9->basis_right.z + v9->position.z;
+    v11 = 12 * i;
+    v12 = &trail->owner->vertices[i];
+    v24 = v10;
+    v12->corner_a.x = v22;
+    v12->corner_a.y = v23;
+    v12->corner_a.z = v24;
+    v13 = -trail->half_width;
+    v14 = &trail->points[i];
+    v27 = v13 * v14->basis_right.x;
+    v28 = v13 * v14->basis_right.y;
+    v33.x = v27 + v14->position.x;
+    v33.y = v28 + v14->position.y;
+    v33.z = v13 * v14->basis_right.z + v14->position.z;
+    trail->owner->vertices[i].corner_b = v33;
+    v15 = -trail->half_width;
+    v16 = &trail->points[i];
+    v29 = v15 * v16->basis_right.x;
+    v30 = v15 * v16->basis_right.y;
+    v34.x = v29 + v16[1].position.x;
+    v34.y = v30 + v16[1].position.y;
+    v34.z = v15 * v16->basis_right.z + v16[1].position.z;
+    trail->owner->vertices[i].corner_c = v34;
+    v17 = trail->half_width;
+    v18 = &trail->points[i];
+    v31 = v17 * v18->basis_right.x;
+    v32 = v17 * v18->basis_right.y;
+    v35.x = v31 + v18[1].position.x;
+    v35.y = v32 + v18[1].position.y;
+    v35.z = v17 * v18->basis_right.z + v18[1].position.z;
+    trail->owner->vertices[i].corner_d = v35;
+    v19 = trail->point_count;
+    if ( v19 == 2 )
+    {
+      trail->owner->vertex_attributes[v11 + 5] = 0;
+      trail->owner->vertex_attributes[v11 + 7] = 0;
+      owner = trail->owner;
+    }
+    else
+    {
+      if ( !i )
+      {
+        trail->owner->vertex_attributes[5] = 0;
+        trail->owner->vertex_attributes[7] = 0;
+        trail->owner->vertex_attributes[9] = 1056964608;
+        trail->owner->vertex_attributes[11] = 1056964608;
+        continue;
+      }
+      v21 = i == v19 - 2;
+      trail->owner->vertex_attributes[v11 + 5] = 1056964608;
+      trail->owner->vertex_attributes[v11 + 7] = 1056964608;
+      owner = trail->owner;
+      if ( !v21 )
+      {
+        owner->vertex_attributes[v11 + 9] = 1056964608;
+        trail->owner->vertex_attributes[v11 + 11] = 1056964608;
+        continue;
+      }
+    }
+    owner->vertex_attributes[v11 + 9] = 1065353216;
+    trail->owner->vertex_attributes[v11 + 11] = 1065353216;
+  }
+  result = 2 * trail->point_count - 2;
+  *trail->owner->index_count_out = result;
+  return result;
 }
 

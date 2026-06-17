@@ -57,6 +57,8 @@ Current checked-in example:
 
 - `path_template_types.h`
 - `uv run python tools/ida/sync_path_template_types.py`
+- `vapour_trail_types.h`
+- `uv run python tools/ida/sync_vapour_trail_types.py`
 
 Current checked-in Binary Ninja companion:
 

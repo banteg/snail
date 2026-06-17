@@ -2,15 +2,15 @@
 /* function: reset_vapour @ 0x442540 */
 /* selector: reset_vapour */
 
-char __thiscall sub_442540(_DWORD *this, int a2)
+int32_t __thiscall reset_vapour(VapourTrail *trail, int32_t z_floor)
 {
-  int v2; // eax
+  int32_t result; // eax
 
-  *(this + 32) = 0;
-  *(this + 35) = a2;
-  v2 = *(this + 1);
-  LOBYTE(v2) = v2 & 0xDF;
-  *(this + 1) = v2;
-  return v2;
+  trail->point_count = 0;
+  trail->z_floor = z_floor;
+  result = trail->flags;
+  LOBYTE(result) = result & 0xDF;
+  trail->flags = result;
+  return result;
 }
 

@@ -3,9 +3,10 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: reset_vapour @ 0x442540 */
 
-00442544        *(arg1 + 0x80) = 0
-0044254e        *(arg1 + 0x8c) = arg2
-00442557        int32_t result
-00442557        result.b = (*(arg1 + 4)).b & 0xdf
-00442559        *(arg1 + 4) = result
-0044255c        return result
+00442544        trail->point_count = 0
+0044254e        int32_t arg_4
+0044254e        trail->z_floor = arg_4
+00442554        int32_t flags = trail->flags
+00442557        flags.b &= 0xdf
+00442559        trail->flags = flags
+0044255c        return flags

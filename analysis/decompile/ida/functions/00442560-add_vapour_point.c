@@ -2,47 +2,40 @@
 /* function: add_vapour_point @ 0x442560 */
 /* selector: add_vapour_point */
 
-_DWORD *__thiscall sub_442560(_DWORD *this, const void *a2)
+void __thiscall add_vapour_point(VapourTrail *trail, const TransformMatrix *point)
 {
-  _DWORD *result; // eax
-  int v3; // edi
-  int v4; // ecx
+  int32_t point_count; // edi
+  int32_t capacity; // ecx
   int v5; // ebx
   int v6; // edx
-  int v7; // ecx
-  const void *v8; // esi
-  void *v9; // edi
-  int v10; // edx
+  TransformMatrix *points; // ecx
+  TransformMatrix *v8; // esi
+  TransformMatrix *v9; // edi
 
-  result = this;
-  v3 = *(this + 32);
-  v4 = *(this + 33);
-  if ( v3 >= v4 )
+  point_count = trail->point_count;
+  capacity = trail->capacity;
+  if ( point_count >= capacity )
   {
     v5 = 0;
-    if ( v4 - 1 > 0 )
+    if ( capacity - 1 > 0 )
     {
       v6 = 0;
       do
       {
-        v7 = result[36];
+        points = trail->points;
         ++v5;
-        v8 = (const void *)(v6 + v7 + 64);
-        v9 = (void *)(v6 + v7);
-        v6 += 64;
-        qmemcpy(v9, v8, 0x40u);
+        v8 = &points[v6 + 1];
+        v9 = &points[v6++];
+        qmemcpy(v9, v8, sizeof(TransformMatrix));
       }
-      while ( v5 < result[33] - 1 );
+      while ( v5 < trail->capacity - 1 );
     }
-    v10 = result[32];
-    result = (_DWORD *)result[36];
-    qmemcpy(&result[16 * v10 - 16], a2, 0x40u);
+    qmemcpy(&trail->points[trail->point_count - 1], point, sizeof(trail->points[trail->point_count - 1]));
   }
   else
   {
-    qmemcpy((void *)(result[36] + (v3 << 6)), a2, 0x40u);
-    ++result[32];
+    qmemcpy(&trail->points[point_count], point, sizeof(trail->points[point_count]));
+    ++trail->point_count;
   }
-  return result;
 }
 
