@@ -29,11 +29,20 @@ Kept local for now:
 
 Focused match:
 
-- 2026-06-18: 44.67%, 505 target instructions versus 480 candidate
+- 2026-06-18 initial: 44.67%, 505 target instructions versus 480 candidate
   instructions.
+- 2026-06-18 local-lifetime correction: 46.29%, still 505 target instructions
+  versus 480 candidate instructions, with 33 masked operands OK, two unresolved
+  relocation artifacts, and one real alignment mismatch. Hoisting the two
+  recurring camera matrices and three vector temporaries to function scope
+  moves the generated frame from `0x9c` to `0xa8` and lines up the state-8
+  matrix/vector stack slots with native.
 - Native code order is `1/2`, `8`, `9`, `10/11`, `12`, `5/6`, `7`; keeping that
   source order improves alignment over the decompiler's displayed case order.
 - Main remaining shape gaps are stack frame size/temporary placement
-  (`0xe8` native versus `0x9c` candidate), register allocation for the shared
-  `-1`/`0.00833333377f` constants, and matrix/vector staging inside the three
-  interpolation legs.
+  (`0xe8` native versus `0xa8` candidate), register allocation for the shared
+  `-1`/`0.00833333377f` constants, and matrix/vector staging inside the
+  death/completion interpolation legs.
+- Rejected probes: swapping the two matrix locals for states `11`/`6` regressed
+  to 38.17%, and a shared `float` local for `0.00833333377f` produced no score
+  movement or saved-register constant hoist.

@@ -11,6 +11,12 @@ void CutsceneAI::update_cutscene()
     int current_state = state;
     force_camera_update = 0;
 
+    TransformMatrix look_at_matrix;
+    TransformMatrix source_matrix;
+    Vector3 target_delta;
+    Vector3 skid_stop;
+    Vector3 intro_talk;
+
     switch (current_state) {
     case 1:
         state = 2;
@@ -39,8 +45,6 @@ void CutsceneAI::update_cutscene()
         *((unsigned char*)g_game_base + 0x42fec4) = 0;
         camera_mode = 1;
 
-        TransformMatrix look_at_matrix;
-        TransformMatrix source_matrix;
         set_matrix_identity(&look_at_matrix);
         look_at_matrix.position = presentation->snail_hotspots_world[18];
         float swing = sine(progress * 3.1415927f);
@@ -51,7 +55,6 @@ void CutsceneAI::update_cutscene()
         float alpha = sine(progress * 1.5707964f);
         live_matrix.linear_interpolate_matrix(&look_at_matrix, &source_matrix, alpha);
 
-        Vector3 target_delta;
         target_delta.x = live_matrix.position.x - presentation->live_matrix.position.x;
         target_delta.y = live_matrix.position.y - presentation->live_matrix.position.y;
         target_delta.z = live_matrix.position.z - presentation->live_matrix.position.z;
@@ -91,8 +94,6 @@ void CutsceneAI::update_cutscene()
 
     case 11: {
         camera_mode = -1;
-        TransformMatrix look_at_matrix;
-        TransformMatrix source_matrix;
         set_matrix_identity(&look_at_matrix);
         look_at_matrix.position = presentation->snail_hotspots_world[18];
         float swing = sine(progress * 3.1415927f);
@@ -166,12 +167,10 @@ void CutsceneAI::update_cutscene()
 
     case 6: {
         camera_mode = -1;
-        TransformMatrix look_at_matrix;
-        TransformMatrix source_matrix;
         set_matrix_identity(&look_at_matrix);
 
-        Vector3 skid_stop = presentation->snail_hotspots_world[12];
-        Vector3 intro_talk = presentation->snail_hotspots_world[18];
+        skid_stop = presentation->snail_hotspots_world[12];
+        intro_talk = presentation->snail_hotspots_world[18];
         float blend_x = (intro_talk.x - skid_stop.x) * progress + skid_stop.x;
         float blend_y = (intro_talk.y - skid_stop.y) * progress + skid_stop.y;
         float blend_z = (intro_talk.z - skid_stop.z) * progress + skid_stop.z;
