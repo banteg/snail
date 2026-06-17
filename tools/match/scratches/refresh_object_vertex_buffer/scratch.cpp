@@ -12,10 +12,6 @@ struct ObjectVertexBufferVtbl {
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
 };
 
-struct ObjectDistort {
-    int apply_distort_to_object(ObjectRenderGeometry* object); // @ 0x41aa50
-};
-
 struct ObjectRenderGeometry {
     char unknown_00[0x10];
     unsigned int flags; // +0x10
@@ -45,7 +41,7 @@ void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
         object->facequad_normals = animation->frames[frame_index]->facequad_normals;
 
         if ((flags & 0x800000) != 0) {
-            ((ObjectDistort*)((char*)object + 0x80))->apply_distort_to_object(object);
+            ((ObjectDistort*)((char*)object + 0x80))->apply_distort_to_object((Object*)object);
         }
 
         ObjectRenderVertex* vertices;

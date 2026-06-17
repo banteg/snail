@@ -77,6 +77,17 @@ typedef char ObjectToonEdge_must_be_0x24[
 struct ObjectIndexBufferResource;
 struct Object;
 
+struct ObjectDistort {
+    float z_wave; // +0x00, y offset envelope from vertex z
+    float y_squash; // +0x04, x stretch plus y squash around bounds_min.y
+    float xyz_scale; // +0x08, x/y grow and z squash
+
+    void apply_distort_to_object(Object* object); // @ 0x41aa50
+};
+
+typedef char ObjectDistort_must_be_0x0c[
+    (sizeof(ObjectDistort) == 0x0c) ? 1 : -1];
+
 struct ObjectIndexBufferResourceVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectIndexBufferResource* self, int offset, int size,
@@ -127,6 +138,7 @@ struct Object {
     void* apply_object_toon(int toon_flags); // @ 0x42fa80
     int calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
+    void calc_object_facequad_normals_simple(); // @ 0x430230
     void calc_object_texture_groups(); // @ 0x4303f0
     void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
     void* request_object_edges(int edge_count); // @ 0x430570
@@ -156,7 +168,9 @@ struct Object {
     int* texture_group_ends; // +0x6c, cumulative facequad ends
     int edge_count; // +0x70
     ObjectToonEdge* edges; // +0x74
-    char unknown_78[0x94 - 0x78];
+    char unknown_78[0x80 - 0x78];
+    ObjectDistort distort; // +0x80
+    char unknown_8c[0x94 - 0x8c];
     float bounding_radius; // +0x94
     char unknown_98[0xa4 - 0x98];
     Vector3 bounds_min; // +0xa4

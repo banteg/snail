@@ -27,9 +27,10 @@ Recovered relationships:
 
 Corrected assumptions:
 
-- `Object +0x80` is only treated as a subobject call base for
-  `apply_distort_to_object`; modeling it as a sized scratch-local field shifted
-  the later `+0xbc/+0xc0/+0xc4` renderer fields and was wrong.
+- `Object +0x80` is a real three-float `ObjectDistort` subobject, but this
+  narrow renderer-local view should keep the explicit cast-call shape. Modeling
+  it as a local member perturbs unrelated vertex-copy loop codegen without
+  improving this scratch.
 - `ObjectAnimation +0x04/+0x0c` are not a raw frame-index/scale pair. The
   animation builder proves they are generated frame count and playback
   progress; their product selects the generated frame.
@@ -41,6 +42,6 @@ Expected residuals:
   `ecx/edi/ebx` in the UV path). The scratch now uses the same byte-offset
   semantics, but VC6 still chooses different loop registers and label distances.
 
-This is intentionally not a promoted `Object` layout yet. The local view is
-only the renderer-side field set proven by this helper and its `render_object`
-caller.
+The local view is intentionally only the renderer-side field set proven by this
+helper and its `render_object` caller; the shared `Object` layout now owns the
+`ObjectDistort` field.
