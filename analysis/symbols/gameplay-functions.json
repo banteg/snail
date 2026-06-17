@@ -864,17 +864,17 @@
     {
       "address": "0x418870",
       "name": "activate_landscape_entry",
-      "description": "Binds one cached landscape entry into the shared backdrop manager, applies its texture or model handles, chooses the random variant flag, and copies its fog color into the global render state."
+      "description": "Selects one cached landscape script, activates up to ten repeated 0x90-byte landscape BOD slices for its object index, chooses the backdrop variant flag, and copies the script fog/render words into global state."
     },
     {
       "address": "0x418a30",
       "name": "clear_active_landscape_entries",
-      "description": "Clears the active 10-slot landscape-entry runtime pool by unlinking every live entry from the shared body list and zeroing its startup-delay lane. `destroy_subgame` uses it when the current landscape set is torn down."
+      "description": "Clears the active 10-slot landscape-entry runtime pool by zeroing each live slot state and unlinking it from the shared BOD active/free list. `destroy_subgame` uses it when the current landscape set is torn down."
     },
     {
       "address": "0x418ac0",
       "name": "update_active_landscape_entry",
-      "description": "Advances one active landscape-entry runtime by counting down its activation delay, shifting its lateral offset, and toggling its shared visibility bit as it moves into or out of the backdrop camera band."
+      "description": "Updates one active repeated landscape slice: state 1 wraps its inherited transform z offset by the recovered repeat span, then toggles the shared visibility bit against the reference BOD camera band."
     },
     {
       "address": "0x418b50",

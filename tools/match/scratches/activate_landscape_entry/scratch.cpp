@@ -1,0 +1,91 @@
+// activate_landscape_entry @ 0x418870 (thiscall, ret 0x4)
+// Activates the ten repeated landscape slices for the selected script record.
+
+#include "active_landscape_entry.h"
+
+extern char* g_game_base; // data_4df904
+extern char g_landscape_backdrop_variant_selector; // data_4df9bc, from level_mode_arg
+
+int next_math_random_value(); // @ 0x44c900
+int report_errorf(char* format, ...);
+
+class BackdropRuntime {
+public:
+    void change_backdrop(LandscapeScriptRecord* record, char flip);
+};
+
+class BorderRuntime {
+public:
+    int set_border_justify_centre(int justify_centre);
+};
+
+void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
+{
+    char flip;
+    int mode = *(int*)(g_game_base + 0x74658);
+    if (mode == 7) {
+        flip = 0;
+    } else if (mode == 1) {
+        if ((float)next_math_random_value() * 0.0000305175781f > 0.5f)
+            flip = 0;
+        else
+            flip = 1;
+    } else {
+        flip = g_landscape_backdrop_variant_selector & 1;
+    }
+
+    int index = 0;
+    int staged_index = 0;
+    LandscapeScriptWindow* selection =
+        (LandscapeScriptWindow*)((char*)this + script_index * sizeof(LandscapeScriptRecord));
+    ActiveLandscapeEntry* entry = this;
+    do {
+        if (selection->record.object_index == -1) {
+            entry->list_flags &= ~0x20;
+            entry->set_bod_object(0);
+        } else {
+            ActiveLandscapeEntry* head =
+                (ActiveLandscapeEntry*)(g_game_base + 0x3ca25c);
+            if ((entry->list_flags & 0x200) != 0) {
+                report_errorf("List ADDafter");
+            } else {
+                entry->list_prev = head;
+                entry->list_next = head->list_next;
+                head->list_next = entry;
+                if (entry->list_next != 0)
+                    entry->list_next->list_prev = entry;
+                entry->list_flags |= 0x200;
+            }
+
+            *(volatile int*)((char*)entry + 0x80) = 1;
+            unsigned int flags = entry->list_flags;
+            flags |= 0x20;
+            entry->list_flags = flags;
+
+            LandscapeObjectSlotRef* objects =
+                (LandscapeObjectSlotRef*)(g_game_base + 0x48e2c);
+            entry->set_bod_object(objects[selection->record.object_index].object);
+            LandscapeObjectBounds* landscape_object =
+                (LandscapeObjectBounds*)entry->object;
+            entry->repeat_z_span =
+                landscape_object->max_z - landscape_object->min_z;
+            set_matrix_identity(&entry->transform);
+            entry->transform.position.z =
+                ((float)staged_index - 0.5f) * entry->repeat_z_span;
+            entry->reference_bod =
+                (RenderableBod*)(g_game_base + 0x42fd7c);
+        }
+        index++;
+        entry++;
+        staged_index = index;
+    } while (index < 10);
+
+    ((BackdropRuntime*)(g_game_base + 0x4ec10))->change_backdrop(
+        &selection->record,
+        flip);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+
+    Color4f* source = (Color4f*)((char*)selection + 0x6b4);
+    Color4f* destination = (Color4f*)(g_game_base + 0x14);
+    *destination = *source;
+}

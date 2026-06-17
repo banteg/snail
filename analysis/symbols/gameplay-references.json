@@ -1256,6 +1256,17 @@
       "description": "Small persistent player-name buffer used to seed high-score entry widgets and updated on name submission."
     },
     {
+      "address": "0x4df9bc",
+      "name": "g_landscape_backdrop_variant_selector",
+      "kind": "global",
+      "aliases": [
+        "data_4df9bc",
+        "unk_4df9bc"
+      ],
+      "size": "0x4",
+      "description": "Landscape/backdrop variant selector stored from Game::level_mode_arg during subgame setup and consumed by activate_landscape_entry through its low bit outside tutorial and random challenge modes."
+    },
+    {
       "address": "0x4df9c0",
       "name": "g_high_score_selected_bank",
       "kind": "global",
