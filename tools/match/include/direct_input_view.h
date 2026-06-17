@@ -36,6 +36,11 @@ struct DirectInput {
     virtual int __stdcall AddRef() = 0;
     virtual int __stdcall Release() = 0;
     virtual int __stdcall CreateDevice(void* guid, DirectInputDevice** out_device, void* outer_unknown) = 0;
+    virtual int __stdcall EnumDevices(
+        unsigned int device_type,
+        void* callback,
+        void* ref,
+        unsigned int flags) = 0;
 };
 
 #endif

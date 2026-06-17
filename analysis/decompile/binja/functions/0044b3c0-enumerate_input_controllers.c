@@ -11,13 +11,13 @@
 0044b411        result = (*(*eax_1 + 0x10))(eax_1, 4, append_enumerated_input_controller_callback, 0, 1)
 0044b416        if (result s>= 0)
 0044b41e        *arg2 = g_joystick_count
-0044b427        if (g_joystick_devices != 0)
+0044b427        if (g_joystick_devices[0] != 0)
 0044b42e        int32_t ebx_1 = 0
 0044b432        if (g_joystick_count s> 0)
 0044b438        int32_t* esi_1 = &g_joystick_devices
 0044b43d        while (true)
 0044b43d        int32_t* eax_4 = *esi_1
-0044b447        result = (*(*eax_4 + 0x2c))(eax_4, 0x49b2fc)
+0044b447        result = (*(*eax_4 + 0x2c))(eax_4, &g_directinput_joystick_data_format)
 0044b44c        if (result s< 0)
 0044b483        return result
 0044b44e        int32_t* eax_5 = *esi_1

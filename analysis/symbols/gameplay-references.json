@@ -874,6 +874,15 @@
       "description": "IDirectInput8A interface IID passed to DirectInput8Create by controller, keyboard, and mouse DirectInput initialization."
     },
     {
+      "address": "0x49b2fc",
+      "name": "g_directinput_joystick_data_format",
+      "kind": "global",
+      "aliases": [
+        "data_49b2fc"
+      ],
+      "description": "DirectInput joystick data format passed to IDirectInputDevice8A::SetDataFormat by enumerate_input_controllers."
+    },
+    {
       "address": "0x49b504",
       "name": "g_directinput_keyboard_data_format",
       "kind": "global",

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**327/676** mapped gameplay functions matched, **420/676** mapped gameplay functions have a scratch, **26472/326004** bytes (**8.12%**) are proof-grade, and overall fuzzy is **19.64%**.
+**331/676** mapped gameplay functions matched, **424/676** mapped gameplay functions have a scratch, **26957/326004** bytes (**8.27%**) are proof-grade, and overall fuzzy is **19.79%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -335,7 +335,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 2 unresolved, 7 ok |  |
+| ✅ | enumerate_input_controllers | 0x44b3c0 | 196 | 71/71 | 100.00% | 71/71 | 14 ok |  |
+| ✅ | append_enumerated_input_controller_callback | 0x44b490 | 69 | 22/22 | 100.00% | 22/22 | 5 ok |  |
+| ✅ | configure_input_controller_axis_range_callback | 0x44b4e0 | 131 | 42/42 | 100.00% | 42/42 | 3 ok |  |
 | ✅ | update_joystick_input | 0x44b570 | 501 | 150/150 | 100.00% | 150/150 | 13 ok |  |
+| ✅ | release_input_controllers | 0x44b770 | 89 | 35/35 | 100.00% | 35/35 | 5 ok |  |
 | ✅ | initialize_keyboard_input | 0x44b7d0 | 160 | 55/55 | 100.00% | 55/55 | 15 ok |  |
 | ✅ | update_keyboard_input | 0x44b870 | 658 | 199/199 | 100.00% | 199/199 | 34 ok |  |
 | ✅ | is_key_pressed_edge | 0x44bb10 | 34 | 11/11 | 100.00% | 11/11 | 2 ok |  |

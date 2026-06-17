@@ -3,7 +3,7 @@
 /* selector: configure_input_controller_axis_range_callback */
 
 // DirectInput object-enumeration callback that applies the native `[-1000, 1000]` range property to each axis object on one enumerated input controller.
-int __stdcall sub_44B4E0(int a1, int a2)
+int __stdcall configure_input_controller_axis_range_callback(int a1, int a2)
 {
   int v2; // edi
   int *i; // esi

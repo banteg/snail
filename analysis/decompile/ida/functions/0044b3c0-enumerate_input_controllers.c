@@ -28,7 +28,7 @@ int __cdecl enumerate_input_controllers(int a1, _DWORD *a2)
       {
         for ( i = g_joystick_devices; ; ++i )
         {
-          result = (*(int (__stdcall **)(int, void *))(*(_DWORD *)*i + 44))(*i, &unk_49B2FC);
+          result = (*(int (__stdcall **)(int, void *))(*(_DWORD *)*i + 44))(*i, &g_directinput_joystick_data_format);
           if ( result < 0 )
             break;
           result = (*(int (__stdcall **)(int, int, int))(*(_DWORD *)*i + 52))(*i, a1, 5);
