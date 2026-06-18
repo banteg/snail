@@ -154,9 +154,10 @@ separate source-shape work for the frame and glyph-switch residuals.
    `random_float_below(mode==1 ? rate*c3+c4 scaled count :
    (float)segment_count)` -> 16928-stride segment, marks +8 visited;
    start rows use the Start block, completion rows the Last block (and
-   mode 3 the special block at +1786896). Mirror byte (game+2) ORs row
-   flag 0x20 and `switch_track_mirror` runs PER ROW (mirror state
-   toggles on '@').
+   mode 3 the special block at +1786896). `track_mirror_enabled` (game+2)
+   ORs row flag 0x20, flips authored lanes and mirrored attachment-template
+   banks, and `switch_track_mirror` runs PER ROW (`track_mirror_repeat_count`
+   at game+4 guards long runs; mirror state toggles on '@').
 7. Authored row flags map: bit2 -> bod row (object id from authored
    +522, matrix identity, position vec from +523..525 with z += row;
    bit8 nested -> aux vec at +526..528), bit1 -> parcel row (flags |=

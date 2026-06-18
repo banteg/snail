@@ -47,7 +47,11 @@ public:
     bool switch_track_mirror();
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
-    char unknown_00[0x34];
+    char unknown_00[2];
+    bool track_mirror_enabled; // +0x02
+    char pad_03;
+    int track_mirror_repeat_count; // +0x04
+    char unknown_08[0x34 - 0x08];
     float challenge_difficulty_scalar; // +0x34
     float subgame_rate; // +0x38
     int subgame_state; // +0x3c
@@ -159,8 +163,8 @@ void Game::populate_runtime_track_cells_from_segments()
         completion_row_start = runtime_row_count - *(int*)(base + 0x1abf1c);
     }
 
-    base[2] = 0;
-    *(int*)(base + 4) = 0;
+    base[2] = 0; // track_mirror_enabled
+    *(int*)(base + 4) = 0; // track_mirror_repeat_count
     int trampoline_counter = 0;
     char first_or_last_row = 0;
     int row_event_owner = 0;
@@ -285,7 +289,7 @@ void Game::populate_runtime_track_cells_from_segments()
         }
 
         char* row_record = base + 0xf4 * build_row + 0x5ccac8;
-        if (base[2])
+        if (base[2]) // track_mirror_enabled
             *(int*)row_record |= 0x20;
 
         int authored_flags = *(int*)(active_segment + 0x814 + 0x38 * segment_row);
@@ -351,7 +355,7 @@ void Game::populate_runtime_track_cells_from_segments()
         char attachment_entry_installed = 0;
         for (int lane = 0; lane < 8; ++lane) {
             int authored_lane;
-            if (base[2])
+            if (base[2]) // track_mirror_enabled
                 authored_lane = 7 - lane;
             else
                 authored_lane = lane;
@@ -441,7 +445,7 @@ void Game::populate_runtime_track_cells_from_segments()
                     *(float*)(row_record + 0x90) = (float)lane - 3.5f;
                     *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
                     *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
-                    if (base[2])
+                    if (base[2]) // track_mirror_enabled
                         *(float*)(row_record + 0x90) *= -1.0f;
                 }
             case '1':
@@ -523,7 +527,7 @@ void Game::populate_runtime_track_cells_from_segments()
                 int template_index =
                     ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index;
                 AttachmentPathTemplate* template_record;
-                if (base[2] == 0)
+                if (base[2] == 0) // track_mirror_enabled
                     template_record = (AttachmentPathTemplate*)(base + 0xff2914 + template_index * 0x150);
                 else
                     template_record = (AttachmentPathTemplate*)(base + 0xff29bc + template_index * 0x150);
