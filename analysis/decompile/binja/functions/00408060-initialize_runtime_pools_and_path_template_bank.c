@@ -4,12 +4,12 @@
 /* function: initialize_runtime_pools_and_path_template_bank @ 0x408060 */
 
 0040807f        initialize_array_with_constructor(arg1 + 0xb4, 0x3c, 0x2cb, initialize_active_bod)
-00408097        initialize_array_with_constructor(arg1 + 0xa878, 0x4220, 0x64, sub_408600)
-004080af        initialize_array_with_constructor(arg1 + 0x1a850c, 0x38, 0x100, sub_408600)
-004080c7        initialize_array_with_constructor(arg1 + 0x1ac72c, 0x38, 0x100, sub_408600)
-004080ea        initialize_array_with_constructor(arg1 + 0x1b01f0, 0x4220, 0x64, sub_408600)
-00408102        initialize_array_with_constructor(arg1 + 0x34de84, 0x38, 0x100, sub_408600)
-0040811a        initialize_array_with_constructor(arg1 + 0x3520a4, 0x38, 0x100, sub_408600)
+00408097        initialize_array_with_constructor(arg1 + 0xa878, 0x4220, 0x64, noop_runtime_slot_constructor)
+004080af        initialize_array_with_constructor(arg1 + 0x1a850c, 0x38, 0x100, noop_runtime_slot_constructor)
+004080c7        initialize_array_with_constructor(arg1 + 0x1ac72c, 0x38, 0x100, noop_runtime_slot_constructor)
+004080ea        initialize_array_with_constructor(arg1 + 0x1b01f0, 0x4220, 0x64, noop_runtime_slot_constructor)
+00408102        initialize_array_with_constructor(arg1 + 0x34de84, 0x38, 0x100, noop_runtime_slot_constructor)
+0040811a        initialize_array_with_constructor(arg1 + 0x3520a4, 0x38, 0x100, noop_runtime_slot_constructor)
 00408130        initialize_bod_base(arg1 + 0x355b64)
 0040813b        initialize_bod_base(arg1 + 0x355b9c)
 00408146        initialize_bod_base(arg1 + 0x355bd4)
@@ -111,9 +111,9 @@
 00408370        initialize_bod_base(arg1 + 0x10013a4)
 00408378        std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<class std::shared_ptr<struct Concurrency::details::_Task_impl<struct std::pair<uint8_t,class Concurrency::details::_CancellationTokenState*> > > > > >::operator++(arg1 + 0x10013dc)
 00408393        *(arg1 + 0x10013a4) = &data_4972f8
-00408399        initialize_array_with_constructor(arg1 + 0x10014d0, 0x4088, 0x96, sub_408600)
+00408399        initialize_array_with_constructor(arg1 + 0x10014d0, 0x4088, 0x96, noop_runtime_slot_constructor)
 004083b1        initialize_array_with_constructor(arg1 + 0x125e480, 0x8c, 0x32, initialize_track_parcel_runtime)
-004083c9        initialize_array_with_constructor(arg1 + 0x1260030, 0x2a0, 0x65, sub_408600)
+004083c9        initialize_array_with_constructor(arg1 + 0x1260030, 0x2a0, 0x65, noop_runtime_slot_constructor)
 004083e1        initialize_array_with_constructor(arg1 + 0x1270950, 0xa0, 0xa, sub_408880)
-004083f9        initialize_array_with_constructor(arg1 + 0x1270fd8, 0x18, 0x100, sub_408600)
+004083f9        initialize_array_with_constructor(arg1 + 0x1270fd8, 0x18, 0x100, noop_runtime_slot_constructor)
 00408403        return arg1

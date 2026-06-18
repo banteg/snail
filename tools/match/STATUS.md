@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**363/679** mapped gameplay functions matched, **492/679** mapped gameplay functions have a scratch, **35474/325973** bytes (**10.88%**) are proof-grade, and overall fuzzy is **25.91%**.
+**364/680** mapped gameplay functions matched, **493/680** mapped gameplay functions have a scratch, **35477/325959** bytes (**10.88%**) are proof-grade, and overall fuzzy is **25.91%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -55,6 +55,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_row_runtime | 0x408590 | 36 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | initialize_path_template_record_pair | 0x4085c0 | 26 | 9/9 | 100.00% | 9/9 | 3 ok |  |
 | ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | noop_runtime_slot_constructor | 0x408600 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |

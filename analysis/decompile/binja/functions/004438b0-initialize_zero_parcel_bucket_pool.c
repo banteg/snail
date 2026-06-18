@@ -7,7 +7,7 @@
 004438b7        int32_t i_1 = 0x800
 004438d2        int32_t result
 004438d2        int32_t i
-004438c6        result = initialize_array_with_constructor(esi, 0x10, 0x20, sub_408600)
+004438c6        result = initialize_array_with_constructor(esi, 0x10, 0x20, noop_runtime_slot_constructor)
 004438cb        esi += 0x20c
 004438d1        i = i_1
 004438d1        i_1 -= 1

@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 666,
-  "function_count": 666,
+  "selected_count": 667,
+  "function_count": 667,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -437,6 +437,11 @@
       "address": "0x4085e0",
       "name": "initialize_active_bod",
       "artifact": "analysis/decompile/binja/functions/004085e0-initialize_active_bod.c"
+    },
+    {
+      "address": "0x408600",
+      "name": "noop_runtime_slot_constructor",
+      "artifact": "analysis/decompile/binja/functions/00408600-noop_runtime_slot_constructor.c"
     },
     {
       "address": "0x408610",
