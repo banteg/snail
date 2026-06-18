@@ -1759,6 +1759,17 @@
       "description": "Five-million-byte temporary buffer size used while serializing ScoreA/B/C high-score files."
     },
     {
+      "address": "0x4df860",
+      "name": "g_pending_window_deactivate",
+      "kind": "global",
+      "aliases": [
+        "data_4df860",
+        "dword_4DF860"
+      ],
+      "size": "0x4",
+      "description": "Pending window-deactivate flag read and cleared by handle_game_window_deactivate after optional fullscreen minimization."
+    },
+    {
       "address": "0x4df868",
       "name": "g_current_display_mode",
       "kind": "global",
