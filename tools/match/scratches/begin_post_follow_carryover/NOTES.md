@@ -13,3 +13,11 @@ This is the producer for the post-follow camera exit lanes:
 fields and `AttachmentPathTemplate::installed_heading_bits`. The same template
 slot remains `installed_heading_delta` for float arithmetic in
 `update_track_attachment_follow_state`; this helper proves the raw-bit view.
+
+2026-06-18 naming sync: `player+0x42c` is now `post_follow_exit_roll`, matching
+the only confirmed consumer in `update_cameraman`. `player+0x430` is
+`post_follow_heading_carryover`: this helper copies the raw dword from the
+template's installed-heading lane, but no direct consumer is currently closed.
+The live Binary Ninja `PathTemplate+0x98` field intentionally remains the float
+`installed_heading_delta` view because the arithmetic attachment helpers use it
+that way.

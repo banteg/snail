@@ -111,7 +111,7 @@
 004465a6        rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b)
 004465ab        struct Player* player_1 = cameraman->player
 004465b9        if (player_1->attachment_exit_pending != 0)
-004465c4        rotate_matrix_world_z(&cameraman->desired_matrix, player_1->post_follow_value_a)
+004465c4        rotate_matrix_world_z(&cameraman->desired_matrix, player_1->post_follow_exit_roll)
 004465d8        struct PathTemplate* template_record = rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->heading_roll)
 004465dd        struct Player* player_2 = cameraman->player
 004465ea        if (player_2->follow_state.active == 1)

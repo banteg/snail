@@ -50,10 +50,10 @@ The current high-confidence `Player` fields are:
 - `+0x410`: `velocity`
 - `+0x41d`: `attachment_exit_pending`
 - `+0x424`: `attachment_exit_anchor_z`
-- `+0x42c`: `post_follow_value_a`
+- `+0x42c`: `post_follow_exit_roll`
   - runtime-confirmed camera carryover input during the pending post-follow window
-- `+0x430`: `post_follow_value_b`
-  - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
+- `+0x430`: `post_follow_heading_carryover`
+  - raw installed-heading bits copied from the follow template; downstream consumer still unresolved
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
 - `+0x43c`: `control_source`
@@ -493,8 +493,8 @@ Current practical read:
   - `game + 0x58` = `game + 0x54 - final Last-block row count`
   - current best read: on non-random shipped levels, completion arms at the start of the final `Last:` block rather than on the last populated row
 - `begin_post_follow_carryover` seeds the attachment-exit handoff:
-  - `post_follow_value_a` from `follow_state.orientation_b`
-  - `post_follow_value_b` from `follow_state.template_record->row_scalar_a` or zero
+  - `post_follow_exit_roll` from `follow_state.orientation_b`
+  - `post_follow_heading_carryover` from `follow_state.template_record->installed_heading_bits` or zero
   - `attachment_exit_pending = 1`
   - `attachment_exit_progress = 0`
   - `attachment_exit_gate_a = 0`
@@ -502,7 +502,7 @@ Current practical read:
 - `update_subgoldy` uses those exit-side latches as threshold gates inside fall handling, not as the final death selector:
   - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
   - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
-  - the bounded March 26 static sweep keeps `post_follow_value_b` unresolved but narrows where it is not used:
+  - the bounded March 26 static sweep keeps `post_follow_heading_carryover` unresolved but narrows where it is not used:
     - `begin_post_follow_carryover` is still only the carryover writer
     - `update_subgoldy` does not directly read `player + 0x430` in the bounded retirement families
     - `update_cameraman` only consumes `player + 0x42c`, not `player + 0x430`

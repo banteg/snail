@@ -177,7 +177,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   }
   v19 = cameraman->player;
   if ( v19->attachment_exit_pending )
-    rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_value_a);
+    rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_exit_roll);
   rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
   v20 = cameraman->player;
   if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
@@ -212,4 +212,3 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   qmemcpy(&cameraman->previous_desired_matrix, p_desired_matrix, sizeof(cameraman->previous_desired_matrix));
   return result;
 }
-

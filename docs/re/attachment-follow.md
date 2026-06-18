@@ -129,11 +129,11 @@ Recovered end-state behavior from `end_track_attachment_follow_state`:
 - seeds `player + 0x424` from current player `z`
 - clears `player + 0x434`, `player + 0x44c`, and `player + 0x44d`
 
-For the trace schema and partial Binary Ninja typing, those exit-side fields are intentionally named conservatively:
+For the match headers and current Binary Ninja typing, those exit-side fields are:
 
 - `player + 0x424` -> `attachment_exit_anchor_z`
-- `player + 0x42c` -> `post_follow_value_a`
-- `player + 0x430` -> `post_follow_value_b`
+- `player + 0x42c` -> `post_follow_exit_roll`
+- `player + 0x430` -> `post_follow_heading_carryover`
 - `player + 0x434` -> `attachment_exit_progress`
 - `player + 0x438` -> `attachment_exit_progress_step`
 - `player + 0x44c` / `+0x44d` -> `attachment_exit_gate_a` / `attachment_exit_gate_b`

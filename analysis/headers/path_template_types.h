@@ -824,8 +824,8 @@ typedef struct Player {
     uint8_t _pad_41e[0x6];
     float attachment_exit_anchor_z;
     uint8_t _pad_428[0x4];
-    float post_follow_value_a;
-    float post_follow_value_b;
+    float post_follow_exit_roll;
+    int32_t post_follow_heading_carryover;
     float attachment_exit_progress;
     float attachment_exit_progress_step;
     PlayerControlSource* control_source;

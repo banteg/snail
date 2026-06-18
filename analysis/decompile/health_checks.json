@@ -41,7 +41,7 @@
       "required_substrings": [
         "cached_camera_target_world",
         "follow_state",
-        "post_follow_value_a",
+        "post_follow_exit_roll",
         "attachment_exit_pending",
         "desired_matrix"
       ],
@@ -58,7 +58,7 @@
       "required_substrings": [
         "cached_camera_target_world",
         "follow_state",
-        "post_follow_value_a",
+        "post_follow_exit_roll",
         "attachment_exit_pending",
         "desired_matrix"
       ],

@@ -215,7 +215,7 @@ public:
     // exit roll while attachment_exit_pending is set.
     // +0x430 <- follow_template->installed_heading_bits (consumer still open)
     float post_follow_exit_roll;           // +0x42c (orientation-b carryover)
-    int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_a")
+    int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_b")
     int attachment_exit_progress;          // +0x434
     char unknown_438[0x440 - 0x438];
     unsigned char completion_handoff_active; // +0x440

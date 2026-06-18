@@ -450,11 +450,11 @@ typedef struct Player {
     Vec3 velocity;
     uint8_t _pad_41c[0x1];
     uint8_t attachment_exit_pending;
-    uint8_t _pad_41e[0x2];
+    uint8_t _pad_41e[0x6];
     float attachment_exit_anchor_z;
-    uint8_t _pad_424[0x8];
-    float post_follow_value_a;
-    float post_follow_value_b;
+    uint8_t _pad_428[0x4];
+    float post_follow_exit_roll;
+    int32_t post_follow_heading_carryover;
     float attachment_exit_progress;
     float attachment_exit_progress_step;
     struct PlayerControlSource* control_source;

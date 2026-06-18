@@ -26,7 +26,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x384", "follow_state", "FollowState"),
     ("0x408", "game", "Game*"),
     ("0x41d", "attachment_exit_pending", "uint8_t"),
-    ("0x42c", "post_follow_value_a", "float"),
+    ("0x42c", "post_follow_exit_roll", "float"),
     ("0x43c", "control_source", "PlayerControlSource*"),
     ("0x2730", "movement_fire_progress", "float"),
     ("0x2734", "movement_fire_progress_step", "float"),

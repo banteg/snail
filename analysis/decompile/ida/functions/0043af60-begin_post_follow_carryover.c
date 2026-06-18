@@ -2,7 +2,7 @@
 /* function: begin_post_follow_carryover @ 0x43af60 */
 /* selector: begin_post_follow_carryover */
 
-// Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` and the live attachment record's installed-heading scalar into `post_follow_value_a` and `post_follow_value_b`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.
+// Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` into `post_follow_exit_roll` and the live attachment record's installed-heading bits into `post_follow_heading_carryover`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.
 int __thiscall sub_43AF60(int this)
 {
   int result; // eax
@@ -28,4 +28,3 @@ int __thiscall sub_43AF60(int this)
   *(_BYTE *)(this + 1101) = 0;
   return result;
 }
-
