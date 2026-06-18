@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**374/687** mapped gameplay functions matched, **511/687** mapped gameplay functions have a scratch, **36152/325882** bytes (**11.09%**) are proof-grade, and overall fuzzy is **27.41%**.
+**376/687** mapped gameplay functions matched, **515/687** mapped gameplay functions have a scratch, **36373/325882** bytes (**11.16%**) are proof-grade, and overall fuzzy is **27.54%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -201,6 +201,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
+| ✅ | cache_music_file | 0x432d50 | 160 | 42/42 | 100.00% | 42/42 | 11 ok |  |
+| 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
 | ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 91.80% | 3/122 | 17 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
@@ -394,6 +396,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_voice_playing | 0x449410 | 78 | 40/40 | 100.00% | 40/40 | 2 ok |  |
 | ✅ | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% | 19/19 | 10 ok |  |
 | ✅ | stop_music_stream | 0x4498d0 | 71 | 21/21 | 100.00% | 21/21 | 8 ok |  |
+| ✅ | load_registered_sound_sample_from_path | 0x449920 | 61 | 20/20 | 100.00% | 20/20 | 4 ok |  |
+| 🚧 | load_registered_sound_sample_from_bytes | 0x449960 | 59 | 18/18 | 88.89% | 13/18 | 4 ok |  |
 | ✅ | play_registered_sound_sample_scaled | 0x4499a0 | 106 | 30/30 | 100.00% | 30/30 | 7 ok |  |
 | ✅ | stop_sound_sample_handle | 0x449a10 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | stop_registered_sound_sample | 0x449a20 | 21 | 5/5 | 100.00% | 5/5 | 2 ok |  |

@@ -1937,6 +1937,16 @@
       "description": "Saved tracked-allocation unwind mark written by set_tracked_allocation_mark and consumed by free_tracked_allocations_to_mark."
     },
     {
+      "address": "0x53c7e8",
+      "name": "g_music_memory_buffer",
+      "kind": "global",
+      "aliases": [
+        "data_53c7e8"
+      ],
+      "size": "0x4",
+      "description": "Shared music/sample byte buffer allocated by initialize_game_data_archive and reused when loading archived music streams and registered sound samples."
+    },
+    {
       "address": "0x53c7ec",
       "name": "g_archive_data_base",
       "kind": "global",
@@ -2201,6 +2211,15 @@
         "data_7527b4"
       ],
       "description": "BASS_SamplePlayEx function pointer used by registered sample playback wrappers."
+    },
+    {
+      "address": "0x7537cc",
+      "name": "g_bass_sample_load",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_7537cc"
+      ],
+      "description": "BASS_SampleLoad function pointer used by registered sample loaders for filesystem paths and archive byte buffers."
     },
     {
       "address": "0x7537d8",
