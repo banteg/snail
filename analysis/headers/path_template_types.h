@@ -163,12 +163,13 @@ typedef struct FrontendWidget {
 typedef struct TextureRef {
     uint32_t flags;
     uint8_t _pad_04[0x8];
-    char texture_path[0x80];
+    char name[0x8c - 0x0c];
     int32_t slot_index;
-    uint8_t _pad_90[0x8];
-    int32_t arg3_98;
+    int32_t frame_count;
+    float frame_progress_step;
+    void* texture_ref;
     uint8_t _pad_9c[0x4];
-    int32_t one_a0;
+    int32_t unknown_a0;
 } TextureRef;
 
 /*
@@ -345,22 +346,21 @@ typedef enum ObjectFaceQuadFlags {
     OBJECT_FACEQUAD_FLAG_NON_QUAD = 0x80,
 } ObjectFaceQuadFlags;
 
+typedef struct ObjectUv {
+    float u;
+    float v;
+} ObjectUv;
+
 typedef struct ObjectFaceQuad {
-    uint16_t flags;
-    uint16_t vertex_index_a;
-    uint16_t vertex_index_b;
-    uint16_t vertex_index_c;
-    uint16_t vertex_index_d;
-    uint16_t _pad_0a;
+    uint8_t flags;
+    uint8_t unknown_01;
+    uint16_t vertex_0;
+    uint16_t vertex_1;
+    uint16_t vertex_2;
+    uint16_t vertex_3;
+    uint8_t _pad_0a[0x0c - 0x0a];
     TextureRef* texture_ref;
-    float u0;
-    float v0;
-    float u1;
-    float v1;
-    float u2;
-    float v2;
-    float u3;
-    float v3;
+    ObjectUv uv[4];
 } ObjectFaceQuad;
 
 typedef struct PathTemplateStripMesh {
