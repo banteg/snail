@@ -6,10 +6,19 @@ void HighScoreRecordView::commit_high_score_entry_into_top_ten(int rank)
 {
     if (rank < HIGH_SCORE_TOP_TEN_COUNT) {
         int row = rank;
+        int offset = row * HIGH_SCORE_RECORD_STRIDE;
+        char* source_cursor = (char*)name_submit_records + offset;
         do {
-            active_record_bank[row] = name_submit_records[row];
-            active_record_bank[row].route_or_rank_index = row;
+            HighScoreRecord* destination =
+                (HighScoreRecord*)((char*)active_record_bank + offset);
+            HighScoreRecord* source = (HighScoreRecord*)source_cursor;
+            offset += HIGH_SCORE_RECORD_STRIDE;
+            source_cursor += HIGH_SCORE_RECORD_STRIDE;
+            *destination = *source;
+            ((HighScoreRecord*)((char*)active_record_bank + offset
+                - HIGH_SCORE_RECORD_STRIDE))
+                ->route_or_rank_index = row;
             ++row;
-        } while (row < HIGH_SCORE_TOP_TEN_COUNT);
+        } while (offset < HIGH_SCORE_RECORD_STRIDE * HIGH_SCORE_TOP_TEN_COUNT);
     }
 }
