@@ -1,7 +1,7 @@
 # Source-shaped — 78.85%, 52/52 insns exact (state ordering/control-flow residual remains)
 
 The warning actor decoded: state 1 pins the target overlay alpha to
-0.99748 (bits 1065336439) while the phase fills; state 2 fades alpha
+0.99900001f (bits 1065336439, `0x3f7fbe77`) while the phase fills; state 2 fades alpha
 as 1 - 2*phase for the first half then holds zero, and on phase wrap
 returns to state 1 replaying sound 50. The target's +0x208 alpha is the
 warning overlay consumed by the HUD. Closes the checklist's "real

@@ -18,10 +18,9 @@ void Backdrop::initialize_backdrop(int last_mode)
     set_backdrop_texture_target(5);
 
     unsigned char render_flags = g_render_flags;
-    unsigned int one_bits = 0x3f800000;
     if ((render_flags & 1) != 0) {
         backdrop_refresh_pending = 1;
-        *(unsigned int*)&unknown_664 = one_bits;
+        unknown_664 = 1.0f;
     } else {
         backdrop_refresh_pending = 0;
         unknown_664 = 0.0f;
@@ -49,11 +48,11 @@ void Backdrop::initialize_backdrop(int last_mode)
 
     previous_primary_texture = 0;
     current_primary_texture = 0;
-    *(unsigned int*)&primary_blend = one_bits;
+    primary_blend = 1.0f;
     primary_blend_step = 0.005555555690f;
     previous_secondary_texture = 0;
     current_secondary_texture = 0;
-    *(unsigned int*)&secondary_blend = one_bits;
+    secondary_blend = 1.0f;
     secondary_blend_step = 0.004166666884f;
 
     set_backdrop_texture_target(0);

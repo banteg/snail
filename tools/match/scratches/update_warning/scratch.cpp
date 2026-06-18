@@ -1,6 +1,6 @@
 // update_warning @ 0x446f80 (thiscall, ret)
 // The damage-warning actor: state 1 holds the overlay alpha near full
-// (0.99748... bits 1065336439) while the phase fills; state 2 fades the
+// (0.99900001f, bits 1065336439) while the phase fills; state 2 fades the
 // first half then holds zero, replaying sound 50 on wrap back to 1.
 
 #include "audio_system.h"
@@ -29,7 +29,7 @@ void WarningActor::update_warning()
                 g_sound_effect_manager.play_sound_effect(50);
             }
         } else if (state == 1) {
-            *(int*)&border->warning_overlay_alpha = 1065336439;
+            border->warning_overlay_alpha = 0.99900001f;
             float advanced = phase_step + phase;
             phase = advanced;
             if (advanced > 1.0f) {
