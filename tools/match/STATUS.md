@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**418/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **44084/325882** bytes (**13.53%**) are proof-grade, and overall fuzzy is **30.01%**.
+**419/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **44131/325882** bytes (**13.54%**) are proof-grade, and overall fuzzy is **30.02%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -559,7 +559,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | ascii_upper_if_lowercase | 0x44e5a0 | 16 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 77/63 | 25.71% | 0/63 | 2 ok |  |
-| 🚧 | advance_to_next_crlf_line | 0x44e690 | 47 | 21/22 | 79.07% | 3/22 | - |  |
+| ✅ | advance_to_next_crlf_line | 0x44e690 | 47 | 22/22 | 100.00% | 22/22 | - |  |
 | ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  |
 | 🚧 | parse_next_signed_int | 0x44e710 | 107 | 50/47 | 28.87% | 0/47 | - |  |
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |

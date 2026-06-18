@@ -13,8 +13,11 @@ Recovered relationships:
 The name is intentionally narrow until the loader callsites identify the
 original class or parser family more strongly.
 
-Focused Wibo result: 79.07%, 21/22 candidate/target instructions, no masked
-operands. Semantics match the native CRLF scan. The residual is the native
-duplicated entry zero-test (`test al, al; je ...; mov dl, 0xa; je ...`) and the
-resulting branch-label distances; a duplicated source guard made the block
-layout worse, so this scratch keeps the plausible single-condition form.
+Focused Wibo result: 100.00%, 22/22 instructions, no masked operands.
+
+The source deliberately keeps a redundant inner `*cursor == '\0'` guard inside
+the outer nonzero scan loop. MSVC 6.5 carries the flags from the loop-entry
+`test al, al` across `mov dl, 0xa`, so the inner guard becomes the native
+duplicated entry zero-test:
+
+`test al, al; je ...; mov dl, 0xa; je ...`
