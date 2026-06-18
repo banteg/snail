@@ -68,6 +68,13 @@
       "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
+      "address": "0x40acd4",
+      "name": "update_frontend_transition_overlay_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "description": "Compiler-emitted fade state switch jump table used by update_frontend_transition_overlay."
+    },
+    {
       "address": "0x410b74",
       "name": "update_frontend_state_machine_jump_table",
       "kind": "jump_table",

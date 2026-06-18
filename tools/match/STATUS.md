@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**433/687** mapped gameplay functions matched, **577/687** mapped gameplay functions have a scratch, **46532/325882** bytes (**14.28%**) are proof-grade, and overall fuzzy is **31.11%**.
+**434/687** mapped gameplay functions matched, **578/687** mapped gameplay functions have a scratch, **46780/325882** bytes (**14.35%**) are proof-grade, and overall fuzzy is **31.18%**.
 
-## Proof Grade (433)
+## Proof Grade (434)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -95,6 +95,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | draw_frontend_overlay_color_lerp | 0x40ab40 | 122 | 38/38 | 100.00% | 38/38 | 6 ok |  |
 | ✅ | begin_frontend_fade_out | 0x40abc0 | 23 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | begin_frontend_fade_in | 0x40abe0 | 14 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 9 ok |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
@@ -591,7 +592,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (110)
+## No Scratch (109)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -617,7 +618,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | load_galaxy_layout | 0x4088e0 | 803 | 0/233 | 0.00% | 0/233 | - |  |
 | ⬜ | initialize_galaxy | 0x408cf0 | 1523 | 0/338 | 0.00% | 0/338 | - |  |
 | ⬜ | update_galaxy | 0x4092f0 | 2051 | 0/566 | 0.00% | 0/566 | - |  |
-| ⬜ | update_frontend_transition_overlay | 0x40abf0 | 248 | 0/62 | 0.00% | 0/62 | - |  |
 | ⬜ | initialize_game_assets_and_world | 0x40acf0 | 23070 | 0/5411 | 0.00% | 0/5411 | - |  |
 | ⬜ | initialize_d3d8_device | 0x411730 | 670 | 0/164 | 0.00% | 0/164 | - |  |
 | ⬜ | initialize_game_window_and_input | 0x4119d0 | 938 | 0/287 | 0.00% | 0/287 | - |  |
