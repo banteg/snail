@@ -1,25 +1,24 @@
 // play_sound_effect_at_position @ 0x44dce0 (stdcall, ret 0x8)
 
-extern char* g_game_base; // data_4df904
+#include "vector3.h"
 
-struct Vector3 {
-    float x;
-    float y;
-    float z;
-
-    float vector_magnitude(); // @ 0x44ccf0, thiscall, returns st0
+struct GameAudioListenerView {
+    char unknown_000[0x22c];
+    Vector3 listener_position; // +0x22c, active camera/listener origin
 };
+
+extern GameAudioListenerView* g_game_base; // data_4df904
 
 void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 
 void __stdcall play_sound_effect_at_position(int sound_id, const float* position)
 {
     float distance = 1.0e10f;
-    float* game = (float*)g_game_base;
+    GameAudioListenerView* game = g_game_base;
     Vector3 delta;
-    delta.x = position[0] - game[139];
-    delta.y = position[1] - game[140];
-    delta.z = position[2] - game[141];
+    delta.x = position[0] - game->listener_position.x;
+    delta.y = position[1] - game->listener_position.y;
+    delta.z = position[2] - game->listener_position.z;
 
     float magnitude = delta.vector_magnitude();
     if (magnitude < distance)

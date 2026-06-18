@@ -5,7 +5,8 @@ First-pass scratch for the positional sound-effect wrapper.
 Recovered semantics:
 
 - builds a camera-relative `Vector3` from the supplied world position and the
-  active camera position at `g_game_base + 0x22c`;
+  active camera/listener position at `g_game_base + 0x22c`
+  (`GameAudioListenerView::listener_position`);
 - plays only within a 25.0 unit radius;
 - computes gain as `1.0 - distance * 0.04`;
 - computes pan from the source x position and clamps it to `[-100, 100]`; and
@@ -28,3 +29,5 @@ Rejected source-shape probes:
   arguments in the wrong order and still kept the compact 0x10-byte frame.
 - A separate `float delta_values[3]` array plus scalar temps also collapsed to
   the compact frame and regressed below the direct `Vector3` spelling.
+- Explicit scalar `delta_x/delta_y/delta_z` locals copied into the `Vector3`
+  regressed to 48.00% by changing the FPU evaluation order.
