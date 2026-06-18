@@ -3,7 +3,7 @@
 /* selector: play_voice_backend */
 
 // Shared voice backend wrapper that plays one voice sample id with an explicit gain scale plus the same optional extra playback parameters used by the SFX backend.
-void __cdecl sub_432E80(int a1, float a2, float a3, float a4)
+void __cdecl play_voice_backend(int a1, float a2, float a3, float a4)
 {
   float v4; // [esp+0h] [ebp-Ch]
   float v5; // [esp+4h] [ebp-8h]
@@ -15,20 +15,19 @@ void __cdecl sub_432E80(int a1, float a2, float a3, float a4)
     {
       if ( a3 == -1.0 )
       {
-        v6 = unk_753C6C * a2;
+        v6 = g_audio_backend_voice_normalization_scale * a2;
         play_registered_sound_sample_scaled(a1, v6);
       }
       else
       {
-        v5 = unk_753C6C * a2;
+        v5 = g_audio_backend_voice_normalization_scale * a2;
         play_registered_sound_sample_backend(a1, v5, a3);
       }
     }
     else
     {
-      v4 = unk_753C6C * a2;
+      v4 = g_audio_backend_voice_normalization_scale * a2;
       play_registered_sound_sample_scaled_panned(a1, v4, -1.0, a4);
     }
   }
 }
-

@@ -14,11 +14,11 @@
 00432e0e        x87_r7_2 - temp1
 00432e19        if ((((x87_r7_2 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
 00432e44        int32_t var_8_1 = arg1
-00432e4e        play_registered_sound_sample_backend(arg1, fconvert.s(fconvert.t(data_753c68) * fconvert.t(arg2)), arg3)
+00432e4e        play_registered_sound_sample_backend(arg1, fconvert.s(fconvert.t(g_audio_backend_sfx_normalization_scale) * fconvert.t(arg2)), arg3)
 00432e53        return 
 00432e25        int32_t var_4_1 = arg1
-00432e2f        play_registered_sound_sample_scaled(arg1, fconvert.s(fconvert.t(data_753c68) * fconvert.t(arg2)))
+00432e2f        play_registered_sound_sample_scaled(arg1, fconvert.s(fconvert.t(g_audio_backend_sfx_normalization_scale) * fconvert.t(arg2)))
 00432e34        return 
 00432e68        int32_t var_c_2 = arg1
-00432e72        play_registered_sound_sample_scaled_panned(arg1, fconvert.s(fconvert.t(data_753c68) * fconvert.t(arg2)), -1f, arg4)
+00432e72        play_registered_sound_sample_scaled_panned(arg1, fconvert.s(fconvert.t(g_audio_backend_sfx_normalization_scale) * fconvert.t(arg2)), -1f, arg4)
 00432e77        return
