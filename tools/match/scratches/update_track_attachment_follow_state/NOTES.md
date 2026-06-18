@@ -28,7 +28,7 @@ Known residuals after the current source shape:
 
 ## Cross-findings (2026-06-12, second agent)
 
-- the "camera basis" globals at 0x42fdb4/c4/d4 are the **player's
+- the former "camera basis" globals at 0x42fdb4/c4/d4 are the **player's
   live_matrix rows**: player block at game+0x42fd7c, TransformMatrix at
   +0x38, position row = the position vector at +0x68 — same shape as the
   hazard slots. Worth folding into the mirror's Player model even though
@@ -140,3 +140,8 @@ operands.
 2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
 the shared `Vector3` type. Focused Wibo remains `46.44%`, `678/726`, with
 `45 ok` masked operands.
+
+2026-06-18 naming cleanup: the scratch now writes
+`g_player_live_matrix_basis_right/up/forward` instead of the stale
+`g_camera_basis_*` names. These are still the same game-relative addresses
+(`0x42fdb4/0x42fdc4/0x42fdd4`) and should not affect codegen.

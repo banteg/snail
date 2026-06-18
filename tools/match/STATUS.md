@@ -546,7 +546,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 28 type name(s) with a header plus scratch-local copies
+- covered: 29 type name(s) with a header plus scratch-local copies
 - divergent: 21 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -596,6 +596,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | OptionsMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PauseMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | PlayerControlSource | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |

@@ -52,9 +52,6 @@ public:
 
 extern char* g_game_base; // data_4df904
 extern AttachmentFollowRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
-extern char g_camera_basis_right[]; // 0x42fdb4
-extern char g_camera_basis_up[]; // 0x42fdc4
-extern char g_camera_basis_forward[]; // 0x42fdd4
 
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 int __stdcall compute_kind42_attachment_transform(
@@ -260,15 +257,15 @@ after_v85:
         output->y = y;
         vertical_offset = vertical;
         output->z = z;
-        *(float*)(g_camera_basis_right + (int)g_game_base) = transform.basis_right.x;
-        *(float*)(g_camera_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
-        *(float*)(g_camera_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
-        *(float*)(g_camera_basis_up + (int)g_game_base) = transform.basis_up.x;
-        *(float*)(g_camera_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
-        *(float*)(g_camera_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
-        *(float*)(g_camera_basis_forward + (int)g_game_base) = transform.basis_forward.x;
-        *(float*)(g_camera_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
-        *(float*)(g_camera_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right.x;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up.x;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward.x;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
     } else {
         AttachmentSampleMatrixView* secondary = current_template->secondary_samples;
         AttachmentSampleMatrixView* sample = &secondary[current_index];
@@ -319,15 +316,15 @@ after_v85:
         output->y = v83;
         v84 = right_z + up_z;
         output->z = v84;
-        *(float*)(g_camera_basis_right + (int)g_game_base) = transform.basis_right.x;
-        *(float*)(g_camera_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
-        *(float*)(g_camera_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
-        *(float*)(g_camera_basis_up + (int)g_game_base) = transform.basis_up.x;
-        *(float*)(g_camera_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
-        *(float*)(g_camera_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
-        *(float*)(g_camera_basis_forward + (int)g_game_base) = transform.basis_forward.x;
-        *(float*)(g_camera_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
-        *(float*)(g_camera_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right.x;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
+        *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up.x;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
+        *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward.x;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
+        *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
     }
 
     orientation_c = transform.basis_up.x;
