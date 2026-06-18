@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: report_errorf @ 0x431cc0 */
 
-00431cc5        sub_48bf30(0x1000)
+00431cc5        chkstk(0x1000)
 00431cdf        void arg_1008
 00431cdf        sub_48c404(&__return_addr, arg1, &arg_1008)
 00431ce4        char* var_10 = "***** ERROR ***** "

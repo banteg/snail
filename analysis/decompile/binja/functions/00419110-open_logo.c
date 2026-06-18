@@ -3,10 +3,10 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: open_logo @ 0x419110 */
 
-0041911c        int32_t* esi = sub_48bf30(0x4084) + 0x2403c
+0041911c        int32_t* esi = chkstk(0x4084) + 0x2403c
 00419122        int32_t i_1 = 0x20
 0041915c        int32_t i
-00419135        set_bod_object(&esi[-9], add_object_to_list(0x4b7648))
+00419135        set_bod_object(&esi[-9], add_object_to_list(&g_object_list))
 00419142        load_object_definition("Objects/Font3D", *esi)
 00419147        void* eax_3 = *esi
 0041914c        esi = &esi[0x24]
@@ -24,11 +24,11 @@
 00419199        void texture_path
 00419199        sub_48b32c(&texture_path, "Intro/%s")
 004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
+004191b4        uint32_t flags = eax_4->flags
 004191b6        edi += 0x80
-004191bc        uint32_t ecx_2
-004191bc        ecx_2:1.b = eax_4->flags:1.b | 4
+004191bc        flags:1.b |= 4
 004191bf        esi_1 += 1
-004191c0        eax_4->flags = ecx_2
+004191c0        eax_4->flags = flags
 004191c2        result = __return_addr
 004191c8        do while (esi_1 s< result)
 004191d2        return result

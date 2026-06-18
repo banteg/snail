@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: report_warningf @ 0x431d10 */
 
-00431d15        sub_48bf30(0x1000)
+00431d15        chkstk(0x1000)
 00431d2f        void arg_1008
 00431d2f        sub_48c404(&__return_addr, arg1, &arg_1008)
 00431d34        char* var_10 = "* WARNING * "
