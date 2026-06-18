@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**399/687** mapped gameplay functions matched, **551/687** mapped gameplay functions have a scratch, **41991/325882** bytes (**12.89%**) are proof-grade, and overall fuzzy is **29.58%**.
+**401/687** mapped gameplay functions matched, **553/687** mapped gameplay functions have a scratch, **42195/325882** bytes (**12.95%**) are proof-grade, and overall fuzzy is **29.65%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -19,6 +19,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | kill_all_borders | 0x4033c0 | 41 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | hide_all_borders | 0x4033f0 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | unhide_all_borders | 0x403400 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | update_input_ok | 0x4034d0 | 137 | 32/32 | 100.00% | 32/32 | - |  |
+| ✅ | initialize_input_ok | 0x403560 | 67 | 23/23 | 100.00% | 23/23 | 5 ok |  |
 | ✅ | reset_tooltip | 0x403be0 | 51 | 16/16 | 100.00% | 16/16 | 2 ok |  |
 | ✅ | queue_frontend_widget_flag_after_delay | 0x403f60 | 93 | 22/22 | 100.00% | 22/22 | 2 ok |  |
 | ✅ | update_twinkle_manager | 0x404030 | 53 | 23/23 | 100.00% | 23/23 | 1 ok |  |
@@ -167,7 +169,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 678/726 | 46.44% | 0/726 | 45 ok |  |
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | 16/16 | 1 ok |  |
-| 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 408/425 | 40.58% | 0/425 | 7 ok |  |
+| 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 400/425 | 40.97% | 0/425 | 7 ok |  |
 | ✅ | find_segment_path_index_by_name | 0x429ae0 | 59 | 27/27 | 100.00% | 27/27 | 3 ok |  |
 | ✅ | compute_kind42_attachment_transform | 0x42b920 | 146 | 48/48 | 100.00% | 48/48 | 8 ok |  |
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
