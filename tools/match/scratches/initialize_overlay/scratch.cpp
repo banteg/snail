@@ -20,7 +20,7 @@ public:
 void Overlay::initialize_overlay()
 {
     field_144 = 0;
-    *(int*)&field_148 = 0x39bf9cd0;
+    field_148 = 0.00036547193f;
     set_matrix_identity(&screen_matrix);
     field_140 = 38.0f;
     set_matrix_identity(&world_matrix);

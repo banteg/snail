@@ -41,10 +41,9 @@ void Game::update_subgame_camera()
             target = override_camera_matrix;
             *(float*)(g_game_base + 0x284) = 110.0f;
         } else {
-            int fov_bits = *(int*)&cameraman.fov_degrees;
             target = cameraman.live_matrix;
             camera_snap_requested = cameraman.unresolved_cc;
-            *(int*)(g_game_base + 0x284) = fov_bits;
+            *(float*)(g_game_base + 0x284) = cameraman.fov_degrees;
         }
     }
 

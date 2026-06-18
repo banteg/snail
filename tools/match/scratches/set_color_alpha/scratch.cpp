@@ -4,6 +4,6 @@
 
 int Color4f::set_color_alpha(int alpha_bits)
 {
-    *(int*)&a = alpha_bits;
+    a = *(float*)&alpha_bits;
     return alpha_bits;
 }

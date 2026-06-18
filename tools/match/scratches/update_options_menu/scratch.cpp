@@ -53,7 +53,6 @@ void OptionsMenu::update_options_menu()
     apply_audio_config_volumes();
     if (previous_sample_volume != g_config_sample_volume) {
         g_sound_effect_manager.play_sound_effect(8);
-        int result = *(int*)&g_config_sample_volume;
-        *(int*)&previous_sample_volume = result;
+        previous_sample_volume = g_config_sample_volume;
     }
 }

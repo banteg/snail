@@ -14,8 +14,7 @@ public:
 void* BarrierActor::update_barrier_ai()
 {
     char* owner_object = owner;
-    int owner_z_bits = *(int*)(owner_object + 0x70);
+    z = *(float*)(owner_object + 0x70);
     y = 0.4f;
-    *(int*)&z = owner_z_bits;
     return owner_object;
 }

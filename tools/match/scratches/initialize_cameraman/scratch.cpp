@@ -5,8 +5,8 @@ extern int g_game_base; // data_4df904
 
 void CameramanState::initialize_cameraman()
 {
-    *(int*)&player = g_game_base + 0x42fd7c;
-    *(int*)&game = g_game_base + 0x74618;
+    player = (Player*)(g_game_base + 0x42fd7c);
+    game = (Game*)(g_game_base + 0x74618);
     unresolved_cc = 0;
     set_matrix_identity(&previous_desired_matrix);
     set_matrix_identity(&desired_matrix);

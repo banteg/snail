@@ -14,8 +14,8 @@ public:
     int field_1c;
     int field_20;
     int field_24;
-    int authored_x;     // +0x28
-    int authored_y;     // +0x2c
+    float authored_x;   // +0x28
+    float authored_y;   // +0x2c
     int field_30;
     int current;        // +0x34
 };
@@ -29,8 +29,8 @@ int InputState::initialize_input()
     previous = 0;
     field_14 = 0;
     field_18 = 0;
-    authored_x = 0x43a00000;
-    authored_y = 0x43700000;
+    authored_x = 320.0f;
+    authored_y = 240.0f;
     field_30 = 0;
     return 0;
 }

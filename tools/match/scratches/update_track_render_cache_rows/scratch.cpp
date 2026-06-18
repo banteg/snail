@@ -21,7 +21,6 @@ int report_errorf(char* format, ...);
 void TrackRenderCacheManager::update_track_render_cache_rows()
 {
     int live_mask = 0x200;
-    int zero = 0;
     if (*(float*)(g_game_base + 0x42fdec) + 46.0f <= next_cache_row_z)
         return;
 
@@ -30,9 +29,9 @@ void TrackRenderCacheManager::update_track_render_cache_rows()
         TrackRenderCacheSlot* slot = &slots[next_cache_row_index][4];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         Vector3* position = &slots[next_cache_row_index][4].bod.position;
-        *(int*)&position->z = zero;
-        *(int*)&position->y = zero;
-        *(int*)&position->x = zero;
+        position->z = 0.0f;
+        position->y = 0.0f;
+        position->x = 0.0f;
         Color4f skirt_color;
         slots[next_cache_row_index][4].bod.color =
             *((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
@@ -41,36 +40,36 @@ void TrackRenderCacheManager::update_track_render_cache_rows()
         slot = &slots[next_cache_row_index][0];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][0].bod.position;
-        *(int*)&position->z = zero;
-        *(int*)&position->y = zero;
-        *(int*)&position->x = zero;
+        position->z = 0.0f;
+        position->y = 0.0f;
+        position->x = 0.0f;
         slots[next_cache_row_index][0].bod.color.set_color_white();
 
         active_list = (BodNode*)(g_game_base + 0x3ca1b4);
         slot = &slots[next_cache_row_index][1];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][1].bod.position;
-        *(int*)&position->z = zero;
-        *(int*)&position->y = zero;
-        *(int*)&position->x = zero;
+        position->z = 0.0f;
+        position->y = 0.0f;
+        position->x = 0.0f;
         slots[next_cache_row_index][1].bod.color.set_color_white();
 
         active_list = (BodNode*)(g_game_base + 0x3ca1b4);
         slot = &slots[next_cache_row_index][3];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][3].bod.position;
-        *(int*)&position->z = zero;
-        *(int*)&position->y = zero;
-        *(int*)&position->x = zero;
+        position->z = 0.0f;
+        position->y = 0.0f;
+        position->x = 0.0f;
         slots[next_cache_row_index][3].bod.color.set_color_white();
 
         active_list = (BodNode*)(g_game_base + 0x3ca1b4);
         slot = &slots[next_cache_row_index][2];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][2].bod.position;
-        *(int*)&position->z = zero;
-        *(int*)&position->y = zero;
-        *(int*)&position->x = zero;
+        position->z = 0.0f;
+        position->y = 0.0f;
+        position->x = 0.0f;
         slots[next_cache_row_index][2].bod.color.set_color_white();
 
         next_cache_row_z += 24.0f;
