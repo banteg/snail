@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**371/686** mapped gameplay functions matched, **502/686** mapped gameplay functions have a scratch, **35885/325887** bytes (**11.01%**) are proof-grade, and overall fuzzy is **26.22%**.
+**372/686** mapped gameplay functions matched, **503/686** mapped gameplay functions have a scratch, **35981/325887** bytes (**11.04%**) are proof-grade, and overall fuzzy is **26.25%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -364,6 +364,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
 | 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 89.83% | 4/59 | 8 ok |  |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  |
+| ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  |
 | 🚧 | format_time_trial_string | 0x448960 | 113 | 37/36 | 95.89% | 26/36 | 12 ok |  |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 | 6 ok |  |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 158/154 | 75.00% | 16/154 | 24 ok |  |

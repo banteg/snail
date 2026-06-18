@@ -676,6 +676,15 @@
       "description": "Linked DirectInput8Create thunk used by controller, keyboard, and mouse DirectInput initialization."
     },
     {
+      "address": "0x48bf30",
+      "name": "chkstk",
+      "kind": "function",
+      "aliases": [
+        "_chkstk"
+      ],
+      "description": "Statically linked VC runtime stack-probe helper emitted for functions with large stack frames such as load_level_definitions."
+    },
+    {
       "address": "0x48b32c",
       "name": "sprintf",
       "kind": "function",
