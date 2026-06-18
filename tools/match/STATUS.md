@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**394/687** mapped gameplay functions matched, **538/687** mapped gameplay functions have a scratch, **41660/325882** bytes (**12.78%**) are proof-grade, and overall fuzzy is **29.29%**.
+**395/687** mapped gameplay functions matched, **539/687** mapped gameplay functions have a scratch, **41715/325882** bytes (**12.80%**) are proof-grade, and overall fuzzy is **29.31%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -199,6 +199,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  |
 | ✅ | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  |
 | ✅ | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
+| ✅ | xor_archive_bytes_in_place | 0x431980 | 55 | 27/27 | 100.00% | 27/27 | - |  |
 | ✅ | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
