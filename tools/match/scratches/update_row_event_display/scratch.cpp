@@ -2,6 +2,7 @@
 
 #include "audio_system.h"
 #include "game_pause_view.h"
+#include "input_state.h"
 #include "player.h"
 #include "row_event_display.h"
 #include "track_parcel_runtime.h"
@@ -13,11 +14,6 @@ typedef Vector3 Vec3;
 
 struct GameRuntime {
     TrackParcelRuntime* spawn_track_parcel(float* world_position, void* owner);
-};
-
-struct InputState {
-    char unknown_00[0x3c];
-    unsigned int control_flags; // +0x3c
 };
 
 void __fastcall update_row_event_display(RowEventDisplayController* controller)
@@ -119,7 +115,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
             game = g_game_base;
         }
 
-        if ((((InputState**)(game + 0x28c))[0]->control_flags & 0x4000) != 0) {
+        if ((((GameInputOwner**)(game + 0x28c))[0]->input.pressed_buttons & 0x4000) != 0) {
             controller->state = 5;
             g_sound_effect_manager.play_sound_effect(8);
         }

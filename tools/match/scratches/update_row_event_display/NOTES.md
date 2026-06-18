@@ -81,3 +81,9 @@ count text updated in the tail, `bonus_widget` is the hidden/blinking bonus
 summary widget, and `continue_widget` is unhidden when the controller reaches
 the acknowledge/continue state. `widget_a` and `widget_d` deliberately remain
 generic because their allocation/setup path has not been recovered yet.
+
+2026-06-18 input-owner naming pass: the continue/confirm gate now uses the
+shared `GameInputOwner`/`InputState` layout. The old scratch-local
+`control_flags` at owner `+0x3c` is really `input.pressed_buttons`, because
+`update_game_input` proves the embedded runtime input block starts at owner
+`+0x38`.
