@@ -557,6 +557,13 @@
       "description": "Compiler-emitted lifecycle-state switch jump table that follows update_star_field immediately after the terminal return."
     },
     {
+      "address": "0x435d1c",
+      "name": "select_track_tile_edge_variants_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "description": "Compiler-emitted edge-mask switch jump table used by select_track_tile_edge_variants."
+    },
+    {
       "address": "0x435e3c",
       "name": "set_subgame_features_jump_table",
       "kind": "jump_table",
