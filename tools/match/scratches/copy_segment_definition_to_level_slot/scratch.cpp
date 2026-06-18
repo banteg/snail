@@ -50,11 +50,10 @@ struct LevelSegmentSlot {
     char* source_name;            // +0x10
     char glyph_rows[8][0x100];    // +0x14
     AuthoredSegmentRow rows[256]; // +0x814
-    int active_row_base;          // +0x4014
-    unsigned char hidden;         // +0x4018
-    char unknown_4019[0x4218 - 0x4019];
-    int runtime_cursor;           // +0x4218
-    int runtime_index;            // +0x421c
+    int angle_radians_bits;       // +0x4014, overridden by level-line Angle=
+    char message_text[0x4218 - 0x4018]; // +0x4018, optional Message=
+    int message_duration_bits;    // +0x4218, optional Duration=
+    int message_sample_id;        // +0x421c, optional Sample=
 };
 
 typedef char LevelSegmentSlot_must_be_0x4220[
@@ -88,7 +87,7 @@ int* __stdcall copy_segment_definition_to_level_slot(char* segment_name, LevelSe
 
     slot->row_count = source->row_count;
     slot->source_name = source->filename;
-    slot->active_row_base = 0;
+    slot->angle_radians_bits = 0;
     slot->path_index = source->id;
 
     int* result = (int*)source->row_count;
@@ -112,8 +111,8 @@ int* __stdcall copy_segment_definition_to_level_slot(char* segment_name, LevelSe
         result = (int*)(authored + 1);
     }
 
-    slot->hidden = 0;
-    slot->runtime_cursor = 0;
-    slot->runtime_index = -1;
+    slot->message_text[0] = 0;
+    slot->message_duration_bits = 0;
+    slot->message_sample_id = -1;
     return result;
 }

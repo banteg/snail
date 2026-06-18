@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**373/686** mapped gameplay functions matched, **509/686** mapped gameplay functions have a scratch, **36073/325887** bytes (**11.07%**) are proof-grade, and overall fuzzy is **26.68%**.
+**373/686** mapped gameplay functions matched, **510/686** mapped gameplay functions have a scratch, **36073/325887** bytes (**11.07%**) are proof-grade, and overall fuzzy is **27.39%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -368,6 +368,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 89.83% | 4/59 | 8 ok |  |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
+| 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 1 unresolved, 164 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
 | ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  |
@@ -521,19 +522,20 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 4 type name(s)
+- ready: 3 type name(s)
 - covered: 26 type name(s) with a header plus scratch-local copies
-- divergent: 23 type name(s) with multiple scratch-local shapes
+- divergent: 25 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | AuthoredSegmentRow | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | AuthoredSegmentRow | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | LevelSegmentSlot | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -546,6 +548,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | HelpScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | LevelDefinitionLoader | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -577,6 +580,5 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | LevelSegmentSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | VertexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

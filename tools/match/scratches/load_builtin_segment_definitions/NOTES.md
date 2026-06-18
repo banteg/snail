@@ -28,6 +28,9 @@ Status:
   and regressed the scratch to 48.65%.
 - Authored row field names were kept in sync with `load_segment_definitions`:
   `Velocity=`, `Path=`, and `RingSpeed=` own row offsets `+0x24..+0x34`.
+- `load_level_definition_file` corrects the slot tail names: `+0x4014`
+  is the per-level segment angle, `+0x4018` starts optional message text,
+  `+0x4218` is message duration, and `+0x421c` is the message sample id.
 - Main residual: VC6 allocates the built-in table in `ebp` for this scratch,
   while native keeps it in `ebx` before the sentinel check and then uses `ebp`
   for the per-glyph destination offset. Pointer/integer/`register` spellings

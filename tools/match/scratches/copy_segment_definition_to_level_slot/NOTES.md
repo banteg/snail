@@ -25,6 +25,9 @@ Corrections from the first pass:
 - `load_segment_definitions` also corrects authored row names:
   `+0x24..+0x2c` are `Velocity=`, `+0x30` is `Path=`, and `+0x34` is
   `RingSpeed=` float bits.
+- `load_level_definition_file` proves the level slot tail is not generic
+  runtime state: `+0x4014` is `Angle=` radians, `+0x4018` starts optional
+  `Message=` text, `+0x4218` is `Duration=`, and `+0x421c` is `Sample=`.
 - `data_74ec74` is a `char*` current level-definition name.
   `load_level_definition_file` writes its input there before segment-copy
   diagnostics consume it.

@@ -30,11 +30,10 @@ struct LevelSegmentSlot {
     char* source_name;            // +0x10
     char glyph_rows[8][0x100];    // +0x14
     AuthoredSegmentRow rows[256]; // +0x814
-    int active_row_base;          // +0x4014
-    unsigned char hidden;         // +0x4018
-    char unknown_4019[0x4218 - 0x4019];
-    int runtime_cursor;           // +0x4218
-    int runtime_index;            // +0x421c
+    int angle_radians_bits;       // +0x4014
+    char message_text[0x4218 - 0x4018]; // +0x4018
+    int message_duration_bits;    // +0x4218
+    int message_sample_id;        // +0x421c
 };
 
 typedef char LevelSegmentSlot_must_be_0x4220[
