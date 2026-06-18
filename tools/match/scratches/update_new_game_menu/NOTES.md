@@ -3,12 +3,12 @@
 First structured scratch for `update_new_game_menu` @ `0x417eb0`.
 
 Match status: 63.94%, 273 target instructions, 265 candidate instructions, 32
-masked operands all resolved. Prefix is 41/273. No fakematching.
+masked operands all resolved. Prefix is 41/273. No byte-shaped source.
 
 Recovered relationships:
 
 - menu buttons at `+0x30/+0x34/+0x38/+0x3c/+0x40/+0x44` dispatch postal,
-  challenge, time trial, tutorial, help, and back respectively;
+  time trial, challenge, tutorial, help, and back respectively;
 - `replay_attract_bank_cursor` at `+0x00` rotates through `0..4`, but only
   banks `0`, `1`, and `3` probe replay/high-score records;
 - record bases `game+0x6ffae8`, `game+0x85c128`, and `game+0x9b8768` are

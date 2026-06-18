@@ -1318,6 +1318,51 @@
       "description": "Intro-screen script path literal for the opening intro state."
     },
     {
+      "address": "0x4a38b4",
+      "name": "g_help_text",
+      "kind": "string",
+      "aliases": [
+        "aHelp"
+      ],
+      "description": "Help button label used by the new-game menu."
+    },
+    {
+      "address": "0x4a38bc",
+      "name": "g_challenge_mode_text",
+      "kind": "string",
+      "aliases": [
+        "aChallengeMode"
+      ],
+      "description": "Challenge Mode button label used by the new-game menu."
+    },
+    {
+      "address": "0x4a38cc",
+      "name": "g_time_trial_text",
+      "kind": "string",
+      "aliases": [
+        "aTimeTrial"
+      ],
+      "description": "Time Trial button label used by the new-game menu."
+    },
+    {
+      "address": "0x4a38d8",
+      "name": "g_postal_mode_text",
+      "kind": "string",
+      "aliases": [
+        "aPostalMode"
+      ],
+      "description": "Postal Mode button label used by the new-game menu."
+    },
+    {
+      "address": "0x4a38e4",
+      "name": "g_tutorial_text",
+      "kind": "string",
+      "aliases": [
+        "aTutorial"
+      ],
+      "description": "Tutorial button label used by the new-game menu."
+    },
+    {
       "address": "0x4a3b58",
       "name": "g_credits_text",
       "kind": "string",

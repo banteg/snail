@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**389/687** mapped gameplay functions matched, **529/687** mapped gameplay functions have a scratch, **39713/325882** bytes (**12.19%**) are proof-grade, and overall fuzzy is **28.62%**.
+**390/687** mapped gameplay functions matched, **530/687** mapped gameplay functions have a scratch, **40452/325882** bytes (**12.41%**) are proof-grade, and overall fuzzy is **28.84%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -137,6 +137,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 97.50% | 26/40 | 3 ok |  |
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 81.82% | 16/33 | - |  |
 | ✅ | exit_high_score_screen | 0x417b50 | 104 | 23/23 | 100.00% | 23/23 | 6 ok |  |
+| ✅ | initialize_new_game_menu | 0x417bc0 | 739 | 182/182 | 100.00% | 182/182 | 48 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | activate_landscape_entry | 0x418870 | 442 | 123/123 | 100.00% | 123/123 | 20 ok |  |
@@ -599,7 +600,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | LandscapeScriptBank | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | LandscapeScriptBank | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | VertexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

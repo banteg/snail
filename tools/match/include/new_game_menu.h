@@ -20,6 +20,7 @@ public:
 
 class NewGameMenu {
 public:
+    void initialize_new_game_menu(); // @ 0x417bc0
     void update_new_game_menu(); // @ 0x417eb0
     void destroy_main_menu();    // @ 0x419b30, callsite member spelling
 
@@ -32,8 +33,8 @@ public:
     float replay_probe_step; // +0x14
     char unknown_18[0x30 - 0x18];
     FrontendWidget* postal_button; // +0x30
-    FrontendWidget* challenge_button; // +0x34
-    FrontendWidget* time_trial_button; // +0x38
+    FrontendWidget* time_trial_button; // +0x34
+    FrontendWidget* challenge_button; // +0x38
     FrontendWidget* tutorial_button; // +0x3c
     FrontendWidget* help_button; // +0x40
     FrontendWidget* back_button; // +0x44

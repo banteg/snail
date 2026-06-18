@@ -13,8 +13,8 @@ void NewGameMenu::update_new_game_menu()
         if (hide_for_replay_latch == 1) {
             postal_button->unhide_border_init();
             tutorial_button->unhide_border_init();
-            challenge_button->unhide_border_init();
             time_trial_button->unhide_border_init();
+            challenge_button->unhide_border_init();
             help_button->unhide_border_init();
             back_button->unhide_border_init();
             ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
@@ -34,9 +34,9 @@ void NewGameMenu::update_new_game_menu()
         return;
     }
 
-    flags = challenge_button->widget_flags;
+    flags = time_trial_button->widget_flags;
     if ((flags & 0x20) != 0) {
-        challenge_button->widget_flags = flags & ~0x20;
+        time_trial_button->widget_flags = flags & ~0x20;
         destroy_main_menu();
         game = (HighScoreGameView*)g_game_base;
         game->frontend_next_state = 10;
@@ -58,9 +58,9 @@ void NewGameMenu::update_new_game_menu()
         return;
     }
 
-    flags = time_trial_button->widget_flags;
+    flags = challenge_button->widget_flags;
     if ((flags & 0x20) != 0) {
-        time_trial_button->widget_flags = flags & ~0x20;
+        challenge_button->widget_flags = flags & ~0x20;
         destroy_main_menu();
         game = (HighScoreGameView*)g_game_base;
         game->frontend_next_state = 10;
