@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**390/687** mapped gameplay functions matched, **530/687** mapped gameplay functions have a scratch, **40452/325882** bytes (**12.41%**) are proof-grade, and overall fuzzy is **28.84%**.
+**391/687** mapped gameplay functions matched, **531/687** mapped gameplay functions have a scratch, **40822/325882** bytes (**12.53%**) are proof-grade, and overall fuzzy is **28.96%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -123,6 +123,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_enemy_manager | 0x415e20 | 7 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | search_path_for_golb | 0x415e30 | 192 | 63/63 | 100.00% | 63/63 | 3 ok |  |
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
+| ✅ | destroy_challenge_setup_screen | 0x4161f0 | 370 | 96/96 | 100.00% | 96/96 | 32 ok |  |
 | ✅ | initialize_help_screen | 0x416800 | 181 | 47/47 | 100.00% | 47/47 | 15 ok |  |
 | ✅ | destroy_help_screen | 0x4168c0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | 🚧 | update_help_screen | 0x4168d0 | 54 | 12/12 | 75.00% | 0/12 | 3 ok |  |

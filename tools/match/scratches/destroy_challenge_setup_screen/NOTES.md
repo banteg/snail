@@ -1,0 +1,14 @@
+# destroy_challenge_setup_screen @ 0x4161f0
+
+First structured scratch for the challenge setup/front-end level selection
+teardown.
+
+- Full Wibo result: 2026-06-18, 100.00%, 96/96 instructions, 32 masked
+  operands ok.
+- The controller stores the owning game view at `+0x00`; the mode selector is
+  `game+0x40`.
+- Mode `0` tears down the postal level navigation/play/back widgets.
+- Mode `1` tears down the challenge speed/difficulty/play/replay/back widgets.
+- Mode `4` tears down the time-trial level navigation/play/replay/back widgets.
+- The sparse `switch` is source-shaped: VC6 emits the native `sub/dec/sub`
+  dispatch for modes `0`, `1`, and `4`.
