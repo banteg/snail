@@ -27,12 +27,11 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     float delta = path_factor * samples[current_index].delta_length;
 
     if (delta + progress > samples[current_index].delta_length) {
-        for (;;) {
+        do {
             current_index = sample_index;
-            float remaining = samples[current_index].delta_length - progress;
+            delta -= samples[current_index].delta_length - progress;
             progress = 0.0f;
             sample_index = current_index + 1;
-            delta = delta - remaining;
 
             if (current_index + 1 == current_template->segment_count) {
                 active = 0;
@@ -81,10 +80,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             }
 
             samples = current_template->secondary_samples;
-            current_index = sample_index;
-            if (delta <= samples[current_index].delta_length)
-                break;
-        }
+        } while (delta > samples[sample_index].delta_length);
     }
 
     current_index = sample_index;

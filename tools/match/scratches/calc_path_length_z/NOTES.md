@@ -125,3 +125,14 @@ assignments also emitted identical 40.58% code. Treat scalar/base local
 declaration order as exhausted; the next useful move needs stronger evidence
 around overflow placement or the matrix-copy block rather than more local
 slot-shuffling.
+
+2026-06-18 GPT Pro overflow-loop pass: rewriting the overflow consumer from
+`for (;;)` plus a named `remaining` local into a `do/while` with
+`delta -= samples[current_index].delta_length - progress` improves focused
+Wibo from `40.58%`, `408/425` to `40.97%`, `400/425`; masked operands remain
+`7 ok`. The useful part is local to the overflow region: candidate region 2
+shrinks from `target[14:148] candidate[14:130]` at `36.00%` to
+`target[14:148] candidate[14:122]` at `37.19%`, and the first subtraction now
+emits native-shaped `fsubp st(1)`. This still does not resolve the broad
+`0xf4`/`0xe0` frame gap, scalar-lerp stack slots, matrix-copy layout, or
+terminal/side-exit position-copy scheduling.
