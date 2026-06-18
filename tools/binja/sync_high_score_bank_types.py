@@ -19,7 +19,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_high_score_entry",
-        "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int32_t runtime_seed, int32_t initial_level_mode_arg, int32_t level_arg_tail_value, uint32_t runtime_flags_snapshot, int32_t high_score_mode_tag, int32_t route_or_rank_index)",
+        "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int32_t runtime_build_seed, int32_t replay_level_index, int32_t replay_speed_scalar_bits, uint32_t runtime_build_flags, int32_t high_score_mode_tag, int32_t route_or_rank_index)",
     ),
     (
         "add_arcade_high_score",

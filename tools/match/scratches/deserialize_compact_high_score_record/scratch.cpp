@@ -28,8 +28,8 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     timer_snapshot_b = compact->salt_scalar_bits;
     source_tail = compact->source_tail;
     runtime_seed = compact->runtime_build_seed;
-    *(int*)unknown_1fab8 = compact->unknown_80;
-    *(int*)(unknown_1fab8 + 4) = compact->unknown_84;
+    unknown_1fab8 = compact->unknown_80;
+    unknown_1fabc = compact->unknown_84;
     runtime_flags_snapshot = compact->runtime_build_flags;
     high_score_mode_tag = compact->bank_selector;
     route_or_rank_index = compact->entry_index;
@@ -42,7 +42,7 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
         ReplayRunRecord* lateral_run = run_records;
         do {
             ++lateral_index;
-            *(short*)lateral_run->unknown_00 = *source_lateral;
+            lateral_run->lateral_x = *source_lateral;
             ++source_lateral;
             ++lateral_run;
         } while (lateral_index < completion_count);
@@ -54,7 +54,7 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
         (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES
             + secondary_count * sizeof(short));
     if (secondary_count > 0) {
-        short* secondary_destination = (short*)run_records + 1;
+        short* secondary_destination = &run_records[0].secondary_lane_raw;
         do {
             ++secondary_index;
             *secondary_destination = *source_secondary;

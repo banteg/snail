@@ -24,8 +24,8 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     compact->score = score;
     compact->checksum = (score * score) ^ HIGH_SCORE_CHECKSUM_MASK;
     compact->runtime_build_seed = runtime_seed;
-    compact->unknown_80 = *(int*)unknown_1fab8;
-    compact->unknown_84 = *(int*)(unknown_1fab8 + 4);
+    compact->unknown_80 = unknown_1fab8;
+    compact->unknown_84 = unknown_1fabc;
     compact->runtime_build_flags = runtime_flags_snapshot;
     compact->bank_selector = high_score_mode_tag;
     compact->entry_index = route_or_rank_index;
@@ -36,7 +36,7 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     short* out_lateral =
         (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES);
     if (lateral_count > 0) {
-        short* source_lateral = (short*)run_records;
+        short* source_lateral = &run_records[0].lateral_x;
         do {
             ++lateral_index;
             *out_lateral = *source_lateral;
@@ -51,7 +51,7 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
         (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES
             + secondary_count * sizeof(short));
     if (secondary_count > 0) {
-        short* source_secondary = (short*)run_records + 1;
+        short* source_secondary = &run_records[0].secondary_lane_raw;
         do {
             ++secondary_index;
             *out_secondary = *source_secondary;

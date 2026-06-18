@@ -21,8 +21,8 @@ void CompletionResultScreen::initialize_completion_screen(
         if (((HighScoreGameView*)g_game_base)->replay_launch_active != 0) {
             HighScoreRecord* record =
                 ((HighScoreGameView*)g_game_base)->replay_launch_record;
-            x_source = record->completion_bonus_x_source;
-            y_source = record->completion_bonus_y_source;
+            x_source = record->challenge_speed_value;
+            y_source = record->challenge_difficulty_value;
         } else {
             x_source = g_completion_bonus_x_source;
             y_source = g_completion_bonus_y_source;

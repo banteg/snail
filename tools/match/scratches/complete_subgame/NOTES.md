@@ -86,15 +86,15 @@ Rejected experiments:
   byte-OR and result-snapshot schedule. The `sparse-switch-0-1-4` idiom probe
   matches the high-score dispatch tail, so that switch shape is not the
   blocker. Reordering the post-copy fields to store `score_tail`,
-  `level_index_tail`, `level_arg_tail`, then `difficulty_tail` kept the same
+  replay-level, replay-speed, and difficulty lanes kept the same
   75.28% headline score but worsened the localized snapshot region; delaying
-  only `source_arg_tail` until after the first timer snapshot regressed to
+  only `source_tail` until after the first timer snapshot regressed to
   74.16%. Keep the current store order.
 - A follow-up `snail match dump` comparison made the native post-copy schedule
-  explicit (`score_tail`, `level_index_tail`, `difficulty_tail`, `level_arg_tail`,
-  timer A, `source_arg_tail`, timer B), but spelling that order directly in the
-  scratch regressed to 74.16%. Leave this as register-allocation/scheduling
-  residual, not a source-order mandate.
+  explicit (`score_tail`, replay-level/difficulty/replay-speed lanes, timer A,
+  `source_tail`, timer B), but spelling that order directly in the scratch
+  regressed to 74.16%. Leave this as register-allocation/scheduling residual,
+  not a source-order mandate.
 - 2026-06-14 recheck: the current localized diff still isolates the same
   byte-OR and snapshot-scheduling clusters, and the `byte-array-stride6-or`,
   `byte-field-stride6-or`, and `bitfield-stride6-set` idiom probes all emit
@@ -114,10 +114,10 @@ Rejected experiments:
   call. This preserves the 75.28% pinned match.
 - 2026-06-18 shared-record pass: `tools/match/include/high_score_record.h`
   now models the full 0x1fac0 high-score/replay record starting at
-  `game+0xfd2b10`, including the 6-byte replay run table and aligned timer
-  snapshot fields. `complete_subgame` now writes `current_high_score_record`
+  `game+0xfd2b10`, including the 6-byte replay run table and aligned replay
+  scalar fields. `complete_subgame` now writes `current_high_score_record`
   instead of a local 0x54 `ResultRecord` prefix, and the replay bonus source
-  lanes are named `completion_bonus_x_source` / `completion_bonus_y_source`.
+  lanes are stored as `challenge_speed_value` / `challenge_difficulty_value`.
   Focused Wibo remains at the pinned 75.28%.
 - 2026-06-18 decompiler-sync pass: the narrow BN/IDA `SubgameRuntime` headers
   now carry the sparse proven runtime layout through `high_score_bank`,

@@ -15,9 +15,10 @@ struct ScoreBucketBlock {
 };
 
 struct ReplayRunRecord {
-    char unknown_00[4]; // +0x00: int16 lateral_x, int16 secondary_lane_raw
+    short lateral_x; // +0x00
+    short secondary_lane_raw; // +0x02
     unsigned char flags; // +0x04
-    char unknown_05; // +0x05, zeroed by compact replay load/init
+    char reserved_05; // +0x05, zeroed by compact replay load/init
 };
 
 typedef char ReplayRunRecord_must_be_0x06[
@@ -75,10 +76,10 @@ struct CompactHighScoreRecord {
 class HighScoreRecord {
 public:
     void initialize_high_score_entry(
-        int runtime_seed,
-        int initial_level_mode_arg,
-        int level_arg_tail_value,
-        unsigned int runtime_flags_snapshot,
+        int runtime_build_seed,
+        int replay_level_index,
+        int replay_speed_scalar_bits,
+        unsigned int runtime_build_flags,
         int high_score_mode_tag,
         int route_or_rank_index); // @ 0x417a70
     unsigned char deserialize_compact_high_score_record(CompactHighScoreRecord* compact);
@@ -93,24 +94,25 @@ public:
     };
     int score_tail; // +0x20
     int source_tail; // +0x24
-    int initial_level_mode_arg; // +0x28, replay_level_index in saved replays
-    int level_mode; // +0x2c, replay_mode_id copied to the subgame launch mode
+    int replay_level_index; // +0x28
+    int replay_mode_id; // +0x2c, copied to the subgame launch mode
     int unknown_30; // +0x30
     int difficulty_scalar_bits; // +0x34, challenge_difficulty_scalar bits
-    unsigned int runtime_flags_snapshot; // +0x38, runtime_build_flags
+    unsigned int runtime_build_flags; // +0x38
     int high_score_mode_tag; // +0x3c, set by add_*_high_score
     int route_or_rank_index; // +0x40, level/route arg before insert or top-ten rank
     int replay_cursor; // +0x44, cleared before persistence
-    int level_arg_tail; // +0x48, replay_speed_scalar bits
-    int completion_bonus_x_source; // +0x4c, challenge_speed_value
-    int completion_bonus_y_source; // +0x50, challenge_difficulty_value
+    int replay_speed_scalar_bits; // +0x48
+    int challenge_speed_value; // +0x4c
+    int challenge_difficulty_value; // +0x50
     char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x54
-    int runtime_seed; // +0x68, runtime_build_seed
-    int completion_count; // +0x6c, replay_sample_count
+    int runtime_build_seed; // +0x68
+    int replay_sample_count; // +0x6c
     ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT]; // +0x70
-    int timer_snapshot_a; // +0x1fab0, garbage_scalar bits
-    int timer_snapshot_b; // +0x1fab4, salt_scalar bits
-    char unknown_1fab8[HIGH_SCORE_RECORD_STRIDE - 0x1fab8];
+    int garbage_scalar_bits; // +0x1fab0
+    int salt_scalar_bits; // +0x1fab4
+    int unknown_1fab8; // +0x1fab8
+    int unknown_1fabc; // +0x1fabc
 };
 
 typedef char HighScoreRecord_must_be_0x1fac0[

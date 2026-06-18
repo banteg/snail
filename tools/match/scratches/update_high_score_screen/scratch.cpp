@@ -123,7 +123,7 @@ int HighScoreScreen::update_high_score_screen()
 
                             launch_game = (HighScoreGameView*)g_game_base;
                             launch_game->selected_subgame_mode =
-                                launch_game->replay_launch_record->level_mode;
+                                launch_game->replay_launch_record->replay_mode_id;
                         }
                     }
                 }
