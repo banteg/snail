@@ -1,6 +1,6 @@
 # request_object_texture_groups @ 0x42f930
 
-Near-exact match at 96.55%.
+Exact match at 100%.
 
 Semantics:
 
@@ -12,18 +12,12 @@ Semantics:
   exceeds capacity;
 - every request updates the live count at `+0x64`.
 
-Residual:
+The helper is modeled as `void`: native leaves the allocation pointer in `eax`
+on the first request, the fixed capacity in `eax` when reusing a large-enough
+buffer, and `report_errorf`'s return value in `eax` on overflow. Those are
+leftover register states rather than a coherent API result.
 
-- the existing-allocation branch has a one-instruction load-order difference:
-  the target loads the requested count before `texture_group_capacity`, while
-  the current source loads capacity first. Natural `>`, `<=`, preloaded
-  `result`, and separate `count`/`capacity` spellings all keep the same
-  residual, so this is pinned unless a stronger VC6 source-idiom lead appears.
-
-2026-06-18 audit: focused Wibo still reports 96.55%, 29/29 candidate/target
-instructions, clean masked operands, and the same first miss at target
-`mov edi, [esp+0xc]` versus candidate `mov eax, [esi+0x68]`. Rejected three
-source-plausible else-branch spellings because all compiled identically:
-direct `requested_count > texture_group_capacity`, preloaded `result =
-texture_group_capacity` with overflow overwrite, and a `count` local driving
-the direct comparison. Keep the clearer `count`/`capacity` baseline.
+2026-06-18 match: focused Wibo reports 100%, 29/29 instructions, with four
+clean masked operands. The previous `void*` declaration forced VC6 to load
+`texture_group_capacity` before the requested count in the fixed-buffer branch;
+the source-shaped `void` helper preserves the native argument-first load order.
