@@ -38,12 +38,13 @@ parent vtable, while the exact `0x43ee50` updater belongs to the speedup
 singleton.
 
 2026-06-16 pool-overlay/list-splice pass: the spawner now mirrors the health
-pickup scratch's padded pool-slot overlay, keeping `esi` based at
-`game + slot_index * 0x19c` while still using the promoted
-`TrackJetpackPickup` fields. The active-list splice was also reordered to put
-the empty-list case first, matching native fallthrough and the health pickup
-shape. Focused Wibo improves from `52.86%` (`136/144`, prefix `25/144`) to
-`73.76%` (`138/144`, prefix `31/144`), with all `9` masked operands still OK.
+pickup scratch's shifted slot-base shape, keeping `esi` based at
+`game + slot_index * 0x19c` while using the shared `Game::jetpack_pickup`
+member and promoted `TrackJetpackPickup` fields. The active-list splice was
+also reordered to put the empty-list case first, matching native fallthrough
+and the health pickup shape. Focused Wibo improves from `52.86%` (`136/144`,
+prefix `25/144`) to `73.76%` (`138/144`, prefix `31/144`), with all `9`
+masked operands still OK.
 Rejected follow-ups: pointer-to-local staging for the initial `PositionBits`
 copy compiled identically, a local wall-tile byte compiled identically, and an
 explicit odd-z bob-phase `else` regressed to `72.22%` by reversing the tail

@@ -1,21 +1,12 @@
 // spawn_track_jetpack_pickup @ 0x43d890 (thiscall, ret 0x8)
 
+#include "game.h"
 #include "player.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "track_jetpack_pickup.h"
 
 typedef unsigned int DWORD;
-
-struct JetpackPickupPoolSlotView {
-    char pool_offset[0x355e64];
-    TrackJetpackPickup pickup;
-};
-
-class Game {
-public:
-    int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player);
-};
 
 extern char* g_game_base; // data_4df904
 
@@ -37,15 +28,15 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
     }
 
     DWORD* slot_base = game_words + 103 * slot_index;
-    JetpackPickupPoolSlotView* slot = (JetpackPickupPoolSlotView*)slot_base;
-    slot->pickup.state = 1;
-    slot->pickup.owner = player;
+    Game* slot = (Game*)slot_base;
+    slot->jetpack_pickup.state = 1;
+    slot->jetpack_pickup.owner = player;
 
     Vector3 staged_position;
     staged_position.x = cell->anchor_position.x;
     staged_position.z = cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 1.5f;
-    Vector3* live_position = &slot->pickup.world_position;
+    Vector3* live_position = &slot->jetpack_pickup.world_position;
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & 7;
@@ -57,7 +48,7 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
         live_position->x = live_position->x - 0.5f;
     }
 
-    BodNode* node = (BodNode*)&slot->pickup;
+    BodNode* node = (BodNode*)&slot->jetpack_pickup;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
@@ -79,27 +70,27 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 124, -1, -1);
-    slot->pickup.sprite = sprite;
+    slot->jetpack_pickup.sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= 0x800;
     sprite->flags = flags;
-    slot->pickup.sprite->gravity_step = 0.0f;
-    slot->pickup.sprite->progress = 0.0f;
-    slot->pickup.sprite->progress_step = 0.0f;
-    slot->pickup.sprite->size_start = 1.5f;
-    slot->pickup.sprite->size_end = 1.5f;
+    slot->jetpack_pickup.sprite->gravity_step = 0.0f;
+    slot->jetpack_pickup.sprite->progress = 0.0f;
+    slot->jetpack_pickup.sprite->progress_step = 0.0f;
+    slot->jetpack_pickup.sprite->size_start = 1.5f;
+    slot->jetpack_pickup.sprite->size_end = 1.5f;
 
-    DWORD* out_position = (DWORD*)&slot->pickup.sprite->position;
+    DWORD* out_position = (DWORD*)&slot->jetpack_pickup.sprite->position;
     out_position[0] = *(DWORD*)&live_position->x;
     out_position[1] = *(DWORD*)&live_position->y;
     out_position[2] = *(DWORD*)&live_position->z;
-    slot->pickup.source_cell = cell;
-    slot->pickup.bob_phase = 0.0f;
+    slot->jetpack_pickup.source_cell = cell;
+    slot->jetpack_pickup.bob_phase = 0.0f;
 
-    int z_as_int = (int)slot->pickup.world_position.z;
+    int z_as_int = (int)slot->jetpack_pickup.world_position.z;
     if ((z_as_int & 1) == 0)
-        slot->pickup.bob_phase = 0.5f;
+        slot->jetpack_pickup.bob_phase = 0.5f;
 
-    slot->pickup.bob_phase_step = 0.012820513f;
+    slot->jetpack_pickup.bob_phase_step = 0.012820513f;
     return z_as_int;
 }

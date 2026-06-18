@@ -18,9 +18,10 @@ Evidence:
   initializer and vtable store. That confirms the shared first `0x38` bytes
   are the BOD base prefix whose payload is reused as pickup world/state fields.
 - Scans eight health pickup slots at `game + 0x356000`, stride `0x74`. The
-  source keeps the native slot-base arithmetic and layers a typed
-  `HealthPickupPoolSlotView::pickup` overlay over it, because a direct
-  `Game` pool member made VC6 choose the wrong base register.
+  source keeps the native slot-base arithmetic by viewing the shifted slot base
+  as a `Game*` and accessing `slot->health_pickups[0]`. A direct
+  `this->health_pickups[slot_index]` member made VC6 choose the wrong base
+  register.
 - Seeds the promoted partial `TrackHealthPickup` fields: `world_position +0x10`,
   `state +0x38`, `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`,
   `bob_phase +0x6c`, and `bob_phase_step +0x70`.
@@ -33,9 +34,9 @@ Evidence:
   `world_position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.
 
-This scratch intentionally keeps the game health pool base scratch-local until
-the shared `Game` layout is recovered across health, jetpack, speedup, and the
-collision walker.
+This scratch now uses the shared `Game::health_pickups` layout, but keeps the
+shifted slot-base source shape because rebasing to a direct pickup pointer still
+does not match native register ownership.
 
 Remaining mismatch:
 
@@ -43,8 +44,8 @@ Remaining mismatch:
   local is source-plausible but wrong for this scratch: it rebases `esi` at the
   pickup object, drops the focused score to 40.00%, and changes the native
   `[slot_base + 0x356000 + field]` addressing into small member offsets. The
-  padded scratch-local pool-slot view keeps the real struct visible without
-  making that invalid register-ownership assumption.
+  shifted `Game*` view keeps the real struct visible without making that
+  invalid register-ownership assumption.
 - The `Vector3` staging correction recovers the native position-local stack
   materialization. The remaining prefix break is now the order of the slot-index
   multiply/subtract versus the late `cell` reload.
