@@ -246,10 +246,18 @@ typedef struct VoiceManager {
  * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
 typedef struct SaltHazardSlot {
-    uint8_t _pad_00[0x68];
-    Vec3 world_position;
-    uint8_t _pad_74[0xc];
-    uint32_t active;
+    BodNode bod;
+    Vec3 bod_position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 world_position;
+    uint8_t _pad_78[0x8];
+    uint32_t state;
     uint8_t _pad_84[0x4];
     struct Game* owner_game;
     float fade_alpha;
@@ -266,13 +274,17 @@ typedef struct SaltHazardSlot {
  * @ 0x4417d0.
  */
 typedef struct SubLazerSlot {
-    uint8_t _pad_00[0x14];
-    float sprite_bob_base_y;
-    uint8_t _pad_18[0x20];
-    uint8_t live_matrix_basis[0x2c];
-    void* sprite;
-    Vec3 live_position;
-    uint8_t _pad_74[0xc];
+    BodNode bod;
+    Vec3 bod_position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 world_position;
+    uint8_t _pad_78[0x8];
     uint32_t state;
     uint8_t _pad_84[0x4];
     struct Game* owner_game;

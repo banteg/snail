@@ -18,7 +18,11 @@ public:
     int deactivate_sub_lazer_projectile(); // @ 0x441740
     void update_sub_lazer_projectile(); // @ 0x4417d0
 
-    char unknown_10[0x38 - 0x10];
+    Vector3 bod_position;     // +0x10, BodBase::position
+    int render_arg_1c;        // +0x1c, BodBase render argument
+    float render_arg_20;      // +0x20, BodBase render argument
+    void* object;             // +0x24
+    Color4f color;            // +0x28
     // RenderableBod transform rows. Kept field-by-field because the slot also
     // uses the zero-offset BodNode list overlay.
     Vector3 basis_right;      // +0x38

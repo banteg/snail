@@ -18,6 +18,13 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+typedef struct Color4f {
+    float r;
+    float g;
+    float b;
+    float a;
+} Color4f;
+
 typedef struct TrackPickupOwnerGameView {
     uint8_t unknown_00[0x09];
     uint8_t pause_gate;
@@ -28,7 +35,11 @@ typedef struct TrackSpeedupRuntime {
     uint32_t list_flags;
     struct TrackSpeedupRuntime* list_prev;
     struct TrackSpeedupRuntime* list_next;
-    uint8_t unknown_10[0x28];
+    Vec3 bod_position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
     Vec3 basis_right;
     float basis_right_w;
     Vec3 basis_up;
@@ -141,7 +152,11 @@ struct RingOrSpecialEffectParent {
     uint32_t list_flags;
     RingOrSpecialEffectParent* list_prev;
     RingOrSpecialEffectParent* list_next;
-    uint8_t unknown_10[0x28];
+    Vec3 bod_position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
     Vec3 basis_right;
     float basis_right_w;
     Vec3 basis_up;

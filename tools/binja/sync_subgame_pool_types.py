@@ -37,6 +37,11 @@ GAME_FIELD_UPDATES = (
 )
 
 TRACK_SPEEDUP_FIELD_UPDATES = (
+    ("0x10", "bod_position", "Vec3"),
+    ("0x1c", "render_arg_1c", "int32_t"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "void*"),
+    ("0x28", "color", "Color4f"),
     ("0x8c", "owner_game", "TrackPickupOwnerGameView*"),
 )
 
@@ -54,6 +59,14 @@ SLUG_HAZARD_FIELD_UPDATES = (
 
 RING_RATE_SOURCE_FIELD_UPDATES = (
     ("0x09", "pause_gate", "uint8_t"),
+)
+
+RING_PARENT_FIELD_UPDATES = (
+    ("0x10", "bod_position", "Vec3"),
+    ("0x1c", "render_arg_1c", "int32_t"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "void*"),
+    ("0x28", "color", "Color4f"),
 )
 
 PROTO_UPDATES = (
@@ -118,6 +131,12 @@ def main() -> int:
             target=TARGET,
             struct_name="RingEffectRateSource",
             updates=RING_RATE_SOURCE_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
+            struct_name="RingOrSpecialEffectParent",
+            updates=RING_PARENT_FIELD_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]

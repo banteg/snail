@@ -14,7 +14,9 @@ public:
     void update_salt_hazard();    // @ 0x441c10
     float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
 
-    char unknown_10[0x24 - 0x10];
+    Vector3 bod_position;     // +0x10, BodBase::position
+    int render_arg_1c;        // +0x1c, BodBase render argument
+    float render_arg_20;      // +0x20, BodBase render argument
     void* object;              // +0x24
     Color4f color;             // +0x28, updater drives alpha
     // RenderableBod transform rows. Kept field-by-field because the slot also

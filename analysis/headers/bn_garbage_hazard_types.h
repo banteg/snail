@@ -93,7 +93,11 @@ struct GarbageHazardSlot {
     uint32_t list_flags;
     GarbageHazardSlot* list_prev;
     GarbageHazardSlot* list_next;
-    uint8_t unknown_10[0x28];
+    Vec3 bod_position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
     Vec3 basis_right;
     float basis_right_w;
     Vec3 basis_up;

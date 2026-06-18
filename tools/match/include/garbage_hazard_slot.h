@@ -18,7 +18,11 @@ public:
     GarbageHazardSlot* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
-    char unknown_10[0x38 - 0x10];
+    Vector3 bod_position;           // +0x10, BodBase::position
+    int render_arg_1c;              // +0x1c, BodBase render argument
+    float render_arg_20;            // +0x20, BodBase render argument
+    void* object;                   // +0x24
+    Color4f color;                  // +0x28
     // RenderableBod transform rows. Kept field-by-field because VC6 rejects a
     // union containing TransformMatrix's constructors.
     Vector3 basis_right;            // +0x38
