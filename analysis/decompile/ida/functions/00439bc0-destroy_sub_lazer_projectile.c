@@ -2,8 +2,10 @@
 /* function: destroy_sub_lazer_projectile @ 0x439bc0 */
 /* selector: destroy_sub_lazer_projectile */
 
-// Unlinks one live SubLazer projectile (`cRSubLazerManager` slot) and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool. Historically labelled a `Wall2 ambient hazard`; the Wall2 tile is the emitter, the slot itself is a projectile.
-_DWORD *__thiscall sub_439BC0(int this)
+// Unlinks the BOD nodes owned by a live TrackRowCell/fringe runtime entry. Tile
+// 29/30 rows also clear the row-colour BOD record before the cell and its four
+// directional fringe objects return to the shared free list.
+_DWORD *__thiscall destroy_sub_lazer_projectile(TrackRowCell *cell)
 {
   int v2; // eax
   char v3; // cl
@@ -27,8 +29,8 @@ _DWORD *__thiscall sub_439BC0(int this)
   int v21; // ecx
   int v22; // ecx
 
-  v2 = get_track_cell_row_index((_DWORD *)this);
-  v3 = *(_BYTE *)(this + 60);
+  v2 = get_track_cell_row_index(cell);
+  v3 = cell->tile_id;
   if ( v3 == 29 || v3 == 30 )
   {
     v4 = 61 * v2;
@@ -66,7 +68,7 @@ _DWORD *__thiscall sub_439BC0(int this)
       }
     }
   }
-  v12 = *(_DWORD *)(this + 4);
+  v12 = cell->bod.list_flags;
   if ( (v12 & 0x200) != 0 )
   {
     v13 = (char *)MEMORY[0x4DF904] + 1448;
@@ -76,20 +78,20 @@ _DWORD *__thiscall sub_439BC0(int this)
     }
     else
     {
-      v14 = *(_DWORD *)(this + 12);
+      v14 = (int)cell->bod.list_next;
       if ( v14 )
-        *(_DWORD *)(v14 + 8) = *(_DWORD *)(this + 8);
-      v15 = *(_DWORD *)(this + 8);
+        *(_DWORD *)(v14 + 8) = cell->bod.list_prev;
+      v15 = (int)cell->bod.list_prev;
       if ( v15 )
-        *(_DWORD *)(v15 + 12) = *(_DWORD *)(this + 12);
+        *(_DWORD *)(v15 + 12) = cell->bod.list_next;
       else
-        *((_DWORD *)v13 + 1) = *(_DWORD *)(this + 12);
-      *(_DWORD *)(this + 12) = *((_DWORD *)v13 + 2);
-      *((_DWORD *)v13 + 2) = this;
-      *(_DWORD *)(this + 4) &= ~0x200u;
+        *((_DWORD *)v13 + 1) = cell->bod.list_next;
+      cell->bod.list_next = (BodNode *)*((_DWORD *)v13 + 2);
+      *((_DWORD *)v13 + 2) = cell;
+      cell->bod.list_flags &= ~0x200u;
     }
   }
-  v16 = (_DWORD *)(this + 68);
+  v16 = (_DWORD *)&cell->fringe_front;
   v17 = 4;
   do
   {
@@ -130,4 +132,3 @@ _DWORD *__thiscall sub_439BC0(int this)
   while ( v17 );
   return result;
 }
-

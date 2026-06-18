@@ -13,6 +13,8 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types
 REQUIRED_HEADER_STRUCTS = (
     "Game",
     "SnailVisual",
+    "BodNode",
+    "FringeObject",
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
     "PathTemplate",
@@ -134,10 +136,16 @@ SNAIL_VISUAL_FIELD_UPDATES = (
 )
 
 TRACK_ROW_CELL_FIELD_UPDATES = (
+    ("0x00", "bod", "BodNode"),
     ("0x10", "anchor_position", "Vec3"),
     ("0x38", "attachment_template_record", "PathTemplate*"),
     ("0x3c", "tile_id", "uint8_t"),
     ("0x3d", "tile_flags_3d", "uint8_t"),
+    ("0x40", "lane_and_flags", "uint32_t"),
+    ("0x44", "fringe_front", "FringeObject*"),
+    ("0x48", "fringe_right", "FringeObject*"),
+    ("0x4c", "fringe_left", "FringeObject*"),
+    ("0x50", "fringe_back", "FringeObject*"),
 )
 
 PATH_TEMPLATE_FIELD_UPDATES = (

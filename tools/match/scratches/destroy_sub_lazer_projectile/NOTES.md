@@ -28,3 +28,16 @@ the active-flag precheck value live in the candidate instead of clobbering and
 reloading it after forming the shared `BodList` anchor as native does. Leave
 that as a source-shape residual unless another caller/header gives a cleaner
 fringe-array spelling.
+
+## 2026-06-18 BN/IDA name sync
+
+Promoted the analysis-side `TrackRowCell` prefix to `BodNode`, renamed
+`+0x40` to `lane_and_flags`, and synced the four directional fringe pointers as
+`fringe_front/right/left/back`. BN now resolves the cell unlink block through
+`cell->bod.*` and starts the final four-pointer scan at `cell->fringe_front`.
+The IDA snapshot was corrected away from the stale `SubLazerSlot` wording.
+
+The same BN type sync does help `wall2_emitter_maybe_fire_sub_lazer`, but that
+export was intentionally not kept in this slice because BN reused the
+`lane_and_flags` field name for a generic condition/temp value across the
+function, making the artifact less honest than the previous `result` spelling.

@@ -31,6 +31,30 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+typedef struct Color4f {
+    float r;
+    float g;
+    float b;
+    float a;
+} Color4f;
+
+typedef struct BodNode BodNode;
+struct BodNode {
+    void* vtable;
+    uint32_t list_flags;
+    BodNode* list_prev;
+    BodNode* list_next;
+};
+
+typedef struct FringeObject {
+    BodNode bod;
+    Vec3 position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+} FringeObject;
+
 typedef struct Vec4 {
     float x;
     float y;
@@ -158,18 +182,18 @@ typedef struct PathTemplate {
 } PathTemplate;
 
 typedef struct TrackRowCell {
-    uint8_t _pad_00[0x10];
+    BodNode bod;
     Vec3 anchor_position;
     uint8_t _pad_1c[0x1c];
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
     uint8_t _pad_3e[0x2];
-    uint32_t render_flags;
-    void* fringe_object_0;
-    void* fringe_object_1;
-    void* fringe_object_2;
-    void* fringe_object_3;
+    uint32_t lane_and_flags;
+    FringeObject* fringe_front;
+    FringeObject* fringe_right;
+    FringeObject* fringe_left;
+    FringeObject* fringe_back;
 } TrackRowCell;
 
 typedef struct TrackAttachmentRuntimeRow {
