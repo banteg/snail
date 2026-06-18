@@ -25,6 +25,12 @@ public:
 class PauseMenu {
 public:
     int uninit_pause_menu(); // @ 0x440600
+    void initialize_pause_menu(); // @ 0x440660
+    void* update_pause_menu(); // @ 0x4407a0
+
+    FrontendWidget* options_widget; // +0x00
+    FrontendWidget* end_game_widget; // +0x04
+    FrontendWidget* resume_widget; // +0x08
 };
 
 class MainMenu {
@@ -58,7 +64,7 @@ public:
     unsigned char pause_gate; // +0x74621
     char unknown_074622[0x7462c - 0x74622];
     PauseMenu pause_menu; // +0x7462c
-    char unknown_07462d[0x74658 - 0x7462d];
+    char unknown_074638[0x74658 - 0x74638];
     int selected_subgame_mode; // +0x74658
     char unknown_07465c[0x430060 - 0x7465c];
     int completion_base_score; // +0x430060

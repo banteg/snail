@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**381/687** mapped gameplay functions matched, **521/687** mapped gameplay functions have a scratch, **37059/325882** bytes (**11.37%**) are proof-grade, and overall fuzzy is **27.80%**.
+**383/687** mapped gameplay functions matched, **523/687** mapped gameplay functions have a scratch, **37624/325882** bytes (**11.55%**) are proof-grade, and overall fuzzy is **27.97%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -288,6 +288,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | calc_subgame_rate | 0x4404d0 | 297 | 84/84 | 100.00% | 84/84 | 16 ok |  |
 | ✅ | uninit_pause_menu | 0x440600 | 82 | 22/22 | 100.00% | 22/22 | 8 ok |  |
+| ✅ | initialize_pause_menu | 0x440660 | 316 | 88/88 | 100.00% | 88/88 | 23 ok |  |
+| ✅ | update_pause_menu | 0x4407a0 | 249 | 55/55 | 100.00% | 55/55 | 10 ok |  |
 | ✅ | advance_blink_random | 0x4408a0 | 31 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | initialize_blink_random | 0x4408c0 | 74 | 21/21 | 100.00% | 21/21 | 5 ok |  |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | 5/5 | - |  |
@@ -534,7 +536,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 3 type name(s)
-- covered: 27 type name(s) with a header plus scratch-local copies
+- covered: 26 type name(s) with a header plus scratch-local copies
 - divergent: 25 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -589,7 +591,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

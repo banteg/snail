@@ -13,15 +13,15 @@ class PauseMenu {
 public:
     int uninit_pause_menu();
 
-    FrontendWidget* title;    // +0x00
-    FrontendWidget* resume;   // +0x04
-    FrontendWidget* quit;     // +0x08
+    FrontendWidget* options_widget;  // +0x00
+    FrontendWidget* end_game_widget; // +0x04
+    FrontendWidget* resume_widget;   // +0x08
 };
 
 int PauseMenu::uninit_pause_menu()
 {
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(title);
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(resume);
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(quit);
+    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(options_widget);
+    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(end_game_widget);
+    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(resume_widget);
     return ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
 }
