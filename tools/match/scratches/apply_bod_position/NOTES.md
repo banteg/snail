@@ -14,3 +14,7 @@ Semantics:
 Source-shape note: the direct member-call expression is required. Introducing a
 named `source` pointer makes VC6 compute the vertex `this` pointer before the
 stack scratch argument and regresses the loop call setup.
+
+The transformed lanes can be copied with ordinary `destination->x/y/z` field
+assignments. VC6 still emits dword moves for the float copy, so no `*(int*)&`
+bit-punning is needed here.

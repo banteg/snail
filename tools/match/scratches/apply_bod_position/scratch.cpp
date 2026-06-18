@@ -30,10 +30,9 @@ ObjectGeometry* BodBase::apply_bod_position(TransformMatrix* matrix)
                     ->multiply_vector_by_matrix_copy(&transformed, matrix);
             ObjectGeometry* destination_object = (ObjectGeometry*)object;
             Vec3* destination = (Vec3*)((char*)destination_object->vertices + offset);
-            int copied_x = *(int*)&copied->x;
             ++index;
             offset += sizeof(Vec3);
-            *(int*)&destination->x = copied_x;
+            destination->x = copied->x;
             destination->y = copied->y;
             destination->z = copied->z;
             result = (ObjectGeometry*)object;
