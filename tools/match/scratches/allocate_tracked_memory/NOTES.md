@@ -6,8 +6,10 @@ the guarded block, writes `de ad ba be` sentinels at both ends, adds the guarded
 size to the global tracked byte total, and returns the caller-visible payload
 at `block + 4`.
 
-Current focused result: 91.67%, 48/48 candidate/target instructions, with seven
-masked operands resolved. Remaining residual is register scheduling at entry
-and at the tracked-stack push arguments: the target saves callee-saved registers
-before loading `size` into `ebx` and uses `eax` for the label argument, while
-this source computes via `eax` before the saves and uses `ecx` for the label.
+Focused match: 100%, 48/48 instructions, with seven clean masked operands.
+
+The native shape mutates the `size` parameter to the guarded allocation size
+before allocation and uses the `name` parameter directly for the tracked-stack
+record. Spelling those as separate `guarded_size` and `label` locals makes VC6
+compute through `eax` before saving callee-saved registers and passes the label
+through `ecx`.
