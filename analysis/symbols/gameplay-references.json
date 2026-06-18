@@ -541,6 +541,13 @@
       "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
+      "address": "0x434248",
+      "name": "update_thanks_for_playing_screen_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "description": "Compiler-emitted message-state switch jump table used by update_thanks_for_playing_screen."
+    },
+    {
       "address": "0x4347e8",
       "name": "update_star_field_jump_table",
       "kind": "jump_table",

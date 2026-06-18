@@ -8,13 +8,14 @@
 class ThanksScreen {
 public:
     void initialize_thanks_for_playing_screen(); // @ 0x433fd0
+    void update_thanks_for_playing_screen(); // @ 0x4340f0
     void uninit_thanks_screen(); // @ 0x4340c0
 
     int field_00; // +0x00
     FrontendWidget* message_widget; // +0x04
-    int field_08; // +0x08
-    int field_0c; // +0x0c
-    float field_10; // +0x10
+    int message_state; // +0x08
+    float message_progress; // +0x0c
+    float message_progress_step; // +0x10
 };
 
 class ThanksScreenOwner {

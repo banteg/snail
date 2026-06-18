@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**435/687** mapped gameplay functions matched, **580/687** mapped gameplay functions have a scratch, **47014/325882** bytes (**14.43%**) are proof-grade, and overall fuzzy is **31.31%**.
+**436/687** mapped gameplay functions matched, **581/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **31.42%**.
 
-## Proof Grade (435)
+## Proof Grade (436)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -215,6 +215,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | open_thanks_screen | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | initialize_thanks_for_playing_screen | 0x433fd0 | 234 | 55/55 | 100.00% | 55/55 | 17 ok |  |
 | ✅ | uninit_thanks_screen | 0x4340c0 | 38 | 8/8 | 100.00% | 8/8 | 3 ok |  |
+| ✅ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 88/88 | 100.00% | 88/88 | 19 ok |  |
 | ✅ | destroy_star_field | 0x434270 | 70 | 28/28 | 100.00% | 28/28 | 1 ok |  |
 | ✅ | open_star_field | 0x4342c0 | 77 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
@@ -594,7 +595,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (107)
+## No Scratch (106)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -680,7 +681,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | read_pressed_text_input_key_code | 0x432440 | 915 | 0/338 | 0.00% | 0/338 | - |  |
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
-| ⬜ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 0/88 | 0.00% | 0/88 | - |  |
 | ⬜ | initialize_star_field | 0x434310 | 861 | 0/247 | 0.00% | 0/247 | - |  |
 | ⬜ | merge_track_tile_runs | 0x435180 | 873 | 0/276 | 0.00% | 0/276 | - |  |
 | ⬜ | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 0/75 | 0.00% | 0/75 | - |  |
