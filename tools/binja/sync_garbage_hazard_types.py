@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_data_var_updates,
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
@@ -123,6 +124,16 @@ SPRITE_SYMBOL_UPDATES = (
     ("0x814cb0", "g_sprite_sentinel"),
 )
 
+# Keep the manager base as its pause byte here; a full SpriteManager data var
+# makes BN fold the active/free tail aliases back into noisy parent expressions.
+SPRITE_DATA_VAR_UPDATES = (
+    ("0x78ff90", "TextureRef*[0x3e8]"),
+    ("0x790f30", "uint8_t"),
+    ("0x814c94", "Sprite*[5]"),
+    ("0x814ca8", "Sprite*"),
+    ("0x814cb0", "Sprite"),
+)
+
 PROTO_UPDATES = (
     ("initialize_sprite_manager", "void __thiscall initialize_sprite_manager(SpriteManager* manager)"),
     (
@@ -193,6 +204,7 @@ def main() -> int:
             updates=GARBAGE_HAZARD_POOL_FIELD_UPDATES,
         ),
         *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SPRITE_SYMBOL_UPDATES, kind="data"),
+        *apply_data_var_updates(REPO_ROOT, target=TARGET, updates=SPRITE_DATA_VAR_UPDATES),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]
 

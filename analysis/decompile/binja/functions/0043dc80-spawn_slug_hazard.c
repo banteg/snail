@@ -49,7 +49,7 @@
 0043dd58        *(esi + 0x356435) = var_4_1:1.b
 0043dd58        *(esi + 0x356436) = var_4_1:2.b
 0043dd58        *(esi + 0x356437) = var_4_1:3.b
-0043dd61        void* edx_5 = data_4df904 + 0x5a8
+0043dd61        void* edx_5 = g_game_base + 0x5a8
 0043dd71        if ((*(esi + 0x3563a5) & 2) == 0)
 0043dd82        *(esi + 0x3563ac) = &game->__offset(0x3bb764).d
 0043dd88        if (*(edx_5 + 4) != &game->__offset(0x3bb764).d)
@@ -74,15 +74,15 @@
 0043dd8a        game->__offset(0x3bb76f).b = (esi + 0x3563a0):3.b
 0043dd8d        *(edx_5 + 4) = esi + 0x3563a0
 0043dd90        *(esi + 0x3563a8) = 0
-0043ddab        int32_t ecx_10
-0043ddab        ecx_10:1.b = (*(esi + 0x3563a4)):1.b | 2
+0043dda8        int32_t ecx_10 = *(esi + 0x3563a4)
+0043ddab        ecx_10:1.b |= 2
 0043ddae        *(esi + 0x3563a4) = ecx_10
 0043dd78        report_errorf("List ADDbefore")
-0043ddc7        int32_t* eax_7 = allocate_sprite(&g_sprite_manager, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
+0043ddc7        struct Sprite* eax_7 = allocate_sprite(&g_sprite_manager, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        *(esi + 0x35644c) = eax_7
-0043ddd5        int32_t ecx_11
-0043ddd5        ecx_11:1.b = eax_7[1]:1.b | 8
-0043ddd8        eax_7[1] = ecx_11
+0043ddd2        uint32_t flags = eax_7->flags
+0043ddd5        flags:1.b |= 8
+0043ddd8        eax_7->flags = flags
 0043dddb        *(esi + 0x35644c)
 0043dde4        set_color_white()
 0043ddf1        *(*(esi + 0x35644c) + 0x78) = 0
@@ -98,10 +98,10 @@
 0043de3d        *(esi + 0x356454) = 0
 0043de43        *(esi + 0x35646c) = 0
 0043de49        *(esi + 0x356470) = 0
-0043de60        *(esi + 0x356474) = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.166666672f))
+0043de60        *(esi + 0x356474) = fconvert.s(fconvert.t(*(g_game_base + 0x74650)) * fconvert.t(0.166666672f))
 0043de66        *(esi + 0x356468) = 7
-0043de76        int32_t eax_12
-0043de76        eax_12:1.b = (*(esi + 0x3563a4)):1.b & 0xef
+0043de70        int32_t eax_12 = *(esi + 0x3563a4)
+0043de76        eax_12:1.b &= 0xef
 0043de79        *(esi + 0x3563a4) = eax_12
 0043de7f        *(esi + 0x356478) = 0
 0043de85        *(esi + 0x356479) = 0
@@ -110,11 +110,10 @@
 0043de9b        long double x87_r6_3 = fconvert.t(cell->anchor_position.z)
 0043de9e        long double temp1 = fconvert.t(game->__offset(0x1270fcc).d)
 0043de9e        x87_r6_3 - temp1
-0043dea4        eax_12.w = (x87_r6_3 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_3, temp1) ? 1 : 0) << 0xa | (x87_r6_3 == temp1 ? 1 : 0) << 0xe | 0x3800
-0043dea9        if ((eax_12:1.b & 0x41) == 0)
+0043dea9        if ((((x87_r6_3 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_3, temp1) ? 1 : 0) << 0xa | (x87_r6_3 == temp1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 0043deab        *(esi + 0x356464) = 1
 0043dec1        game->__offset(0x1270fcc).d = fconvert.s(fconvert.t(game->__offset(0x1270fd0).d) + fconvert.t(game->__offset(0x1270fcc).d))
 0043dec7        *(esi + 0x356484) = 0
-0043decd        struct Player* eax_13 = next_math_random_value()
-0043def2        *(esi + 0x356488) = fconvert.s(fconvert.t(1f) / ((float.t(eax_13) * fconvert.t(3.05175781e-05f) + fconvert.t(1f)) * fconvert.t(60f)))
-0043deff        return eax_13
+0043decd        struct Player* eax_14 = next_math_random_value()
+0043def2        *(esi + 0x356488) = fconvert.s(fconvert.t(1f) / ((float.t(eax_14) * fconvert.t(3.05175781e-05f) + fconvert.t(1f)) * fconvert.t(60f)))
+0043deff        return eax_14

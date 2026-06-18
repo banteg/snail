@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_frontend_sprite_button @ 0x401a70 */
 
-00401a78        struct FrontendWidget* eax = data_4df904 + 0xb4c
+00401a78        struct FrontendWidget* eax = g_game_base + 0xb4c
 00401a8b        if ((arg1->list_flags & 0x200) == 0)
 00401a9c        arg1->list_prev = eax
 00401aa2        arg1->list_next = eax->list_next
@@ -74,9 +74,7 @@
 00401c0f        arg1->hot_text_color.g = eax_8->g
 00401c15        arg1->hot_text_color.b = eax_8->b
 00401c1b        arg1->hot_text_color.a = eax_8->a
-00401c1e        float eax_9
-00401c1e        eax_9.b = arg1->widget_flags.b
-00401c27        if ((eax_9.b & 2) == 0)
+00401c27        if ((arg1->widget_flags.b & 2) == 0)
 00401c41        float idle_padding = arg1->idle_padding
 00401c47        arg1->hover_blend_target = 0f
 00401c4d        arg1->target_padding = idle_padding
@@ -90,30 +88,30 @@
 00401c7d        arg1->text_effect_current = 0f
 00401c83        arg1->text_alignment = 0
 00401c89        arg1->anchor_x = arg7
-00401c98        long double x87_r7_1 = fconvert.t(arg7) + fconvert.t(*(data_4df904 + 0x440fc))
+00401c98        long double x87_r7_1 = fconvert.t(arg7) + fconvert.t(*(g_game_base + 0x440fc))
 00401ca2        arg1->layout_left = arg4
 00401ca8        arg1->layout_top = arg5
 00401cae        arg1->anchor_x = fconvert.s(x87_r7_1)
-00401cbe        arg1->layout_width = fconvert.s(float.t(*(*((arg3 << 2) + &g_sprite_texture_table) + 4)))
+00401cbe        arg1->layout_width = fconvert.s(float.t(g_sprite_texture_table[arg3]->_pad_04[0].d))
 00401ccb        float layout_width = arg1->layout_width
-00401cd1        long double x87_r7_3 = float.t(*(*((arg3 << 2) + &g_sprite_texture_table) + 8))
-00401cd4        arg1->_pad_250[0] = layout_width.b
-00401cd4        arg1->_pad_250[1] = layout_width:1.b
-00401cd4        arg1->_pad_250[2] = layout_width:2.b
-00401cd4        arg1->_pad_250[3] = layout_width:3.b
+00401cd1        long double x87_r7_3 = float.t(g_sprite_texture_table[arg3]->_pad_04[4].d)
+00401cd4        arg1->_pad_24c[0] = layout_width.b
+00401cd4        arg1->_pad_24c[1] = layout_width:1.b
+00401cd4        arg1->_pad_24c[2] = layout_width:2.b
+00401cd4        arg1->_pad_24c[3] = layout_width:3.b
 00401cde        arg1->texture_id_270 = arg3
 00401ce8        arg1->layout_height = fconvert.s(x87_r7_3)
 00401cee        float layout_height = arg1->layout_height
 00401cf4        arg1->layout_anchor_x = arg4
-00401cfa        arg1->_pad_250[4] = layout_height.b
-00401cfa        arg1->_pad_250[5] = layout_height:1.b
-00401cfa        arg1->_pad_250[6] = layout_height:2.b
-00401cfa        arg1->_pad_250[7] = layout_height:3.b
+00401cfa        arg1->_pad_24c[4] = layout_height.b
+00401cfa        arg1->_pad_24c[5] = layout_height:1.b
+00401cfa        arg1->_pad_24c[6] = layout_height:2.b
+00401cfa        arg1->_pad_24c[7] = layout_height:3.b
 00401d06        arg1->layout_anchor_y = arg5
-00401d0c        arg1->_pad_274[0] = arg8[0]
-00401d0c        arg1->_pad_274[1] = arg8[1]
-00401d0c        arg1->_pad_274[2] = arg8[2]
-00401d0c        arg1->_pad_274[3] = arg8[3]
+00401d0c        arg1->_pad_270[0] = arg8[0]
+00401d0c        arg1->_pad_270[1] = arg8[1]
+00401d0c        arg1->_pad_270[2] = arg8[2]
+00401d0c        arg1->_pad_270[3] = arg8[3]
 00401d12        arg1->aux_progress = 0f
 00401d18        arg1->aux_step = 0f
 00401d28        return layout_frontend_widget(arg1)

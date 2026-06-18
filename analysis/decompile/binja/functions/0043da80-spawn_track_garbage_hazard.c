@@ -28,7 +28,7 @@
 0043db59        *(esi + 0x3591b0) = var_8
 0043db64        *(esi + 0x3591b4) = z
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, esi + 0x3591ac, esi + 0x3591e4)
-0043db81        void* eax_5 = data_4df904 + 0x5a8
+0043db81        void* eax_5 = g_game_base + 0x5a8
 0043db88        if ((0x200 & *(esi + 0x359148)) == 0)
 0043db9b        *(esi + 0x359150) = &game->__offset(0x3bb764).d
 0043dba3        if (*(eax_5 + 4) != &game->__offset(0x3bb764).d)

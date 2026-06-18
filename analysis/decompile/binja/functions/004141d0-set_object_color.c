@@ -10,7 +10,7 @@
 0041425a        return result
 00414200        int32_t* eax = *(*(arg1 + 0xc0) + 8)
 0041421a        int32_t var_4
-0041421a        (*(*eax + 0x2c))(eax, 0, data_5031bc * 0x18, &var_4, 0)
+0041421a        (*(*eax + 0x2c))(eax, 0, g_object_grouped_vertex_cursor * 0x18, &var_4, 0)
 00414223        int32_t i = 0
 00414227        if (*(arg1 + 0xc4) s> 0)
 0041422a        int32_t ecx_7 = 0

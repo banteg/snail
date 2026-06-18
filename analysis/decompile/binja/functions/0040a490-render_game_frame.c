@@ -10,7 +10,7 @@
 0040a4aa        if (eax s> 0)
 0040a4ad        *(edi + 0x56c) = eax - 1
 0040a4bd        return eax - 1
-0040a4be        sub_414650()
+0040a4be        reset_render_counters()
 0040a4c7        int32_t var_70 = 0
 0040a4cb        struct TransformMatrix transform
 0040a4cb        set_matrix_identity(&transform)
@@ -75,16 +75,15 @@
 0040a5cd        int32_t result_1 = result_2
 0040a5d1        int32_t* var_74_1 = &i_7
 0040aa2e        bool cond:2_1
-0040a5d9        int32_t ebx_1 = *var_74_1
+0040a5d5        int32_t* edx_5 = var_74_1
+0040a5d9        int32_t ebx_1 = *edx_5
 0040a5db        int32_t eax_7 = ebx_1 * 5
 0040a5de        void* ebp_2 = edi + (eax_7 << 3)
-0040a5e1        eax_7.b = *(edi + (eax_7 << 3) + 0x5bc)
-0040a5ea        if ((eax_7.b & 1) != 0)
-0040a5f0        void* eax_8 = *(ebp_2 + 0x5d4)
-0040a5f6        int32_t* edx_5
+0040a5ea        if ((*(edi + (eax_7 << 3) + 0x5bc) & 1) != 0)
+0040a5f0        void* eax_9 = *(ebp_2 + 0x5d4)
 0040a5f6        edx_5.b = *(ebp_2 + 0x5d8)
 0040a609        int32_t* esi_1 = edi + ((ebx_1 * 5 + 0xb9) << 3)
-0040a637        int16_t x87control_1 = render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_8 + 0xc0), eax_8 + 0x38, eax_8 + 0x80, edx_5.b, 0)
+0040a637        int16_t x87control_1 = render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_9 + 0xc0), eax_9 + 0x38, eax_9 + 0x80, edx_5.b, 0)
 0040a647        if ((*(ebp_2 + 0x5bc) & 2) == 0)
 0040a64d        void* i_2 = *(edi + 0x5ac)
 0040a653        i_10 = 0
@@ -92,9 +91,9 @@
 0040a663        int32_t* edi_1 = &data_4dfb10
 0040a66c        if ((*(i_2 + 4) & 0x10) != 0)
 0040a66e        char* var_94_2 = "DEBUG RENDER\n"
-0040a67b        int32_t eax_12 = *(i_2 + 4)
-0040a69c        if ((eax_12.b & 2) != 0 && (eax_12.b & 0x20) != 0 && (*(ebp_2 + 0x5bc) & eax_12 & 0xff000000) != 0)
-0040a6a4        if ((eax_12.b & 0x80) != 0)
+0040a67b        int32_t eax_14 = *(i_2 + 4)
+0040a69c        if ((eax_14.b & 2) != 0 && (eax_14.b & 0x20) != 0 && (*(ebp_2 + 0x5bc) & eax_14 & 0xff000000) != 0)
+0040a6a4        if ((eax_14.b & 0x80) != 0)
 0040a6aa        *edi_1 = i_2
 0040a6ad        edi_1 = &edi_1[1]
 0040a6b0        i_10 += 1
@@ -124,15 +123,15 @@
 0040a73e        i_2 = *(i_2 + 0xc)
 0040a743        do while (i_2 != 0)
 0040a749        edi = var_78
-0040a74d        void* i_3 = *((ebx_1 << 2) + &g_sprite_active_heads)
+0040a74d        void* i_3 = g_sprite_active_heads[ebx_1]
 0040a754        int32_t* var_6c_1 = &data_4e5510
-0040a75c        sub_413540()
+0040a75c        begin_sprite_depth_render_state()
 0040a763        while (i_3 != 0)
 0040a774        var_70 += 1
-0040a778        int32_t eax_25 = *(i_3 + 4)
-0040a783        if ((*(ebp_2 + 0x5bc) & eax_25 & 0xff000000) == 0)
+0040a778        int32_t eax_27 = *(i_3 + 4)
+0040a783        if ((*(ebp_2 + 0x5bc) & eax_27 & 0xff000000) == 0)
 0040a8a4        report_errorf("Loose Sprite scene viewport")
-0040a79c        if ((eax_25.b & 1) != 0 && (eax_25.b & 0x40) != 0 && (eax_25:1.b & 2) == 0)
+0040a79c        if ((eax_27.b & 1) != 0 && (eax_27.b & 0x40) != 0 && (eax_27:1.b & 2) == 0)
 0040a7ae        int32_t esi_3 = *(ebp_2 + 0x5d4) + 0x80
 0040a7b8        float var_60 = *(i_3 + 0x48)
 0040a7bc        int32_t ecx_20 = *(i_3 + 0x4c)
@@ -144,9 +143,9 @@
 0040a7e8        long double x87_r7_4 = fneg(fconvert.t(edx_16))
 0040a7ea        float var_58_2 = fconvert.s(x87_r7_4)
 0040a7f6        long double x87_r7_7 = fneg(x87_r7_4) * fconvert.t(4.19672108f) + fconvert.t(*(i_3 + 0x98))
-0040a7fe        int32_t eax_27
-0040a7fe        eax_27, x87control_1 = __ftol(x87control_1, x87_r7_7)
-0040a803        int32_t esi_4 = eax_27
+0040a7fe        int32_t eax_29
+0040a7fe        eax_29, x87control_1 = __ftol(x87control_1, x87_r7_7)
+0040a803        int32_t esi_4 = eax_29
 0040a80b        if (esi_4 s>= 0x100)
 0040a80d        esi_4 = 0xff
 0040a820        label_40a820:
@@ -166,9 +165,7 @@
 0040a83a        while (true)
 0040a83a        long double temp4_1 = fconvert.t(ecx_22[4])
 0040a83a        x87_r7_7 - temp4_1
-0040a83d        int32_t* eax_29
-0040a83d        eax_29.w = (x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe | 0x3800
-0040a842        if ((eax_29:1.b & 1) == 0)
+0040a842        if ((((x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe | 0x3800):1.b & 1) == 0)
 0040a842        break
 0040a844        edi_2 = ecx_22
 0040a846        ecx_22 = *ecx_22
@@ -198,51 +195,51 @@
 0040a906        while (i_4 s>= &data_4f7050)
 0040a8c4        void** j_1 = *i_4
 0040a8c8        if (j_1 != 0)
-0040a8ca        void* ecx_26 = j_1[5]
-0040a8d1        if ((*(ecx_26 + 4) & 2) != 0)
-0040a8e0        update_sprite_facing_angle(ecx_26, *(ebp_2 + 0x5d4) + 0x80)
+0040a8ca        struct Sprite* sprite = j_1[5]
+0040a8d1        if ((sprite->flags.b & 2) != 0)
+0040a8e0        update_sprite_facing_angle(sprite, *(ebp_2 + 0x5d4) + 0x80)
 0040a8ed        draw_sprite_quad(&j_1[1], j_1[5])
 0040a8f2        j_1 = *j_1
 0040a8f9        do while (j_1 != 0)
 0040a8fb        *i_4 = j_1
 0040a8fd        i_4 -= 4
-0040a908        sub_413650()
-0040a90d        sub_411e10()
+0040a908        end_sprite_depth_render_state()
+0040a90d        begin_overlay_render_state()
 0040a919        draw_font_text_queue(*(ebp_2 + 0x5bc))
-0040a921        sub_411de0()
+0040a921        end_overlay_render_state()
 0040a939        if ((*(ebp_2 + 0x5bc) & 2) == 0 && i_10 != 0)
-0040a93f        void* eax_33 = *(ebp_2 + 0x5d4)
-0040a97c        render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_33 + 0xc0), eax_33 + 0x38, eax_33 + 0x80, *(ebp_2 + 0x5d8), 1)
+0040a93f        void* eax_36 = *(ebp_2 + 0x5d4)
+0040a97c        render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_36 + 0xc0), eax_36 + 0x38, eax_36 + 0x80, *(ebp_2 + 0x5d8), 1)
 0040a989        int32_t i_9 = i_10
 0040a990        int32_t* edi_3 = (i_10 << 2) + &data_4dfb10
 0040a997        i_10 = 0
 0040a99f        var_7c += i_9
 0040aa14        int32_t i_5
-0040a9a3        void* eax_38 = edi_3[-1]
+0040a9a3        void* eax_41 = edi_3[-1]
 0040a9a6        edi_3 -= 4
 0040a9af        int32_t var_a0_4
 0040a9af        float var_9c_4
 0040a9af        int32_t* var_98_5
 0040a9af        char var_94_9
-0040a9af        struct TransformMatrix* eax_41
+0040a9af        struct TransformMatrix* eax_44
 0040a9af        void* esi_5
-0040a9af        if (((*(eax_38 + 4)).w:1.b & 4) == 0)
+0040a9af        if (((*(eax_41 + 4)).w:1.b & 4) == 0)
 0040a9cf        esi_5 = *edi_3
-0040a9d3        transform.position.x = *(eax_38 + 0x10)
-0040a9dd        transform.position.y = *(eax_38 + 0x14)
-0040a9e9        transform.position.z = *(eax_38 + 0x18)
+0040a9d3        transform.position.x = *(eax_41 + 0x10)
+0040a9dd        transform.position.y = *(eax_41 + 0x14)
+0040a9e9        transform.position.z = *(eax_41 + 0x18)
 0040a9fb        var_94_9 = is_bod_after_sprites(esi_5)
 0040a9ff        var_98_5 = esi_5 + 0x28
 0040aa00        var_9c_4 = *(esi_5 + 0x20)
 0040aa01        var_a0_4 = *(esi_5 + 0x1c)
-0040aa02        eax_41 = &transform
-0040a9b1        esi_5 = eax_38
+0040aa02        eax_44 = &transform
+0040a9b1        esi_5 = eax_41
 0040a9c0        var_94_9 = is_bod_after_sprites(esi_5)
 0040a9c4        var_98_5 = esi_5 + 0x28
 0040a9c5        var_9c_4 = *(esi_5 + 0x20)
 0040a9c6        var_a0_4 = *(esi_5 + 0x1c)
-0040a9c7        eax_41 = esi_5 + 0x38
-0040aa0b        render_object(*(esi_5 + 0x24), eax_41, var_a0_4, var_9c_4, var_98_5, var_94_9)
+0040a9c7        eax_44 = esi_5 + 0x38
+0040aa0b        render_object(*(esi_5 + 0x24), eax_44, var_a0_4, var_9c_4, var_98_5, var_94_9)
 0040aa13        i_5 = i_9
 0040aa13        i_9 -= 1
 0040aa14        do while (i_5 != 1)

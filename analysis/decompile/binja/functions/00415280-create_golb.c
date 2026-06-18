@@ -6,7 +6,7 @@
 0041528f        arg1[0x6f].b = 0
 00415295        *(arg1 + 0x1bd) = 0
 0041529e        if ((arg1[1] & 0x200) == 0)
-004152b4        int32_t** eax_2 = data_4df904 + 0x5ac
+004152b4        int32_t** eax_2 = g_game_base + 0x5ac
 004152b9        int32_t* ecx = *eax_2
 004152bd        if (ecx != 0)
 004152cb        ecx[2] = arg1
@@ -132,9 +132,7 @@
 00415599        long double x87_r7_21 = fconvert.t(*(ecx_7 + 0x60))
 0041559c        long double temp1_1 = fconvert.t(0f)
 0041559c        x87_r7_21 - temp1_1
-004155a2        int32_t eax_19
-004155a2        eax_19.w = (x87_r7_21 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp1_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp1_1 ? 1 : 0) << 0xe
-004155a7        if ((eax_19:1.b & 0x41) != 0)
+004155a7        if ((((x87_r7_21 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp1_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 004155b5        arg3 = 0
 004155af        arg3 = ecx_7 + 0x4184
 00415557        arg1[0x7d] = *(ecx_7 + 0x417c)
@@ -143,9 +141,7 @@
 00415565        long double x87_r7_20 = fconvert.t(*(ecx_7 + 0x60))
 00415568        long double temp2_1 = fconvert.t(0f)
 00415568        x87_r7_20 - temp2_1
-0041556e        int32_t eax_17
-0041556e        eax_17.w = (x87_r7_20 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp2_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp2_1 ? 1 : 0) << 0xe
-00415573        if ((eax_17:1.b & 0x41) != 0)
+00415573        if ((((x87_r7_20 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp2_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 004155b5        arg3 = 0
 0041557b        arg3 = ecx_7 + 0x4184
 004155bf        long double x87_r7_23 = fconvert.t(*(ecx_7 + 0x418)) + fconvert.t(1f)
@@ -213,58 +209,69 @@
 004157d8        arg1[0x96] = arg1[0x93]
 004157dd        arg1[0x97] = arg1[0x94]
 004157e3        arg1[0x98] = arg1[0x95]
-004157e6        int32_t eax_26 = arg1[0x70]
-004157ee        int32_t* eax_29
-004157ee        if (eax_26 == 0)
+004157e6        int32_t eax_28 = arg1[0x70]
+004157ee        if (eax_28 == 0)
 004159b6        void* ecx_29 = arg1[0x9c]
-004159bc        void* edx_31 = arg1[0x9e]
+004159bc        void* edx_29 = arg1[0x9e]
 004159c2        arg1[0x9a] = 0
 004159df        arg1[0x9b] = fconvert.s(fconvert.t(*(ecx_29 + 0x38)) * fconvert.t(0.0416666679f))
-004159ec        int32_t* eax_41 = allocate_sprite(&g_sprite_manager, *(edx_31 + 0x380), 0x82, 0xffffffff, 0xffffffff)
-004159f1        arg1[0x92] = eax_41
-00415a05        eax_41[1] |= 0x800
+004159ec        struct Sprite* eax_43 = allocate_sprite(&g_sprite_manager, *(edx_29 + 0x380), 0x82, 0xffffffff, 0xffffffff)
+004159f1        arg1[0x92] = eax_43
+00415a05        eax_43->flags |= 0x800
 00415a18        *(arg1[0x92] + 0x68) = 0
 00415a2a        *(arg1[0x92] + 0x6c) = 0
 00415a33        *(arg1[0x92] + 0x78) = 0
-00415a36        struct Color4f* eax_43 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00415a36        struct Color4f* eax_45 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00415a43        float* ecx_33 = arg1[0x92] + 0x2c
-00415a46        *ecx_33 = eax_43->r
-00415a4b        ecx_33[1] = eax_43->g
-00415a51        ecx_33[2] = eax_43->b
-00415a57        ecx_33[3] = eax_43->a
+00415a46        *ecx_33 = eax_45->r
+00415a4b        ecx_33[1] = eax_45->g
+00415a51        ecx_33[2] = eax_45->b
+00415a57        ecx_33[3] = eax_45->a
 00415a65        *(arg1[0x92] + 0x60) = 0x3efae148
 00415a70        *(arg1[0x92] + 0x64) = 0x3efae148
-00415a7b        float* eax_46 = arg1[0x92] + 0x48
-00415a7e        *eax_46 = arg1[0x7d]
-00415a83        eax_46[1] = arg1[0x7e]
-00415a89        eax_46[2] = arg1[0x7f]
+00415a7b        float* eax_48 = arg1[0x92] + 0x48
+00415a7e        *eax_48 = arg1[0x7d]
+00415a83        eax_48[1] = arg1[0x7e]
+00415a89        eax_48[2] = arg1[0x7f]
 00415aab        *(arg1[0x92] + 0x7c) = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f))
 00415ac7        *(arg1[0x92] + 0x80) = fconvert.s(fconvert.t(arg1[0x9c][0xe]) * fconvert.t(0.58177644f))
 00415ac7        top = 0
 00415acd        arg1[0x9d] = arg4
-004157f5        if (eax_26 == 1)
+004157f5        if (eax_28 == 1)
 00415900        void* ecx_23 = arg1[0x9c]
 00415906        arg1[0x9a] = 0
 00415915        long double x87_r7_50 = fconvert.t(*(ecx_23 + 0x38)) * fconvert.t(0.0416666679f)
 0041591b        arg1[0x45] = arg1
 00415926        arg1[0x9b] = fconvert.s(x87_r7_50)
-00415932        void* eax_36 = data_4df904 + 0x3ca33c
-0041593d        if ((0x200 & arg1[0x21]) == 0)
-0041594e        arg1[0x22] = eax_36
-00415954        arg1[0x23] = *(eax_36 + 0xc)
-00415957        *(eax_36 + 0xc) = &arg1[0x20]
-0041595a        void* eax_37 = arg1[0x23]
-0041595f        if (eax_37 != 0)
-00415961        *(eax_37 + 8) = &arg1[0x20]
-00415964        arg1[0x21] |= 0x200
-00415944        report_errorf("List ADDafter")
-0041596e        reset_vapour(&arg1[0x20], arg3)
+00415932        void* eax_38 = g_game_base + 0x3ca33c
+0041593d        int32_t z_floor
+0041593d        if ((0x200 & arg1[0x20]:4.d) == 0)
+0041594e        arg1[0x20]:8.28[0] = eax_38.b
+0041594e        arg1[0x20]:8.28[1] = eax_38:1.b
+0041594e        arg1[0x20]:8.28[2] = eax_38:2.b
+0041594e        arg1[0x20]:8.28[3] = eax_38:3.b
+00415951        z_floor = *(eax_38 + 0xc)
+00415954        arg1[0x20]:8.28[4] = z_floor.b
+00415954        arg1[0x20]:8.28[5] = z_floor:1.b
+00415954        arg1[0x20]:8.28[6] = z_floor:2.b
+00415954        arg1[0x20]:8.28[7] = z_floor:3.b
+00415957        *(eax_38 + 0xc) = &arg1[0x20]
+0041595a        void* eax_39
+0041595a        eax_39.b = arg1[0x20]:8.28[4]
+0041595a        eax_39:1.b = arg1[0x20]:8.28[5]
+0041595a        eax_39:2.b = arg1[0x20]:8.28[6]
+0041595a        eax_39:3.b = arg1[0x20]:8.28[7]
+0041595f        if (eax_39 != 0)
+00415961        *(eax_39 + 8) = &arg1[0x20]
+00415964        arg1[0x20]:4.d |= 0x200
+00415944        z_floor = report_errorf("List ADDafter")
+0041596e        reset_vapour(&arg1[0x20], z_floor)
 0041598d        store_color4f(&arg1[0x2a], 1f, 1f, 1f, 0.99000001f)
 0041598d        top = 0xffff
-0041599c        arg1[0x9d] = arg4
+0041599c        arg1[0x9d] = arg3
 004159a5        add_vapour_point(&arg1[0x20], &arg1[0x71])
-004159af        (*arg1[0x20])()
-004157fc        if (eax_26 == 2)
+004159af        (*arg1[0x20].d)(&arg1[0x71], arg3)
+004157fc        if (eax_28 == 2)
 00415802        void* ecx_17 = arg1[0x9c]
 00415808        arg1[0x9a] = 0
 00415811        long double x87_r7_48 = fconvert.t(*(ecx_17 + 0x38)) * fconvert.t(0.0277777761f)
@@ -275,39 +282,40 @@
 00415839        arg1[0x9b] = fconvert.s(x87_r7_48)
 00415839        top = 0
 00415845        if (((arg1[0x47]).w:1.b & 2) == 0)
-00415856        void* edx_18 = data_4df904
-00415862        void* edx_19 = *(edx_18 + 0x5ac)
-0041586a        if (edx_19 != 0)
-00415878        *(edx_19 + 8) = &arg1[0x46]
-0041587b        void* edx_20 = *(edx_18 + 0x5ac)
-00415880        *(*(edx_20 + 8) + 0xc) = edx_20
-00415885        void* edx_22 = *(*(edx_18 + 0x5ac) + 8)
-00415888        *(edx_18 + 0x5ac) = edx_22
-0041588a        *(edx_22 + 8) = 0
-0041586c        *(edx_18 + 0x5ac) = &arg1[0x46]
+00415856        void* game_base_1 = g_game_base
+00415862        void* edx_18 = *(game_base_1 + 0x5ac)
+0041586a        if (edx_18 != 0)
+00415878        *(edx_18 + 8) = &arg1[0x46]
+0041587b        void* edx_19 = *(game_base_1 + 0x5ac)
+00415880        *(*(edx_19 + 8) + 0xc) = edx_19
+00415885        void* edx_21 = *(*(game_base_1 + 0x5ac) + 8)
+00415888        *(game_base_1 + 0x5ac) = edx_21
+0041588a        *(edx_21 + 8) = 0
+0041586c        *(game_base_1 + 0x5ac) = &arg1[0x46]
 0041586e        arg1[0x48] = 0
-00415873        *(*(edx_18 + 0x5ac) + 0xc) = 0
-00415890        int32_t eax_33
-00415890        eax_33:1.b = arg1[0x47]:1.b | 2
-00415893        arg1[0x47] = eax_33
+00415873        *(*(game_base_1 + 0x5ac) + 0xc) = 0
+0041588d        int32_t eax_35 = arg1[0x47]
+00415890        eax_35:1.b |= 2
+00415893        arg1[0x47] = eax_35
 0041584c        report_errorf("List ADD")
 004158a1        int32_t* ecx_20 = arg1[0x9c] + 0x1270fd4
 004158a7        arg1[0x9d] = arg4
-004158ad        eax_29 = search_path_for_golb(ecx_20, &arg1[0x7d])
-004158b4        if (eax_29 != 0)
-004158ba        void* ecx_21 = eax_29[5]
+004158ad        int32_t* eax_31 = search_path_for_golb(ecx_20, &arg1[0x7d])
+004158b4        if (eax_31 != 0)
+004158ba        void* ecx_21 = eax_31[5]
 004158bd        arg1[0x66] = ecx_21
-004158c7        if (*eax_29 == 0)
-004158cc        int32_t edx_24
-004158cc        edx_24:1.b = (*(ecx_21 + 4)):1.b | 0x10
-004158cf        *(ecx_21 + 4) = edx_24
-004158dd        arg1[0x67] = eax_29[1]
-004158e2        arg1[0x68] = eax_29[2]
-004158e5        eax_29 = eax_29[3]
+004158c7        if (*eax_31 == 0)
+004158c9        int32_t edx_23 = *(ecx_21 + 4)
+004158cc        edx_23:1.b |= 0x10
+004158cf        *(ecx_21 + 4) = edx_23
+004158dd        arg1[0x67] = eax_31[1]
+004158e2        arg1[0x68] = eax_31[2]
+004158e5        eax_31 = eax_31[3]
 004158e8        arg1[0x6b] = 0
-004158ee        arg1[0x69] = eax_29
+004158ee        arg1[0x69] = eax_31
 004158f1        arg1[0x6c] = 0x3d088889
 00415ad3        void* ecx_38 = arg1[0x9e]
+00415ae1        int16_t eax_50
 00415ae1        if (*(ecx_38 + 0x384) == 1)
 00415ae7        unimplemented  {fld st0, dword [ecx+0x398]}
 00415aed        long double temp6_1 = fconvert.t(0.5f)
@@ -316,8 +324,8 @@
 00415aed        bool c2_3 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497228]}, temp6_1)
 00415aed        bool c3_3 = unimplemented  {fcomp st0, dword [0x497228]} f== temp6_1
 00415aed        unimplemented  {fcomp st0, dword [0x497228]}
-00415af3        eax_29.w = (c0_3 ? 1 : 0) << 8 | (c2_3 ? 1 : 0) << 0xa | (c3_3 ? 1 : 0) << 0xe | (top & 7) << 0xb
-00415af8        if (*(ecx_38 + 0x384) != 1 || (eax_29:1.b & 1) == 0)
+00415af3        eax_50 = (c0_3 ? 1 : 0) << 8 | (c2_3 ? 1 : 0) << 0xa | (c3_3 ? 1 : 0) << 0xe | (top & 7) << 0xb
+00415af8        if (*(ecx_38 + 0x384) != 1 || (eax_50:1.b & 1) == 0)
 00415b67        arg1[0xaf].b = 0
 00415b6d        arg1[0xb9] = 0xbf800000
 00415afa        arg1[0xaf].b = 1
@@ -328,18 +336,18 @@
 00415b37        arg1[0xb4] = 0
 00415b45        arg1[0xb5] = *(ecx_38 + 0x3b0)
 00415b4a        arg1[0xb6] = *(ecx_38 + 0x3b4)
-00415b4d        int32_t eax_51 = *(ecx_38 + 0x3b8)
+00415b4d        int32_t eax_54 = *(ecx_38 + 0x3b8)
 00415b50        arg1[0xb8] = arg1
-00415b56        arg1[0xb7] = eax_51
+00415b56        arg1[0xb7] = eax_54
 00415b5f        arg1[0xb9] = *(ecx_38 + 0x3b8)
 00415b7d        vector_magnitude(&arg1[0x93])
 00415b7d        unimplemented  {call 0x44ccf0}
-00415b82        float eax_52 = arg1[0x7d]
+00415b82        float eax_55 = arg1[0x7d]
 00415b84        int32_t ecx_41 = arg1[0x7e]
 00415b8d        arg1[0x99] = fconvert.s(unimplemented  {fstp dword [esi+0x264], st0})
 00415b8d        unimplemented  {fstp dword [esi+0x264], st0}
-00415b93        arg1[0x8d] = eax_52
-00415b95        int32_t eax_53 = arg1[0x7f]
+00415b93        arg1[0x8d] = eax_55
+00415b95        int32_t eax_56 = arg1[0x7f]
 00415b98        arg1[0x8e] = ecx_41
-00415b9d        arg1[0x8f] = eax_53
+00415b9d        arg1[0x8f] = eax_56
 00415baa        return (**arg1)()

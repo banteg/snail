@@ -33,6 +33,27 @@ typedef struct ObjectUv {
     float v;
 } ObjectUv;
 
+typedef struct ObjectGroupedVertex {
+    float x;
+    float y;
+    float z;
+    uint32_t diffuse;
+    float u;
+    float v;
+    int32_t source_vertex;
+} ObjectGroupedVertex;
+
+typedef struct TransformMatrix {
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 position;
+    float position_w;
+} TransformMatrix;
+
 typedef struct ObjectFaceQuad {
     uint8_t flags;
     uint8_t unknown_01;

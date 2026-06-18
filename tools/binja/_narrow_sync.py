@@ -16,6 +16,7 @@ STRUCT_FIELD_RE = re.compile(
 FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
 SymbolUpdate = tuple[str, str]
+DataVarUpdate = tuple[str, str]
 
 
 def run_bn(repo_root: Path, *args: str) -> object:
@@ -285,6 +286,51 @@ def apply_symbol_updates(
             }
         )
     return operations
+
+
+def apply_data_var_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[DataVarUpdate],
+) -> list[dict[str, object]]:
+    update_list = list(updates)
+    if not update_list:
+        return []
+
+    code = f"""
+updates = {json.dumps(update_list)}
+out = []
+for address_text, type_text in updates:
+    address = int(address_text, 0)
+    parsed_type, _ = bv.parse_type_string(type_text)
+    before = bv.get_data_var_at(address)
+    before_type = str(before.type) if before is not None else None
+    bv.define_user_data_var(address, parsed_type)
+    after = bv.get_data_var_at(address)
+    out.append({{
+        "address": hex(address),
+        "requested_type": type_text,
+        "before_type": before_type,
+        "after_type": str(after.type) if after is not None else None,
+    }})
+result = out
+"""
+    result = run_bn(repo_root, "py", "exec", "--target", target, "--format", "json", "--code", code)
+    payload = result.get("result") if isinstance(result, dict) else None
+    if not isinstance(payload, list):
+        payload = []
+    return [
+        {
+            "op": "data_var_set",
+            "address": entry.get("address"),
+            "type": entry.get("requested_type"),
+            "before_type": entry.get("before_type"),
+            "after_type": entry.get("after_type"),
+        }
+        for entry in payload
+        if isinstance(entry, dict)
+    ]
 
 
 def emit_summary(*, repo_root: Path, target: str, header_path: Path, operations: list[dict[str, object]]) -> int:

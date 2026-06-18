@@ -6,7 +6,14 @@ import argparse
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare
+from _narrow_sync import (
+    apply_data_var_updates,
+    apply_proto_updates,
+    apply_struct_field_updates,
+    apply_symbol_updates,
+    emit_summary,
+    types_declare,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +54,20 @@ OBJECT_FIELDS = (
     ("0xd8", "toon_index_buffer", "ObjectIndexBuffer*"),
 )
 
+SYMBOL_UPDATES = (
+    ("0x4f7458", "g_direct3d_renderer"),
+    ("0x5000fc", "g_object_index_buffer_factory"),
+    ("0x5031bc", "g_object_grouped_vertex_cursor"),
+    ("0x5031c4", "g_object_grouped_vertex_scratch"),
+    ("0x5031d8", "g_object_texture_transform_matrix"),
+)
+
+DATA_VAR_UPDATES = (
+    ("0x5031bc", "int32_t"),
+    ("0x5031c4", "ObjectGroupedVertex*"),
+    ("0x5031d8", "TransformMatrix"),
+)
+
 PROTO_UPDATES = (
     (
         "request_object_animation",
@@ -77,6 +98,8 @@ def main() -> int:
     operations: list[dict[str, object]] = []
     operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
     operations.extend(apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="Object", updates=OBJECT_FIELDS))
+    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES, kind="data"))
+    operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
