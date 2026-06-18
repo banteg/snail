@@ -2,13 +2,13 @@
 /* function: classify_archive_entry_extension @ 0x4050c0 */
 /* selector: classify_archive_entry_extension */
 
-// Copies one archive entry's filename suffix into the caller buffer and returns the rebuild classifier id: `1` for `TGA`, `2` for `WAV`, `3` for `MP3`, otherwise `0`.
-int __cdecl sub_4050C0(char *a1, _BYTE *a2)
+// Copies one archive entry's filename stem before the first dot into the caller buffer and returns the rebuild classifier id: `1` for `TGA`, `2` for `WAV`, `3` for `MP3`, otherwise `0`.
+int __cdecl classify_archive_entry_extension(char *a1, char *a2)
 {
   char *v2; // eax
   char i; // cl
   char v5; // cl
-  _BYTE *v6; // eax
+  char *v6; // eax
 
   v2 = a1;
   for ( i = *a1; *v2; i = *v2 )

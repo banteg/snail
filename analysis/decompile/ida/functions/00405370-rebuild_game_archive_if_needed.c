@@ -2,6 +2,7 @@
 /* function: rebuild_game_archive_if_needed @ 0x405370 */
 /* selector: rebuild_game_archive_if_needed */
 
+// When `SnailMail.dat` is missing but `SnailMail.dam` exists, decodes the legacy archive, repacks TGA entries through the image loader, copies other entries unchanged, writes the rebuilt `SnailMail.dat`, and deletes the old `.dam` plus temporary `0.png`.
 void rebuild_game_archive_if_needed()
 {
   _DWORD *v0; // ebx
@@ -138,4 +139,3 @@ void rebuild_game_archive_if_needed()
     free(v0);
   }
 }
-
