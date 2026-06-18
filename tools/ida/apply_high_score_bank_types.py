@@ -38,6 +38,7 @@ TRUSTED_DECLARATIONS = [
 
 TRUSTED_NAMES = [
     (0x4DF904, "g_game_base"),
+    (0x4DF9C0, "g_high_score_selected_bank"),
 ]
 
 

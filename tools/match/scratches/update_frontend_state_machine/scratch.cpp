@@ -100,7 +100,7 @@ struct GameRoot {
 };
 
 extern GameRoot* volatile g_game; // data_4df904
-extern int unk_4DF9C0;        // high-score browse mode owner
+extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 
@@ -208,7 +208,7 @@ int FrontendStateMachine::update_frontend_state_machine()
             break;
         }
         case 18:
-            g_game->high_score_screen.initialize_high_score_screen(unk_4DF9C0, -1);
+            g_game->high_score_screen.initialize_high_score_screen(g_high_score_selected_bank, -1);
             *(int*)(self + 0x94) = 19;
             break;
         case 19: {

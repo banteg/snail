@@ -86,6 +86,24 @@
       "description": "Tiny wrapper that loads g_direct3d_renderer into ecx and tail-calls the renderer resource teardown used by input/window shutdown paths."
     },
     {
+      "address": "0x411630",
+      "name": "initialize_direct3d_renderer_defaults",
+      "kind": "function",
+      "aliases": [
+        "sub_411630"
+      ],
+      "description": "Initializes the Direct3D renderer wrapper defaults, window-rect bookkeeping, presentation dimensions, and inactive device/interface slots before device creation."
+    },
+    {
+      "address": "0x4118b0",
+      "name": "reset_direct3d_render_state",
+      "kind": "function",
+      "aliases": [
+        "sub_4118b0"
+      ],
+      "description": "Reapplies the renderer's baseline Direct3D render states after device creation or reset."
+    },
+    {
       "address": "0x412e18",
       "name": "set_blend_mode_jump_table",
       "kind": "jump_table",
@@ -125,6 +143,15 @@
       "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate object D3D index-buffer wrappers."
     },
     {
+      "address": "0x4129c0",
+      "name": "initialize_direct3d_renderer",
+      "kind": "function",
+      "aliases": [
+        "sub_4129c0"
+      ],
+      "description": "Bootstraps the shared Direct3D renderer: initializes renderer defaults, creates the D3D8 device, and allocates the transient 8-vertex object/sprite buffer."
+    },
+    {
       "address": "0x414270",
       "name": "direct3d_renderer_set_fullscreen_mode",
       "kind": "function",
@@ -132,6 +159,24 @@
         "sub_414270"
       ],
       "description": "Renderer-wrapper method called by set_fullscreen_mode to switch windowed/fullscreen bookkeeping, reset the Direct3D device, restore window placement, and recenter the cursor."
+    },
+    {
+      "address": "0x4143c0",
+      "name": "restore_texture_ref_stage_states",
+      "kind": "function",
+      "aliases": [
+        "sub_4143c0"
+      ],
+      "description": "Walks the shared TextureRefList after a device reset, rebinding each D3D texture handle and restoring the texture-stage address modes derived from TextureRef flags."
+    },
+    {
+      "address": "0x414600",
+      "name": "query_direct3d_device_caps",
+      "kind": "function",
+      "aliases": [
+        "sub_414600"
+      ],
+      "description": "Queries the Direct3D device caps into the renderer wrapper and logs the maximum texture width and height."
     },
     {
       "address": "0x5031bc",

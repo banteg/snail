@@ -13,7 +13,7 @@ void initialize_parcel_set_bucket_pool()
             bucket->slots,
             0x10,
             0x20,
-            &ParcelBucketSlot::initialize_runtime_slot);
+            &ParcelBucketSlot::noop_runtime_slot_constructor);
         ++bucket;
     } while (--count != 0);
 }

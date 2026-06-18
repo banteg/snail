@@ -70,8 +70,8 @@ int __thiscall initialize_d3d8_device(int this, char a2)
       abort_startup_with_3d_error();
   }
   sub_449C00();
-  sub_4118B0((_DWORD **)this);
-  result = sub_414600((_DWORD **)this);
+  reset_direct3d_render_state((_DWORD **)this);
+  result = query_direct3d_device_caps((_DWORD **)this);
   *(_BYTE *)(this + 48012) = 1;
   return result;
 }

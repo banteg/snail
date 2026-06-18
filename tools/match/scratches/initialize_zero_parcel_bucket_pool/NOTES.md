@@ -5,7 +5,9 @@ bucket pool at `data_53d190`.
 
 Its source shape mirrors `initialize_parcel_set_bucket_pool`: `0x800` buckets,
 bucket stride `0x20c`, `0x20` slots per bucket, slot stride `0x10`, and the
-real shared callback at `0x408600`.
+real shared callback at `0x408600`. That callback is the generic
+`noop_runtime_slot_constructor` (`mov eax, ecx; ret`), not a parcel-specific
+initializer.
 
 The exact loop source is a pointer cursor plus explicit `0x800` countdown,
 matching native's `esi` bucket pointer and `edi` counter.

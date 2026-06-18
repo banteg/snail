@@ -23,7 +23,13 @@ TRUSTED_DECLARATIONS = [
 TRUSTED_NAMES = [
     (0x4114B0, "create_object_vertex_buffer_resource"),
     (0x4115D0, "create_object_index_buffer_resource"),
+    (0x411630, "initialize_direct3d_renderer_defaults"),
+    (0x4118B0, "reset_direct3d_render_state"),
+    (0x411D70, "release_global_direct3d_renderer_resources"),
+    (0x4129C0, "initialize_direct3d_renderer"),
     (0x414270, "direct3d_renderer_set_fullscreen_mode"),
+    (0x4143C0, "restore_texture_ref_stage_states"),
+    (0x414600, "query_direct3d_device_caps"),
 ]
 
 

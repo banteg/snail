@@ -5,7 +5,7 @@
 
 class ParcelBucketSlot {
 public:
-    void initialize_runtime_slot(); // sub_408600
+    void noop_runtime_slot_constructor(); // sub_408600
 
     char unknown_00[0x10];
 };

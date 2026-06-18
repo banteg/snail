@@ -65,7 +65,13 @@ SYMBOL_UPDATES = (
 FUNCTION_SYMBOL_UPDATES = (
     ("0x4114b0", "create_object_vertex_buffer_resource"),
     ("0x4115d0", "create_object_index_buffer_resource"),
+    ("0x411630", "initialize_direct3d_renderer_defaults"),
+    ("0x4118b0", "reset_direct3d_render_state"),
+    ("0x411d70", "release_global_direct3d_renderer_resources"),
+    ("0x4129c0", "initialize_direct3d_renderer"),
     ("0x414270", "direct3d_renderer_set_fullscreen_mode"),
+    ("0x4143c0", "restore_texture_ref_stage_states"),
+    ("0x414600", "query_direct3d_device_caps"),
 )
 
 DATA_VAR_UPDATES = (

@@ -35,7 +35,7 @@
 00411a36        ebx = 0x4b0
 00411a3b        var_e0 = 0x640
 00411a59        HMODULE hInstance = data_50327c
-00411a66        data_4dfaf4 = 0
+00411a66        g_fullscreen_active = 0
 00411a6d        if (hInstance == 0)
 00411a70        hInstance = GetModuleHandleA(nullptr)
 00411a76        data_50327c = hInstance
@@ -53,9 +53,7 @@
 00411ac6        if (RegisterClassA(&wndClass) == 0)
 00411ac8        abort_startup_with_3d_error()
 00411ad9        return 0
-00411ada        uint16_t eax_2
-00411ada        eax_2.b = data_4dfaf4
-00411ae1        if (eax_2.b == 0)
+00411ae1        if (g_fullscreen_active == 0)
 00411ae1        goto label_411b3b
 00411aee        enum CDS_TYPE dwFlags = CDS_FULLSCREEN
 00411af0        DEVMODEA devMode
@@ -70,9 +68,7 @@
 00411b29        enum WINDOW_STYLE dwStyle
 00411b29        enum WINDOW_EX_STYLE dwExStyle
 00411b29        if (ChangeDisplaySettingsA(&devMode, dwFlags) == DISP_CHANGE_SUCCESSFUL)
-00411bde        enum DISP_CHANGE eax_4
-00411bde        eax_4.b = data_4dfaf4
-00411be5        if (eax_4.b == 0)
+00411be5        if (g_fullscreen_active == 0)
 00411be5        goto label_411b3b
 00411bed        dwExStyle = WS_EX_APPWINDOW
 00411bf2        dwStyle = WS_POPUP
@@ -82,7 +78,7 @@
 00411c08        Y = 0
 00411c13        int32_t var_fc_4 = ecx_4
 00411c17        update_mouse_authored_scale(fconvert.s(float.t(var_e0)), fconvert.s(float.t(ebx)))
-00411b2f        data_4dfaf4 = 0
+00411b2f        g_fullscreen_active = 0
 00411b3b        label_411b3b:
 00411b3b        dwExStyle = 0x40100
 00411b40        dwStyle = 0x10ca0000
@@ -97,39 +93,39 @@
 00411b6d        rect.bottom = ebx
 00411b71        AdjustWindowRectEx(&rect, dwStyle, 0, dwExStyle)
 00411bb8        HWND hWnd = CreateWindowExA(dwExStyle, "SnailMailWindowClass", arg1, dwStyle | 0x6000000, X, Y, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, data_50327c, 0)
-00411bc0        data_4dfaf0 = hWnd
+00411bc0        g_main_window = hWnd
 00411bc5        if (hWnd == 0)
 00411bc7        release_global_direct3d_renderer_resources()
 00411bcc        abort_startup_with_3d_error()
 00411bdd        return 0
-00411c25        HDC eax_9 = GetDC(hWnd)
-00411c2d        data_4dfaec = eax_9
-00411c32        if (eax_9 == 0)
+00411c25        HDC eax_11 = GetDC(hWnd)
+00411c2d        data_4dfaec = eax_11
+00411c32        if (eax_11 == 0)
 00411c34        release_global_direct3d_renderer_resources()
 00411c39        abort_startup_with_3d_error()
 00411c4a        return 0
-00411c53        ShowWindow(data_4dfaf0, SW_SHOW)
-00411c60        SetForegroundWindow(data_4dfaf0)
-00411c73        SetFocus(data_4dfaf0)
-00411c7c        if (sub_4129c0() == 0)
+00411c53        ShowWindow(g_main_window, SW_SHOW)
+00411c60        SetForegroundWindow(g_main_window)
+00411c73        SetFocus(g_main_window)
+00411c7c        if (initialize_direct3d_renderer() == 0)
 00411c7e        release_global_direct3d_renderer_resources()
 00411c83        abort_startup_with_3d_error()
 00411c94        return 0
-00411ca5        if (initialize_keyboard_input(data_4dfaf0) s< 0)
+00411ca5        if (initialize_keyboard_input(g_main_window) s< 0)
 00411ca7        abort_startup_with_3d_error()
 00411cac        release_keyboard_input()
 00411cbd        return 0
-00411cd4        if (enumerate_input_controllers(data_4dfaf0, &data_4b776c) s< 0)
+00411cca        HRESULT eax_19 = enumerate_input_controllers(g_main_window, &data_4b776c)
+00411cd4        if (eax_19 s< 0)
 00411cd6        abort_startup_with_3d_error()
-00411ce4        EndDialog(data_4dfaf0, 0)
+00411ce4        EndDialog(g_main_window, 0)
 00411cf6        return 0
-00411cf7        HRESULT eax_17
-00411cf7        eax_17.b = data_4dfaf4
-00411d02        HRESULT var_f8_16 = eax_17
-00411d0e        if (initialize_mouse_input(data_4dfaf0) s>= 0)
-00411d37        SetFocus(data_4dfaf0)
+00411cf7        eax_19.b = g_fullscreen_active
+00411d02        HRESULT var_f8_16 = eax_19
+00411d0e        if (initialize_mouse_input(g_main_window) s>= 0)
+00411d37        SetFocus(g_main_window)
 00411d3b        set_cull_mode(1)
 00411d52        return 1
 00411d10        abort_startup_with_3d_error()
-00411d1e        EndDialog(data_4dfaf0, 0)
+00411d1e        EndDialog(g_main_window, 0)
 00411d30        return 0

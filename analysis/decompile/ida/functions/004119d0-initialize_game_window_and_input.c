@@ -56,12 +56,12 @@ LABEL_7:
       v11 = 640;
       break;
   }
-  v4 = flt_4DFAFC[36320];
+  v4 = unk_4DFAFC[36320];
   unk_4DFAF4 = 0;
-  if ( !LODWORD(flt_4DFAFC[36320]) )
+  if ( !LODWORD(unk_4DFAFC[36320]) )
   {
     v4 = COERCE_FLOAT(((int (__stdcall *)(_DWORD))GetModuleHandleA)(0));
-    flt_4DFAFC[36320] = v4;
+    unk_4DFAFC[36320] = v4;
   }
   WndClass[0] = 3;
   WndClass[1] = game_window_proc;
@@ -119,7 +119,7 @@ LABEL_16:
          Rect_12 - HIDWORD(Rect),
          0,
          0,
-         LODWORD(flt_4DFAFC[36320]),
+         LODWORD(unk_4DFAFC[36320]),
          0);
   MEMORY[0x4DFAF0] = v7;
   if ( !v7 )
@@ -136,7 +136,7 @@ LABEL_16:
   ((void (__stdcall *)(_DWORD, int))ShowWindow)(MEMORY[0x4DFAF0], 5);
   ((void (__stdcall *)(_DWORD))SetForegroundWindow)(MEMORY[0x4DFAF0]);
   ((void (__stdcall *)(_DWORD))SetFocus)(MEMORY[0x4DFAF0]);
-  if ( !sub_4129C0() )
+  if ( !initialize_direct3d_renderer() )
   {
     release_global_direct3d_renderer_resources();
     abort_startup_with_3d_error();

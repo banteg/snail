@@ -41,6 +41,7 @@ PROTO_UPDATES = (
 
 SYMBOL_UPDATES = (
     ("0x4df904", "g_game_base"),
+    ("0x4df9c0", "g_high_score_selected_bank"),
 )
 
 
