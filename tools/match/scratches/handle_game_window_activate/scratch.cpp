@@ -1,0 +1,51 @@
+// handle_game_window_activate @ 0x4072f0 (cdecl)
+
+#include "audio_system.h"
+
+extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
+extern "C" __declspec(dllimport) int __stdcall ShowWindow(int window, int command);
+extern "C" __declspec(dllimport) int __stdcall SetForegroundWindow(int window);
+extern "C" __declspec(dllimport) int __stdcall SetFocus(int window);
+
+int debug_report_stub(char* format); // @ 0x449c00, stripped in release
+void set_fullscreen_mode(int enabled);
+
+extern int g_main_window; // data_4dfaf0
+extern char g_config_fullscreen_enabled; // data_4df920
+extern unsigned char g_window_deactivated; // data_4b7654
+extern float g_previous_frame_timestamp_seconds; // data_4dfb00
+extern unsigned char g_left_mouse_button_latch[2]; // data_4b7764
+extern unsigned char g_left_mouse_button_state[2]; // data_4b7234
+extern unsigned char g_right_mouse_button_latch[2]; // data_4b7230
+extern unsigned char g_right_mouse_button_state[2]; // data_4b7640
+
+int handle_game_window_activate()
+{
+    debug_report_stub("G0Maximize %i\n");
+    debug_report_stub("G0Maximize Do something\n");
+    g_audio_backend.resume_audio_backend_if_paused();
+
+    int zero = 0;
+    char fullscreen_enabled = g_config_fullscreen_enabled;
+    g_window_deactivated = (unsigned char)zero;
+    if (fullscreen_enabled != 0) {
+        set_fullscreen_mode(1);
+    }
+
+    unsigned int ticks = timeGetTime();
+    g_previous_frame_timestamp_seconds = (float)ticks * 0.001f;
+    ShowWindow(g_main_window, 1);
+    SetForegroundWindow(g_main_window);
+    int result = SetFocus(g_main_window);
+
+    g_left_mouse_button_latch[0] = (unsigned char)zero;
+    g_left_mouse_button_state[0] = (unsigned char)zero;
+    g_right_mouse_button_latch[0] = (unsigned char)zero;
+    g_right_mouse_button_state[0] = (unsigned char)zero;
+    g_left_mouse_button_latch[1] = (unsigned char)zero;
+    g_left_mouse_button_state[1] = (unsigned char)zero;
+    g_right_mouse_button_latch[1] = (unsigned char)zero;
+    g_right_mouse_button_state[1] = (unsigned char)zero;
+
+    return result;
+}
