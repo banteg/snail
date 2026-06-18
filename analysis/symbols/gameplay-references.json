@@ -1291,6 +1291,15 @@
       "description": "Landscape script name loaded for the main-menu backdrop."
     },
     {
+      "address": "0x4a3488",
+      "name": "g_help_script_path",
+      "kind": "string",
+      "aliases": [
+        "aHelpTxt"
+      ],
+      "description": "Help.txt landscape script path loaded by initialize_help_screen."
+    },
+    {
       "address": "0x4a34b8",
       "name": "g_intro_credits_script_path",
       "kind": "string",
