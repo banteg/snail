@@ -9,10 +9,14 @@ public:
     char unknown_000000[0x40];
     int selected_subgame_mode; // +0x40
     int selected_level_index; // +0x44
+    char unknown_000048[0xa874 - 0x48];
+    char frontend_level_loader_storage[0xfb3050 - 0xa874]; // +0xa874
+    int selected_replay_available; // +0xfb3050
 };
 
 class ChallengeSetupScreen {
 public:
+    int initialize_challenge_setup_screen(); // @ 0x415f50
     void destroy_challenge_setup_screen(); // @ 0x4161f0
 
     ChallengeSetupGameView* game; // +0x00
