@@ -775,6 +775,16 @@
       "description": "Statically linked CRT free helper used by free_tracked_memory for guarded heap blocks."
     },
     {
+      "address": "0x48be4f",
+      "name": "exit",
+      "kind": "function",
+      "aliases": [
+        "_exit",
+        "sub_48be4f"
+      ],
+      "description": "Statically linked CRT exit helper used by abort_startup_with_3d_error after showing the startup failure dialog."
+    },
+    {
       "address": "0x48bfdb",
       "name": "srand",
       "kind": "function",
