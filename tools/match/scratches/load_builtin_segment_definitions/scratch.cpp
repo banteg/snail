@@ -1,5 +1,10 @@
 // load_builtin_segment_definitions @ 0x448060 (thiscall, ret 0x4)
 
+union AuthoredFloatBits {
+    int bits;
+    float value;
+};
+
 struct AuthoredSegmentRow {
     int flags;
     int parcel_set_id;
@@ -10,11 +15,11 @@ struct AuthoredSegmentRow {
     int object_position_x_bits;
     int object_position_y_bits;
     int object_position_z_bits;
-    int object_rotation_x_bits;
-    int object_rotation_y_bits;
-    int object_rotation_z_bits;
-    int attachment_template_index;
-    int row_event_id;
+    int object_velocity_x_bits;
+    int object_velocity_y_bits;
+    int object_velocity_z_bits;
+    int path_template_index;
+    AuthoredFloatBits ring_speed;
 };
 
 struct LevelSegmentSlot {

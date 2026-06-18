@@ -4,7 +4,7 @@ Initial target:
 
 - Copies one named segment from the runtime segment catalog at
   `game+0x1075ae4` into a level slot.
-- Searches segment names with `strings_equal_case_insensitive_path`.
+- Searches segment filenames with `strings_equal_case_insensitive_path`.
 - Transposes the source glyph grid from catalog column-major storage into the
   level slot's eight 0x100-byte row lanes.
 - Copies the per-row authored metadata records with the 0x38-byte row stride
@@ -17,9 +17,14 @@ Status:
 
 Corrections from the first pass:
 
-- The catalog entry base is the count word at `game+0x1075ae4`; `name` lives at
-  entry `+0x44`. Modeling an extra catalog header kept the same rough score but
-  was structurally wrong.
+- The catalog entry base is the count word at `game+0x1075ae4`; the segment
+  filename lives at entry `+0x44`. Modeling an extra catalog header kept the
+  same rough score but was structurally wrong.
+- `load_segment_definitions` proves the internal `Name:'...'` display string is
+  separate and starts at entry `+0x04`.
+- `load_segment_definitions` also corrects authored row names:
+  `+0x24..+0x2c` are `Velocity=`, `+0x30` is `Path=`, and `+0x34` is
+  `RingSpeed=` float bits.
 - `data_74ec74` is a `char*` current level-definition name.
   `load_level_definition_file` writes its input there before segment-copy
   diagnostics consume it.

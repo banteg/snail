@@ -26,6 +26,8 @@ Status:
 - The built-in definition has an unknown dword at `+0x24`; the eight row
   pointers start at `+0x28`. Omitting that gap moved the row table to `+0x24`
   and regressed the scratch to 48.65%.
+- Authored row field names were kept in sync with `load_segment_definitions`:
+  `Velocity=`, `Path=`, and `RingSpeed=` own row offsets `+0x24..+0x34`.
 - Main residual: VC6 allocates the built-in table in `ebp` for this scratch,
   while native keeps it in `ebx` before the sentinel check and then uses `ebp`
   for the per-glyph destination offset. Pointer/integer/`register` spellings
