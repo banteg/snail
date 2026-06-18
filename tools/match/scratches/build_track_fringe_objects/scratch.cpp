@@ -26,7 +26,7 @@ public:
     int runtime_row_count; // +0x54
 };
 
-int debug_report_stub(char* format, ...); // sub_449c00
+int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
 int Game::build_track_fringe_objects()
