@@ -806,7 +806,8 @@
     },
     {
       "address": "0x4175e0",
-      "name": "load_high_scores_from_file"
+      "name": "load_high_scores_from_file",
+      "description": "Loads one encoded ScoreA/B/C high-score overlay, decodes compact records, and dispatches each record into the postal, survival, or per-route time-trial bank. The function is side-effect-only; known callers ignore the incidental register return."
     },
     {
       "address": "0x4176a0",
@@ -825,7 +826,8 @@
     },
     {
       "address": "0x417940",
-      "name": "save_high_scores_and_config"
+      "name": "save_high_scores_and_config",
+      "description": "Serializes active postal, survival, and time-trial high-score records into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob."
     },
     {
       "address": "0x417a70",

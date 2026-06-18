@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**360/679** mapped gameplay functions matched, **490/679** mapped gameplay functions have a scratch, **34931/325973** bytes (**10.72%**) are proof-grade, and overall fuzzy is **25.75%**.
+**362/679** mapped gameplay functions matched, **492/679** mapped gameplay functions have a scratch, **35412/325973** bytes (**10.86%**) are proof-grade, and overall fuzzy is **25.89%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -120,9 +120,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | destroy_high_score_screen | 0x417220 | 52 | 11/11 | 100.00% | 11/11 | 5 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | ✅ | initialize_high_score_tables | 0x417540 | 155 | 58/58 | 100.00% | 58/58 | 4 ok |  |
+| ✅ | load_high_scores_from_file | 0x4175e0 | 184 | 71/71 | 100.00% | 71/71 | 4 ok |  |
 | 🚧 | add_arcade_high_score | 0x4176a0 | 222 | 67/70 | 65.69% | 15/70 | 1 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 81/84 | 66.67% | 3/84 | 5 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
+| ✅ | save_high_scores_and_config | 0x417940 | 297 | 101/101 | 100.00% | 101/101 | 19 ok |  |
 | 🚧 | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 85.00% | 20/40 | 3 ok |  |
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 34/33 | 38.81% | 0/33 | - |  |
 | ✅ | exit_high_score_screen | 0x417b50 | 104 | 23/23 | 100.00% | 23/23 | 6 ok |  |

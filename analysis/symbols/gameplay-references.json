@@ -1194,6 +1194,15 @@
       "description": "Shared TextureRefList backing get_or_create_texture_ref and sprite texture registration."
     },
     {
+      "address": "0x4c4b40",
+      "name": "k_high_score_save_buffer_size",
+      "kind": "constant",
+      "aliases": [
+        "HIGH_SCORE_SAVE_BUFFER_SIZE"
+      ],
+      "description": "Five-million-byte temporary buffer size used while serializing ScoreA/B/C high-score files."
+    },
+    {
       "address": "0x4df868",
       "name": "g_current_display_mode",
       "kind": "global",
@@ -1218,9 +1227,10 @@
       "name": "g_config_sample_volume",
       "kind": "global",
       "aliases": [
-        "data_4df918"
+        "data_4df918",
+        "g_config_blob"
       ],
-      "description": "Saved sample-volume config loaded from SnailMail.cfg and applied to the audio backend."
+      "description": "Start of the 0xc4-byte SnailMail.cfg blob; the first float is the saved sample-volume config applied to the audio backend."
     },
     {
       "address": "0x4df91c",
