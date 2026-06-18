@@ -17,7 +17,7 @@ int __thiscall sub_415C60(int this, float *a2)
   float v13; // [esp+Ch] [ebp-Ch]
   float v14; // [esp+10h] [ebp-8h]
 
-  v3 = (float *)allocate_sprite(unk_790F30, *(_DWORD *)(*(_DWORD *)(this + 632) + 896), 128, -1, -1);
+  v3 = (float *)allocate_sprite(g_sprite_manager, *(_DWORD *)(*(_DWORD *)(this + 632) + 896), 128, -1, -1);
   v4 = *((_DWORD *)v3 + 1);
   v3[26] = 0.0;
   BYTE1(v4) |= 8u;

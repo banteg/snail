@@ -20,7 +20,7 @@ char __thiscall sub_43D5A0(_DWORD *this, float *a2, float *a3, int a4)
   LOBYTE(v4) = byte_4DF934;
   if ( (byte_4DF934 & 0x10) != 0 )
   {
-    v6 = (float *)allocate_sprite(unk_790F30, *(_DWORD *)(a4 + 896), 33, -1, -1);
+    v6 = (float *)allocate_sprite(g_sprite_manager, *(_DWORD *)(a4 + 896), 33, -1, -1);
     v7 = *((_DWORD *)v6 + 1);
     v6[26] = 0.0;
     BYTE1(v7) |= 8u;

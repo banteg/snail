@@ -8,7 +8,7 @@ void kill_game_sprites()
   int sprite; // ecx
   int next; // esi
 
-  bucket = unk_814C94;
+  bucket = g_sprite_active_heads;
   do
   {
     sprite = *bucket;
@@ -25,5 +25,5 @@ void kill_game_sprites()
     }
     ++bucket;
   }
-  while ( (int)bucket < (int)&unk_814CA8 );
+  while ( (int)bucket < (int)&g_sprite_free_head );
 }

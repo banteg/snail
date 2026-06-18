@@ -16,7 +16,7 @@ unsigned int __thiscall sub_43D230(_DWORD *this, int a2)
   unsigned int result; // eax
   _DWORD v13[4]; // [esp+10h] [ebp-10h] BYREF
 
-  v3 = allocate_sprite(unk_790F30, a2, 159, -1, -1);
+  v3 = allocate_sprite(g_sprite_manager, a2, 159, -1, -1);
   *(this + 38) = v3;
   v4 = v3[1];
   BYTE1(v4) |= 8u;
@@ -35,7 +35,7 @@ unsigned int __thiscall sub_43D230(_DWORD *this, int a2)
   *(_DWORD *)(*(this + 38) + 72) = 1083179008;
   *(_DWORD *)(*(this + 38) + 76) = 1065353216;
   *(_DWORD *)(*(this + 38) + 80) = 0;
-  v7 = allocate_sprite(unk_790F30, a2, 159, -1, -1);
+  v7 = allocate_sprite(g_sprite_manager, a2, 159, -1, -1);
   *(this + 39) = v7;
   v8 = v7[1];
   BYTE1(v8) |= 8u;

@@ -26,7 +26,7 @@ char __stdcall sub_441DD0(float *a1, int a2, int a3, int a4)
       v12 = a4;
       do
       {
-        v7 = (float *)allocate_sprite(unk_790F30, a2, a3, -1, -1);
+        v7 = (float *)allocate_sprite(g_sprite_manager, a2, a3, -1, -1);
         v8 = *((_DWORD *)v7 + 1);
         *((_DWORD *)v7 + 10) = 10;
         v7[34] = 4.0;

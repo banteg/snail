@@ -78,7 +78,7 @@
 0043ddab        ecx_10:1.b = (*(esi + 0x3563a4)):1.b | 2
 0043ddae        *(esi + 0x3563a4) = ecx_10
 0043dd78        report_errorf("List ADDbefore")
-0043ddc7        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
+0043ddc7        int32_t* eax_7 = allocate_sprite(&g_sprite_manager, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        *(esi + 0x35644c) = eax_7
 0043ddd5        int32_t ecx_11
 0043ddd5        ecx_11:1.b = eax_7[1]:1.b | 8

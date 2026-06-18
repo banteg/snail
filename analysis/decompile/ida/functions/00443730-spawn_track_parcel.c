@@ -25,7 +25,7 @@ char *__thiscall sub_443730(int *this, float *a2, int a3)
   *((float *)v4 + 5) = a2[1];
   *((float *)v4 + 6) = a2[2];
   *((_DWORD *)v4 + 25) = this + 978393;
-  v7 = allocate_sprite(unk_790F30, *(this + 978617), 121, -1, -1);
+  v7 = allocate_sprite(g_sprite_manager, *(this + 978617), 121, -1, -1);
   *((_DWORD *)v5 + 21) = v7;
   v8 = v7[1];
   BYTE1(v8) |= 8u;

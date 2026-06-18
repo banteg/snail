@@ -13,7 +13,7 @@
 0044714f        nuke->state = 1
 00447155        nuke->orbit_center_z_step = fconvert.s(x87_r7_3 + x87_r7_3)
 004471c3        int32_t i
-00447170        Sprite* sprite = allocate_sprite(&data_790f30, nuke->owner_player->player_slot, 0x83, 0xffffffff, 0xffffffff)
+00447170        Sprite* sprite = allocate_sprite(&g_sprite_manager, nuke->owner_player->player_slot, 0x83, 0xffffffff, 0xffffffff)
 00447175        *sprite_slots = sprite
 0044717a        int32_t edx_2
 0044717a        edx_2:1.b = sprite->flags:1.b | 8

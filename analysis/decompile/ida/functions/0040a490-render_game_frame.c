@@ -290,7 +290,7 @@ int __thiscall sub_40A490(int *this)
             v1 = v75;
           }
         }
-        v41 = unk_814C94[v18];
+        v41 = g_sprite_active_heads[v18];
         v78 = (char *)&MEMORY[0x4E5510];
         sub_413540();
         if ( v41 )

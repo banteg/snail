@@ -17,15 +17,15 @@
 0043e4d1        particle[7] = 0x3f99999a
 0043e4d8        int32_t eax_4 = *(arg1 + 0x88)
 0043e4f3        if (eax_4 == 4 || eax_4 == 5 || eax_4 == 8)
-0043e59f        *particle = allocate_sprite(&data_790f30, *(*(arg1 + 0x84) + 0x380), 0x87, 0xffffffff, 0xffffffff)
+0043e59f        *particle = allocate_sprite(&g_sprite_manager, *(*(arg1 + 0x84) + 0x380), 0x87, 0xffffffff, 0xffffffff)
 0043e5a1        *(arg1 + 0x1ec) = 0x88
 0043e5ad        *(*particle + 0x28) = 9
 0043e501        if (eax_4 == 2 || eax_4 == 6)
-0043e568        *particle = allocate_sprite(&data_790f30, *(*(arg1 + 0x84) + 0x380), 0x83, 0xffffffff, 0xffffffff)
+0043e568        *particle = allocate_sprite(&g_sprite_manager, *(*(arg1 + 0x84) + 0x380), 0x83, 0xffffffff, 0xffffffff)
 0043e56a        *(arg1 + 0x1ec) = 0x84
 0043e576        *(*particle + 0x28) = 0xd
 0043e50b        if (eax_4 == 3 || eax_4 == 7)
-0043e531        *particle = allocate_sprite(&data_790f30, *(*(arg1 + 0x84) + 0x380), 0x85, 0xffffffff, 0xffffffff)
+0043e531        *particle = allocate_sprite(&g_sprite_manager, *(*(arg1 + 0x84) + 0x380), 0x85, 0xffffffff, 0xffffffff)
 0043e533        *(arg1 + 0x1ec) = 0x86
 0043e53f        *(*particle + 0x28) = 0xd
 0043e5cc        struct Color4f color

@@ -41,7 +41,7 @@
 0043dbc3        *(esi + 0x359148) |= 0x200
 0043db8f        report_errorf("List ADDbefore")
 0043dbdd        int32_t eax_8 = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-0.000122070312f))
-0043dbfc        struct Sprite* eax_10 = allocate_sprite(&data_790f30, *(*(esi + 0x359204) + 0x380), 0x72 - eax_8, 0xffffffff, 0xffffffff)
+0043dbfc        struct Sprite* eax_10 = allocate_sprite(&g_sprite_manager, *(*(esi + 0x359204) + 0x380), 0x72 - eax_8, 0xffffffff, 0xffffffff)
 0043dc01        *(esi + 0x3591f8) = eax_10
 0043dc07        uint32_t flags = eax_10->flags
 0043dc0a        flags:1.b |= 8

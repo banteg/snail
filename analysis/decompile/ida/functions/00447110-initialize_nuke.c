@@ -25,7 +25,7 @@ int32_t __thiscall initialize_nuke(NukeController *nuke)
     nuke->orbit_center_z_step = v4;
     do
     {
-      sprite = allocate_sprite(unk_790F30, nuke->owner_player->player_slot, 131, -1, -1);
+      sprite = allocate_sprite(g_sprite_manager, nuke->owner_player->player_slot, 131, -1, -1);
       *sprite_slots = sprite;
       v6 = *((_DWORD *)sprite + 1);
       BYTE1(v6) |= 8u;

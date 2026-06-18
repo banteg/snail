@@ -56,7 +56,7 @@ int __thiscall sub_434310(_DWORD *this)
     do
     {
       ++v2;
-      *(_DWORD *)(v3 + *(this + 15) + 28) = allocate_sprite(unk_790F30, 2, 32, -1, -1);
+      *(_DWORD *)(v3 + *(this + 15) + 28) = allocate_sprite(g_sprite_manager, 2, 32, -1, -1);
       v3 += 44;
     }
     while ( v2 < *(this + 16) );

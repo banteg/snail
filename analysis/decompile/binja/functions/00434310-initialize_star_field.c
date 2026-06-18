@@ -7,7 +7,7 @@
 00434322        if (arg1[0x10] s> 0)
 00434324        int32_t ebx_1 = 0
 0043433b        i += 1
-0043433c        *(ebx_1 + arg1[0xf] + 0x1c) = allocate_sprite(&data_790f30, 2, 0x20, 0xffffffff, 0xffffffff)
+0043433c        *(ebx_1 + arg1[0xf] + 0x1c) = allocate_sprite(&g_sprite_manager, 2, 0x20, 0xffffffff, 0xffffffff)
 00434343        ebx_1 += 0x2c
 00434348        do while (i s< arg1[0x10])
 0043434d        int32_t i_1 = 0

@@ -6,7 +6,7 @@
 0043d5a0        int32_t result
 0043d5a0        result.b = data_4df934
 0043d5ad        if ((result.b & 0x10) != 0)
-0043d5ca        int32_t* eax_1 = allocate_sprite(&data_790f30, *(arg4 + 0x380), 0x21, 0xffffffff, 0xffffffff)
+0043d5ca        int32_t* eax_1 = allocate_sprite(&g_sprite_manager, *(arg4 + 0x380), 0x21, 0xffffffff, 0xffffffff)
 0043d5e0        int32_t eax_2 = eax_1[1]
 0043d5e3        eax_1[0x1a] = 0
 0043d5ea        eax_2:1.b |= 8

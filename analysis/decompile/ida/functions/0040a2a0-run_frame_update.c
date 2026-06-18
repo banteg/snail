@@ -81,7 +81,7 @@ int __thiscall sub_40A2A0(int this)
     (**(void (__thiscall ***)(int))(this + 292))(this + 292);
     if ( *(_DWORD *)(this + 476760) == 6 )
       (**(void (__thiscall ***)(int))(this + 796))(this + 796);
-    v10 = unk_814C94;
+    v10 = g_sprite_active_heads;
     do
     {
       v11 = *v10;
@@ -98,7 +98,7 @@ int __thiscall sub_40A2A0(int this)
       }
       ++v10;
     }
-    while ( (int)v10 < (int)&unk_814CA8 );
+    while ( (int)v10 < (int)&g_sprite_free_head );
     initialize_enemy_manager((#94 *)(this + 19813868));
     v13 = *(float *)(this + 1304);
     *(_BYTE *)(this + 1312) = 0;

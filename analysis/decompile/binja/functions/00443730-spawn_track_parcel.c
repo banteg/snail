@@ -23,7 +23,7 @@
 00443773        result->world_position.z:2.b = z:2.b
 00443773        result->world_position.z:3.b = z:3.b
 0044377c        result->owner = &game->__offset(0x3bb764).d
-0044378b        int32_t* eax_1 = allocate_sprite(&data_790f30, game->__offset(0x3bbae4).d, 0x79, 0xffffffff, 0xffffffff)
+0044378b        int32_t* eax_1 = allocate_sprite(&g_sprite_manager, game->__offset(0x3bbae4).d, 0x79, 0xffffffff, 0xffffffff)
 00443790        result->sprite = eax_1
 00443796        int32_t ecx_3
 00443796        ecx_3:1.b = eax_1[1]:1.b | 8

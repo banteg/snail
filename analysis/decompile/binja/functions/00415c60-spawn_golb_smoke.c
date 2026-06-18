@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_golb_smoke @ 0x415c60 */
 
-00415c82        int32_t* eax_1 = allocate_sprite(&data_790f30, *(*(arg1 + 0x278) + 0x380), 0x80, 0xffffffff, 0xffffffff)
+00415c82        int32_t* eax_1 = allocate_sprite(&g_sprite_manager, *(*(arg1 + 0x278) + 0x380), 0x80, 0xffffffff, 0xffffffff)
 00415c98        int32_t ecx_1 = eax_1[1]
 00415c9b        eax_1[0x1a] = 0
 00415ca2        ecx_1:1.b |= 8

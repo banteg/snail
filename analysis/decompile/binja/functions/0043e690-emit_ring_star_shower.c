@@ -7,7 +7,7 @@
 0043e69d        return
 0043e6ca        struct Sprite* eax_2
 0043e6ca        int32_t ecx_1
-0043e6ca        eax_2, ecx_1 = allocate_sprite(&data_790f30, owner->player_slot, particle->parent->star_sprite_id, 0xffffffff, 0xffffffff)
+0043e6ca        eax_2, ecx_1 = allocate_sprite(&g_sprite_manager, owner->player_slot, particle->parent->star_sprite_id, 0xffffffff, 0xffffffff)
 0043e6d1        int32_t var_24_1 = ecx_1
 0043e6d2        uint32_t flags = eax_2->flags
 0043e6d5        eax_2->progress = 0f

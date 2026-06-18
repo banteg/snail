@@ -48,7 +48,7 @@
 0043a814        long double temp0_1 = fconvert.t(0.899999976f)
 0043a814        x87_r7_20 - temp0_1
 0043a81f        if ((((x87_r7_20 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp0_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-0043a83d        struct Sprite* eax_18 = allocate_sprite(&data_790f30, gauge->game->__offset(0x3bbae4).d, 0x21, 0xffffffff, 0xffffffff)
+0043a83d        struct Sprite* eax_18 = allocate_sprite(&g_sprite_manager, gauge->game->__offset(0x3bbae4).d, 0x21, 0xffffffff, 0xffffffff)
 0043a853        uint32_t flags = eax_18->flags
 0043a85b        flags:1.b |= 8
 0043a862        eax_18->flags = flags

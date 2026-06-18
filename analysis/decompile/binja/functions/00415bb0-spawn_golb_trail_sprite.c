@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_golb_trail_sprite @ 0x415bb0 */
 
-00415bcc        int32_t* result = allocate_sprite(&data_790f30, *(*(arg1 + 0x278) + 0x380), 0x21, 0xffffffff, 0xffffffff)
+00415bcc        int32_t* result = allocate_sprite(&g_sprite_manager, *(*(arg1 + 0x278) + 0x380), 0x21, 0xffffffff, 0xffffffff)
 00415bd6        int32_t ecx_1
 00415bd6        ecx_1:1.b = result[1]:1.b | 8
 00415bd9        result[0x1a] = 0

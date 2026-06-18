@@ -6,7 +6,7 @@
 0044df30        uint32_t flags_2 = sprite->flags
 0044df37        int16_t eax
 0044df37        if ((flags_2:1.b & 8) != 0)
-0044df39        eax.b = data_790f30
+0044df39        eax.b = g_sprite_manager
 0044df40        if ((flags_2:1.b & 8) != 0 && eax.b != 0)
 0044df40        return
 0044df49        if ((flags_2.b & 8) != 0)

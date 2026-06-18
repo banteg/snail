@@ -6,7 +6,7 @@
 int __cdecl sub_44A6D0(int a1)
 {
   return draw_textured_quad_immediate(
-           LODWORD(unk_78FF90[*(_DWORD *)(a1 + 80)]),
+           LODWORD(g_sprite_texture_table[*(_DWORD *)(a1 + 80)]),
            *(float *)(a1 + 4),
            *(float *)(a1 + 8),
            *(float *)(a1 + 16),

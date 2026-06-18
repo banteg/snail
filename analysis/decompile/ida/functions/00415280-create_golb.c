@@ -416,7 +416,7 @@ LABEL_51:
     v49 = *((_DWORD *)this + 158);
     *((_DWORD *)this + 154) = 0;
     *((float *)this + 155) = *(float *)(v48 + 56) * 0.041666668;
-    v50 = allocate_sprite(unk_790F30, *(_DWORD *)(v49 + 896), 130, -1, -1);
+    v50 = allocate_sprite(g_sprite_manager, *(_DWORD *)(v49 + 896), 130, -1, -1);
     *((_DWORD *)this + 146) = v50;
     v50[1] |= 0x800u;
     *(_DWORD *)(*((_DWORD *)this + 146) + 104) = 0;

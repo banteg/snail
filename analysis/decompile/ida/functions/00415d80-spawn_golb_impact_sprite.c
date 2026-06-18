@@ -12,7 +12,7 @@ char __thiscall sub_415D80(_DWORD *this, _DWORD *a2)
   LOBYTE(v2) = byte_4DF934;
   if ( (byte_4DF934 & 0x10) != 0 )
   {
-    v3 = allocate_sprite(unk_790F30, *(_DWORD *)(*(this + 158) + 896), 33, -1, -1);
+    v3 = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 158) + 896), 33, -1, -1);
     v4 = v3[1];
     BYTE1(v4) |= 8u;
     v3[1] = v4;

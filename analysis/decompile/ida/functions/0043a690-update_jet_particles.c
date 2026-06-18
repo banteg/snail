@@ -80,7 +80,7 @@ void __thiscall sub_43A690(int this)
         {
           if ( (double)next_math_random_value() * 0.000030517578 > 0.89999998 )
           {
-            v8 = (char *)allocate_sprite(unk_790F30, *(_DWORD *)(*(_DWORD *)(this + 512) + 3914468), 33, -1, -1);
+            v8 = (char *)allocate_sprite(g_sprite_manager, *(_DWORD *)(*(_DWORD *)(this + 512) + 3914468), 33, -1, -1);
             v9 = *((_DWORD *)v8 + 1);
             BYTE1(v9) |= 8u;
             *((_DWORD *)v8 + 1) = v9;

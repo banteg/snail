@@ -19,7 +19,7 @@ void __thiscall update_sprite(int sprite)
   int v15; // eax
 
   v1 = *(_DWORD *)(sprite + 4);
-  if ( (v1 & 0x800) != 0 && unk_790F30 )
+  if ( (v1 & 0x800) != 0 && g_sprite_manager )
     return;
   if ( (v1 & 8) != 0 )
   {

@@ -4,6 +4,6 @@
 
 int __stdcall sub_44E580(int a1)
 {
-  return *(_DWORD *)(LODWORD(unk_78FF90[a1]) + 152);
+  return *(_DWORD *)(LODWORD(g_sprite_texture_table[a1]) + 152);
 }
 

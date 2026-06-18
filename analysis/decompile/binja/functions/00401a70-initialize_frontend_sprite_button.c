@@ -94,9 +94,9 @@
 00401ca2        arg1->layout_left = arg4
 00401ca8        arg1->layout_top = arg5
 00401cae        arg1->anchor_x = fconvert.s(x87_r7_1)
-00401cbe        arg1->layout_width = fconvert.s(float.t(*(*((arg3 << 2) + &data_78ff90) + 4)))
+00401cbe        arg1->layout_width = fconvert.s(float.t(*(*((arg3 << 2) + &g_sprite_texture_table) + 4)))
 00401ccb        float layout_width = arg1->layout_width
-00401cd1        long double x87_r7_3 = float.t(*(*((arg3 << 2) + &data_78ff90) + 8))
+00401cd1        long double x87_r7_3 = float.t(*(*((arg3 << 2) + &g_sprite_texture_table) + 8))
 00401cd4        arg1->_pad_250[0] = layout_width.b
 00401cd4        arg1->_pad_250[1] = layout_width:1.b
 00401cd4        arg1->_pad_250[2] = layout_width:2.b

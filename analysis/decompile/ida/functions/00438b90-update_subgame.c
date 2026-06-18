@@ -197,7 +197,7 @@ LABEL_25:
       {
         *(_BYTE *)(this + 9) = 0;
         *(_BYTE *)(this + 8) = 0;
-        set_sprite_manager_paused(unk_790F30, 0);
+        set_sprite_manager_paused(g_sprite_manager, 0);
       }
       if ( *(_BYTE *)(this + 16721360)
         && *(float *)(this + 12) == 0.0
@@ -222,7 +222,7 @@ LABEL_25:
       {
         *(_BYTE *)(this + 9) = 1;
         *(_DWORD *)(this + 60) = 3;
-        set_sprite_manager_paused(unk_790F30, 1);
+        set_sprite_manager_paused(g_sprite_manager, 1);
         if ( *(_DWORD *)(this + 3913860) == 2 )
           hide_border_init(*(_DWORD **)(this + 3913864));
         return;

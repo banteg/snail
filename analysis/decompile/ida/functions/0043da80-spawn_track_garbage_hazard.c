@@ -65,7 +65,7 @@ Vec3 *__thiscall spawn_track_garbage_hazard(Game *game, TrackRowCell *cell, Play
     slot->list_flags |= 0x200u;
   }
   texture_variant = (__int64)((double)next_math_random_value() * -0.00012207031);
-  sprite = allocate_sprite(unk_790F30, player->player_slot, 114 - texture_variant, -1, -1);
+  sprite = allocate_sprite(g_sprite_manager, player->player_slot, 114 - texture_variant, -1, -1);
   slot->sprite = sprite;
   flags = sprite->flags;
   BYTE1(flags) |= 8u;

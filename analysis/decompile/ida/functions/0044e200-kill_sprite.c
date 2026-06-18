@@ -10,17 +10,17 @@ void __thiscall kill_sprite(int sprite)
 
   if ( (*(_BYTE *)(sprite + 4) & 1) == 0 )
     report_errorf("Sprite kill error, already dead (%s)", (const char *)(*(_DWORD *)(sprite + 28) + 12));
-  if ( (_UNKNOWN *)sprite != &unk_814CB0 )
+  if ( (_UNKNOWN *)sprite != &g_sprite_sentinel )
   {
     *(_DWORD *)(sprite + 4) &= ~1u;
-    if ( sprite == unk_814C94[*(_DWORD *)(sprite + 8)] )
+    if ( sprite == g_sprite_active_heads[*(_DWORD *)(sprite + 8)] )
     {
       next = *(_DWORD *)(sprite + 12);
       if ( next )
         *(_DWORD *)(next + 16) = 0;
-      unk_814C94[*(_DWORD *)(sprite + 8)] = *(_DWORD *)(sprite + 12);
-      *(_DWORD *)(sprite + 12) = unk_814CA8;
-      unk_814CA8 = sprite;
+      g_sprite_active_heads[*(_DWORD *)(sprite + 8)] = *(_DWORD *)(sprite + 12);
+      *(_DWORD *)(sprite + 12) = g_sprite_free_head;
+      g_sprite_free_head = sprite;
     }
     else
     {
@@ -30,8 +30,8 @@ void __thiscall kill_sprite(int sprite)
       next_after_prev = *(_DWORD *)(sprite + 12);
       if ( next_after_prev )
         *(_DWORD *)(next_after_prev + 16) = *(_DWORD *)(sprite + 16);
-      *(_DWORD *)(sprite + 12) = unk_814CA8;
-      unk_814CA8 = sprite;
+      *(_DWORD *)(sprite + 12) = g_sprite_free_head;
+      g_sprite_free_head = sprite;
     }
   }
 }

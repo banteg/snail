@@ -9,7 +9,7 @@ _DWORD *__thiscall sub_415BB0(_DWORD *this, _DWORD *a2)
   int v4; // ecx
   int v5; // ecx
 
-  result = allocate_sprite(unk_790F30, *(_DWORD *)(*(this + 158) + 896), 33, -1, -1);
+  result = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 158) + 896), 33, -1, -1);
   v4 = result[1];
   BYTE1(v4) |= 8u;
   result[26] = 0;

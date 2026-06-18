@@ -220,7 +220,7 @@
 004159bc        void* edx_31 = arg1[0x9e]
 004159c2        arg1[0x9a] = 0
 004159df        arg1[0x9b] = fconvert.s(fconvert.t(*(ecx_29 + 0x38)) * fconvert.t(0.0416666679f))
-004159ec        int32_t* eax_41 = allocate_sprite(&data_790f30, *(edx_31 + 0x380), 0x82, 0xffffffff, 0xffffffff)
+004159ec        int32_t* eax_41 = allocate_sprite(&g_sprite_manager, *(edx_31 + 0x380), 0x82, 0xffffffff, 0xffffffff)
 004159f1        arg1[0x92] = eax_41
 00415a05        eax_41[1] |= 0x800
 00415a18        *(arg1[0x92] + 0x68) = 0

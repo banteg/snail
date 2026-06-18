@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, emit_summary, run_bn, types_declare
+from _narrow_sync import apply_proto_updates, apply_symbol_updates, emit_summary, types_declare
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -44,28 +44,6 @@ SYMBOL_UPDATES = (
 )
 
 
-def apply_symbol_updates(repo_root: Path, *, target: str) -> list[dict[str, object]]:
-    operations: list[dict[str, object]] = []
-    for identifier, name in SYMBOL_UPDATES:
-        operations.append(
-            {
-                "op": "symbol_rename",
-                "identifier": identifier,
-                "name": name,
-                "result": run_bn(
-                    repo_root,
-                    "symbol",
-                    "rename",
-                    identifier,
-                    name,
-                    "--target",
-                    target,
-                ),
-            }
-        )
-    return operations
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow high-score bank type/prototype/name slice to the active Binary Ninja target."
@@ -92,7 +70,7 @@ def main() -> int:
 
     operations: list[dict[str, object]] = [types_declare(REPO_ROOT, target=args.target, header_path=header_path)]
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
-    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target))
+    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 

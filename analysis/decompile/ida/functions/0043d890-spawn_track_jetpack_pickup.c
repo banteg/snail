@@ -78,7 +78,7 @@ LABEL_14:
     BYTE1(v12) |= 2u;
     *((_DWORD *)v4 + 874394) = v12;
   }
-  v13 = allocate_sprite(unk_790F30, *(_DWORD *)(a3 + 896), 124, -1, -1);
+  v13 = allocate_sprite(g_sprite_manager, *(_DWORD *)(a3 + 896), 124, -1, -1);
   *((_DWORD *)v4 + 874418) = v13;
   v14 = v13[1];
   BYTE1(v14) |= 8u;

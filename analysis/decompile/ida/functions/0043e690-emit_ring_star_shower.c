@@ -17,7 +17,7 @@ void __thiscall emit_ring_star_shower(float *particle, int owner)
 
   if ( (byte_4DF934 & 0x10) == 0 )
     return;
-  star = (float *)allocate_sprite(unk_790F30, *(_DWORD *)(owner + 896), *(_DWORD *)(*((_DWORD *)particle + 1) + 492), -1, -1);
+  star = (float *)allocate_sprite(g_sprite_manager, *(_DWORD *)(owner + 896), *(_DWORD *)(*((_DWORD *)particle + 1) + 492), -1, -1);
   flags = *((_DWORD *)star + 1);
   star[26] = 0.0;
   BYTE1(flags) |= 8u;

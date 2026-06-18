@@ -6,7 +6,7 @@ int __thiscall sub_44E550(_DWORD *this, int a2, int a3)
 {
   int result; // eax
 
-  result = LODWORD(unk_78FF90[a2]) + 164 * a3;
+  result = LODWORD(g_sprite_texture_table[a2]) + 164 * a3;
   *(this + 7) = result;
   return result;
 }

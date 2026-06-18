@@ -27,7 +27,7 @@ char __thiscall sub_43A010(int this, int a2)
     v11 = 0;
     do
     {
-      v4 = (char *)allocate_sprite(unk_790F30, *(_DWORD *)(this + 896), 128, -1, -1);
+      v4 = (char *)allocate_sprite(g_sprite_manager, *(_DWORD *)(this + 896), 128, -1, -1);
       *((_DWORD *)v4 + 1) |= 0x800u;
       *((_DWORD *)v4 + 26) = 0;
       *((_DWORD *)v4 + 27) = 1026206379;

@@ -21,7 +21,7 @@ void __thiscall initialize_jet_particles(char *gauge)
     columns = 2;
     do
     {
-      sprite = allocate_sprite(unk_790F30, 1, 158, -1, -1);
+      sprite = allocate_sprite(g_sprite_manager, 1, 158, -1, -1);
       *(_DWORD *)slot_cursor = sprite;
       flags = sprite[1];
       BYTE1(flags) |= 8u;

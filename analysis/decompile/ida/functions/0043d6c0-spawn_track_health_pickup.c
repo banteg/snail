@@ -67,7 +67,7 @@ _DWORD *__fastcall sub_43D6C0(int a1, int a2, int a3, int a4)
     BYTE1(v12) |= 2u;
     *(_DWORD *)(v7 + 3497988) = v12;
   }
-  v13 = allocate_sprite(unk_790F30, *(_DWORD *)(a4 + 896), 57, -1, -1);
+  v13 = allocate_sprite(g_sprite_manager, *(_DWORD *)(a4 + 896), 57, -1, -1);
   *(_DWORD *)(v7 + 3498084) = v13;
   v14 = v13[1];
   BYTE1(v14) |= 8u;

@@ -144,7 +144,7 @@
 00438ed0        int32_t var_50_11 = 0
 00438ed6        game->_pad_00[9] = 0
 00438eda        game->_pad_00[8] = 0
-00438ede        set_sprite_manager_paused(&data_790f30, 0)
+00438ede        set_sprite_manager_paused(&g_sprite_manager, 0)
 00438ede        esp_1 = &__saved_edi
 00438ee3        int16_t eax_8
 00438ee3        eax_8.b = game->selected_level_record_active
@@ -162,7 +162,7 @@
 00438f3f        game->_pad_00[9] = 1
 00438f43        int32_t var_50_12 = 1
 00438f4a        game->subgame_state = 3
-00438f4d        set_sprite_manager_paused(&data_790f30, 1)
+00438f4d        set_sprite_manager_paused(&g_sprite_manager, 1)
 00438f4d        esp_1 = &__saved_edi
 00438f58        if (game->__offset(0x3bb884).d != 2)
 00438f58        goto label_4398ff

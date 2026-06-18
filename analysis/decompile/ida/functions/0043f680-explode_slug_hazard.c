@@ -36,7 +36,7 @@ int __thiscall sub_43F680(int this)
   {
     v16 = (double)next_math_random_value() * 0.0000061035157 + 0.2;
     v15 = (double)next_math_random_value() * 0.000030517578 * 0.75 + 0.25;
-    v2 = (char *)allocate_sprite(unk_790F30, 1, 129, -1, -1);
+    v2 = (char *)allocate_sprite(g_sprite_manager, 1, 129, -1, -1);
     v3 = *((_DWORD *)v2 + 1);
     *((_DWORD *)v2 + 26) = 0;
     *((_DWORD *)v2 + 1) = v3 | 0x802;

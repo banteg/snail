@@ -7,7 +7,7 @@ Wibo result: exact 100%, 41/41 instructions, masked operands 2 ok.
 Recovered relationships:
 
 - Reads the texture id at `FontQueueEntry +0x50` through the shared sprite
-  texture table (`data_78ff90`).
+  texture table (`g_sprite_texture_table`, data `0x78ff90`).
 - Forwards all four corner coordinate pairs (`+0x04..+0x2c`), size
   (`+0x54/+0x58`), UV bounds (`+0x5c..+0x68`), `Color4f` pointer
   (`+0x6c`), layer (`+0x7c`), and blend (`+0x80`) into

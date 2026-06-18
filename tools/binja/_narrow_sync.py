@@ -15,6 +15,7 @@ STRUCT_FIELD_RE = re.compile(
 
 FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
+SymbolUpdate = tuple[str, str]
 
 
 def run_bn(repo_root: Path, *args: str) -> object:
@@ -251,6 +252,36 @@ def apply_proto_updates(
                     "--target",
                     target,
                 ),
+            }
+        )
+    return operations
+
+
+def apply_symbol_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[SymbolUpdate],
+    kind: str = "auto",
+) -> list[dict[str, object]]:
+    operations: list[dict[str, object]] = []
+    for identifier, name in updates:
+        command = [
+            "symbol",
+            "rename",
+            "--target",
+            target,
+        ]
+        if kind != "auto":
+            command.extend(["--kind", kind])
+        command.extend([identifier, name])
+        operations.append(
+            {
+                "op": "symbol_rename",
+                "identifier": identifier,
+                "name": name,
+                "kind": kind,
+                "result": run_bn(repo_root, *command),
             }
         )
     return operations

@@ -124,7 +124,7 @@
 0040a73e        i_2 = *(i_2 + 0xc)
 0040a743        do while (i_2 != 0)
 0040a749        edi = var_78
-0040a74d        void* i_3 = *((ebx_1 << 2) + &data_814c94)
+0040a74d        void* i_3 = *((ebx_1 << 2) + &g_sprite_active_heads)
 0040a754        int32_t* var_6c_1 = &data_4e5510
 0040a75c        sub_413540()
 0040a763        while (i_3 != 0)

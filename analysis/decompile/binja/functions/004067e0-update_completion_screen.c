@@ -16,7 +16,7 @@
 00406996        destroy_completion_screen(prompt)
 004069a6        uninit_pause_menu(data_4df904 + 0x7462c)
 004069b2        *(data_4df904 + 0x74621) = 0
-004069bd        set_sprite_manager_paused(&data_790f30, 0)
+004069bd        set_sprite_manager_paused(&g_sprite_manager, 0)
 004069ce        destroy_subgame(data_4df904 + 0x74618)
 004069d3        void* ecx_22 = data_4df904
 004069d9        int32_t eax_10 = *(ecx_22 + 0x74658)
@@ -27,7 +27,7 @@
 00406952        destroy_completion_screen(prompt)
 00406962        uninit_pause_menu(data_4df904 + 0x7462c)
 0040696e        *(data_4df904 + 0x74621) = 0
-00406979        set_sprite_manager_paused(&data_790f30, 0)
+00406979        set_sprite_manager_paused(&g_sprite_manager, 0)
 0040698a        destroy_subgame(data_4df904 + 0x74618)
 00406a54        case 1
 00406a54        struct FrontendWidget* yes_button_5 = prompt->yes_button
@@ -38,7 +38,7 @@
 00406a6f        destroy_completion_screen(prompt)
 00406a80        uninit_pause_menu(data_4df904 + 0x7462c)
 00406a91        *(data_4df904 + 0x74621) = 0
-00406a97        set_sprite_manager_paused(&data_790f30, 0)
+00406a97        set_sprite_manager_paused(&g_sprite_manager, 0)
 00406aa7        destroy_subgame(data_4df904 + 0x74618)
 00406aac        void* eax_13 = data_4df904
 00406ab7        *(eax_13 + 0x1b8) = *(eax_13 + 0x1066bf0)
@@ -61,7 +61,7 @@
 00406a23        destroy_completion_screen(prompt)
 00406a33        uninit_pause_menu(data_4df904 + 0x7462c)
 00406a3f        *(data_4df904 + 0x74621) = 0
-00406a4a        set_sprite_manager_paused(&data_790f30, 0)
+00406a4a        set_sprite_manager_paused(&g_sprite_manager, 0)
 00406aee        destroy_subgame(data_4df904 + 0x74618)
 00406af8        *(data_4df904 + 0x1b8) = 2
 00406b10        case 6

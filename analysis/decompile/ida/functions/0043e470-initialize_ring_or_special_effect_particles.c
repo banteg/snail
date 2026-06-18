@@ -37,19 +37,19 @@ int __thiscall sub_43E470(_DWORD *this, int a2)
       case 4:
       case 5:
       case 8:
-        *(_DWORD *)v4 = allocate_sprite(unk_790F30, *(_DWORD *)(*(this + 33) + 896), 135, -1, -1);
+        *(_DWORD *)v4 = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 33) + 896), 135, -1, -1);
         *(this + 123) = 136;
         *(_DWORD *)(*(_DWORD *)v4 + 40) = 9;
         break;
       case 2:
       case 6:
-        *(_DWORD *)v4 = allocate_sprite(unk_790F30, *(_DWORD *)(*(this + 33) + 896), 131, -1, -1);
+        *(_DWORD *)v4 = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 33) + 896), 131, -1, -1);
         *(this + 123) = 132;
         *(_DWORD *)(*(_DWORD *)v4 + 40) = 13;
         break;
       case 3:
       case 7:
-        *(_DWORD *)v4 = allocate_sprite(unk_790F30, *(_DWORD *)(*(this + 33) + 896), 133, -1, -1);
+        *(_DWORD *)v4 = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 33) + 896), 133, -1, -1);
         *(this + 123) = 134;
         *(_DWORD *)(*(_DWORD *)v4 + 40) = 13;
         break;

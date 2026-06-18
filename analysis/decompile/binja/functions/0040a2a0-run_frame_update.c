@@ -57,8 +57,8 @@
 0040a40a        (**(arg1 + 0x124))()
 0040a413        if (*(arg1 + 0x74658) == 6)
 0040a421        (**(arg1 + 0x31c))()
-0040a423        int32_t* i = &data_814c94
-0040a446        while (i s< &data_814ca8)
+0040a423        int32_t* i = &g_sprite_active_heads
+0040a446        while (i s< &g_sprite_free_head)
 0040a428        void* j_1 = *i
 0040a42c        if (j_1 != 0)
 0040a43b        void* j

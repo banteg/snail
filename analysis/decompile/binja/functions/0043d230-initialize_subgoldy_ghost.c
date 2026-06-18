@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_subgoldy_ghost @ 0x43d230 */
 
-0043d24c        int32_t* eax = allocate_sprite(&data_790f30, arg2, 0x9f, 0xffffffff, 0xffffffff)
+0043d24c        int32_t* eax = allocate_sprite(&g_sprite_manager, arg2, 0x9f, 0xffffffff, 0xffffffff)
 0043d251        *(arg1 + 0x98) = eax
 0043d25a        int32_t ecx
 0043d25a        ecx:1.b = eax[1]:1.b | 8
@@ -23,7 +23,7 @@
 0043d2e0        *(*(arg1 + 0x98) + 0x48) = 0x40900000
 0043d2ed        *(*(arg1 + 0x98) + 0x4c) = 0x3f800000
 0043d2ff        *(*(arg1 + 0x98) + 0x50) = 0
-0043d302        int32_t* eax_5 = allocate_sprite(&data_790f30, arg2, 0x9f, 0xffffffff, 0xffffffff)
+0043d302        int32_t* eax_5 = allocate_sprite(&g_sprite_manager, arg2, 0x9f, 0xffffffff, 0xffffffff)
 0043d307        *(arg1 + 0x9c) = eax_5
 0043d310        int32_t ecx_7
 0043d310        ecx_7:1.b = eax_5[1]:1.b | 8

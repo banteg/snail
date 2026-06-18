@@ -8,7 +8,7 @@
 0043a678        bool cond:1_1
 0043a5c9        int32_t i_1 = 2
 0043a669        int32_t i
-0043a5de        struct Sprite* eax_1 = allocate_sprite(&data_790f30, 1, 0x9e, 0xffffffff, 0xffffffff)
+0043a5de        struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager, 1, 0x9e, 0xffffffff, 0xffffffff)
 0043a5e3        (esi - 0x20)->particle_slots[0].sprite = eax_1
 0043a5e5        uint32_t flags = eax_1->flags
 0043a5e8        flags:1.b |= 8

@@ -41,7 +41,7 @@ int __thiscall update_completion_screen(CompletionPrompt *prompt)
           destroy_completion_screen(prompt);
           uninit_pause_menu((_DWORD **)MEMORY[0x4DF904] + 119179);
           *((_BYTE *)MEMORY[0x4DF904] + 476705) = 0;
-          set_sprite_manager_paused(unk_790F30, 0);
+          set_sprite_manager_paused(g_sprite_manager, 0);
           destroy_subgame((int)MEMORY[0x4DF904] + 476696);
         }
         else
@@ -49,7 +49,7 @@ int __thiscall update_completion_screen(CompletionPrompt *prompt)
           destroy_completion_screen(prompt);
           uninit_pause_menu((_DWORD **)MEMORY[0x4DF904] + 119179);
           *((_BYTE *)MEMORY[0x4DF904] + 476705) = 0;
-          set_sprite_manager_paused(unk_790F30, 0);
+          set_sprite_manager_paused(g_sprite_manager, 0);
           destroy_subgame((int)MEMORY[0x4DF904] + 476696);
           v10 = *((_DWORD *)MEMORY[0x4DF904] + 119190);
           if ( v10 == 4 || v10 == 1 )
@@ -69,7 +69,7 @@ int __thiscall update_completion_screen(CompletionPrompt *prompt)
         destroy_completion_screen(prompt);
         uninit_pause_menu((_DWORD **)MEMORY[0x4DF904] + 119179);
         *((_BYTE *)MEMORY[0x4DF904] + 476705) = 0;
-        set_sprite_manager_paused(unk_790F30, 0);
+        set_sprite_manager_paused(g_sprite_manager, 0);
         destroy_subgame((int)MEMORY[0x4DF904] + 476696);
         *((_DWORD *)MEMORY[0x4DF904] + 110) = *((_DWORD *)MEMORY[0x4DF904] + 4299516);
       }
@@ -94,7 +94,7 @@ int __thiscall update_completion_screen(CompletionPrompt *prompt)
         destroy_completion_screen(prompt);
         uninit_pause_menu((_DWORD **)MEMORY[0x4DF904] + 119179);
         *((_BYTE *)MEMORY[0x4DF904] + 476705) = 0;
-        set_sprite_manager_paused(unk_790F30, 0);
+        set_sprite_manager_paused(g_sprite_manager, 0);
         goto LABEL_24;
       }
       break;

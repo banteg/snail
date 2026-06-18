@@ -94,8 +94,8 @@ float *__thiscall initialize_frontend_sprite_button(
   *(_DWORD *)(this + 568) = a4;
   *(_DWORD *)(this + 572) = a5;
   *(float *)(this + 608) = v14;
-  *(float *)(this + 584) = (float)*(int *)(LODWORD(unk_78FF90[a3]) + 4);
-  v15 = (double)*(int *)(LODWORD(unk_78FF90[a3]) + 8);
+  *(float *)(this + 584) = (float)*(int *)(LODWORD(g_sprite_texture_table[a3]) + 4);
+  v15 = (double)*(int *)(LODWORD(g_sprite_texture_table[a3]) + 8);
   *(_DWORD *)(this + 592) = *(_DWORD *)(this + 584);
   *(_DWORD *)(this + 624) = a3;
   *(float *)(this + 588) = v15;

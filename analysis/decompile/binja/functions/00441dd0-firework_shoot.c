@@ -9,7 +9,7 @@
 00441df5        float world_x_1 = world_x
 00441dfa        float world_z_1 = world_z
 00441f46        bool cond:1_1
-00441e09        int32_t* eax_2 = allocate_sprite(&data_790f30, world_x_1, world_y_1, 0xffffffff, 0xffffffff)
+00441e09        int32_t* eax_2 = allocate_sprite(&g_sprite_manager, world_x_1, world_y_1, 0xffffffff, 0xffffffff)
 00441e10        int32_t var_24_1 = 0
 00441e16        int32_t ecx_1 = eax_2[1]
 00441e19        eax_2[0xa] = 0xa

@@ -503,7 +503,7 @@ char __thiscall sub_40ACF0(int this)
   sub_432D20(aObjectsFontFon, 2, 1061158912, 1.0);
   initialize_font3d_objects(0.0);
   initialize_font_wave_state();
-  initialize_sprite_manager(unk_790F30);
+  initialize_sprite_manager(g_sprite_manager);
   register_sprite_texture(aSpritesDebugTg, 1, 0);
   register_sprite_texture(aSpritesOverlay, 2, 0);
   register_sprite_texture(aSpritesBorderT, 5, 1024);

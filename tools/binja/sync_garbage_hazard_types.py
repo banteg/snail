@@ -8,6 +8,7 @@ import sys
 from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
+    apply_symbol_updates,
     emit_summary,
     struct_exists,
     types_declare_if_missing,
@@ -113,6 +114,14 @@ GARBAGE_HAZARD_POOL_FIELD_UPDATES = (
     ("0x04", "slots", "GarbageHazardSlot[0x32]"),
 )
 
+SPRITE_SYMBOL_UPDATES = (
+    ("0x78ff90", "g_sprite_texture_table"),
+    ("0x790f30", "g_sprite_manager"),
+    ("0x814c94", "g_sprite_active_heads"),
+    ("0x814ca8", "g_sprite_free_head"),
+    ("0x814cb0", "g_sprite_sentinel"),
+)
+
 PROTO_UPDATES = (
     ("initialize_sprite_manager", "void __thiscall initialize_sprite_manager(SpriteManager* manager)"),
     (
@@ -182,6 +191,7 @@ def main() -> int:
             struct_name="GarbageHazardPool",
             updates=GARBAGE_HAZARD_POOL_FIELD_UPDATES,
         ),
+        *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SPRITE_SYMBOL_UPDATES, kind="data"),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]
 

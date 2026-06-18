@@ -19,7 +19,7 @@
 0043f6d9        unimplemented  {fadd dword [0x49744c]}
 0043f6df        float var_40_2 = fconvert.s(unimplemented  {fstp dword [esp+0x20], st0})
 0043f6df        unimplemented  {fstp dword [esp+0x20], st0}
-0043f6e3        int32_t* eax_3 = allocate_sprite(&data_790f30, 1, 0x81, 0xffffffff, 0xffffffff)
+0043f6e3        int32_t* eax_3 = allocate_sprite(&g_sprite_manager, 1, 0x81, 0xffffffff, 0xffffffff)
 0043f6e8        unimplemented  {fld st0, dword [esp+0x10]}
 0043f6ee        unimplemented  {fadd st0, st0}
 0043f6f0        int32_t edx_1 = eax_3[1]
