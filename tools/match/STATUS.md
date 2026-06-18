@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**434/687** mapped gameplay functions matched, **578/687** mapped gameplay functions have a scratch, **46780/325882** bytes (**14.35%**) are proof-grade, and overall fuzzy is **31.18%**.
+**434/687** mapped gameplay functions matched, **579/687** mapped gameplay functions have a scratch, **46780/325882** bytes (**14.35%**) are proof-grade, and overall fuzzy is **31.24%**.
 
 ## Proof Grade (434)
 
@@ -443,7 +443,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (144)
+## In Progress (145)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -496,6 +496,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 55/53 | 51.85% | 5/53 | 1 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 50/47 | 82.47% | 18/47 | 1 mismatch, 18 ok |  |
+| 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 13 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 72/64 | 44.12% | 0/64 | 9 ok |  |
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
@@ -592,7 +593,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (109)
+## No Scratch (108)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -674,7 +675,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | find_archive_entry | 0x431250 | 122 | 0/60 | 0.00% | 0/60 | - |  |
 | ⬜ | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 0/206 | 0.00% | 0/206 | - |  |
 | ⬜ | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 0/182 | 0.00% | 0/182 | - |  |
-| ⬜ | load_archive_index | 0x4319c0 | 187 | 0/67 | 0.00% | 0/67 | - |  |
 | ⬜ | update_input_controller_pointer_region | 0x4321c0 | 466 | 0/134 | 0.00% | 0/134 | - |  |
 | ⬜ | read_pressed_text_input_key_code | 0x432440 | 915 | 0/338 | 0.00% | 0/338 | - |  |
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
