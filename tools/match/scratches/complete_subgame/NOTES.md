@@ -108,14 +108,21 @@ Rejected experiments:
   scheduling shape below.
 - 2026-06-16 score-view split: the display call now uses the shared
   `RunScoreStats` pointer view at `game+0x3bb764`. Do not embed the full view
-  directly as a `Game` member: its fields overlap the following `Game` fields
-  (`source_score` at `+0x3bba48`, etc.), so the scratch keeps a fixed-size
-  `score_stats_block` and casts that storage for the call. This preserves the
-  75.28% pinned match.
+  directly as a `SubgameRuntime` member: its fields overlap the following
+  runtime fields (`source_score` at `+0x3bba48`, etc.), so the shared runtime
+  keeps a one-byte owner anchor and the scratch casts `&score_stats` for the
+  call. This preserves the 75.28% pinned match.
+- 2026-06-18 shared-record pass: `tools/match/include/high_score_record.h`
+  now models the full 0x1fac0 high-score/replay record starting at
+  `game+0xfd2b10`, including the 6-byte replay run table and aligned timer
+  snapshot fields. `complete_subgame` now writes `current_high_score_record`
+  instead of a local 0x54 `ResultRecord` prefix, and the replay bonus source
+  lanes are named `completion_bonus_x_source` / `completion_bonus_y_source`.
+  Focused Wibo remains at the pinned 75.28%.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register
-allocation around the difficulty/timer fields. Result-record pointer ownership
+allocation around the difficulty/timer fields. High-score record pointer ownership
 now matches native `ebp`; do not force the remaining byte-OR or store-schedule
 residuals with volatile, raw offset macros, or fake aliasing. Treat this
 scratch as pinned unless new source evidence explains the contextual byte-OR.

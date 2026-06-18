@@ -29,6 +29,10 @@ TRUSTED_DECLARATIONS = [
         "calc_subgame_rate",
         "void __thiscall calc_subgame_rate(SubgameRuntime* runtime);",
     ),
+    (
+        "complete_subgame",
+        "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
+    ),
 ]
 
 
@@ -44,6 +48,7 @@ def _normalize_type_text(value: str | None) -> str | None:
         return None
     normalized = value.strip().removesuffix(";")
     normalized = re.sub(r"\s+", " ", normalized)
+    normalized = normalized.replace("unsigned __int8", "unsigned char")
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)

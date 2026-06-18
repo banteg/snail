@@ -3,11 +3,22 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
+#include "high_score_record.h"
+#include "score_stats.h"
 #include "track_parcel_runtime.h"
 
 class Player;
 struct SelectedLevelRecord;
 struct TrackRowCell;
+
+struct HighScoreBank {
+    void add_arcade_high_score(HighScoreRecord* record, int level_arg); // @ 0x4176a0
+    void add_survival_high_score(HighScoreRecord* record); // @ 0x417780
+    void add_time_trial_high_score(
+        HighScoreRecord* record,
+        int level_arg,
+        unsigned char route_active); // @ 0x4178b0
+};
 
 class SubgameRuntime {
 public:
@@ -25,7 +36,7 @@ public:
         void* owner_hint); // @ 0x443730
     TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
     float sample_track_floor_height_at_position(Vector3* position);
-    void complete_subgame(int completed);
+    void complete_subgame(unsigned char completed);
     void build_track_colours();
     void place_parcels_on_track();
     void select_track_tile_edge_variants();
@@ -41,9 +52,17 @@ public:
     int track_mirror_repeat_count; // +0x04
     char unknown_000008;
     unsigned char subgame_pause_gate; // +0x09
-    char unknown_00000a[0x30 - 0x0a];
-    float base_rate; // +0x30, set by set_subgame_rate and used by calc_subgame_rate
-    float challenge_difficulty_scalar; // +0x34
+    char unknown_00000a[0x28 - 0x0a];
+    int completion_bonus_x_source; // +0x28, raw result snapshot lane
+    int completion_bonus_y_source; // +0x2c, raw result snapshot lane
+    union {
+        float base_rate; // +0x30, set by set_subgame_rate and used by calc_subgame_rate
+        int level_arg_tail; // +0x30, raw result snapshot lane
+    };
+    union {
+        float challenge_difficulty_scalar; // +0x34
+        int difficulty_scalar_bits; // +0x34, raw result snapshot lane
+    };
     float subgame_rate; // +0x38
     int subgame_state; // +0x3c
     int level_mode; // +0x40
@@ -63,17 +82,27 @@ public:
     char score_stats; // +0x3bb764, owner anchor used by parcels
     char unknown_3bb765[0x3bb7d4 - 0x3bb765];
     float completion_progress_z; // +0x3bb7d4
-    char unknown_3bb7d8[0x3bbae4 - 0x3bb7d8];
+    char unknown_3bb7d8[0x3bba48 - 0x3bb7d8];
+    int source_score; // +0x3bba48
+    ScoreBucketBlock source_stats; // +0x3bba4c
+    int source_score_tail; // +0x3bba64
+    int source_tail; // +0x3bba68
+    char unknown_3bba6c[0x3bbae4 - 0x3bba6c];
     int parcel_sprite_owner; // +0x3bbae4
     char unknown_3bbae8[0x3bbb28 - 0x3bbae8];
     int bonus_rate_state; // +0x3bbb28
     char unknown_3bbb2c[0x3bbb48 - 0x3bbb2c];
     float bonus_rate_phase; // +0x3bbb48
-    char unknown_3bbb4c[0x3bdec0 - 0x3bbb4c];
+    char unknown_3bbb4c[0x3bbba4 - 0x3bbb4c];
+    unsigned char time_trial_route_active; // +0x3bbba4
+    char unknown_3bbba5[0x3bdec0 - 0x3bbba5];
     int nuke_rate_state; // +0x3bdec0
     char unknown_3bdec4[0x3be0c0 - 0x3bdec4];
     float nuke_rate_progress; // +0x3be0c0
-    char unknown_3be0c4[0xff25d0 - 0x3be0c4];
+    char unknown_3be0c4[0x68b4c8 - 0x3be0c4];
+    HighScoreBank high_score_bank; // +0x68b4c8
+    char unknown_68b4c9[0xfd2b10 - 0x68b4c9];
+    HighScoreRecord current_high_score_record; // +0xfd2b10
     unsigned char selected_level_record_active; // +0xff25d0
     unsigned char selected_level_record_persistent; // +0xff25d1
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
@@ -82,6 +111,8 @@ public:
     int replay_update_cursor; // +0xff25dc
     char unknown_ff25e0[0x125e480 - 0xff25e0];
     TrackParcelPool parcel_pool; // +0x125e480
+    int source_timer_a; // +0x125ffd8
+    int source_timer_b; // +0x125ffdc
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define BN_SUBGAME_RUNTIME_TYPES_H
 
 typedef int int32_t;
+typedef unsigned char uint8_t;
 
 typedef struct SubgameRuntime SubgameRuntime;
 

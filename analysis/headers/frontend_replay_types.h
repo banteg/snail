@@ -150,10 +150,13 @@ typedef struct HighScoreRecord {
     int32_t active;
     uint8_t _pad_04[0x2c - 0x04];
     int32_t level_mode;
-    uint8_t _pad_30[0x48 - 0x30];
+    uint8_t _pad_30[0x3c - 0x30];
+    int32_t high_score_mode_tag;
+    int32_t route_or_rank_index;
+    int32_t replay_cursor;
     int32_t level_arg_tail;
-    int32_t source_arg_tail;
-    int32_t level_index_tail;
+    int32_t completion_bonus_x_source;
+    int32_t completion_bonus_y_source;
     char player_name[2];
 } HighScoreRecord;
 
