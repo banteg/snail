@@ -2,9 +2,8 @@
 /* function: end_jetpack_hover @ 0x43a370 */
 /* selector: end_jetpack_hover */
 
-void __thiscall sub_43A370(float *this)
+void __thiscall end_jetpack_hover(float *gauge)
 {
-  if ( *((_DWORD *)this + 3) == 1 && *this < 0.94 )
-    *this = 0.94;
+  if ( *((_DWORD *)gauge + 3) == 1 && *gauge < 0.94 )
+    *gauge = 0.94;
 }
-

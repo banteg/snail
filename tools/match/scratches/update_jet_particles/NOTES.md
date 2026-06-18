@@ -42,3 +42,8 @@ Focused Wibo status:
   `0x50` frame with x/y offset temporaries and later velocity temporaries,
   while the current C++ source lets VC6 collapse much of that into FPU stack
   flow and a `0x38` frame.
+- 2026-06-18 BN field sync: `JetParticleSlot` is now promoted in the BN headers
+  as `Sprite* sprite`, `wobble_x`, `wobble_y`, and `wobble_alpha`. The tracked
+  BN export now resolves the emitted trail-puff `Sprite` fields (`flags`,
+  progress/lifetime, color, size, velocity, gravity, and position); the focused
+  Wibo result remains 45.14% with the same stack/local-schedule residual.

@@ -21,10 +21,10 @@
 0043a735        float var_30_1
 0043a735        float var_2c_1
 0043a735        if (i != 0)
-0043a75e        int32_t* edx_5 = &gauge->game->__offset(0x3bf940).d
-0043a766        var_34_1 = *edx_5
-0043a76d        var_30_1 = edx_5[1]
-0043a774        var_2c_1 = edx_5[2]
+0043a75e        void* __offset(Game, 0x3bf940) edx_5 = &gauge->game->__offset(0x3bf940).d
+0043a766        var_34_1 = (edx_5 - 0x3bf940)->__offset(0x3bf940).d
+0043a76d        var_30_1 = (edx_5 - 0x3bf940)->__offset(0x3bf944).d
+0043a774        var_2c_1 = (edx_5 - 0x3bf940)->__offset(0x3bf948).d
 0043a73d        void* __offset(Game, 0x3bf934) eax_4 = &gauge->game->__offset(0x3bf934).d
 0043a744        var_34_1 = (eax_4 - 0x3bf934)->__offset(0x3bf934).d
 0043a74b        var_30_1 = (eax_4 - 0x3bf934)->__offset(0x3bf938).d
@@ -47,41 +47,39 @@
 0043a80e        long double x87_r7_20 = float.t(next_math_random_value()) * fconvert.t(3.05175781e-05f)
 0043a814        long double temp0_1 = fconvert.t(0.899999976f)
 0043a814        x87_r7_20 - temp0_1
-0043a81a        int32_t eax_15
-0043a81a        eax_15.w = (x87_r7_20 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp0_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp0_1 ? 1 : 0) << 0xe
-0043a81f        if ((eax_15:1.b & 0x41) == 0)
-0043a83d        int32_t* eax_17 = allocate_sprite(&data_790f30, gauge->game->__offset(0x3bbae4).d, 0x21, 0xffffffff, 0xffffffff)
-0043a85b        int32_t eax_18
-0043a85b        eax_18:1.b = eax_17[1]:1.b | 8
-0043a862        eax_17[1] = eax_18
-0043a867        eax_17[0x1a] = 0
-0043a86a        eax_17[0x1b] = 0x3e0e38e4
-0043a871        eax_17[0x1c] = 0
-0043a874        eax_17[0x1d] = 0
+0043a81f        if ((((x87_r7_20 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp0_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
+0043a83d        struct Sprite* eax_18 = allocate_sprite(&data_790f30, gauge->game->__offset(0x3bbae4).d, 0x21, 0xffffffff, 0xffffffff)
+0043a853        uint32_t flags = eax_18->flags
+0043a85b        flags:1.b |= 8
+0043a862        eax_18->flags = flags
+0043a867        eax_18->progress = 0f
+0043a86a        eax_18->progress_step = 0.138888896f
+0043a871        eax_18->lifetime = 0f
+0043a874        eax_18->lifetime_step = 0f
 0043a877        struct Color4f color
 0043a877        struct Color4f* eax_19 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-0043a881        eax_17[0xb] = eax_19->r
-0043a887        eax_17[0xc] = eax_19->g
-0043a88d        eax_17[0xd] = eax_19->b
+0043a881        eax_18->color.r = eax_19->r
+0043a887        eax_18->color.g = eax_19->g
+0043a88d        eax_18->color.b = eax_19->b
 0043a890        float a = eax_19->a
-0043a893        eax_17[0x18] = 0x3dcccccd
-0043a89a        eax_17[0x19] = 0x3e99999a
-0043a8a1        eax_17[0xe] = a
+0043a893        eax_18->size_start = 0.100000001f
+0043a89a        eax_18->size_end = 0.300000012f
+0043a8a1        eax_18->color.a = a
 0043a8aa        void* __offset(Game, 0x3bbb74) eax_21 = &gauge->game->__offset(0x3bbb74).d
 0043a8bd        float var_28_1 = fconvert.s(fconvert.t((eax_21 - 0x3bbb74)->__offset(0x3bbb74).d) * fconvert.t(0.850000024f))
 0043a8ce        float var_24_1 = fconvert.s(fconvert.t((eax_21 - 0x3bbb74)->__offset(0x3bbb78).d) * fconvert.t(0.850000024f))
 0043a8d5        long double x87_r7_26 = fconvert.t((eax_21 - 0x3bbb74)->__offset(0x3bbb7c).d) * fconvert.t(0.850000024f)
-0043a8df        eax_17[0x1e] = 0x3a83126f
-0043a8e6        eax_17[0x15] = var_28_1
-0043a8e8        eax_17[0x12] = var_34_2
+0043a8df        eax_18->gravity_step = 0x3a83126f
+0043a8e6        eax_18->velocity.x = var_28_1
+0043a8e8        eax_18->position.x = var_34_2
 0043a8ea        float var_20_1 = fconvert.s(x87_r7_26)
-0043a8f2        eax_17[0x16] = var_24_1
-0043a8f9        eax_17[0x13] = var_30_2
-0043a8fc        eax_17[0x17].b = var_20_1.b
-0043a8fc        *(eax_17 + 0x5d) = var_20_1:1.b
-0043a8fc        *(eax_17 + 0x5e) = var_20_1:2.b
-0043a8fc        *(eax_17 + 0x5f) = var_20_1:3.b
-0043a8ff        eax_17[0x14] = var_2c_2
+0043a8f2        eax_18->velocity.y = var_24_1
+0043a8f9        eax_18->position.y = var_30_2
+0043a8fc        eax_18->velocity.z.b = var_20_1.b
+0043a8fc        eax_18->velocity.z:1.b = var_20_1:1.b
+0043a8fc        eax_18->velocity.z:2.b = var_20_1:2.b
+0043a8fc        eax_18->velocity.z:3.b = var_20_1:3.b
+0043a8ff        eax_18->position.z = var_2c_2
 0043a902        esi_1 = var_50_1
 0043a906        i = i_1
 0043a90a        i += 1

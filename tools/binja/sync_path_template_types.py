@@ -17,6 +17,8 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackAttachmentRuntimeRow",
     "PathTemplate",
     "Player",
+    "JetParticleSlot",
+    "JetpackGaugeController",
     "TutorialController",
 )
 
@@ -158,6 +160,27 @@ PATH_TEMPLATE_FIELD_UPDATES = (
     ("0xa4", "header_a4", "float"),
 )
 
+JET_PARTICLE_SLOT_FIELD_UPDATES = (
+    ("0x00", "sprite", "Sprite*"),
+    ("0x04", "wobble_x", "float"),
+    ("0x08", "wobble_y", "float"),
+    ("0x0c", "wobble_alpha", "float"),
+)
+
+JETPACK_GAUGE_FIELD_UPDATES = (
+    ("0x00", "progress", "float"),
+    ("0x04", "progress_step", "float"),
+    ("0x0c", "state", "int32_t"),
+    ("0x10", "player", "Player*"),
+    ("0x14", "wobble_x", "float"),
+    ("0x18", "wobble_y", "float"),
+    ("0x1c", "wobble_alpha", "float"),
+    ("0x20", "particle_slots", "JetParticleSlot[0x1e]"),
+    ("0x200", "game", "Game*"),
+    ("0x20c", "warning_intensity_latch", "float"),
+    ("0x210", "warning_intensity", "float"),
+)
+
 PROTO_UPDATES = (
     (
         "initialize_matrix_from_values",
@@ -267,12 +290,16 @@ PROTO_UPDATES = (
         "int32_t __thiscall arm_jetpack_gauge(JetpackGaugeController* gauge)",
     ),
     (
+        "end_jetpack_hover",
+        "void __fastcall end_jetpack_hover(JetpackGaugeController* gauge)",
+    ),
+    (
         "uninit_jet_particles",
         "void __fastcall uninit_jet_particles(JetpackGaugeController* gauge)",
     ),
     (
         "initialize_jet_particles",
-        "int32_t __fastcall initialize_jet_particles(JetpackGaugeController* gauge)",
+        "void __fastcall initialize_jet_particles(JetpackGaugeController* gauge)",
     ),
     (
         "update_jet_particles",
@@ -380,6 +407,22 @@ def main() -> int:
             target=args.target,
             struct_name="PathTemplate",
             updates=PATH_TEMPLATE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="JetParticleSlot",
+            updates=JET_PARTICLE_SLOT_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="JetpackGaugeController",
+            updates=JETPACK_GAUGE_FIELD_UPDATES,
         )
     )
     operations.extend(

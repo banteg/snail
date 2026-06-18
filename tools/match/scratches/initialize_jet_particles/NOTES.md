@@ -35,3 +35,9 @@ Rejected/source-shaped probes:
   caller-observed incidental return, but it triggers an MSVC warning path under
   wibo that aborts on a missing `lstrcpynA` import. Keep the runnable exact
   callee as `void` and leave the `int` view local to the exact caller.
+- 2026-06-18 BN/IDA sync: the durable BN prototype is now
+  `void __fastcall initialize_jet_particles(JetpackGaugeController*)`, and the
+  BN/IDA exports no longer preserve the synthetic loop-counter return. The
+  shared BN headers also promote `JetParticleSlot` to `Sprite* sprite`,
+  `wobble_x`, `wobble_y`, and `wobble_alpha`, matching this exact initializer
+  and the hover updater.

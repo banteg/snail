@@ -425,9 +425,10 @@ typedef struct DamageGaugeController {
 } DamageGaugeController;
 
 typedef struct JetParticleSlot {
-    void* sprite;
-    uint8_t _pad_04[0x8];
-    float alpha_step;
+    Sprite* sprite;
+    float wobble_x;
+    float wobble_y;
+    float wobble_alpha;
 } JetParticleSlot;
 
 typedef struct JetpackGaugeController {
