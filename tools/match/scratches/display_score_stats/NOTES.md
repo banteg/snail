@@ -6,6 +6,9 @@ The bucket offsets mirror the producer fields used by `add_subgoldy_score`,
 but the callsites pass the run score block, not the `Player`; keep this on
 the shared `RunScoreStats` pointer view.
 
+The six bucket indexes are shared through `score_stats.h`:
+garbage, slug, ring/special-effect, parcel collect, parcel deliver, and bonus.
+
 The function is source-shaped:
 
 - return `0` immediately when the total score bucket at `+0x2e4` is zero

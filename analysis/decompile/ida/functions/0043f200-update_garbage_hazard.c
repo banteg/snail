@@ -56,7 +56,7 @@ int *__thiscall sub_43F200(int this)
             *(_DWORD *)(this + 136) = 2;
           else
             *(_DWORD *)(this + 136) = 1;
-          add_subgoldy_score((int *)v5, 0, 0);
+          add_subgoldy_score((int *)v5, SUBGOLDY_SCORE_GARBAGE, 0);
         }
         sub_415EF0(
           (float *)(*(_DWORD *)(this + 140) + 19337172),
@@ -151,4 +151,3 @@ LABEL_27:
   }
   return result;
 }
-

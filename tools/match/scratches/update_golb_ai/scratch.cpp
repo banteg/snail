@@ -2,6 +2,8 @@
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
+#include "score_stats.h"
+
 struct Vec3 {
     float x;
     float y;
@@ -9,7 +11,7 @@ struct Vec3 {
 };
 
 float __fastcall normalize_vector(Vec3* vector);
-void add_subgoldy_score(int* player, int event_id, int value);
+void add_subgoldy_score(int* player, int score_kind, int value);
 void hit_slug_hazard(int slug, int mode);
 char* get_track_grid_cell_at_world_position(char* game, Vec3* position);
 void add_vapour_point(void* vapour, const void* matrix);
@@ -290,7 +292,7 @@ void GolbShot::update_golb_ai()
                         if (dz < 3.0f && normalize_vector(&probe) < *(float*)(garbage + 156) + 0.49000001f) {
                             *(int*)(garbage + 132) = 2;
                             *(int*)(garbage + 136) = probe.x >= 0.0f ? 1 : 2;
-                            add_subgoldy_score((int*)player, 0, 0);
+                            add_subgoldy_score((int*)player, SUBGOLDY_SCORE_GARBAGE, 0);
                             if (kind != 1)
                                 break;
                         }
@@ -313,7 +315,7 @@ void GolbShot::update_golb_ai()
                                     *(int*)(splash + 136) = 1;
                                 else
                                     *(int*)(splash + 136) = 2;
-                                add_subgoldy_score((int*)player, 0, 0);
+                                add_subgoldy_score((int*)player, SUBGOLDY_SCORE_GARBAGE, 0);
                             }
                         }
                     }

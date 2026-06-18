@@ -4,6 +4,11 @@ Current match: 89.66%, source-shaped.
 
 - `score_kind` selects fixed point awards for regular hazards/parcels and uses
   `bonus_score` only for score kind `5`.
+- 2026-06-18 bucket enum pass: display strings and producer callsites now back
+  the shared names in `score_stats.h`:
+  `SUBGOLDY_SCORE_GARBAGE`, `SUBGOLDY_SCORE_SLUG`, `SUBGOLDY_SCORE_RING`,
+  `SUBGOLDY_SCORE_PARCEL_COLLECT`, `SUBGOLDY_SCORE_PARCEL_DELIVER`, and
+  `SUBGOLDY_SCORE_BONUS`.
 - The six buckets at `Player+0x310` accumulate per-kind points; `Player+0x2e4`
   is the total subgame score.
 - Crossing a 50,000-point boundary increments `Player+0x4340` up to a visible

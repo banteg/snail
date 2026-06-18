@@ -308,7 +308,7 @@ void __thiscall sub_414820(int this)
                 {
                   *(_DWORD *)(v43 + 132) = 2;
                   *(_DWORD *)(v43 + 136) = v63 >= 0.0 ? 1 : 2;
-                  add_subgoldy_score(*(int **)(this + 632), 0, 0);
+                  add_subgoldy_score(*(int **)(this + 632), SUBGOLDY_SCORE_GARBAGE, 0);
                   if ( *(_DWORD *)(this + 448) != 1 )
                     break;
                 }
@@ -339,7 +339,7 @@ void __thiscall sub_414820(int this)
                       *(_DWORD *)(i + 136) = 1;
                     else
                       *(_DWORD *)(i + 136) = 2;
-                    add_subgoldy_score(*(int **)(this + 632), 0, 0);
+                    add_subgoldy_score(*(int **)(this + 632), SUBGOLDY_SCORE_GARBAGE, 0);
                   }
                 }
               }
@@ -424,4 +424,3 @@ LABEL_82:
     }
   }
 }
-

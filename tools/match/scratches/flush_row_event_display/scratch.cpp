@@ -11,7 +11,7 @@ void RowEventDisplayController::flush_row_event_display()
     if (state != 0) {
         if (delivered_parcel_count != parcel_target_count) {
             while (delivered_parcel_count < parcel_target_count) {
-                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(4, 0);
+                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
                 delivered_parcel_count += 1;
             }
 

@@ -10,7 +10,7 @@ int32_t __fastcall register_parcel_delivery(RowEventDisplayController *controlle
   result = controller->delivered_parcel_count;
   if ( result != controller->parcel_target_count )
   {
-    add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 4, 0);
+    add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
     ++controller->delivered_parcel_count;
     play_sound_effect(45);
     result = controller->parcel_target_count;
@@ -19,7 +19,7 @@ int32_t __fastcall register_parcel_delivery(RowEventDisplayController *controlle
       result = controller->bonus_enabled;
       if ( result )
       {
-        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, controller->bonus_score);
+        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_BONUS, controller->bonus_score);
         play_sound_effect(49);
       }
       controller->state = 3;
@@ -27,4 +27,3 @@ int32_t __fastcall register_parcel_delivery(RowEventDisplayController *controlle
   }
   return result;
 }
-

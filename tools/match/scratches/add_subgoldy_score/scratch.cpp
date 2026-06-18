@@ -1,5 +1,7 @@
 // add_subgoldy_score @ 0x4402c0 (thiscall, ret 8)
 
+#include "score_stats.h"
+
 extern char* g_game_base; // data_4df904
 
 void report_errorf(const char* message, ...);
@@ -17,7 +19,7 @@ public:
     char unknown_0000[0x2e4];
     int total_score; // +0x2e4
     char unknown_02e8[0x310 - 0x2e8];
-    int score_buckets[6]; // +0x310
+    int score_buckets[SUBGOLDY_SCORE_BUCKET_COUNT]; // +0x310
     char unknown_0328[0x4340 - 0x328];
     int visible_life_stock; // +0x4340
 };
@@ -27,18 +29,18 @@ void Player::add_subgoldy_score(int score_kind, int bonus_score)
     int points;
 
     switch (score_kind) {
-    case 0:
+    case SUBGOLDY_SCORE_GARBAGE:
         points = 10;
         break;
-    case 1:
+    case SUBGOLDY_SCORE_SLUG:
         points = 500;
         break;
-    case 2:
-    case 3:
-    case 4:
+    case SUBGOLDY_SCORE_RING:
+    case SUBGOLDY_SCORE_PARCEL_COLLECT:
+    case SUBGOLDY_SCORE_PARCEL_DELIVER:
         points = 100;
         break;
-    case 5:
+    case SUBGOLDY_SCORE_BONUS:
         points = bonus_score;
         break;
     default:

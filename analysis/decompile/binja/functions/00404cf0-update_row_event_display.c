@@ -68,7 +68,7 @@
 00404e49        void* eax_5 = data_4df904
 00404e55        if (*(eax_5 + 0x74658) == 1)
 00404e5a        bonus_score = controller_1->bonus_score
-00404e63        add_subgoldy_score(eax_5 + 0x42fd7c, 5, bonus_score)
+00404e63        add_subgoldy_score(eax_5 + 0x42fd7c, SUBGOLDY_SCORE_BONUS, bonus_score)
 00404e68        bonus_score = 0x31
 00404e6f        play_sound_effect(bonus_score)
 00404e6f        esp = &__saved_esi

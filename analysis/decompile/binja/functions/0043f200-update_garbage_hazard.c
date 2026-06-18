@@ -51,7 +51,7 @@
 0043f29c        if ((y:1.b & 0x41) != 0)
 0043f2aa        self->collision_side = 2
 0043f29e        self->collision_side = 1
-0043f2b2        add_subgoldy_score(owner, 0, 0)
+0043f2b2        add_subgoldy_score(owner, SUBGOLDY_SCORE_GARBAGE, 0)
 0043f2cd        sub_415ef0(&self->game->__offset(0x1270fd4).d, &self->world_position.x, self->__offset(0x9c).d, 0, self)
 0043f2d2        goto label_43f4de
 0043f2d7        case 2

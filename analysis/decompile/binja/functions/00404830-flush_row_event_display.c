@@ -11,7 +11,7 @@
 00404848        if (delivered_parcel_count s< parcel_target_count)
 0040486c        int32_t parcel_target_count_1
 0040486c        int32_t edx_2
-00404859        add_subgoldy_score(data_4df904 + 0x42fd7c, 4, 0)
+00404859        add_subgoldy_score(data_4df904 + 0x42fd7c, SUBGOLDY_SCORE_PARCEL_DELIVER, 0)
 00404861        parcel_target_count_1 = controller->parcel_target_count
 00404864        edx_2 = controller->delivered_parcel_count + 1
 00404867        controller->delivered_parcel_count = edx_2

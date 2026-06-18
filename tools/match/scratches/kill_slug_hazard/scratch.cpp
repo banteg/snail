@@ -22,7 +22,7 @@ void SlugHazardRuntime::kill_slug_hazard()
             death_toss_direction = 1;
         else
             death_toss_direction = 2;
-        owner_game->player.add_subgoldy_score(1, 0);
+        owner_game->player.add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
         explode_slug_hazard();
     }
 }

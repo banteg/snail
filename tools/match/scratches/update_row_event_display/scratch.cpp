@@ -99,7 +99,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
             if (controller->parcel_target_count == 0) {
                 char* game = g_game_base;
                 if (*(int*)(game + 0x74658) == 1) {
-                    ((Player*)(game + 0x42fd7c))->add_subgoldy_score(5, controller->bonus_score);
+                    ((Player*)(game + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_BONUS, controller->bonus_score);
                     g_sound_effect_manager.play_sound_effect(0x31);
                 }
             }

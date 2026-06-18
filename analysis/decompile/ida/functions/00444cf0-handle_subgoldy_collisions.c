@@ -143,7 +143,7 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
             *(_DWORD *)(k + 136) = 1;
           else
             *(_DWORD *)(k + 136) = 2;
-          add_subgoldy_score((int *)player, 0, 0);
+          add_subgoldy_score((int *)player, SUBGOLDY_SCORE_GARBAGE, 0);
           apply_damage_gauge_delta((float *)&player->damage_gauge.state, 0.039999999, 0);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);
           play_sound_effect(39 - v10);
@@ -227,7 +227,7 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
         v77 = vector;
         if ( v27 < 1.0 && normalize_vector(&v77) < 1.24 )
         {
-          add_subgoldy_score((int *)player, 3, 0);
+          add_subgoldy_score((int *)player, SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
           play_voice_manager((int)unk_751498, 10, 1u, -1);
           play_sound_effect(27);
           *(_DWORD *)&player->game->_pad_ff25e8[n + 2539216] = 4;
@@ -381,7 +381,7 @@ LABEL_105:
                 v62 = 6;
 LABEL_106:
               play_sound_effect(v62 + 1);
-              add_subgoldy_score((int *)player, 2, 0);
+              add_subgoldy_score((int *)player, SUBGOLDY_SCORE_RING, 0);
               continue;
             case 8:
               v61 = player->movement_flag_selector;
@@ -399,12 +399,12 @@ LABEL_106:
                 goto LABEL_105;
               goto LABEL_106;
             case 1:
-              add_subgoldy_score((int *)player, 2, 0);
+              add_subgoldy_score((int *)player, SUBGOLDY_SCORE_RING, 0);
               play_sound_effect(1);
               break;
             case 2:
             case 6:
-              add_subgoldy_score((int *)player, 2, 0);
+              add_subgoldy_score((int *)player, SUBGOLDY_SCORE_RING, 0);
               play_sound_effect(42);
               player->nuke_effect_progress = player->nuke_effect_progress_step;
               result = initialize_nuke(&player->nuke);
@@ -416,4 +416,3 @@ LABEL_106:
   }
   return result;
 }
-

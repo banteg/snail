@@ -10,6 +10,7 @@
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
 #include "presentation_animation_channel.h"
+#include "score_stats.h"
 #include "snail_skin.h"
 #include "transform_matrix.h"
 #include "vector3.h"
@@ -169,7 +170,7 @@ public:
     char unknown_2e8[0x308 - 0x2e8];
     int movement_flag_selector;             // +0x308
     char unknown_30c[0x310 - 0x30c];
-    int score_buckets[6];                  // +0x310
+    int score_buckets[SUBGOLDY_SCORE_BUCKET_COUNT]; // +0x310
     char unknown_328[0x338 - 0x328];
     unsigned int movement_flags;           // +0x338
     unsigned int previous_movement_flags;   // +0x33c

@@ -4,7 +4,7 @@
 
 int RunScoreStats::clear_subgoldy_score_buckets()
 {
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < SUBGOLDY_SCORE_BUCKET_COUNT; ++i) {
         score_buckets[i] = 0;
     }
     return 0;

@@ -102,7 +102,7 @@ void __fastcall update_row_event_display(RowEventDisplayController *controller)
           v11 = (float *)MEMORY[0x4DF904];
           if ( *((_DWORD *)MEMORY[0x4DF904] + 119190) == 1 )
           {
-            add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, controller->bonus_score);
+            add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_BONUS, controller->bonus_score);
             play_sound_effect(49);
 LABEL_18:
             v11 = (float *)MEMORY[0x4DF904];
@@ -166,4 +166,3 @@ LABEL_27:
     }
   }
 }
-

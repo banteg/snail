@@ -23,7 +23,7 @@ int32_t __fastcall flush_row_event_display(RowEventDisplayController *controller
       {
         do
         {
-          add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 4, 0);
+          add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
           v5 = controller->parcel_target_count;
           v6 = controller->delivered_parcel_count + 1;
           controller->delivered_parcel_count = v6;
@@ -47,4 +47,3 @@ int32_t __fastcall flush_row_event_display(RowEventDisplayController *controller
   controller->state = 0;
   return result;
 }
-

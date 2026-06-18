@@ -124,7 +124,7 @@ void Player::handle_subgoldy_collisions()
                         garbage->collision_side = 1;
                     else
                         garbage->collision_side = 2;
-                    add_subgoldy_score(0, 0);
+                    add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                 }
@@ -192,7 +192,7 @@ void Player::handle_subgoldy_collisions()
                 probe_salt.z = parcel->world_position.z - cached_camera_target_world.z;
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
-                    add_subgoldy_score(3, 0);
+                    add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
                     g_voice_manager.play_voice_manager(10, 1, -1);
                     g_sound_effect_manager.play_sound_effect(27);
                     parcel->state = 4;
@@ -305,7 +305,7 @@ void Player::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);
-                        add_subgoldy_score(2, 0);
+                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
                     if (effect_kind == 8) {
@@ -320,14 +320,14 @@ void Player::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);
-                        add_subgoldy_score(2, 0);
+                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
                     if (effect_kind == 1) {
-                        add_subgoldy_score(2, 0);
+                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(1);
                     } else if (effect_kind == 2 || effect_kind == 6) {
-                        add_subgoldy_score(2, 0);
+                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
                         nuke.initialize_nuke();

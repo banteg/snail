@@ -45,7 +45,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
                     collision_side = 1;
                 else
                     collision_side = 2;
-                owner->add_subgoldy_score(0, 0);
+                owner->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
             }
 
             game->contact_targets.append_subgame_contact_target(

@@ -3,45 +3,44 @@
 /* selector: add_subgoldy_score */
 
 // Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly.
-void __thiscall sub_4402C0(int *this, int a2, int a3)
+void __thiscall add_subgoldy_score(Player *player, int score_kind, int bonus_score)
 {
-  int v4; // eax
-  int v5; // edi
-  int v6; // eax
+  int points; // eax
+  int old_total; // edi
+  int visible_life_stock; // eax
 
-  switch ( a2 )
+  switch ( score_kind )
   {
-    case 0:
-      v4 = 10;
+    case SUBGOLDY_SCORE_GARBAGE:
+      points = 10;
       break;
-    case 1:
-      v4 = 500;
+    case SUBGOLDY_SCORE_SLUG:
+      points = 500;
       break;
-    case 2:
-    case 3:
-    case 4:
-      v4 = 100;
+    case SUBGOLDY_SCORE_RING:
+    case SUBGOLDY_SCORE_PARCEL_COLLECT:
+    case SUBGOLDY_SCORE_PARCEL_DELIVER:
+      points = 100;
       break;
-    case 5:
-      v4 = a3;
+    case SUBGOLDY_SCORE_BONUS:
+      points = bonus_score;
       break;
     default:
       report_errorf(aUnknownScoreTy);
-      v4 = 0;
+      points = 0;
       break;
   }
-  *(this + a2 + 196) += v4;
-  v5 = *(this + 185);
-  *(this + 185) = v5 + v4;
-  if ( v5 / 50000 != (v5 + v4) / 50000 )
+  player->score_buckets[score_kind] += points;
+  old_total = player->total_score;
+  player->total_score = old_total + points;
+  if ( old_total / 50000 != (old_total + points) / 50000 )
   {
-    v6 = *(this + 4304);
-    if ( v6 < 9 )
+    visible_life_stock = player->visible_life_stock;
+    if ( visible_life_stock < 9 )
     {
-      *(this + 4304) = v6 + 1;
+      player->visible_life_stock = visible_life_stock + 1;
       if ( !*((_DWORD *)MEMORY[0x4DF904] + 119190) && !*((_DWORD *)MEMORY[0x4DF904] + 9) )
         play_sound_effect(44);
     }
   }
 }
-

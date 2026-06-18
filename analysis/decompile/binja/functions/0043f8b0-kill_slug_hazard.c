@@ -15,6 +15,6 @@
 0043f8fd        if ((((x87_r7_3 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 0043f90b        slot->death_toss_direction = 2
 0043f8ff        slot->death_toss_direction = 1
-0043f921        add_subgoldy_score(&slot->game->__offset(0x3bb764).d, 1, 0)
+0043f921        add_subgoldy_score(&slot->game->__offset(0x3bb764).d, SUBGOLDY_SCORE_SLUG, 0)
 0043f928        explode_slug_hazard()
 0043f92f        return

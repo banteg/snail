@@ -9,12 +9,12 @@ extern char* g_game_base; // data_4df904
 void RowEventDisplayController::register_parcel_delivery()
 {
     if (delivered_parcel_count != parcel_target_count) {
-        ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(4, 0);
+        ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
         delivered_parcel_count += 1;
         g_sound_effect_manager.play_sound_effect(0x2d);
         if (delivered_parcel_count == parcel_target_count) {
             if (bonus_enabled != 0) {
-                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(5, bonus_score);
+                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_BONUS, bonus_score);
                 g_sound_effect_manager.play_sound_effect(0x31);
             }
             state = 3;

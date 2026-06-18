@@ -17,8 +17,7 @@ void __thiscall sub_43F8B0(int this)
       *(_DWORD *)(this + 132) = 2;
     else
       *(_DWORD *)(this + 132) = 1;
-    add_subgoldy_score((int *)(*(_DWORD *)(this + 136) + 3913572), 1, 0);
+    add_subgoldy_score((int *)(*(_DWORD *)(this + 136) + 3913572), SUBGOLDY_SCORE_SLUG, 0);
     explode_slug_hazard(this);
   }
 }
-
