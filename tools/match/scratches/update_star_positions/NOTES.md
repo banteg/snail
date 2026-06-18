@@ -14,8 +14,9 @@ Layout evidence shared with `initialize_star_field`:
 - `sprite +0x1c`, `speed +0x20`, `phase +0x24`, and
   `twinkle_scale +0x28` are all read by this updater.
 
-The game camera/origin view at `g_game_base +0x6d4/+0x6e4` stays
-scratch-local until more callers agree on names.
+The game camera/origin view at `g_game_base +0x6d4/+0x6e4` is now promoted as
+`Game::star_spawn_direction` and `Game::star_spawn_origin`; using the shared
+fields preserves the focused Wibo result.
 
 Current Wibo result: 32.85%, 101/106 candidate/target instructions, prefix
 1/106, masked operands 11 ok.

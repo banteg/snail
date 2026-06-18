@@ -12,6 +12,7 @@
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_speedup.h"
+#include "vector3.h"
 
 class Player;
 struct TrackRowCell;
@@ -28,7 +29,11 @@ public:
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
 
-    char unknown_000000[0x74621];
+    char unknown_000000[0x6d4];
+    Vector3 star_spawn_direction; // +0x6d4
+    char unknown_0006e0[0x6e4 - 0x6e0];
+    Vector3 star_spawn_origin; // +0x6e4
+    char unknown_0006f0[0x74621 - 0x6f0];
     unsigned char pause_gate; // +0x74621
     char unknown_074622[0x74650 - 0x74622];
     float subgame_rate; // +0x74650, root view of subgame +0x38

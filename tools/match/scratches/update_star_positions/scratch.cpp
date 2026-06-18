@@ -1,15 +1,9 @@
 // update_star_positions @ 0x434800 (thiscall, ret 0x4)
 
+#include "game.h"
 #include "star_field.h"
 
-struct StarFieldGameView {
-    char unknown_000[0x6d4];
-    Vector3 star_spawn_direction; // +0x6d4
-    char unknown_6e0[0x6e4 - 0x6e0];
-    Vector3 star_spawn_origin; // +0x6e4
-};
-
-extern StarFieldGameView* g_game_base; // data_4df904
+extern Game* g_game_base; // data_4df904
 
 void* StarField::update_star_positions(float fade_alpha)
 {
@@ -24,7 +18,7 @@ void* StarField::update_star_positions(float fade_alpha)
                 *phase = 0.0f;
                 entry->sprite->facing_refresh_progress = 0.0f;
 
-                StarFieldGameView* game = g_game_base;
+                Game* game = g_game_base;
                 Vector3 direction_scaled;
                 Vector3 staged_position;
                 direction_scaled.x = game->star_spawn_direction.x * 50.0f;
