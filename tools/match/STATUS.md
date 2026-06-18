@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**430/687** mapped gameplay functions matched, **572/687** mapped gameplay functions have a scratch, **46003/325882** bytes (**14.12%**) are proof-grade, and overall fuzzy is **30.66%**.
+**431/687** mapped gameplay functions matched, **573/687** mapped gameplay functions have a scratch, **46181/325882** bytes (**14.17%**) are proof-grade, and overall fuzzy is **30.72%**.
 
-## Proof Grade (430)
+## Proof Grade (431)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -110,6 +110,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
 | ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
 | ✅ | set_object_color | 0x4141d0 | 139 | 47/47 | 100.00% | 47/47 | 3 ok |  |
+| ✅ | bind_texture_ref | 0x414500 | 178 | 62/62 | 100.00% | 62/62 | 11 ok |  |
 | ✅ | replace_object_group_texture_refs | 0x4145c0 | 129 | 26/26 | 100.00% | 26/26 | - |  |
 | ✅ | reset_render_counters | 0x414650 | 18 | 5/5 | 100.00% | 5/5 | 3 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
@@ -586,7 +587,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (115)
+## No Scratch (114)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -621,7 +622,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | render_camera | 0x411fa0 | 685 | 0/180 | 0.00% | 0/180 | - |  |
 | ⬜ | draw_textured_quad_immediate | 0x413030 | 1284 | 0/332 | 0.00% | 0/332 | - |  |
 | ⬜ | set_fullscreen_mode | 0x414260 | 667 | 0/210 | 0.00% | 0/210 | - |  |
-| ⬜ | bind_texture_ref | 0x414500 | 178 | 0/62 | 0.00% | 0/62 | - |  |
 | ⬜ | update_challenge_setup_screen | 0x416370 | 1166 | 0/355 | 0.00% | 0/355 | - |  |
 | ⬜ | initialize_high_score_screen | 0x416910 | 2311 | 0/600 | 0.00% | 0/600 | - |  |
 | ⬜ | load_landscape_script_by_name | 0x4182f0 | 1404 | 0/386 | 0.00% | 0/386 | - |  |

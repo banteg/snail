@@ -2148,6 +2148,16 @@
       "description": "Temporary ObjectToonEdge count used by calc_object_edges and add_object_edge before the packed edge list is copied into the object."
     },
     {
+      "address": "0x503174",
+      "name": "g_current_texture_ref",
+      "kind": "global",
+      "aliases": [
+        "data_503174"
+      ],
+      "size": "0x4",
+      "description": "Last TextureRef bound through bind_texture_ref, used to skip redundant Direct3D SetTexture calls."
+    },
+    {
       "address": "0x503178",
       "name": "g_saved_d3d_view_transform",
       "kind": "global",
@@ -2165,6 +2175,16 @@
         "data_5031c0"
       ],
       "description": "Per-frame SetTexture/bind counter incremented by bind_texture_ref and cleared by reset_render_counters."
+    },
+    {
+      "address": "0x5031c8",
+      "name": "g_d3d_texture_slots",
+      "kind": "global",
+      "aliases": [
+        "data_5031c8"
+      ],
+      "size": "0x4",
+      "description": "Pointer table indexed by TextureRef::slot_index before bind_texture_ref calls Direct3D SetTexture."
     },
     {
       "address": "0x503220",
