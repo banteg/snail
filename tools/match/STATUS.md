@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**429/687** mapped gameplay functions matched, **571/687** mapped gameplay functions have a scratch, **45846/325882** bytes (**14.07%**) are proof-grade, and overall fuzzy is **30.61%**.
+**430/687** mapped gameplay functions matched, **572/687** mapped gameplay functions have a scratch, **46003/325882** bytes (**14.12%**) are proof-grade, and overall fuzzy is **30.66%**.
 
-## Proof Grade (429)
+## Proof Grade (430)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -41,6 +41,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
+| ✅ | load_or_reuse_cached_x_mesh | 0x405cc0 | 157 | 65/65 | 100.00% | 65/65 | 6 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
 | ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
 | ✅ | log_startup_timestamp | 0x406d30 | 143 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
@@ -585,7 +586,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (116)
+## No Scratch (115)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -602,7 +603,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | border_mouse_test | 0x404580 | 421 | 0/117 | 0.00% | 0/117 | - |  |
 | ⬜ | rebuild_game_archive_if_needed | 0x405370 | 715 | 0/232 | 0.00% | 0/232 | - |  |
 | ⬜ | load_x_mesh | 0x405640 | 1603 | 0/492 | 0.00% | 0/492 | - |  |
-| ⬜ | load_or_reuse_cached_x_mesh | 0x405cc0 | 157 | 0/65 | 0.00% | 0/65 | - |  |
 | ⬜ | load_x_animation_clip | 0x405d60 | 754 | 0/228 | 0.00% | 0/228 | - |  |
 | ⬜ | initialize_exit_prompt | 0x4060d0 | 1804 | 0/441 | 0.00% | 0/441 | - |  |
 | ⬜ | initialize_default_runtime_config | 0x406c10 | 282 | 0/48 | 0.00% | 0/48 | - |  |
@@ -713,7 +713,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 30 type name(s) with a header plus scratch-local copies
-- divergent: 18 type name(s) with multiple scratch-local shapes
+- divergent: 19 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -729,6 +729,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | CachedXMeshBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
