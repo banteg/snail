@@ -750,10 +750,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         statuses = collect_scratch_statuses(manifest, image_path)
         totals = manifest_cluster_totals(manifest, image_path, statuses)
         type_findings = type_consolidation_findings()
-        print(render_status_table(statuses, totals, type_findings=type_findings))
+        print(
+            render_status_table(
+                statuses,
+                totals,
+                type_findings=type_findings,
+                manifest=manifest,
+                image_path=image_path,
+            )
+        )
         if args.write is not None:
             args.write.write_text(
-                render_status_markdown(statuses, totals, type_findings=type_findings),
+                render_status_markdown(
+                    statuses,
+                    totals,
+                    type_findings=type_findings,
+                    manifest=manifest,
+                    image_path=image_path,
+                ),
                 encoding="utf-8",
             )
         return 0

@@ -840,6 +840,70 @@ def test_render_status_rows_includes_prefix() -> None:
     assert render_status_rows([status])[0][6] == "2/4"
 
 
+def test_render_status_rows_include_missing_manifest_functions() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch/exact"),
+        function="exact",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x1000,
+        target_size=2,
+        ratio=1.0,
+        prefix_instructions=2,
+        target_instructions=2,
+        candidate_instructions=2,
+        error=None,
+    )
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="exact"),
+            FunctionSymbol(address=0x1002, name="missing"),
+        ),
+    )
+    image = LoadedImage(
+        mapped=b"\x90\xc3\x90\xc3\xcc",
+        image_base=0x1000,
+        size_of_image=5,
+    )
+
+    rows = render_status_rows([status], manifest=manifest, image=image)
+
+    assert rows[1] == (
+        "⬜",
+        "missing",
+        "0x1002",
+        "2",
+        "0/2",
+        "0.00%",
+        "0/2",
+        "-",
+        "",
+        "no scratch",
+    )
+
+    totals = ClusterTotals(
+        function_count=2,
+        byte_total=4,
+        matched_functions=1,
+        matched_bytes=2,
+        scratched_functions=1,
+        fuzzy_weighted_bytes=2.0,
+    )
+    markdown = render_status_markdown([status], totals, manifest=manifest, image=image)
+    assert "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  |" in markdown
+
+
 def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
     exact_config = ScratchConfig(
         directory=Path("scratch/exact"),

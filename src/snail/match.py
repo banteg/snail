@@ -2189,6 +2189,14 @@ def manifest_cluster_totals(
 
 
 STATE_ICONS = {"match": "✅", "audit": "⚠", "wip": "🚧", "error": "❌"}
+MISSING_SCRATCH_ICON = "⬜"
+STATUS_SECTION_ORDER = (
+    ("✅", "Proof Grade"),
+    ("⚠", "Audit Needed"),
+    ("🚧", "In Progress"),
+    ("⬜", "No Scratch"),
+    ("❌", "Errors"),
+)
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
 STATUS_HEADER = (
@@ -2216,7 +2224,75 @@ def _format_masked_counts(status: ScratchStatus) -> str:
     return ", ".join(parts) if parts else "-"
 
 
-def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
+def _manifest_function_rows(
+    manifest: FunctionSymbolManifest,
+    image: LoadedImage,
+) -> list[tuple[int, int, str, int]]:
+    reference_manifest = load_default_reference_symbol_manifest()
+    functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
+    rows: list[tuple[int, int, str, int]] = []
+    for index, symbol in enumerate(functions):
+        start = symbol.address
+        if index + 1 < len(functions):
+            end = functions[index + 1].address
+        else:
+            padding_index = image.mapped.find(b"\xcc", start - image.image_base)
+            end = image.image_base + padding_index if padding_index != -1 else start
+        target_data = image.function_bytes(start, end)
+        target_lines = disassemble_normalized_function(
+            target_data,
+            address_range=(image.image_base, image.image_base + image.size_of_image),
+            base_address=start,
+            image=image,
+            manifest=manifest,
+            reference_manifest=reference_manifest,
+        )
+        rows.append((start, len(target_data), symbol.name, len(target_lines)))
+    return rows
+
+
+def _missing_scratch_status_rows(
+    statuses: list[ScratchStatus],
+    manifest: FunctionSymbolManifest | None,
+    image_path: Path | None,
+    image: LoadedImage | None,
+) -> list[tuple[str, ...]]:
+    if manifest is None:
+        return []
+    if image is None:
+        if image_path is None:
+            return []
+        image = load_image(image_path, manifest.image_base)
+
+    scratched_functions = {status.config.function for status in statuses}
+    rows: list[tuple[str, ...]] = []
+    for address, target_size, name, target_instructions in _manifest_function_rows(manifest, image):
+        if name in scratched_functions:
+            continue
+        rows.append(
+            (
+                MISSING_SCRATCH_ICON,
+                name,
+                f"0x{address:x}",
+                str(target_size),
+                f"0/{target_instructions}",
+                "0.00%",
+                f"0/{target_instructions}",
+                "-",
+                "",
+                "no scratch",
+            )
+        )
+    return rows
+
+
+def render_status_rows(
+    statuses: list[ScratchStatus],
+    *,
+    manifest: FunctionSymbolManifest | None = None,
+    image_path: Path | None = None,
+    image: LoadedImage | None = None,
+) -> list[tuple[str, ...]]:
     rows = []
     for status in sorted(statuses, key=lambda item: item.address):
         ratio = f"{status.ratio:.2%}" if status.ratio is not None else "-"
@@ -2246,7 +2322,23 @@ def render_status_rows(statuses: list[ScratchStatus]) -> list[tuple[str, ...]]:
                 status.error or "",
             )
         )
+    rows.extend(_missing_scratch_status_rows(statuses, manifest, image_path, image))
+    rows.sort(key=lambda row: int(row[2], 16) if row[2].startswith("0x") else 0)
     return rows
+
+
+def _section_status_rows(rows: list[tuple[str, ...]]) -> list[tuple[str, list[tuple[str, ...]]]]:
+    sections: list[tuple[str, list[tuple[str, ...]]]] = []
+    consumed_icons: set[str] = set()
+    for icon, title in STATUS_SECTION_ORDER:
+        section_rows = [row for row in rows if row[0] == icon]
+        consumed_icons.add(icon)
+        if section_rows:
+            sections.append((title, section_rows))
+    other_rows = [row for row in rows if row[0] not in consumed_icons]
+    if other_rows:
+        sections.append(("Other", other_rows))
+    return sections
 
 
 def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> str:
@@ -2265,13 +2357,22 @@ def render_status_table(
     statuses: list[ScratchStatus],
     totals: ClusterTotals,
     type_findings: list[TypeConsolidationFinding] | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+    image_path: Path | None = None,
+    image: LoadedImage | None = None,
 ) -> str:
-    rows = [STATUS_HEADER, *render_status_rows(statuses)]
-    widths = [max(len(row[column]) for row in rows) for column in range(len(STATUS_HEADER))]
-    lines = [
-        "  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip()
-        for row in rows
-    ]
+    rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
+    lines: list[str] = []
+    for title, section_rows in _section_status_rows(rendered_rows):
+        rows = [STATUS_HEADER, *section_rows]
+        widths = [max(len(row[column]) for row in rows) for column in range(len(STATUS_HEADER))]
+        if lines:
+            lines.append("")
+        lines.append(f"{title} ({len(section_rows)})")
+        lines.extend(
+            "  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip()
+            for row in rows
+        )
     lines.append(f"\n{_cluster_summary(totals, statuses)}")
     if type_findings is not None:
         lines.append(_type_consolidation_console_summary(type_findings))
@@ -2282,6 +2383,9 @@ def render_status_markdown(
     statuses: list[ScratchStatus],
     totals: ClusterTotals,
     type_findings: list[TypeConsolidationFinding] | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+    image_path: Path | None = None,
+    image: LoadedImage | None = None,
 ) -> str:
     lines = [
         "# Matching Status",
@@ -2293,12 +2397,20 @@ def render_status_markdown(
         f"mapped gameplay functions have a scratch, **{totals.matched_bytes}/"
         f"{totals.byte_total}** bytes (**{totals.byte_percentage:.2%}**) are "
         f"proof-grade, and overall fuzzy is **{totals.fuzzy_percentage:.2%}**.",
-        "",
-        "| | function | address | bytes | insns | match | prefix | masked | build |",
-        "|---|---|---|---|---|---|---|---|---|",
     ]
-    for row in render_status_rows(statuses):
-        lines.append("| " + " | ".join(row[:9]) + " |")
+    rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
+    for title, section_rows in _section_status_rows(rendered_rows):
+        lines.extend(
+            [
+                "",
+                f"## {title} ({len(section_rows)})",
+                "",
+                "| | function | address | bytes | insns | match | prefix | masked | build |",
+                "|---|---|---|---|---|---|---|---|---|",
+            ]
+        )
+        for row in section_rows:
+            lines.append("| " + " | ".join(row[:9]) + " |")
     lines.append("")
     if type_findings is not None:
         lines.extend(render_type_consolidation_markdown(type_findings))
