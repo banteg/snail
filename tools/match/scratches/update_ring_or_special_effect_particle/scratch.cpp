@@ -9,28 +9,28 @@ float cosine(float radians);
 
 void RingOrSpecialEffectParticle::update_ring_or_special_effect_particle()
 {
-    RingOrSpecialEffectParent* owner = parent;
-    if (owner->kind != 3)
+    RingOrSpecialEffectParent* source_parent = parent;
+    if (source_parent->kind != 3)
         phase += phase_step;
 
     if (phase > 6.2831855f)
         phase -= 6.2831855f;
 
-    Vector3 position;
+    Vector3 staged_position;
     float orbit_y = cosine(phase) * radius;
     float orbit_x = sine(phase);
-    RingOrSpecialEffectParent* live_owner = parent;
+    RingOrSpecialEffectParent* live_parent = parent;
     Sprite* live_sprite = sprite;
-    Vector3* owner_position = &live_owner->transform.position;
+    Vector3* parent_position = &live_parent->transform.position;
     Vector3* sprite_position = &live_sprite->position;
     orbit_x *= radius;
-    position.x = orbit_x + owner_position->x;
-    position.y = orbit_y + owner_position->y;
-    position.z = owner_position->z;
+    staged_position.x = orbit_x + parent_position->x;
+    staged_position.y = orbit_y + parent_position->y;
+    staged_position.z = parent_position->z;
 
-    *sprite_position = position;
+    *sprite_position = staged_position;
 
-    RingOrSpecialEffectParent* result_owner = parent;
-    if (result_owner->star_shower_counter == 0)
-        emit_ring_star_shower(result_owner->owner_player);
+    RingOrSpecialEffectParent* result_parent = parent;
+    if (result_parent->star_shower_counter == 0)
+        emit_ring_star_shower(result_parent->owner_player);
 }

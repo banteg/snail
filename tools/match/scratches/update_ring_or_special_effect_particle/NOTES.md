@@ -61,3 +61,10 @@ Rejected source-shape probe:
   and child Sprite position fields in the tracked BN export. The remaining
   mismatch is still only the parent-position materialization order documented
   above.
+- 2026-06-18 naming cleanup: the scratch locals now consistently call the
+  effect owner `parent`/`source_parent` instead of overloading `owner`, reserving
+  `owner_player` for the player pointer at parent `+0x84`. The local staged
+  sprite vector is named `staged_position`. This is codegen-neutral at 96.36%,
+  55/55 instructions. The IDA artifact was synced to the same
+  `RingOrSpecialEffectParticle`, `RingOrSpecialEffectParent`, `Sprite`, and
+  `Vec3` names; no Ghidra artifact exists for this function in the repo.
