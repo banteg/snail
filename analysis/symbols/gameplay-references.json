@@ -1469,6 +1469,26 @@
       "description": "New Game button label used by the main menu."
     },
     {
+      "address": "0x4a3c40",
+      "name": "g_backdrop_raise_first_vertex_index",
+      "kind": "global",
+      "aliases": [
+        "dword_4A3C40",
+        "data_4a3c40"
+      ],
+      "description": "First backdrop quad vertex index raised by raise_backdrop_quad_edge_pair for the Objects/Univers lane."
+    },
+    {
+      "address": "0x4a3c44",
+      "name": "g_backdrop_raise_second_vertex_index",
+      "kind": "global",
+      "aliases": [
+        "dword_4A3C44",
+        "data_4a3c44"
+      ],
+      "description": "Second backdrop quad vertex index raised by raise_backdrop_quad_edge_pair for the Objects/Univers lane."
+    },
+    {
       "address": "0x4a3d00",
       "name": "g_duplicate_vertices_alloc_label",
       "kind": "string",
