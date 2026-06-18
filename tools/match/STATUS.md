@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**431/687** mapped gameplay functions matched, **573/687** mapped gameplay functions have a scratch, **46181/325882** bytes (**14.17%**) are proof-grade, and overall fuzzy is **30.72%**.
+**431/687** mapped gameplay functions matched, **575/687** mapped gameplay functions have a scratch, **46181/325882** bytes (**14.17%**) are proof-grade, and overall fuzzy is **30.81%**.
 
 ## Proof Grade (431)
 
@@ -440,7 +440,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (142)
+## In Progress (144)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -492,6 +492,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_object_edges | 0x4308b0 | 433 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |
 | 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 55/53 | 51.85% | 5/53 | 1 ok |  |
+| 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 50/47 | 82.47% | 18/47 | 1 mismatch, 18 ok |  |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 72/64 | 44.12% | 0/64 | 9 ok |  |
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
@@ -574,6 +575,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 1 unresolved, 8 ok |  |
+| 🚧 | initialize_mouse_input | 0x44c310 | 157 | 46/46 | 95.65% | 6/46 | 17 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_axis | 0x44d530 | 74 | 28/26 | 77.78% | 9/26 | 4 ok |  |
 | 🚧 | initialize_matrix_from_quaternion | 0x44d820 | 247 | 85/82 | 73.05% | 10/82 | 3 ok |  |
@@ -587,7 +589,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (114)
+## No Scratch (112)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -668,7 +670,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 0/1029 | 0.00% | 0/1029 | - |  |
 | ⬜ | calc_object_facequad_normals | 0x42fcb0 | 1397 | 0/437 | 0.00% | 0/437 | - |  |
 | ⬜ | calc_object_facequad_normals_simple | 0x430230 | 441 | 0/139 | 0.00% | 0/139 | - |  |
-| ⬜ | initialize_game_data_archive | 0x430e40 | 176 | 0/47 | 0.00% | 0/47 | - |  |
 | ⬜ | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 0/188 | 0.00% | 0/188 | - |  |
 | ⬜ | find_archive_entry | 0x431250 | 122 | 0/60 | 0.00% | 0/60 | - |  |
 | ⬜ | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 0/206 | 0.00% | 0/206 | - |  |
@@ -698,7 +699,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_bass_audio_backend | 0x449460 | 612 | 0/176 | 0.00% | 0/176 | - |  |
 | ⬜ | update_mouse | 0x44bc50 | 1012 | 0/295 | 0.00% | 0/295 | - |  |
 | ⬜ | convert_mouse_screen_xy | 0x44c100 | 440 | 0/115 | 0.00% | 0/115 | - |  |
-| ⬜ | initialize_mouse_input | 0x44c310 | 157 | 0/46 | 0.00% | 0/46 | - |  |
 | ⬜ | load_object_definition | 0x44c420 | 1109 | 0/325 | 0.00% | 0/325 | - |  |
 | ⬜ | multiply_matrices | 0x44d060 | 312 | 0/114 | 0.00% | 0/114 | - |  |
 | ⬜ | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 0/186 | 0.00% | 0/186 | - |  |

@@ -416,6 +416,15 @@
       "description": "Object X-animation builder that validates 0x80-byte keyframe objects, stores ObjectAnimation at Object+0xbc, generates per-frame vertex and facequad-normal arrays, and refreshes normals through calc_object_facequad_normals."
     },
     {
+      "address": "0x432d40",
+      "name": "reset_registered_sound_sample_count",
+      "kind": "function",
+      "aliases": [
+        "sub_432d40"
+      ],
+      "description": "Tiny helper that resets g_registered_sound_sample_count before archive-backed audio buffers are allocated."
+    },
+    {
       "address": "0x433050",
       "name": "launch_alpha72_url",
       "kind": "function",
@@ -1295,6 +1304,16 @@
       "description": "DirectInput keyboard device GUID passed to IDirectInput8A::CreateDevice by initialize_keyboard_input."
     },
     {
+      "address": "0x49b020",
+      "name": "g_directinput_mouse_guid",
+      "kind": "global",
+      "aliases": [
+        "data_49b020"
+      ],
+      "size": "0x10",
+      "description": "DirectInput mouse device GUID passed to IDirectInput8A::CreateDevice by initialize_mouse_input."
+    },
+    {
       "address": "0x49b0c0",
       "name": "g_directinput8_iid",
       "kind": "global",
@@ -1323,6 +1342,15 @@
         "unk_49b504"
       ],
       "description": "DirectInput keyboard data format passed to IDirectInputDevice8A::SetDataFormat by initialize_keyboard_input."
+    },
+    {
+      "address": "0x49b70c",
+      "name": "g_directinput_mouse_data_format",
+      "kind": "global",
+      "aliases": [
+        "data_49b70c"
+      ],
+      "description": "DirectInput mouse data format passed to IDirectInputDevice8A::SetDataFormat by initialize_mouse_input."
     },
     {
       "address": "0x4a1194",
@@ -1771,6 +1799,16 @@
       "description": "Window deactivation latch set by activate/deactivate handling, read by click_mouse_screen and subgame update paths."
     },
     {
+      "address": "0x4b7760",
+      "name": "g_authored_view_height",
+      "kind": "global",
+      "aliases": [
+        "data_4b7760"
+      ],
+      "size": "0x4",
+      "description": "Authored viewport height converted during renderer default setup and used to seed mouse live Y."
+    },
+    {
       "address": "0x4b7764",
       "name": "g_left_mouse_button_latch",
       "kind": "global",
@@ -1797,6 +1835,16 @@
         "HIGH_SCORE_SAVE_BUFFER_SIZE"
       ],
       "description": "Five-million-byte temporary buffer size used while serializing ScoreA/B/C high-score files."
+    },
+    {
+      "address": "0x4df85c",
+      "name": "g_authored_view_width",
+      "kind": "global",
+      "aliases": [
+        "data_4df85c"
+      ],
+      "size": "0x4",
+      "description": "Authored viewport width converted during renderer default setup and used to seed mouse live X."
     },
     {
       "address": "0x4df860",
@@ -2286,6 +2334,16 @@
       "description": "Input-controller pointer-value lane array with slot 0 at this address and slot 1 at +0x38; copied into InputState.pointer_value by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
     },
     {
+      "address": "0x50339c",
+      "name": "g_text_input_repeat_step",
+      "kind": "global",
+      "aliases": [
+        "data_50339c"
+      ],
+      "size": "0x4",
+      "description": "Current autorepeat step used by read_repeating_text_input_key_code after the held text-input key changes."
+    },
+    {
       "address": "0x508890",
       "name": "g_input_region_top",
       "kind": "global",
@@ -2356,6 +2414,16 @@
       "description": "Running total of guarded bytes currently held by tracked allocations, updated by allocate_tracked_memory/free_tracked_memory and reset during archive initialization."
     },
     {
+      "address": "0x5108b8",
+      "name": "g_text_input_repeat_accumulator",
+      "kind": "global",
+      "aliases": [
+        "data_5108b8"
+      ],
+      "size": "0x4",
+      "description": "Autorepeat accumulator tested and advanced by read_repeating_text_input_key_code."
+    },
+    {
       "address": "0x5108c0",
       "name": "g_tracked_allocation_depth",
       "kind": "global",
@@ -2382,6 +2450,26 @@
       ],
       "size": "0x4",
       "description": "Shared music/sample byte buffer allocated by initialize_game_data_archive and reused when loading archived music streams and registered sound samples."
+    },
+    {
+      "address": "0x53c7f4",
+      "name": "g_archive_startup_flag",
+      "kind": "global",
+      "aliases": [
+        "data_53c7f4"
+      ],
+      "size": "0x1",
+      "description": "Single-byte archive startup flag cleared by initialize_game_data_archive; no other code references are currently recovered."
+    },
+    {
+      "address": "0x53c7f5",
+      "name": "g_text_input_last_repeat_code",
+      "kind": "global",
+      "aliases": [
+        "data_53c7f5"
+      ],
+      "size": "0x1",
+      "description": "Last text-input code held by read_repeating_text_input_key_code for case-insensitive repeat comparison."
     },
     {
       "address": "0x53c7ec",
