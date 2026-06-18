@@ -3,6 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_salt_hazard @ 0x441c10 */
 
+// *(arg1 + 0x88) is owner_game; byte +0x09 is subgame_pause_gate.
 00441c13        void* eax = *(arg1 + 0x88)
 00441c1e        if (*(eax + 9) == 0)
 00441c24        int32_t ecx_1 = *(arg1 + 0x80)

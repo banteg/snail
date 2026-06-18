@@ -3,6 +3,8 @@
 /* selector: update_sub_lazer_projectile */
 
 // Integrates one active sub-lazer projectile, tests track attachment intersection, and deactivates it after collision or exit.
+// owner_game +0x09 is subgame_pause_gate; the same owner view supplies the
+// sub-lazer kill-plane at +0x3be0e4.
 void __thiscall sub_4417D0(int this)
 {
   int v2; // eax
@@ -127,4 +129,3 @@ void __thiscall sub_4417D0(int this)
     }
   }
 }
-

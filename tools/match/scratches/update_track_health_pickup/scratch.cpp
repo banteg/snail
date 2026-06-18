@@ -17,7 +17,7 @@ void TrackHealthPickup::update_track_health_pickup()
     TrackHealthPickup* next;
     TrackHealthPickup* prev;
 
-    if (owner_game->pause_gate != zero) {
+    if (owner_game->subgame_pause_gate != zero) {
         return;
     }
 

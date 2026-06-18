@@ -37,7 +37,8 @@ Evidence:
 Type consolidation:
 
 - `RingOrSpecialEffectParent::state`, `transition_progress`,
-  `transition_step`, `oscillate_x`, and `RingEffectRateSource::pause_gate` are now
+  `transition_step`, `oscillate_x`, and
+  `RingEffectRateSource::subgame_pause_gate` are now
   in `tools/match/include/ring_special_effect_types.h`.
 - 2026-06-16 naming correction: the old exported name
   `update_subgoldy_bullet` was stale. The function is the virtual updater for
@@ -104,7 +105,7 @@ Rejected/source-shape probes:
 - 2026-06-16 collapse staging probes: changing case `0`/default to explicit
   early returns alone compiled identically and did not fix the jump table;
   the winning shape required the explicit unsigned range guard. Staging
-  `rate->pause_gate` in a local byte also compiled identically. Mutating a local
+  `rate->subgame_pause_gate` in a local byte also compiled identically. Mutating a local
   `Vector3 target.z` before computing delta improved only to `70.52%`, and a
   pointer plus scalar `target_y`/`target_z` spelling regressed to `70.55%` with
   a smaller frame. Keep the immutable local `Vector3 target` plus aggregate

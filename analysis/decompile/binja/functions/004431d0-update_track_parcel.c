@@ -3,6 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_track_parcel @ 0x4431d0 */
 
+// parcel->game is g_game_base +0x74618; byte +0x09 is subgame_pause_gate.
 004431da        struct Game* game_3 = parcel->game
 004431e0        if (game_3->_pad_00[9] != 0)
 004431e0        return 

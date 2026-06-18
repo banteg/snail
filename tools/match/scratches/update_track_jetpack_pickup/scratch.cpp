@@ -19,7 +19,7 @@ void TrackJetpackPickup::update_track_jetpack_pickup()
     TrackJetpackPickup* next;
     TrackJetpackPickup* prev;
 
-    if (owner_game->pause_gate != zero)
+    if (owner_game->subgame_pause_gate != zero)
         return;
 
     int current_state = state - zero;

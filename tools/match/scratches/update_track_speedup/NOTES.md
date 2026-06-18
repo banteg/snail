@@ -4,7 +4,7 @@ Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
 Recovered behavior:
 
-- skip when the singleton's `owner_game +0x09` `pause_gate` byte is set;
+- skip when the singleton's `owner_game +0x09` `subgame_pause_gate` byte is set;
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;

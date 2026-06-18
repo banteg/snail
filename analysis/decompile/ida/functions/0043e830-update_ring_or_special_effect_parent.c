@@ -2,6 +2,8 @@
 /* function: update_ring_or_special_effect_parent @ 0x43e830 */
 /* selector: update_ring_or_special_effect_parent */
 
+// rate_source +0x09 is RingEffectRateSource::subgame_pause_gate; this is the
+// root subgame update gate paired with rate_source +0x38 subgame_rate.
 void __thiscall sub_43E830(int this)
 {
   int v2; // eax

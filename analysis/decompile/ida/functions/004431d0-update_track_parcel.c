@@ -3,6 +3,8 @@
 /* selector: update_track_parcel */
 
 // Runs one live gameplay parcel slot through its bobbing, homing, and final delivery-arc states, then registers the delivered parcel on `game->row_event_display` before tearing down the sprite.
+// TrackParcelRuntime::game is g_game_base +0x74618; byte +0x09 is
+// subgame_pause_gate for this subgame-base view.
 void __thiscall sub_4431D0(int this)
 {
   int v2; // ecx
@@ -223,4 +225,3 @@ LABEL_13:
     }
   }
 }
-

@@ -4,6 +4,8 @@
 
 // Updates one live track jetpack pickup: handles state 1/2 removal, kills the
 // nested sprite on cleanup, and advances the sine bob while the pickup is live.
+// The entry gate reads owner_game +0x09, now named subgame_pause_gate; this is
+// distinct from the global/UI Game::pause_gate view at root +0x74621.
 void __thiscall update_track_jetpack_pickup(int this)
 {
   int v2; // eax

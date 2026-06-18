@@ -27,7 +27,7 @@ typedef char RingOrSpecialEffectParticle_must_be_0x20[
 class RingEffectRateSource {
 public:
     char unknown_00[0x09];
-    unsigned char pause_gate; // +0x09
+    unsigned char subgame_pause_gate; // +0x09
     char unknown_0a[0x38 - 0x0a];
     float subgame_rate; // +0x38
 };

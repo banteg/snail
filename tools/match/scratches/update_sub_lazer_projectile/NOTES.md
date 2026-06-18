@@ -12,7 +12,7 @@ Layout facts settled by this asm and `spawn_sub_lazer_projectile`:
 
 - pool stride is `0xb0`; state is `+0x80`
 - position is the renderable transform position row at `+0x68`
-- owner game is `+0x88`, with the root pause gate visible at `+0x09`
+- owner game is `+0x88`, with the root `subgame_pause_gate` visible at `+0x09`
 - velocity is a real `Vector3` at `+0x8c/+0x90/+0x94`
 - sprite bob phase/step are `+0x98/+0x9c`, inside the sub-lazer slot
 

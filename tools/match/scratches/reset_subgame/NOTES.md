@@ -53,6 +53,9 @@ Important source-shape correction:
 - The health pickup `+0x44` field is `owner_game`, not a visibility/source
   cell. `reset_subgame` writes the containing `Game*` into this lane for all
   eight health slots; the spawned row source remains `source_cell +0x68`.
+- The tiny `TrackPickupOwnerGameView` byte at `+0x09` is
+  `subgame_pause_gate`; keep it distinct from the global/UI pause gate at root
+  `Game +0x74621`.
 - A broad BN header import preview still disturbed existing shared structs, so
   the sync script declares only the tiny `TrackPickupOwnerGameView` type when
   missing and field-sets the recovered names without reimporting `Sprite`,

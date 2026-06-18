@@ -3,6 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_sub_lazer_projectile @ 0x4417d0 */
 
+// slot->emitter is owner_game; byte +0x09 is subgame_pause_gate.
 004417e4        if (*(slot->emitter + 9) != 0)
 004417e4        return 
 004417ea        uint32_t state = slot->state

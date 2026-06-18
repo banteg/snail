@@ -32,7 +32,7 @@ struct TransformMatrix {
 
 struct Game {
     char unknown_00[0x9];
-    unsigned char pause_gate; // +0x09
+    unsigned char subgame_pause_gate; // +0x09
     char unknown_0a[0x38 - 0x0a];
     float subgame_rate; // +0x38
     char unknown_3c[0x359140 - 0x3c];
@@ -127,7 +127,7 @@ void GolbShot::update_golb_ai()
     Vec3 trail_b;
     Vec3 wall_impact;
 
-    if (game->pause_gate)
+    if (game->subgame_pause_gate)
         return;
     if (skip_one_tick == 1) {
         skip_one_tick = 0;

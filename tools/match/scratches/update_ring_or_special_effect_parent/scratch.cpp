@@ -12,7 +12,7 @@ float sine(float radians);
 void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
 {
     RingEffectRateSource* rate = rate_source;
-    if (rate->pause_gate != 0)
+    if (rate->subgame_pause_gate != 0)
         return;
 
     star_shower_counter++;

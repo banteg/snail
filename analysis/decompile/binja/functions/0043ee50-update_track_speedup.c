@@ -3,6 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_track_speedup @ 0x43ee50 */
 
+// pickup->__offset(0x8c) is owner_game; byte +0x09 is subgame_pause_gate.
 0043ee5f        if (*(pickup->__offset(0x8c).d + 9) != 0)
 0043ee5f        return 
 0043ee65        int32_t eax_1 = pickup->__offset(0x80).d

@@ -3,6 +3,7 @@
 /* selector: update_garbage_hazard */
 
 // Advances one live garbage hazard through its hover, impact-burst, bounce, smoke, and teardown states. Cross-port Android and iOS symbols match this helper to `cRSubGarbage::AI()`.
+// slot->game +0x09 is subgame_pause_gate; slot->game +0x38 is subgame_rate.
 int *__thiscall sub_43F200(int this)
 {
   int *result; // eax

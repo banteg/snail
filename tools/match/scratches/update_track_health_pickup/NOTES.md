@@ -5,7 +5,8 @@ and 128 candidate instructions.
 
 Recovered behavior:
 
-- skip when the reset-initialized owner-game `pause_gate` byte at `+0x09` is set;
+- skip when the reset-initialized owner-game `subgame_pause_gate` byte at
+  `+0x09` is set;
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
@@ -62,5 +63,5 @@ view used by speedup and jetpack pickups.
 
 2026-06-18 pickup pause-view consolidation: speedup, health, and jetpack
 pickups now share `TrackPickupOwnerGameView`. The `+0x09` byte is named
-`pause_gate`, matching the root game pause gate semantics without claiming the
-full owner-game layout here.
+`subgame_pause_gate`, distinguishing this root subgame update gate from the
+global/UI `Game::pause_gate` view at root `+0x74621`.

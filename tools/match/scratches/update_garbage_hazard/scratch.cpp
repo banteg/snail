@@ -8,7 +8,7 @@
 class Game {
 public:
     char unknown_00[0x09];
-    unsigned char pause_gate; // +0x09
+    unsigned char subgame_pause_gate; // +0x09
     char unknown_0a[0x38 - 0x0a];
     float subgame_rate; // +0x38
     char unknown_3c[0x1270fd4 - 0x3c];
@@ -21,7 +21,7 @@ double random_float_below(float upper_bound, const char* tag);
 GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 {
     Game* result = game;
-    if (!result->pause_gate) {
+    if (!result->subgame_pause_gate) {
         switch (state) {
         case 0:
             return 0;

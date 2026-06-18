@@ -16,7 +16,7 @@ void TrackSpeedupRuntime::update_track_speedup()
     TrackSpeedupRuntime* next;
     TrackSpeedupRuntime* prev;
 
-    if (owner_game->pause_gate != zero) {
+    if (owner_game->subgame_pause_gate != zero) {
         return;
     }
 

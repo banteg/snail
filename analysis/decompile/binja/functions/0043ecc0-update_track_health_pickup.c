@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_track_health_pickup @ 0x43ecc0 */
 
-0043eccc        if (pickup->owner_game->paused != 0)
+0043eccc        if (pickup->owner_game->subgame_pause_gate != 0)
 0043eccc        return 
 0043ecd2        int32_t state = pickup->state
 0043ecd7        if (state == 0)

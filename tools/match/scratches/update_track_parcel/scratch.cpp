@@ -18,7 +18,7 @@ struct ParcelOwnerView {
 class ParcelSubgameView {
 public:
     char unknown_000000[0x09];
-    unsigned char pause_gate; // +0x09
+    unsigned char subgame_pause_gate; // +0x09
     char unknown_00000a[0x3be0e4 - 0x0a];
     float parcel_kill_plane_z; // +0x3be0e4
     char unknown_3be0e8[0x3be130 - 0x3be0e8];
@@ -32,7 +32,7 @@ public:
 void TrackParcelRuntime::update_track_parcel()
 {
     ParcelSubgameView* subgame = (ParcelSubgameView*)game;
-    if (subgame->pause_gate)
+    if (subgame->subgame_pause_gate)
         return;
 
     switch (state) {

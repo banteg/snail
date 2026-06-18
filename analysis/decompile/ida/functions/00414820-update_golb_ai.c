@@ -3,6 +3,7 @@
 /* selector: update_golb_ai */
 
 // Advances one live Golb shot actor, including straight-flight or path-follow motion, collision transitions, burst or smoke aftermath, and the final cleanup path once it passes the player or leaves the valid band.
+// shot owner game +0x09 is subgame_pause_gate; owner game +0x38 is subgame_rate.
 void __thiscall sub_414820(int this)
 {
   char *v2; // ecx

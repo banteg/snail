@@ -5,7 +5,8 @@ First structured scratch for `update_track_parcel` @ `0x4431d0`.
 Recovered relationships:
 
 - `TrackParcelRuntime::game` is a subgame-base pointer (`g_game_base +
-  0x74618`), not the root game base.
+  0x74618`), not the root game base. Its `+0x09` byte is the
+  `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
   `subgame+0x3be0e4`, mirrors `world_position` into the sprite, and copies the
   owner facing angle from `owner+0x370`, optionally adding `owner+0x3a0`.

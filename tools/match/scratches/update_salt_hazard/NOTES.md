@@ -10,7 +10,7 @@ remove` versus `List remove NEXTBOD`) in the candidate control-flow shape.
 
 Recovered behavior:
 
-- skips while `owner_game +0x09` `pause_gate` is set
+- skips while `owner_game +0x09` `subgame_pause_gate` is set
 - state `2` performs the standard live-list removal against `game +0x5a8`
 - state `1` computes a fade fraction from `position.z`, clamps it to
   `[0, 1]`, writes alpha through `Color4f::set_color_alpha(0.9)`, and moves

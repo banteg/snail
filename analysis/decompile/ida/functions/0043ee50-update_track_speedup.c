@@ -2,6 +2,8 @@
 /* function: update_track_speedup @ 0x43ee50 */
 /* selector: update_track_speedup */
 
+// The entry gate reads owner_game +0x09, now named subgame_pause_gate; this is
+// distinct from the global/UI Game::pause_gate view at root +0x74621.
 void __thiscall update_track_speedup(int this)
 {
   int v2; // eax
@@ -87,4 +89,3 @@ LABEL_6:
     }
   }
 }
-

@@ -3,6 +3,8 @@
 /* selector: update_salt_hazard */
 
 // Advances one live salt hazard's fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff.
+// owner_game +0x09 is subgame_pause_gate; owner_game +0x3bb7d4/+0x3be0e4 are
+// the fade and kill-plane z thresholds.
 void __thiscall update_salt_hazard(int this)
 {
   int v2; // eax
@@ -73,4 +75,3 @@ void __thiscall update_salt_hazard(int this)
     }
   }
 }
-

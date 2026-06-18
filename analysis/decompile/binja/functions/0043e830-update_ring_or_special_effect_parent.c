@@ -3,6 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_ring_or_special_effect_parent @ 0x43e830 */
 
+// *(arg1 + 0x1d0) is rate_source; byte +0x09 is subgame_pause_gate.
 0043e839        float* eax = *(arg1 + 0x1d0)
 0043e844        if (*(eax + 9) == 0)
 0043e850        int32_t edi_2 = *(arg1 + 0x1e8) + 1
