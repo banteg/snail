@@ -15,19 +15,16 @@ struct TrackRenderCacheSlotCursor {
 
 void* TrackRenderCacheManager::initialize_track_render_cache_manager()
 {
-    int vertex_count = 560;
-    int index_count = 1280;
-    max_vertex_counts[0] = vertex_count;
-    max_vertex_counts[1] = vertex_count;
-    max_index_counts[0] = index_count;
-    max_index_counts[1] = index_count;
-    vertex_count = 160;
-    max_vertex_counts[2] = vertex_count;
+    max_vertex_counts[0] = 560;
+    max_vertex_counts[1] = 560;
+    max_index_counts[0] = 1280;
+    max_index_counts[1] = 1280;
+    max_vertex_counts[2] = 160;
     max_index_counts[2] = 240;
     max_vertex_counts[3] = 80;
-    max_index_counts[3] = vertex_count;
+    max_index_counts[3] = 160;
     max_vertex_counts[4] = 800;
-    max_index_counts[4] = index_count;
+    max_index_counts[4] = 1280;
     track_render_grid = (TrackRenderGrid*)(g_game_base + 0x74618);
 
     int slot_base = 0;
@@ -68,10 +65,12 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
     int count = 5;
     void* result;
     do {
-        vertex_buffers[0] =
+        void* vertex_buffer =
             allocate_tracked_memory((*(int*)((char*)vertex_buffers - 0x28) * 3) << 3,
                 "GDX Cache Vertex Buffer");
-        result = allocate_tracked_memory(*(int*)((char*)vertex_buffers - 0x14) << 1,
+        vertex_buffers[0] = vertex_buffer;
+        int index_buffer_count = *(int*)((char*)vertex_buffers - 0x14);
+        result = allocate_tracked_memory(index_buffer_count << 1,
             "GDX Cache Index Buffer");
         vertex_buffers[5] = result;
         ++vertex_buffers;

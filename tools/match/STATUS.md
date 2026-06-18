@@ -216,7 +216,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
 | ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  |
-| 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 91.80% | 3/122 | 17 ok |  |
+| 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 93.44% | 3/122 | 18 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 57/58 | 52.17% | 7/58 | 4 ok |  |

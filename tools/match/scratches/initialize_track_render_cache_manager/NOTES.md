@@ -25,6 +25,13 @@ Layout correction:
 Status:
 
 - 2026-06-18: 91.80%, 122/122 instructions, masked operands clean. Remaining
-  residuals are register/scheduling only: capacity seed register choice, a
+  residuals were register/scheduling only: capacity seed register choice, a
   commuted slot-index `lea`, and a delayed shared-vertex-buffer store before
   the index-buffer allocation setup.
+- 2026-06-18 follow-up: spelling the shared GDX vertex allocation through an
+  explicit `vertex_buffer` temporary recovers the native store-before-index
+  setup order. Keeping the index element count as a separate temporary gives
+  the best current shape: 93.44%, 122/122 instructions, 18 clean masked
+  operands. Remaining residuals are the capacity seed register/scheduling
+  block, the commuted slot-index `lea`, and the tail byte-count register choice
+  (`eax` plus `lea edx,[eax+eax]` versus native `edx` plus `shl edx,1`).
