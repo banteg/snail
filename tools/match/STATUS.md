@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**360/679** mapped gameplay functions matched, **488/679** mapped gameplay functions have a scratch, **34931/325973** bytes (**10.72%**) are proof-grade, and overall fuzzy is **25.56%**.
+**360/679** mapped gameplay functions matched, **490/679** mapped gameplay functions have a scratch, **34931/325973** bytes (**10.72%**) are proof-grade, and overall fuzzy is **25.75%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -262,6 +262,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | hit_slug_hazard | 0x43f620 | 94 | 25/25 | 100.00% | 25/25 | 5 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 148/147 | 73.22% | 0/147 | 32 ok |  |
 | ✅ | kill_slug_hazard | 0x43f8b0 | 128 | 35/35 | 100.00% | 35/35 | 7 ok |  |
+| 🚧 | deserialize_compact_high_score_record | 0x440020 | 335 | 114/114 | 92.98% | 80/114 | 1 ok |  |
+| 🚧 | serialize_compact_high_score_record | 0x440170 | 326 | 109/109 | 85.32% | 60/109 | 1 ok |  |
 | 🚧 | add_subgoldy_score | 0x4402c0 | 190 | 58/58 | 89.66% | 39/58 | 6 ok |  |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
