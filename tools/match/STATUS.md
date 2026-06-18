@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**377/687** mapped gameplay functions matched, **516/687** mapped gameplay functions have a scratch, **36422/325882** bytes (**11.18%**) are proof-grade, and overall fuzzy is **27.56%**.
+**379/687** mapped gameplay functions matched, **518/687** mapped gameplay functions have a scratch, **36694/325882** bytes (**11.26%**) are proof-grade, and overall fuzzy is **27.64%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -202,6 +202,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
 | ✅ | cache_music_file | 0x432d50 | 160 | 42/42 | 100.00% | 42/42 | 11 ok |  |
+| ✅ | play_sound_effect_backend | 0x432df0 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
+| ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
 | ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 91.80% | 3/122 | 17 ok |  |

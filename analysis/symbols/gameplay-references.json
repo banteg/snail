@@ -2324,6 +2324,26 @@
       "description": "Runtime stream-volume scale multiplied with the saved stream-volume config before applying audio settings."
     },
     {
+      "address": "0x753c68",
+      "name": "g_audio_backend_sfx_normalization_scale",
+      "kind": "global",
+      "aliases": [
+        "data_753c68"
+      ],
+      "size": "0x4",
+      "description": "AudioBackend::sfx_normalization_scale at g_audio_backend+0x10, used by sound-effect playback wrappers."
+    },
+    {
+      "address": "0x753c6c",
+      "name": "g_audio_backend_voice_normalization_scale",
+      "kind": "global",
+      "aliases": [
+        "data_753c6c"
+      ],
+      "size": "0x4",
+      "description": "AudioBackend::voice_normalization_scale at g_audio_backend+0x14, used by voice playback wrappers."
+    },
+    {
       "address": "0x753c90",
       "name": "g_bass_module",
       "kind": "global",

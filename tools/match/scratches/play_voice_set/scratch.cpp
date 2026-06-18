@@ -2,7 +2,7 @@
 
 #include "voice_manager.h"
 
-void play_voice_backend(int sample_id, float volume, float pan, float frequency);
+void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
 bool VoiceSet::play_voice_set(int sample_override)
 {

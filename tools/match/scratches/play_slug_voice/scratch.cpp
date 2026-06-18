@@ -3,7 +3,7 @@
 #include "slug_hazard_types.h"
 
 extern char* g_game_base; // data_4df904
-void play_voice_backend(int sample_id, float volume, float pan, float frequency);
+void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
 void SlugHazardRuntime::play_slug_voice(int sample_index)
 {

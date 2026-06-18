@@ -22,9 +22,13 @@ public:
         char* bytes, int byte_count, int sample_id, int normalization_class); // @ 0x449960
 
     // Gameplay callsites spell these helpers as calls on the backend object.
-    void play_registered_sound_sample_scaled(int sample_id, float volume);
-    void stop_registered_sound_sample(int sample_id);
-    bool is_registered_sound_sample_playing(int sample_id);
+    void play_registered_sound_sample_scaled(int sample_id, float volume); // @ 0x4499a0
+    void play_registered_sound_sample_backend(
+        int sample_id, float volume, float pitch); // @ 0x449a80
+    void play_registered_sound_sample_scaled_panned(
+        int sample_id, float volume, float pitch, float pan); // @ 0x449ae0
+    void stop_registered_sound_sample(int sample_id); // @ 0x449a20
+    bool is_registered_sound_sample_playing(int sample_id); // @ 0x449a40
 
     unsigned char music_stream_active; // +0x00
     char unknown_01[0x0c - 0x01];
