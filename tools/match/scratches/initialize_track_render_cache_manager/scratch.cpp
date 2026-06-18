@@ -46,8 +46,7 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
             ((Object*)slot->bod.object)->facequads = 0;
             ((Object*)slot->bod.object)->texture_group_count = 1;
             ((Object*)slot->bod.object)->render_buffers =
-                (ObjectRenderBuffers*)g_direct3d_renderer.create_vertex_buffer(
-                    max_vertex_counts[i], 0x142);
+                g_direct3d_renderer.create_vertex_buffer(max_vertex_counts[i], 0x142);
             ((Object*)slot->bod.object)->index_buffer =
                 g_object_index_buffer_factory.create_index_buffer(max_index_counts[i]);
             ((Object*)slot->bod.object)->group_index_starts =
