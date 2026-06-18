@@ -2,12 +2,9 @@
 #include "player.h"
 #include "transform_matrix.h"
 #include "voice_manager.h"
+#include "vector3.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+typedef Vector3 Vec3;
 
 #include "track_attachment_matrix_path_view.h"
 #include "track_row_cell_anchor_view.h"

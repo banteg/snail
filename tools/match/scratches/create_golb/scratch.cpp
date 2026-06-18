@@ -5,16 +5,11 @@
 
 #include "sprite.h"
 #include "vapour_trail.h"
+#include "vector3.h"
 
 typedef unsigned int DWORD;
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-
-    float vector_magnitude();
-};
+typedef Vector3 Vec3;
 
 struct GolbPathSampleBank {
     void* search_path_for_golb(Vec3* position);

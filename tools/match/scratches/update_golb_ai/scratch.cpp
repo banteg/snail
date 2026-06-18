@@ -3,12 +3,9 @@
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
 #include "score_stats.h"
+#include "vector3.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+typedef Vector3 Vec3;
 
 float __fastcall normalize_vector(Vec3* vector);
 void add_subgoldy_score(int* player, int score_kind, int value);

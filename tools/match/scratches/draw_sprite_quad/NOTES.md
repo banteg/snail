@@ -31,3 +31,7 @@ Open matching issues:
 - The no-op color constructor at `0x44db50` is modeled locally as
   `ColorBGRA8::noop_this_constructor`; it is a real identity helper
   (`mov eax, ecx; ret`) already curated as a shared reference symbol.
+
+2026-06-18 vector alias cleanup: the draw-position argument now aliases the
+shared `Vector3` type. Focused Wibo stays exact at `100.00%`, `259/259`, with
+`29 ok` masked operands.

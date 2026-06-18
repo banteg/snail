@@ -271,3 +271,7 @@ scratch should be derived from the boss scratch's source, and any boss
 golf wins transfer here. For the Zig mirror, the existing
 updateTrackAttachmentFollowState transcription covers this function's
 semantics modulo the state struct binding.
+
+2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
+the shared `Vector3` type. Focused Wibo remains `49.85%`, `646/694`, with
+`52 ok` masked operands and the known target-call mismatch.

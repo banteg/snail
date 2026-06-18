@@ -5,14 +5,11 @@
 #include "player.h"
 #include "row_event_display.h"
 #include "track_parcel_runtime.h"
+#include "vector3.h"
 
 extern char* g_game_base; // data_4df904
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+typedef Vector3 Vec3;
 
 struct GameRuntime {
     TrackParcelRuntime* spawn_track_parcel(float* world_position, void* owner);

@@ -69,3 +69,8 @@ dummy temporary.
 `row_event_display.h` into `frontend_widget.h`. The row-event widgets still use
 the shared +0x1a0 `widget_flags` and +0x2cc `text_buffer` fields; focused match
 remains pinned.
+
+2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
+the shared `Vector3` type. Focused Wibo remains pinned at `99.53%`, `213/213`,
+with `37 ok` masked operands; the only residual is still the bonus sound
+thiscall setup order.

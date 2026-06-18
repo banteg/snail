@@ -3,12 +3,9 @@
 #include "sprite.h"
 #include "direct3d_device8_view.h"
 #include "transform_matrix.h"
+#include "vector3.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+typedef Vector3 Vec3;
 
 struct SpriteVertex {
     float x;

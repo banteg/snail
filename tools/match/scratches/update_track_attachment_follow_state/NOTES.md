@@ -136,3 +136,7 @@ raw `+0x94/+0x98` floats. Hoisting the sample pointer outside the branch
 regressed the pinned shape to `44.99%`, so the source keeps the branch-local
 address formation and remains at `46.44%`, `678/726`, with `45 ok` masked
 operands.
+
+2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
+the shared `Vector3` type. Focused Wibo remains `46.44%`, `678/726`, with
+`45 ok` masked operands.

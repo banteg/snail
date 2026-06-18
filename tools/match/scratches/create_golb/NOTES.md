@@ -86,3 +86,7 @@ Residuals:
   sprite color copy, and path-search hit handling still differ in local
   ordering. Do not add dummy temporaries solely to force those byte layouts
   without stronger source evidence.
+- 2026-06-18 vector alias cleanup: the scratch-local `Vec3` view now aliases the
+  shared `Vector3` type, including the existing `vector_magnitude` method
+  surface. Focused Wibo remains `30.96%`, `445/582`, with `31 ok` masked
+  operands and the known mismatch.
