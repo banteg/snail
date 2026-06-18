@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**408/687** mapped gameplay functions matched, **560/687** mapped gameplay functions have a scratch, **43083/325882** bytes (**13.22%**) are proof-grade, and overall fuzzy is **29.95%**.
+**409/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **43219/325882** bytes (**13.26%**) are proof-grade, and overall fuzzy is **29.99%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -83,6 +83,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | close_galaxy_route | 0x409bf0 | 88 | 18/18 | 100.00% | 18/18 | 6 ok |  |
 | ✅ | open_galaxy_route | 0x409c50 | 1128 | 266/266 | 100.00% | 266/266 | 41 ok |  |
 | ✅ | galaxy_border_bound | 0x40a0c0 | 225 | 63/63 | 100.00% | 63/63 | 2 ok |  |
+| ✅ | update_overlay | 0x40a1b0 | 136 | 42/42 | 100.00% | 42/42 | 7 ok |  |
 | ✅ | initialize_overlay | 0x40a240 | 70 | 17/17 | 100.00% | 17/17 | 3 ok |  |
 | ✅ | noop_runtime_callback | 0x40a290 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
