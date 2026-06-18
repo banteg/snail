@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**436/687** mapped gameplay functions matched, **581/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **31.42%**.
+**436/687** mapped gameplay functions matched, **583/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **32.28%**.
 
 ## Proof Grade (436)
 
@@ -445,7 +445,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (145)
+## In Progress (147)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -504,12 +504,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 93.44% | 3/122 | 18 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 57/58 | 52.17% | 7/58 | 4 ok |  |
+| 🚧 | initialize_star_field | 0x434310 | 861 | 179/247 | 34.74% | 0/247 | 25 ok |  |
 | 🚧 | update_star_positions | 0x434800 | 860 | 101/106 | 32.85% | 1/106 | 11 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 unresolved, 57 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
+| 🚧 | update_subgame | 0x438b90 | 3748 | 1043/1033 | 66.38% | 9/1033 | 2 unresolved, 107 ok |  |
 | 🚧 | destroy_sub_lazer_projectile | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
 | 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 172/187 | 42.34% | 0/187 | 26 ok |  |
 | 🚧 | health_collect_particles | 0x43a010 | 386 | 98/104 | 66.34% | 1/104 | 11 ok |  |
@@ -595,7 +597,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (106)
+## No Scratch (104)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -681,7 +683,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | read_pressed_text_input_key_code | 0x432440 | 915 | 0/338 | 0.00% | 0/338 | - |  |
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
-| ⬜ | initialize_star_field | 0x434310 | 861 | 0/247 | 0.00% | 0/247 | - |  |
 | ⬜ | merge_track_tile_runs | 0x435180 | 873 | 0/276 | 0.00% | 0/276 | - |  |
 | ⬜ | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 0/75 | 0.00% | 0/75 | - |  |
 | ⬜ | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 0/226 | 0.00% | 0/226 | - |  |
@@ -689,7 +690,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 0/160 | 0.00% | 0/160 | - |  |
 | ⬜ | initialize_subgame | 0x4374b0 | 1632 | 0/396 | 0.00% | 0/396 | - |  |
 | ⬜ | build_subgame_level | 0x437eb0 | 2128 | 0/555 | 0.00% | 0/555 | - |  |
-| ⬜ | update_subgame | 0x438b90 | 3748 | 0/1033 | 0.00% | 0/1033 | - |  |
 | ⬜ | initialize_subgoldy | 0x43a9c0 | 1360 | 0/279 | 0.00% | 0/279 | - |  |
 | ⬜ | update_slug_hazard_ai | 0x43f930 | 1772 | 0/464 | 0.00% | 0/464 | - |  |
 | ⬜ | remove_subgame_bods | 0x440910 | 1644 | 0/501 | 0.00% | 0/501 | - |  |
@@ -720,9 +720,10 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SelectedLevelRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SlugVoiceManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -735,8 +736,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 36 | 1 | 36 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 37 | 1 | 37 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |

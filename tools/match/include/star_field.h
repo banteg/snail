@@ -20,6 +20,7 @@ typedef char StarFieldEntry_must_be_0x2c[
 
 class StarField {
 public:
+    virtual int update_star_field_callback(); // vtable slot 0, points to update_star_field
     int destroy_star_field(); // @ 0x434270
     void open_star_field(int star_count); // @ 0x4342c0
     int initialize_star_field(); // @ 0x434310
@@ -28,7 +29,7 @@ public:
     void update_star_field(); // @ 0x4346f0
     void* update_star_positions(float fade); // @ 0x434800
 
-    char pad_00[0x38];
+    char pad_04[0x38 - 0x04];
     int state; // +0x38, star-field lifecycle state
     StarFieldEntry* entries; // +0x3c
     int count; // +0x40
