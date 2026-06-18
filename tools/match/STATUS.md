@@ -2,13 +2,14 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**432/687** mapped gameplay functions matched, **576/687** mapped gameplay functions have a scratch, **46365/325882** bytes (**14.23%**) are proof-grade, and overall fuzzy is **31.06%**.
+**433/687** mapped gameplay functions matched, **577/687** mapped gameplay functions have a scratch, **46532/325882** bytes (**14.28%**) are proof-grade, and overall fuzzy is **31.11%**.
 
-## Proof Grade (432)
+## Proof Grade (433)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | ✅ | initialize_array_with_constructor | 0x401000 | 42 | 21/21 | 100.00% | 21/21 | - |  |
+| ✅ | border_add_text_number | 0x401030 | 167 | 68/68 | 100.00% | 68/68 | - |  |
 | ✅ | hide_border_init | 0x4010e0 | 39 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | unhide_border_init | 0x401110 | 23 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | set_frontend_widget_shortcut_key | 0x402790 | 30 | 6/6 | 100.00% | 6/6 | - |  |
@@ -590,11 +591,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (111)
+## No Scratch (110)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| ⬜ | border_add_text_number | 0x401030 | 167 | 0/68 | 0.00% | 0/68 | - |  |
 | ⬜ | draw_frontend_widget | 0x401130 | 2353 | 0/712 | 0.00% | 0/712 | - |  |
 | ⬜ | initialize_frontend_sprite_button | 0x401a70 | 699 | 0/157 | 0.00% | 0/157 | - |  |
 | ⬜ | initialize_frontend_widget | 0x401d30 | 1892 | 0/429 | 0.00% | 0/429 | - |  |
