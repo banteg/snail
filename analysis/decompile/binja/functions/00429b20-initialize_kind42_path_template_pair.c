@@ -219,7 +219,7 @@
 0042a4a1        if (((j.b ^ i_5.b) & 1) != 0)
 0042a53a        texture_path_1 = texture_path_3
 0042a4ae        texture_path_1 = texture_path_3
-0042a4c1        *(edi_4 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path_1, 0, 0)
+0042a4c1        *(edi_4 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
 0042a4c8        *(edi_4 + 0x10) = var_74_1
 0042a4cb        *(edi_4 + 0x14) = var_84_2
 0042a4d0        *(edi_4 + 0x18) = var_9c_4
@@ -244,7 +244,7 @@
 0042a3e9        if (((j.b ^ i_5.b) & 1) != 0)
 0042a43e        texture_path = texture_path_2
 0042a3f2        texture_path = texture_path_2
-0042a405        *(edi_3 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path, 0, 0)
+0042a405        *(edi_3 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
 0042a40c        *(edi_3 + 0x10) = var_9c_4
 0042a40f        *(edi_3 + 0x14) = var_84_2
 0042a414        *(edi_3 + 0x18) = var_74_1

@@ -85,7 +85,7 @@
 00419422        arg1[arg1[5] * 0x24 + 7] |= 0x200
 004193e1        report_errorf("List ADD")
 00419439        set_bod_object(&arg1[arg1[5] * 0x24 + 6], *var_168_1)
-00419462        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x5c) + 0xc) = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
+00419462        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x5c) + 0xc) = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
 00419472        set_matrix_identity(&arg1[arg1[5] * 0x24 + 0x14])
 00419477        int32_t eax_20 = arg1[5]
 00419491        int32_t var_148_1 = 0

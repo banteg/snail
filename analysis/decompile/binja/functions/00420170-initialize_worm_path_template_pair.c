@@ -377,7 +377,7 @@
 00420b60        if (((j.b ^ i_3.b) & 1) != 0)
 00420b73        texture_path_1 = texture_path
 00420b69        texture_path_1 = texture_path
-00420b7e        *(edi_4 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path_1, 0, 0)
+00420b7e        *(edi_4 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
 00420b85        unimplemented  {fild st0, dword [esi+0x54]}
 00420b8a        float var_6c_4 = fconvert.s(unimplemented  {fstp dword [esp+0x24], st0})
 00420b8a        unimplemented  {fstp dword [esp+0x24], st0}

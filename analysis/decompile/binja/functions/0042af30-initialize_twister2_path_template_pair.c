@@ -221,7 +221,7 @@
 0042b916        texture_path_1 = texture_b
 0042b890        texture_path_1 = texture_b
 0042b89f        int32_t edx_50 = arg4.d
-0042b8a3        *(ebp_3 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path_1, 0, 0)
+0042b8a3        *(ebp_3 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
 0042b8aa        *(ebp_3 + 0x10) = arg2
 0042b8ad        *(ebp_3 + 0x14) = arg3
 0042b8b2        *(ebp_3 + 0x18) = edx_50
@@ -245,7 +245,7 @@
 0042b7d3        if (((j.b ^ i_3.b) & 1) != 0)
 0042b822        texture_path = texture_a
 0042b7d9        texture_path = texture_a
-0042b7ec        *(ebp_2 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path, 0, 0)
+0042b7ec        *(ebp_2 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
 0042b7f3        *(ebp_2 + 0x10) = arg4.d
 0042b7f6        *(ebp_2 + 0x14) = arg3
 0042b7fb        *(ebp_2 + 0x18) = arg2

@@ -28,7 +28,7 @@
 0041a233        facequads->vertex_index_b = 1
 0041a239        facequads->vertex_index_c = 3
 0041a23f        facequads->vertex_index_d = 2
-0041a245        struct TextureRef* eax_1 = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+0041a245        struct TextureRef* eax_1 = get_or_create_texture_ref(&g_texture_refs, arg2, 0, 0)
 0041a254        facequads->texture_ref = eax_1
 0041a25c        long double x87_r7_4 = (fconvert.t(arg3) + fconvert.t(1f)) * fconvert.t(-0.125f)
 0041a262        eax_1->flags |= 2

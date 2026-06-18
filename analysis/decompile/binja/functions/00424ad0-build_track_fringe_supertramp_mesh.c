@@ -65,7 +65,7 @@
 00424d30        if (*(arg1 + 0x44) s> 0)
 00424d36        uint16_t* edi_2 = &facequads->vertex_index_a
 00424d59        while (true)
-00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&g_texture_refs, arg2, 0, 0)
 00424d5c        int16_t ebp_1 = (ebp << 2).w
 00424d5f        (edi_2 - 2)->vertex_index_a = (ebp << 2).w + 4
 00424d6c        (edi_2 - 2)->vertex_index_b = ebp_1 + 5
@@ -79,7 +79,7 @@
 00424d93        (edi_2 - 2)->v1 = 0f
 00424d96        (edi_2 - 2)->u2 = 0.5f
 00424d9a        (edi_2 - 2)->v2 = 0f
-00424da9        (edi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424da9        (edi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&g_texture_refs, arg2, 0, 0)
 00424db2        (edi_2 - 2)->__offset(0x32).w = ebp_1 + 7
 00424db9        (edi_2 - 2)->__offset(0x34).w = ebp_1 + 6
 00424dc0        (edi_2 - 2)->__offset(0x36).w = ebp_1 + 2
@@ -119,7 +119,7 @@
 00424f3c        *(edi_3 + 0x18) = *(edi_3 + 0x3c)
 00424f46        *(edi_3 + 0x1c) = *(edi_3 + 0x40)
 00424f4c        *(edi_3 + 0x20) = *(edi_3 + 0x44)
-00424f62        facequads[*(arg1 + 0x44) * 2].texture_ref = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424f62        facequads[*(arg1 + 0x44) * 2].texture_ref = get_or_create_texture_ref(&g_texture_refs, arg2, 0, 0)
 00424f78        facequads[*(arg1 + 0x44) * 2].vertex_index_a = (*(arg1 + 0x44) << 2) + 1
 00424f80        int32_t ecx_37
 00424f80        ecx_37.w = *(arg1 + 0x44)

@@ -229,7 +229,7 @@
 0041ba98        if (((j.b ^ i_4.b) & 1) != 0)
 0041bb30        texture_path_1 = arg5
 0041baa5        texture_path_1 = arg5
-0041bab8        *(ebp_2 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path_1, 0, 0)
+0041bab8        *(ebp_2 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
 0041babf        *(ebp_2 + 0x10) = var_50_1
 0041bac2        *(ebp_2 + 0x14) = arg3
 0041bac7        *(ebp_2 + 0x18) = arg2
@@ -253,7 +253,7 @@
 0041b9e5        if (((j.b ^ i_4.b) & 1) != 0)
 0041ba34        texture_path = texture_b
 0041b9eb        texture_path = texture_b
-0041b9fe        *(ebp_1 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path, 0, 0)
+0041b9fe        *(ebp_1 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
 0041ba05        *(ebp_1 + 0x10) = arg2
 0041ba08        *(ebp_1 + 0x14) = arg3
 0041ba0d        *(ebp_1 + 0x18) = var_50_1

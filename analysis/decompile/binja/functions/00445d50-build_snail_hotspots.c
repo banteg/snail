@@ -14,7 +14,7 @@
 00445d71        (esi - 0x16d4)->snail_hotspots_local[0].z = 0f
 00445d73        (esi - 0x16d4)->snail_hotspots_local[0].y = 0f
 00445d76        (esi - 0x16d4)->snail_hotspots_local[0].x = 0
-00445d7e        struct TextureRef* j = get_or_create_texture_ref(&data_4b7790, *i, 0, 0)
+00445d7e        struct TextureRef* j = get_or_create_texture_ref(&g_texture_refs, *i, 0, 0)
 00445d83        int32_t edx_1 = *(ebp + 0x54)
 00445d86        int32_t ecx = 0
 00445d8a        if (edx_1 s<= 0)

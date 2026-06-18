@@ -20,7 +20,7 @@
 0041a52e        facequads->vertex_index_b = 1
 0041a534        facequads->vertex_index_c = 3
 0041a53a        facequads->vertex_index_d = 2
-0041a545        facequads->texture_ref = get_or_create_texture_ref(&data_4b7790, arg6, 0, 0)
+0041a545        facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, arg6, 0, 0)
 0041a553        float result = arg3
 0041a564        __builtin_memcpy(&facequads->u0, "\xcd\xcc\x4c\x3f\x00\x00\x80\x3f\xcd\xcc\x4c\x3e\x00\x00\x80\x3f\xcd\xcc\x4c\x3e", 0x14)
 0041a56d        facequads->v2 = 0f

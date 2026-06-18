@@ -122,7 +122,7 @@
 00405a15        *(&mesh->facequads->u3 + esi_1) = eax_14[ebx_4 * 2]
 00405a25        *(&mesh->facequads->v3 + esi_1) = eax_14[ebx_4 * 2 + 1]
 00405a31        esi_1 = &esi_1[0x18]
-00405a34        *(esi_1 + mesh->facequads - 0x24) = get_or_create_texture_ref(&data_4b7790, "X/snail-turbo.tga", 0, 0)
+00405a34        *(esi_1 + mesh->facequads - 0x24) = get_or_create_texture_ref(&g_texture_refs, "X/snail-turbo.tga", 0, 0)
 00405a3b        struct ObjectFaceQuad* ecx_14
 00405a3b        ecx_14.w = eax_20.w
 00405a40        int32_t* eax_27 = *(esi_1 + mesh->facequads - 0x24)
@@ -178,7 +178,7 @@
 00405bf6        eax_39[2] = 0x67
 00405bfa        eax_39[3] = 0x61
 00405bfd        eax_39[4] = 0
-00405c09        struct TextureRef* eax_43 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
+00405c09        struct TextureRef* eax_43 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
 00405c0e        *ebx_5 = eax_43
 00405c12        uint32_t ecx_21
 00405c12        ecx_21:1.b = eax_43->flags:1.b | 0x10
@@ -191,7 +191,7 @@
 00405c29        *eax_44 = ecx_22
 00405b77        if ((options_flags & 2) == 0)
 00405b84        report_warningf("No TextureFilename for Material %i in %s", ebp_1, &var_200)
-00405b9f        *ebx_5 = get_or_create_texture_ref(&data_4b7790, "Sprites/debug.tga", 0, 0)
+00405b9f        *ebx_5 = get_or_create_texture_ref(&g_texture_refs, "Sprites/debug.tga", 0, 0)
 00405ba1        esi_3 = var_22c
 00405c2f        ebp_1 += 1
 00405c30        ebx_5 = &ebx_5[1]

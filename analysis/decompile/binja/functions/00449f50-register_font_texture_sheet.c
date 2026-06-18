@@ -106,13 +106,13 @@
 0044a252        struct TextureRef* eax_27
 0044a252        uint32_t ecx_19
 0044a252        if (*(eax + 0xc) != 0x800)
-0044a2c8        eax_27 = get_or_create_texture_ref(&data_4b7790, arg1, 0, 0)
+0044a2c8        eax_27 = get_or_create_texture_ref(&g_texture_refs, arg1, 0, 0)
 0044a2dd        *(data_777b20 * 0x828 + &data_7772fc) = eax_27
 0044a2e6        ecx_19:1.b = eax_27->flags:1.b | 4
-0044a25e        struct TextureRef* eax_26 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
+0044a25e        struct TextureRef* eax_26 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
 0044a277        *(data_777b20 * 0x828 + &data_7772fc) = eax_26
 0044a28b        eax_26->flags |= 0x420
-0044a295        eax_27 = get_or_create_texture_ref(&data_4b7790, &texture_path_1, 0, 0)
+0044a295        eax_27 = get_or_create_texture_ref(&g_texture_refs, &texture_path_1, 0, 0)
 0044a2aa        *(data_777b20 * 0x828 + &data_777300) = eax_27
 0044a2b3        ecx_19 = eax_27->flags | 0x420
 0044a2e9        eax_27->flags = ecx_19

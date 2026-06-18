@@ -115,6 +115,7 @@ GARBAGE_HAZARD_POOL_FIELD_UPDATES = (
 )
 
 SPRITE_SYMBOL_UPDATES = (
+    ("0x4b7790", "g_texture_refs"),
     ("0x78ff90", "g_sprite_texture_table"),
     ("0x790f30", "g_sprite_manager"),
     ("0x814c94", "g_sprite_active_heads"),

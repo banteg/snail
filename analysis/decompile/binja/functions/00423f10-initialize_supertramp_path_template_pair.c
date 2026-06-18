@@ -174,7 +174,7 @@
 00424603        if (((j.b ^ i_3.b) & 1) != 0)
 00424699        texture_path_1 = texture_c
 0042460d        texture_path_1 = texture_c
-00424620        *(ebp_2 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path_1, 0, 0)
+00424620        *(ebp_2 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path_1, 0, 0)
 00424627        *(ebp_2 + 0x10) = var_2c_1
 0042462a        *(ebp_2 + 0x14) = arg3
 0042462f        *(ebp_2 + 0x18) = arg2
@@ -204,7 +204,7 @@
 00424545        int32_t var_44_5 = 0
 00424547        char* texture_path_2
 00424547        texture_path = texture_path_2
-0042455a        *(ebp_1 + 0xc) = get_or_create_texture_ref(&data_4b7790, texture_path, 0, 0)
+0042455a        *(ebp_1 + 0xc) = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0)
 00424561        *(ebp_1 + 0x10) = arg2
 00424564        *(ebp_1 + 0x14) = arg3
 00424569        *(ebp_1 + 0x18) = var_2c_1

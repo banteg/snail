@@ -23,7 +23,7 @@
 0041918e        void* var_c_4 = edi
 00419199        void texture_path
 00419199        sub_48b32c(&texture_path, "Intro/%s")
-004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
+004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
 004191b6        edi += 0x80
 004191bc        uint32_t ecx_2
 004191bc        ecx_2:1.b = eax_4->flags:1.b | 4
