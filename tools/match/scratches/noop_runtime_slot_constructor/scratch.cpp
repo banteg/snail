@@ -1,6 +1,11 @@
-// noop_runtime_slot_constructor @ 0x408600 (thiscall-equivalent, returns self)
+// noop_runtime_slot_constructor @ 0x408600 (thiscall, returns this)
 
-void* __fastcall noop_runtime_slot_constructor(void* self)
+class RuntimeSlot {
+public:
+    RuntimeSlot* noop_runtime_slot_constructor();
+};
+
+RuntimeSlot* RuntimeSlot::noop_runtime_slot_constructor()
 {
-    return self;
+    return this;
 }
