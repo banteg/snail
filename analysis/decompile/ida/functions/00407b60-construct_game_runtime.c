@@ -86,19 +86,19 @@ int construct_game_runtime()
     while ( v7 );
     initialize_renderable_bod((_DWORD *)v1 + 415);
     sub_408040((_DWORD *)v1 + 447);
-    *((_DWORD *)v1 + 415) = off_4972EC;
+    *((_DWORD *)v1 + 415) = g_overlay_callback_table;
     initialize_renderable_bod((_DWORD *)v1 + 498);
     sub_408040((_DWORD *)v1 + 530);
-    *((_DWORD *)v1 + 498) = off_4972EC;
+    *((_DWORD *)v1 + 498) = g_overlay_callback_table;
     initialize_renderable_bod((_DWORD *)v1 + 581);
     sub_408040((_DWORD *)v1 + 613);
-    *((_DWORD *)v1 + 581) = off_4972EC;
+    *((_DWORD *)v1 + 581) = g_overlay_callback_table;
     initialize_renderable_bod((_DWORD *)v1 + 664);
     Iostream_init::Iostream_init((#93 *)(v1 + 2784));
     *((_DWORD *)v1 + 664) = &off_4972B0;
     initialize_bod_base((_DWORD *)v1 + 723);
     initialize_array_with_constructor((int)(v1 + 4560), 1828, 150, (int (__thiscall *)(int))initialize_border_record);
-    *((_DWORD *)v1 + 723) = off_4972E8;
+    *((_DWORD *)v1 + 723) = g_border_manager_callback_table;
     v8 = v1 + 278784;
     v9 = 352;
     do
@@ -112,16 +112,16 @@ int construct_game_runtime()
     initialize_bod_base((_DWORD *)v1 + 80644);
     Iostream_init::Iostream_init((#93 *)(v1 + 324236));
     Iostream_init::Iostream_init((#93 *)(v1 + 324268));
-    *((_DWORD *)v1 + 80644) = off_4972E4;
+    *((_DWORD *)v1 + 80644) = g_backdrop_callback_table;
     initialize_bod_base((_DWORD *)v1 + 81103);
-    *((_DWORD *)v1 + 81103) = off_4972E0;
+    *((_DWORD *)v1 + 81103) = g_star_field_callback_table;
     initialize_bod_base((_DWORD *)v1 + 81138);
     initialize_array_with_constructor((int)(v1 + 324632), 144, 1024, (int (__thiscall *)(int))initialize_intro_logo_renderable);
     initialize_array_with_constructor((int)(v1 + 472088), 144, 32, (int (__thiscall *)(int))initialize_intro_logo_renderable);
     initialize_runtime_pools_and_path_template_bank((_DWORD *)v1 + 119174);
     initialize_bod_base((_DWORD *)v1 + 4955094);
-    *((_DWORD *)v1 + 4955094) = off_4972DC;
-    *(_DWORD *)v1 = &off_4972D8;
+    *((_DWORD *)v1 + 4955094) = g_tip_manager_callback_table;
+    *(_DWORD *)v1 = &g_root_runtime_callback_table;
   }
   else
   {

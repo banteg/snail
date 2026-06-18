@@ -47,7 +47,7 @@
 0040822d        int32_t i_2
 0040821e        initialize_bod_base(edi_3)
 0040821e        top -= 1
-00408223        *edi_3 = &data_497304
+00408223        *edi_3 = &g_banner_callback_table
 00408229        edi_3 = &edi_3[0x18]
 0040822c        i_2 = i_10
 0040822c        i_10 -= 1
@@ -75,7 +75,7 @@
 00408290        int16_t top_2 = top - 2
 004082be        initialize_array_with_constructor(arg1 + 0x3bbbb4, 0x2e8, 0xc, initialize_golb_shot)
 004082c9        initialize_enemy_manager_runtime(arg1 + 0x3be0e8)
-004082ce        *(arg1 + 0x3bb764) = &data_497300
+004082ce        *(arg1 + 0x3bb764) = &g_subgoldy_callback_table
 004082d4        char** edi_6 = arg1 + 0x3bfac8
 004082da        int32_t i_13 = 0x6400
 004082ea        int32_t i_5
@@ -104,12 +104,12 @@
 0040831f        i_15 -= 1
 00408320        do while (i_7 != 1)
 0040832a        initialize_bod_base(arg1 + 0xff7bc4)
-0040832f        *(arg1 + 0xff7bc4) = &data_4972fc
+0040832f        *(arg1 + 0xff7bc4) = &g_barrier_actor_callback_table
 00408348        initialize_array_with_constructor(arg1 + 0xff7c00, 0x90, 0xa, initialize_active_landscape_entry)
 00408363        initialize_array_with_constructor(arg1 + 0xff81a4, 0x124, 0x80, initialize_landscape_script_record)
 00408370        initialize_bod_base(arg1 + 0x10013a4)
 00408378        std::_Vector_iterator<class std::_Vector_val<struct std::_Simple_types<class std::shared_ptr<struct Concurrency::details::_Task_impl<struct std::pair<uint8_t,class Concurrency::details::_CancellationTokenState*> > > > > >::operator++(arg1 + 0x10013dc)
-00408393        *(arg1 + 0x10013a4) = &data_4972f8
+00408393        *(arg1 + 0x10013a4) = &g_smtracks_callback_table
 00408399        initialize_array_with_constructor(arg1 + 0x10014d0, 0x4088, 0x96, noop_runtime_slot_constructor)
 004083b1        initialize_array_with_constructor(arg1 + 0x125e480, 0x8c, 0x32, initialize_track_parcel_runtime)
 004083c9        initialize_array_with_constructor(arg1 + 0x1260030, 0x2a0, 0x65, noop_runtime_slot_constructor)

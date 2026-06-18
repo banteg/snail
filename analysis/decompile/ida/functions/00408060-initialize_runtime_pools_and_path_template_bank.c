@@ -2,7 +2,7 @@
 /* function: initialize_runtime_pools_and_path_template_bank @ 0x408060 */
 /* selector: initialize_runtime_pools_and_path_template_bank */
 
-_DWORD *__thiscall sub_408060(_DWORD *this)
+_DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
 {
   _DWORD *v2; // edi
   _DWORD *v3; // edi
@@ -17,13 +17,13 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   int v12; // ebx
   _DWORD *v13; // edi
   int v14; // ebx
-  _DWORD *v15; // edi
+  char *v15; // edi
   int v16; // ebx
   _DWORD *v17; // edi
   int v18; // ebx
 
   v2 = this + 23;
-  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 23));
+  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 23));
   initialize_array_with_constructor((int)(v2 + 22), 60, 715, (int (__thiscall *)(int))initialize_active_bod);
   initialize_array_with_constructor(
     (int)(this + 10782),
@@ -40,7 +40,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     56,
     256,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 442448));
+  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 442448));
   initialize_array_with_constructor(
     (int)(this + 442492),
     16928,
@@ -56,7 +56,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     56,
     256,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 874158));
+  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 874158));
   initialize_bod_base(this + 874201);
   initialize_bod_base(this + 874215);
   initialize_bod_base(this + 874229);
@@ -102,7 +102,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   do
   {
     initialize_bod_base(v7);
-    *v7 = &off_497304;
+    *v7 = &g_banner_callback_table;
     v7 += 24;
     --v8;
   }
@@ -132,7 +132,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978618));
   initialize_array_with_constructor((int)(this + 978669), 744, 12, (int (__thiscall *)(int))initialize_golb_shot);
   initialize_enemy_manager_runtime(this + 981050);
-  *(this + 978393) = &off_497300;
+  *(this + 978393) = &g_subgoldy_callback_table;
   v13 = this + 982706;
   v14 = 25600;
   do
@@ -142,12 +142,12 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     --v14;
   }
   while ( v14 );
-  v15 = (int *)((char *)byte_5CCAC8 + (_DWORD)this);
+  v15 = &byte_5CCAC8[(_DWORD)this];
   v16 = 3200;
   do
   {
     initialize_track_row_runtime(v15);
-    v15 += 61;
+    v15 += 244;
     --v16;
   }
   while ( v16 );
@@ -161,7 +161,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   }
   while ( v18 );
   initialize_bod_base(this + 4185841);
-  *(this + 4185841) = off_4972FC;
+  *(this + 4185841) = &g_barrier_actor_callback_table;
   initialize_array_with_constructor(
     (int)(this + 4185856),
     144,
@@ -170,7 +170,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   initialize_array_with_constructor((int)(this + 4186217), 292, 128, initialize_landscape_script_record);
   initialize_bod_base(this + 4195561);
   sub_42F6E0(this + 4195575);
-  *(this + 4195561) = &off_4972F8;
+  *(this + 4195561) = g_smtracks_callback_table;
   initialize_array_with_constructor(
     (int)(this + 4195636),
     16520,

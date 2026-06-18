@@ -790,6 +790,110 @@
       "description": "Statically linked CRT atexit helper used to register compiler-generated static destructors."
     },
     {
+      "address": "0x4972d8",
+      "name": "g_root_runtime_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972d8",
+        "data_4972d8"
+      ],
+      "description": "Root runtime BOD callback table installed at the `construct_game_runtime` object prefix; first entry is the shared no-op update callback."
+    },
+    {
+      "address": "0x4972dc",
+      "name": "g_tip_manager_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972dc",
+        "data_4972dc"
+      ],
+      "description": "Tip-manager BOD callback table installed at root offset `0x12e6f58`; first entry is `update_tip_manager`."
+    },
+    {
+      "address": "0x4972e0",
+      "name": "g_star_field_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972e0",
+        "data_4972e0"
+      ],
+      "description": "Star-field BOD callback table installed at root offset `0x4f33c`; first entry is `update_star_field`."
+    },
+    {
+      "address": "0x4972e4",
+      "name": "g_backdrop_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972e4",
+        "data_4972e4"
+      ],
+      "description": "Backdrop BOD callback table installed at root offset `0x4ec10`; first entry is `update_backdrop`."
+    },
+    {
+      "address": "0x4972e8",
+      "name": "g_border_manager_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972e8",
+        "data_4972e8"
+      ],
+      "description": "Border-manager BOD callback table installed at root offset `0xb4c`; first entry is `update_border_manager`."
+    },
+    {
+      "address": "0x4972ec",
+      "name": "g_overlay_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972ec",
+        "data_4972ec"
+      ],
+      "description": "Shared overlay renderable callback table installed on the three overlay BOD slots in `construct_game_runtime`; first entry is `update_overlay`."
+    },
+    {
+      "address": "0x4972f8",
+      "name": "g_smtracks_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972f8",
+        "data_4972f8",
+        "g_smtracks_vtable"
+      ],
+      "description": "SMTracks BOD callback table installed at subgame offset `0x10013a4`; first entry is `update_smtracks`."
+    },
+    {
+      "address": "0x4972fc",
+      "name": "g_barrier_actor_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972fc",
+        "data_4972fc",
+        "g_barrier_ai_vtable"
+      ],
+      "description": "Barrier actor BOD callback table installed at subgame offset `0xff7bc4`; first entry is `update_barrier_ai`."
+    },
+    {
+      "address": "0x497300",
+      "name": "g_subgoldy_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_497300",
+        "data_497300",
+        "g_subgoldy_vtable"
+      ],
+      "description": "Main SubGoldy/player callback table installed at subgame offset `0x3bb764`; first entry is `update_subgoldy`."
+    },
+    {
+      "address": "0x497304",
+      "name": "g_banner_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_497304",
+        "data_497304",
+        "g_banner_vtable"
+      ],
+      "description": "Banner/start-line actor callback table installed by `initialize_runtime_pools_and_path_template_bank`; first entry is `update_banner`."
+    },
+    {
       "address": "0x497308",
       "name": "g_frontend_widget_vtable",
       "kind": "vtable",
