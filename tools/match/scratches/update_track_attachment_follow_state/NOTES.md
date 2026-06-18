@@ -1,12 +1,14 @@
 # update_track_attachment_follow_state @ 0x420cb0
 
-Best current source-shaped baseline for the native attachment-follow update helper.
+Best current source-shaped reconstruction for the native attachment-follow update helper.
 
 Current matcher result:
 
-- 46.44% match
+- 69.38% match
 - target: 726 instructions
-- candidate: 678 instructions
+- candidate: 672 instructions
+- exact prefix: 122 instructions
+- masked operands: 53 ok, 0 unresolved, 0 mismatch
 
 Recovered shape:
 
@@ -20,11 +22,11 @@ Recovered shape:
 
 Known residuals after the current source shape:
 
-- stack layout still differs (`sub esp, 0x180` target vs `sub esp, 0x160` candidate)
-- the overflow loop still uses a different x87 subtract shape and keeps the template record in `ebx` instead of freeing `ebx` for the `0x80` row flag constant
-- special-runtime row writes are semantically typed, but row lookup/store ordering and registers still differ in both milestone branches
-- normal interpolation now follows the target's scalar and output temporary flow, but matrix-copy stack offsets and camera-basis stores remain different
-- `orientation_b` is intentionally overwritten by the installed-heading lane, matching the native semantic result; exact dead/intermediate stores still need source-shape work
+- the stack frame now matches exactly at `sub esp, 0x180`; the first mismatch is the destination of the branch at target instruction 122 (`je L240` versus candidate `je L23e`)
+- the ordinary and kind-42 transform regions still differ in local stack-slot placement, x87 scheduling, and the amount of duplicated basis-copy code
+- the candidate remains 54 instructions shorter, with most of the deficit concentrated after the scalar interpolation prefix
+- the side-exit clamp tails use semantic C++ returns but do not reproduce the target's x87 constant-store schedule
+- `orientation_b` is intentionally overwritten by the installed-heading lane, matching the native semantic result; some dead/intermediate stores remain layout-only mismatches
 
 ## Cross-findings (2026-06-12, second agent)
 
@@ -145,3 +147,45 @@ the shared `Vector3` type. Focused Wibo remains `46.44%`, `678/726`, with
 `g_player_live_matrix_basis_right/up/forward` instead of the stale
 `g_camera_basis_*` names. These are still the same game-relative addresses
 (`0x42fdb4/0x42fdc4/0x42fdd4`) and should not affect codegen.
+
+
+## Focused source-shape pass (2026-06-18)
+
+Starting point and final measured result:
+
+- before: `46.44%`, target `726`, candidate `678`, prefix `0`, masks `45/0/0`, frame `0x160`
+- after: `69.38%`, target `726`, candidate `672`, prefix `122`, masks `53/0/0`, frame `0x180`
+- net improvement: `+22.94` percentage points with no unresolved or mismatched masked operands
+
+Accepted source-shape changes, in measured order:
+
+- introduced real `Vec3` result-stage temporaries for the ordinary rotated offsets and the terminal Supertramp launch position; these recover meaningful stack storage rather than padding
+- split template-pointer lifetimes (`initial_template`, runtime/loop reloads, current/orientation/final views), which recovered the exact frame and progressively lengthened the exact prefix
+- replaced the cloned/shared overflow construction with one top-tested segment-consumption `while`, retaining a lexical normal-path block and a terminal label so the source remains valid C++ across initialized locals
+- kept a real `float* p_delta_length` and updated it after every consumed segment; this made the first 122 target instructions exact
+- spelled the special-runtime row lookup for each native store instead of reusing one row pointer, matching the repeated call/store order in both milestone branches
+- used direct `primary_samples[index]` expressions for scalar and orientation interpolation instead of hoisting a sample pointer
+- recovered the kind-42 helper as a member-shaped call through the attachment template, producing the native `thiscall` setup
+- matched the native blend branch polarity and the `z, y, x` zeroing order for the two interpolation matrices
+- retained semantic, separate side-exit clamp returns; the simpler source shape matched better than the exact decompiler nesting
+- materialized terminal `forward_offset`, `base_position`, and `launch_position` vectors with field assignments, preserving the otherwise-dead aggregate x write naturally
+- materialized ordinary-path `path_x`, `path_y`, and `path_z` intermediates, improving x87 scheduling without changing the exact frame
+
+Representative rejected or neutral trials:
+
+- a four-vector ordinary-path rewrite fell to `43.99%` and overgrew the frame to `0x184`
+- the first sibling-style top-tested-loop transplant fell to `42.13%`; it was only useful after reconstructing pointer lifetimes and terminal control flow
+- exact scalar terminal/Supertramp rewrites collapsed the frame to `0x174` and regressed global alignment
+- an aggregate ordinary result vector reached `68.67%` but also collapsed the frame to `0x174`, so the exact-frame `69.38%` shape was retained
+- explicit basis-pointer locals intended to prevent branch tail merging increased code size but scored lower (`67.05%` for the strongest variant)
+- an active primary-sample pointer in the kind-42 path scored `65.52%`; direct member expressions were better
+- the literal IDA-style nested clamp tail scored `67.80%`; three straightforward semantic return paths scored higher
+- additional row locals, voice-expression spellings, terminal boolean locals, and several expression reorderings were codegen-neutral
+
+Final verification command:
+
+```sh
+UV_PYTHON=3.13 tools/match/match.sh \
+  tools/match/scratches/update_track_attachment_follow_state \
+  --regions --max-regions 14 --region-context 6
+```
