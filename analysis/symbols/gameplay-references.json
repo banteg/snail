@@ -745,6 +745,16 @@
       "description": "Statically linked CRT ftell helper used by stream/archive readers that preserve file position."
     },
     {
+      "address": "0x48b72d",
+      "name": "malloc",
+      "kind": "function",
+      "aliases": [
+        "_malloc",
+        "sub_48b72d"
+      ],
+      "description": "Statically linked CRT malloc helper used by allocate_tracked_memory for guarded heap blocks."
+    },
+    {
       "address": "0x48b8ab",
       "name": "remove",
       "kind": "function",
@@ -753,6 +763,16 @@
         "sub_48b8ab"
       ],
       "description": "Statically linked CRT remove helper wrapped by delete_file_path and used by delete_file_path_with_directory_walk."
+    },
+    {
+      "address": "0x48b8d5",
+      "name": "free",
+      "kind": "function",
+      "aliases": [
+        "_free",
+        "sub_48b8d5"
+      ],
+      "description": "Statically linked CRT free helper used by free_tracked_memory for guarded heap blocks."
     },
     {
       "address": "0x48bfdb",
@@ -2162,6 +2182,16 @@
       ],
       "size": "0x4",
       "description": "Current registered sound sample count and next sample id used by register_sound_sample and find_registered_sound_sample_id_by_name."
+    },
+    {
+      "address": "0x5108b4",
+      "name": "g_tracked_allocation_total_bytes",
+      "kind": "global",
+      "aliases": [
+        "data_5108b4"
+      ],
+      "size": "0x4",
+      "description": "Running total of guarded bytes currently held by tracked allocations, updated by allocate_tracked_memory/free_tracked_memory and reset during archive initialization."
     },
     {
       "address": "0x5108c0",

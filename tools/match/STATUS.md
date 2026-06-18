@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**395/687** mapped gameplay functions matched, **540/687** mapped gameplay functions have a scratch, **41715/325882** bytes (**12.80%**) are proof-grade, and overall fuzzy is **29.31%**.
+**396/687** mapped gameplay functions matched, **544/687** mapped gameplay functions have a scratch, **41769/325882** bytes (**12.82%**) are proof-grade, and overall fuzzy is **29.41%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -205,6 +205,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | get_tracked_allocation_size | 0x431ab0 | 61 | 26/26 | 100.00% | 26/26 | 2 ok |  |
+| ✅ | push_tracked_allocation | 0x431af0 | 54 | 19/19 | 100.00% | 19/19 | 2 ok |  |
+| 🚧 | pop_tracked_allocation | 0x431b30 | 44 | 25/20 | 66.67% | 4/20 | - |  |
+| 🚧 | allocate_tracked_memory | 0x431b60 | 129 | 48/48 | 91.67% | 0/48 | 7 ok |  |
+| 🚧 | free_tracked_memory | 0x431bf0 | 127 | 43/43 | 95.35% | 0/43 | 9 ok |  |
 | ✅ | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  |
 | ✅ | set_tracked_allocation_mark | 0x431cb0 | 11 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 | - |  |
@@ -554,12 +558,13 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
 - covered: 29 type name(s) with a header plus scratch-local copies
-- divergent: 19 type name(s) with multiple scratch-local shapes
+- divergent: 20 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | FrontendFade | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
