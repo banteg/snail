@@ -12,8 +12,8 @@ sprite/ring runtime views without making unsupported field claims.
 - `size_start +0x60` and `size_end +0x64` are the right names for the former
   scale fields: `draw_sprite_quad` interpolates them by `progress +0x68`, and
   particle callsites seed them as start/end sizes rather than X/Y axes.
-- `unknown_84` and `unknown_98` still only have initializer-level evidence in
-  the promoted view, so they stay unnamed.
+- `reserved_84` still only has initializer-level evidence in the promoted view;
+  `depth_bias +0x98` is named by the render-depth bucket consumer.
 
 ## Sprite manager and lists
 

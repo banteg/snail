@@ -57,7 +57,7 @@ SPRITE_FIELD_UPDATES = (
     ("0x78", "gravity_step", "float"),
     ("0x7c", "facing_angle", "float"),
     ("0x80", "facing_angle_step", "float"),
-    ("0x84", "unknown_84", "int32_t"),
+    ("0x84", "reserved_84", "int32_t"),
     ("0x88", "corner_scale", "float"),
     ("0x8c", "facing_refresh_progress", "float"),
     ("0x90", "facing_refresh_step", "float"),

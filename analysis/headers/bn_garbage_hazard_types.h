@@ -65,7 +65,7 @@ struct Sprite {
     float gravity_step;
     float facing_angle;
     float facing_angle_step;
-    int32_t unknown_84;
+    int32_t reserved_84;
     float corner_scale;
     float facing_refresh_progress;
     float facing_refresh_step;
