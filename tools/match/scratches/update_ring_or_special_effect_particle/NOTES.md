@@ -55,3 +55,9 @@ Rejected source-shape probe:
   return-type conflict is resolved by treating this updater as a side-effect-only
   `void` helper; `emit_ring_star_shower` is also modeled as `void` because all
   known callsites ignore the incidental byte result.
+- 2026-06-18 BN prototype sync: the durable BN prototype is now
+  `void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle*)`.
+  This removes the synthetic float return and resolves the particle, parent,
+  and child Sprite position fields in the tracked BN export. The remaining
+  mismatch is still only the parent-position materialization order documented
+  above.

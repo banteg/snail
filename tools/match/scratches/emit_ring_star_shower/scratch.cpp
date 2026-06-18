@@ -1,4 +1,4 @@
-// emit_ring_star_shower @ 0x43e690 (thiscall, ret 0x4)
+// emit_ring_star_shower @ 0x43e690 (thiscall)
 
 #include "player.h"
 #include "ring_special_effect_types.h"

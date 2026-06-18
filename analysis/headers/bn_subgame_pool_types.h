@@ -10,6 +10,8 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
+typedef struct Player Player;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -169,5 +171,8 @@ struct RingOrSpecialEffectParent {
 typedef struct RingOrSpecialEffectPool {
     RingOrSpecialEffectParent slots[2];
 } RingOrSpecialEffectPool;
+
+void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner);
+void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle* particle);
 
 #endif

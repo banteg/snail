@@ -74,3 +74,8 @@ Type consolidation:
   `void`. Every known callsite ignores the helper return; the native low-byte
   `al` result is an incidental position-copy artifact, not a meaningful
   gameplay value. Focused Wibo remains 74.42%, and the caller remains 96.36%.
+- 2026-06-18 BN prototype sync: the durable BN prototype is now
+  `void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle*, Player*)`.
+  This resolves `particle->phase`, `particle->radius`, `particle->parent`,
+  `owner->player_slot`, and Sprite position/velocity fields in the BN export;
+  the match residual stays the known stack-frame/source-shape issue.

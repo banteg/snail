@@ -23,6 +23,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackJetpackPickup",
     "TrackHealthPickup",
     "SlugHazardRuntime",
+    "RingOrSpecialEffectParticle",
     "RingOrSpecialEffectParent",
     "RingOrSpecialEffectPool",
 )
@@ -62,6 +63,14 @@ PROTO_UPDATES = (
         "TrackHealthPickup* __thiscall initialize_track_health_pickup_runtime(TrackHealthPickup* pickup)",
     ),
     ("update_track_health_pickup", "void __thiscall update_track_health_pickup(TrackHealthPickup* pickup)"),
+    (
+        "emit_ring_star_shower",
+        "void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner)",
+    ),
+    (
+        "update_ring_or_special_effect_particle",
+        "void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle* particle)",
+    ),
 )
 
 
