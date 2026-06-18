@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**424/687** mapped gameplay functions matched, **566/687** mapped gameplay functions have a scratch, **44872/325882** bytes (**13.77%**) are proof-grade, and overall fuzzy is **30.24%**.
+**425/687** mapped gameplay functions matched, **567/687** mapped gameplay functions have a scratch, **45041/325882** bytes (**13.82%**) are proof-grade, and overall fuzzy is **30.30%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -189,6 +189,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 36 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 112/111 | 87.89% | 15/111 | 6 ok |  |
 | ✅ | load_config_file | 0x42f470 | 23 | 9/9 | 100.00% | 9/9 | 1 ok |  |
+| ✅ | load_file_bytes_from_path | 0x42f490 | 169 | 59/59 | 100.00% | 59/59 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | save_config_file | 0x42f540 | 115 | 31/31 | 100.00% | 31/31 | 5 ok |  |
 | ✅ | is_bod_after_sprites | 0x42f5c0 | 8 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | 6/6 | - |  |
