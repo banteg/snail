@@ -1,6 +1,7 @@
 // load_level_definition_file @ 0x447480 (thiscall, ret 0x4)
 
 #include "sprite.h"
+#include "landscape_script_bank.h"
 
 extern char* g_game_base; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
@@ -51,11 +52,6 @@ struct LevelSegmentSlot {
 
 typedef char LevelSegmentSlot_must_be_0x4220[
     (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
-
-class LandscapeScriptBank {
-public:
-    int load_landscape_script_by_name(char* script_name);
-};
 
 struct LevelDefinitionParseBuffers {
     char level_path[512];

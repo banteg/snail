@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "object_render_types.h"
+#include "render_buffer_factories.h"
 #include "vector3.h"
 
 void* allocate_tracked_memory(int size, char* name);
@@ -18,18 +19,8 @@ struct ObjectVertexBufferVtbl {
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
 };
 
-struct VertexBufferFactory {
-    void* create_vertex_buffer(int vertex_count, int fvf); // @ 0x4114b0
-};
-
-struct IndexBufferFactory {
-    ObjectIndexBuffer* create_index_buffer(int index_count); // @ 0x4115d0
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
-extern VertexBufferFactory g_direct3d_renderer; // data_4f7458
-extern IndexBufferFactory g_object_index_buffer_factory; // data_5000fc
 
 void* build_object_texture_group_buffers(Object* object)
 {

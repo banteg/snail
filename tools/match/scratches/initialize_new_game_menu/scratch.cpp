@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "completion_screen.h"
+#include "landscape_script_bank.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
@@ -20,11 +21,6 @@ class NewGameBorderManager {
 public:
     FrontendWidget* allocate_border();
     int set_border_justify_centre(int justify_centre);
-};
-
-class LandscapeScriptBank {
-public:
-    int load_landscape_script_by_name(char* script_name);
 };
 
 void NewGameMenu::initialize_new_game_menu()

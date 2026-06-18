@@ -1,21 +1,12 @@
 // initialize_track_render_cache_manager @ 0x433060 (thiscall, ret)
 
 #include "object_render_types.h"
+#include "render_buffer_factories.h"
 #include "track_render_cache.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-struct VertexBufferFactory {
-    void* create_vertex_buffer(int vertex_count, int fvf); // @ 0x4114b0
-};
-
-struct IndexBufferFactory {
-    ObjectIndexBuffer* create_index_buffer(int index_count); // @ 0x4115d0
-};
-
 extern char* g_game_base; // data_4df904
-extern VertexBufferFactory g_direct3d_renderer; // data_4f7458
-extern IndexBufferFactory g_object_index_buffer_factory; // data_5000fc
 
 struct TrackRenderCacheSlotCursor {
     char unknown_00[0x58];

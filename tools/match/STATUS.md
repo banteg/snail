@@ -545,7 +545,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 4 type name(s)
+- ready: 1 type name(s)
 - covered: 29 type name(s) with a header plus scratch-local copies
 - divergent: 23 type name(s) with multiple scratch-local shapes
 
@@ -603,7 +603,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | LandscapeScriptBank | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | VertexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
