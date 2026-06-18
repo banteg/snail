@@ -11,7 +11,7 @@ Recovered relationships:
   prompt widget at `+0x84`, teardown progress/step at `+0x88/+0x8c`, owner
   player at `+0x98`, and prompt-hide latch at `+0xa8`;
 - state `2` accepts either the app replay-launch scratch at `game+0x1066be8`
-  or a live input confirm edge (`control_flags & 0x4000`);
+  or a live input confirm edge (`input.pressed_buttons & 0x4000`);
 - accepted startup writes `Player+0x304`, recenters authored input pointers for
   slots 0 and 1, and plays SFX `8`;
 - states `3/4` kill the prompt, move the embedded render transform, and recycle

@@ -2,18 +2,18 @@
 /* function: initialize_input @ 0x40aa50 */
 /* selector: initialize_input */
 
-int __thiscall sub_40AA50(_DWORD *this)
+int __thiscall initialize_input(InputState *state)
 {
-  *(this + 4) = -1;
-  *(this + 13) = 0;
-  *(this + 1) = 0;
-  *(this + 2) = 0;
-  *(this + 3) = 0;
-  *(this + 5) = 0;
-  *(this + 6) = 0;
-  *(this + 10) = 1134559232;
-  *(this + 11) = 1131413504;
-  *(this + 12) = 0;
+  state->inverse_current_buttons = -1;
+  state->current_buttons = 0;
+  state->pressed_buttons = 0;
+  state->released_buttons = 0;
+  state->previous_buttons = 0;
+  state->axis_x = 0.0;
+  state->axis_y = 0.0;
+  state->authored_x = 320.0;
+  state->authored_y = 240.0;
+  state->pointer_value = 0.0;
   return 0;
 }
 

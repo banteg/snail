@@ -67,9 +67,13 @@ Current checked-in example:
 - `uv run python tools/ida/sync_subgame_runtime_types.py`
 - `vapour_trail_types.h`
 - `uv run python tools/ida/sync_vapour_trail_types.py`
+- `ida_input_state_types.h`
+- `uv run python tools/ida/sync_input_state_types.py`
 
 Current checked-in Binary Ninja companion:
 
+- `bn_input_state_types.h`
+- `uv run python tools/binja/sync_input_state_types.py`
 - `bn_player_presentation_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
 - `bn_selected_level_record_types.h`
@@ -94,6 +98,10 @@ The selected-record BN lane is even narrower:
 The high-score bank and subgame-runtime BN lanes carry the recovered
 `HighScoreRecord`, `HighScoreBank`, and sparse `SubgameRuntime` layouts that
 make `complete_subgame` and the three `add_*_high_score` helpers readable.
+
+The input-state BN/IDA lane carries the recovered `InputState` button edge
+masks, controller-axis fields, pointer-authored coordinates, and the embedded
+`GameInputOwner.input` field proven by `update_game_input`.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

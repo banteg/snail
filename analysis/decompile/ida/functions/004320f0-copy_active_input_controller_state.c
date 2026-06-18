@@ -3,40 +3,40 @@
 /* selector: copy_active_input_controller_state */
 
 // Copies one of the two global input-controller slots into the caller-owned runtime buffer, including button flags, normalized pointer coordinates, and the per-slot authored cursor lanes used by gameplay input.
-float *__cdecl sub_4320F0(
-        int a1,
-        _DWORD *a2,
-        float *a3,
-        float *a4,
-        float *a5,
-        float *a6,
-        float *a7,
-        float *a8,
-        float *a9)
+float *__cdecl copy_active_input_controller_state(
+        int controller_slot,
+        int *out_buttons,
+        float *out_axis_x,
+        float *out_axis_y,
+        float *out_authored_x,
+        float *out_authored_y,
+        float *out_pointer_value,
+        float *out_pointer_x,
+        float *out_pointer_y)
 {
-  if ( a1 )
+  if ( controller_slot )
   {
-    *a2 = MEMORY[0x50337C];
-    *a3 = MEMORY[0x503374];
-    *a4 = MEMORY[0x503378];
-    *a5 = MEMORY[0x503388];
-    *a6 = MEMORY[0x50338C];
-    *a7 = MEMORY[0x503390];
-    *a8 = MEMORY[0x503380];
-    *a9 = MEMORY[0x503384];
-    return a7;
+    *out_buttons = unk_50337C;
+    *out_axis_x = unk_503374;
+    *out_axis_y = unk_503378;
+    *out_authored_x = unk_503388;
+    *out_authored_y = unk_50338C;
+    *out_pointer_value = unk_503390;
+    *out_pointer_x = unk_503380;
+    *out_pointer_y = unk_503384;
+    return out_pointer_value;
   }
   else
   {
-    *a2 = MEMORY[0x503344][0];
-    *a3 = MEMORY[0x50333C][0];
-    *a4 = MEMORY[0x503340][0];
-    *a5 = *(float *)&MEMORY[0x503350];
-    *a6 = *(float *)&MEMORY[0x503354];
-    *a7 = MEMORY[0x503358];
-    *a8 = MEMORY[0x503348];
-    *a9 = MEMORY[0x50334C];
-    return a7;
+    *out_buttons = g_input_slot0_buttons[0];
+    *out_axis_x = g_input_slot0_axis_x[0];
+    *out_axis_y = g_input_slot0_axis_y[0];
+    *out_authored_x = *(float *)g_input_slot0_authored_x;
+    *out_authored_y = *(float *)g_input_slot0_authored_y;
+    *out_pointer_value = g_input_slot0_pointer_value;
+    *out_pointer_x = g_input_slot0_pointer_x;
+    *out_pointer_y = g_input_slot0_pointer_y;
+    return out_pointer_value;
   }
 }
 

@@ -8,7 +8,7 @@ void NewGameMenu::update_new_game_menu()
     unsigned int flags;
 
     if (read_pressed_text_input_key_code() != 0
-        || ((*(NewGameInputSource**)(g_game_base + 0x28c))->control_flags & 0x4000) != 0) {
+        || ((*(GameInputOwner**)(g_game_base + 0x28c))->input.pressed_buttons & 0x4000) != 0) {
         replay_probe_progress = 0.0f;
         if (hide_for_replay_latch == 1) {
             postal_button->unhide_border_init();

@@ -3,17 +3,13 @@
 #include "click_start.h"
 #include "audio_system.h"
 #include "game_pause_view.h"
+#include "input_state.h"
 
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 void set_math_random_seed(int seed);
 void* set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
-
-struct ClickStartInputSource {
-    char unknown_00[0x3c];
-    unsigned int control_flags; // +0x3c, 0x4000 confirm edge
-};
 
 void ClickStartController::update_click_start()
 {
@@ -47,8 +43,8 @@ void ClickStartController::update_click_start()
             if ((replay_record[(replay_offset << 1) + 0x74] & 0x20) == 0)
                 return;
         } else {
-            ClickStartInputSource* input = *(ClickStartInputSource**)(g_game_base + 0x28c);
-            if (hide_prompt != 0 || (input->control_flags & 0x4000) == 0)
+            GameInputOwner* input = *(GameInputOwner**)(g_game_base + 0x28c);
+            if (hide_prompt != 0 || (input->input.pressed_buttons & 0x4000) == 0)
                 return;
         }
 

@@ -2,18 +2,18 @@
 /* function: update_input @ 0x40aa80 */
 /* selector: update_input */
 
-int __thiscall sub_40AA80(_DWORD *this)
+int __thiscall update_input(InputState *state)
 {
   int result; // eax
   int v2; // edx
 
-  result = *(this + 13);
-  v2 = result ^ *(this + 3);
-  *(this + 3) = result;
-  *(this + 1) = result & v2;
-  *(this + 4) = ~result;
-  *(this + 13) = 0;
-  *(this + 2) = v2 & ~result;
+  result = state->current_buttons;
+  v2 = result ^ state->previous_buttons;
+  state->previous_buttons = result;
+  state->pressed_buttons = result & v2;
+  state->inverse_current_buttons = ~result;
+  state->current_buttons = 0;
+  state->released_buttons = v2 & ~result;
   return result;
 }
 

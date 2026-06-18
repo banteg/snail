@@ -3,14 +3,14 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_input @ 0x40aa50 */
 
-0040aa52        *(arg1 + 0x10) = 0xffffffff
-0040aa59        *(arg1 + 0x34) = 0
-0040aa5c        *(arg1 + 4) = 0
-0040aa5f        *(arg1 + 8) = 0
-0040aa62        *(arg1 + 0xc) = 0
-0040aa65        *(arg1 + 0x14) = 0
-0040aa68        *(arg1 + 0x18) = 0
-0040aa6b        *(arg1 + 0x28) = 0x43a00000
-0040aa72        *(arg1 + 0x2c) = 0x43700000
-0040aa79        *(arg1 + 0x30) = 0
+0040aa52        state->inverse_current_buttons = 0xffffffff
+0040aa59        state->current_buttons = 0
+0040aa5c        state->pressed_buttons = 0
+0040aa5f        state->released_buttons = 0
+0040aa62        state->previous_buttons = 0
+0040aa65        state->axis_x = 0f
+0040aa68        state->axis_y = 0f
+0040aa6b        state->authored_x = 320f
+0040aa72        state->authored_y = 240f
+0040aa79        state->pointer_value = 0f
 0040aa7c        return 0

@@ -4,13 +4,8 @@
 
 #include "frontend_widget.h"
 #include "high_score_screen.h"
+#include "input_state.h"
 #include "mouse_cursor_state.h"
-
-class NewGameInputSource {
-public:
-    char unknown_00[0x3c];
-    unsigned int control_flags; // +0x3c, 0x4000 confirm/menu edge
-};
 
 class TutorialController {
 public:

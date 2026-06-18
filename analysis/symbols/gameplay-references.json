@@ -2101,7 +2101,7 @@
         "data_503358"
       ],
       "size": "0x3c",
-      "description": "Input-controller auxiliary pointer lane array with slot 0 at this address and slot 1 at +0x38; copied by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
+      "description": "Input-controller pointer-value lane array with slot 0 at this address and slot 1 at +0x38; copied into InputState.pointer_value by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
     },
     {
       "address": "0x508890",
