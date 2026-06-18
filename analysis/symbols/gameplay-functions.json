@@ -1566,6 +1566,11 @@
       "description": "Registers one voice or sound-bank sample path into the shared 256-entry runtime sound table, loading bytes from the archive on first use and returning the assigned sample index."
     },
     {
+      "address": "0x432fc0",
+      "name": "find_registered_sound_sample_id_by_name",
+      "description": "Scans the registered sound-sample path/name table populated by `register_sound_sample` and returns the matching sample id for level `Sample=\"...\"` message audio, reporting an error and returning 0 on miss."
+    },
+    {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
     },

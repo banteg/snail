@@ -1899,6 +1899,26 @@
       "description": "Two-slot input-controller pointer-region right-bound array used by update_input_controller_pointer_region and set_input_controller_pointer_authored_xy."
     },
     {
+      "address": "0x5088b0",
+      "name": "g_registered_sound_sample_names",
+      "kind": "global",
+      "aliases": [
+        "data_5088b0"
+      ],
+      "size": "0x8000",
+      "description": "256-entry table of 0x80-byte registered sound sample path/name slots populated by register_sound_sample and searched by find_registered_sound_sample_id_by_name."
+    },
+    {
+      "address": "0x5108b0",
+      "name": "g_registered_sound_sample_count",
+      "kind": "global",
+      "aliases": [
+        "data_5108b0"
+      ],
+      "size": "0x4",
+      "description": "Current registered sound sample count and next sample id used by register_sound_sample and find_registered_sound_sample_id_by_name."
+    },
+    {
       "address": "0x5108c0",
       "name": "g_tracked_allocation_depth",
       "kind": "global",

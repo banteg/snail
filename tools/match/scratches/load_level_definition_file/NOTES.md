@@ -11,7 +11,7 @@ Initial relationship scratch.
 - Confirms `Speed:`, `Garbage:`, `Salt:`, `Background:`, `Parcels:`,
   `Track:`, and `Quota:` scalar fields at `+0x1a595c..+0x1a5974`.
 - Focused Wibo status: 2026-06-18, 75.17%, 939/926 candidate/target
-  instructions, prefix 20/926, masked operands 164 ok, 1 unresolved.
+  instructions, prefix 20/926, masked operands 165 ok.
 
 Slot corrections from this loader:
 
@@ -29,5 +29,6 @@ Residuals:
 - Early fallback-file error handling still differs in stack cleanup scheduling.
 - `GalaxyText:` parsing is structurally recovered, but the compact text-copy
   loop still uses different register ownership.
-- `0x432fc0` resolves `Sample="..."` names to ids, but it does not yet have a
-  promoted function name, so the call remains one masked unresolved operand.
+- `find_registered_sound_sample_id_by_name` resolves `Sample="..."` names to
+  registered sound sample ids by scanning the path/name table populated by
+  `register_sound_sample`.

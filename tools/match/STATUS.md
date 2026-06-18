@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**373/686** mapped gameplay functions matched, **510/686** mapped gameplay functions have a scratch, **36073/325887** bytes (**11.07%**) are proof-grade, and overall fuzzy is **27.39%**.
+**374/687** mapped gameplay functions matched, **511/687** mapped gameplay functions have a scratch, **36152/325882** bytes (**11.09%**) are proof-grade, and overall fuzzy is **27.41%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -201,6 +201,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
+| ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 91.80% | 3/122 | 17 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
@@ -368,7 +369,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_nuke | 0x4471e0 | 169 | 59/59 | 89.83% | 4/59 | 8 ok |  |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 106 | 36/36 | 100.00% | 36/36 | 4 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
-| 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 1 unresolved, 164 ok |  |
+| 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
 | ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  |

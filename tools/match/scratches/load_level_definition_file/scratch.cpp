@@ -16,7 +16,7 @@ char* advance_to_next_crlf_line(char* cursor); // @ 0x44e690
 int parse_next_signed_int(char** cursor);
 float parse_next_float32(char** cursor);
 void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
-int sub_432FC0(char* sample_name);
+int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
 
 struct AuthoredSegmentRow {
     int flags;
@@ -391,7 +391,8 @@ int* LevelDefinitionLoader::load_level_definition_file(char* filename)
                         ch = *option_cursor;
                     }
                     *sample_out = 0;
-                    segment_slots[segment_count].message_sample_id = sub_432FC0(sample_name);
+                    segment_slots[segment_count].message_sample_id =
+                        find_registered_sound_sample_id_by_name(sample_name);
                     if (segment_slots[segment_count].message_sample_id == -1)
                         report_errorf("Cannot find sample %s in %s", sample_name, level_path);
                 }
