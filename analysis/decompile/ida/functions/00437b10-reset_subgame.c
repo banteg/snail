@@ -5,7 +5,7 @@
 void __thiscall reset_subgame(Game *game)
 {
   int v2; // ecx
-  TrackHealthPickupGameView **health_owner; // eax
+  TrackPickupOwnerGameView **health_owner; // eax
   Game **garbage_game; // eax
   int v5; // ecx
   Game **slug_owner; // eax
@@ -23,7 +23,7 @@ void __thiscall reset_subgame(Game *game)
   do
   {
     *(health_owner - 3) = 0; // health_pickups[i].state
-    *health_owner = (TrackHealthPickupGameView *)game; // health_pickups[i].owner_game
+    *health_owner = (TrackPickupOwnerGameView *)game; // health_pickups[i].owner_game
     health_owner += 29;
     --v2;
   }

@@ -6,15 +6,11 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
+#include "track_pickup_owner_game_view.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
-
-struct TrackSpeedupGameView {
-    char unknown_00[0x09];
-    unsigned char paused; // +0x09
-};
 
 class TrackSpeedupRuntime : public BodNode {
 public:
@@ -36,7 +32,7 @@ public:
     int state; // +0x80
     Player* owner; // +0x84
     char unknown_88[0x8c - 0x88];
-    TrackSpeedupGameView* owner_game; // +0x8c
+    TrackPickupOwnerGameView* owner_game; // +0x8c
     char unknown_90[0xac - 0x90];
     Sprite* sprite; // +0xac
     char unknown_b0[0xb4 - 0xb0];

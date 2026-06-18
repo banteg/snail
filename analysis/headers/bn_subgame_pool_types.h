@@ -16,10 +16,10 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct TrackSpeedupGameView {
+typedef struct TrackPickupOwnerGameView {
     uint8_t unknown_00[0x09];
-    uint8_t paused;
-} TrackSpeedupGameView;
+    uint8_t pause_gate;
+} TrackPickupOwnerGameView;
 
 typedef struct TrackSpeedupRuntime {
     void* vtable;
@@ -39,16 +39,11 @@ typedef struct TrackSpeedupRuntime {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
-    TrackSpeedupGameView* owner_game;
+    TrackPickupOwnerGameView* owner_game;
     uint8_t unknown_90[0x1c];
     struct Sprite* sprite;
     uint8_t unknown_b0[0x04];
 } TrackSpeedupRuntime;
-
-typedef struct TrackJetpackPickupGameView {
-    uint8_t unknown_00[0x09];
-    uint8_t paused;
-} TrackJetpackPickupGameView;
 
 typedef struct TrackJetpackPickup {
     void* vtable;
@@ -60,7 +55,7 @@ typedef struct TrackJetpackPickup {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    TrackJetpackPickupGameView* owner_game;
+    TrackPickupOwnerGameView* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
@@ -72,11 +67,6 @@ typedef struct TrackJetpackPickup {
     uint8_t unknown_180[0x1c];
 } TrackJetpackPickup;
 
-typedef struct TrackHealthPickupGameView {
-    uint8_t unknown_00[0x09];
-    uint8_t paused;
-} TrackHealthPickupGameView;
-
 typedef struct TrackHealthPickup {
     void* vtable;
     uint32_t list_flags;
@@ -87,7 +77,7 @@ typedef struct TrackHealthPickup {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    TrackHealthPickupGameView* owner_game;
+    TrackPickupOwnerGameView* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
@@ -139,7 +129,7 @@ typedef struct RingOrSpecialEffectParticle {
 
 typedef struct RingEffectRateSource {
     uint8_t unknown_00[0x09];
-    uint8_t paused;
+    uint8_t pause_gate;
     uint8_t unknown_0a[0x2e];
     float subgame_rate;
 } RingEffectRateSource;

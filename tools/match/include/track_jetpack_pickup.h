@@ -7,16 +7,12 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
+#include "track_pickup_owner_game_view.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
 struct TrackRowCell;
-
-struct TrackJetpackPickupGameView {
-    char unknown_00[0x09];
-    unsigned char paused; // +0x09
-};
 
 class TrackJetpackPickup : public BodNode {
 public:
@@ -28,7 +24,7 @@ public:
     int state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
-    TrackJetpackPickupGameView* owner_game; // +0x44
+    TrackPickupOwnerGameView* owner_game; // +0x44
     char unknown_48[0x64 - 0x48];
     Sprite* sprite; // +0x64
     TrackRowCell* source_cell; // +0x68

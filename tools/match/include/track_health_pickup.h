@@ -6,16 +6,12 @@
 #define TRACK_HEALTH_PICKUP_H
 
 #include "bod_list.h"
+#include "track_pickup_owner_game_view.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
 struct TrackRowCell;
-
-struct TrackHealthPickupGameView {
-    char unknown_00[0x09];
-    unsigned char paused; // +0x09
-};
 
 class TrackHealthPickup : public BodNode {
 public:
@@ -29,7 +25,7 @@ public:
     char unknown_40[0x44 - 0x40];
     // Pause gate view initialized from Game during reset_subgame. This is
     // distinct from source_cell at +0x68, which spawn_track_health_pickup stores.
-    TrackHealthPickupGameView* owner_game; // +0x44
+    TrackPickupOwnerGameView* owner_game; // +0x44
     char unknown_48[0x64 - 0x48];
     Sprite* sprite; // +0x64
     TrackRowCell* source_cell; // +0x68

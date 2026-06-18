@@ -54,6 +54,6 @@ Important source-shape correction:
   cell. `reset_subgame` writes the containing `Game*` into this lane for all
   eight health slots; the spawned row source remains `source_cell +0x68`.
 - A broad BN header import preview still disturbed existing shared structs, so
-  the sync script declares only the tiny `TrackHealthPickupGameView` type when
+  the sync script declares only the tiny `TrackPickupOwnerGameView` type when
   missing and field-sets the recovered names without reimporting `Sprite`,
   `TrackRowCell`, or `Player`.

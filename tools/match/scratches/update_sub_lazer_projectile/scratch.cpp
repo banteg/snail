@@ -37,7 +37,7 @@ struct TrackRuntime {
 class Game {
 public:
     char unknown_00[0x9];
-    unsigned char paused; // +0x09
+    unsigned char pause_gate; // +0x09
     char unknown_0a[0x5a8 - 0x0a];
     SubLazerListAnchor sub_lazer_free_anchor; // +0x5a8
     char unknown_5b4[0x74618 - 0x5b4];
@@ -53,7 +53,7 @@ int report_errorf(char* format, ...);
 
 void SubLazerSlot::update_sub_lazer_projectile()
 {
-    if (owner_game->paused)
+    if (owner_game->pause_gate)
         return;
     switch (state) {
     case 2: {

@@ -258,7 +258,7 @@ struct Squidge {
 
 struct Game {
     char unknown_00[0x09];
-    unsigned char paused; // +0x09
+    unsigned char pause_gate; // +0x09
     char unknown_0a[0x38 - 0x0a];
     float subgame_rate; // +0x38
     char unknown_3c[0x40 - 0x3c];
@@ -382,7 +382,7 @@ struct Player {
 void Player::update_subgoldy()
 {
     Game* current_game = game;
-    if (current_game->paused) {
+    if (current_game->pause_gate) {
         if (g_app->frontend_state != 9) {
             damage_gauge.update_damage_gauge();
             progress_bar.update_progress_bar();

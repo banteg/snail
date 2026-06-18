@@ -13,7 +13,7 @@ Layout facts now shared with `track_jetpack_pickup.h`:
 - parent list prefix at `+0x00`, with live/free-list flags at `+0x04`
 - world position at `+0x10`; the updater uses y as the sprite bob base and
   z for the owner kill-plane compare
-- state `+0x38`, owner `+0x3c`, owner game/paused view `+0x44`
+- state `+0x38`, owner `+0x3c`, owner-game pause view `+0x44`
 - sprite `+0x64`, source row cell `+0x68`, bob phase/step `+0x6c/+0x70`
 - embedded renderable bodies at `+0x74` and `+0x108`, initialized by the
   constructor but not directly advanced by this updater

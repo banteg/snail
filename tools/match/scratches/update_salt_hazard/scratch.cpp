@@ -6,7 +6,7 @@
 class Game {
 public:
     char unknown_00[0x09];
-    unsigned char paused; // +0x09
+    unsigned char pause_gate; // +0x09
     char unknown_0a[0x5a8 - 0x0a];
     SaltListAnchor salt_free_anchor; // +0x5a8
     char unknown_5b4[0x3bb7d4 - 0x5b4];
@@ -20,7 +20,7 @@ int report_errorf(char* format, ...);
 
 void SaltHazardSlot::update_salt_hazard()
 {
-    if (owner_game->paused)
+    if (owner_game->pause_gate)
         return;
 
     switch (state) {

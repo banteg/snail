@@ -15,7 +15,7 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
-HEALTH_GAME_VIEW_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_health_pickup_game_view.h"
+PICKUP_OWNER_GAME_VIEW_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_pickup_owner_game_view.h"
 TARGET = "active"
 
 REQUIRED_HEADER_STRUCTS = (
@@ -35,12 +35,24 @@ GAME_FIELD_UPDATES = (
     ("0x35b78c", "ring_effects", "RingOrSpecialEffectPool"),
 )
 
+TRACK_SPEEDUP_FIELD_UPDATES = (
+    ("0x8c", "owner_game", "TrackPickupOwnerGameView*"),
+)
+
+TRACK_JETPACK_PICKUP_FIELD_UPDATES = (
+    ("0x44", "owner_game", "TrackPickupOwnerGameView*"),
+)
+
 TRACK_HEALTH_PICKUP_FIELD_UPDATES = (
-    ("0x44", "owner_game", "TrackHealthPickupGameView*"),
+    ("0x44", "owner_game", "TrackPickupOwnerGameView*"),
 )
 
 SLUG_HAZARD_FIELD_UPDATES = (
     ("0x88", "owner_game", "Game*"),
+)
+
+RING_RATE_SOURCE_FIELD_UPDATES = (
+    ("0x09", "pause_gate", "uint8_t"),
 )
 
 PROTO_UPDATES = (
@@ -58,8 +70,8 @@ def main() -> int:
         types_declare_if_missing(
             REPO_ROOT,
             target=TARGET,
-            header_path=HEALTH_GAME_VIEW_HEADER_PATH,
-            required_structs=("TrackHealthPickupGameView",),
+            header_path=PICKUP_OWNER_GAME_VIEW_HEADER_PATH,
+            required_structs=("TrackPickupOwnerGameView",),
         ),
         types_declare_if_missing(
             REPO_ROOT,
@@ -71,6 +83,18 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,
+            struct_name="TrackSpeedupRuntime",
+            updates=TRACK_SPEEDUP_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
+            struct_name="TrackJetpackPickup",
+            updates=TRACK_JETPACK_PICKUP_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
             struct_name="TrackHealthPickup",
             updates=TRACK_HEALTH_PICKUP_FIELD_UPDATES,
         ),
@@ -79,6 +103,12 @@ def main() -> int:
             target=TARGET,
             struct_name="SlugHazardRuntime",
             updates=SLUG_HAZARD_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
+            struct_name="RingEffectRateSource",
+            updates=RING_RATE_SOURCE_FIELD_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]

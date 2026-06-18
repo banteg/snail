@@ -4,7 +4,7 @@
 /* function: reset_subgame @ 0x437b10 */
 
 00437b16        int32_t i_4 = 8
-00437b1b        struct TrackHealthPickupGameView** eax = &game->health_pickups[0].owner_game
+00437b1b        struct TrackPickupOwnerGameView** eax = &game->health_pickups[0].owner_game
 00437b2a        int32_t i
 00437b21        (eax - 0x356044)->health_pickups[0].state = 0
 00437b24        (eax - 0x356044)->health_pickups[0].owner_game = game

@@ -10,10 +10,6 @@
 #include "vector3.h"
 
 class Game;
-struct SubLazerGameView {
-    char unknown_00[0x09];
-    unsigned char paused; // +0x09
-};
 
 class SubLazerSlot : public BodNode {
 public:
