@@ -3,14 +3,14 @@
 #include "direct_input_view.h"
 
 extern int g_joystick_count; // data_777b2c
-extern DirectInput* volatile g_joystick_input; // data_777b30
-extern DirectInputDevice* volatile g_joystick_devices[4]; // data_777b34
+extern DirectInput* g_joystick_input; // data_777b30
+extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
 
 int release_input_controllers()
 {
     int index = 0;
     if (g_joystick_count > 0) {
-        DirectInputDevice* volatile* device_ref = g_joystick_devices;
+        DirectInputDevice** device_ref = g_joystick_devices;
         do {
             DirectInputDevice* device = *device_ref;
             if (device != 0)

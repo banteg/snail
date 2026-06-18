@@ -2,9 +2,9 @@
 
 #include "frontend_overlay_color_lerp.h"
 
-int FrontendOverlayColorLerp::initialize_frontend_overlay_color_lerp(int state_)
+void FrontendOverlayColorLerp::initialize_frontend_overlay_color_lerp(int state_)
 {
     state = state_;
-    target.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
-    return current.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
+    target.store_color4f(1.0f, 1.0f, 1.0f, 0.0f);
+    current.store_color4f(1.0f, 1.0f, 1.0f, 0.0f);
 }

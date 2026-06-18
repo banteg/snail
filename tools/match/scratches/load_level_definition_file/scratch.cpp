@@ -196,7 +196,7 @@ int* LevelDefinitionLoader::load_level_definition_file(char* filename)
         fringe_color.b = (float)parsed_int * 0.0039215689f;
     } else {
         report_errorf("No Fringe: in %s using white", level_path);
-        fringe_color.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000);
+        fringe_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     cursor = find_case_insensitive_substring("Track:", LEVEL_FILE_BUFFER);

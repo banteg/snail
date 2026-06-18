@@ -2,8 +2,8 @@
 
 #include "direct_input_view.h"
 
-extern DirectInput* volatile g_keyboard_input; // data_777d4c
-extern DirectInputDevice* volatile g_keyboard_device; // data_777d50
+extern DirectInput* g_keyboard_input; // data_777d4c
+extern DirectInputDevice* g_keyboard_device; // data_777d50
 
 int release_keyboard_input()
 {

@@ -7,7 +7,7 @@
 
 class FrontendOverlayColorLerp {
 public:
-    int initialize_frontend_overlay_color_lerp(int state); // @ 0x40ab00
+    void initialize_frontend_overlay_color_lerp(int state); // @ 0x40ab00
     void draw_frontend_overlay_color_lerp();
 
     int state; // +0x00

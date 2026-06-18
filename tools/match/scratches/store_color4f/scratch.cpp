@@ -2,11 +2,10 @@
 
 #include "sprite.h"
 
-int Color4f::store_color4f(int r_, int g_, int b_, int a_)
+void Color4f::store_color4f(float r_, float g_, float b_, float a_)
 {
-    *(int*)&r = r_;
-    *(int*)&g = g_;
-    *(int*)&b = b_;
-    *(int*)&a = a_;
-    return b_;
+    r = r_;
+    g = g_;
+    b = b_;
+    a = a_;
 }
