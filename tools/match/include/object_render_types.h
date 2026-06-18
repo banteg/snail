@@ -151,7 +151,7 @@ struct Object {
     Vector3* toon_vertices; // +0x08, 12 bytes per source vertex
     ObjectToonFaceQuadNormal* toon_facequad_normals; // +0x0c, 24 bytes per facequad
     unsigned int flags; // +0x10
-    int field_14; // +0x14
+    int blend_mode; // +0x14
     TextureRef* override_texture_ref; // +0x18
     char unknown_1c[0x2c - 0x1c];
     int vertex_count; // +0x2c

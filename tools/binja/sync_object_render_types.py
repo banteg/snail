@@ -13,16 +13,38 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 OBJECT_FIELDS = (
+    ("0x08", "toon_vertices", "Vec3*"),
+    ("0x0c", "toon_facequad_normals", "ObjectToonFaceQuadNormal*"),
     ("0x10", "flags", "uint32_t"),
+    ("0x14", "blend_mode", "int32_t"),
+    ("0x18", "override_texture_ref", "TextureRef*"),
     ("0x2c", "vertex_count", "int32_t"),
     ("0x38", "vertices", "Vec3*"),
     ("0x3c", "copied_vertices", "Vec3*"),
+    ("0x40", "field_40", "int32_t"),
+    ("0x44", "vertex_normals", "Vec3*"),
+    ("0x48", "vertex_colours", "Color4f*"),
     ("0x54", "facequad_count", "int32_t"),
+    ("0x58", "facequad_capacity", "int32_t"),
     ("0x5c", "facequads", "ObjectFaceQuad*"),
     ("0x60", "facequad_normals", "Vec3*"),
+    ("0x64", "texture_group_count", "int32_t"),
+    ("0x68", "texture_group_capacity", "int32_t"),
+    ("0x6c", "texture_group_ends", "int32_t*"),
+    ("0x70", "edge_count", "int32_t"),
+    ("0x74", "edges", "ObjectToonEdge*"),
+    ("0x80", "distort", "ObjectDistort"),
+    ("0x94", "bounding_radius", "float"),
+    ("0xa4", "bounds_min", "Vec3"),
+    ("0xb0", "bounds_max", "Vec3"),
     ("0xbc", "animation", "ObjectAnimation*"),
     ("0xc0", "render_buffers", "ObjectRenderBuffers*"),
     ("0xc4", "grouped_vertex_count", "int32_t"),
+    ("0xc8", "index_buffer", "ObjectIndexBuffer*"),
+    ("0xcc", "group_index_starts", "int32_t*"),
+    ("0xd0", "group_texture_refs", "TextureRef**"),
+    ("0xd4", "group_primitive_counts", "int32_t*"),
+    ("0xd8", "toon_index_buffer", "ObjectIndexBuffer*"),
 )
 
 PROTO_UPDATES = (
