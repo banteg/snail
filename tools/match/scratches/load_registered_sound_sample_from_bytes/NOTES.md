@@ -10,5 +10,6 @@ Registers one archive-backed sound sample through the BASS sample loader.
 - Failure path uses the native `***ERROR:Bass Sample Load Memory Fail\n` string.
 
 Current status: near-match. The only remaining difference is stack cleanup after
-the stripped one-argument debug stub: native emits `pop ecx`; this scratch emits
-the equivalent `add esp, 0x4`.
+the stripped one-argument debug report call: native emits `pop ecx`; this
+scratch emits the equivalent `add esp, 0x4`. Declaring the debug helper as the
+same variadic surface used by other callsites does not change that cleanup.

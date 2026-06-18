@@ -8,7 +8,7 @@ typedef int (__stdcall* BassSampleLoadFn)(
 extern BassSampleLoadFn g_bass_sample_load; // 0x7537cc
 extern int g_registered_sound_sample_handles[]; // 0x7537e0
 
-int debug_report_stub(char* format); // @ 0x449c00, stripped in release
+int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 int AudioBackend::load_registered_sound_sample_from_bytes(
     char* bytes, int byte_count, int sample_id, int normalization_class)
