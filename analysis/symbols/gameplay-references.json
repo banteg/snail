@@ -1965,6 +1965,16 @@
       "description": "Fullscreen-mode flag initialized by game-window setup and read by mouse cursor conversion and click forwarding."
     },
     {
+      "address": "0x4dfb00",
+      "name": "g_previous_frame_timestamp_seconds",
+      "kind": "global",
+      "aliases": [
+        "data_4dfb00"
+      ],
+      "size": "0x4",
+      "description": "Previous frame timestamp in seconds, refreshed by window activation/focus helpers and rolled forward by the main loop."
+    },
+    {
       "address": "0x4dfb08",
       "name": "g_blank_text",
       "kind": "global",

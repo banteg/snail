@@ -1,0 +1,37 @@
+// show_and_focus_game_window @ 0x4073b0 (cdecl)
+
+extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
+extern "C" __declspec(dllimport) int __stdcall ShowWindow(int window, int command);
+extern "C" __declspec(dllimport) int __stdcall SetForegroundWindow(int window);
+extern "C" __declspec(dllimport) int __stdcall SetFocus(int window);
+extern "C" __declspec(dllimport) int __stdcall SetActiveWindow(int window);
+
+extern int g_main_window; // data_4dfaf0
+extern float g_previous_frame_timestamp_seconds; // data_4dfb00
+extern unsigned char g_left_mouse_button_latch[2]; // data_4b7764
+extern unsigned char g_left_mouse_button_state[2]; // data_4b7234
+extern unsigned char g_right_mouse_button_latch[2]; // data_4b7230
+extern unsigned char g_right_mouse_button_state[2]; // data_4b7640
+
+int show_and_focus_game_window()
+{
+    unsigned int ticks = timeGetTime();
+    int zero = 0;
+
+    g_previous_frame_timestamp_seconds = (float)ticks * 0.001f;
+    ShowWindow(g_main_window, 1);
+    SetForegroundWindow(g_main_window);
+    SetFocus(g_main_window);
+    int result = SetActiveWindow(g_main_window);
+
+    g_left_mouse_button_latch[0] = (unsigned char)zero;
+    g_left_mouse_button_state[0] = (unsigned char)zero;
+    g_right_mouse_button_latch[0] = (unsigned char)zero;
+    g_right_mouse_button_state[0] = (unsigned char)zero;
+    g_left_mouse_button_latch[1] = (unsigned char)zero;
+    g_left_mouse_button_state[1] = (unsigned char)zero;
+    g_right_mouse_button_latch[1] = (unsigned char)zero;
+    g_right_mouse_button_state[1] = (unsigned char)zero;
+
+    return result;
+}
