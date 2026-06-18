@@ -11,6 +11,10 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_high_score_tables",
+        "void __thiscall initialize_high_score_tables(HighScoreBank* bank);",
+    ),
+    (
         "initialize_high_score_entry",
         "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int runtime_seed, int initial_level_mode_arg, int level_arg_tail_value, unsigned int runtime_flags_snapshot, int high_score_mode_tag, int route_or_rank_index);",
     ),

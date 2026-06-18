@@ -155,6 +155,36 @@
       "description": "Loading-screen progress state initialized by initialize_loading_screen and ticked during archive/object build loading passes."
     },
     {
+      "address": "0x4df9c4",
+      "name": "g_last_loading_budget",
+      "kind": "global",
+      "aliases": [
+        "data_4df9c4"
+      ],
+      "size": "0x4",
+      "description": "Last measured loading-screen budget preserved by destroy_loading_screen for the next loader pass."
+    },
+    {
+      "address": "0x503280",
+      "name": "g_loading_background_texture",
+      "kind": "global",
+      "aliases": [
+        "data_503280"
+      ],
+      "size": "0x4",
+      "description": "Direct3D texture pointer for the loading-screen background, released by destroy_loading_screen."
+    },
+    {
+      "address": "0x503288",
+      "name": "g_loading_bar_on_texture",
+      "kind": "global",
+      "aliases": [
+        "data_503288"
+      ],
+      "size": "0x4",
+      "description": "Direct3D texture pointer for the loading-screen progress fill, released by destroy_loading_screen."
+    },
+    {
       "address": "0x4137b8",
       "name": "configure_sprite_render_state_jump_table",
       "kind": "jump_table",

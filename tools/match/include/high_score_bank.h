@@ -10,6 +10,7 @@ const int HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT = 51;
 
 class HighScoreBank {
 public:
+    void initialize_high_score_tables(); // @ 0x417540
     int add_arcade_high_score(HighScoreRecord* record, int level_arg); // @ 0x4176a0
     int add_survival_high_score(HighScoreRecord* record); // @ 0x417780
     void add_time_trial_high_score(
