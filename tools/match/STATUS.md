@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**420/687** mapped gameplay functions matched, **562/687** mapped gameplay functions have a scratch, **44243/325882** bytes (**13.58%**) are proof-grade, and overall fuzzy is **30.05%**.
+**421/687** mapped gameplay functions matched, **563/687** mapped gameplay functions have a scratch, **44386/325882** bytes (**13.62%**) are proof-grade, and overall fuzzy is **30.10%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -46,6 +46,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
 | ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
+| ✅ | log_startup_timestamp | 0x406d30 | 143 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | handle_game_window_deactivate | 0x407440 | 112 | 18/18 | 100.00% | 18/18 | 9 ok |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |

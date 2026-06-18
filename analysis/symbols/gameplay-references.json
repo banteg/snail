@@ -805,6 +805,26 @@
       "description": "Statically linked CRT free helper used by free_tracked_memory for guarded heap blocks."
     },
     {
+      "address": "0x48b936",
+      "name": "ftime",
+      "kind": "function",
+      "aliases": [
+        "_ftime",
+        "sub_48b936"
+      ],
+      "description": "Statically linked CRT _ftime helper used by log_startup_timestamp to populate the startup time buffer."
+    },
+    {
+      "address": "0x48ba1b",
+      "name": "ctime",
+      "kind": "function",
+      "aliases": [
+        "_ctime",
+        "sub_48ba1b"
+      ],
+      "description": "Statically linked CRT ctime helper used by log_startup_timestamp to format the startup time value."
+    },
+    {
       "address": "0x48be4f",
       "name": "exit",
       "kind": "function",
