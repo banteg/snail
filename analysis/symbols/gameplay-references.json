@@ -765,6 +765,16 @@
       "description": "Statically linked CRT malloc helper used by allocate_tracked_memory for guarded heap blocks."
     },
     {
+      "address": "0x48b7a1",
+      "name": "fwrite",
+      "kind": "function",
+      "aliases": [
+        "_fwrite",
+        "sub_48b7a1"
+      ],
+      "description": "Statically linked CRT fwrite helper used by config, high-score, and archive file writers."
+    },
+    {
       "address": "0x48b8ab",
       "name": "remove",
       "kind": "function",
@@ -837,6 +847,16 @@
         "sub_48c7ba"
       ],
       "description": "Statically linked CRT atexit helper used to register compiler-generated static destructors."
+    },
+    {
+      "address": "0x496946",
+      "name": "getcwd",
+      "kind": "function",
+      "aliases": [
+        "_getcwd",
+        "sub_496946"
+      ],
+      "description": "Statically linked CRT _getcwd helper used by file error-reporting paths."
     },
     {
       "address": "0x4972d8",
