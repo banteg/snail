@@ -3,83 +3,83 @@
 /* selector: spawn_track_garbage_hazard */
 
 // Allocates and seeds one live garbage hazard from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`.
-_DWORD *__thiscall sub_43DA80(_DWORD *this, int a2, int a3)
+Vec3 *__thiscall spawn_track_garbage_hazard(Game *game, TrackRowCell *cell, Player *player)
 {
-  int v3; // eax
-  _DWORD *i; // ecx
-  _DWORD *result; // eax
-  float *v7; // esi
-  _DWORD *v8; // ebp
-  float *v9; // ebx
-  float *v10; // edi
-  char *v11; // eax
-  __int64 v12; // rax
-  _DWORD *v13; // eax
-  int v14; // edx
-  float v15; // [esp+Ch] [ebp-8h]
-  int v16; // [esp+10h] [ebp-4h]
+  int slot_index; // eax
+  _DWORD *scan_state; // ecx
+  Vec3 *result; // eax
+  float *slot_base; // esi
+  GarbageHazardSlot *slot; // ebp
+  float *radius; // ebx
+  BodNode *tail; // edi
+  BodList *active_list; // eax
+  __int64 texture_variant; // rax
+  Sprite *sprite; // eax
+  int flags; // edx
+  float staged_y; // [esp+Ch] [ebp-8h]
+  int staged_z_bits; // [esp+10h] [ebp-4h]
 
-  v3 = 0;
-  for ( i = this + 877682; *i; i += 49 )
+  slot_index = 0;
+  for ( scan_state = (_DWORD *)&game->garbage_hazards.slots[0].state; *scan_state; scan_state += 49 )
   {
-    if ( ++v3 >= 50 )
-      return (_DWORD *)report_warningf(aRunOutOfGarbag);
+    if ( ++slot_index >= 50 )
+      return (Vec3 *)report_warningf(aRunOutOfGarbag);
   }
-  v7 = (float *)(this + 49 * v3);
-  v7[877681] = *((float *)this + 877648);
-  v8 = v7 + 877649;
-  *(this + 877648) = v7 + 877649;
-  v9 = (float *)(this + 49 * v3 + 877688);
-  *((_DWORD *)v7 + 877697) = a3;
-  *v9 = (random_float_below(0.40000001) + 1.0) * 0.60000002;
-  *((_DWORD *)v7 + 877682) = 1;
-  set_matrix_identity((_DWORD *)v7 + 877663);
-  v16 = *(_DWORD *)(a2 + 24);
-  v15 = *v9 + *(float *)(a2 + 20);
-  v7[877675] = *(float *)(a2 + 16);
-  v7[877676] = v15;
-  *((_DWORD *)v7 + 877677) = v16;
-  project_position_onto_track_attachment(this, v7 + 877675, v7 + 877689);
-  v10 = (float *)(this + 978393);
-  v11 = (char *)MEMORY[0x4DF904] + 1448;
-  if ( ((_DWORD)v7[877650] & 0x200) != 0 )
+  slot_base = (float *)((_DWORD *)game + 49 * slot_index);
+  slot = (GarbageHazardSlot *)&slot_base[877649];
+  slot->next_active = game->garbage_hazards.active_head;
+  game->garbage_hazards.active_head = slot;
+  radius = (float *)((_DWORD *)game + 49 * slot_index + 877688);
+  slot->player = player;
+  *radius = (random_float_below(0.40000001) + 1.0) * 0.60000002;
+  slot->state = 1;
+  set_matrix_identity((TransformMatrix *)&slot->basis_right);
+  staged_z_bits = *(_DWORD *)&cell->anchor_position.z;
+  staged_y = *radius;
+  staged_y = staged_y + cell->anchor_position.y;
+  slot->world_position.x = cell->anchor_position.x;
+  slot->world_position.y = staged_y;
+  *(_DWORD *)&slot->world_position.z = staged_z_bits;
+  project_position_onto_track_attachment(game, &slot->world_position, &slot->sprite_y_offset);
+  tail = (BodNode *)((_DWORD *)game + 978393);
+  active_list = (BodList *)((char *)MEMORY[0x4DF904] + 1448);
+  if ( (slot->list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddbefore);
   }
   else
   {
-    *((_DWORD *)v7 + 877652) = v10;
-    if ( *((float **)v11 + 1) == v10 )
+    slot->list_next = (GarbageHazardSlot *)tail;
+    if ( active_list->first == (BodNode *)tail )
     {
-      *((_DWORD *)v10 + 2) = v8;
-      *((_DWORD *)v11 + 1) = v8;
-      v7[877651] = 0.0;
+      tail->list_prev = (BodNode *)slot;
+      active_list->first = (BodNode *)slot;
+      slot->list_prev = 0;
     }
     else
     {
-      v7[877651] = v10[2];
-      *((_DWORD *)v10 + 2) = v8;
-      *(_DWORD *)(*((_DWORD *)v7 + 877651) + 12) = v8;
+      slot->list_prev = (GarbageHazardSlot *)tail->list_prev;
+      tail->list_prev = (BodNode *)slot;
+      slot->list_prev->list_next = slot;
     }
-    *((_DWORD *)v7 + 877650) |= 0x200u;
+    slot->list_flags |= 0x200u;
   }
-  v12 = (__int64)((double)next_math_random_value() * -0.00012207031);
-  v13 = allocate_sprite(unk_790F30, *(_DWORD *)(*((_DWORD *)v7 + 877697) + 896), 114 - v12, -1, -1);
-  *((_DWORD *)v7 + 877694) = v13;
-  v14 = v13[1];
-  BYTE1(v14) |= 8u;
-  v13[1] = v14;
-  *(_DWORD *)(*((_DWORD *)v7 + 877694) + 120) = 0;
-  *(_DWORD *)(*((_DWORD *)v7 + 877694) + 104) = 0;
-  *(_DWORD *)(*((_DWORD *)v7 + 877694) + 108) = 0;
-  *(float *)(*((_DWORD *)v7 + 877694) + 96) = *v9;
-  *(float *)(*((_DWORD *)v7 + 877694) + 100) = *v9;
-  result = (_DWORD *)(*((_DWORD *)v7 + 877694) + 72);
-  *result = *((_DWORD *)v7 + 877675);
-  result[1] = *((_DWORD *)v7 + 877676);
-  result[2] = *((_DWORD *)v7 + 877677);
-  *((_DWORD *)v7 + 877695) = a2;
-  *((_BYTE *)v7 + 3510784) = 0;
+  texture_variant = (__int64)((double)next_math_random_value() * -0.00012207031);
+  sprite = allocate_sprite(unk_790F30, player->player_slot, 114 - texture_variant, -1, -1);
+  slot->sprite = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  slot->sprite->gravity_step = 0.0;
+  slot->sprite->progress = 0.0;
+  slot->sprite->progress_step = 0.0;
+  slot->sprite->size_start = *radius;
+  slot->sprite->size_end = *radius;
+  result = &slot->sprite->position;
+  result->x = slot->world_position.x;
+  result->y = slot->world_position.y;
+  result->z = slot->world_position.z;
+  slot->source_cell = cell;
+  slot->hidden = 0;
   return result;
 }
-

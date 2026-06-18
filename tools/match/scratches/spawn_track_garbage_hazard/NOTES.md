@@ -106,3 +106,13 @@ Residuals:
   `Vector3*`, matching the live slot position. Removing the `(float*)` cast is
   codegen-neutral: focused Wibo remains 99.30%, 143/143, with the same single
   projection-staging scheduling residual and 16 clean masked operands.
+- 2026-06-18 naming cleanup: the scratch now uses named garbage slot/pool
+  constants, renames the local presentation/radius pointer to `radius`, and
+  spells the intrusive BOD-list insertion through `BodNode`/`BodList`. It also
+  uses a narrow `GarbageHazardPoolSlotView` only for the confirmed tail fields
+  `source_cell` and `hidden`. This is codegen-neutral: focused Wibo remains
+  99.30%, 143/143, with the same projection-staging scheduling residual. The
+  earlier full `GarbageHazardSlot*` rewrite is still rejected because it
+  changed saved-register ownership and regressed badly. Collapsing the y
+  staging into `*radius + cell->anchor_position.y` is also rejected: it
+  regresses to 98.60% by reversing the native x87 operand load order.
