@@ -2119,6 +2119,16 @@
       "description": "51-entry track colour bank initialized by build_track_colours."
     },
     {
+      "address": "0x74ec74",
+      "name": "g_current_level_definition_name",
+      "kind": "global",
+      "aliases": [
+        "data_74ec74"
+      ],
+      "size": "0x4",
+      "description": "Pointer to the level-definition filename currently being parsed; load_level_definition_file stores its input here and segment-copy diagnostics read it."
+    },
+    {
       "address": "0x751478",
       "name": "g_time_trial_string",
       "kind": "global",
