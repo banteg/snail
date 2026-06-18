@@ -5,8 +5,6 @@
 void Object::copy_object_vertices()
 {
     for (int i = 0; i < vertex_count; ++i) {
-        copied_vertices[i].x = vertices[i].x;
-        copied_vertices[i].y = vertices[i].y;
-        copied_vertices[i].z = vertices[i].z;
+        copied_vertices[i] = vertices[i];
     }
 }

@@ -7,9 +7,12 @@ The helper is modeled as `void`: the native fallthrough leaves either the
 non-positive vertex count or the final byte offset in `eax`, which is leftover
 register state rather than a coherent API result.
 
-2026-06-18 probe: the readable indexed member source is the best source-shaped
-attempt so far at 47.27% with prefix 3/28. The compiler-shaped pointer/offset
-loop from the decompiler note did compile once the shared declaration was made
-`void`, but VC6 chose `edi` for the loop index and regressed to 28.07%. Keeping
-the readable form documents the true semantics while leaving the remaining
-register/base-reload scheduling as residual debt.
+2026-06-18 match: the high-level indexed whole-struct assignment
+`copied_vertices[i] = vertices[i]` is the exact source shape. VC6 emits the
+same byte-offset/index loop from that assignment, including the `eax` offset,
+`edx` loop index, and three dword moves through `ebx`/`esi`.
+
+The compiler-shaped pointer/offset loop from the decompiler note does compile
+once the shared declaration is `void`, but VC6 pins the loop index in `edi` and
+regresses to 28.07%. The note was right about the fake return and the 12-byte
+vertex struct; explicit field stores are just not the matching source shape.
