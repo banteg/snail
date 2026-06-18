@@ -93,14 +93,20 @@ recovering the native `0x70` frame. Remaining homing residuals are the y/z
 velocity owner operands (`[edi+4]`/`[edi+8]` versus direct member offsets) and
 the downstream path/collision scheduling.
 
-Tooling cleanup note: `uv run snail match types Game Player PathFollow
+Historical tooling cleanup note: `uv run snail match types Game Player PathFollow
 TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
 `TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
 `Vec3` are still divergent across scratches. After the typed transform pass,
 `uv run snail match types TransformMatrix GolbShot Vec3` also reports
-`TransformMatrix`, `GolbShot`, and `Vec3` as divergent. Do not consolidate the
-gameplay owner/projectile/matrix types yet; keep using scratch-local fields
-until more matching islands agree.
+`TransformMatrix`, `GolbShot`, and `Vec3` as divergent. The TransformMatrix
+piece is superseded by the 2026-06-18 consolidation below; keep the broader
+gameplay owner/projectile/vector views scratch-local until more matching
+islands agree.
+
+2026-06-18 TransformMatrix consolidation: the scratch now uses shared
+`transform_matrix.h` instead of its local 0x40 matrix view. Focused Wibo stays
+`49.85%`, `646/694`, with `52 ok, 1 mismatch`; the broader `GolbShot`,
+`Game`, and `Vec3` owner views remain scratch-local.
 
 2026-06-15 type-header split probe: replacing the tiny local `TrackRowCell`
 view with `track_attachment_types.h` kept the headline score at 49.85%, but

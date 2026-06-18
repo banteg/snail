@@ -1,15 +1,6 @@
 // update_frontend_state_machine @ 0x4107d0 (thiscall)
 // Root front-end dispatch loop and subgame bridge owner.
-#include "vector_types.h"
-
-struct TransformMatrix {
-    Vector4 basis_right;
-    Vector4 basis_up;
-    Vector4 basis_forward;
-    Vector4 position;
-
-    TransformMatrix* invert_matrix_from_source(TransformMatrix* source);
-};
+#include "transform_matrix.h"
 
 struct CameraAnchor {
     char unknown_00[0x60];

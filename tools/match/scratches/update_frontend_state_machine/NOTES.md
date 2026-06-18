@@ -29,3 +29,6 @@ Residuals are intentionally left to the matcher rather than papered over:
   copy, and delayed `camera_y` store without byte-shaped code. `uv run snail
   match idioms six-dword-struct-copy` confirms aggregate copies lower to
   `rep movsd`.
+- 2026-06-18: Replaced the local 0x40 matrix view with shared
+  `transform_matrix.h`; focused Wibo stays `71.35%`, `176/180`, with
+  `53 ok, 1 mismatch`.

@@ -3,6 +3,7 @@
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
 #include "score_stats.h"
+#include "transform_matrix.h"
 #include "vector3.h"
 
 typedef Vector3 Vec3;
@@ -12,20 +13,6 @@ void add_subgoldy_score(int* player, int score_kind, int value);
 void hit_slug_hazard(int slug, int mode);
 char* get_track_grid_cell_at_world_position(char* game, Vec3* position);
 void add_vapour_point(void* vapour, const void* matrix);
-
-struct TransformMatrix {
-    float right[3];
-    float pad0;
-    float up[3];
-    float pad1;
-    float forward[3];
-    float pad2;
-    Vec3 position;
-    float pad3;
-
-    void set_matrix_z_direction(Vec3* direction);
-    void rotate_matrix_world_z(float angle);
-};
 
 struct Game {
     char unknown_00[0x9];
