@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**354/678** mapped gameplay functions matched, **477/678** mapped gameplay functions have a scratch, **32662/325983** bytes (**10.02%**) are proof-grade, and overall fuzzy is **24.68%**.
+**355/678** mapped gameplay functions matched, **478/678** mapped gameplay functions have a scratch, **33492/325983** bytes (**10.27%**) are proof-grade, and overall fuzzy is **24.93%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -203,6 +203,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | 11/11 | 4 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
+| ✅ | destroy_subgame | 0x438850 | 830 | 246/246 | 100.00% | 246/246 | 41 ok |  |
 | ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | 17/17 | - |  |
 | ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | 29/29 | - |  |
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 | - |  |

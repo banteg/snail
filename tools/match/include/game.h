@@ -7,6 +7,10 @@
 
 class Game {
 public:
+    void initialize_subgame(); // @ 0x4374b0
+    void complete_subgame(unsigned char completed); // @ 0x438700
+    void destroy_subgame(); // @ 0x438850
+    void remove_subgame_bods(); // @ 0x440910
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
 

@@ -15,6 +15,7 @@ public:
 class TutorialController {
 public:
     void initialize_tutorial(); // @ 0x448da0
+    void uninit_tutorial(); // @ 0x448dd0
 };
 
 class NewGameMenu {
