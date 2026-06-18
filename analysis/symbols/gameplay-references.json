@@ -2195,6 +2195,17 @@
       "description": "BASS_Start function pointer used to resume the audio backend."
     },
     {
+      "address": "0x7516a0",
+      "name": "g_cached_music_path",
+      "kind": "global",
+      "aliases": [
+        "data_7516a0",
+        "byte_7516a0"
+      ],
+      "size": "0x100",
+      "description": "Cached active music path copied by the music stream loaders and compared before reloading archive-backed music."
+    },
+    {
       "address": "0x751680",
       "name": "g_active_music_stream_sync",
       "kind": "global",
@@ -2211,6 +2222,15 @@
         "data_7527b4"
       ],
       "description": "BASS_SamplePlayEx function pointer used by registered sample playback wrappers."
+    },
+    {
+      "address": "0x7517a0",
+      "name": "g_bass_channel_play",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_7517a0"
+      ],
+      "description": "BASS_ChannelPlay function pointer used by music stream loaders after creating or opening a stream."
     },
     {
       "address": "0x7537cc",
@@ -2248,6 +2268,15 @@
         "data_753be4"
       ],
       "description": "BASS_ChannelStop function pointer used when stopping the active music stream."
+    },
+    {
+      "address": "0x753bf8",
+      "name": "g_bass_stream_create_file",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753bf8"
+      ],
+      "description": "BASS_StreamCreateFile function pointer used by filesystem-backed and memory-backed music stream loaders."
     },
     {
       "address": "0x753bfc",
