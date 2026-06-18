@@ -1,12 +1,9 @@
 // initialize_directx_loader @ 0x405c90 (thiscall, ret)
 
+#include "duplicate_vertices.h"
+
 char* load_file_bytes(char* file_name, int* out_size);
 extern char g_x_animation_script_path[]; // "XAnimation.txt"
-
-class DuplicateVertexBuffer {
-public:
-    void* initialize_duplicate_vertices(int count);
-};
 
 class DirectXLoader {
 public:
