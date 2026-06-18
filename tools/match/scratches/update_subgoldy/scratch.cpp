@@ -10,6 +10,8 @@
 
 #include "presentation_animation_channel.h"
 
+class Sprite;
+
 float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
@@ -367,7 +369,7 @@ struct Player {
     void play_movement_state_sound();
     void update_movement_flag_emitters(Player* player);
     void update_player_movement_flags();
-    void mark_current_track_pair_with_payload(float payload);
+    Sprite* mark_current_track_pair_with_payload(float payload);
     void show_subgoldy_lives();
 };
 

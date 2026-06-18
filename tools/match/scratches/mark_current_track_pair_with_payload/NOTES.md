@@ -38,3 +38,10 @@ candidate/target insns, no masked operands, and the same final
 `Player +0x98/+0x9c`. The exact `initialize_subgoldy_ghost` scratch proves both
 slots are allocated `Sprite*` values, and Binary Ninja/readback now names them
 `ghost_sprite_a` and `ghost_sprite_b`.
+
+2026-06-18 cross-scratch sync: the large `update_subgoldy` scratch now declares
+this helper as returning `Sprite*`, matching `player.h`, this scratch, and the
+BN decompile. The callsite still ignores the return, and focused Wibo remains
+72.51% for `update_subgoldy`. The IDA artifact for this helper was updated from
+raw `this+38/39` slots to `Player::ghost_sprite_a` and
+`Player::ghost_sprite_b`.

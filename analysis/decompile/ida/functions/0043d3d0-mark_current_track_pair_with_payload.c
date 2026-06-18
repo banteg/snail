@@ -3,14 +3,16 @@
 /* selector: mark_current_track_pair_with_payload */
 
 // Sets flag 0x40 on the two ghost sprites at +0x98/+0x9c and writes the supplied scalar payload bits into Sprite::position.z (+0x50).
-int __thiscall sub_43D3D0(_DWORD *this, int payload_bits)
+Sprite *__thiscall mark_current_track_pair_with_payload(Player *player, float payload)
 {
-  int result; // eax
+  Sprite *result; // eax
+  int payload_bits; // edx
 
-  *(_DWORD *)(*(this + 38) + 4) |= 0x40u;
-  *(_DWORD *)(*(this + 39) + 4) |= 0x40u;
-  *(_DWORD *)(*(this + 38) + 80) = payload_bits;
-  result = *(this + 39);
-  *(_DWORD *)(result + 80) = payload_bits;
+  payload_bits = *(_DWORD *)&payload;
+  player->ghost_sprite_a->flags |= 0x40u;
+  player->ghost_sprite_b->flags |= 0x40u;
+  *(_DWORD *)&player->ghost_sprite_a->position.z = payload_bits;
+  result = player->ghost_sprite_b;
+  *(_DWORD *)&result->position.z = payload_bits;
   return result;
 }
