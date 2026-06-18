@@ -695,6 +695,16 @@
       "description": "Statically linked CRT sprintf helper used by formatted path, HUD, and debug-buffer writers."
     },
     {
+      "address": "0x48c404",
+      "name": "vsprintf",
+      "kind": "function",
+      "aliases": [
+        "_vsprintf",
+        "sub_48c404"
+      ],
+      "description": "Statically linked CRT vsprintf helper used by the formatted debug-report wrappers."
+    },
+    {
       "address": "0x48b380",
       "name": "ftol",
       "kind": "function",
