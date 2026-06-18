@@ -4,7 +4,7 @@ Live source map for the health-pickup collection burst.
 
 Current match:
 
-- `62.07%`, `99/104` candidate/target instructions, with `13` masked operands
+- `66.34%`, `98/104` candidate/target instructions, with `11` masked operands
   ok and no masked mismatch.
 - The burst now spells the shared `Sprite` fields directly; VC6 still emits
   the exact `0xb951b717` gravity constant for `-0.00019999999f`.
@@ -63,5 +63,5 @@ Rejected source-shape probes:
 Type consolidation:
 
 - `Player::health_collect_particles` now takes the promoted partial
-  `TrackHealthPickup*`. The layout is still partial: `visibility_cell +0x44`
+  `TrackHealthPickup*`. The layout is still partial: `owner_game +0x44`
   and `source_cell +0x68` are intentionally separate fields.

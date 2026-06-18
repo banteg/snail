@@ -5,7 +5,7 @@ and 128 candidate instructions.
 
 Recovered behavior:
 
-- skip when shared `TrackVisibilityCell +0x09` is hidden;
+- skip when the reset-initialized owner-game pause byte at `+0x09` is set;
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
@@ -47,14 +47,15 @@ now uses this same promoted `TrackHealthPickup` type, while casting through
 therefore both the BOD base prefix at initialization time and the pickup
 world/state payload used by spawn/update/collision paths.
 
-Important naming correction: the update hidden check reads
-`visibility_cell +0x44`, while `spawn_track_health_pickup` stores the row/source
-cell at `source_cell +0x68`. Do not collapse those into one `source_cell` field.
-Do not merge health and jetpack into one full pickup struct either: health has
-a visibility-cell gate at `+0x44`, while jetpack uses that lane for the owner
-game/paused view and has embedded renderable bodies below `+0x74`.
+Important naming correction: reset_subgame initializes health pickup `+0x44`
+with the `Game*`, so this lane is now `owner_game`, not a visibility-cell
+pointer. `spawn_track_health_pickup` stores the row/source cell at
+`source_cell +0x68`. Do not collapse those into one `source_cell` field.
+Do not merge health and jetpack into one full pickup struct either: both use
+the owner-game pause view at `+0x44`, while jetpack has embedded renderable
+bodies below `+0x74`.
 
-2026-06-16 visibility-gate rename: the old `TrackRuntimeCell` name in
-`track_runtime.h` was too broad and easy to confuse with the full 0x54-byte
-`TrackRowCell` runtime-grid record used by spawners and attachment paths. It is
-now `TrackVisibilityCell`, a narrow view for the `hidden +0x09` gate only.
+2026-06-18 owner-game rename: the earlier `TrackVisibilityCell` interpretation
+was invalidated by reset_subgame, which writes the containing `Game*` into
+`+0x44` for every health pickup slot. The update check is the same pause-byte
+view used by speedup and jetpack pickups.

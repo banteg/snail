@@ -19,3 +19,11 @@ Residual:
   the current source loads capacity first. Natural `>`, `<=`, preloaded
   `result`, and separate `count`/`capacity` spellings all keep the same
   residual, so this is pinned unless a stronger VC6 source-idiom lead appears.
+
+2026-06-18 audit: focused Wibo still reports 96.55%, 29/29 candidate/target
+instructions, clean masked operands, and the same first miss at target
+`mov edi, [esp+0xc]` versus candidate `mov eax, [esi+0x68]`. Rejected three
+source-plausible else-branch spellings because all compiled identically:
+direct `requested_count > texture_group_capacity`, preloaded `result =
+texture_group_capacity` with overflow overwrite, and a `count` local driving
+the direct comparison. Keep the clearer `count`/`capacity` baseline.

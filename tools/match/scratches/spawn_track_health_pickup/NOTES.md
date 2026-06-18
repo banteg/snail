@@ -27,8 +27,8 @@ Evidence:
 - Allocates sprite texture `57`, marks sprite flag `0x800`, clears gravity and
   progress fields, and writes `size_start/size_end = 0.60000002f`.
 - Writes `source_cell +0x68`; this is distinct from
-  `TrackHealthPickup::visibility_cell +0x44`, which is read by
-  `update_track_health_pickup`.
+  `TrackHealthPickup::owner_game +0x44`, the reset-initialized game pause view
+  read by `update_track_health_pickup`.
 - Initializes `bob_phase +0x6c` from a numeric float-to-int conversion of
   `world_position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.

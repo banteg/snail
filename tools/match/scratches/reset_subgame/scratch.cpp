@@ -2,18 +2,14 @@
 
 #include "score_stats.h"
 #include "timer_counters.h"
+#include "game.h"
 
 typedef unsigned int DWORD;
 
 extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 #pragma intrinsic(memcpy)
 
-class Game {
-public:
-    int reset_subgame();
-};
-
-int Game::reset_subgame()
+void Game::reset_subgame()
 {
     DWORD* self = (DWORD*)this;
 
@@ -59,7 +55,6 @@ int Game::reset_subgame()
         --ring_count;
     } while (ring_count);
 
-    int result;
     if (*((unsigned char*)this + 16721360) == 1
         && self[16] == self[4147919]) {
         DWORD saved_score = self[4147909];
@@ -69,13 +64,12 @@ int Game::reset_subgame()
         self[978585] = saved_tail_a;
         memcpy(self + 978579, self + 4147910, 0x18);
         self[978586] = saved_tail_b;
-        result = saved_tail_b;
     } else {
         if (self[4834290] == 2) {
             self[978578] = 0;
             ((RunScoreStats*)(self + 978393))->clear_subgoldy_score_buckets();
         }
-        result = ((TimerCounters*)(self + 978579))->zero_timer_counters();
+        ((TimerCounters*)(self + 978579))->zero_timer_counters();
         self[978585] = 0;
         self[978586] = 0;
     }
@@ -85,5 +79,4 @@ int Game::reset_subgame()
     *((unsigned char*)this + 1) = 1;
     *((unsigned char*)this + 16721360) = 0;
     self[877648] = 0;
-    return result;
 }

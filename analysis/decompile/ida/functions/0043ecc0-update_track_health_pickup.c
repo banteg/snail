@@ -2,6 +2,9 @@
 /* function: update_track_health_pickup @ 0x43ecc0 */
 /* selector: update_track_health_pickup */
 
+// Type-sync note: `this` is TrackHealthPickup*. The first gate is
+// `owner_game +0x09` (`TrackHealthPickup::owner_game` at +0x44), not a
+// source/visibility cell. The row source cell remains the separate +0x68 field.
 void __thiscall update_track_health_pickup(int this)
 {
   int v2; // eax
@@ -98,4 +101,3 @@ LABEL_20:
     }
   }
 }
-

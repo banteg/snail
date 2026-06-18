@@ -2,7 +2,6 @@
 
 #include "player.h"
 #include "sprite.h"
-#include "track_runtime.h"
 #include "track_health_pickup.h"
 
 extern char* g_game_base; // data_4df904
@@ -18,7 +17,7 @@ void TrackHealthPickup::update_track_health_pickup()
     TrackHealthPickup* next;
     TrackHealthPickup* prev;
 
-    if (visibility_cell->hidden != zero) {
+    if (owner_game->paused != zero) {
         return;
     }
 

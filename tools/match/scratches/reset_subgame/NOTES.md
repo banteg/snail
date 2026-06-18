@@ -13,12 +13,13 @@ Recovered behavior:
 - re-arms the two live subgame bytes, clears the replay/restore byte, and
   resets the active garbage chain head.
 
-This first scratch intentionally keeps the large `Game` owner as raw dword
-offsets until the surrounding reset/update functions agree on field names.
+The scratch still uses raw dword lanes for the unresolved score/timer snapshot
+band, but it now relies on the shared `Game` declaration for the recovered
+pickup and hazard pool band.
 
 Current focused result:
 
-- 98.67%, 75/75 instructions, prefix 44/75
+- 100.00%, 75/75 instructions, prefix 75/75
 - masked comparison: 2 ok, 0 unresolved, 0 mismatch
 
 Important source-shape correction:
@@ -30,9 +31,29 @@ Important source-shape correction:
   `push esi; push edi; mov ecx, 6; rep movsd` block and the `ebp` owner
   register.
 
-Remaining residual:
+2026-06-18 signature correction:
 
-- Native loads the saved tail fields as score, tail-a, tail-b. VC6 keeps the
-  equivalent source values but loads tail-b before tail-a. Local-order probes
-  were codegen-neutral, so leave this as a register/scheduling residual unless
-  new source evidence appears.
+- The native function is void-shaped. The old `int result` source was a
+  decompiler artifact from the leftover `eax` value and made VC6 hoist the saved
+  tail-b load before tail-a.
+- Spelling the helper as `void Game::reset_subgame()` removes the artificial
+  return-value dependency and matches the native saved snapshot load order:
+  score, tail-a, tail-b.
+- Focused Wibo is now 100.00%, 75/75 instructions, with 2 clean masked
+  operands.
+- Binary Ninja readback now reports the member-shaped prototype
+  `void __thiscall(struct Game* game)`.
+
+2026-06-18 pool naming correction:
+
+- `Game` now carries the contiguous subgame pool band:
+  `speedup_pickup`, `jetpack_pickup`, `health_pickups[8]`, `slug_slots[8]`,
+  `sub_lazer_pool[20]`, `salt_pool[40]`, `garbage_hazards`, and
+  `ring_effects`.
+- The health pickup `+0x44` field is `owner_game`, not a visibility/source
+  cell. `reset_subgame` writes the containing `Game*` into this lane for all
+  eight health slots; the spawned row source remains `source_cell +0x68`.
+- A broad BN header import preview still disturbed existing shared structs, so
+  the sync script declares only the tiny `TrackHealthPickupGameView` type when
+  missing and field-sets the recovered names without reimporting `Sprite`,
+  `TrackRowCell`, or `Player`.
