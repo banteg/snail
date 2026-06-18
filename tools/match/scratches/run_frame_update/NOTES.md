@@ -39,3 +39,8 @@ Two mouse callsites remain local on purpose: `uninit_pause_menu` declares
 shape, while `update_frontend_state_machine` keeps the compact
 `capture_mouse_cursor` declaration because including the full header dirties
 the jump-table/global masked operand audit without improving structure.
+
+2026-06-18 cheat header cleanup: `CheatState` is now shared with
+`initialize_cheat`, `match_cheat_text`, and `update_cheat`. Focused Wibo remains
+pinned at 97.78%, 135/135 instructions, with the same mouse-state/tint
+argument scheduling residuals and 23 clean masked operands.

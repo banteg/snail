@@ -1,15 +1,11 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "cheat_state.h"
 #include "frontend_overlay_color_lerp.h"
 #include "mouse_cursor_state.h"
 #include "sprite.h"
 #include "voice_manager.h"
-
-class CheatState {
-public:
-    void update_cheat();
-};
 
 class FrontendTransitionOverlay {
 public:
