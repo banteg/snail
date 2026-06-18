@@ -1489,6 +1489,17 @@
       "description": "Second backdrop quad vertex index raised by raise_backdrop_quad_edge_pair for the Objects/Univers lane."
     },
     {
+      "address": "0x4a3ce0",
+      "name": "g_backdrop_corner_vertex_indices",
+      "kind": "global",
+      "aliases": [
+        "dword_4A3CE0",
+        "data_4a3ce0"
+      ],
+      "size": 16,
+      "description": "Four-entry int table {3, 2, 0, 1} mapping backdrop corner ids to the vertex normalized by initialize_backdrop_corner_quad."
+    },
+    {
       "address": "0x4a3d00",
       "name": "g_duplicate_vertices_alloc_label",
       "kind": "string",

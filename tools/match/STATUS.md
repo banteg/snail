@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**406/687** mapped gameplay functions matched, **557/687** mapped gameplay functions have a scratch, **42680/325882** bytes (**13.10%**) are proof-grade, and overall fuzzy is **29.79%**.
+**408/687** mapped gameplay functions matched, **559/687** mapped gameplay functions have a scratch, **43083/325882** bytes (**13.22%**) are proof-grade, and overall fuzzy is **29.91%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -164,6 +164,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | clean_duplicate_vertices | 0x419f80 | 70 | 33/33 | 100.00% | 33/33 | - |  |
 | ✅ | initialize_textured_backdrop_quad | 0x41a0b0 | 181 | 57/57 | 100.00% | 57/57 | 6 ok |  |
 | ✅ | raise_backdrop_quad_edge_pair | 0x41a170 | 66 | 19/19 | 100.00% | 19/19 | 4 ok |  |
+| ✅ | initialize_backdrop_slice_quad | 0x41a1c0 | 196 | 61/61 | 100.00% | 61/61 | 7 ok |  |
+| ✅ | initialize_backdrop_corner_quad | 0x41a290 | 207 | 55/55 | 100.00% | 55/55 | 10 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | ✅ | initialize_options_menu | 0x41ace0 | 506 | 127/127 | 100.00% | 127/127 | 32 ok |  |
 | ✅ | destroy_options_menu | 0x41aee0 | 127 | 32/32 | 100.00% | 32/32 | 13 ok |  |
