@@ -1264,6 +1264,33 @@
       "description": "Back button label used by the options menu."
     },
     {
+      "address": "0x4a20f4",
+      "name": "g_exit_text",
+      "kind": "string",
+      "aliases": [
+        "aExit"
+      ],
+      "description": "Exit button label used by the main menu."
+    },
+    {
+      "address": "0x4a2128",
+      "name": "g_main_menu_music_path",
+      "kind": "string",
+      "aliases": [
+        "aMusicMainmenuO"
+      ],
+      "description": "Main-menu music path loaded by initialize_main_menu."
+    },
+    {
+      "address": "0x4a347c",
+      "name": "g_menu_background_script_path",
+      "kind": "string",
+      "aliases": [
+        "aMenubgTxt"
+      ],
+      "description": "Landscape script name loaded for the main-menu backdrop."
+    },
+    {
       "address": "0x4a34b8",
       "name": "g_intro_credits_script_path",
       "kind": "string",
@@ -1280,6 +1307,42 @@
         "aIntroIntroTxt"
       ],
       "description": "Intro-screen script path literal for the opening intro state."
+    },
+    {
+      "address": "0x4a3b58",
+      "name": "g_credits_text",
+      "kind": "string",
+      "aliases": [
+        "aCredits"
+      ],
+      "description": "Credits button label used by the main menu."
+    },
+    {
+      "address": "0x4a3b60",
+      "name": "g_options_text",
+      "kind": "string",
+      "aliases": [
+        "aOptions"
+      ],
+      "description": "Options button label used by the main and pause menus."
+    },
+    {
+      "address": "0x4a3b68",
+      "name": "g_high_scores_text",
+      "kind": "string",
+      "aliases": [
+        "aHighScores"
+      ],
+      "description": "High Scores button label used by the main menu."
+    },
+    {
+      "address": "0x4a3b74",
+      "name": "g_new_game_text",
+      "kind": "string",
+      "aliases": [
+        "aNewGame"
+      ],
+      "description": "New Game button label used by the main menu."
     },
     {
       "address": "0x4a3d00",
@@ -1343,6 +1406,24 @@
       "kind": "string",
       "aliases": [],
       "description": "Debug-report format string emitted after build_track_fringe_objects counts fringe BOD usage."
+    },
+    {
+      "address": "0x4a4f2c",
+      "name": "g_resume_text",
+      "kind": "string",
+      "aliases": [
+        "aResume"
+      ],
+      "description": "Resume button label used by the pause menu."
+    },
+    {
+      "address": "0x4a4f34",
+      "name": "g_end_game_text",
+      "kind": "string",
+      "aliases": [
+        "aEndGame"
+      ],
+      "description": "End Game button label used by the pause menu."
     },
     {
       "address": "0x4a4f40",

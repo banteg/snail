@@ -8,6 +8,7 @@
 #include "new_game_menu.h"
 #include "options_menu.h"
 #include "sprite.h"
+#include "star_field.h"
 
 class BorderManager {
 public:
@@ -67,10 +68,12 @@ public:
     unsigned char high_score_entry_pending; // +0x30d
     char unknown_00030e[0x568 - 0x30e];
     unsigned char frontend_link_latch; // +0x568
-    char unknown_000569[0x4f2dc - 0x569];
+    char unknown_000569[0x56c - 0x569];
+    int render_skip_countdown; // +0x56c
+    char unknown_000570[0x4f2dc - 0x570];
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
-    char unknown_04f33c[0x4f388 - 0x4f33c];
+    StarField star_field; // +0x4f33c
     OptionsMenu options_menu; // +0x4f388
     CompletionPrompt exit_prompt; // +0x4f3ac
     char unknown_04f3c8[0x74618 - 0x4f3c8];
