@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**412/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **43557/325882** bytes (**13.37%**) are proof-grade, and overall fuzzy is **29.99%**.
+**413/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **43601/325882** bytes (**13.38%**) are proof-grade, and overall fuzzy is **30.00%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -219,7 +219,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | get_tracked_allocation_size | 0x431ab0 | 61 | 26/26 | 100.00% | 26/26 | 2 ok |  |
 | ✅ | push_tracked_allocation | 0x431af0 | 54 | 19/19 | 100.00% | 19/19 | 2 ok |  |
-| 🚧 | pop_tracked_allocation | 0x431b30 | 44 | 25/20 | 66.67% | 4/20 | - |  |
+| ✅ | pop_tracked_allocation | 0x431b30 | 44 | 20/20 | 100.00% | 20/20 | - |  |
 | ✅ | allocate_tracked_memory | 0x431b60 | 129 | 48/48 | 100.00% | 48/48 | 7 ok |  |
 | ✅ | free_tracked_memory | 0x431bf0 | 127 | 43/43 | 100.00% | 43/43 | 9 ok |  |
 | ✅ | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  |
