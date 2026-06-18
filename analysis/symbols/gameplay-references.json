@@ -889,6 +889,16 @@
       "description": "Statically linked CRT atexit helper used to register compiler-generated static destructors."
     },
     {
+      "address": "0x48c18b",
+      "name": "chdir",
+      "kind": "function",
+      "aliases": [
+        "_chdir",
+        "sub_48c18b"
+      ],
+      "description": "Statically linked CRT _chdir helper used by directory-walking file and archive helpers."
+    },
+    {
       "address": "0x496946",
       "name": "getcwd",
       "kind": "function",
