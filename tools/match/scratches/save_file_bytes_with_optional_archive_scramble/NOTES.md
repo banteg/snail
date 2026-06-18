@@ -5,11 +5,10 @@ scramble in place before opening the destination. The success path logs the
 write, writes the bytes, and closes the stream. The failure path captures the
 current directory and reports the save failure.
 
-Match status: 93.81%, no masked operand issues.
+Focused match: 100%, 56/56 instructions, with ten clean masked operands.
 
-Residual:
-
-- Native coalesces the `_getcwd` and failure `printf` cdecl cleanup into a
-  single `add esp, 0x14` and computes the stack-buffer address before popping
-  the `_getcwd` arguments. The readable source shape emits `add esp, 0x8`
-  after `_getcwd`, then cleans the three `printf` arguments separately.
+This scratch compiles as C (`/TC`). C-mode MSVC 6.5 keeps the `_getcwd`
+arguments live across the failure `printf` argument setup, coalescing cleanup
+into the native `add esp, 0x14`. The source keeps C/C++ compatible opaque
+`File` declarations and uses a top-of-function `File* file` local for C89
+declaration ordering.
