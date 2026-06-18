@@ -6,10 +6,10 @@ result into the high-score bank. Cross-port symbols identify this as
 
 Behavior:
 
-- Tags the result record as mode 2, stores the route index, and clears the
-  replay cursor field.
+- Tags the result record as mode 2, stores the route index in
+  `route_or_rank_index`, and clears the replay cursor field.
 - Failed/inactive route writes zero the record's timer total before copying it
-  into the scratch/current-result slot at `this + 0x9080c8`.
+  into the `current_result_record` slot at `this + 0x9080c8`.
 - Successful route writes also inspect the per-route record at
   `this + 0x2b8c88 + route_index * 0x1fac0`; the persistent route record is
   replaced only when the new time is lower than the stored time or the stored
@@ -39,3 +39,11 @@ Rejected source-shape probes:
   and split `goto` replacement gate: all compiled identically to the baseline.
 - Local `route_seconds` value: changed x87 compare ordering and regressed to
   78.79%.
+- 2026-06-18 shared-layout pass: the scratch now consumes
+  `tools/match/include/high_score_bank.h` and `high_score_record.h`. The score
+  remains 83.67%, so the shared layout did not change the known route-record
+  base materialization residual.
+- 2026-06-18 name-sync pass: `HighScoreRecord` exposes the `+0x08` lane as
+  `total_seconds` first, with the score-bucket block as an alternate view. This
+  keeps the time-trial helper and BN decompile aligned on the ordering key
+  without changing layout or codegen.

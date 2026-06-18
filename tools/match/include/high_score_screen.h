@@ -19,7 +19,11 @@ public:
     int frontend_next_state; // +0x1b8
     char unknown_0001bc[0x30c - 0x1bc];
     unsigned char frontend_state_dirty; // +0x30c
-    char unknown_00030d[0x74658 - 0x30d];
+    unsigned char high_score_entry_pending; // +0x30d
+    char unknown_00030e[0x310 - 0x30e];
+    int high_score_entry_rank; // +0x310
+    int high_score_entry_bank; // +0x314
+    char unknown_000318[0x74658 - 0x318];
     int selected_subgame_mode; // +0x74658
     char unknown_07465c[0x6ffae0 - 0x7465c];
     HighScoreRecord* active_record_bank; // +0x6ffae0

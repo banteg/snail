@@ -27,7 +27,10 @@ class HighScoreRecord {
 public:
     int active; // +0x00
     int score; // +0x04
-    ScoreBucketBlock stats; // +0x08
+    union {
+        float total_seconds; // +0x08, time-trial ordering key
+        ScoreBucketBlock stats; // +0x08
+    };
     int score_tail; // +0x20
     int source_tail; // +0x24
     int unknown_28; // +0x28
@@ -36,7 +39,7 @@ public:
     int difficulty_scalar_bits; // +0x34, raw challenge-difficulty snapshot
     char unknown_38[0x3c - 0x38];
     int high_score_mode_tag; // +0x3c, set by add_*_high_score
-    int route_or_rank_index; // +0x40, route index or top-ten rank
+    int route_or_rank_index; // +0x40, level/route arg before insert or top-ten rank
     int replay_cursor; // +0x44, cleared before persistence
     int level_arg_tail; // +0x48
     int completion_bonus_x_source; // +0x4c

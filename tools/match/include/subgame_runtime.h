@@ -3,6 +3,7 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
+#include "high_score_bank.h"
 #include "high_score_record.h"
 #include "score_stats.h"
 #include "track_parcel_runtime.h"
@@ -10,15 +11,6 @@
 class Player;
 struct SelectedLevelRecord;
 struct TrackRowCell;
-
-struct HighScoreBank {
-    void add_arcade_high_score(HighScoreRecord* record, int level_arg); // @ 0x4176a0
-    void add_survival_high_score(HighScoreRecord* record); // @ 0x417780
-    void add_time_trial_high_score(
-        HighScoreRecord* record,
-        int level_arg,
-        unsigned char route_active); // @ 0x4178b0
-};
 
 class SubgameRuntime {
 public:
@@ -101,7 +93,6 @@ public:
     float nuke_rate_progress; // +0x3be0c0
     char unknown_3be0c4[0x68b4c8 - 0x3be0c4];
     HighScoreBank high_score_bank; // +0x68b4c8
-    char unknown_68b4c9[0xfd2b10 - 0x68b4c9];
     HighScoreRecord current_high_score_record; // +0xfd2b10
     unsigned char selected_level_record_active; // +0xff25d0
     unsigned char selected_level_record_persistent; // +0xff25d1

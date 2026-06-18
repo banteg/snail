@@ -119,6 +119,12 @@ Rejected experiments:
   instead of a local 0x54 `ResultRecord` prefix, and the replay bonus source
   lanes are named `completion_bonus_x_source` / `completion_bonus_y_source`.
   Focused Wibo remains at the pinned 75.28%.
+- 2026-06-18 decompiler-sync pass: the narrow BN/IDA `SubgameRuntime` headers
+  now carry the sparse proven runtime layout through `high_score_bank`,
+  `current_high_score_record`, replay cursor, selected-level gates, timers, and
+  route-active state. BN now renders the high-score dispatch as calls through
+  `runtime->high_score_bank` and `runtime->current_high_score_record` instead
+  of raw `runtime + 0x68b4c8` / `runtime + 0xfd2b10` offsets.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
 uses a direct memory `or`, and the result snapshot still differs in register

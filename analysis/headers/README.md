@@ -61,6 +61,10 @@ Current checked-in example:
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
 - `uv run python tools/ida/sync_frontend_replay_types.py`
+- `ida_high_score_bank_types.h`
+- `uv run python tools/ida/sync_high_score_bank_types.py`
+- `ida_subgame_runtime_types.h`
+- `uv run python tools/ida/sync_subgame_runtime_types.py`
 - `vapour_trail_types.h`
 - `uv run python tools/ida/sync_vapour_trail_types.py`
 
@@ -72,8 +76,12 @@ Current checked-in Binary Ninja companion:
 - `uv run python tools/binja/sync_selected_level_record_types.py`
 - `bn_garbage_hazard_types.h`
 - `uv run python tools/binja/sync_garbage_hazard_types.py`
+- `bn_high_score_bank_types.h`
+- `uv run python tools/binja/sync_high_score_bank_types.py`
+- `bn_subgame_runtime_types.h`
+- `uv run python tools/binja/sync_subgame_runtime_types.py`
 
-That BN sync lane intentionally replays a narrow presentation/camera slice:
+The presentation BN sync lane intentionally replays a narrow camera/render slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
 - the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
@@ -82,6 +90,10 @@ The selected-record BN lane is even narrower:
 - just the expanded in-memory selected replay/high-score entry
 - the `Game.selected_level_record*` control fields
 - the minimal `Player.game` / `Player.movement_state` overlays needed for replay consumers like `update_subgoldy`
+
+The high-score bank and subgame-runtime BN lanes carry the recovered
+`HighScoreRecord`, `HighScoreBank`, and sparse `SubgameRuntime` layouts that
+make `complete_subgame` and the three `add_*_high_score` helpers readable.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database
