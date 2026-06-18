@@ -3,9 +3,8 @@
 /* selector: set_sprite_manager_paused */
 
 // Writes the shared sprite-manager pause byte consumed by `update_sprite`, freezing or unfreezing sprite updates globally.
-char __thiscall sub_44E540(_BYTE *this, char a2)
+char __thiscall set_sprite_manager_paused(_BYTE *manager, char paused)
 {
-  *this = a2;
-  return a2;
+  *manager = paused;
+  return paused;
 }
-

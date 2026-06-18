@@ -2,29 +2,28 @@
 /* function: kill_game_sprites @ 0x44e3d0 */
 /* selector: kill_game_sprites */
 
-void sub_44E3D0()
+void kill_game_sprites()
 {
-  int *v0; // edi
-  int v1; // ecx
-  int v2; // esi
+  int *bucket; // edi
+  int sprite; // ecx
+  int next; // esi
 
-  v0 = unk_814C94;
+  bucket = unk_814C94;
   do
   {
-    v1 = *v0;
-    if ( *v0 )
+    sprite = *bucket;
+    if ( *bucket )
     {
       do
       {
-        v2 = *(_DWORD *)(v1 + 12);
-        if ( (*(_DWORD *)(v1 + 4) & 0x800) != 0 )
-          kill_sprite(v1);
-        v1 = v2;
+        next = *(_DWORD *)(sprite + 12);
+        if ( (*(_DWORD *)(sprite + 4) & 0x800) != 0 )
+          kill_sprite(sprite);
+        sprite = next;
       }
-      while ( v2 );
+      while ( next );
     }
-    ++v0;
+    ++bucket;
   }
-  while ( (int)v0 < (int)&unk_814CA8 );
+  while ( (int)bucket < (int)&unk_814CA8 );
 }
-

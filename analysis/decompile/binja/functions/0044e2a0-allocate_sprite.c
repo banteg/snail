@@ -3,39 +3,39 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: allocate_sprite @ 0x44e2a0 */
 
-0044e2a2        int32_t* result = *(arg1 + 0x83d78)
-0044e2ac        if (result == 0)
+0044e2a2        struct Sprite* free_head = manager->free_head
+0044e2ac        if (free_head == 0)
 0044e2b5        return 0x814cb0
-0044e2c0        *(arg1 + 0x83d78) = result[3]
-0044e2c6        result[2] = arg2
-0044e2c9        void* eax_2 = *(arg1 + (arg2 << 2) + 0x83d64)
+0044e2c0        manager->free_head = free_head->next
+0044e2c6        free_head->owner = owner
+0044e2c9        void* eax_2 = manager->active_heads[owner]
 0044e2d2        if (eax_2 != 0)
-0044e2d4        *(eax_2 + 0x10) = result
-0044e2d7        result[4] = 0
-0044e2e1        result[3] = *(arg1 + (arg2 << 2) + 0x83d64)
-0044e2e4        *(arg1 + (arg2 << 2) + 0x83d64) = result
-0044e2ed        initialize_sprite(result)
-0044e2ff        int32_t ecx_3 = result[1] | 1 << (arg2.b + 0x18)
-0044e305        result[1] = ecx_3
-0044e30f        result[7] = *((arg3 << 2) + &data_78ff90)
-0044e319        if (arg5 != 0xffffffff)
-0044e31e        result[1] = ecx_3 | 0x20
-0044e32c        result[8] = *((arg4 << 2) + &data_78ff90)
-0044e336        result[9] = *((arg5 << 2) + &data_78ff90)
-0044e342        if (arg4 != 0xffffffff)
-0044e347        result[1] = ecx_3 | 0x10
-0044e351        result[8] = *((arg4 << 2) + &data_78ff90)
-0044e354        result[0x19] = 0
-0044e357        result[0x27] = arg3
-0044e35d        result[0x2b] = 0
-0044e363        result[0x2c] = 0
-0044e376        result[0x28] = *(*((arg3 << 2) + &data_78ff90) + 0x90)
-0044e388        if (((**((arg3 << 2) + &data_78ff90)).w:1.b & 0x20) != 0)
-0044e38d        int32_t edi_2 = result[1] | 0x2000
-0044e393        result[1] = edi_2
-0044e3a5        result[0x2c] = *(*((arg3 << 2) + &data_78ff90) + 0x94)
-0044e3b7        if (((**((arg3 << 2) + &data_78ff90)).w:1.b & 0x40) != 0)
-0044e3b9        int32_t ecx_11
-0044e3b9        ecx_11:1.b = edi_2:1.b | 0x40
-0044e3bc        result[1] = ecx_11
-0044e3c4        return result
+0044e2d4        *(eax_2 + 0x10) = free_head
+0044e2d7        free_head->prev = nullptr
+0044e2e1        free_head->next = manager->active_heads[owner]
+0044e2e4        manager->active_heads[owner] = free_head
+0044e2ed        initialize_sprite(free_head)
+0044e2ff        int32_t ecx_3 = free_head->flags | 1 << (owner.b + 0x18)
+0044e305        free_head->flags = ecx_3
+0044e30f        free_head->texture_ref = *((texture_id << 2) + &data_78ff90)
+0044e319        if (texture_b != 0xffffffff)
+0044e31e        free_head->flags = ecx_3 | 0x20
+0044e32c        free_head->texture_ref_a = *((texture_a << 2) + &data_78ff90)
+0044e336        free_head->texture_ref_b = *((texture_b << 2) + &data_78ff90)
+0044e342        if (texture_a != 0xffffffff)
+0044e347        free_head->flags = ecx_3 | 0x10
+0044e351        free_head->texture_ref_a = *((texture_a << 2) + &data_78ff90)
+0044e354        free_head->size_end = 0f
+0044e357        free_head->texture_id = texture_id
+0044e35d        free_head->frame_progress = 0f
+0044e363        free_head->frame_progress_step = 0f
+0044e376        free_head->frame_count = *(*((texture_id << 2) + &data_78ff90) + 0x90)
+0044e388        if (((**((texture_id << 2) + &data_78ff90)).w:1.b & 0x20) != 0)
+0044e38d        uint32_t edi_2 = free_head->flags | 0x2000
+0044e393        free_head->flags = edi_2
+0044e39d        uint32_t ecx_11 = edi_2
+0044e3a5        free_head->frame_progress_step = *(*((texture_id << 2) + &data_78ff90) + 0x94)
+0044e3b7        if (((**((texture_id << 2) + &data_78ff90)).w:1.b & 0x40) != 0)
+0044e3b9        ecx_11:1.b |= 0x40
+0044e3bc        free_head->flags = ecx_11
+0044e3c4        return free_head

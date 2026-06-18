@@ -2,60 +2,59 @@
 /* function: allocate_sprite @ 0x44e2a0 */
 /* selector: allocate_sprite */
 
-void *__thiscall sub_44E2A0(_DWORD *this, int a2, int a3, int a4, int a5)
+void *__thiscall allocate_sprite(_DWORD *manager, int owner, int texture_id, int texture_a, int texture_b)
 {
-  int v5; // esi
-  int v7; // eax
-  int v8; // ecx
-  int v9; // edi
-  int v10; // ecx
+  int free_sprite; // esi
+  int active_head; // eax
+  int flags; // ecx
+  int animation_flags; // edi
+  int final_flags; // ecx
 
-  v5 = *(this + 135006);
-  if ( !v5 )
+  free_sprite = *(manager + 135006);
+  if ( !free_sprite )
     return &unk_814CB0;
-  *(this + 135006) = *(_DWORD *)(v5 + 12);
-  *(_DWORD *)(v5 + 8) = a2;
-  v7 = *(this + a2 + 135001);
-  if ( v7 )
-    *(_DWORD *)(v7 + 16) = v5;
-  *(_DWORD *)(v5 + 16) = 0;
-  *(_DWORD *)(v5 + 12) = *(this + a2 + 135001);
-  *(this + a2 + 135001) = v5;
-  initialize_sprite((_DWORD *)v5);
-  v8 = (1 << (a2 + 24)) | *(_DWORD *)(v5 + 4);
-  *(_DWORD *)(v5 + 4) = v8;
-  *(float *)(v5 + 28) = unk_78FF90[a3];
-  if ( a5 == -1 )
+  *(manager + 135006) = *(_DWORD *)(free_sprite + 12);
+  *(_DWORD *)(free_sprite + 8) = owner;
+  active_head = *(manager + owner + 135001);
+  if ( active_head )
+    *(_DWORD *)(active_head + 16) = free_sprite;
+  *(_DWORD *)(free_sprite + 16) = 0;
+  *(_DWORD *)(free_sprite + 12) = *(manager + owner + 135001);
+  *(manager + owner + 135001) = free_sprite;
+  initialize_sprite((_DWORD *)free_sprite);
+  flags = (1 << (owner + 24)) | *(_DWORD *)(free_sprite + 4);
+  *(_DWORD *)(free_sprite + 4) = flags;
+  *(float *)(free_sprite + 28) = unk_78FF90[texture_id];
+  if ( texture_b == -1 )
   {
-    if ( a4 != -1 )
+    if ( texture_a != -1 )
     {
-      *(_DWORD *)(v5 + 4) = v8 | 0x10;
-      *(float *)(v5 + 32) = unk_78FF90[a4];
+      *(_DWORD *)(free_sprite + 4) = flags | 0x10;
+      *(float *)(free_sprite + 32) = unk_78FF90[texture_a];
     }
   }
   else
   {
-    *(_DWORD *)(v5 + 4) = v8 | 0x20;
-    *(float *)(v5 + 32) = unk_78FF90[a4];
-    *(float *)(v5 + 36) = unk_78FF90[a5];
+    *(_DWORD *)(free_sprite + 4) = flags | 0x20;
+    *(float *)(free_sprite + 32) = unk_78FF90[texture_a];
+    *(float *)(free_sprite + 36) = unk_78FF90[texture_b];
   }
-  *(_DWORD *)(v5 + 100) = 0;
-  *(_DWORD *)(v5 + 156) = a3;
-  *(_DWORD *)(v5 + 172) = 0;
-  *(_DWORD *)(v5 + 176) = 0;
-  *(_DWORD *)(v5 + 160) = *(_DWORD *)(LODWORD(unk_78FF90[a3]) + 144);
-  if ( (*(_DWORD *)LODWORD(unk_78FF90[a3]) & 0x2000) != 0 )
+  *(_DWORD *)(free_sprite + 100) = 0;
+  *(_DWORD *)(free_sprite + 156) = texture_id;
+  *(_DWORD *)(free_sprite + 172) = 0;
+  *(_DWORD *)(free_sprite + 176) = 0;
+  *(_DWORD *)(free_sprite + 160) = *(_DWORD *)(LODWORD(unk_78FF90[texture_id]) + 144);
+  if ( (*(_DWORD *)LODWORD(unk_78FF90[texture_id]) & 0x2000) != 0 )
   {
-    v9 = *(_DWORD *)(v5 + 4) | 0x2000;
-    *(_DWORD *)(v5 + 4) = v9;
-    v10 = v9;
-    *(_DWORD *)(v5 + 176) = *(_DWORD *)(LODWORD(unk_78FF90[a3]) + 148);
-    if ( (*(_DWORD *)LODWORD(unk_78FF90[a3]) & 0x4000) != 0 )
+    animation_flags = *(_DWORD *)(free_sprite + 4) | 0x2000;
+    *(_DWORD *)(free_sprite + 4) = animation_flags;
+    final_flags = animation_flags;
+    *(_DWORD *)(free_sprite + 176) = *(_DWORD *)(LODWORD(unk_78FF90[texture_id]) + 148);
+    if ( (*(_DWORD *)LODWORD(unk_78FF90[texture_id]) & 0x4000) != 0 )
     {
-      BYTE1(v10) = BYTE1(v9) | 0x40;
-      *(_DWORD *)(v5 + 4) = v10;
+      BYTE1(final_flags) = BYTE1(animation_flags) | 0x40;
+      *(_DWORD *)(free_sprite + 4) = final_flags;
     }
   }
-  return (void *)v5;
+  return (void *)free_sprite;
 }
-

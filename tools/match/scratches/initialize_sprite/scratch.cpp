@@ -1,4 +1,4 @@
-// initialize_sprite @ 0x44de90 (thiscall, ret)
+// initialize_sprite @ 0x44de90 (thiscall)
 
 #include "sprite.h"
 

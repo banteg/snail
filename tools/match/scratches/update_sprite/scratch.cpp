@@ -1,4 +1,4 @@
-// update_sprite @ 0x44df30 (thiscall, ret)
+// update_sprite @ 0x44df30 (thiscall)
 
 #include "sprite.h"
 

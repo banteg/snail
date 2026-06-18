@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_sprite_manager_paused @ 0x44e540 */
 
-0044e544        *arg1 = arg2
-0044e546        return arg2
+0044e544        manager->paused = paused
+0044e546        return paused

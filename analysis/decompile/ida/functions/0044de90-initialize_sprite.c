@@ -2,35 +2,33 @@
 /* function: initialize_sprite @ 0x44de90 */
 /* selector: initialize_sprite */
 
-int __thiscall sub_44DE90(_DWORD *this)
+void __thiscall initialize_sprite(_DWORD *sprite)
 {
-  *(this + 1) = 73;
-  set_color_white(this + 11);
-  *(this + 30) = -1135280652;
-  *(this + 10) = 0;
-  *(this + 26) = 0;
-  *(this + 28) = 0;
-  *(this + 29) = 0;
-  *(this + 31) = 0;
-  *(this + 32) = 0;
-  *(this + 33) = 0;
-  *(this + 34) = 1065353216;
-  *(this + 35) = 0;
-  *(this + 36) = 0;
-  *(this + 37) = -1007026176;
-  *(this + 8) = 0;
-  *(this + 9) = 0;
-  *(this + 23) = 0;
-  *(this + 22) = 0;
-  *(this + 21) = 0;
-  *(this + 38) = 0;
-  *this = -1;
-  *(this + 39) = 0;
-  *(this + 40) = 0;
-  *(this + 41) = 0;
-  *(this + 43) = 0;
-  *(this + 44) = 0;
-  *(this + 42) = 1;
-  return 0;
+  *(sprite + 1) = 73;
+  set_color_white(sprite + 11);
+  *(sprite + 30) = -1135280652;
+  *(sprite + 10) = 0;
+  *(sprite + 26) = 0;
+  *(sprite + 28) = 0;
+  *(sprite + 29) = 0;
+  *(sprite + 31) = 0;
+  *(sprite + 32) = 0;
+  *(sprite + 33) = 0;
+  *(sprite + 34) = 1065353216;
+  *(sprite + 35) = 0;
+  *(sprite + 36) = 0;
+  *(sprite + 37) = -1007026176;
+  *(sprite + 8) = 0;
+  *(sprite + 9) = 0;
+  *(sprite + 23) = 0;
+  *(sprite + 22) = 0;
+  *(sprite + 21) = 0;
+  *(sprite + 38) = 0;
+  *sprite = -1;
+  *(sprite + 39) = 0;
+  *(sprite + 40) = 0;
+  *(sprite + 41) = 0;
+  *(sprite + 43) = 0;
+  *(sprite + 44) = 0;
+  *(sprite + 42) = 1;
 }
-

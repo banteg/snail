@@ -5,13 +5,13 @@
 
 0044e3d3        int32_t* i = &data_814c94
 0044e401        while (i s< &data_814ca8)
-0044e3dd        void* j_1 = *i
-0044e3e1        if (j_1 != 0)
-0044e3f6        void* j
-0044e3e6        j = *(j_1 + 0xc)
-0044e3eb        if ((0x800 & *(j_1 + 4)) != 0)
-0044e3ed        kill_sprite(j_1)
-0044e3f4        j_1 = j
-0044e3f6        do while (j != 0)
+0044e3dd        struct Sprite* sprite = *i
+0044e3e1        if (sprite != 0)
+0044e3f6        struct Sprite* next
+0044e3e6        next = sprite->next
+0044e3eb        if ((0x800 & sprite->flags) != 0)
+0044e3ed        kill_sprite(sprite)
+0044e3f4        sprite = next
+0044e3f6        do while (next != 0)
 0044e3f8        i = &i[1]
 0044e406        return

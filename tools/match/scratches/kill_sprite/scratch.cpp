@@ -1,4 +1,4 @@
-// kill_sprite @ 0x44e200 (thiscall, ret)
+// kill_sprite @ 0x44e200 (thiscall)
 
 #include "sprite.h"
 
