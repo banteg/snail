@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**401/687** mapped gameplay functions matched, **553/687** mapped gameplay functions have a scratch, **42195/325882** bytes (**12.95%**) are proof-grade, and overall fuzzy is **29.65%**.
+**402/687** mapped gameplay functions matched, **554/687** mapped gameplay functions have a scratch, **42306/325882** bytes (**12.98%**) are proof-grade, and overall fuzzy is **29.68%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -23,6 +23,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_input_ok | 0x403560 | 67 | 23/23 | 100.00% | 23/23 | 5 ok |  |
 | ✅ | reset_tooltip | 0x403be0 | 51 | 16/16 | 100.00% | 16/16 | 2 ok |  |
 | ✅ | queue_frontend_widget_flag_after_delay | 0x403f60 | 93 | 22/22 | 100.00% | 22/22 | 2 ok |  |
+| ✅ | update_border_manager | 0x403fc0 | 111 | 28/28 | 100.00% | 28/28 | 2 ok |  |
 | ✅ | update_twinkle_manager | 0x404030 | 53 | 23/23 | 100.00% | 23/23 | 1 ok |  |
 | ✅ | draw_twinkle | 0x404070 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | border_sprite_extend | 0x404540 | 55 | 14/14 | 100.00% | 14/14 | - |  |
@@ -566,13 +567,12 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 29 type name(s) with a header plus scratch-local copies
-- divergent: 20 type name(s) with multiple scratch-local shapes
+- covered: 30 type name(s) with a header plus scratch-local copies
+- divergent: 19 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | FrontendFade | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -598,6 +598,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | PlayerPresentationController | 3 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | FrontendFade | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
