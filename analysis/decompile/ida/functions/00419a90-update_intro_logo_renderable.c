@@ -1,8 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: update_logo_row @ 0x419a90 */
-/* selector: update_logo_row */
+/* function: update_intro_logo_renderable @ 0x419a90 */
+/* selector: update_intro_logo_renderable */
 
-char __thiscall update_logo_row(int this)
+// Advances one intro/credits or logo renderable by applying its velocity to the shared BOD position, fades alpha as it passes the z-window, marks the backing object dirty, and toggles the visible bit. The old `update_logo_row` name was too narrow: `initialize_intro_screen` uses the same 0x90-byte bank for intro text and image renderables, while `open_logo` uses the 32-slot logo bank.
+char __thiscall update_intro_logo_renderable(int this)
 {
   int v1; // eax
 

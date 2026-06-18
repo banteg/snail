@@ -3,15 +3,26 @@
 #ifndef BORDER_MANAGER_H
 #define BORDER_MANAGER_H
 
+#include "bod_types.h"
 #include "border_batch_state.h"
 #include "frontend_widget.h"
 
-class BorderRecord {
+class BorderRecord : public BodBase {
 public:
-    char unknown_000[0x19c];
+    BorderRecord* initialize_border_record(); // @ 0x408410
+
+    char unknown_038[0x6c - 0x038];
+    Color4f color_06c; // +0x06c, constructor-proven color/style block
+    char unknown_07c[0x19c - 0x07c];
     int created_time; // +0x19c
     int flags; // +0x1a0
-    char unknown_1a4[0x20c - 0x1a4];
+    char unknown_1a4[0x1ac - 0x1a4];
+    Color4f color_1ac; // +0x1ac
+    Color4f color_1bc; // +0x1bc
+    Color4f color_1cc; // +0x1cc
+    Color4f color_1dc; // +0x1dc
+    Color4f color_1ec; // +0x1ec
+    Color4f color_1fc; // +0x1fc
     float hover_blend_target; // +0x20c
     float hover_blend_current; // +0x210
     float idle_padding; // +0x214

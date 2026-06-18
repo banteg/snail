@@ -107,7 +107,7 @@
 00407dda        void* edi_3 = &esi[0x16d]
 00407de0        int32_t i_6 = 5
 00407df0        int32_t i_2
-00407de7        sub_44e920(edi_3)
+00407de7        initialize_render_camera_slot(edi_3)
 00407dec        edi_3 += 0x28
 00407def        i_2 = i_6
 00407def        i_6 -= 1
@@ -125,7 +125,7 @@
 00407e64        esi[0x298] = "P{@"
 00407e72        initialize_bod_base(&esi[0x2d3])
 00407e72        int16_t top_9 = top - 9
-00407e8d        initialize_array_with_constructor(&esi[0x474], 0x724, 0x96, sub_408410)
+00407e8d        initialize_array_with_constructor(&esi[0x474], 0x724, 0x96, initialize_border_record)
 00407e92        esi[0x2d3] = &data_4972e8
 00407e98        char** edi_9 = &esi[0x11040]
 00407e9e        int32_t i_7 = 0x160
@@ -136,21 +136,21 @@
 00407ead        i_3 = i_7
 00407ead        i_7 -= 1
 00407eae        do while (i_3 != 1)
-00407ec6        initialize_array_with_constructor(&esi[0x12382], 0xbc, 0x80, sub_408470)
+00407ec6        initialize_array_with_constructor(&esi[0x12382], 0xbc, 0x80, initialize_cached_x_mesh_slot)
 00407ed3        initialize_bod_base(&esi[0x13b04])
 00407eee        esi[0x13b04] = &data_4972e4
 00407efc        initialize_bod_base(&esi[0x13ccf])
 00407f07        esi[0x13ccf] = &data_4972e0
 00407f0d        initialize_bod_base(&esi[0x13cf2])
-00407f28        initialize_array_with_constructor(&esi[0x13d06], 0x90, 0x400, sub_408490)
-00407f40        initialize_array_with_constructor(&esi[0x1cd06], 0x90, 0x20, sub_408490)
+00407f28        initialize_array_with_constructor(&esi[0x13d06], 0x90, 0x400, initialize_intro_logo_renderable)
+00407f40        initialize_array_with_constructor(&esi[0x1cd06], 0x90, 0x20, initialize_intro_logo_renderable)
 00407f4b        initialize_runtime_pools_and_path_template_bank(&esi[0x1d186])
 00407f58        initialize_bod_base(&esi[0x4b9bd6])
 00407f5d        esi[0x4b9bd6] = &data_4972dc
 00407f64        *esi = &data_4972d8
 00407f6f        int32_t __saved_edi_6 = data_50331c
 00407f74        int32_t var_4_1 = 0xffffffff
-00407f7c        data_4df904 = esi
+00407f7c        g_game_base = esi
 00407f8e        int32_t __saved_ebx_5 = __saved_edi_6 * 0x38
 00407f8f        int32_t __saved_edi_5 = __saved_edi_6
 00407f90        char* var_20_5 = "BodCount=%i  Memory=%i\n"

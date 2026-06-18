@@ -347,6 +347,21 @@
       "name": "initialize_runtime_pools_and_path_template_bank"
     },
     {
+      "address": "0x408410",
+      "name": "initialize_border_record",
+      "description": "Constructs one 0x724-byte front-end border/widget pool record by seeding the shared BOD header, no-op-constructing the constructor-proven color/style blocks, and installing the front-end widget callback table. `construct_game_runtime` uses it for the 150-entry `BorderManager::borders` pool at `game + 0x11d0`."
+    },
+    {
+      "address": "0x408470",
+      "name": "initialize_cached_x_mesh_slot",
+      "description": "Constructs one 0xbc-byte cached X-mesh object slot by seeding the shared BOD header and installing the cache-slot callback table. The slot bank starts at `game + 0x48e08`; `load_or_reuse_cached_x_mesh(game + 0x48e00, ...)` stores names at slot `+0x3c` and object BOD refs at slot `+0x24`."
+    },
+    {
+      "address": "0x408490",
+      "name": "initialize_intro_logo_renderable",
+      "description": "Constructs one 0x90-byte intro/logo renderable by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both the 1024-entry intro/credits text bank and the 32-entry logo row bank with this constructor."
+    },
+    {
       "address": "0x4084b0",
       "name": "initialize_track_speedup_runtime",
       "description": "Constructs the shared speed-up runtime record by running the shared renderable-body constructor and installing the speed-up vtable. Even though `spawn_track_speedup` is an empty stub in this build, the same `0x355db0` runtime lane is still consumed by `update_jetpack_gauge`, `handle_subgoldy_collisions`, and `remove_subgame_bods`, and its `0xb4` footprint matches the native `cRSubSpeedUp` size ledger."
@@ -934,7 +949,11 @@
     },
     {
       "address": "0x419a90",
-      "name": "update_logo_row"
+      "name": "update_intro_logo_renderable",
+      "aliases": [
+        "update_logo_row"
+      ],
+      "description": "Advances one intro/credits or logo renderable by applying its velocity to the shared BOD position, fades alpha as it passes the z-window, marks the backing object dirty, and toggles the visible bit. The old `update_logo_row` name was too narrow: `initialize_intro_screen` uses the same 0x90-byte bank for intro text and image renderables, while `open_logo` uses the 32-slot logo bank."
     },
     {
       "address": "0x419b30",

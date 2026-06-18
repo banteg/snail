@@ -97,7 +97,7 @@ int construct_game_runtime()
     Iostream_init::Iostream_init((#93 *)(v1 + 2784));
     *((_DWORD *)v1 + 664) = &off_4972B0;
     initialize_bod_base((_DWORD *)v1 + 723);
-    initialize_array_with_constructor((int)(v1 + 4560), 1828, 150, (int (__thiscall *)(int))sub_408410);
+    initialize_array_with_constructor((int)(v1 + 4560), 1828, 150, (int (__thiscall *)(int))initialize_border_record);
     *((_DWORD *)v1 + 723) = off_4972E8;
     v8 = v1 + 278784;
     v9 = 352;
@@ -108,7 +108,7 @@ int construct_game_runtime()
       --v9;
     }
     while ( v9 );
-    initialize_array_with_constructor((int)(v1 + 298504), 188, 128, (int (__thiscall *)(int))sub_408470);
+    initialize_array_with_constructor((int)(v1 + 298504), 188, 128, (int (__thiscall *)(int))initialize_cached_x_mesh_slot);
     initialize_bod_base((_DWORD *)v1 + 80644);
     Iostream_init::Iostream_init((#93 *)(v1 + 324236));
     Iostream_init::Iostream_init((#93 *)(v1 + 324268));
@@ -116,8 +116,8 @@ int construct_game_runtime()
     initialize_bod_base((_DWORD *)v1 + 81103);
     *((_DWORD *)v1 + 81103) = off_4972E0;
     initialize_bod_base((_DWORD *)v1 + 81138);
-    initialize_array_with_constructor((int)(v1 + 324632), 144, 1024, (int (__thiscall *)(int))sub_408490);
-    initialize_array_with_constructor((int)(v1 + 472088), 144, 32, (int (__thiscall *)(int))sub_408490);
+    initialize_array_with_constructor((int)(v1 + 324632), 144, 1024, (int (__thiscall *)(int))initialize_intro_logo_renderable);
+    initialize_array_with_constructor((int)(v1 + 472088), 144, 32, (int (__thiscall *)(int))initialize_intro_logo_renderable);
     initialize_runtime_pools_and_path_template_bank((_DWORD *)v1 + 119174);
     initialize_bod_base((_DWORD *)v1 + 4955094);
     *((_DWORD *)v1 + 4955094) = off_4972DC;
@@ -132,4 +132,3 @@ int construct_game_runtime()
   sub_449C00();
   return sub_449C00();
 }
-

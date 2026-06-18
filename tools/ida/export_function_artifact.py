@@ -64,7 +64,11 @@ def _export_function(out_dir, selector):
     start = _resolve_selector(resolve_selector)
     name = idc.get_func_name(start)
     try:
-        pseudocode = str(ida_hexrays.decompile(start))
+        ida_hexrays.mark_cfunc_dirty(start, True)
+        cfunc = ida_hexrays.decompile(start)
+        if cfunc is None:
+            raise RuntimeError("Hex-Rays returned no cfunc")
+        pseudocode = str(cfunc)
     except Exception as exc:  # pragma: no cover - IDA runtime dependent
         raise RuntimeError(f"failed to decompile {selector}: {exc}") from exc
 

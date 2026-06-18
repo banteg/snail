@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 670,
-  "function_count": 670,
+  "selected_count": 673,
+  "function_count": 673,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -529,6 +529,27 @@
       "address": "0x408060",
       "name": "initialize_runtime_pools_and_path_template_bank",
       "artifact": "analysis/decompile/ida/functions/00408060-initialize_runtime_pools_and_path_template_bank.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_border_record",
+      "address": "0x408410",
+      "name": "initialize_border_record",
+      "artifact": "analysis/decompile/ida/functions/00408410-initialize_border_record.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_cached_x_mesh_slot",
+      "address": "0x408470",
+      "name": "initialize_cached_x_mesh_slot",
+      "artifact": "analysis/decompile/ida/functions/00408470-initialize_cached_x_mesh_slot.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_intro_logo_renderable",
+      "address": "0x408490",
+      "name": "initialize_intro_logo_renderable",
+      "artifact": "analysis/decompile/ida/functions/00408490-initialize_intro_logo_renderable.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1330,10 +1351,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_logo_row",
+      "selector": "update_intro_logo_renderable",
       "address": "0x419a90",
-      "name": "update_logo_row",
-      "artifact": "analysis/decompile/ida/functions/00419a90-update_logo_row.c",
+      "name": "update_intro_logo_renderable",
+      "artifact": "analysis/decompile/ida/functions/00419a90-update_intro_logo_renderable.c",
       "removed_stale_artifacts": []
     },
     {

@@ -790,6 +790,36 @@
       "description": "Statically linked CRT atexit helper used to register compiler-generated static destructors."
     },
     {
+      "address": "0x497308",
+      "name": "g_frontend_widget_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497308",
+        "data_497308"
+      ],
+      "description": "Front-end widget/border callback table installed by initialize_border_record; first entry is `update_frontend_widget_interaction`."
+    },
+    {
+      "address": "0x49730c",
+      "name": "g_cached_x_mesh_slot_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49730c",
+        "data_49730c"
+      ],
+      "description": "Cached X-mesh slot callback table installed by initialize_cached_x_mesh_slot; first entry is the shared no-op AI callback."
+    },
+    {
+      "address": "0x497310",
+      "name": "g_intro_logo_renderable_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497310",
+        "data_497310"
+      ],
+      "description": "Intro/credits and logo renderable callback table installed by initialize_intro_logo_renderable; first entry is `update_intro_logo_renderable`."
+    },
+    {
       "address": "0x497314",
       "name": "g_track_speedup_vtable",
       "kind": "vtable",

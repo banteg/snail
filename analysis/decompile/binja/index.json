@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 670,
-  "function_count": 670,
+  "selected_count": 673,
+  "function_count": 673,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -392,6 +392,21 @@
       "address": "0x408060",
       "name": "initialize_runtime_pools_and_path_template_bank",
       "artifact": "analysis/decompile/binja/functions/00408060-initialize_runtime_pools_and_path_template_bank.c"
+    },
+    {
+      "address": "0x408410",
+      "name": "initialize_border_record",
+      "artifact": "analysis/decompile/binja/functions/00408410-initialize_border_record.c"
+    },
+    {
+      "address": "0x408470",
+      "name": "initialize_cached_x_mesh_slot",
+      "artifact": "analysis/decompile/binja/functions/00408470-initialize_cached_x_mesh_slot.c"
+    },
+    {
+      "address": "0x408490",
+      "name": "initialize_intro_logo_renderable",
+      "artifact": "analysis/decompile/binja/functions/00408490-initialize_intro_logo_renderable.c"
     },
     {
       "address": "0x4084b0",
@@ -965,8 +980,8 @@
     },
     {
       "address": "0x419a90",
-      "name": "update_logo_row",
-      "artifact": "analysis/decompile/binja/functions/00419a90-update_logo_row.c"
+      "name": "update_intro_logo_renderable",
+      "artifact": "analysis/decompile/binja/functions/00419a90-update_intro_logo_renderable.c"
     },
     {
       "address": "0x419b30",

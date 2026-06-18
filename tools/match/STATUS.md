@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**367/683** mapped gameplay functions matched, **496/683** mapped gameplay functions have a scratch, **35571/325917** bytes (**10.91%**) are proof-grade, and overall fuzzy is **25.95%**.
+**371/686** mapped gameplay functions matched, **501/686** mapped gameplay functions have a scratch, **35885/325887** bytes (**11.01%**) are proof-grade, and overall fuzzy is **26.12%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -46,6 +46,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | probe_display_mode_count | 0x407880 | 40 | 17/17 | 100.00% | 17/17 | 1 ok |  |
 | ✅ | read_current_display_resolution | 0x4078b0 | 351 | 22/22 | 100.00% | 22/22 | 1 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
+| ✅ | initialize_border_record | 0x408410 | 92 | 21/21 | 100.00% | 21/21 | 9 ok |  |
+| ✅ | initialize_cached_x_mesh_slot | 0x408470 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_intro_logo_renderable | 0x408490 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_track_speedup_runtime | 0x4084b0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 55 | 17/17 | 100.00% | 17/17 | 6 ok |  |
 | ✅ | initialize_track_health_pickup_runtime | 0x408510 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
@@ -195,6 +198,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
+| 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 126/122 | 57.26% | 0/122 | 18 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 57/58 | 52.17% | 7/58 | 4 ok |  |
@@ -305,6 +309,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 97/125 | 49.55% | 0/125 | 28 ok |  |
+| ✅ | update_row_model | 0x443070 | 186 | 60/60 | 100.00% | 60/60 | 6 ok |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
 | ✅ | allocate_track_parcel_slot | 0x443190 | 54 | 18/18 | 100.00% | 18/18 | 2 ok |  |
@@ -508,9 +513,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 0 type name(s)
+- ready: 2 type name(s)
 - covered: 26 type name(s) with a header plus scratch-local copies
-- divergent: 21 type name(s) with multiple scratch-local shapes
+- divergent: 22 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -534,6 +539,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | InputState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 36 | 1 | 36 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
@@ -561,3 +567,5 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | VertexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
