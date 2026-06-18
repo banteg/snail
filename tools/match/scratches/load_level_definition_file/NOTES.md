@@ -12,6 +12,8 @@ Initial relationship scratch.
   `Track:`, and `Quota:` scalar fields at `+0x1a595c..+0x1a5974`.
 - Focused Wibo status: 2026-06-18, 75.17%, 939/926 candidate/target
   instructions, prefix 20/926, masked operands 165 ok.
+- 2026-06-18: Replaced the local segment row and slot layout with
+  `include/segment_catalog_types.h`; focused Wibo score stayed 75.17%.
 
 Slot corrections from this loader:
 
@@ -20,9 +22,9 @@ Slot corrections from this loader:
 - Slot `+0x4218` is `Duration=` with default `4.0f`.
 - Slot `+0x421c` is the resolved `Sample=` id with default `-1`.
 
-This first pass is intentionally scratch-local. Promote the slot field names
-after retesting `copy_segment_definition_to_level_slot` and
-`load_builtin_segment_definitions` with the corrected tail names.
+The segment slot field names are now shared with
+`copy_segment_definition_to_level_slot` and
+`load_builtin_segment_definitions` after focused retesting.
 
 Residuals:
 

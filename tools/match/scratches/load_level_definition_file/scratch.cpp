@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "landscape_script_bank.h"
+#include "segment_catalog_types.h"
 
 extern char* g_game_base; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
@@ -18,40 +19,6 @@ int parse_next_signed_int(char** cursor);
 float parse_next_float32(char** cursor);
 void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
-
-struct AuthoredSegmentRow {
-    int flags;
-    int parcel_set_id;
-    int local_x_bits;
-    int local_y_bits;
-    int local_z_bits;
-    int object_id;
-    int object_position_x_bits;
-    int object_position_y_bits;
-    int object_position_z_bits;
-    int object_velocity_x_bits;
-    int object_velocity_y_bits;
-    int object_velocity_z_bits;
-    int path_template_index;
-    int ring_speed_bits;
-};
-
-struct LevelSegmentSlot {
-    int row_base;                 // +0x00
-    int row_count;                // +0x04
-    int visited;                  // +0x08
-    int path_index;               // +0x0c
-    char* source_name;            // +0x10
-    char glyph_rows[8][0x100];    // +0x14
-    AuthoredSegmentRow rows[256]; // +0x814
-    float angle_radians;          // +0x4014, parsed from Angle=
-    char message_text[0x4218 - 0x4018]; // +0x4018, parsed from Message=
-    float message_duration;       // +0x4218, parsed from Duration=
-    int message_sample_id;        // +0x421c, parsed from Sample=
-};
-
-typedef char LevelSegmentSlot_must_be_0x4220[
-    (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
 
 struct LevelDefinitionParseBuffers {
     char level_path[512];
@@ -338,10 +305,10 @@ int* LevelDefinitionLoader::load_level_definition_file(char* filename)
             if (option_cursor != 0) {
                 option_cursor = find_case_insensitive_substring("=", option_cursor);
                 parsed_int = parse_next_signed_int(&option_cursor);
-                segment_slots[segment_count].angle_radians =
+                segment_slots[segment_count].angle_radians.value =
                     (float)parsed_int * 0.017453292f;
             } else {
-                segment_slots[segment_count].angle_radians = 0.0f;
+                segment_slots[segment_count].angle_radians.value = 0.0f;
             }
 
             segment_slots[segment_count].message_text[0] = 0;
@@ -368,10 +335,10 @@ int* LevelDefinitionLoader::load_level_definition_file(char* filename)
                 *message_out = 0;
 
                 option_cursor = find_case_insensitive_substring("Duration=", line_options);
-                segment_slots[segment_count].message_duration = 4.0f;
+                segment_slots[segment_count].message_duration.value = 4.0f;
                 if (option_cursor != 0) {
                     option_cursor = find_case_insensitive_substring("=", option_cursor) + 1;
-                    segment_slots[segment_count].message_duration =
+                    segment_slots[segment_count].message_duration.value =
                         parse_next_float32(&option_cursor);
                 }
 

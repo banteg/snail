@@ -1,43 +1,6 @@
 // load_builtin_segment_definitions @ 0x448060 (thiscall, ret 0x4)
 
-union AuthoredFloatBits {
-    int bits;
-    float value;
-};
-
-struct AuthoredSegmentRow {
-    int flags;
-    int parcel_set_id;
-    int local_x_bits;
-    int local_y_bits;
-    int local_z_bits;
-    int object_id;
-    int object_position_x_bits;
-    int object_position_y_bits;
-    int object_position_z_bits;
-    int object_velocity_x_bits;
-    int object_velocity_y_bits;
-    int object_velocity_z_bits;
-    int path_template_index;
-    AuthoredFloatBits ring_speed;
-};
-
-struct LevelSegmentSlot {
-    int row_base;                 // +0x00
-    int row_count;                // +0x04
-    int visited;                  // +0x08
-    int path_index;               // +0x0c
-    char* source_name;            // +0x10
-    char glyph_rows[8][0x100];    // +0x14
-    AuthoredSegmentRow rows[256]; // +0x814
-    int angle_radians_bits;       // +0x4014
-    char message_text[0x4218 - 0x4018]; // +0x4018
-    int message_duration_bits;    // +0x4218
-    int message_sample_id;        // +0x421c
-};
-
-typedef char LevelSegmentSlot_must_be_0x4220[
-    (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
+#include "segment_catalog_types.h"
 
 struct BuiltinSegmentDefinition {
     int row_count;            // +0x00, filled after measuring row 0

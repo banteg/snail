@@ -14,6 +14,9 @@ Status:
 
 - 2026-06-18: 54.10%, 119/125 candidate/target instructions, prefix 42/125,
   5 masked operands ok.
+- 2026-06-18: Promoted the shared authored segment catalog and
+  `LevelSegmentSlot` layouts to `include/segment_catalog_types.h`; focused
+  Wibo score stayed 54.10%.
 
 Corrections from the first pass:
 

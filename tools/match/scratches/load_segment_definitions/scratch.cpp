@@ -1,5 +1,7 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
+#include "segment_catalog_types.h"
+
 extern char* g_game_base; // data_4df904
 
 int sprintf(char* buffer, char* format, ...);
@@ -24,42 +26,6 @@ class SegmentPathTable {
 public:
     int find_segment_path_index_by_name(char* name); // @ 0x429ae0
 };
-
-union AuthoredFloatBits {
-    int bits;
-    float value;
-};
-
-struct AuthoredSegmentRow {
-    int flags;                     // +0x00
-    int parcel_set_id;             // +0x04
-    AuthoredFloatBits local_x;     // +0x08
-    AuthoredFloatBits local_y;     // +0x0c
-    AuthoredFloatBits local_z;     // +0x10
-    int object_id;                 // +0x14
-    AuthoredFloatBits object_position_x; // +0x18
-    AuthoredFloatBits object_position_y; // +0x1c
-    AuthoredFloatBits object_position_z; // +0x20
-    AuthoredFloatBits object_velocity_x; // +0x24
-    AuthoredFloatBits object_velocity_y; // +0x28
-    AuthoredFloatBits object_velocity_z; // +0x2c
-    int path_template_index;       // +0x30, parsed from Path=
-    AuthoredFloatBits ring_speed;  // +0x34, parsed from RingSpeed=
-};
-
-struct SegmentCatalogEntry {
-    int count_alias; // +0x00 on entry 0 only; the catalog count overlaps entry 0
-    char display_name[0x40]; // +0x04, copied from Name:'...'
-    char filename[0x40];     // +0x44, copied from Segments/*.txt enumeration
-    int id;                  // +0x84, parsed from ID:
-    int row_count;           // +0x88
-    char glyph_columns[0x100][8]; // +0x8c
-    AuthoredSegmentRow rows[255]; // +0x88c
-    char unknown_4054[0x4088 - 0x4054];
-};
-
-typedef char SegmentCatalogEntry_must_be_0x4088[
-    (sizeof(SegmentCatalogEntry) == 0x4088) ? 1 : -1];
 
 class SegmentCatalog {
 public:

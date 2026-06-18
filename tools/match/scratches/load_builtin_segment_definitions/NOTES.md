@@ -20,6 +20,8 @@ Status:
 - 2026-06-18: Reshaped the scratch around the shared `LevelSegmentSlot` layout
   and a typed `BuiltinSegmentDefinition`; score stayed at 52.97%, but the slot
   offsets now line up with `copy_segment_definition_to_level_slot`.
+- 2026-06-18: Replaced the local authored row and slot copies with
+  `include/segment_catalog_types.h`; focused Wibo score still stayed 52.97%.
 - Useful correction from the first pass: the row-copy loop should reload the
   row pointer through the table for each glyph; caching/incrementing the row
   pointer made the shape worse.
