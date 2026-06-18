@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**357/679** mapped gameplay functions matched, **482/679** mapped gameplay functions have a scratch, **34631/325973** bytes (**10.62%**) are proof-grade, and overall fuzzy is **25.41%**.
+**358/679** mapped gameplay functions matched, **485/679** mapped gameplay functions have a scratch, **34735/325973** bytes (**10.66%**) are proof-grade, and overall fuzzy is **25.49%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -117,10 +117,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | append_subgame_contact_target | 0x415ef0 | 88 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | destroy_help_screen | 0x4168c0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | destroy_high_score_screen | 0x417220 | 52 | 11/11 | 100.00% | 11/11 | 5 ok |  |
-| 🚧 | update_high_score_screen | 0x417260 | 731 | 205/205 | 64.88% | 0/205 | 28 ok |  |
+| 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | add_arcade_high_score | 0x4176a0 | 222 | 67/70 | 65.69% | 15/70 | 1 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 81/84 | 66.67% | 3/84 | 5 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
+| 🚧 | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 85.00% | 20/40 | 3 ok |  |
+| 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 34/33 | 38.81% | 0/33 | - |  |
+| ✅ | exit_high_score_screen | 0x417b50 | 104 | 23/23 | 100.00% | 23/23 | 6 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | activate_landscape_entry | 0x418870 | 442 | 123/123 | 100.00% | 123/123 | 20 ok |  |

@@ -3,12 +3,17 @@
 #define HIGH_SCORE_SCREEN_H
 
 #include "frontend_widget.h"
-#include "high_score_record.h"
+#include "high_score_bank.h"
 #include "sprite.h"
 
-class HighScoreRecordBank {
+class HighScoreRecordView {
 public:
-    char record_bytes[HIGH_SCORE_RECORD_STRIDE];
+    void commit_high_score_entry_into_top_ten(int rank); // @ 0x417af0
+
+    HighScoreRecord* active_record_bank; // +0x00
+    int active_record_count; // +0x04
+    char unknown_000008[0x17c108 - 0x08];
+    HighScoreRecord name_submit_records[HIGH_SCORE_TOP_TEN_COUNT]; // +0x17c108
 };
 
 class HighScoreGameView {
@@ -26,14 +31,16 @@ public:
     char unknown_000318[0x74658 - 0x318];
     int selected_subgame_mode; // +0x74658
     char unknown_07465c[0x6ffae0 - 0x7465c];
-    HighScoreRecord* active_record_bank; // +0x6ffae0
-    int active_record_count; // +0x6ffae4
-    char unknown_6ffae8[0x1066be8 - 0x6ffae8];
+    HighScoreRecordView high_score_records; // +0x6ffae0
+    char unknown_after_high_score_records[
+        0x1066be8 - 0x6ffae0 - sizeof(HighScoreRecordView)];
     unsigned char replay_launch_active; // +0x1066be8
     unsigned char replay_launch_from_frontend; // +0x1066be9
     char unknown_1066bea[0x1066bec - 0x1066bea];
     HighScoreRecord* replay_launch_record; // +0x1066bec
     int replay_launch_return_state; // +0x1066bf0
+    char unknown_1066bf4[0x12e55e0 - 0x1066bf4];
+    int ordinary_rebuild_selector; // +0x12e55e0
 };
 
 class HighScoreScreen {
@@ -65,6 +72,5 @@ extern int g_high_score_selected_bank; // data_4df9c0
 extern char g_last_entered_player_name[]; // data_4df978
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
-void __cdecl commit_high_score_entry_into_top_ten(HighScoreRecord* bank, int rank); // @ 0x417af0
 
 #endif

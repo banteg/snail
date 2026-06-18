@@ -44,7 +44,8 @@ int HighScoreBank::add_survival_high_score(HighScoreRecord* record)
     if (rank != -1) {
         record->high_score_mode_tag = 1;
         bank->survival_records[rank].high_score_mode_tag = 1;
-        ((HighScoreGameView*)g_game_base)->active_record_bank = bank->survival_records;
+        ((HighScoreGameView*)g_game_base)->high_score_records.active_record_bank =
+            bank->survival_records;
         ((HighScoreGameView*)g_game_base)->high_score_entry_rank = rank;
         ((HighScoreGameView*)g_game_base)->high_score_entry_bank = 1;
     }

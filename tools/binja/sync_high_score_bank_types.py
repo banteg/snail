@@ -14,6 +14,10 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
 
 PROTO_UPDATES = (
     (
+        "initialize_high_score_entry",
+        "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int32_t runtime_seed, int32_t initial_level_mode_arg, int32_t level_arg_tail_value, uint32_t runtime_flags_snapshot, int32_t high_score_mode_tag, int32_t route_or_rank_index)",
+    ),
+    (
         "add_arcade_high_score",
         "int32_t __thiscall add_arcade_high_score(HighScoreBank* bank, HighScoreRecord* record, int32_t level_arg)",
     ),
@@ -24,6 +28,10 @@ PROTO_UPDATES = (
     (
         "add_time_trial_high_score",
         "void __thiscall add_time_trial_high_score(HighScoreBank* bank, HighScoreRecord* record, int32_t route_index, uint8_t route_active)",
+    ),
+    (
+        "commit_high_score_entry_into_top_ten",
+        "void __thiscall commit_high_score_entry_into_top_ten(HighScoreRecordView* view, int32_t rank)",
     ),
 )
 

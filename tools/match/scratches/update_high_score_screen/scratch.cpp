@@ -20,7 +20,7 @@ int HighScoreScreen::update_high_score_screen()
             int rank = selected_rank;
             FrontendWidget* name_widget = name_row_widgets[rank];
             HighScoreRecord* record =
-                (HighScoreRecord*)((char*)game->active_record_bank
+                (HighScoreRecord*)((char*)game->high_score_records.active_record_bank
                     + rank * HIGH_SCORE_RECORD_STRIDE);
             rstrcpy_checked_ascii(record->player_name, name_widget->text_buffer);
             rstrcpy_checked_ascii(game->pending_player_name, name_widget->text_buffer);
@@ -44,9 +44,9 @@ int HighScoreScreen::update_high_score_screen()
 
             destroy_high_score_screen();
             g_sprite_manager.kill_game_sprites();
-            commit_high_score_entry_into_top_ten(
-                ((HighScoreGameView*)g_game_base)->active_record_bank,
-                selected_rank);
+            ((HighScoreGameView*)g_game_base)
+                ->high_score_records.commit_high_score_entry_into_top_ten(
+                    selected_rank);
             return exit_high_score_screen();
         }
     } else {
@@ -91,13 +91,14 @@ int HighScoreScreen::update_high_score_screen()
 
         HighScoreGameView* game = (HighScoreGameView*)g_game_base;
         int i = 0;
-        result = game->active_record_count;
+        result = game->high_score_records.active_record_count;
         if (result > 0) {
             int record_offset = 0;
             FrontendWidget** replay_widget = replay_row_widgets;
             do {
                 HighScoreRecord* record =
-                    (HighScoreRecord*)((char*)game->active_record_bank + record_offset);
+                    (HighScoreRecord*)((char*)game->high_score_records.active_record_bank
+                        + record_offset);
                 if (record->active == 1) {
                     FrontendWidget* widget = *replay_widget;
                     if (widget != 0) {
@@ -113,8 +114,9 @@ int HighScoreScreen::update_high_score_screen()
 
                             launch_game = (HighScoreGameView*)g_game_base;
                             launch_game->replay_launch_record =
-                                (HighScoreRecord*)((char*)launch_game->active_record_bank
-                                    + record_offset);
+                                (HighScoreRecord*)
+                                    ((char*)launch_game->high_score_records.active_record_bank
+                                        + record_offset);
                             ((HighScoreGameView*)g_game_base)->replay_launch_active = 1;
                             ((HighScoreGameView*)g_game_base)->replay_launch_from_frontend = 1;
                             ((HighScoreGameView*)g_game_base)->replay_launch_return_state = 18;
@@ -129,7 +131,7 @@ int HighScoreScreen::update_high_score_screen()
                 ++i;
                 record_offset += HIGH_SCORE_RECORD_STRIDE;
                 ++replay_widget;
-                result = game->active_record_count;
+                result = game->high_score_records.active_record_count;
             } while (i < result);
         }
     }
