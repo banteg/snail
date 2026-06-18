@@ -136,3 +136,53 @@ shrinks from `target[14:148] candidate[14:130]` at `36.00%` to
 emits native-shaped `fsubp st(1)`. This still does not resolve the broad
 `0xf4`/`0xe0` frame gap, scalar-lerp stack slots, matrix-copy layout, or
 terminal/side-exit position-copy scheduling.
+
+## 2026-06-19 measured source-shape pass
+
+The Linux i686 runtime now executes the pinned VC6.5 compiler under QEMU. The
+previous local scratch reproduced **40.97%** (400 candidate instructions). The
+accepted source-shape patch measures **55.41%** (398 candidate instructions),
+with 7 masked operands resolved and no unresolved or mismatched masks, using:
+
+```sh
+tools/match/match.sh tools/match/scratches/calc_path_length_z --regions --max-regions 12 --region-context 5
+```
+
+Accepted changes preserve all previously mapped behavior:
+
+- spell the segment-consumption path as one top-tested `while`, with
+  `delta -= current_length - progress` and a real `next_index` local;
+- keep `terminal_index` after the overflow path rather than precomputing it;
+- use a whole `Vec3` copy only for the initial terminal mirror to
+  `shot->position`;
+- use `sample_index` directly in the normal path and repeat the natural
+  `primary_samples[sample_index]` expressions instead of hoisting a primary
+  sample pointer;
+- call kind 42 through the recovered `AttachmentPathTemplate` member shape;
+- materialize the ordinary-path rotated offset as a real `Vec3` before adding
+  the three base components.
+
+The loop now emits the native `fsubp st(1)` form and backward continuation
+edge. The direct primary-bank expressions recover the native index/byte-offset
+register pattern; the focused scalar interpolation region is 79.17%.
+
+Rejected measured trials:
+
+- precomputing `terminal_index` before the loop scored 56.00%, but inserted
+  `mov edi,[segment_count]` / `dec edi` before the initial overflow test and
+  changed the terminal compare to `jg`; those instructions are absent from the
+  target, so this is rejected as a metric-only alignment gain;
+- adding both a named rotated-offset vector and named result vector scored
+  54.48% and overgrew the frame to `0xf8` versus native `0xf4`;
+- a named result vector without the rotated-offset vector scored 54.50%; whole
+  direction-to-velocity assignment scored 54.06%; both regress the accepted
+  layout;
+- hoisting output/basis/velocity pointers moved the frame but perturbed the
+  initial register schedule and regressed to 52-53%.
+
+The remaining precise lead is the ordinary result staging: native reserves
+`0xf4`, while this candidate reserves `0xec`. Native has result slots at
+`esp+0x2c..0x34` and rotated-product slots at `esp+0x38..0x40` immediately
+before the transform at `esp+0x44`. Straight named-`Vec3` spellings allocate
+four bytes too much and regress, so the next experiment should target the
+original vector-expression/temporary shape rather than add padding.
