@@ -137,6 +137,16 @@ typedef struct ObjectIndexBuffer {
     ObjectIndexBufferResource* buffer;
 } ObjectIndexBuffer;
 
+typedef struct VertexBufferFactory {
+    int32_t count;
+    ObjectRenderBuffers buffers[0xbb8];
+} VertexBufferFactory;
+
+typedef struct IndexBufferFactory {
+    int32_t count;
+    ObjectIndexBuffer buffers[0xbb8];
+} IndexBufferFactory;
+
 typedef struct Object {
     uint8_t _pad_00[0x08];
     Vec3* toon_vertices;
@@ -183,3 +193,7 @@ ObjectAnimation* __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, void* keyframes,
     float progress_step, uint16_t flags);
 void __cdecl refresh_object_vertex_buffer(Object* object);
+ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
+    VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
+ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(
+    IndexBufferFactory* factory, int32_t index_count);

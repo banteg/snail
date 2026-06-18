@@ -82,6 +82,14 @@ DATA_VAR_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "create_object_vertex_buffer_resource",
+        "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf)",
+    ),
+    (
+        "create_object_index_buffer_resource",
+        "ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(IndexBufferFactory* factory, int32_t index_count)",
+    ),
+    (
         "request_object_animation",
         "ObjectAnimation* __thiscall request_object_animation(Object* object, int32_t keyframe_count, void* keyframes, float progress_step, uint16_t flags)",
     ),

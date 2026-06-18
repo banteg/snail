@@ -11,6 +11,14 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "create_object_vertex_buffer_resource",
+        "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int vertex_count, int fvf);",
+    ),
+    (
+        "create_object_index_buffer_resource",
+        "ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(IndexBufferFactory* factory, int index_count);",
+    ),
+    (
         "request_object_animation",
         "ObjectAnimation* __thiscall request_object_animation(Object* object, int keyframe_count, void* keyframes, float progress_step, unsigned __int16 flags);",
     ),
