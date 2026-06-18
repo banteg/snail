@@ -7,30 +7,30 @@ int __thiscall ensure_music_stream_from_path(_BYTE *this, char *ArgList, char a3
 {
   int result; // eax
   unsigned int v5; // kr04_4
-  int v6; // eax
+  int file; // eax
 
   if ( *this )
   {
-    result = sub_44E6C0(ArgList, byte_7516A0);
+    result = strings_equal_case_insensitive_path(ArgList, g_cached_music_path);
     if ( result )
       return result;
     stop_music_stream(this);
   }
   v5 = strlen(ArgList) + 1;
-  rstrcpy_checked_ascii(byte_7516A0, ArgList);
-  if ( unk_753C20 )
+  rstrcpy_checked_ascii(g_cached_music_path, ArgList);
+  if ( g_active_music_stream )
     stop_music_stream(this);
-  unk_753C20 = 0;
+  g_active_music_stream = 0;
   if ( (int)(v5 - 1) <= 4 )
     return report_errorf("Music Play Memory Failed %s", ArgList);
-  v6 = MEMORY[0x753BF8](0, ArgList, 0, 0, 0);
-  unk_753C20 = v6;
-  if ( !v6 )
+  file = g_bass_stream_create_file(0, ArgList, 0, 0, 0);
+  g_active_music_stream = file;
+  if ( !file )
     return report_errorf("Music Play Memory Failed %s", ArgList);
   if ( a3 )
-    result = (*(int (__stdcall **)(int, _DWORD, int))&byte_7516A0[256])(v6, 0, 4);
+    result = (*(int (__stdcall **)(int, _DWORD, int))&g_cached_music_path[256])(file, 0, 4);
   else
-    result = (*(int (__stdcall **)(int, _DWORD, _DWORD))&byte_7516A0[256])(v6, 0, 0);
+    result = (*(int (__stdcall **)(int, _DWORD, _DWORD))&g_cached_music_path[256])(file, 0, 0);
   *this = 1;
   return result;
 }
