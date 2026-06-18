@@ -2,47 +2,42 @@
 /* function: initialize_sprite_manager @ 0x44e160 */
 /* selector: initialize_sprite_manager */
 
-int __thiscall sub_44E160(_DWORD *this)
+void __thiscall initialize_sprite_manager(_DWORD *manager)
 {
-  int v2; // edi
-  _DWORD *v3; // ebp
-  int result; // eax
+  int index; // edi
+  _DWORD *sprite_words; // ebp
 
-  *(_BYTE *)this = 0;
-  *(this + 135001) = 0;
-  *(this + 135002) = 0;
-  *(this + 135003) = 0;
-  *(this + 135004) = 0;
-  v2 = 0;
-  *(this + 135005) = 0;
-  *(this + 135006) = this + 1;
+  *(_BYTE *)manager = 0;
+  *(manager + 135001) = 0;
+  *(manager + 135002) = 0;
+  *(manager + 135003) = 0;
+  *(manager + 135004) = 0;
+  index = 0;
+  *(manager + 135005) = 0;
+  *(manager + 135006) = manager + 1;
   do
   {
-    v3 = this + 45 * v2;
-    result = initialize_sprite(v3 + 1);
-    if ( v2 )
+    sprite_words = manager + 45 * index;
+    initialize_sprite(sprite_words + 1);
+    if ( index )
     {
-      if ( v2 == 2999 )
+      if ( index == 2999 )
       {
-        *(this + 134960) = this + 134911;
-        *(this + 134959) = 0;
+        *(manager + 134960) = manager + 134911;
+        *(manager + 134959) = 0;
       }
       else
       {
-        result = (int)(v3 + 46);
-        v3[5] = v3 - 44;
-        v3[4] = v3 + 46;
+        sprite_words[5] = sprite_words - 44;
+        sprite_words[4] = sprite_words + 46;
       }
     }
     else
     {
-      result = (int)(this + 46);
-      *(this + 5) = 0;
-      *(this + 4) = this + 46;
+      *(manager + 5) = 0;
+      *(manager + 4) = manager + 46;
     }
-    ++v2;
+    ++index;
   }
-  while ( v2 < 3000 );
-  return result;
+  while ( index < 3000 );
 }
-

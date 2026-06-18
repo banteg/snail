@@ -43,3 +43,10 @@ Rejected/source-neutral probes:
   already promoted in `sprite.h`: `paused +0x0`, sprite pool at `+0x4`, active
   heads `+0x83d64..+0x83d74`, and free head `+0x83d78`. No additional manager
   fields are proved by this function.
+- 2026-06-18 prototype sync: BN/IDA's old integer return was just the final
+  link-pointer value left in `eax`; native returns void. Syncing BN to
+  `void __thiscall initialize_sprite_manager(SpriteManager*)` resolves the
+  manager fields (`paused`, `active_heads`, `free_head`, first/last sprite
+  links) and removes the synthetic `result`. Rechecking explicit active-head
+  stores still regressed to 47.19%, so the `memset`-style source remains the
+  best honest baseline for now.

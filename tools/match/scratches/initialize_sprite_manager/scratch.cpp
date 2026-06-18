@@ -1,4 +1,4 @@
-// initialize_sprite_manager @ 0x44e160 (thiscall, ret)
+// initialize_sprite_manager @ 0x44e160 (thiscall)
 
 #include "sprite.h"
 

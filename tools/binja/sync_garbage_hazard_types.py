@@ -114,6 +114,7 @@ GARBAGE_HAZARD_POOL_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    ("initialize_sprite_manager", "void __thiscall initialize_sprite_manager(SpriteManager* manager)"),
     (
         "allocate_sprite",
         "Sprite* __thiscall allocate_sprite(SpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",

@@ -124,6 +124,7 @@ typedef struct GarbageHazardPool {
     GarbageHazardSlot slots[50];
 } GarbageHazardPool;
 
+void __thiscall initialize_sprite_manager(SpriteManager* manager);
 Sprite* __thiscall allocate_sprite(
     SpriteManager* manager,
     int32_t owner,
