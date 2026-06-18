@@ -23,7 +23,15 @@ public:
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
 
-    char unknown_000000[0x355db0];
+    char unknown_000000[0x74621];
+    unsigned char pause_gate; // +0x74621
+    char unknown_074622[0x74650 - 0x74622];
+    float subgame_rate; // +0x74650, root view of subgame +0x38
+    char unknown_074654[0x74668 - 0x74654];
+    int active_row_start; // +0x74668
+    char unknown_07466c[0x74670 - 0x7466c];
+    int active_row_end; // +0x74670
+    char unknown_074674[0x355db0 - 0x74674];
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000

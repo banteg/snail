@@ -55,7 +55,7 @@ public:
     char unknown_04f325[0x74618 - 0x4f325];
     SubgameController subgame; // +0x74618
     char unknown_074619[0x74621 - 0x74619];
-    unsigned char pause_menu_active; // +0x74621
+    unsigned char pause_gate; // +0x74621
     char unknown_074622[0x7462c - 0x74622];
     PauseMenu pause_menu; // +0x7462c
     char unknown_07462d[0x74658 - 0x7462d];

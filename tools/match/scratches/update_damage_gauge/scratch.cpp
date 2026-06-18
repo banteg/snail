@@ -9,7 +9,7 @@
 
 struct Game {
     char unknown_000000[0x74621];
-    unsigned char damage_gauge_suspended; // +0x74621
+    unsigned char pause_gate; // +0x74621
     char unknown_074622[0x42fde8 - 0x74622];
     int player_ground_height_bits; // +0x42fde8, 0.49f gate
     char unknown_42fdec[0x42fe08 - 0x42fdec];
@@ -49,7 +49,7 @@ int queue_axis_aligned_textured_quad_uv(
 void DamageGaugeController::update_damage_gauge()
 {
     Game* game = g_game;
-    if (!game->damage_gauge_suspended) {
+    if (!game->pause_gate) {
         display_fill = (fill - display_fill) * 0.2f + display_fill;
 
         if (hit_flash_progress > 0.0f) {
@@ -128,7 +128,7 @@ render:
         mask_height = 0.0f;
     }
 
-    if (!game->damage_gauge_suspended)
+    if (!game->pause_gate)
         pulse_progress = pulse_step + pulse_progress;
     if (pulse_progress > 1.0f)
         pulse_progress = pulse_progress - 1.0f;

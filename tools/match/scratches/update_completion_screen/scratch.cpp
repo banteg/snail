@@ -63,13 +63,13 @@ int CompletionPrompt::update_completion_screen()
                     ((CompletionGameView*)g_game_base)->frontend_next_state;
                 destroy_completion_screen();
                 ((CompletionGameView*)g_game_base)->pause_menu.uninit_pause_menu();
-                ((CompletionGameView*)g_game_base)->pause_menu_active = 0;
+                ((CompletionGameView*)g_game_base)->pause_gate = 0;
                 g_sprite_manager.set_sprite_manager_paused(0);
                 ((CompletionGameView*)g_game_base)->subgame.destroy_subgame();
             } else {
                 destroy_completion_screen();
                 ((CompletionGameView*)g_game_base)->pause_menu.uninit_pause_menu();
-                ((CompletionGameView*)g_game_base)->pause_menu_active = 0;
+                ((CompletionGameView*)g_game_base)->pause_gate = 0;
                 g_sprite_manager.set_sprite_manager_paused(0);
                 ((CompletionGameView*)g_game_base)->subgame.destroy_subgame();
                 int mode = ((CompletionGameView*)g_game_base)->selected_subgame_mode;
@@ -88,7 +88,7 @@ int CompletionPrompt::update_completion_screen()
             button->widget_flags = flags & ~0x20;
             destroy_completion_screen();
             ((CompletionGameView*)g_game_base)->pause_menu.uninit_pause_menu();
-            ((CompletionGameView*)g_game_base)->pause_menu_active = 0;
+            ((CompletionGameView*)g_game_base)->pause_gate = 0;
             g_sprite_manager.set_sprite_manager_paused(0);
             ((CompletionGameView*)g_game_base)->subgame.destroy_subgame();
             ((CompletionGameView*)g_game_base)->frontend_next_state = 2;
@@ -102,7 +102,7 @@ int CompletionPrompt::update_completion_screen()
             button->widget_flags = flags & ~0x20;
             destroy_completion_screen();
             ((CompletionGameView*)g_game_base)->pause_menu.uninit_pause_menu();
-            ((CompletionGameView*)g_game_base)->pause_menu_active = 0;
+            ((CompletionGameView*)g_game_base)->pause_gate = 0;
             g_sprite_manager.set_sprite_manager_paused(0);
             ((CompletionGameView*)g_game_base)->subgame.destroy_subgame();
             ((CompletionGameView*)g_game_base)->frontend_next_state =

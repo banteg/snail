@@ -2,6 +2,7 @@
 
 #include "click_start.h"
 #include "audio_system.h"
+#include "game_pause_view.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -16,7 +17,7 @@ struct ClickStartInputSource {
 
 void ClickStartController::update_click_start()
 {
-    if (*(g_game_base + 0x74621) != 0)
+    if (((GamePauseView*)g_game_base)->pause_gate != 0)
         return;
 
     FrontendWidget* widget = prompt;

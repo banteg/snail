@@ -334,7 +334,7 @@ Current practical read:
   of `Game+0x4300b4` is set, and ignores unforced negative state-2 deltas while
   `Game+0x42ff60 == 1`
 - `update_damage_gauge` reads several game-global gates:
-  - `Game+0x74621` suspends controller math and `update_warning`
+  - `Game+0x74621` is the global `pause_gate` consumed by controller math and `update_warning`
   - `Game+0x430199` and `Game+0x4301bc` block fresh state-0 full-gauge warning startup
   - `Game+0x4301bc` also fast-forwards state 1 and applies an extra unforced `-0.0066666668` drain in state 2
   - `Game+0x42fde8 == 0.49f` gates state-1 entry into state 2 and the fill-zero state-2 exit

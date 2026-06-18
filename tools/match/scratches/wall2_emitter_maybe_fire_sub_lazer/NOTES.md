@@ -5,7 +5,7 @@ BOD/color prefix used by pooled `FringeObject`, but extends past the pooled
 `0x38` object with owner/tile/runtime flags, so keep it separate. Semantics
 complete:
 
-- gate: flags & 0x2000 plus the suspend byte
+- gate: flags & 0x2000 plus `Game::pause_gate`
 - tile 14 (wall2): fires only once the active row start
   (game+0x74668) is past the player z; 4% per-tick roll
   (random_float_below(100) < 4); spawn at the fringe position with

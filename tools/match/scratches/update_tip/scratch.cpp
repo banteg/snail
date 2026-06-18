@@ -2,13 +2,14 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_pause_view.h"
 #include "tip_manager.h"
 
 extern char* g_game_base; // data_4df904
 
 void __fastcall update_tip(TipSlot* slot)
 {
-    if (*(g_game_base + 0x74621) != 0) {
+    if (((GamePauseView*)g_game_base)->pause_gate != 0) {
         slot->widget_main->hide_border_init();
         return;
     }

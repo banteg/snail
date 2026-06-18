@@ -3,7 +3,7 @@
 update_damage_gauge @ 0x440fd0. The audit's "unresolved writer" globals
 are now interpretable with the recovered region layouts:
 
-- suspend byte Game+0x74621: the global pause gate (checklist item)
+- `Game::pause_gate` at +0x74621: the global pause gate (checklist item)
 - warning-start blockers: **Game+0x430199 is FollowState.live_flag**
   (+0x99 of the shared follow block — the swept entry clears it; the
   warning cannot start while an attachment entry is live) and
@@ -28,7 +28,7 @@ correct seam shape; they can now be WIRED to their real sources
 Promoted to a matcher scratch on 2026-06-13. Current result: 65.92%,
 266/268 instructions. The first scratch is structure-first and covers:
 
-- suspend gate `Game+0x74621`
+- pause gate `Game::pause_gate` at +0x74621
 - display-fill smoothing and hit-flash progress wrap
 - state 0 warning start gates at `Game+0x430199` and `Game+0x4301bc`
 - state 1 transition to drain on `Game+0x42fde8 == 0.49f`

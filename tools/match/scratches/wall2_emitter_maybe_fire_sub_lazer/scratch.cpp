@@ -29,7 +29,7 @@ struct PlayerBlock {
 
 struct Game {
     char unknown_00[0x74621];
-    unsigned char suspended;     // +0x74621
+    unsigned char pause_gate;     // +0x74621
     char unknown_74622[0x74650 - 0x74622];
     float subgame_rate;          // +0x74650
     char unknown_74654[0x74668 - 0x74654];
@@ -71,7 +71,7 @@ void FringeRuntimeObject::wall2_emitter_maybe_fire_sub_lazer()
 {
     if ((flags & 0x2000) == 0)
         return;
-    if (g_game->suspended)
+    if (g_game->pause_gate)
         return;
     switch (tile) {
     case 14: {

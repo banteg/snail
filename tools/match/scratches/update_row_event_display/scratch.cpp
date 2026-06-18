@@ -1,6 +1,7 @@
 // update_row_event_display @ 0x404cf0 (fastcall, ret)
 
 #include "audio_system.h"
+#include "game_pause_view.h"
 #include "player.h"
 #include "row_event_display.h"
 #include "track_parcel_runtime.h"
@@ -27,7 +28,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
     if (controller->state == 0)
         return;
 
-    char pause_gate = *(g_game_base + 0x74621);
+    char pause_gate = ((GamePauseView*)g_game_base)->pause_gate;
     if (pause_gate != 0) {
         FrontendWidget* widget_b = controller->widget_b;
         widget_b->hide_border_init();

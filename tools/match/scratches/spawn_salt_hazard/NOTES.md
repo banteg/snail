@@ -9,7 +9,7 @@ pass ordering. All semantics verified in the diff body:
 - free scan over `slots[i].state` (+0x80, stride 0x98), bails with
   `return index` at 40
 - seeding order: state=1, velocity.x +0x8c=0.0f, velocity.y +0x90 =
-  `game[+0x74650] * (1/30)`, position triple into the live-matrix
+  `Game::subgame_rate * (1/30)`, position triple into the live-matrix
   position row (+0x68), `set_matrix_rotation_identity` on +0x38,
   random world-y rotation `(rand() - 16384) * 0.0001917476` (±π),
   then a one-byte write to velocity.z +0x94

@@ -3,7 +3,7 @@
 Exact match: 41/41 instructions, clean masks.
 
 `update_active_landscape_entry` is the active background/landscape slice
-updater. It skips while the global suspend byte at `Game+0x74621` is set, then
+updater. It skips while the global pause gate at `Game+0x74621` is set, then
 only runs state `1`.
 
 Recovered layout:

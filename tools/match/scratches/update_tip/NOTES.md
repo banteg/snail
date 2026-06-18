@@ -5,7 +5,7 @@ candidate instructions, with an 11/51 exact prefix.
 
 The scratch covers the full recovered behavior:
 
-- hide the main tip widget while the gameplay presentation gate is suspended;
+- hide the main tip widget while `Game::pause_gate` is set;
 - unhide it otherwise;
 - consume either OK or Disable button click by clearing widget flag `0x20`;
 - restore the previous frontend outer owner, kill the tip widgets, unhide all
@@ -28,7 +28,7 @@ Rejected source-shaped probes:
   named `FrontendWidget::widget_flags` field, so the named field is kept;
 - explicit label/goto button checks moved the clicked teardown block after the
   timed-tip block and regressed the score;
-- a shared `widget_main` local made the suspend gate use a shorter prefix; using
+- a shared `widget_main` local made the pause gate use a shorter prefix; using
   branch-local `slot->widget_main` is the accepted source shape.
 
 Keep pinned unless a new source idiom explains the button pointer ownership.

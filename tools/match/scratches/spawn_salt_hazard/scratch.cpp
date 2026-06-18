@@ -5,7 +5,7 @@
 class Game {
 public:
     char unknown_00[0x74650];
-    float salt_speed_base;      // +0x74650
+    float subgame_rate;        // +0x74650
     char unknown_74654[0x3ca224 - 0x74654];
     SaltHazardSlot salt_list_head; // +0x3ca224, node-shaped anchor
 };
@@ -30,7 +30,7 @@ found:
     SaltHazardSlot* slot = &slots[index];
     slot->state = 1;
     slot->velocity.x = 0.0f;
-    slot->velocity.y = g_game->salt_speed_base * 0.033333335f;
+    slot->velocity.y = g_game->subgame_rate * 0.033333335f;
     TransformMatrix* live_matrix = (TransformMatrix*)((char*)slot + 0x38);
     Vector3* spawn_position = &slot->position;
     *spawn_position = *position;

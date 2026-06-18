@@ -8,14 +8,14 @@
 
 struct Game {
     char unknown_00[0x74621];
-    unsigned char suspended; // +0x74621
+    unsigned char pause_gate; // +0x74621
 };
 
 extern Game* volatile g_game; // data_4df904
 
 void WarningActor::update_warning()
 {
-    if (!g_game->suspended && state) {
+    if (!g_game->pause_gate && state) {
         if (state == 2) {
             if (phase >= 0.5f)
                 border->warning_overlay_alpha = 0;

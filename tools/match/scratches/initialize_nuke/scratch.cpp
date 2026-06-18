@@ -1,13 +1,8 @@
 // initialize_nuke @ 0x447110 (thiscall, ret)
 
+#include "game.h"
 #include "nuke_controller.h"
 #include "player.h"
-
-class Game {
-public:
-    char unknown_00[0x74650];
-    float subgame_rate; // +0x74650
-};
 
 extern Game* g_game_base; // data_4df904
 
