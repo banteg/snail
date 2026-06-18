@@ -78,6 +78,15 @@ typedef struct TransformMatrix {
     Vec4 position;
 } TransformMatrix;
 
+typedef struct Stopwatch {
+    float total_seconds;
+    int32_t minutes;
+    int32_t frames_into_second;
+    int32_t display_hundredths;
+    int32_t display_thousandths;
+    float second_fraction;
+} Stopwatch;
+
 typedef struct SelectedLevelReplaySample {
     int16_t lateral_x;
     int16_t delta_z;
@@ -451,16 +460,21 @@ typedef struct Player {
     float damage_retrigger_step;
     float surface_reaction_timer;
     float surface_reaction_step;
-    uint8_t _pad_1e4[0x4];
+    uint8_t trampoline_bounce_active;
+    uint8_t _pad_1e5[0x3];
     PlayerRowEventState row_event;
     CameramanState cameraman;
     uint8_t control_override_active;
     uint8_t _pad_2d9[0x3];
     float cutscene_pitch_cycle;
     float cutscene_pitch_cycle_step;
-    uint8_t _pad_2e4[0x24];
+    int32_t total_score;
+    Stopwatch stopwatch;
+    uint8_t _pad_300[0x4];
+    int32_t startup_track_index;
     int32_t movement_flag_selector;
-    uint8_t _pad_30c[0x1c];
+    uint8_t _pad_30c[0x4];
+    int32_t score_buckets[0x6];
     float barrier_hold_progress;
     float barrier_hold_step;
     float startup_voice_timer;
@@ -494,7 +508,8 @@ typedef struct Player {
     float attachment_exit_progress;
     float attachment_exit_progress_step;
     struct PlayerControlSource* control_source;
-    int32_t completion_handoff_active;
+    uint8_t completion_handoff_active;
+    uint8_t _pad_441[0x3];
     float completion_handoff_timer;
     float completion_handoff_timer_step;
     uint8_t attachment_exit_gate_a;
@@ -503,7 +518,7 @@ typedef struct Player {
     uint8_t _pad_44f[0x22e1];
     float movement_fire_progress;
     float movement_fire_progress_step;
-    uint8_t _pad_2738[0x4];
+    float slide_extension_threshold_z;
     float track_z_offset;
     float track_z_anchor;
     float completion_handoff_cycle_progress;
