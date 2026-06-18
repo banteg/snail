@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**362/679** mapped gameplay functions matched, **492/679** mapped gameplay functions have a scratch, **35412/325973** bytes (**10.86%**) are proof-grade, and overall fuzzy is **25.91%**.
+**363/679** mapped gameplay functions matched, **492/679** mapped gameplay functions have a scratch, **35474/325973** bytes (**10.88%**) are proof-grade, and overall fuzzy is **25.91%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -237,7 +237,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 291 ok |  |
 | ✅ | initialize_subgoldy_ghost | 0x43d230 | 413 | 108/108 | 100.00% | 108/108 | 6 ok |  |
-| 🚧 | mark_current_track_pair_with_payload | 0x43d3d0 | 62 | 17/18 | 91.43% | 15/18 | - |  |
+| ✅ | set_subgoldy_ghost_z | 0x43d3d0 | 62 | 18/18 | 100.00% | 18/18 | - |  |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 98 | 34/34 | 100.00% | 34/34 | 3 ok |  |
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |

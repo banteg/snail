@@ -871,21 +871,21 @@ LABEL_287:
                 v89 = *((_DWORD *)v88 + 2429039);
               v90 = *(_DWORD *)&player->_pad_2e4[32];
               if ( v90 && (v91 = *((_DWORD *)v88 + 2429021) - v90 + v89) != 0 )
-                v92 = convert_math_type16_to_32(*(_WORD *)&v88[6 * v91 + 9716162], 32.0) + flt_643190;
+                v92 = convert_math_type16_to_32(*(_WORD *)&v88[6 * v91 + 9716162], 32.0) + g_subgoldy_ghost_z;
               else
                 v92 = convert_math_type16_to_32(*((_WORD *)v88 + 4858081), 32.0);
-              flt_643190 = v92;
+              g_subgoldy_ghost_z = v92;
               if ( player->game->selected_level_record_active )
-                flt_643190 = player->live_matrix.position.z;
+                g_subgoldy_ghost_z = player->live_matrix.position.z;
               v93 = player->live_matrix.position.z + 20.0;
-              if ( flt_643190 >= v93 )
+              if ( g_subgoldy_ghost_z >= v93 )
               {
                 *(float *)&source_celle = v93;
-                mark_current_track_pair_with_payload(player, source_celle);
+                set_subgoldy_ghost_z(player, source_celle);
               }
               else
               {
-                mark_current_track_pair_with_payload(player, SLODWORD(flt_643190));
+                set_subgoldy_ghost_z(player, SLODWORD(g_subgoldy_ghost_z));
               }
             }
           }

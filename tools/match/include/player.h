@@ -138,7 +138,7 @@ public:
     int initialize_subgoldy_death();       // @ 0x446e30
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
-    Sprite* mark_current_track_pair_with_payload(float payload); // @ 0x43d3d0
+    Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
 
     char unknown_00[0x68];                 // +0x00; +0x38..+0x77 is PlayerLiveMatrixRows
     Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
@@ -150,7 +150,7 @@ public:
     float resurrect_progress_step;         // +0x90
     char unknown_94[0x98 - 0x94];
     // The ghost pair initialized by initialize_subgoldy_ghost. The same two
-    // sprite slots are updated each tick by mark_current_track_pair_with_payload.
+    // sprite slots are updated each tick by set_subgoldy_ghost_z.
     Sprite* ghost_sprite_a;                // +0x98
     Sprite* ghost_sprite_b;                // +0x9c
     char unknown_a0[0x150 - 0xa0];

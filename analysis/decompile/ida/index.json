@@ -2667,10 +2667,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "mark_current_track_pair_with_payload",
+      "selector": "set_subgoldy_ghost_z",
       "address": "0x43d3d0",
-      "name": "mark_current_track_pair_with_payload",
-      "artifact": "analysis/decompile/ida/functions/0043d3d0-mark_current_track_pair_with_payload.c",
+      "name": "set_subgoldy_ghost_z",
+      "artifact": "analysis/decompile/ida/functions/0043d3d0-set_subgoldy_ghost_z.c",
       "removed_stale_artifacts": []
     },
     {

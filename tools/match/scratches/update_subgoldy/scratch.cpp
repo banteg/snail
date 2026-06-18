@@ -27,7 +27,7 @@ struct SoundEffectManager {
 };
 extern SoundEffectManager g_sound_effect_manager;
 
-extern float g_ghost_payload_z;           // flt_643190
+extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 extern unsigned char g_environment_flags; // byte_4B2F40
 extern float g_steering_sensitivity[];    // flt_4DF950
@@ -369,7 +369,7 @@ struct Player {
     void play_movement_state_sound();
     void update_movement_flag_emitters(Player* player);
     void update_player_movement_flags();
-    Sprite* mark_current_track_pair_with_payload(float payload);
+    Sprite* set_subgoldy_ghost_z(float ghost_z);
     void show_subgoldy_lives();
 };
 
@@ -1135,17 +1135,17 @@ steering_stored:
                 ghost_z = convert_math_type16_to_32(
                               *(unsigned short*)(record_block + 6 * offset_cursor + 0x9441c2),
                               32.0f)
-                        + g_ghost_payload_z;
-            g_ghost_payload_z = ghost_z;
+                        + g_subgoldy_ghost_z;
+            g_subgoldy_ghost_z = ghost_z;
             if (*((unsigned char*)game + 0xff25d0))
-                g_ghost_payload_z = live_matrix.position.z;
+                g_subgoldy_ghost_z = live_matrix.position.z;
             float ghost_horizon = live_matrix.position.z + 20.0f;
-            float ghost_payload;
-            if (g_ghost_payload_z < ghost_horizon)
-                ghost_payload = g_ghost_payload_z;
+            float clamped_ghost_z;
+            if (g_subgoldy_ghost_z < ghost_horizon)
+                clamped_ghost_z = g_subgoldy_ghost_z;
             else
-                ghost_payload = ghost_horizon;
-            mark_current_track_pair_with_payload(ghost_payload);
+                clamped_ghost_z = ghost_horizon;
+            set_subgoldy_ghost_z(clamped_ghost_z);
         }
     }
 

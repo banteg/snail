@@ -56,9 +56,9 @@ scratch additionally pins:
   hypothesis is dead; it's ring/speedup cadence.
 - **Ghost marking (level_mode 4)**: record block at game + 129728*arg;
   active flag +0x944150, cursor base +0x944174, count +0x9441bc, ghost
-  words stride 6 at +0x9441c2; payload = min(accumulated ghost z, z+20)
+  words stride 6 at +0x9441c2; ghost z = min(accumulated ghost z, z+20)
   through flt_643190, anchored by player+0x304;
-  `mark_current_track_pair_with_payload(float)` each tick.
+  `set_subgoldy_ghost_z(float)` each tick.
 - **Movement-fire emitters**: require runtime_flags & 0x400000, no
   handoff/override, movement_state 0 or 4; fire cooldown via +0x2730
   progress (+0.3 bias on flags_a fire); replay flags bits 1/2 replay the

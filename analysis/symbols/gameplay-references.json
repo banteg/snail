@@ -1774,13 +1774,13 @@
     },
     {
       "address": "0x643190",
-      "name": "g_ghost_payload_z",
+      "name": "g_subgoldy_ghost_z",
       "kind": "global",
       "aliases": [
         "flt_643190",
         "data_643190"
       ],
-      "description": "Ghost payload z accumulator used while marking level-mode 4 track cells."
+      "description": "Level-mode 4 SubGoldy ghost z accumulator used before updating the cached ghost sprites."
     },
     {
       "address": "0x643194",

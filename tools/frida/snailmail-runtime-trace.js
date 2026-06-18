@@ -24,7 +24,7 @@ const HOOK_PROFILES = {
     respawn_enter: true,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: true,
+    subgoldy_ghost_z: true,
     attachment_follow_dispatch: true,
     attachment_probe: true,
     attachment_begin: true,
@@ -56,7 +56,7 @@ const HOOK_PROFILES = {
     respawn_enter: false,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: false,
+    subgoldy_ghost_z: false,
     attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: false,
@@ -88,7 +88,7 @@ const HOOK_PROFILES = {
     respawn_enter: true,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: false,
+    subgoldy_ghost_z: false,
     attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: false,
@@ -120,7 +120,7 @@ const HOOK_PROFILES = {
     respawn_enter: false,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: false,
+    subgoldy_ghost_z: false,
     attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: true,
@@ -152,7 +152,7 @@ const HOOK_PROFILES = {
     respawn_enter: false,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: true,
+    subgoldy_ghost_z: true,
     attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: true,
@@ -184,7 +184,7 @@ const HOOK_PROFILES = {
     respawn_enter: false,
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
-    track_pair_payload: false,
+    subgoldy_ghost_z: false,
     attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: false,
@@ -230,7 +230,7 @@ const LIMITS = {
   respawn_enter: 256,
   respawn_life_decrement: 128,
   respawn_complete_subgame_branch: 128,
-  track_pair_payload: 2048,
+  subgoldy_ghost_z: 2048,
   attachment_follow_dispatch: 2048,
   attachment_probe: 4096,
   attachment_begin: 1024,
@@ -270,7 +270,7 @@ const VA = {
   normalize_level_runtime_fields: 0x437eb0,
   end_track_attachment_follow_state: 0x43af60,
   update_subgoldy: 0x43b120,
-  mark_current_track_pair_with_payload: 0x43d3d0,
+  set_subgoldy_ghost_z: 0x43d3d0,
   get_track_grid_cell_at_world_position: 0x43d410,
   sample_track_floor_height_at_position: 0x43d4d0,
   spawn_track_health_pickup: 0x43d6c0,
@@ -1831,16 +1831,16 @@ function installHooks(module) {
     });
   }
 
-  if (HOOKS.track_pair_payload) {
-    Interceptor.attach(fromVa(module, VA.mark_current_track_pair_with_payload), {
+  if (HOOKS.subgoldy_ghost_z) {
+    Interceptor.attach(fromVa(module, VA.set_subgoldy_ghost_z), {
       onEnter(args) {
         const player = asPtr(this.context.ecx);
         const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
-        const payload = floatArg(args[0]);
+        const ghostZ = floatArg(args[0]);
         const ghostSpriteA = playerSummary !== null ? playerSummary.ghost_sprite_a : null;
         const ghostSpriteB = playerSummary !== null ? playerSummary.ghost_sprite_b : null;
         const digest = JSON.stringify({
-          payload: payload,
+          ghost_z: ghostZ,
           ghost_sprite_a: ghostSpriteA !== null ? ghostSpriteA.ptr : null,
           ghost_sprite_b: ghostSpriteB !== null ? ghostSpriteB.ptr : null,
           ghost_sprite_a_z:
@@ -1849,7 +1849,7 @@ function installHooks(module) {
             ghostSpriteB !== null && ghostSpriteB.position !== null ? ghostSpriteB.position.z : null,
         });
 
-        maybeEmitSampled('track_pair_payload', playerSummary !== null ? playerSummary.ptr : hex(player), digest, 4, {
+        maybeEmitSampled('subgoldy_ghost_z', playerSummary !== null ? playerSummary.ptr : hex(player), digest, 4, {
           player: playerSummary !== null ? playerSummary.ptr : hex(player),
           player_position: playerSummary !== null ? playerSummary.position : null,
           movement_state: playerSummary !== null ? playerSummary.movement_state : null,
@@ -1859,7 +1859,7 @@ function installHooks(module) {
           track_z_offset: playerSummary !== null ? playerSummary.track_z_offset : null,
           track_z_anchor: playerSummary !== null ? playerSummary.track_z_anchor : null,
           track_state_latch: playerSummary !== null ? playerSummary.track_state_latch : null,
-          pair_payload: payload,
+          ghost_z: ghostZ,
           ghost_sprite_a: ghostSpriteA,
           ghost_sprite_b: ghostSpriteB,
         });

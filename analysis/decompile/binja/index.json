@@ -1920,8 +1920,8 @@
     },
     {
       "address": "0x43d3d0",
-      "name": "mark_current_track_pair_with_payload",
-      "artifact": "analysis/decompile/binja/functions/0043d3d0-mark_current_track_pair_with_payload.c"
+      "name": "set_subgoldy_ghost_z",
+      "artifact": "analysis/decompile/binja/functions/0043d3d0-set_subgoldy_ghost_z.c"
     },
     {
       "address": "0x43d410",

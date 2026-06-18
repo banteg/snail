@@ -1810,8 +1810,8 @@
     },
     {
       "address": "0x43d3d0",
-      "name": "mark_current_track_pair_with_payload",
-      "description": "Sets flag 0x40 on the two cached track cells at +0x98/+0x9c and writes the supplied scalar payload into each cell payload slot at +0x50."
+      "name": "set_subgoldy_ghost_z",
+      "description": "Marks the two cached SubGoldy ghost sprites visible with flag 0x40 and writes the supplied ghost z into each Sprite::position.z lane."
     },
     {
       "address": "0x43d410",

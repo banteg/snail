@@ -1643,12 +1643,12 @@
 0043cd53        y = 0x42000000
 0043cd59        top_213 = top_212 - 1
 0043cd59        unimplemented  {call 0x44c8b0}
-0043cd82        data_643190 = fconvert.s(unimplemented  {fstp dword [0x643190], st0})
+0043cd82        g_subgoldy_ghost_z = fconvert.s(unimplemented  {fstp dword [0x643190], st0})
 0043cd82        unimplemented  {fstp dword [0x643190], st0}
 0043cd8e        int16_t eax_84
 0043cd8e        eax_84.b = player_1->game->selected_level_record_active
 0043cd96        if (eax_84.b != 0)
-0043cd9b        data_643190 = player_1->live_matrix.position.z
+0043cd9b        g_subgoldy_ghost_z = player_1->live_matrix.position.z
 0043cda1        unimplemented  {fld st0, dword [ebp+0x70]}
 0043cda4        unimplemented  {fadd dword [0x497448]}
 0043cdaa        unimplemented  {fld st0, dword [0x643190]}
@@ -1665,9 +1665,9 @@
 0043cdbe        unimplemented  {fstp st0, st0}
 0043cdbe        unimplemented  {fstp st0, st0}
 0043cdbe        top_212 = top_213 + 1
-0043cdc0        y_4 = data_643190
+0043cdc0        y_4 = g_subgoldy_ghost_z
 0043cdce        y = y_4
-0043cdd1        game_53 = mark_current_track_pair_with_payload(player_1, y)
+0043cdd1        game_53 = set_subgoldy_ghost_z(player_1, y)
 0043cddc        void* eax_86 = data_4df904
 0043cde1        y = game_53
 0043cde2        unimplemented  {fild st0, dword [edx+0x54]}
