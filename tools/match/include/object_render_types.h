@@ -131,8 +131,8 @@ struct RenderObjectDevice {
 struct Object {
     int initialize_object(); // @ 0x42f6f0
     void request_object_vertices(int vertex_count); // @ 0x42f710
-    int request_object_vertices_copy(); // @ 0x42f7d0
-    int copy_object_vertices(); // @ 0x42f790
+    void request_object_vertices_copy(); // @ 0x42f7d0
+    void copy_object_vertices(); // @ 0x42f790
     void* request_object_facequad_normals(); // @ 0x42f800
     void request_object_facequads(int facequad_count); // @ 0x42f8c0
     void* request_object_texture_groups(int group_count); // @ 0x42f930

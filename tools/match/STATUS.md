@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**395/687** mapped gameplay functions matched, **539/687** mapped gameplay functions have a scratch, **41715/325882** bytes (**12.80%**) are proof-grade, and overall fuzzy is **29.31%**.
+**395/687** mapped gameplay functions matched, **540/687** mapped gameplay functions have a scratch, **41715/325882** bytes (**12.80%**) are proof-grade, and overall fuzzy is **29.31%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -179,6 +179,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 | - |  |
 | ✅ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 | 8 ok |  |
+| 🚧 | copy_object_vertices | 0x42f790 | 57 | 27/28 | 47.27% | 3/28 | - |  |
 | ✅ | request_object_vertices_copy | 0x42f7d0 | 38 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | request_object_facequad_normals | 0x42f800 | 71 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | request_object_vertex_colours | 0x42f850 | 77 | 30/30 | 100.00% | 30/30 | 2 ok |  |
