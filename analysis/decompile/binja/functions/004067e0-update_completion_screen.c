@@ -70,9 +70,8 @@
 00406b18        uint32_t widget_flags_7 = yes_button_7->widget_flags
 00406b20        if ((widget_flags_7.b & 0x20) != 0)
 00406b22        widget_flags_7.b &= 0xdf
-00406b24        char* var_c_1 = "Alpha72.url"
 00406b29        yes_button_7->widget_flags = widget_flags_7
-00406b2f        sub_433050()
+00406b2f        launch_alpha72_url("Alpha72.url")
 00406b3f        *(g_game_base + 0x1b8) = 0
 00406b4a        *(g_game_base + 0x568) = 0
 00406b50        destroy_completion_screen(prompt)

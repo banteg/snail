@@ -106,7 +106,7 @@ int __thiscall update_completion_screen(CompletionPrompt *prompt)
       {
         LOBYTE(v18) = v18 & 0xDF;
         v17->widget_flags = v18;
-        sub_433050(aAlpha72Url);
+        launch_alpha72_url(aAlpha72Url);
         *((_DWORD *)MEMORY[0x4DF904] + 110) = 0;
         *((_BYTE *)MEMORY[0x4DF904] + 1384) = 0;
         destroy_completion_screen(prompt);
@@ -178,4 +178,3 @@ LABEL_24:
   }
   return result;
 }
-

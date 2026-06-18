@@ -3,7 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare
+from _narrow_sync import (
+    apply_proto_updates,
+    apply_struct_field_updates,
+    apply_symbol_updates,
+    emit_summary,
+    types_declare,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,6 +102,11 @@ PROTO_UPDATES = (
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
+    ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
+)
+
+SYMBOL_UPDATES = (
+    ("0x433050", "launch_alpha72_url"),
 )
 
 
@@ -105,6 +116,7 @@ def main() -> int:
         *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidget", updates=FRONTEND_WIDGET_FIELDS),
         *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidgetTooltip", updates=FRONTEND_WIDGET_TOOLTIP_FIELDS),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SYMBOL_UPDATES, kind="function"),
     ]
     return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
 
