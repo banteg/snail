@@ -1,5 +1,7 @@
 // load_level_definitions @ 0x448900 (cdecl)
 
+#include "level_definition_loader.h"
+
 extern char* g_game_base; // data_4df904
 
 void enumerate_matching_archive_or_fs_entries(
@@ -7,11 +9,6 @@ void enumerate_matching_archive_or_fs_entries(
     char* pattern,
     int* out_count,
     char* out_names); // @ 0x431740
-
-class LevelDefinitionLoader {
-public:
-    void* load_level_definition_file(char* path); // @ 0x447480
-};
 
 int load_level_definitions()
 {

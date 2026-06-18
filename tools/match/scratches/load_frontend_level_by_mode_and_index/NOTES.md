@@ -4,6 +4,9 @@ Initial shape:
 
 - Formats a level definition filename into a 128-byte stack buffer from the
   frontend mode and level index.
+- The receiver is the same `LevelDefinitionLoader` object that owns
+  `load_level_definition_file`; the old `FrontendLevelLoader` name was only a
+  partial-callsite artifact.
 - Mode `0` is postal/arcade. Indexes `0..50` format as `Arcade%03i.txt`; index
   `51` uses `ArcadeExtra000.txt`.
 - Mode `1` loads `Challenge000.txt`; modes `2` and `3` load `Arcade000.txt`;

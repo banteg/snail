@@ -2,6 +2,8 @@
 
 #include "border_manager.h"
 #include "challenge_setup_screen.h"
+#include "frontend_widget_virtual_layout.h"
+#include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
 
 extern char* g_game_base; // data_4df904
@@ -9,20 +11,10 @@ extern int g_completion_bonus_x_source; // data_4df958
 extern int g_completion_bonus_y_source; // data_4df960
 extern char g_back_text[]; // 0x4a20ec
 
-class FrontendWidgetVirtualLayout {
-public:
-    virtual void layout_frontend_widget();
-};
-
-class FrontendLevelLoader {
-public:
-    void* load_frontend_level_by_mode_and_index(int mode, int level_index);
-};
-
 int ChallengeSetupScreen::initialize_challenge_setup_screen()
 {
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
-    ((FrontendLevelLoader*)game->frontend_level_loader_storage)
+    ((LevelDefinitionLoader*)game->level_definition_loader_storage)
         ->load_frontend_level_by_mode_and_index(
             game->selected_subgame_mode,
             game->selected_level_index);

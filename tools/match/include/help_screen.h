@@ -7,6 +7,7 @@
 class HelpScreen {
 public:
     void initialize_help_screen(); // @ 0x416800
+    int destroy_help_screen(); // @ 0x4168c0
     void update_help_screen(); // @ 0x4168d0
 
     FrontendWidget* back_button; // +0x00
