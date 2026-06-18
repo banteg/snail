@@ -42,7 +42,7 @@ public:
     int kill_all_borders(); // @ 0x4033c0
     int hide_all_borders(); // @ 0x4033f0
     int unhide_all_borders(); // @ 0x403400
-    void kill_border(FrontendWidget* border);
+    int kill_border(FrontendWidget* border);
 
     char unknown_000[0x38];
     BorderBatchState batch_state; // +0x38

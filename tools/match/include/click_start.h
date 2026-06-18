@@ -8,7 +8,7 @@
 class BorderManager {
 public:
     FrontendWidget* allocate_border(); // @ 0x4032a0
-    void kill_border(FrontendWidget* border);
+    int kill_border(FrontendWidget* border);
 };
 
 class ClickStartPlayer {

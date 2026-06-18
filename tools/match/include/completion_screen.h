@@ -15,7 +15,7 @@ public:
     FrontendWidget* allocate_border(); // @ 0x4032a0
     void hide_all_borders();           // @ 0x4033f0
     int unhide_all_borders();          // @ 0x403400
-    void kill_border(FrontendWidget* border);
+    int kill_border(FrontendWidget* border);
 };
 
 class SubgameController {

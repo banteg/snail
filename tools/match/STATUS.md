@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**394/687** mapped gameplay functions matched, **537/687** mapped gameplay functions have a scratch, **41660/325882** bytes (**12.78%**) are proof-grade, and overall fuzzy is **29.26%**.
+**394/687** mapped gameplay functions matched, **538/687** mapped gameplay functions have a scratch, **41660/325882** bytes (**12.78%**) are proof-grade, and overall fuzzy is **29.29%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -15,6 +15,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | highlight_border | 0x402800 | 23 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | allocate_border | 0x4032a0 | 82 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | activate_all_borders | 0x403300 | 83 | 19/19 | 100.00% | 19/19 | - |  |
+| 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
 | ✅ | kill_all_borders | 0x4033c0 | 41 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | hide_all_borders | 0x4033f0 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | unhide_all_borders | 0x403400 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  |

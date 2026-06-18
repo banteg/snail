@@ -72,6 +72,10 @@ public:
     char unknown_2ce[0x6f4 - 0x2ce];
     float layout_anchor_x; // +0x6f4
     float layout_anchor_y; // +0x6f8
+    char unknown_6fc[0x718 - 0x6fc];
+    FrontendWidget* child_widget_0; // +0x718
+    FrontendWidget* child_widget_1; // +0x71c
+    FrontendWidget* child_widget_2; // +0x720
 };
 
 #endif
