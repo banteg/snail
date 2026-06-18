@@ -12,8 +12,8 @@ public:
     char unknown_000[0x308];
     int movement_flag_selector; // +0x308
     char unknown_30c[0x338 - 0x30c];
-    int movement_flags; // +0x338
-    int previous_movement_flags; // +0x33c
+    unsigned int movement_flags; // +0x338
+    unsigned int previous_movement_flags; // +0x33c
     char unknown_340[0x2734 - 0x340];
     float movement_fire_progress_step; // +0x2734
     char unknown_2738[0x2984 - 0x2738];
@@ -68,7 +68,7 @@ slow_fire:
         break;
     }
 
-    int result = movement_flags;
+    unsigned int result = movement_flags;
     if (result != previous_movement_flags) {
         presentation.set_snail_weapon(movement_flags);
         result = movement_flags;

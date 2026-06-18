@@ -35,3 +35,11 @@ Residual:
   equal path as an explicit `else` kept the 93.75% score but dirtied the
   jump-table symbol audit (`$L321`/`$L322` versus the curated table symbol).
   Keep the baseline shape unless a source-plausible table-owner fix appears.
+- 2026-06-18 type/name sync: the compact local `Player` shell now marks
+  `movement_flags` and `previous_movement_flags` as `unsigned int`, matching
+  `tools/match/include/player.h`, while still avoiding the full shared include
+  because it changes the curated jump-table symbol. Focused Wibo remains
+  93.75%, 46/50 candidate/target instructions, with 2 masked operands OK. The
+  IDA artifact was updated from raw `this+206/207/2509` indexing to
+  `Player::movement_flags`, `previous_movement_flags`,
+  `movement_fire_progress_step`, and `presentation`.

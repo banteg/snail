@@ -3,67 +3,66 @@
 /* selector: update_player_movement_flags */
 
 // Maps the player movement-flag selector at +0x308 onto movement_flags and the movement-fire progress step at +0x2734, then refreshes the 0x2984 state machine when the mask changes.
-int __thiscall sub_43A1A0(int *this)
+int __thiscall update_player_movement_flags(Player *player)
 {
-  int v2; // eax
-  int result; // eax
+  int selector; // eax
+  unsigned int result; // eax
 
-  v2 = *(this + 194);
-  *(this + 206) = 0;
-  switch ( v2 )
+  selector = player->movement_flag_selector;
+  player->movement_flags = 0;
+  switch ( selector )
   {
     case 0:
-      *(this + 206) = 1;
-      *(this + 2509) = 1033352230;
+      player->movement_flags = 1;
+      player->movement_fire_progress_step = 0.074074075;
       break;
     case 1:
-      *(this + 206) = 2;
-      *(this + 2509) = 1033352230;
+      player->movement_flags = 2;
+      player->movement_fire_progress_step = 0.074074075;
       break;
     case 2:
-      *(this + 206) = 4;
-      *(this + 2509) = 1033352230;
+      player->movement_flags = 4;
+      player->movement_fire_progress_step = 0.074074075;
       break;
     case 3:
-      *(this + 206) = 8;
-      *(this + 2509) = 1038323256;
+      player->movement_flags = 8;
+      player->movement_fire_progress_step = 0.1111111;
       break;
     case 4:
-      *(this + 206) = 16;
-      *(this + 2509) = 1038323256;
+      player->movement_flags = 16;
+      player->movement_fire_progress_step = 0.1111111;
       break;
     case 5:
-      *(this + 206) = 32;
+      player->movement_flags = 32;
       goto LABEL_12;
     case 6:
-      *(this + 206) = 64;
-      *(this + 2509) = 1040746633;
+      player->movement_flags = 64;
+      player->movement_fire_progress_step = 0.13333334;
       break;
     case 7:
-      *(this + 206) = 192;
-      *(this + 2509) = 1040746633;
+      player->movement_flags = 192;
+      player->movement_fire_progress_step = 0.13333334;
       break;
     case 8:
-      *(this + 206) = 144;
-      *(this + 2509) = 1038323256;
+      player->movement_flags = 144;
+      player->movement_fire_progress_step = 0.1111111;
       break;
     default:
-      *(this + 206) = 129;
+      player->movement_flags = 129;
 LABEL_12:
-      *(this + 2509) = 1032358025;
+      player->movement_fire_progress_step = 0.06666667;
       break;
   }
-  result = *(this + 206);
-  if ( result == *(this + 207) )
+  result = player->movement_flags;
+  if ( result == player->previous_movement_flags )
   {
-    *(this + 207) = *(this + 206);
+    player->previous_movement_flags = player->movement_flags;
   }
   else
   {
-    set_snail_weapon(this + 2657, *(this + 206));
-    result = *(this + 206);
-    *(this + 207) = result;
+    set_snail_weapon(&player->presentation, player->movement_flags);
+    result = player->movement_flags;
+    player->previous_movement_flags = result;
   }
   return result;
 }
-
