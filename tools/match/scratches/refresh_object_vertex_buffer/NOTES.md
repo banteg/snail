@@ -42,6 +42,9 @@ Expected residuals:
   `ecx/edi/ebx` in the UV path). The scratch now uses the same byte-offset
   semantics, but VC6 still chooses different loop registers and label distances.
 
-The local view is intentionally only the renderer-side field set proven by this
-helper and its `render_object` caller; the shared `Object` layout now owns the
-`ObjectDistort` field.
+The refresh parameter now aliases the shared `Object` layout; its old local
+field set is covered by shared `flags`, `vertices`, `facequad_normals`,
+`animation`, render buffers, and grouped vertex count. `Object +0xbc` is the
+shared `ObjectAnimation*` owner pointer, and generated frame facequad normals
+are typed as `Vector3*` buffers containing two normals per facequad. Focused
+Wibo remains `59.85%`, `135/139`, with `4 ok` masked operands.

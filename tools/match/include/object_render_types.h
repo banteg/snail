@@ -10,6 +10,7 @@ struct RenderObjectDevice;
 struct ObjectVertexBufferVtbl;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
+struct ObjectAnimation;
 
 struct ObjectVertexBuffer {
     ObjectVertexBufferVtbl* vtbl;
@@ -143,6 +144,8 @@ struct Object {
     void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
     void* request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
+    ObjectAnimation* request_object_animation(
+        int keyframe_count, void* keyframes, float progress_step, unsigned short flags); // @ 0x430a70
 
     char unknown_00[0x08];
     Vector3* toon_vertices; // +0x08, 12 bytes per source vertex
@@ -175,7 +178,7 @@ struct Object {
     char unknown_98[0xa4 - 0x98];
     Vector3 bounds_min; // +0xa4
     Vector3 bounds_max; // +0xb0
-    char unknown_bc[0xc0 - 0xbc];
+    ObjectAnimation* animation; // +0xbc, generated animation frames
     ObjectRenderBuffers* render_buffers; // +0xc0
     int grouped_vertex_count; // +0xc4
     ObjectIndexBuffer* index_buffer; // +0xc8

@@ -5,7 +5,7 @@
 
 struct ObjectAnimationFrame {
     Vector3* vertices; // +0x00
-    void* facequad_normals; // +0x04, 0x18 bytes per facequad
+    Vector3* facequad_normals; // +0x04, two normals / 0x18 bytes per facequad
 };
 
 struct ObjectAnimation {

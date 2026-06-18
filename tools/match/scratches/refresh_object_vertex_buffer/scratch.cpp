@@ -3,8 +3,6 @@
 #include "object_animation_types.h"
 #include "object_render_types.h"
 
-struct ObjectRenderGeometry;
-
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
@@ -12,22 +10,7 @@ struct ObjectVertexBufferVtbl {
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
 };
 
-struct ObjectRenderGeometry {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0x2c - 0x14];
-    int vertex_count; // +0x2c
-    char unknown_30[0x38 - 0x30];
-    Vector3* vertices; // +0x38
-    Vector3* copied_vertices; // +0x3c
-    char unknown_40[0x5c - 0x40];
-    ObjectFaceQuad* facequads; // +0x5c
-    void* facequad_normals; // +0x60
-    char unknown_64[0xbc - 0x64];
-    ObjectAnimation* animation; // +0xbc
-    ObjectRenderBuffers* render_buffers; // +0xc0
-    int grouped_vertex_count; // +0xc4
-};
+typedef Object ObjectRenderGeometry;
 
 void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
 {

@@ -493,7 +493,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 0 type name(s)
-- covered: 26 type name(s) with a header plus scratch-local copies
+- covered: 25 type name(s) with a header plus scratch-local copies
 - divergent: 21 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -540,7 +540,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Direct3DDevice8 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Object | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PauseMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
