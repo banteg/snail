@@ -24,7 +24,11 @@ public:
     void initialize_backdrop(int last_mode); // @ 0x410e20
     int set_backdrop_texture_target(int texture_id); // @ 0x410f40
     int draw_split_backdrop(); // @ 0x410f90
+#ifdef BACKDROP_RENDER_BACKDROP_RETURNS_VOID
+    void render_backdrop(); // @ 0x411040
+#else
     int render_backdrop(); // @ 0x411040
+#endif
     int update_backdrop(); // @ 0x4112f0
 
     char unknown_000[0x38];
