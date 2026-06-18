@@ -5,7 +5,7 @@
 // Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`.
 void __fastcall update_row_event_display(RowEventDisplayController *controller)
 {
-  _DWORD *widget_b; // ecx
+  _DWORD *delivered_count_widget; // ecx
   double v3; // st7
   int32_t staged_parcel_count; // eax
   char *v5; // eax
@@ -16,7 +16,7 @@ void __fastcall update_row_event_display(RowEventDisplayController *controller)
   int32_t bonus_enabled; // eax
   float *v11; // eax
   double v12; // st7
-  _DWORD *widget_c; // ecx
+  _DWORD *bonus_widget; // ecx
   int32_t delivered_parcel_count; // ecx
   float v15; // [esp+8h] [ebp-3Ch]
   float v16; // [esp+Ch] [ebp-38h]
@@ -34,21 +34,21 @@ void __fastcall update_row_event_display(RowEventDisplayController *controller)
 
   if ( controller->state )
   {
-    widget_b = controller->widget_b;
+    delivered_count_widget = controller->delivered_count_widget;
     if ( *((_BYTE *)MEMORY[0x4DF904] + 476705) )
     {
-      hide_border_init(widget_b);
+      hide_border_init(delivered_count_widget);
       hide_border_init(controller->widget_a);
       hide_border_init((_DWORD *)controller->widget_d);
-      hide_border_init((_DWORD *)controller->widget_c);
-      hide_border_init((_DWORD *)controller->widget_e);
+      hide_border_init((_DWORD *)controller->bonus_widget);
+      hide_border_init((_DWORD *)controller->continue_widget);
     }
     else
     {
-      unhide_border_init(widget_b);
+      unhide_border_init(delivered_count_widget);
       unhide_border_init(controller->widget_a);
       unhide_border_init((_DWORD *)controller->widget_d);
-      unhide_border_init((_DWORD *)controller->widget_e);
+      unhide_border_init((_DWORD *)controller->continue_widget);
       switch ( controller->state )
       {
         case 0:
@@ -90,13 +90,13 @@ void __fastcall update_row_event_display(RowEventDisplayController *controller)
           }
           goto LABEL_27;
         case 3:
-          unhide_border_init((_DWORD *)controller->widget_e);
+          unhide_border_init((_DWORD *)controller->continue_widget);
           bonus_enabled = controller->bonus_enabled;
           controller->gate_18 = 0;
           controller->state = 4;
           if ( !bonus_enabled )
             goto LABEL_18;
-          unhide_border_init((_DWORD *)controller->widget_c);
+          unhide_border_init((_DWORD *)controller->bonus_widget);
           if ( controller->parcel_target_count )
             goto LABEL_18;
           v11 = (float *)MEMORY[0x4DF904];
@@ -113,12 +113,12 @@ LABEL_18:
             controller->bonus_blink_progress = v12;
             if ( v12 > 1.0 )
             {
-              widget_c = controller->widget_c;
+              bonus_widget = controller->bonus_widget;
               controller->bonus_blink_progress = 0.0;
-              if ( (widget_c[104] & 0x1000) != 0 )
-                unhide_border_init(widget_c);
+              if ( (bonus_widget[104] & 0x1000) != 0 )
+                unhide_border_init(bonus_widget);
               else
-                hide_border_init(widget_c);
+                hide_border_init(bonus_widget);
             }
             v11 = (float *)MEMORY[0x4DF904];
           }
@@ -147,10 +147,10 @@ LABEL_27:
           controller->widget_world_z = v19;
           delivered_parcel_count = controller->delivered_parcel_count;
           if ( delivered_parcel_count >= 10 )
-            *((_BYTE *)controller->widget_b + 716) = delivered_parcel_count / 10 + 48;
+            *((_BYTE *)controller->delivered_count_widget + 716) = delivered_parcel_count / 10 + 48;
           else
-            *((_BYTE *)controller->widget_b + 716) = 32;
-          *((_BYTE *)controller->widget_b + 717) = controller->delivered_parcel_count % 10 + 48;
+            *((_BYTE *)controller->delivered_count_widget + 716) = 32;
+          *((_BYTE *)controller->delivered_count_widget + 717) = controller->delivered_parcel_count % 10 + 48;
           break;
         case 4:
           goto LABEL_18;

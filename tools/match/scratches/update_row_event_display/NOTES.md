@@ -74,3 +74,10 @@ remains pinned.
 the shared `Vector3` type. Focused Wibo remains pinned at `99.53%`, `213/213`,
 with `37 ok` masked operands; the only residual is still the bonus sound
 thiscall setup order.
+
+2026-06-18 row-event naming pass: three widget fields now have role names
+backed by multiple callsites. `delivered_count_widget` is the two-character
+count text updated in the tail, `bonus_widget` is the hidden/blinking bonus
+summary widget, and `continue_widget` is unhidden when the controller reaches
+the acknowledge/continue state. `widget_a` and `widget_d` deliberately remain
+generic because their allocation/setup path has not been recovered yet.

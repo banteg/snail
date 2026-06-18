@@ -660,10 +660,10 @@ typedef struct TutorialController {
 
 typedef struct RowEventDisplayController {
     void* widget_a;
-    void* widget_b;
-    void* widget_c;
+    void* delivered_count_widget;
+    void* bonus_widget;
     void* widget_d;
-    void* widget_e;
+    void* continue_widget;
     int32_t state;
     uint8_t gate_18;
     uint8_t _pad_19[0x3];

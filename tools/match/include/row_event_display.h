@@ -10,10 +10,10 @@ public:
     void register_parcel_delivery();   // @ 0x405040
 
     FrontendWidget* widget_a;   // +0x00
-    FrontendWidget* widget_b;   // +0x04
-    FrontendWidget* widget_c;   // +0x08
+    FrontendWidget* delivered_count_widget; // +0x04
+    FrontendWidget* bonus_widget;           // +0x08
     FrontendWidget* widget_d;   // +0x0c
-    FrontendWidget* widget_e;   // +0x10
+    FrontendWidget* continue_widget;        // +0x10
     int state;                  // +0x14
     unsigned char gate_18;      // +0x18
     char unknown_19[0x1c - 0x19];

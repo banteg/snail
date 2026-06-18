@@ -23,10 +23,10 @@ void RowEventDisplayController::flush_row_event_display()
         delivered_parcel_count += 1;
 
         ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_a);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_b);
+        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(delivered_count_widget);
         ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_d);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_c);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_e);
+        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(bonus_widget);
+        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(continue_widget);
 
         if (*(int*)(g_game_base + 0x430060) != display_token)
             *(int*)(g_game_base + 0x430060) = display_token;

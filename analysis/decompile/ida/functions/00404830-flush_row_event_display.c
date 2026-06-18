@@ -36,10 +36,10 @@ int32_t __fastcall flush_row_event_display(RowEventDisplayController *controller
     widget_a = controller->widget_a;
     ++controller->delivered_parcel_count;
     kill_border(widget_a);
-    kill_border((_DWORD *)controller->widget_b);
+    kill_border((_DWORD *)controller->delivered_count_widget);
     kill_border((_DWORD *)controller->widget_d);
-    kill_border((_DWORD *)controller->widget_c);
-    kill_border((_DWORD *)controller->widget_e);
+    kill_border((_DWORD *)controller->bonus_widget);
+    kill_border((_DWORD *)controller->continue_widget);
     result = controller->display_token;
     if ( *((_DWORD *)MEMORY[0x4DF904] + 1097752) != result )
       *((_DWORD *)MEMORY[0x4DF904] + 1097752) = result;

@@ -27,20 +27,20 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
 
     char pause_gate = ((GamePauseView*)g_game_base)->pause_gate;
     if (pause_gate != 0) {
-        FrontendWidget* widget_b = controller->widget_b;
-        widget_b->hide_border_init();
+        FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
+        delivered_count_widget->hide_border_init();
         controller->widget_a->hide_border_init();
         controller->widget_d->hide_border_init();
-        controller->widget_c->hide_border_init();
-        controller->widget_e->hide_border_init();
+        controller->bonus_widget->hide_border_init();
+        controller->continue_widget->hide_border_init();
         return;
     }
 
-    FrontendWidget* widget_b = controller->widget_b;
-    widget_b->unhide_border_init();
+    FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
+    delivered_count_widget->unhide_border_init();
     controller->widget_a->unhide_border_init();
     controller->widget_d->unhide_border_init();
-    controller->widget_e->unhide_border_init();
+    controller->continue_widget->unhide_border_init();
 
     switch (controller->state) {
     case 0:
@@ -87,12 +87,12 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
         break;
     }
     case 3: {
-        controller->widget_e->unhide_border_init();
+        controller->continue_widget->unhide_border_init();
         int bonus_enabled = controller->bonus_enabled;
         controller->gate_18 = 0;
         controller->state = 4;
         if (bonus_enabled != 0) {
-            controller->widget_c->unhide_border_init();
+            controller->bonus_widget->unhide_border_init();
             if (controller->parcel_target_count == 0) {
                 char* game = g_game_base;
                 if (*(int*)(game + 0x74658) == 1) {
@@ -109,12 +109,12 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
             float blink_progress = controller->bonus_blink_step + controller->bonus_blink_progress;
             controller->bonus_blink_progress = blink_progress;
             if (blink_progress > 1.0f) {
-                FrontendWidget* widget_c = controller->widget_c;
+                FrontendWidget* bonus_widget = controller->bonus_widget;
                 controller->bonus_blink_progress = 0.0f;
-                if ((widget_c->widget_flags & 0x1000) != 0)
-                    widget_c->unhide_border_init();
+                if ((bonus_widget->widget_flags & 0x1000) != 0)
+                    bonus_widget->unhide_border_init();
                 else
-                    widget_c->hide_border_init();
+                    bonus_widget->hide_border_init();
             }
             game = g_game_base;
         }
@@ -158,8 +158,8 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
 
     int delivered_parcel_count = controller->delivered_parcel_count;
     if (delivered_parcel_count < 10)
-        controller->widget_b->text_buffer[0] = 0x20;
+        controller->delivered_count_widget->text_buffer[0] = 0x20;
     else
-        controller->widget_b->text_buffer[0] = (char)(delivered_parcel_count / 10 + 0x30);
-    controller->widget_b->text_buffer[1] = (char)(controller->delivered_parcel_count % 10 + 0x30);
+        controller->delivered_count_widget->text_buffer[0] = (char)(delivered_parcel_count / 10 + 0x30);
+    controller->delivered_count_widget->text_buffer[1] = (char)(controller->delivered_parcel_count % 10 + 0x30);
 }
