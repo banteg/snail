@@ -1,32 +1,10 @@
 // calc_subgame_rate @ 0x4404d0 (thiscall, ret)
 
+#include "subgame_runtime.h"
+
 float sine(float angle);
 
-class Game {
-public:
-    void calc_subgame_rate();
-
-    char unknown_00[0x30];
-    float base_rate; // +0x30
-    char unknown_34[0x38 - 0x34];
-    float subgame_rate; // +0x38
-    int subgame_state; // +0x3c
-    int level_mode; // +0x40
-    char unknown_44[0x58 - 0x44];
-    int completion_row_start; // +0x58
-    char unknown_5c[0x3bb7d4 - 0x5c];
-    float completion_progress_z; // +0x3bb7d4
-    char unknown_3bb7d8[0x3bbb28 - 0x3bb7d8];
-    int bonus_rate_state; // +0x3bbb28
-    char unknown_3bbb2c[0x3bbb48 - 0x3bbb2c];
-    float bonus_rate_phase; // +0x3bbb48
-    char unknown_3bbb4c[0x3bdec0 - 0x3bbb4c];
-    int nuke_rate_state; // +0x3bdec0
-    char unknown_3bdec4[0x3be0c0 - 0x3bdec4];
-    float nuke_rate_progress; // +0x3be0c0
-};
-
-void Game::calc_subgame_rate()
+void SubgameRuntime::calc_subgame_rate()
 {
     if (subgame_state == 2) {
         float completion_fraction = completion_progress_z / (float)completion_row_start;

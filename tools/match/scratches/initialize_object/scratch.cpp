@@ -5,7 +5,7 @@
 int Object::initialize_object()
 {
     flags = 0;
-    field_14 = 0;
+    blend_mode = 0;
     vertex_count = 0;
     facequad_count = 0;
     vertex_normals = 0;

@@ -5,26 +5,7 @@
 
 extern char* g_game_base; // data_4df904
 
-class Game {
-public:
-    int rebuild_track_runtime_from_segments(int level_index);
-    void set_subgame_features();
-    void build_track_colours();
-    void populate_runtime_track_cells_from_segments();
-    void place_parcels_on_track();
-    void select_track_tile_edge_variants();
-    void promote_track_tiles_to_fringe_variants();
-    void harmonize_center_lane_floor_slide_variants();
-    void merge_track_tile_runs();
-    void mark_track_warning_zones();
-    void build_track_fringe_objects();
-
-    char unknown_00[0x44];
-    int level_mode_arg; // +0x44
-    char unknown_48[0x5c - 0x48];
-};
-
-int Game::rebuild_track_runtime_from_segments(int level_index)
+int SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
 {
     level_mode_arg = level_index;
     set_subgame_features();
