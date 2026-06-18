@@ -811,13 +811,14 @@
     },
     {
       "address": "0x49731c",
-      "name": "g_track_jetpack_body_vtable",
+      "name": "g_vapour_vtable",
       "kind": "vtable",
       "aliases": [
+        "g_track_jetpack_body_vtable",
         "off_49731c",
         "data_49731c"
       ],
-      "description": "Embedded jetpack pickup body vtable installed on both child bodies."
+      "description": "Vapour-trail render body vtable whose first callback is `update_vapour`; reused by jetpack pickup child bodies and Golb shot secondary bodies."
     },
     {
       "address": "0x497320",
@@ -918,6 +919,36 @@
         "data_497344"
       ],
       "description": "Fringe render object vtable installed by initialize_fringe_object."
+    },
+    {
+      "address": "0x497348",
+      "name": "g_click_start_controller_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497348",
+        "data_497348"
+      ],
+      "description": "Click-start controller callback table installed by initialize_click_start_controller_runtime; first entry is `update_click_start`."
+    },
+    {
+      "address": "0x49734c",
+      "name": "g_golb_shot_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_49734c",
+        "data_49734c"
+      ],
+      "description": "Golb shot callback table installed by initialize_golb_shot; first entry is `update_golb_ai`."
+    },
+    {
+      "address": "0x497350",
+      "name": "g_golb_noop_body_vtable",
+      "kind": "vtable",
+      "aliases": [
+        "off_497350",
+        "data_497350"
+      ],
+      "description": "Embedded Golb shot body callback table installed by initialize_golb_shot; first entry is `noop_runtime_ai`."
     },
     {
       "address": "0x497354",

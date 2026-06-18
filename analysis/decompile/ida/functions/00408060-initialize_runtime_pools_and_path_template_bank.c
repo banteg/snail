@@ -23,40 +23,40 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   int v18; // ebx
 
   v2 = this + 23;
-  Iostream_init::Iostream_init((#93 *)(this + 23));
+  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 23));
   initialize_array_with_constructor((int)(v2 + 22), 60, 715, (int (__thiscall *)(int))initialize_active_bod);
   initialize_array_with_constructor(
     (int)(this + 10782),
     16928,
     100,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor(
     (int)(this + 434499),
     56,
     256,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor(
     (int)(this + 438731),
     56,
     256,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
-  Iostream_init::Iostream_init((#93 *)(this + 442448));
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
+  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 442448));
   initialize_array_with_constructor(
     (int)(this + 442492),
     16928,
     100,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor(
     (int)(this + 866209),
     56,
     256,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor(
     (int)(this + 870441),
     56,
     256,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
-  Iostream_init::Iostream_init((#93 *)(this + 874158));
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
+  Iostream_init::Iostream_init((ObjectVertexBufferVtbl *)(this + 874158));
   initialize_bod_base(this + 874201);
   initialize_bod_base(this + 874215);
   initialize_bod_base(this + 874229);
@@ -127,10 +127,10 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
   while ( v12 );
   initialize_array_with_constructor((int)(this + 880367), 56, 7000, (int (__thiscall *)(int))initialize_fringe_object);
   initialize_renderable_bod(this + 978393);
-  sub_408670(this + 978433);
-  Iostream_init::Iostream_init((#93 *)(this + 978521));
-  Iostream_init::Iostream_init((#93 *)(this + 978618));
-  initialize_array_with_constructor((int)(this + 978669), 744, 12, (int (__thiscall *)(int))sub_408690);
+  initialize_click_start_controller_runtime(this + 978433);
+  noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978521));
+  noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978618));
+  initialize_array_with_constructor((int)(this + 978669), 744, 12, (int (__thiscall *)(int))initialize_golb_shot);
   initialize_enemy_manager_runtime(this + 981050);
   *(this + 978393) = &off_497300;
   v13 = this + 982706;
@@ -167,7 +167,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     144,
     10,
     (int (__thiscall *)(int))initialize_active_landscape_entry);
-  initialize_array_with_constructor((int)(this + 4186217), 292, 128, sub_408840);
+  initialize_array_with_constructor((int)(this + 4186217), 292, 128, initialize_landscape_script_record);
   initialize_bod_base(this + 4195561);
   sub_42F6E0(this + 4195575);
   *(this + 4195561) = &off_4972F8;
@@ -175,7 +175,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     (int)(this + 4195636),
     16520,
     150,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor(
     (int)(this + 4815136),
     140,
@@ -185,13 +185,13 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     (int)(this + 4816908),
     672,
     101,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   initialize_array_with_constructor((int)(this + 4833876), 160, 10, sub_408880);
   initialize_array_with_constructor(
     (int)(this + 4834294),
     24,
     256,
-    (int (__thiscall *)(int))Iostream_init::Iostream_init);
+    (int (__thiscall *)(int))noop_runtime_slot_constructor);
   return this;
 }
 

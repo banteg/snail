@@ -412,6 +412,16 @@
       "description": "Constructs one 0x38-byte fringe render object by clearing the shared object base and installing the fringe-object vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 7000-entry fringe-manager pool later consumed by `allocate_fringe_object`."
     },
     {
+      "address": "0x408670",
+      "name": "initialize_click_start_controller_runtime",
+      "description": "Constructs the renderable click-start controller and installs the callback table whose first entry is `update_click_start`. This is the runtime slot constructor; `initialize_click_start` later seeds the gameplay prompt state."
+    },
+    {
+      "address": "0x408690",
+      "name": "initialize_golb_shot",
+      "description": "Constructs one 0x2e8-byte Golb shot slot by seeding its three renderable-body prefixes and installing the `update_golb_ai`, vapour, and no-op child callback tables. `initialize_runtime_pools_and_path_template_bank` uses it for the 12-shot bank later driven by `create_golb`."
+    },
+    {
       "address": "0x4086d0",
       "name": "initialize_enemy_manager_runtime",
       "description": "Constructs the embedded enemy-manager runtime object by seeding its visible bods and child renderable entries before the later gameplay reset in `initialize_enemy_manager`. Its `0x1804` footprint matches the native `cREnemyManager` size ledger from `construct_game_runtime`."
@@ -420,6 +430,11 @@
       "address": "0x408820",
       "name": "initialize_active_landscape_entry",
       "description": "Constructs one active landscape-entry runtime record by clearing its shared body-list links and installing the landscape-entry update selector. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 10-slot pool later driven by `activate_landscape_entry`."
+    },
+    {
+      "address": "0x408840",
+      "name": "initialize_landscape_script_record",
+      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `Color4f` constructor for its `fog_color` field at `+0x110`; used for the 128-record landscape-script bank at `game+0xff81a4`."
     },
     {
       "address": "0x408860",

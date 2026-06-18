@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 667,
-  "function_count": 667,
+  "selected_count": 670,
+  "function_count": 670,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -459,6 +459,16 @@
       "artifact": "analysis/decompile/binja/functions/00408650-initialize_fringe_object.c"
     },
     {
+      "address": "0x408670",
+      "name": "initialize_click_start_controller_runtime",
+      "artifact": "analysis/decompile/binja/functions/00408670-initialize_click_start_controller_runtime.c"
+    },
+    {
+      "address": "0x408690",
+      "name": "initialize_golb_shot",
+      "artifact": "analysis/decompile/binja/functions/00408690-initialize_golb_shot.c"
+    },
+    {
       "address": "0x4086d0",
       "name": "initialize_enemy_manager_runtime",
       "artifact": "analysis/decompile/binja/functions/004086d0-initialize_enemy_manager_runtime.c"
@@ -467,6 +477,11 @@
       "address": "0x408820",
       "name": "initialize_active_landscape_entry",
       "artifact": "analysis/decompile/binja/functions/00408820-initialize_active_landscape_entry.c"
+    },
+    {
+      "address": "0x408840",
+      "name": "initialize_landscape_script_record",
+      "artifact": "analysis/decompile/binja/functions/00408840-initialize_landscape_script_record.c"
     },
     {
       "address": "0x408860",

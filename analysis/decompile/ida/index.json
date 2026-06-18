@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 667,
-  "function_count": 667,
+  "selected_count": 670,
+  "function_count": 670,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -623,6 +623,20 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_click_start_controller_runtime",
+      "address": "0x408670",
+      "name": "initialize_click_start_controller_runtime",
+      "artifact": "analysis/decompile/ida/functions/00408670-initialize_click_start_controller_runtime.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_golb_shot",
+      "address": "0x408690",
+      "name": "initialize_golb_shot",
+      "artifact": "analysis/decompile/ida/functions/00408690-initialize_golb_shot.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_enemy_manager_runtime",
       "address": "0x4086d0",
       "name": "initialize_enemy_manager_runtime",
@@ -634,6 +648,13 @@
       "address": "0x408820",
       "name": "initialize_active_landscape_entry",
       "artifact": "analysis/decompile/ida/functions/00408820-initialize_active_landscape_entry.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_landscape_script_record",
+      "address": "0x408840",
+      "name": "initialize_landscape_script_record",
+      "artifact": "analysis/decompile/ida/functions/00408840-initialize_landscape_script_record.c",
       "removed_stale_artifacts": []
     },
     {

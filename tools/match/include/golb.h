@@ -3,7 +3,7 @@
 #ifndef GOLB_H
 #define GOLB_H
 
-#include "bod_list.h"
+#include "bod_types.h"
 #include "player.h"
 #include "sprite.h"
 #include "vector3.h"
@@ -61,6 +61,7 @@ public:
 // update/create scratches still keep scheduling-sensitive local GolbShot views.
 class GolbShot {
 public:
+    GolbShot* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670
     void update_golb_ai(); // @ 0x414820
     int create_golb(Player* player, int spawn_selector, int emitter_index); // @ 0x415280
@@ -68,13 +69,13 @@ public:
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80
 
-    BodNode primary_body;        // +0x000
-    char unknown_010[0x080 - 0x010];
+    RenderableBod primary_body;  // +0x000
+    char unknown_078[0x080 - 0x078];
     // Kind-1 also treats this subobject as the VapourTrail body prefix.
-    BodNode secondary_body;      // +0x080
-    char unknown_090[0x118 - 0x090];
-    BodNode tertiary_body;       // +0x118
-    char unknown_128[0x198 - 0x128];
+    RenderableBod secondary_body; // +0x080
+    char unknown_0f8[0x118 - 0x0f8];
+    RenderableBod tertiary_body; // +0x118
+    char unknown_190[0x198 - 0x190];
     Sprite* attached_sprite;     // +0x198
     char unknown_19c[0x1c0 - 0x19c];
     int kind;                    // +0x1c0

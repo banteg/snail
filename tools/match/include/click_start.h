@@ -19,6 +19,7 @@ public:
 
 class ClickStartController : public RenderableBod {
 public:
+    ClickStartController* initialize_click_start_controller_runtime(); // @ 0x408670
     void initialize_click_start(ClickStartPlayer* player); // @ 0x442170
     void update_click_start();                             // @ 0x442290
 

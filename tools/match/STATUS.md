@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**364/680** mapped gameplay functions matched, **493/680** mapped gameplay functions have a scratch, **35477/325959** bytes (**10.88%**) are proof-grade, and overall fuzzy is **25.91%**.
+**367/683** mapped gameplay functions matched, **496/683** mapped gameplay functions have a scratch, **35571/325917** bytes (**10.91%**) are proof-grade, and overall fuzzy is **25.95%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -59,8 +59,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_sub_lazer_runtime | 0x408610 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_salt_hazard_runtime | 0x408630 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_click_start_controller_runtime | 0x408670 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_golb_shot | 0x408690 | 58 | 17/17 | 100.00% | 17/17 | 6 ok |  |
 | ✅ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | 79/79 | 27 ok |  |
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_landscape_script_record | 0x408840 | 18 | 7/7 | 100.00% | 7/7 | 1 ok |  |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | ✅ | destroy_galaxy | 0x408c10 | 218 | 49/49 | 100.00% | 49/49 | 18 ok |  |

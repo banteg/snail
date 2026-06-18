@@ -6,6 +6,8 @@
 #include "sprite.h"
 
 struct LandscapeScriptRecord {
+    LandscapeScriptRecord* initialize_landscape_script_record(); // @ 0x408840
+
     int id; // +0x00, parsed from "ID:"
     char name[0x84 - 0x04]; // +0x04
     int backdrop_texture_id; // +0x84, base sprite texture id from "Picture:"
