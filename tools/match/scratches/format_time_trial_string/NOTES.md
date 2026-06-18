@@ -12,15 +12,9 @@ Behavior:
   `%1i:%02i:%02i` form.
 - The helper returns the shared 0x751478 buffer.
 
-Match status: 95.89% (35/36 target instructions semantically aligned, candidate
-has one extra instruction).
+Focused match: 100%, 36/36 instructions, with twelve clean masked operands.
 
-Residual:
-
-- Native coalesces the cdecl stack cleanup across the two adjacent `sprintf`
-  calls in the non-zero branch (`add esp, 0x28` after the second call).
-  `msvc6.5 /O2 /G5 /W3` emits `add esp, 0x14` after each call for the plain
-  source shape.
-- Rejected source-shape probes: comma expression, early return from the non-zero
-  branch, return comma expression, `void sprintf`, non-const format pointer, and
-  VC6 `<stdio.h>` declaration. All kept the same cleanup split.
+This scratch compiles as C (`/TC`) with a local C-compatible `TimerCounters`
+layout shell. C-mode MSVC 6.5 coalesces cdecl stack cleanup across the two
+adjacent non-zero-branch `sprintf` calls, producing the native `add esp, 0x28`
+after the second call.

@@ -1,6 +1,13 @@
 // format_time_trial_string @ 0x448960 (stdcall, ret 0x4)
 
-#include "timer_counters.h"
+typedef struct TimerCounters {
+    float total_seconds;        // +0x00
+    int minutes;                // +0x04
+    int frames_into_second;     // +0x08
+    int display_hundredths;     // +0x0c
+    int display_thousandths;    // +0x10
+    float second_fraction;      // +0x14
+} TimerCounters;
 
 int sprintf(char* buffer, char* format, ...);
 
