@@ -295,7 +295,7 @@
 00447e2f        cursor_1 = cursor_30
 00447e33        i_6 = *cursor_30
 00447e3a        *edx_35 = 0
-00447e5f        *((*arg1 + 1) * 0x4220 + arg1) = sub_432fc0(&var_480)
+00447e5f        *((*arg1 + 1) * 0x4220 + arg1) = find_registered_sound_sample_id_by_name(&var_480)
 00447e78        if (*((*arg1 + 1) * 0x4220 + arg1) == 0xffffffff)
 00447e8c        report_errorf("Cannot find sample %s in %s", &var_480, &var_700)
 00447e96        char* cursor_36 = cursor

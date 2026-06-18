@@ -463,7 +463,7 @@ LABEL_94:
           v63 = ++v48;
         }
         *v49 = 0;
-        *((_DWORD *)this + 4232 * *(_DWORD *)this + 4232) = sub_432FC0(ArgList);
+        *((_DWORD *)this + 4232 * *(_DWORD *)this + 4232) = find_registered_sound_sample_id_by_name(ArgList);
         if ( *((_DWORD *)this + 4232 * *(_DWORD *)this + 4232) == -1 )
           report_errorf("Cannot find sample %s in %s", ArgList, Buffer);
       }
@@ -478,4 +478,3 @@ LABEL_94:
       goto LABEL_94;
   }
 }
-
