@@ -8,10 +8,9 @@ the release-stripped debug report helper.
 byte-checked as `"%s"`, and `data_4a44cc` is the shared newline literal already
 documented by `display_score_stats`.
 
-Match status: 82.93%, no masked operand issues.
+Focused match: 100%, 19/19 instructions, with eight clean masked operands.
 
-Residual:
-
-- Native coalesces the cdecl cleanup for the three `vsprintf` arguments plus
-  all stripped debug helper arguments into the final `add esp, 0x101c`.
-  MSVC 6.5 emits cleanup after each call for the readable source shape.
+This scratch compiles as C (`/TC`). The C-mode MSVC 6.5 codegen coalesces the
+cdecl cleanup for the three `vsprintf` arguments plus all stripped debug helper
+arguments into the final `add esp, 0x101c`, matching the native wrapper while
+keeping the source as straightforward sequential calls.

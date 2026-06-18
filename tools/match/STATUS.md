@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**413/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **43601/325882** bytes (**13.38%**) are proof-grade, and overall fuzzy is **30.00%**.
+**416/687** mapped gameplay functions matched, **561/687** mapped gameplay functions have a scratch, **43815/325882** bytes (**13.45%**) are proof-grade, and overall fuzzy is **30.01%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -224,9 +224,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | free_tracked_memory | 0x431bf0 | 127 | 43/43 | 100.00% | 43/43 | 9 ok |  |
 | ✅ | free_tracked_allocations_to_mark | 0x431c70 | 53 | 15/15 | 100.00% | 15/15 | 6 ok |  |
 | ✅ | set_tracked_allocation_mark | 0x431cb0 | 11 | 3/3 | 100.00% | 3/3 | 2 ok |  |
-| 🚧 | report_errorf | 0x431cc0 | 78 | 22/19 | 82.93% | 9/19 | 8 ok |  |
-| 🚧 | report_warningf | 0x431d10 | 78 | 22/19 | 82.93% | 9/19 | 8 ok |  |
-| 🚧 | report_messagef | 0x431d60 | 58 | 16/15 | 83.87% | 9/15 | 4 ok |  |
+| ✅ | report_errorf | 0x431cc0 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC |
+| ✅ | report_warningf | 0x431d10 | 78 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.5 /O2 /G5 /W3 /TC |
+| ✅ | report_messagef | 0x431d60 | 58 | 15/15 | 100.00% | 15/15 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | copy_c_string | 0x431da0 | 21 | 10/10 | 100.00% | 10/10 | - |  |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | ✅ | skip_to_next_line | 0x431e30 | 29 | 13/13 | 100.00% | 13/13 | - |  |
