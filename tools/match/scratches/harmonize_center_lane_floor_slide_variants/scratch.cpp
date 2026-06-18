@@ -1,0 +1,138 @@
+// harmonize_center_lane_floor_slide_variants @ 0x4356f0 (thiscall)
+
+#include "bod_types.h"
+#include "subgame_runtime.h"
+#include "track_attachment_types.h"
+
+extern char* g_game_base; // data_4df904
+
+unsigned char __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
+unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
+
+void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
+{
+    SubgameRuntime* game_runtime = this;
+    int row = 0;
+    if (game_runtime->runtime_row_count - 1 > 0) {
+        int transition_flag = 0x40;
+        do {
+            int lane = 0;
+            int row_mod = row & 7;
+            do {
+                if (row_mod == 3) {
+                    TrackRowCell* cell =
+                        (TrackRowCell*)((char*)game_runtime + 0x3bfac8
+                            + (lane + row * 8) * sizeof(TrackRowCell));
+                    TrackRowCell* next = cell + 8;
+                    if ((cell->lane_and_flags & 0x20) == 0) {
+                        if ((next->lane_and_flags & 0x20) == 0
+                            && is_slide_cache_tile_family(cell) == 1
+                            && (is_floor_cache_tile_family(next) == 1
+                                || next->tile_id == 0x1e)) {
+                            char* game = g_game_base;
+                            if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
+                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x44b34));
+                                cell->lane_and_flags |= transition_flag;
+                                game = g_game_base;
+                            }
+                            int offset = 0;
+                            do {
+                                if (((BodBase*)cell)->object
+                                    == *(void**)(game + offset + 0x4423c)) {
+                                    ((BodBase*)cell)
+                                        ->set_bod_object(*(void**)(game + offset + 0x443fc));
+                                    cell->lane_and_flags |= transition_flag;
+                                    game = g_game_base;
+                                }
+                                offset += 0x38;
+                            } while (offset < 0xe0);
+                        }
+                    }
+
+                    if ((cell->lane_and_flags & 0x20) == 0) {
+                        if ((next->lane_and_flags & 0x20) == 0
+                            && is_floor_cache_tile_family(cell) == 1
+                            && is_slide_cache_tile_family(next) == 1) {
+                            char* game = g_game_base;
+                            if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
+                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));
+                                cell->lane_and_flags |= transition_flag;
+                                game = g_game_base;
+                            }
+                            int offset = 0;
+                            do {
+                                if (((BodBase*)cell)->object
+                                    == *(void**)(game + offset + 0x443fc)) {
+                                    ((BodBase*)cell)
+                                        ->set_bod_object(*(void**)(game + offset + 0x4423c));
+                                    cell->lane_and_flags |= transition_flag;
+                                    game = g_game_base;
+                                }
+                                offset += 0x38;
+                            } while (offset < 0xe0);
+                        }
+                    }
+                }
+
+                if (row_mod == 5) {
+                    TrackRowCell* cell =
+                        (TrackRowCell*)((char*)game_runtime + 0x3bfac8
+                            + (lane + row * 8) * sizeof(TrackRowCell));
+                    TrackRowCell* previous = cell - 8;
+                    if ((cell->lane_and_flags & 0x20) == 0) {
+                        if ((previous->lane_and_flags & 0x20) == 0
+                            && is_slide_cache_tile_family(cell) == 1
+                            && (is_floor_cache_tile_family(previous) == 1
+                                || previous->tile_id == 0x20)) {
+                            char* game = g_game_base;
+                            if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
+                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x44b34));
+                                cell->lane_and_flags |= transition_flag;
+                                game = g_game_base;
+                            }
+                            int offset = 0;
+                            do {
+                                if (((BodBase*)cell)->object
+                                    == *(void**)(game + offset + 0x4423c)) {
+                                    ((BodBase*)cell)
+                                        ->set_bod_object(*(void**)(game + offset + 0x443fc));
+                                    cell->lane_and_flags |= transition_flag;
+                                    game = g_game_base;
+                                }
+                                offset += 0x38;
+                            } while (offset < 0xe0);
+                        }
+                    }
+
+                    if ((cell->lane_and_flags & 0x20) == 0) {
+                        if ((previous->lane_and_flags & 0x20) == 0
+                            && is_floor_cache_tile_family(cell) == 1
+                            && is_slide_cache_tile_family(previous) == 1) {
+                            char* game = g_game_base;
+                            if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
+                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));
+                                cell->lane_and_flags |= transition_flag;
+                                game = g_game_base;
+                            }
+                            int offset = 0;
+                            do {
+                                if (((BodBase*)cell)->object
+                                    == *(void**)(game + offset + 0x443fc)) {
+                                    ((BodBase*)cell)
+                                        ->set_bod_object(*(void**)(game + offset + 0x4423c));
+                                    cell->lane_and_flags |= transition_flag;
+                                    game = g_game_base;
+                                }
+                                offset += 0x38;
+                            } while (offset < 0xe0);
+                        }
+                    }
+                }
+
+                ++lane;
+            } while (lane < 8);
+
+            ++row;
+        } while (row < game_runtime->runtime_row_count - 1);
+    }
+}
