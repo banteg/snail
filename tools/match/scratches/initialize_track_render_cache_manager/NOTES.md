@@ -1,0 +1,30 @@
+# initialize_track_render_cache_manager @ 0x433060
+
+Initial shape:
+
+- Seeds five render-cache capacity pairs.
+- Stores the live track-render grid pointer at `game+0x74618`.
+- Initializes the 143 x 5 cache BOD slots by allocating an `Object` for each
+  slot, attaching it through `set_bod_object`, clearing the object geometry
+  counters, and allocating per-object D3D/index/texture-group resources.
+- The fifth slot in each row uses `blend_mode = 5`, matching the skirt/cache
+  lane used by `update_track_render_cache_rows`.
+- Allocates the five shared GDX cache vertex/index buffers from the recovered
+  capacity arrays.
+
+Layout correction:
+
+- The existing header had `track_render_grid` at `+0x28`. The native
+  constructor proves the fixed layout is `unknown_00`, capacity arrays at
+  `+0x04/+0x18`, shared vertex/index buffers at `+0x2c/+0x40`, and
+  `track_render_grid` at `+0x54`, with cache slots still starting at `+0x58`.
+- The slot initialization loop uses a manager-relative cursor view: native
+  computes `manager + slot_index * 0x3c`, then accesses the BOD at `+0x58` and
+  the attached object pointer at `+0x7c`.
+
+Status:
+
+- 2026-06-18: 91.80%, 122/122 instructions, masked operands clean. Remaining
+  residuals are register/scheduling only: capacity seed register choice, a
+  commuted slot-index `lea`, and a delayed shared-vertex-buffer store before
+  the index-buffer allocation setup.
