@@ -9,5 +9,6 @@ site/
 tools/match/compilers/
 tools/match/bin/wibo
 tools/match/bin/wibo-*
+tools/match/gpt-pro-tooling/
 tools/match/idioms/build/
 tools/match/scratches/*/build/

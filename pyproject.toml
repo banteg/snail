@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "banteg", email = "4562643+banteg@users.noreply.github.com" }
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "construct>=2.10.70",
     "msgspec>=0.20.0",
