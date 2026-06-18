@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**436/687** mapped gameplay functions matched, **583/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **32.28%**.
+**436/687** mapped gameplay functions matched, **584/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **32.34%**.
 
 ## Proof Grade (436)
 
@@ -445,7 +445,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (147)
+## In Progress (148)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -508,6 +508,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_star_positions | 0x434800 | 860 | 101/106 | 32.85% | 1/106 | 11 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
+| 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 unresolved, 57 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
@@ -597,7 +598,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (104)
+## No Scratch (103)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -684,7 +685,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
 | ⬜ | merge_track_tile_runs | 0x435180 | 873 | 0/276 | 0.00% | 0/276 | - |  |
-| ⬜ | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 0/75 | 0.00% | 0/75 | - |  |
 | ⬜ | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 0/226 | 0.00% | 0/226 | - |  |
 | ⬜ | select_track_tile_edge_variants | 0x435a80 | 692 | 0/220 | 0.00% | 0/220 | - |  |
 | ⬜ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 0/160 | 0.00% | 0/160 | - |  |
