@@ -62,6 +62,12 @@ SYMBOL_UPDATES = (
     ("0x5031d8", "g_object_texture_transform_matrix"),
 )
 
+FUNCTION_SYMBOL_UPDATES = (
+    ("0x4114b0", "create_object_vertex_buffer_resource"),
+    ("0x4115d0", "create_object_index_buffer_resource"),
+    ("0x414270", "direct3d_renderer_set_fullscreen_mode"),
+)
+
 DATA_VAR_UPDATES = (
     ("0x5031bc", "int32_t"),
     ("0x5031c4", "ObjectGroupedVertex*"),
@@ -99,6 +105,7 @@ def main() -> int:
     operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
     operations.extend(apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="Object", updates=OBJECT_FIELDS))
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES, kind="data"))
+    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=FUNCTION_SYMBOL_UPDATES, kind="function"))
     operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)

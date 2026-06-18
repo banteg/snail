@@ -303,6 +303,10 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall update_subgoldy(Player* player);",
     ),
     (
+        "set_subgoldy_ghost_z",
+        "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);",
+    ),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
     ),

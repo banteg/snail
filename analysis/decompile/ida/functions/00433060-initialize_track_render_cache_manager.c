@@ -25,7 +25,7 @@ void *__fastcall initialize_track_render_cache_manager(TrackRenderCacheManager *
   manager->max_index_counts[3] = 160;
   manager->max_vertex_counts[4] = 800;
   manager->max_index_counts[4] = 1280;
-  manager->track_render_grid = (TrackRenderGrid *)((char *)MEMORY[0x4DF904] + 476696);
+  manager->track_render_grid = (TrackRenderGrid *)((char *)g_game_base + 476696);
   v9 = 0;
   p_render_object = &manager->slots[4].render_object;
   do
@@ -41,11 +41,13 @@ void *__fastcall initialize_track_render_cache_manager(TrackRenderCacheManager *
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 84) = 0;
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 92) = 0;
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 100) = 1;
-      *(_DWORD *)(*((_DWORD *)v3 + 31) + 192) = sub_4114B0(
-                                                  (int *)&flt_4DFAFC[24151],
+      *(_DWORD *)(*((_DWORD *)v3 + 31) + 192) = create_object_vertex_buffer_resource(
+                                                  (int *)&unk_4DFAFC[24151],
                                                   manager->max_vertex_counts[i],
                                                   322);
-      *(_DWORD *)(*((_DWORD *)v3 + 31) + 200) = sub_4115D0((int *)&flt_4DFAFC[33152], manager->max_index_counts[i]);
+      *(_DWORD *)(*((_DWORD *)v3 + 31) + 200) = create_object_index_buffer_resource(
+                                                  (int *)&unk_4DFAFC[33152],
+                                                  manager->max_index_counts[i]);
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 204) = allocate_tracked_memory(4, (int)aDxTexturegroup);
       **(_DWORD **)(*((_DWORD *)v3 + 31) + 204) = 0;
       *(_DWORD *)(*((_DWORD *)v3 + 31) + 208) = allocate_tracked_memory(4, (int)aDxTexturegroup_0);

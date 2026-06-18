@@ -57,9 +57,9 @@ int *__usercall sub_413D50@<eax>(int a1@<esi>, _DWORD *a2, int a3)
     v30 = 4 * a2[25];
     a2[52] = v7;
     a2[53] = allocate_tracked_memory(v30, (int)aDxTexturegroup_1);
-    MEMORY[0x5031C4] = get_archive_data_base();
+    unk_5031C4 = get_archive_data_base();
     v41 = (char *)get_archive_data_end();
-    MEMORY[0x5031BC] = 0;
+    unk_5031BC = 0;
     v8 = 0;
     v9 = 0;
     v38 = 0;
@@ -182,40 +182,40 @@ int *__usercall sub_413D50@<eax>(int a1@<esi>, _DWORD *a2, int a3)
         v8 = v38;
       }
     }
-    a2[49] = MEMORY[0x5031BC];
-    a2[48] = sub_4114B0(MEMORY[0x4F7458], MEMORY[0x5031BC], 322);
-    v21 = sub_4115D0(MEMORY[0x5000FC], v9);
+    a2[49] = unk_5031BC;
+    a2[48] = create_object_vertex_buffer_resource(unk_4F7458, unk_5031BC, 322);
+    v21 = create_object_index_buffer_resource(unk_5000FC, v9);
     v22 = a2[48];
     a2[50] = v21;
     (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD, int))(**(_DWORD **)(v22 + 8) + 44))(
       *(_DWORD *)(v22 + 8),
       0,
-      24 * MEMORY[0x5031BC],
+      24 * unk_5031BC,
       &v39,
       0,
       a1);
     v23 = 0;
-    if ( MEMORY[0x5031BC] > 0 )
+    if ( unk_5031BC > 0 )
     {
       v24 = 0;
       v25 = 0;
       do
       {
-        *(_DWORD *)(v24 + v40 + 12) = *(_DWORD *)(v25 + MEMORY[0x5031C4] + 12);
-        v26 = (_DWORD *)(v25 + MEMORY[0x5031C4] + 16);
+        *(_DWORD *)(v24 + v40 + 12) = *(_DWORD *)(v25 + unk_5031C4 + 12);
+        v26 = (_DWORD *)(v25 + unk_5031C4 + 16);
         *(_DWORD *)(v24 + v40 + 16) = *v26;
         *(_DWORD *)(v24 + v40 + 20) = v26[1];
-        v27 = v25 + MEMORY[0x5031C4];
+        v27 = v25 + unk_5031C4;
         v28 = (_DWORD *)(v24 + v40);
         ++v23;
-        v29 = *(_DWORD *)(v25 + MEMORY[0x5031C4]);
+        v29 = *(_DWORD *)(v25 + unk_5031C4);
         v25 += 28;
         *v28 = v29;
         v24 += 24;
         v28[1] = *(_DWORD *)(v27 + 4);
         v28[2] = *(_DWORD *)(v27 + 8);
       }
-      while ( v23 < MEMORY[0x5031BC] );
+      while ( v23 < unk_5031BC );
       v9 = a3;
     }
     (*(void (__cdecl **)(_DWORD))(**(_DWORD **)(a2[48] + 8) + 48))(*(_DWORD *)(a2[48] + 8));
@@ -230,7 +230,7 @@ int *__usercall sub_413D50@<eax>(int a1@<esi>, _DWORD *a2, int a3)
     result = (int *)a2[4];
     if ( (BYTE1(result) & 0x40) != 0 )
     {
-      result = sub_4115D0(MEMORY[0x5000FC], v9);
+      result = create_object_index_buffer_resource(unk_5000FC, v9);
       a2[54] = result;
     }
   }

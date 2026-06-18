@@ -59,13 +59,20 @@ typedef struct FringeObject {
     Color4f color;
 } FringeObject;
 
-typedef struct Sprite Sprite;
 typedef struct Player Player;
 typedef struct Game Game;
 typedef struct PlayerPresentationController PlayerPresentationController;
 typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
+
+typedef struct Sprite {
+    uint8_t _pad_00[0x04];
+    uint32_t flags;
+    uint8_t _pad_08[0x48 - 0x08];
+    Vec3 position;
+    uint8_t _pad_54[0xb4 - 0x54];
+} Sprite;
 
 typedef struct FrontendWidgetTextBuffer {
     uint8_t raw[0x420];
@@ -970,6 +977,7 @@ int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
+Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
 int32_t __thiscall handle_subgoldy_collisions(Player* player);
 void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
 void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);

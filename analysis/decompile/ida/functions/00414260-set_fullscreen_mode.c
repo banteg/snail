@@ -5,6 +5,6 @@
 // Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change.
 char __usercall sub_414260@<al>(int a1@<edi>, char a2)
 {
-  return sub_414270((int)MEMORY[0x4F7458], a1, a2);
+  return direct3d_renderer_set_fullscreen_mode((int)unk_4F7458, a1, a2);
 }
 

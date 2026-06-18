@@ -125,6 +125,15 @@
       "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate object D3D index-buffer wrappers."
     },
     {
+      "address": "0x414270",
+      "name": "direct3d_renderer_set_fullscreen_mode",
+      "kind": "function",
+      "aliases": [
+        "sub_414270"
+      ],
+      "description": "Renderer-wrapper method called by set_fullscreen_mode to switch windowed/fullscreen bookkeeping, reset the Direct3D device, restore window placement, and recenter the cursor."
+    },
+    {
       "address": "0x5031bc",
       "name": "g_object_grouped_vertex_cursor",
       "kind": "global",

@@ -128,8 +128,8 @@
 00414085        break
 00413ebb        ecx_2 = var_14
 00414097        *(ebx + 0xc4) = g_object_grouped_vertex_cursor
-004140b4        *(ebx + 0xc0) = sub_4114b0(&g_direct3d_renderer, g_object_grouped_vertex_cursor, 0x142)
-004140ba        void* eax_46 = sub_4115d0(&g_object_index_buffer_factory, ebp)
+004140b4        *(ebx + 0xc0) = create_object_vertex_buffer_resource(&g_direct3d_renderer, g_object_grouped_vertex_cursor, 0x142)
+004140ba        void* eax_46 = create_object_index_buffer_resource(&g_object_index_buffer_factory, ebp)
 004140bf        void* edx_36 = *(ebx + 0xc0)
 004140ca        *(ebx + 0xc8) = eax_46
 004140d0        int32_t* eax_47 = *(edx_36 + 8)
@@ -167,6 +167,6 @@
 004141a9        (*(*eax_53 + 0x30))(eax_53)
 004141ac        void* eax_54 = *(ebx + 0x10)
 004141b3        if ((eax_54:1.b & 0x40) != 0)
-004141bb        eax_54 = sub_4115d0(&g_object_index_buffer_factory, ebp)
+004141bb        eax_54 = create_object_index_buffer_resource(&g_object_index_buffer_factory, ebp)
 004141c0        *(ebx + 0xd8) = eax_54
 004141cc        return eax_54

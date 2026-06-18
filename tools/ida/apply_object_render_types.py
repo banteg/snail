@@ -4,6 +4,7 @@ import re
 import sys
 
 import ida_funcs
+import ida_name
 import ida_pro
 import idc
 
@@ -17,6 +18,12 @@ TRUSTED_DECLARATIONS = [
         "refresh_object_vertex_buffer",
         "void __cdecl refresh_object_vertex_buffer(Object* object);",
     ),
+]
+
+TRUSTED_NAMES = [
+    (0x4114B0, "create_object_vertex_buffer_resource"),
+    (0x4115D0, "create_object_index_buffer_resource"),
+    (0x414270, "direct3d_renderer_set_fullscreen_mode"),
 ]
 
 
@@ -51,8 +58,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     applied = 0
     unchanged = 0
+    renamed = 0
+    names_unchanged = 0
     missing = []
     failed = []
+
+    for address, name in TRUSTED_NAMES:
+        current_name = idc.get_name(address)
+        if current_name == name:
+            names_unchanged += 1
+            continue
+        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            failed.append(
+                {
+                    "selector": name,
+                    "address": hex(address),
+                    "reason": "rename_failed",
+                }
+            )
+            continue
+        renamed += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address, _name = _resolve_function(selector)
@@ -106,6 +131,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
                 "missing": missing,
                 "failed": failed,
             },

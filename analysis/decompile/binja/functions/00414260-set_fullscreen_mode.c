@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_fullscreen_mode @ 0x414260 */
 
-0041426f        return sub_414270(&g_direct3d_renderer, arg1)
+0041426f        return direct3d_renderer_set_fullscreen_mode(&g_direct3d_renderer, arg1)

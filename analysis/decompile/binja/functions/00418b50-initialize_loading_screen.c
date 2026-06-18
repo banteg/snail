@@ -39,8 +39,8 @@
 00418d29        (*(*eax_16 + 0xfc))(eax_16, 0, 0x10, 3)
 00418d2f        int32_t* eax_17 = data_502fec
 00418d3c        (*(*eax_17 + 0xfc))(eax_17, 0, 0x11, 3)
-00418d5f        data_503284 = sub_4114b0(&g_direct3d_renderer, 4, 0x102)
-00418d69        data_5032a4 = sub_4114b0(&g_direct3d_renderer, 4, 0x102)
+00418d5f        data_503284 = create_object_vertex_buffer_resource(&g_direct3d_renderer, 4, 0x102)
+00418d69        data_5032a4 = create_object_vertex_buffer_resource(&g_direct3d_renderer, 4, 0x102)
 00418d78        int32_t* eax_21 = *(data_503284 + 8)
 00418d82        int32_t* var_8
 00418d82        (*(*eax_21 + 0x2c))(eax_21, 0, 0x50, &var_8, 0)

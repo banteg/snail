@@ -18,8 +18,8 @@
 00433102        *(*(esi_1 + 0x7c) + 0x54) = 0
 00433108        *(*(esi_1 + 0x7c) + 0x5c) = 0
 0043310e        *(*(esi_1 + 0x7c) + 0x64) = 1
-0043312c        *(*(esi_1 + 0x7c) + 0xc0) = sub_4114b0(&g_direct3d_renderer, manager->max_vertex_counts[i], 0x142)
-00433146        *(*(esi_1 + 0x7c) + 0xc8) = sub_4115d0(&g_object_index_buffer_factory, manager->max_index_counts[i])
+0043312c        *(*(esi_1 + 0x7c) + 0xc0) = create_object_vertex_buffer_resource(&g_direct3d_renderer, manager->max_vertex_counts[i], 0x142)
+00433146        *(*(esi_1 + 0x7c) + 0xc8) = create_object_index_buffer_resource(&g_object_index_buffer_factory, manager->max_index_counts[i])
 0043315b        *(*(esi_1 + 0x7c) + 0xcc) = allocate_tracked_memory(4, "DX TextureGroups")
 0043316a        **(*(esi_1 + 0x7c) + 0xcc) = 0
 0043317b        *(*(esi_1 + 0x7c) + 0xd0) = allocate_tracked_memory(4, "DX TextureGroupsTexture Ref")
