@@ -70,6 +70,8 @@ Current checked-in Binary Ninja companion:
 - `uv run python tools/binja/sync_path_template_types.py`
 - `bn_selected_level_record_types.h`
 - `uv run python tools/binja/sync_selected_level_record_types.py`
+- `bn_garbage_hazard_types.h`
+- `uv run python tools/binja/sync_garbage_hazard_types.py`
 
 That BN sync lane intentionally replays a narrow presentation/camera slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
