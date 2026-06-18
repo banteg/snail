@@ -38,7 +38,7 @@ PROTO_UPDATES = (
     ("initialize_track_render_cache_manager", "void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager)"),
     ("build_track_render_caches", "int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager)"),
     ("update_track_render_cache_rows", "void __fastcall update_track_render_cache_rows(TrackRenderCacheManager* manager)"),
-    ("remove_track_render_cache_bods", "int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager)"),
+    ("remove_track_render_cache_bods", "void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager)"),
     ("is_slide_cache_tile_family", "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell)"),
     ("is_floor_cache_tile_family", "int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell)"),
     ("is_ramp_cache_tile_family", "int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell)"),

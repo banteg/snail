@@ -19,7 +19,7 @@ class TrackRenderCacheManager {
 public:
     int build_track_render_caches(Color4f skirt_color); // @ 0x433220
     void update_track_render_cache_rows();              // @ 0x433b30
-    int remove_track_render_cache_bods();               // @ 0x433f20
+    void remove_track_render_cache_bods();              // @ 0x433f20
 
     int max_vertex_counts[5]; // +0x00
     int max_index_counts[5];  // +0x14

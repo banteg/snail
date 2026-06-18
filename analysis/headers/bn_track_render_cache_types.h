@@ -20,7 +20,7 @@ typedef struct TrackRenderCacheManager {
 void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
 int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);
 void __fastcall update_track_render_cache_rows(TrackRenderCacheManager* manager);
-int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
+void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
 int32_t __fastcall is_slide_cache_tile_family(struct TrackRowCell* cell);
 int32_t __fastcall is_floor_cache_tile_family(struct TrackRowCell* cell);
 int32_t __fastcall is_ramp_cache_tile_family(struct TrackRowCell* cell);

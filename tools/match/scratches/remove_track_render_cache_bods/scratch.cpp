@@ -5,7 +5,7 @@
 extern char* volatile g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
-int TrackRenderCacheManager::remove_track_render_cache_bods()
+void TrackRenderCacheManager::remove_track_render_cache_bods()
 {
     BodNode** next_ref = &slots[0][0].bod.list_next;
     int rows = 0x8f;
@@ -45,6 +45,4 @@ int TrackRenderCacheManager::remove_track_render_cache_bods()
         } while (count);
         rows--;
     } while (rows);
-
-    return rows;
 }

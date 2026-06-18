@@ -140,7 +140,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "remove_track_render_cache_bods",
-        "int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);",
+        "void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);",
     ),
     (
         "is_slide_cache_tile_family",

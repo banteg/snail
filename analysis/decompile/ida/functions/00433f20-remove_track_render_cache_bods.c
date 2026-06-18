@@ -3,14 +3,13 @@
 /* selector: remove_track_render_cache_bods */
 
 // Unlinks the fixed 143x5 track-render cache bod grid from the shared active-bod list during subgame teardown.
-int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
+void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
 {
   uint8_t *v1; // esi
   int v2; // edi
   char *v3; // ecx
   int v4; // eax
   int v5; // eax
-  int32_t result; // eax
   int v7; // [esp+10h] [ebp-4h]
 
   v1 = &manager->slots[0]._pad_00[12];
@@ -53,9 +52,7 @@ int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manag
       --v2;
     }
     while ( v2 );
-    result = --v7;
+    --v7;
   }
   while ( v7 );
-  return result;
 }
-

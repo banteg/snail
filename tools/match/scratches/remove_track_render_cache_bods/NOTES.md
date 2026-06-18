@@ -13,7 +13,7 @@ active-list unlink/free-stack push against the global BOD list at
 `g_game_base + 0x5a8`, reporting the same `"List remove"` and
 `"List remove NEXTBOD"` diagnostics used by the shared `BodList` remover.
 
-Current match: 51.72%, 58/58 instructions, 7-instruction prefix, four masked
+Current match: 52.17%, 57/58 instructions, 7-instruction prefix, four masked
 operands clean.
 
 Important shape correction: native keeps `esi` as a cursor to
@@ -29,6 +29,11 @@ Residuals:
 - Because native keeps those mask registers live, `edi` remains the inner
   five-slot counter and the global list pointer stays in `ecx`; the scratch
   allocates those registers differently.
+- The native function is side-effect-only. The old `int` prototype was a
+  decompiler artifact from the row-count loop; the sole known caller
+  (`remove_subgame_bods`) discards the value, and the native epilogue does not
+  materialize a return register. Changing the member and BN/IDA prototypes to
+  `void` removes the scratch's trailing `xor eax, eax`.
 
 Rejected probe:
 
