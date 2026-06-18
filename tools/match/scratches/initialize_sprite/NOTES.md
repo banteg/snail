@@ -23,8 +23,6 @@ Confirmed fields include:
 The initializer preserves native store order; only the field types/names were
 cleaned up.
 
-2026-06-16 audit: tracked scratch sources now use `size_start`/`size_end`; the
-remaining `scale_x`/`scale_y` hits are stale build-only artifacts under
-unpromoted scratch directories (`emit_ring_star_shower`,
-`health_collect_particles`, `spawn_track_health_pickup`), not live source
-definitions.
+2026-06-18 audit: tracked Sprite callsites now use `size_start`/`size_end`.
+Remaining `scale_x`/`scale_y` hits are unrelated local scale factors or notes
+about rejected drafts, not `Sprite +0x60/+0x64` field names.
