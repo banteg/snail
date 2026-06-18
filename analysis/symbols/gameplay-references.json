@@ -40,13 +40,14 @@
     },
     {
       "address": "0x408600",
-      "name": "initialize_runtime_slot",
+      "name": "noop_runtime_slot_constructor",
       "kind": "function",
       "aliases": [
         "sub_408600",
+        "initialize_runtime_slot",
         "initialize_iostream"
       ],
-      "description": "Shared small-object constructor callback used by runtime slot arrays and enemy-manager I/O stream members."
+      "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) used by initialize_array_with_constructor for POD-like runtime slot arrays and enemy-manager I/O stream members."
     },
     {
       "address": "0x405018",
