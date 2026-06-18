@@ -24,6 +24,10 @@ Confirmed fields include:
 The initializer preserves native store order; only the field types/names were
 cleaned up.
 
+2026-06-18 review cleanup: the `depth_bias` zero store is now spelled as the
+honest float assignment `depth_bias = 0.0f`; VC6 still emits the same `eax`
+zero-store at `+0x98`.
+
 2026-06-18 audit: tracked Sprite callsites now use `size_start`/`size_end`.
 Remaining `scale_x`/`scale_y` hits are unrelated local scale factors or notes
 about rejected drafts, not `Sprite +0x60/+0x64` field names.
