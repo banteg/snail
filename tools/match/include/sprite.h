@@ -90,7 +90,7 @@ public:
     float gravity_step; // +0x78
     float facing_angle; // +0x7c
     float facing_angle_step; // +0x80
-    int unknown_84; // +0x84
+    int reserved_84; // +0x84, initialized to zero; no covered reader yet
     float corner_scale; // +0x88
     float facing_refresh_progress; // +0x8c
     float facing_refresh_step; // +0x90

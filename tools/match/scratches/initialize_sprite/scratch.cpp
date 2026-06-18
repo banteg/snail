@@ -15,7 +15,7 @@ void Sprite::initialize_sprite()
     lifetime_step = 0.0f;
     facing_angle = 0.0f;
     facing_angle_step = 0.0f;
-    unknown_84 = zero;
+    reserved_84 = zero;
     corner_scale = 1.0f;
     facing_refresh_progress = 0.0f;
     facing_refresh_step = 0.0f;
