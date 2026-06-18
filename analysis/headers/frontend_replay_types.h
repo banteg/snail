@@ -140,8 +140,8 @@ typedef struct NewGameMenu {
     float replay_probe_step;
     uint8_t _pad_18[0x30 - 0x18];
     FrontendWidget* postal_button;
-    FrontendWidget* challenge_button;
     FrontendWidget* time_trial_button;
+    FrontendWidget* challenge_button;
     FrontendWidget* tutorial_button;
     FrontendWidget* help_button;
     FrontendWidget* back_button;

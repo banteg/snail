@@ -13,7 +13,7 @@ extern char g_high_scores_text[]; // 0x4a3b68
 extern char g_options_text[]; // 0x4a3b60
 extern char g_credits_text[]; // 0x4a3b58
 
-char cache_music_file(char* path, int unused, char* fallback_path); // @ 0x432d50
+char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 class BorderRuntime {
 public:

@@ -1489,6 +1489,60 @@
       "description": "Salt-hazard attachment rejection debug-report string used before deactivation."
     },
     {
+      "address": "0x4a4fb4",
+      "name": "g_arcade000_level_path",
+      "kind": "string",
+      "aliases": [
+        "aArcade000Txt"
+      ],
+      "description": "Arcade000.txt fixed level path used by load_frontend_level_by_mode_and_index for modes 2 and 3."
+    },
+    {
+      "address": "0x4a4fc4",
+      "name": "g_tutorial_level_path",
+      "kind": "string",
+      "aliases": [
+        "aTutorialTxt"
+      ],
+      "description": "Tutorial.txt fixed level path used by load_frontend_level_by_mode_and_index for tutorial mode."
+    },
+    {
+      "address": "0x4a4fd4",
+      "name": "g_challenge_level_path",
+      "kind": "string",
+      "aliases": [
+        "aChallenge000T"
+      ],
+      "description": "Challenge000.txt fixed level path used by load_frontend_level_by_mode_and_index for challenge mode."
+    },
+    {
+      "address": "0x4a4fe8",
+      "name": "g_time_trial_extra_level_format",
+      "kind": "string",
+      "aliases": [
+        "aTimetrialextr"
+      ],
+      "description": "TimeTrialExtra%03i.txt level path format used by load_frontend_level_by_mode_and_index for extra time-trial levels."
+    },
+    {
+      "address": "0x4a5000",
+      "name": "g_arcade_extra_level_path",
+      "kind": "string",
+      "aliases": [
+        "aArcadeextra00"
+      ],
+      "description": "ArcadeExtra000.txt fixed level path used by load_frontend_level_by_mode_and_index for postal index 51."
+    },
+    {
+      "address": "0x4a5014",
+      "name": "g_arcade_level_format",
+      "kind": "string",
+      "aliases": [
+        "aArcade03iTxt"
+      ],
+      "description": "Arcade%03i.txt level path format used by load_frontend_level_by_mode_and_index for postal and time-trial level selection."
+    },
+    {
       "address": "0x4a5138",
       "name": "g_worm_fov_report_format",
       "kind": "string",

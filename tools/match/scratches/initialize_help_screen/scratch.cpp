@@ -9,7 +9,7 @@ extern char g_help_script_path[]; // 0x4a3488
 extern char g_blank_text[]; // 0x4dfb08
 extern char g_back_text[]; // 0x4a20ec
 
-char cache_music_file(char* path, int unused, char* fallback_path); // @ 0x432d50
+char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 class HelpBorderManager {
 public:

@@ -18,6 +18,10 @@ TRUSTED_DECLARATIONS = [
         "int __thiscall exit_high_score_screen(HighScoreScreen* screen);",
     ),
     (
+        "initialize_new_game_menu",
+        "void __thiscall initialize_new_game_menu(NewGameMenu* menu);",
+    ),
+    (
         "update_new_game_menu",
         "void __thiscall update_new_game_menu(NewGameMenu* menu);",
     ),
