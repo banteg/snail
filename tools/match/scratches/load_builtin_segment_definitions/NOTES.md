@@ -17,9 +17,15 @@ Status:
 
 - 2026-06-18: 52.97%, 92 target instructions vs 93 candidate instructions,
   no masked operands.
+- 2026-06-18: Reshaped the scratch around the shared `LevelSegmentSlot` layout
+  and a typed `BuiltinSegmentDefinition`; score stayed at 52.97%, but the slot
+  offsets now line up with `copy_segment_definition_to_level_slot`.
 - Useful correction from the first pass: the row-copy loop should reload the
   row pointer through the table for each glyph; caching/incrementing the row
   pointer made the shape worse.
+- The built-in definition has an unknown dword at `+0x24`; the eight row
+  pointers start at `+0x28`. Omitting that gap moved the row table to `+0x24`
+  and regressed the scratch to 48.65%.
 - Main residual: VC6 allocates the built-in table in `ebp` for this scratch,
   while native keeps it in `ebx` before the sentinel check and then uses `ebp`
   for the per-glyph destination offset. Pointer/integer/`register` spellings
