@@ -3,7 +3,7 @@
 /* selector: load_builtin_segment_definitions */
 
 // Copies the shipped built-in segment definitions from the static table at `0x4a63d0` into the runtime segment catalog, including names like `Start`, `Finish`, and `Filler` plus their eight authored row strings and metadata lanes.
-_BYTE *__thiscall sub_448060(int *this, int a2)
+_BYTE *__thiscall load_builtin_segment_definitions(int *this, int a2)
 {
   _BYTE *result; // eax
   _BYTE *v4; // esi
@@ -63,4 +63,3 @@ _BYTE *__thiscall sub_448060(int *this, int a2)
   }
   return result;
 }
-

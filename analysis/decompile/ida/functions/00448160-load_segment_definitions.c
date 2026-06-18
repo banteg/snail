@@ -2,7 +2,7 @@
 /* function: load_segment_definitions @ 0x448160 */
 /* selector: load_segment_definitions */
 
-// Parses SEGMENTS/*.TXT into the segment catalog and per-row metadata arrays.
+// Parses SEGMENTS/*.TXT into the segment catalog, storing the internal `Name:'...'` display label separately from the enumerated filename and recovering per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata.
 int __thiscall load_segment_definitions(int *this)
 {
   int result; // eax
@@ -137,10 +137,10 @@ int __thiscall load_segment_definitions(int *this)
           v15 = find_case_insensitive_substring(aData, v72);
           if ( v15 )
           {
-            v16 = (_BYTE *)sub_44E690(v15);
+            v16 = (_BYTE *)advance_to_next_crlf_line(v15);
             if ( v16 )
             {
-              v17 = (_BYTE *)sub_44E690(v16);
+              v17 = (_BYTE *)advance_to_next_crlf_line(v16);
               v18 = v17;
               if ( v17 )
               {
@@ -322,7 +322,7 @@ int __thiscall load_segment_definitions(int *this)
                       BYTE1(v57) |= 0x80u;
                       v22[547] = v57;
                     }
-                    v18 = (_BYTE *)sub_44E690(v26);
+                    v18 = (_BYTE *)advance_to_next_crlf_line(v26);
                     if ( !v18 )
                     {
                       v59 = &v73[128 * v64];
@@ -380,4 +380,3 @@ int __thiscall load_segment_definitions(int *this)
   }
   return result;
 }
-

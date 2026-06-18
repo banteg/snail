@@ -2,6 +2,7 @@
 /* function: copy_segment_definition_to_level_slot @ 0x447300 */
 /* selector: copy_segment_definition_to_level_slot */
 
+// Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a level segment slot, and copies the authored row metadata including velocity, path template, and ring-speed fields.
 _DWORD *__stdcall copy_segment_definition_to_level_slot(char *ArgList, _DWORD *a2)
 {
   _DWORD *v2; // edi
@@ -28,7 +29,7 @@ _DWORD *__stdcall copy_segment_definition_to_level_slot(char *ArgList, _DWORD *a
     v4 = (char *)MEMORY[0x4DF904] + 17259304;
     do
     {
-      if ( sub_44E6C0(ArgList, v4) == 1 )
+      if ( strings_equal_case_insensitive_path(ArgList, v4) == 1 )
         break;
       ++v3;
       v4 += 16520;
@@ -101,4 +102,3 @@ _DWORD *__stdcall copy_segment_definition_to_level_slot(char *ArgList, _DWORD *a
   v6[4231] = -1;
   return result;
 }
-

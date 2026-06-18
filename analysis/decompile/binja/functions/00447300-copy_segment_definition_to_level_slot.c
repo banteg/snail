@@ -7,7 +7,7 @@
 00447313        int32_t i = 0
 00447318        if (*edi s> 0)
 0044731a        char* ebp_1 = &edi[0x11]
-0044732a        if (sub_44e6c0(arg1, ebp_1) == 1)
+0044732a        if (strings_equal_case_insensitive_path(arg1, ebp_1) == 1)
 0044732a        break
 0044732e        i += 1
 0044732f        ebp_1 = &ebp_1[0x4088]
