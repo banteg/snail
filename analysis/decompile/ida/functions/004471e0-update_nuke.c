@@ -21,18 +21,18 @@ int32_t __thiscall update_nuke(NukeController *nuke)
   {
     if ( !--result )
     {
-      nuke->orbit_axis = nuke->orbit_axis_step + nuke->orbit_axis;
-      v3 = nuke->phase_step + nuke->phase;
-      nuke->phase = v3;
+      nuke->orbit_center_z = nuke->orbit_center_z_step + nuke->orbit_center_z;
+      v3 = nuke->orbit_phase_step + nuke->orbit_phase;
+      nuke->orbit_phase = v3;
       if ( !(v5 | v6) )
-        nuke->phase = v3 - 6.2831855;
+        nuke->orbit_phase = v3 - 6.2831855;
       v7 = 0;
       v11 = 0;
       sprite_slots = nuke->sprite_slots;
       do
       {
-        v9 = (double)v11 * 0.039999999 * 6.2831855 + nuke->phase;
-        *((_DWORD *)*sprite_slots + 20) = LODWORD(nuke->orbit_axis);
+        v9 = (double)v11 * 0.039999999 * 6.2831855 + nuke->orbit_phase;
+        *((_DWORD *)*sprite_slots + 20) = LODWORD(nuke->orbit_center_z);
         v12 = v9;
         *((float *)*sprite_slots + 18) = sine(v12) * 7.0;
         v10 = cosine(v12);
@@ -47,4 +47,3 @@ int32_t __thiscall update_nuke(NukeController *nuke)
   }
   return result;
 }
-

@@ -17,12 +17,12 @@ int32_t __thiscall initialize_nuke(NukeController *nuke)
   {
     sprite_slots = nuke->sprite_slots;
     v3 = 25;
-    nuke->orbit_axis = nuke->owner_player->live_matrix.position.z - 5.0;
+    nuke->orbit_center_z = nuke->owner_player->live_matrix.position.z - 5.0;
     v4 = *((float *)MEMORY[0x4DF904] + 119188) + *((float *)MEMORY[0x4DF904] + 119188);
-    nuke->phase = 0.0;
-    nuke->phase_step = 0.10471976;
+    nuke->orbit_phase = 0.0;
+    nuke->orbit_phase_step = 0.10471976;
     nuke->state = 1;
-    nuke->orbit_axis_step = v4;
+    nuke->orbit_center_z_step = v4;
     do
     {
       sprite = allocate_sprite(unk_790F30, nuke->owner_player->player_slot, 131, -1, -1);
@@ -50,4 +50,3 @@ int32_t __thiscall initialize_nuke(NukeController *nuke)
   }
   return update_nuke(nuke);
 }
-

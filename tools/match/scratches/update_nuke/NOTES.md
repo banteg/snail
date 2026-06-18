@@ -3,7 +3,7 @@
 Source-shaped match: 89.83%, 59/59 instructions.
 
 This scratch maps the active nuke/ring effect updater. When `state == 1`, it
-advances the z-axis orbit center by `orbit_axis_step`, advances and wraps the
+advances the z-axis orbit center by `orbit_center_z_step`, advances and wraps the
 phase, then updates all 25 sprite slots around a radius-7 circle using the
 existing `sine`/`cosine` helpers.
 

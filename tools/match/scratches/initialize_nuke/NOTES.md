@@ -3,7 +3,7 @@
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
 - Uses typed `NukeController`, `Player`, `Game`, `SpriteManager`, and `Sprite`
   layouts. This pins the owner player pointer, `subgame_rate` read at
-  `game+0x74650`, orbit axis/phase fields, and the 25 sprite slots at
+  `game+0x74650`, orbit center-z/phase fields, and the 25 sprite slots at
   controller `+0x18`.
 - Semantics: inactive state allocates 25 sprite id `0x83` entries for the
   owner's player slot, sets sprite flag `0x800`, clears sprite progress,
@@ -18,3 +18,8 @@
   first-store `current` sprite plus `sprite_scale` local did not improve the
   match. Keep the direct flag OR and vector-pointer zeroing unless stronger
   original-source evidence appears.
+- 2026-06-18 name correction: `orbit_axis`/`orbit_axis_step` were too vague.
+  `initialize_nuke` seeds the value from the owner's current z minus 5, and
+  `update_nuke` writes it into every sprite's `position.z`, so the shared
+  fields are now `orbit_center_z` and `orbit_center_z_step`. The angular fields
+  are `orbit_phase` and `orbit_phase_step`.

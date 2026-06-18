@@ -13,12 +13,12 @@ int NukeController::initialize_nuke()
         Sprite** slots = sprite_slots;
         int count = 25;
 
-        orbit_axis = owner_player->position.z - 5.0f;
+        orbit_center_z = owner_player->position.z - 5.0f;
         float rate = g_game_base->subgame_rate;
-        phase = 0.0f;
-        phase_step = 0.104719758f;
+        orbit_phase = 0.0f;
+        orbit_phase_step = 0.104719758f;
         state = 1;
-        orbit_axis_step = rate + rate;
+        orbit_center_z_step = rate + rate;
 
         do {
             Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x83, -1, -1);

@@ -15,10 +15,10 @@ public:
 
     int state; // +0x00
     Player* owner_player; // +0x04
-    float orbit_axis_step; // +0x08
-    float orbit_axis; // +0x0c
-    float phase; // +0x10
-    float phase_step; // +0x14
+    float orbit_center_z_step; // +0x08
+    float orbit_center_z; // +0x0c
+    float orbit_phase; // +0x10
+    float orbit_phase_step; // +0x14
     Sprite* sprite_slots[25]; // +0x18
 };
 
