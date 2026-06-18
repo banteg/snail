@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**379/687** mapped gameplay functions matched, **518/687** mapped gameplay functions have a scratch, **36694/325882** bytes (**11.26%**) are proof-grade, and overall fuzzy is **27.64%**.
+**381/687** mapped gameplay functions matched, **521/687** mapped gameplay functions have a scratch, **37059/325882** bytes (**11.37%**) are proof-grade, and overall fuzzy is **27.80%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -397,7 +397,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_voice_set | 0x449390 | 119 | 43/43 | 100.00% | 43/43 | 3 ok |  |
 | ✅ | is_voice_playing | 0x449410 | 78 | 40/40 | 100.00% | 40/40 | 2 ok |  |
 | ✅ | uninitialize_bass_audio_backend | 0x4496d0 | 70 | 19/19 | 100.00% | 19/19 | 10 ok |  |
+| ✅ | ensure_music_stream_from_path | 0x449720 | 192 | 70/70 | 100.00% | 70/70 | 14 ok |  |
 | ✅ | prepare_music_stream_reload_if_path_changed | 0x4497e0 | 49 | 19/19 | 100.00% | 19/19 | 3 ok |  |
+| ✅ | play_music_stream_from_bytes | 0x449820 | 173 | 68/68 | 100.00% | 68/68 | 11 ok |  |
 | ✅ | stop_music_stream | 0x4498d0 | 71 | 21/21 | 100.00% | 21/21 | 8 ok |  |
 | ✅ | load_registered_sound_sample_from_path | 0x449920 | 61 | 20/20 | 100.00% | 20/20 | 4 ok |  |
 | 🚧 | load_registered_sound_sample_from_bytes | 0x449960 | 59 | 18/18 | 88.89% | 13/18 | 4 ok |  |
@@ -497,6 +499,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | 9/9 | 3 ok |  |
 | ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | initialize_sound_bank | 0x44dcb0 | 48 | 21/21 | 100.00% | 21/21 | 1 ok |  |
+| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 57/66 | 61.79% | 0/66 | 10 ok |  |
 | ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
@@ -531,7 +534,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 3 type name(s)
-- covered: 26 type name(s) with a header plus scratch-local copies
+- covered: 27 type name(s) with a header plus scratch-local copies
 - divergent: 25 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
@@ -586,6 +589,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Vector3 | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
