@@ -21,6 +21,8 @@ Recovered relationships:
 
 - State 2 completes the active subgame and either returns to a dirty frontend
   state or restarts challenge/time-trial style modes.
+- The state 2 and 11 gates check `CompletionGameView::high_score_entry_pending`
+  at `+0x30d`, not the ordinary front-end dirty byte at `+0x30c`.
 - State 3 returns through `game+0x1066bf0`, matching the replay-launch return
   state recovered from high-score and new-game menu paths.
 - State 8 launches the outbound `Alpha72.url` resource helper, clears

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**386/687** mapped gameplay functions matched, **526/687** mapped gameplay functions have a scratch, **38524/325882** bytes (**11.82%**) are proof-grade, and overall fuzzy is **28.25%**.
+**388/687** mapped gameplay functions matched, **528/687** mapped gameplay functions have a scratch, **39532/325882** bytes (**12.13%**) are proof-grade, and overall fuzzy is **28.56%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -143,6 +143,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_active_landscape_entry | 0x418ac0 | 130 | 41/41 | 100.00% | 41/41 | 4 ok |  |
 | ✅ | destroy_loading_screen | 0x418e50 | 41 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | destroy_main_menu | 0x419b30 | 26 | 5/5 | 100.00% | 5/5 | 4 ok |  |
+| ✅ | initialize_main_menu | 0x419b50 | 682 | 172/172 | 100.00% | 172/172 | 48 ok |  |
+| ✅ | update_main_menu | 0x419e00 | 326 | 68/68 | 100.00% | 68/68 | 16 ok |  |
 | ✅ | initialize_duplicate_vertices | 0x419f50 | 39 | 13/13 | 100.00% | 13/13 | 2 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | ✅ | initialize_options_menu | 0x41ace0 | 506 | 127/127 | 100.00% | 127/127 | 32 ok |  |
@@ -538,7 +540,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 3 type name(s)
+- ready: 4 type name(s)
 - covered: 27 type name(s) with a header plus scratch-local copies
 - divergent: 25 type name(s) with multiple scratch-local shapes
 
@@ -551,13 +553,13 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Direct3DDevice8Vtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LevelSegmentSlot | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BorderRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CheatState | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | DuplicateVertexBuffer | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -597,5 +599,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | ready | IndexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | LandscapeScriptBank | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | SegmentCatalogEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | VertexBufferFactory | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |

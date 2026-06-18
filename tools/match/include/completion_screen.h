@@ -4,6 +4,7 @@
 
 #include "frontend_widget.h"
 #include "high_score_screen.h"
+#include "main_menu.h"
 #include "new_game_menu.h"
 #include "options_menu.h"
 #include "sprite.h"
@@ -34,12 +35,6 @@ public:
     FrontendWidget* resume_widget; // +0x08
 };
 
-class MainMenu {
-public:
-    void destroy_main_menu(); // @ 0x419b30, helper ignores this
-    int update_main_menu(); // @ 0x419e00
-};
-
 class GalaxyRoute {
 public:
     void destroy_galaxy(); // @ 0x408c10
@@ -67,14 +62,15 @@ public:
     int frontend_quit_mode; // +0x38
     char unknown_00003c[0x1b8 - 0x3c];
     int frontend_next_state; // +0x1b8
-    char unknown_0001bc[0x30d - 0x1bc];
-    unsigned char frontend_state_dirty; // +0x30d
+    char unknown_0001bc[0x30c - 0x1bc];
+    unsigned char frontend_state_dirty; // +0x30c
+    unsigned char high_score_entry_pending; // +0x30d
     char unknown_00030e[0x568 - 0x30e];
     unsigned char frontend_link_latch; // +0x568
     char unknown_000569[0x4f2dc - 0x569];
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
-    char unknown_04f325[0x4f388 - 0x4f325];
+    char unknown_04f33c[0x4f388 - 0x4f33c];
     OptionsMenu options_menu; // +0x4f388
     CompletionPrompt exit_prompt; // +0x4f3ac
     char unknown_04f3c8[0x74618 - 0x4f3c8];
@@ -98,6 +94,8 @@ public:
     GalaxyRoute galaxy; // +0x12d4638
     char unknown_12d4639[0x12e55e0 - 0x12d4639];
     int ordinary_rebuild_selector; // +0x12e55e0
+    char unknown_12e55e4[0x12e6e50 - 0x12e55e4];
+    HighScoreScreen high_score_screen; // +0x12e6e50
 };
 
 class CompletionResultScreen {

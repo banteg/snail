@@ -39,7 +39,7 @@ int CompletionPrompt::update_completion_screen()
             button->widget_flags = flags & ~0x20;
             ((CompletionGameView*)g_game_base)->galaxy.destroy_galaxy();
             ((CompletionGameView*)g_game_base)->subgame.complete_subgame(1);
-            if (((CompletionGameView*)g_game_base)->frontend_state_dirty == 1) {
+            if (((CompletionGameView*)g_game_base)->high_score_entry_pending == 1) {
                 previous_frontend_state =
                     ((CompletionGameView*)g_game_base)->frontend_next_state;
                 destroy_completion_screen();
@@ -58,7 +58,7 @@ int CompletionPrompt::update_completion_screen()
         if ((flags & 0x20) != 0) {
             button->widget_flags = flags & ~0x20;
             ((CompletionGameView*)g_game_base)->subgame.complete_subgame(1);
-            if (((CompletionGameView*)g_game_base)->frontend_state_dirty == 1) {
+            if (((CompletionGameView*)g_game_base)->high_score_entry_pending == 1) {
                 previous_frontend_state =
                     ((CompletionGameView*)g_game_base)->frontend_next_state;
                 destroy_completion_screen();
