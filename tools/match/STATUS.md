@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**391/687** mapped gameplay functions matched, **531/687** mapped gameplay functions have a scratch, **40822/325882** bytes (**12.53%**) are proof-grade, and overall fuzzy is **28.96%**.
+**392/687** mapped gameplay functions matched, **532/687** mapped gameplay functions have a scratch, **40944/325882** bytes (**12.56%**) are proof-grade, and overall fuzzy is **28.99%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -81,6 +81,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | ✅ | initialize_input | 0x40aa50 | 45 | 12/12 | 100.00% | 12/12 | - |  |
 | ✅ | initialize_frontend_overlay_color_lerp | 0x40ab00 | 63 | 18/18 | 100.00% | 18/18 | 2 ok |  |
+| ✅ | draw_frontend_overlay_color_lerp | 0x40ab40 | 122 | 38/38 | 100.00% | 38/38 | 6 ok |  |
 | ✅ | begin_frontend_fade_out | 0x40abc0 | 23 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | begin_frontend_fade_in | 0x40abe0 | 14 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |

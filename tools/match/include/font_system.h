@@ -88,6 +88,15 @@ int draw_textured_quad_immediate(
     int blend); // @ 0x413030
 int draw_font_text_instance(FontQueueEntry* entry); // @ 0x44a360
 int draw_queued_font_quad_instance(FontQueueEntry* entry); // @ 0x44a6d0
+int queue_axis_aligned_textured_quad(
+    int texture_id,
+    float x,
+    float y,
+    float width,
+    float height,
+    unsigned int flags,
+    Color4f* color,
+    int layer); // @ 0x44a8b0
 void queue_font_text_instance(
     char* text,
     int font_id,

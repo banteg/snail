@@ -5,6 +5,6 @@
 int FrontendOverlayColorLerp::initialize_frontend_overlay_color_lerp(int state_)
 {
     state = state_;
-    current.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
-    return target.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
+    target.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
+    return current.store_color4f(0x3f800000, 0x3f800000, 0x3f800000, 0);
 }

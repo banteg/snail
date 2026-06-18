@@ -11,8 +11,8 @@ public:
     void draw_frontend_overlay_color_lerp();
 
     int state; // +0x00
-    Color4f current; // +0x04
-    Color4f target; // +0x14
+    Color4f target; // +0x04
+    Color4f current; // +0x14
 };
 
 #endif
