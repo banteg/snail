@@ -124,6 +124,10 @@ PROTO_UPDATES = (
     ("kill_sprite", "void __thiscall kill_sprite(Sprite* sprite)"),
     ("kill_game_sprites", "void __thiscall kill_game_sprites(SpriteManager* manager)"),
     (
+        "update_sprite_facing_angle",
+        "void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix)",
+    ),
+    (
         "set_sprite_manager_paused",
         "uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused)",
     ),

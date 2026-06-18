@@ -10,6 +10,8 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
+typedef struct TransformMatrix TransformMatrix;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -135,6 +137,7 @@ void __thiscall initialize_sprite(Sprite* sprite);
 void __thiscall update_sprite(Sprite* sprite);
 void __thiscall kill_sprite(Sprite* sprite);
 void __thiscall kill_game_sprites(SpriteManager* manager);
+void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix);
 uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused);
 
 GarbageHazardSlot* __thiscall initialize_garbage_hazard(GarbageHazardSlot* slot);

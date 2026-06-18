@@ -40,3 +40,9 @@ different matrix type.
 2026-06-16 five-target audit: the disassembly confirms flag `0x400` is tested
 through the high byte of `Sprite::flags`, so the current `flags +0x04` lane and
 refresh fields `+0x8c/+0x90` remain the right shared names.
+
+2026-06-18 prototype sync: BN's old `int16_t` return was another condition-code
+artifact from the final progress comparison. The live prototype is
+`void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`,
+which resolves the same Sprite fields in BN and removes the synthetic `result`.
+The exact-match residual is unchanged: only the dead rotated-Z spill slot differs.

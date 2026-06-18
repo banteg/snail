@@ -1,4 +1,4 @@
-// update_sprite_facing_angle @ 0x44e410 (thiscall, ret 0x4)
+// update_sprite_facing_angle @ 0x44e410 (thiscall)
 
 #include "sprite.h"
 #include "transform_matrix.h"
