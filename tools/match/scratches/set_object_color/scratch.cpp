@@ -10,17 +10,9 @@ struct ObjectVertexBufferVtbl {
     int (__stdcall* Unlock)(ObjectVertexBuffer* self);
 };
 
-struct ObjectColorRenderView {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0xc0 - 0x14];
-    ObjectRenderBuffers* render_buffers; // +0xc0
-    int grouped_vertex_count; // +0xc4
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 
-ColorBGRA8* set_object_color(ObjectColorRenderView* object, Color4f color)
+ColorBGRA8* set_object_color(Object* object, Color4f color)
 {
     ColorBGRA8 out;
     ObjectRenderVertex* vertices;

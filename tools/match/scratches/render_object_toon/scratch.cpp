@@ -13,25 +13,6 @@ struct ToonVector3 {
     double dot_vector(ToonVector3* rhs); // @ 0x44cb70
 };
 
-struct ObjectToonRenderView {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0x2c - 0x14];
-    int vertex_count; // +0x2c
-    char unknown_30[0x38 - 0x30];
-    Vector3* vertices; // +0x38
-    char unknown_3c[0x60 - 0x3c];
-    Vector3* facequad_normals; // +0x60
-    char unknown_64[0x70 - 0x64];
-    int edge_count; // +0x70
-    ObjectToonEdge* edges; // +0x74
-    char unknown_78[0xc0 - 0x78];
-    ObjectRenderBuffers* render_buffers; // +0xc0
-    int grouped_vertex_count; // +0xc4
-    char unknown_c8[0xd8 - 0xc8];
-    ObjectIndexBuffer* toon_index_buffer; // +0xd8
-};
-
 extern RenderObjectDevice* g_d3d_device; // data_502fec
 extern int g_render_triangle_count; // data_4f7450
 extern int g_draw_primitive_call_count; // data_503170
@@ -46,7 +27,7 @@ TransformMatrix* __stdcall build_perspective_projection_matrix(
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
 TextureRef* __stdcall get_sprite_texture(int texture_id); // @ 0x44e570
 
-int render_object_toon(ObjectToonRenderView* object, TransformMatrix* matrix)
+int render_object_toon(Object* object, TransformMatrix* matrix)
 {
     unsigned int flags = object->flags;
     if ((flags & 0x4000) == 0) {

@@ -9,7 +9,7 @@ int get_archive_data_base();
 int get_archive_data_end();
 void* memcpy(void* destination, const void* source, unsigned int count);
 
-int get_or_append_object_texture_group_vertex(void* object, int vertex_index, float u, float v);
+int get_or_append_object_texture_group_vertex(Object* object, int vertex_index, float u, float v);
 
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];
@@ -26,35 +26,12 @@ struct IndexBufferFactory {
     ObjectIndexBuffer* create_index_buffer(int index_count); // @ 0x4115d0
 };
 
-struct ObjectTextureGroupBuildView {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0x2c - 0x14];
-    int vertex_count; // +0x2c
-    char unknown_30[0x54 - 0x30];
-    int facequad_count; // +0x54
-    int facequad_capacity; // +0x58
-    ObjectFaceQuad* facequads; // +0x5c
-    char unknown_60[0x64 - 0x60];
-    int texture_group_count; // +0x64
-    int texture_group_capacity; // +0x68
-    int* texture_group_ends; // +0x6c, cumulative facequad ends
-    char unknown_70[0xc0 - 0x70];
-    ObjectRenderBuffers* render_buffers; // +0xc0
-    int grouped_vertex_count; // +0xc4
-    ObjectIndexBuffer* index_buffer; // +0xc8
-    int* group_index_starts; // +0xcc
-    TextureRef** group_texture_refs; // +0xd0
-    int* group_primitive_counts; // +0xd4
-    ObjectIndexBuffer* toon_index_buffer; // +0xd8
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 extern VertexBufferFactory g_direct3d_renderer; // data_4f7458
 extern IndexBufferFactory g_object_index_buffer_factory; // data_5000fc
 
-void* build_object_texture_group_buffers(ObjectTextureGroupBuildView* object)
+void* build_object_texture_group_buffers(Object* object)
 {
     if (object->vertex_count == 0) {
         object->group_index_starts = 0;

@@ -6,39 +6,21 @@
 
 struct ColorBGRA8;
 
-struct ObjectRenderView {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    int blend_mode; // +0x14
-    TextureRef* override_texture_ref; // +0x18
-    char unknown_1c[0x2c - 0x1c];
-    int vertex_count; // +0x2c
-    char unknown_30[0x64 - 0x30];
-    int texture_group_count; // +0x64
-    char unknown_68[0xc0 - 0x68];
-    ObjectRenderBuffers* render_buffers; // +0xc0
-    int grouped_vertex_count; // +0xc4
-    ObjectIndexBuffer* index_buffer; // +0xc8
-    int* group_index_starts; // +0xcc
-    TextureRef** group_texture_refs; // +0xd0
-    int* group_primitive_counts; // +0xd4
-};
-
 extern RenderObjectDevice* g_d3d_device; // data_502fec
 extern int g_render_triangle_count; // data_4f7450
 extern int g_draw_primitive_call_count; // data_503170
 extern unsigned char g_object_render_pass_filter; // data_503260
 extern TransformMatrix g_object_texture_transform_matrix; // data_5031d8
 
-void refresh_object_vertex_buffer(ObjectRenderView* object); // @ 0x412250
+void refresh_object_vertex_buffer(Object* object); // @ 0x412250
 int set_cull_mode(char cull_front); // @ 0x4129f0
 int set_blend_mode(int blend_mode); // @ 0x412d00
-ColorBGRA8* set_object_color(ObjectRenderView* object, Color4f color); // @ 0x4141d0
+ColorBGRA8* set_object_color(Object* object, Color4f color); // @ 0x4141d0
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
-int render_object_toon(ObjectRenderView* object, TransformMatrix* matrix); // @ 0x4123e0
+int render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
 
 int render_object(
-    ObjectRenderView* object,
+    Object* object,
     TransformMatrix* matrix,
     int texture_scroll_bits,
     float texture_v,

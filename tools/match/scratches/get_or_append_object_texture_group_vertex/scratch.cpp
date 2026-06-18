@@ -6,22 +6,11 @@
 
 int report_errorf(char* format, ...);
 
-struct ObjectTextureGroupVertexView {
-    char unknown_00[0x10];
-    unsigned int flags; // +0x10
-    char unknown_14[0x2c - 0x14];
-    int vertex_count; // +0x2c
-    char unknown_30[0x38 - 0x30];
-    Vector3* vertices; // +0x38
-    char unknown_3c[0x48 - 0x3c];
-    Color4f* vertex_colours; // +0x48
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 
 int get_or_append_object_texture_group_vertex(
-    ObjectTextureGroupVertexView* object, int vertex_index, float u, float v)
+    Object* object, int vertex_index, float u, float v)
 {
     if (vertex_index >= object->vertex_count) {
         report_errorf("VertexRef out of Range");
