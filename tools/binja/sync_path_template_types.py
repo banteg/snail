@@ -14,6 +14,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Game",
     "SnailVisual",
     "BodNode",
+    "BodBase",
     "FringeObject",
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
@@ -146,6 +147,17 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x48", "fringe_right", "FringeObject*"),
     ("0x4c", "fringe_left", "FringeObject*"),
     ("0x50", "fringe_back", "FringeObject*"),
+)
+
+TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
+    ("0x00", "flags", "uint32_t"),
+    ("0x90", "projection_payload", "Vec3"),
+    ("0x9c", "parcel_set_id", "int32_t"),
+    ("0xa0", "attachment_template_index", "int32_t"),
+    ("0xa4", "primary_attachment_cell", "TrackRowCell*"),
+    ("0xa8", "secondary_attachment_cell", "TrackRowCell*"),
+    ("0xb0", "aux_body", "BodBase"),
+    ("0xf0", "row_event_id", "int32_t"),
 )
 
 PATH_TEMPLATE_FIELD_UPDATES = (
@@ -407,6 +419,14 @@ def main() -> int:
             target=args.target,
             struct_name="TrackRowCell",
             updates=TRACK_ROW_CELL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TrackAttachmentRuntimeRow",
+            updates=TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES,
         )
     )
     operations.extend(

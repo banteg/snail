@@ -11,3 +11,10 @@ Exact helper: clamps world z to runtime row `0..3199` and returns the
 asserts `sizeof(TrackAttachmentRuntimeRow) == 0xf4`. This exact accessor pins
 the row-table stride, and builder/projection/parcel/subgoldy consumers agree
 on the same runtime row shape.
+
+2026-06-18 analysis/BN sync: `TrackAttachmentRuntimeRow +0xb0` is now named as a
+`BodBase aux_body` in the analysis headers and BN sync script. The
+`initialize_track_row_runtime` scratch proves that tail by calling
+`initialize_bod_base()` at `this + 0xb0`; the matcher include keeps the same
+bytes flattened for now because no scratch consumes the tail through the row
+record yet.

@@ -41,6 +41,15 @@ typedef struct BodNode {
     struct BodNode* list_next;
 } BodNode;
 
+typedef struct BodBase {
+    BodNode bod;
+    Vec3 position;
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+} BodBase;
+
 typedef struct FringeObject {
     BodNode bod;
     Vec3 position;
@@ -294,7 +303,9 @@ typedef struct TrackAttachmentRuntimeRow {
     int32_t attachment_template_index;
     TrackRowCell* primary_attachment_cell;
     TrackRowCell* secondary_attachment_cell;
-    uint8_t _pad_ac[0x44];
+    uint8_t _pad_ac[0x4];
+    BodBase aux_body;
+    uint8_t _pad_e8[0x8];
     int32_t row_event_id;
 } TrackAttachmentRuntimeRow;
 
