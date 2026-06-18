@@ -1538,6 +1538,11 @@
       "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
     },
     {
+      "address": "0x433b30",
+      "name": "update_track_render_cache_rows",
+      "description": "Activates forward track-render cache row BODs while Goldy's current row position stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe slots into their active lists and seeding each slot color."
+    },
+    {
       "address": "0x433e80",
       "name": "update_active_bod",
       "description": "Implements the default active-bod subtype callback by recycling a live bod to the free list once its world-z plus the native 24-unit buffer falls behind the current subgame cutoff."

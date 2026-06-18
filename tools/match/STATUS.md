@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**356/678** mapped gameplay functions matched, **479/678** mapped gameplay functions have a scratch, **33783/325983** bytes (**10.36%**) are proof-grade, and overall fuzzy is **25.05%**.
+**357/679** mapped gameplay functions matched, **480/679** mapped gameplay functions have a scratch, **34631/325973** bytes (**10.62%**) are proof-grade, and overall fuzzy is **25.31%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -181,6 +181,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
+| ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 58/58 | 51.72% | 7/58 | 4 ok |  |
 | ✅ | open_thanks_screen | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |

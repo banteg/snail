@@ -29,14 +29,15 @@ TRACK_RENDER_CACHE_MANAGER_FIELDS = (
     ("0x40", "shared_index_buffers", "void*[5]"),
     ("0x54", "track_render_grid", "TrackRenderGrid*"),
     ("0x58", "slots", "TrackRenderCacheSlot[0x2cb]"),
-    ("0xa7ec", "scratch_cell_base_offset", "float"),
-    ("0xa7f0", "scratch_max_vertices", "int32_t"),
-    ("0xa7f4", "scratch_max_indices", "int32_t"),
+    ("0xa7ec", "build_cache_row_base", "float"),
+    ("0xa7f0", "next_cache_row_z", "float"),
+    ("0xa7f4", "next_cache_row_index", "int32_t"),
 )
 
 PROTO_UPDATES = (
     ("initialize_track_render_cache_manager", "void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager)"),
     ("build_track_render_caches", "int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager)"),
+    ("update_track_render_cache_rows", "void __fastcall update_track_render_cache_rows(TrackRenderCacheManager* manager)"),
     ("remove_track_render_cache_bods", "int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager)"),
     ("is_slide_cache_tile_family", "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell)"),
     ("is_floor_cache_tile_family", "int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell)"),

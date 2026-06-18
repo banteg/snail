@@ -391,9 +391,9 @@ typedef struct TrackRenderCacheManager {
     TrackRenderGrid* track_render_grid;
     TrackRenderCacheSlot slots[0x2cb];
     uint8_t _pad_a7bc[0x30];
-    float scratch_cell_base_offset;
-    int32_t scratch_max_vertices;
-    int32_t scratch_max_indices;
+    float build_cache_row_base;
+    float next_cache_row_z;
+    int32_t next_cache_row_index;
 } TrackRenderCacheManager;
 
 typedef struct CameramanState {
@@ -1199,6 +1199,8 @@ double __cdecl parse_next_float32(char** cursor);
 void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
 
 int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);
+
+void __fastcall update_track_render_cache_rows(TrackRenderCacheManager* manager);
 
 int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
 
