@@ -15,18 +15,18 @@ extern int g_tracked_allocation_depth;
 
 void free_tracked_memory(void* pointer)
 {
-    char* block = (char*)pointer;
-    block -= 4;
+    pointer = (char*)pointer - 4;
     int guarded_size =
-        ((TrackedAllocationStack*)&g_tracked_allocation_depth)->get_tracked_allocation_size(block);
+        ((TrackedAllocationStack*)&g_tracked_allocation_depth)->get_tracked_allocation_size(pointer);
     g_tracked_allocation_total_bytes -= guarded_size;
 
+    char* block = (char*)pointer;
     if (block[0] != -34 || block[1] != -83 || block[2] != -70 || block[3] != -66 ||
         block[guarded_size - 4] != -34 || block[guarded_size - 3] != -83 ||
         block[guarded_size - 2] != -70 || block[guarded_size - 1] != -66) {
         report_errorf("Memory corruption");
     }
 
-    free(block);
-    ((TrackedAllocationStack*)&g_tracked_allocation_depth)->pop_tracked_allocation(block);
+    free(pointer);
+    ((TrackedAllocationStack*)&g_tracked_allocation_depth)->pop_tracked_allocation(pointer);
 }
