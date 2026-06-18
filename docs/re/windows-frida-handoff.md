@@ -120,7 +120,7 @@ Important payload notes for the current script:
   - `template_summary` with the active attachment template header floats, kind, mirror or variant flags, terminal flag, sample count, width or scale, and sample-array pointers
   - `template_summary.row_scalar_a` through `row_scalar_d` from `+0x98/+0x9c/+0xa0/+0xa4`
   - `follow_state_summary` with the active follow sample index, progress, vertical offset, orientation-ish vector, and output pose
-- `player_update` now also exposes the cached pair-cell pointers at `player + 0x98/+0x9c` as `cached_track_pair_cell_a` and `cached_track_pair_cell_b`
+- `player_update` now also exposes the Subgoldy ghost sprite pointers at `player + 0x98/+0x9c` as `ghost_sprite_a` and `ghost_sprite_b`
 - `player_update` now also emits the statically recovered attachment-exit latch fields:
   - `movement_flag_selector`
   - `movement_flags`
@@ -136,7 +136,7 @@ Important payload notes for the current script:
   - `attachment_exit_gate_a`
   - `attachment_exit_gate_b`
 - `movement_flags_update` now samples the `movement_flag_selector -> movement_flags` switch directly at `0x43a1a0`
-- `track_pair_payload` now records the scalar written into the cached pair-cell payload slots at `0x43d3d0`
+- `track_pair_payload` now records the scalar written into `Sprite::position.z` for `ghost_sprite_a/b` at `0x43d3d0`
 - `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the typed movement integrator and row-event state:
   - `level_mode`
   - `level_mode_arg`

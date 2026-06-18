@@ -34,6 +34,7 @@ typedef struct ColorBGRA8 {
     uint8_t a;
 } ColorBGRA8;
 
+typedef struct Sprite Sprite;
 typedef struct Player Player;
 typedef struct Game Game;
 typedef struct PlayerPresentationController PlayerPresentationController;
@@ -772,8 +773,8 @@ typedef struct Player {
     float resurrect_progress;
     float resurrect_progress_step;
     uint8_t _pad_94[0x4];
-    TrackRowCell* cached_track_pair_cell_a;
-    TrackRowCell* cached_track_pair_cell_b;
+    Sprite* ghost_sprite_a;
+    Sprite* ghost_sprite_b;
     uint8_t _pad_a0[0x80];
     int32_t movement_state;
     uint8_t unresolved_pre_row_event[0x28];

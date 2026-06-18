@@ -14,8 +14,8 @@ The current high-confidence `Player` fields are:
 - `+0x84`: `resurrect_active`
 - `+0x8c`: `resurrect_progress`
 - `+0x90`: `resurrect_progress_step`
-- `+0x98`: `cached_track_pair_cell_a`
-- `+0x9c`: `cached_track_pair_cell_b`
+- `+0x98`: `ghost_sprite_a`
+- `+0x9c`: `ghost_sprite_b`
 - `+0x120`: `movement_state`
   - state `2` is the suspended-drive state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
   - the current Zig port maps this shape to the post-attachment launch envelope (`LaunchState.active`) rather than treating it as a standalone hazard flag

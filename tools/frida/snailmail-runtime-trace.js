@@ -940,6 +940,38 @@ function summarizeCell(cellPtr, getTrackCellRowIndex, gamePtr) {
   };
 }
 
+function summarizeSprite(spritePtr) {
+  const sprite = asPtr(spritePtr);
+  if (sprite === null || sprite.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(sprite),
+    object_ref: hex(safeReadPointer(sprite, 0x00)),
+    flags: safeReadU32(sprite, 0x04),
+    owner: safeReadU32(sprite, 0x08),
+    texture_ref: hex(safeReadPointer(sprite, 0x1c)),
+    draw_mode: safeReadU32(sprite, 0x28),
+    color: {
+      r: safeReadFloat(sprite, 0x2c),
+      g: safeReadFloat(sprite, 0x30),
+      b: safeReadFloat(sprite, 0x34),
+      a: safeReadFloat(sprite, 0x38),
+    },
+    previous_position: safeReadVec3(sprite, 0x3c),
+    position: safeReadVec3(sprite, 0x48),
+    velocity: safeReadVec3(sprite, 0x54),
+    size_start: safeReadFloat(sprite, 0x60),
+    size_end: safeReadFloat(sprite, 0x64),
+    progress: safeReadFloat(sprite, 0x68),
+    progress_step: safeReadFloat(sprite, 0x6c),
+    gravity_step: safeReadFloat(sprite, 0x78),
+    texture_id: safeReadU32(sprite, 0x9c),
+    frame: safeReadU32(sprite, 0xa4),
+  };
+}
+
 function summarizeAttachmentTemplate(templatePtr) {
   const template = asPtr(templatePtr);
   if (template === null || template.isNull()) {
@@ -1044,8 +1076,8 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
     replay_track_index: safeReadU32(gamePtr, RUNTIME.replay_track_index),
     position: safeReadVec3(player, 0x68),
     velocity: safeReadVec3(player, 0x410),
-    cached_track_pair_cell_a: summarizeCell(safeReadPointer(player, 0x98), getTrackCellRowIndex, gamePtr),
-    cached_track_pair_cell_b: summarizeCell(safeReadPointer(player, 0x9c), getTrackCellRowIndex, gamePtr),
+    ghost_sprite_a: summarizeSprite(safeReadPointer(player, 0x98)),
+    ghost_sprite_b: summarizeSprite(safeReadPointer(player, 0x9c)),
     cell: summarizeCell(safeReadPointer(player, 0x43c), getTrackCellRowIndex, gamePtr),
     attachment_active: boolFlag(safeReadU32(player, 0x384)),
     follow_state: hex(player.add(0x384)),
@@ -1398,8 +1430,8 @@ function installHooks(module) {
           raw_cell: after.cell,
           before_raw_cell: this.before ? this.before.cell : null,
           velocity: after.velocity,
-          cached_track_pair_cell_a: after.cached_track_pair_cell_a,
-          cached_track_pair_cell_b: after.cached_track_pair_cell_b,
+          ghost_sprite_a: after.ghost_sprite_a,
+          ghost_sprite_b: after.ghost_sprite_b,
           attachment_active: after.attachment_active,
           attachment_active_before: this.before ? this.before.attachment_active : null,
           follow_state: after.follow_state,
@@ -1805,16 +1837,16 @@ function installHooks(module) {
         const player = asPtr(this.context.ecx);
         const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
         const payload = floatArg(args[0]);
+        const ghostSpriteA = playerSummary !== null ? playerSummary.ghost_sprite_a : null;
+        const ghostSpriteB = playerSummary !== null ? playerSummary.ghost_sprite_b : null;
         const digest = JSON.stringify({
           payload: payload,
-          row_a:
-            playerSummary !== null && playerSummary.cached_track_pair_cell_a !== null
-              ? playerSummary.cached_track_pair_cell_a.row
-              : null,
-          row_b:
-            playerSummary !== null && playerSummary.cached_track_pair_cell_b !== null
-              ? playerSummary.cached_track_pair_cell_b.row
-              : null,
+          ghost_sprite_a: ghostSpriteA !== null ? ghostSpriteA.ptr : null,
+          ghost_sprite_b: ghostSpriteB !== null ? ghostSpriteB.ptr : null,
+          ghost_sprite_a_z:
+            ghostSpriteA !== null && ghostSpriteA.position !== null ? ghostSpriteA.position.z : null,
+          ghost_sprite_b_z:
+            ghostSpriteB !== null && ghostSpriteB.position !== null ? ghostSpriteB.position.z : null,
         });
 
         maybeEmitSampled('track_pair_payload', playerSummary !== null ? playerSummary.ptr : hex(player), digest, 4, {
@@ -1828,8 +1860,8 @@ function installHooks(module) {
           track_z_anchor: playerSummary !== null ? playerSummary.track_z_anchor : null,
           track_state_latch: playerSummary !== null ? playerSummary.track_state_latch : null,
           pair_payload: payload,
-          pair_cell_a: playerSummary !== null ? playerSummary.cached_track_pair_cell_a : null,
-          pair_cell_b: playerSummary !== null ? playerSummary.cached_track_pair_cell_b : null,
+          ghost_sprite_a: ghostSpriteA,
+          ghost_sprite_b: ghostSpriteB,
         });
       },
     });

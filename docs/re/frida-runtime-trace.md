@@ -86,7 +86,7 @@ Current hooks in the script:
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
   - now also records the current build-flag word seen by the active gameplay state
   - now includes the embedded follow-state summary, including template metadata, output position, orientation, and `offset_y`
-  - now also records the cached pair-cell pointers at `player + 0x98/+0x9c`
+  - now also records the Subgoldy ghost sprite pointers at `player + 0x98/+0x9c`
   - now also emits the follow-exit latch fields recovered statically from the player object:
     - `movement_flag_selector`
     - `movement_flags`
@@ -150,7 +150,7 @@ Current hooks in the script:
     - `track_z_offset`
     - `track_z_anchor`
 - `0x43d3d0` `mark_current_track_pair_with_payload`
-  - logs the scalar payload pushed into the cached pair cells and the resolved rows of `cached_track_pair_cell_a/b`
+  - logs the scalar payload written into `Sprite::position.z` for `ghost_sprite_a/b`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - older stable hook target for attempted path-attachment entry
   - the more aggressive direct `update_subgoldy` callsite hooks at `0x43bdf0` and `0x43bec5` were tried and then removed from the default Windows pack after a startup crash
