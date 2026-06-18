@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**399/687** mapped gameplay functions matched, **550/687** mapped gameplay functions have a scratch, **41991/325882** bytes (**12.89%**) are proof-grade, and overall fuzzy is **29.54%**.
+**399/687** mapped gameplay functions matched, **551/687** mapped gameplay functions have a scratch, **41991/325882** bytes (**12.89%**) are proof-grade, and overall fuzzy is **29.58%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -37,6 +37,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_stream_length_preserve_position | 0x405170 | 51 | 24/24 | 100.00% | 24/24 | 4 ok |  |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  |
+| 🚧 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 57/56 | 93.81% | 21/56 | 10 ok |  |
 | ✅ | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  |
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |

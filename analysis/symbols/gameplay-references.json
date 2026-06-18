@@ -755,6 +755,16 @@
       "description": "Statically linked CRT ftell helper used by stream/archive readers that preserve file position."
     },
     {
+      "address": "0x48b614",
+      "name": "printf",
+      "kind": "function",
+      "aliases": [
+        "_printf",
+        "sub_48b614"
+      ],
+      "description": "Statically linked CRT printf helper used by archive rebuild and file error-reporting paths."
+    },
+    {
       "address": "0x48b72d",
       "name": "malloc",
       "kind": "function",
