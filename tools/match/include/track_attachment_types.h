@@ -2,6 +2,7 @@
 #ifndef TRACK_ATTACHMENT_TYPES_H
 #define TRACK_ATTACHMENT_TYPES_H
 
+#include "bod_list.h"
 #include "vector3.h"
 #include "vector_types.h"
 
@@ -77,7 +78,10 @@ typedef char AttachmentPathTemplate_must_be_0x150[
     (sizeof(AttachmentPathTemplate) == 0x150) ? 1 : -1];
 
 struct TrackRowCell {
-    char unknown_00[0x10];
+    BodNode bod;                       // +0x00, active/free BOD prefix
+
+    void destroy_sub_lazer_projectile(); // @ 0x439bc0
+
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     char unknown_1c[0x38 - 0x1c];
     AttachmentPathTemplate* attachment_template_record; // +0x38, installed by P/p entry tiles
@@ -108,7 +112,12 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     int attachment_template_index;       // +0xa0, P/p template bank index
     TrackRowCell* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
     TrackRowCell* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
-    char unknown_ac[0xf0 - 0xac];
+    char unknown_ac[0xb0 - 0xac];
+    BodNode bod;                          // +0xb0, row draw/list node for slide/lazer rows
+    char unknown_c0[0xd4 - 0xc0];
+    void* row_draw_object;                // +0xd4, recolored from active skirt color
+    int skirt_color[4];                   // +0xd8
+    char unknown_e8[0xf0 - 0xe8];
     int row_event_id;                    // +0xf0
 };
 
