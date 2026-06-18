@@ -765,6 +765,16 @@
       "description": "Statically linked CRT printf helper used by archive rebuild and file error-reporting paths."
     },
     {
+      "address": "0x48b645",
+      "name": "fread",
+      "kind": "function",
+      "aliases": [
+        "_fread",
+        "sub_48b645"
+      ],
+      "description": "Statically linked CRT fread helper used by file and archive-loading wrappers."
+    },
+    {
       "address": "0x48b72d",
       "name": "malloc",
       "kind": "function",

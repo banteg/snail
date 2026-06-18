@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**423/687** mapped gameplay functions matched, **565/687** mapped gameplay functions have a scratch, **44714/325882** bytes (**13.72%**) are proof-grade, and overall fuzzy is **30.20%**.
+**424/687** mapped gameplay functions matched, **566/687** mapped gameplay functions have a scratch, **44872/325882** bytes (**13.77%**) are proof-grade, and overall fuzzy is **30.24%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -39,6 +39,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | get_stream_length_preserve_position | 0x405170 | 51 | 24/24 | 100.00% | 24/24 | 4 ok |  |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
+| ✅ | load_file_bytes_into_optional_buffer | 0x4051d0 | 158 | 56/56 | 100.00% | 56/56 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  |
 | ✅ | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  |
