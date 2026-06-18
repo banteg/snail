@@ -1255,6 +1255,15 @@
       "description": "XAnimation.txt script path loaded by initialize_directx_loader."
     },
     {
+      "address": "0x4a20ec",
+      "name": "g_back_text",
+      "kind": "string",
+      "aliases": [
+        "aBack"
+      ],
+      "description": "Back button label used by the options menu."
+    },
+    {
       "address": "0x4a34b8",
       "name": "g_intro_credits_script_path",
       "kind": "string",
@@ -1280,6 +1289,34 @@
         "aDuplicateVerti"
       ],
       "description": "Tracked-allocation label used by initialize_duplicate_vertices for the duplicate-vertex remap buffer."
+    },
+    {
+      "address": "0x4a3d14",
+      "name": "g_music_volume_text",
+      "kind": "string",
+      "aliases": [],
+      "description": "Music volume slider label used by the options menu."
+    },
+    {
+      "address": "0x4a3d30",
+      "name": "g_sounds_volume_text",
+      "kind": "string",
+      "aliases": [],
+      "description": "Sounds volume slider label used by the options menu."
+    },
+    {
+      "address": "0x4a3d4c",
+      "name": "g_fullscreen_off_text",
+      "kind": "string",
+      "aliases": [],
+      "description": "Fullscreen toggle label used when fullscreen config is disabled."
+    },
+    {
+      "address": "0x4a3d5c",
+      "name": "g_fullscreen_on_text",
+      "kind": "string",
+      "aliases": [],
+      "description": "Fullscreen toggle label used when fullscreen config is enabled."
     },
     {
       "address": "0x4a3d6c",
@@ -1471,6 +1508,16 @@
       "description": "Saved stream-volume config loaded from SnailMail.cfg and applied to the audio backend."
     },
     {
+      "address": "0x4df920",
+      "name": "g_config_fullscreen_enabled",
+      "kind": "global",
+      "aliases": [
+        "data_4df920"
+      ],
+      "size": "0x1",
+      "description": "Saved fullscreen config flag toggled by the options menu and consumed during startup/window setup."
+    },
+    {
       "address": "0x4df934",
       "name": "g_render_flags",
       "kind": "global",
@@ -1595,6 +1642,15 @@
       ],
       "size": "0x1",
       "description": "Fullscreen-mode flag initialized by game-window setup and read by mouse cursor conversion and click forwarding."
+    },
+    {
+      "address": "0x4dfb08",
+      "name": "g_blank_text",
+      "kind": "global",
+      "aliases": [
+        "data_4dfb08"
+      ],
+      "description": "Shared empty text buffer used to initialize the options-menu fullscreen toggle before update_options_menu writes the live label."
     },
     {
       "address": "0x4f7450",

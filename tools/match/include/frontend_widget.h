@@ -42,7 +42,9 @@ public:
     float frame_height; // +0x58
     char unknown_05c[0x178 - 0x05c];
     int warning_field; // +0x178
-    char unknown_17c[0x194 - 0x17c];
+    float slider_value; // +0x17c
+    float slider_target_value; // +0x180
+    char unknown_184[0x194 - 0x184];
     int shortcut_key_code; // +0x194
     char unknown_198[0x1a0 - 0x198];
     unsigned int widget_flags; // +0x1a0

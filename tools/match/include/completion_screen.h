@@ -5,6 +5,7 @@
 #include "frontend_widget.h"
 #include "high_score_screen.h"
 #include "new_game_menu.h"
+#include "options_menu.h"
 #include "sprite.h"
 
 class BorderManager {
@@ -45,6 +46,21 @@ public:
     int update_galaxy(); // @ 0x4092f0
 };
 
+class CompletionPrompt {
+public:
+    int initialize_exit_prompt(); // @ 0x4060d0
+    int destroy_completion_screen(); // @ 0x406060
+    int update_completion_screen(); // @ 0x4067e0
+
+    int state; // +0x00
+    char unknown_04[0x08 - 0x04];
+    int previous_frontend_state; // +0x08
+    float prompt_y; // +0x0c
+    FrontendWidget* prompt_title; // +0x10
+    FrontendWidget* yes_button; // +0x14
+    FrontendWidget* no_button; // +0x18
+};
+
 class CompletionGameView {
 public:
     char unknown_000000[0x38];
@@ -58,20 +74,30 @@ public:
     char unknown_000569[0x4f2dc - 0x569];
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
-    char unknown_04f325[0x74618 - 0x4f325];
+    char unknown_04f325[0x4f388 - 0x4f325];
+    OptionsMenu options_menu; // +0x4f388
+    CompletionPrompt exit_prompt; // +0x4f3ac
+    char unknown_04f3c8[0x74618 - 0x4f3c8];
     SubgameController subgame; // +0x74618
-    char unknown_074619[0x74621 - 0x74619];
+    char unknown_074619[0x74620 - 0x74619];
+    unsigned char subgame_resume_requested; // +0x74620
     unsigned char pause_gate; // +0x74621
     char unknown_074622[0x7462c - 0x74622];
     PauseMenu pause_menu; // +0x7462c
-    char unknown_074638[0x74658 - 0x74638];
+    char unknown_074638[0x74654 - 0x74638];
+    int subgame_resume_state; // +0x74654, set by pause-menu Resume
     int selected_subgame_mode; // +0x74658
     char unknown_07465c[0x430060 - 0x7465c];
     int completion_base_score; // +0x430060
-    char unknown_430064[0x1066bf0 - 0x430064];
+    char unknown_430064[0x1066be8 - 0x430064];
+    unsigned char replay_launch_active; // +0x1066be8
+    unsigned char replay_launch_from_frontend; // +0x1066be9
+    char unknown_1066bea[0x1066bf0 - 0x1066bea];
     int replay_launch_return_state; // +0x1066bf0
     char unknown_1066bf4[0x12d4638 - 0x1066bf4];
     GalaxyRoute galaxy; // +0x12d4638
+    char unknown_12d4639[0x12e55e0 - 0x12d4639];
+    int ordinary_rebuild_selector; // +0x12e55e0
 };
 
 class CompletionResultScreen {
@@ -97,21 +123,6 @@ public:
     float bonus_progress_step; // +0x44
     int bonus_score; // +0x48
     int total_score; // +0x4c
-};
-
-class CompletionPrompt {
-public:
-    int initialize_exit_prompt(); // @ 0x4060d0
-    int destroy_completion_screen(); // @ 0x406060
-    int update_completion_screen(); // @ 0x4067e0
-
-    int state; // +0x00
-    char unknown_04[0x08 - 0x04];
-    int previous_frontend_state; // +0x08
-    float prompt_y; // +0x0c
-    FrontendWidget* prompt_title; // +0x10
-    FrontendWidget* yes_button; // +0x14
-    FrontendWidget* no_button; // +0x18
 };
 
 extern char* g_game_base; // data_4df904

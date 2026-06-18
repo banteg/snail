@@ -13,3 +13,11 @@ First scratch for the pause-menu button dispatcher.
   to `8`.
 - Focused Wibo result: 2026-06-18, 100.00%, 55/55 instructions, masked
   operands 10 ok.
+
+2026-06-18 field promotion:
+
+- Promoted the raw owner slots to `CompletionGameView::options_menu`,
+  `exit_prompt`, `subgame_resume_requested`, `subgame_resume_state`,
+  `replay_launch_from_frontend`, and `ordinary_rebuild_selector`.
+- The fielded source remains an exact 55/55 match, so these names are not just
+  decompiler cosmetics.

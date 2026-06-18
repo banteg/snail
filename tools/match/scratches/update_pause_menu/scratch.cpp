@@ -9,10 +9,10 @@ void* PauseMenu::update_pause_menu()
     unsigned int flags = options_widget->widget_flags;
     if ((flags & 0x20) != 0) {
         options_widget->widget_flags = flags & ~0x20u;
-        *(unsigned char*)(g_game_base + 0x4f38c) = 0;
-        char* game = g_game_base;
-        *(int*)(game + 0x4f388) = *(int*)(game + 0x1b8);
-        *(int*)(g_game_base + 0x1b8) = 6;
+        ((CompletionGameView*)g_game_base)->options_menu.active = 0;
+        CompletionGameView* game = (CompletionGameView*)g_game_base;
+        game->options_menu.previous_frontend_state = game->frontend_next_state;
+        ((CompletionGameView*)g_game_base)->frontend_next_state = 6;
         return game;
     }
 
@@ -21,9 +21,9 @@ void* PauseMenu::update_pause_menu()
     if ((flags & 0x20) != 0) {
         resume->widget_flags = flags & ~0x20u;
         uninit_pause_menu();
-        char* game = g_game_base;
-        *(int*)(game + 0x74654) = 2;
-        *(unsigned char*)(g_game_base + 0x74620) = 1;
+        CompletionGameView* game = (CompletionGameView*)g_game_base;
+        game->subgame_resume_state = 2;
+        ((CompletionGameView*)g_game_base)->subgame_resume_requested = 1;
         return game;
     }
 
@@ -31,19 +31,20 @@ void* PauseMenu::update_pause_menu()
     void* result = (void*)end_game->widget_flags;
     if (((unsigned int)result & 0x20) != 0) {
         end_game->widget_flags = (unsigned int)result & ~0x20u;
-        char* game = g_game_base;
-        *(int*)(game + 0x4f3b4) = *(int*)(game + 0x1b8);
-        game = g_game_base;
-        if (*(int*)(game + 0x74658) == 7) {
-            *(int*)(game + 0x4f3ac) = 7;
-        } else if (*(unsigned char*)(game + 0x1066be9) == 1) {
-            *(int*)(game + 0x4f3ac) = 3;
+        CompletionGameView* game = (CompletionGameView*)g_game_base;
+        game->exit_prompt.previous_frontend_state = game->frontend_next_state;
+        game = (CompletionGameView*)g_game_base;
+        if (game->selected_subgame_mode == 7) {
+            game->exit_prompt.state = 7;
+        } else if (game->replay_launch_from_frontend == 1) {
+            game->exit_prompt.state = 3;
         } else {
-            *(int*)(game + 0x4f3ac) = 2;
+            game->exit_prompt.state = 2;
         }
-        result = g_game_base;
-        *(int*)((char*)result + 0x12e55e0) = 2;
-        *(int*)(g_game_base + 0x1b8) = 8;
+        CompletionGameView* result_game = (CompletionGameView*)g_game_base;
+        result_game->ordinary_rebuild_selector = 2;
+        ((CompletionGameView*)g_game_base)->frontend_next_state = 8;
+        result = result_game;
     }
     return result;
 }
