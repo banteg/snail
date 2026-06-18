@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**397/687** mapped gameplay functions matched, **545/687** mapped gameplay functions have a scratch, **41796/325882** bytes (**12.83%**) are proof-grade, and overall fuzzy is **29.42%**.
+**398/687** mapped gameplay functions matched, **546/687** mapped gameplay functions have a scratch, **41876/325882** bytes (**12.85%**) are proof-grade, and overall fuzzy is **29.45%**.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -228,6 +228,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | 🚧 | register_sound_sample | 0x432f10 | 171 | 50/51 | 93.07% | 2/51 | 19 ok |  |
 | ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  |
+| ✅ | xor_decode_buffer_with_index | 0x433010 | 80 | 15/15 | 100.00% | 15/15 | - |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 93.44% | 3/122 | 18 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
