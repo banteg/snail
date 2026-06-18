@@ -117,7 +117,8 @@ Rejected experiments:
   `game+0xfd2b10`, including the 6-byte replay run table and aligned replay
   scalar fields. `complete_subgame` now writes `current_high_score_record`
   instead of a local 0x54 `ResultRecord` prefix, and the replay bonus source
-  lanes are stored as `challenge_speed_value` / `challenge_difficulty_value`.
+  lanes are stored as `challenge_speed_value` /
+  `challenge_difficulty_value`.
   Focused Wibo remains at the pinned 75.28%.
 - 2026-06-18 decompiler-sync pass: the narrow BN/IDA `SubgameRuntime` headers
   now carry the sparse proven runtime layout through `high_score_bank`,

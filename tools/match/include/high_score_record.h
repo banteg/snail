@@ -16,7 +16,7 @@ struct ScoreBucketBlock {
 
 struct ReplayRunRecord {
     short lateral_x; // +0x00
-    short secondary_lane_raw; // +0x02
+    short delta_z; // +0x02, fixed-point z delta scaled by 32.0
     unsigned char flags; // +0x04
     char reserved_05; // +0x05, zeroed by compact replay load/init
 };
@@ -70,7 +70,7 @@ struct CompactHighScoreRecord {
     };
     int unknown_80; // +0x80
     int unknown_84; // +0x84
-    char replay_payload[1]; // +0x88, variable: int16 lane A, int16 lane B, byte flags
+    char replay_payload[1]; // +0x88, variable: int16 lateral_x, int16 delta_z, byte flags
 };
 
 class HighScoreRecord {
@@ -97,7 +97,7 @@ public:
     int replay_level_index; // +0x28
     int replay_mode_id; // +0x2c, copied to the subgame launch mode
     int unknown_30; // +0x30
-    int difficulty_scalar_bits; // +0x34, challenge_difficulty_scalar bits
+    int challenge_difficulty_scalar_bits; // +0x34
     unsigned int runtime_build_flags; // +0x38
     int high_score_mode_tag; // +0x3c, set by add_*_high_score
     int route_or_rank_index; // +0x40, level/route arg before insert or top-ten rank

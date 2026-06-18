@@ -19,7 +19,7 @@ Safe expanded-entry slice:
 - `record + 0x68`: `runtime_build_seed`
 - `record + 0x6c`: `replay_sample_count`
 - `record + 0x70 + i*6`: `replay_samples[i].lateral_x`
-- `record + 0x72 + i*6`: `replay_samples[i].secondary_lane_raw`
+- `record + 0x72 + i*6`: `replay_samples[i].delta_z`
 - `record + 0x74 + i*6`: `replay_samples[i].flags`
 
 Evidence:

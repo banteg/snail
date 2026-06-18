@@ -172,7 +172,7 @@ typedef union ScoreOrTime {
 
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
-    int16_t secondary_lane_raw;
+    int16_t delta_z;
     uint8_t flags;
     uint8_t reserved_05;
 } ReplayRunRecord;

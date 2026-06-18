@@ -18,7 +18,7 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
 
         current_high_score_record.score = source_score;
         current_high_score_record.stats = source_stats;
-        current_high_score_record.difficulty_scalar_bits = difficulty_scalar_bits;
+        current_high_score_record.challenge_difficulty_scalar_bits = difficulty_scalar_bits;
         current_high_score_record.challenge_speed_value = completion_bonus_x_source;
         current_high_score_record.score_tail = source_score_tail;
         current_high_score_record.challenge_difficulty_value = completion_bonus_y_source;

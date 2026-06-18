@@ -27,7 +27,7 @@ typedef struct TransformMatrix {
 
 typedef struct SelectedLevelReplaySample {
     int16_t lateral_x;
-    int16_t secondary_lane_raw;
+    int16_t delta_z;
     uint8_t flags;
     uint8_t _pad_05;
 } SelectedLevelReplaySample;
