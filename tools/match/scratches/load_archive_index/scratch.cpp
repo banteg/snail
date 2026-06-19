@@ -1,17 +1,8 @@
 /* load_archive_index @ 0x4319c0 (cdecl, C mode) */
 
+#include "archive_index.h"
+
 typedef struct File File;
-
-typedef struct ArchiveEntry {
-    char* path;
-    int data_offset;
-    int byte_count;
-} ArchiveEntry;
-
-typedef struct ArchiveIndex {
-    int count;
-    ArchiveEntry entries[1];
-} ArchiveIndex;
 
 extern int g_archive_index_records; // data_53c7f8
 extern File* g_archive_file;        // data_53c7f0

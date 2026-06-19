@@ -1,15 +1,6 @@
 // find_archive_entry @ 0x431250 (cdecl, ret)
 
-typedef struct ArchiveEntry {
-    char* path;      // +0x00
-    int data_offset; // +0x04
-    int byte_count;  // +0x08
-} ArchiveEntry;
-
-typedef struct ArchiveIndex {
-    int count;               // +0x00
-    ArchiveEntry entries[1]; // +0x04
-} ArchiveIndex;
+#include "archive_index.h"
 
 extern ArchiveIndex* g_archive_index_records; // data_53c7f8
 

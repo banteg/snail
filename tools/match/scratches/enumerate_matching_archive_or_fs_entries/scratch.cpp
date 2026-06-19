@@ -1,15 +1,6 @@
 // enumerate_matching_archive_or_fs_entries @ 0x431740 (cdecl, C mode)
 
-typedef struct ArchiveEntry {
-    char* path;      // +0x00
-    int data_offset; // +0x04
-    int byte_count;  // +0x08
-} ArchiveEntry;
-
-typedef struct ArchiveIndex {
-    int count;               // +0x00
-    ArchiveEntry entries[1]; // +0x04
-} ArchiveIndex;
+#include "archive_index.h"
 
 typedef struct FindData {
     unsigned int attrib; // +0x00
