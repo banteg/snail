@@ -44,3 +44,10 @@ the jump-table/global masked operand audit without improving structure.
 `initialize_cheat`, `match_cheat_text`, and `update_cheat`. Focused Wibo remains
 pinned at 97.78%, 135/135 instructions, with the same mouse-state/tint
 argument scheduling residuals and 23 clean masked operands.
+
+2026-06-20 frame-order retry: hoisting the `MouseCursorState* mouse` declaration
+above the frame-accumulator temporary is codegen-neutral and keeps the early
+`fstp [base+0x518]` before `lea ecx, [base+0x290]`. Naming the cursor draw
+layer as a local `int layer = 7` is also codegen-neutral; the layer push still
+lands after `Color4f::set_color_rgba`. The residual remains argument/store
+scheduling, not a missing local name.

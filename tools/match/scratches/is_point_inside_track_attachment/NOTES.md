@@ -65,3 +65,10 @@ Rejected probes:
   argument as `local_y`, and subtracting `sample_origin.z` directly. Keep the
   current two-step Y/Z subtracts plus direct `local = Vector3(...)` assignment
   unless a new source lead explains the scheduler choice.
+- 2026-06-20 vector-local retry: making `local` block-scoped at the assignment
+  point has the same bad shape as explicit `local.x/y/z` stores: VC6 shrinks
+  the frame to `0x24` and drops to 71.30%. Reordering the Y/Z source
+  statements is codegen-neutral at 99.10%, and building the vector from raw Z
+  before `local.z -= origin_z` regresses to 52.86% by adding saved `ebp` and
+  flipping the Z subtract to `fsubr`. The long-lived aggregate assignment
+  remains the only accepted frame shape.
