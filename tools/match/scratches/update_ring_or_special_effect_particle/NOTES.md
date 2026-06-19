@@ -77,3 +77,13 @@ Rejected source-shape probe:
   multiply before reloading the parent and sprite pointers and removes the
   native `add eax, 0x68` used by the y/z lanes. Leave the typed pointer spelling
   as the best current source shape.
+- 2026-06-19 follow-up materialization audit: focused Wibo still reproduces
+  96.36%, 55/55 instructions, 28/55 prefix, and 5 clean masked operands.
+  Splitting `staged_x` into a separate local regresses to 94.55% by hoisting
+  `fmul [this+0x1c]` before the parent/sprite reloads. Assigning
+  `staged_position.x` from the parent first and then adding `orbit_x`, and
+  swapping the parent/sprite position pointer declarations, are both codegen
+  neutral and leave the same address-materialization residual. Directly writing
+  the sprite position fields regresses to 73.08% by removing the native 0x10-byte
+  stack frame, and explicit field copy from `staged_position` regresses to 82.24%
+  by changing the final store schedule. Keep the aggregate staged-vector copy.
