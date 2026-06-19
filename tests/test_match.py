@@ -236,6 +236,7 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert by_name["update_galaxy_route_record"].kind == "function"
     assert by_name["ftol"].kind == "function"
     assert by_name["g_math_random_table"].size == 0x7FFC
+    assert by_name["g_math_random_table"].allow_one_past is True
 
 
 def test_reference_symbol_manifest_allows_duplicate_addresses(tmp_path: Path) -> None:
@@ -299,6 +300,28 @@ def test_reference_symbol_manifest_rejects_duplicate_aliases(tmp_path: Path) -> 
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="duplicate reference symbol name or alias"):
+        load_reference_symbol_manifest(manifest_path)
+
+
+def test_reference_symbol_manifest_rejects_one_past_without_size(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "invalid one-past references",
+  "symbols": [
+    {
+      "address": "0x402000",
+      "name": "g_table",
+      "kind": "global",
+      "allow_one_past": true
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="allow_one_past requires size"):
         load_reference_symbol_manifest(manifest_path)
 
 
@@ -923,6 +946,53 @@ def test_masked_operand_audit_rejects_sized_reference_end_addend() -> None:
     assert reference.alternate_keys == ()
     assert result.masked_operand_audit.mismatch_count == 1
     assert result.masked_operand_audit.problem_count == 1
+
+
+def test_masked_operand_audit_accepts_explicit_one_past_reference() -> None:
+    target = bytes.fromhex("81fe10204000c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("81fe10000000c3"),
+        relocation_offsets=frozenset({2}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=2,
+                symbol_name="_g_table",
+                text="sym:g_table+0x10",
+                key="ref:g_table+0x10",
+                explained=True,
+                addend=0x10,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(mapped=b"\x00" * 0x3000, image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="g_table",
+                    kind="global",
+                    size=0x10,
+                    allow_one_past=True,
+                ),
+                ReferenceSymbol(
+                    address=0x402010,
+                    name="g_next_global",
+                    kind="global",
+                ),
+            ),
+        ),
+    )
+    reference = result.masked_operand_audit.entries[0].target_references[0]
+    assert reference.key == "ref:g_next_global"
+    assert reference.alternate_keys == ("ref:g_table+0x10",)
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
 
 
 def test_masked_operand_audit_does_not_treat_sized_reference_base_as_end() -> None:

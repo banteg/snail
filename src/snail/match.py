@@ -85,6 +85,7 @@ class ReferenceSymbol:
     aliases: tuple[str, ...] = ()
     description: str | None = None
     size: int | None = None
+    allow_one_past: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,6 +145,11 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             )
             if size <= 0:
                 raise ValueError(f"symbols[{index}].size must be positive")
+        allow_one_past = raw_symbol.get("allow_one_past", False)
+        if not isinstance(allow_one_past, bool):
+            raise ValueError(f"symbols[{index}].allow_one_past must be a boolean")
+        if allow_one_past and size is None:
+            raise ValueError(f"symbols[{index}].allow_one_past requires size")
         for raw_name in (name_value, *aliases_value):
             for checked_name in {raw_name, _canonical_symbol_name(raw_name)}:
                 previous_symbol = seen_names.get(checked_name)
@@ -161,6 +167,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
                 aliases=tuple(aliases_value),
                 description=description,
                 size=size,
+                allow_one_past=allow_one_past,
             )
         )
     return ReferenceSymbolManifest(name=name, symbols=tuple(symbols))
@@ -545,7 +552,9 @@ def _reference_offsets_for_address(
         if symbol.size is None:
             continue
         offset = value - symbol.address
-        if 0 < offset < symbol.size:
+        if 0 < offset < symbol.size or (
+            symbol.allow_one_past and offset == symbol.size
+        ):
             matches.append((symbol, offset))
     return tuple(matches)
 
@@ -608,6 +617,10 @@ def _resolve_object_relocation(
         text, key = _format_symbol_reference(symbol.name, offset)
         explained = offset == 0 or (
             reference_symbol.size is not None and 0 <= offset < reference_symbol.size
+        ) or (
+            reference_symbol.size is not None
+            and reference_symbol.allow_one_past
+            and offset == reference_symbol.size
         )
         if offset != 0:
             key = _format_reference_key(reference_symbol, offset)
