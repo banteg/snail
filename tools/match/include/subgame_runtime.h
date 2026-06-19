@@ -9,7 +9,6 @@
 #include "track_parcel_runtime.h"
 
 class Player;
-struct SelectedLevelRecord;
 struct TrackRowCell;
 
 class SubgameRuntime {
@@ -97,7 +96,7 @@ public:
     unsigned char selected_level_record_active; // +0xff25d0
     unsigned char selected_level_record_persistent; // +0xff25d1
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
-    SelectedLevelRecord* selected_level_record; // +0xff25d4
+    HighScoreRecord* selected_level_record; // +0xff25d4
     int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
     int replay_update_cursor; // +0xff25dc
     char unknown_ff25e0[0x125e480 - 0xff25e0];

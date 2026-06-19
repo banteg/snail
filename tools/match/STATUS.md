@@ -731,12 +731,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Direct3DDevice8Vtbl | 8 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SelectedLevelRecord | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 5 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | SelectedLevelRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
