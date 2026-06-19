@@ -733,6 +733,233 @@
       "ios_symbol": "cRPath::BuildCage2(int, char*, char*)",
       "source_object": "Path.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x413d50",
+      "windows_name": "build_object_texture_group_buffers",
+      "ios_symbol": "cRObject::BuildGLVertexArray()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f5c0",
+      "windows_name": "is_bod_after_sprites",
+      "ios_symbol": "cRBod::IsAfterSprites()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f5d0",
+      "windows_name": "set_bod_object",
+      "ios_symbol": "cRBod::SetObject(cRObject*)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f5f0",
+      "windows_name": "initialize_bod_base",
+      "ios_symbol": "cRBod::cRBod()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f650",
+      "windows_name": "initialize_renderable_bod",
+      "ios_symbol": "cRBodPos::cRBodPos()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f680",
+      "windows_name": "apply_bod_position",
+      "ios_symbol": "cRBod::ApplyPos(tMatrix&)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f6f0",
+      "windows_name": "initialize_object",
+      "ios_symbol": "cRObject::cRObject()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f710",
+      "windows_name": "request_object_vertices",
+      "ios_symbol": "cRObject::RequestVertices(int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f7d0",
+      "windows_name": "request_object_vertices_copy",
+      "ios_symbol": "cRObject::RequestVerticesCopy()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f8c0",
+      "windows_name": "request_object_facequads",
+      "ios_symbol": "cRObject::RequestFaceQuads(int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f990",
+      "windows_name": "initialize_object_list",
+      "ios_symbol": "cRObjects::Init(int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42f9e0",
+      "windows_name": "build_all_objects",
+      "ios_symbol": "cRObjects::BuildObjects()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42fa80",
+      "windows_name": "apply_object_toon",
+      "ios_symbol": "cRObject::ApplyToon(int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42fad0",
+      "windows_name": "add_object_to_list",
+      "ios_symbol": "cRObjects::Add()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42fcb0",
+      "windows_name": "calc_object_facequad_normals",
+      "ios_symbol": "cRObject::CalcFaceQuadNormals()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4303f0",
+      "windows_name": "calc_object_texture_groups",
+      "ios_symbol": "cRObject::CalcTextureGroups()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4305a0",
+      "windows_name": "add_object_edge",
+      "ios_symbol": "cRObject::AddEdge(int, int, int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4308b0",
+      "windows_name": "calc_object_edges",
+      "ios_symbol": "cRObject::CalcEdges()",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x430a70",
+      "windows_name": "request_object_animation",
+      "ios_symbol": "cRObject::RequestAnim(int, cRBodPos*, float, int)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44c420",
+      "windows_name": "load_object_definition",
+      "ios_symbol": "cRObject::Load(char*)",
+      "source_object": "RObject.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44de90",
+      "windows_name": "initialize_sprite",
+      "ios_symbol": "cRSprite slot initializer",
+      "source_object": "RSprite.o",
+      "confidence": "medium",
+      "notes": "iOS exposes the cRSprite owner family but not a direct constructor symbol."
+    },
+    {
+      "address": "0x44df30",
+      "windows_name": "update_sprite",
+      "ios_symbol": "cRSprite::AI()",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e0f0",
+      "windows_name": "register_sprite_texture",
+      "ios_symbol": "cRSpriteManager::Load(char*, int, int)",
+      "source_object": "RSprite.o",
+      "confidence": "medium",
+      "notes": "iOS also exposes `cRSpriteManager::LoadSet(char*, int, int)`; Windows texture registration is the direct single-texture split."
+    },
+    {
+      "address": "0x44e160",
+      "windows_name": "initialize_sprite_manager",
+      "ios_symbol": "cRSpriteManager::Init()",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e200",
+      "windows_name": "kill_sprite",
+      "ios_symbol": "cRSprite::Kill()",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e2a0",
+      "windows_name": "allocate_sprite",
+      "ios_symbol": "cRSpriteManager::New(int, int, int, int)",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e3d0",
+      "windows_name": "kill_game_sprites",
+      "ios_symbol": "cRSpriteManager::KillGame()",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e410",
+      "windows_name": "update_sprite_facing_angle",
+      "ios_symbol": "cRSprite::BuildTail(tMatrix*)",
+      "source_object": "RSprite.o",
+      "confidence": "medium",
+      "notes": "The iOS name confirms the matrix-driven facing/tail family; Windows keeps the narrower facing-angle helper name."
+    },
+    {
+      "address": "0x44e540",
+      "windows_name": "set_sprite_manager_paused",
+      "ios_symbol": "cRSpriteManager::Pause(bool)",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e550",
+      "windows_name": "set_sprite_texture_ref",
+      "ios_symbol": "cRSprite::SetTextureRef(int, int)",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e570",
+      "windows_name": "get_sprite_texture",
+      "ios_symbol": "cRSpriteManager::GetTexture(int)",
+      "source_object": "RSprite.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44e580",
+      "windows_name": "get_sprite_texture_ref",
+      "ios_symbol": "cRSpriteManager::GetTextureRef(int)",
+      "source_object": "RSprite.o",
+      "confidence": "high"
     }
   ]
 }

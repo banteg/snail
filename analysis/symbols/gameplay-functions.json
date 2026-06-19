@@ -722,7 +722,7 @@
     {
       "address": "0x413d50",
       "name": "build_object_texture_group_buffers",
-      "description": "Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering."
+      "description": "Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering. iOS RObject.o names the owner family `cRObject::BuildGLVertexArray()`."
     },
     {
       "address": "0x4141d0",
@@ -1268,33 +1268,38 @@
     },
     {
       "address": "0x42f5c0",
-      "name": "is_bod_after_sprites"
+      "name": "is_bod_after_sprites",
+      "description": "Returns whether one body should draw after sprites; iOS RObject.o names this `cRBod::IsAfterSprites()`."
     },
     {
       "address": "0x42f5d0",
-      "name": "set_bod_object"
+      "name": "set_bod_object",
+      "description": "Stores the render-object pointer on one body record; iOS RObject.o names this `cRBod::SetObject(cRObject*)`."
     },
     {
       "address": "0x42f5f0",
       "name": "initialize_bod_base",
-      "description": "Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment."
+      "description": "Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment. iOS RObject.o names this base constructor `cRBod::cRBod()`."
     },
     {
       "address": "0x42f650",
       "name": "initialize_renderable_bod",
-      "description": "Builds the shared renderable bod shell on top of the base bod header, seeding its object-oriented vtable, default render flags, and identity local transform."
+      "description": "Builds the shared renderable bod shell on top of the base bod header, seeding its object-oriented vtable, default render flags, and identity local transform. iOS RObject.o names this positioned-body constructor `cRBodPos::cRBodPos()`."
     },
     {
       "address": "0x42f680",
-      "name": "apply_bod_position"
+      "name": "apply_bod_position",
+      "description": "Applies one body's position into the supplied matrix before object rendering; iOS RObject.o names this `cRBod::ApplyPos(tMatrix&)`."
     },
     {
       "address": "0x42f6f0",
-      "name": "initialize_object"
+      "name": "initialize_object",
+      "description": "Constructs one render object with empty geometry buffers and default render flags; iOS RObject.o names this `cRObject::cRObject()`."
     },
     {
       "address": "0x42f710",
-      "name": "request_object_vertices"
+      "name": "request_object_vertices",
+      "description": "Ensures one render object has the requested vertex storage; iOS RObject.o names this `cRObject::RequestVertices(int)`."
     },
     {
       "address": "0x42f790",
@@ -1302,7 +1307,8 @@
     },
     {
       "address": "0x42f7d0",
-      "name": "request_object_vertices_copy"
+      "name": "request_object_vertices_copy",
+      "description": "Ensures one render object has the secondary copied-vertex storage; iOS RObject.o names this `cRObject::RequestVerticesCopy()`."
     },
     {
       "address": "0x42f800",
@@ -1315,7 +1321,8 @@
     },
     {
       "address": "0x42f8c0",
-      "name": "request_object_facequads"
+      "name": "request_object_facequads",
+      "description": "Ensures one render object has the requested face-quad storage; iOS RObject.o names this `cRObject::RequestFaceQuads(int)`."
     },
     {
       "address": "0x42f930",
@@ -1323,20 +1330,23 @@
     },
     {
       "address": "0x42f990",
-      "name": "initialize_object_list"
+      "name": "initialize_object_list",
+      "description": "Initializes the global render-object list with the requested capacity; iOS RObject.o names this `cRObjects::Init(int)`."
     },
     {
       "address": "0x42f9e0",
-      "name": "build_all_objects"
+      "name": "build_all_objects",
+      "description": "Builds every object in the global render-object list; iOS RObject.o names this `cRObjects::BuildObjects()`."
     },
     {
       "address": "0x42fa80",
       "name": "apply_object_toon",
-      "description": "Marks one object as toon-enabled and prepares its outline support buffers. Cross-port Android symbols match this helper to `cRObject::ApplyToon(int)`, but Android only flips the toon flags while Windows also allocates the support storage here."
+      "description": "Marks one object as toon-enabled and prepares its outline support buffers. Cross-port Android and iOS symbols match this helper to `cRObject::ApplyToon(int)`, but the Windows split also allocates support storage here."
     },
     {
       "address": "0x42fad0",
-      "name": "add_object_to_list"
+      "name": "add_object_to_list",
+      "description": "Appends one render object to the global object list and returns the new slot; iOS RObject.o names this `cRObjects::Add()`."
     },
     {
       "address": "0x42fb10",
@@ -1345,7 +1355,7 @@
     {
       "address": "0x42fcb0",
       "name": "calc_object_facequad_normals",
-      "description": "Builds one object's toon-normal data: face-pair normals per quad plus averaged inverted vertex normals for silhouette edge tests. Called from the object build path and again when animated geometry is refreshed."
+      "description": "Builds one object's toon-normal data: face-pair normals per quad plus averaged inverted vertex normals for silhouette edge tests. Called from the object build path and again when animated geometry is refreshed. iOS RObject.o names this `cRObject::CalcFaceQuadNormals()`."
     },
     {
       "address": "0x430230",
@@ -1354,7 +1364,8 @@
     },
     {
       "address": "0x4303f0",
-      "name": "calc_object_texture_groups"
+      "name": "calc_object_texture_groups",
+      "description": "Collapses contiguous face quads by texture group for one render object; iOS RObject.o names this `cRObject::CalcTextureGroups()`."
     },
     {
       "address": "0x430470",
@@ -1369,16 +1380,17 @@
     {
       "address": "0x4305a0",
       "name": "add_object_edge",
-      "description": "Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline."
+      "description": "Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline. iOS RObject.o names this `cRObject::AddEdge(int, int, int)`."
     },
     {
       "address": "0x4308b0",
       "name": "calc_object_edges",
-      "description": "Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`."
+      "description": "Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`. iOS RObject.o names this `cRObject::CalcEdges()`."
     },
     {
       "address": "0x430a70",
-      "name": "request_object_animation"
+      "name": "request_object_animation",
+      "description": "Ensures one render object has generated animation-frame storage; iOS RObject.o names this `cRObject::RequestAnim(int, cRBodPos*, float, int)`."
     },
     {
       "address": "0x430d90",
@@ -2872,7 +2884,8 @@
     },
     {
       "address": "0x44c420",
-      "name": "load_object_definition"
+      "name": "load_object_definition",
+      "description": "Parses one authored object definition into the caller object; iOS RObject.o names this `cRObject::Load(char*)`."
     },
     {
       "address": "0x44c880",
@@ -3149,53 +3162,63 @@
     },
     {
       "address": "0x44de90",
-      "name": "initialize_sprite"
+      "name": "initialize_sprite",
+      "description": "Initializes one sprite slot in the `cRSprite` runtime family before manager allocation links it into active/free lists."
     },
     {
       "address": "0x44df30",
-      "name": "update_sprite"
+      "name": "update_sprite",
+      "description": "Runs one live sprite's per-frame state update; iOS RSprite.o names this `cRSprite::AI()`."
     },
     {
       "address": "0x44e0f0",
-      "name": "register_sprite_texture"
+      "name": "register_sprite_texture",
+      "description": "Registers or reuses one sprite texture reference; iOS RSprite.o names this manager family `cRSpriteManager::Load(char*, int, int)` and also exposes the adjacent `LoadSet` variant."
     },
     {
       "address": "0x44e160",
-      "name": "initialize_sprite_manager"
+      "name": "initialize_sprite_manager",
+      "description": "Initializes the global sprite manager, its sprite pool, and free-list heads; iOS RSprite.o names this `cRSpriteManager::Init()`."
     },
     {
       "address": "0x44e200",
-      "name": "kill_sprite"
+      "name": "kill_sprite",
+      "description": "Unlinks and returns one live sprite to the manager free list; iOS RSprite.o names this `cRSprite::Kill()`."
     },
     {
       "address": "0x44e2a0",
-      "name": "allocate_sprite"
+      "name": "allocate_sprite",
+      "description": "Allocates one sprite from the manager free list, assigns texture ids, and links it into the selected active bucket; iOS RSprite.o names this `cRSpriteManager::New(int, int, int, int)`."
     },
     {
       "address": "0x44e3d0",
-      "name": "kill_game_sprites"
+      "name": "kill_game_sprites",
+      "description": "Kills all nonpersistent gameplay sprites while preserving manager state; iOS RSprite.o names this `cRSpriteManager::KillGame()`."
     },
     {
       "address": "0x44e410",
       "name": "update_sprite_facing_angle",
-      "description": "Refreshes the sprite angle lane at `+0x7c` from motion delta in camera space, with the optional smoothing timer carried in `+0x8c/+0x90`."
+      "description": "Refreshes the sprite angle lane at `+0x7c` from motion delta in camera space, with the optional smoothing timer carried in `+0x8c/+0x90`. iOS RSprite.o names the matrix-driven tail/facing family `cRSprite::BuildTail(tMatrix*)`."
     },
     {
       "address": "0x44e540",
       "name": "set_sprite_manager_paused",
-      "description": "Writes the shared sprite-manager pause byte consumed by `update_sprite`, freezing or unfreezing sprite updates globally."
+      "description": "Writes the shared sprite-manager pause byte consumed by `update_sprite`, freezing or unfreezing sprite updates globally. iOS RSprite.o names this `cRSpriteManager::Pause(bool)`."
     },
     {
       "address": "0x44e550",
-      "name": "set_sprite_texture_ref"
+      "name": "set_sprite_texture_ref",
+      "description": "Assigns one sprite's texture reference and frame metadata from a manager texture id; iOS RSprite.o names this `cRSprite::SetTextureRef(int, int)`."
     },
     {
       "address": "0x44e570",
-      "name": "get_sprite_texture"
+      "name": "get_sprite_texture",
+      "description": "Returns the texture object for a manager texture id; iOS RSprite.o names this `cRSpriteManager::GetTexture(int)`."
     },
     {
       "address": "0x44e580",
-      "name": "get_sprite_texture_ref"
+      "name": "get_sprite_texture_ref",
+      "description": "Returns the texture-ref record for a manager texture id; iOS RSprite.o names this `cRSpriteManager::GetTextureRef(int)`."
     },
     {
       "address": "0x44e5a0",

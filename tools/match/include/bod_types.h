@@ -1,4 +1,5 @@
 // Shared BodBase/RenderableBod initializer-family views.
+// iOS RObject.o names these owners cRBod and cRBodPos.
 // More runtime-specific object geometry and AI fields stay scratch-local.
 #ifndef BOD_TYPES_H
 #define BOD_TYPES_H

@@ -263,6 +263,8 @@ High-confidence ownership recovered from the iOS symbols:
   `BuildTurnoverDouble`, `BuildTwisterA`, `BuildCage2`, and related variants).
   The no-argument `cRPath::CalcLengthZ()` is the template-finalization family;
   the live Goldy/Golb traversal helpers use `cRPathFollow*::Traverse(...)`.
+- Shared renderer ownership is split as `cRBod`/`cRBodPos`, `cRObject` with
+  the `cRObjects` list owner, and `cRSprite` with `cRSpriteManager`.
 
 ## Candidate Use
 

@@ -1,4 +1,5 @@
 // Sprite runtime structures, partial.
+// iOS RSprite.o names these owners cRSprite and cRSpriteManager.
 // Layout is cross-checked by initialize_sprite, update_sprite, texture helpers,
 // allocate_sprite, kill_sprite, kill_game_sprites, draw_sprite_quad,
 // update_sprite_facing_angle, and exact allocation callers.

@@ -1,6 +1,8 @@
 #ifndef OBJECT_RENDER_TYPES_H
 #define OBJECT_RENDER_TYPES_H
 
+// iOS RObject.o names Object as cRObject and ObjectList as cRObjects.
+
 #include "vector3.h"
 
 struct TextureRef;
