@@ -3,6 +3,7 @@
 #define TRACK_ATTACHMENT_TYPES_H
 
 #include "bod_list.h"
+#include "bod_types.h"
 #include "vector3.h"
 #include "vector_types.h"
 
@@ -43,6 +44,7 @@ struct TrackRowCell;
 
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
+    void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0
     void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
@@ -69,7 +71,7 @@ struct AttachmentPathTemplate {
     int width_cells;                 // +0x54, integer half-span source
     AttachmentSample* primary_samples; // +0x58
     AttachmentSample* secondary_samples; // +0x5c
-    char unknown_60[0x98 - 0x60];
+    BodBase fringe_mesh_bod;         // +0x60, generated side/fringe mesh object
     union {
         float installed_heading_delta;
         int installed_heading_bits;
