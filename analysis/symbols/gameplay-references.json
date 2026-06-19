@@ -986,6 +986,26 @@
       "description": "Statically linked CRT _chdir helper used by directory-walking file and archive helpers."
     },
     {
+      "address": "0x48c211",
+      "name": "findfirst",
+      "kind": "function",
+      "aliases": [
+        "_findfirst",
+        "sub_48c211"
+      ],
+      "description": "Statically linked CRT _findfirst wrapper used by enumerate_matching_archive_or_fs_entries to populate _finddata_t records from FindFirstFileA."
+    },
+    {
+      "address": "0x48c2db",
+      "name": "findnext",
+      "kind": "function",
+      "aliases": [
+        "_findnext",
+        "sub_48c2db"
+      ],
+      "description": "Statically linked CRT _findnext wrapper used by enumerate_matching_archive_or_fs_entries to continue filesystem enumeration through FindNextFileA."
+    },
+    {
       "address": "0x496946",
       "name": "getcwd",
       "kind": "function",
@@ -2350,6 +2370,16 @@
         "data_50331c"
       ],
       "description": "BOD-base constructor counter incremented by initialize_bod_base."
+    },
+    {
+      "address": "0x503320",
+      "name": "g_enumerated_entry_count",
+      "kind": "global",
+      "aliases": [
+        "data_503320"
+      ],
+      "size": "0x4",
+      "description": "Private filename count cursor used only by enumerate_matching_archive_or_fs_entries while filling 128-byte output name slots."
     },
     {
       "address": "0x50333c",

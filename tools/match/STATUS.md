@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**440/687** mapped gameplay functions matched, **607/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **34.38%**.
+**440/687** mapped gameplay functions matched, **608/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **34.47%**.
 
 ## Proof Grade (440)
 
@@ -449,7 +449,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (167)
+## In Progress (168)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -513,6 +513,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 192/188 | 81.05% | 9/188 | 32 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 66.12% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 211/206 | 65.71% | 10/206 | 31 ok |  |
+| 🚧 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 189/182 | 49.60% | 0/182 | 23 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 13 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 72/64 | 44.12% | 0/64 | 9 ok |  |
@@ -621,7 +622,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (80)
+## No Scratch (79)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -690,7 +691,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 0/579 | 0.00% | 0/579 | - |  |
 | ⬜ | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 0/1029 | 0.00% | 0/1029 | - |  |
 | ⬜ | calc_object_facequad_normals | 0x42fcb0 | 1397 | 0/437 | 0.00% | 0/437 | - |  |
-| ⬜ | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 0/182 | 0.00% | 0/182 | - |  |
 | ⬜ | read_pressed_text_input_key_code | 0x432440 | 915 | 0/338 | 0.00% | 0/338 | - |  |
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
@@ -766,7 +766,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | ArchiveEntry | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | ArchiveIndex | 4 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ArchiveEntry | 5 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ArchiveIndex | 5 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | IntroRenderableSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | IntroScreenRuntime | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
