@@ -6,5 +6,5 @@ FrontendWidget* FrontendWidget::stack_widget_below(FrontendWidget* previous_widg
 {
     layout_anchor_x = previous_widget->layout_anchor_x;
     layout_anchor_y = previous_widget->layout_anchor_y + stack_gap + previous_widget->layout_height;
-    return layout_frontend_widget();
+    return (FrontendWidget*)layout_frontend_widget();
 }

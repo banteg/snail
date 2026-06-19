@@ -721,14 +721,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- header-conflict: 2 type name(s)
+- header-conflict: 1 type name(s)
 - unresolved-layout: 23 type name(s)
-- header-compatible: 16 type name(s)
+- header-compatible: 17 type name(s)
 - partial-compatible: 21 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
-| header-conflict | FrontendWidget | 8 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | GolbShot | 2 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | RuntimeCallback | 4 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
@@ -754,6 +753,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | FrontendWidget | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FrontendFade | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
