@@ -20,4 +20,7 @@ Type consolidation:
 - `GolbShot` is now promoted in `tools/match/include/golb.h` for this
   teardown and the small trail/smoke/impact sprite emitters. This exact match
   anchors the primary/secondary/tertiary `BodNode` offsets, `kind +0x1c0`,
-  `state +0x244`, body sprite `+0x248`, and attached sprite `+0x198`.
+  `state +0x244`, and the variant-specific owners at `+0x198`/`+0x248`.
+- `+0x198` is intentionally opaque in the shared header: kind-2 teardown reads
+  an attached `Sprite*`, while `update_golb_ai` uses the same lane as homing
+  state through `+0x1bf`.

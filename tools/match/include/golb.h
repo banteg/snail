@@ -58,6 +58,24 @@ public:
     float subgame_rate; // +0x38
 };
 
+// Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
+// Kind 2 teardown instead reads GolbShot+0x198 as an attached Sprite*.
+struct GolbShotHomingStateOverlay {
+    int homing_target_active; // +0x00
+    Vector3 homing_target; // +0x04
+    char unknown_10[0x14 - 0x10];
+    float homing_blend; // +0x14
+    float homing_blend_step; // +0x18
+    float spin; // +0x1c
+    float spin_step; // +0x20
+    unsigned char skip_one_tick; // +0x24
+    unsigned char slug_bounce_armed; // +0x25
+    char unknown_26[0x28 - 0x26];
+};
+
+typedef char GolbShotHomingStateOverlay_must_be_0x28[
+    (sizeof(GolbShotHomingStateOverlay) == 0x28) ? 1 : -1];
+
 // Shot sprite/list view shared by the small Golb helpers. The larger
 // update/create scratches still keep scheduling-sensitive local GolbShot views.
 class GolbShot {
@@ -76,9 +94,7 @@ public:
     RenderableBod secondary_body; // +0x080
     char unknown_0f8[0x118 - 0x0f8];
     RenderableBod tertiary_body; // +0x118
-    char unknown_190[0x198 - 0x190];
-    Sprite* attached_sprite;     // +0x198
-    char unknown_19c[0x1c0 - 0x19c];
+    char unknown_190[0x1c0 - 0x190]; // +0x198 variant overlay
     int kind;                    // +0x1c0
     Vector3 basis_right_scratch;  // +0x1c4
     char unknown_1d0[0x1d4 - 0x1d0];
@@ -91,7 +107,7 @@ public:
     Vector3 previous_output;      // +0x234
     char unknown_240[0x244 - 0x240];
     int state;                   // +0x244
-    Sprite* body_sprite;         // +0x248, kind-0 presentation sprite
+    void* render_body_owner;     // +0x248, kind-specific body/sprite owner
     Vector3 velocity;            // +0x24c
     Vector3 direction;           // +0x258
     float path_factor;           // +0x264

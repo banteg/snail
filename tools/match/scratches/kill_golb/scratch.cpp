@@ -37,7 +37,7 @@ void GolbShot::kill_golb()
     state = 0;
     switch (live_kind) {
         case 0:
-            body_sprite->kill_sprite();
+            ((Sprite*)render_body_owner)->kill_sprite();
             break;
 
         case 1: {
@@ -96,7 +96,7 @@ void GolbShot::kill_golb()
                 body->list_flags = updated;
             }
 
-            Sprite* sprite = attached_sprite;
+            Sprite* sprite = *(Sprite**)((char*)this + 0x198);
             if (sprite != 0) {
                 unsigned int sprite_flags = sprite->flags;
                 sprite_flags &= ~0x1000;
