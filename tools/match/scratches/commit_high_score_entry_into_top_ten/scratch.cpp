@@ -11,9 +11,10 @@ void HighScoreRecordView::commit_high_score_entry_into_top_ten(int rank)
         do {
             HighScoreRecord* destination =
                 (HighScoreRecord*)((char*)active_record_bank + offset);
-            HighScoreRecord* source = (HighScoreRecord*)source_cursor;
-            offset += HIGH_SCORE_RECORD_STRIDE;
             source_cursor += HIGH_SCORE_RECORD_STRIDE;
+            HighScoreRecord* source =
+                (HighScoreRecord*)(source_cursor - HIGH_SCORE_RECORD_STRIDE);
+            offset += HIGH_SCORE_RECORD_STRIDE;
             *destination = *source;
             ((HighScoreRecord*)((char*)active_record_bank + offset
                 - HIGH_SCORE_RECORD_STRIDE))

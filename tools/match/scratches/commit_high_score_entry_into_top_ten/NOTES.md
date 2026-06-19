@@ -7,3 +7,19 @@ This helper is a member of the front-end record view at `game+0x6ffae0`, not a
 free function taking a raw `HighScoreRecord*`. The first two fields are the
 active persistent bank pointer and row count; the native copy source begins at
 view offset `+0x17c108`.
+
+Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
+
+2026-06-20 high-score commit pass:
+
+- Rewriting the source row cursor as a byte post-increment improves focused Wibo
+  from 81.82% to 84.85%. MSVC now schedules the source cursor increment before
+  the `rep movsd`, closer to native's `add ebx, 0x1fac0` before the copy.
+- The remaining residual is address folding/register ownership: native keeps
+  the source base as `this + offset + 0x17c108` and increments `ebx` after
+  copying it to `esi`, while the candidate folds the same address as
+  `this + offset + 0x15c648` plus an early `add ebx, 0x1fac0`.
+- Rejected probes: a destination cursor rewrite regressed to 35.29% by changing
+  the prologue and loop ownership; a decompiler-style `(int)active_record_bank`
+  expression was codegen-neutral at 81.82%; and a typed `source + 1`
+  post-increment collapsed back to the old 81.82% schedule.

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.49%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.50%**.
 
 ## Proof Grade (453)
 
@@ -495,7 +495,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_challenge_setup_screen | 0x416370 | 1166 | 354/355 | 80.68% | 8/355 | 35 ok |  |
 | 🚧 | add_arcade_high_score | 0x4176a0 | 222 | 69/70 | 80.58% | 15/70 | 4 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 83.67% | 20/49 | 1 ok |  |
-| 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 81.82% | 16/33 | - |  |
+| 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | load_landscape_script_by_name | 0x4182f0 | 1404 | 392/386 | 88.95% | 14/386 | 63 ok |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | update_loading_screen | 0x418e80 | 656 | 205/204 | 88.02% | 2/204 | 24 ok |  |

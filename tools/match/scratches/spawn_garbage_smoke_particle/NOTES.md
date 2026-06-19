@@ -92,3 +92,8 @@ Rejected source-shape probes:
   before the color copy. Explicit `scaled_x/scaled_y/scaled_z` locals regress
   to 72.60% and lose two clean masked operands. Keep the raw tail while leaving
   the aggregate color assignment intact.
+- 2026-06-20 emitter-tail retry: mutating the raw sprite cursor after forming
+  the velocity pointer, matching the IDA `v11 = v6 + 21; v6 += 18` shape, is
+  codegen-neutral at 85.14%. Interleaving the X velocity store immediately
+  after computing `color.r` also stays at 85.14% but is less native because it
+  emits a direct `fstp [sprite+0x54]`. Keep the accepted raw-tail shape.
