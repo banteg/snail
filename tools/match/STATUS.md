@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**438/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **48978/325882** bytes (**15.03%**) are proof-grade, and overall fuzzy is **52.26%**.
+**439/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **49242/325882** bytes (**15.11%**) are proof-grade, and overall fuzzy is **52.26%**.
 
-## Proof Grade (438)
+## Proof Grade (439)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -221,6 +221,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | open_star_field | 0x4342c0 | 77 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | unhide_star_field | 0x4346b0 | 50 | 23/23 | 100.00% | 23/23 | - |  |
+| ✅ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 13 ok |  |
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
 | ✅ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 160/160 | 100.00% | 160/160 | 2 ok |  |
@@ -447,14 +448,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Audit Needed (6)
+## Audit Needed (5)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | ⚠ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 1 unresolved, 68 ok |  |
 | ⚠ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 1 unresolved, 8 ok |  |
 | ⚠ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 88/88 | 100.00% | 88/88 | 1 unresolved, 18 ok |  |
-| ⚠ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 1 unresolved, 12 ok |  |
 | ⚠ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 1 unresolved, 2 ok |  |
 | ⚠ | update_invincible_shell | 0x444b50 | 416 | 98/98 | 100.00% | 98/98 | 1 unresolved, 27 ok |  |
 

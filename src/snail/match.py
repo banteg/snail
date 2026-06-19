@@ -73,6 +73,7 @@ class ObjectRelocationReference:
     key: str | None
     explained: bool
     addend: int | None = None
+    symbol_offset: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -182,6 +183,7 @@ class MaskedReference:
     key: str | None
     explained: bool
     alternate_keys: tuple[str, ...] = ()
+    jump_table_entries: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -366,6 +368,41 @@ def _read_u32(data: bytes, offset: int) -> int | None:
     if 0 <= offset <= len(data) - 4:
         return struct.unpack_from("<I", data, offset)[0]
     return None
+
+
+def _read_image_jump_table_entries(
+    image: LoadedImage,
+    table_va: int,
+    byte_count: int,
+    *,
+    relative_to: int,
+) -> tuple[int, ...] | None:
+    if byte_count <= 0 or byte_count % 4 != 0:
+        return None
+    table_offset = table_va - image.image_base
+    entries: list[int] = []
+    for entry_offset in range(table_offset, table_offset + byte_count, 4):
+        value = _read_u32(image.mapped, entry_offset)
+        if value is None:
+            return None
+        entries.append(value - relative_to)
+    return tuple(entries)
+
+
+def _read_object_jump_table_entries(
+    data: bytes,
+    table_offset: int,
+    relocation_by_offset: dict[int, ObjectRelocationReference],
+) -> tuple[int, ...] | None:
+    entries: list[int] = []
+    for entry_offset in range(table_offset, len(data), 4):
+        reference = relocation_by_offset.get(entry_offset)
+        if reference is None:
+            break
+        if reference.symbol_offset is None:
+            return None
+        entries.append(reference.symbol_offset + (reference.addend or 0))
+    return tuple(entries) or None
 
 
 def _read_printable_c_string(data: bytes, offset: int, *, limit: int = 160) -> str | None:
@@ -645,6 +682,7 @@ def extract_object_function(
                     key=None,
                     explained=False,
                     addend=None,
+                    symbol_offset=None,
                 )
             )
             continue
@@ -663,6 +701,11 @@ def extract_object_function(
                 key=key,
                 explained=explained,
                 addend=addend,
+                symbol_offset=(
+                    symbol.value - target.value
+                    if symbol.section_number == target.section_number
+                    else None
+                ),
             )
         )
     return ObjectFunction(
@@ -748,6 +791,7 @@ def _resolve_image_reference(
     manifest: FunctionSymbolManifest | None = None,
     reference_manifest: ReferenceSymbolManifest | None = None,
     prefer_rdata_float: bool = False,
+    function_base: int = 0,
 ) -> MaskedReference:
     text: str
     key: str | None
@@ -755,6 +799,18 @@ def _resolve_image_reference(
     reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
     if reference_symbol is not None:
         text, key = _format_reference_symbol(reference_symbol)
+        jump_table_entries = None
+        if (
+            reference_symbol.kind == "jump_table"
+            and reference_symbol.size is not None
+            and image is not None
+        ):
+            jump_table_entries = _read_image_jump_table_entries(
+                image,
+                value,
+                reference_symbol.size,
+                relative_to=function_base,
+            )
         return MaskedReference(
             0,
             "",
@@ -768,6 +824,7 @@ def _resolve_image_reference(
                 value,
                 primary_key=key,
             ),
+            jump_table_entries=jump_table_entries,
         )
     if manifest is not None:
         by_address = {symbol.address: symbol.name for symbol in manifest.functions}
@@ -933,6 +990,17 @@ def disassemble_normalized_function(
         operand_index: int,
         kind: str,
     ) -> MaskedReference:
+        jump_table_entries = None
+        if (
+            reference is not None
+            and reference.symbol_name.startswith("$L")
+            and reference.symbol_offset is not None
+        ):
+            jump_table_entries = _read_object_jump_table_entries(
+                data,
+                reference.symbol_offset + (reference.addend or 0),
+                relocation_by_offset,
+            )
         if reference is None:
             return MaskedReference(
                 operand_index=operand_index,
@@ -951,6 +1019,7 @@ def disassemble_normalized_function(
             text=reference.text,
             key=reference.key,
             explained=reference.explained,
+            jump_table_entries=jump_table_entries,
         )
 
     def image_reference(
@@ -966,6 +1035,7 @@ def disassemble_normalized_function(
             manifest=manifest,
             reference_manifest=reference_manifest,
             prefer_rdata_float=prefer_rdata_float,
+            function_base=base_address,
         )
         return MaskedReference(
             operand_index=operand_index,
@@ -976,6 +1046,7 @@ def disassemble_normalized_function(
             key=resolved.key,
             explained=resolved.explained,
             alternate_keys=resolved.alternate_keys,
+            jump_table_entries=resolved.jump_table_entries,
         )
 
     lines: list[DisassemblyLine] = []
@@ -1111,12 +1182,7 @@ def _reference_status(
         keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
         return frozenset(keys)
 
-    def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
-        target_keys = reference_key_options(target)
-        candidate_keys = reference_key_options(candidate)
-        return bool(target_keys & candidate_keys)
-
-    def is_unverified_local_jump_table(
+    def is_local_jump_table(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
         return (
@@ -1124,6 +1190,21 @@ def _reference_status(
             and candidate.source == "reloc"
             and candidate.text.startswith("sym:$L")
         )
+
+    def jump_table_entries_match(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
+        return (
+            is_local_jump_table(target, candidate)
+            and target.jump_table_entries is not None
+            and candidate.jump_table_entries is not None
+            and target.jump_table_entries == candidate.jump_table_entries
+        )
+
+    def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
+        target_keys = reference_key_options(target)
+        candidate_keys = reference_key_options(candidate)
+        return bool(target_keys & candidate_keys) or jump_table_entries_match(target, candidate)
 
     target_keys = tuple(reference_key_options(reference) for reference in target_references)
     candidate_keys = tuple(reference_key_options(reference) for reference in candidate_references)
@@ -1140,7 +1221,12 @@ def _reference_status(
     ):
         return "ok"
     has_unverified_jump_table = any(
-        is_unverified_local_jump_table(target, candidate)
+        is_local_jump_table(target, candidate)
+        and not jump_table_entries_match(target, candidate)
+        and (
+            target.jump_table_entries is None
+            or candidate.jump_table_entries is None
+        )
         for target, candidate in zip(target_references, candidate_references)
     )
     if (

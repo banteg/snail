@@ -637,6 +637,7 @@
       "aliases": [
         "$L529"
       ],
+      "size": "0x10",
       "description": "Compiler-emitted lifecycle-state switch jump table that follows update_star_field immediately after the terminal return."
     },
     {
