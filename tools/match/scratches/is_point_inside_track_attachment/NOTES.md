@@ -13,17 +13,25 @@ shape, not a three-float helper. The method consumes a by-value `Vector3 probe`,
 an unused by-value `Vector3 swept_motion`, and a `TrackRowCell*`, so native
 returns with `ret 0x1c`.
 
-Current match: 87.89%, 112/111 instructions, 15-instruction prefix, six masked
+Current match: 99.10%, 111/111 instructions, 42-instruction prefix, six masked
 operands clean.
 
 Residuals:
 
-- Native pushes the `inverse_matrix` argument before spilling the intermediate
-  sample-origin Y/Z temporaries; the clean staged source spills them before the
-  push.
-- Native lays out the false epilogue before the true epilogue and branches to
-  the true tail after the final `delta_length` compare. VC6 keeps the inline
-  `return true` epilogue before the loop-exhausted false return.
+- The remaining miss is a single independent scheduling swap in the local-vector
+  constructor: native subtracts `origin_z` before reloading the staged
+  `delta_y`, while the scratch reloads `delta_y` before the `fsub`.
+
+2026-06-20 attachment probe pass:
+
+- Replacing the aggregate `sample_origin = Vector3(...)` with field stores and
+  keeping the `inverse_matrix` pointer between the Y and Z origin stores moves
+  the matrix-argument push before the Y/Z spills, matching the native loop-body
+  schedule.
+- Rewriting the loop as `while (idx >= 0) { ... idx--; }` matches the native
+  false-then-true epilogue layout and removes the extra loop-tail jump.
+- Focused matcher improves from 87.89% to 99.10% (111/111 instructions,
+  prefix 42/111, six clean masked operands).
 
 Rejected probes:
 
@@ -36,3 +44,14 @@ Rejected probes:
   `0x30` frame and dropped the match to 68.49%.
 - Breaking out of the loop and returning from a tail `idx` test added an early
   false epilogue and regressed to 85.71%.
+- A `bool inside` result local introduced an extra saved register and dropped
+  the match to 51.33%.
+- Passing `secondary_samples[idx].inverse_matrix` directly was codegen-neutral;
+  the accepted schedule needs the source-level pointer between origin Y and Z.
+- Explicit `local.x/y/z` stores collapsed the frame to 0x24 and regressed to
+  65.44%.
+- Folding `delta_z = probe.z - origin_z` changed the x87 polarity to `fsubr`
+  and regressed to 98.20%.
+- Applying the same field-origin ordering to
+  `try_enter_track_attachment_from_swept_motion` was codegen-neutral at 79.80%,
+  so that scratch stays unchanged.

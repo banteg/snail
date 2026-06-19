@@ -18,15 +18,11 @@ bool AttachmentPathTemplate::is_point_inside_track_attachment(
     float origin_z;
 
     int idx = segment_count - 1;
-    if (idx < 0)
-        return false;
-
-    do {
+    while (idx >= 0) {
+        sample_origin.x = anchor_x + secondary_samples[idx].transform.position.x;
+        sample_origin.y = anchor_y + secondary_samples[idx].transform.position.y;
         float* inverse_matrix = secondary_samples[idx].inverse_matrix;
-        sample_origin = Vector3(
-            anchor_x + secondary_samples[idx].transform.position.x,
-            anchor_y + secondary_samples[idx].transform.position.y,
-            anchor_z + secondary_samples[idx].transform.position.z);
+        sample_origin.z = anchor_z + secondary_samples[idx].transform.position.z;
         origin_y = sample_origin.y;
         origin_z = sample_origin.z;
         delta_x = probe.x - sample_origin.x;
@@ -43,8 +39,11 @@ bool AttachmentPathTemplate::is_point_inside_track_attachment(
             && local.y < 0.300000012f
             && local.z > 0.0f
             && local.z < secondary_samples[idx].delta_length)
+        {
             return true;
-    } while (--idx >= 0);
+        }
+        idx--;
+    }
 
     return false;
 }
