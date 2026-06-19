@@ -43,3 +43,10 @@ Residual:
   IDA artifact was updated from raw `this+206/207/2509` indexing to
   `Player::movement_flags`, `previous_movement_flags`,
   `movement_fire_progress_step`, and `presentation`.
+- 2026-06-19 equal-tail audit: decompiler-shaped `if (equal) { store; } else
+  { set_snail_weapon; store; }`, explicit equal early-return, an
+  `unchanged_flags` local, a typed `previous_flags` pointer, source label layout
+  with the equal block after the changed return, and returning `movement_flags`
+  directly from the equal branch all compile back to the same 93.75% candidate
+  with clean `2 ok` masks. Keep the clearer baseline final branch; the only
+  residual remains VC6 tail-merging the native duplicate equal-mask epilogue.
