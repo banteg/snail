@@ -44,7 +44,7 @@ Remaining mismatch:
   local is source-plausible but wrong for this scratch: it rebases `esi` at the
   pickup object, drops the focused score to 40.00%, and changes the native
   `[slot_base + 0x356000 + field]` addressing into small member offsets. The
-  shifted `Game*` view keeps the real struct visible without making that
+  shifted `SubgameRuntime*` view keeps the real struct visible without making that
   invalid register-ownership assumption.
 - The `Vector3` staging correction recovers the native position-local stack
   materialization. The remaining prefix break is now the order of the slot-index

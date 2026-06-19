@@ -15,7 +15,7 @@ Layout evidence shared with `initialize_star_field`:
   `twinkle_scale +0x28` are all read by this updater.
 
 The game camera/origin view at `g_game_base +0x6d4/+0x6e4` is now promoted as
-`Game::star_spawn_direction` and `Game::star_spawn_origin`; using the shared
+`GameRoot::star_spawn_direction` and `GameRoot::star_spawn_origin`; using the shared
 fields preserves the focused Wibo result.
 
 Current Wibo result: 32.85%, 101/106 candidate/target instructions, prefix

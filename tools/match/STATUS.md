@@ -723,8 +723,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - header-conflict: 2 type name(s)
 - unresolved-layout: 26 type name(s)
-- header-compatible: 17 type name(s)
-- partial-compatible: 17 type name(s)
+- header-compatible: 16 type name(s)
+- partial-compatible: 18 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -756,7 +756,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| header-compatible | Game | 42 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
@@ -773,6 +772,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| partial-compatible | Game | 42 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | LoadingScreen | 7 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

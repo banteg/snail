@@ -24,6 +24,7 @@ public:
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
     void reset_subgame(); // @ 0x437b10
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
+    void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
         TrackRowCell* cell, Player* player); // @ 0x43d6c0
     int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
@@ -31,6 +32,7 @@ public:
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
+    void remove_subgame_bods(); // @ 0x440910
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
     Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120

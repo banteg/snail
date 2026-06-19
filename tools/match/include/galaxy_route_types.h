@@ -4,8 +4,6 @@
 
 #include "frontend_widget.h"
 
-class Game;
-
 class GalaxyRouteRecordTick {
 public:
     void update_galaxy_route_record(); // @ 0x409bd0

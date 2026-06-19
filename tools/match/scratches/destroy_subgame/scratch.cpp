@@ -3,8 +3,8 @@
 #include "active_landscape_entry.h"
 #include "bod_list.h"
 #include "completion_screen.h"
-#include "game.h"
 #include "row_event_display.h"
+#include "subgame_runtime.h"
 #include "times_up_controller.h"
 #include "warning_actor.h"
 
@@ -71,7 +71,7 @@ int report_errorf(char* format, ...);
         }                                                         \
     } while (0)
 
-void Game::destroy_subgame()
+void SubgameRuntime::destroy_subgame()
 {
     char* game = (char*)this;
 

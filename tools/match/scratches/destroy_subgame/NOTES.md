@@ -13,7 +13,7 @@ Recovered behavior:
   `TutorialController::uninit_tutorial()` at `game+0xa858`;
 - always uninitializes warning, active landscape entries through
   `ActiveLandscapeEntry::clear_active_landscape_entries()`, times-up, and the
-  broader subgame BOD pool through `Game::remove_subgame_bods()`;
+  broader subgame BOD pool through `SubgameRuntime::remove_subgame_bods()`;
 - for non-state-1 postal/time-trial teardown, flushes row-event display for
   level modes `0` and `1`, then removes active BOD nodes from the 20 SubLazer
   slots, 40 Salt slots, and two ring/special-effect parent slots;

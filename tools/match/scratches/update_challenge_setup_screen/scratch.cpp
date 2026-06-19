@@ -1,9 +1,9 @@
 // update_challenge_setup_screen @ 0x416370 (thiscall)
 
 #include "challenge_setup_screen.h"
-#include "game.h"
 #include "high_score_record.h"
 #include "level_definition_loader.h"
+#include "subgame_runtime.h"
 #include "timer_counters.h"
 
 extern int data_4df9b8;
@@ -19,7 +19,7 @@ public:
 
 int ChallengeSetupScreen::update_challenge_setup_screen()
 {
-    ((Game*)game)->hide_gameplay_scores();
+    ((SubgameRuntime*)game)->hide_gameplay_scores();
 
     switch (*(int*)((char*)game + 0x40)) {
     case 4: {

@@ -1,10 +1,10 @@
 # initialize_nuke
 
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
-- Uses typed `NukeController`, `Player`, `Game`, `SpriteManager`, and `Sprite`
-  layouts. This pins the owner player pointer, `subgame_rate` read at
-  `game+0x74650`, orbit center-z/phase fields, and the 25 sprite slots at
-  controller `+0x18`.
+- Uses typed `NukeController`, `Player`, `SubgameRuntime`, `SpriteManager`, and
+  `Sprite` layouts. This pins the owner player pointer, `subgame_rate` read
+  through the embedded subgame at `root+0x74618+0x38`, orbit center-z/phase
+  fields, and the 25 sprite slots at controller `+0x18`.
 - Semantics: inactive state allocates 25 sprite id `0x83` entries for the
   owner's player slot, sets sprite flag `0x800`, clears sprite progress,
   progress step, gravity, position, and velocity lanes, seeds `3.0f` size, sets

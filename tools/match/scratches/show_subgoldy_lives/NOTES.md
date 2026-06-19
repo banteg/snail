@@ -14,7 +14,7 @@ Evidence:
   entries visible and hides the rest.
 
 This also consolidates the adjacent gameplay score/life HUD widget fields into
-the shared scratch-local `game.h` view instead of repeating local `Game`
+the shared `SubgameRuntime` view instead of repeating local `Game`
 definitions.
 
 Source-shape note: native keeps an absolute `Game` byte offset in the loop

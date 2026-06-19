@@ -1,6 +1,6 @@
 # `remove_subgame_bods` recovery notes
 
-Target: `Game::remove_subgame_bods @ 0x440910` (`thiscall`, 1644 bytes, 501 instructions).
+Target: `SubgameRuntime::remove_subgame_bods @ 0x440910` (`thiscall`, 1644 bytes, 501 instructions).
 
 Initial scratch reconstructs the full cleanup pass:
 

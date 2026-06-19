@@ -3,9 +3,9 @@
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
-#include "game.h"
 #include "level_definition_loader.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "vector3.h"
 
 extern char* g_game_base; // data_4df904
@@ -41,7 +41,7 @@ int GalaxyRoute::update_galaxy()
     Color4f color;
     color.noop_this_constructor();
 
-    ((Game*)level_progress_base)->hide_gameplay_scores();
+    ((SubgameRuntime*)level_progress_base)->hide_gameplay_scores();
 
     int tick_index = 0;
     if (data_4df9b8 >= 0) {

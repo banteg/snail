@@ -1,9 +1,9 @@
 // remove_subgame_bods @ 0x440910 (thiscall, ret)
 
 #include "bod_list.h"
-#include "game.h"
 #include "golb.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "track_render_cache.h"
 
@@ -76,7 +76,7 @@ int report_errorf(char* format, ...);
             REMOVE_INLINE_BOD_NODE(node);                         \
     } while (0)
 
-void Game::remove_subgame_bods()
+void SubgameRuntime::remove_subgame_bods()
 {
     char* game = (char*)this;
 

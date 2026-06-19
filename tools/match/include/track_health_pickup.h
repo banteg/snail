@@ -23,7 +23,7 @@ public:
     int state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
-    // Pause gate view initialized from Game during reset_subgame. This is
+    // Pause gate view initialized from SubgameRuntime during reset_subgame. This is
     // distinct from source_cell at +0x68, which spawn_track_health_pickup stores.
     TrackPickupOwnerSubgameView* owner_game; // +0x44
     char unknown_48[0x64 - 0x48];

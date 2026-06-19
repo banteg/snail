@@ -1,10 +1,10 @@
 // initialize_nuke @ 0x447110 (thiscall, ret)
 
-#include "game.h"
 #include "nuke_controller.h"
 #include "player.h"
+#include "subgame_runtime.h"
 
-extern Game* g_game_base; // data_4df904
+extern char* g_game_base; // data_4df904
 
 int NukeController::initialize_nuke()
 {
@@ -14,7 +14,7 @@ int NukeController::initialize_nuke()
         int count = 25;
 
         orbit_center_z = owner_player->position.z - 5.0f;
-        float rate = g_game_base->subgame_rate;
+        float rate = ((SubgameRuntime*)(g_game_base + 0x74618))->subgame_rate;
         orbit_phase = 0.0f;
         orbit_phase_step = 0.104719758f;
         state = 1;

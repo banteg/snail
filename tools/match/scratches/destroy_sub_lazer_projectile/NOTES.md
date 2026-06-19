@@ -20,7 +20,7 @@ Recovered behavior:
   BOD is unlinked back into the shared free list.
 
 This helper is called by the wall-2 emitter update path and by
-`Game::remove_subgame_bods()`, so it is the smaller source-of-truth target
+`SubgameRuntime::remove_subgame_bods()`, so it is the smaller source-of-truth target
 before writing the larger subgame teardown pool scratch.
 
 Residual: the four-fringe-pointer loop is semantically aligned, but VC6 keeps

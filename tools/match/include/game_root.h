@@ -2,6 +2,8 @@
 #ifndef GAME_ROOT_H
 #define GAME_ROOT_H
 
+#include "vector3.h"
+
 class GameRootNewGameMenu {
 public:
     int replay_attract_controller; // +0x00
@@ -67,7 +69,11 @@ public:
     char unknown_000040[0x310 - 0x40];
     int selected_high_score_rank; // +0x310
     int selected_high_score_mode; // +0x314
-    char unknown_000318[0x4f2dc - 0x318];
+    char unknown_000318[0x6d4 - 0x318];
+    Vector3 star_spawn_direction; // +0x6d4
+    char unknown_0006e0[0x6e4 - 0x6e0];
+    Vector3 star_spawn_origin; // +0x6e4
+    char unknown_0006f0[0x4f2dc - 0x6f0];
     GameRootNewGameMenu new_game_menu; // +0x4f2dc
     char unknown_04f2e0[0x4f324 - 0x4f2e0];
     GameRootMainMenu main_menu; // +0x4f324
