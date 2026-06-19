@@ -41,3 +41,27 @@ The same BN type sync does help `wall2_emitter_maybe_fire_sub_lazer`, but that
 export was intentionally not kept in this slice because BN reused the
 `lane_and_flags` field name for a generic condition/temp value across the
 function, making the artifact less honest than the previous `result` spelling.
+
+## 2026-06-19 fringe reload audit
+
+Focused Wibo still reports 91.19%, 130/131 candidate/target instructions, an
+87-instruction exact prefix, and 17 clean masked operands.
+
+The remaining fringe-loop residual is a real source-shape/register-allocation
+tradeoff:
+
+- a fringe-only remove macro that names `g_game_base` through an intermediate
+  `list_base` is codegen-neutral; VC6 still keeps the active precheck flags
+  live and emits `mov edx, [g_game_base]; add edx, 0x5a8` without reloading
+  `node->list_flags`;
+- passing `fringe[i]` directly to the remove macro, or reloading it into a
+  second local inside the active branch, does recover the native inner
+  `mov ecx, [g_game_base]; lea edx, [ecx+0x5a8]; mov ecx, [eax+4]` sequence,
+  but it regresses the whole function to 71.76% by changing saved-register
+  ownership: the prologue drops `push ebx`, the unlink mask moves to `edi`, and
+  the final fringe clear becomes a byte-lane `and ch, 0xfd` store instead of
+  native `and dword [eax+4], ebx`.
+
+Keep the local `FringeObject* object` loop as the pinned shape. It preserves the
+native prologue, loop counter, and dword unlink mask; the lone missing reload is
+less damaging than the expression-form register cascade.

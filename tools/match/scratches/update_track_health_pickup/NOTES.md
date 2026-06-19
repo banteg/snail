@@ -35,6 +35,21 @@ Rejected source-shaped probes:
   56.54%;
 - an explicit `state_one_remove` label emitted the same merged 58.47% layout.
 
+2026-06-19 branch-layout retry:
+
+- spelling the state-one guard as `!(world_z < interaction_max_z)` is
+  codegen-neutral at 71.88%; VC6 simplifies it back to the pinned
+  bob-before-removal layout with `jne` into the state-one unlink block;
+- retesting the structured `if (world_z < interaction_max_z) { remove; }`
+  form still recovers the native `je` around the state-one unlink block but
+  merges the duplicated unlink error tails, reproducing the 58.47%,
+  108-instruction regression;
+- adding explicit local labels around the state-two error exits does not
+  prevent the merge and further regresses to 58.97%/106 instructions by
+  changing the state-two branch polarity. Keep the speedup-shaped duplicated
+  blocks until a structured spelling preserves both native branch polarity and
+  the duplicated error exits.
+
 Keep this pinned unless a source-plausible dispatch spelling preserves both the
 duplicated unlink blocks and the native final bob-tail placement.
 
