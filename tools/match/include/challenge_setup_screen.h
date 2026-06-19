@@ -18,6 +18,7 @@ class ChallengeSetupScreen {
 public:
     int initialize_challenge_setup_screen(); // @ 0x415f50
     void destroy_challenge_setup_screen(); // @ 0x4161f0
+    int update_challenge_setup_screen(); // @ 0x416370
 
     ChallengeSetupGameView* game; // +0x00
     FrontendWidget* next_level_button; // +0x04
