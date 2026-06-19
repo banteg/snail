@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 30.93% (`tools/match/match.sh
+- Current matcher result: 31.71% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -88,5 +88,10 @@ Residuals:
   without stronger source evidence.
 - 2026-06-18 vector alias cleanup: the scratch-local `Vec3` view now aliases the
   shared `Vector3` type, including the existing `vector_magnitude` method
-  surface. Focused Wibo remains `30.96%`, `445/582`, with `31 ok` masked
+  surface. Focused Wibo remained `30.96%`, `445/582`, with `31 ok` masked
   operands and the known mismatch.
+- 2026-06-19 movement-tree layout: inverting the top-level `(movement_flags & 5)`
+  source branch keeps the non-`&5` movement families as the fallthrough path and
+  moves the `&5` anchor-copy body out-of-line, matching the native tree shape
+  better without changing spawn semantics. Focused Wibo improves to `31.71%`,
+  `446/582`, and the masked operand audit is now clean at `33 ok`, `0 mismatch`.

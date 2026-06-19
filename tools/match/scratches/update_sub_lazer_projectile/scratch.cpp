@@ -57,7 +57,8 @@ void SubLazerSlot::update_sub_lazer_projectile()
         return;
     switch (state) {
     case 2: {
-        SubLazerListAnchor* anchor = &g_game->sub_lazer_free_anchor;
+        Game* game = g_game;
+        SubLazerListAnchor* anchor = &game->sub_lazer_free_anchor;
         int flags = list_flags;
         BodNode* next;
         BodNode* prev;

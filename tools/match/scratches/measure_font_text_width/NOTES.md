@@ -2,10 +2,17 @@
 
 Initial scratch for the atlas-width accumulator at `0x449e90`.
 
-Wibo result: 22.86%, 60 target instructions versus 45 candidate instructions.
-The relationships are useful, but the residual is still register/prologue shape:
-native keeps the text cursor in saved `ebp`, font id in `esi`, and reuses the
-argument home for the width accumulator.
+Wibo result after casting mapper slots through `char`: 26.17%, 60 target
+instructions versus 47 candidate instructions, 0/60 prefix, 3 masked operands
+ok. The relationship is still useful, and the cast matches native's
+`movsx eax, al` treatment of the `font_slot_index_for_char` result.
+
+Remaining residual is still register/prologue shape: native keeps the text
+cursor in saved `ebp`, font id in `esi`, pushes `ebx`/`edi` only for the
+non-empty loop, and reuses the argument home for the width accumulator. The
+current source keeps the cursor in `edi`, font id in `ebx`, and carries a
+`FontSheet*` base instead of the native split glyph-index and sheet-offset
+lanes.
 
 Recovered relationships:
 

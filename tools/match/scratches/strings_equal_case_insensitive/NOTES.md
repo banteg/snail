@@ -12,7 +12,12 @@ Recovered relationships:
   comparison loop. This means prefix-style matches can succeed when `right`
   ends at the current comparison point.
 
-Focused Wibo result: 29.13%, 53/50 candidate/target instructions, no masked
-operands. The first-pass source has the right semantics, but native keeps the
-right string in `esi`, left string in `edi`, and compares folded bytes through
-`dl/bl/cl/al` without the current source's pointer-delta loop shape.
+Focused Wibo result after the peeled-loop rewrite: 66.02%, 53/50
+candidate/target instructions, 5/50 prefix, no masked operands. The source now
+keeps the prefix-style semantics (`right` reaching NUL is success) while
+avoiding the old pointer-delta loop shape.
+
+Remaining residual: native loads the initial right/left raw bytes straight into
+`dl`/`bl`, copies them to `cl`/`al`, and tests left then right. The current
+source still has VC6 load the fold lanes first (`cl`/`al`), then copy to
+`dl`/`bl`, with the same recovered semantics but different byte-lane ordering.

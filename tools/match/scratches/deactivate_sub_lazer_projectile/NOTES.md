@@ -36,3 +36,10 @@ and `BodList` anchor through `sub_lazer_types.h`. Focused Wibo remains 62.79%,
 43/43 insns, with four masked operands OK. The typed consolidation confirms
 the helper is a specialized spelling of the common live/free-list teardown, not
 a distinct sub-lazer-only list layout.
+
+2026-06-19 local game-base staging: spelling the list anchor through a local
+`Game* game = g_game` improves the focused match from `62.79%` to `77.65%`
+with `4 ok / 0 unresolved / 0 mismatch` masked operands. This is still an
+honest partial: native loads `g_game` before saving `esi` and materializes
+`game+0x5a8` as the anchor pointer in `ecx`, while the candidate keeps the game
+base in `ecx` and folds anchor field accesses to `+0x5ac/+0x5b0`.

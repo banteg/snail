@@ -15,8 +15,9 @@ int report_errorf(char* format, ...);
 
 int SubLazerSlot::deactivate_sub_lazer_projectile()
 {
-    SubLazerListAnchor* anchor = &g_game->sub_lazer_free_anchor;
+    Game* game = g_game;
     int flags = list_flags;
+    SubLazerListAnchor* anchor = &game->sub_lazer_free_anchor;
     BodNode* next;
     BodNode* prev;
     int result;

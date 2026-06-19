@@ -25,7 +25,8 @@ void SaltHazardSlot::update_salt_hazard()
 
     switch (state) {
     case 2: {
-        SaltListAnchor* anchor = &g_game->salt_free_anchor;
+        Game* game = g_game;
+        SaltListAnchor* anchor = &game->salt_free_anchor;
         int flags = list_flags;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");

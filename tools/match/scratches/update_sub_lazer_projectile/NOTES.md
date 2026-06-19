@@ -41,3 +41,11 @@ update, collision, and the wall emitter all consume the matrix position and
 velocity lanes. The type deliberately still inherits `BodNode`: the first
 `0x10` bytes are also the intrusive list overlay used by spawn/deactivate and
 state-2 removal.
+
+2026-06-19 local game-base staging: spelling the state-2 free-list anchor
+through a local `Game* game = g_game` improves the focused match from `48.39%`
+to `52.66%` with `18 ok / 0 unresolved / 0 mismatch` masked operands. The
+state-2 residual now mirrors `deactivate_sub_lazer_projectile`: native forms
+the anchor pointer at `game+0x5a8`, while the candidate folds accesses through
+the game base. The broader state-1 residual remains the prior velocity/bob
+phase/probe scheduling around the attachment checks.

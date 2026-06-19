@@ -26,3 +26,11 @@ BodBase/renderable rows through `+0x77`. This updater now calls
 instead of a raw cast, while spawn/initializer/collision prove the position
 row at `+0x68`. Focused Wibo remains `62.96%`, `79/83`, with the same known
 state-2 error-string tail merge mismatch.
+
+2026-06-19 local game-base staging: spelling the state-2 free-list anchor
+through a local `Game* game = g_game` improves the focused match from `62.96%`
+to `75.78%` and clears the previous masked string mismatch (`10 ok / 0
+unresolved / 0 mismatch`). The remaining state-2 residual is still real:
+native materializes `game+0x5a8` as an anchor pointer in `ecx`, while the
+candidate keeps the game base and folds anchor accesses to `+0x5ac/+0x5b0`;
+the first error-report call also remains tail-merged in candidate code.

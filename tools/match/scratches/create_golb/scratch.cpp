@@ -79,7 +79,59 @@ int GolbShot::create_golb(char* player, int spawn_selector, int emitter_index)
     position->z = *(float*)(player + 0x60) * 0.5f + position->z;
 
     DWORD movement_flags = *(DWORD*)(player + 0x338);
-    if ((movement_flags & 5) != 0) {
+    if ((movement_flags & 5) == 0) {
+        if ((movement_flags & 2) != 0) {
+            if (spawn_selector == 2) {
+                Vec3* source = (Vec3*)(player + 0x4134);
+                position->x = source->x;
+                position->y = source->y;
+                position->z = source->z;
+                position->x += 0.5f;
+            } else if (spawn_selector == 1) {
+                Vec3* source = (Vec3*)(player + 0x414c);
+                position->x = source->x;
+                position->y = source->y;
+                position->z = source->z;
+                position->x -= 0.5f;
+            }
+            velocity->x = 0.0f;
+            velocity->y = 0.0f;
+            velocity->z = *(float*)(player + 0x418) + 1.0f;
+        } else if ((movement_flags & 0x18) != 0) {
+            Vec3* source;
+            if (spawn_selector == 2)
+                source = (Vec3*)(player + 0x417c);
+            else
+                source = (Vec3*)(player + 0x4188);
+            position->x = source->x;
+            position->y = source->y;
+            position->z = source->z;
+            self[0x1bc] = 1;
+            velocity->x = 0.0f;
+            velocity->y = 0.0f;
+            velocity->z = *(float*)(player + 0x418) + 1.0f;
+        } else if ((movement_flags & 0x60) != 0) {
+            Vec3* source = (Vec3*)(player + 0x41ac);
+            position->x = source->x;
+            position->y = source->y;
+            position->z = source->z;
+            velocity->x = 0.0f;
+            velocity->y = 0.0f;
+            velocity->z = *(float*)(player + 0x418) + 0.60000002f;
+        } else if ((movement_flags & 0x29) != 0) {
+            velocity->x = 0.0f;
+            velocity->y = 0.0f;
+            velocity->z = *(float*)(player + 0x418) + 1.0f;
+        } else if ((movement_flags & 0x52) != 0) {
+            velocity->x = 0.0f;
+            velocity->y = 0.0f;
+            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            if (spawn_selector == 2)
+                position->x += 0.5f;
+            else
+                position->x -= 0.5f;
+        }
+    } else {
         Vec3* source;
         if (spawn_selector == 3) {
             source = (Vec3*)(player + 0x4134);
@@ -123,56 +175,6 @@ after_movement_flag_source:
             velocity->y = 0.0f;
             velocity->z = *(float*)(player + 0x418) + 1.0f;
         }
-    } else if ((movement_flags & 2) != 0) {
-        if (spawn_selector == 2) {
-            Vec3* source = (Vec3*)(player + 0x4134);
-            position->x = source->x;
-            position->y = source->y;
-            position->z = source->z;
-            position->x += 0.5f;
-        } else if (spawn_selector == 1) {
-            Vec3* source = (Vec3*)(player + 0x414c);
-            position->x = source->x;
-            position->y = source->y;
-            position->z = source->z;
-            position->x -= 0.5f;
-        }
-        velocity->x = 0.0f;
-        velocity->y = 0.0f;
-        velocity->z = *(float*)(player + 0x418) + 1.0f;
-    } else if ((movement_flags & 0x18) != 0) {
-        Vec3* source;
-        if (spawn_selector == 2)
-            source = (Vec3*)(player + 0x417c);
-        else
-            source = (Vec3*)(player + 0x4188);
-        position->x = source->x;
-        position->y = source->y;
-        position->z = source->z;
-        self[0x1bc] = 1;
-        velocity->x = 0.0f;
-        velocity->y = 0.0f;
-        velocity->z = *(float*)(player + 0x418) + 1.0f;
-    } else if ((movement_flags & 0x60) != 0) {
-        Vec3* source = (Vec3*)(player + 0x41ac);
-        position->x = source->x;
-        position->y = source->y;
-        position->z = source->z;
-        velocity->x = 0.0f;
-        velocity->y = 0.0f;
-        velocity->z = *(float*)(player + 0x418) + 0.60000002f;
-    } else if ((movement_flags & 0x29) != 0) {
-        velocity->x = 0.0f;
-        velocity->y = 0.0f;
-        velocity->z = *(float*)(player + 0x418) + 1.0f;
-    } else if ((movement_flags & 0x52) != 0) {
-        velocity->x = 0.0f;
-        velocity->y = 0.0f;
-        velocity->z = *(float*)(player + 0x418) + 1.0f;
-        if (spawn_selector == 2)
-            position->x += 0.5f;
-        else
-            position->x -= 0.5f;
     }
 
     if (words[112] == 1) {
