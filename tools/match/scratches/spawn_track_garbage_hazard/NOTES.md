@@ -134,3 +134,10 @@ Residuals:
   Accumulating `staged_position.y` in place is codegen-neutral and leaves the
   same lone `fadd` scheduling residual, so the scratch keeps the clearer
   two-step `staged_y` temporary.
+- 2026-06-19 z-lane staging audit: an explicit `DWORD staged_z_bits` local
+  recovers the native early `fadd [cell->anchor_position.y]`, but regresses to
+  90.14% by removing the native staged-vector stack copy and changing the
+  body-list label layout. Copying through a pointer to the local staged vector
+  is codegen-neutral at 99.30%. Keep the direct `*live_position =
+  staged_position` spelling and treat the remaining residual as x87/integer-load
+  scheduling debt.
