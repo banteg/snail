@@ -32,6 +32,7 @@ BRANCH_TARGET_RE = re.compile(r"\bL([0-9a-f]+)\b")
 DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
     REPO_ROOT / "analysis/symbols/gameplay-references.json"
 )
+CONTENT_AUDITED_REFERENCE_KINDS = frozenset(("data_blob", "lookup_table"))
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,7 +113,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
         raise ValueError("reference symbol manifest field 'symbols' must be a list")
 
     symbols: list[ReferenceSymbol] = []
-    seen_names: set[str] = set()
+    seen_names: dict[str, str] = {}
     for index, raw_symbol in enumerate(raw_symbols):
         if not isinstance(raw_symbol, dict):
             raise ValueError(f"symbols[{index}] must be an object")
@@ -143,9 +144,15 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             )
             if size <= 0:
                 raise ValueError(f"symbols[{index}].size must be positive")
-        if name_value in seen_names:
-            raise ValueError(f"duplicate reference symbol name: {name_value}")
-        seen_names.add(name_value)
+        for raw_name in (name_value, *aliases_value):
+            for checked_name in {raw_name, _canonical_symbol_name(raw_name)}:
+                previous_symbol = seen_names.get(checked_name)
+                if previous_symbol is not None and previous_symbol != name_value:
+                    raise ValueError(
+                        "duplicate reference symbol name or alias: "
+                        f"{checked_name} ({previous_symbol}, {name_value})"
+                    )
+                seen_names[checked_name] = name_value
         symbols.append(
             ReferenceSymbol(
                 address=address,
@@ -184,6 +191,7 @@ class MaskedReference:
     explained: bool
     alternate_keys: tuple[str, ...] = ()
     jump_table_entries: tuple[int, ...] | None = None
+    audited_bytes: bytes | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -370,6 +378,14 @@ def _read_u32(data: bytes, offset: int) -> int | None:
     return None
 
 
+def _read_bytes(data: bytes, offset: int, byte_count: int) -> bytes | None:
+    if byte_count <= 0:
+        return None
+    if not (0 <= offset <= len(data) - byte_count):
+        return None
+    return data[offset : offset + byte_count]
+
+
 def _read_image_jump_table_entries(
     image: LoadedImage,
     table_va: int,
@@ -403,6 +419,16 @@ def _read_object_jump_table_entries(
             return None
         entries.append(reference.symbol_offset + (reference.addend or 0))
     return tuple(entries) or None
+
+
+def _read_object_reference_bytes(
+    data: bytes,
+    reference: ObjectRelocationReference,
+    byte_count: int,
+) -> bytes | None:
+    if reference.symbol_offset is None:
+        return None
+    return _read_bytes(data, reference.symbol_offset + (reference.addend or 0), byte_count)
 
 
 def _read_printable_c_string(data: bytes, offset: int, *, limit: int = 160) -> str | None:
@@ -518,7 +544,7 @@ def _reference_offsets_for_address(
         if symbol.size is None:
             continue
         offset = value - symbol.address
-        if 0 < offset <= symbol.size:
+        if 0 < offset < symbol.size:
             matches.append((symbol, offset))
     return tuple(matches)
 
@@ -580,7 +606,7 @@ def _resolve_object_relocation(
         offset = addend or 0
         text, key = _format_symbol_reference(symbol.name, offset)
         explained = offset == 0 or (
-            reference_symbol.size is not None and 0 <= offset <= reference_symbol.size
+            reference_symbol.size is not None and 0 <= offset < reference_symbol.size
         )
         if offset != 0:
             key = _format_reference_key(reference_symbol, offset)
@@ -800,6 +826,7 @@ def _resolve_image_reference(
     if reference_symbol is not None:
         text, key = _format_reference_symbol(reference_symbol)
         jump_table_entries = None
+        audited_bytes = None
         if (
             reference_symbol.kind == "jump_table"
             and reference_symbol.size is not None
@@ -810,6 +837,16 @@ def _resolve_image_reference(
                 value,
                 reference_symbol.size,
                 relative_to=function_base,
+            )
+        if (
+            reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS
+            and reference_symbol.size is not None
+            and image is not None
+        ):
+            audited_bytes = _read_bytes(
+                image.mapped,
+                value - image.image_base,
+                reference_symbol.size,
             )
         return MaskedReference(
             0,
@@ -825,6 +862,7 @@ def _resolve_image_reference(
                 primary_key=key,
             ),
             jump_table_entries=jump_table_entries,
+            audited_bytes=audited_bytes,
         )
     if manifest is not None:
         by_address = {symbol.address: symbol.name for symbol in manifest.functions}
@@ -991,6 +1029,7 @@ def disassemble_normalized_function(
         kind: str,
     ) -> MaskedReference:
         jump_table_entries = None
+        audited_bytes = None
         if (
             reference is not None
             and reference.symbol_name.startswith("$L")
@@ -1001,6 +1040,21 @@ def disassemble_normalized_function(
                 reference.symbol_offset + (reference.addend or 0),
                 relocation_by_offset,
             )
+        if reference is not None:
+            reference_symbol = _reference_symbol_for_symbol_name(
+                reference_manifest,
+                reference.symbol_name,
+            )
+            if (
+                reference_symbol is not None
+                and reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS
+                and reference_symbol.size is not None
+            ):
+                audited_bytes = _read_object_reference_bytes(
+                    data,
+                    reference,
+                    reference_symbol.size,
+                )
         if reference is None:
             return MaskedReference(
                 operand_index=operand_index,
@@ -1020,6 +1074,7 @@ def disassemble_normalized_function(
             key=reference.key,
             explained=reference.explained,
             jump_table_entries=jump_table_entries,
+            audited_bytes=audited_bytes,
         )
 
     def image_reference(
@@ -1047,6 +1102,7 @@ def disassemble_normalized_function(
             explained=resolved.explained,
             alternate_keys=resolved.alternate_keys,
             jump_table_entries=resolved.jump_table_entries,
+            audited_bytes=resolved.audited_bytes,
         )
 
     lines: list[DisassemblyLine] = []
@@ -1191,6 +1247,14 @@ def _reference_status(
             and candidate.text.startswith("sym:$L")
         )
 
+    def is_content_audited_reference(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
+        return (
+            target.text.startswith(("data_blob:", "lookup_table:"))
+            and candidate.source == "reloc"
+        )
+
     def jump_table_entries_match(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
@@ -1201,10 +1265,24 @@ def _reference_status(
             and target.jump_table_entries == candidate.jump_table_entries
         )
 
+    def audited_bytes_match(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
+        return (
+            is_content_audited_reference(target, candidate)
+            and target.audited_bytes is not None
+            and candidate.audited_bytes is not None
+            and target.audited_bytes == candidate.audited_bytes
+        )
+
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
+        if is_local_jump_table(target, candidate):
+            return jump_table_entries_match(target, candidate)
+        if is_content_audited_reference(target, candidate):
+            return audited_bytes_match(target, candidate)
         target_keys = reference_key_options(target)
         candidate_keys = reference_key_options(candidate)
-        return bool(target_keys & candidate_keys) or jump_table_entries_match(target, candidate)
+        return bool(target_keys & candidate_keys)
 
     target_keys = tuple(reference_key_options(reference) for reference in target_references)
     candidate_keys = tuple(reference_key_options(reference) for reference in candidate_references)
@@ -1229,10 +1307,20 @@ def _reference_status(
         )
         for target, candidate in zip(target_references, candidate_references)
     )
+    has_unverified_content = any(
+        is_content_audited_reference(target, candidate)
+        and not audited_bytes_match(target, candidate)
+        and (
+            target.audited_bytes is None
+            or candidate.audited_bytes is None
+        )
+        for target, candidate in zip(target_references, candidate_references)
+    )
     if (
         not all_explained
         or any(not keys for keys in (*target_keys, *candidate_keys))
         or has_unverified_jump_table
+        or has_unverified_content
     ):
         return "unresolved"
     return "mismatch"

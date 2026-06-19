@@ -673,7 +673,7 @@
     {
       "address": "0x43744c",
       "name": "normalize_segment_glyph_for_track_flags_lookup_table",
-      "kind": "global",
+      "kind": "lookup_table",
       "aliases": [
         "$L344"
       ],
@@ -1055,8 +1055,7 @@
       "kind": "function",
       "aliases": [
         "_rand",
-        "sub_48bfe5",
-        "j_sub_48bfe5"
+        "sub_48bfe5"
       ],
       "description": "CRT rand helper used to seed the gameplay random table and random-float wrappers."
     },

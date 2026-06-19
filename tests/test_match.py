@@ -270,6 +270,38 @@ def test_reference_symbol_manifest_allows_duplicate_addresses(tmp_path: Path) ->
     ]
 
 
+def test_reference_symbol_manifest_rejects_duplicate_aliases(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "duplicate alias references",
+  "symbols": [
+    {
+      "address": "0x402000",
+      "name": "first_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L100"
+      ]
+    },
+    {
+      "address": "0x402020",
+      "name": "second_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L100"
+      ]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="duplicate reference symbol name or alias"):
+        load_reference_symbol_manifest(manifest_path)
+
+
 def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
     return ObjectFunction(
         name="_foo",
@@ -495,7 +527,11 @@ def test_masked_operand_audit_leaves_local_jump_table_label_unresolved() -> None
     assert entry.candidate_references[0].text == "sym:$L123"
 
 
-def local_jump_table_candidate(second_entry_offset: int) -> ObjectFunction:
+def local_jump_table_candidate(
+    second_entry_offset: int,
+    *,
+    table_key: str = "name:$Ltable",
+) -> ObjectFunction:
     return ObjectFunction(
         name="_foo",
         data=bytes.fromhex("ff248500000000c3") + (b"\x00" * 8),
@@ -505,7 +541,7 @@ def local_jump_table_candidate(second_entry_offset: int) -> ObjectFunction:
                 offset=3,
                 symbol_name="$Ltable",
                 text="sym:$Ltable",
-                key="name:$Ltable",
+                key=table_key,
                 explained=True,
                 addend=0,
                 symbol_offset=8,
@@ -583,6 +619,86 @@ def test_masked_operand_audit_rejects_permuted_local_jump_table_contents() -> No
     assert result.ratio == 1.0
     assert result.masked_operand_audit.mismatch_count == 1
     assert result.masked_operand_audit.problem_count == 1
+
+
+def test_masked_operand_audit_rejects_same_key_permuted_jump_table_contents() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
+    result = match_function(
+        bytes.fromhex("ff248500204000c3"),
+        local_jump_table_candidate(
+            second_entry_offset=0,
+            table_key="ref:foo_jump_table",
+        ),
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    aliases=("$Ltable",),
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+    assert result.ratio == 1.0
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.status == "mismatch"
+    assert entry.target_references[0].key == "ref:foo_jump_table"
+    assert entry.candidate_references[0].key == "ref:foo_jump_table"
+    assert entry.target_references[0].jump_table_entries == (0, 7)
+    assert entry.candidate_references[0].jump_table_entries == (0, 0)
+
+
+def local_lookup_table_candidate(table_bytes: bytes) -> ObjectFunction:
+    return ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("a100000000c3") + table_bytes,
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="$Llookup",
+                text="sym:$Llookup",
+                key="ref:foo_lookup_table",
+                explained=True,
+                addend=0,
+                symbol_offset=6,
+            ),
+        ),
+    )
+
+
+def test_masked_operand_audit_rejects_same_key_lookup_table_byte_mismatch() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    mapped[0x2000:0x2002] = b"\x09\x0a"
+    result = match_function(
+        bytes.fromhex("a100204000c3"),
+        local_lookup_table_candidate(b"\x09\x0b"),
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_lookup_table",
+                    kind="lookup_table",
+                    aliases=("$Llookup",),
+                    size=0x2,
+                ),
+            ),
+        ),
+    )
+    assert result.ratio == 1.0
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.status == "mismatch"
+    assert entry.target_references[0].audited_bytes == b"\x09\x0a"
+    assert entry.candidate_references[0].audited_bytes == b"\x09\x0b"
 
 
 def test_masked_operand_audit_accepts_same_address_reference_alternate() -> None:
@@ -676,7 +792,7 @@ def test_reference_symbol_overrides_same_address_function_symbol() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
-def test_masked_operand_audit_accepts_sized_reference_end_addend() -> None:
+def test_masked_operand_audit_rejects_sized_reference_end_addend() -> None:
     # target: cmp esi, 0x402010; ret. 0x402010 is also the next global, but the
     # candidate relocation is explicitly g_table + 0x10.
     target = bytes.fromhex("81fe10204000c3")
@@ -719,9 +835,9 @@ def test_masked_operand_audit_accepts_sized_reference_end_addend() -> None:
     )
     reference = result.masked_operand_audit.entries[0].target_references[0]
     assert reference.key == "ref:g_next_global"
-    assert reference.alternate_keys == ("ref:g_table+0x10",)
-    assert result.masked_operand_audit.ok_count == 1
-    assert result.masked_operand_audit.problem_count == 0
+    assert reference.alternate_keys == ()
+    assert result.masked_operand_audit.mismatch_count == 1
+    assert result.masked_operand_audit.problem_count == 1
 
 
 def test_masked_operand_audit_does_not_treat_sized_reference_base_as_end() -> None:
