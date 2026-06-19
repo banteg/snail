@@ -45,6 +45,7 @@ struct TrackRowCell;
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0
+    void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0
     void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
