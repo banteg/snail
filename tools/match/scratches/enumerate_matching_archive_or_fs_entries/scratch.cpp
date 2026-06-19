@@ -11,8 +11,7 @@ typedef struct FindData {
     char name[260];      // +0x14
 } FindData;
 
-extern ArchiveIndex* g_archive_index_records; // data_53c7f8
-extern int g_enumerated_entry_count;          // data_503320
+extern int g_enumerated_entry_count; // data_503320
 
 char* __cdecl getcwd(char* buffer, int size);
 int __cdecl chdir(char* path);

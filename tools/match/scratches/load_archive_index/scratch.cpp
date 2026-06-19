@@ -2,11 +2,6 @@
 
 #include "archive_index.h"
 
-typedef struct File File;
-
-extern int g_archive_index_records; // data_53c7f8
-extern File* g_archive_file;        // data_53c7f0
-
 char archive_or_file_exists(char* path, char force_filesystem);
 char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer, unsigned int byte_count);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -39,7 +34,7 @@ char __cdecl load_archive_index(char* path)
     load_file_bytes_fixed_size_from_archive_or_fs(path, (char*)index, byte_count);
     xor_archive_bytes_in_place(0, (char*)index, byte_count);
     records = index;
-    g_archive_index_records = (int)records;
+    g_archive_index_records = records;
 
     i = 0;
     if (index->count > 0) {
@@ -50,7 +45,7 @@ char __cdecl load_archive_index(char* path)
             rebased_path += (int)records;
             ++i;
             *(char**)((char*)records + offset - 8) = rebased_path;
-            records = (ArchiveIndex*)g_archive_index_records;
+            records = g_archive_index_records;
         } while (i < records->count);
     }
 

@@ -3,11 +3,6 @@
 #include "archive_index.h"
 #include "loading_screen.h"
 
-typedef struct File File;
-
-extern ArchiveIndex* g_archive_index_records; // data_53c7f8
-extern File* g_archive_file;                // data_53c7f0
-
 extern "C" {
 File* __cdecl fopen(char* path, char* mode);
 int __cdecl fclose(File* file);

@@ -2,8 +2,6 @@
 
 #include "archive_index.h"
 
-extern ArchiveIndex* g_archive_index_records; // data_53c7f8
-
 ArchiveEntry* find_archive_entry(char* path)
 {
     ArchiveIndex* index = g_archive_index_records;

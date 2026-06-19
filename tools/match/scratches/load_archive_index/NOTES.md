@@ -13,3 +13,9 @@ index pointer from `esi` to `eax`, cleans up the batched call arguments, stores
 shape here still stores the global directly from `esi` before the stack cleanup,
 then copies `esi` to `eax` before the rebase loop. The archive semantics and
 entry-pointer rebase loop are otherwise aligned.
+
+2026-06-20 shared header sync: `archive_index.h` now owns the `File` forward
+declaration plus `g_archive_file` and typed `ArchiveIndex* g_archive_index_records`
+externs. Removing duplicate local externs from the archive-index consumers is
+codegen-neutral for the focused archive scratches; `load_archive_index` remains
+92.54% with the same store/stack-cleanup residual.
