@@ -16,6 +16,8 @@ struct Msg {
 
 typedef char Msg_must_be_0x1c[(sizeof(Msg) == 0x1c) ? 1 : -1];
 
+#include "game_root.h"
+
 class LoadingScreen {
 public:
     int initialize_loading_screen(); // @ 0x418b50
@@ -25,15 +27,6 @@ public:
 class FrontendFade {
 public:
     void begin_frontend_fade_in(); // @ 0x40abe0
-};
-
-class GameRoot {
-public:
-    char unknown_000[0x3c];
-    int fixed_update_count; // +0x3c
-
-    int run_frame_update();     // @ 0x40a2a0
-    void initialize_game_last(); // @ 0x410720
 };
 
 class HighScoreBank {

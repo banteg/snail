@@ -727,9 +727,9 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - header-conflict: 3 type name(s)
-- unresolved-layout: 30 type name(s)
-- header-compatible: 17 type name(s)
-- partial-compatible: 18 type name(s)
+- unresolved-layout: 26 type name(s)
+- header-compatible: 16 type name(s)
+- partial-compatible: 17 type name(s)
 - ready: 5 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
@@ -749,19 +749,15 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | VoiceManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | IntroScreen | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | Backdrop | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | HelpScreen | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | InputOkState | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | MainMenu | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | ObjectList | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | OptionsMenu | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
@@ -773,19 +769,17 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FrontendFade | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | HighScoreScreen | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | BodList | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | CutsceneAI | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | NewGameMenu | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | HighScoreScreen | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | PauseMenu | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | PlayerControlSource | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | partial-compatible | LoadingScreen | 7 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | GameRoot | 6 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

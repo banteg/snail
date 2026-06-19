@@ -6,6 +6,7 @@
 #include "bod_types.h"
 #include "cameraman_state.h"
 #include "directx_loader.h"
+#include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "object_render_types.h"
@@ -52,11 +53,6 @@ TextureRef* __stdcall register_sprite_texture(char* texture_path, int texture_id
 class LogoRuntime {
 public:
     int open_logo(); // @ 0x419110
-};
-
-class GameRoot {
-public:
-    char initialize_game_assets_and_world();
 };
 
 static void link_root_bod(char* game, int offset)

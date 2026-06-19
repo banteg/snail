@@ -1,11 +1,7 @@
 // initialize_game_last @ 0x410720 (thiscall, ret)
 
 #include "backdrop.h"
-
-class GameRoot {
-public:
-    void initialize_game_last();
-};
+#include "game_root.h"
 
 void GameRoot::initialize_game_last()
 {

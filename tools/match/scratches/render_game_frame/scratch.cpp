@@ -2,14 +2,10 @@
 
 #include "bod_types.h"
 #include "font_system.h"
+#include "game_root.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
 #include "transform_matrix.h"
-
-class GameRoot {
-public:
-    int render_game_frame();
-};
 
 struct RenderCameraSourceView {
     char unknown_00[0x38];

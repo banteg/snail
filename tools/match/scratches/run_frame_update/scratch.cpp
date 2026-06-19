@@ -3,6 +3,7 @@
 #include "audio_system.h"
 #include "cheat_state.h"
 #include "frontend_overlay_color_lerp.h"
+#include "game_root.h"
 #include "mouse_cursor_state.h"
 #include "sprite.h"
 #include "voice_manager.h"
@@ -43,10 +44,6 @@ int queue_axis_aligned_textured_quad(
     int layer);
 
 extern CheatState g_completion_snapshot_flags; // byte_4b2f40
-class GameRoot {
-public:
-    int run_frame_update();
-};
 
 int GameRoot::run_frame_update()
 {
