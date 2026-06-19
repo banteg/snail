@@ -20,7 +20,8 @@ void __stdcall play_sound_effect_at_position(int sound_id, const float* position
     delta.y = position[1] - game->listener_position.y;
     delta.z = position[2] - game->listener_position.z;
 
-    float magnitude = delta.vector_magnitude();
+    Vector3 magnitude_delta = delta;
+    float magnitude = magnitude_delta.vector_magnitude();
     if (magnitude < distance)
         distance = magnitude;
 

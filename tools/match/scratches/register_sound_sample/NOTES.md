@@ -23,3 +23,8 @@ Residual:
   Structured `if/else` source with a local `archive_index_records` gives the
   right branch layout and operands, but VC6 hoists `source_path = path` before
   the branch and reuses it in the filesystem path arm.
+- 2026-06-20 rejected probes: branch-local `archive_path`/`filesystem_path`
+  aliases and an explicit archive-arm `goto sample_loaded` compiled identically
+  to the hoisted near-match. Moving the filesystem `source_path = path` after
+  the backend call recovered the late load but regressed the call and count tail
+  to 77.67%, so the simpler structured form remains.

@@ -17,9 +17,14 @@ Focused Wibo result:
 - 2026-06-18 first pass: 61.79%, 57/66 candidate/target instructions, masked
   operands 10 ok. The clean source shape proves the constants, radius gate,
   gain expression, pan clamp, and backend dispatch, but VC6 collapses the local
-  vector staging into a 0x10-byte frame. Native uses a 0x1c-byte frame with
-  separate x/y/z scalar temps copied into a second 3-float vector before the
-  `vector_magnitude` thiscall.
+  vector staging into a 0x10-byte frame.
+- 2026-06-20 local-vector staging pass: 83.72%, 63/66 candidate/target
+  instructions, prefix 4/66, masked operands 10 ok. Keeping a second
+  `Vector3 magnitude_delta = delta` recovers the native 0x1c-byte frame and the
+  copy from x/y/z scalar slots into the vector passed to `vector_magnitude`.
+  Remaining residual: native initializes the `distance` local before the delta
+  math and keeps the min-distance result in that slot; the scratch stores the
+  magnitude in a temporary and short-circuits the impossible far-audible case.
 
 Rejected source-shape probes:
 
@@ -31,3 +36,6 @@ Rejected source-shape probes:
   the compact frame and regressed below the direct `Vector3` spelling.
 - Explicit scalar `delta_x/delta_y/delta_z` locals copied into the `Vector3`
   regressed to 48.00% by changing the FPU evaluation order.
+- A narrower scalar staging attempt that delayed `z`, plus conditional-assignment
+  and ternary min-distance spellings, either regressed or compiled identically to
+  the accepted two-vector shape.

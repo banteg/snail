@@ -16,9 +16,9 @@ int AudioBackend::load_registered_sound_sample_from_bytes(
     int sample_handle =
         g_bass_sample_load(1, bytes, 0, byte_count, normalization_class, 0x20010);
     g_registered_sound_sample_handles[sample_id] = sample_handle;
-    if (sample_handle == 0) {
-        sample_handle = debug_report_stub("***ERROR:Bass Sample Load Memory Fail\n");
+    if (sample_handle != 0) {
+        return sample_handle;
     }
 
-    return sample_handle;
+    return debug_report_stub("***ERROR:Bass Sample Load Memory Fail\n");
 }
