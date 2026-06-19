@@ -28,3 +28,8 @@ Residual:
   to the hoisted near-match. Moving the filesystem `source_path = path` after
   the backend call recovered the late load but regressed the call and count tail
   to 77.67%, so the simpler structured form remains.
+- 2026-06-20 global-test retry: removing the `archive_index_records` local and
+  testing `g_archive_index_records` directly is codegen-neutral at 93.07%.
+  That rules out the saved global alias as the reason for the early `path` load;
+  the remaining residual is specifically VC6's branch-invariant path reload
+  scheduling.

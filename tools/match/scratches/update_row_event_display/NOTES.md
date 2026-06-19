@@ -87,3 +87,14 @@ shared `GameInputOwner`/`InputState` layout. The old scratch-local
 `control_flags` at owner `+0x3c` is really `input.pressed_buttons`, because
 `update_game_input` proves the embedded runtime input block starts at owner
 `+0x38`.
+
+2026-06-20 near-proof retry: focused Wibo still reports 99.53%, 213/213
+instructions, 102/213 prefix, and 37 clean masked operands. The exact sibling
+`register_parcel_delivery` proves that the same
+`g_sound_effect_manager.play_sound_effect(0x31)` source spelling can emit the
+native `push 0x31; mov ecx, ADDR` order, but the surrounding state-machine
+shape here still schedules `mov ecx` first. Removing the retained `game` local,
+staging `int sound_id = 0x31`, and calling through a real
+`SoundEffectManager*` pointer were all codegen-neutral. Keep the current clear
+bonus-award source until a stronger owner/lifetime lead explains the call setup
+order.

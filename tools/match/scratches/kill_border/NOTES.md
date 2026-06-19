@@ -12,3 +12,9 @@ cannot compile a non-void fallthrough without entering a missing-import warning
 path. Current result: 88.52%. The remaining residual is the three recursive
 calls normalizing as `call ADDR` instead of target-local `call L0`, plus the
 compiler's final load for the placeholder return value.
+
+2026-06-20 recursion spelling retry: writing the three recursive calls as
+`this->kill_border(...)` is codegen-neutral at 88.52% and still normalizes as
+external `call ADDR` sites. The gap remains the scratch/linker model for
+self-recursion plus the intentional non-void result placeholder required by
+callers that preserve incidental `eax`.

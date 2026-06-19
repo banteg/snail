@@ -47,3 +47,9 @@ Rejected source-shape probes:
   `total_seconds` first, with the score-bucket block as an alternate view. This
   keeps the time-trial helper and BN decompile aligned on the ordering key
   without changing layout or codegen.
+- 2026-06-20 route-base retry: materializing a `HighScoreBank*` for the selected
+  route and then taking `route_bank->time_trial_route_records`, or spelling the
+  same address through an incremented `char* route_base`, are both codegen-neutral
+  at 83.67%. Native still adds the route stride into the `this` register before
+  the compare, so the current array-shaped source remains the least misleading
+  expression of the recovered layout.

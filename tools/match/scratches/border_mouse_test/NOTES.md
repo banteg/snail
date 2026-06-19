@@ -25,3 +25,8 @@ mask index as dead `width *= y`, `y * width + x + 6`, a separate add chain, or
 `x + 6` followed by the row product all compile identically and leave the same
 `imul esi, eax` versus `imul eax, esi` destination-register residual. Keep the
 clear `row = width; row *= y` source.
+
+2026-06-20 near-proof retry: mutating the live `width` local directly
+(`width *= y; pixel_index = width + x + 6`) is also codegen-neutral at 98.29%.
+It does not recover native's product-in-`esi` destination, so the explicit
+`row` temporary remains the clearer source shape for the mask row index.

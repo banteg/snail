@@ -44,3 +44,9 @@ Remaining residuals:
   expression, assignment through `repeat_code`, or swapped result/repeat stores
   are all codegen-neutral and keep `add bl, 5`. Keep the current byte-shaped
   baseline.
+- 2026-06-20 near-proof retry: swapping the case-fold equality operands again
+  regresses to 98.86% by changing the final compare direction without fixing
+  the call/load order. Widening only the Enter/Ctrl `enter_code` temporary to
+  `unsigned int` is codegen-neutral and still emits `add bl, 5`, confirming the
+  full-register `add ebx, 5` residual is not recoverable through a narrow
+  local type change while preserving the byte-shaped function body.
