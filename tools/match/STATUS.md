@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**440/687** mapped gameplay functions matched, **607/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **34.37%**.
+**440/687** mapped gameplay functions matched, **607/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **34.38%**.
 
 ## Proof Grade (440)
 
@@ -530,7 +530,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 unresolved, 57 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
-| 🚧 | update_subgame | 0x438b90 | 3748 | 1043/1033 | 66.38% | 9/1033 | 2 unresolved, 107 ok |  |
+| 🚧 | update_subgame | 0x438b90 | 3748 | 1046/1033 | 67.53% | 9/1033 | 2 unresolved, 108 ok |  |
 | 🚧 | destroy_sub_lazer_projectile | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
 | 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 172/187 | 42.34% | 0/187 | 26 ok |  |
 | 🚧 | health_collect_particles | 0x43a010 | 386 | 98/104 | 66.34% | 1/104 | 11 ok |  |

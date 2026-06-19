@@ -43,6 +43,8 @@ Several source-level details were important rather than cosmetic:
 - The four authored tile-35 ring variants converge on one shared last-ring-Z assignment.
 - RNG calls are kept on the left side of comparisons where that produces the native operand ordering and clean call audits.
 - Completion-source assignments intentionally retain the matcher-confirmed X/Y source ordering.
+- Duplicating the challenge-setup `result == 1` build-zero path scores better than sharing the later case-7 label; the native places that build return before the challenge destroy path.
+- `format_time_trial_string` is called as if it had an unused receiver at `game + 0xff25e0`. The callee itself is still the `ret 4` formatter, but this source shape recovers the native `ecx` setup at the HUD callsites.
 
 These choices recover the exact native prologue through the state range test:
 
@@ -60,11 +62,19 @@ cmp eax, 7
 
 ## Remaining mismatches
 
+Focused matcher result: 67.53%, 1046 candidate instructions versus 1033 target instructions, 9-instruction prefix, and 108 clean masked operands.
+
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. The two unresolved masked operands are switch jump-table addresses, not mismatched data or call targets.
 
 The largest remaining source-shape opportunities are:
 
-1. state-1 galaxy/challenge setup case ordering and shared build/destroy exits;
+1. state-1 galaxy setup case ordering and shared build/destroy exits;
 2. the early state-2 bridge/handoff scheduling;
 3. projected and ambient ring shared exits;
 4. the time-trial/HUD branches and final camera-return topology.
+
+Rejected continuation trials:
+
+- moving the selected-level handoff to a tail `goto` label still emitted the same measured layout;
+- spelling the pause-state setup with raw offsets did not change the prologue mismatch;
+- materializing a time-trial `record` base local improved one address sequence but regressed the surrounding HUD/camera tail.

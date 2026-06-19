@@ -59,6 +59,11 @@ struct RuntimeCellSlotBase {
     TrackRowCell cell;
 };
 
+class TimeTrialStringFormatter {
+public:
+    char* format_time_trial_string(TimerCounters* timer);
+};
+
 struct SelectedLevelRecord {
     char unknown_00[0x28];
     int replay_level_index;
@@ -128,7 +133,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int layer,
     int blend);
-char* __stdcall format_time_trial_string(TimerCounters* timer);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
@@ -229,8 +233,11 @@ void Game::update_subgame()
 
         case 1:
             result = ((ChallengeSetupController*)(game + 0x125ffe0))->update_challenge_setup_screen();
-            if (result == one)
-                goto build_zero_level;
+            if (result == one) {
+                subgame_rebuild_selector = 2;
+                build_subgame_level(0);
+                return;
+            }
             if (result != 3)
                 break;
             destroy_subgame();
@@ -238,7 +245,6 @@ void Game::update_subgame()
             return;
 
         case 7:
-build_zero_level:
             subgame_rebuild_selector = 2;
             build_subgame_level(0);
             return;
@@ -624,11 +630,13 @@ after_authored_ring:
         ((TrackRenderCacheManager*)(game + 0x5c))->update_track_render_cache_rows();
 
         if (level_mode == 4) {
-            char* text = format_time_trial_string((TimerCounters*)(game + 0x3bba4c));
+            TimeTrialStringFormatter* formatter = (TimeTrialStringFormatter*)(game + 0xff25e0);
+            char* text = formatter->format_time_trial_string((TimerCounters*)(game + 0x3bba4c));
             rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb88) + 0x2cc, text);
             int record_offset = level_mode_arg * 0x1fac0;
             if (*(int*)(game + record_offset + 0x944150) == one) {
-                text = format_time_trial_string((TimerCounters*)(game + record_offset + 0x944158));
+                text = formatter->format_time_trial_string(
+                    (TimerCounters*)(game + record_offset + 0x944158));
                 rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb8c) + 0x2cc, text);
                 break;
             }
