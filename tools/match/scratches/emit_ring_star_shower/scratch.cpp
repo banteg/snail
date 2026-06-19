@@ -31,12 +31,9 @@ void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
         velocity.y *= 0.30000001f;
         star->velocity = velocity;
 
-        int* source_position_words = (int*)&sprite->position;
-        int* star_position_words = (int*)&star->position;
-        star_position_words[0] = source_position_words[0];
-        star_position_words[1] = source_position_words[1];
-        int source_z = source_position_words[2];
+        Vector3* source_position = &sprite->position;
+        Vector3* star_position = &star->position;
+        *star_position = *source_position;
         star->gravity_step = 0.0f;
-        star_position_words[2] = source_z;
     }
 }

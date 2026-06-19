@@ -4,7 +4,7 @@ Live source map for the star burst emitted by
 `update_ring_or_special_effect_particle` when the parent cadence counter is
 zero.
 
-Current match: 74.42%, 64 candidate instructions versus 65 target instructions,
+Current match: 90.77%, 65 candidate instructions versus 65 target instructions,
 with 9 clean masked operands. The scratch deliberately uses shared `sprite.h`,
 `player.h`, and `ring_special_effect_types.h`, confirming the already-promoted
 Sprite lanes used by this emitter:
@@ -19,14 +19,11 @@ Residual:
 
 - Native reserves a `0x18` stack frame immediately after loading
   `g_render_flags`. The current source still compiles to a smaller `0x0c`
-  frame, but now matches the native idea of filling a local velocity vector
-  with unscaled orbit components before applying the `0.30000001f` velocity
-  scale and copying the vector to `sprite->velocity`.
-- The position copy is intentionally dword-shaped: native copies x/y/z from
-  the parent sprite position and stores gravity zero before writing z. Native
-  leaves the low byte of the copied z dword in `al`, but the only known caller
-  ignores it. The `int*` spelling keeps that
-  relationship explicit and removes the earlier extra source-z byte reload.
+  frame, but matches the native velocity, sprite-flag, and position-copy
+  register ownership.
+- Native stores `gravity_step = 0.0f` before writing the copied position z lane.
+  The natural `Vector3` assignment writes x/y/z first, then stores gravity.
+  The only known caller ignores the incidental low-byte result.
 
 Rejected/source-shape probes:
 
@@ -61,8 +58,23 @@ Rejected/source-shape probes:
 - 2026-06-16 direct destination retry: removing the `star_position_words`
   destination pointer and writing `((int*)&star->position)[0..2]` directly
   compiled identically at 74.42%. This confirms the remaining tail residual is
-  not solved by the destination pointer spelling; keep the current clearer
-  dword-position-copy source.
+  not solved by the destination pointer spelling alone; the dword-position-copy
+  form stayed as the best source until the later `Vector3` assignment probe.
+- 2026-06-20 position-copy correction: spelling the emitted star position copy
+  as `Vector3* source_position = &sprite->position; Vector3* star_position =
+  &star->position; *star_position = *source_position;` improves the focused
+  match from 74.42% to 90.77%. This recovers the native source pointer in `eax`,
+  destination pointer in `ecx`, sprite-flag read/write register, and 65/65
+  instruction count. Adding only named `Vector3*` source/destination pointers
+  around the old dword copy compiled identically at 74.42%, so the win is the
+  semantic vector assignment rather than pointer naming alone.
+- 2026-06-20 rejected gravity-order probes: splitting the assignment into
+  `x/y/z` field stores regressed to 74.42% by losing the native destination
+  pointer shape and using an x87 z copy. Naming separate unscaled velocity
+  locals regressed to 85.94% by disturbing the x87 scale schedule. Staging
+  `sprite->position` into a local `Vector3` regressed to 79.39% and still kept
+  the smaller `0x0c` frame, so the remaining `0x18` frame residual is not
+  explained by a source-position local.
 
 Type consolidation:
 

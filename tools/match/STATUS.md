@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.50%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.51%**.
 
 ## Proof Grade (453)
 
@@ -478,7 +478,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (56)
+## High Progress (80-94.99%) (57)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -517,6 +517,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 81.79% | 44/144 | 9 ok |  |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 86.52% | 23/160 | 15 ok |  |
+| 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 90.77% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 338/336 | 86.35% | 9/336 | 1 mismatch, 35 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |
 | 🚧 | deserialize_compact_high_score_record | 0x440020 | 335 | 114/114 | 92.98% | 80/114 | 1 ok |  |
@@ -539,7 +540,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (89)
+## Mid Progress (50-79.99%) (88)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -599,7 +600,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 124/122 | 74.80% | 16/122 | 7 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 223/347 | 51.23% | 22/347 | 8 mismatch, 34 ok |  |
-| 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 64/65 | 74.42% | 1/65 | 9 ok |  |
 | 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 71.88% | 6/128 | 15 ok |  |
 | 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 127/127 | 72.44% | 6/127 | 15 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 148/147 | 73.22% | 0/147 | 32 ok |  |
