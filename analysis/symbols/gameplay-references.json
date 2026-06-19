@@ -717,6 +717,16 @@
       "description": "No-op this-returning constructor thunk reused by trivial default constructors before later real initialization."
     },
     {
+      "address": "0x44dbd0",
+      "name": "set_color_rgb",
+      "kind": "function",
+      "aliases": [
+        "sub_44dbd0",
+        "?set_color_rgb@Color4f@@QAEXMMM@Z"
+      ],
+      "description": "Color4f three-channel RGB setter used by firework_shoot; stores r/g/b and leaves alpha unchanged."
+    },
+    {
       "address": "0x44fd8a",
       "name": "D3DXMatrixTranslation",
       "kind": "function",

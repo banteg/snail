@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**439/687** mapped gameplay functions matched, **594/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.26%**.
+**439/687** mapped gameplay functions matched, **595/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.36%**.
 
 ## Proof Grade (439)
 
@@ -448,7 +448,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (155)
+## In Progress (156)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -555,6 +555,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 48.39% | 0/218 | 17 ok |  |
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 45/48 | 49.46% | 0/48 | 3 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 62.96% | 5/83 | 1 mismatch, 9 ok |  |
+| 🚧 | firework_shoot | 0x441dd0 | 390 | 99/103 | 78.22% | 4/103 | 21 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
@@ -608,7 +609,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (93)
+## No Scratch (92)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -694,7 +695,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_subgoldy | 0x43a9c0 | 1360 | 0/279 | 0.00% | 0/279 | - |  |
 | ⬜ | update_slug_hazard_ai | 0x43f930 | 1772 | 0/464 | 0.00% | 0/464 | - |  |
 | ⬜ | remove_subgame_bods | 0x440910 | 1644 | 0/501 | 0.00% | 0/501 | - |  |
-| ⬜ | firework_shoot | 0x441dd0 | 390 | 0/103 | 0.00% | 0/103 | - |  |
 | ⬜ | place_challenge_parcels_on_track | 0x444240 | 617 | 0/171 | 0.00% | 0/171 | - |  |
 | ⬜ | initialize_voice_manager | 0x448ee0 | 960 | 0/269 | 0.00% | 0/269 | - |  |
 | ⬜ | initialize_bass_audio_backend | 0x449460 | 612 | 0/176 | 0.00% | 0/176 | - |  |

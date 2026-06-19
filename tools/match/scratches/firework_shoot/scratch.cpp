@@ -1,0 +1,49 @@
+// firework_shoot @ 0x441dd0 (stdcall, ret 0x10)
+
+#include "sprite.h"
+
+extern unsigned char g_render_flags; // byte_4df934
+
+double random_float_below(float upper_bound, int tag);
+int next_math_random_value();
+
+void __stdcall firework_shoot(Vector3* position, int owner, int texture_id, int count)
+{
+    if ((g_render_flags & 0x10) == 0 || count <= 0)
+        return;
+
+    int remaining = count;
+    Vector3 velocity;
+
+    do {
+        Sprite* sprite = g_sprite_manager.allocate_sprite(owner, texture_id, -1, -1);
+        sprite->draw_mode = 10;
+        sprite->flags |= 0x802;
+        sprite->corner_scale = 4.0f;
+        sprite->progress = 0.0f;
+
+        float duration = (float)random_float_below(0.5f, 0) + 0.800000012f;
+        sprite->lifetime = 0.0f;
+        sprite->lifetime_step = 0.277777791f;
+        sprite->progress_step = 1.0f / (duration * 60.0f);
+
+        float red = (float)random_float_below(0.300000012f, 0) + 0.699999988f;
+        sprite->color.set_color_rgb(red, red * 0.5f, 0.0f);
+
+        sprite->size_start = 0.5f;
+        sprite->size_end = 0.100000001f;
+
+        velocity.z =
+            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
+        velocity.y =
+            ((float)next_math_random_value() - 16384.0f) * 0.0000183105476f
+            + 0.100000001f;
+        velocity.x =
+            ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
+
+        sprite->depth_offset = 0.0f;
+        sprite->velocity = velocity;
+        Vector3* out_position = &sprite->position;
+        *out_position = *position;
+    } while (--remaining != 0);
+}

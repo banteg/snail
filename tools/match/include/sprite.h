@@ -11,6 +11,7 @@ struct Color4f {
     Color4f* noop_this_constructor();
     Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
     void store_color4f(float r, float g, float b, float a);       // @ 0x44dbb0
+    void set_color_rgb(float r, float g, float b);                // @ 0x44dbd0
     int set_color_alpha(int alpha_bits);                         // @ 0x44db80, raw-bit alpha
     void set_color_grayscale(float intensity);                    // @ 0x44db90
     void set_color_white();                                      // @ 0x44dc50
