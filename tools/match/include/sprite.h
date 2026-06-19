@@ -110,6 +110,7 @@ typedef char Sprite_must_be_0xb4[
 class SpriteManager {
 public:
     void initialize_sprite_manager(); // @ 0x44e160
+    TextureRef* register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
     Sprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
     void kill_game_sprites(); // @ 0x44e3d0
     char set_sprite_manager_paused(char paused_); // @ 0x44e540
