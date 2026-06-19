@@ -50,6 +50,24 @@
       "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) used by initialize_array_with_constructor for POD-like runtime slot arrays and enemy-manager I/O stream members."
     },
     {
+      "address": "0x408880",
+      "name": "initialize_solution_record",
+      "kind": "function",
+      "aliases": [
+        "sub_408880"
+      ],
+      "description": "Small thiscall solution-record initializer used by initialize_runtime_pools_and_path_template_bank; constructs the Color4f field at +0x84 and returns this."
+    },
+    {
+      "address": "0x42f6e0",
+      "name": "initialize_object_constructor_thunk",
+      "kind": "function",
+      "aliases": [
+        "sub_42F6E0"
+      ],
+      "description": "Thiscall object-constructor thunk that calls initialize_object at 0x42f6f0, preserves the original this pointer, and returns it."
+    },
+    {
       "address": "0x405018",
       "name": "update_row_event_display_jump_table",
       "kind": "jump_table",

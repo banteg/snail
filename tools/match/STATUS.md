@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**441/687** mapped gameplay functions matched, **634/687** mapped gameplay functions have a scratch, **50322/325882** bytes (**15.44%**) are proof-grade, and overall fuzzy is **40.90%**.
+**442/687** mapped gameplay functions matched, **635/687** mapped gameplay functions have a scratch, **51254/325882** bytes (**15.73%**) are proof-grade, and overall fuzzy is **41.18%**.
 
-## Proof Grade (441)
+## Proof Grade (442)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -60,6 +60,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | read_current_display_resolution | 0x4078b0 | 351 | 22/22 | 100.00% | 22/22 | 1 ok |  |
 | ✅ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 23 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
+| ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 932 | 227/227 | 100.00% | 227/227 | 72 ok |  |
 | ✅ | initialize_border_record | 0x408410 | 92 | 21/21 | 100.00% | 21/21 | 9 ok |  |
 | ✅ | initialize_cached_x_mesh_slot | 0x408470 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_intro_logo_renderable | 0x408490 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
@@ -648,7 +649,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (53)
+## No Scratch (52)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -662,7 +663,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_exit_prompt | 0x4060d0 | 1804 | 0/441 | 0.00% | 0/441 | - |  |
 | ⬜ | game_startup_and_main_loop | 0x406dc0 | 1316 | 0/325 | 0.00% | 0/325 | - |  |
 | ⬜ | construct_game_runtime | 0x407b60 | 1266 | 0/310 | 0.00% | 0/310 | - |  |
-| ⬜ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 932 | 0/227 | 0.00% | 0/227 | - |  |
 | ⬜ | initialize_game_assets_and_world | 0x40acf0 | 23070 | 0/5411 | 0.00% | 0/5411 | - |  |
 | ⬜ | initialize_game_window_and_input | 0x4119d0 | 938 | 0/287 | 0.00% | 0/287 | - |  |
 | ⬜ | draw_textured_quad_immediate | 0x413030 | 1284 | 0/332 | 0.00% | 0/332 | - |  |
@@ -728,6 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | ObjectVertexBufferVtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | RuntimeSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteNameRecord | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -739,7 +740,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LevelSegmentSlotStore | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ScoreStats | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Twinkle | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VertexBufferVtbl | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
