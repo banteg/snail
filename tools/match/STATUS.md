@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**440/687** mapped gameplay functions matched, **632/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **40.38%**.
+**440/687** mapped gameplay functions matched, **633/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **40.53%**.
 
 ## Proof Grade (440)
 
@@ -449,10 +449,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (192)
+## In Progress (193)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | initialize_frontend_sprite_button | 0x401a70 | 699 | 156/157 | 69.01% | 35/157 | 7 ok |  |
 | 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 87.87% | 5/218 | 23 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
@@ -646,12 +647,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (55)
+## No Scratch (54)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | ⬜ | draw_frontend_widget | 0x401130 | 2353 | 0/712 | 0.00% | 0/712 | - |  |
-| ⬜ | initialize_frontend_sprite_button | 0x401a70 | 699 | 0/157 | 0.00% | 0/157 | - |  |
 | ⬜ | initialize_frontend_widget | 0x401d30 | 1892 | 0/429 | 0.00% | 0/429 | - |  |
 | ⬜ | layout_frontend_widget | 0x4024a0 | 741 | 0/177 | 0.00% | 0/177 | - |  |
 | ⬜ | update_frontend_widget_interaction | 0x402820 | 2677 | 0/647 | 0.00% | 0/647 | - |  |
@@ -752,6 +752,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FrontendFade | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | FrontendWidget | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
@@ -762,7 +763,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Backdrop | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | CutsceneAI | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FrontendWidget | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HelpScreen | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LevelDefinitionLoader | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
