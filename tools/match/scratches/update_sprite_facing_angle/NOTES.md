@@ -46,3 +46,12 @@ artifact from the final progress comparison. The live prototype is
 `void __thiscall update_sprite_facing_angle(Sprite*, const TransformMatrix*)`,
 which resolves the same Sprite fields in BN and removes the synthetic `result`.
 The exact-match residual is unchanged: only the dead rotated-Z spill slot differs.
+
+2026-06-19 dead-Z spill audit: focused Wibo still reproduces 97.67%, 86/86
+instructions, with the only residual being the unused returned `z` spill slot in
+both recompute blocks. Using the returned `Vector3*` directly for
+`atan2_positive` regresses to 85.54% and removes the native dead-Z store; adding
+an explicit returned-pointer temporary before copying to `rotated` regresses to
+72.94%; and naming `angle_x`/`angle_y` temporaries regresses to 68.13% by
+expanding argument staging. Keep the current value-copy spelling until there is
+stronger evidence for a real local-lifetime source idiom.
