@@ -23,9 +23,11 @@ extern char g_directinput_mouse_data_format; // data_49b70c
 
 int initialize_mouse_input(int hwnd)
 {
-    g_mouse_live_x[0] = g_authored_view_width * 0.5f;
+    float mouse_x = g_authored_view_width * 0.5f;
+    float mouse_y = g_authored_view_height * 0.5f;
+    g_mouse_live_x[0] = mouse_x;
     g_hide_system_cursor_flag = 1;
-    g_mouse_live_y[0] = g_authored_view_height * 0.5f;
+    g_mouse_live_y[0] = mouse_y;
 
     int result = DirectInput8Create(
         GetModuleHandleA(0),

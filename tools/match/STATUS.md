@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**443/687** mapped gameplay functions matched, **637/687** mapped gameplay functions have a scratch, **51270/325882** bytes (**15.73%**) are proof-grade, and overall fuzzy is **41.37%**.
+**444/687** mapped gameplay functions matched, **638/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **41.91%**.
 
-## Proof Grade (443)
+## Proof Grade (444)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -381,6 +381,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | click_mouse_screen | 0x44c060 | 156 | 43/43 | 100.00% | 43/43 | 13 ok |  |
 | ✅ | release_mouse_input | 0x44c2c0 | 66 | 21/21 | 100.00% | 21/21 | 5 ok |  |
+| ✅ | initialize_mouse_input | 0x44c310 | 157 | 46/46 | 100.00% | 46/46 | 18 ok |  |
 | ✅ | is_mouse_captured | 0x44c3b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | capture_mouse_cursor | 0x44c3c0 | 51 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | release_mouse_cursor | 0x44c400 | 21 | 8/8 | 100.00% | 8/8 | - |  |
@@ -452,7 +453,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (11)
+## Near Match (95-99.99%) (10)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -465,7 +466,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 98.86% | 386/440 | 73 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | initialize_mouse_input | 0x44c310 | 157 | 46/46 | 95.65% | 6/46 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
 ## High Progress (80-94.99%) (50)
@@ -523,7 +523,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 
-## Mid Progress (50-79.99%) (85)
+## Mid Progress (50-79.99%) (86)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -564,6 +564,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 66.12% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 211/206 | 65.71% | 10/206 | 31 ok |  |
 | 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 141/134 | 53.09% | 0/134 | 26 ok |  |
+| 🚧 | build_track_render_caches | 0x433220 | 2310 | 475/763 | 75.77% | 90/763 | 1 unresolved, 14 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 57/58 | 52.17% | 7/58 | 4 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 4 mismatch, 20 ok |  |
@@ -666,7 +667,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (0%) (50)
+## No Scratch (0%) (49)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -718,7 +719,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 0/668 | 0.00% | 0/668 | - |  |
 | ⬜ | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 0/579 | 0.00% | 0/579 | - |  |
 | ⬜ | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 0/1029 | 0.00% | 0/1029 | - |  |
-| ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
 | ⬜ | build_subgame_level | 0x437eb0 | 2128 | 0/555 | 0.00% | 0/555 | - |  |
 
 ## Type Consolidation
@@ -737,11 +737,11 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 6 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | ObjectVertexBufferVtbl | 5 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ObjectVertexBufferVtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |

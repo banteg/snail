@@ -6,8 +6,8 @@
   returns zero on successful setup.
 - Native does not test the `SetCooperativeLevel` result after `SetDataFormat`
   succeeds; it calls `Acquire` and returns zero.
-- Current focused match: 95.65%, 46/46 instructions, with 17 clean masked
-  operands. The only residual is startup scheduling: native stores
-  `g_mouse_live_x` before the `GetModuleHandleA(0)` argument push and cursor
-  hide flag store, while VC6 keeps those two setup instructions before the X
-  store for this source spelling.
+- Current focused match: 100.00%, 46/46 instructions, with 18 clean masked
+  operands. The source-shape key is naming the X/Y half-viewport products as
+  locals before storing them; this lets VC6 keep the native schedule where the
+  X store precedes the nested `GetModuleHandleA(0)` argument push and the hide
+  flag store.
