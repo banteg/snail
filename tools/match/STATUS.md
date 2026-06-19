@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**442/687** mapped gameplay functions matched, **636/687** mapped gameplay functions have a scratch, **51254/325882** bytes (**15.73%**) are proof-grade, and overall fuzzy is **41.36%**.
+**443/687** mapped gameplay functions matched, **637/687** mapped gameplay functions have a scratch, **51270/325882** bytes (**15.73%**) are proof-grade, and overall fuzzy is **41.37%**.
 
-## Proof Grade (442)
+## Proof Grade (443)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -116,6 +116,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
 | ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
 | ✅ | set_object_color | 0x4141d0 | 139 | 47/47 | 100.00% | 47/47 | 3 ok |  |
+| ✅ | set_fullscreen_mode | 0x414260 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | bind_texture_ref | 0x414500 | 178 | 62/62 | 100.00% | 62/62 | 11 ok |  |
 | ✅ | replace_object_group_texture_refs | 0x4145c0 | 129 | 26/26 | 100.00% | 26/26 | - |  |
 | ✅ | reset_render_counters | 0x414650 | 18 | 5/5 | 100.00% | 5/5 | 3 ok |  |
@@ -650,7 +651,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (51)
+## No Scratch (50)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -666,7 +667,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_game_assets_and_world | 0x40acf0 | 23070 | 0/5411 | 0.00% | 0/5411 | - |  |
 | ⬜ | initialize_game_window_and_input | 0x4119d0 | 938 | 0/287 | 0.00% | 0/287 | - |  |
 | ⬜ | draw_textured_quad_immediate | 0x413030 | 1284 | 0/332 | 0.00% | 0/332 | - |  |
-| ⬜ | set_fullscreen_mode | 0x414260 | 667 | 0/210 | 0.00% | 0/210 | - |  |
 | ⬜ | initialize_high_score_screen | 0x416910 | 2311 | 0/600 | 0.00% | 0/600 | - |  |
 | ⬜ | load_landscape_script_by_name | 0x4182f0 | 1404 | 0/386 | 0.00% | 0/386 | - |  |
 | ⬜ | initialize_intro_screen | 0x4191e0 | 1851 | 0/521 | 0.00% | 0/521 | - |  |
@@ -722,12 +722,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 6 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 4 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Direct3DRenderer | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
