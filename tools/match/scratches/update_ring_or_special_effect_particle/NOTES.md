@@ -104,3 +104,13 @@ Rejected source-shape probe:
   y/z reproduces the 89.91% direct-X regression: it recovers
   `fadd [eax+0x68]`, but hoists the radius multiply before the parent/sprite
   reloads and loses the native y/z base materialization. Keep the baseline.
+- 2026-06-19 delayed-X audit: focused Wibo still reports 96.36%, 55/55
+  instructions, 28/55 prefix, and 5 clean masked operands. Delaying
+  `parent_position = &live_parent->transform.position` until after a direct
+  `live_parent->transform.position.x` read regresses to 89.91%, and naming an
+  explicit `scaled_x = orbit_x * radius` value produces the same regression:
+  VC6 hoists `fmul [this+0x1c]` before the parent/sprite reloads and reads y/z
+  directly from `[parent+0x6c]`/`[parent+0x70]`. An explicit lane pointer
+  `(float*)((char*)live_parent + 0x68)` is codegen-neutral at 96.36% and leaves
+  the same materialization-order residual. Keep the typed `Vector3*`
+  `parent_position` baseline.
