@@ -29,19 +29,7 @@ struct PathAttachmentSample {
 typedef char PathAttachmentSample_must_be_0xa8[
     (sizeof(PathAttachmentSample) == 0xa8) ? 1 : -1];
 
-struct PathTemplateFaceQuad {
-    unsigned short flags;                  // +0x00
-    unsigned short vertex_0;               // +0x02
-    unsigned short vertex_1;               // +0x04
-    unsigned short vertex_2;               // +0x06
-    unsigned short vertex_3;               // +0x08
-    char unknown_0a[0x0c - 0x0a];
-    TextureRef* texture_ref;               // +0x0c
-    ObjectUv uv[4];                        // +0x10
-};
-
-typedef char PathTemplateFaceQuad_must_be_0x30[
-    (sizeof(PathTemplateFaceQuad) == 0x30) ? 1 : -1];
+typedef ObjectFaceQuad PathTemplateFaceQuad;
 
 class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
@@ -673,7 +661,7 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
                 for (face_index = 0; face_index < 2; ++face_index) {
                     PathTemplateFaceQuad* face =
                         &facequads[2 * face_column + 2 * face_row * width_cells + face_index];
-                    face->flags = 0;
+                    face->header_word = 0;
                     if (face_index == 0) {
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;

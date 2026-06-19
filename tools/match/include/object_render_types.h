@@ -46,8 +46,13 @@ struct ObjectUv {
 };
 
 struct ObjectFaceQuad {
-    unsigned char flags; // +0x00; 0x80 marks three-index form, 0x10 starts a texture group
-    char unknown_01;
+    union {
+        unsigned short header_word; // +0x00, constructor word store
+        struct {
+            unsigned char flags; // +0x00; 0x80 marks three-index form, 0x10 starts a texture group
+            unsigned char secondary_flags; // +0x01
+        };
+    };
     unsigned short vertex_0; // +0x02
     unsigned short vertex_1; // +0x04
     unsigned short vertex_2; // +0x06

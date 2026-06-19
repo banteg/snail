@@ -730,7 +730,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 - unresolved-layout: 30 type name(s)
 - header-compatible: 18 type name(s)
 - partial-compatible: 18 type name(s)
-- ready: 6 type name(s)
+- ready: 5 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -803,7 +803,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | partial-compatible | ScoreStats | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Twinkle | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | TwinkleManager | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| ready | PathTemplateFaceQuad | 8 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
 | ready | VertexBuffer | 3 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
 | ready | IntroRenderableSlot | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
 | ready | IntroScreenRuntime | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
