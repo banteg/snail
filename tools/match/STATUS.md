@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**440/687** mapped gameplay functions matched, **627/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **39.27%**.
+**440/687** mapped gameplay functions matched, **628/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **39.57%**.
 
 ## Proof Grade (440)
 
@@ -449,7 +449,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (187)
+## In Progress (188)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -572,6 +572,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | serialize_compact_high_score_record | 0x440170 | 326 | 109/109 | 85.32% | 60/109 | 1 ok |  |
 | 🚧 | add_subgoldy_score | 0x4402c0 | 190 | 58/58 | 89.66% | 39/58 | 6 ok |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
+| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 494/501 | 59.90% | 6/501 | 2 mismatch, 58 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 80.60% | 6/268 | 58 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 95/94 | 60.32% | 0/94 | 1 mismatch, 13 ok |  |
 | 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 74.07% | 0/67 | 8 ok |  |
@@ -641,7 +642,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (60)
+## No Scratch (59)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -703,7 +704,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
 | ⬜ | build_subgame_level | 0x437eb0 | 2128 | 0/555 | 0.00% | 0/555 | - |  |
 | ⬜ | update_slug_hazard_ai | 0x43f930 | 1772 | 0/464 | 0.00% | 0/464 | - |  |
-| ⬜ | remove_subgame_bods | 0x440910 | 1644 | 0/501 | 0.00% | 0/501 | - |  |
 | ⬜ | load_object_definition | 0x44c420 | 1109 | 0/325 | 0.00% | 0/325 | - |  |
 
 ## Type Consolidation
