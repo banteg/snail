@@ -721,14 +721,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- header-conflict: 3 type name(s)
+- header-conflict: 2 type name(s)
 - unresolved-layout: 26 type name(s)
-- header-compatible: 16 type name(s)
+- header-compatible: 17 type name(s)
 - partial-compatible: 17 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
-| header-conflict | Game | 42 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | FrontendWidget | 8 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | GolbShot | 2 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
@@ -757,6 +756,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| header-compatible | Game | 42 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

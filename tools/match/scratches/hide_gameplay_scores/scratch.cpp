@@ -1,8 +1,8 @@
 // hide_gameplay_scores @ 0x445f10 (thiscall, ret)
 
-#include "game.h"
+#include "subgame_runtime.h"
 
-void Game::hide_gameplay_scores()
+void SubgameRuntime::hide_gameplay_scores()
 {
     FrontendWidget* widget_b = score_widget_b;
     if (widget_b != 0) {

@@ -50,12 +50,7 @@ public:
     char unknown_359080[0x359140 - 0x359080];
     GarbageHazardPool garbage_hazards; // +0x359140
     RingOrSpecialEffectPool ring_effects; // +0x35b78c
-    char unknown_35bb7c[0x35bb88 - 0x35bb7c];
-    FrontendWidget* score_widget_a; // +0x35bb88
-    FrontendWidget* score_widget_b; // +0x35bb8c
-    FrontendWidget* lives_icon_widget; // +0x35bb90
-    FrontendWidget* lives_text_widget; // +0x35bb94
-    FrontendWidget* life_stock_widgets[9]; // +0x35bb98
+    char unknown_35bb7c[0x35bbbc - 0x35bb7c];
 };
 typedef char Game_hud_widgets_must_reach_0x35bbbc[
     (sizeof(Game) == 0x35bbbc) ? 1 : -1];

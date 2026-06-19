@@ -3,6 +3,7 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
+#include "frontend_widget.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "score_stats.h"
@@ -22,6 +23,8 @@ public:
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
+    void hide_gameplay_scores(); // @ 0x445f10
+    void unhide_gameplay_scores(); // @ 0x445f40
     Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120
     TrackParcelRuntime* spawn_track_parcel(
         Vector3* world_position,
@@ -70,7 +73,13 @@ public:
     float track_skirt_r; // +0x1b0140
     float track_skirt_g; // +0x1b0144
     float track_skirt_b; // +0x1b0148
-    char unknown_1b014c[0x3bb764 - 0x1b014c];
+    char unknown_1b014c[0x35bb88 - 0x1b014c];
+    FrontendWidget* score_widget_a; // +0x35bb88
+    FrontendWidget* score_widget_b; // +0x35bb8c
+    FrontendWidget* lives_icon_widget; // +0x35bb90
+    FrontendWidget* lives_text_widget; // +0x35bb94
+    FrontendWidget* life_stock_widgets[9]; // +0x35bb98
+    char unknown_35bbbc[0x3bb764 - 0x35bbbc];
     char score_stats; // +0x3bb764, owner anchor used by parcels
     char unknown_3bb765[0x3bb7d4 - 0x3bb765];
     float completion_progress_z; // +0x3bb7d4
