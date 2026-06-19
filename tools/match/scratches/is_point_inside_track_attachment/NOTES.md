@@ -55,3 +55,13 @@ Rejected probes:
 - Applying the same field-origin ordering to
   `try_enter_track_attachment_from_swept_motion` was codegen-neutral at 79.80%,
   so that scratch stays unchanged.
+- 2026-06-20 residual scheduling audit: focused Wibo still reports 99.10%,
+  111/111 instructions, 42/111 prefix, and six clean masked operands. Folding
+  only the Y subtract (`delta_y = probe.y - origin_y`) regresses to 97.30% by
+  flipping that lane to `fsubr`. The following source-plausible shapes are
+  codegen-neutral and leave the same lone `delta_y` reload / `delta_z` fsub
+  swap: spelling the Z subtract as `delta_z = delta_z - origin_z`, assigning
+  through a short-lived `Vector3 local_delta`, aliasing the middle constructor
+  argument as `local_y`, and subtracting `sample_origin.z` directly. Keep the
+  current two-step Y/Z subtracts plus direct `local = Vector3(...)` assignment
+  unless a new source lead explains the scheduler choice.
