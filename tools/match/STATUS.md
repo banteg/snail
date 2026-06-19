@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**439/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **49242/325882** bytes (**15.11%**) are proof-grade, and overall fuzzy is **52.26%**.
+**444/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **52.26%**.
 
-## Proof Grade (439)
+## Proof Grade (444)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -46,6 +46,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_directx_loader | 0x405c90 | 45 | 13/13 | 100.00% | 13/13 | 3 ok |  |
 | ✅ | load_or_reuse_cached_x_mesh | 0x405cc0 | 157 | 65/65 | 100.00% | 65/65 | 6 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
+| ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
 | ✅ | log_startup_timestamp | 0x406d30 | 143 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  |
 | ✅ | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  |
@@ -97,6 +98,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | draw_frontend_overlay_color_lerp | 0x40ab40 | 122 | 38/38 | 100.00% | 38/38 | 6 ok |  |
 | ✅ | begin_frontend_fade_out | 0x40abc0 | 23 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | begin_frontend_fade_in | 0x40abe0 | 14 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 9 ok |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
@@ -217,6 +219,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | open_thanks_screen | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | initialize_thanks_for_playing_screen | 0x433fd0 | 234 | 55/55 | 100.00% | 55/55 | 17 ok |  |
 | ✅ | uninit_thanks_screen | 0x4340c0 | 38 | 8/8 | 100.00% | 8/8 | 3 ok |  |
+| ✅ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 88/88 | 100.00% | 88/88 | 19 ok |  |
 | ✅ | destroy_star_field | 0x434270 | 70 | 28/28 | 100.00% | 28/28 | 1 ok |  |
 | ✅ | open_star_field | 0x4342c0 | 77 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
@@ -224,6 +227,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 13 ok |  |
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
+| ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 160/160 | 100.00% | 160/160 | 2 ok |  |
 | ✅ | reset_subgame | 0x437b10 | 291 | 75/75 | 100.00% | 75/75 | 2 ok |  |
 | ✅ | update_progress_bar | 0x437c40 | 413 | 110/110 | 100.00% | 110/110 | 19 ok |  |
@@ -294,6 +298,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | initialize_invincible_shell | 0x444ac0 | 31 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | 21/21 | 4 ok |  |
+| ✅ | update_invincible_shell | 0x444b50 | 416 | 98/98 | 100.00% | 98/98 | 28 ok |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
@@ -447,16 +452,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
-
-## Audit Needed (5)
-
-| | function | address | bytes | insns | match | prefix | masked | build |
-|---|---|---|---|---|---|---|---|---|
-| ⚠ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 1 unresolved, 68 ok |  |
-| ⚠ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 1 unresolved, 8 ok |  |
-| ⚠ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 88/88 | 100.00% | 88/88 | 1 unresolved, 18 ok |  |
-| ⚠ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 1 unresolved, 2 ok |  |
-| ⚠ | update_invincible_shell | 0x444b50 | 416 | 98/98 | 100.00% | 98/98 | 1 unresolved, 27 ok |  |
 
 ## Near Match (95-99.99%) (12)
 

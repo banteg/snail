@@ -92,6 +92,7 @@
       "aliases": [
         "$L922"
       ],
+      "size": "0x28",
       "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
@@ -126,6 +127,7 @@
       "name": "update_frontend_transition_overlay_jump_table",
       "kind": "jump_table",
       "aliases": [],
+      "size": "0x14",
       "description": "Compiler-emitted fade state switch jump table used by update_frontend_transition_overlay."
     },
     {
@@ -628,6 +630,7 @@
       "name": "update_thanks_for_playing_screen_jump_table",
       "kind": "jump_table",
       "aliases": [],
+      "size": "0x20",
       "description": "Compiler-emitted message-state switch jump table used by update_thanks_for_playing_screen."
     },
     {
@@ -654,6 +657,7 @@
       "aliases": [
         "$L314"
       ],
+      "size": "0x20",
       "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
     },
     {
@@ -729,6 +733,7 @@
       "aliases": [
         "$L683"
       ],
+      "size": "0x10",
       "description": "Compiler-emitted state switch jump table used by update_invincible_shell."
     },
     {
