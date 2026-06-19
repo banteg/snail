@@ -33,13 +33,15 @@ void __stdcall firework_shoot(Vector3* position, int owner, int texture_id, int 
         sprite->size_start = 0.5f;
         sprite->size_end = 0.100000001f;
 
-        velocity.z =
+        float velocity_z =
             ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
-        velocity.y =
+        float velocity_y =
             ((float)next_math_random_value() - 16384.0f) * 0.0000183105476f
             + 0.100000001f;
         velocity.x =
             ((float)next_math_random_value() - 16384.0f) * 0.0000122070314f;
+        velocity.y = velocity_y;
+        velocity.z = velocity_z;
 
         sprite->depth_offset = 0.0f;
         sprite->velocity = velocity;

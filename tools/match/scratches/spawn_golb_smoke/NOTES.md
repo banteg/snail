@@ -53,5 +53,9 @@ Rejected source-shaped probes:
   improves `spawn_garbage_smoke_particle`, confirming a shared smoke-emitter
   source-shape lead. The remaining gap is the native `lea velocity; add
   position-base` setup plus stack-staged velocity reloads.
+- 2026-06-20 emitter-family retry: mutating the raw sprite cursor
+  (`sprite_words += 18`) after forming the velocity pointer compiled
+  identically. Interleaving the velocity stores around z scaling regressed to
+  78.26%, so the accepted raw-tail shape remains.
 
 Keep pinned unless a new source idiom explains the delayed sprite-base advance.
