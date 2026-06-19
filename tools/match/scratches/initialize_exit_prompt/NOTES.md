@@ -14,8 +14,20 @@
   - state 5 uses absolute title and button positions.
   - state 10 uses the centered default layout.
 - Focused match: `99.66%` (`441` target insns, `442` candidate insns),
-  `108 ok`, `1 unresolved`, `0 mismatch`.
-- Remaining code-shape delta: shared headers model `FrontendWidget::initialize_frontend_widget`
-  as `void`; native leaves the final call's `eax` live on the two final-call
-  return paths, while the scratch uses `return 0` and emits one extra
-  `xor eax,eax`.
+  `108 ok`, `0 unresolved`, `1 mismatch`.
+- `initialize_exit_prompt_jump_table` is curated at `0x4067b4` with ten entries
+  (`0x28` bytes) between the function `ret` at `0x4067b0` and the `0x90`
+  padding before `update_completion_screen`. The masked audit now reports the
+  table as a real content mismatch instead of an anonymous unresolved image
+  address: native entries include the shared return offset `0x6d9`, while the
+  candidate table uses `0x6db` because of the extra `xor eax,eax`.
+- Shared headers now model `FrontendWidget::initialize_frontend_widget` as
+  returning `FrontendWidget*`, matching the `initialize_frontend_widget` scratch
+  and the IDA result flow here. This is codegen-neutral for this scratch and
+  preserves the exact menu initializer scratches tested with it.
+- Rejected tail attempts: direct `return (int)no_button->initialize_frontend_widget(...)`
+  on the two no-title branches reshapes the switch to `74.86%`; a shared
+  `result` local keeps the audit clean but introduces an `edi` result register,
+  shifts all stack color locals, and drops to `92.20%`. Keep the explicit
+  `return 0` spelling until there is a source shape that removes the `xor`
+  without perturbing the switch layout.

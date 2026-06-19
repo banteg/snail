@@ -87,6 +87,14 @@
       "description": "Compiler-emitted state switch jump table used by update_row_event_display."
     },
     {
+      "address": "0x4067b4",
+      "name": "initialize_exit_prompt_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x28",
+      "description": "Compiler-emitted prompt-state switch jump table used by initialize_exit_prompt."
+    },
+    {
       "address": "0x406b90",
       "name": "update_completion_screen_jump_table",
       "kind": "jump_table",

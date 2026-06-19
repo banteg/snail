@@ -463,7 +463,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
-| 🚧 | initialize_exit_prompt | 0x4060d0 | 1804 | 442/441 | 99.66% | 9/441 | 1 unresolved, 108 ok |  |
+| 🚧 | initialize_exit_prompt | 0x4060d0 | 1804 | 442/441 | 99.66% | 9/441 | 1 mismatch, 108 ok |  |
 | 🚧 | initialize_galaxy | 0x408cf0 | 1523 | 336/338 | 97.92% | 113/338 | 74 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1284 | 334/332 | 97.60% | 111/332 | 1 unresolved, 24 ok |  |

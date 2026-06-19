@@ -29,7 +29,7 @@ public:
     int set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790
     FrontendWidget* border_input_text_init(int arg2, char* text, int flags); // @ 0x403410
     void border_add_text_number(int value); // @ 0x401030
-    void initialize_frontend_widget(int flags, char* text, int widget_type,
+    FrontendWidget* initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, Color4f* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         Color4f* color, float z, int layer);
