@@ -4,20 +4,13 @@
 
 #include "sub_lazer_types.h"
 
-class Game {
-public:
-    char unknown_00[0x5a8];
-    SubLazerListAnchor sub_lazer_free_anchor; // +0x5a8
-};
-
-extern Game* volatile g_game; // data_4df904
+extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
 int SubLazerSlot::deactivate_sub_lazer_projectile()
 {
-    Game* game = g_game;
+    SubLazerListAnchor* anchor = (SubLazerListAnchor*)(g_game_base + 0x5a8);
     int flags = list_flags;
-    SubLazerListAnchor* anchor = &game->sub_lazer_free_anchor;
     BodNode* next;
     BodNode* prev;
     int result;

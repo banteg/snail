@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**447/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **52631/325882** bytes (**16.15%**) are proof-grade, and overall fuzzy is **52.32%**.
+**448/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **52771/325882** bytes (**16.19%**) are proof-grade, and overall fuzzy is **52.33%**.
 
-## Proof Grade (447)
+## Proof Grade (448)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -277,6 +277,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 100.00% | 63/63 | 6 ok |  |
+| ✅ | deactivate_sub_lazer_projectile | 0x441740 | 140 | 43/43 | 100.00% | 43/43 | 5 ok |  |
 | ✅ | zero_timer_counters | 0x441b70 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | advance_timer_counters | 0x441b90 | 116 | 38/38 | 100.00% | 38/38 | 7 ok |  |
 | ✅ | update_banner | 0x441d40 | 129 | 44/44 | 100.00% | 44/44 | 7 ok |  |
@@ -528,7 +529,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 
-## Mid Progress (50-79.99%) (95)
+## Mid Progress (50-79.99%) (94)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -597,7 +598,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 494/501 | 59.90% | 6/501 | 2 mismatch, 58 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 95/94 | 60.32% | 0/94 | 1 mismatch, 13 ok |  |
 | 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 74.07% | 0/67 | 8 ok |  |
-| 🚧 | deactivate_sub_lazer_projectile | 0x441740 | 140 | 42/43 | 77.65% | 0/43 | 4 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 215/218 | 52.66% | 0/218 | 18 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 78/83 | 75.78% | 5/83 | 10 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 99/103 | 78.22% | 4/103 | 21 ok |  |
@@ -728,7 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
-| ABI-conflict | Game | 42 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Game | 41 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | BorderManager | 9 | 3 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | FrontendWidget | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Player | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
