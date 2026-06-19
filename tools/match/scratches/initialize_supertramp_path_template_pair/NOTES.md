@@ -1,0 +1,11 @@
+# initialize_supertramp_path_template_pair
+
+Honest starter scratch for `initialize_supertramp_path_template_pair @ 0x423f10`.
+
+The native tail is `ret 0x1c`, matching seven explicit stack arguments. This
+constructor allocates an extra sample before decrementing `segment_count`, then
+uses the final allocated sample directly in the mesh. The scratch models the
+flat approach, circular supertramp arc, separate secondary radius, direct mesh
+rows, deltas, and finalization.
+
+Residuals are expected.

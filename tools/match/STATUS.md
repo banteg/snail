@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**444/687** mapped gameplay functions matched, **652/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **46.19%**.
+**444/687** mapped gameplay functions matched, **685/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **51.04%**.
 
 ## Proof Grade (444)
 
@@ -624,22 +624,55 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (52)
+## Early Progress (>0-49.99%) (85)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 678/712 | 39.42% | 0/712 | 3 mismatch, 39 ok |  |
+| 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 270/429 | 45.21% | 0/429 | 1 mismatch, 1 unresolved, 38 ok |  |
+| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 544/647 | 46.85% | 15/647 | 5 mismatch, 55 ok |  |
+| 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 16/19 | 34.29% | 1/19 | - |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 253/5411 | 4.66% | 0/5411 | 21 mismatch, 3 unresolved, 51 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 126/127 | 45.85% | 16/127 | 8 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 330/373 | 20.20% | 0/373 | 21 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 445/582 | 30.96% | 3/582 | 1 mismatch, 31 ok |  |
+| 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |
+| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 26.42% | 0/521 | 3 mismatch, 33 ok |  |
 | 🚧 | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 74/75 | 41.61% | 1/75 | - |  |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.59% | 0/721 | 39 ok |  |
+| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 664/745 | 27.96% | 0/745 | 1 mismatch, 21 ok |  |
+| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 636/718 | 37.37% | 0/718 | 1 mismatch, 41 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 606/685 | 14.72% | 0/685 | 4 mismatch, 15 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 605/690 | 14.67% | 0/690 | 4 mismatch, 15 ok |  |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.02% | 0/655 | 1 mismatch, 30 ok |  |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 613/685 | 18.80% | 0/685 | 4 mismatch, 19 ok |  |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 615/696 | 19.22% | 0/696 | 3 mismatch, 19 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 131/696 | 7.98% | 0/696 | 5 mismatch, 6 ok |  |
+| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 115/652 | 7.04% | 0/652 | 6 mismatch, 4 ok |  |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 112/652 | 8.90% | 0/652 | 5 mismatch, 8 ok |  |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 144/552 | 8.62% | 0/552 | 6 mismatch, 4 ok |  |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 281/318 | 42.07% | 0/318 | 17 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 303/421 | 17.13% | 0/421 | 17 ok |  |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 129/683 | 10.59% | 0/683 | 5 mismatch, 12 ok |  |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 134/679 | 10.58% | 0/679 | 8 mismatch, 6 ok |  |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 124/610 | 10.90% | 0/610 | 6 mismatch, 8 ok |  |
+| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 173/671 | 8.77% | 0/671 | 7 mismatch, 9 ok |  |
+| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 176/680 | 9.81% | 0/680 | 7 mismatch, 14 ok |  |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 197/687 | 8.37% | 0/687 | 10 mismatch, 6 ok |  |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 115/608 | 9.41% | 0/608 | 8 mismatch, 7 ok |  |
+| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 116/600 | 8.66% | 0/600 | 7 mismatch, 7 ok |  |
+| 🚧 | initialize_kind42_path_template_pair | 0x429b20 | 2592 | 667/707 | 35.95% | 0/707 | 1 mismatch, 45 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 125/677 | 10.97% | 0/677 | 8 mismatch, 11 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 125/677 | 10.97% | 0/677 | 8 mismatch, 11 ok |  |
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
+| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 175/663 | 9.55% | 0/663 | 8 mismatch, 5 ok |  |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 124/668 | 7.58% | 0/668 | 5 mismatch, 7 ok |  |
+| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 118/579 | 10.90% | 0/579 | 6 mismatch, 11 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 629/1029 | 43.55% | 0/1029 | 1 mismatch, 39 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 392/437 | 17.13% | 0/437 | 1 mismatch, 11 ok |  |
 | 🚧 | calc_object_facequad_normals_simple | 0x430230 | 441 | 131/139 | 10.37% | 0/139 | 2 mismatch |  |
@@ -681,61 +714,28 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (0%) (35)
+## No Scratch (0%) (2)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| ⬜ | draw_frontend_widget | 0x401130 | 2353 | 0/712 | 0.00% | 0/712 | - |  |
-| ⬜ | initialize_frontend_widget | 0x401d30 | 1892 | 0/429 | 0.00% | 0/429 | - |  |
-| ⬜ | update_frontend_widget_interaction | 0x402820 | 2677 | 0/647 | 0.00% | 0/647 | - |  |
-| ⬜ | border_input_text | 0x4035b0 | 1581 | 0/446 | 0.00% | 0/446 | - |  |
-| ⬜ | initialize_game_assets_and_world | 0x40acf0 | 23070 | 0/5411 | 0.00% | 0/5411 | - |  |
-| ⬜ | initialize_high_score_screen | 0x416910 | 2311 | 0/600 | 0.00% | 0/600 | - |  |
-| ⬜ | initialize_intro_screen | 0x4191e0 | 1851 | 0/521 | 0.00% | 0/521 | - |  |
-| ⬜ | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 0/721 | 0.00% | 0/721 | - |  |
-| ⬜ | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 0/745 | 0.00% | 0/745 | - |  |
-| ⬜ | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 0/718 | 0.00% | 0/718 | - |  |
-| ⬜ | initialize_hump_path_template_pair | 0x41d030 | 2553 | 0/685 | 0.00% | 0/685 | - |  |
-| ⬜ | initialize_dump_path_template_pair | 0x41da30 | 2563 | 0/690 | 0.00% | 0/690 | - |  |
-| ⬜ | initialize_dip_path_template_pair | 0x41e440 | 2390 | 0/655 | 0.00% | 0/655 | - |  |
-| ⬜ | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 0/685 | 0.00% | 0/685 | - |  |
-| ⬜ | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 0/696 | 0.00% | 0/696 | - |  |
 | ⬜ | initialize_worm_path_template_pair | 0x420170 | 2759 | 0/736 | 0.00% | 0/736 | - |  |
-| ⬜ | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 0/696 | 0.00% | 0/696 | - |  |
-| ⬜ | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 0/652 | 0.00% | 0/652 | - |  |
-| ⬜ | initialize_snake_path_template_pair | 0x423580 | 2436 | 0/652 | 0.00% | 0/652 | - |  |
-| ⬜ | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 0/552 | 0.00% | 0/552 | - |  |
-| ⬜ | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 0/683 | 0.00% | 0/683 | - |  |
-| ⬜ | initialize_p_path_template_pair | 0x425a40 | 2482 | 0/679 | 0.00% | 0/679 | - |  |
-| ⬜ | initialize_start_path_template_pair | 0x426400 | 2223 | 0/610 | 0.00% | 0/610 | - |  |
-| ⬜ | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 0/671 | 0.00% | 0/671 | - |  |
-| ⬜ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 0/680 | 0.00% | 0/680 | - |  |
-| ⬜ | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 0/687 | 0.00% | 0/687 | - |  |
-| ⬜ | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 0/608 | 0.00% | 0/608 | - |  |
-| ⬜ | initialize_invert_path_template_pair | 0x429250 | 2182 | 0/600 | 0.00% | 0/600 | - |  |
-| ⬜ | initialize_kind42_path_template_pair | 0x429b20 | 2592 | 0/707 | 0.00% | 0/707 | - |  |
-| ⬜ | initialize_twister_path_template_pair | 0x42a540 | 2540 | 0/677 | 0.00% | 0/677 | - |  |
-| ⬜ | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 0/677 | 0.00% | 0/677 | - |  |
 | ⬜ | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 0/796 | 0.00% | 0/796 | - |  |
-| ⬜ | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 0/663 | 0.00% | 0/663 | - |  |
-| ⬜ | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 0/668 | 0.00% | 0/668 | - |  |
-| ⬜ | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 0/579 | 0.00% | 0/579 | - |  |
 
 ## Type Consolidation
 
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 8 type name(s)
-- covered: 43 type name(s) with a header plus scratch-local copies
-- divergent: 27 type name(s) with multiple scratch-local shapes
+- ready: 12 type name(s)
+- covered: 44 type name(s) with a header plus scratch-local copies
+- divergent: 29 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 8 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GameRoot | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GameRoot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -746,6 +746,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | LevelSegmentSlotStore | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VertexBufferVtbl | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteNameRecord | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -755,17 +756,18 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | CachedXMeshBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | LevelSegmentSlotStore | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | IntroScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ScoreStats | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Twinkle | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | TwinkleManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | GalaxyRoute | 8 | 1 | 8 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | AttachmentPathTemplate | 29 | 1 | 22 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | GalaxyRoute | 9 | 1 | 9 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | BorderManager | 9 | 3 | 6 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | FrontendWidget | 8 | 1 | 8 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | BorderManager | 6 | 3 | 4 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FrontendWidget | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 4 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AttachmentPathTemplate | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FrontendFade | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
@@ -776,6 +778,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LevelDefinitionLoader | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TimerCounters | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | TooltipState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
@@ -787,6 +790,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | GolbPathBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HelpScreen | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | InputOkState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LandscapeScriptBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
@@ -799,9 +803,11 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | StarField | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SubLazerPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TooltipState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackParcelPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | PathTemplateSample | 17 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | PathAttachmentSample | 8 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | PathTemplateFaceQuad | 8 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ArchiveEntry | 5 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | ArchiveIndex | 5 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | TimeTrialStringFormatter | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
@@ -809,4 +815,5 @@ Run `uv run snail match types --paths` for the full path-level report.
 | ready | IntroRenderableSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | IntroScreenRuntime | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | LoadingVertex | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | LogoRuntime | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
 | ready | RendererState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
