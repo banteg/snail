@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "frontend_widget.h"
+#include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
 #include "star_field.h"
@@ -19,57 +20,6 @@ class GalaxyBorderManager {
 public:
     FrontendWidget* allocate_border();
     int set_border_justify_centre(int justify_centre);
-};
-
-class GalaxyRouteRecord {
-public:
-    int route_name_index; // +0x00
-    char unknown_004[0x14 - 0x04];
-    int highlight_bits; // +0x14
-    int selected_bits; // +0x18
-    char unknown_01c[0x2a0 - 0x1c];
-};
-
-class GalaxyRouteNameRecord {
-public:
-    char name[0x80];
-    int star_count;
-    int color_r_bits;
-    int color_g_bits;
-    int color_b_bits;
-    int color_a_bits;
-    int map_x_bits;
-    int map_y_bits;
-    int map_z_bits;
-};
-
-class GalaxyRoute {
-public:
-    FrontendWidget* initialize_galaxy();
-    FrontendWidget* open_galaxy_route(int selected_level_index);
-
-    char active; // +0x00
-    char unknown_001[0x04 - 0x01];
-    int route_mode; // +0x04
-    int route_state; // +0x08
-    int record_count; // +0x0c
-    char unknown_010[0x14 - 0x10];
-    GalaxyRouteRecord records[100]; // +0x14
-    char unknown_10694[0x10930 - 0x10694];
-    GalaxyRouteNameRecord route_names[10]; // +0x10930
-    char* level_progress_base; // +0x10f70
-    FrontendWidget* exit_or_back_widget; // +0x10f74
-    FrontendWidget* route_title_widget; // +0x10f78
-    FrontendWidget* route_icon_widget; // +0x10f7c
-    int selected_index; // +0x10f80
-    int hover_state; // +0x10f84
-    char unknown_10f88[0x10f8c - 0x10f88];
-    FrontendWidget* bounds_frame_widget; // +0x10f8c
-    FrontendWidget* selected_title_widget; // +0x10f90
-    FrontendWidget* selected_detail_widget; // +0x10f94
-    FrontendWidget* selected_description_widget; // +0x10f98
-    FrontendWidget* play_or_deliver_widget; // +0x10f9c
-    FrontendWidget* replay_widget; // +0x10fa0
 };
 
 FrontendWidget* GalaxyRoute::initialize_galaxy()

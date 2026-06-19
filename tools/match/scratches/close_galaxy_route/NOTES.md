@@ -15,6 +15,5 @@ match. The two field clears precede the calls in source; VC6 hoists the first
 
 Type layout recovered for this call: `+0x08` route-state word, `+0x10f80`
 selected index with a `-1` sentinel, `+0x10f8c` a six-entry `FrontendWidget*`
-border array. The parent is modeled as a local `GalaxyRoute` shell because no
-shared header covers this object yet; `open_galaxy_route` (@ 0x409c50) and
-`draw_galaxy_line` (@ 0x409b00) are the sibling evidence.
+border array. The parent now uses the shared `GalaxyRoute` header also used by
+`open_galaxy_route` (@ 0x409c50) and `update_galaxy` (@ 0x4092f0).

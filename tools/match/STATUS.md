@@ -727,9 +727,9 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - header-conflict: 3 type name(s)
-- unresolved-layout: 31 type name(s)
+- unresolved-layout: 30 type name(s)
 - header-compatible: 18 type name(s)
-- partial-compatible: 20 type name(s)
+- partial-compatible: 18 type name(s)
 - ready: 6 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
@@ -737,7 +737,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-conflict | Game | 42 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | FrontendWidget | 8 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | GolbShot | 2 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
-| unresolved-layout | GalaxyRoute | 9 | 1 | 3 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | Direct3DDevice8Vtbl | 8 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | ObjectVertexBufferVtbl | 5 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
@@ -790,12 +789,10 @@ Run `uv run snail match types --paths` for the full path-level report.
 | partial-compatible | GameRoot | 6 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | GalaxyRouteRecord | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | SlugVoiceManager | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BlinkRandomTable | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | GalaxyRouteNameRecord | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Rect | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | ActiveBod | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

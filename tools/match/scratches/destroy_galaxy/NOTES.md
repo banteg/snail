@@ -11,6 +11,6 @@ It kills nine frontend widgets through the global border manager at
 - the six route border widgets at `+0x10f8c..+0x10fa0`
 
 The six route border slots are the same local field family used by
-`close_galaxy_route`. The three earlier widgets are intentionally named only as
-`pre_route_borders`; `initialize_galaxy` / `open_galaxy_route` should provide
-better semantic names later.
+`close_galaxy_route`. The three earlier widgets are overlaid as
+`pre_route_borders` for this exact kill order and as named fields in the shared
+`GalaxyRoute` header for initializer/update callsites.

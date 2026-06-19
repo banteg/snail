@@ -1,16 +1,7 @@
 // galaxy_border_bound @ 0x40a0c0 (thiscall member helper, ret 0x14)
 
 #include "frontend_widget.h"
-
-class GalaxyRoute {
-public:
-    void galaxy_border_bound(
-        float* min_x,
-        float* max_x,
-        float* min_y,
-        float* max_y,
-        FrontendWidget* widget);
-};
+#include "galaxy_route_types.h"
 
 void GalaxyRoute::galaxy_border_bound(
     float* min_x,

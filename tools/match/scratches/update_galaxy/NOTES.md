@@ -1,9 +1,9 @@
 # update_galaxy @ 0x4092f0
 
-Relationship-first scratch for the Star Map update/render controller. It keeps
-the `GalaxyRoute` and route-record layouts scratch-local while cross-checking
-them against `load_galaxy_layout`, `initialize_galaxy`, `open_galaxy_route`,
-and `close_galaxy_route`.
+Relationship-first scratch for the Star Map update/render controller. It now
+uses the shared `GalaxyRoute` and route-record layouts recovered across
+`load_galaxy_layout`, `initialize_galaxy`, `open_galaxy_route`, and
+`close_galaxy_route`.
 
 This function owns the route icon/line render pass, route-card hit testing,
 highlight-target assignment, route-card open/switch/close input, and the

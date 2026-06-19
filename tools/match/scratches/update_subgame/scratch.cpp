@@ -102,7 +102,7 @@ public:
     char unknown_ff25d8[0x125ffe0 - 0xff25d8];
     ChallengeSetupController challenge_setup;       // +0x125ffe0
     char unknown_125ffe1[0x1260020 - 0x125ffe1];
-    GalaxyRoute galaxy;                             // +0x1260020
+    CompletionGalaxyRoute galaxy;                   // +0x1260020
     char unknown_1260021[0x1270fc8 - 0x1260021];
     int subgame_rebuild_selector;                   // +0x1270fc8
 };
@@ -195,7 +195,7 @@ void Game::update_subgame()
         int result;
         switch (level_mode) {
         case 0:
-            result = ((GalaxyRoute*)(game + 0x1260020))->update_galaxy();
+            result = ((CompletionGalaxyRoute*)(game + 0x1260020))->update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 3;
                 g_landscape_backdrop_variant_selector = level_mode_arg;
@@ -215,7 +215,7 @@ void Game::update_subgame()
             return;
 
         case 4:
-            result = ((GalaxyRoute*)(game + 0x1260020))->update_galaxy();
+            result = ((CompletionGalaxyRoute*)(game + 0x1260020))->update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 g_landscape_backdrop_variant_selector = level_mode_arg;

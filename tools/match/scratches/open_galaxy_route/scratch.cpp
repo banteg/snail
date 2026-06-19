@@ -1,48 +1,9 @@
 // open_galaxy_route @ 0x409c50 (thiscall, ret 4)
 
 #include "frontend_widget.h"
+#include "galaxy_route_types.h"
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
-
-class GalaxyRouteRecord {
-public:
-    int route_name_index; // +0x00, indexes route_name_table
-    char unknown_004[0x08 - 0x04];
-    float map_x; // +0x08
-    float map_y; // +0x0c
-    char unknown_010[0x1c - 0x10];
-    char detail_text[0x80]; // +0x1c
-    char description_text[0x2a0 - 0x9c]; // +0x9c
-};
-
-class GalaxyRoute {
-public:
-    FrontendWidget* open_galaxy_route(int selected_level_index);
-    void galaxy_border_bound(
-        float* min_x,
-        float* max_x,
-        float* min_y,
-        float* max_y,
-        FrontendWidget* widget);
-
-    int unknown_000; // +0x00
-    int route_mode; // +0x04
-    int route_state; // +0x08
-    char unknown_00c[0x14 - 0x00c];
-    GalaxyRouteRecord records[100]; // +0x14
-    char unknown_10694[0x10930 - 0x10694];
-    char route_name_table[10][0xa0]; // +0x10930
-    char* level_progress_base; // +0x10f70
-    char unknown_10f74[0x10f80 - 0x10f74];
-    int selected_index; // +0x10f80
-    char unknown_10f84[0x10f8c - 0x10f84];
-    FrontendWidget* bounds_frame_widget; // +0x10f8c
-    FrontendWidget* title_widget; // +0x10f90
-    FrontendWidget* detail_widget; // +0x10f94
-    FrontendWidget* description_widget; // +0x10f98
-    FrontendWidget* back_widget; // +0x10f9c
-    FrontendWidget* continue_widget; // +0x10fa0
-};
 
 FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
 {
@@ -52,7 +13,7 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
     title_widget->unhide_border_init();
     rstrcpy_checked_ascii(
         title_widget->text_buffer,
-        route_name_table[records[selected_index].route_name_index]);
+        route_names[records[selected_index].route_name_index].name);
     title_widget->layout_anchor_x = records[selected_index].map_x + 60.0f;
     title_widget->layout_anchor_y = records[selected_index].map_y - 130.0f;
 

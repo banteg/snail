@@ -25,6 +25,12 @@ public:
     void destroy_subgame(); // @ 0x438850
 };
 
+class CompletionGalaxyRoute {
+public:
+    void destroy_galaxy(); // @ 0x408c10
+    int update_galaxy(); // @ 0x4092f0
+};
+
 class PauseMenu {
 public:
     int uninit_pause_menu(); // @ 0x440600
@@ -34,12 +40,6 @@ public:
     FrontendWidget* options_widget; // +0x00
     FrontendWidget* end_game_widget; // +0x04
     FrontendWidget* resume_widget; // +0x08
-};
-
-class GalaxyRoute {
-public:
-    void destroy_galaxy(); // @ 0x408c10
-    int update_galaxy(); // @ 0x4092f0
 };
 
 class CompletionPrompt {
@@ -94,7 +94,7 @@ public:
     char unknown_1066bea[0x1066bf0 - 0x1066bea];
     int replay_launch_return_state; // +0x1066bf0
     char unknown_1066bf4[0x12d4638 - 0x1066bf4];
-    GalaxyRoute galaxy; // +0x12d4638
+    CompletionGalaxyRoute galaxy; // +0x12d4638
     char unknown_12d4639[0x12e55e0 - 0x12d4639];
     int ordinary_rebuild_selector; // +0x12e55e0
     char unknown_12e55e4[0x12e6e50 - 0x12e55e4];

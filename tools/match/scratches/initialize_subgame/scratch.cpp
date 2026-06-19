@@ -4,6 +4,7 @@
 #include "border_manager.h"
 #include "challenge_setup_screen.h"
 #include "frontend_widget.h"
+#include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "segment_catalog_types.h"
 #include "timer_counters.h"
@@ -25,11 +26,6 @@ public:
 class WarningRuntime {
 public:
     void initialize_warning();
-};
-
-class GalaxyRoute {
-public:
-    void initialize_galaxy();
 };
 
 class SubgameBorderManager {

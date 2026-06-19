@@ -1,9 +1,8 @@
 # initialize_galaxy @ 0x408cf0
 
-First structural scratch for the galaxy/star-map screen initializer. This keeps
-the broad `GalaxyRoute` layout scratch-local while reusing established
-frontend-widget, color, star-field, backdrop, landscape-bank, and mouse cursor
-helpers.
+First structural scratch for the galaxy/star-map screen initializer. This uses
+the shared `GalaxyRoute` layout while reusing established frontend-widget,
+color, star-field, backdrop, landscape-bank, and mouse cursor helpers.
 
 The scratch is intentionally relationship-first: several widget post-init lanes
 at `+0x6f0`, `+0x26c`, and `+0x214` remain raw writes until more frontend

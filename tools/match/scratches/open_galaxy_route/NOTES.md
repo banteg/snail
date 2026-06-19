@@ -20,6 +20,7 @@ Current local field evidence:
   geometry fields at `+0x4c..+0x58`, `+0x238..+0x260`, so these are promoted
   into `frontend_widget.h` instead of being accessed through raw casts.
 
-Do not promote this `GalaxyRoute` layout yet. The record-area size and the
-meaning of the large progress-table offset still need confirmation from
-`initialize_galaxy`, save/progress code, or additional route callsites.
+The `GalaxyRoute` layout is now promoted after agreement with
+`load_galaxy_layout`, `initialize_galaxy`, `update_galaxy`, and
+`close_galaxy_route`; this opener keeps the alternate widget names used by the
+route-card source through shared header aliases.

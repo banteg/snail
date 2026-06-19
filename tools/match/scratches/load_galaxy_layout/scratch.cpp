@@ -1,5 +1,7 @@
 // load_galaxy_layout @ 0x4088e0 (thiscall)
 
+#include "galaxy_route_types.h"
+
 int sprintf(char* buffer, char* format, ...);
 
 char* get_archive_data_base();
@@ -16,45 +18,6 @@ extern int dword_4a1d18[];
 extern int dword_4a1d1c[];
 extern int dword_4a1d20[];
 extern int data_4a1c50[];
-
-class GalaxyRouteRecord {
-public:
-    int route_name_index; // +0x00
-    char unknown_004[0x08 - 0x04];
-    int map_x_bits; // +0x08
-    int map_y_bits; // +0x0c
-    int map_z_bits; // +0x10
-    char unknown_014[0x1c - 0x14];
-    char detail_text[0x80]; // +0x1c
-    char description_text[0x2a0 - 0x9c]; // +0x9c
-};
-
-class GalaxyRouteNameRecord {
-public:
-    char name[0x80]; // +0x00
-    int star_count; // +0x80
-    int color_r_bits; // +0x84
-    int color_g_bits; // +0x88
-    int color_b_bits; // +0x8c
-    int color_a_bits; // +0x90
-    int map_x_bits; // +0x94
-    int map_y_bits; // +0x98
-    int map_z_bits; // +0x9c
-};
-
-class GalaxyRoute {
-public:
-    int load_galaxy_layout();
-
-    char active; // +0x00
-    char unknown_001[0x0c - 0x01];
-    int record_count; // +0x0c
-    char unknown_010[0x14 - 0x10];
-    GalaxyRouteRecord records[100]; // +0x14
-    char unknown_10694[0x10930 - 0x10694];
-    GalaxyRouteNameRecord route_names[10]; // +0x10930
-    char* level_progress_base; // +0x10f70
-};
 
 int GalaxyRoute::load_galaxy_layout()
 {

@@ -6,6 +6,7 @@
 #include "bod_types.h"
 #include "cameraman_state.h"
 #include "directx_loader.h"
+#include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "object_render_types.h"
 #include "segment_catalog_types.h"
@@ -51,11 +52,6 @@ TextureRef* __stdcall register_sprite_texture(char* texture_path, int texture_id
 class LogoRuntime {
 public:
     int open_logo(); // @ 0x419110
-};
-
-class GalaxyRoute {
-public:
-    int load_galaxy_layout(); // @ 0x4088e0
 };
 
 class GameRoot {

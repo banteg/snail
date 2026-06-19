@@ -2,6 +2,7 @@
 
 #include "font_system.h"
 #include "frontend_widget.h"
+#include "galaxy_route_types.h"
 #include "game.h"
 #include "level_definition_loader.h"
 #include "sprite.h"
@@ -34,89 +35,13 @@ int __stdcall draw_galaxy_line(
     Color4f* color); // @ 0x409b00
 void __stdcall play_sound_effect(int sample_id); // @ 0x44dde0
 
-class GalaxyRouteRecordTick {
-public:
-    void update_galaxy_route_record(); // @ 0x409bd0
-};
-
-class GalaxyRouteRecord {
-public:
-    int route_name_index; // +0x00
-    char unknown_004[0x08 - 0x04];
-    float map_x; // +0x08
-    float map_y; // +0x0c
-    float map_z; // +0x10
-    float route_tint_alpha; // +0x14
-    float highlight_target; // +0x18
-    char detail_text[0x80]; // +0x1c
-    char description_text[0x2a0 - 0x9c]; // +0x9c
-};
-
-class GalaxyRouteRecordSlot {
-public:
-    char before_record[0x14];
-    int route_name_index; // +0x14
-    char unknown_018[0x1c - 0x18];
-    float map_x; // +0x1c
-    float map_y; // +0x20
-    float map_z; // +0x24
-    float route_tint_alpha; // +0x28
-    float highlight_target; // +0x2c
-    char detail_text[0x80]; // +0x30
-    char description_text[0x2a0 - 0x9c]; // +0xb0
-};
-
-class GalaxyRouteNameRecord {
-public:
-    char name[0x80]; // +0x00
-    int star_count; // +0x80
-    int color_r_bits; // +0x84
-    int color_g_bits; // +0x88
-    int color_b_bits; // +0x8c
-    int color_a_bits; // +0x90
-    float map_x; // +0x94
-    float map_y; // +0x98
-    float map_z; // +0x9c
-};
-
-class GalaxyRoute {
-public:
-    int update_galaxy();
-    FrontendWidget* open_galaxy_route(int selected_level_index);
-    void close_galaxy_route();
-    void destroy_galaxy();
-
-    char active; // +0x00
-    char unknown_001[0x04 - 0x01];
-    int route_mode; // +0x04
-    int route_state; // +0x08
-    int record_count; // +0x0c
-    char unknown_010[0x14 - 0x10];
-    GalaxyRouteRecord records[100]; // +0x14
-    char unknown_10694[0x10930 - 0x10694];
-    GalaxyRouteNameRecord route_names[10]; // +0x10930
-    Game* level_progress_base; // +0x10f70
-    FrontendWidget* exit_or_back_widget; // +0x10f74
-    FrontendWidget* route_title_widget; // +0x10f78
-    FrontendWidget* route_icon_widget; // +0x10f7c
-    int selected_index; // +0x10f80
-    int hover_state; // +0x10f84
-    char unknown_10f88[0x10f8c - 0x10f88];
-    FrontendWidget* bounds_frame_widget; // +0x10f8c
-    FrontendWidget* selected_title_widget; // +0x10f90
-    FrontendWidget* selected_detail_widget; // +0x10f94
-    FrontendWidget* selected_description_widget; // +0x10f98
-    FrontendWidget* play_or_deliver_widget; // +0x10f9c
-    FrontendWidget* replay_widget; // +0x10fa0
-};
-
 int GalaxyRoute::update_galaxy()
 {
     Color4f route_zero_color;
     Color4f color;
     color.noop_this_constructor();
 
-    level_progress_base->hide_gameplay_scores();
+    ((Game*)level_progress_base)->hide_gameplay_scores();
 
     int tick_index = 0;
     if (data_4df9b8 >= 0) {

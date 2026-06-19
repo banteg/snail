@@ -5,9 +5,9 @@ the two authored point tables, loads `Galaxy/_Galaxy.txt`, copies galaxy names
 and star counts into the route-name table, seeds placeholder level labels, and
 initializes the first route record.
 
-Keep the `GalaxyRoute` and `GalaxyRouteNameRecord` views scratch-local until the
-remaining galaxy loader/update scratches agree on the name table and record
-prefixes.
+The loader now uses the shared `GalaxyRoute`, `GalaxyRouteRecord`, and
+`GalaxyRouteNameRecord` views established with the route initializer, opener,
+updater, and closer.
 
 Current retained result: 77.94%, 234 candidate instructions for 233 target
 instructions, 38-instruction common prefix, and 33 clean / 7 unresolved / 0
