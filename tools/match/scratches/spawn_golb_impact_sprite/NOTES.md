@@ -45,6 +45,22 @@ Rejected source-shaped probes:
 - 2026-06-16 Golb type consolidation: the scratch now uses the promoted
   `GolbShot` view in `tools/match/include/golb.h`; codegen stays 63.64%
   and shares `owner_player +0x278` with the trail/smoke/teardown helpers.
+- 2026-06-19 impact-sprite scheduling audit: focused Wibo still reports
+  63.64%, 43/45 candidate instructions, 3/45 prefix, and 3 clean masked
+  operands. The smoke-emitter raw float-lane tail does not transfer here:
+  spelling the post-allocation stores as direct `sprite_words[...]` lanes
+  regresses to 51.95% by removing the native 12-byte stack vector and the
+  `mov al; test al` flag-load shape. A raw DWORD lane spelling for the local
+  velocity does force an `esi` save, but regresses to 49.41% by adding `edi`,
+  changing the flag gate, and still losing the native stack frame. Inlining
+  `owner_player->player_slot` in the allocation call recovers the native
+  `mov ecx, [owner+0x380]; push ecx` operand, but regresses to 54.55% because
+  the velocity stack/local schedule gets worse. Normal source-order probes are
+  neutral: a reused `float zero`, assigning `velocity.y` before the zero lanes,
+  naming `impact_velocity_y`, making the final position pointer explicit, and
+  moving the `out_velocity` declaration down all stay at 63.64%. Keep the
+  current real `Vector3` temporary and treat the remaining gap as the saved-`esi`
+  zero-lane and split velocity-copy schedule.
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.
