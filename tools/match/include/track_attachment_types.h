@@ -17,10 +17,14 @@ struct AttachmentTransform {
     Vector4 position;                // +0x30
 };
 
+struct PathTemplateStripMesh {
+    char unknown_00[0x10];
+    int flags;                       // +0x10
+};
+
 struct AttachmentSample {            // stride 0xa8
     AttachmentTransform transform;   // +0x00
-    float inverse_matrix[12];        // +0x40, local-frame rotation
-    char unknown_70[0x80 - 0x70];
+    float inverse_matrix[16];        // +0x40, full local-frame transform
     Vector3 delta_dir_to_next;       // +0x80
     float delta_length;              // +0x8c, segment length (the swept-entry
                                      // "depth limit" gate is z < this)
@@ -50,7 +54,9 @@ struct AttachmentPathTemplate {
     bool is_point_inside_track_attachment(
         Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90
 
-    char unknown_00[0x38];
+    char unknown_00[0x24];
+    PathTemplateStripMesh* strip_mesh; // +0x24
+    char unknown_28[0x38 - 0x28];
     int kind;                        // +0x38
     unsigned char is_mirrored_x;     // +0x3c
     char unknown_3d[0x40 - 0x3d];
