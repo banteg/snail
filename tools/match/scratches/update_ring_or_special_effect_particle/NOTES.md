@@ -87,3 +87,13 @@ Rejected source-shape probe:
   the sprite position fields regresses to 73.08% by removing the native 0x10-byte
   stack frame, and explicit field copy from `staged_position` regresses to 82.24%
   by changing the final store schedule. Keep the aggregate staged-vector copy.
+- 2026-06-19 direct-X retest: direct
+  `orbit_x * radius + live_parent->transform.position.x` still recovers the
+  native `[parent+0x68]` operand only by hoisting `fmul [this+0x1c]` before the
+  parent/sprite reloads, regressing to 89.91%. A staged scalar that multiplies
+  after the reloads preserves the native multiply position but lets VC6 avoid
+  materializing `parent_position`, so y/z become `[parent+0x6c]`/`[parent+0x70]`
+  and the match drops to 91.74%. Copying the whole parent vector first regresses
+  to 75.00% by introducing extra stack stores. A separate
+  `scaled_x = orbit_x * radius` local with the typed `parent_position` pointer is
+  codegen-neutral at 96.36%. Keep the current typed-pointer baseline.
