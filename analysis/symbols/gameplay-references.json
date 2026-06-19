@@ -783,6 +783,33 @@
       "description": "Builds the simple Direct3D orthographic projection matrix used by begin_overlay_render_state for authored 640x480 overlay/font rendering."
     },
     {
+      "address": "0x4533c4",
+      "name": "D3DXCreateTextureFromFileInMemoryEx",
+      "kind": "function",
+      "aliases": [
+        "sub_4533c4"
+      ],
+      "description": "D3DX texture creation wrapper used when texture bytes have already been loaded from the archive."
+    },
+    {
+      "address": "0x453404",
+      "name": "D3DXCreateTextureFromFileExA",
+      "kind": "function",
+      "aliases": [
+        "sub_453404"
+      ],
+      "description": "D3DX file-path texture creation wrapper used when loading textures directly from the filesystem."
+    },
+    {
+      "address": "0x453467",
+      "name": "D3DXCreateTextureFromFileA",
+      "kind": "function",
+      "aliases": [
+        "sub_453467"
+      ],
+      "description": "D3DX simple texture creation wrapper used as the Sprites/Debug.tga fallback after texture creation failures."
+    },
+    {
       "address": "0x47c840",
       "name": "DirectInput8Create",
       "kind": "function",
