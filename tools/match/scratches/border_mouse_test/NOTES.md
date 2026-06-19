@@ -18,3 +18,10 @@ This pass promotes the missing `FrontendWidget` texture-hit fields around
 Focused Wibo result: 98.29%, 117/117 instructions, prefix 73/117, with 5 clean
 masked operands. The retained residual is only the final `imul` destination
 register in the raw mask-row index.
+
+2026-06-19 row-index retry: focused Wibo still reports 98.29%, 117/117
+instructions, prefix 73/117, and 5 clean masked operands. Rewriting the final
+mask index as dead `width *= y`, `y * width + x + 6`, a separate add chain, or
+`x + 6` followed by the row product all compile identically and leave the same
+`imul esi, eax` versus `imul eax, esi` destination-register residual. Keep the
+clear `row = width; row *= y` source.

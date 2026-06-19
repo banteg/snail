@@ -79,3 +79,11 @@ Type consolidation:
   This resolves `particle->phase`, `particle->radius`, `particle->parent`,
   `owner->player_slot`, and Sprite position/velocity fields in the BN export;
   the match residual stays the known stack-frame/source-shape issue.
+- 2026-06-19 family retry: focused Wibo still reports 74.42%, 64/65
+  candidate/target instructions, and 9 clean masked operands. Naming an
+  explicit `orbit_x` local, spelling the flag update through an unsigned
+  temporary, and adding named source/destination position pointers all compile
+  identically. Direct `star->position` field stores regress to 73.85% by
+  splitting source sprite reloads, and explicit sine/cosine phase locals
+  regress to 59.09% by materializing extra argument stores and disturbing the
+  scratch push. Keep the dword position-copy baseline.
