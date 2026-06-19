@@ -77,7 +77,9 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
     out_position[2] = *(DWORD*)&live_position->z;
     slot->health_pickups[0].source_cell = cell;
     slot->health_pickups[0].bob_phase = 0.0f;
-    if (((int)slot->health_pickups[0].world_position.z & 1) == 0)
+    if (((int)slot->health_pickups[0].world_position.z & 1) != 0)
+        slot->health_pickups[0].bob_phase = 0.0f;
+    else
         slot->health_pickups[0].bob_phase = 0.5f;
 
     int step_index = slot_index + 30156;

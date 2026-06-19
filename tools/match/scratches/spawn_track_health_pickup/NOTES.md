@@ -4,7 +4,7 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `72.95%`, `122/122` candidate/target instructions, with `7` masked operands
+- `74.80%`, `124/122` candidate/target instructions, with `7` masked operands
   ok.
 - The scratch now uses the promoted `TrackHealthPickup` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
@@ -69,5 +69,11 @@ from `2/122` to `16/122`, with all `7` masked operands still OK.
 2026-06-16 bob-phase if/else retry: replacing the default-zero plus even-z
 override with a natural `if even -> 0.5f else -> 0.0f` branch regressed focused
 Wibo from `72.95%` to `71.02%` and grew the candidate to `123/122`
-instructions. The target's odd/even tail residual is not evidence for that
-source shape; keep the current default-zero spelling.
+instructions.
+
+2026-06-19 pickup bob-tail pass: using the odd-first branch instead matches
+the target tail direction better and improves focused Wibo from `72.95%` to
+`74.80%`, with candidate size `124/122` and all `7` masked operands still OK.
+Native stores zero before `__ftol`, stores zero again on the odd path, and
+jumps over the even `0.5f` store to the shared step-index tail; this source now
+keeps that explicit odd-zero lane.

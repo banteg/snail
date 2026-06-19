@@ -4,7 +4,7 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `79.30%`, `141/144` candidate/target instructions, with `9` masked
+- `81.79%`, `147/144` candidate/target instructions, with `9` masked
   operands ok.
 - The scratch now uses the promoted `TrackJetpackPickup` field names and the
   shared `BodList`/`BodNode` active-list shape. Prefix improves to `44/144`;
@@ -59,3 +59,13 @@ candidate size from `138/144` to `141/144`, and prefix from `31/144` to
 `44/144`, with all `9` masked operands still OK. Retesting signed/named
 wall-tile constants remained codegen-neutral and did not recover the native
 `mov cl, 0xe` ordering, so the source keeps direct tile-id comparisons.
+
+2026-06-19 pickup bob-tail pass: spelling the odd-z case as an explicit
+early-return tail improves focused Wibo from `79.30%` to `81.79%`. Native
+sets `bob_phase` to zero before the `__ftol` parity test, stores zero again on
+the odd path, and has separate odd/even return tails; the early return is the
+source shape that recovers that duplication. A destination `Sprite*` local for
+the position copy stayed neutral at `79.30%`, direct typed `position.x/y/z`
+stores regressed to `77.62%`, splitting the lane-wall test into nested or
+independent `if` blocks stayed neutral at `79.30%`, and a `switch(lane)`
+regressed to `76.49%`.

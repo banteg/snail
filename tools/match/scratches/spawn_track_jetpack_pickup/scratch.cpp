@@ -88,9 +88,12 @@ int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* playe
     slot->jetpack_pickup.bob_phase = 0.0f;
 
     int z_as_int = (int)slot->jetpack_pickup.world_position.z;
-    if ((z_as_int & 1) == 0)
-        slot->jetpack_pickup.bob_phase = 0.5f;
-
+    if ((z_as_int & 1) != 0) {
+        slot->jetpack_pickup.bob_phase = 0.0f;
+        slot->jetpack_pickup.bob_phase_step = 0.012820513f;
+        return z_as_int;
+    }
+    slot->jetpack_pickup.bob_phase = 0.5f;
     slot->jetpack_pickup.bob_phase_step = 0.012820513f;
     return z_as_int;
 }
