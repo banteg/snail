@@ -3,8 +3,6 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void __fastcall sub_430a30(ObjectFaceQuad* quad);
-
 #define SHRINK_BACKDROP_TILE_COMPONENT(component_expr)     \
     do {                                                   \
         float component_value = (component_expr);           \
@@ -70,7 +68,7 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = 0.5f;
         break;
     case 1:
-        sub_430a30(quad);
+        rotate_object_facequad_uv_pairs(quad);
         vertices[0].x = 0.89999998f;
         vertices[0].z = column_offset + 0.5f;
         vertices[1].x = 0.5f;
@@ -81,9 +79,9 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = -0.5f;
         break;
     case 2:
-        sub_430a30(quad);
-        sub_430a30(quad);
-        sub_430a30(quad);
+        rotate_object_facequad_uv_pairs(quad);
+        rotate_object_facequad_uv_pairs(quad);
+        rotate_object_facequad_uv_pairs(quad);
         vertices[0].x = -0.5f;
         vertices[0].z = 0.5f;
         vertices[1].x = -0.89999998f;
@@ -94,8 +92,8 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = -0.5f - column_offset;
         break;
     case 3:
-        sub_430a30(quad);
-        sub_430a30(quad);
+        rotate_object_facequad_uv_pairs(quad);
+        rotate_object_facequad_uv_pairs(quad);
         vertices[0].x = 0.5f;
         vertices[0].z = -0.5f;
         vertices[1].x = -0.5f;

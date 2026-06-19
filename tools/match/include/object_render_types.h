@@ -63,6 +63,8 @@ struct ObjectFaceQuad {
 typedef char ObjectFaceQuad_must_be_0x30[
     (sizeof(ObjectFaceQuad) == 0x30) ? 1 : -1];
 
+void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad); // @ 0x430a30
+
 struct ObjectToonEdge {
     unsigned int flags; // +0x00, bit 0 is boundary-only, bit 1 is shared edge
     unsigned short vertex_a; // +0x04

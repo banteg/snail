@@ -1408,6 +1408,11 @@
       "description": "Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`. iOS RObject.o names this `cRObject::CalcEdges()`."
     },
     {
+      "address": "0x430a30",
+      "name": "rotate_object_facequad_uv_pairs",
+      "description": "Rotates one ObjectFaceQuad's four UV pairs forward by one slot; used by backdrop tile orientation cases before writing the matching quad vertices."
+    },
+    {
       "address": "0x430a70",
       "name": "request_object_animation",
       "description": "Ensures one render object has generated animation-frame storage; iOS RObject.o names this `cRObject::RequestAnim(int, cRBodPos*, float, int)`."

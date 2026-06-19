@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**451/691** mapped gameplay functions matched, **691/691** mapped gameplay functions have a scratch, **52788/325834** bytes (**16.20%**) are proof-grade, and overall fuzzy is **52.43%**.
+**452/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **52837/325832** bytes (**16.22%**) are proof-grade, and overall fuzzy is **52.43%**.
 
-## Proof Grade (451)
+## Proof Grade (452)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -184,6 +184,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | apply_object_toon | 0x42fa80 | 73 | 24/24 | 100.00% | 24/24 | 4 ok |  |
 | ✅ | advance_frame_sequence | 0x430470 | 245 | 65/65 | 100.00% | 65/65 | 2 ok |  |
 | ✅ | request_object_edges | 0x430570 | 44 | 16/16 | 100.00% | 16/16 | 2 ok |  |
+| ✅ | rotate_object_facequad_uv_pairs | 0x430a30 | 49 | 17/17 | 100.00% | 17/17 | - |  |
 | ✅ | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  |
 | ✅ | set_current_directory_with_drive_fallback | 0x430f30 | 151 | 48/48 | 100.00% | 48/48 | 6 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  |
@@ -566,7 +567,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 64/60 | 69.35% | 2/60 | 13 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 111/109 | 59.09% | 0/109 | 12 ok |  |
-| 🚧 | initialize_backdrop_tile_quad | 0x41a4d0 | 1393 | 339/367 | 79.32% | 91/367 | 7 unresolved, 51 ok |  |
+| 🚧 | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 339/367 | 79.32% | 91/367 | 1 unresolved, 57 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 672/726 | 69.38% | 122/726 | 53 ok |  |
@@ -577,7 +578,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 36 ok |  |
 | 🚧 | add_object_to_list | 0x42fad0 | 58 | 22/24 | 73.91% | 2/24 | 3 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 115/119 | 52.14% | 15/119 | 1 ok |  |
-| 🚧 | calc_object_edges | 0x4308b0 | 433 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |
+| 🚧 | calc_object_edges | 0x4308b0 | 382 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 55/53 | 51.85% | 5/53 | 1 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 66.12% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 211/206 | 65.71% | 10/206 | 31 ok |  |
