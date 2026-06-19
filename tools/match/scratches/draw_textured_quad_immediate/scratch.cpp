@@ -13,13 +13,6 @@ struct ImmediateVertex {
     float v;
 };
 
-struct VertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
-        ImmediateVertex** vertices, unsigned int flags);
-    int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
 struct Direct3DDevice8Vtbl {
     char unknown_000[0xc8];
     int (__stdcall* SetRenderState)(Direct3DDevice8* self, int state, int value);
@@ -76,7 +69,8 @@ int draw_textured_quad_immediate(
 
     ImmediateVertex* vertices;
     g_renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_renderer_state->sprite_vertex_buffer, 0, sizeof(ImmediateVertex) * 4, &vertices, 0);
+        g_renderer_state->sprite_vertex_buffer, 0, sizeof(ImmediateVertex) * 4,
+        (void**)&vertices, 0);
 
     if (rotation == 0.0f) {
         if (width == 0.0f) {

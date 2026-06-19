@@ -7,13 +7,6 @@
 class Direct3DDevice8;
 class Direct3DTexture8;
 
-struct ObjectVertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectVertexBuffer* self, unsigned int offset, unsigned int size,
-        LoadingVertex** vertices, unsigned int flags);
-    int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
 struct Direct3DDevice8Vtbl {
     char unknown_000[0xf4];
     int (__stdcall* SetTexture)(Direct3DDevice8* self, unsigned int stage,
@@ -121,7 +114,7 @@ int LoadingScreen::initialize_loading_screen()
     LoadingVertex* vertices;
     g_loading_background_vertex_buffer->vertex_buffer->vtbl->Lock(
         g_loading_background_vertex_buffer->vertex_buffer, 0, sizeof(LoadingVertex) * 4,
-        &vertices, 0);
+        (void**)&vertices, 0);
 
     vertices[0].x = 0.0f;
     vertices[0].y = 0.0f;

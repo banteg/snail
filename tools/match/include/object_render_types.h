@@ -4,19 +4,15 @@
 // iOS RObject.o names Object as cRObject and ObjectList as cRObjects.
 
 #include "vector3.h"
+#include "vertex_buffer_view.h"
 
 struct TextureRef;
 struct TransformMatrix;
 struct Color4f;
 struct RenderObjectDevice;
-struct ObjectVertexBufferVtbl;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
 struct ObjectAnimation;
-
-struct ObjectVertexBuffer {
-    ObjectVertexBufferVtbl* vtbl;
-};
 
 struct ObjectRenderBuffers {
     char unknown_00[0x08];

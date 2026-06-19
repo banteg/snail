@@ -12,13 +12,6 @@ void* memcpy(void* destination, const void* source, unsigned int count);
 
 int get_or_append_object_texture_group_vertex(Object* object, int vertex_index, float u, float v);
 
-struct ObjectVertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
-        void** data, int flags);
-    int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 

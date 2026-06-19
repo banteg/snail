@@ -3,13 +3,6 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-struct ObjectVertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
-        ObjectRenderVertex** vertices, int flags);
-    int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 
 ColorBGRA8* set_object_color(Object* object, Color4f color)
@@ -23,7 +16,7 @@ ColorBGRA8* set_object_color(Object* object, Color4f color)
     if ((object->flags & 0x80000) != 0) {
         object->render_buffers->vertex_buffer->vtbl->Lock(
             object->render_buffers->vertex_buffer, 0, g_object_grouped_vertex_cursor * 0x18,
-            &vertices, 0);
+            (void**)&vertices, 0);
 
         int i = 0;
         if (object->grouped_vertex_count > 0) {

@@ -6,13 +6,6 @@
 class Direct3DDevice8;
 class Direct3DTexture8;
 
-struct VertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
-        LoadingVertex** vertices, unsigned int flags);
-    int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
 struct RendererVertexBufferResource {
     char unknown_00[0x08];
     VertexBuffer* vertex_buffer; // +0x08
@@ -104,7 +97,7 @@ int LoadingScreen::update_loading_screen()
             LoadingVertex* vertices;
             g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Lock(
                 g_loading_bar_vertex_buffer->vertex_buffer, 0, sizeof(LoadingVertex) * 4,
-                &vertices, 0);
+                (void**)&vertices, 0);
 
             float x_end = bar_percent * 2.5599999f + 192.0f;
 

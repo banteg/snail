@@ -17,13 +17,6 @@ struct SpriteVertex {
     float v;
 };
 
-struct VertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
-        SpriteVertex** vertices, unsigned int flags);
-    int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
 struct Direct3DDevice8Vtbl {
     char unknown_000[0x94];
     int (__stdcall* SetTransform)(Direct3DDevice8* self, int state, TransformMatrix* matrix);
@@ -93,7 +86,8 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
 
     SpriteVertex* vertices;
     g_renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_renderer_state->sprite_vertex_buffer, 0, sizeof(SpriteVertex) * 4, &vertices, 0);
+        g_renderer_state->sprite_vertex_buffer, 0, sizeof(SpriteVertex) * 4,
+        (void**)&vertices, 0);
 
     if (sprite->facing_angle == 0.0f) {
         float negative_extent = -half_extent;

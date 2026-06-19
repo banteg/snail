@@ -14,13 +14,6 @@ unsigned char __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 
-struct ObjectVertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
-        void** data, int flags);
-    int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
 struct TrackRowCellCacheView {
     char unknown_00[0x10];
     Vector3 anchor_position;

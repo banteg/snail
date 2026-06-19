@@ -3,13 +3,6 @@
 #include "object_animation_types.h"
 #include "object_render_types.h"
 
-struct ObjectVertexBufferVtbl {
-    char unknown_00[0x2c];
-    int (__stdcall* Lock)(ObjectVertexBuffer* self, int offset, int size,
-        ObjectRenderVertex** vertices, int flags);
-    int (__stdcall* Unlock)(ObjectVertexBuffer* self);
-};
-
 typedef Object ObjectRenderGeometry;
 
 void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
@@ -30,7 +23,7 @@ void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
         ObjectRenderVertex* vertices;
         object->render_buffers->vertex_buffer->vtbl->Lock(
             object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
-            &vertices, 0);
+            (void**)&vertices, 0);
 
         int count = object->grouped_vertex_count;
         int i = 0;
@@ -60,7 +53,7 @@ void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
         ObjectRenderVertex* vertices;
         object->render_buffers->vertex_buffer->vtbl->Lock(
             object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
-            &vertices, 0);
+            (void**)&vertices, 0);
 
         int count = object->grouped_vertex_count;
         int i = 0;
