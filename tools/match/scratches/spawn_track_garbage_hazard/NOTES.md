@@ -141,3 +141,9 @@ Residuals:
   is codegen-neutral at 99.30%. Keep the direct `*live_position =
   staged_position` spelling and treat the remaining residual as x87/integer-load
   scheduling debt.
+- 2026-06-19 additive-y retry: the focused matcher still reports 99.30%,
+  143/143 instructions, 48/143 prefix, and 16 clean masked operands. Replacing
+  `staged_y += cell->anchor_position.y` with an explicit
+  `staged_y = staged_y + cell->anchor_position.y`, or with a temporary pointer
+  to `cell->anchor_position.y`, is codegen-neutral and leaves the same first
+  mismatch. Keep the current two-step additive spelling.
