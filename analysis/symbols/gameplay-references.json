@@ -810,6 +810,15 @@
       "description": "D3DX simple texture creation wrapper used as the Sprites/Debug.tga fallback after texture creation failures."
     },
     {
+      "address": "0x47bdf4",
+      "name": "Direct3DCreate8",
+      "kind": "function",
+      "aliases": [
+        "j_Direct3DCreate8"
+      ],
+      "description": "Direct3D 8 creation import thunk called by initialize_d3d8_device before adapter mode and device creation setup."
+    },
+    {
       "address": "0x47c840",
       "name": "DirectInput8Create",
       "kind": "function",
