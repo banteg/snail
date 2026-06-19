@@ -1,18 +1,11 @@
 // initialize_loading_screen @ 0x418b50 (thiscall, ret)
 
+#include "loading_vertex.h"
 #include "object_render_types.h"
 #include "render_buffer_factories.h"
 
 class Direct3DDevice8;
 class Direct3DTexture8;
-
-struct LoadingVertex {
-    float x;
-    float y;
-    float z;
-    float u;
-    float v;
-};
 
 struct ObjectVertexBufferVtbl {
     char unknown_00[0x2c];

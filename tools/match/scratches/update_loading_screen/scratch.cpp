@@ -1,16 +1,10 @@
 // update_loading_screen @ 0x418e80 (thiscall, ret)
 
+#include "loading_vertex.h"
+
 class Direct3DDevice8;
 class Direct3DTexture8;
 struct VertexBuffer;
-
-struct LoadingVertex {
-    float x;
-    float y;
-    float z;
-    float u;
-    float v;
-};
 
 struct VertexBufferVtbl {
     char unknown_00[0x2c];
