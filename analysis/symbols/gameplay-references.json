@@ -2801,6 +2801,15 @@
       "description": "Shared voice manager object initialized at startup and used by subgoldy, attachment, cutscene, and damage feedback callsites."
     },
     {
+      "address": "0x75162c",
+      "name": "g_bass_channel_bytes2_seconds",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_75162c"
+      ],
+      "description": "BASS_ChannelBytes2Seconds function pointer resolved during BASS backend initialization."
+    },
+    {
       "address": "0x75165c",
       "name": "g_bass_channel_remove_sync",
       "kind": "function_pointer",
@@ -2817,6 +2826,33 @@
         "data_751660"
       ],
       "description": "BASS_Start function pointer used to resume the audio backend."
+    },
+    {
+      "address": "0x751670",
+      "name": "g_bass_stream_prebuf",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_751670"
+      ],
+      "description": "BASS_StreamPreBuf function pointer resolved during BASS backend initialization."
+    },
+    {
+      "address": "0x751674",
+      "name": "g_bass_error_get_code",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_751674"
+      ],
+      "description": "BASS_ErrorGetCode function pointer resolved during BASS backend initialization."
+    },
+    {
+      "address": "0x751698",
+      "name": "g_bass_update",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_751698"
+      ],
+      "description": "BASS_Update function pointer resolved during BASS backend initialization."
     },
     {
       "address": "0x7516a0",
@@ -2912,6 +2948,24 @@
       "description": "BASS_Stop function pointer used by audio backend stop/uninitialize helpers."
     },
     {
+      "address": "0x753c08",
+      "name": "g_bass_init",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753c08"
+      ],
+      "description": "BASS_Init function pointer resolved and called by initialize_bass_audio_backend."
+    },
+    {
+      "address": "0x753c18",
+      "name": "g_bass_channel_get_data",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753c18"
+      ],
+      "description": "BASS_ChannelGetData function pointer resolved during BASS backend initialization."
+    },
+    {
       "address": "0x753c1c",
       "name": "g_bass_set_config",
       "kind": "function_pointer",
@@ -2986,6 +3040,15 @@
       "description": "BASS_SampleStop function pointer used by registered sample stop wrappers."
     },
     {
+      "address": "0x753c98",
+      "name": "g_bass_channel_get_position",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753c98"
+      ],
+      "description": "BASS_ChannelGetPosition function pointer resolved during BASS backend initialization."
+    },
+    {
       "address": "0x753ca8",
       "name": "g_bass_sample_is_active",
       "kind": "function_pointer",
@@ -3004,6 +3067,15 @@
       "description": "BASS_StreamFree function pointer used when stopping the active music stream."
     },
     {
+      "address": "0x753cbc",
+      "name": "g_bass_channel_get_level",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753cbc"
+      ],
+      "description": "BASS_ChannelGetLevel function pointer resolved during BASS backend initialization."
+    },
+    {
       "address": "0x753cc0",
       "name": "g_bass_pause",
       "kind": "function_pointer",
@@ -3011,6 +3083,15 @@
         "data_753cc0"
       ],
       "description": "BASS_Pause function pointer used to pause the audio backend."
+    },
+    {
+      "address": "0x753cc4",
+      "name": "g_bass_channel_set_sync",
+      "kind": "function_pointer",
+      "aliases": [
+        "data_753cc4"
+      ],
+      "description": "BASS_ChannelSetSync function pointer resolved during BASS backend initialization."
     },
     {
       "address": "0x753ce8",
