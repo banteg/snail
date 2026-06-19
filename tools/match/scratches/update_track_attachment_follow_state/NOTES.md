@@ -185,7 +185,7 @@ Representative rejected or neutral trials:
 Final verification command:
 
 ```sh
-UV_PYTHON=3.13 tools/match/match.sh \
+tools/match/match.sh \
   tools/match/scratches/update_track_attachment_follow_state \
   --regions --max-regions 14 --region-context 6
 ```

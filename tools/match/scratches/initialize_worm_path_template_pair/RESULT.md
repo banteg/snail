@@ -3,7 +3,7 @@
 Measured with:
 
 ```sh
-tools/match/match-py313.sh \
+tools/match/match.sh \
   tools/match/scratches/initialize_worm_path_template_pair \
   --regions --max-regions 20 --region-context 6
 ```
