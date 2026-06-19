@@ -20,6 +20,7 @@ public:
 class VoiceManager {
 public:
     void reset_voice_manager(); // @ 0x448ec0
+    void initialize_voice_manager(); // @ 0x448ee0
     void update_voice_manager(); // @ 0x4492a0
     bool play_voice_manager(int set_id, unsigned int mode, int sample_override); // @ 0x4492d0
     int is_voice_playing(); // @ 0x449410

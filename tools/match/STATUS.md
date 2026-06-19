@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**440/687** mapped gameplay functions matched, **625/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **39.03%**.
+**440/687** mapped gameplay functions matched, **626/687** mapped gameplay functions have a scratch, **49114/325882** bytes (**15.07%**) are proof-grade, and overall fuzzy is **39.21%**.
 
 ## Proof Grade (440)
 
@@ -449,7 +449,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (185)
+## In Progress (186)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -609,6 +609,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 158/154 | 75.00% | 16/154 | 24 ok |  |
 | 🚧 | update_tip | 0x448c40 | 166 | 53/51 | 73.08% | 11/51 | 9 ok |  |
+| 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 61.78% | 4/269 | 56 ok |  |
 | 🚧 | load_registered_sound_sample_from_bytes | 0x449960 | 59 | 18/18 | 88.89% | 13/18 | 4 ok |  |
 | 🚧 | measure_font_text_width | 0x449e90 | 182 | 45/60 | 22.86% | 0/60 | 1 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 230/274 | 27.78% | 0/274 | 18 ok |  |
@@ -639,7 +640,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (62)
+## No Scratch (61)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -703,7 +704,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | build_subgame_level | 0x437eb0 | 2128 | 0/555 | 0.00% | 0/555 | - |  |
 | ⬜ | update_slug_hazard_ai | 0x43f930 | 1772 | 0/464 | 0.00% | 0/464 | - |  |
 | ⬜ | remove_subgame_bods | 0x440910 | 1644 | 0/501 | 0.00% | 0/501 | - |  |
-| ⬜ | initialize_voice_manager | 0x448ee0 | 960 | 0/269 | 0.00% | 0/269 | - |  |
 | ⬜ | load_object_definition | 0x44c420 | 1109 | 0/325 | 0.00% | 0/325 | - |  |
 
 ## Type Consolidation
