@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**436/687** mapped gameplay functions matched, **586/687** mapped gameplay functions have a scratch, **47390/325882** bytes (**14.54%**) are proof-grade, and overall fuzzy is **32.71%**.
+**437/687** mapped gameplay functions matched, **587/687** mapped gameplay functions have a scratch, **47960/325882** bytes (**14.72%**) are proof-grade, and overall fuzzy is **32.88%**.
 
-## Proof Grade (436)
+## Proof Grade (437)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -224,6 +224,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  |
+| ✅ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 160/160 | 100.00% | 160/160 | 2 ok |  |
 | ✅ | reset_subgame | 0x437b10 | 291 | 75/75 | 100.00% | 75/75 | 2 ok |  |
 | ✅ | update_progress_bar | 0x437c40 | 413 | 110/110 | 100.00% | 110/110 | 19 ok |  |
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
@@ -600,7 +601,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (101)
+## No Scratch (100)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -687,7 +688,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 0/440 | 0.00% | 0/440 | - |  |
 | ⬜ | build_track_render_caches | 0x433220 | 2310 | 0/763 | 0.00% | 0/763 | - |  |
 | ⬜ | merge_track_tile_runs | 0x435180 | 873 | 0/276 | 0.00% | 0/276 | - |  |
-| ⬜ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 0/160 | 0.00% | 0/160 | - |  |
 | ⬜ | initialize_subgame | 0x4374b0 | 1632 | 0/396 | 0.00% | 0/396 | - |  |
 | ⬜ | build_subgame_level | 0x437eb0 | 2128 | 0/555 | 0.00% | 0/555 | - |  |
 | ⬜ | initialize_subgoldy | 0x43a9c0 | 1360 | 0/279 | 0.00% | 0/279 | - |  |
@@ -736,7 +736,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 37 | 1 | 37 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 38 | 1 | 38 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |

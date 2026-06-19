@@ -573,6 +573,26 @@
       "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
     },
     {
+      "address": "0x437418",
+      "name": "normalize_segment_glyph_for_track_flags_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L345"
+      ],
+      "size": "0x34",
+      "description": "Compiler-emitted case jump table used by normalize_segment_glyph_for_track_flags after the sparse glyph lookup."
+    },
+    {
+      "address": "0x43744c",
+      "name": "normalize_segment_glyph_for_track_flags_lookup_table",
+      "kind": "global",
+      "aliases": [
+        "$L344"
+      ],
+      "size": "0x5e",
+      "description": "Compiler-emitted byte lookup table mapping glyph values 0x20..0x7d to normalize_segment_glyph_for_track_flags switch case indexes."
+    },
+    {
       "address": "0x43a2d4",
       "name": "update_player_movement_flags_jump_table",
       "kind": "jump_table",
