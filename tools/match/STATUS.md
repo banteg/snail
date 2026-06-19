@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**438/687** mapped gameplay functions matched, **588/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **32.98%**.
+**438/687** mapped gameplay functions matched, **589/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **33.00%**.
 
 ## Proof Grade (438)
 
@@ -447,7 +447,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (150)
+## In Progress (151)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -500,6 +500,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 55/53 | 51.85% | 5/53 | 1 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 50/47 | 82.47% | 18/47 | 1 mismatch, 18 ok |  |
+| 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 66.12% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 13 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 53/50 | 29.13% | 5/50 | - |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 72/64 | 44.12% | 0/64 | 9 ok |  |
@@ -602,7 +603,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (99)
+## No Scratch (98)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -681,7 +682,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | calc_object_facequad_normals | 0x42fcb0 | 1397 | 0/437 | 0.00% | 0/437 | - |  |
 | ⬜ | calc_object_facequad_normals_simple | 0x430230 | 441 | 0/139 | 0.00% | 0/139 | - |  |
 | ⬜ | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 0/188 | 0.00% | 0/188 | - |  |
-| ⬜ | find_archive_entry | 0x431250 | 122 | 0/60 | 0.00% | 0/60 | - |  |
 | ⬜ | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 0/206 | 0.00% | 0/206 | - |  |
 | ⬜ | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 0/182 | 0.00% | 0/182 | - |  |
 | ⬜ | update_input_controller_pointer_region | 0x4321c0 | 466 | 0/134 | 0.00% | 0/134 | - |  |
@@ -711,7 +711,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 0 type name(s)
+- ready: 2 type name(s)
 - covered: 30 type name(s) with a header plus scratch-local copies
 - divergent: 19 type name(s) with multiple scratch-local shapes
 
@@ -766,3 +766,5 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| ready | ArchiveEntry | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| ready | ArchiveIndex | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
