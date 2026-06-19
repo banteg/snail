@@ -163,15 +163,15 @@ int Player::initialize_subgoldy(int player_slot)
     int zero_x = zero;
     *(int*)(self + 0x1d8) = 0x3d4ede62;
     *(int*)(self + 0x1e0) = 0x3d4ede62;
-    char* camera_target = self + 0x2964;
+    int* camera_target = (int*)(self + 0x2964);
     int zero_y = zero;
     *(int*)(self + 0x68) = zero;
     *(int*)(self + 0x6c) = zero;
-    *(int*)(camera_target + 0) = zero_x;
-    *(int*)(self + 0x70) = 0x40800000;
+    camera_target[0] = zero_x;
+    *(float*)(self + 0x70) = 4.0f;
     int position_z = *(int*)(self + 0x70);
     *(int*)(self + 0x37c) = zero;
-    *(int*)(camera_target + 4) = zero_y;
+    camera_target[1] = zero_y;
     *(int*)(self + 0x328) = zero;
     *(int*)(self + 0x32c) = 0x3c888889;
     *(int*)(self + 0x1d4) = zero;
@@ -181,21 +181,22 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x3f48) = zero;
     *(int*)(self + 0x3f4c) = 0x3bde0163;
     *(unsigned char*)(self + 0x84) = (unsigned char)zero;
-    *(int*)(camera_target + 8) = position_z;
+    camera_target[2] = position_z;
     *(int*)(self + 0x418) = zero;
     *(int*)(self + 0x414) = zero;
     *(int*)(self + 0x410) = zero;
 
     int active_slot = *(int*)(self + 0x380);
-    char* app = g_game_base;
     char* control_source;
     if (active_slot == 1) {
+        char* app = g_game_base;
         char* control_check = app + 0x44;
         if (control_check != 0)
             control_source = app + 0x7c;
         else
             control_source = 0;
     } else {
+        char* app = g_game_base;
         char* control_check = app + 0xb4;
         if (control_check != 0)
             control_source = app + 0xec;

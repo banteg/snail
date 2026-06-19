@@ -1025,6 +1025,11 @@
       "description": "Builds one oriented textured backdrop tile quad by choosing one of the eight UV-orientation cases and offsetting the local tile with the supplied row and column selectors."
     },
     {
+      "address": "0x41aa30",
+      "name": "reset_spring_float",
+      "description": "Clears the five-float spring state used by the player's visual root before initializing SubGoldy."
+    },
+    {
       "address": "0x41aa50",
       "name": "apply_distort_to_object"
     },

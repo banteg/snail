@@ -23,8 +23,18 @@ Known partials:
 
 - The full `Player` layout is still intentionally raw here; do not consolidate
   from this scratch alone.
-- The tiny `0x41aa30` spring reset and empty runtime callback are represented
-  as local method views only to preserve their call shapes.
+- The tiny `0x41aa30` spring reset is now split out as a proof-grade
+  `reset_spring_float` scratch; the empty runtime callback is still represented
+  as a local method view only to preserve its call shape.
 - The remaining tail mismatch starts after the ghost/cameraman setup in the
-  camera-target/control-source seed block and is currently register/order
-  polish rather than a known semantic difference.
+  camera-target/control-source seed block. The current scratch matches all
+  masked operands but still differs in base-pointer/register scheduling for the
+  cached camera target, the control-source branch, and one transform-loop game
+  pointer load.
+
+Latest focused result:
+
+- match: 95.14%
+- target/candidate instructions: 279 / 276
+- prefix: 190 / 279
+- masked operands: 27 clean, 0 unresolved, 0 mismatched
