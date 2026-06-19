@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**444/687** mapped gameplay functions matched, **651/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **45.74%**.
+**444/687** mapped gameplay functions matched, **652/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **46.19%**.
 
 ## Proof Grade (444)
 
@@ -624,7 +624,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (51)
+## Early Progress (>0-49.99%) (52)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -640,6 +640,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 281/318 | 42.07% | 0/318 | 17 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 303/421 | 17.13% | 0/421 | 17 ok |  |
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
+| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 629/1029 | 43.55% | 0/1029 | 1 mismatch, 39 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 392/437 | 17.13% | 0/437 | 1 mismatch, 11 ok |  |
 | 🚧 | calc_object_facequad_normals_simple | 0x430230 | 441 | 131/139 | 10.37% | 0/139 | 2 mismatch |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 56/55 | 28.83% | 5/55 | - |  |
@@ -680,7 +681,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (0%) (36)
+## No Scratch (0%) (35)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -719,7 +720,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 0/663 | 0.00% | 0/663 | - |  |
 | ⬜ | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 0/668 | 0.00% | 0/668 | - |  |
 | ⬜ | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 0/579 | 0.00% | 0/579 | - |  |
-| ⬜ | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 0/1029 | 0.00% | 0/1029 | - |  |
 
 ## Type Consolidation
 
@@ -765,12 +765,12 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | BorderManager | 6 | 3 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FrontendWidget | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 4 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | AttachmentPathTemplate | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FrontendFade | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PlayerPresentationController | 3 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
