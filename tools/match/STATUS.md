@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**437/687** mapped gameplay functions matched, **587/687** mapped gameplay functions have a scratch, **47960/325882** bytes (**14.72%**) are proof-grade, and overall fuzzy is **32.88%**.
+**438/687** mapped gameplay functions matched, **588/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **32.98%**.
 
-## Proof Grade (437)
+## Proof Grade (438)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -404,6 +404,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | rotate_matrix_world_y | 0x44cec0 | 133 | 50/50 | 100.00% | 50/50 | 2 ok |  |
 | ✅ | rotate_matrix_world_z | 0x44cf50 | 133 | 50/50 | 100.00% | 50/50 | 2 ok |  |
 | ✅ | initialize_matrix_from_values | 0x44cfe0 | 116 | 34/34 | 100.00% | 34/34 | - |  |
+| ✅ | multiply_matrices | 0x44d060 | 312 | 114/114 | 100.00% | 114/114 | - |  |
 | ✅ | multiply_matrix_in_place | 0x44d1a0 | 45 | 18/18 | 100.00% | 18/18 | 1 ok |  |
 | ✅ | premultiply_matrix_in_place | 0x44d1e0 | 45 | 18/18 | 100.00% | 18/18 | 1 ok |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 | - |  |
@@ -601,7 +602,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (100)
+## No Scratch (99)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -700,7 +701,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | update_mouse | 0x44bc50 | 1012 | 0/295 | 0.00% | 0/295 | - |  |
 | ⬜ | convert_mouse_screen_xy | 0x44c100 | 440 | 0/115 | 0.00% | 0/115 | - |  |
 | ⬜ | load_object_definition | 0x44c420 | 1109 | 0/325 | 0.00% | 0/325 | - |  |
-| ⬜ | multiply_matrices | 0x44d060 | 312 | 0/114 | 0.00% | 0/114 | - |  |
 | ⬜ | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 0/186 | 0.00% | 0/186 | - |  |
 | ⬜ | initialize_translation_matrix | 0x44fd90 | 1412 | 0/34 | 0.00% | 0/34 | - |  |
 | ⬜ | build_perspective_projection_matrix | 0x450314 | 6085 | 0/54 | 0.00% | 0/54 | - |  |
