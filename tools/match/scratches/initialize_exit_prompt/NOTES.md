@@ -13,21 +13,19 @@
   - state 4 uses absolute Yes/No positions without title.
   - state 5 uses absolute title and button positions.
   - state 10 uses the centered default layout.
-- Focused match: `99.66%` (`441` target insns, `442` candidate insns),
-  `108 ok`, `0 unresolved`, `1 mismatch`.
+- Focused match: `100.00%` (`441/441` instructions, `441/441` prefix,
+  `109 ok`, `0 unresolved`, `0 mismatch`).
 - `initialize_exit_prompt_jump_table` is curated at `0x4067b4` with ten entries
   (`0x28` bytes) between the function `ret` at `0x4067b0` and the `0x90`
-  padding before `update_completion_screen`. The masked audit now reports the
-  table as a real content mismatch instead of an anonymous unresolved image
-  address: native entries include the shared return offset `0x6d9`, while the
-  candidate table uses `0x6db` because of the extra `xor eax,eax`.
+  padding before `update_completion_screen`. The table now resolves cleanly.
 - Shared headers now model `FrontendWidget::initialize_frontend_widget` as
   returning `FrontendWidget*`, matching the `initialize_frontend_widget` scratch
   and the IDA result flow here. This is codegen-neutral for this scratch and
   preserves the exact menu initializer scratches tested with it.
-- Rejected tail attempts: direct `return (int)no_button->initialize_frontend_widget(...)`
-  on the two no-title branches reshapes the switch to `74.86%`; a shared
-  `result` local keeps the audit clean but introduces an `edi` result register,
-  shifts all stack color locals, and drops to `92.20%`. Keep the explicit
-  `return 0` spelling until there is a source shape that removes the `xor`
-  without perturbing the switch layout.
+- 2026-06-20 proof: the two no-title branches must return the final
+  `no_button->initialize_frontend_widget(...)` result instead of discarding it
+  with `return 0`. BN and IDA both show native leaving that call result in
+  `eax`; matching the real result flow removes the extra `xor eax,eax`, fixes
+  the jump-table target offset, and proves the scratch.
+- A shared `result` local still remains rejected: it introduces an `edi` result
+  register, shifts the stack color locals, and drops to `92.20%`.

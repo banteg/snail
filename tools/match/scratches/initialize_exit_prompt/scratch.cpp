@@ -42,7 +42,7 @@ int CompletionPrompt::initialize_exit_prompt()
             140.0f);
 
         no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        no_button->initialize_frontend_widget(
+        return (int)no_button->initialize_frontend_widget(
             0x14,
             "No",
             0x14,
@@ -51,7 +51,6 @@ int CompletionPrompt::initialize_exit_prompt()
             color_19.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             268.0f);
-        return 0;
 
     case 8:
         prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
@@ -247,7 +246,7 @@ int CompletionPrompt::initialize_exit_prompt()
             0.0f);
 
         no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        no_button->initialize_frontend_widget(
+        return (int)no_button->initialize_frontend_widget(
             0x14,
             "No",
             0x14,
@@ -256,7 +255,6 @@ int CompletionPrompt::initialize_exit_prompt()
             color_20.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        return 0;
     }
 
     return state - 2;
