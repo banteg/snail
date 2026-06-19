@@ -15,11 +15,13 @@ The native keeps the accumulated byte in `bl`; this source keeps the same
 single `char result` shape and leaves the exact keyboard edge/down helpers as
 calls.
 
-## Current match notes
+## Exact match notes
 
-Focused matcher result: 99.41%, 336 candidate instructions versus 338 target
-instructions, 326-instruction prefix, and 55 clean masked operands.
+Focused matcher result: 100.00%, 338 candidate instructions versus 338 target
+instructions, full 338-instruction prefix, and 55 clean masked operands.
 
-The only remaining mismatch is the Enter/Ctrl tail. Native normalizes the Ctrl
-key-down byte with `test al; setne al` before adding `5`; the clear source
-spelling leaves the exact helper's return byte in `eax` and adds `5` directly.
+The final Enter/Ctrl tail must normalize the Ctrl key-down result through a
+`char ctrl_down` local before adding `5`. A full-width `int` normalization
+compiled to a `neg`/`sbb` boolean idiom, while directly adding the helper result
+left the raw byte in `eax`. The byte local recovers native `test al; setne al`
+without barriers or fake temporaries.

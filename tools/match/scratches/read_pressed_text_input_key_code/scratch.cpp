@@ -115,8 +115,10 @@ char read_pressed_text_input_key_code()
         result = 11;
     if (is_key_pressed_edge(0x3b))
         result = 12;
-    if (is_key_pressed_edge(0x1c))
-        return is_key_down(0x1d) + 5;
+    if (is_key_pressed_edge(0x1c)) {
+        char ctrl_down = is_key_down(0x1d) != 0;
+        return ctrl_down + 5;
+    }
 
     return result;
 }

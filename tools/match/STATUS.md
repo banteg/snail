@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**445/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **51547/325882** bytes (**15.82%**) are proof-grade, and overall fuzzy is **52.30%**.
+**446/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **52462/325882** bytes (**16.10%**) are proof-grade, and overall fuzzy is **52.31%**.
 
-## Proof Grade (445)
+## Proof Grade (446)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -210,6 +210,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
+| ✅ | read_pressed_text_input_key_code | 0x432440 | 915 | 338/338 | 100.00% | 338/338 | 55 ok |  |
 | ✅ | cache_music_file | 0x432d50 | 160 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | play_sound_effect_backend | 0x432df0 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
@@ -454,7 +455,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (11)
+## Near Match (95-99.99%) (10)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -464,7 +465,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_galaxy | 0x408cf0 | 1523 | 336/338 | 97.92% | 113/338 | 74 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1284 | 334/332 | 97.60% | 111/332 | 1 unresolved, 24 ok |  |
-| 🚧 | read_pressed_text_input_key_code | 0x432440 | 915 | 336/338 | 99.41% | 326/338 | 55 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 98.86% | 386/440 | 73 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
