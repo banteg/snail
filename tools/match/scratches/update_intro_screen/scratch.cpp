@@ -1,21 +1,31 @@
 // update_intro_screen @ 0x4199e0 (thiscall)
 
+#include "bod_list.h"
 #include "border_delay_lane.h"
 
 extern char* g_game_base; // data_4df904
 
 char read_pressed_text_input_key_code();
 
+struct IntroRenderableSlot {
+    BodNode bod; // +0x00
+    char unknown_10[0x90 - sizeof(BodNode)];
+};
+typedef char IntroRenderableSlot_must_be_0x90[
+    (sizeof(IntroRenderableSlot) == 0x90) ? 1 : -1];
+
 class IntroScreenRuntime {
 public:
     void update_intro_screen();
-    void destroy_intro_screen();
+    int destroy_intro_screen();
 
     float progress; // +0x00
     float progress_step; // +0x04
     int state; // +0x08
-    int next_frontend_state; // +0x0c
+    int saved_render_flags; // +0x0c
     float duration_seconds; // +0x10
+    int renderable_count; // +0x14
+    IntroRenderableSlot renderables[1]; // +0x18
 };
 
 void IntroScreenRuntime::update_intro_screen()

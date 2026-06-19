@@ -1,0 +1,80 @@
+// destroy_intro_screen @ 0x419920 (thiscall, ret)
+
+#include "bod_list.h"
+
+extern char* g_game_base; // data_4df904
+extern int g_render_flags; // data_4df934
+
+int report_errorf(char* format, ...);
+
+struct IntroRenderableSlot {
+    BodNode bod; // +0x00
+    char unknown_10[0x90 - sizeof(BodNode)];
+};
+typedef char IntroRenderableSlot_must_be_0x90[
+    (sizeof(IntroRenderableSlot) == 0x90) ? 1 : -1];
+
+class IntroScreenRuntime {
+public:
+    void update_intro_screen();
+    int destroy_intro_screen();
+
+    float progress;                 // +0x00
+    float progress_step;            // +0x04
+    int state;                      // +0x08
+    int saved_render_flags;         // +0x0c
+    float duration_seconds;         // +0x10
+    int renderable_count;           // +0x14
+    IntroRenderableSlot renderables[1]; // +0x18
+};
+
+int IntroScreenRuntime::destroy_intro_screen()
+{
+    g_render_flags = saved_render_flags;
+
+    char* game = g_game_base;
+    if (*(unsigned char*)(game + 0x30d) == 1)
+        *(int*)(game + 0x1b8) = 20;
+    else
+        *(int*)(game + 0x1b8) = 3;
+
+    int result = renderable_count;
+    int index = 0;
+    if (result > 0) {
+        BodNode** next_ref = &renderables[0].bod.list_next;
+        do {
+            unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
+            unsigned int flags = *flags_ref;
+            BodList* list = (BodList*)(g_game_base + 0x5a8);
+            if ((flags & 0x200) == 0) {
+                report_errorf("List remove");
+            } else {
+                if ((flags & 0x40) == 0) {
+                    BodNode* next = *next_ref;
+                    if (next != 0)
+                        next->list_prev = *(BodNode**)((char*)next_ref - 4);
+
+                    BodNode* prev = *(BodNode**)((char*)next_ref - 4);
+                    if (prev != 0)
+                        prev->list_next = *next_ref;
+                    else
+                        list->first = *next_ref;
+
+                    *next_ref = list->free_top;
+                    list->free_top = (BodNode*)((char*)next_ref - 0xc);
+
+                    int updated = *flags_ref;
+                    updated &= ~0x200;
+                    *flags_ref = updated;
+                } else {
+                    report_errorf("List remove NEXTBOD");
+                }
+            }
+
+            result = renderable_count;
+            ++index;
+            next_ref = (BodNode**)((char*)next_ref + sizeof(IntroRenderableSlot));
+        } while (index < result);
+    }
+    return result;
+}
