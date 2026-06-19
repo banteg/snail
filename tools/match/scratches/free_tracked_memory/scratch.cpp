@@ -1,14 +1,10 @@
 // free_tracked_memory @ 0x431bf0 (cdecl)
 
+#include "tracked_allocation_stack.h"
+
 extern "C" void free(void* pointer);
 
 void report_errorf(char* format, ...);
-
-class TrackedAllocationStack {
-public:
-    int get_tracked_allocation_size(void* pointer);
-    void pop_tracked_allocation(void* pointer);
-};
 
 extern int g_tracked_allocation_total_bytes;
 extern int g_tracked_allocation_depth;

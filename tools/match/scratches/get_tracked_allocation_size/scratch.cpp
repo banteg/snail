@@ -1,17 +1,8 @@
 // get_tracked_allocation_size @ 0x431ab0 (thiscall, ret 0x4)
 
+#include "tracked_allocation_stack.h"
+
 int report_errorf(char* format, ...);
-
-class TrackedAllocationStack {
-public:
-    int get_tracked_allocation_size(void* pointer);
-
-    int depth; // +0x00
-    int field_04;
-    int field_08;
-    int first_pointer; // +0x0c
-    int first_size; // +0x10
-};
 
 int TrackedAllocationStack::get_tracked_allocation_size(void* pointer)
 {

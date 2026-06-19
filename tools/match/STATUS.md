@@ -723,7 +723,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 10 type name(s)
 - covered: 44 type name(s) with a header plus scratch-local copies
-- divergent: 29 type name(s) with multiple scratch-local shapes
+- divergent: 28 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -732,7 +732,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 5 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |

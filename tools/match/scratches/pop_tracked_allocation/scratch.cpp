@@ -1,15 +1,6 @@
 // pop_tracked_allocation @ 0x431b30 (thiscall, ret 0x4)
 
-class TrackedAllocationStack {
-public:
-    int pop_tracked_allocation(void* pointer);
-
-    int depth; // +0x00
-    int field_04;
-    int field_08;
-    int first_pointer; // +0x0c
-    int first_size; // +0x10
-};
+#include "tracked_allocation_stack.h"
 
 int TrackedAllocationStack::pop_tracked_allocation(void* pointer)
 {
