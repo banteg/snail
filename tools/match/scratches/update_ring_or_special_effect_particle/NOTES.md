@@ -68,3 +68,12 @@ Rejected source-shape probe:
   55/55 instructions. The IDA artifact was synced to the same
   `RingOrSpecialEffectParticle`, `RingOrSpecialEffectParent`, `Sprite`, and
   `Vec3` names; no Ghidra artifact exists for this function in the repo.
+- 2026-06-19 materialization audit: a C++ reference to
+  `live_parent->transform.position` and an explicit `TransformMatrix*` owner
+  were both codegen-neutral at 96.36% and kept the same `add eax, 0x68; fadd
+  [eax]` residual. A direct scalar `staged_x = orbit_x +
+  live_parent->transform.position.x` does recover native-style
+  `fadd [eax+0x68]`, but regresses to 89.91% because VC6 hoists the radius
+  multiply before reloading the parent and sprite pointers and removes the
+  native `add eax, 0x68` used by the y/z lanes. Leave the typed pointer spelling
+  as the best current source shape.
