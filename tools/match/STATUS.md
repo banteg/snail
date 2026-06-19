@@ -723,7 +723,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - unresolved-layout: 23 type name(s)
 - header-compatible: 18 type name(s)
-- partial-compatible: 19 type name(s)
+- partial-compatible: 18 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -770,7 +770,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | partial-compatible | Game | 42 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DDevice8Vtbl | 8 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | LoadingScreen | 7 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

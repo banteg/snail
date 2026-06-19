@@ -1,5 +1,6 @@
 // update_loading_screen @ 0x418e80 (thiscall, ret)
 
+#include "loading_screen.h"
 #include "loading_vertex.h"
 #include "vertex_buffer_view.h"
 
@@ -36,15 +37,6 @@ struct Direct3DDevice8Vtbl {
 class Direct3DDevice8 {
 public:
     Direct3DDevice8Vtbl* vtbl;
-};
-
-class LoadingScreen {
-public:
-    int update_loading_screen();
-
-    int active;           // +0x00
-    int previous_percent; // +0x04
-    int last_loading_budget; // +0x08
 };
 
 extern int g_last_loading_budget; // data_4df9c4

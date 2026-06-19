@@ -1,14 +1,10 @@
 // load_file_bytes_fixed_size_from_archive_or_fs @ 0x431030 (cdecl)
 
 #include "archive_index.h"
+#include "loading_screen.h"
 
 typedef struct File File;
 
-struct LoadingScreen {
-    void update_loading_screen();
-};
-
-extern LoadingScreen g_loading_screen;      // data_503290
 extern ArchiveIndex* g_archive_index_records; // data_53c7f8
 extern File* g_archive_file;                // data_53c7f0
 

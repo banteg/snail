@@ -1,5 +1,7 @@
 // destroy_loading_screen @ 0x418e50 (thiscall)
 
+#include "loading_screen.h"
+
 class Direct3DTexture8;
 
 class Direct3DTexture8Vtbl {
@@ -12,15 +14,6 @@ public:
 class Direct3DTexture8 {
 public:
     Direct3DTexture8Vtbl* vtbl;
-};
-
-class LoadingScreen {
-public:
-    int destroy_loading_screen();
-
-    int active; // +0x00
-    int unknown_04;
-    int last_loading_budget; // +0x08
 };
 
 extern int g_last_loading_budget; // data_4df9c4

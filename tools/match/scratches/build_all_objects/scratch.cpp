@@ -1,12 +1,7 @@
 // build_all_objects @ 0x42f9e0 (thiscall)
 
+#include "loading_screen.h"
 #include "object_render_types.h"
-
-struct LoadingScreen {
-    void update_loading_screen(); // @ 0x418e80
-};
-
-extern LoadingScreen g_loading_screen; // data_503290
 
 void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
 void* build_object_texture_group_buffers(Object* object); // @ 0x413d50

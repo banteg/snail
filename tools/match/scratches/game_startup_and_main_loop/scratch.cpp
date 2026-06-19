@@ -17,12 +17,7 @@ struct Msg {
 typedef char Msg_must_be_0x1c[(sizeof(Msg) == 0x1c) ? 1 : -1];
 
 #include "game_root.h"
-
-class LoadingScreen {
-public:
-    int initialize_loading_screen(); // @ 0x418b50
-    int destroy_loading_screen();    // @ 0x418e50
-};
+#include "loading_screen.h"
 
 class FrontendFade {
 public:
@@ -69,7 +64,6 @@ extern float data_4dfb04;
 extern float data_4b763c;
 extern float data_4b7638;
 extern float data_4b7768;
-extern LoadingScreen g_loading_screen;       // data_503290
 
 extern unsigned char data_4df918;
 extern unsigned char data_4df938;

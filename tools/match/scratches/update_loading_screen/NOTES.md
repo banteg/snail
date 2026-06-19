@@ -3,7 +3,7 @@
 Draws the loading-screen background and the clipped `LoadingBarOn` fill quad
 when the integer loader percentage advances by at least one point.
 
-Recovered layout:
+Shared owner layout, now declared in `tools/match/include/loading_screen.h`:
 
 ```cpp
 struct LoadingScreen {
