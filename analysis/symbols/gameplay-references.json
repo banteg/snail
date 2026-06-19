@@ -246,23 +246,52 @@
     },
     {
       "address": "0x503280",
-      "name": "g_loading_background_texture",
+      "name": "g_loading_bar_on_texture",
       "kind": "global",
       "aliases": [
         "data_503280"
       ],
       "size": "0x4",
-      "description": "Direct3D texture pointer for the loading-screen background, released by destroy_loading_screen."
+      "description": "Direct3D texture pointer for the LoadingBarOn progress fill loaded by initialize_loading_screen and drawn by update_loading_screen."
+    },
+    {
+      "address": "0x503284",
+      "name": "g_loading_background_vertex_buffer",
+      "kind": "global",
+      "aliases": [
+        "data_503284"
+      ],
+      "size": "0x4",
+      "description": "Renderer vertex-buffer resource for the full loading-screen background quad initialized by initialize_loading_screen and drawn by update_loading_screen."
     },
     {
       "address": "0x503288",
-      "name": "g_loading_bar_on_texture",
+      "name": "g_loading_background_texture",
       "kind": "global",
       "aliases": [
         "data_503288"
       ],
       "size": "0x4",
-      "description": "Direct3D texture pointer for the loading-screen progress fill, released by destroy_loading_screen."
+      "description": "Direct3D texture pointer for Sprites/Loading.tga, the full loading-screen background drawn before the progress fill."
+    },
+    {
+      "address": "0x5032a4",
+      "name": "g_loading_bar_vertex_buffer",
+      "kind": "global",
+      "aliases": [
+        "data_5032a4"
+      ],
+      "size": "0x4",
+      "description": "Renderer vertex-buffer resource for the dynamic LoadingBarOn progress-fill quad updated by update_loading_screen."
+    },
+    {
+      "address": "0x413520",
+      "name": "present_backbuffer",
+      "kind": "function",
+      "aliases": [
+        "sub_413520"
+      ],
+      "description": "Tiny Direct3D Present wrapper called after loading-screen and startup frame draws."
     },
     {
       "address": "0x4137b8",
