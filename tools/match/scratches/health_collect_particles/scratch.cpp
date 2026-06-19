@@ -43,12 +43,14 @@ void Player::health_collect_particles(TrackHealthPickup* pickup)
             burst_velocity->y = burst_velocity_y;
             burst_velocity->z = burst_velocity_z;
 
-            float offset_y = velocity.y * 3.0f;
-            float offset_z = velocity.z * 3.0f;
-            position->x = velocity.x * 3.0f + position->x;
-            position->y = offset_y + position->y;
+            Vector3 pickup_offset(
+                velocity.x * 3.0f,
+                velocity.y * 3.0f,
+                velocity.z * 3.0f);
+            position->x = pickup_offset.x + position->x;
+            position->y = pickup_offset.y + position->y;
             ++index;
-            position->z = offset_z + position->z;
+            position->z = pickup_offset.z + position->z;
         } while (index < 8);
     }
 }

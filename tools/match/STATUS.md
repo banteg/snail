@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**447/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **52631/325882** bytes (**16.15%**) are proof-grade, and overall fuzzy is **52.31%**.
+**447/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **52631/325882** bytes (**16.15%**) are proof-grade, and overall fuzzy is **52.32%**.
 
 ## Proof Grade (447)
 
@@ -584,7 +584,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 79.82% | 177/555 | 1 mismatch, 2 unresolved, 99 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1046/1033 | 67.53% | 9/1033 | 2 mismatch, 108 ok |  |
-| 🚧 | health_collect_particles | 0x43a010 | 386 | 98/104 | 66.34% | 1/104 | 11 ok |  |
+| 🚧 | health_collect_particles | 0x43a010 | 386 | 100/104 | 69.61% | 1/104 | 13 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 72.95% | 16/122 | 7 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 141/144 | 79.30% | 44/144 | 9 ok |  |
