@@ -22,3 +22,11 @@ Recovered relationships:
   before the flags/color arguments; the helper does not consume them.
 - Clears the axis-aligned width/height lanes (`+0x54/+0x58`) so the draw
   forwarder uses the stored corner coordinates instead.
+
+2026-06-20 render-queue chunk: removing the final `return 0` matches the
+decompiler's incidental-return shape in spirit, but Wibo aborts through the
+MSVC missing-return warning path (`missing import lstrcpynA`) before producing
+an object. This is the same harness limitation documented for other incidental
+return scratches, so the explicit final zero remains. The residual masked
+operand mismatches are still queue-store scheduling around the UV/layer/blend
+tail, not evidence that the two unused zero arguments are consumed.

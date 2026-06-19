@@ -53,3 +53,13 @@ not recover native's `fst [esp+0x3c]` reload. Moving the third rotated vertex's
 zero-z store before its y store regressed to 97.74%. A conventional `int` tail
 with an explicit success/failure block regressed to 97.44% by inverting the
 native branch layout.
+
+2026-06-20 render-queue chunk: several wider rotated-path source-shape probes
+were rejected. Mutating `width`/`height`/`x0`/`y0` as stack-slot scratch
+variables to mirror BN/IDA's argument-slot reuse regressed to 95.02% by changing
+the FPU operand order. Reusing only `width` as the half-height scratch regressed
+to 96.83% for the same reason. Reversing the radius expression to
+`half_height * half_height + half_width * half_width` was codegen-neutral at
+98.34%, so it is not retained. The remaining body gap is still the native
+half-height `fst [esp+0x3c]`/reload and one rotated vertex zero-store/load
+scheduling swap, not evidence for a different vertex layout.

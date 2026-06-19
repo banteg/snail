@@ -17,3 +17,10 @@ Recovered relationships:
 - Stores caller-provided UV bounds at `+0x5c..+0x68`.
 - Used by front-end widgets, progress bars, damage gauge, galaxy display, and
   gameplay HUD quads.
+
+2026-06-20 render-queue chunk: the same missing-final-return probe used on the
+default-UV and corner queue helpers cannot be kept here either. It likely models
+native's shared incidental skip return, but under Wibo the MSVC warning path
+aborts on a missing `lstrcpynA` import before producing a comparable object.
+Keep the runnable explicit `return 0` until a real source spelling avoids the
+extra epilogue without entering the warning path.

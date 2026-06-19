@@ -19,3 +19,13 @@ Recovered relationships:
   zero.
 - Seeds UVs to `[0, 0, 1, 1]`, ORs record flags with `2`, copies a `Color4f`,
   stores the texture id, layer, and clears blend.
+
+2026-06-20 render-queue chunk: native skip exits share the existing return
+register rather than materializing `return 0`, but removing the final source
+return triggers the known MSVC warning path under Wibo (`missing import
+lstrcpynA`) before an object is produced. The `int result; ... return result;`
+workaround compiles but remains 69.70% and only swaps the final `xor eax, eax`
+for a stack load, so it is not retained. Splitting `entry->color = *color` into
+readable float field assignments regressed to 33.33% by switching the gate to
+`test al, al`, dropping the saved-register copy shape, and emitting x87 alpha
+stores. Keep the aggregate color copy and explicit final zero for now.
