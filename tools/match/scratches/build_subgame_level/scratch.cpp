@@ -1,5 +1,7 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
+#include "high_score_record.h"
+
 class StarField {
 public:
     int unhide_star_field();
@@ -59,19 +61,6 @@ public:
 class ActiveLandscapeEntry {
 public:
     void activate_landscape_entry(int script_index);
-};
-
-struct SelectedLevelRecord {
-    char unknown_00[0x28];
-    int replay_level_index;
-    int replay_mode_id;
-    char unknown_30[0x48 - 0x30];
-    float replay_speed_scalar;
-    int challenge_speed_value;
-    int challenge_difficulty_value;
-    char unknown_54[0x1fab0 - 0x54];
-    float garbage_scalar;
-    float salt_scalar;
 };
 
 struct BodNode {
@@ -167,15 +156,15 @@ void Game::build_subgame_level(int level_index)
     if (*(unsigned char*)(game + 0xff25d0) != zero
         || *(unsigned char*)(game + 0xff25d1) != zero) {
         *(float*)(game + 0x30) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->replay_speed_scalar;
+            (*(HighScoreRecord**)(game + 0xff25d4))->replay_speed_scalar;
         *(int*)(game + 0x40) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->replay_mode_id;
+            (*(HighScoreRecord**)(game + 0xff25d4))->replay_mode_id;
         *(int*)(game + 0x2c) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->challenge_difficulty_value;
+            (*(HighScoreRecord**)(game + 0xff25d4))->challenge_difficulty_value;
         *(int*)(game + 0x28) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->challenge_speed_value;
+            (*(HighScoreRecord**)(game + 0xff25d4))->challenge_speed_value;
         *(float*)(game + 0x34) =
-            (float)(*(SelectedLevelRecord**)(game + 0xff25d4))->challenge_difficulty_value
+            (float)(*(HighScoreRecord**)(game + 0xff25d4))->challenge_difficulty_value
             * 0.00999999978f;
     } else {
         int level_mode = *(int*)(game + 0x40);
@@ -204,9 +193,9 @@ void Game::build_subgame_level(int level_index)
     if (*(unsigned char*)(game + 0xff25d0) != zero
         || *(unsigned char*)(game + 0xff25d1) != zero) {
         *(float*)(game + 0x125ffd8) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->garbage_scalar;
+            (*(HighScoreRecord**)(game + 0xff25d4))->garbage_scalar;
         *(float*)(game + 0x125ffdc) =
-            (*(SelectedLevelRecord**)(game + 0xff25d4))->salt_scalar;
+            (*(HighScoreRecord**)(game + 0xff25d4))->salt_scalar;
     } else {
         int level_mode = *(int*)(game + 0x40);
         if (level_mode == 2 || level_mode == 3 || level_mode == 0

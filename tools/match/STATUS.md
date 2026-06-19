@@ -728,7 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 10 type name(s)
 - covered: 44 type name(s) with a header plus scratch-local copies
-- divergent: 27 type name(s) with multiple scratch-local shapes
+- divergent: 26 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -741,7 +741,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SelectedLevelRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -776,7 +775,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LevelDefinitionLoader | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TimerCounters | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TooltipState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
@@ -800,6 +798,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | StarField | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SubLazerPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TrackParcelPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |

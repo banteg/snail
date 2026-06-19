@@ -27,11 +27,6 @@ struct HighScoreEntry {
         int replay_level_arg);
 };
 
-struct SelectedLevelRecord {
-    char unknown_00[0x68];
-    int runtime_build_seed;
-};
-
 extern char* g_game_base; // data_4df904
 extern unsigned char g_track_render_flags; // byte_4df934
 
@@ -72,7 +67,7 @@ void Game::populate_runtime_track_cells_from_segments()
     int runtime_build_seed;
 
     if (*(unsigned char*)(base + 0xff25d0) != 0) {
-        SelectedLevelRecord* record = *(SelectedLevelRecord**)(base + 0xff25d4);
+        HighScoreRecord* record = *(HighScoreRecord**)(base + 0xff25d4);
         runtime_build_seed = record->runtime_build_seed;
     } else {
         int mode = level_mode;

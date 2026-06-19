@@ -3,6 +3,7 @@
 #include "bod_list.h"
 #include "completion_screen.h"
 #include "fringe_object.h"
+#include "high_score_record.h"
 #include "new_game_menu.h"
 #include "salt_hazard_types.h"
 #include "sprite.h"
@@ -64,11 +65,6 @@ public:
     char* format_time_trial_string(TimerCounters* timer);
 };
 
-struct SelectedLevelRecord {
-    char unknown_00[0x28];
-    int replay_level_index;
-};
-
 class Game {
 public:
     void update_subgame();
@@ -102,7 +98,7 @@ public:
     unsigned char selected_level_record_active;     // +0xff25d0
     unsigned char selected_level_record_persistent; // +0xff25d1
     char unknown_ff25d2[2];
-    SelectedLevelRecord* selected_level_record;     // +0xff25d4
+    HighScoreRecord* selected_level_record;         // +0xff25d4
     char unknown_ff25d8[0x125ffe0 - 0xff25d8];
     ChallengeSetupController challenge_setup;       // +0x125ffe0
     char unknown_125ffe1[0x1260020 - 0x125ffe1];

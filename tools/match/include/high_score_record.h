@@ -97,20 +97,32 @@ public:
     int replay_level_index; // +0x28
     int replay_mode_id; // +0x2c, copied to the subgame launch mode
     int unknown_30; // +0x30
-    int challenge_difficulty_scalar_bits; // +0x34
+    union {
+        int challenge_difficulty_scalar_bits; // +0x34
+        float challenge_difficulty_scalar; // +0x34
+    };
     unsigned int runtime_build_flags; // +0x38
     int high_score_mode_tag; // +0x3c, set by add_*_high_score
     int route_or_rank_index; // +0x40, level/route arg before insert or top-ten rank
     int replay_cursor; // +0x44, cleared before persistence
-    int replay_speed_scalar_bits; // +0x48
+    union {
+        int replay_speed_scalar_bits; // +0x48
+        float replay_speed_scalar; // +0x48
+    };
     int challenge_speed_value; // +0x4c
     int challenge_difficulty_value; // +0x50
     char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x54
     int runtime_build_seed; // +0x68
     int replay_sample_count; // +0x6c
     ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT]; // +0x70
-    int garbage_scalar_bits; // +0x1fab0
-    int salt_scalar_bits; // +0x1fab4
+    union {
+        int garbage_scalar_bits; // +0x1fab0
+        float garbage_scalar; // +0x1fab0
+    };
+    union {
+        int salt_scalar_bits; // +0x1fab4
+        float salt_scalar; // +0x1fab4
+    };
     int unknown_1fab8; // +0x1fab8
     int unknown_1fabc; // +0x1fabc
 };

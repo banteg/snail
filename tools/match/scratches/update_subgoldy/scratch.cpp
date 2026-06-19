@@ -8,6 +8,7 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "high_score_record.h"
 #include "presentation_animation_channel.h"
 
 class Sprite;
@@ -100,11 +101,6 @@ struct Nuke {
     void uninit_nuke();
 };
 
-struct TimerCounters {
-    int state;
-    void advance_timer_counters(float amount);
-};
-
 struct AttachmentSample {
     char unknown_00[0xa4];
     float lateral_source; // +0xa4
@@ -187,19 +183,6 @@ struct PlayerControlSource {
     unsigned int control_flags_b; // +0x0c
     char unknown_10[0x28 - 0x10];
     float steering_x; // +0x28
-};
-
-struct ReplaySample {
-    short lateral_x;     // +0x00
-    short delta_z;       // +0x02
-    unsigned char flags; // +0x04: 1 fire_a, 2 fire_b, 4 latch, 8 end
-    char pad;
-};
-
-struct SelectedLevelRecord {
-    char unknown_00[0x6c];
-    int replay_sample_count;        // +0x6c
-    ReplaySample replay_samples[1]; // +0x70
 };
 
 struct JetpackGauge {
@@ -301,7 +284,7 @@ struct Player {
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x2e8 - 0x2d9];
     TimerCounters timer_counters; // +0x2e8
-    char unknown_2ec[0x304 - 0x2ec];
+    char unknown_300[0x304 - 0x300];
     int ghost_anchor_cursor; // +0x304
     char unknown_308[0x328 - 0x308];
     float wall_stall_timer; // +0x328
@@ -430,24 +413,24 @@ void Player::update_subgoldy()
     Game* replay_game = game;
     if (*((unsigned char*)replay_game + 0xff25d0)
         && *(int*)((char*)replay_game + 0xff25dc)
-               < (*(SelectedLevelRecord**)((char*)replay_game + 0xff25d4))->replay_sample_count
+               < (*(HighScoreRecord**)((char*)replay_game + 0xff25d4))->replay_sample_count
         && movement_state != 2) {
         p_position = &live_matrix.position;
         live_matrix.position.x = convert_math_type16_to_32(
-            (*(SelectedLevelRecord**)((char*)replay_game + 0xff25d4))
-                ->replay_samples[*(int*)((char*)replay_game + 0xff25dc)]
+            (*(HighScoreRecord**)((char*)replay_game + 0xff25d4))
+                ->run_records[*(int*)((char*)replay_game + 0xff25dc)]
                 .lateral_x,
             16.0f);
         Game* flag_game = game;
-        if ((*(SelectedLevelRecord**)((char*)flag_game + 0xff25d4))
-                ->replay_samples[*(int*)((char*)flag_game + 0xff25dc)]
+        if ((*(HighScoreRecord**)((char*)flag_game + 0xff25d4))
+                ->run_records[*(int*)((char*)flag_game + 0xff25dc)]
                 .flags
             & 4)
             *((unsigned char*)flag_game + 0xa854) = 1;
         else
             *((unsigned char*)flag_game + 0xa854) = 0;
-        if ((*(SelectedLevelRecord**)((char*)game + 0xff25d4))
-                ->replay_samples[*(int*)((char*)game + 0xff25dc)]
+        if ((*(HighScoreRecord**)((char*)game + 0xff25d4))
+                ->run_records[*(int*)((char*)game + 0xff25dc)]
                 .flags
             & 8) {
             g_app->frontend_state = 26;
@@ -508,24 +491,24 @@ steering_stored:
             convert_math_type32_to_16(live_matrix.position.x, 16.0f), 16.0f);
         live_matrix.position.x = quantized_x;
         Game* record_game = game;
-        ((ReplaySample*)((char*)record_game + 0xfd2b80))[*(int*)((char*)record_game + 0xff25dc)]
+        ((ReplayRunRecord*)((char*)record_game + 0xfd2b80))[*(int*)((char*)record_game + 0xff25dc)]
             .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);
         Game* record_game_z = game;
         if (!*(int*)((char*)game + 0xff25dc)) {
-            ((ReplaySample*)((char*)record_game_z
-                             + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
+            ((ReplayRunRecord*)((char*)record_game_z
+                                + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
                 .delta_z = convert_math_type32_to_16(live_matrix.position.z, 32.0f);
             g_replay_accum_z = convert_math_type16_to_32(
-                ((ReplaySample*)((char*)game + 0xfd2b80))[*(int*)((char*)game + 0xff25dc)]
+                ((ReplayRunRecord*)((char*)game + 0xfd2b80))[*(int*)((char*)game + 0xff25dc)]
                     .delta_z,
                 32.0f);
         } else {
-            ((ReplaySample*)((char*)record_game_z
-                             + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
+            ((ReplayRunRecord*)((char*)record_game_z
+                                + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
                 .delta_z =
                 convert_math_type32_to_16(live_matrix.position.z - g_replay_accum_z, 32.0f);
             g_replay_accum_z =
-                convert_math_type16_to_32(((ReplaySample*)((char*)game + 0xfd2b80))
+                convert_math_type16_to_32(((ReplayRunRecord*)((char*)game + 0xfd2b80))
                                               [*(int*)((char*)game + 0xff25dc)]
                                                   .delta_z,
                                           32.0f)
@@ -1231,15 +1214,15 @@ steering_stored:
                 movement_fire_progress = 0.0f;
         } else if (*((unsigned char*)emitter_game + 0xa854)) {
             if (*((unsigned char*)emitter_game + 0xff25d0)) {
-                if ((*(SelectedLevelRecord**)((char*)emitter_game + 0xff25d4))
-                        ->replay_samples[*(int*)((char*)emitter_game + 0xff25dc)]
+                if ((*(HighScoreRecord**)((char*)emitter_game + 0xff25d4))
+                        ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
                         .flags
                     & 1) {
                     play_movement_state_sound();
                     update_movement_flag_emitters(this);
                     movement_fire_progress = movement_fire_progress_step + 0.30000001f;
-                } else if ((*(SelectedLevelRecord**)((char*)emitter_game + 0xff25d4))
-                               ->replay_samples[*(int*)((char*)emitter_game + 0xff25dc)]
+                } else if ((*(HighScoreRecord**)((char*)emitter_game + 0xff25d4))
+                               ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
                                .flags
                            & 2) {
                     movement_fire_progress = movement_fire_progress_step;
