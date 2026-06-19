@@ -59,6 +59,15 @@
       "description": "Small thiscall solution-record initializer used by initialize_runtime_pools_and_path_template_bank; constructs the Color4f field at +0x84 and returns this."
     },
     {
+      "address": "0x409bd0",
+      "name": "update_galaxy_route_record",
+      "kind": "function",
+      "aliases": [
+        "sub_409bd0"
+      ],
+      "description": "Thiscall helper that advances one galaxy route record tick from the route view while update_galaxy walks the active star-map records."
+    },
+    {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
       "kind": "function",
@@ -2037,6 +2046,57 @@
       "description": "Authored viewport width converted during renderer default setup and used to seed mouse live X."
     },
     {
+      "address": "0x4a1c50",
+      "name": "g_galaxy_route_point_table",
+      "kind": "global",
+      "aliases": [
+        "data_4a1c50"
+      ],
+      "size": "0x50",
+      "description": "Authored galaxy route x/y point table rescaled by load_galaxy_layout and copied into per-route name records."
+    },
+    {
+      "address": "0x4a1d14",
+      "name": "g_galaxy_initial_map_x_bits",
+      "kind": "global",
+      "aliases": [
+        "dword_4a1d14"
+      ],
+      "size": "0x4",
+      "description": "Initial map X coordinate bits copied into the first galaxy route record by load_galaxy_layout."
+    },
+    {
+      "address": "0x4a1d18",
+      "name": "g_galaxy_initial_map_y_bits",
+      "kind": "global",
+      "aliases": [
+        "dword_4a1d18",
+        "data_4a1d18"
+      ],
+      "size": "0x4",
+      "description": "Initial map Y coordinate bits copied into the first galaxy route record by load_galaxy_layout."
+    },
+    {
+      "address": "0x4a1d1c",
+      "name": "g_galaxy_missing_level_map_x_table",
+      "kind": "global",
+      "aliases": [
+        "dword_4a1d1c"
+      ],
+      "size": "0x4",
+      "description": "Galaxy missing-level route-record map X coordinate source indexed by load_galaxy_layout."
+    },
+    {
+      "address": "0x4a1d20",
+      "name": "g_galaxy_missing_level_map_y_table",
+      "kind": "global",
+      "aliases": [
+        "dword_4a1d20"
+      ],
+      "size": "0x4",
+      "description": "Galaxy missing-level route-record map Y coordinate source indexed by load_galaxy_layout."
+    },
+    {
       "address": "0x4df860",
       "name": "g_pending_window_deactivate",
       "kind": "global",
@@ -2149,6 +2209,16 @@
         "unk_4df978"
       ],
       "description": "Small persistent player-name buffer used to seed high-score entry widgets and updated on name submission."
+    },
+    {
+      "address": "0x4df9b8",
+      "name": "g_highest_galaxy_route_index",
+      "kind": "global",
+      "aliases": [
+        "data_4df9b8"
+      ],
+      "size": "0x4",
+      "description": "Inclusive highest galaxy route index initialized from runtime config and used by challenge setup, subgame setup, and update_galaxy route loops."
     },
     {
       "address": "0x4df9bc",

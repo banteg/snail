@@ -231,6 +231,9 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     by_name = {symbol.name: symbol for symbol in manifest.symbols}
     assert by_name["g_game_base"].address == 0x4DF904
     assert "g_app" in by_name["g_game_base"].aliases
+    assert by_name["g_highest_galaxy_route_index"].address == 0x4DF9B8
+    assert "data_4df9b8" in by_name["g_highest_galaxy_route_index"].aliases
+    assert by_name["update_galaxy_route_record"].kind == "function"
     assert by_name["ftol"].kind == "function"
     assert by_name["g_math_random_table"].size == 0x7FFC
 
