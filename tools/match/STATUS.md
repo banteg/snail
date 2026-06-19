@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**439/687** mapped gameplay functions matched, **602/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.82%**.
+**439/687** mapped gameplay functions matched, **603/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.90%**.
 
 ## Proof Grade (439)
 
@@ -448,7 +448,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (163)
+## In Progress (164)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -569,6 +569,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 260/312 | 60.14% | 0/312 | 1 mismatch, 32 ok |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
+| 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 178/171 | 44.70% | 0/171 | 1 unresolved, 18 ok |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 | 5 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 54/55 | 88.07% | 2/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 54/55 | 88.07% | 2/55 | 3 ok |  |
@@ -616,7 +617,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 
-## No Scratch (85)
+## No Scratch (84)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -697,7 +698,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_subgoldy | 0x43a9c0 | 1360 | 0/279 | 0.00% | 0/279 | - |  |
 | ⬜ | update_slug_hazard_ai | 0x43f930 | 1772 | 0/464 | 0.00% | 0/464 | - |  |
 | ⬜ | remove_subgame_bods | 0x440910 | 1644 | 0/501 | 0.00% | 0/501 | - |  |
-| ⬜ | place_challenge_parcels_on_track | 0x444240 | 617 | 0/171 | 0.00% | 0/171 | - |  |
 | ⬜ | initialize_voice_manager | 0x448ee0 | 960 | 0/269 | 0.00% | 0/269 | - |  |
 | ⬜ | initialize_bass_audio_backend | 0x449460 | 612 | 0/176 | 0.00% | 0/176 | - |  |
 | ⬜ | update_mouse | 0x44bc50 | 1012 | 0/295 | 0.00% | 0/295 | - |  |
@@ -736,7 +736,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | LoadingScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 38 | 1 | 38 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | Game | 39 | 1 | 39 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Player | 5 | 1 | 5 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BorderManager | 5 | 3 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GalaxyRoute | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |

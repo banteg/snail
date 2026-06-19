@@ -2736,6 +2736,16 @@
       "description": "51-entry track colour bank initialized by build_track_colours."
     },
     {
+      "address": "0x6447e8",
+      "name": "g_challenge_parcel_rows",
+      "kind": "global",
+      "aliases": [
+        "data_6447e8"
+      ],
+      "size": "0x4000",
+      "description": "Challenge-mode row-index scratch array filled by place_challenge_parcels_on_track before random parcel selection."
+    },
+    {
       "address": "0x6487e8",
       "name": "g_parcel_set_buckets",
       "kind": "global",
