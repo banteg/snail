@@ -727,6 +727,15 @@
       "description": "Color4f three-channel RGB setter used by firework_shoot; stores r/g/b and leaves alpha unchanged."
     },
     {
+      "address": "0x44ebc1",
+      "name": "D3DXVec3Normalize",
+      "kind": "function",
+      "aliases": [
+        "j_sub_44ebb4"
+      ],
+      "description": "DirectX vector-normalize import thunk (`jmp dword [0x4ace54]`) called by camera, axis-angle, quaternion, and plane builders."
+    },
+    {
       "address": "0x44fd8a",
       "name": "D3DXMatrixTranslation",
       "kind": "function",
