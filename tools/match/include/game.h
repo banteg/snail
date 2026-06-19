@@ -20,7 +20,6 @@ struct TrackRowCell;
 class Game {
 public:
     void initialize_subgame(); // @ 0x4374b0
-    void reset_subgame(); // @ 0x437b10
     void complete_subgame(unsigned char completed); // @ 0x438700
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(TrackRowCell* cell, Player* player); // @ 0x43d6c0

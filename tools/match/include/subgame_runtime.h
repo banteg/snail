@@ -16,6 +16,7 @@ public:
     int set_subgame_features(); // @ 0x435df0
     bool switch_track_mirror(); // @ 0x435e60
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
+    void reset_subgame(); // @ 0x437b10
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     TrackRowCell* spawn_track_ring_or_special_effect(
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10

@@ -14,8 +14,9 @@ Recovered behavior:
   resets the active garbage chain head.
 
 The scratch still uses raw dword lanes for the unresolved score/timer snapshot
-band, but it now relies on the shared `Game` declaration for the recovered
-pickup and hazard pool band.
+band. Its owner is now `SubgameRuntime`, because all touched pool and snapshot
+offsets are relative to the embedded subgame controller rather than the root
+game allocation.
 
 Current focused result:
 
@@ -36,22 +37,22 @@ Important source-shape correction:
 - The native function is void-shaped. The old `int result` source was a
   decompiler artifact from the leftover `eax` value and made VC6 hoist the saved
   tail-b load before tail-a.
-- Spelling the helper as `void Game::reset_subgame()` removes the artificial
+- Spelling the helper as `void SubgameRuntime::reset_subgame()` removes the artificial
   return-value dependency and matches the native saved snapshot load order:
   score, tail-a, tail-b.
 - Focused Wibo is now 100.00%, 75/75 instructions, with 2 clean masked
   operands.
-- Binary Ninja readback now reports the member-shaped prototype
-  `void __thiscall(struct Game* game)`.
+- Binary Ninja readback should be treated as subgame-owned even if old imports
+  still name the owner `Game`.
 
 2026-06-18 pool naming correction:
 
-- `Game` now carries the contiguous subgame pool band:
+- The subgame runtime carries the contiguous subgame pool band:
   `speedup_pickup`, `jetpack_pickup`, `health_pickups[8]`, `slug_slots[8]`,
   `sub_lazer_pool[20]`, `salt_pool[40]`, `garbage_hazards`, and
   `ring_effects`.
 - The health pickup `+0x44` field is `owner_game`, not a visibility/source
-  cell. `reset_subgame` writes the containing `Game*` into this lane for all
+  cell. `reset_subgame` writes the containing subgame owner into this lane for all
   eight health slots; the spawned row source remains `source_cell +0x68`.
 - The tiny `TrackPickupOwnerGameView` byte at `+0x09` is
   `subgame_pause_gate`; keep it distinct from the global/UI pause gate at root

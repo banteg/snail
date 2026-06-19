@@ -1,15 +1,15 @@
 // reset_subgame @ 0x437b10 (thiscall, ret)
 
 #include "score_stats.h"
+#include "subgame_runtime.h"
 #include "timer_counters.h"
-#include "game.h"
 
 typedef unsigned int DWORD;
 
 extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 #pragma intrinsic(memcpy)
 
-void Game::reset_subgame()
+void SubgameRuntime::reset_subgame()
 {
     DWORD* self = (DWORD*)this;
 
