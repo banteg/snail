@@ -4,7 +4,7 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `86.35%`, `338/336` candidate/target instructions, with `35` masked
+- `88.92%`, `332/336` candidate/target instructions, with `33` masked
   operands ok and one known jump-table audit mismatch.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
@@ -78,16 +78,20 @@ Residual:
   exits. The scratch now spells those exits explicitly, which raised the match
   from `28.32%` to `68.48%`.
 - A `Vector3 delta` local for the state-3 collapse moved the scratch from
-  `68.48%` to `69.77%`. The current state-3 collapse also stages an immutable
-  local copy of `owner_player->cached_camera_target_world` before computing and
-  scaling the delta. This recovers the native `sub esp, 0x18` frame. The later
-  state-switch correction raised the scratch to `79.53%`; the state-1 branch
-  shape pass below raises it further to `86.35%`, although native still uses a
-  different x87/stack schedule for the target lanes.
-- Remaining residuals are mostly switch and stack-shape differences: VC6 still
-  uses a different stack and x87 schedule for the state-3 collapse and the
-  duplicated removal tails. The dispatch itself now matches native's direct
-  `0..5` jump table.
+  `68.48%` to `69.77%`. Staging an immutable local copy of
+  `owner_player->cached_camera_target_world` before computing and scaling the
+  delta recovered the native `sub esp, 0x18` frame. The later state-switch
+  correction raised the scratch to `79.53%`; the state-1 branch-shape pass
+  raised it further to `86.35%`; the current target/current position pointer
+  plus `scaled_delta` source shape raises it to `88.92%` while preserving the
+  native `0x18` frame.
+- Remaining residuals are mostly switch-label, duplicated-removal-tail, and
+  state-3 x87 schedule differences. Native keeps target x and biased z live on
+  the FPU stack before materializing target y; the current source uses the
+  clearer target-position pointer and scaled-delta vector shape, but still
+  computes target lanes in a different order. The dispatch itself now matches
+  native's direct `0..5` jump table; the audit mismatch is only the local
+  candidate switch-table symbol versus the curated target table name.
 - 2026-06-16 state-1 branch-shape pass: spelling the z-threshold as
   `position.z < owner_player->interaction_max_z` with the removal path in the
   taken source block recovers the native physical order for the remove-vs-lives
@@ -96,6 +100,14 @@ Residual:
   switch-table symbol (`$L1005`) versus the curated target
   `update_ring_or_special_effect_parent_state_jump_table`; the dispatch
   instructions and table shape are otherwise unchanged.
+- 2026-06-20 collapse restaging: revisiting the pointer-plus-scalar target
+  shape with a real `Vector3 scaled_delta` local preserves the native `0x18`
+  frame and improves the focused match from `86.35%` to `88.92%`. The accepted
+  source keeps typed pointers to `owner_player->cached_camera_target_world` and
+  `transform.position`, computes `delta`, then applies a separate scaled-delta
+  vector before copying the updated parent position into each child particle's
+  base position. Reordering the named target y/z lanes compiled identically at
+  `88.92%`, so the clearer delta-first source order is kept.
 
 Rejected/source-shape probes:
 

@@ -114,3 +114,11 @@ Rejected source-shape probe:
   `(float*)((char*)live_parent + 0x68)` is codegen-neutral at 96.36% and leaves
   the same materialization-order residual. Keep the typed `Vector3*`
   `parent_position` baseline.
+- 2026-06-20 ring-family retry: naming `parent_x =
+  live_parent->transform.position.x` while keeping the typed parent-position
+  pointer still regresses to 89.91% by hoisting the radius multiply and reading
+  y/z directly from `[parent+0x6c]`/`[parent+0x70]`. A shared `char*`
+  parent-base spelling with both the typed transform field and the y/z vector
+  view produces the same regression. Keep the 96.36% typed-pointer baseline;
+  the remaining residual is still a one-instruction materialization order debt,
+  not a missing layout field.

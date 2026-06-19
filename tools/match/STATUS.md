@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.51%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.52%**.
 
 ## Proof Grade (453)
 
@@ -518,7 +518,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 81.79% | 44/144 | 9 ok |  |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 86.52% | 23/160 | 15 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 90.77% | 1/65 | 9 ok |  |
-| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 338/336 | 86.35% | 9/336 | 1 mismatch, 35 ok |  |
+| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 332/336 | 88.92% | 9/336 | 1 mismatch, 33 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |
 | 🚧 | deserialize_compact_high_score_record | 0x440020 | 335 | 114/114 | 92.98% | 80/114 | 1 ok |  |
 | 🚧 | serialize_compact_high_score_record | 0x440170 | 326 | 109/109 | 85.32% | 60/109 | 1 ok |  |
