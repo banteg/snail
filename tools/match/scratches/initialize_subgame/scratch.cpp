@@ -5,13 +5,12 @@
 #include "challenge_setup_screen.h"
 #include "frontend_widget.h"
 #include "landscape_script_bank.h"
+#include "segment_catalog_types.h"
 #include "timer_counters.h"
 #include "transform_matrix.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
-
-struct BuiltinSegmentDefinition;
 
 class RuntimeCallback {
 public:
@@ -21,11 +20,6 @@ public:
 class TimeTrialStringFormatter {
 public:
     char* format_time_trial_string(TimerCounters* timer);
-};
-
-class LevelSegmentSlotStore {
-public:
-    void load_builtin_segment_definitions(BuiltinSegmentDefinition** builtins);
 };
 
 class WarningRuntime {

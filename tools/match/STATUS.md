@@ -728,7 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 10 type name(s)
 - covered: 44 type name(s) with a header plus scratch-local copies
-- divergent: 28 type name(s) with multiple scratch-local shapes
+- divergent: 27 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
@@ -745,7 +745,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | LevelSegmentSlotStore | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | VertexBufferVtbl | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteNameRecord | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |

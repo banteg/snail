@@ -59,4 +59,21 @@ struct LevelSegmentSlot {
 typedef char LevelSegmentSlot_must_be_0x4220[
     (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
 
+struct BuiltinSegmentDefinition {
+    int row_count;                 // +0x00, filled after measuring row 0
+    char unknown_04[0x18];
+    int path_index;                // +0x1c
+    char* source_name;             // +0x20
+    int unknown_24;                // +0x24
+    char* glyph_rows[8];           // +0x28
+};
+
+class LevelSegmentSlotStore {
+public:
+    int count;                     // +0x00
+    LevelSegmentSlot slots[103];   // +0x04
+
+    char* load_builtin_segment_definitions(BuiltinSegmentDefinition** builtins);
+};
+
 #endif

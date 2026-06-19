@@ -8,6 +8,7 @@
 #include "directx_loader.h"
 #include "landscape_script_bank.h"
 #include "object_render_types.h"
+#include "segment_catalog_types.h"
 #include "sprite.h"
 #include "thanks_screen.h"
 #include "transform_matrix.h"
@@ -19,7 +20,7 @@ extern char byte_4B2F40; // cheat-state storage
 extern char unk_74EB18; // cleared 0x15c-byte directx scratch
 extern char unk_4F7050; // cleared 0x400-byte root scratch
 extern void* off_4A2140; // sound bank table
-extern void* off_4A63D0; // builtin segment table
+extern BuiltinSegmentDefinition* off_4A63D0[]; // builtin segment table
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
@@ -55,11 +56,6 @@ public:
 class GalaxyRoute {
 public:
     int load_galaxy_layout(); // @ 0x4088e0
-};
-
-class LevelSegmentSlotStore {
-public:
-    char* load_builtin_segment_definitions(void* builtins); // @ 0x448060
 };
 
 class GameRoot {
@@ -297,7 +293,7 @@ char GameRoot::initialize_game_assets_and_world()
     apply_audio_config_volumes();
     load_level_definitions();
     ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Menubg.txt");
-    ((LevelSegmentSlotStore*)(game + 0x224a04))->load_builtin_segment_definitions(&off_4A63D0);
+    ((LevelSegmentSlotStore*)(game + 0x224a04))->load_builtin_segment_definitions(off_4A63D0);
 
     *(int*)(game + 0x5e0) = 1;
     *(int*)(game + 0x5e4) = 0x2000001;
