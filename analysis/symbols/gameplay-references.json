@@ -2340,6 +2340,16 @@
       "description": "Object-render texture transform matrix passed to Direct3D transform state 0x10 when object flag 0x80 enables animated/scrolled UV transform; fields at 0x5031f8 and 0x5031fc receive the render_object scalar arguments."
     },
     {
+      "address": "0x503218",
+      "name": "g_render_camera_view_matrix",
+      "kind": "global",
+      "aliases": [
+        "data_503218"
+      ],
+      "size": "0x4",
+      "description": "Pointer to the active render-camera view matrix stored by render_camera after Direct3D view setup."
+    },
+    {
       "address": "0x503260",
       "name": "g_object_render_pass_filter",
       "kind": "global",

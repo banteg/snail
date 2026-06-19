@@ -1,0 +1,138 @@
+// render_camera @ 0x411fa0 (cdecl)
+
+#include "sprite.h"
+#include "transform_matrix.h"
+#include "vector3.h"
+
+struct D3DViewport8 {
+    unsigned int x;
+    unsigned int y;
+    unsigned int width;
+    unsigned int height;
+    float min_z;
+    float max_z;
+};
+
+struct RenderCameraDevice;
+
+struct RenderCameraDeviceVtbl {
+    char unknown_000[0x94];
+    int (__stdcall* SetTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
+    int (__stdcall* GetTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
+    int (__stdcall* MultiplyTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
+    int (__stdcall* SetViewport)(RenderCameraDevice* self, D3DViewport8* viewport);
+    int (__stdcall* GetViewport)(RenderCameraDevice* self, D3DViewport8* viewport);
+    char unknown_0a8[0xc8 - 0xa8];
+    int (__stdcall* SetRenderState)(RenderCameraDevice* self, int state, int value);
+};
+
+struct RenderCameraDevice {
+    RenderCameraDeviceVtbl* vtbl;
+};
+
+extern RenderCameraDevice* g_d3d_device; // data_502fec
+extern char* g_game_base; // data_4df904
+extern void* g_current_texture_ref; // data_503174
+extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
+extern TransformMatrix* g_render_camera_view_matrix; // data_503218
+extern float g_render_projection_param_b; // data_50316c
+extern float g_render_projection_near_z; // data_5031cc
+extern float g_render_projection_far_z; // data_5031d0
+extern float g_render_projection_param_a; // data_5031d4
+extern unsigned char g_object_render_pass_filter; // data_503260
+
+TransformMatrix* __stdcall build_perspective_projection_matrix(
+    TransformMatrix* matrix,
+    float vertical_fov_radians,
+    float aspect_ratio,
+    float near_z,
+    float far_z); // @ 0x450314
+TransformMatrix* __stdcall build_camera_view_matrix(
+    TransformMatrix* matrix,
+    const Vector3* eye,
+    const Vector3* target,
+    const Vector3* up); // @ 0x451ad9
+
+TransformMatrix* render_camera(
+    float viewport_x,
+    float viewport_y,
+    float viewport_width,
+    float viewport_height,
+    float fov_degrees,
+    TransformMatrix* camera_matrix,
+    TransformMatrix* view_matrix,
+    char draw_world,
+    char post_sprite_pass)
+{
+    D3DViewport8 viewport;
+    viewport.x = (unsigned int)viewport_x;
+    viewport.y = (unsigned int)viewport_y;
+
+    float pixel_width = viewport_width * 640.0f;
+    viewport.width = (unsigned int)pixel_width;
+    float pixel_height = viewport_height * 480.0f;
+    viewport.height = (unsigned int)pixel_height;
+    viewport.min_z = 0.0f;
+    viewport.max_z = 1.0f;
+    g_d3d_device->vtbl->SetViewport(g_d3d_device, &viewport);
+
+    g_render_projection_near_z = 0.30000001f;
+    g_render_projection_far_z = 52.0f;
+    g_render_projection_param_a = fov_degrees * 0.017453292f;
+    g_render_projection_param_b = pixel_width / pixel_height;
+
+    TransformMatrix projection;
+    build_perspective_projection_matrix(
+        &projection,
+        g_render_projection_param_a,
+        g_render_projection_param_b,
+        0.30000001f,
+        52.0f);
+    g_d3d_device->vtbl->SetTransform(g_d3d_device, 3, &projection);
+
+    g_object_render_pass_filter = post_sprite_pass;
+
+    Vector3 eye;
+    Vector3 target;
+    Vector3 up;
+    eye.x = camera_matrix->position.x;
+    eye.y = camera_matrix->position.y;
+    eye.z = camera_matrix->position.z;
+    target.x = camera_matrix->basis_forward.x + camera_matrix->position.x;
+    target.y = camera_matrix->basis_forward.y + camera_matrix->position.y;
+    target.z = camera_matrix->basis_forward.z + camera_matrix->position.z;
+    up.x = camera_matrix->basis_up.x;
+    up.y = camera_matrix->basis_up.y;
+    up.z = camera_matrix->basis_up.z;
+
+    TransformMatrix view;
+    build_camera_view_matrix(&view, &eye, &target, &up);
+    g_d3d_device->vtbl->SetTransform(g_d3d_device, 2, &view);
+
+    g_d3d_device->vtbl->SetRenderState(g_d3d_device, 7, 1);
+    g_d3d_device->vtbl->SetRenderState(g_d3d_device, 14, 1);
+    g_d3d_device->vtbl->SetRenderState(g_d3d_device, 23, 4);
+
+    if (draw_world != 0 && *(g_game_base + 4) != 0) {
+        int fog_start = *(int*)(g_game_base + 8);
+        int fog_end = *(int*)(g_game_base + 0x0c);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 1);
+
+        ColorBGRA8 packed_fog;
+        packed_fog.noop_this_constructor();
+        packed_fog.pack_color_rgba_u8((Color4f*)(g_game_base + 0x14));
+        packed_fog.a = 0;
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 34, *(int*)&packed_fog);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 140, 3);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 36, fog_start);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 37, fog_end);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 38, *(int*)(g_game_base + 0x10));
+    } else {
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 0);
+    }
+
+    g_render_camera_source_matrix = camera_matrix;
+    g_render_camera_view_matrix = view_matrix;
+    g_current_texture_ref = 0;
+    return view_matrix;
+}
