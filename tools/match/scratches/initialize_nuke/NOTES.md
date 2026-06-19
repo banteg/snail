@@ -50,3 +50,11 @@
   weaker evidence even though the score stays 93.75%. Keep the retained
   store/flag/increment spelling; the remaining lead needs a different
   source-owner clue, not more slot expression reshuffling.
+- 2026-06-19 lane-store retry: focused Wibo still reports 93.75%, 64/64
+  instructions, 30/64 prefix, and 5 clean masked operands. Replacing the
+  progress/size stores with one raw `unsigned int*` view of `*(slots - 1)`
+  regresses to 75.20% by collapsing native's repeated slot reloads and
+  changing the tail zeroing schedule. A narrower size-bit store form is
+  codegen-neutral, as is spelling the flag assignment as
+  `sprite->flags = sprite->flags | 0x800`. Keep the typed progress/size stores
+  and direct `|=` flag expression.
