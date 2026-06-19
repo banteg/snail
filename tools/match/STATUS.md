@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**439/687** mapped gameplay functions matched, **596/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.46%**.
+**439/687** mapped gameplay functions matched, **597/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.58%**.
 
 ## Proof Grade (439)
 
@@ -448,11 +448,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (157)
+## In Progress (158)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
+| 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | update_cheat | 0x404750 | 124 | 46/52 | 67.35% | 9/52 | 7 ok |  |
 | 🚧 | match_cheat_text | 0x4047d0 | 85 | 43/42 | 68.24% | 12/42 | 2 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
@@ -610,7 +611,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (91)
+## No Scratch (90)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -622,7 +623,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | border_input_text | 0x4035b0 | 1581 | 0/446 | 0.00% | 0/446 | - |  |
 | ⬜ | update_tooltip | 0x403c20 | 821 | 0/218 | 0.00% | 0/218 | - |  |
 | ⬜ | update_twinkle | 0x404080 | 1208 | 0/181 | 0.00% | 0/181 | - |  |
-| ⬜ | border_mouse_test | 0x404580 | 421 | 0/117 | 0.00% | 0/117 | - |  |
 | ⬜ | rebuild_game_archive_if_needed | 0x405370 | 715 | 0/232 | 0.00% | 0/232 | - |  |
 | ⬜ | load_x_mesh | 0x405640 | 1603 | 0/492 | 0.00% | 0/492 | - |  |
 | ⬜ | load_x_animation_clip | 0x405d60 | 754 | 0/228 | 0.00% | 0/228 | - |  |

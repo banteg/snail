@@ -41,7 +41,10 @@ public:
     float frame_y; // +0x50
     float frame_width; // +0x54
     float frame_height; // +0x58
-    char unknown_05c[0x178 - 0x05c];
+    unsigned char texture_hit_test_enabled; // +0x05c
+    char unknown_05d[0x64 - 0x05d];
+    int texture_hit_test_sprite; // +0x064
+    char unknown_068[0x178 - 0x068];
     int warning_field; // +0x178
     float slider_value; // +0x17c
     float slider_target_value; // +0x180
@@ -59,10 +62,13 @@ public:
     char unknown_220[0x238 - 0x220];
     float layout_x; // +0x238
     float layout_y; // +0x23c
-    char unknown_240[0x248 - 0x240];
+    float texture_hit_x; // +0x240
+    float texture_hit_y; // +0x244
     float layout_width; // +0x248
     float layout_height; // +0x24c
-    char unknown_250[0x25c - 0x250];
+    float texture_hit_width; // +0x250
+    float texture_hit_height; // +0x254
+    char unknown_258[0x25c - 0x258];
     int layout_mode; // +0x25c
     float layout_center_x; // +0x260
     char unknown_264[0x26c - 0x264];
