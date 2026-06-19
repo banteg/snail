@@ -6,7 +6,7 @@
 #define TRACK_HEALTH_PICKUP_H
 
 #include "bod_list.h"
-#include "track_pickup_owner_game_view.h"
+#include "track_pickup_owner_subgame_view.h"
 #include "vector3.h"
 
 class Player;
@@ -25,7 +25,7 @@ public:
     char unknown_40[0x44 - 0x40];
     // Pause gate view initialized from Game during reset_subgame. This is
     // distinct from source_cell at +0x68, which spawn_track_health_pickup stores.
-    TrackPickupOwnerGameView* owner_game; // +0x44
+    TrackPickupOwnerSubgameView* owner_game; // +0x44
     char unknown_48[0x64 - 0x48];
     Sprite* sprite; // +0x64
     TrackRowCell* source_cell; // +0x68

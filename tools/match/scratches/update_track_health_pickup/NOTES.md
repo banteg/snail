@@ -62,6 +62,6 @@ was invalidated by reset_subgame, which writes the containing `Game*` into
 view used by speedup and jetpack pickups.
 
 2026-06-18 pickup pause-view consolidation: speedup, health, and jetpack
-pickups now share `TrackPickupOwnerGameView`. The `+0x09` byte is named
-`subgame_pause_gate`, distinguishing this root subgame update gate from the
+pickups now share `TrackPickupOwnerSubgameView`. The `+0x09` byte is named
+`subgame_pause_gate`, distinguishing this embedded subgame update gate from the
 global/UI `Game::pause_gate` view at root `+0x74621`.
