@@ -229,18 +229,26 @@ public:
     float nuke_effect_progress_step;        // +0x378
     char unknown_37c[0x380 - 0x37c];
     int player_slot;                       // +0x380
-    // +0x384..+0x3bf is the embedded FollowState prefix (track_attachment.h):
+    // +0x384..+0x3c3 is the embedded FollowState prefix (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
-    // Keep the fields flattened here: the full FollowState view currently
-    // reaches adjacent Player lanes and is too large for a direct member.
+    // Keep the fields flattened here so adjacent Player lanes remain under the
+    // Player owner instead of a child view reaching past its 0x40-byte extent.
     unsigned char follow_active;           // +0x384
     char unknown_385[3];
     AttachmentPathTemplate* follow_template; // +0x388
     TrackRowCell* follow_source_cell;      // +0x38c
-    char unknown_390[0x39c - 0x390];
+    int follow_sample_index;               // +0x390
+    float follow_progress;                 // +0x394
+    float follow_vertical_offset;          // +0x398
     float follow_orientation_a;            // +0x39c
     float follow_orientation_b;            // +0x3a0
-    char unknown_3a4[0x3c4 - 0x3a4];
+    float follow_orientation_c;            // +0x3a4
+    float follow_orientation_d;            // +0x3a8
+    float follow_orientation_e;            // +0x3ac
+    Vector3 follow_output_position;        // +0x3b0
+    Player* follow_player;                 // +0x3bc
+    unsigned char follow_flag_3c;          // +0x3c0
+    char unknown_3c1[0x3c4 - 0x3c1];
     DamageGaugeController damage_gauge;     // +0x3c4
     char unknown_3f0[0x404 - 0x3f0];
     int lives;                            // +0x404

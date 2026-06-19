@@ -436,8 +436,8 @@
         "g_follow_state_block",
         "data_430100"
       ],
-      "size": "0xc0",
-      "description": "Relocatable Player embedded attachment-follow state block at player+0x384, seeded by try_enter_track_attachment_from_swept_motion."
+      "size": "0x40",
+      "description": "Relocatable 0x40-byte Player embedded attachment-follow child block at player+0x384, seeded by try_enter_track_attachment_from_swept_motion."
     },
     {
       "address": "0x430170",
@@ -460,12 +460,13 @@
     },
     {
       "address": "0x430199",
-      "name": "g_follow_live_flag_offset",
+      "name": "g_player_attachment_exit_pending_offset",
       "kind": "offset",
       "aliases": [
+        "g_follow_live_flag_offset",
         "data_430199"
       ],
-      "description": "Relocatable follow-state live flag byte that blocks damage-warning startup during attachment entry."
+      "description": "Relocatable Player attachment-exit pending byte at player+0x41d; older notes treated it as FollowState+0x99 before the child extent was narrowed."
     },
     {
       "address": "0x4301bc",

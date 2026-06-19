@@ -4,9 +4,10 @@ update_damage_gauge @ 0x440fd0. The audit's "unresolved writer" globals
 are now interpretable with the recovered region layouts:
 
 - `Game::pause_gate` at +0x74621: the global pause gate (checklist item)
-- warning-start blockers: **Game+0x430199 is FollowState.live_flag**
-  (+0x99 of the shared follow block — the swept entry clears it; the
-  warning cannot start while an attachment entry is live) and
+- warning-start blockers: **Game+0x430199 is Player.attachment_exit_pending**
+  (player+0x41d, formerly spelled as FollowState+0x99 before the
+  follow child was narrowed — the swept entry clears it; the warning
+  cannot start while an attachment entry is live) and
   Game+0x4301bc (follow-region byte +0xbc, writer still unknown but now
   localized to the follow block; also forces the drain transition)
 - drain transition gate: **Game+0x42fde8 == 0.49f is

@@ -2750,6 +2750,10 @@ _KNOWN_TYPE_SIZES = {
     "Vec3": 0x0C,
 }
 
+_KNOWN_TYPE_MAX_EXTENTS = {
+    "FollowState": 0x40,
+}
+
 
 def _strip_cpp_comments(text: str) -> str:
     return _LINE_COMMENT_RE.sub("", _BLOCK_COMMENT_RE.sub("", text))
@@ -3094,6 +3098,26 @@ def _layout_definitions_conflict(first: TypeDefinition, second: TypeDefinition) 
     return _layout_fields_conflict(first.layout_fields, second.layout_fields)
 
 
+def _definition_extent(definition: TypeDefinition) -> int | None:
+    if not definition.layout_fields:
+        return None
+    return max(field.offset + field.width for field in definition.layout_fields)
+
+
+def _has_overbroad_header(
+    canonical_name: str,
+    header_definitions: list[TypeDefinition],
+) -> bool:
+    max_extent = _KNOWN_TYPE_MAX_EXTENTS.get(canonical_name)
+    if max_extent is None:
+        return False
+    for definition in header_definitions:
+        extent = _definition_extent(definition)
+        if extent is not None and extent > max_extent:
+            return True
+    return False
+
+
 def _compatible_layout_groups(definitions: list[TypeDefinition]) -> list[list[TypeDefinition]]:
     field_definitions = [definition for definition in definitions if definition.layout_fields]
     groups: list[list[TypeDefinition]] = []
@@ -3155,6 +3179,9 @@ def type_consolidation_findings(
             if not header_layout_definitions or layout_group_count == 0:
                 status = "unresolved-layout"
                 recommendation = "header or scratch definitions lack parsed fields; inspect manually"
+            elif _has_overbroad_header(canonical_name, header_definitions):
+                status = "overbroad-header"
+                recommendation = "header fields exceed a known child extent; split parent-owned storage"
             elif _has_layout_conflict(header_definitions, scratch_definitions):
                 status = "header-conflict"
                 recommendation = (
@@ -3204,11 +3231,12 @@ def type_consolidation_findings(
 
 TYPE_CONSOLIDATION_STATUS_ORDER = {
     "header-conflict": 0,
-    "divergent": 1,
-    "unresolved-layout": 2,
-    "header-compatible": 3,
-    "partial-compatible": 4,
-    "ready": 5,
+    "overbroad-header": 1,
+    "divergent": 2,
+    "unresolved-layout": 3,
+    "header-compatible": 4,
+    "partial-compatible": 5,
+    "ready": 6,
 }
 
 

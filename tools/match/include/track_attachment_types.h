@@ -137,14 +137,11 @@ public:
     float orientation_e;         // +0x28
     Vector3 output_position;     // +0x2c
     Player* player;              // +0x38 back-reference (player+0x3bc)
-    char unknown_3c[0x8c - 0x3c];
-    // adjacent Player fields, reachable from the follow base because the
-    // struct is embedded at player+0x384 (see track_attachment.h header comment):
-    float player_velocity_x;     // +0x8c = player+0x410
-    float player_velocity_y;     // +0x90 = player+0x414
-    float player_velocity_z;     // +0x94 = player+0x418
-    char unknown_98;             // +0x98 = player+0x41c boost byte (dead: never set)
-    unsigned char attachment_exit_pending; // +0x99 = player+0x41d
+    unsigned char flag_3c;       // +0x3c, completion handoff gate
+    char unknown_3d[0x40 - 0x3d];
 };
+
+typedef char FollowState_must_be_0x40[
+    (sizeof(FollowState) == 0x40) ? 1 : -1];
 
 #endif

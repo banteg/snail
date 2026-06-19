@@ -1244,6 +1244,34 @@ def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> 
     assert findings["CallbackVtbl"].signature_count == 2
 
 
+def test_type_consolidation_flags_overbroad_follow_state_header(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (include_dir / "follow_state.h").write_text(
+        """
+struct FollowState {
+    unsigned char active;
+    char unknown_01[0x8c - 0x01];
+    float player_velocity_x;
+};
+""".lstrip()
+    )
+    (scratches / "a" / "scratch.cpp").write_text(
+        """
+struct FollowState {
+    unsigned char active;
+    char unknown_01[0x40 - 0x01];
+};
+""".lstrip()
+    )
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["FollowState"].status == "overbroad-header"
+
+
 def test_render_status_rows_includes_prefix() -> None:
     config = ScratchConfig(
         directory=Path("scratch"),

@@ -43,8 +43,8 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
 - probe 2: sweep-displaced position re-rotated; accept when rotated
   y <= 0.001f
 - seeding: the FollowState at game+0x430100 — UNIFIED (2026-06-12): this
-  is the Player's embedded follow sub-struct at player+0x384, not a
-  standalone global (0x42fd7c + 0x384 = 0x430100). The seed re-reads as:
+  is the Player's embedded 0x40-byte follow sub-struct at player+0x384,
+  not a standalone global (0x42fd7c + 0x384 = 0x430100). The seed re-reads as:
   active=1, template, cell, sample index, progress = rotated z,
   vertical_offset = 0, player back-reference, orientation_a/_b
   (+0x18/+0x1c) reset, **attachment_exit_pending (player+0x41d) cleared,

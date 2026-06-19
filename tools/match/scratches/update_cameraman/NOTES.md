@@ -81,13 +81,11 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
 
 ## Type consolidation note (2026-06-15)
 
-The player fields at +0x384..+0x41d are the shared embedded
-`FollowState`, but do not replace the local field spelling with an inline
-`FollowState follow_state` member here yet. The shared C++ class tail-aligns
-to a larger `sizeof(FollowState)` than the raw player slice, which shifts
-`post_follow_exit_roll` and `cached_camera_target_world` by 4 bytes and
-regresses the focused match to 89.13% with a masked call mismatch. Keep the
-local fields until the shared header has an explicit packed/prefix view.
+The player fields at +0x384..+0x3c3 are the shared embedded 0x40-byte
+`FollowState`; velocity, exit state, and post-follow carryover are adjacent
+`Player` fields. Keep the local field spelling here for codegen stability
+until a focused pass proves that inlining `FollowState follow_state` preserves
+the current match.
 
 2026-06-16 Player header consolidation: `player.h` now documents the
 `PlayerLiveMatrixRows` view for the matrix at `Player+0x38`; `Player::position`
@@ -118,8 +116,9 @@ The scratch now includes shared `player.h` instead of carrying a local
 `follow_template +0x388`, `follow_source_cell +0x38c`,
 `follow_orientation_a +0x39c`, `follow_orientation_b +0x3a0`, and
 `post_follow_exit_roll +0x42c`. Do not inline `FollowState` as a Player
-member yet; the flattened prefix keeps the focused match at `92.55%`,
-`322/322`, with the same single masked call mismatch.
+member in this scratch without a focused match check; the flattened prefix
+keeps the focused match at `92.55%`, `322/322`, with the same single masked
+call mismatch.
 
 ## Cameraman header consolidation (2026-06-16)
 
