@@ -38,3 +38,15 @@
   match with the label-shaped state switch used by other exact updaters.
   `initialize_nuke` remains at the same 93.75% residual, so the signature change
   is accepted as shared lifecycle evidence rather than a local initializer fix.
+- 2026-06-19 slot-expression audit: focused Wibo still reports 93.75%,
+  64/64 instructions, 30/64 prefix, and 5 clean masked operands. The native and
+  retained candidate match exactly through the allocator call and slot store;
+  only the flag temporary (`edx` native versus `ecx` candidate) and the adjacent
+  `3.0f` materialization order differ. Rewriting the allocation as
+  `*slots = allocate; (*slots)->flags |= 0x800`, as
+  `Sprite* sprite = *slots = allocate`, and as an assignment-expression plus an
+  explicit flag local is codegen-neutral. Moving the visible increment earlier,
+  including `*slots++ = sprite`, schedules the OR after the slot advance and is
+  weaker evidence even though the score stays 93.75%. Keep the retained
+  store/flag/increment spelling; the remaining lead needs a different
+  source-owner clue, not more slot expression reshuffling.
