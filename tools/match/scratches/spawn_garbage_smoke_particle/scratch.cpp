@@ -31,19 +31,22 @@ void GarbageHazardSlot::spawn_garbage_smoke_particle(
 
         Color4f color;
         sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-        sprite->size_start = 0.30000001f;
-        sprite->size_end = 1.3f;
+        float* sprite_words = (float*)sprite;
+        sprite_words[24] = 0.30000001f;
+        sprite_words[25] = 1.3f;
 
+        float* out_velocity = sprite_words + 21;
+        float* out_position = sprite_words + 18;
         color.r = velocity->x * 0.2f;
         color.g = velocity->y * 0.2f;
         color.b = velocity->z * 0.2f;
-        Vector3* out_velocity = &sprite->velocity;
-        out_velocity->x = color.r;
-        sprite->gravity_step = 0.0f;
-        out_velocity->y = color.g;
-        out_velocity->z = color.b;
+        *out_velocity = color.r;
+        out_position[12] = 0.0f;
+        out_velocity[1] = color.g;
+        out_velocity[2] = color.b;
 
-        Vector3* out_position = &sprite->position;
-        *out_position = *position;
+        *out_position = position->x;
+        out_position[1] = position->y;
+        out_position[2] = position->z;
     }
 }

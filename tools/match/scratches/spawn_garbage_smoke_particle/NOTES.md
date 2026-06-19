@@ -12,17 +12,17 @@ Behavior:
 - Seeds white color, scale `(0.30000001, 1.3)`, velocity scaled by `0.2`, and
   position copied from the garbage hazard.
 
-Match status: 84.56% (73 candidate instructions vs 76 target, 5/76 exact
+Match status: 85.14% (72 candidate instructions vs 76 target, 5/76 exact
 prefix). This is source-shaped and useful as a garbage-smoke semantic anchor,
 but not exact.
 
 Residual:
 
-- The native target keeps the color copy at `sprite + 0x2c`, delays
-  `sprite += 0x48` until after preparing the velocity destination, and stores
-  scaled velocity through stack locals. The best source-shaped aggregate color
-  assignment moves `sprite += 0x48` earlier and stores velocity with a different
-  x87/local schedule.
+- The accepted raw float-lane tail keeps the color copy and scale stores at
+  native `sprite + 0x2c`, `+0x60`, and `+0x64`. The remaining residual is the
+  native `lea velocity; add position-base` setup and stack-staged scaled
+  velocity reloads; the candidate still stores the tail through direct
+  `sprite + offset` lanes.
 - The helper is modeled as `void`: `update_garbage_hazard` ignores the result,
   and native simply leaves the success path's copied `position.z` dword in
   `eax`. Modeling a byte return was an invalid assumption that added a final
@@ -36,10 +36,10 @@ Rejected source-shape probes:
   regressed to 63.69%.
 - A separate scaled-velocity aggregate local over-allocated the stack and
   regressed to 67.55%.
-- Rewriting the hot sprite setup as explicit word-lane stores for color, size,
-  velocity, and position regressed to 72.00%. It delayed the early `sprite +=
-  0x48` symptom but disrupted the color and velocity schedule, so keep the
-  aggregate color/position spelling.
+- Rewriting the hot sprite setup as explicit word-lane stores including the
+  color copy regressed to 72.00%. It delayed the early `sprite += 0x48` symptom
+  but disrupted the color and velocity schedule, so keep the aggregate color
+  assignment.
 - 2026-06-16 Player consolidation: the owner slot now comes from shared
   `player.h` (`Player::player_slot`) with the same 76.82% score and clean
   `9 ok` masked audit.
@@ -79,4 +79,16 @@ Rejected source-shape probes:
   store immediately after computing `color.r`, and declaring both typed
   `out_velocity`/`out_position` views before the velocity math are all
   codegen-neutral. None recover native's delayed `sprite += 0x48` or the
-  stack-staged velocity X reload. Keep the clearer typed output views.
+  stack-staged velocity X reload. This typed-output-only result is superseded by
+  the raw float-lane tail below.
+- 2026-06-19 shared smoke tail pass: using a raw `float* sprite_words` view
+  after the aggregate color copy for `size_start/size_end`, velocity, gravity,
+  and position improves focused Wibo from 84.56% to 85.14% (72/76 candidate
+  instructions, 5/76 prefix, 9 clean masked operands). The same idiom improves
+  `spawn_golb_smoke`, so this is a real shared emitter source-shape lead rather
+  than a one-off tweak. Predeclaring both raw lane views is codegen-neutral.
+  Mixing raw size stores with typed `sprite->velocity`/`sprite->position`
+  falls back to 84.56% because the compiler again advances the sprite base
+  before the color copy. Explicit `scaled_x/scaled_y/scaled_z` locals regress
+  to 72.60% and lose two clean masked operands. Keep the raw tail while leaving
+  the aggregate color assignment intact.
