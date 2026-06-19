@@ -73,3 +73,10 @@ Rejected source-shape probes:
   Keep the existing aggregate color copy plus `out_velocity`/`out_position`
   spelling; the remaining residual is still delayed sprite-base advance and
   native stack-staged velocity reload scheduling.
+- 2026-06-19 output-view lifetime retry: focused Wibo still reports 84.56%,
+  73/76 candidate instructions, 5/76 prefix, and 9 clean masked operands. A
+  byte-base view (`sprite_bytes + 0x54/+0x48`), interleaving the X velocity
+  store immediately after computing `color.r`, and declaring both typed
+  `out_velocity`/`out_position` views before the velocity math are all
+  codegen-neutral. None recover native's delayed `sprite += 0x48` or the
+  stack-staged velocity X reload. Keep the clearer typed output views.
