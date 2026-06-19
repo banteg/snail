@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**438/687** mapped gameplay functions matched, **590/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **33.08%**.
+**438/687** mapped gameplay functions matched, **592/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **33.18%**.
 
 ## Proof Grade (438)
 
@@ -447,7 +447,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (152)
+## Audit Needed (1)
+
+| | function | address | bytes | insns | match | prefix | masked | build |
+|---|---|---|---|---|---|---|---|---|
+| ⚠ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 2 mismatch, 4 unresolved, 17 ok |  |
+
+## In Progress (153)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -486,6 +492,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 81.82% | 16/33 | - |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
 | 🚧 | update_intro_logo_renderable | 0x419a90 | 148 | 41/42 | 81.93% | 8/42 | 6 ok |  |
+| 🚧 | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 74/75 | 41.61% | 1/75 | - |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 672/726 | 69.38% | 122/726 | 53 ok |  |
@@ -604,7 +611,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (97)
+## No Scratch (95)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -623,7 +630,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_exit_prompt | 0x4060d0 | 1804 | 0/441 | 0.00% | 0/441 | - |  |
 | ⬜ | game_startup_and_main_loop | 0x406dc0 | 1316 | 0/325 | 0.00% | 0/325 | - |  |
 | ⬜ | game_window_proc | 0x4074b0 | 828 | 0/141 | 0.00% | 0/141 | - |  |
-| ⬜ | initialize_audio_subsystem | 0x407a10 | 312 | 0/102 | 0.00% | 0/102 | - |  |
 | ⬜ | construct_game_runtime | 0x407b60 | 1266 | 0/310 | 0.00% | 0/310 | - |  |
 | ⬜ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 932 | 0/227 | 0.00% | 0/227 | - |  |
 | ⬜ | load_galaxy_layout | 0x4088e0 | 803 | 0/233 | 0.00% | 0/233 | - |  |
@@ -643,7 +649,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | open_logo | 0x419110 | 195 | 0/60 | 0.00% | 0/60 | - |  |
 | ⬜ | initialize_intro_screen | 0x4191e0 | 1851 | 0/521 | 0.00% | 0/521 | - |  |
 | ⬜ | destroy_intro_screen | 0x419920 | 184 | 0/61 | 0.00% | 0/61 | - |  |
-| ⬜ | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 0/75 | 0.00% | 0/75 | - |  |
 | ⬜ | sample_smtrack_heightmap | 0x41a360 | 364 | 0/109 | 0.00% | 0/109 | - |  |
 | ⬜ | initialize_backdrop_tile_quad | 0x41a4d0 | 1393 | 0/367 | 0.00% | 0/367 | - |  |
 | ⬜ | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 0/721 | 0.00% | 0/721 | - |  |
