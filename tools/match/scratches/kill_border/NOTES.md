@@ -18,3 +18,10 @@ compiler's final load for the placeholder return value.
 external `call ADDR` sites. The gap remains the scratch/linker model for
 self-recursion plus the intentional non-void result placeholder required by
 callers that preserve incidental `eax`.
+
+2026-06-20 border-family retry: returning the third recursive child call looks
+like it might model the native incidental `eax`, but it regresses to 65.57% by
+changing the tail into an explicit result/null-check shape. Native remains
+void-fallthrough shaped after the third recursive call; the retained residual is
+still local self-call normalization plus the harness-required placeholder
+return load.

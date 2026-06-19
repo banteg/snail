@@ -30,3 +30,12 @@ clear `row = width; row *= y` source.
 (`width *= y; pixel_index = width + x + 6`) is also codegen-neutral at 98.29%.
 It does not recover native's product-in-`esi` destination, so the explicit
 `row` temporary remains the clearer source shape for the mask row index.
+
+2026-06-20 border-family retry: collapsing the row calculation into
+`width * y + x + 6` and indexing through the declared `mask->pixels` field are
+both codegen-neutral at 98.29%. Typing the dimensions as `unsigned short`
+recovers the native `imul esi, eax` destination only by regressing the
+surrounding register ownership and zero-extension shape: width-only drops to
+85.47% with `and esi, 0xffff`, height-only drops to 78.63% by swapping the mask
+and height registers, and both dimensions as shorts drop to 79.49%. Keep the
+32-bit dimension locals plus explicit `row` temporary.
