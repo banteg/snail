@@ -39,3 +39,13 @@ Rejected source-shape probes:
   59.51% by changing saved-register ownership.
 - Explicit `out_velocity->x/y/z` field stores collapsed the stack frame and
   regressed to 62.31%; keep the aggregate `sprite->velocity = velocity`.
+- Naming only the final random X component as `velocity_x` is codegen-neutral
+  at 94.17% and leaves the early `sprite + 0x48` schedule unchanged.
+- Spelling the velocity destination as an aggregate `Vector3* out_velocity`
+  regresses to 92.23% by moving the depth-offset store before the second
+  temporary spill; keep the direct aggregate assignment.
+- Applying the shared smoke-emitter raw float-lane tail is a hard regression
+  to 46.46% here: it collapses the native stack/register model and direct-stores
+  the velocity lanes instead of preserving the typed aggregate copy.
+- A `Sprite* position_sprite` alias for the final position copy is codegen-neutral
+  at 94.17%, so keep the clearer `Vector3* out_position` spelling.
