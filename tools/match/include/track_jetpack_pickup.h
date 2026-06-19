@@ -1,4 +1,5 @@
-// Track jetpack pickup singleton runtime, partial.
+// Track jetpack pickup singleton runtime, partial. iOS symbols name this
+// runtime class cRJetPack and the spawning helper cRSubGame::AddJetPack.
 // Proven by initialize_track_jetpack_pickup_runtime,
 // spawn_track_jetpack_pickup, update_track_jetpack_pickup,
 // remove_subgame_bods, and handle_subgoldy_collisions.

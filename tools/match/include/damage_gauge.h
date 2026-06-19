@@ -1,6 +1,7 @@
-// Contact-damage gauge controller view, cross-checked by initialize, update,
-// and apply-delta paths. The +0x24/+0x28 pair doubles as the hit-flash
-// animation driver and the voice/skin retrigger gate in apply_damage_gauge_delta.
+// Contact-damage gauge controller view. iOS symbols spell the original owner
+// cRDamageGuage. Cross-checked by initialize, update, and apply-delta paths.
+// The +0x24/+0x28 pair doubles as the hit-flash animation driver and the
+// voice/skin retrigger gate in apply_damage_gauge_delta.
 #ifndef DAMAGE_GAUGE_H
 #define DAMAGE_GAUGE_H
 

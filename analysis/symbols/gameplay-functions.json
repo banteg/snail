@@ -1687,11 +1687,13 @@
     },
     {
       "address": "0x435d40",
-      "name": "build_track_colours"
+      "name": "build_track_colours",
+      "description": "Builds the active subgame track colour banks used by skirt, fringe, and row-cache rendering. Cross-port iOS symbols match this helper to `cRSubGame::BuildColours()` in `SubGame.o`."
     },
     {
       "address": "0x435df0",
-      "name": "set_subgame_features"
+      "name": "set_subgame_features",
+      "description": "Derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Cross-port iOS symbols match this helper to `cRSubGame::SetFeatures()` in `SubGame.o`."
     },
     {
       "address": "0x435e60",
@@ -1795,7 +1797,8 @@
     },
     {
       "address": "0x43a370",
-      "name": "end_jetpack_hover"
+      "name": "end_jetpack_hover",
+      "description": "Ends Goldy's active jetpack-hover state before normal movement resumes. The surrounding pickup and countdown owner still matches the leaked `cRJetPack` and `cRDamageGuage` SubGame.o ownership."
     },
     {
       "address": "0x43a390",
@@ -1822,7 +1825,7 @@
     {
       "address": "0x43a980",
       "name": "arm_jetpack_gauge",
-      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals."
+      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals. The controller's leaked iOS owner name is `cRDamageGuage` in `SubGame.o`."
     },
     {
       "address": "0x43a9c0",
@@ -1851,7 +1854,8 @@
     },
     {
       "address": "0x43d230",
-      "name": "initialize_subgoldy_ghost"
+      "name": "initialize_subgoldy_ghost",
+      "description": "Initializes Goldy's paired ghost sprites for the active player slot. Cross-port iOS symbols match this helper to `cRSubGoldy::GhostInit(int)` in v1.5 and `cRSubGoldy::GhostInit(int, int)` in v1.9."
     },
     {
       "address": "0x43d3d0",
@@ -1884,7 +1888,8 @@
     },
     {
       "address": "0x43d880",
-      "name": "spawn_track_speedup"
+      "name": "spawn_track_speedup",
+      "description": "Allocates and seeds one live speed-up pickup from the active runtime row state. Cross-port iOS v1.9 symbols match this helper to `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43d890",
@@ -1904,7 +1909,7 @@
     {
       "address": "0x43df10",
       "name": "spawn_track_ring_or_special_effect",
-      "description": "Dispatches authored Ring=* rows into the ring, explode, or slow particle effect families."
+      "description": "Dispatches authored Ring=* rows into the ring, explode, or slow particle effect families. Cross-port iOS symbols match this helper family to `cRSubGame::AddRing(...)`, with v1.9 adding the row pointer argument."
     },
     {
       "address": "0x43e470",
@@ -1913,7 +1918,8 @@
     },
     {
       "address": "0x43e690",
-      "name": "emit_ring_star_shower"
+      "name": "emit_ring_star_shower",
+      "description": "Emits the ring-star shower around Goldy when a ring/special-effect collection resolves. Cross-port iOS v1.9 symbols match this helper to `cRSubRingStar::Shower(cRSubGoldy*)`."
     },
     {
       "address": "0x43e780",
@@ -1927,17 +1933,18 @@
     },
     {
       "address": "0x43ecc0",
-      "name": "update_track_health_pickup"
+      "name": "update_track_health_pickup",
+      "description": "Runs one live health pickup's per-frame body, visibility, and teardown state. Cross-port iOS symbols name the runtime class `cRSubHealth` in `SubGame.o`."
     },
     {
       "address": "0x43ee50",
       "name": "update_track_speedup",
-      "description": "Updates the single speedup runtime: skips while the owner game is paused, retires state 2 immediately, and retires state 1 once the speedup falls behind the owner's interaction plane."
+      "description": "Updates the single speedup runtime: skips while the owner game is paused, retires state 2 immediately, and retires state 1 once the speedup falls behind the owner's interaction plane. Cross-port iOS symbols name the runtime class `cRSubSpeedUp` in `SubGame.o`."
     },
     {
       "address": "0x43efb0",
       "name": "update_track_jetpack_pickup",
-      "description": "Updates the single jetpack pickup parent installed by `initialize_track_jetpack_pickup_runtime`: handles state 1/2 list removal, kills the nested sprite on teardown, and advances the sprite bob phase while live."
+      "description": "Updates the single jetpack pickup parent installed by `initialize_track_jetpack_pickup_runtime`: handles state 1/2 list removal, kills the nested sprite on teardown, and advances the sprite bob phase while live. Cross-port iOS symbols name the runtime class `cRJetPack` in `SubGame.o`."
     },
     {
       "address": "0x43f130",
@@ -1967,19 +1974,23 @@
     },
     {
       "address": "0x43f620",
-      "name": "hit_slug_hazard"
+      "name": "hit_slug_hazard",
+      "description": "Applies one hit to a live slug hazard. Cross-port iOS symbols match this helper to `cRSlug::Hit(int)` in `SubGame.o`."
     },
     {
       "address": "0x43f680",
-      "name": "explode_slug_hazard"
+      "name": "explode_slug_hazard",
+      "description": "Transitions a live slug hazard into its explosion path. Cross-port iOS symbols match this helper to `cRSlug::Explode()` in v1.5 and `cRSlug::Explode(cRSubGoldy*)` in v1.9."
     },
     {
       "address": "0x43f8b0",
-      "name": "kill_slug_hazard"
+      "name": "kill_slug_hazard",
+      "description": "Kills and unlinks one slug hazard. Cross-port iOS symbols match this helper to `cRSlug::Kill()` in `SubGame.o`."
     },
     {
       "address": "0x43f930",
-      "name": "update_slug_hazard_ai"
+      "name": "update_slug_hazard_ai",
+      "description": "Runs one live slug hazard's per-frame AI. Cross-port iOS symbols match this helper to `cRSlug::AI()` in `SubGame.o`."
     },
     {
       "address": "0x440020",
@@ -2003,15 +2014,18 @@
     },
     {
       "address": "0x4403c0",
-      "name": "display_score_stats"
+      "name": "display_score_stats",
+      "description": "Formats and displays Goldy's per-event score buckets. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
     },
     {
       "address": "0x4404c0",
-      "name": "set_subgame_rate"
+      "name": "set_subgame_rate",
+      "description": "Stores the authored subgame speed scalar and refreshes the derived live rate. Cross-port iOS symbols match this helper to `cRSubGame::SetRate(float)` in `SubGame.o`."
     },
     {
       "address": "0x4404d0",
-      "name": "calc_subgame_rate"
+      "name": "calc_subgame_rate",
+      "description": "Recomputes the live subgame rate from the base speed and current runtime modifiers. The owning object is the leaked iOS `cRSubGame` in `SubGame.o`."
     },
     {
       "address": "0x440600",
@@ -2035,7 +2049,8 @@
     },
     {
       "address": "0x440910",
-      "name": "remove_subgame_bods"
+      "name": "remove_subgame_bods",
+      "description": "Unlinks gameplay body lists and runtime pickup/hazard bods during subgame teardown. Cross-port iOS symbols match this helper to `cRSubGame::RemoveBods()` in `SubGame.o`."
     },
     {
       "address": "0x440f80",
@@ -2043,7 +2058,8 @@
     },
     {
       "address": "0x440fa0",
-      "name": "initialize_damage_gauge"
+      "name": "initialize_damage_gauge",
+      "description": "Initializes Goldy's contact-damage gauge controller at player +0x3c4. Cross-port iOS v1.9 symbols match this helper to the intentionally misspelled `cRDamageGuage::Init(cRSubGoldy*)` owner."
     },
     {
       "address": "0x440fd0",
@@ -2053,7 +2069,7 @@
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path."
+      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
     },
     {
       "address": "0x441540",
@@ -2062,7 +2078,7 @@
     {
       "address": "0x441560",
       "name": "spawn_salt_hazard",
-      "description": "Allocates one live salt.x hazard slot from the 40-slot pool and seeds its runtime state."
+      "description": "Allocates one live salt.x hazard slot from the 40-slot pool and seeds its runtime state. Cross-port iOS symbols match this helper to `cRSaltManager::Add(tVector&)`, with v1.9 adding the owning `cRSubGoldy*` argument."
     },
     {
       "address": "0x441650",
@@ -2072,7 +2088,7 @@
     {
       "address": "0x441670",
       "name": "spawn_sub_lazer_projectile",
-      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`."
+      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`; cross-port iOS v1.9 symbols name the slot method `cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)`."
     },
     {
       "address": "0x441740",
@@ -2082,12 +2098,12 @@
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Integrates one active SubLazer projectile, tests track attachment intersection, and deactivates it after collision or exit."
+      "description": "Integrates one active SubLazer projectile, tests track attachment intersection, and deactivates it after collision or exit. Cross-port iOS symbols match this helper to `cRSubLazer::AI()` in `SubGame.o`."
     },
     {
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
-      "description": "Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position."
+      "description": "Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position. Cross-port iOS v1.5 symbols match this manager-level helper to `cRSubLazerManager::Shoot(tVector, tVector)`."
     },
     {
       "address": "0x441b70",
@@ -2101,7 +2117,7 @@
     {
       "address": "0x441c10",
       "name": "update_salt_hazard",
-      "description": "Advances one live salt hazard fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff."
+      "description": "Advances one live salt hazard fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff. Cross-port iOS symbols match the slot owner to `cRSalt::AI()` in `SubGame.o`."
     },
     {
       "address": "0x441d40",
@@ -2143,19 +2159,23 @@
     },
     {
       "address": "0x442500",
-      "name": "initialize_vapour"
+      "name": "initialize_vapour",
+      "description": "Initializes one vapour trail controller from its source object and authored spacing scalar. Cross-port iOS symbols match this helper to `cRVapour::Init(cRObject*, float)` in `SubGame.o`."
     },
     {
       "address": "0x442540",
-      "name": "reset_vapour"
+      "name": "reset_vapour",
+      "description": "Resets a vapour trail controller around the supplied progress pointer. Cross-port iOS symbols match this helper to `cRVapour::ReSet(float*)` in `SubGame.o`."
     },
     {
       "address": "0x442560",
-      "name": "add_vapour_point"
+      "name": "add_vapour_point",
+      "description": "Appends one transformed point into the vapour trail. Cross-port iOS symbols match this helper to `cRVapour::Add(tMatrix&)` in `SubGame.o`."
     },
     {
       "address": "0x4425f0",
-      "name": "update_vapour"
+      "name": "update_vapour",
+      "description": "Runs one vapour trail controller's per-frame update. Cross-port iOS symbols match this helper to `cRVapour::AI()` in `SubGame.o`."
     },
     {
       "address": "0x4428d0",
@@ -2164,7 +2184,8 @@
     },
     {
       "address": "0x442e40",
-      "name": "release_snail_weapons"
+      "name": "release_snail_weapons",
+      "description": "Clears Goldy's active snail weapon visuals and presentation channels. Cross-port iOS symbols match this helper to `cRSnail::ReleaseWeapons()` in `SubGame.o`."
     },
     {
       "address": "0x443070",
@@ -2173,7 +2194,7 @@
     {
       "address": "0x443130",
       "name": "update_track_parcels",
-      "description": "Walks the 50-slot `game->track_parcels` runtime array and dispatches `update_track_parcel` on each active parcel slot."
+      "description": "Walks the 50-slot `game->track_parcels` runtime array and dispatches `update_track_parcel` on each active parcel slot. Cross-port iOS symbols name the slot owner `cRParcel` in `SubGame.o`."
     },
     {
       "address": "0x443160",
@@ -2188,7 +2209,7 @@
     {
       "address": "0x4431d0",
       "name": "update_track_parcel",
-      "description": "Runs one live gameplay parcel slot through its bobbing, homing, and final delivery-arc states, then registers the delivered parcel on `game->row_event_display` before tearing down the sprite."
+      "description": "Runs one live gameplay parcel slot through its bobbing, homing, and final delivery-arc states, then registers the delivered parcel on `game->row_event_display` before tearing down the sprite. Cross-port iOS symbols match this helper to `cRParcel::AI()` in `SubGame.o`."
     },
     {
       "address": "0x443650",
@@ -2198,7 +2219,7 @@
     {
       "address": "0x443730",
       "name": "spawn_track_parcel",
-      "description": "Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot."
+      "description": "Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot. Cross-port iOS symbols match this helper to `cRSubGame::AddParcel(...)`, with v1.9 adding the source `cRSubRow*` argument."
     },
     {
       "address": "0x443870",
@@ -2245,7 +2266,8 @@
     },
     {
       "address": "0x444960",
-      "name": "initialize_score_stats"
+      "name": "initialize_score_stats",
+      "description": "Initializes Goldy's per-event score-stat buckets before gameplay starts. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsInit()` in `SubGame.o`."
     },
     {
       "address": "0x444980",
@@ -2285,22 +2307,23 @@
     },
     {
       "address": "0x445860",
-      "name": "set_snail_jetpack"
+      "name": "set_snail_jetpack",
+      "description": "Maps the requested jetpack state onto Goldy's snail presentation channel. Cross-port iOS symbols match this helper to `cRSnail::SetJetPack(int)` in `SubGame.o`."
     },
     {
       "address": "0x445920",
       "name": "set_snail_weapon",
-      "description": "Maps the requested player weapon state onto the three visual-state channels rooted at +0x2984 and refreshes the active weapon presentation."
+      "description": "Maps the requested player weapon state onto the three visual-state channels rooted at +0x2984 and refreshes the active weapon presentation. Cross-port iOS symbols match this helper to `cRSnail::SetWeapon(int)` in `SubGame.o`."
     },
     {
       "address": "0x445cd0",
       "name": "update_snail_skin",
-      "description": "Transforms the 19-entry local snail hotspot bank at `+0x16cc` into the live world-space hotspot bank at `+0x17b0`, using two cached matrices and feeding the cutscene anchor points later consumed by `update_cutscene`, including the authored `CameraSkidStop` and `CameraIntroTalk` hotspots."
+      "description": "Transforms the 19-entry local snail hotspot bank at `+0x16cc` into the live world-space hotspot bank at `+0x17b0`, using two cached matrices and feeding the cutscene anchor points later consumed by `update_cutscene`, including the authored `CameraSkidStop` and `CameraIntroTalk` hotspots. Cross-port iOS symbols match the owning runtime to `cRSnail` in `SubGame.o`."
     },
     {
       "address": "0x445d50",
       "name": "build_snail_hotspots",
-      "description": "Builds the 19-entry local snail hotspot bank from named hotpoint textures on the loaded snail model, including the authored `CameraSkidStop`, `CameraSlugDeath`, and `CameraIntroTalk` entries later transformed by `update_snail_skin` and consumed by the cutscene path."
+      "description": "Builds the 19-entry local snail hotspot bank from named hotpoint textures on the loaded snail model, including the authored `CameraSkidStop`, `CameraSlugDeath`, and `CameraIntroTalk` entries later transformed by `update_snail_skin` and consumed by the cutscene path. Cross-port iOS symbols match this helper to `cRSnail::ExtractHotSpots()` in `SubGame.o`."
     },
     {
       "address": "0x445e20",

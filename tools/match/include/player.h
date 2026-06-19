@@ -1,4 +1,6 @@
-// Player (Goldy) runtime struct, partial — fields recovered around the
+// Player (Goldy) runtime struct, partial. iOS symbols name this owner
+// cRSubGoldy, with the presentation subobject carrying cRSnail methods.
+// Fields recovered around the
 // attachment-exit lanes. Offsets per analysis/decompile/*/0043af60-*.c and
 // the swept-entry asm (position vector at +0x68; the global instance lives
 // at game+0x42fd7c, so game+0x42fde8 is position.y).

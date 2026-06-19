@@ -238,14 +238,35 @@ Resource strings also confirm route/data naming shared with other ports:
 - `HighScores/SL_000.bin`
 - `HighScores/HS_%08i.bin`
 
+## Windows Crosswalk
+
+The applied Windows-side index is tracked in
+`analysis/symbols/windows-ios-gameplay-crosswalk.json`. It records stable
+Windows match names beside the leaked iOS owner/method names, the v1.5 object
+file when available, and any v1.9 signature drift.
+
+High-confidence ownership recovered from the iOS symbols:
+
+- `SubgameRuntime` is the embedded `cRSubGame` owner; the surrounding Windows
+  root object still uses the larger `Game` view.
+- `Player` is the live Goldy actor, `cRSubGoldy`; the presentation subobject
+  carries `cRSnail` methods such as `SetWeapon`, `SetJetPack`, and
+  `ExtractHotSpots`.
+- The contact-damage gauge keeps the shipped typo `cRDamageGuage`.
+- Runtime pickup and hazard slots align to `cRSubSpeedUp`, `cRJetPack`,
+  `cRSubHealth`, `cRSubGarbage`, `cRSlug`, `cRSalt`, `cRSubLazer`,
+  `cRParcel`, and the ring/star classes in `SubGame.o`.
+- Path-template and attachment helpers are owned by `cRPath` and the
+  `cRPathFollowGoldy`/`cRPathFollowGolb` family in `Path.o`.
+
 ## Candidate Use
 
 Recommended next use:
 
 1. For a Windows function already structurally matched to iOS/Android, use this
-   report to tighten the human-readable name or description.
+   report and the crosswalk to tighten the human-readable name or description.
 2. For ambiguous `SubGame.o`, `Path.o`, `RObject.o`, `RSprite.o`, and shell
    functions, use the v1.5 object grouping as a candidate namespace constraint.
 3. Keep the canonical manifests in `analysis/symbols/gameplay-functions.json`
-   and `analysis/symbols/gameplay-references.json` unchanged until each candidate
-   is backed by structural evidence.
+   and `analysis/symbols/gameplay-references.json` conservative until each
+   candidate is backed by structural evidence.

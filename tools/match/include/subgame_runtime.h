@@ -1,5 +1,7 @@
-// Root subgame runtime view, partial. This intentionally stays sparse: fields
-// are added only when an exact helper or cross-function caller proves them.
+// Root subgame runtime view, partial. iOS symbols name this embedded owner
+// cRSubGame; the surrounding Windows root object remains the larger Game view.
+// This intentionally stays sparse: fields are added only when an exact helper
+// or cross-function caller proves them.
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 

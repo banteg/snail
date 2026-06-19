@@ -1,4 +1,5 @@
-// Track speedup singleton runtime, partial.
+// Track speedup singleton runtime, partial. iOS symbols name this runtime
+// class cRSubSpeedUp and the spawning helper cRSubGame::AddSpeedUp.
 // Proven by initialize_track_speedup_runtime, update_track_speedup,
 // remove_subgame_bods, and the speedup branch in handle_subgoldy_collisions.
 #ifndef TRACK_SPEEDUP_H

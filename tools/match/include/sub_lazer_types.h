@@ -1,5 +1,6 @@
-// Shared sub-lazer slot view. The spawn, update, and deactivate paths all use
-// this 0xb0 slot; an earlier split update object was a shifted jetpack name.
+// Shared sub-lazer slot view. iOS symbols name slots cRSubLazer and the pool
+// cRSubLazerManager. The spawn, update, and deactivate paths all use this 0xb0
+// slot; an earlier split update object was a shifted jetpack name.
 // The first 0x10 bytes are the common intrusive BOD list prefix.
 #ifndef SUB_LAZER_TYPES_H
 #define SUB_LAZER_TYPES_H
