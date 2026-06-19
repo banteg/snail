@@ -690,6 +690,11 @@
       "description": "Maps one render blend preset through the shared lookup table and programs the matching alpha-blend state. Cross-port Android symbols match this helper to `G0SetBlend(int)`."
     },
     {
+      "address": "0x412e50",
+      "name": "set_immediate_blend_mode",
+      "description": "Programs the immediate 2D quad alpha-blend render state selected by draw_textured_quad_immediate."
+    },
+    {
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
       "description": "Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive."

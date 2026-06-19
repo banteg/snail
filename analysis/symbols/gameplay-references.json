@@ -198,6 +198,14 @@
       "description": "Compiler-emitted byte lookup table mapping object blend preset ids 0..20 to set_blend_mode case indexes."
     },
     {
+      "address": "0x412fe8",
+      "name": "set_immediate_blend_mode_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x40",
+      "description": "Compiler-emitted switch jump table used by set_immediate_blend_mode for immediate 2D quad blend presets."
+    },
+    {
       "address": "0x4114b0",
       "name": "create_object_vertex_buffer_resource",
       "kind": "function",

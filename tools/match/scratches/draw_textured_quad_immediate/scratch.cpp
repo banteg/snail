@@ -33,7 +33,7 @@ extern int g_render_successful_primitive_count; // data_4f7454
 extern int g_draw_primitive_call_count;    // data_503170
 
 void bind_texture_ref(TextureRef* texture);
-int sub_412e50(int blend_mode);
+int set_immediate_blend_mode(int blend_mode);
 float square_root(float value);
 float sine(float angle);
 float cosine(float angle);
@@ -61,7 +61,7 @@ int draw_textured_quad_immediate(
 {
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x16, 1);
     bind_texture_ref(texture);
-    sub_412e50(blend_mode);
+    set_immediate_blend_mode(blend_mode);
 
     ColorBGRA8 packed;
     packed.noop_this_constructor();
