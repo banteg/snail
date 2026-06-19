@@ -2709,6 +2709,13 @@ _TYPE_DEFINITION_RE = re.compile(r"\b(struct|class)\s+([A-Za-z_][A-Za-z0-9_]*)\s
 _TYPE_FIELD_RE = re.compile(
     r"^(?P<type>.+?)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)(?P<arrays>(?:\s*\[[^\]]+\])*)\s*;$"
 )
+_TYPE_FUNCTION_POINTER_FIELD_RE = re.compile(
+    r"^(?P<return_type>.+?)\s*"
+    r"\(\s*(?P<callconv>__[A-Za-z0-9_]+)?\s*\*\s*"
+    r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\)\s*"
+    r"\((?P<params>.*)\)\s*;$"
+)
+_TYPE_FUNCTION_POINTER_START_RE = re.compile(r"\(\s*(?:__[A-Za-z0-9_]+\s*)?\*")
 _TYPE_OFFSET_COMMENT_RE = re.compile(r"\+\s*0x([0-9a-fA-F]+)")
 _TYPE_ARRAY_RE = re.compile(r"\[([^\]]+)\]")
 _BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
@@ -2811,6 +2818,15 @@ def _field_storage_and_size(field_type: str) -> tuple[str, int | None]:
         "int32_t",
         "uint32_t",
         "DWORD",
+        "BOOL",
+        "HRESULT",
+        "HWND",
+        "LONG",
+        "LPARAM",
+        "LRESULT",
+        "UINT",
+        "ULONG",
+        "WPARAM",
         "float",
     }:
         return "word4", 4
@@ -2836,16 +2852,89 @@ def _normalize_method_signature(statement: str) -> str:
     return statement.rstrip(";")
 
 
+def _split_parameter_list(params: str) -> list[str]:
+    params = params.strip()
+    if not params or params == "void":
+        return []
+
+    result: list[str] = []
+    depth = 0
+    start = 0
+    for index, char in enumerate(params):
+        if char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth = max(depth - 1, 0)
+        elif char == "," and depth == 0:
+            result.append(params[start:index].strip())
+            start = index + 1
+    result.append(params[start:].strip())
+    return [param for param in result if param]
+
+
+def _parameter_type(param: str) -> str:
+    param = param.strip()
+    if param == "...":
+        return param
+    param = re.sub(r"\s*=\s*.*$", "", param).strip()
+    param = re.sub(r"\s+[A-Za-z_][A-Za-z0-9_]*\s*(?:\[[^\]]*\])?$", "", param).strip()
+    return param
+
+
+def _abi_storage_category(field_type: str) -> str:
+    if field_type == "...":
+        return "variadic"
+    if field_type == "void":
+        return "void"
+    storage, size = _field_storage_and_size(field_type)
+    if storage == "ptr":
+        return "ptr"
+    if size is not None:
+        return f"word{size}"
+    return storage
+
+
+def _function_pointer_field(statement: str) -> TypeLayoutField | None:
+    match = _TYPE_FUNCTION_POINTER_FIELD_RE.match(statement)
+    if not match:
+        return None
+
+    callconv = match.group("callconv") or "cdecl"
+    return_category = _abi_storage_category(_normalized_field_type(match.group("return_type")))
+    param_categories = tuple(
+        _abi_storage_category(_parameter_type(param))
+        for param in _split_parameter_list(match.group("params"))
+    )
+    storage = f"fnptr:{callconv}:{return_category}({','.join(param_categories)})"
+    return TypeLayoutField(offset=0, width=4, storage=storage, name=match.group("name"))
+
+
 def _analyze_type_body(body: str) -> tuple[tuple[TypeLayoutField, ...], tuple[str, ...]]:
     fields: list[TypeLayoutField] = []
     methods: list[str] = []
     current_offset = 0
     union_stack: list[tuple[int, int]] = []
+    pending_statement: list[str] = []
+    pending_offset: int | None = None
 
     for raw_line in body.splitlines():
-        offset_match = _TYPE_OFFSET_COMMENT_RE.search(raw_line)
-        explicit_offset = int(offset_match.group(1), 16) if offset_match else None
-        statement = _LINE_COMMENT_RE.sub("", raw_line).strip()
+        line = _LINE_COMMENT_RE.sub("", raw_line).strip()
+        if pending_statement:
+            pending_statement.append(line)
+            if ";" not in line:
+                continue
+            statement = " ".join(pending_statement)
+            explicit_offset = pending_offset
+            pending_statement = []
+            pending_offset = None
+        else:
+            offset_match = _TYPE_OFFSET_COMMENT_RE.search(raw_line)
+            explicit_offset = int(offset_match.group(1), 16) if offset_match else None
+            statement = line
+            if _TYPE_FUNCTION_POINTER_START_RE.search(statement) and not statement.endswith(";"):
+                pending_statement = [statement]
+                pending_offset = explicit_offset
+                continue
         if not statement or statement in {"public:", "private:", "protected:"}:
             continue
         if statement.startswith(("typedef ", "using ", "enum ")):
@@ -2859,6 +2948,25 @@ def _analyze_type_body(body: str) -> tuple[tuple[TypeLayoutField, ...], tuple[st
             if union_stack:
                 parent_offset, parent_width = union_stack.pop()
                 union_stack.append((parent_offset, max(parent_width, union_width)))
+            continue
+        function_pointer_field = _function_pointer_field(statement)
+        if function_pointer_field is not None:
+            field_offset = explicit_offset
+            if field_offset is None:
+                field_offset = union_stack[-1][0] if union_stack else current_offset
+            fields.append(
+                TypeLayoutField(
+                    field_offset,
+                    function_pointer_field.width,
+                    function_pointer_field.storage,
+                    function_pointer_field.name,
+                )
+            )
+            if union_stack:
+                union_offset, union_width = union_stack.pop()
+                union_stack.append((union_offset, max(union_width, function_pointer_field.width)))
+            else:
+                current_offset = field_offset + function_pointer_field.width
             continue
         if "(" in statement and ")" in statement and statement.endswith(";"):
             methods.append(_normalize_method_signature(statement))
@@ -2953,6 +3061,8 @@ def _range_contains(outer: TypeLayoutField, inner: TypeLayoutField) -> bool:
 def _storage_compatible(first: TypeLayoutField, second: TypeLayoutField) -> bool:
     if first.storage == second.storage:
         return True
+    if first.storage.startswith("fnptr:") or second.storage.startswith("fnptr:"):
+        return False
     if first.storage == "ptr" or second.storage == "ptr":
         return False
     return first.width == second.width

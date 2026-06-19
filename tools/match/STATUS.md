@@ -722,23 +722,20 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - header-conflict: 2 type name(s)
-- unresolved-layout: 26 type name(s)
+- unresolved-layout: 23 type name(s)
 - header-compatible: 16 type name(s)
-- partial-compatible: 18 type name(s)
+- partial-compatible: 21 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
 | header-conflict | FrontendWidget | 8 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | header-conflict | GolbShot | 2 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
 | unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | Direct3DDevice8Vtbl | 8 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | ObjectVertexBufferVtbl | 5 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | RuntimeCallback | 4 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | MouseCursorState | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SoundEffectManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | VertexBufferVtbl | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | VoiceManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
@@ -773,7 +770,9 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | partial-compatible | Game | 42 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Direct3DDevice8Vtbl | 8 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | LoadingScreen | 7 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | ObjectVertexBufferVtbl | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
@@ -781,6 +780,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | partial-compatible | BlinkRandomTable | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Rect | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | VertexBufferVtbl | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | ActiveBod | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Axis | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

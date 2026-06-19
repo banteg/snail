@@ -1198,6 +1198,52 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
     assert [finding.name for finding in filtered] == ["Shared"]
 
 
+def test_type_parser_tracks_function_pointer_slots(tmp_path: Path) -> None:
+    scratch = tmp_path / "scratch.cpp"
+    scratch.write_text(
+        """
+struct Device;
+
+struct DeviceVtbl {
+    char unknown_00[0x2c];
+    int (__stdcall* Lock)(Device* self, unsigned int offset, unsigned int size,
+        void** out, unsigned int flags);
+    void (__stdcall* Unlock)(Device* self);
+};
+""".lstrip()
+    )
+
+    definition = find_type_definitions(scratch)[0]
+    assert definition.name == "DeviceVtbl"
+    assert definition.method_signatures == ()
+    assert [(field.name, field.offset, field.width) for field in definition.layout_fields] == [
+        ("Lock", 0x2C, 4),
+        ("Unlock", 0x30, 4),
+    ]
+    assert definition.layout_fields[0].storage == (
+        "fnptr:__stdcall:word4(ptr,word4,word4,ptr,word4)"
+    )
+    assert definition.layout_fields[1].storage == "fnptr:__stdcall:void(ptr)"
+
+
+def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    (match_root / "include").mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (scratches / "b").mkdir()
+    (scratches / "a" / "scratch.cpp").write_text(
+        "struct Callback; struct CallbackVtbl { int (__stdcall* Run)(Callback* self); };\n"
+    )
+    (scratches / "b" / "scratch.cpp").write_text(
+        "struct Callback; struct CallbackVtbl { void (__stdcall* Run)(Callback* self); };\n"
+    )
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["CallbackVtbl"].status == "divergent"
+    assert findings["CallbackVtbl"].signature_count == 2
+
+
 def test_render_status_rows_includes_prefix() -> None:
     config = ScratchConfig(
         directory=Path("scratch"),
