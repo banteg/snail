@@ -721,43 +721,49 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- unresolved-layout: 23 type name(s)
-- header-compatible: 18 type name(s)
-- partial-compatible: 18 type name(s)
+- ABI-conflict: 17 type name(s)
+- unresolved-layout: 16 type name(s)
+- header-compatible: 13 type name(s)
+- partial-compatible: 13 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
-| unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | RuntimeCallback | 4 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | MouseCursorState | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| ABI-conflict | Game | 42 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | BorderManager | 9 | 3 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | FrontendWidget | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Player | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Quaternion | 5 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | RuntimeSlot | 4 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | RuntimeCallback | 4 | 0 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | FrontendFade | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Vector3 (aliases: Vec3) | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | MouseCursorState | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | VoiceManager | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | ActiveBod | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | GolbShot | 2 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Twinkle | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Backdrop | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | InputOkState | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | TipManager | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SoundEffectManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | VoiceManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | Backdrop | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | InputOkState | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | ObjectList | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | FrontendWidget | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | FrontendFade | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | Vector3 (aliases: Vec3) | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | GolbShot | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | BodList | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
@@ -768,21 +774,16 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| partial-compatible | Game | 42 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DDevice8Vtbl | 8 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | SlugVoiceManager | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BlinkRandomTable | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Rect | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | ActiveBod | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Axis | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | CachedXMeshBank | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | GameRuntime | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | ProgressBar | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | ScoreStats | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | Twinkle | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | TwinkleManager | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

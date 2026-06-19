@@ -498,6 +498,8 @@ def _reference_symbol_by_name(
     by_name: dict[str, ReferenceSymbol] = {}
     for symbol in reference_manifest.symbols:
         for name in (symbol.name, *symbol.aliases):
+            if name.startswith("$L"):
+                continue
             by_name[name] = symbol
             by_name[_canonical_symbol_name(name)] = symbol
     return by_name
@@ -2898,6 +2900,55 @@ def _abi_storage_category(field_type: str) -> str:
     return storage
 
 
+def _method_name_and_abi(signature: str) -> tuple[str, str] | None:
+    signature = signature.strip()
+    if "[" in signature or "]" in signature:
+        return None
+    is_const = signature.endswith(" const")
+    if is_const:
+        signature = signature.removesuffix(" const").strip()
+    signature = re.sub(r"\s*=\s*0$", "", signature).strip()
+    open_paren = signature.find("(")
+    close_paren = signature.rfind(")")
+    if open_paren < 0 or close_paren < open_paren:
+        return None
+
+    head = signature[:open_paren].strip()
+    params = signature[open_paren + 1 : close_paren]
+    tokens = head.split()
+    if not tokens:
+        return None
+
+    method_name = tokens[-1]
+    if not re.fullmatch(r"~?[A-Za-z_][A-Za-z0-9_]*", method_name):
+        return None
+    prefix_tokens = tokens[:-1]
+    is_virtual = "virtual" in prefix_tokens
+    is_static = "static" in prefix_tokens
+    callconv = next((token for token in prefix_tokens if token.startswith("__")), None)
+    if callconv is None:
+        callconv = "cdecl" if is_static else "thiscall"
+    return_tokens = [
+        token
+        for token in prefix_tokens
+        if token not in {"virtual", "static", "inline", "extern", "friend"}
+        and not token.startswith("__")
+    ]
+    return_type = " ".join(return_tokens) or "void"
+    return_category = _abi_storage_category(_normalized_field_type(return_type))
+    param_categories = tuple(
+        _abi_storage_category(_parameter_type(param))
+        for param in _split_parameter_list(params)
+    )
+    abi = (
+        f"{'virtual' if is_virtual else 'nonvirtual'}:"
+        f"{'static' if is_static else 'member'}:"
+        f"{callconv}:{return_category}({','.join(param_categories)})"
+        f"{':const' if is_const else ''}"
+    )
+    return method_name, abi
+
+
 def _function_pointer_field(statement: str) -> TypeLayoutField | None:
     match = _TYPE_FUNCTION_POINTER_FIELD_RE.match(statement)
     if not match:
@@ -2972,7 +3023,13 @@ def _analyze_type_body(body: str) -> tuple[tuple[TypeLayoutField, ...], tuple[st
             else:
                 current_offset = field_offset + function_pointer_field.width
             continue
-        if "(" in statement and ")" in statement and statement.endswith(";"):
+        if (
+            "(" in statement
+            and ")" in statement
+            and "[" not in statement
+            and "]" not in statement
+            and statement.endswith(";")
+        ):
             methods.append(_normalize_method_signature(statement))
             continue
 
@@ -3141,8 +3198,44 @@ def _has_layout_conflict(
     for scratch in scratch_definitions:
         if not scratch.layout_fields:
             continue
-        if not any(not _layout_definitions_conflict(header, scratch) for header in field_headers):
+        if any(_layout_definitions_conflict(header, scratch) for header in field_headers):
             return True
+    return False
+
+
+def _method_abi_entries(definition: TypeDefinition) -> tuple[tuple[str, str], ...]:
+    entries = [
+        parsed
+        for signature in definition.method_signatures
+        if (parsed := _method_name_and_abi(signature)) is not None
+    ]
+    return tuple(sorted(set(entries)))
+
+
+def _has_method_abi_conflict(definitions: list[TypeDefinition]) -> bool:
+    method_abis_by_name: dict[str, set[str]] = {}
+    method_entry_sets: list[tuple[tuple[str, str], ...]] = []
+    for definition in definitions:
+        entries = _method_abi_entries(definition)
+        if not entries:
+            continue
+        method_entry_sets.append(entries)
+        for method_name, abi in entries:
+            method_abis_by_name.setdefault(method_name, set()).add(abi)
+
+    if any(len(abis) > 1 for abis in method_abis_by_name.values()):
+        return True
+
+    for index, first_entries in enumerate(method_entry_sets):
+        first_names = {name for name, _abi in first_entries}
+        first_has_virtual = any(abi.startswith("virtual:") for _name, abi in first_entries)
+        for second_entries in method_entry_sets[index + 1 :]:
+            second_names = {name for name, _abi in second_entries}
+            if first_names & second_names:
+                continue
+            second_has_virtual = any(abi.startswith("virtual:") for _name, abi in second_entries)
+            if first_has_virtual != second_has_virtual:
+                return True
     return False
 
 
@@ -3172,7 +3265,12 @@ def type_consolidation_findings(
         scratch_layout_groups = _compatible_layout_groups(scratch_definitions)
         layout_group_count = len(scratch_layout_groups)
         paths = tuple(sorted({definition.path for definition in named_definitions}))
-        if header_definitions and scratch_definitions:
+        if _has_method_abi_conflict(named_definitions):
+            status = "ABI-conflict"
+            recommendation = (
+                "method declarations disagree by return, parameters, calling convention, or virtual status"
+            )
+        elif header_definitions and scratch_definitions:
             header_layout_definitions = [
                 definition for definition in header_definitions if definition.layout_fields
             ]
@@ -3231,12 +3329,13 @@ def type_consolidation_findings(
 
 TYPE_CONSOLIDATION_STATUS_ORDER = {
     "header-conflict": 0,
-    "overbroad-header": 1,
-    "divergent": 2,
-    "unresolved-layout": 3,
-    "header-compatible": 4,
-    "partial-compatible": 5,
-    "ready": 6,
+    "ABI-conflict": 1,
+    "overbroad-header": 2,
+    "divergent": 3,
+    "unresolved-layout": 4,
+    "header-compatible": 5,
+    "partial-compatible": 6,
+    "ready": 7,
 }
 
 

@@ -451,6 +451,30 @@ def test_extract_object_function_maps_reference_symbol_aliases() -> None:
     assert function.relocation_references[0].key == "ref:g_game_base"
 
 
+def test_extract_object_function_does_not_global_resolve_local_label_alias() -> None:
+    code = bytes.fromhex("a100000000c3") + b"\x00" * 8
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("$L307", 6)], [(1, 1)]))
+    function = extract_object_function(
+        obj,
+        "foo",
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x446E60,
+                    name="initialize_subgoldy_death_jump_table",
+                    kind="jump_table",
+                    aliases=("$L307",),
+                    size=0x20,
+                ),
+            ),
+        ),
+    )
+    reference = function.relocation_references[0]
+    assert reference.text == "sym:$L307"
+    assert reference.key == "name:$L307"
+
+
 def test_extract_object_function_preserves_reference_symbol_addends() -> None:
     code = bytes.fromhex("b808000000c3")
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_table", 0)], [(1, 1)]))
@@ -721,7 +745,8 @@ def test_masked_operand_audit_rejects_same_key_lookup_table_byte_mismatch() -> N
     entry = result.masked_operand_audit.entries[0]
     assert entry.status == "mismatch"
     assert entry.target_references[0].audited_bytes == b"\x09\x0a"
-    assert entry.candidate_references[0].audited_bytes == b"\x09\x0b"
+    assert entry.candidate_references[0].audited_bytes is None
+    assert entry.candidate_references[0].local_data_bytes.startswith(b"\x09\x0b")
 
 
 def test_masked_operand_audit_accepts_drifted_local_lookup_table_label() -> None:
@@ -1226,6 +1251,23 @@ struct DeviceVtbl {
     assert definition.layout_fields[1].storage == "fnptr:__stdcall:void(ptr)"
 
 
+def test_type_parser_ignores_array_size_expressions_as_methods(tmp_path: Path) -> None:
+    scratch = tmp_path / "scratch.cpp"
+    scratch.write_text(
+        """
+struct PlayerBlock;
+
+struct Game {
+    char unknown_42fe58[0x4326fc - 0x42fd7c - sizeof(PlayerBlock)];
+    void update_subgame();
+};
+""".lstrip()
+    )
+
+    definition = find_type_definitions(scratch)[0]
+    assert definition.method_signatures == ("void update_subgame()",)
+
+
 def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> None:
     match_root = tmp_path / "match"
     (match_root / "include").mkdir(parents=True)
@@ -1242,6 +1284,58 @@ def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> 
     findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
     assert findings["CallbackVtbl"].status == "divergent"
     assert findings["CallbackVtbl"].signature_count == 2
+
+
+def test_type_consolidation_flags_method_abi_conflicts(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    (match_root / "include").mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (scratches / "b").mkdir()
+    (scratches / "a" / "scratch.cpp").write_text(
+        "struct MouseCursorState { void release_mouse_cursor(); int captured; };\n"
+    )
+    (scratches / "b" / "scratch.cpp").write_text(
+        "struct MouseCursorState { int release_mouse_cursor(); int captured; };\n"
+    )
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["MouseCursorState"].status == "ABI-conflict"
+    assert (
+        findings["MouseCursorState"].recommendation
+        == "method declarations disagree by return, parameters, calling convention, or virtual status"
+    )
+
+
+def test_type_consolidation_flags_virtual_owner_collisions(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    (match_root / "include").mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (scratches / "b").mkdir()
+    (scratches / "a" / "scratch.cpp").write_text(
+        "struct RuntimeCallback { virtual void update(); };\n"
+    )
+    (scratches / "b" / "scratch.cpp").write_text(
+        "struct RuntimeCallback { void noop_runtime_ai(); };\n"
+    )
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["RuntimeCallback"].status == "ABI-conflict"
+
+
+def test_type_consolidation_conflicts_when_any_header_disagrees(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (include_dir / "good.h").write_text("struct MultiHeader { int x; };\n")
+    (include_dir / "bad.h").write_text("struct MultiHeader { short x; };\n")
+    (scratches / "a" / "scratch.cpp").write_text("struct MultiHeader { int x; };\n")
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["MultiHeader"].status == "header-conflict"
 
 
 def test_type_consolidation_flags_overbroad_follow_state_header(tmp_path: Path) -> None:
