@@ -727,7 +727,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | Vec3 | 9 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 8 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GameRoot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |

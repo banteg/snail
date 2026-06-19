@@ -1,15 +1,9 @@
-double __fastcall normalize_vector(void* vector);
+#include "vector3.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
+float __fastcall normalize_vector(void* vector);
 
-    double normalize_vector_from_source(const Vec3* source);
-};
-
-double Vec3::normalize_vector_from_source(const Vec3* source)
+float Vector3::normalize_vector_from_source(const Vector3* source)
 {
     *this = *source;
-    return normalize_vector(this);
+    return ::normalize_vector(this);
 }
