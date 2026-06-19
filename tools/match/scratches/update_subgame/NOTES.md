@@ -62,9 +62,9 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 67.53%, 1046 candidate instructions versus 1033 target instructions, 9-instruction prefix, and 108 clean masked operands.
+Focused matcher result: 67.53%, 1046 candidate instructions versus 1033 target instructions, 9-instruction prefix, 108 clean masked operands, and 2 jump-table mismatches.
 
-The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. The two unresolved masked operands are switch jump-table addresses, not mismatched data or call targets.
+The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
 The largest remaining source-shape opportunities are:
 

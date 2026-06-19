@@ -174,12 +174,13 @@
       "aliases": [
         "$L246"
       ],
+      "size": "0x18",
       "description": "Compiler-emitted switch target table used by set_blend_mode after the blend preset lookup."
     },
     {
       "address": "0x412e30",
       "name": "set_blend_mode_lookup_table",
-      "kind": "global",
+      "kind": "lookup_table",
       "aliases": [
         "$L245"
       ],
@@ -338,12 +339,13 @@
       "aliases": [
         "$L317"
       ],
+      "size": "0x1c",
       "description": "Compiler-emitted switch target table used by configure_sprite_render_state."
     },
     {
       "address": "0x4137d4",
       "name": "configure_sprite_render_state_lookup_table",
-      "kind": "global",
+      "kind": "lookup_table",
       "aliases": [
         "$L316"
       ],
@@ -679,6 +681,38 @@
       ],
       "size": "0x5e",
       "description": "Compiler-emitted byte lookup table mapping glyph values 0x20..0x7d to normalize_segment_glyph_for_track_flags switch case indexes."
+    },
+    {
+      "address": "0x4386dc",
+      "name": "build_subgame_level_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x14",
+      "description": "Compiler-emitted switch jump table for the first build_subgame_level state dispatch."
+    },
+    {
+      "address": "0x4386f0",
+      "name": "build_subgame_level_track_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x10",
+      "description": "Compiler-emitted switch jump table for the later build_subgame_level track dispatch."
+    },
+    {
+      "address": "0x4399f4",
+      "name": "update_subgame_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x20",
+      "description": "Compiler-emitted switch jump table for update_subgame's primary subgame-state dispatch."
+    },
+    {
+      "address": "0x439a14",
+      "name": "update_subgame_level_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x20",
+      "description": "Compiler-emitted switch jump table for update_subgame's level-state dispatch."
     },
     {
       "address": "0x43a2d4",

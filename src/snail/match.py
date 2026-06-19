@@ -192,6 +192,7 @@ class MaskedReference:
     alternate_keys: tuple[str, ...] = ()
     jump_table_entries: tuple[int, ...] | None = None
     audited_bytes: bytes | None = None
+    local_data_bytes: bytes | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1030,16 +1031,20 @@ def disassemble_normalized_function(
     ) -> MaskedReference:
         jump_table_entries = None
         audited_bytes = None
+        local_data_bytes = None
         if (
             reference is not None
             and reference.symbol_name.startswith("$L")
             and reference.symbol_offset is not None
         ):
+            local_offset = reference.symbol_offset + (reference.addend or 0)
             jump_table_entries = _read_object_jump_table_entries(
                 data,
-                reference.symbol_offset + (reference.addend or 0),
+                local_offset,
                 relocation_by_offset,
             )
+            if 0 <= local_offset < len(data):
+                local_data_bytes = data[local_offset:]
         if reference is not None:
             reference_symbol = _reference_symbol_for_symbol_name(
                 reference_manifest,
@@ -1075,6 +1080,7 @@ def disassemble_normalized_function(
             explained=reference.explained,
             jump_table_entries=jump_table_entries,
             audited_bytes=audited_bytes,
+            local_data_bytes=local_data_bytes,
         )
 
     def image_reference(
@@ -1103,6 +1109,7 @@ def disassemble_normalized_function(
             alternate_keys=resolved.alternate_keys,
             jump_table_entries=resolved.jump_table_entries,
             audited_bytes=resolved.audited_bytes,
+            local_data_bytes=resolved.local_data_bytes,
         )
 
     lines: list[DisassemblyLine] = []
@@ -1268,11 +1275,24 @@ def _reference_status(
     def audited_bytes_match(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
+        if not is_content_audited_reference(target, candidate):
+            return False
+        if target.audited_bytes is None:
+            return False
+        if candidate.audited_bytes is not None:
+            return target.audited_bytes == candidate.audited_bytes
+        if candidate.local_data_bytes is None:
+            return False
+        byte_count = len(target.audited_bytes)
         return (
-            is_content_audited_reference(target, candidate)
-            and target.audited_bytes is not None
-            and candidate.audited_bytes is not None
-            and target.audited_bytes == candidate.audited_bytes
+            len(candidate.local_data_bytes) >= byte_count
+            and target.audited_bytes == candidate.local_data_bytes[:byte_count]
+        )
+
+    def has_candidate_audited_bytes(candidate: MaskedReference, byte_count: int) -> bool:
+        return candidate.audited_bytes is not None or (
+            candidate.local_data_bytes is not None
+            and len(candidate.local_data_bytes) >= byte_count
         )
 
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
@@ -1312,7 +1332,7 @@ def _reference_status(
         and not audited_bytes_match(target, candidate)
         and (
             target.audited_bytes is None
-            or candidate.audited_bytes is None
+            or not has_candidate_audited_bytes(candidate, len(target.audited_bytes))
         )
         for target, candidate in zip(target_references, candidate_references)
     )

@@ -31,11 +31,11 @@ int configure_sprite_render_state(Sprite* sprite)
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 1);
         return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
-    case 10:
+    case 9:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
         return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
-    case 11:
+    case 10:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
         return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);

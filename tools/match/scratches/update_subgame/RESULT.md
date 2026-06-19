@@ -8,9 +8,9 @@
 | Target instructions | 1033 | 1033 |
 | Candidate instructions | 1 | 1046 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **108 clean, 2 unresolved, 0 mismatched** |
+| Masked operands | none | **108 clean, 0 unresolved, 2 mismatched** |
 
-The final candidate is thirteen instructions longer than the target. Both unresolved operands are switch jump-table address relocations. There are no masked call or data-operand mismatches.
+The final candidate is thirteen instructions longer than the target. Both switch jump-table operands are now content-audited and classified as real mismatches. There are no unresolved masked operands.
 
 The first remaining mismatch is:
 

@@ -701,6 +701,91 @@ def test_masked_operand_audit_rejects_same_key_lookup_table_byte_mismatch() -> N
     assert entry.candidate_references[0].audited_bytes == b"\x09\x0b"
 
 
+def test_masked_operand_audit_accepts_drifted_local_lookup_table_label() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    mapped[0x2000:0x2002] = b"\x09\x0a"
+    candidate = local_lookup_table_candidate(b"\x09\x0a")
+    candidate = ObjectFunction(
+        name=candidate.name,
+        data=candidate.data,
+        relocation_offsets=candidate.relocation_offsets,
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="$Ldrifted",
+                text="sym:$Ldrifted",
+                key="name:$Ldrifted",
+                explained=True,
+                addend=0,
+                symbol_offset=6,
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("a100204000c3"),
+        candidate,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_lookup_table",
+                    kind="lookup_table",
+                    aliases=("$Llookup",),
+                    size=0x2,
+                ),
+            ),
+        ),
+    )
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.status == "ok"
+    assert entry.candidate_references[0].audited_bytes is None
+    assert entry.candidate_references[0].local_data_bytes.startswith(b"\x09\x0a")
+
+
+def test_masked_operand_audit_rejects_drifted_local_lookup_table_bytes() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    mapped[0x2000:0x2002] = b"\x09\x0a"
+    candidate = local_lookup_table_candidate(b"\x09\x0b")
+    candidate = ObjectFunction(
+        name=candidate.name,
+        data=candidate.data,
+        relocation_offsets=candidate.relocation_offsets,
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="$Ldrifted",
+                text="sym:$Ldrifted",
+                key="name:$Ldrifted",
+                explained=True,
+                addend=0,
+                symbol_offset=6,
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("a100204000c3"),
+        candidate,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_lookup_table",
+                    kind="lookup_table",
+                    aliases=("$Llookup",),
+                    size=0x2,
+                ),
+            ),
+        ),
+    )
+    assert result.masked_operand_audit.entries[0].status == "mismatch"
+
+
 def test_masked_operand_audit_accepts_same_address_reference_alternate() -> None:
     # target: mov cl, [0x402000]; ret. 0x402000 is the display name for one
     # global, but the candidate relocation can still honestly name a separate

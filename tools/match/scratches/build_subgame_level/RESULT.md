@@ -18,7 +18,7 @@ tools/match/match-py313.sh \
 | Common prefix | 0 / 555 | **177 / 555** |
 | Masked operands OK | 0 | **100** |
 | Masked operands unresolved | 0 | **2** |
-| Masked operand mismatches | 0 | **0** |
+| Masked operand mismatches | 0 | **1** |
 
 This is a 79.46 percentage-point improvement over the starter skeleton. The
 first mismatch is:
@@ -28,9 +28,11 @@ target[177]    jne L398
 candidate[177] jne L396
 ```
 
-The two unresolved masked operands are the compiler-generated jump tables at
-target instructions 23 and 185. Their candidate operands are local switch-table
-symbols; no masked operand is classified as a mismatch.
+The compiler-generated jump tables at target instructions 23 and 185 are now
+content-audited. The later track dispatch table matches; the first state
+dispatch table is a real masked-operand mismatch. The two remaining unresolved
+masked operands are the completion-bonus globals at
+`g_completion_bonus_x_source+0x4`.
 
 ## Accepted source-shape changes
 

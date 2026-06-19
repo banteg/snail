@@ -3,7 +3,7 @@
 Object blend preset mapper at `0x412d00`.
 
 Current Wibo result: 81.52%, 92/92 instructions, prefix 14/92, masked operands
-13 ok, 0 unresolved, 2 mismatch.
+14 ok, 0 unresolved, 1 mismatch.
 
 Recovered relationships:
 
@@ -18,9 +18,9 @@ Expected residuals:
 - The source-shaped sparse switch correctly regenerates the compiler byte
   lookup/table idiom, but VC6 picks a different tail-sharing owner for the two
   identical `src=5, dest=6` blend cases.
-- The masked operand mismatches are the target lookup and jump-table addresses
-  versus the scratch-local `$L...` labels; do not hide these with convenience
-  aliases unless the target label evidence is recovered independently.
+- The lookup bytes are content-audited and match. The remaining masked operand
+  mismatch is the jump table; do not hide it with convenience aliases unless the
+  target label evidence is recovered independently.
 
 `render_object` calls this helper before applying the object tint and grouped
 draw call.

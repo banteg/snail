@@ -88,8 +88,10 @@ insertions. Attempts to force that allocation with typed overlays, earlier
 player-pointer declarations, `register`, and named flag locals did not improve
 code generation.
 
-The two unresolved masked operands are compiler-generated jump-table
-relocations. There are no masked-operand mismatches.
+The two compiler-generated jump tables are now content-audited. The later
+track dispatch table matches, while the first state dispatch table is a real
+masked-operand mismatch. The two remaining unresolved operands are the
+completion-bonus globals at `g_completion_bonus_x_source+0x4`.
 
 ## Rejected trials
 
