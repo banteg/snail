@@ -9,6 +9,9 @@ unsigned char strings_equal_case_insensitive(char* left, char* right); // @ 0x43
 TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int arg3, int flags)
 {
     int i = 0;
+    int current;
+    TextureRef* result;
+
     if (count == capacity) {
         report_errorf("Too many Texture References - Increase TextureList.Init(MAX) in g0.cpp");
     }
@@ -24,14 +27,14 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
     }
 
     copy_c_string(entries[count].name, texture_path);
-    int current = count;
+    current = count;
     entries[current].slot_index = current;
     entries[count].flags = 0;
     entries[count].flags = 0x400;
     entries[count].texture_ref = (void*)arg3;
     entries[count].unknown_a0 = 1;
 
-    int result_index = count;
-    count = result_index + 1;
-    return &entries[result_index];
+    result = &entries[count];
+    ++count;
+    return result;
 }

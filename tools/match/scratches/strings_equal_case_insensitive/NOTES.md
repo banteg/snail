@@ -21,3 +21,11 @@ Remaining residual: native loads the initial right/left raw bytes straight into
 `dl`/`bl`, copies them to `cl`/`al`, and tests left then right. The current
 source still has VC6 load the fold lanes first (`cl`/`al`), then copy to
 `dl`/`bl`, with the same recovered semantics but different byte-lane ordering.
+
+2026-06-20 caller-shape pass: two direct decompiler-shaped rewrites were tested
+and rejected. Explicit `left_cursor`/`right_cursor` locals made VC6 collapse the
+two pointers into a pointer-delta loop and regressed to 29.13%. A direct
+IDA-style `do` loop over the original arguments also regressed to 35.85% by
+materializing `sub 0x20` lanes and extra tests. Keep the peeled-loop source
+until a source shape preserves the native `dl`/`bl` raw-byte lanes without
+introducing the pointer-delta form.

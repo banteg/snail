@@ -21,8 +21,17 @@ Recovered relationships:
 This scratch exists primarily to correct and consolidate texture-list structure
 evidence used by sprite texture registration and runtime sprite allocation.
 
-Focused Wibo result after correcting the flags width, raw name cursor, and
-function end bound: 76.07%, 85/78 candidate/target instructions, with 4 masked
-operands OK and no unresolved or mismatched operands. Remaining residual is
-control-flow layout for the scan-found return block plus final `count`
-increment/register scheduling.
+Focused Wibo result after preserving the new-entry pointer before incrementing
+`count`: 82.21%, 85/78 candidate/target instructions, with 4 masked operands OK
+and no unresolved or mismatched operands. The accepted source shape uses
+`result = &entries[count]; ++count; return result;`, matching the native
+allocation return more closely than the previous `result_index = count; count =
+result_index + 1; return &entries[result_index];` spelling.
+
+Rejected/no-op variants:
+
+- Rewriting the reuse scan as the IDA-style `while (!match) ... goto allocate`
+  structure compiled to the same candidate layout and score, so the structured
+  `do` scan remains.
+- Moving the found-existing return behind an explicit label did not move VC6's
+  emitted found block; it still laid out before the allocation path.
