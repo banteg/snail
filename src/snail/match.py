@@ -2474,7 +2474,17 @@ class TypeDefinition:
     name: str
     path: Path
     signature: str
+    layout_fields: tuple["TypeLayoutField", ...]
+    method_signatures: tuple[str, ...]
     is_header: bool
+
+
+@dataclass(frozen=True, slots=True)
+class TypeLayoutField:
+    offset: int
+    width: int
+    storage: str
+    name: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -2489,9 +2499,42 @@ class TypeConsolidationFinding:
 
 
 _TYPE_DEFINITION_RE = re.compile(r"\b(struct|class)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{")
+_TYPE_FIELD_RE = re.compile(
+    r"^(?P<type>.+?)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)(?P<arrays>(?:\s*\[[^\]]+\])*)\s*;$"
+)
+_TYPE_OFFSET_COMMENT_RE = re.compile(r"\+\s*0x([0-9a-fA-F]+)")
+_TYPE_ARRAY_RE = re.compile(r"\[([^\]]+)\]")
 _BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 _LINE_COMMENT_RE = re.compile(r"//.*")
 _SPACE_RE = re.compile(r"\s+")
+
+_TYPE_ALIASES = {
+    "AttachmentSample": "AttachmentSample",
+    "PathAttachmentSample": "AttachmentSample",
+    "PathTemplateSample": "AttachmentSample",
+    "HighScoreRecord": "HighScoreRecord",
+    "SelectedLevelRecord": "HighScoreRecord",
+    "Vec3": "Vector3",
+    "Vector3": "Vector3",
+}
+
+_KNOWN_TYPE_SIZES = {
+    "ActiveRuntimeRow": 0xF4,
+    "ArchiveEntry": 0x0C,
+    "AttachmentTransform": 0x40,
+    "BodNode": 0x10,
+    "Color4f": 0x10,
+    "ColorBGRA8": 0x04,
+    "HighScoreRecord": 0x1FAC0,
+    "ObjectUv": 0x08,
+    "ReplayRunRecord": 0x06,
+    "TimerCounters": 0x18,
+    "TransformMatrix": 0x40,
+    "TrackedAllocationRecord": 0x0C,
+    "Vector4": 0x10,
+    "Vector3": 0x0C,
+    "Vec3": 0x0C,
+}
 
 
 def _strip_cpp_comments(text: str) -> str:
@@ -2517,6 +2560,146 @@ def normalize_type_signature(kind: str, name: str, body: str) -> str:
     return f"{kind} {name} {{ {body} }}"
 
 
+def _canonical_type_name(name: str) -> str:
+    return _TYPE_ALIASES.get(name, name)
+
+
+def _eval_int_expr(expr: str) -> int | None:
+    expr = expr.strip()
+    if not expr or re.search(r"[^0-9a-fA-FxX()+\-*/\s]", expr):
+        return None
+    try:
+        value = eval(expr, {"__builtins__": {}}, {})
+    except Exception:
+        return None
+    return int(value) if isinstance(value, int | float) else None
+
+
+def _normalized_field_type(field_type: str) -> str:
+    field_type = field_type.replace("*", " * ").replace("&", " & ")
+    words = [
+        word
+        for word in _SPACE_RE.sub(" ", field_type).strip().split(" ")
+        if word not in {"const", "volatile", "static", "mutable", "class", "struct"}
+    ]
+    return " ".join(words)
+
+
+def _field_storage_and_size(field_type: str) -> tuple[str, int | None]:
+    normalized = _normalized_field_type(field_type)
+    if "*" in normalized or "&" in normalized:
+        return "ptr", 4
+
+    unsigned = normalized.startswith("unsigned ")
+    signed = normalized.startswith("signed ")
+    base = normalized.removeprefix("unsigned ").removeprefix("signed ").strip()
+    if base in {"char", "__int8", "int8_t", "uint8_t", "byte", "bool"}:
+        return "word1", 1
+    if base in {"short", "__int16", "int16_t", "uint16_t"}:
+        return "word2", 2
+    if base in {
+        "int",
+        "long",
+        "__int32",
+        "int32_t",
+        "uint32_t",
+        "DWORD",
+        "float",
+    }:
+        return "word4", 4
+    if base in {"double", "__int64", "int64_t", "uint64_t"}:
+        return "word8", 8
+    if unsigned or signed:
+        return "word4", 4
+    if base in _KNOWN_TYPE_SIZES:
+        return f"type:{base}", _KNOWN_TYPE_SIZES[base]
+    return f"type:{base}", None
+
+
+def _is_padding_field(name: str, storage: str, arrays: str) -> bool:
+    lowered = name.lower()
+    if not arrays or storage != "word1":
+        return False
+    return lowered.startswith(("unknown", "pad", "reserved", "unused", "before_"))
+
+
+def _normalize_method_signature(statement: str) -> str:
+    statement = _strip_cpp_comments(statement)
+    statement = _SPACE_RE.sub(" ", statement).strip()
+    return statement.rstrip(";")
+
+
+def _analyze_type_body(body: str) -> tuple[tuple[TypeLayoutField, ...], tuple[str, ...]]:
+    fields: list[TypeLayoutField] = []
+    methods: list[str] = []
+    current_offset = 0
+    union_stack: list[tuple[int, int]] = []
+
+    for raw_line in body.splitlines():
+        offset_match = _TYPE_OFFSET_COMMENT_RE.search(raw_line)
+        explicit_offset = int(offset_match.group(1), 16) if offset_match else None
+        statement = _LINE_COMMENT_RE.sub("", raw_line).strip()
+        if not statement or statement in {"public:", "private:", "protected:"}:
+            continue
+        if statement.startswith(("typedef ", "using ", "enum ")):
+            continue
+        if statement.startswith("union") and "{" in statement:
+            union_stack.append((current_offset, 0))
+            continue
+        if statement in {"};", "}"} and union_stack:
+            union_offset, union_width = union_stack.pop()
+            current_offset = union_offset + union_width
+            if union_stack:
+                parent_offset, parent_width = union_stack.pop()
+                union_stack.append((parent_offset, max(parent_width, union_width)))
+            continue
+        if "(" in statement and ")" in statement and statement.endswith(";"):
+            methods.append(_normalize_method_signature(statement))
+            continue
+
+        field_match = _TYPE_FIELD_RE.match(statement)
+        if not field_match:
+            continue
+
+        field_type = field_match.group("type")
+        name = field_match.group("name")
+        arrays = field_match.group("arrays")
+        storage, element_size = _field_storage_and_size(field_type)
+        if element_size is None:
+            continue
+        count = 1
+        for array_expr in _TYPE_ARRAY_RE.findall(arrays):
+            array_count = _eval_int_expr(array_expr)
+            if array_count is None:
+                count = 0
+                break
+            count *= array_count
+        if count <= 0:
+            continue
+
+        width = element_size * count
+        field_offset = explicit_offset
+        if field_offset is None:
+            field_offset = union_stack[-1][0] if union_stack else current_offset
+        field_storage = f"{storage}[{count}]" if arrays and not storage.startswith("type:") else storage
+        if not _is_padding_field(name, storage, arrays):
+            fields.append(TypeLayoutField(field_offset, width, field_storage, name))
+
+        if union_stack:
+            union_offset, union_width = union_stack.pop()
+            union_stack.append((union_offset, max(union_width, width)))
+        else:
+            current_offset = field_offset + width
+
+    unique_fields = sorted(
+        {(field.offset, field.width, field.storage, field.name) for field in fields}
+    )
+    return (
+        tuple(TypeLayoutField(offset, width, storage, name) for offset, width, storage, name in unique_fields),
+        tuple(sorted(set(methods))),
+    )
+
+
 def find_type_definitions(path: Path, *, is_header: bool = False) -> list[TypeDefinition]:
     text = path.read_text(encoding="latin1")
     definitions: list[TypeDefinition] = []
@@ -2528,12 +2711,15 @@ def find_type_definitions(path: Path, *, is_header: bool = False) -> list[TypeDe
             continue
         kind, name = match.group(1), match.group(2)
         body = text[open_brace + 1 : close_brace]
+        layout_fields, method_signatures = _analyze_type_body(body)
         definitions.append(
             TypeDefinition(
                 kind=kind,
                 name=name,
                 path=path,
                 signature=normalize_type_signature(kind, name, body),
+                layout_fields=layout_fields,
+                method_signatures=method_signatures,
                 is_header=is_header,
             )
         )
@@ -2549,6 +2735,76 @@ def scan_match_type_definitions(match_root: Path = DEFAULT_MATCH_ROOT) -> list[T
     return definitions
 
 
+def _ranges_overlap(first: TypeLayoutField, second: TypeLayoutField) -> bool:
+    return first.offset < second.offset + second.width and second.offset < first.offset + first.width
+
+
+def _range_contains(outer: TypeLayoutField, inner: TypeLayoutField) -> bool:
+    return outer.offset <= inner.offset and inner.offset + inner.width <= outer.offset + outer.width
+
+
+def _storage_compatible(first: TypeLayoutField, second: TypeLayoutField) -> bool:
+    if first.storage == second.storage:
+        return True
+    if first.storage == "ptr" or second.storage == "ptr":
+        return False
+    return first.width == second.width
+
+
+def _layout_fields_conflict(
+    first_fields: tuple[TypeLayoutField, ...],
+    second_fields: tuple[TypeLayoutField, ...],
+) -> bool:
+    for first in first_fields:
+        for second in second_fields:
+            if not _ranges_overlap(first, second):
+                continue
+            if first.offset == second.offset and first.width == second.width:
+                if not _storage_compatible(first, second):
+                    return True
+                continue
+            if first.storage.startswith("type:") and _range_contains(first, second):
+                continue
+            if second.storage.startswith("type:") and _range_contains(second, first):
+                continue
+            return True
+    return False
+
+
+def _layout_definitions_conflict(first: TypeDefinition, second: TypeDefinition) -> bool:
+    if not first.layout_fields or not second.layout_fields:
+        return False
+    return _layout_fields_conflict(first.layout_fields, second.layout_fields)
+
+
+def _compatible_layout_groups(definitions: list[TypeDefinition]) -> list[list[TypeDefinition]]:
+    field_definitions = [definition for definition in definitions if definition.layout_fields]
+    groups: list[list[TypeDefinition]] = []
+    for definition in field_definitions:
+        for group in groups:
+            if all(not _layout_definitions_conflict(definition, member) for member in group):
+                group.append(definition)
+                break
+        else:
+            groups.append([definition])
+    return groups
+
+
+def _has_layout_conflict(
+    header_definitions: list[TypeDefinition],
+    scratch_definitions: list[TypeDefinition],
+) -> bool:
+    field_headers = [definition for definition in header_definitions if definition.layout_fields]
+    if not field_headers:
+        return False
+    for scratch in scratch_definitions:
+        if not scratch.layout_fields:
+            continue
+        if not any(not _layout_definitions_conflict(header, scratch) for header in field_headers):
+            return True
+    return False
+
+
 def type_consolidation_findings(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
@@ -2560,40 +2816,68 @@ def type_consolidation_findings(
     definitions = scan_match_type_definitions(match_root)
     by_name: dict[str, list[TypeDefinition]] = {}
     for definition in definitions:
-        by_name.setdefault(definition.name, []).append(definition)
+        by_name.setdefault(_canonical_type_name(definition.name), []).append(definition)
 
     findings: list[TypeConsolidationFinding] = []
-    for name, named_definitions in sorted(by_name.items()):
-        if names is not None and name not in names:
+    for canonical_name, named_definitions in sorted(by_name.items()):
+        aliases = {definition.name for definition in named_definitions}
+        if names is not None and canonical_name not in names and not aliases.intersection(names):
             continue
         scratch_definitions = [definition for definition in named_definitions if not definition.is_header]
         header_definitions = [definition for definition in named_definitions if definition.is_header]
         if len(scratch_definitions) < threshold and not header_definitions:
             continue
 
-        scratch_signatures = {definition.signature for definition in scratch_definitions}
+        scratch_layout_groups = _compatible_layout_groups(scratch_definitions)
+        layout_group_count = len(scratch_layout_groups)
         paths = tuple(sorted({definition.path for definition in named_definitions}))
         if header_definitions and scratch_definitions:
-            status = "covered"
-            recommendation = (
-                "header exists; consider replacing matching scratch-local copies with includes"
-            )
-        elif len(scratch_signatures) == 1 and len(scratch_definitions) >= threshold:
-            status = "ready"
-            recommendation = "same scratch-local definition appears repeatedly; consider a header"
-        elif len(scratch_signatures) > 1 and len(scratch_definitions) >= threshold:
+            header_layout_definitions = [
+                definition for definition in header_definitions if definition.layout_fields
+            ]
+            if not header_layout_definitions or layout_group_count == 0:
+                status = "unresolved-layout"
+                recommendation = "header or scratch definitions lack parsed fields; inspect manually"
+            elif _has_layout_conflict(header_definitions, scratch_definitions):
+                status = "header-conflict"
+                recommendation = (
+                    "header exists but at least one scratch field layout conflicts; inspect before including"
+                )
+            else:
+                status = "header-compatible"
+                recommendation = (
+                    "header layout is compatible with scratch-local field slices; replace copies deliberately"
+                )
+        elif layout_group_count == 0 and len(scratch_definitions) >= threshold:
+            status = "unresolved-layout"
+            recommendation = "definitions are method-only or lack parsed fields; inspect manually"
+        elif layout_group_count == 1 and len(scratch_definitions) >= threshold:
+            scratch_signatures = {definition.signature for definition in scratch_definitions}
+            if len(scratch_signatures) == 1:
+                status = "ready"
+                recommendation = "same scratch-local layout appears repeatedly; consider a header"
+            else:
+                status = "partial-compatible"
+                recommendation = (
+                    "scratch-local field slices are layout-compatible; consider one shared header or alias"
+                )
+        elif layout_group_count > 1 and len(scratch_definitions) >= threshold:
             status = "divergent"
-            recommendation = "same name has multiple scratch-local shapes; do not consolidate yet"
+            recommendation = "same name has incompatible field layouts; do not consolidate yet"
         else:
             continue
 
+        display_name = canonical_name
+        if aliases != {canonical_name}:
+            alias_text = ", ".join(sorted(aliases - {canonical_name}))
+            display_name = f"{canonical_name} (aliases: {alias_text})"
         findings.append(
             TypeConsolidationFinding(
-                name=name,
+                name=display_name,
                 status=status,
                 scratch_count=len(scratch_definitions),
                 header_count=len(header_definitions),
-                signature_count=len(scratch_signatures),
+                signature_count=layout_group_count,
                 paths=paths,
                 recommendation=recommendation,
             )
@@ -2602,14 +2886,17 @@ def type_consolidation_findings(
 
 
 TYPE_CONSOLIDATION_STATUS_ORDER = {
-    "divergent": 0,
-    "covered": 1,
-    "ready": 2,
+    "header-conflict": 0,
+    "divergent": 1,
+    "unresolved-layout": 2,
+    "header-compatible": 3,
+    "partial-compatible": 4,
+    "ready": 5,
 }
 
 
 def _type_consolidation_counts(findings: list[TypeConsolidationFinding]) -> dict[str, int]:
-    counts = {"ready": 0, "covered": 0, "divergent": 0}
+    counts = {status: 0 for status in TYPE_CONSOLIDATION_STATUS_ORDER}
     for finding in findings:
         counts[finding.status] = counts.get(finding.status, 0) + 1
     return counts
@@ -2626,10 +2913,14 @@ def _type_consolidation_sort_key(finding: TypeConsolidationFinding) -> tuple[int
 
 def _type_consolidation_console_summary(findings: list[TypeConsolidationFinding]) -> str:
     counts = _type_consolidation_counts(findings)
+    rendered_counts = ", ".join(
+        f"{counts[status]} {status}"
+        for status in TYPE_CONSOLIDATION_STATUS_ORDER
+        if counts.get(status, 0)
+    )
     return (
         "types: "
-        f"{counts['ready']} ready, {counts['covered']} covered, "
-        f"{counts['divergent']} divergent; "
+        f"{rendered_counts or '0 findings'}; "
         "run `uv run snail match types --paths` for details"
     )
 
@@ -2659,13 +2950,13 @@ def render_type_consolidation_markdown(
         return lines
 
     counts = _type_consolidation_counts(findings)
+    for status in TYPE_CONSOLIDATION_STATUS_ORDER:
+        if counts.get(status, 0):
+            lines.append(f"- {status}: {counts[status]} type name(s)")
     lines.extend(
         [
-            f"- ready: {counts['ready']} type name(s)",
-            f"- covered: {counts['covered']} type name(s) with a header plus scratch-local copies",
-            f"- divergent: {counts['divergent']} type name(s) with multiple scratch-local shapes",
             "",
-            "| status | type | scratch | header | signatures | recommendation |",
+            "| status | type | scratch | header | layouts | recommendation |",
             "|---|---|---:|---:|---:|---|",
         ]
     )

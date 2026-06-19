@@ -726,89 +726,89 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ready: 10 type name(s)
-- covered: 44 type name(s) with a header plus scratch-local copies
-- divergent: 26 type name(s) with multiple scratch-local shapes
+- header-conflict: 3 type name(s)
+- unresolved-layout: 31 type name(s)
+- header-compatible: 18 type name(s)
+- partial-compatible: 20 type name(s)
+- ready: 6 type name(s)
 
-| status | type | scratch | header | signatures | recommendation |
+| status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
-| divergent | Vec3 | 9 | 0 | 8 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Direct3DDevice8Vtbl | 8 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GameRoot | 6 | 0 | 6 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ObjectVertexBufferVtbl | 5 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | RuntimeSlot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BlinkRandomTable | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | VertexBufferVtbl | 3 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | BorderRuntime | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GalaxyRouteNameRecord | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Rect | 3 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ActiveBod | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | AppShell | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Axis | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | CachedXMeshBank | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GameRuntime | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | IntroScreen | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ProgressBar | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | ScoreStats | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | Twinkle | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | TwinkleManager | 2 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
-| covered | Game | 42 | 1 | 42 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AttachmentPathTemplate | 31 | 1 | 24 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | GalaxyRoute | 9 | 1 | 9 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | BorderManager | 9 | 3 | 6 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FrontendWidget | 8 | 1 | 8 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Player | 7 | 1 | 7 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Direct3DDevice8 | 4 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FrontendFade | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | MouseCursorState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | VoiceManager | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | PlayerPresentationController | 3 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AttachmentSample | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | LevelDefinitionLoader | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TooltipState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | AudioBackend | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Backdrop | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | BodList | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | CutsceneAI | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | DamageGaugeController | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | GolbPathBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | HelpScreen | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | HighScoreBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | InputOkState | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | LandscapeScriptBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | ObjectList | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | OptionsMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | PauseMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | PlayerControlSource | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SaltHazardPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | Sprite | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | StarField | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | SubLazerPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TimerCounters | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TipManager | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | TrackParcelPool | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | WarningActor | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
-| ready | PathTemplateSample | 17 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | PathAttachmentSample | 8 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | PathTemplateFaceQuad | 8 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | TimeTrialStringFormatter | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | VertexBuffer | 3 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | IntroRenderableSlot | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | IntroScreenRuntime | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | LoadingVertex | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | LogoRuntime | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
-| ready | RendererState | 2 | 0 | 1 | same scratch-local definition appears repeatedly; consider a header |
+| header-conflict | Game | 42 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
+| header-conflict | FrontendWidget | 8 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
+| header-conflict | GolbShot | 2 | 1 | 1 | header exists but at least one scratch field layout conflicts; inspect before including |
+| unresolved-layout | GalaxyRoute | 9 | 1 | 3 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | BorderManager | 9 | 3 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | Direct3DDevice8Vtbl | 8 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | ObjectVertexBufferVtbl | 5 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | RuntimeCallback | 4 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | MouseCursorState | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | SoundEffectManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | VertexBufferVtbl | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | VoiceManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | IntroScreen | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | Backdrop | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | HelpScreen | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | InputOkState | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | MainMenu | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | ObjectList | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | OptionsMenu | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | AttachmentSample (aliases: PathAttachmentSample, PathTemplateSample) | 27 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | Vector3 (aliases: Vec3) | 9 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | FrontendFade | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | HighScoreScreen | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | BodList | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | CutsceneAI | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | NewGameMenu | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | PauseMenu | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | PlayerControlSource | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| partial-compatible | LoadingScreen | 7 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | GameRoot | 6 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Quaternion | 5 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | GalaxyRouteRecord | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | RuntimeSlot | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | SlugVoiceManager | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | BlinkRandomTable | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | GalaxyRouteNameRecord | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Rect | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | ActiveBod | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Axis | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | CachedXMeshBank | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | GameRuntime | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | ProgressBar | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | ScoreStats | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Twinkle | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | TwinkleManager | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| ready | PathTemplateFaceQuad | 8 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
+| ready | VertexBuffer | 3 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
+| ready | IntroRenderableSlot | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
+| ready | IntroScreenRuntime | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
+| ready | LoadingVertex | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |
+| ready | RendererState | 2 | 0 | 1 | same scratch-local layout appears repeatedly; consider a header |

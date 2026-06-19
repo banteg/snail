@@ -861,7 +861,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                             "status": finding.status,
                             "scratch_count": finding.scratch_count,
                             "header_count": finding.header_count,
-                            "signature_count": finding.signature_count,
+                            "layout_count": finding.signature_count,
                             "recommendation": finding.recommendation,
                             "paths": [str(path) for path in finding.paths],
                         }
@@ -879,7 +879,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(
                 f"{finding.status:9} {finding.name}: "
                 f"{finding.scratch_count} scratch, {finding.header_count} header, "
-                f"{finding.signature_count} scratch signature(s) - {finding.recommendation}"
+                f"{finding.signature_count} layout group(s) - {finding.recommendation}"
             )
             if args.paths:
                 for path in finding.paths:

@@ -801,10 +801,21 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
     (scratches / "b" / "scratch.cpp").write_text("struct Shared { int x; };\n")
     (scratches / "c" / "scratch.cpp").write_text("struct Divergent { int x; };\n")
     (scratches / "d").mkdir()
-    (scratches / "d" / "scratch.cpp").write_text("struct Divergent { float x; };\n")
+    (scratches / "d" / "scratch.cpp").write_text("struct Divergent { short x; };\n")
     (include_dir / "covered.h").write_text("struct Covered { int x; };\n")
     (scratches / "e").mkdir()
     (scratches / "e" / "scratch.cpp").write_text("struct Covered { int x; };\n")
+    (include_dir / "conflict.h").write_text("struct HeaderConflict { int x; };\n")
+    (scratches / "f").mkdir()
+    (scratches / "f" / "scratch.cpp").write_text("struct HeaderConflict { short x; };\n")
+    (scratches / "g").mkdir()
+    (scratches / "h").mkdir()
+    (scratches / "g" / "scratch.cpp").write_text("struct MethodOnly { int x; };\n")
+    (scratches / "h" / "scratch.cpp").write_text("struct MethodOnly { void tick(); };\n")
+    (scratches / "i").mkdir()
+    (scratches / "j").mkdir()
+    (scratches / "i" / "scratch.cpp").write_text("struct BitView { int x_bits; };\n")
+    (scratches / "j" / "scratch.cpp").write_text("struct BitView { float x; };\n")
 
     definitions = find_type_definitions(scratches / "a" / "scratch.cpp")
     assert [(definition.kind, definition.name) for definition in definitions] == [
@@ -814,7 +825,10 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
     findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
     assert findings["Shared"].status == "ready"
     assert findings["Divergent"].status == "divergent"
-    assert findings["Covered"].status == "covered"
+    assert findings["Covered"].status == "header-compatible"
+    assert findings["HeaderConflict"].status == "header-conflict"
+    assert findings["MethodOnly"].status == "partial-compatible"
+    assert findings["BitView"].status == "partial-compatible"
 
     filtered = type_consolidation_findings(match_root, names={"Shared", "Missing"})
     assert [finding.name for finding in filtered] == ["Shared"]
@@ -1076,12 +1090,12 @@ def test_render_status_outputs_type_consolidation_summary() -> None:
         ),
         TypeConsolidationFinding(
             name="Player",
-            status="covered",
+            status="header-compatible",
             scratch_count=4,
             header_count=1,
             signature_count=2,
             paths=(),
-            recommendation="header exists; consider replacing matching scratch-local copies with includes",
+            recommendation="header layout is compatible with scratch-local field slices; replace copies deliberately",
         ),
         TypeConsolidationFinding(
             name="BodNode",
@@ -1107,12 +1121,13 @@ def test_render_status_outputs_type_consolidation_summary() -> None:
     )
 
     status_table = render_status_table([status], totals, type_findings=findings)
-    assert "types: 1 ready, 1 covered, 8 divergent" in status_table
+    assert "types: 8 divergent, 1 header-compatible, 1 ready" in status_table
 
     markdown = render_status_markdown([status], totals, type_findings=findings)
     assert "## Type Consolidation" in markdown
     assert "| divergent | Game | 5 | 0 | 3 |" in markdown
     assert "| divergent | GameVariant6 | 2 | 0 | 2 |" in markdown
+    assert "| header-compatible | Player | 4 | 1 | 2 |" in markdown
     assert "more divergent finding(s)" not in markdown
     assert "`uv run snail match types --paths`" in markdown
 
