@@ -178,6 +178,14 @@
       "description": "Reapplies the renderer's baseline Direct3D render states after device creation or reset."
     },
     {
+      "address": "0x411d54",
+      "name": "initialize_game_window_resolution_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x14",
+      "description": "Compiler-emitted switch jump table selecting the configured 4:3 window resolution in initialize_game_window_and_input."
+    },
+    {
       "address": "0x412e18",
       "name": "set_blend_mode_jump_table",
       "kind": "jump_table",
@@ -292,6 +300,16 @@
       "description": "Loading-screen progress state initialized by initialize_loading_screen and ticked during archive/object build loading passes."
     },
     {
+      "address": "0x50327c",
+      "name": "g_module_instance",
+      "kind": "global",
+      "aliases": [
+        "data_50327c"
+      ],
+      "size": "0x4",
+      "description": "Application instance handle cached during game window/input initialization and passed to Win32 window creation APIs."
+    },
+    {
       "address": "0x4df9c4",
       "name": "g_last_loading_budget",
       "kind": "global",
@@ -300,6 +318,46 @@
       ],
       "size": "0x4",
       "description": "Last measured loading-screen budget preserved by destroy_loading_screen for the next loader pass."
+    },
+    {
+      "address": "0x4df9c8",
+      "name": "g_config_reserved_b0",
+      "kind": "global",
+      "aliases": [
+        "data_4df9c8"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg float at blob offset 0xb0; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df9cc",
+      "name": "g_config_reserved_b4",
+      "kind": "global",
+      "aliases": [
+        "data_4df9cc"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg float at blob offset 0xb4; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df9d0",
+      "name": "g_config_reserved_b8",
+      "kind": "global",
+      "aliases": [
+        "data_4df9d0"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg float at blob offset 0xb8; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df9d4",
+      "name": "g_config_reserved_bc",
+      "kind": "global",
+      "aliases": [
+        "data_4df9d4"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg float at blob offset 0xbc; initialized with the default config block but no current gameplay consumer has been recovered."
     },
     {
       "address": "0x503280",
@@ -2084,6 +2142,16 @@
       "description": "Left mouse button latch array cleared by read_left_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4b776c",
+      "name": "g_controller_count_view",
+      "kind": "global",
+      "aliases": [
+        "data_4b776c"
+      ],
+      "size": "0x4",
+      "description": "Controller count output storage passed to enumerate_input_controllers during game window/input initialization."
+    },
+    {
       "address": "0x4b7790",
       "name": "g_texture_refs",
       "kind": "global",
@@ -2223,6 +2291,46 @@
       "description": "Saved fullscreen config flag toggled by the options menu and consumed during startup/window setup."
     },
     {
+      "address": "0x4df924",
+      "name": "g_config_reserved_0c",
+      "kind": "global",
+      "aliases": [
+        "data_4df924"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x0c; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df928",
+      "name": "g_config_reserved_10",
+      "kind": "global",
+      "aliases": [
+        "data_4df928"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x10; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df92c",
+      "name": "g_config_reserved_14",
+      "kind": "global",
+      "aliases": [
+        "data_4df92c"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x14; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df930",
+      "name": "g_config_reserved_18",
+      "kind": "global",
+      "aliases": [
+        "data_4df930"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x18; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
       "address": "0x4df934",
       "name": "g_render_flags",
       "kind": "global",
@@ -2235,6 +2343,35 @@
       "description": "Shared render-effect flags byte whose 0x20 bit gates fringe and particle rendering."
     },
     {
+      "address": "0x4df938",
+      "name": "g_config_validation_tail_start",
+      "kind": "global",
+      "aliases": [
+        "data_4df938"
+      ],
+      "description": "Start byte of the loaded config tail passed to the legacy validation stub after SnailMail.cfg is loaded."
+    },
+    {
+      "address": "0x4df949",
+      "name": "g_config_load_valid_flag",
+      "kind": "global",
+      "aliases": [
+        "data_4df949"
+      ],
+      "size": "0x1",
+      "description": "Config-load validity flag initialized to true and rewritten from validate_config_tail_stub after SnailMail.cfg is loaded."
+    },
+    {
+      "address": "0x4df94c",
+      "name": "g_config_display_mode_index",
+      "kind": "global",
+      "aliases": [
+        "data_4df94c"
+      ],
+      "size": "0x4",
+      "description": "Saved display-mode preset index used by initialize_game_window_and_input to select 320x240, 640x480, 800x600, 1024x768, or 1600x1200."
+    },
+    {
       "address": "0x4df950",
       "name": "g_steering_sensitivity",
       "kind": "global",
@@ -2242,6 +2379,7 @@
         "data_4df950",
         "flt_4df950"
       ],
+      "size": "0x8",
       "description": "Steering sensitivity lookup table consumed by update_subgoldy based on the live steering selector."
     },
     {
@@ -2256,6 +2394,16 @@
       "description": "Challenge setup slider source copied into the subgame and used by initialize_completion_screen as the x-axis completion bonus input."
     },
     {
+      "address": "0x4df95c",
+      "name": "g_config_default_challenge_speed_slider",
+      "kind": "global",
+      "aliases": [
+        "data_4df95c"
+      ],
+      "size": "0x4",
+      "description": "Saved default challenge speed slider scalar used by build_subgame_level when challenge setup does not supply a live x-source value."
+    },
+    {
       "address": "0x4df960",
       "name": "g_completion_bonus_y_source",
       "kind": "global",
@@ -2265,6 +2413,66 @@
       ],
       "size": "0x4",
       "description": "Challenge setup slider source copied into the subgame and used by initialize_completion_screen as the y-axis completion bonus input."
+    },
+    {
+      "address": "0x4df964",
+      "name": "g_config_reserved_4c",
+      "kind": "global",
+      "aliases": [
+        "data_4df964"
+      ],
+      "size": "0x1",
+      "description": "Saved SnailMail.cfg byte at blob offset 0x4c; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df965",
+      "name": "g_config_reserved_4d",
+      "kind": "global",
+      "aliases": [
+        "data_4df965"
+      ],
+      "size": "0x1",
+      "description": "Saved SnailMail.cfg byte at blob offset 0x4d; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df968",
+      "name": "g_config_reserved_50",
+      "kind": "global",
+      "aliases": [
+        "data_4df968"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x50; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df96c",
+      "name": "g_config_reserved_54",
+      "kind": "global",
+      "aliases": [
+        "data_4df96c"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x54; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df970",
+      "name": "g_config_reserved_58",
+      "kind": "global",
+      "aliases": [
+        "data_4df970"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x58; initialized with the default config block but no current gameplay consumer has been recovered."
+    },
+    {
+      "address": "0x4df974",
+      "name": "g_config_reserved_5c",
+      "kind": "global",
+      "aliases": [
+        "data_4df974"
+      ],
+      "size": "0x4",
+      "description": "Saved SnailMail.cfg dword at blob offset 0x5c; initialized with the default config block but no current gameplay consumer has been recovered."
     },
     {
       "address": "0x4df978",
@@ -2356,6 +2564,16 @@
         "data_4dfadc"
       ],
       "description": "BOD constructor counter incremented by initialize_bod."
+    },
+    {
+      "address": "0x4dfaec",
+      "name": "g_main_window_dc",
+      "kind": "global",
+      "aliases": [
+        "data_4dfaec"
+      ],
+      "size": "0x4",
+      "description": "Main window device-context handle captured by initialize_game_window_and_input before renderer creation."
     },
     {
       "address": "0x4dfaf0",

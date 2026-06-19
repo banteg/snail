@@ -19,10 +19,13 @@ body and candidate body match instruction-for-instruction after the jump/padding
 stub.
 
 The scratch deliberately keeps the startup stub unmatched instead of using a
-naked/asm shim or fake prologue. Several config slots remain as raw `data_`
-globals until their meanings are recovered from consumers.
+naked/asm shim or fake prologue. The saved `SnailMail.cfg` blob slots now have
+curated references when their consumers are known; fields with no recovered
+consumer are named as explicit reserved config offsets instead of anonymous
+`data_` globals.
 
 Current retained Wibo result: 85.71%, 48 target instructions vs 36 candidate
 instructions. The missing 12 instructions are the leading `jmp` plus padding.
-Masked operand audit noise is from unrecovered config-slot names and three
-neighboring globals whose current reference aliases point at adjacent fields.
+Focused matcher now reports 32 clean masked operands, 0 unresolved, and 0
+mismatched. The config-tail validation helper at `0x42f5b0` is recovered as
+`validate_config_tail_stub`; it ignores its argument and returns true.

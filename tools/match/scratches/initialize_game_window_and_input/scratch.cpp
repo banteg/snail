@@ -81,7 +81,7 @@ extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND hwnd);
 extern "C" __declspec(dllimport) BOOL __stdcall EndDialog(HWND dialog, int result);
 
 extern unsigned int g_render_flags; // data_4df934
-extern int data_4df94c;
+extern int g_config_display_mode_index;
 extern HINSTANCE g_module_instance; // data_50327c
 extern HWND g_main_window; // data_4dfaf0
 extern HDC g_main_window_dc; // data_4dfaec
@@ -107,7 +107,7 @@ int initialize_game_window_and_input(char* window_name)
     int height;
     int authored_width;
 
-    switch (data_4df94c) {
+    switch (g_config_display_mode_index) {
     case 0:
         width = 320;
         height = 240;
@@ -131,7 +131,7 @@ int initialize_game_window_and_input(char* window_name)
         authored_width = 1600;
         break;
     default:
-        data_4df94c = 1;
+        g_config_display_mode_index = 1;
 use_640x480:
         width = 640;
         height = 480;

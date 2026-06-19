@@ -640,6 +640,11 @@
       "name": "initialize_d3d8_device"
     },
     {
+      "address": "0x4119c0",
+      "name": "initialize_game_window_and_input_wrapper",
+      "description": "Small cdecl wrapper used by startup to forward the SnailMail window title to the window/input initializer body."
+    },
+    {
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
@@ -1270,6 +1275,11 @@
     {
       "address": "0x42f540",
       "name": "save_config_file"
+    },
+    {
+      "address": "0x42f5b0",
+      "name": "validate_config_tail_stub",
+      "description": "Legacy config-tail validation helper called after SnailMail.cfg is loaded; this build ignores the tail pointer and returns true."
     },
     {
       "address": "0x42f5c0",

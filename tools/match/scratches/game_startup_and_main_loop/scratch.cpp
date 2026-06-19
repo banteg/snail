@@ -47,7 +47,7 @@ extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
 extern char* g_game_base;                    // data_4df904
 extern char g_config_fullscreen_enabled;     // data_4df920
-extern unsigned char data_4df949;
+extern unsigned char g_config_load_valid_flag;
 extern int g_application_instance;           // data_4dfad8
 extern HWND g_main_window;                   // data_4dfaf0
 extern unsigned char data_4df864;
@@ -66,14 +66,14 @@ extern float data_4b7638;
 extern float data_4b7768;
 
 extern unsigned char data_4df918;
-extern unsigned char data_4df938;
+extern unsigned char g_config_validation_tail_start;
 extern int data_4df858;
 extern int data_4b775c;
 extern unsigned char data_753c70;
 extern AudioBackend g_audio_backend; // data_753c58
 
 int query_runtime_capability(); // @ 0x44afc0
-char sub_42f5b0(void* config_tail); // @ 0x42f5b0
+char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
 void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
@@ -85,7 +85,7 @@ int probe_display_mode_count(); // @ 0x407880
 int read_current_display_resolution(void* width, void* height); // @ 0x4078b0
 int log_startup_timestamp(); // @ 0x406d30
 char initialize_audio_subsystem(); // @ 0x407a10
-int initialize_game_window_and_input(char* window_name); // @ 0x4119d0
+int initialize_game_window_and_input_wrapper(char* window_name); // @ 0x4119c0
 int noop_runtime_ai(); // @ 0x407b50
 int set_fullscreen_mode(int enabled); // @ 0x414260
 int sub_406d70(); // @ 0x406d70
@@ -126,7 +126,7 @@ int __stdcall game_startup_and_main_loop(
 
     rebuild_game_archive_if_needed();
     load_config_file("SnailMail.cfg", &data_4df918);
-    data_4df949 = sub_42f5b0(&data_4df938);
+    g_config_load_valid_flag = validate_config_tail_stub(&g_config_validation_tail_start);
     g_application_instance = hInstance;
     initialize_trigonometry_tables();
 
@@ -156,7 +156,7 @@ int __stdcall game_startup_and_main_loop(
 
         if (data_4df90c != 0) {
             initialize_audio_subsystem();
-            initialize_game_window_and_input("SnailMail");
+            initialize_game_window_and_input_wrapper("SnailMail");
             noop_runtime_ai();
             set_fullscreen_mode(g_config_fullscreen_enabled);
             sub_406d70();

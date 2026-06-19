@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**448/688** mapped gameplay functions matched, **688/688** mapped gameplay functions have a scratch, **52771/325871** bytes (**16.19%**) are proof-grade, and overall fuzzy is **52.41%**.
+**450/690** mapped gameplay functions matched, **690/690** mapped gameplay functions have a scratch, **52771/325842** bytes (**16.20%**) are proof-grade, and overall fuzzy is **52.41%**.
 
-## Proof Grade (448)
+## Proof Grade (450)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -107,6 +107,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | draw_split_backdrop | 0x410f90 | 172 | 50/50 | 100.00% | 50/50 | 4 ok |  |
 | ✅ | direct3d_renderer_set_cull_mode | 0x411700 | 46 | 16/16 | 100.00% | 16/16 | - |  |
+| ✅ | initialize_game_window_and_input_wrapper | 0x4119c0 | 14 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | uninitialize_input_devices | 0x411d80 | 20 | 4/4 | 100.00% | 4/4 | 4 ok |  |
 | ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
 | ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
@@ -162,7 +163,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | compute_kind42_attachment_transform | 0x42b920 | 146 | 48/48 | 100.00% | 48/48 | 8 ok |  |
 | ✅ | load_config_file | 0x42f470 | 23 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | load_file_bytes_from_path | 0x42f490 | 169 | 59/59 | 100.00% | 59/59 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| ✅ | save_config_file | 0x42f540 | 115 | 31/31 | 100.00% | 31/31 | 5 ok |  |
+| ✅ | save_config_file | 0x42f540 | 98 | 31/31 | 100.00% | 31/31 | 5 ok |  |
+| ✅ | validate_config_tail_stub | 0x42f5b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | is_bod_after_sprites | 0x42f5c0 | 8 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_bod_object | 0x42f5d0 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 5 ok |  |
@@ -478,7 +480,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 87.87% | 5/218 | 23 ok |  |
-| 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 19 unresolved, 13 ok |  |
+| 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 137/141 | 89.21% | 4/141 | 1 mismatch, 2 unresolved, 36 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1266 | 287/310 | 80.40% | 0/310 | 4 unresolved, 111 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 85.56% | 12/192 | 2 mismatch, 24 ok |  |
@@ -542,7 +544,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 3 unresolved, 42 ok |  |
-| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 4 mismatch, 35 unresolved, 91 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 4 mismatch, 31 unresolved, 95 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 77.94% | 38/233 | 2 unresolved, 38 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_game_input | 0x40aab0 | 71 | 30/30 | 63.33% | 4/30 | 3 ok |  |
@@ -551,7 +553,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 50.70% | 3/73 | 14 ok |  |
 | 🚧 | change_backdrop | 0x410d50 | 111 | 38/34 | 63.89% | 2/34 | - |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 66/67 | 72.18% | 0/67 | 6 ok |  |
-| 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 264/287 | 79.85% | 6/287 | 8 unresolved, 42 ok |  |
+| 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 264/287 | 79.85% | 6/287 | 1 mismatch, 49 ok |  |
 | 🚧 | render_camera | 0x411fa0 | 685 | 182/180 | 70.17% | 0/180 | 1 mismatch, 34 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 135/139 | 59.85% | 7/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |

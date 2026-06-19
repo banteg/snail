@@ -2,7 +2,8 @@
 
 Initial recovery for the Win32 window/input startup helper.
 
-- Picks one of the recovered 4:3 resolution presets from `data_4df94c`,
+- Picks one of the recovered 4:3 resolution presets from
+  `g_config_display_mode_index`,
   defaulting back to 640x480 when the setting is out of range.
 - Registers `"SnailMailWindowClass"` with `game_window_proc`, then creates the
   main window, initializes the renderer, keyboard, controllers, and mouse, and
@@ -12,7 +13,18 @@ Initial recovery for the Win32 window/input startup helper.
   the extra push is part of this caller's native shape.
 
 Focused match result: 79.85% (`287` target instructions, `264` candidate
-instructions), with `42` masked operands resolved and `8` still unresolved.
+instructions), with `49` masked operands resolved, `0` unresolved, and `1`
+masked mismatch.
+
+2026-06-20 startup/window symbol pass:
+
+- `g_config_display_mode_index`, `g_module_instance`, `g_main_window_dc`, and
+  `g_controller_count_view` are now curated references backed by this function's
+  direct consumers.
+- The resolution switch table at `0x411d54` is named as
+  `initialize_game_window_resolution_jump_table`. The remaining masked mismatch
+  is only the candidate compiler label for that jump table; do not clear it with
+  a scratch-local `$L...` alias.
 
 Remaining gaps are mostly code-layout shape rather than unknown behavior:
 
