@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**444/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **52.30%**.
+**445/687** mapped gameplay functions matched, **687/687** mapped gameplay functions have a scratch, **51547/325882** bytes (**15.82%**) are proof-grade, and overall fuzzy is **52.30%**.
 
-## Proof Grade (444)
+## Proof Grade (445)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -134,6 +134,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_high_score_tables | 0x417540 | 155 | 58/58 | 100.00% | 58/58 | 4 ok |  |
 | ✅ | load_high_scores_from_file | 0x4175e0 | 184 | 71/71 | 100.00% | 71/71 | 4 ok |  |
 | ✅ | save_high_scores_and_config | 0x417940 | 297 | 101/101 | 100.00% | 101/101 | 19 ok |  |
+| ✅ | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 100.00% | 40/40 | 3 ok |  |
 | ✅ | exit_high_score_screen | 0x417b50 | 104 | 23/23 | 100.00% | 23/23 | 6 ok |  |
 | ✅ | initialize_new_game_menu | 0x417bc0 | 739 | 182/182 | 100.00% | 182/182 | 48 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
@@ -453,7 +454,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (12)
+## Near Match (95-99.99%) (11)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -463,7 +464,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_galaxy | 0x408cf0 | 1523 | 336/338 | 97.92% | 113/338 | 74 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1284 | 334/332 | 97.60% | 111/332 | 1 unresolved, 24 ok |  |
-| 🚧 | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 97.50% | 26/40 | 3 ok |  |
 | 🚧 | read_pressed_text_input_key_code | 0x432440 | 915 | 336/338 | 99.41% | 326/338 | 55 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 98.86% | 386/440 | 73 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |

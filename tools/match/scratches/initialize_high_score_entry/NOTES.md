@@ -10,12 +10,9 @@ Recovered layout corrections:
 - replay records start at `+0x70`, are 21600 six-byte entries, and have their
   per-entry `lateral_x`, `delta_z`, flags, and reserved byte fields.
 
-2026-06-18 post-name-copy scheduling:
+2026-06-19 post-name-copy ordering:
 
-- The focused Wibo diff is 97.50%, with the exact prefix extended to 26/40.
-- The only remaining residual is one store-order swap after
-  `rstrcpy_checked_ascii`: native clears `active` before storing
-  `runtime_build_flags`, while VC6 keeps the flags store first.
-  Snapshot-local and alternate store-order variants did not remove that swap
-  cleanly, so leave it as scheduling debt rather than forcing it with barriers
-  or raw offset writes.
+- Exact match. Spelling the post-`rstrcpy_checked_ascii` stores in native order
+  (`active = 0` before `runtime_build_flags = runtime_build_flags_value`) keeps
+  the existing argument reload shape and removes the last one-instruction store
+  swap without barriers, raw offset writes, or dummy temporaries.
