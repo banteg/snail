@@ -46,7 +46,7 @@ public:
     float sub_lazer_kill_plane_z; // +0x3be0e4
 };
 
-extern Game* volatile g_game; // data_4df904
+extern char* g_game_base; // data_4df904
 extern char g_debug_report_arg[];
 int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
@@ -57,8 +57,7 @@ void SubLazerSlot::update_sub_lazer_projectile()
         return;
     switch (state) {
     case 2: {
-        Game* game = g_game;
-        SubLazerListAnchor* anchor = &game->sub_lazer_free_anchor;
+        SubLazerListAnchor* anchor = (SubLazerListAnchor*)(g_game_base + 0x5a8);
         int flags = list_flags;
         BodNode* next;
         BodNode* prev;
@@ -96,22 +95,24 @@ void SubLazerSlot::update_sub_lazer_projectile()
             state = 2;
             return;
         }
-        position.x = velocity.x + position.x;
-        position.y = velocity.y + position.y;
-        position.z = velocity.z + position.z;
+        Vector3* live_position = &position;
+        live_position->x = velocity.x + live_position->x;
+        live_position->y = velocity.y + live_position->y;
+        float* live_z = &live_position->z;
+        *live_z = velocity.z + *live_z;
         if (position.y >= 0.0f && position.z >= owner_game->sub_lazer_kill_plane_z) {
-            GridCell* grid = g_game->track_runtime.get_track_grid_cell_at_world_position(&position);
-            RuntimeTrackCell* cell = g_game->track_runtime.get_track_runtime_cell_at_world_z(&position);
-            if (grid->tile != 14 || position.y >= 0.0f) {
+            GridCell* grid = ((Game*)g_game_base)->track_runtime.get_track_grid_cell_at_world_position(live_position);
+            RuntimeTrackCell* cell = ((Game*)g_game_base)->track_runtime.get_track_runtime_cell_at_world_z(live_position);
+            if (grid->tile != 14 || position.y >= 7.0f) {
                 if ((cell->flags & 0x40) == 0
                     || !cell->primary_attachment->body->is_point_inside_track_attachment(
-                        Vector3(velocity.x + position.x, velocity.y + position.y, velocity.z + position.z),
+                        Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
                         Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
                         (RuntimeTrackCellRef*)cell->primary_attachment)) {
                     if ((cell->flags & 0x80) == 0)
                         return;
                     if (!cell->secondary_attachment->body->is_point_inside_track_attachment(
-                            Vector3(velocity.x + position.x, velocity.y + position.y, velocity.z + position.z),
+                            Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
                             Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
                             (RuntimeTrackCellRef*)cell->secondary_attachment))
                         return;

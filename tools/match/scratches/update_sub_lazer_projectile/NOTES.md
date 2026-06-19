@@ -1,7 +1,8 @@
 # update_sub_lazer_projectile @ 0x4417d0
 
-Pinned at `48.39%`, `216/218` target instructions, masked operands
-`17 ok / 0 mismatch`.
+Current best is `81.11%`, `216/218` candidate/target instructions, masked
+operands `23 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
+with `17 ok / 0 mismatch`.
 
 2026-06-16 vtable correction: this is the sub-lazer projectile updater, not
 the salt hazard updater. `initialize_sub_lazer_runtime` installs vtable
@@ -49,3 +50,28 @@ state-2 residual now mirrors `deactivate_sub_lazer_projectile`: native forms
 the anchor pointer at `game+0x5a8`, while the candidate folds accesses through
 the game base. The broader state-1 residual remains the prior velocity/bob
 phase/probe scheduling around the attachment checks.
+
+2026-06-19 raw game-base and live-position shape: matching the exact
+`deactivate_sub_lazer_projectile` anchor form with `char* g_game_base` and an
+explicit `(SubLazerListAnchor*)(g_game_base + 0x5a8)` lifts the focused score
+from the staged `52.66%` to `63.13%`. The same raw base is also the better
+shape for the track-runtime calls at `g_game_base+0x74618`. The grid guard is
+`grid->tile != 14 || position.y >= 7.0f`; the old `>= 0.0f` spelling was a real
+semantic error and fixing it clears the remaining masked operand mismatch.
+
+State-1 codegen improves when the integrated position is kept through a
+`Vector3* live_position`, while the post-integrate bounds checks reload the
+member slots as `position.y`/`position.z`. Taking a temporary z-slot pointer
+only for the assignment (`*live_z = velocity.z + *live_z`) preserves the native
+`velocity.z`-then-position add order without leaving an x87 cleanup tail. This
+raises the focused match to `81.11%`, `216/218` candidate/target instructions,
+with `23 ok / 0 unresolved / 0 mismatch` masked operands.
+
+Rejected experiments: an explicit pause-byte local regressed to `78.34%` and
+changed the y-lane integration order; named primary/secondary `Vector3` locals
+regressed to `73.27%` by precomputing both vectors too early; splitting the
+primary/secondary attachment branches inflated the candidate to `260`
+instructions and dropped the match to `66.11%`. The remaining residual is
+therefore mostly zero-register scheduling in the inlined state-2 removal and
+the by-value `Vector3` spill order around `is_point_inside_track_attachment`,
+not a known semantic gap.
