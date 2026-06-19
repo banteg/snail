@@ -19,3 +19,9 @@ declaration plus `g_archive_file` and typed `ArchiveIndex* g_archive_index_recor
 externs. Removing duplicate local externs from the archive-index consumers is
 codegen-neutral for the focused archive scratches; `load_archive_index` remains
 92.54% with the same store/stack-cleanup residual.
+
+2026-06-20 install-store retry: a typed `ArchiveIndex* installed_records`
+temporary and a raw integer base temporary both preserve the 92.54% object.
+Neither source shape moves VC6's `mov eax, esi` before stack cleanup or the
+global store, reinforcing that the residual is local scheduling rather than the
+source-level alias used for `g_archive_index_records`.

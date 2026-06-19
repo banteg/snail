@@ -33,3 +33,7 @@ Residual:
   That rules out the saved global alias as the reason for the early `path` load;
   the remaining residual is specifically VC6's branch-invariant path reload
   scheduling.
+- 2026-06-20 audio-family retry: forcing `source_path` into a `register` local
+  is codegen-neutral at 93.07%. Duplicating the shared store/count/error tail
+  inside both backend-load arms regresses to 42.11% by emitting real duplicate
+  tail code, so the single shared tail is the durable source shape.
