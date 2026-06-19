@@ -1114,8 +1114,11 @@ def _reference_status(
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
         target_keys = reference_key_options(target)
         candidate_keys = reference_key_options(candidate)
-        if target_keys & candidate_keys:
-            return True
+        return bool(target_keys & candidate_keys)
+
+    def is_unverified_local_jump_table(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
         return (
             target.text.startswith("jump_table:")
             and candidate.source == "reloc"
@@ -1136,7 +1139,15 @@ def _reference_status(
         and all_explained
     ):
         return "ok"
-    if not all_explained or any(not keys for keys in (*target_keys, *candidate_keys)):
+    has_unverified_jump_table = any(
+        is_unverified_local_jump_table(target, candidate)
+        for target, candidate in zip(target_references, candidate_references)
+    )
+    if (
+        not all_explained
+        or any(not keys for keys in (*target_keys, *candidate_keys))
+        or has_unverified_jump_table
+    ):
         return "unresolved"
     return "mismatch"
 

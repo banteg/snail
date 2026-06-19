@@ -447,7 +447,7 @@ def test_masked_operand_audit_accepts_reference_symbol_aliases() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
-def test_masked_operand_audit_accepts_local_jump_table_label() -> None:
+def test_masked_operand_audit_leaves_local_jump_table_label_unresolved() -> None:
     # target: jmp dword [eax*4+0x402000]; candidate: same shape through a
     # compiler-local switch-table label. VC6 may renumber that local label after
     # unrelated source/header changes.
@@ -483,9 +483,11 @@ def test_masked_operand_audit_accepts_local_jump_table_label() -> None:
         ),
     )
     assert result.ratio == 1.0
-    assert result.masked_operand_audit.ok_count == 1
-    assert result.masked_operand_audit.problem_count == 0
+    assert result.masked_operand_audit.ok_count == 0
+    assert result.masked_operand_audit.unresolved_count == 1
+    assert result.masked_operand_audit.problem_count == 1
     entry = result.masked_operand_audit.entries[0]
+    assert entry.status == "unresolved"
     assert entry.target_references[0].text == "jump_table:foo_jump_table@0x402000"
     assert entry.candidate_references[0].text == "sym:$L123"
 
