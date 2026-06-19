@@ -482,7 +482,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 87.87% | 5/218 | 23 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 137/141 | 89.21% | 4/141 | 1 mismatch, 2 unresolved, 36 ok |  |
-| 🚧 | construct_game_runtime | 0x407b60 | 1266 | 287/310 | 80.40% | 0/310 | 4 unresolved, 111 ok |  |
+| 🚧 | construct_game_runtime | 0x407b60 | 1266 | 287/310 | 80.40% | 0/310 | 115 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 85.56% | 12/192 | 2 mismatch, 24 ok |  |
 | 🚧 | initialize_d3d8_device | 0x411730 | 378 | 106/106 | 86.79% | 38/106 | 9 ok |  |
 | 🚧 | set_blend_mode | 0x412d00 | 325 | 92/92 | 81.52% | 14/92 | 1 mismatch, 14 ok |  |
@@ -544,7 +544,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 3 unresolved, 42 ok |  |
-| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 4 mismatch, 31 unresolved, 95 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 4 mismatch, 30 unresolved, 96 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 77.94% | 38/233 | 2 unresolved, 38 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_game_input | 0x40aab0 | 71 | 30/30 | 63.33% | 4/30 | 3 ok |  |

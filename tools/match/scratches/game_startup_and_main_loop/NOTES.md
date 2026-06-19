@@ -13,7 +13,7 @@ Initial scratch is expected to be partial because the native block layout is
 heavily shaped by out-of-line early returns and x87 timestep comparisons.
 
 Focused match result: 63.14% (`325` target instructions, `337` candidate
-instructions), with `95` masked operands resolved, `31` unresolved, and `4`
+instructions), with `96` masked operands resolved, `30` unresolved, and `4`
 masked mismatches.
 
 2026-06-20 config/startup symbol pass:
@@ -27,6 +27,12 @@ masked mismatches.
 - The config-tail pointer and load-valid flag are named, reducing masked audit
   debt from the previous local baseline without changing the function's control
   flow or register-shape residuals.
+
+2026-06-20 startup-runtime reference pass:
+
+- The shutdown call target at `0x48ba34` is now curated as the CRT
+  `scalar_delete` helper. This clears one masked unresolved operand in the
+  teardown path while leaving the control-flow/register residuals visible.
 
 Known shape gaps:
 

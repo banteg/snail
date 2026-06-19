@@ -1148,6 +1148,26 @@
       "description": "Statically linked CRT ctime helper used by log_startup_timestamp to format the startup time value."
     },
     {
+      "address": "0x48ba34",
+      "name": "scalar_delete",
+      "kind": "function",
+      "aliases": [
+        "??3@YAXPAX@Z",
+        "sub_48ba34"
+      ],
+      "description": "Statically linked scalar delete helper that forwards to the CRT free wrapper; used by game_startup_and_main_loop during shutdown."
+    },
+    {
+      "address": "0x48ba3f",
+      "name": "operator_new",
+      "kind": "function",
+      "aliases": [
+        "??2@YAPAXI@Z",
+        "sub_48ba3f"
+      ],
+      "description": "Statically linked scalar new helper that requests zero-initialized heap storage; used by construct_game_runtime to allocate the root game object."
+    },
+    {
       "address": "0x48be4f",
       "name": "exit",
       "kind": "function",
@@ -1241,6 +1261,16 @@
       "description": "Statically linked CRT _getcwd helper used by file error-reporting paths."
     },
     {
+      "address": "0x4972b0",
+      "name": "g_overlay_stream_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972b0",
+        "data_4972b0"
+      ],
+      "description": "Overlay-stream renderable callback table installed on the root overlay stream slot and the helper sub-slots initialized by construct_game_runtime."
+    },
+    {
       "address": "0x4972d8",
       "name": "g_root_runtime_callback_table",
       "kind": "vtable",
@@ -1299,6 +1329,26 @@
         "data_4972ec"
       ],
       "description": "Shared overlay renderable callback table installed on the three overlay BOD slots in `construct_game_runtime`; first entry is `update_overlay`."
+    },
+    {
+      "address": "0x4972f0",
+      "name": "g_unknown_runtime_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972f0",
+        "data_4972f0"
+      ],
+      "description": "Runtime callback table installed on the two root slots at offset `0x44` during construct_game_runtime."
+    },
+    {
+      "address": "0x4972f4",
+      "name": "g_unknown_composite_runtime_callback_table",
+      "kind": "vtable",
+      "aliases": [
+        "off_4972f4",
+        "data_4972f4"
+      ],
+      "description": "Runtime callback table installed by the 0x408000 composite helper reached from construct_game_runtime."
     },
     {
       "address": "0x4972f8",
@@ -2564,6 +2614,15 @@
         "data_4dfadc"
       ],
       "description": "BOD constructor counter incremented by initialize_bod."
+    },
+    {
+      "address": "0x4dfae0",
+      "name": "g_loc_mirror_count",
+      "kind": "global",
+      "aliases": [
+        "data_4dfae0"
+      ],
+      "description": "Loc-mirror constructor counter reported by construct_game_runtime in the startup memory ledger."
     },
     {
       "address": "0x4dfaec",
