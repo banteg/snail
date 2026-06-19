@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**439/687** mapped gameplay functions matched, **593/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.22%**.
+**439/687** mapped gameplay functions matched, **594/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.26%**.
 
 ## Proof Grade (439)
 
@@ -448,7 +448,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## In Progress (154)
+## In Progress (155)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -486,6 +486,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 97.50% | 26/40 | 3 ok |  |
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 81.82% | 16/33 | - |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
+| 🚧 | open_logo | 0x419110 | 195 | 64/60 | 69.35% | 2/60 | 13 ok |  |
 | 🚧 | destroy_intro_screen | 0x419920 | 184 | 59/61 | 80.00% | 14/61 | 4 ok |  |
 | 🚧 | update_intro_logo_renderable | 0x419a90 | 148 | 41/42 | 81.93% | 8/42 | 6 ok |  |
 | 🚧 | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 74/75 | 41.61% | 1/75 | - |  |
@@ -607,7 +608,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## No Scratch (94)
+## No Scratch (93)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -642,7 +643,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | load_landscape_script_by_name | 0x4182f0 | 1404 | 0/386 | 0.00% | 0/386 | - |  |
 | ⬜ | initialize_loading_screen | 0x418b50 | 758 | 0/253 | 0.00% | 0/253 | - |  |
 | ⬜ | update_loading_screen | 0x418e80 | 656 | 0/204 | 0.00% | 0/204 | - |  |
-| ⬜ | open_logo | 0x419110 | 195 | 0/60 | 0.00% | 0/60 | - |  |
 | ⬜ | initialize_intro_screen | 0x4191e0 | 1851 | 0/521 | 0.00% | 0/521 | - |  |
 | ⬜ | sample_smtrack_heightmap | 0x41a360 | 364 | 0/109 | 0.00% | 0/109 | - |  |
 | ⬜ | initialize_backdrop_tile_quad | 0x41a4d0 | 1393 | 0/367 | 0.00% | 0/367 | - |  |
