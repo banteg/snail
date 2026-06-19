@@ -38,3 +38,13 @@ Latest focused result:
 - target/candidate instructions: 279 / 276
 - prefix: 190 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
+
+2026-06-20 helper-type consolidation:
+
+- `ScoreStats` and `SpringFloat` now come from shared headers instead of
+  scratch-local duplicate declarations.
+- Focused Wibo remains unchanged at 95.14%, 276/279 instructions, prefix
+  190/279, with 27 clean masked operands.
+- The normal type-consolidation report no longer lists either helper as
+  `partial-compatible`; remaining initializer debt is still the cached camera
+  target/control-source tail described above.

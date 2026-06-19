@@ -729,7 +729,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 - ABI-conflict: 17 type name(s)
 - unresolved-layout: 16 type name(s)
 - header-compatible: 13 type name(s)
-- partial-compatible: 14 type name(s)
+- partial-compatible: 12 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -790,6 +790,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | partial-compatible | CachedXMeshBank | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | GameRuntime | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | ProgressBar | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | ScoreStats | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | SpringFloat | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | TwinkleManager | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

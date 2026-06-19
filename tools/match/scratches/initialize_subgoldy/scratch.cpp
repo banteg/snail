@@ -6,18 +6,10 @@
 #include "damage_gauge.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
+#include "score_stats.h"
 #include "snail_skin.h"
+#include "spring_float.h"
 #include "transform_matrix.h"
-
-class ScoreStats {
-public:
-    int initialize_score_stats();
-};
-
-class SpringFloat {
-public:
-    void reset_spring_float();
-};
 
 class CutsceneAIState {
 public:

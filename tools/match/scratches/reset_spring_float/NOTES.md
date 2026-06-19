@@ -20,3 +20,12 @@ Current focused result:
 - target/candidate instructions: 7 / 7
 - prefix: 7 / 7
 - masked operands: none
+
+2026-06-20 helper-type consolidation:
+
+- Promoted the shared `SpringFloat` view into
+  `tools/match/include/spring_float.h` and removed the scratch-local duplicate
+  declarations from this helper and `initialize_subgoldy`.
+- Focused Wibo remains exact: 100.00%, 7/7 instructions, no masked operands.
+- `initialize_subgoldy` still calls the helper through the shared type and
+  remains stable at 95.14%.
