@@ -18,6 +18,7 @@ public:
     void hit_slug_hazard(int damage);                     // @ 0x43f620
     int explode_slug_hazard();                            // @ 0x43f680
     void kill_slug_hazard();                              // @ 0x43f8b0
+    void update_slug_hazard_ai();                         // @ 0x43f930
 
     char unknown_78[0x80 - 0x78];
     int state;                         // +0x80
