@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**444/687** mapped gameplay functions matched, **639/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **42.07%**.
+**444/687** mapped gameplay functions matched, **640/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **42.30%**.
 
 ## Proof Grade (444)
 
@@ -615,11 +615,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 76.07% | 16/78 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (48)
+## Early Progress (>0-49.99%) (49)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
+| 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 16/19 | 34.29% | 1/19 | - |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 126/127 | 45.85% | 16/127 | 8 ok |  |
@@ -668,7 +669,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (0%) (48)
+## No Scratch (0%) (47)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -676,7 +677,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | initialize_frontend_widget | 0x401d30 | 1892 | 0/429 | 0.00% | 0/429 | - |  |
 | ⬜ | update_frontend_widget_interaction | 0x402820 | 2677 | 0/647 | 0.00% | 0/647 | - |  |
 | ⬜ | border_input_text | 0x4035b0 | 1581 | 0/446 | 0.00% | 0/446 | - |  |
-| ⬜ | load_x_mesh | 0x405640 | 1603 | 0/492 | 0.00% | 0/492 | - |  |
 | ⬜ | initialize_exit_prompt | 0x4060d0 | 1804 | 0/441 | 0.00% | 0/441 | - |  |
 | ⬜ | game_startup_and_main_loop | 0x406dc0 | 1316 | 0/325 | 0.00% | 0/325 | - |  |
 | ⬜ | construct_game_runtime | 0x407b60 | 1266 | 0/310 | 0.00% | 0/310 | - |  |
