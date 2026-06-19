@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**444/687** mapped gameplay functions matched, **649/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **44.93%**.
+**444/687** mapped gameplay functions matched, **650/687** mapped gameplay functions have a scratch, **51427/325882** bytes (**15.78%**) are proof-grade, and overall fuzzy is **45.19%**.
 
 ## Proof Grade (444)
 
@@ -526,7 +526,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 
-## Mid Progress (50-79.99%) (91)
+## Mid Progress (50-79.99%) (92)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -537,6 +537,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 3 unresolved, 42 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 18 mismatch, 21 unresolved, 91 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 77.94% | 38/233 | 7 unresolved, 33 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 9 unresolved, 34 ok |  |
 | 🚧 | update_game_input | 0x40aab0 | 71 | 30/30 | 63.33% | 4/30 | 3 ok |  |
@@ -678,7 +679,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
-## No Scratch (0%) (38)
+## No Scratch (0%) (37)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -687,7 +688,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⬜ | update_frontend_widget_interaction | 0x402820 | 2677 | 0/647 | 0.00% | 0/647 | - |  |
 | ⬜ | border_input_text | 0x4035b0 | 1581 | 0/446 | 0.00% | 0/446 | - |  |
 | ⬜ | initialize_exit_prompt | 0x4060d0 | 1804 | 0/441 | 0.00% | 0/441 | - |  |
-| ⬜ | game_startup_and_main_loop | 0x406dc0 | 1316 | 0/325 | 0.00% | 0/325 | - |  |
 | ⬜ | initialize_game_assets_and_world | 0x40acf0 | 23070 | 0/5411 | 0.00% | 0/5411 | - |  |
 | ⬜ | initialize_high_score_screen | 0x416910 | 2311 | 0/600 | 0.00% | 0/600 | - |  |
 | ⬜ | initialize_intro_screen | 0x4191e0 | 1851 | 0/521 | 0.00% | 0/521 | - |  |
@@ -727,21 +727,21 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ready: 8 type name(s)
-- covered: 41 type name(s) with a header plus scratch-local copies
+- covered: 43 type name(s) with a header plus scratch-local copies
 - divergent: 27 type name(s) with multiple scratch-local shapes
 
 | status | type | scratch | header | signatures | recommendation |
 |---|---|---:|---:|---:|---|
 | divergent | Vec3 | 10 | 0 | 9 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DDevice8Vtbl | 8 | 0 | 7 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | LoadingScreen | 6 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | LoadingScreen | 7 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
+| divergent | GameRoot | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SelectedLevelRecord | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | TrackedAllocationStack | 5 | 0 | 5 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Quaternion | 5 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | ObjectVertexBufferVtbl | 5 | 0 | 3 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | Direct3DRenderer | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | GalaxyRouteRecord | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
-| divergent | GameRoot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeSlot | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | SlugVoiceManager | 4 | 0 | 4 | same name has multiple scratch-local shapes; do not consolidate yet |
 | divergent | RuntimeCallback | 4 | 0 | 2 | same name has multiple scratch-local shapes; do not consolidate yet |
@@ -765,13 +765,13 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | BorderManager | 6 | 3 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FrontendWidget | 4 | 1 | 4 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Direct3DDevice8 | 4 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | FrontendFade | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MouseCursorState | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | VoiceManager | 3 | 1 | 3 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | PlayerPresentationController | 3 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | SoundEffectManager | 3 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentPathTemplate | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | FollowState | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
-| covered | FrontendFade | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbShot | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HighScoreScreen | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LevelDefinitionLoader | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
@@ -779,12 +779,14 @@ Run `uv run snail match types --paths` for the full path-level report.
 | covered | TrackRowCell | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | TutorialController | 2 | 1 | 2 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | AttachmentSample | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | AudioBackend | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | Backdrop | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | BodList | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | CutsceneAI | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | DamageGaugeController | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | GolbPathBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | HelpScreen | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
+| covered | HighScoreBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | LandscapeScriptBank | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | MainMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
 | covered | NewGameMenu | 1 | 1 | 1 | header exists; consider replacing matching scratch-local copies with includes |
