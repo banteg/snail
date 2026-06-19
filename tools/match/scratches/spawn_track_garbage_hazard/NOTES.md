@@ -116,3 +116,12 @@ Residuals:
   changed saved-register ownership and regressed badly. Collapsing the y
   staging into `*radius + cell->anchor_position.y` is also rejected: it
   regresses to 98.60% by reversing the native x87 operand load order.
+- 2026-06-19 projection-staging audit: focused Wibo still reproduces 99.30%,
+  143/143 instructions, and the single residual where native performs
+  `fadd [cell->anchor_position.y]` before loading x/z. The remaining
+  source-plausible probes did not improve it: an `anchor_position` pointer and
+  moving the `Vector3` declaration before `staged_y` were codegen-neutral;
+  the `Vector3(x, y, z)` constructor regressed to 92.68% by adding extra x87
+  stores; named `staged_x`/`staged_z` locals regressed to 93.38%; and copying
+  the anchor vector before adding `radius` to `y` regressed to 82.23% and lost
+  one clean masked operand. Keep the current two-step `staged_y` spelling.
