@@ -1,5 +1,6 @@
 // initialize_wibble_path_template_pair @ 0x4289a0 (thiscall, ret 0x1c)
 
+#include "attachment_sample.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
@@ -7,21 +8,7 @@
 float sine(float angle);
 float cosine(float angle);
 
-struct PathTemplateSample {
-    TransformMatrix transform;
-    float inverse_matrix[16];
-    Vector3 delta_dir_to_next;
-    float delta_length;
-    float center_x;
-    float rotation_scalar_94;
-    float rotation_scalar_98;
-    float lateral_scale;
-    float special_scalar;
-    float lateral_source;
-};
-
-typedef char PathTemplateSample_must_be_0xa8[
-    (sizeof(PathTemplateSample) == 0xa8) ? 1 : -1];
+typedef AttachmentSample PathTemplateSample;
 
 class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);

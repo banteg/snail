@@ -6,6 +6,7 @@
 #define PATH_HEIGHT_SCALE 1.0f
 #define PATH_VARIANT 5
 
+#include "attachment_sample.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
@@ -13,21 +14,7 @@
 float sine(float angle);
 float cosine(float angle);
 
-struct PathAttachmentSample {
-    TransformMatrix transform;             // +0x00
-    float inverse_matrix[16];              // +0x40
-    Vector3 delta_dir_to_next;             // +0x80
-    float delta_length;                    // +0x8c
-    float center_x;                        // +0x90
-    float rotation_scalar_94;              // +0x94
-    float rotation_scalar_98;              // +0x98
-    float lateral_scale;                   // +0x9c
-    float special_scalar;                  // +0xa0
-    float lateral_source;                  // +0xa4
-};
-
-typedef char PathAttachmentSample_must_be_0xa8[
-    (sizeof(PathAttachmentSample) == 0xa8) ? 1 : -1];
+typedef AttachmentSample PathAttachmentSample;
 
 typedef ObjectFaceQuad PathTemplateFaceQuad;
 

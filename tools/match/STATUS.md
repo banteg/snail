@@ -728,7 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - header-conflict: 3 type name(s)
 - unresolved-layout: 30 type name(s)
-- header-compatible: 18 type name(s)
+- header-compatible: 17 type name(s)
 - partial-compatible: 18 type name(s)
 - ready: 5 type name(s)
 
@@ -768,7 +768,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | AttachmentSample (aliases: PathAttachmentSample, PathTemplateSample) | 27 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Vector3 (aliases: Vec3) | 9 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

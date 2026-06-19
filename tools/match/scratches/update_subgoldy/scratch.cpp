@@ -8,6 +8,7 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "attachment_sample.h"
 #include "high_score_record.h"
 #include "presentation_animation_channel.h"
 
@@ -99,11 +100,6 @@ struct Nuke {
     int state;
     void update_nuke();
     void uninit_nuke();
-};
-
-struct AttachmentSample {
-    char unknown_00[0xa4];
-    float lateral_source; // +0xa4
 };
 
 struct TrackRowCell;
