@@ -2694,6 +2694,15 @@
       "description": "Renderer triangle counter incremented by quad submission helpers after successful or attempted DrawPrimitive calls."
     },
     {
+      "address": "0x4f7454",
+      "name": "g_render_successful_primitive_count",
+      "kind": "global",
+      "aliases": [
+        "data_4f7454"
+      ],
+      "description": "Renderer successful DrawPrimitive counter incremented by the immediate textured-quad helper only after the D3D call returns success."
+    },
+    {
       "address": "0x4f7458",
       "name": "g_direct3d_renderer",
       "kind": "global",

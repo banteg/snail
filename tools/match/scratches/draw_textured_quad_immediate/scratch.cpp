@@ -39,7 +39,7 @@ float sine(float angle);
 float cosine(float angle);
 int report_errorf(const char* format, ...);
 
-int draw_textured_quad_immediate(
+void draw_textured_quad_immediate(
     TextureRef* texture,
     float x0,
     float y0,
@@ -179,8 +179,8 @@ int draw_textured_quad_immediate(
     g_render_triangle_count += 2;
     ++g_draw_primitive_call_count;
     if (result != 0) {
-        return report_errorf("Draw Primitive Failed");
+        report_errorf("Draw Primitive Failed");
+        return;
     }
     ++g_render_successful_primitive_count;
-    return result;
 }
