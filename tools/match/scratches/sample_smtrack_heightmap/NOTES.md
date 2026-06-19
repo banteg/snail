@@ -1,0 +1,20 @@
+# sample_smtrack_heightmap @ 0x41a360
+
+First tracked scratch for the SMTracks replacement-heightmap sampler.
+
+Recovered behavior:
+
+- the fourth argument is a replacement object whose `+0x98` field points at a
+  TGA-like image header;
+- source `+0x1c`, `+0x24`, and `+0x28` derive the sampled row count, while
+  source `+0x38` is the 12-byte output sample array;
+- the loop bounds are inclusive float counters, matching the native x87
+  `test ah, 0x41` comparisons;
+- each sample looks up a bottom-up RGB texel, averages the three channels with
+  `1/255` and `1/3` factors, optionally cubes the value, then writes
+  `base + value * scale` to the output record's y lane.
+
+Focused Wibo result: 59.09%, 111/109 instructions, prefix 0/109, with 12 clean
+masked operands. Remaining differences are allocator/scheduling shape: the
+scratch keeps the output pointer on the stack while the native keeps it in
+`ebp`, and the compiler folds later channel additions into `fiadd`.
