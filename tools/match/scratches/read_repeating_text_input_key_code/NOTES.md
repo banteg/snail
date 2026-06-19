@@ -15,9 +15,18 @@ while `repeat_code` preserves the pre-repeat comparison byte.
 
 ## Current match notes
 
-Focused matcher result: 98.86%, 440 candidate instructions versus 440 target
+Focused matcher result: 99.09%, 440 candidate instructions versus 440 target
 instructions, 386-instruction prefix, and 73 clean masked operands.
 
-The only remaining semantic mismatch is the Enter/Ctrl byte-code addition:
-native widens the final add to `ebx`, while VC6 keeps the clear source addition
-on `bl`.
+Swapping the operands in the case-fold equality is source-equivalent and nudges
+VC6 toward the native comparison order, reducing the repeat-tail residual
+without changing the autorepeat behavior.
+
+Remaining residuals:
+
+- Enter/Ctrl byte-code addition: native widens the final add to `ebx`, while
+  clear byte-shaped source compiles as the equivalent `add bl, 5`.
+- The repeat comparison still loads `g_text_input_last_repeat_code` before the
+  stack `repeat_code`; a named `char` temporary fixed call order but worsened the
+  preservation register, and an `int` temporary or subtraction-style comparison
+  changed the stack frame. Leave those variants rejected.
