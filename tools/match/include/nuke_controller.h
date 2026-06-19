@@ -9,8 +9,8 @@ class Player;
 
 class NukeController {
 public:
-    int initialize_nuke(); // @ 0x447110
-    int update_nuke();    // @ 0x4471e0
+    void initialize_nuke(); // @ 0x447110
+    void update_nuke();    // @ 0x4471e0
     void uninit_nuke();   // @ 0x4470e0
 
     int state; // +0x00

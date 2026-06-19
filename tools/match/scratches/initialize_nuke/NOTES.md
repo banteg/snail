@@ -8,8 +8,8 @@
 - Semantics: inactive state allocates 25 sprite id `0x83` entries for the
   owner's player slot, sets sprite flag `0x800`, clears sprite progress,
   progress step, gravity, position, and velocity lanes, seeds `3.0f` size, sets
-  phase step `0.104719758f`, and tail-calls `update_nuke()`. Already-active
-  state skips allocation and still tail-calls `update_nuke()`.
+  phase step `0.104719758f`, and dispatches `update_nuke()`. Already-active
+  state skips allocation and still dispatches `update_nuke()`.
 - Residual: four instructions differ after each `allocate_sprite` call. Native
   uses `edx` for the sprite flag OR and reloads the just-stored slot into `ecx`
   before materializing the `3.0f` bit pattern in `eax`; VC6 emits the equivalent
@@ -33,3 +33,8 @@
   assignments regresses to 90.62% by reversing the `size_start`/`size_end` store
   order, while a separate `sprite_size` local is codegen-neutral. Keep the raw
   slot-reload spelling and direct `3.0f` stores.
+- 2026-06-19 shared signature audit: modeling `initialize_nuke` and
+  `update_nuke` as side-effect-only `void` methods lets `update_nuke` exact
+  match with the label-shaped state switch used by other exact updaters.
+  `initialize_nuke` remains at the same 93.75% residual, so the signature change
+  is accepted as shared lifecycle evidence rather than a local initializer fix.
