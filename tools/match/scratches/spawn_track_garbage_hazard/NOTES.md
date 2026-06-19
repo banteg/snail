@@ -125,3 +125,12 @@ Residuals:
   stores; named `staged_x`/`staged_z` locals regressed to 93.38%; and copying
   the anchor vector before adding `radius` to `y` regressed to 82.23% and lost
   one clean masked operand. Keep the current two-step `staged_y` spelling.
+- 2026-06-19 follow-up projection audit: focused Wibo again reproduces 99.30%,
+  143/143 instructions, 48/143 prefix, and 16 clean masked operands. Directly
+  writing `live_position->x/z/y` instead of copying a staged `Vector3` regresses
+  to 51.96% by collapsing the native stack frame and saved-register ownership.
+  Hoisting the `live_position` pointer before the y computation regresses to
+  80.56% by extending that pointer lifetime across the projection block.
+  Accumulating `staged_position.y` in place is codegen-neutral and leaves the
+  same lone `fadd` scheduling residual, so the scratch keeps the clearer
+  two-step `staged_y` temporary.
