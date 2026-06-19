@@ -97,3 +97,10 @@ Rejected source-shape probe:
   to 75.00% by introducing extra stack stores. A separate
   `scaled_x = orbit_x * radius` local with the typed `parent_position` pointer is
   codegen-neutral at 96.36%. Keep the current typed-pointer baseline.
+- 2026-06-19 lane-view audit: replacing the typed `Vector3* parent_position`
+  with a `float*` lane pointer is codegen-neutral at 96.36% and leaves the same
+  `add eax, 0x68; fadd [eax]` residual. Splitting only the X read to
+  `live_parent->transform.position.x` while materializing the typed pointer for
+  y/z reproduces the 89.91% direct-X regression: it recovers
+  `fadd [eax+0x68]`, but hoists the radius multiply before the parent/sprite
+  reloads and loses the native y/z base materialization. Keep the baseline.
