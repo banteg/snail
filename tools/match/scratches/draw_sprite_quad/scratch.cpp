@@ -4,6 +4,7 @@
 #include "direct3d_device8_view.h"
 #include "transform_matrix.h"
 #include "vector3.h"
+#include "vertex_buffer_view.h"
 
 typedef Vector3 Vec3;
 
@@ -16,22 +17,11 @@ struct SpriteVertex {
     float v;
 };
 
-struct VertexBuffer;
-
 struct VertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
         SpriteVertex** vertices, unsigned int flags);
     int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
-struct VertexBuffer {
-    VertexBufferVtbl* vtbl;
-};
-
-struct RendererState {
-    char unknown_00[0x08];
-    VertexBuffer* sprite_vertex_buffer; // +0x08
 };
 
 struct Direct3DDevice8Vtbl {

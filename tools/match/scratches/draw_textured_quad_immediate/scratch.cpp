@@ -2,6 +2,7 @@
 
 #include "direct3d_device8_view.h"
 #include "sprite.h"
+#include "vertex_buffer_view.h"
 
 struct ImmediateVertex {
     float x;
@@ -12,22 +13,11 @@ struct ImmediateVertex {
     float v;
 };
 
-struct VertexBuffer;
-
 struct VertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
         ImmediateVertex** vertices, unsigned int flags);
     int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
-struct VertexBuffer {
-    VertexBufferVtbl* vtbl;
-};
-
-struct RendererState {
-    char unknown_00[0x08];
-    VertexBuffer* sprite_vertex_buffer; // +0x08
 };
 
 struct Direct3DDevice8Vtbl {

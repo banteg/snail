@@ -1,20 +1,16 @@
 // update_loading_screen @ 0x418e80 (thiscall, ret)
 
 #include "loading_vertex.h"
+#include "vertex_buffer_view.h"
 
 class Direct3DDevice8;
 class Direct3DTexture8;
-struct VertexBuffer;
 
 struct VertexBufferVtbl {
     char unknown_00[0x2c];
     int (__stdcall* Lock)(VertexBuffer* self, unsigned int offset, unsigned int size,
         LoadingVertex** vertices, unsigned int flags);
     int (__stdcall* Unlock)(VertexBuffer* self);
-};
-
-struct VertexBuffer {
-    VertexBufferVtbl* vtbl;
 };
 
 struct RendererVertexBufferResource {
