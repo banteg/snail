@@ -2191,11 +2191,15 @@ def manifest_cluster_totals(
 STATE_ICONS = {"match": "✅", "audit": "⚠", "wip": "🚧", "error": "❌"}
 MISSING_SCRATCH_ICON = "⬜"
 STATUS_SECTION_ORDER = (
-    ("✅", "Proof Grade"),
-    ("⚠", "Audit Needed"),
-    ("🚧", "In Progress"),
-    ("⬜", "No Scratch"),
-    ("❌", "Errors"),
+    "Proof Grade",
+    "Audit Needed",
+    "Near Match (95-99.99%)",
+    "High Progress (80-94.99%)",
+    "Mid Progress (50-79.99%)",
+    "Early Progress (>0-49.99%)",
+    "Zero Match (0%)",
+    "No Scratch (0%)",
+    "Errors",
 )
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
@@ -2327,17 +2331,53 @@ def render_status_rows(
     return rows
 
 
+def _row_match_ratio(row: tuple[str, ...]) -> float | None:
+    match_text = row[5]
+    if not match_text.endswith("%"):
+        return None
+    try:
+        return float(match_text[:-1]) / 100.0
+    except ValueError:
+        return None
+
+
+def _status_row_section(row: tuple[str, ...]) -> str:
+    icon = row[0]
+    if icon == "✅":
+        return "Proof Grade"
+    if icon == "⚠":
+        return "Audit Needed"
+    if icon == "❌":
+        return "Errors"
+    if icon == "⬜":
+        return "No Scratch (0%)"
+    if icon != "🚧":
+        return "Other"
+
+    ratio = _row_match_ratio(row)
+    if ratio is None or ratio <= 0.0:
+        return "Zero Match (0%)"
+    if ratio >= 0.95:
+        return "Near Match (95-99.99%)"
+    if ratio >= 0.80:
+        return "High Progress (80-94.99%)"
+    if ratio >= 0.50:
+        return "Mid Progress (50-79.99%)"
+    return "Early Progress (>0-49.99%)"
+
+
 def _section_status_rows(rows: list[tuple[str, ...]]) -> list[tuple[str, list[tuple[str, ...]]]]:
-    sections: list[tuple[str, list[tuple[str, ...]]]] = []
-    consumed_icons: set[str] = set()
-    for icon, title in STATUS_SECTION_ORDER:
-        section_rows = [row for row in rows if row[0] == icon]
-        consumed_icons.add(icon)
-        if section_rows:
-            sections.append((title, section_rows))
-    other_rows = [row for row in rows if row[0] not in consumed_icons]
-    if other_rows:
-        sections.append(("Other", other_rows))
+    rows_by_section: dict[str, list[tuple[str, ...]]] = {}
+    for row in rows:
+        rows_by_section.setdefault(_status_row_section(row), []).append(row)
+
+    sections: list[tuple[str, list[tuple[str, ...]]]] = [
+        (title, rows_by_section.pop(title))
+        for title in STATUS_SECTION_ORDER
+        if title in rows_by_section
+    ]
+    for title in sorted(rows_by_section):
+        sections.append((title, rows_by_section[title]))
     return sections
 
 

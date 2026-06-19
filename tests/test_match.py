@@ -904,6 +904,74 @@ def test_render_status_rows_include_missing_manifest_functions() -> None:
     assert "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  |" in markdown
 
 
+def test_render_status_markdown_splits_progress_sections() -> None:
+    def make_status(name: str, address: int, ratio: float) -> ScratchStatus:
+        config = ScratchConfig(
+            directory=Path(f"scratch/{name}"),
+            function=name,
+            compiler="msvc6.5",
+            cflags="/O2 /G5 /W3",
+            end_va=None,
+            symbol=None,
+        )
+        return ScratchStatus(
+            config=config,
+            address=address,
+            target_size=16,
+            ratio=ratio,
+            prefix_instructions=0,
+            target_instructions=4,
+            candidate_instructions=4,
+            error=None,
+        )
+
+    statuses = [
+        make_status("near", 0x1000, 0.95),
+        make_status("high", 0x1010, 0.80),
+        make_status("mid", 0x1020, 0.50),
+        make_status("early", 0x1030, 0.25),
+        make_status("zero", 0x1040, 0.0),
+    ]
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="near"),
+            FunctionSymbol(address=0x1010, name="high"),
+            FunctionSymbol(address=0x1020, name="mid"),
+            FunctionSymbol(address=0x1030, name="early"),
+            FunctionSymbol(address=0x1040, name="zero"),
+            FunctionSymbol(address=0x1050, name="missing"),
+        ),
+    )
+    image = LoadedImage(
+        mapped=(b"\xc3" * 0x60) + b"\xcc",
+        image_base=0x1000,
+        size_of_image=0x61,
+    )
+    totals = ClusterTotals(
+        function_count=6,
+        byte_total=96,
+        matched_functions=0,
+        matched_bytes=0,
+        scratched_functions=5,
+        fuzzy_weighted_bytes=40.0,
+    )
+
+    markdown = render_status_markdown(statuses, totals, manifest=manifest, image=image)
+
+    assert "## Near Match (95-99.99%) (1)" in markdown
+    assert "## High Progress (80-94.99%) (1)" in markdown
+    assert "## Mid Progress (50-79.99%) (1)" in markdown
+    assert "## Early Progress (>0-49.99%) (1)" in markdown
+    assert "## Zero Match (0%) (1)" in markdown
+    assert "## No Scratch (0%) (1)" in markdown
+
+
 def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
     exact_config = ScratchConfig(
         directory=Path("scratch/exact"),
