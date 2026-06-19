@@ -63,3 +63,13 @@ Rejected source-shape probes:
   schedule. Replacing the reused `Color4f` lanes with explicit
   `scaled_x/scaled_y/scaled_z` locals regressed the focused score to `68.03%`.
   Keep the color-local velocity staging.
+- 2026-06-19 sprite-base/velocity staging audit: making the `set_color_rgba`
+  result explicit and saving alpha bits until after the size fields recovers a
+  longer sprite-base lifetime, but breaks the native aggregate color-copy shape
+  and regresses to 67.57%. Direct `sprite->velocity`/`sprite->position` field
+  stores are codegen-neutral at 84.56%, and reading the reused `Color4f` lanes
+  through a local pointer optimizes back to the same candidate. Copying the lanes
+  into named scaled-velocity locals regresses to 81.33% with extra x87 churn.
+  Keep the existing aggregate color copy plus `out_velocity`/`out_position`
+  spelling; the remaining residual is still delayed sprite-base advance and
+  native stack-staged velocity reload scheduling.
