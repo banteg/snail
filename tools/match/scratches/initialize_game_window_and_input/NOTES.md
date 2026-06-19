@@ -34,3 +34,9 @@ Remaining gaps are mostly code-layout shape rather than unknown behavior:
   still lets the compiler sink that store to the common path.
 - The fullscreen fallback and common window-creation block are equivalent, but
   the compiler lays out the out-of-line fullscreen path earlier than native.
+
+2026-06-20 type consolidation: the Win32-style `Rect` view now lives in
+`include/rect.h` and is shared with the mouse scratches. Focused rerun keeps
+the existing result at 79.85%, 264 candidate instructions versus 287 target
+instructions, 49 masked operands OK, and the same jump-table relocation
+mismatch.

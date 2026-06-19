@@ -1,6 +1,7 @@
 // update_slug_hazard_ai @ 0x43f930 (thiscall, ret)
 
 #include "bod_list.h"
+#include "blink_random_table.h"
 #include "contact_target.h"
 #include "font_system.h"
 #include "player.h"
@@ -18,11 +19,6 @@ public:
     float subgame_rate; // +0x38
     char unknown_3c[0x1270fd4 - 0x3c];
     ContactTargetRegistry contact_targets; // +0x1270fd4
-};
-
-class BlinkRandomTable {
-public:
-    double advance_blink_random(); // @ 0x4408a0
 };
 
 extern char* g_game_base; // data_4df904

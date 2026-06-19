@@ -2,6 +2,7 @@
 
 #include "font_system.h"
 #include "mouse_cursor_state.h"
+#include "twinkle_manager.h"
 
 extern char* g_game_base; // data_4df904
 extern unsigned int g_render_flags; // data_4df934
@@ -34,11 +35,6 @@ class TooltipState {
 public:
     int reset_tooltip();
     void update_tooltip();
-};
-
-class TwinkleManager {
-public:
-    int update_twinkle_manager();
 };
 
 class BorderManager {

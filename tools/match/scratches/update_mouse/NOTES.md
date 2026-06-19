@@ -33,3 +33,10 @@ mismatch reports `GetClientRect` versus `GetWindowRect` because the normalized
 diff aligns the target's second Win32 call with the candidate's first call after
 earlier control-flow drift; the candidate object itself contains distinct
 `__imp__GetWindowRect@8` and `__imp__GetClientRect@8` relocations.
+
+2026-06-20 type consolidation: `Rect` now comes from `include/rect.h` here,
+`update_mouse_authored_scale`, and `initialize_game_window_and_input`.
+Focused rerun preserves the prior result at 73.68%, 294 candidate
+instructions versus 295 target instructions, with 61 masked operands OK, 9
+unresolved scratch-local globals, and the same Win32 import alignment
+mismatch.

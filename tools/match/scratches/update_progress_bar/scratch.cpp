@@ -2,6 +2,7 @@
 // Queues the left-column gameplay progress-bar HUD quads.
 
 #include "font_system.h"
+#include "progress_bar.h"
 #include "sprite.h"
 
 struct Game {
@@ -31,11 +32,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int layer,
     int blend);
-
-class ProgressBar {
-public:
-    void update_progress_bar();
-};
 
 void ProgressBar::update_progress_bar()
 {

@@ -12,3 +12,9 @@ Expected residuals:
 - list removal is source-shaped but not instruction-scheduled;
 - several flag names remain raw until more callsites are pinned;
 - slider/text color propagation is semantic but not exact.
+
+2026-06-20 type consolidation: the method-only `TwinkleManager` declaration was
+replaced with `include/twinkle_manager.h`, validated by exact
+`update_twinkle_manager`. Focused rerun preserves the prior 46.85% result,
+544 candidate instructions versus 647 target instructions, 55 masked operands
+OK, and the same five masked call mismatches.

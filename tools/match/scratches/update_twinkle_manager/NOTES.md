@@ -1,0 +1,13 @@
+# update_twinkle_manager @ 0x404030
+
+Exact match: 100.00%, 23/23 instructions.
+
+This manager gates five inline stride-0x30 twinkles behind `active_state` at
+`+0xf0`; when `active_state - 1 == 0`, it walks `twinkle_count` at `+0xf4` and
+calls `Twinkle::update_twinkle()` on each inline record.
+
+2026-06-20 type consolidation: `TwinkleManager` now lives in
+`include/twinkle_manager.h` as a 0xf8 shell over the inline twinkle storage.
+The `Twinkle` record itself stays local because its method declarations still
+conflict across scratches. `update_frontend_widget_interaction` also uses the
+shared manager header and keeps its existing 46.85% residual profile.

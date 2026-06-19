@@ -1,5 +1,7 @@
 // initialize_game_window_and_input @ 0x4119d0 (cdecl)
 
+#include "rect.h"
+
 #include <string.h>
 
 typedef unsigned int UINT;
@@ -15,13 +17,6 @@ typedef int HMODULE;
 typedef int BOOL;
 typedef int LONG;
 typedef LONG (__stdcall* WindowProc)(HWND hwnd, UINT message, UINT wparam, int lparam);
-
-struct Rect {
-    LONG left;
-    LONG top;
-    LONG right;
-    LONG bottom;
-};
 
 struct WndClassA {
     UINT style;

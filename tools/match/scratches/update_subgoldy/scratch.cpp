@@ -10,6 +10,7 @@
 
 #include "attachment_sample.h"
 #include "high_score_record.h"
+#include "progress_bar.h"
 #include "presentation_animation_channel.h"
 
 class Sprite;
@@ -156,11 +157,6 @@ struct DamageGauge {
     char unknown_1c[0x2c - 0x1c];
 
     void update_damage_gauge();
-};
-
-struct ProgressBar {
-    int state;
-    void update_progress_bar();
 };
 
 struct WarningActor {

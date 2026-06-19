@@ -1,15 +1,8 @@
 // initialize_blink_random @ 0x4408c0 (thiscall, ret)
 
+#include "blink_random_table.h"
+
 int next_math_random_value();
-
-class BlinkRandomTable {
-public:
-    int initialize_blink_random();
-
-    char unknown_000000[0x3bb700];
-    int index; // +0x3bb700
-    float samples[24]; // +0x3bb704
-};
 
 int BlinkRandomTable::initialize_blink_random()
 {

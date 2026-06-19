@@ -2,13 +2,7 @@
 
 #include "direct_input_view.h"
 #include "mouse_cursor_state.h"
-
-struct Rect {
-    int left;
-    int top;
-    int right;
-    int bottom;
-};
+#include "rect.h"
 
 struct DirectInputMouseState {
     int x;

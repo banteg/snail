@@ -6,3 +6,7 @@ This helper resets the blink cadence index at `+0x3bb700` and fills the
 24-entry table at `+0x3bb704` with random reciprocal intervals:
 
 `1.0 / (((float)next_math_random_value() * 0.000030517578 + 1.0) * 60.0)`.
+
+2026-06-20 type consolidation: the local `BlinkRandomTable` copy was replaced
+with `include/blink_random_table.h`. Focused rerun remains exact at 100.00%,
+21/21 instructions, with 5 masked operands OK.

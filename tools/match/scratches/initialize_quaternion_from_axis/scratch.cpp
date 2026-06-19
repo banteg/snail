@@ -1,14 +1,9 @@
 // initialize_quaternion_from_axis @ 0x44d530 (thiscall)
 
+#include "axis.h"
+
 float sine(float angle);
 float cosine(float angle);
-
-struct Axis {
-    float x;
-    float y;
-    float z;
-    float angle;
-};
 
 struct Quaternion {
     float x;

@@ -1,11 +1,6 @@
 // update_mouse_authored_scale @ 0x44bbd0 (cdecl, ret)
 
-struct Rect {
-    int left;
-    int top;
-    int right;
-    int bottom;
-};
+#include "rect.h"
 
 extern float g_mouse_screen_to_authored_y_scale; // data_777d68
 extern float g_mouse_screen_to_authored_x_scale; // data_777d6c

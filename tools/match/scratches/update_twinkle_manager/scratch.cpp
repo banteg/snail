@@ -1,17 +1,10 @@
 // update_twinkle_manager @ 0x404030 (thiscall, ret)
 
+#include "twinkle_manager.h"
+
 class Twinkle {
 public:
     int update_twinkle();
-};
-
-class TwinkleManager {
-public:
-    int update_twinkle_manager();
-
-    char twinkles[0xf0]; // +0x00, five stride-0x30 records
-    int active_state; // +0xf0
-    int twinkle_count; // +0xf4
 };
 
 int TwinkleManager::update_twinkle_manager()

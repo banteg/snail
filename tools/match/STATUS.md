@@ -729,7 +729,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 - ABI-conflict: 17 type name(s)
 - unresolved-layout: 16 type name(s)
 - header-compatible: 13 type name(s)
-- partial-compatible: 12 type name(s)
+- partial-compatible: 7 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -782,12 +782,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | partial-compatible | Direct3DDevice8Vtbl | 9 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | SlugVoiceManager | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | BlinkRandomTable | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | Rect | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | Axis | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | CachedXMeshBank | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | GameRuntime | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | ProgressBar | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | TwinkleManager | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

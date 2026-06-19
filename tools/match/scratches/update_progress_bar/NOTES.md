@@ -29,3 +29,9 @@ Source-shape notes:
 - The active row window is modeled as a small typed view at `game + 0x74668`
   instead of one huge sparse `Game` struct, because VC6 rejects the large
   padding array needed to span from `+0x42fdec` to `+0x74668`.
+
+2026-06-20 type consolidation: `ProgressBar` now lives in
+`include/progress_bar.h` as the one-word player subobject used at
+`Player +0x3f0`. Focused rerun remains exact at 100.00%, 110/110
+instructions, with 19 masked operands OK. The `update_subgoldy` callsite uses
+the shared header and keeps its existing 72.51% residual profile.
