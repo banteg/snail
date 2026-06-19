@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**438/687** mapped gameplay functions matched, **592/687** mapped gameplay functions have a scratch, **48272/325882** bytes (**14.81%**) are proof-grade, and overall fuzzy is **33.18%**.
+**439/687** mapped gameplay functions matched, **592/687** mapped gameplay functions have a scratch, **48502/325882** bytes (**14.88%**) are proof-grade, and overall fuzzy is **33.18%**.
 
-## Proof Grade (438)
+## Proof Grade (439)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -57,6 +57,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | restore_desktop_display_mode | 0x407860 | 19 | 6/6 | 100.00% | 6/6 | 2 ok |  |
 | ✅ | probe_display_mode_count | 0x407880 | 40 | 17/17 | 100.00% | 17/17 | 1 ok |  |
 | ✅ | read_current_display_resolution | 0x4078b0 | 351 | 22/22 | 100.00% | 22/22 | 1 ok |  |
+| ✅ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 23 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
 | ✅ | initialize_border_record | 0x408410 | 92 | 21/21 | 100.00% | 21/21 | 9 ok |  |
 | ✅ | initialize_cached_x_mesh_slot | 0x408470 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
@@ -446,12 +447,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
-
-## Audit Needed (1)
-
-| | function | address | bytes | insns | match | prefix | masked | build |
-|---|---|---|---|---|---|---|---|---|
-| ⚠ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 2 mismatch, 4 unresolved, 17 ok |  |
 
 ## In Progress (153)
 

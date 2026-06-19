@@ -68,6 +68,24 @@
       "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
+      "address": "0x4079e0",
+      "name": "bass_audio_window_proc",
+      "kind": "function",
+      "aliases": [
+        "sub_4079e0"
+      ],
+      "description": "Hidden BASS audio window procedure installed by initialize_audio_subsystem; posts WM_QUIT on close and otherwise forwards to DefWindowProcA."
+    },
+    {
+      "address": "0x407b00",
+      "name": "shutdown_bass_audio_window",
+      "kind": "function",
+      "aliases": [
+        "sub_407b00"
+      ],
+      "description": "Tears down the BASS audio backend, destroys the hidden audio window, clears its handle, and unregisters the BASS window class."
+    },
+    {
       "address": "0x40acd4",
       "name": "update_frontend_transition_overlay_jump_table",
       "kind": "jump_table",
@@ -2039,8 +2057,18 @@
       "aliases": [
         "data_4dfad0"
       ],
-      "size": "0x8",
+      "size": "0x4",
       "description": "Two-slot mouse wheel delta array consumed and cleared by consume_mouse_wheel_delta."
+    },
+    {
+      "address": "0x4dfad8",
+      "name": "g_application_instance",
+      "kind": "global",
+      "aliases": [
+        "data_4dfad8"
+      ],
+      "size": "0x4",
+      "description": "Application instance handle saved by game_startup_and_main_loop and used when registering/unregistering the hidden BASS audio window class."
     },
     {
       "address": "0x4dfadc",
@@ -2072,6 +2100,16 @@
       ],
       "size": "0x1",
       "description": "Fullscreen-mode flag initialized by game-window setup and read by mouse cursor conversion and click forwarding."
+    },
+    {
+      "address": "0x4dfaf8",
+      "name": "g_bass_window",
+      "kind": "global",
+      "aliases": [
+        "data_4dfaf8"
+      ],
+      "size": "0x4",
+      "description": "Hidden BASS audio window handle created by initialize_audio_subsystem and destroyed by shutdown_bass_audio_window."
     },
     {
       "address": "0x4dfb00",

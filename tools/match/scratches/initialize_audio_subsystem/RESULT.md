@@ -8,11 +8,11 @@
 | Target instructions | 73 |
 | Candidate instructions | 73 |
 | Common prefix | 73 / 73 |
-| Masked operands | 17 clean, 4 unresolved, 2 mismatched |
+| Masked operands | 23 clean |
 
 The exact body match requires `END=0x407af6`; without it, the manifest extent
 includes the following cleanup helper after the final return.
 
-The remaining operand mismatches are unresolved or stale global names rather
-than instruction differences. The source deliberately avoids dummy aliases for
-`data_4dfad8` and `data_4dfaf8`.
+The reference manifest resolves the application instance, hidden BASS window,
+window procedure, and shutdown helper references, so this is proof-grade rather
+than audit-pending.
