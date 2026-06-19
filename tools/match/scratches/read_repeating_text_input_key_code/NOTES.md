@@ -30,3 +30,17 @@ Remaining residuals:
   stack `repeat_code`; a named `char` temporary fixed call order but worsened the
   preservation register, and an `int` temporary or subtraction-style comparison
   changed the stack frame. Leave those variants rejected.
+- 2026-06-19 repeat-tail audit: the exact sibling
+  `read_pressed_text_input_key_code` still matches 100.00%, 338/338, with 55
+  clean masked operands. Focused Wibo for this repeat helper remains 99.09%,
+  440/440, 386/440 prefix, and 73 clean masked operands. Swapping the
+  case-fold equality operands regresses to 98.86% by changing only the final
+  compare. A named folded-repeat byte recovers the native call order but
+  regresses to 98.75% because VC6 preserves the first folded value through a
+  stack byte instead of `dl`; widening that temporary to `int` changes the
+  frame and collapses the prefix. Widening the top-level `result` to `int`
+  also collapses the prefix by turning every `mov bl, imm8` into `mov ebx,
+  imm32`. Enter/Ctrl variants using direct result assignment, a single
+  expression, assignment through `repeat_code`, or swapped result/repeat stores
+  are all codegen-neutral and keep `add bl, 5`. Keep the current byte-shaped
+  baseline.
