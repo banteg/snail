@@ -9,7 +9,10 @@
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "score_stats.h"
+#include "track_health_pickup.h"
+#include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
+#include "track_speedup.h"
 
 class Player;
 struct TrackRowCell;
@@ -21,6 +24,9 @@ public:
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
     void reset_subgame(); // @ 0x437b10
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
+    unsigned int* spawn_track_health_pickup(
+        TrackRowCell* cell, Player* player); // @ 0x43d6c0
+    int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
     TrackRowCell* spawn_track_ring_or_special_effect(
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
@@ -75,7 +81,11 @@ public:
     float track_skirt_r; // +0x1b0140
     float track_skirt_g; // +0x1b0144
     float track_skirt_b; // +0x1b0148
-    char unknown_1b014c[0x35bb88 - 0x1b014c];
+    char unknown_1b014c[0x355db0 - 0x1b014c];
+    TrackSpeedupRuntime speedup_pickup; // +0x355db0
+    TrackJetpackPickup jetpack_pickup; // +0x355e64
+    TrackHealthPickup health_pickups[8]; // +0x356000
+    char unknown_3563a0[0x35bb88 - 0x3563a0];
     FrontendWidget* score_widget_a; // +0x35bb88
     FrontendWidget* score_widget_b; // +0x35bb8c
     FrontendWidget* lives_icon_widget; // +0x35bb90

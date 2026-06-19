@@ -13,7 +13,7 @@ Current match:
 
 Evidence:
 
-- Allocates the single jetpack pickup runtime at `game + 0x355e64`; the
+- Allocates the single jetpack pickup runtime at `subgame +0x355e64`; the
   shared parent layout now lives in `track_jetpack_pickup.h`.
 - The collision-visible lanes are `position +0x10`, `state +0x38`,
   `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`, `bob_phase +0x6c`,
@@ -39,8 +39,9 @@ singleton.
 
 2026-06-16 pool-overlay/list-splice pass: the spawner now mirrors the health
 pickup scratch's shifted slot-base shape, keeping `esi` based at
-`game + slot_index * 0x19c` while using the shared `Game::jetpack_pickup`
-member and promoted `TrackJetpackPickup` fields. The active-list splice was
+`subgame + slot_index * 0x19c` while using the shared
+`SubgameRuntime::jetpack_pickup` member and promoted `TrackJetpackPickup`
+fields. The active-list splice was
 also reordered to put the empty-list case first, matching native fallthrough
 and the health pickup shape. Focused Wibo improves from `52.86%` (`136/144`,
 prefix `25/144`) to `73.76%` (`138/144`, prefix `31/144`), with all `9`

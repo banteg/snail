@@ -17,9 +17,9 @@ Evidence:
   `TrackHealthPickup` type, casting through `BodBase` only for the exact base
   initializer and vtable store. That confirms the shared first `0x38` bytes
   are the BOD base prefix whose payload is reused as pickup world/state fields.
-- Scans eight health pickup slots at `game + 0x356000`, stride `0x74`. The
+- Scans eight health pickup slots at `subgame +0x356000`, stride `0x74`. The
   source keeps the native slot-base arithmetic by viewing the shifted slot base
-  as a `Game*` and accessing `slot->health_pickups[0]`. A direct
+  as a `SubgameRuntime*` and accessing `slot->health_pickups[0]`. A direct
   `this->health_pickups[slot_index]` member made VC6 choose the wrong base
   register.
 - Seeds the promoted partial `TrackHealthPickup` fields: `world_position +0x10`,
@@ -28,15 +28,15 @@ Evidence:
 - Allocates sprite texture `57`, marks sprite flag `0x800`, clears gravity and
   progress fields, and writes `size_start/size_end = 0.60000002f`.
 - Writes `source_cell +0x68`; this is distinct from
-  `TrackHealthPickup::owner_game +0x44`, the reset-initialized game pause view
-  read by `update_track_health_pickup`.
+  `TrackHealthPickup::owner_game +0x44`, the reset-initialized subgame pause
+  view read by `update_track_health_pickup`.
 - Initializes `bob_phase +0x6c` from a numeric float-to-int conversion of
   `world_position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.
 
-This scratch now uses the shared `Game::health_pickups` layout, but keeps the
-shifted slot-base source shape because rebasing to a direct pickup pointer still
-does not match native register ownership.
+This scratch now uses the shared `SubgameRuntime::health_pickups` layout, but
+keeps the shifted slot-base source shape because rebasing to a direct pickup
+pointer still does not match native register ownership.
 
 Remaining mismatch:
 

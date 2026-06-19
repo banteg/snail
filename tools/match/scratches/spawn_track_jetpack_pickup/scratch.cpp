@@ -1,8 +1,8 @@
 // spawn_track_jetpack_pickup @ 0x43d890 (thiscall, ret 0x8)
 
-#include "game.h"
 #include "player.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "track_jetpack_pickup.h"
 
@@ -12,7 +12,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
+int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
@@ -28,7 +28,7 @@ int Game::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
     }
 
     DWORD* slot_base = game_words + 103 * slot_index;
-    Game* slot = (Game*)slot_base;
+    SubgameRuntime* slot = (SubgameRuntime*)slot_base;
     slot->jetpack_pickup.state = 1;
     slot->jetpack_pickup.owner = player;
 
