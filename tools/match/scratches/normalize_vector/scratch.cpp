@@ -1,15 +1,11 @@
 // normalize_vector @ 0x44cca0 (fastcall)
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-};
+#include "vector3.h"
 
-double __stdcall dot_vectors(const Vec3* lhs, const Vec3* rhs);
+double __stdcall dot_vectors(const Vector3* lhs, const Vector3* rhs);
 float square_root(float value);
 
-float __fastcall normalize_vector(Vec3* vector)
+float __fastcall normalize_vector(Vector3* vector)
 {
     float length = square_root((float)dot_vectors(vector, vector));
     if (length == 0.0f) {

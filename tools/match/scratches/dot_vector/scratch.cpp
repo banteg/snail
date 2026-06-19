@@ -1,12 +1,6 @@
-struct Vec3 {
-    float x;
-    float y;
-    float z;
+#include "vector3.h"
 
-    double dot_vector(const Vec3* rhs);
-};
-
-double Vec3::dot_vector(const Vec3* rhs)
+double Vector3::dot_vector(const Vector3* rhs)
 {
     return rhs->z * z + rhs->y * y + rhs->x * x;
 }

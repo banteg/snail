@@ -2,17 +2,9 @@
 
 #include "transform_matrix.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-
-    Vec3* rotate_vector_by_matrix(const TransformMatrix* matrix);
-};
-
-Vec3* Vec3::rotate_vector_by_matrix(const TransformMatrix* matrix)
+Vector3* Vector3::rotate_vector_by_matrix(const TransformMatrix* matrix)
 {
-    Vec3 source = *this;
+    Vector3 source = *this;
 
     x = source.x * matrix->basis_right.x + source.y * matrix->basis_up.x + source.z * matrix->basis_forward.x;
     y = source.x * matrix->basis_right.y + source.y * matrix->basis_up.y + source.z * matrix->basis_forward.y;

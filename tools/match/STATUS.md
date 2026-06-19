@@ -764,10 +764,10 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | TipManager | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | Vector3 (aliases: Vec3) | 9 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 7 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FrontendFade | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | Vector3 (aliases: Vec3) | 3 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

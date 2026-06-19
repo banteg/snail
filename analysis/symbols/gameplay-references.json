@@ -3598,9 +3598,10 @@
       "name": "cross_vectors_static_guard",
       "kind": "global",
       "aliases": [
-        "?$S1@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4EA"
+        "?$S1@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4EA",
+        "?$S1@?1??cross_vectors@Vector3@@QAEXPBU2@0@Z@4EA"
       ],
-      "description": "Compiler-generated guard byte for the function-local static Vec3 result in cross_vectors; it shares storage with the synthetic trigonometry init-base reference."
+      "description": "Compiler-generated guard byte for the function-local static Vector3 result in cross_vectors; it shares storage with the synthetic trigonometry init-base reference."
     },
     {
       "address": "0x77ff3c",
@@ -3625,10 +3626,11 @@
       "name": "cross_vectors_static_result",
       "kind": "global",
       "aliases": [
-        "?result@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4U2@A"
+        "?result@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4U2@A",
+        "?result@?1??cross_vectors@Vector3@@QAEXPBU2@0@Z@4U2@A"
       ],
       "size": "0xc",
-      "description": "Function-local static Vec3 result storage used by cross_vectors before copying back to the destination vector."
+      "description": "Function-local static Vector3 result storage used by cross_vectors before copying back to the destination vector."
     },
     {
       "address": "0x77ff88",
