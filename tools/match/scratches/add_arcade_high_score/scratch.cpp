@@ -26,11 +26,11 @@ int HighScoreBank::add_arcade_high_score(HighScoreRecord* record, int level_arg)
     }
 
     int shift_rank = HIGH_SCORE_TOP_TEN_COUNT;
-    do {
+    while (shift_rank > rank) {
         bank->postal_records[shift_rank] = bank->postal_records[shift_rank - 1];
         bank->postal_records[shift_rank].route_or_rank_index = shift_rank;
         --shift_rank;
-    } while (shift_rank > rank);
+    }
 
     bank->postal_records[rank] = *record;
     bank->postal_records[rank].route_or_rank_index = rank;

@@ -29,3 +29,8 @@ Residual:
 - The high-score frontend arm is semantically aligned, including the native
   `rank != -1` gate, but global reload and active-bank materialization differ
   in register ownership.
+- 2026-06-20 high-score insertion pass: the arcade helper improved when its
+  down-shift loop was spelled as a pre-tested `while`, but applying the same
+  source shape here regressed survival to 55.95%. MSVC then kept constant `1`
+  in `ebp` and left the bank in `ebx`, moving further away from native, so the
+  survival scratch keeps the existing `do while` shift loop.
