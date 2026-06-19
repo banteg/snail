@@ -23,3 +23,13 @@
   `update_nuke` writes it into every sprite's `position.z`, so the shared
   fields are now `orbit_center_z` and `orbit_center_z_step`. The angular fields
   are `orbit_phase` and `orbit_phase_step`.
+- 2026-06-19 flag/size scheduling audit: focused Wibo still reproduces 93.75%,
+  64/64 instructions, 30/64 prefix, and 5 clean masked operands. Explicit
+  unsigned and signed flag locals still used `ecx` for the flag OR; the signed
+  form also moved the OR after the slot increment. A `flag_sprite` alias is
+  codegen-neutral. A `current = *(slots - 1)` pointer recovers the native `edx`
+  flag temporary, but regresses to 53.33% by collapsing the deliberate slot
+  reloads and changing saved-register ownership. Chaining the two `3.0f` size
+  assignments regresses to 90.62% by reversing the `size_start`/`size_end` store
+  order, while a separate `sprite_size` local is codegen-neutral. Keep the raw
+  slot-reload spelling and direct `3.0f` stores.
