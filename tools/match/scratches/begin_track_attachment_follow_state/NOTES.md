@@ -18,6 +18,19 @@ a dead `add ecx, ADDR`; and a scalar `float heading` local wrongly lowers
 through x87. Keep the current table-pointer spelling until a source-plausible
 form preserves both native index ownership and folded displacement.
 
+2026-06-19 folded-load audit: focused matcher still verifies 94.55%,
+27/28 instructions, 23/27 prefix, and 3 clean masked operands. Re-tested direct
+raw loads from the real row-heading table symbol, an explicit `g_game_base`
+local, a byte-offset local, raw `installed_heading_bits`, a `game_words`
+dword-table view, and the authored `row * 60 + row` spelling. The direct forms
+fold the `g_row_heading_table` displacement but consistently move the scaled
+row index from native `edx` to `ecx` and drop to 85.19%; moving the template
+reload after the table load regresses further to 78.57%. The raw-bit assignment
+through the retained table pointer is codegen-neutral at 94.55%, so keep the
+clear float `installed_heading_delta` assignment. Resume only with a new
+source-owner lead that can preserve both native `edx` index ownership and the
+folded table displacement.
+
 Recovered: FollowState layout (+0x00 active, +0x04 template, +0x08 cell,
 +0x0c sample_index, +0x10 progress = z - cell anchor z, +0x14
 vertical_offset = y - 0.49f, +0x38 player); `get_track_cell_row_index`
