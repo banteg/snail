@@ -258,6 +258,11 @@ High-confidence ownership recovered from the iOS symbols:
   `cRParcel`, and the ring/star classes in `SubGame.o`.
 - Path-template and attachment helpers are owned by `cRPath` and the
   `cRPathFollowGoldy`/`cRPathFollowGolb` family in `Path.o`.
+- The `Path.o` builder names recover most authored attachment-template
+  families directly (`BuildLoopTheLoop`, `BuildSlalomDouble`, `BuildP`,
+  `BuildTurnoverDouble`, `BuildTwisterA`, `BuildCage2`, and related variants).
+  The no-argument `cRPath::CalcLengthZ()` is the template-finalization family;
+  the live Goldy/Golb traversal helpers use `cRPathFollow*::Traverse(...)`.
 
 ## Candidate Use
 

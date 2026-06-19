@@ -1045,118 +1045,143 @@
     },
     {
       "address": "0x41b0f0",
-      "name": "initialize_looptheloop_path_template_pair"
+      "name": "initialize_looptheloop_path_template_pair",
+      "description": "Builds the LoopTheLoop attachment path-template pair; iOS Path.o names this `cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41bb40",
-      "name": "initialize_looptheloopw_path_template_pair"
+      "name": "initialize_looptheloopw_path_template_pair",
+      "description": "Builds the wide LoopTheLoop attachment path-template pair; iOS Path.o names this `cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41c5f0",
-      "name": "initialize_loopout_path_template_pair"
+      "name": "initialize_loopout_path_template_pair",
+      "description": "Builds the LoopOut attachment path-template pair; iOS Path.o names this `cRPath::BuildLoopOut(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41d030",
-      "name": "initialize_hump_path_template_pair"
+      "name": "initialize_hump_path_template_pair",
+      "description": "Builds the Hump attachment path-template pair; iOS Path.o names this `cRPath::BuildHump(float, float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41da30",
-      "name": "initialize_dump_path_template_pair"
+      "name": "initialize_dump_path_template_pair",
+      "description": "Builds the Dump attachment path-template pair; iOS Path.o names this `cRPath::BuildDump(float, float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41e440",
-      "name": "initialize_dip_path_template_pair"
+      "name": "initialize_dip_path_template_pair",
+      "description": "Builds the Dip attachment path-template pair; iOS Path.o names this `cRPath::BuildDip(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x41eda0",
-      "name": "initialize_screw_path_template_pair"
+      "name": "initialize_screw_path_template_pair",
+      "description": "Builds the Screw attachment path-template pair; iOS Path.o names this `cRPath::BuildScrew(int, int, bool, char*, char*)`."
     },
     {
       "address": "0x41f760",
-      "name": "initialize_slalom_path_template_pair"
+      "name": "initialize_slalom_path_template_pair",
+      "description": "Builds the Slalom attachment path-template pair; iOS Path.o names this `cRPath::BuildSlalom(int, int, bool, char*, char*)`."
     },
     {
       "address": "0x420170",
-      "name": "initialize_worm_path_template_pair"
+      "name": "initialize_worm_path_template_pair",
+      "description": "Builds the Worm attachment path template; iOS Path.o names this `cRPath::BuildWorm(char*)`."
     },
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
-      "description": "Starts one live attachment-follow session from the selected runtime attachment cell by marking the follow struct active, storing the template and owner cell, zeroing the segment index, seeding progress from `world_z - cell_anchor_z`, seeding local height from `world_y - 0.49`, caching the player pointer, and copying the row payload into template `+0x98`. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height."
+      "description": "Starts one live attachment-follow session from the selected runtime attachment cell by marking the follow struct active, storing the template and owner cell, zeroing the segment index, seeding progress from `world_z - cell_anchor_z`, seeding local height from `world_y - 0.49`, caching the player pointer, and copying the row payload into template `+0x98`. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. iOS Path.o names the player-follow owner family `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`."
     },
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state",
-      "description": "Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported."
+      "description": "Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported. iOS Path.o names the player-follow advance family `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`."
     },
     {
       "address": "0x421770",
-      "name": "initialize_path_follow_golb"
+      "name": "initialize_path_follow_golb",
+      "description": "Starts one Golb projectile attachment-follow session; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
     },
     {
       "address": "0x4217b0",
-      "name": "calc_path_length_z"
+      "name": "calc_path_length_z",
+      "description": "Advances one Golb projectile attachment-follow session and emits the interpolated position or exit velocity. iOS Path.o names the matching follow-state advance family `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the path-template length finalizer is separately exposed as `cRPath::CalcLengthZ()`."
     },
     {
       "address": "0x421dc0",
       "name": "mirror_path_template_pair_x",
-      "description": "Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half."
+      "description": "Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half. iOS Path.o names this `cRPath::Mirror(cRPath*)`."
     },
     {
       "address": "0x4221f0",
-      "name": "initialize_slalombig_path_template_pair"
+      "name": "initialize_slalombig_path_template_pair",
+      "description": "Builds the SlalomBig attachment path-template pair; iOS Path.o names this `cRPath::BuildSlalomBig(int, int, bool, char*, char*)`."
     },
     {
       "address": "0x422c00",
-      "name": "initialize_sweep_path_template_pair"
+      "name": "initialize_sweep_path_template_pair",
+      "description": "Builds the Sweep attachment path-template pair; iOS Path.o names this `cRPath::BuildSweep(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x423580",
-      "name": "initialize_snake_path_template_pair"
+      "name": "initialize_snake_path_template_pair",
+      "description": "Builds the Snake attachment path-template pair; iOS Path.o names this `cRPath::BuildSnake(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x423f10",
-      "name": "initialize_supertramp_path_template_pair"
+      "name": "initialize_supertramp_path_template_pair",
+      "description": "Builds the SuperTramp attachment path-template pair; iOS Path.o names this `cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)`."
     },
     {
       "address": "0x4246a0",
-      "name": "build_track_fringe_mesh"
+      "name": "build_track_fringe_mesh",
+      "description": "Builds the generated side/fringe strip mesh for one attachment path template; iOS Path.o names this `cRPath::BuildFringe(char*, float)`."
     },
     {
       "address": "0x424ad0",
-      "name": "build_track_fringe_supertramp_mesh"
+      "name": "build_track_fringe_supertramp_mesh",
+      "description": "Builds the generated SuperTramp fringe strip mesh for one attachment path template; iOS Path.o names this `cRPath::BuildFringeSuperTramp(char*)`."
     },
     {
       "address": "0x425050",
-      "name": "initialize_slalomdouble_path_template_pair"
+      "name": "initialize_slalomdouble_path_template_pair",
+      "description": "Builds the SlalomDouble attachment path-template pair; iOS Path.o names this `cRPath::BuildSlalomDouble(int, int, bool, char*, char*)`."
     },
     {
       "address": "0x425a40",
-      "name": "initialize_p_path_template_pair"
+      "name": "initialize_p_path_template_pair",
+      "description": "Builds the P attachment path-template pair; iOS Path.o names this `cRPath::BuildP(int, float, int, float, float, int, char*, char*)`."
     },
     {
       "address": "0x426400",
-      "name": "initialize_start_path_template_pair"
+      "name": "initialize_start_path_template_pair",
+      "description": "Builds the Start attachment path-template pair; iOS Path.o names this `cRPath::BuildStart(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x426cb0",
-      "name": "initialize_turnover_path_template_pair"
+      "name": "initialize_turnover_path_template_pair",
+      "description": "Builds the Turnover attachment path-template pair; iOS Path.o names this `cRPath::BuildTurnover(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x427640",
-      "name": "initialize_turnoverdouble_path_template_pair"
+      "name": "initialize_turnoverdouble_path_template_pair",
+      "description": "Builds the TurnoverDouble attachment path-template pair; iOS Path.o names this `cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x427fe0",
-      "name": "initialize_turnunder_path_template_pair"
+      "name": "initialize_turnunder_path_template_pair",
+      "description": "Builds the Turnunder attachment path-template pair; iOS Path.o names this `cRPath::BuildTurnunder(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x4289a0",
-      "name": "initialize_wibble_path_template_pair"
+      "name": "initialize_wibble_path_template_pair",
+      "description": "Builds the Wibble attachment path-template pair; iOS Path.o names this `cRPath::BuildWibble(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x429250",
-      "name": "initialize_invert_path_template_pair"
+      "name": "initialize_invert_path_template_pair",
+      "description": "Builds the Invert attachment path-template pair; iOS Path.o has both `cRPath::BuildInvert(float, int, bool, char*, char*)` and `cRPath::BuildInvert1(float, int, bool, char*, char*)`, so this Windows split keeps the conservative family name."
     },
     {
       "address": "0x429ae0",
@@ -1170,11 +1195,13 @@
     },
     {
       "address": "0x42a540",
-      "name": "initialize_twister_path_template_pair"
+      "name": "initialize_twister_path_template_pair",
+      "description": "Builds the TwisterA attachment path-template pair; iOS Path.o names this `cRPath::BuildTwisterA(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x42af30",
-      "name": "initialize_twister2_path_template_pair"
+      "name": "initialize_twister2_path_template_pair",
+      "description": "Builds the Twister2A attachment path-template pair; iOS Path.o names this `cRPath::BuildTwister2A(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x42b920",
@@ -1183,16 +1210,18 @@
     },
     {
       "address": "0x42b9c0",
-      "name": "get_path_position_at_node"
+      "name": "get_path_position_at_node",
+      "description": "Projects a path node and row index into local/output position for attachment-row consumers; iOS Path.o names this `cRPath::GetPos(tVector&, int, int, tVector&)`."
     },
     {
       "address": "0x42ba80",
-      "name": "initialize_loopbow_path_template_pair"
+      "name": "initialize_loopbow_path_template_pair",
+      "description": "Builds the LoopBow attachment path-template pair; iOS Path.o names this `cRPath::BuildLoopBow(float, int, bool, char*, char*)`."
     },
     {
       "address": "0x42c600",
       "name": "finalize_path_template",
-      "description": "Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state."
+      "description": "Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state. iOS Path.o names this finalizer family `cRPath::CalcLengthZ()`."
     },
     {
       "address": "0x42c770",
@@ -1201,23 +1230,28 @@
     },
     {
       "address": "0x42ca90",
-      "name": "is_point_inside_track_attachment"
+      "name": "is_point_inside_track_attachment",
+      "description": "Tests whether one probe/swept-motion pair lies inside the selected attachment template cell. iOS Path.o names the closest split helper `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`."
     },
     {
       "address": "0x42cbf0",
-      "name": "initialize_toad_path_template_pair"
+      "name": "initialize_toad_path_template_pair",
+      "description": "Builds the Toad attachment path-template pair; iOS Path.o names this `cRPath::BuildToad(bool, char*, char*)`."
     },
     {
       "address": "0x42d570",
-      "name": "initialize_hill_valley_path_template_pair"
+      "name": "initialize_hill_valley_path_template_pair",
+      "description": "Builds the Hill/Valley attachment path-template pair; iOS Path.o names this family `cRPath::BuildHill(int, float, float, bool, char*, char*)`."
     },
     {
       "address": "0x42df00",
-      "name": "initialize_sbend_path_template_pair"
+      "name": "initialize_sbend_path_template_pair",
+      "description": "Builds the SBend attachment path-template pair; iOS Path.o names this `cRPath::BuildSBend(int, float, float, bool, char*, char*)`."
     },
     {
       "address": "0x42e720",
-      "name": "initialize_cage2_path_template_pair"
+      "name": "initialize_cage2_path_template_pair",
+      "description": "Builds the Cage2 attachment path-template pair; iOS Path.o names this `cRPath::BuildCage2(int, char*, char*)`."
     },
     {
       "address": "0x42f470",

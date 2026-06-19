@@ -1,4 +1,5 @@
 // Golb (player shot) path-follow structures, partial.
+// iOS Path.o keeps this live projectile traversal family as cRPathFollowGolb.
 // Offsets per analysis/decompile/*/00421770-*.c and 00415e30-*.c
 #ifndef GOLB_H
 #define GOLB_H

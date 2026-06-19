@@ -1,4 +1,5 @@
 // Matrix-backed attachment path-template view, partial.
+// iOS Path.o keeps this template owner as cRPath.
 //
 // This is a sibling view of AttachmentPathTemplate for path-follow scratches
 // that need samples as AttachmentSampleMatrixView. It intentionally depends on

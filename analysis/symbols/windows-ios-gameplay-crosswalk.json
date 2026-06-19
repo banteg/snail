@@ -440,11 +440,96 @@
       "confidence": "high"
     },
     {
-      "address": "0x4217b0",
-      "windows_name": "calc_path_length_z",
-      "ios_symbol": "cRPath::CalcLengthZ()",
+      "address": "0x41b0f0",
+      "windows_name": "initialize_looptheloop_path_template_pair",
+      "ios_symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
       "source_object": "Path.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x41bb40",
+      "windows_name": "initialize_looptheloopw_path_template_pair",
+      "ios_symbol": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41c5f0",
+      "windows_name": "initialize_loopout_path_template_pair",
+      "ios_symbol": "cRPath::BuildLoopOut(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41d030",
+      "windows_name": "initialize_hump_path_template_pair",
+      "ios_symbol": "cRPath::BuildHump(float, float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41da30",
+      "windows_name": "initialize_dump_path_template_pair",
+      "ios_symbol": "cRPath::BuildDump(float, float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41e440",
+      "windows_name": "initialize_dip_path_template_pair",
+      "ios_symbol": "cRPath::BuildDip(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41eda0",
+      "windows_name": "initialize_screw_path_template_pair",
+      "ios_symbol": "cRPath::BuildScrew(int, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x41f760",
+      "windows_name": "initialize_slalom_path_template_pair",
+      "ios_symbol": "cRPath::BuildSlalom(int, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x420170",
+      "windows_name": "initialize_worm_path_template_pair",
+      "ios_symbol": "cRPath::BuildWorm(char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x420c40",
+      "windows_name": "begin_track_attachment_follow_state",
+      "ios_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x420cb0",
+      "windows_name": "update_track_attachment_follow_state",
+      "ios_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x421770",
+      "windows_name": "initialize_path_follow_golb",
+      "ios_symbol": "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4217b0",
+      "windows_name": "calc_path_length_z",
+      "ios_symbol": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)",
+      "source_object": "Path.o",
+      "confidence": "high",
+      "notes": "This Windows helper advances the Golb follow state; the similarly named no-argument `cRPath::CalcLengthZ()` maps to `finalize_path_template`."
     },
     {
       "address": "0x421dc0",
@@ -454,11 +539,155 @@
       "confidence": "high"
     },
     {
+      "address": "0x4221f0",
+      "windows_name": "initialize_slalombig_path_template_pair",
+      "ios_symbol": "cRPath::BuildSlalomBig(int, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x422c00",
+      "windows_name": "initialize_sweep_path_template_pair",
+      "ios_symbol": "cRPath::BuildSweep(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x423580",
+      "windows_name": "initialize_snake_path_template_pair",
+      "ios_symbol": "cRPath::BuildSnake(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x423f10",
+      "windows_name": "initialize_supertramp_path_template_pair",
+      "ios_symbol": "cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4246a0",
+      "windows_name": "build_track_fringe_mesh",
+      "ios_symbol": "cRPath::BuildFringe(char*, float)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x424ad0",
+      "windows_name": "build_track_fringe_supertramp_mesh",
+      "ios_symbol": "cRPath::BuildFringeSuperTramp(char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x425050",
+      "windows_name": "initialize_slalomdouble_path_template_pair",
+      "ios_symbol": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x425a40",
+      "windows_name": "initialize_p_path_template_pair",
+      "ios_symbol": "cRPath::BuildP(int, float, int, float, float, int, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x426400",
+      "windows_name": "initialize_start_path_template_pair",
+      "ios_symbol": "cRPath::BuildStart(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x426cb0",
+      "windows_name": "initialize_turnover_path_template_pair",
+      "ios_symbol": "cRPath::BuildTurnover(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x427640",
+      "windows_name": "initialize_turnoverdouble_path_template_pair",
+      "ios_symbol": "cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x427fe0",
+      "windows_name": "initialize_turnunder_path_template_pair",
+      "ios_symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4289a0",
+      "windows_name": "initialize_wibble_path_template_pair",
+      "ios_symbol": "cRPath::BuildWibble(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x429250",
+      "windows_name": "initialize_invert_path_template_pair",
+      "ios_symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "medium",
+      "notes": "iOS also exposes `cRPath::BuildInvert1(...)`; this row preserves the known Windows family without asserting which original split survived the port."
+    },
+    {
+      "address": "0x429b20",
+      "windows_name": "initialize_kind42_path_template_pair",
+      "ios_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "medium",
+      "notes": "Structural evidence ties Windows kind 42 to the HalfPipe family, but the public authored-path mapping remains open."
+    },
+    {
+      "address": "0x42a540",
+      "windows_name": "initialize_twister_path_template_pair",
+      "ios_symbol": "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42af30",
+      "windows_name": "initialize_twister2_path_template_pair",
+      "ios_symbol": "cRPath::BuildTwister2A(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42b920",
+      "windows_name": "compute_kind42_attachment_transform",
+      "ios_symbol": "cRPath::HalfPipePos(float, float, float, tMatrix&, float&)",
+      "source_object": "Path.o",
+      "confidence": "medium",
+      "notes": "The iOS symbol confirms the nonlinear kind-42 transform family; Windows keeps the neutral helper name until HalfPipe/HalfPole splits are fully resolved."
+    },
+    {
       "address": "0x42b9c0",
       "windows_name": "get_path_position_at_node",
       "ios_symbol": "cRPath::GetPos(tVector&, int, int, tVector&)",
       "source_object": "Path.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x42ba80",
+      "windows_name": "initialize_loopbow_path_template_pair",
+      "ios_symbol": "cRPath::BuildLoopBow(float, int, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42c600",
+      "windows_name": "finalize_path_template",
+      "ios_symbol": "cRPath::CalcLengthZ()",
+      "source_object": "Path.o",
+      "confidence": "high",
+      "notes": "No-argument iOS method aligns with the template finalization pass that recomputes derived length scalars."
     },
     {
       "address": "0x42c770",
@@ -475,6 +704,35 @@
       "source_object": "Path.o",
       "confidence": "medium",
       "notes": "Point-in-template test is the closest Windows split of the iOS path-position search helper."
+    },
+    {
+      "address": "0x42cbf0",
+      "windows_name": "initialize_toad_path_template_pair",
+      "ios_symbol": "cRPath::BuildToad(bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42d570",
+      "windows_name": "initialize_hill_valley_path_template_pair",
+      "ios_symbol": "cRPath::BuildHill(int, float, float, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "medium",
+      "notes": "Windows helper name keeps the recovered hill/valley role while iOS exposes the BuildHill spelling."
+    },
+    {
+      "address": "0x42df00",
+      "windows_name": "initialize_sbend_path_template_pair",
+      "ios_symbol": "cRPath::BuildSBend(int, float, float, bool, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x42e720",
+      "windows_name": "initialize_cage2_path_template_pair",
+      "ios_symbol": "cRPath::BuildCage2(int, char*, char*)",
+      "source_object": "Path.o",
+      "confidence": "high"
     }
   ]
 }

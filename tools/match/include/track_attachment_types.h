@@ -1,4 +1,6 @@
 // Attachment-follow runtime type views, partial.
+// iOS Path.o keeps the template owner as cRPath and the live player traversal
+// state as cRPathFollowGoldy.
 #ifndef TRACK_ATTACHMENT_TYPES_H
 #define TRACK_ATTACHMENT_TYPES_H
 
@@ -21,19 +23,19 @@ struct TrackRowCell;
 
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
-    void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0
-    void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0
-    void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0
+    void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
+    void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
+    void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0, cRPath::Mirror
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,
-        TrackRowCell* cell); // @ 0x42c770
+        TrackRowCell* cell); // @ 0x42c770, cRPath::Search
     // Semantically void/thiscall; the non-void return is preserved only for
     // caller scratches that still model the stale EAX value after the call.
     int compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
     bool is_point_inside_track_attachment(
-        Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90
+        Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90, cRPath::SearchPos
 
     char unknown_00[0x24];
     PathTemplateStripMesh* strip_mesh; // +0x24
@@ -58,7 +60,7 @@ struct AttachmentPathTemplate {
     char unknown_9d[0xa8 - 0x9d];
     char unknown_a8[0x150 - 0xa8];
 
-    int get_path_position_at_node(Vector3* out, int node, int row_index, float* local);
+    int get_path_position_at_node(Vector3* out, int node, int row_index, float* local); // cRPath::GetPos
 };
 
 typedef char AttachmentPathTemplate_must_be_0x150[
