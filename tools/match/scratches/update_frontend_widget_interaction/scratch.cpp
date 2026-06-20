@@ -49,7 +49,7 @@ static void unlink_frontend_widget(FrontendWidget* widget)
         return;
     }
     if ((list_flags & 0x40) != 0) {
-        report_errorf("List remove next");
+        report_errorf("List remove NEXTBOD");
         ((TooltipState*)(self + 0x28c))->reset_tooltip();
         *(int*)(self + 0x1a0) = 0;
         return;
@@ -90,7 +90,32 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     unsigned int flags = *(unsigned int*)(self + 0x1a0);
     if (flags == 0) {
-        unlink_frontend_widget(this);
+        char* free_anchor = g_game_base + 0x5a8;
+        unsigned int list_flags = *(unsigned int*)(self + 0x04);
+        if ((list_flags & 0x200) == 0) {
+            report_errorf("List remove");
+            ((TooltipState*)(self + 0x28c))->reset_tooltip();
+            return;
+        }
+        if ((list_flags & 0x40) != 0) {
+            report_errorf("List remove NEXTBOD");
+            ((TooltipState*)(self + 0x28c))->reset_tooltip();
+            return;
+        }
+
+        FrontendWidget* next = *(FrontendWidget**)(self + 0x0c);
+        FrontendWidget* prev = *(FrontendWidget**)(self + 0x08);
+        if (next != 0)
+            *(FrontendWidget**)((char*)next + 0x08) = prev;
+        if (prev != 0)
+            *(FrontendWidget**)((char*)prev + 0x0c) = next;
+        else
+            *(FrontendWidget**)(free_anchor + 4) = next;
+
+        *(FrontendWidget**)(self + 0x0c) = *(FrontendWidget**)(free_anchor + 8);
+        *(FrontendWidget**)(free_anchor + 8) = this;
+        *(unsigned int*)(self + 0x04) &= ~0x200u;
+        ((TooltipState*)(self + 0x28c))->reset_tooltip();
         return;
     }
     if ((flags & 0x200) != 0) {
@@ -221,27 +246,27 @@ update_after_input:
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x1000) == 0) {
         float cold = 1.0f - *(float*)(self + 0x210);
-        ((Color4f*)(self + 0x1dc))->store_color4f(
-            *(float*)(self + 0x210) * *(float*)(self + 0x1bc) + cold * *(float*)(self + 0x1ac),
-            *(float*)(self + 0x210) * *(float*)(self + 0x1c0) + cold * *(float*)(self + 0x1b0),
-            *(float*)(self + 0x210) * *(float*)(self + 0x1c4) + cold * *(float*)(self + 0x1b4),
-            *(float*)(self + 0x210) * *(float*)(self + 0x1c8) + cold * *(float*)(self + 0x1b8));
+        ((Color4f*)(self + 0x1ac))->store_color4f(
+            *(float*)(self + 0x210) * *(float*)(self + 0x1cc) + cold * *(float*)(self + 0x1bc),
+            *(float*)(self + 0x210) * *(float*)(self + 0x1d0) + cold * *(float*)(self + 0x1c0),
+            *(float*)(self + 0x210) * *(float*)(self + 0x1d4) + cold * *(float*)(self + 0x1c4),
+            *(float*)(self + 0x210) * *(float*)(self + 0x1d8) + cold * *(float*)(self + 0x1c8));
 
-        ((Color4f*)(self + 0x1cc))->store_color4f(
+        ((Color4f*)(self + 0x1dc))->store_color4f(
             *(float*)(self + 0x210) * *(float*)(self + 0x1fc) + cold * *(float*)(self + 0x1ec),
             *(float*)(self + 0x210) * *(float*)(self + 0x200) + cold * *(float*)(self + 0x1f0),
             *(float*)(self + 0x210) * *(float*)(self + 0x204) + cold * *(float*)(self + 0x1f4),
             *(float*)(self + 0x210) * *(float*)(self + 0x208) + cold * *(float*)(self + 0x1f8));
 
         if ((*(unsigned int*)(self + 0x1a0) & 0x8000) != 0) {
-            ((Color4f*)(self + 0x1cc))->r *= 0.5f;
-            ((Color4f*)(self + 0x1cc))->g *= 0.5f;
-            ((Color4f*)(self + 0x1cc))->b *= 0.5f;
-            ((Color4f*)(self + 0x1cc))->a *= 0.5f;
             ((Color4f*)(self + 0x1dc))->r *= 0.5f;
             ((Color4f*)(self + 0x1dc))->g *= 0.5f;
             ((Color4f*)(self + 0x1dc))->b *= 0.5f;
             ((Color4f*)(self + 0x1dc))->a *= 0.5f;
+            ((Color4f*)(self + 0x1ac))->r *= 0.5f;
+            ((Color4f*)(self + 0x1ac))->g *= 0.5f;
+            ((Color4f*)(self + 0x1ac))->b *= 0.5f;
+            ((Color4f*)(self + 0x1ac))->a *= 0.5f;
         }
 
         if ((*(unsigned int*)(self + 0x1a0) & 0x800) == 0) {
@@ -253,8 +278,8 @@ update_after_input:
             } else {
                 layout_and_queue_wrapped_font_text(
                     self + 0x2cc,
-                    *(int*)(self + 0x18),
-                    *(float*)(self + 0x1c),
+                    *(int*)(self + 0x6ec),
+                    *(float*)(self + 0x6f0),
                     *(float*)(self + 0x6f4),
                     *(float*)(self + 0x6f8),
                     (float*)(self + 0x240),
@@ -266,7 +291,7 @@ update_after_input:
                     *(int*)(self + 0x25c),
                     *(float*)(self + 0x260),
                     0x1000000,
-                    (Color4f*)(self + 0x1cc),
+                    (Color4f*)(self + 0x1dc),
                     0,
                     render_hot_text);
             }

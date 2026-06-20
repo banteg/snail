@@ -11,7 +11,8 @@ helpers.
 Expected residuals:
 - list removal is source-shaped but not instruction-scheduled;
 - several flag names remain raw until more callsites are pinned;
-- slider/text color propagation is semantic but not exact.
+- slider/text color propagation now follows the native slot relationships but
+  still has local scheduling drift.
 
 2026-06-20 type consolidation: the method-only `TwinkleManager` declaration was
 replaced with `include/twinkle_manager.h`, validated by exact
@@ -42,3 +43,16 @@ refresh copies `+0x4c/+0x50/+0x54/+0x58` back into layout
 `45.53%`, and rewriting the internal text layout call to the apparent
 `+0x6ec/+0x6f0` font fields regressed to `48.32%`, so both probes were
 rejected.
+
+2026-06-20 current-color layout pass: focused matcher improves from `48.36%`
+to `52.85%`, with `579/647` candidate/target instructions, prefix `42/647`,
+and masked operands `65 ok / 4 mismatch`. The zero-flags teardown is inlined
+because the target has the first intrusive-list removal in the main function,
+and the diagnostic string is the shared `"List remove NEXTBOD"`. Constructor
+and update dumps agree on the color slots: current fill `+0x1ac`, idle fill
+`+0x1bc`, hot fill `+0x1cc`, current text `+0x1dc`, idle text `+0x1ec`, and
+hot text `+0x1fc`; the internal wrapped-text call also uses the real font
+fields `+0x6ec/+0x6f0`. Rejected probes: expanding all teardown paths raised
+masked operands to `70 ok / 2 mismatch` but regressed to `50.19%` by forcing
+an extra saved `ebx`; a macro-based teardown expansion similarly regressed to
+`48.79%` through register-pressure artifacts.
