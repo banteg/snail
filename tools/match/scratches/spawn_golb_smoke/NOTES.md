@@ -57,5 +57,15 @@ Rejected source-shaped probes:
   (`sprite_words += 18`) after forming the velocity pointer compiled
   identically. Interleaving the velocity stores around z scaling regressed to
   78.26%, so the accepted raw-tail shape remains.
+- 2026-06-20 shared smoke-tail audit: focused Wibo still reports 84.29%,
+  68/72 candidate instructions, 43/72 prefix, and eight clean masked operands.
+  Deriving `out_position` from `out_velocity - 3`, spelling the same view as
+  `Vector3* output_velocity` / `output_position`, adding a compact
+  `SpriteMotionTail` overlay, and writing the reused `Color4f` lanes through a
+  `float* color_words` view all compile back to the same direct `sprite + offset`
+  tail. The overlay variant even schedules the gravity store before the delayed
+  x-velocity store. Keep the raw float-lane source; the remaining gap is VC6
+  choosing not to materialize native's `lea velocity; add position-base` cursor
+  pair or the separate x-velocity stack spill.
 
 Keep pinned unless a new source idiom explains the delayed sprite-base advance.

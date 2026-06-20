@@ -109,3 +109,10 @@ Rejected source-shape probes:
   lane directly to `sprite + 0x54`. Keep the raw sprite-word tail plus reused
   `Color4f` velocity lanes; the residual is output lifetime/stack-reload
   scheduling, not an input velocity ownership issue.
+- 2026-06-20 shared smoke-tail audit: focused Wibo still reports 85.14%,
+  72/76 candidate instructions, 5/76 prefix, and nine clean masked operands.
+  Reusing the `spawn_golb_smoke` color-lane test here by assigning the velocity
+  staging through `float* color_words = (float*)&color` is codegen-neutral and
+  leaves the same missing `lea velocity; add position-base` pair plus direct
+  x-velocity store. This confirms the tail residual is shared VC6 scheduling
+  debt across both smoke emitters, not a Golb-specific member-layout issue.
