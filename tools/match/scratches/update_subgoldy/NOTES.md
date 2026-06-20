@@ -202,6 +202,14 @@ source-shape issue is solved.
   re-entry callsites from by-value `Vector3` arguments to six explicit scalar
   floats is rejected for this caller shape: it fell to 71.14%, `2057/2087`,
   and `288 ok / 1`.
+- 2026-06-20 shared call-surface cleanup: `VoiceManager`,
+  `SoundEffectManager`, `TipManager`/`TipMessageDefinition`, and `Backdrop`
+  now come from their shared headers instead of compact local stubs. This is
+  codegen neutral at the current baseline (`72.51%`, `2067/2087`, same
+  `290 ok / 1` jump-table audit). Type report impact: `TipManager` is removed
+  from the conflict list, `update_subgoldy` drops out of the `VoiceManager` and
+  `SoundEffectManager` rows, and `Backdrop` no longer lists this scratch, though
+  the type tool still reports a header-only `Backdrop` residual.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

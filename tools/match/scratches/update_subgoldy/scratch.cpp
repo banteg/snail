@@ -10,9 +10,13 @@
 
 #include "attachment_sample.h"
 #include "app_shell.h"
+#include "audio_system.h"
+#include "backdrop.h"
 #include "high_score_record.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
+#include "tip_manager.h"
+#include "voice_manager.h"
 
 class Sprite;
 
@@ -20,37 +24,10 @@ float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
-struct VoiceManager {
-    void play_voice_manager(int voice, unsigned char flag, int arg);
-    void reset_voice_manager();
-};
-extern VoiceManager g_voice_manager; // unk_751498
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-};
-extern SoundEffectManager g_sound_effect_manager;
-
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 extern unsigned char g_environment_flags; // byte_4B2F40
 extern float g_steering_sensitivity[];    // flt_4DF950
-
-struct TipDefinition {
-    int flags;             // +0x00
-    float layout_y;        // +0x04
-    float text_scale;      // +0x08
-    float dismiss_seconds; // +0x0c
-    char* text;            // +0x10
-};
-
-struct TipManager {
-    void enqueue_tip_message(TipDefinition* tip, int mode);
-};
-
-struct Backdrop {
-    void set_backdrop_progress_fraction(float fraction);
-};
 
 struct RowEventDisplay {
     char unknown_00[0x14];
@@ -246,7 +223,7 @@ struct Player {
     unsigned char trampoline_bounce_active; // +0x1e4
     char unknown_1e5[3];
     int row_event_id;            // +0x1e8
-    TipDefinition row_event_tip; // +0x1ec
+    TipMessageDefinition row_event_tip; // +0x1ec
     char unknown_200[0x2d8 - 0x200];
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x2e8 - 0x2d9];

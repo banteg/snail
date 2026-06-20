@@ -726,7 +726,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ABI-conflict: 16 type name(s)
+- ABI-conflict: 15 type name(s)
 - unresolved-layout: 14 type name(s)
 - header-compatible: 12 type name(s)
 
@@ -741,19 +741,18 @@ Run `uv run snail match types --paths` for the full path-level report.
 | ABI-conflict | RuntimeCallback | 4 | 0 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Vector3 (aliases: Vec3) | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | MouseCursorState | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | VoiceManager | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | ActiveBod | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | GolbShot | 2 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Twinkle | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | Backdrop | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | VoiceManager | 2 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | InputOkState | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | TipManager | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Backdrop | 0 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | SoundEffectManager | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | SoundEffectManager | 2 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
