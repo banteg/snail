@@ -90,3 +90,12 @@ view used by speedup and jetpack pickups.
 pickups now share `TrackPickupOwnerSubgameView`. The `+0x09` byte is named
 `subgame_pause_gate`, distinguishing this embedded subgame update gate from the
 global/UI `Game::pause_gate` view at root `+0x74621`.
+
+2026-06-20 updater CFG improvement: the Pro Extended pass moved the state-one
+guard to the positive `world_position.z < owner->interaction_max_z` removal
+arm, split the two state-two list-error exits into cold labels, and added one
+state-one `Sprite*` snapshot shared by the two diagnostic exits. Local focused
+Wibo reproduces 87.94%, 129/128 instructions, 6/128 prefix, and 21 clean masked
+operands; `health_collect_particles` remains exact at 100.00%. The remaining
+residual is the extra state-one sprite snapshot load before the diagnostic
+tails; the native shape reloads `sprite` directly into `ecx`.

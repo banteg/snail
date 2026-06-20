@@ -38,16 +38,8 @@ state_two:
     flags = list_flags;
     state = zero;
     head = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) {
-        report_errorf("List remove");
-        sprite->kill_sprite();
-        return;
-    }
-    if ((flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-        sprite->kill_sprite();
-        return;
-    }
+    if ((flags & 0x200) == 0) goto state_two_not_linked;
+    if ((flags & 0x40) != 0) goto state_two_nextbod;
 
     next = (TrackHealthPickup*)list_next;
     if (next != (TrackHealthPickup*)zero) {
@@ -64,45 +56,54 @@ state_two:
     list_next = (TrackHealthPickup*)head->free_top;
     head->free_top = (BodNode*)this;
     list_flags &= ~0x200;
+    sprite->kill_sprite();
+    return;
+
+state_two_nextbod:
+    report_errorf("List remove NEXTBOD");
+    sprite->kill_sprite();
+    return;
+
+state_two_not_linked:
+    report_errorf("List remove");
     sprite->kill_sprite();
     return;
 
 state_one:
-    if (world_position.z >= owner->interaction_max_z) {
-        goto update_bob;
-    }
+    if (world_position.z < owner->interaction_max_z) {
+        flags = list_flags;
+        state = zero;
+        head = (BodList*)(g_game_base + 0x5a8);
+        Sprite* pickup_sprite = sprite;
+        if ((flags & 0x200) == 0) {
+            report_errorf("List remove");
+            pickup_sprite->kill_sprite();
+            return;
+        }
+        if ((flags & 0x40) != 0) {
+            report_errorf("List remove NEXTBOD");
+            pickup_sprite->kill_sprite();
+            return;
+        }
 
-    flags = list_flags;
-    state = zero;
-    head = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) {
-        report_errorf("List remove");
+        next = (TrackHealthPickup*)list_next;
+        if (next != (TrackHealthPickup*)zero) {
+            next->list_prev = list_prev;
+        }
+
+        prev = (TrackHealthPickup*)list_prev;
+        if (prev != (TrackHealthPickup*)zero) {
+            prev->list_next = list_next;
+        } else {
+            head->first = (BodNode*)list_next;
+        }
+
+        list_next = (TrackHealthPickup*)head->free_top;
+        head->free_top = (BodNode*)this;
+        list_flags &= ~0x200;
         sprite->kill_sprite();
         return;
     }
-    if ((flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-        sprite->kill_sprite();
-        return;
-    }
-
-    next = (TrackHealthPickup*)list_next;
-    if (next != (TrackHealthPickup*)zero) {
-        next->list_prev = list_prev;
-    }
-
-    prev = (TrackHealthPickup*)list_prev;
-    if (prev != (TrackHealthPickup*)zero) {
-        prev->list_next = list_next;
-    } else {
-        head->first = (BodNode*)list_next;
-    }
-
-    list_next = (TrackHealthPickup*)head->free_top;
-    head->free_top = (BodNode*)this;
-    list_flags &= ~0x200;
-    sprite->kill_sprite();
-    return;
 
 update_bob:
     float advanced = bob_phase_step + bob_phase;
