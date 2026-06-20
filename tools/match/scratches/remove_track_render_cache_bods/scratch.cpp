@@ -2,7 +2,7 @@
 
 #include "track_render_cache.h"
 
-extern char* volatile g_game_base; // data_4df904
+extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
 void TrackRenderCacheManager::remove_track_render_cache_bods()

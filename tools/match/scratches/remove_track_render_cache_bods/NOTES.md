@@ -40,3 +40,12 @@ Rejected probe:
 - Walking a `TrackRenderCacheSlot*` directly produced the right semantics but
   started from `slot + 0x00` (`lea esi, [ecx+0x58]`) instead of native's
   `slot + 0x0c` cursor (`lea esi, [ecx+0x64]`) and matched only 43.48%.
+
+2026-06-20 byte-base audit: unlike the damage-gauge byte-base scratch, this
+helper benefits from spelling `g_game_base` as a normal external. Focused Wibo
+improves from 52.17% to 54.39%, with 56/58 candidate/target instructions and
+5 clean masked operands. The change removes one stale volatile reload around
+the global BOD-list anchor; the remaining dominant residual is still the native
+full-dword mask lifetime (`ebx = 0x200`, `ebp = ~0x200`) versus VC6 folding the
+tests/clear into `bh`/`ah`. Signed flag types and explicit assignment for the
+final clear were tested and were codegen-neutral, so they are not retained.
