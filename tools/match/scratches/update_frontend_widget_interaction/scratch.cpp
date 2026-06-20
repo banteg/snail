@@ -78,10 +78,10 @@ void FrontendWidget::update_frontend_widget_interaction()
     *(unsigned int*)(self + 0x1a0) &= 0xfffdffff;
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
-        *(float*)(self + 0x198) = *(float*)(self + 0x248) * 0.1f + *(float*)(self + 0x240) + 4.0f - 12.0f;
-        *(float*)(self + 0x19c) = *(float*)(self + 0x248) * 0.80000001f + *(float*)(self + 0x240) - 4.0f;
-        *(float*)(self + 0x1a8) = *(float*)(self + 0x24c) * 0.5f + *(float*)(self + 0x244) - 6.0f;
-        *(float*)(self + 0x1ac) = *(float*)(self + 0x24c) * 0.5f + *(float*)(self + 0x244) + 32.0f - 6.0f;
+        *(float*)(self + 0x184) = *(float*)(self + 0x248) * 0.1f + *(float*)(self + 0x238) + 4.0f - 12.0f;
+        *(float*)(self + 0x188) = *(float*)(self + 0x248) * 0.80000001f + *(float*)(self + 0x238) - 4.0f;
+        *(float*)(self + 0x18c) = *(float*)(self + 0x24c) * 0.5f + *(float*)(self + 0x23c) - 6.0f;
+        *(float*)(self + 0x190) = *(float*)(self + 0x24c) * 0.5f + *(float*)(self + 0x23c) + 32.0f - 6.0f;
     }
 
     *(float*)(self + 0x180) =
@@ -246,10 +246,10 @@ update_after_input:
 
         if ((*(unsigned int*)(self + 0x1a0) & 0x800) == 0) {
             if ((*(unsigned int*)(self + 0x1a0) & 0x10000) != 0) {
-                *(float*)(self + 0x240) = *(float*)(self + 0x238);
-                *(float*)(self + 0x244) = *(float*)(self + 0x23c);
-                *(float*)(self + 0x248) = *(float*)(self + 0x250);
-                *(float*)(self + 0x24c) = *(float*)(self + 0x254);
+                *(float*)(self + 0x238) = *(float*)(self + 0x4c);
+                *(float*)(self + 0x23c) = *(float*)(self + 0x50);
+                *(float*)(self + 0x248) = *(float*)(self + 0x54);
+                *(float*)(self + 0x24c) = *(float*)(self + 0x58);
             } else {
                 layout_and_queue_wrapped_font_text(
                     self + 0x2cc,
@@ -280,7 +280,7 @@ update_after_input:
     *(float*)(self + 0x6e8) = *(float*)(g_game_base + 0x2a0);
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
-        FrontendWidget* more = *(FrontendWidget**)(self + 0x184);
+        FrontendWidget* more = *(FrontendWidget**)(self + 0x71c);
         if ((*(unsigned int*)((char*)more + 0x1a0) & 0x20) != 0) {
             *(unsigned int*)((char*)more + 0x1a0) &= ~0x20u;
             *(float*)(self + 0x17c) += 0.2f;
@@ -288,7 +288,7 @@ update_after_input:
                 *(float*)(self + 0x17c) = 1.0f;
         }
 
-        FrontendWidget* less = *(FrontendWidget**)(self + 0x188);
+        FrontendWidget* less = *(FrontendWidget**)(self + 0x718);
         if ((*(unsigned int*)((char*)less + 0x1a0) & 0x20) != 0) {
             *(unsigned int*)((char*)less + 0x1a0) &= ~0x20u;
             *(float*)(self + 0x17c) -= 0.2f;
@@ -306,8 +306,8 @@ update_after_input:
         else
             *(unsigned int*)((char*)more + 0x1a0) &= ~0x8000u;
 
-        FrontendWidget* value = *(FrontendWidget**)(self + 0x18c);
-        *(Color4f*)((char*)value + 0x1cc) = *(Color4f*)(self + 0x1cc);
+        FrontendWidget* value = *(FrontendWidget**)(self + 0x720);
+        *(Color4f*)((char*)value + 0x1dc) = *(Color4f*)(self + 0x1dc);
         *(float*)((char*)value + 0x20c) = *(float*)(self + 0x20c);
         *(float*)((char*)value + 0x210) = *(float*)(self + 0x210);
         sprintf((char*)value + 0x2cc, "%02i%%", (int)(*(float*)(self + 0x17c) * 100.0f + 0.1f));

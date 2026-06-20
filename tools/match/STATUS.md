@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.54%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.56%**.
 
 ## Proof Grade (453)
 
@@ -639,7 +639,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 678/712 | 39.42% | 0/712 | 3 mismatch, 39 ok |  |
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 270/429 | 45.21% | 0/429 | 1 mismatch, 1 unresolved, 38 ok |  |
-| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 544/647 | 46.85% | 15/647 | 5 mismatch, 55 ok |  |
+| 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 544/647 | 48.36% | 42/647 | 5 mismatch, 55 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
