@@ -127,3 +127,9 @@ Rejected/source-shape probes:
   the native `sub esp, 0x18` frame to `0x0c` and shrinks the candidate to
   `332/336` instructions. Reverted; the aggregate `Vector3 target`/`delta`
   spelling is still the better structural match.
+- 2026-06-20 larger-family retry: spelling the state-3 collapse in native
+  scalar order with explicit `target_z`, `target_y`, `delta_x/y/z`, and
+  `scaled_y/z` locals regressed the focused match from `88.92%` to `78.55%`,
+  collapsed the frame to a single pushed scratch slot, and shortened the
+  candidate to `326/336` instructions. Keep the pointer-plus-`Vector3 delta`
+  and `scaled_delta` form unless a stronger local-lifetime lead appears.
