@@ -11,3 +11,12 @@ Small level texture-set mutator at `0x410730`.
 The native caller ignores the return register, and the changed path only leaves
 whatever the texture-replacement helper leaves in `eax`, so this is modeled as a
 `void` mutator rather than a meaningful `int`-returning getter.
+
+## 2026-06-20 object texture-family audit
+
+Two source-plausible selector forms were codegen-neutral at `76.19%`: reusing
+the `texture_set` parameter as the selected value, and initializing
+`int selected = texture_set` before a no-op default case. Neither recovers the
+native pre-save `mov eax, [esp+4]` switch selector. Keep the clearer explicit
+`selected` local and default assignment; the prologue residual is not evidence
+for different texture-bank semantics.

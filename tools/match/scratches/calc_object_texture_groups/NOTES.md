@@ -39,3 +39,13 @@ expression order, integer byte-address spelling, a texture-slot base view, and
 a named texture-field offset were all codegen-neutral for the SIB residual.
 Keep the current clearer byte-offset expression until a real source-owner lead
 appears; do not force the one-byte addressing difference.
+
+## 2026-06-20 object texture-family audit
+
+Retesting a typed `ObjectFaceQuad* active_quad` inside only the `flags & 0x400`
+block regressed to `75.23%`: VC6 stopped reloading `Object::facequads` before
+the texture-ref load, which contradicts the native `mov eax, [esi+0x5c]` shape.
+A `TextureRef** active_texture_slot` view regressed to `82.88%` by introducing
+an extra `lea` before the load. Keep the accepted `TextureRef* active_texture =
+*(TextureRef**)((char*)facequads + offset + 0x0c)` spelling; the remaining
+base/index SIB byte is not evidence for a different `ObjectFaceQuad` layout.

@@ -27,3 +27,13 @@ helper still looks like original byte-cursor source even though
 outer zero/count registers and drops to `61.68%`; keep the clearer
 `ObjectFaceQuad*` spelling until a stronger object-address ownership lead
 appears. A `register Object*` hint was codegen-neutral and is not retained.
+
+## 2026-06-20 object texture-family audit
+
+Rechecking the decompiler-looking single `object_offset += 0xdc` recurrence
+regressed to the old `51.85%` shape, and changing only the object pointer
+expression from `object_cursor` to `object_offset` also regressed to `51.85%`.
+The separate `object_cursor` used for the pointer plus `object_offset` advanced
+at the loop bottom is therefore evidence-backed even though it looks redundant.
+The remaining residual is still object-address register ownership around
+`objects + offset`, not a reason to return to typed `Object[]` indexing.
