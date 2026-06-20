@@ -46,3 +46,19 @@ Status:
   for the repeated capacity constants (`560`, `1280`, `160`) was codegen-neutral
   and left the same seed-register residual. Keep the current direct capacity
   stores and `index_buffer_count << 1` tail.
+- 2026-06-20 seed-order pass: initializing the first two capacity pairs as
+  vertex0/index0/vertex1/index1 recovers the native seed-register schedule
+  (`ecx = 560`, `eax = 1280`) and removes the whole first mismatch region.
+  The scratch improves from 93.44% to 97.54%, with prefix advancing from
+  3/122 to 29/122 and all 18 masked operands still clean. This is plausible
+  handwritten C++ even though both decompilers present the duplicate 560 stores
+  together.
+- Rejected tail/cursor probes in the seed-order pass: a direct
+  `2 * *(max_index_count)` expression reached native `edx; shl` arithmetic but
+  hoisted the load before the vertex-buffer store and dropped to 95.90%;
+  `index_buffer_count *= 2` kept the store order but used `eax` and matched
+  96.72%; unsigned count typing was neutral; spelling the cursor as
+  `(i + slot_base) * 0x3c` was neutral. Keep the clearer signed count, shift
+  expression, and `(slot_base + i)` cursor. Remaining residuals are the
+  equivalent slot-index `lea` SIB order and the tail byte-count register/shift
+  idiom.

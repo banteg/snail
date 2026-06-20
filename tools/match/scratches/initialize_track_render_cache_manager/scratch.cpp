@@ -16,8 +16,8 @@ struct TrackRenderCacheSlotCursor {
 void* TrackRenderCacheManager::initialize_track_render_cache_manager()
 {
     max_vertex_counts[0] = 560;
-    max_vertex_counts[1] = 560;
     max_index_counts[0] = 1280;
+    max_vertex_counts[1] = 560;
     max_index_counts[1] = 1280;
     max_vertex_counts[2] = 160;
     max_index_counts[2] = 240;
