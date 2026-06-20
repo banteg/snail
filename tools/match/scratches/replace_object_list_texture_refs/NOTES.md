@@ -37,3 +37,14 @@ The separate `object_cursor` used for the pointer plus `object_offset` advanced
 at the loop bottom is therefore evidence-backed even though it looks redundant.
 The remaining residual is still object-address register ownership around
 `objects + offset`, not a reason to return to typed `Object[]` indexing.
+
+## 2026-06-20 larger object-texture retry
+
+Focused Wibo still reports `69.16%`, `54/53` candidate/target instructions,
+`14/53` prefix, and one clean masked operand. Reversing the byte-pointer
+expression to `object_cursor + (char*)objects` and casting the object-list base
+through an integer address are both codegen-neutral: VC6 still keeps the object
+base in `ecx` instead of native's `add eax, [objects]` cursor shape. Keep the
+current byte-cursor source because it preserves the verified loop-bottom
+offset recurrence, and treat the object-address register ownership as the next
+real residual.

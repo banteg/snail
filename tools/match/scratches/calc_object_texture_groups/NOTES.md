@@ -49,3 +49,13 @@ A `TextureRef** active_texture_slot` view regressed to `82.88%` by introducing
 an extra `lea` before the load. Keep the accepted `TextureRef* active_texture =
 *(TextureRef**)((char*)facequads + offset + 0x0c)` spelling; the remaining
 base/index SIB byte is not evidence for a different `ObjectFaceQuad` layout.
+
+## 2026-06-20 larger object-texture retry
+
+Focused Wibo still reports `98.18%`, `55/55` candidate/target instructions,
+`18/55` prefix, and one clean masked operand. Naming a separate
+`active_quads` byte base, spelling the reload as a narrow `TextureRef**`
+slot view, and casting the byte offset to an unsigned local are all
+codegen-neutral and leave the same `[ecx+eax+0x0c]` versus native
+`[eax+ecx+0x0c]` SIB ownership residual. Keep the byte-offset loop; the
+remaining byte is an addressing encoding artifact, not a layout lead.
