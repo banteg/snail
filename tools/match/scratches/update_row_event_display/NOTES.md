@@ -108,3 +108,16 @@ Those variants leave the exact same residual (`mov ecx, ADDR; push 0x31`
 instead of native `push 0x31; mov ecx, ADDR`). Keep this scratch pinned; the
 remaining mismatch is a call-setup scheduling artifact with no new
 source-plausible lifetime lead.
+
+2026-06-20 row-event lifecycle retry: focused Wibo still reports `99.53%`,
+`213/213` candidate/target instructions, `102/213` prefix, and 37 clean masked
+operands. The exact `flush_row_event_display` and `register_parcel_delivery`
+siblings still prove the row-event lifecycle and show that the same
+`g_sound_effect_manager.play_sound_effect(0x31)` spelling can emit native's
+`push 0x31; mov ecx, ADDR` order in the shorter payout helper. In this larger
+state-machine body, spelling the id as decimal `49`, folding the
+`parcel_target_count == 0` and game-mode gates into one condition, and calling
+through `(&g_sound_effect_manager)->play_sound_effect(0x31)` are all
+codegen-neutral. The retained nested gate and direct member call remain the
+clearest source; the residual is still local thiscall setup scheduling, not
+evidence for a second audio API.
