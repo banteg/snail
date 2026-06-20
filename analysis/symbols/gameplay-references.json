@@ -2349,6 +2349,15 @@
       "description": "Authored galaxy route x/y point table rescaled by load_galaxy_layout and copied into per-route name records."
     },
     {
+      "address": "0x4a1ca0",
+      "name": "g_galaxy_route_point_table_end",
+      "kind": "global",
+      "aliases": [
+        "flt_4a1ca0"
+      ],
+      "description": "One-past sentinel for the authored galaxy route x/y point table walked by load_galaxy_layout."
+    },
+    {
       "address": "0x4a1d14",
       "name": "g_galaxy_initial_map_x_bits",
       "kind": "global",

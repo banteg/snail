@@ -17,7 +17,8 @@ extern int dword_4a1d14;
 extern int dword_4a1d18[];
 extern int dword_4a1d1c[];
 extern int dword_4a1d20[];
-extern int data_4a1c50[];
+extern int g_galaxy_route_point_table[];
+extern int g_galaxy_route_point_table_end[];
 
 int GalaxyRoute::load_galaxy_layout()
 {
@@ -34,14 +35,14 @@ int GalaxyRoute::load_galaxy_layout()
         first_point_cursor += 2;
     } while ((int)first_point_cursor < 0x4a2040);
 
-    float* galaxy_point_cursor = (float*)data_4a1c50;
+    float* galaxy_point_cursor = (float*)g_galaxy_route_point_table;
     do {
         float scaled_x = galaxy_point_cursor[-1] * 0.80000001f;
         galaxy_point_cursor[-1] = scaled_x;
         galaxy_point_cursor[0] =
             (galaxy_point_cursor[0] * 0.80000001f - 240.0f) * 0.93000001f + 250.0f;
         galaxy_point_cursor += 2;
-    } while ((int)galaxy_point_cursor < 0x4a1ca0);
+    } while ((int)galaxy_point_cursor < (int)g_galaxy_route_point_table_end);
 
     int star_index = 0;
     level_progress_base = g_game_base + 0x74618;
@@ -53,7 +54,7 @@ int GalaxyRoute::load_galaxy_layout()
 
     int galaxy_index = star_index;
     int star_group_offset = star_index;
-    int* current_galaxy_point = data_4a1c50;
+    int* current_galaxy_point = g_galaxy_route_point_table;
     int* route_name_cursor = (int*)((char*)route_names + 0x84);
 
     while (1) {
@@ -117,7 +118,7 @@ int GalaxyRoute::load_galaxy_layout()
         route_name_cursor += 40;
         ++galaxy_index;
         star_group_offset += 10;
-        if ((int)current_galaxy_point < 0x4a1ca0) {
+        if ((int)current_galaxy_point < (int)g_galaxy_route_point_table_end) {
             continue;
         }
 
