@@ -54,13 +54,12 @@ void Player::add_subgoldy_score(int score_kind, int bonus_score)
         int lives = visible_life_stock;
         if (lives < 9) {
             visible_life_stock = lives + 1;
-        }
-    }
-
-    char* game = g_game_base;
-    if (*(int*)(game + 0x74658) == 0) {
-        if (*(int*)(game + 0x24) == 0) {
-            g_sound_effect_manager.play_sound_effect(0x2c);
+            char* game = g_game_base;
+            if (*(int*)(game + 0x74658) == 0) {
+                if (*(int*)(game + 0x24) == 0) {
+                    g_sound_effect_manager.play_sound_effect(0x2c);
+                }
+            }
         }
     }
 }
