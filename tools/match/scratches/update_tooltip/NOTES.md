@@ -34,3 +34,11 @@ was replaced with `include/frontend_widget.h`, mapping the local names above to
 the shared field names. Focused matcher evidence stayed unchanged at `87.87%`,
 `219/218` candidate/target instructions, `5/218` prefix, and `23 ok` masked
 operands.
+
+2026-06-20 state-2 layout pass: spelling the armed-owner path as the positive
+branch keeps the reset-to-state-1 block physically late, matching native's
+state-2 branch layout instead of inlining the reset before the allocation body.
+Focused Wibo improves to `89.70%`, still `219/218` candidate/target
+instructions with `23 ok` masked operands. The remaining leading residual is
+the extra `test eax, eax` after the third state-dispatch decrement; native
+reuses the `dec` flags directly.
