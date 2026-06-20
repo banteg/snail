@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**471/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61183/325832** bytes (**18.78%**) are proof-grade, and overall fuzzy is **53.65%**.
+**472/693** mapped gameplay functions matched, **693/693** mapped gameplay functions have a scratch, **61226/325825** bytes (**18.79%**) are proof-grade, and overall fuzzy is **53.65%**.
 
-## Proof Grade (471)
+## Proof Grade (472)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -222,6 +222,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
 | ✅ | read_pressed_text_input_key_code | 0x432440 | 915 | 338/338 | 100.00% | 338/338 | 55 ok |  |
+| ✅ | register_font_texture_sheet_wrapper | 0x432d20 | 43 | 11/11 | 100.00% | 11/11 | 1 ok |  |
 | ✅ | cache_music_file | 0x432d50 | 160 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | play_sound_effect_backend | 0x432df0 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
@@ -490,7 +491,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1284 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
-| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 99.09% | 386/440 | 73 ok |  |
+| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.09% | 386/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 97.54% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
@@ -654,7 +655,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 253/5411 | 4.66% | 0/5411 | 20 mismatch, 4 unresolved, 51 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 20 mismatch, 3 unresolved, 52 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 319/373 | 42.20% | 0/373 | 24 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 446/582 | 31.71% | 3/582 | 33 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |

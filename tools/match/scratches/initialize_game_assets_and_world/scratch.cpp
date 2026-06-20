@@ -37,7 +37,7 @@ void load_level_definitions(); // @ 0x448900
 void apply_audio_config_volumes(); // @ 0x41b070
 void initialize_font_wave_state(); // @ 0x449c70
 int initialize_font3d_objects(short font_id); // @ 0x44ae10
-void sub_432D20(char* font_path, int font_id, float scale, double alpha); // @ font setup callsite
+void register_font_texture_sheet_wrapper(char* font_path, int font_id, float width_scale, float height_scale); // @ 0x432d20
 void initialize_overlay(void* overlay); // @ 0x407d40-family overlay init
 void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
 void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a2f0
@@ -292,7 +292,7 @@ char GameRoot::initialize_game_assets_and_world()
     initialize_overlay_slot(game, 0x914);
     initialize_overlay_slot(game, 0x7c8);
 
-    sub_432D20((char*)"Objects/Font/Font-menu-hover.tga", 2, 0.800000012f, 1.0);
+    register_font_texture_sheet_wrapper((char*)"Objects/Font/Font-menu-hover.tga", 2, 0.75f, 1.0f);
     initialize_font3d_objects(0);
     initialize_font_wave_state();
     g_sprite_manager.initialize_sprite_manager();

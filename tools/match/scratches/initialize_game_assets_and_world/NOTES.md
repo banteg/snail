@@ -16,3 +16,23 @@ Expected residuals:
   target has the inline intrusive-list sequence;
 - string literals are used for concrete asset paths recovered from the binary,
   so masked-operand audit may still need reference-manifest promotion later.
+
+2026-06-20 font bootstrap audit: the native FONT-MENU-HOVER setup call pushes
+`0x3f400000` (`0.75f`) for the width scale and `0x3f800000` (`1.0f`) for the
+height scale. The old scratch used `0.800000012f` and a `double` height
+argument, which produced an extra high-dword push. The call now targets the
+named startup wrapper at `0x432d20`:
+
+```asm
+00432d20  mov eax, [esp+0x10]
+00432d24  mov ecx, [esp+0x0c]
+00432d28  mov edx, [esp+0x08]
+00432d2c  push eax
+00432d2d  mov eax, [esp+0x08]
+00432d31  push ecx
+00432d32  push edx
+00432d33  push eax
+00432d34  call register_font_texture_sheet
+00432d39  add esp, 0x10
+00432d3c  ret
+```

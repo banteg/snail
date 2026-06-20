@@ -1617,6 +1617,11 @@
       "description": "Maps held keyboard scancodes into the same text-input byte codes as read_pressed_text_input_key_code, but with the native repeat delay/rate state so border_input_text can autorepeat held edits and cursor moves."
     },
     {
+      "address": "0x432d20",
+      "name": "register_font_texture_sheet_wrapper",
+      "description": "Small cdecl wrapper used by startup to forward the FONT-MENU-HOVER sheet path, font kind, width scale, and height scale into `register_font_texture_sheet`."
+    },
+    {
       "address": "0x432d50",
       "name": "cache_music_file",
       "description": "Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
