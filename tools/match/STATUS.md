@@ -505,7 +505,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 87.87% | 5/218 | 23 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
-| 🚧 | game_window_proc | 0x4074b0 | 828 | 137/141 | 89.21% | 4/141 | 1 mismatch, 2 unresolved, 36 ok |  |
+| 🚧 | game_window_proc | 0x4074b0 | 828 | 137/141 | 89.21% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1266 | 287/310 | 80.40% | 0/310 | 115 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 85.56% | 12/192 | 2 mismatch, 24 ok |  |
 | 🚧 | initialize_d3d8_device | 0x411730 | 378 | 106/106 | 86.79% | 38/106 | 9 ok |  |

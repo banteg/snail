@@ -105,6 +105,30 @@
       "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
+      "address": "0x4076ac",
+      "name": "game_window_proc_low_message_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x18",
+      "description": "Compiler-emitted switch jump table used by game_window_proc for messages 2 through 0x100 after the byte lookup."
+    },
+    {
+      "address": "0x4076c4",
+      "name": "game_window_proc_low_message_lookup_table",
+      "kind": "lookup_table",
+      "aliases": [],
+      "size": "0xff",
+      "description": "Compiler-emitted byte lookup table mapping game_window_proc message values 2 through 0x100 to compact switch cases."
+    },
+    {
+      "address": "0x4077c4",
+      "name": "game_window_proc_mouse_message_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x28",
+      "description": "Compiler-emitted switch jump table used by game_window_proc for mouse messages 0x201 through 0x20a."
+    },
+    {
       "address": "0x4079e0",
       "name": "bass_audio_window_proc",
       "kind": "function",

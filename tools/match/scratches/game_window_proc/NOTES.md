@@ -18,9 +18,11 @@ mouse movement therefore returns zero without changing the wheel latch.
 ## Current match notes
 
 Focused matcher result: 89.21%, 137 candidate instructions versus 141 target
-instructions, with 36 clean masked operands. The two unresolved operands and
-one mismatch are compiler-emitted switch tables for the `message - 2` and
-`message - 0x201` dispatches.
+instructions, with 37 clean masked operands, 0 unresolved operands, and 2
+audited jump-table mismatches. The `message - 2` byte lookup table is now
+content-audited as `game_window_proc_low_message_lookup_table`; the two
+remaining mismatches are the compiler-emitted jump tables for the `message - 2`
+and `message - 0x201` dispatches.
 
 The main remaining source-shape difference is the shared close/ESC quit body:
 native lays out the `PostQuitMessage(0)` block before the `WM_KEYDOWN` ESC
