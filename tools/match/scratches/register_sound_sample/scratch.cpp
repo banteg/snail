@@ -15,12 +15,13 @@ int register_sound_sample(char* path, int normalization_class)
 {
     int archive_index_records = g_archive_index_records;
     char* source_path;
+    int sample_size;
     if (archive_index_records != 0) {
         source_path = path;
-        load_file_bytes_from_archive_or_fs(path, g_music_memory_buffer, (int*)&path);
+        load_file_bytes_from_archive_or_fs(path, g_music_memory_buffer, &sample_size);
         g_audio_backend.load_registered_sound_sample_from_bytes(
             g_music_memory_buffer,
-            (int)path,
+            sample_size,
             g_registered_sound_sample_count,
             normalization_class);
     } else {

@@ -13,16 +13,15 @@ First scratch for the registered sound sample entry point.
 - Increments `g_registered_sound_sample_count` and reports the native
   `RSHELL_SOUND_MAX` error if the table reaches 256 entries.
 
-Current status: near-match. The operands and backend method calls are resolved,
-but VC6 hoists the saved path load above the archive-index branch. Native keeps
-that `esi = path` setup inside each branch.
+Current status: proof-grade match, 100.00%, 51/51 target instructions, prefix
+51/51, masked operands 19 ok.
 
-Residual:
+Resolved:
 
-- Native reloads the original path into `esi` inside both load branches.
-  Structured `if/else` source with a local `archive_index_records` gives the
-  right branch layout and operands, but VC6 hoists `source_path = path` before
-  the branch and reuses it in the filesystem path arm.
+- Native reloads the original path into `esi` inside both load branches because
+  the archive byte count is a real local, not the caller's `path` stack slot.
+  With `int sample_size`, `&sample_size` lands at `[esp+0x8]` after `push esi`
+  in the archive arm, and the source no longer aliases the original path value.
 - 2026-06-20 rejected probes: branch-local `archive_path`/`filesystem_path`
   aliases and an explicit archive-arm `goto sample_loaded` compiled identically
   to the hoisted near-match. Moving the filesystem `source_path = path` after
@@ -47,3 +46,9 @@ Residual:
   filesystem-arm delayed `source_path = path` shape still regresses to 77.67%:
   it recovers the late reload but moves the backend call and count-tail register
   ownership away from native. Keep the structured shared-tail source.
+- 2026-06-20 proof: binding `source_path = path` inside the archive/filesystem
+  call arguments is codegen-neutral at 93.07%, confirming the residual was not
+  expression spelling. Replacing the `(int*)&path` out parameter with
+  `int sample_size` matches 100.00%; the previous scratch had misidentified the
+  native `lea [esp+0x8]` as `&path` when it is the local byte-count slot after
+  saving `esi`.
