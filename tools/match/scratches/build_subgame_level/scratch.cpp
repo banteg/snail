@@ -1,86 +1,24 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
 #include "high_score_record.h"
+#include "active_landscape_entry.h"
+#include "bod_list.h"
+#include "damage_gauge.h"
+#include "frontend_widget.h"
+#include "golb.h"
+#include "landscape_script_bank.h"
+#include "level_definition_loader.h"
+#include "mouse_cursor_state.h"
+#include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
+#include "star_field.h"
+#include "sub_lazer_types.h"
+#include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-class StarField {
-public:
-    int unhide_star_field();
-};
-
-class GolbPathBank {
-public:
-    void initialize_enemy_manager();
-};
-
-class DamageGaugeController {
-public:
-    void initialize_damage_gauge();
-};
 
 class RuntimeCallback {
 public:
     void noop_runtime_ai();
-};
-
-class SubLazerPool {
-public:
-    int* initialize_sub_lazer_pool();
-};
-
-class SaltHazardPool {
-public:
-    int* initialize_salt_hazard_pool();
-};
-
-class LevelDefinitionLoader {
-public:
-    int* load_frontend_level_by_mode_and_index(int mode, int level_index);
-};
-
-class TrackParcelPool {
-public:
-    void initialize_track_parcel_slots();
-};
-
-class FrontendWidget {
-public:
-    int hide_border_init();
-    int unhide_border_init();
-};
-
-class LandscapeScriptBank {
-public:
-    int load_landscape_script_by_name(char* script_name);
-};
-
-class ActiveLandscapeEntry {
-public:
-    void activate_landscape_entry(int script_index);
-};
-
-struct BodNode {
-    int callback;
-    unsigned int list_flags;
-    BodNode* list_prev;
-    BodNode* list_next;
-};
-
-struct BodList {
-    int unknown_00;
-    BodNode* first;
-    BodNode* free_top;
-};
-
-class MouseCursorState {
-public:
-    void release_mouse_cursor();
-};
-
-class Player {
-public:
-    int initialize_subgoldy(int player_slot);
 };
 
 class Game {

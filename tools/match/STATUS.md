@@ -727,43 +727,35 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 14 type name(s)
-- unresolved-layout: 13 type name(s)
-- header-compatible: 12 type name(s)
+- unresolved-layout: 6 type name(s)
+- header-compatible: 11 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
 | ABI-conflict | Game | 41 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | BorderManager | 9 | 3 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | FrontendWidget | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | Player | 7 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | FrontendWidget | 6 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | Player | 6 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Quaternion | 5 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | RuntimeSlot | 4 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | RuntimeCallback | 4 | 0 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Vector3 (aliases: Vec3) | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | MouseCursorState | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | ActiveBod | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | GolbShot | 2 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Twinkle | 2 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
+| ABI-conflict | MouseCursorState | 2 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | InputOkState | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Backdrop | 0 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | LevelDefinitionLoader | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
+| unresolved-layout | LevelDefinitionLoader | 1 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | BodList | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | CutsceneAI | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | HighScoreScreen | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | PauseMenu | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

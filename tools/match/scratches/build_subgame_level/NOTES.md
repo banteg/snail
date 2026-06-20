@@ -3,8 +3,8 @@
 ## Scope
 
 This scratch reconstructs `Game::build_subgame_level(int level_index)` at
-`0x437eb0` using scratch-local declarations and raw `Game` offsets. No shared
-headers or unrelated scratches were changed.
+`0x437eb0` using shared runtime headers where their call surfaces are already
+stable, with raw `Game` offsets still kept local.
 
 The source shape was recovered from both decompile exports:
 
@@ -76,6 +76,16 @@ early after the easier prefix. Its major phases are:
   is unchanged at `79.82%`, `555/555`, `177/555` prefix, with the same
   `99 ok / 2 unresolved / 1` masked audit, so this is accepted as a
   call-surface consolidation rather than a source-shape win.
+- 2026-06-20 shared subgame runtime header pass: local one-method or prefix
+  views for `StarField`, `GolbPathBank`, `DamageGaugeController`,
+  `SubLazerPool`, `SaltHazardPool`, `LevelDefinitionLoader`,
+  `TrackParcelPool`, `FrontendWidget`, `LandscapeScriptBank`,
+  `ActiveLandscapeEntry`, `BodList`, `BodNode`, `MouseCursorState`, and
+  `Player::initialize_subgoldy` were replaced by shared headers. The focused
+  matcher remains unchanged at `79.82%`, `555/555`, `177/555` prefix, with the
+  same `99 ok / 2 unresolved / 1` masked audit. The type auditor moved this
+  scratch out of the `FrontendWidget`, `Player`, `GolbPathBank`,
+  `SubLazerPool`, and `SaltHazardPool` rows.
 
 ## Remaining differences
 
