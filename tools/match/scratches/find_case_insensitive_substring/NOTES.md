@@ -16,3 +16,14 @@ Focused Wibo result: 25.71%, 77/63 candidate/target instructions, with 2 masked
 operands OK. The source maps the helper calls and return semantics, but native
 loads the haystack pointer before saving registers and keeps a compact
 `haystack - needle` delta across the inner scan.
+
+2026-06-20 native cursor rewrite: focused Wibo improves to 65.00%, with 57/63
+candidate/target instructions and 4 clean masked operands. IDA shows the first
+argument is the pattern and the second argument is the searched cursor, and the
+success return points into the second argument. Rewriting the scratch around
+that ownership, then spelling the inner scan as a preincremented pattern cursor
+with a `haystack_cursor - needle` delta, recovers the native compact scan shape.
+The remaining residual is the prologue/cursor ownership: native loads the
+searched cursor and its first byte before saving registers, while VC6 still
+saves registers first. A direct mutation of the `haystack` argument regressed to
+34.11%, so the retained source keeps the separate `haystack_cursor` local.

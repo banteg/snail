@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.69%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.71%**.
 
 ## Proof Grade (453)
 
@@ -541,7 +541,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (89)
+## Mid Progress (50-79.99%) (90)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -634,8 +634,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/61 | 51.79% | 0/61 | 6 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
+| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 57/63 | 65.00% | 0/63 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (81)
+## Early Progress (>0-49.99%) (80)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -714,7 +715,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 1 unresolved, 8 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1109 | 300/325 | 44.80% | 0/325 | 5 mismatch, 36 ok |  |
-| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 77/63 | 25.71% | 0/63 | 2 ok |  |
 | 🚧 | parse_next_signed_int | 0x44e710 | 107 | 50/47 | 28.87% | 0/47 | - |  |
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
