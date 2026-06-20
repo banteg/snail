@@ -19,16 +19,15 @@ char DisplayModeState::update_display_mode_view_state()
     float height;
     float width;
     float y;
-sample_next:
-    if (read_next_display_mode_view_sample(&x, &y, &width, &height) != 0) {
-
+    while (1) {
+        if (read_next_display_mode_view_sample(&x, &y, &width, &height) == 0)
+            break;
         int bottom = (int)(y + height);
         int mode_height = current_mode->height;
         y = (float)(mode_height - bottom);
 
-        if (probe_count == previous_probe_count) {
-            goto sample_next;
-        }
+        if (probe_count != previous_probe_count)
+            break;
     }
 
     return 1;
