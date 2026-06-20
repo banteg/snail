@@ -42,3 +42,17 @@ constructor in the current exports, so the scratch keeps them as local
 - Rechecked this scratch plus the three RuntimeSlot anchors. The anchors stayed
   exact, this scratch remained 80.40%, and the `RuntimeSlot` ABI-conflict row
   disappeared from `uv run snail match types --paths`.
+
+2026-06-20 runtime no-op AI split:
+
+- `RuntimeSlot` now also declares the empty `noop_runtime_ai()` callback used by
+  embedded runtime slots in `build_subgame_level`, `initialize_subgame`, and
+  `initialize_subgoldy`.
+- Those three callsites stayed byte-stable at their pinned focused scores, the
+  exact `noop_runtime_ai`, `noop_runtime_slot_constructor`,
+  `initialize_array_with_constructor`, and
+  `initialize_runtime_pools_and_path_template_bank` anchors stayed exact, and
+  `construct_game_runtime` stayed 80.40%.
+- `RuntimeCallback` is no longer a cross-scratch ABI-conflict name; the
+  remaining local use in `run_frame_update` is the frame-loop virtual `update()`
+  row, not this empty runtime-slot callback.

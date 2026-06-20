@@ -7,6 +7,7 @@
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
+#include "runtime_slot.h"
 #include "segment_catalog_types.h"
 #include "time_trial_string_formatter.h"
 #include "timer_counters.h"
@@ -14,11 +15,6 @@
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
-
-class RuntimeCallback {
-public:
-    void noop_runtime_ai();
-};
 
 class WarningRuntime {
 public:
@@ -116,7 +112,7 @@ void Game::initialize_subgame()
     *(unsigned char*)(game + 8) = (unsigned char)zero;
     *(int*)(game + 0x0c) = zero;
     *(int*)(game + 0x10) = 0x3d088889;
-    ((RuntimeCallback*)(game + 0x68b4c8))->noop_runtime_ai();
+    ((RuntimeSlot*)(game + 0x68b4c8))->noop_runtime_ai();
     *(int*)(game + 0x3c) = zero;
     *(int*)(game + 0x1272828) = zero;
 

@@ -9,17 +9,13 @@
 #include "landscape_script_bank.h"
 #include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
+#include "runtime_slot.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
 #include "star_field.h"
 #include "sub_lazer_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-class RuntimeCallback {
-public:
-    void noop_runtime_ai();
-};
 
 class Game {
 public:
@@ -75,7 +71,7 @@ void Game::build_subgame_level(int level_index)
     *(float*)(game + 0x1270fd0) = 100.0f;
     ((GolbPathBank*)(game + 0x1270fd4))->initialize_enemy_manager();
     ((DamageGaugeController*)(game + 0x3bbb28))->initialize_damage_gauge();
-    ((RuntimeCallback*)(game + 0x3bbb54))->noop_runtime_ai();
+    ((RuntimeSlot*)(game + 0x3bbb54))->noop_runtime_ai();
     ((SubLazerPool*)(game + 0x356b00))->initialize_sub_lazer_pool();
     ((SaltHazardPool*)(game + 0x3578c0))->initialize_salt_hazard_pool();
     g_voice_manager.reset_voice_manager();

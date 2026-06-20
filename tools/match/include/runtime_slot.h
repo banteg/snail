@@ -37,6 +37,8 @@ public:
     RuntimeSlot* initialize_track_parcel_runtime();
     RuntimeSlot* sub_408880();
 
+    void noop_runtime_ai();
+
     void* vtable; // +0x00 for bod-like runtime slots
 };
 

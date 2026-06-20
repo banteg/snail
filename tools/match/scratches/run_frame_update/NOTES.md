@@ -58,3 +58,9 @@ scheduling, not a missing local name.
 conflict without changing the pinned 97.78% residual profile. The adjacent
 `RuntimeCallback` vtable row is still deliberately local because it spans
 larger partials with different callback names and needs a separate pass.
+
+2026-06-20 runtime no-op AI split: the empty runtime-slot callback is now
+spelled as `RuntimeSlot::noop_runtime_ai()` in the three subgame/player
+callsite scratches. This leaves the local `RuntimeCallback` here scoped to the
+two frame-loop virtual `update()` slots at `base + 0x124` and `base + 0x31c`.
+Focused Wibo remains pinned at 97.78% with the same two scheduling residuals.

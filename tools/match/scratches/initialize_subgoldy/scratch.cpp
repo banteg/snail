@@ -6,6 +6,7 @@
 #include "damage_gauge.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
+#include "runtime_slot.h"
 #include "score_stats.h"
 #include "snail_skin.h"
 #include "spring_float.h"
@@ -14,11 +15,6 @@
 class CutsceneAIState {
 public:
     int initialize_cutscene_ai();
-};
-
-class RuntimeCallback {
-public:
-    void noop_runtime_ai();
 };
 
 class Player {
@@ -200,7 +196,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(unsigned char*)(self + 0x440) = (unsigned char)zero;
     *(int*)(self + 0x2738) = zero;
     ((DamageGaugeController*)(self + 0x3c4))->initialize_damage_gauge();
-    ((RuntimeCallback*)(self + 0x3f0))->noop_runtime_ai();
+    ((RuntimeSlot*)(self + 0x3f0))->noop_runtime_ai();
     *(unsigned char*)(self + 0x384) = (unsigned char)zero;
 
     char* transform = self + 0x614;
