@@ -7,6 +7,7 @@
 #include "vector3.h"
 
 typedef Vector3 Vec3;
+struct Sprite;
 
 float __fastcall normalize_vector(Vec3* vector);
 void add_subgoldy_score(int* player, int score_kind, int value);
@@ -50,7 +51,7 @@ struct GolbShot {
     void kill_golb();
     void spawn_golb_impact_sprite(Vec3* position);
     void spawn_golb_smoke(Vec3* position);
-    void spawn_golb_trail_sprite(Vec3* position);
+    Sprite* spawn_golb_trail_sprite(Vec3* position);
 
     char unknown_000[0x80];
     char vapour[0x150 - 0x80];       // +0x80 vapour trail object

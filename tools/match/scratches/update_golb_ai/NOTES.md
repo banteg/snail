@@ -289,3 +289,11 @@ semantics modulo the state struct binding.
 2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
 the shared `Vector3` type. Focused Wibo remains `49.85%`, `646/694`, with
 `52 ok` masked operands and the known target-call mismatch.
+
+2026-06-20 trail helper ABI cleanup: the local `GolbShot` view now declares
+`spawn_golb_trail_sprite` with its allocator-shaped `Sprite*` return, matching
+`golb.h` and the helper decompiler. Focused Wibo remains `49.85%`, `646/694`;
+all update callsites ignore the return. A broader attempt to clear the
+`GolbShot` type row by making `create_dispatch` nonvirtual was rejected:
+`create_golb`'s native tail is a real `(**vtable)(this)` dispatch through
+`*this`.
