@@ -25,3 +25,10 @@ changing the tail into an explicit result/null-check shape. Native remains
 void-fallthrough shaped after the third recursive call; the retained residual is
 still local self-call normalization plus the harness-required placeholder
 return load.
+
+2026-06-20 larger-chunk audit: target/candidate dumps still match
+instruction-for-instruction through the flag update and three child loads. The
+only object difference before the placeholder return load is the same recursive
+self-call relocation (`call L0` target versus `call ADDR` candidate). Keep this
+scratch pinned as a harness/link model residual, not a source-control-flow
+lead.

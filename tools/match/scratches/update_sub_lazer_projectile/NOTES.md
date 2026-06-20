@@ -75,3 +75,10 @@ instructions and dropped the match to `66.11%`. The remaining residual is
 therefore mostly zero-register scheduling in the inlined state-2 removal and
 the by-value `Vector3` spill order around `is_point_inside_track_attachment`,
 not a known semantic gap.
+
+2026-06-20 larger-chunk audit: spelling the pause gate as
+`owner_game->subgame_pause_gate != 0` is codegen-neutral at 81.11%. VC6 still
+introduces the shared `xor ebx, ebx` before `push edi`, uses `cmp ..., bl` for
+the pause byte and null checks, and stores `state = ebx` in state 2. Keep the
+plain truthiness test; the zero-register residual needs a stronger source owner
+than comparison spelling.

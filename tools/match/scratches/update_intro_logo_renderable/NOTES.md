@@ -13,3 +13,11 @@ one cleanup `fstp st(0)` on the constant-alpha branch.
 
 The helper is modeled as void. IDA's `char` return is the leftover low byte of
 `list_flags` after the visible-bit update.
+
+2026-06-20 larger-chunk audit: staging `float z = position->z` after the
+position update regresses to 75.61% by keeping the z value live across the
+later dirty-object flag update and shrinking the candidate to 40 instructions.
+Splitting the update as `float next_z = velocity.z + position->z; position->z =
+next_z;` is score-neutral at 81.93% and still emits `fst`/`fcom` instead of the
+native `fstp`/reload pair. Keep the direct `position->z += velocity.z` source;
+the remaining miss is x87 store/reload scheduling.

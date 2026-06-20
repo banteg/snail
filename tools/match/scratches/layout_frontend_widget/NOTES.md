@@ -18,3 +18,11 @@
   residuals are authored-frame load scheduling, wrapped-text argument register
   assignment, and the recursive self-call target spelling (`call L0` versus
   candidate relocation), with no unresolved operands.
+- 2026-06-20 larger-chunk audit: moving only the `authored_width` declaration
+  after the layout pointer setup is codegen-neutral at 86.44% and leaves the
+  same width-load hoist. Staging only `layout_mode`, `layout_center_x`, and
+  `idle_text_color` before the wrapped-text call regresses to 72.11% by growing
+  the frame to 0x0c. Loading `layout_top_bits` before storing
+  `texture_hit_x` regresses to 78.53% by moving the preserved flags owner from
+  `ecx` to `edx` and disturbing the recursive tail. Keep the current
+  post-call read/store schedule.
