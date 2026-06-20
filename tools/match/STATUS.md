@@ -616,7 +616,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 127/127 | 72.44% | 6/127 | 15 ok |  |
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 1 mismatch, 1 unresolved, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 494/501 | 59.90% | 6/501 | 2 mismatch, 58 ok |  |
-| 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 95/94 | 60.32% | 0/94 | 1 mismatch, 13 ok |  |
+| 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 90/94 | 64.13% | 0/94 | 1 mismatch, 15 ok |  |
 | 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 77.04% | 0/67 | 9 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |

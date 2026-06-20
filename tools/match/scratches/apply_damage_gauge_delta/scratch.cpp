@@ -9,10 +9,10 @@
 struct SnailSkinTransition;
 struct AnimDispatcher;
 
-extern char* volatile g_game_base; // data_4df904
+extern char* g_game_base; // data_4df904
 extern char g_damage_gate_byte[];          // 0x4300b4, sign bit blocks unforced
 extern char g_negative_delta_block_byte[]; // 0x42ff60
-extern char g_anim_suppress_byte[];        // 0x42ffd4
+extern char g_damage_gauge_anim_suppress_offset[]; // 0x430054
 extern char g_snail_skin_transition[];     // 0x430938
 extern char g_player_presentation_offset[]; // 0x432700
 
@@ -38,7 +38,7 @@ void DamageGaugeController::apply_damage_gauge_delta(float delta, char force)
             } else {
                 if (g_voice_manager.play_voice_manager(9, 0, -1))
                     hit_flash_progress = hit_flash_step;
-                if (!*(g_anim_suppress_byte + (int)g_game_base)) {
+                if (!*(g_damage_gauge_anim_suppress_offset + (int)g_game_base)) {
                     ((AnimDispatcherApi*)(g_player_presentation_offset + (int)g_game_base))
                         ->dispatch_cutscene_animation(6, 1, -1);
                     ((AnimDispatcherApi*)(g_player_presentation_offset + (int)g_game_base))

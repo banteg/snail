@@ -561,6 +561,15 @@
       "description": "Relocatable follow-region exit gate used by update_damage_gauge state-2 drain exit checks."
     },
     {
+      "address": "0x430054",
+      "name": "g_damage_gauge_anim_suppress_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_430054"
+      ],
+      "description": "Relocatable player presentation byte checked by apply_damage_gauge_delta before dispatching fallback damage animations after voice playback fails."
+    },
+    {
       "address": "0x4300b4",
       "name": "g_invincible_damage_gate_flags_offset",
       "kind": "offset",

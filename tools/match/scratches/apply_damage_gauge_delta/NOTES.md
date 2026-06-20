@@ -37,3 +37,16 @@ in the clamp tail (`0.0f`/`1.0f` materialization differs from native).
 separate `updated = 0.0f; fill = updated;` local produced identical 60.32%
 code, while hoisting `g_game_base` into an early `game` local regressed the
 score to 59.14%. Keep the shared type view and direct global-offset spelling.
+
+2026-06-20 volatile-base audit: unlike the attachment-follow header case, this
+scratch improves when `g_game_base` is a normal external. Focused Wibo moves
+from 60.32% to 64.13% (90/94 candidate/target instructions). The change removes
+several repeated volatile reloads while preserving the recovered damage gates
+and side-effect nesting. The pass also corrected the fallback animation
+suppress byte from the stale `Game+0x42ffd4` note to `Game+0x430054`, matching
+Binja and the target dump at `0x4414b6`; the offset is now curated as
+`g_damage_gauge_anim_suppress_offset`. The remaining masked debt is still the
+known clamp-tail `0.0f` versus `1.0f` constant materialization mismatch. An
+explicit `char* game_base` local with the non-volatile declaration regresses to
+53.76% by adding another saved register and moving `this`, so the direct
+global-offset spelling remains retained.
