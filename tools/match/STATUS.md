@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**482/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **62910/325759** bytes (**19.31%**) are proof-grade, and overall fuzzy is **53.81%**.
+**482/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **62910/325759** bytes (**19.31%**) are proof-grade, and overall fuzzy is **53.83%**.
 
 ## Proof Grade (482)
 
@@ -491,7 +491,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (12)
+## Near Match (95-99.99%) (13)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -505,10 +505,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 97.54% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
+| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 67/67 | 98.51% | 41/67 | 10 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (57)
+## High Progress (80-94.99%) (58)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -554,6 +555,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 81.11% | 5/218 | 23 ok |  |
+| 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 48/48 | 85.42% | 7/48 | 3 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 81.48% | 5/83 | 11 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 82.98% | 21/47 | - |  |
@@ -570,7 +572,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (83)
+## Mid Progress (50-79.99%) (81)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -633,8 +635,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 494/501 | 59.90% | 6/501 | 2 mismatch, 58 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 90/94 | 64.13% | 0/94 | 1 mismatch, 15 ok |  |
-| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 77.04% | 0/67 | 9 ok |  |
-| 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 54/48 | 78.43% | 2/48 | 2 ok |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 260/312 | 60.14% | 0/312 | 1 mismatch, 32 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |

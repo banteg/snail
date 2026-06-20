@@ -4,19 +4,19 @@
 
 #include "sub_lazer_types.h"
 
-void play_sound_effect_at_position(int sound_id, const float* position);
+void __stdcall play_sound_effect_at_position(int sound_id, const float* position);
 
 void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
 {
     int index = 0;
     int* state = &slots[0].state;
-    if (*state != 0) {
-        do {
-            index++;
-            state += 44;
-            if (index >= 20)
-                return;
-        } while (*state != 0);
+    while (1) {
+        if (*state == 0)
+            break;
+        index++;
+        state += 44;
+        if (index >= 20)
+            return;
     }
 
     Vector3 raw;

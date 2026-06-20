@@ -1,4 +1,4 @@
-# Improved — 78.43%, 54/48 insns, stack-staging residual
+# Improved — 85.42%, 48/48 insns, loop-layout residual
 
 Same scan-rotation residual class as spawn_salt_hazard (the target's
 single-test loop re-spills the index at the top because it later feeds
@@ -29,7 +29,17 @@ relationship explicit.
 
 2026-06-20 source-shape update: a scripted sweep showed the native stack frame
 is best modeled as one raw `Vector3` copied into the staged vector passed to
-`spawn_sub_lazer_projectile`. That recovers the `sub esp, 0x1c` frame and raises
+`spawn_sub_lazer_projectile`. That recovers the `sub esp, 0x1c` frame and raised
 the focused matcher to 78.43% with 2 masked operands ok and no mismatches. Keep
 the y stagger split through the named `stagger_y` local; the inline expression
 still flips into the misleading positive-constant `fmul` / `fsubr` form.
+
+2026-06-20 sibling loop/call correction: using the same top-test scan shape as
+`spawn_salt_hazard` (`while (1)` with an early empty-slot break) recovers the
+native `cmp [state], 0` first test and raises the prefix from 2 to 7. Declaring
+`play_sound_effect_at_position` as its matched `__stdcall ret 0x8` surface
+removes the caller cleanup. Focused Wibo is now 85.42%, 48/48 instructions, and
+3 clean masked operands. Spelling the exhaustion branch as `if (index < 20)
+continue; return;` and using an explicit `goto found_slot` were codegen-neutral;
+the remaining gap is the rotated exhausted-return block plus native's dead
+`ecx` load before the positional sound call.

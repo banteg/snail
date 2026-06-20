@@ -18,15 +18,15 @@ int SaltHazardPool::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;
     int* state = &slots[0].state;
-    do {
+    while (1) {
         if (!*state)
-            goto found;
+            break;
         ++index;
         state += 38;
-    } while (index < 40);
-    return index;
+        if (index >= 40)
+            return index;
+    }
 
-found:
     SaltHazardSlot* slot = &slots[index];
     slot->state = 1;
     slot->velocity.x = 0.0f;
@@ -35,8 +35,8 @@ found:
     Vector3* spawn_position = &slot->position;
     *spawn_position = *position;
     live_matrix->set_matrix_rotation_identity();
-    float angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
-    live_matrix->rotate_matrix_world_y(angle);
+    live_matrix->rotate_matrix_world_y(
+        ((float)next_math_random_value() - 16384.0f) * 0.0001917476f);
     *(unsigned char*)&slot->velocity.z = 1;
     SaltHazardSlot* head = &g_game->salt_list_head;
     if ((slot->list_flags & 0x200) != 0)

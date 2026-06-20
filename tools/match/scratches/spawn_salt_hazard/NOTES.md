@@ -1,4 +1,4 @@
-# Pinned — 77.04%, 67/68 insns, layout-only residual
+# Improved — 98.51%, 67/67 insns, one scheduling residual
 
 The free-scan loop is the only divergence: the original lays it out as a
 single top test with the bound compare as conditional back-edge; every
@@ -42,3 +42,12 @@ candidate instructions, with 9 masked operands OK and no unresolved or
 mismatched operands. The remaining mismatch is still the free-scan rotation and
 spawn scheduling/register choices; no fake loop labels or volatile locals were
 used.
+
+2026-06-20 sibling loop/angle correction: retesting the top-test
+`while (1) { if (!*state) break; ... }` scan after the non-volatile `g_game`
+cleanup recovers the native single state test and raises the prefix to 34.
+Inlining the random world-y angle into `rotate_matrix_world_y(...)` lets VC6
+push the argument slot first and fill it through x87 like native. Focused Wibo
+is now 98.51%, 67/67 instructions, and 10 clean masked operands. Rewriting the
+`+0x94` low-byte poke as a raw byte pointer was neutral; the only residual is
+VC6 loading `list_flags` before that independent byte store.
