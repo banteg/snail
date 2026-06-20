@@ -6,6 +6,8 @@
 #include "player.h"
 #include "voice_manager.h"
 
+extern char g_player_intro_cutscene_latch_offset[]; // 0x42fec4 = g_player_block + 0x148
+
 void CutsceneAI::update_cutscene()
 {
     int current_state = state;
@@ -42,7 +44,7 @@ void CutsceneAI::update_cutscene()
         return;
 
     case 8: {
-        *((unsigned char*)g_game_base + 0x42fec4) = 0;
+        *(g_player_intro_cutscene_latch_offset + (int)g_game_base) = 0;
         camera_mode = 1;
 
         set_matrix_identity(&look_at_matrix);

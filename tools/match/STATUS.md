@@ -722,7 +722,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 178/171 | 44.70% | 0/171 | 19 ok |  |
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
-| 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 1 unresolved, 33 ok |  |
+| 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 34 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 230/274 | 27.78% | 0/274 | 18 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 224/272 | 32.66% | 0/272 | 18 ok |  |

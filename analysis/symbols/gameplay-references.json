@@ -536,6 +536,15 @@
       "description": "Relocatable player-region exit gate used by damage-gauge state-2 exit checks."
     },
     {
+      "address": "0x42fec4",
+      "name": "g_player_intro_cutscene_latch_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42fec4"
+      ],
+      "description": "Relocatable Player byte at player+0x148 cleared by update_cutscene when the intro camera handoff enters its close-in leg; the consumer is not recovered yet."
+    },
+    {
       "address": "0x430060",
       "name": "g_row_event_display_token_offset",
       "kind": "offset",

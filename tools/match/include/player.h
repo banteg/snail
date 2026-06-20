@@ -184,7 +184,9 @@ public:
     Sprite* ghost_sprite_b;                // +0x9c
     char unknown_a0[0x120 - 0xa0];
     int movement_state;                    // +0x120
-    char unknown_124[0x14c - 0x124];
+    char unknown_124[0x148 - 0x124];
+    unsigned char intro_cutscene_latch;     // +0x148; cleared by update_cutscene state-8 handoff
+    char unknown_149[0x14c - 0x149];
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];
     NukeController nuke;                  // +0x150
