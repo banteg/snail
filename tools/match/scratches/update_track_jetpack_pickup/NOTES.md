@@ -1,7 +1,7 @@
 # update_track_jetpack_pickup @ 0x43efb0
 
-Pinned at `72.44%`, `127/127` candidate/target instructions, masked operands
-`15 ok / 0 mismatch`.
+Current match: `87.84%`, `128/127` candidate/target instructions, masked
+operands `20 ok / 0 mismatch`.
 
 2026-06-16 vtable correction: this is the jetpack pickup parent updater, not
 the sub-lazer projectile updater. `initialize_track_jetpack_pickup_runtime`
@@ -35,5 +35,18 @@ gameplay manifest and this scratch. The old shifted labels at `0x43ee50` and
 block was nested under `world_position.z < owner->interaction_max_z` regressed
 to `58.12%` (`107/127`). VC6 merged the two unlink blocks just like the health
 pickup rejection notes warned. Keep the duplicated state-1/state-2 unlink
-source shape; the remaining bob-tail placement is layout debt, not a reason to
-change the semantic branch.
+source shape until the health pickup's anti-merge shape can be applied.
+
+2026-06-20 health-family transfer: applying the accepted
+`update_track_health_pickup` teardown shape to this updater improves the match
+from `72.44%`, `127/127`, `15 ok` to `87.84%`, `128/127`, `20 ok`. The retained
+source uses the positive state-1 removal arm so the bob tail stays in the native
+final position, splits the two state-2 error exits into cold labels, and keeps
+one state-1 `Sprite*` snapshot shared by the two diagnostic exits so VC6 does
+not merge the duplicated teardown blocks.
+
+Rejected in the same pass: removing the state-1 snapshot and calling
+`sprite->kill_sprite()` directly in the diagnostics regresses to `58.12%`,
+`107/127`, `11 ok`; this exactly mirrors the health pickup residual. The
+remaining difference is the extra state-1 sprite snapshot load before the two
+diagnostic tails, with otherwise clean masked operands.

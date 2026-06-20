@@ -108,3 +108,11 @@ operands. Spelling the state-one diagnostics as explicit local labels regresses
 further to `51.69%`, `108/128`, with 9 clean masked operands. Keep the shared
 state-one sprite snapshot until a natural source form preserves both the
 native tail placement and the separate teardown shape.
+
+2026-06-20 pickup-family transfer: the same positive state-one removal arm,
+split state-two cold exits, and shared state-one diagnostic sprite snapshot
+lift `update_track_jetpack_pickup` from `72.44%` to `87.84%`. Retesting the
+direct state-one `sprite->kill_sprite()` diagnostics in both health and jetpack
+folds the duplicated teardown blocks (`58.47%` here, `58.12%` in jetpack), so
+the remaining extra snapshot load is a shared pickup-family source-shape debt,
+not a health-only semantic gap.
