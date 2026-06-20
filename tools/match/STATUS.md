@@ -728,7 +728,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 13 type name(s)
 - unresolved-layout: 6 type name(s)
-- header-compatible: 11 type name(s)
+- header-compatible: 10 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -751,7 +751,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 1 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| header-compatible | FrontendWidget | 6 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | AttachmentPathTemplate | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

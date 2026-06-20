@@ -4,8 +4,9 @@ Starter scratch for the shell-font front-end widget constructor.
 
 Models list insertion, tooltip owner reset, border style presets 20-23, text
 copy/layout anchors, highlight state, slider child creation, and the final
-layout call. It uses local offsets because the complete widget render/layout
-block is not yet promoted to the shared header.
+layout call. It uses the shared frontend widget header for the list prefix and
+call surface, with raw offsets still used where the constructor's local
+scheduling is not yet source-shaped.
 
 Expected residuals:
 - stack-local color ordering is still decompiler-shaped;
@@ -20,3 +21,8 @@ exact `initialize_exit_prompt` branches that return the initializer result in
 `eax`. Focused matcher evidence for this scratch stayed unchanged at `45.21%`,
 `270/429` candidate/target instructions, with the same `38 ok / 1 unresolved /
 1 mismatch` masked audit.
+
+2026-06-20 shared frontend header pass: the local `FrontendWidget` list-prefix
+view was removed in favor of `include/frontend_widget.h`. Focused matcher
+evidence stayed unchanged at `45.21%`, `270/429` candidate/target
+instructions, with the same `38 ok / 1 unresolved / 1 mismatch` masked audit.

@@ -1,22 +1,9 @@
 // initialize_frontend_sprite_button @ 0x401a70 (thiscall, ret 0x1c)
 
-#include "sprite.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
-
-class FrontendWidget {
-public:
-    void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
-        Color4f* color, float anchor_x, int layer);
-    int unhide_border_init();
-    int layout_frontend_widget();
-
-    unsigned int list_kind; // +0x00
-    unsigned int list_flags; // +0x04
-    FrontendWidget* list_prev; // +0x08
-    FrontendWidget* list_next; // +0x0c
-};
 
 void FrontendWidget::initialize_frontend_sprite_button(
     int flags,

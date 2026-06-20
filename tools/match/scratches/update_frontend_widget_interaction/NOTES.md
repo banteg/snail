@@ -24,3 +24,9 @@ OK, and the same five masked call mismatches.
 highlight/layout helpers. The focused matcher remains unchanged at `46.85%`,
 `544/647` candidate/target instructions, `15/647` prefix, and the same
 `55 ok / 5 mismatch` masked audit.
+
+2026-06-20 shared frontend header pass: the local method-only
+`FrontendWidget` declaration was replaced with `include/frontend_widget.h`.
+Focused matcher evidence stayed unchanged at `46.85%`, `544/647`
+candidate/target instructions, `15/647` prefix, and the same `55 ok /
+5 mismatch` masked audit.

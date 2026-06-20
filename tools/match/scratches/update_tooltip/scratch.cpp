@@ -1,39 +1,9 @@
 // update_tooltip @ 0x403c20 (thiscall)
 
-#include "sprite.h"
-#include "tooltip_state.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
-
-class FrontendWidget {
-public:
-    int initialize_frontend_widget(unsigned int flags, char* text, int widget_type,
-        float x, float y, Color4f* color, int alignment, float anchor_x);
-    int layout_frontend_widget();
-
-    char unknown_000[0x1a0];
-    unsigned int widget_flags; // +0x1a0
-    char unknown_1a4[0x214 - 0x1a4];
-    float idle_padding; // +0x214
-    float hot_padding; // +0x218
-    float target_padding; // +0x21c
-    float current_padding; // +0x220
-    char unknown_224[0x238 - 0x224];
-    float layout_left; // +0x238
-    float layout_top; // +0x23c
-    char unknown_240[0x248 - 0x240];
-    float layout_width; // +0x248
-    float layout_height; // +0x24c
-    char unknown_250[0x25c - 0x250];
-    int text_alignment; // +0x25c
-    float anchor_x; // +0x260
-    char unknown_264[0x26c - 0x264];
-    float stack_gap; // +0x26c
-    char unknown_270[0x6f4 - 0x270];
-    float layout_anchor_x; // +0x6f4
-    float layout_anchor_y; // +0x6f8
-};
 
 class BorderManager {
 public:
@@ -83,8 +53,8 @@ void TooltipState::update_tooltip()
             return;
 
         float anchor;
-        if (owner->text_alignment != 0)
-            anchor = owner->anchor_x;
+        if (owner->layout_mode != 0)
+            anchor = owner->layout_center_x;
         else
             anchor = owner->layout_width * 0.5f + owner->layout_anchor_x - 320.0f;
 
@@ -103,46 +73,46 @@ void TooltipState::update_tooltip()
             FrontendWidget* local_owner = owner_widget;
             tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
                 local_owner->layout_anchor_x,
-                local_owner->layout_anchor_y - local_owner->current_padding,
+                local_owner->layout_anchor_y - local_owner->active_padding,
                 color_above.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
             FrontendWidget* border = tooltip_widget;
             border->layout_anchor_y =
-                border->layout_anchor_y - (border->layout_height + border->current_padding);
+                border->layout_anchor_y - (border->layout_height + border->active_padding);
         } else if ((flags & 2) != 0) {
             FrontendWidget* local_owner = owner_widget;
             tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
                 local_owner->layout_anchor_x,
                 local_owner->layout_anchor_y + local_owner->layout_height +
-                    local_owner->current_padding,
+                    local_owner->active_padding,
                 color_below.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
             FrontendWidget* border = tooltip_widget;
-            border->layout_anchor_y = border->layout_anchor_y + border->current_padding;
+            border->layout_anchor_y = border->layout_anchor_y + border->active_padding;
         } else if ((flags & 0x10) != 0) {
             FrontendWidget* local_owner = owner_widget;
             tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
                 local_owner->layout_anchor_x,
-                local_owner->layout_anchor_y - local_owner->current_padding,
+                local_owner->layout_anchor_y - local_owner->active_padding,
                 color_above_left.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
             FrontendWidget* border = tooltip_widget;
             border->layout_anchor_y =
-                border->layout_anchor_y - (border->layout_height + border->current_padding);
+                border->layout_anchor_y - (border->layout_height + border->active_padding);
         } else if ((flags & 8) != 0) {
             FrontendWidget* local_owner = owner_widget;
             tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
                 local_owner->layout_anchor_x,
                 local_owner->layout_anchor_y + local_owner->layout_height +
-                    local_owner->current_padding,
+                    local_owner->active_padding,
                 color_below_left.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
             FrontendWidget* border = tooltip_widget;
-            border->layout_anchor_y = border->layout_anchor_y + border->current_padding;
+            border->layout_anchor_y = border->layout_anchor_y + border->active_padding;
         }
 
         border = tooltip_widget;
-        if (border->layout_left - border->hot_padding - border->stack_gap < 0.0f)
+        if (border->layout_x - border->hot_padding - border->stack_gap < 0.0f)
             border->layout_anchor_x = border->stack_gap;
 
         border = tooltip_widget;
-        right_edge = border->stack_gap + border->layout_width + border->layout_left + border->hot_padding;
+        right_edge = border->stack_gap + border->layout_width + border->layout_x + border->hot_padding;
         if (right_edge > 640.0f)
             border->layout_anchor_x = border->layout_anchor_x - (right_edge - 640.0f);
         tooltip_widget->layout_frontend_widget();

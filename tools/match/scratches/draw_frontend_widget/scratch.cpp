@@ -1,6 +1,7 @@
 // draw_frontend_widget @ 0x401130 (thiscall)
 
 #include "font_system.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
 extern unsigned int g_render_flags; // data_4df934
@@ -19,11 +20,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int layer,
     int blend);
-
-class FrontendWidget {
-public:
-    void draw_frontend_widget();
-};
 
 void FrontendWidget::draw_frontend_widget()
 {

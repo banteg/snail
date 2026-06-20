@@ -14,5 +14,7 @@ The scratch reconstructs the sprite-backed frontend widget initializer:
 - calls `layout_frontend_widget` at the end and treats the leftover return value
   as non-semantic.
 
-Offsets are kept scratch-local because the shared frontend widget header is
-still intentionally partial around the dense widget style/layout block.
+2026-06-20 shared frontend header pass: the scratch now uses
+`include/frontend_widget.h` for the widget list prefix and helper call surface.
+Focused matcher evidence stayed unchanged at `69.01%`, `156/157`
+candidate/target instructions, `35/157` prefix, and `7 ok` masked operands.

@@ -1,37 +1,12 @@
 // initialize_frontend_widget @ 0x401d30 (thiscall, ret 0x20)
 
-#include "sprite.h"
+#include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
-
-class FrontendWidget {
-public:
-    int initialize_frontend_widget(
-        int flags,
-        char* text,
-        int widget_type,
-        float x,
-        float y,
-        Color4f* color,
-        int alignment,
-        float anchor_x);
-    void initialize_frontend_sprite_button(
-        int flags, int sprite, float x, float y, Color4f* color, float z, int layer);
-    int unhide_border_init();
-    int highlight_border();
-    int unhighlight_border();
-    int layout_frontend_widget();
-    int border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag);
-
-    unsigned int list_kind; // +0x00
-    unsigned int list_flags; // +0x04
-    FrontendWidget* list_prev; // +0x08
-    FrontendWidget* list_next; // +0x0c
-};
 
 class BorderManager {
 public:

@@ -1,6 +1,7 @@
 // update_frontend_widget_interaction @ 0x402820 (thiscall)
 
 #include "font_system.h"
+#include "frontend_widget.h"
 #include "mouse_cursor_state.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
@@ -35,16 +36,6 @@ float* layout_and_queue_wrapped_font_text(
 class BorderManager {
 public:
     void activate_all_borders();
-};
-
-class FrontendWidget {
-public:
-    void update_frontend_widget_interaction();
-    int unhighlight_border();
-    int highlight_border();
-    int layout_frontend_widget();
-    void draw_frontend_widget();
-    void border_input_text();
 };
 
 void queue_frontend_widget_flag_after_delay(void* manager, FrontendWidget* widget, int flag);

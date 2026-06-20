@@ -1,5 +1,7 @@
 // border_input_text @ 0x4035b0 (thiscall)
 
+#include "frontend_widget.h"
+
 extern char* g_game_base; // data_4df904
 
 char read_repeating_text_input_key_code();
@@ -12,12 +14,6 @@ public:
 class BorderManager {
 public:
     int kill_border(void* border);
-};
-
-class FrontendWidget {
-public:
-    void border_input_text();
-    int layout_frontend_widget();
 };
 
 static void remove_char_at(char* text)

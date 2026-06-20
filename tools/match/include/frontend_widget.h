@@ -8,6 +8,7 @@
 
 class FrontendWidget {
 public:
+    void draw_frontend_widget(); // @ 0x401130
     int hide_border_init(); // @ 0x4010e0
     int unhide_border_init(); // @ 0x401110
     int highlight_border(); // @ 0x402800
@@ -16,7 +17,10 @@ public:
     int layout_frontend_widget(); // @ 0x4024a0
     int set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790
     FrontendWidget* border_input_text_init(int arg2, char* text, int flags); // @ 0x403410
+    void border_input_text(); // @ 0x4035b0
     void border_add_text_number(int value); // @ 0x401030
+    int border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag); // @ 0x404540
+    void update_frontend_widget_interaction(); // @ 0x402820
     int initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, Color4f* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
