@@ -10,19 +10,23 @@ void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
 {
     int index = 0;
     int* state = &slots[0].state;
-    while (*state) {
-        ++index;
-        state += 44;
-        if (index >= 20)
-            return;
+    if (*state != 0) {
+        do {
+            index++;
+            state += 44;
+            if (index >= 20)
+                return;
+        } while (*state != 0);
     }
+
+    Vector3 raw;
     Vector3 staged;
-    float z = origin[2];
-    staged.x = origin[0];
+    raw.x = origin[0];
     float stagger_y = (float)index * -0.0099999998f;
     float y = stagger_y + origin[1];
-    staged.y = y;
-    staged.z = z;
+    raw.y = y;
+    raw.z = origin[2];
+    staged = raw;
     slots[index].spawn_sub_lazer_projectile(&staged, direction);
     play_sound_effect_at_position(15, origin);
 }
