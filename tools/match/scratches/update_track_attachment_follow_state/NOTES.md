@@ -189,3 +189,9 @@ tools/match/match.sh \
   tools/match/scratches/update_track_attachment_follow_state \
   --regions --max-regions 14 --region-context 6
 ```
+
+2026-06-20 follow layout cleanup: the local matrix-backed `FollowState` view now
+includes the recovered `+0x3c` flag byte and tail padding, matching the shared
+0x40 layout used by `track_attachment_types.h` and `update_subgoldy`. This is
+codegen neutral: focused match remains `69.38%`, target `726`, candidate `672`,
+prefix `122/726`, masks `53/0/0`.

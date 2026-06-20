@@ -48,6 +48,8 @@ public:
     float orientation_e;
     Vec3 output_position;
     Player* player;
+    unsigned char flag_3c;
+    char unknown_3d[3];
 };
 
 extern char* g_game_base; // data_4df904

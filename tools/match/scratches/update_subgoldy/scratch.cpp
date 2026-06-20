@@ -119,8 +119,8 @@ struct FollowState {
     unsigned char flag_3c;   // +0x3c
     char unknown_3d[3];
 
-    void begin_track_attachment_follow_state(TrackRowCell* cell, Vector3* position,
-                                             Player* player);
+    AttachmentPathTemplate* begin_track_attachment_follow_state(
+        TrackRowCell* cell, const Vector3* position, Player* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,
                                              Vector3* velocity);
 };
