@@ -1,13 +1,14 @@
 // update_tooltip @ 0x403c20 (thiscall)
 
 #include "sprite.h"
+#include "tooltip_state.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
 class FrontendWidget {
 public:
-    void initialize_frontend_widget(unsigned int flags, char* text, int widget_type,
+    int initialize_frontend_widget(unsigned int flags, char* text, int widget_type,
         float x, float y, Color4f* color, int alignment, float anchor_x);
     int layout_frontend_widget();
 
@@ -38,21 +39,6 @@ class BorderManager {
 public:
     FrontendWidget* allocate_border();
     int kill_border(FrontendWidget* border);
-};
-
-class TooltipState {
-public:
-    void update_tooltip();
-
-    int field_00; // +0x00
-    int state; // +0x04
-    unsigned int mode_flags; // +0x08
-    FrontendWidget* owner_widget; // +0x0c
-    float delay_progress; // +0x10
-    float delay_step; // +0x14
-    FrontendWidget* tooltip_widget; // +0x18
-    char unknown_01c[0x38 - 0x1c];
-    FrontendWidget* owner_widget_38; // +0x38
 };
 
 void TooltipState::update_tooltip()

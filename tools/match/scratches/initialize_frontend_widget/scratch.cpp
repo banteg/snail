@@ -10,7 +10,7 @@ void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
 class FrontendWidget {
 public:
-    FrontendWidget* initialize_frontend_widget(
+    int initialize_frontend_widget(
         int flags,
         char* text,
         int widget_type,
@@ -21,10 +21,10 @@ public:
         float anchor_x);
     void initialize_frontend_sprite_button(
         int flags, int sprite, float x, float y, Color4f* color, float z, int layer);
-    void unhide_border_init();
-    void highlight_border();
-    void unhighlight_border();
-    FrontendWidget* layout_frontend_widget();
+    int unhide_border_init();
+    int highlight_border();
+    int unhighlight_border();
+    int layout_frontend_widget();
     int border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag);
 
     unsigned int list_kind; // +0x00
@@ -43,7 +43,7 @@ static void copy_color(Color4f* out, Color4f* in)
     *out = *in;
 }
 
-FrontendWidget* FrontendWidget::initialize_frontend_widget(
+int FrontendWidget::initialize_frontend_widget(
     int flags,
     char* text,
     int widget_type,

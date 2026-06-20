@@ -18,3 +18,9 @@ replaced with `include/twinkle_manager.h`, validated by exact
 `update_twinkle_manager`. Focused rerun preserves the prior 46.85% result,
 544 candidate instructions versus 647 target instructions, 55 masked operands
 OK, and the same five masked call mismatches.
+
+2026-06-20 frontend type pass: this scratch now uses the shared
+`TooltipState` subobject declaration and the exact `int` return ABI for the
+highlight/layout helpers. The focused matcher remains unchanged at `46.85%`,
+`544/647` candidate/target instructions, `15/647` prefix, and the same
+`55 ok / 5 mismatch` masked audit.

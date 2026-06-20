@@ -2,6 +2,7 @@
 
 #include "font_system.h"
 #include "mouse_cursor_state.h"
+#include "tooltip_state.h"
 #include "twinkle_manager.h"
 
 extern char* g_game_base; // data_4df904
@@ -31,12 +32,6 @@ float* layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha);
 
-class TooltipState {
-public:
-    int reset_tooltip();
-    void update_tooltip();
-};
-
 class BorderManager {
 public:
     void activate_all_borders();
@@ -45,8 +40,8 @@ public:
 class FrontendWidget {
 public:
     void update_frontend_widget_interaction();
-    void unhighlight_border();
-    void highlight_border();
+    int unhighlight_border();
+    int highlight_border();
     int layout_frontend_widget();
     void draw_frontend_widget();
     void border_input_text();

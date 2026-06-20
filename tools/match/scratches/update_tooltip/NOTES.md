@@ -22,3 +22,11 @@ Offsets are aligned with the currently matched frontend widget scratches:
 
 The return value is leftover register state in native code, so the scratch is
 written as a `void` updater.
+
+2026-06-20 frontend type pass: `TooltipState` is now shared through
+`include/tooltip_state.h` as the 0x40 subobject embedded at
+`FrontendWidget+0x28c`. The updater keeps its scratch-local `FrontendWidget`
+field slice, but the shared tooltip layout covers `mode_flags`, owner pointers,
+delay counters, and the allocated tooltip widget pointer. Focused matcher
+evidence stayed unchanged at `87.87%`, `219/218` candidate/target instructions,
+`5/218` prefix, and `23 ok` masked operands.

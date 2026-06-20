@@ -19,9 +19,9 @@
   (`0x28` bytes) between the function `ret` at `0x4067b0` and the `0x90`
   padding before `update_completion_screen`. The table now resolves cleanly.
 - Shared headers now model `FrontendWidget::initialize_frontend_widget` as
-  returning `FrontendWidget*`, matching the `initialize_frontend_widget` scratch
-  and the IDA result flow here. This is codegen-neutral for this scratch and
-  preserves the exact menu initializer scratches tested with it.
+  returning the same word result as `layout_frontend_widget`; this matches the
+  two no-title branches that return the call result in `eax` and remains
+  codegen-neutral for this scratch.
 - 2026-06-20 proof: the two no-title branches must return the final
   `no_button->initialize_frontend_widget(...)` result instead of discarding it
   with `return 0`. BN and IDA both show native leaving that call result in

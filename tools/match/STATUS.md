@@ -726,7 +726,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ABI-conflict: 14 type name(s)
+- ABI-conflict: 13 type name(s)
 - unresolved-layout: 6 type name(s)
 - header-compatible: 11 type name(s)
 
@@ -734,7 +734,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 |---|---|---:|---:|---:|---|
 | ABI-conflict | Game | 41 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | BorderManager | 9 | 3 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | FrontendWidget | 6 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Player | 6 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Quaternion | 5 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | RuntimeSlot | 4 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
@@ -752,9 +751,9 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | LevelDefinitionLoader | 1 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| header-compatible | FrontendWidget | 6 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | AttachmentPathTemplate | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | CutsceneAI | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | HighScoreScreen | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

@@ -6,7 +6,7 @@ extern char* g_game_base; // data_4df904
 
 class BorderManager {
 public:
-    int kill_border(BorderRecord* border);
+    int kill_border(FrontendWidget* border);
 };
 
 int TooltipState::reset_tooltip()

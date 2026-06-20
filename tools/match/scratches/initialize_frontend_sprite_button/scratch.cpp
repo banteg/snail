@@ -9,7 +9,7 @@ class FrontendWidget {
 public:
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         Color4f* color, float anchor_x, int layer);
-    void unhide_border_init();
+    int unhide_border_init();
     int layout_frontend_widget();
 
     unsigned int list_kind; // +0x00
