@@ -3619,6 +3619,15 @@
       "description": "51-entry track colour bank initialized by build_track_colours."
     },
     {
+      "address": "0x643390",
+      "name": "g_zero_parcel_bucket_count_lane_end",
+      "kind": "offset",
+      "aliases": [
+        "data_643390"
+      ],
+      "description": "End sentinel for the zero-parcel bucket count-lane reset in place_challenge_parcels_on_track; this address overlaps track colour bank K storage."
+    },
+    {
       "address": "0x6434c8",
       "name": "g_track_colour_bank_f",
       "kind": "global",

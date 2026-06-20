@@ -24,4 +24,4 @@ target    0x643390 = zero-bucket count-lane end
 candidate g_zero_parcel_buckets + 0x106200
 ```
 
-No dummy symbol was added for that boundary. The retained source is semantic and leaves the remaining stack/register-shape debt visible.
+The boundary is curated as `g_zero_parcel_bucket_count_lane_end`. No fake range widening was used; the retained source is semantic and leaves the remaining stack/register-shape debt visible.

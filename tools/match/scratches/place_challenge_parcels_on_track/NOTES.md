@@ -14,7 +14,7 @@ This is the challenge-mode parcel placer called by `place_parcels_on_track` when
 ## Residuals
 
 - Current score is 44.70%, with a `0x4c` frame versus native `0x48`. Native reuses `[esp+0x14]` first for the selected row index and later for the kind-42 out-angle, then places the transform at `[esp+0x18]`; the scratch still allocates the transform four bytes later.
-- The reset-loop end operand is an honest unresolved boundary: target address `0x643390` is the end sentinel for the zero-bucket count lane, but the current reference resolver also sees it as inside the adjacent track-colour bank.
+- The reset-loop end operand is curated as `g_zero_parcel_bucket_count_lane_end @ 0x643390`. The masked audit still reports it unresolved because the target is the boundary symbol while the candidate source spells the same address as `g_zero_parcel_buckets + 0x106200`.
 - The main loop still has register ownership drift: native keeps `last_index` in `ebx`, selected row slot in `esi`, and `this` in `ebp`.
 
 ## Rejected trials
