@@ -19,3 +19,15 @@ camera-minus-player vector staging, normalized distance volume, and both audio
 call paths match the recovered behavior. Leave the remaining residual as
 clamp-tail control-flow duplication unless a new source-shaped VC6 tail form
 appears.
+
+2026-06-20 larger motion-audio retry: focused Wibo still reports 89.13%,
+96/88 candidate/target instructions, 26/88 prefix, and 19 clean masked
+operands. The addressed dump confirms native stores zero for the lower clamp
+then jumps to the shared `play_sound_effect_scaled` tail. Inverting the source
+guard to `if (volume >= 0.0f) ... else ...` regresses to 88.04% by duplicating
+the upper clamp tail instead. Two independent clamp guards are codegen-neutral
+and still duplicate the lower tail. The exact `play_sound_effect_scaled`
+scratch and shared audio header keep the callee `void`, so changing the ABI
+would be source-false. No canned `snail match idioms` clamp case exists; keep
+the clearer `if/else if` clamp until a real VC6 tail-merge source idiom is
+identified.

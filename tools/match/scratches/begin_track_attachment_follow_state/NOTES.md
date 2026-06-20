@@ -31,6 +31,17 @@ clear float `installed_heading_delta` assignment. Resume only with a new
 source-owner lead that can preserve both native `edx` index ownership and the
 folded table displacement.
 
+2026-06-20 larger attachment retry: focused Wibo still reports 94.55%,
+28/27 candidate/target instructions, 23/27 prefix, and three clean masked
+operands. Rechecking the direct byte-address load again folds the displacement
+but drops to 85.19% by moving the scaled row index into `ecx`. A raw `int*`
+table, a named `installed_heading_bits` local, and a byte-base `char* table`
+are all codegen-neutral at 94.55% and leave the same separate `add ecx, ADDR`.
+Modeling the recovered table as `float rows[][61]` is semantically tempting but
+regresses to 75.00% by disturbing saved-register ownership. Keep the flat
+float-table source until a form preserves native `edx` index ownership and the
+folded table displacement together.
+
 Recovered: FollowState layout (+0x00 active, +0x04 template, +0x08 cell,
 +0x0c sample_index, +0x10 progress = z - cell anchor z, +0x14
 vertical_offset = y - 0.49f, +0x38 player); `get_track_cell_row_index`

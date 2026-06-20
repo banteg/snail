@@ -22,3 +22,15 @@ The remaining mismatch is compiler shape, not unresolved behavior. Native keeps
 source-shaped scratch emits the same work through a tighter 0x44-byte frame and
 different nonvolatile ownership. A trial that made the object owner explicit was
 assembly-identical, so it was reverted.
+
+2026-06-20 larger object-normal retry: focused Wibo baseline remains 10.37%,
+131/139 candidate/target instructions, zero prefix, and two masked call
+alignment mismatches caused by the poor prologue/frame match. Hoisting `lhs`,
+`rhs`, `normal_a`, and `normal_b` outside the loop does not force the native
+0x58-byte frame and slightly regresses to 9.63%. Direct `lhs.x/y/z` and
+`rhs.x/y/z` field assignments improve the fuzzy score to 11.36% and reduce the
+masked-call drift to one, but they shrink the frame further to 0x40 and move
+away from IDA's scalar temporary lanes. Reject that local score bump for now;
+the retained scalar-lane source better matches the decompiler evidence even
+though the next real lead still needs to recover native `esi` ownership and the
+larger frame.
