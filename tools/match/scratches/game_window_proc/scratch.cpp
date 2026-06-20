@@ -1,7 +1,7 @@
 // game_window_proc @ 0x4074b0 (stdcall, ret 0x10)
 
 #include "audio_system.h"
-#include "frame_timer_state.h"
+#include "display_mode_state.h"
 
 typedef int HWND;
 typedef unsigned int UINT;
@@ -25,7 +25,7 @@ extern unsigned char g_right_mouse_button_latch[2]; // data_4b7230
 extern unsigned char g_right_mouse_button_state[2]; // data_4b7640
 extern unsigned char g_window_deactivated;          // data_4b7654
 extern int g_mouse_wheel_delta[2];                  // data_4dfad0
-extern FrameTimerState g_frame_timer_state;         // data_4df9e0
+extern DisplayModeState g_display_mode_state;       // data_4df9e0
 extern float g_previous_frame_timestamp_seconds;    // data_4dfb00
 
 LRESULT __stdcall game_window_proc(
@@ -82,7 +82,7 @@ post_quit_message:
                     g_window_deactivated = 0;
                     g_previous_frame_timestamp_seconds =
                         (float)timeGetTime() * 0.001f;
-                    g_frame_timer_state.reset_frame_timer_state();
+                    g_display_mode_state.reset_display_mode_probe_count();
                 }
                 return 0;
 

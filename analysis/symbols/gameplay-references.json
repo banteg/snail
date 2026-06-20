@@ -149,12 +149,12 @@
     },
     {
       "address": "0x407920",
-      "name": "reset_frame_timer_state",
+      "name": "reset_display_mode_probe_count",
       "kind": "function",
       "aliases": [
         "sub_407920"
       ],
-      "description": "Tiny thiscall helper that clears the frame-timer state's secondary dword after restoring the main window from minimization."
+      "description": "Tiny thiscall helper that clears the display-mode probe count after restoring the main window from minimization."
     },
     {
       "address": "0x407b00",
@@ -2898,13 +2898,13 @@
     },
     {
       "address": "0x4df9e0",
-      "name": "g_frame_timer_state",
+      "name": "g_display_mode_state",
       "kind": "global",
       "aliases": [
         "data_4df9e0",
         "unk_4df9e0"
       ],
-      "description": "Frame-timer state object reset by the game window procedure after restore from minimization."
+      "description": "Display-mode/view-sample state object reset by startup and after restoring the main window from minimization."
     },
     {
       "address": "0x4df9c0",

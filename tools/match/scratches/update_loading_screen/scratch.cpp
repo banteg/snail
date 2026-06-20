@@ -17,7 +17,7 @@ extern RendererVertexBufferResource* g_loading_background_vertex_buffer; // data
 extern Direct3DTexture8* g_loading_bar_on_texture; // data_503280
 extern RendererVertexBufferResource* g_loading_bar_vertex_buffer; // data_5032a4
 
-int present_backbuffer(); // sub_413520
+int present_backbuffer(); // @ 0x413520
 
 int LoadingScreen::update_loading_screen()
 {

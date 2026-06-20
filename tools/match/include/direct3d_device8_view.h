@@ -10,7 +10,10 @@ struct TransformMatrix;
 typedef Direct3DVertexBuffer8 VertexBuffer;
 
 struct Direct3DDevice8Vtbl {
-    char unknown_000[0x88];
+    char unknown_000[0x3c];
+    int (__stdcall* Present)(Direct3DDevice8* self, void* source_rect,
+        void* dest_rect, int dest_window_override, void* dirty_region);
+    char unknown_040[0x88 - 0x40];
     int (__stdcall* BeginScene)(Direct3DDevice8* self);
     int (__stdcall* EndScene)(Direct3DDevice8* self);
     int (__stdcall* Clear)(Direct3DDevice8* self, unsigned int count, void* rects,

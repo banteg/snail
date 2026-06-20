@@ -272,8 +272,8 @@
     },
     {
       "address": "0x406d70",
-      "name": "initialize_main_loop_frame_state",
-      "description": "Resets the frame timer, window deactivation latches, object texture transform matrix, and main-loop timing counters before startup enters the active frame loop."
+      "name": "initialize_main_loop_display_state",
+      "description": "Resets the display-mode/view-sample state, window deactivation latches, object texture transform matrix, and main-loop timing counters before startup enters the active frame loop."
     },
     {
       "address": "0x406dc0",
@@ -336,8 +336,18 @@
     },
     {
       "address": "0x407910",
-      "name": "clear_frame_timer_state",
-      "description": "Clears the primary timestamp and elapsed-frame lanes of the shared frame timer state."
+      "name": "clear_display_mode_state",
+      "description": "Clears the queued display-mode view-sample count and current display-mode pointer."
+    },
+    {
+      "address": "0x407920",
+      "name": "reset_display_mode_probe_count",
+      "description": "Clears the display-mode probe count after the main window restores from minimization."
+    },
+    {
+      "address": "0x407930",
+      "name": "read_next_display_mode_view_sample",
+      "description": "Returns the next display-mode view sample or the current mode dimensions during the startup probe warm-up."
     },
     {
       "address": "0x407a10",
@@ -695,6 +705,11 @@
       "description": "Renders one built object through the grouped Direct3D path: refreshes animated vertices, sets world transform and cull mode, binds each texture group, applies the blend preset and tint, submits indexed primitives, and optionally dispatches the toon edge pass. Cross-port Android symbols match this helper to `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`."
     },
     {
+      "address": "0x412940",
+      "name": "update_display_mode_view_state",
+      "description": "Updates the shared display-mode view-sample state against the authored view dimensions before the frame render pass."
+    },
+    {
       "address": "0x4129f0",
       "name": "set_cull_mode",
       "description": "Programs the shared renderer cull state from the one-bit front-vs-back-face selection. Cross-port Android symbols match this helper to `G0SetCull(int)`."
@@ -713,6 +728,16 @@
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
       "description": "Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive."
+    },
+    {
+      "address": "0x4134c0",
+      "name": "render_game_frame_scene",
+      "description": "Clears the backbuffer, opens a Direct3D scene, updates display-mode view state, renders one game frame, and closes the scene."
+    },
+    {
+      "address": "0x413520",
+      "name": "present_backbuffer",
+      "description": "Presents the Direct3D backbuffer with null source, destination, window, and dirty-region arguments."
     },
     {
       "address": "0x413540",
@@ -1659,6 +1684,16 @@
     {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
+    },
+    {
+      "address": "0x433030",
+      "name": "get_authored_view_width",
+      "description": "Returns the authored 640-style view width float used while updating display-mode view samples."
+    },
+    {
+      "address": "0x433040",
+      "name": "get_authored_view_height",
+      "description": "Returns the authored 480-style view height float used while updating display-mode view samples."
     },
     {
       "address": "0x433060",

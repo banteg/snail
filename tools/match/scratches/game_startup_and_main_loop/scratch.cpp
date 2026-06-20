@@ -80,15 +80,15 @@ char initialize_audio_subsystem(); // @ 0x407a10
 int initialize_game_window_and_input_wrapper(char* window_name); // @ 0x4119c0
 int noop_runtime_ai(); // @ 0x407b50
 int set_fullscreen_mode(int enabled); // @ 0x414260
-int initialize_main_loop_frame_state(); // @ 0x406d70
+int initialize_main_loop_display_state(); // @ 0x406d70
 int construct_game_runtime(); // @ 0x407b60
 int set_tracked_allocation_mark(); // @ 0x431cb0
 char initialize_game_assets_and_world(GameRoot* game); // @ 0x40acf0
 int sub_412a00(int value); // @ 0x412a00
 int show_and_focus_game_window(); // @ 0x4073b0
 BOOL sub_407490(); // @ 0x407490
-int sub_4134c0(); // @ 0x4134c0
-int sub_413520(); // @ 0x413520
+int render_game_frame_scene(); // @ 0x4134c0
+int present_backbuffer(); // @ 0x413520
 int update_keyboard_input(); // @ 0x44b870
 int update_joystick_input(); // @ 0x44b570
 int update_mouse(HWND hwnd); // @ 0x44bc50
@@ -151,7 +151,7 @@ int __stdcall game_startup_and_main_loop(
             initialize_game_window_and_input_wrapper("SnailMail");
             noop_runtime_ai();
             set_fullscreen_mode(g_config_fullscreen_enabled);
-            initialize_main_loop_frame_state();
+            initialize_main_loop_display_state();
             g_loading_screen.initialize_loading_screen();
 
             int warmup_count = timeGetTime() % 1000;
@@ -180,9 +180,9 @@ int __stdcall game_startup_and_main_loop(
         }
 
         if (data_4b7759 != 0) {
-            sub_4134c0();
+            render_game_frame_scene();
             if (*(int*)(g_game_base + 0x56c) == 0)
-                sub_413520();
+                present_backbuffer();
             data_4b7759 = 0;
         }
 
