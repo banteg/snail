@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**462/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **56969/325832** bytes (**17.48%**) are proof-grade, and overall fuzzy is **52.97%**.
+**462/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **56969/325832** bytes (**17.48%**) are proof-grade, and overall fuzzy is **52.99%**.
 
 ## Proof Grade (462)
 
@@ -525,7 +525,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 81.79% | 44/144 | 9 ok |  |
-| 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 86.52% | 23/160 | 15 ok |  |
+| 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 92.79% | 48/160 | 16 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 90.77% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 332/336 | 88.92% | 9/336 | 1 mismatch, 33 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |

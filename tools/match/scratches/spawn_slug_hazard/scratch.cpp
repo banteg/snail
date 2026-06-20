@@ -40,8 +40,10 @@ int Game::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     }
 
     char* slot_base = (char*)(game_words + 59 * slot_index);
-    *(DWORD*)(slot_base + 0x356420) = 1;
-    *(DWORD*)(slot_base + 0x356460) = (DWORD)player;
+    DWORD* state_ref = (DWORD*)(slot_base + 0x356420);
+    DWORD* player_ref = (DWORD*)(slot_base + 0x356460);
+    *state_ref = 1;
+    *player_ref = (DWORD)player;
     set_matrix_identity((TransformMatrix*)(slot_base + 0x3563d8));
 
     Vector3 staged_position;
@@ -61,23 +63,23 @@ int Game::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     velocity.z = velocity_z;
     *(Vector3*)(slot_base + 0x35642c) = velocity;
 
-    DWORD* node = (DWORD*)(slot_base + 0x3563a0);
-    char* anchor = g_game_base + 0x5a8;
-    DWORD tail = (DWORD)((char*)this + 0x3bb764);
-    if ((node[1] & 0x200) != 0) {
+    BodNode* node = (BodNode*)(slot_base + 0x3563a0);
+    BodNode* tail = (BodNode*)((char*)this + 0x3bb764);
+    BodList* anchor = (BodList*)(g_game_base + 0x5a8);
+    if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
     } else {
-        node[3] = tail;
-        if (*((DWORD*)anchor + 1) == tail) {
-            *(DWORD*)(tail + 8) = (DWORD)node;
-            *((DWORD*)anchor + 1) = (DWORD)node;
-            node[2] = 0;
+        node->list_next = tail;
+        if (anchor->first == tail) {
+            tail->list_prev = node;
+            anchor->first = node;
+            node->list_prev = 0;
         } else {
-            node[2] = *(DWORD*)(tail + 8);
-            *(DWORD*)(tail + 8) = (DWORD)node;
-            *(DWORD*)(node[2] + 12) = (DWORD)node;
+            node->list_prev = tail->list_prev;
+            tail->list_prev = node;
+            node->list_prev->list_next = node;
         }
-        node[1] |= 0x200u;
+        node->list_flags |= 0x200u;
     }
 
     Sprite* sprite =
@@ -102,13 +104,16 @@ int Game::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     *(unsigned char*)(slot_base + 0x356454) = 0;
     *(unsigned char*)(slot_base + 0x35646c) = 0;
     *(DWORD*)(slot_base + 0x356470) = 0;
-    *(float*)(slot_base + 0x356474) =
+    float* hit_flash_step_ref = (float*)(slot_base + 0x356474);
+    *hit_flash_step_ref =
         *(float*)(g_game_base + 0x74650) * 0.16666667f;
-    *(DWORD*)(slot_base + 0x356468) = 7;
+    DWORD* hit_points_ref = (DWORD*)(slot_base + 0x356468);
+    *hit_points_ref = 7;
 
-    DWORD node_flags = *(DWORD*)(slot_base + 0x3563a4);
+    DWORD* node_flags_ref = (DWORD*)(slot_base + 0x3563a4);
+    DWORD node_flags = *node_flags_ref;
     node_flags &= ~0x1000u;
-    *(DWORD*)(slot_base + 0x3563a4) = node_flags;
+    *node_flags_ref = node_flags;
     *(unsigned char*)(slot_base + 0x356478) = 0;
     *(unsigned char*)(slot_base + 0x356479) = 0;
     *(DWORD*)(slot_base + 0x35647c) = 0;
