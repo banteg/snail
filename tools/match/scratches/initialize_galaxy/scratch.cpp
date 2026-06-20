@@ -24,8 +24,6 @@ public:
 
 FrontendWidget* GalaxyRoute::initialize_galaxy()
 {
-    Color4f color;
-
     ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
 
@@ -62,30 +60,34 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
         selected_index = g_landscape_backdrop_variant_selector;
     }
 
-    route_title_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    route_title_widget->initialize_frontend_widget(
-        0x400000,
-        "Intergalactic Delivery Route",
-        20,
-        15.0f,
-        15.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0,
-        0.0f);
-    *(int*)((char*)route_title_widget + 0x6f0) = 0x3f547ae1;
+    {
+        Color4f color;
+        route_title_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        route_title_widget->initialize_frontend_widget(
+            0x400000,
+            "Intergalactic Delivery Route",
+            20,
+            15.0f,
+            15.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0,
+            0.0f);
+        *(int*)((char*)route_title_widget + 0x6f0) = 0x3f547ae1;
 
-    route_icon_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    route_icon_widget->initialize_frontend_sprite_button(
-        0x20400802,
-        138,
-        370.0f,
-        10.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0.0f,
-        4);
+        route_icon_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        route_icon_widget->initialize_frontend_sprite_button(
+            0x20400802,
+            138,
+            370.0f,
+            10.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0.0f,
+            4);
+    }
 
     exit_or_back_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     if (route_mode == 1) {
+        Color4f color;
         exit_or_back_widget->initialize_frontend_widget(
             0x20000014,
             g_exit_text,
@@ -96,6 +98,7 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
             0,
             0.0f);
     } else {
+        Color4f color;
         exit_or_back_widget->initialize_frontend_widget(
             0x60000014,
             g_back_text,
@@ -118,72 +121,76 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
         } while (index < record_count);
     }
 
-    bounds_frame_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    bounds_frame_widget->initialize_frontend_widget(
-        0x20010002,
-        g_blank_text,
-        20,
-        30.0f,
-        80.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0,
-        0.0f);
-    ((Color4f*)((char*)bounds_frame_widget + 0x1cc))->store_color4f(
-        1.0f,
-        1.0f,
-        1.0f,
-        1.0f);
-    bounds_frame_widget->hide_border_init();
-    *(int*)((char*)bounds_frame_widget + 0x48) = 152;
-    *(int*)((char*)bounds_frame_widget + 0x4c) = 0x43a00000;
-    *(int*)((char*)bounds_frame_widget + 0x50) = 0x43700000;
-    *(int*)((char*)bounds_frame_widget + 0x54) = 0x43480000;
-    *(int*)((char*)bounds_frame_widget + 0x58) = 0x42c80000;
+    {
+        Color4f color;
+        bounds_frame_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        bounds_frame_widget->initialize_frontend_widget(
+            0x20010002,
+            g_blank_text,
+            20,
+            30.0f,
+            80.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0,
+            0.0f);
+        ((Color4f*)((char*)bounds_frame_widget + 0x1cc))->store_color4f(
+            1.0f,
+            1.0f,
+            1.0f,
+            1.0f);
+        bounds_frame_widget->hide_border_init();
+        *(int*)((char*)bounds_frame_widget + 0x48) = 152;
+        *(int*)((char*)bounds_frame_widget + 0x4c) = 0x43a00000;
+        *(int*)((char*)bounds_frame_widget + 0x50) = 0x43700000;
+        *(int*)((char*)bounds_frame_widget + 0x54) = 0x43480000;
+        *(int*)((char*)bounds_frame_widget + 0x58) = 0x42c80000;
 
-    selected_title_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    selected_title_widget->initialize_frontend_widget(
-        0x20400002,
-        g_blank_text,
-        20,
-        100.0f,
-        80.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0,
-        0.0f);
-    selected_title_widget->hide_border_init();
-    *(int*)((char*)selected_title_widget + 0x6f0) = 0x3f666666;
-    selected_title_widget->stack_gap = 0.0f;
+        selected_title_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        selected_title_widget->initialize_frontend_widget(
+            0x20400002,
+            g_blank_text,
+            20,
+            100.0f,
+            80.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0,
+            0.0f);
+        selected_title_widget->hide_border_init();
+        *(int*)((char*)selected_title_widget + 0x6f0) = 0x3f666666;
+        selected_title_widget->stack_gap = 0.0f;
 
-    selected_detail_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    selected_detail_widget->initialize_frontend_widget(
-        0x20400002,
-        g_blank_text,
-        20,
-        300.0f,
-        440.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0,
-        0.0f);
-    selected_detail_widget->hide_border_init();
-    *(int*)((char*)selected_detail_widget + 0x6f0) = 0x3f666666;
-    selected_detail_widget->stack_gap = 0.0f;
+        selected_detail_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        selected_detail_widget->initialize_frontend_widget(
+            0x20400002,
+            g_blank_text,
+            20,
+            300.0f,
+            440.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0,
+            0.0f);
+        selected_detail_widget->hide_border_init();
+        *(int*)((char*)selected_detail_widget + 0x6f0) = 0x3f666666;
+        selected_detail_widget->stack_gap = 0.0f;
 
-    selected_description_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    selected_description_widget->initialize_frontend_widget(
-        0x20400002,
-        g_blank_text,
-        20,
-        300.0f,
-        440.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        0,
-        0.0f);
-    selected_description_widget->hide_border_init();
-    *(int*)((char*)selected_description_widget + 0x6f0) = 0x3f333333;
-    selected_description_widget->stack_gap = 0.0f;
+        selected_description_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        selected_description_widget->initialize_frontend_widget(
+            0x20400002,
+            g_blank_text,
+            20,
+            300.0f,
+            440.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            0,
+            0.0f);
+        selected_description_widget->hide_border_init();
+        *(int*)((char*)selected_description_widget + 0x6f0) = 0x3f333333;
+        selected_description_widget->stack_gap = 0.0f;
+    }
 
     play_or_deliver_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     if (*(int*)(level_progress_base + 0x40) == 0) {
+        Color4f color;
         play_or_deliver_widget->initialize_frontend_widget(
             0x60000014,
             "Deliver!",
@@ -194,6 +201,7 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
             2,
             100.0f);
     } else {
+        Color4f color;
         play_or_deliver_widget->initialize_frontend_widget(
             0x60000014,
             "Play",
@@ -207,21 +215,24 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
     play_or_deliver_widget->hide_border_init();
     play_or_deliver_widget->stack_gap = 20.0f;
 
-    replay_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    replay_widget->initialize_frontend_widget(
-        0x60000014,
-        "Watch Best Trial",
-        20,
-        300.0f,
-        440.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        2,
-        0.0f);
-    replay_widget->hide_border_init();
-    replay_widget->stack_gap = 10.0f;
-    *(int*)((char*)replay_widget + 0x6f0) = 0x3f4ccccd;
-    replay_widget->idle_padding = 4.0f;
-    replay_widget->idle_padding = 8.0f;
+    {
+        Color4f color;
+        replay_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        replay_widget->initialize_frontend_widget(
+            0x60000014,
+            "Watch Best Trial",
+            20,
+            300.0f,
+            440.0f,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            2,
+            0.0f);
+        replay_widget->hide_border_init();
+        replay_widget->stack_gap = 10.0f;
+        *(int*)((char*)replay_widget + 0x6f0) = 0x3f4ccccd;
+        replay_widget->idle_padding = 4.0f;
+        replay_widget->idle_padding = 8.0f;
+    }
 
     return open_galaxy_route(selected_index);
 }
