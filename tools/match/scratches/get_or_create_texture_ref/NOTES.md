@@ -35,3 +35,8 @@ Rejected/no-op variants:
   `do` scan remains.
 - Moving the found-existing return behind an explicit label did not move VC6's
   emitted found block; it still laid out before the allocation path.
+- 2026-06-21 resource-string family pass: retesting the stronger IDA-style
+  allocation gate (`flags || count <= 0` followed by scan and `goto allocate`)
+  was still exactly neutral at 82.21%. The retained structured scan is clearer,
+  and the remaining residual is confirmed as found-block placement plus the
+  allocation tail's count/index scheduling, not missing texture-list semantics.

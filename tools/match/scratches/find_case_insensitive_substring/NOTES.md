@@ -32,3 +32,12 @@ saves registers first. A direct mutation of the `haystack` argument regressed to
 postincrement condition `(needle_cursor++)[delta + 1]` regressed to 39.39% by
 adding a stack temp, `push ecx`, and a wider branch tail. The existing
 preincrement-plus-break loop remains the only accepted compact scan shape.
+
+2026-06-21 resource-string family pass: two plausible source-shape probes were
+rejected. Holding the outer searched byte in a local to mimic native's
+pre-prologue first-byte read regressed to 63.41% and introduced a stack byte
+spill. Rewriting the inner scan as a preincremented `while
+((++needle_cursor)[delta] != 0)` condition also regressed to 39.39%, landing in
+the same stack-temp family as the previous postincrement probe. Keep the
+current 65.00% explicit preincrement-plus-break source; the remaining prologue
+and inner-success tail differences are scheduler/control-flow layout debt.

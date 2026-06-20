@@ -35,3 +35,13 @@ raw-byte locals declared before folded-byte locals regressed to 36.19% by
 switching to `sub 0x20` lanes and extra zero tests. Changing only the outer gate
 was score-neutral at 66.02% and merely swapped the scratch raw-byte lane roles,
 so the retained source stays on the existing peeled-loop spelling.
+
+2026-06-21 resource-string family pass: the same byte-lane hypothesis was
+retested with the current parser-neighborhood context and still did not hold.
+Declaring raw right/left byte locals before folded byte locals again regressed
+to 36.19% by changing the fold lanes to `sub 0x20` temporaries. Moving the
+outer guard to the left byte and making the right byte the loop condition
+regressed further to 36.00% by swapping the active fold/raw lanes away from the
+native `dl`/`bl` story. The retained 66.02% peeled-loop source remains the best
+observed form; remaining debt is byte-register allocation and test order, not a
+missing semantic branch.
