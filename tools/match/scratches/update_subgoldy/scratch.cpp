@@ -292,10 +292,10 @@ struct Player {
     void begin_post_follow_carryover();
     void handle_subgoldy_collisions();
     void update_subgoldy_resurrect();
-    void initialize_subgoldy_death();
+    int initialize_subgoldy_death();
     void play_movement_state_sound();
     void update_movement_flag_emitters(Player* player);
-    void update_player_movement_flags();
+    int update_player_movement_flags();
     Sprite* set_subgoldy_ghost_z(float ghost_z);
     void show_subgoldy_lives();
 };

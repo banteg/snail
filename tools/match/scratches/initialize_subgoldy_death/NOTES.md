@@ -16,3 +16,7 @@
   `2 ok, 1 mismatch` (`$L395` instead of
   `initialize_subgoldy_death_jump_table`). Keep the local `Player` shell until
   that symbol-shape issue has a targeted fix.
+- 2026-06-20 Player ABI cleanup: the local method now returns `int`, matching
+  `player.h` and the IDA decompiler's carried `result`. The source keeps the
+  local field shell for the jump-table relocation reason above, and focused
+  Wibo stays exact at `100.00%`, `14/14`, with `3 ok` masked operands.

@@ -226,6 +226,13 @@ source-shape issue is solved.
   these compact local slices as promotable `WarningActor`, `PlayerControlSource`,
   or `CutsceneAI` definitions. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
+- 2026-06-20 Player ABI cleanup: the compact local `Player` method surface now
+  matches `player.h` for `initialize_subgoldy_death()` and
+  `update_player_movement_flags()` returning `int`. Their return values are
+  still ignored at the callsites in this large update body, so focused Wibo
+  remains `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked
+  audit; full shared `player.h` remains rejected for the include-boundary and
+  relocation-shape reasons above.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

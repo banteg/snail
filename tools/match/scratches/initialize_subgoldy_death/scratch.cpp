@@ -8,7 +8,7 @@ public:
 
 class Player {
 public:
-    void initialize_subgoldy_death();
+    int initialize_subgoldy_death();
     int initialize_subgoldy_resurrect(int final_loss);
 
     char unknown_0000[0x408];
@@ -17,21 +17,21 @@ public:
     int visible_life_stock; // +0x4340
 };
 
-void Player::initialize_subgoldy_death()
+int Player::initialize_subgoldy_death()
 {
-    switch (game->level_mode) {
+    int mode = game->level_mode;
+
+    switch (mode) {
     case 0:
         if (visible_life_stock <= 0)
-            initialize_subgoldy_resurrect(1);
-        else
-            initialize_subgoldy_resurrect(0);
-        break;
+            return initialize_subgoldy_resurrect(1);
+        return initialize_subgoldy_resurrect(0);
     case 1:
     case 4:
-        initialize_subgoldy_resurrect(1);
-        break;
+        return initialize_subgoldy_resurrect(1);
     case 7:
-        initialize_subgoldy_resurrect(0);
-        break;
+        return initialize_subgoldy_resurrect(0);
     }
+
+    return mode;
 }
