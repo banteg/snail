@@ -11,31 +11,35 @@ struct Game {
     unsigned char pause_gate; // +0x74621
 };
 
-extern Game* volatile g_game; // data_4df904
+extern Game* g_game; // data_4df904
 
 void WarningActor::update_warning()
 {
     if (!g_game->pause_gate && state) {
-        if (state == 2) {
-            if (phase >= 0.5f)
-                border->warning_overlay_alpha = 0;
-            else
+        float advanced;
+        switch (state) {
+        case 2:
+            if (phase < 0.5f)
                 border->warning_overlay_alpha = 1.0f - (phase + phase);
-            float advanced = phase_step + phase;
+            else
+                border->warning_overlay_alpha = 0;
+            advanced = phase_step + phase;
             phase = advanced;
             if (advanced > 1.0f) {
                 phase = 0.0f;
                 state = 1;
                 g_sound_effect_manager.play_sound_effect(50);
             }
-        } else if (state == 1) {
+            break;
+        case 1:
             border->warning_overlay_alpha = 0.99900001f;
-            float advanced = phase_step + phase;
+            advanced = phase_step + phase;
             phase = advanced;
             if (advanced > 1.0f) {
                 phase = 0.0f;
                 state = 2;
             }
+            break;
         }
     }
 }

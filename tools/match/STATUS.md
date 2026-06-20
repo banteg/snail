@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**466/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **58829/325832** bytes (**18.06%**) are proof-grade, and overall fuzzy is **53.05%**.
+**466/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **58829/325832** bytes (**18.06%**) are proof-grade, and overall fuzzy is **53.06%**.
 
 ## Proof Grade (466)
 
@@ -475,7 +475,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (12)
+## Near Match (95-99.99%) (13)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -490,6 +490,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.50% | 190/279 | 27 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
+| 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
 ## High Progress (80-94.99%) (51)
@@ -548,7 +549,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (87)
+## Mid Progress (50-79.99%) (86)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -622,7 +623,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_snail_jetpack | 0x445860 | 185 | 59/62 | 54.55% | 0/62 | 8 ok |  |
 | 🚧 | update_snail_skin | 0x445cd0 | 128 | 43/44 | 57.47% | 6/44 | 1 ok |  |
 | 🚧 | build_snail_hotspots | 0x445d50 | 208 | 72/74 | 60.27% | 9/74 | 2 mismatch, 5 ok |  |
-| 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 78.85% | 0/52 | 7 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 18 unresolved, 147 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
