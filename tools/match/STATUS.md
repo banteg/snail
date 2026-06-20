@@ -558,7 +558,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 48/48 | 85.42% | 7/48 | 3 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 81.48% | 5/83 | 11 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
-| 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 82.98% | 21/47 | - |  |
+| 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 89.36% | 21/47 | - |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 | 5 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 54/55 | 88.07% | 2/55 | 3 ok |  |

@@ -12,7 +12,7 @@ Recovered relationships:
 - callers ignore the incidental return register, so the scratch models this as
   a `void` member.
 
-Focused Wibo result: 63.83%, 47/47 instructions, 3/47 prefix, no masked
+Focused Wibo result: 89.36%, 47/47 instructions, 21/47 prefix, no masked
 operands. The raw `int*` view currently preserves native ownership better than
 the typed fields.
 
@@ -37,3 +37,15 @@ source/destination pointer expression order and swapping local declaration
 order/name roles in the retained loop were neutral at 82.98%. The remaining
 residual is register ownership around the full-buffer shift loop plus equivalent
 final `lea` base/index ordering.
+
+2026-06-20 shift-loop tail pass: a scripted sweep over equivalent loop-body
+spellings improved focused Wibo from 82.98% to 89.36%. Moving both
+`shift_offset += 0x40` and `++shift_index` after the `memcpy` lets VC6 keep
+native-style `ebx` ownership for the loop counter and `edx` for the byte offset;
+declaring `shift_index` before `shift_offset` preserves the longer 21/47 exact
+prefix. Rejected followups: initializing the byte offset only inside the guarded
+loop regressed to 78.72% by delaying the `push ebx`, while `register` hints,
+dropping the `point_limit` local, folding the copy arguments directly, and
+`while (1)` tail-break forms were score-neutral or worse. The retained residual
+is now the early `xor edx` plus source/destination cursor materialization inside
+the full-buffer shift loop.
