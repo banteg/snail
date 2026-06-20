@@ -3,8 +3,8 @@
 Structure-first scratch for the object texture-group buffer builder at
 `0x413d50`.
 
-Current Wibo result: 20.20%, 330/373 candidate/target instruction shape,
-prefix 0/373, masked operands 21 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 42.20%, 319/373 candidate/target instruction shape,
+prefix 0/373, masked operands 24 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -32,10 +32,29 @@ Recovered relationships:
 - The vertex-buffer factory is the existing `g_direct3d_renderer` object at
   `0x4f7458` under a scratch-local factory view. The index-buffer factory is
   the neighboring object at `0x5000fc`.
+- The `flags & 4` warm-up scan is an `else if` chain. For each source
+  vertex/face pair, native appends only the first matching corner, matching the
+  IDA control flow rather than four independent corner tests.
+- The known caller ignores this helper's return value. Modeling the scratch as
+  `void` better matches the native incidental return state than manufacturing
+  `return 0` / `return result`.
+- Native's final index upload is an inline MSVC `memcpy` intrinsic
+  (`rep movsd`/`rep movsb`), not an out-of-line CRT call. Promoting the scratch
+  to `#pragma intrinsic(memcpy)` also recovers the native `ebx` ownership for
+  the object pointer through most of the function.
+
+Rejected probes:
+
+- Rewriting the texture-group expansion around six long-lived output-pointer
+  locals grew the frame toward native size but regressed to 38.48% and moved
+  object ownership from `ebx` to `ebp`, so the clearer indexed loop is retained
+  for now.
+- Retesting the non-void return shape after the intrinsic/local-lifetime edits
+  dropped slightly to 42.14% and reintroduced an explicit zero-return block.
 
 Expected residuals:
 
-- This source is intentionally relationship-first. The native function has
-  hand-shaped nested loops with shared locals for face cursor, index cursor,
-  primitive count, and index-output pointers. The scratch uses clearer loops to
-  preserve ownership and field evidence before any source-shape golfing.
+- The main remaining residual is native's larger `0x28` frame and saved-register
+  schedule. The group loop still differs in pointer-local ownership and branch
+  layout; direct pointer-local source spelling currently loses the better object
+  register, so continue only with a stronger source-idiom lead.
