@@ -2,6 +2,7 @@
 
 #include "high_score_record.h"
 #include "slug_voice_manager.h"
+#include "voice_manager.h"
 
 class StarField {
 public:
@@ -31,11 +32,6 @@ public:
 class SaltHazardPool {
 public:
     int* initialize_salt_hazard_pool();
-};
-
-class VoiceManager {
-public:
-    void reset_voice_manager();
 };
 
 class LevelDefinitionLoader {

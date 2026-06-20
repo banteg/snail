@@ -1,16 +1,11 @@
 // add_subgoldy_score @ 0x4402c0 (thiscall, ret 8)
 
 #include "score_stats.h"
+#include "sound_effect_manager.h"
 
 extern char* g_game_base; // data_4df904
 
 void report_errorf(const char* message, ...);
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-};
-
-extern SoundEffectManager g_sound_effect_manager;
 
 class Player {
 public:

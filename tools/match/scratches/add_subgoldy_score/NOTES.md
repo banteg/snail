@@ -38,3 +38,9 @@ Current match: 89.66%, source-shaped.
 - 2026-06-16 shared-audio probe: replacing the local `SoundEffectManager`
   call view with `audio_system.h` produced the same switch-table audit
   regression (`5 ok, 1 mismatch`). Keep the compact local sound view here too.
+- 2026-06-20 narrow sound-manager header pass: `SoundEffectManager` was split
+  into `sound_effect_manager.h`, with `audio_system.h` including that call
+  surface. Including the narrow header here is codegen/audit neutral at the
+  accepted baseline (`89.66%`, `58/58`, `39/58` prefix, `6 ok / 0`), avoiding
+  the broad `audio_system.h` switch-table regression while removing this
+  scratch's local sound-manager copy.

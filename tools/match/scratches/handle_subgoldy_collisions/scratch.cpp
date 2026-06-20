@@ -11,11 +11,13 @@
 #include "ring_special_effect_types.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
+#include "sound_effect_manager.h"
 #include "sub_lazer_types.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
 #include "track_speedup.h"
+#include "voice_manager.h"
 
 typedef Vector3 Vec3;
 
@@ -24,16 +26,6 @@ int next_math_random_value();
 void firework_shoot(float* position, int player_slot, int a3, int a4);
 void noop_runtime_ai();
 int sprintf(char* buffer, const char* format, ...);
-
-struct VoiceManager {
-    void play_voice_manager(int voice, unsigned char flag, int arg);
-};
-extern VoiceManager g_voice_manager; // unk_751498
-
-struct SoundEffectManager {
-    void play_sound_effect(int sound_id);
-};
-extern SoundEffectManager g_sound_effect_manager;
 
 extern char g_parcel_format[];
 

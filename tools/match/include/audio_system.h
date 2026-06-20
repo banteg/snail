@@ -2,6 +2,8 @@
 #ifndef AUDIO_SYSTEM_H
 #define AUDIO_SYSTEM_H
 
+#include "sound_effect_manager.h"
+
 class AudioBackend {
 public:
     char initialize_bass_audio_backend(void* hwnd); // @ 0x449460
@@ -39,15 +41,6 @@ public:
     unsigned char is_paused;         // +0x18
 };
 
-class SoundEffectManager {
-public:
-    void play_sound_effect(int sound_id);
-    void play_sound_effect_scaled(int sound_id, float gain);
-    int play_warning_sample_backend(int sample_id);
-    void stop_warning_sample_handle(int handle);
-};
-
 extern AudioBackend g_audio_backend; // 0x753c58
-extern SoundEffectManager g_sound_effect_manager;
 
 #endif

@@ -71,6 +71,11 @@ early after the easier prefix. Its major phases are:
 - The visible-body `0x80` flag update is expressed through the low byte of a
   local flag value. A direct full-word OR was cleaner but shortened the
   candidate to 552 instructions and scored lower.
+- 2026-06-20 shared voice-manager header pass: the local one-method
+  `VoiceManager` view was replaced with `voice_manager.h`. The focused matcher
+  is unchanged at `79.82%`, `555/555`, `177/555` prefix, with the same
+  `99 ok / 2 unresolved / 1` masked audit, so this is accepted as a
+  call-surface consolidation rather than a source-shape win.
 
 ## Remaining differences
 

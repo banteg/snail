@@ -82,6 +82,13 @@ masked audit from `65 ok` to `70 ok`. The remaining masked mismatch is still the
 slug-block alignment debt (`kill_slug_hazard` vs `begin_post_follow_carryover`),
 not an audio-symbol problem.
 
+2026-06-20 shared audio/voice header pass: the compact manager method views are
+now supplied by `sound_effect_manager.h` and `voice_manager.h`. Focused Wibo is
+unchanged at `47.99%`, `648/673`, `77 ok / 1`, with the same slug-block masked
+call mismatch. This clears the remaining `SoundEffectManager`/`VoiceManager`
+type-report rows without importing broader audio backend layout into this
+large collision scratch.
+
 2026-06-16 slug method call-surface pass: replaced the scratch-local free
 `kill_slug_hazard(int)` / `play_slug_voice(int, int)` declarations with the
 shared `SlugHazardRuntime` method declarations. BN prototypes and the exact
