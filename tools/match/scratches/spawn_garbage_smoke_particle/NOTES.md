@@ -101,3 +101,11 @@ Rejected source-shape probes:
   velocity component regresses to 81.08%. It makes VC6 load/scale X after Y/Z,
   which is the opposite of native's stack-spilled `v15 = x * 0.2` order. Keep
   the reused `Color4f` lanes for the velocity staging.
+- 2026-06-20 larger garbage-family retry: focused Wibo still reports 85.14%,
+  72/76 candidate instructions, 5/76 prefix, and 9 clean masked operands. A
+  separate `Vector3* input_velocity` alias before the accepted raw output tail
+  is codegen-neutral: VC6 still optimizes away the native-looking
+  `lea velocity; add position-base` output setup and streams the x velocity
+  lane directly to `sprite + 0x54`. Keep the raw sprite-word tail plus reused
+  `Color4f` velocity lanes; the residual is output lifetime/stack-reload
+  scheduling, not an input velocity ownership issue.

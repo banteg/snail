@@ -157,3 +157,11 @@ Residuals:
   to 15 clean operands. Keep the existing field-by-field staged `Vector3`; the
   remaining mismatch is still a local x87/integer-load scheduling residual, not
   evidence for a different slot or row-cell layout.
+- 2026-06-20 larger garbage-family retry: focused Wibo still reports 99.30%,
+  143/143 instructions, 48/143 prefix, and 16 clean masked operands. Reordering
+  the staged-vector field writes from x/z/y to x/y/z is codegen-neutral and
+  leaves the same `fadd [cell->anchor_position.y]` scheduling residual.
+  Starting `staged_y` from `cell->anchor_position.y` and then adding `*radius`
+  regresses to 98.60% by inverting the native x87 load order (`fld cell_y`,
+  then `fadd radius`). Keep the radius-first `staged_y` and x/z/y field-copy
+  spelling.

@@ -166,3 +166,11 @@ Residuals:
   view records the renderable transform rows at `+0x38..+0x77`; the
   `world_position` consumed here is the transform position row at `+0x68`.
   Focused result remains 80.00%, 218/217 instructions, `19 ok, 1 mismatch`.
+- 2026-06-20 larger garbage-family retry: focused Wibo still reports 80.00%,
+  218/217 instructions, with 19 clean masked operands and the known jump-table
+  relocation mismatch. Declaring the state-3 velocity pointer before the x
+  integration and computing `movement->x + world_position.x` is codegen-neutral:
+  VC6 still emits `fld world_position.x; fadd velocity.x`, not the native
+  `fld velocity.x; fadd world_position.x`. Keep the current `next_x` spelling
+  because the pointer-lifetime variant does not explain the operand-order or
+  frame-size residual.
