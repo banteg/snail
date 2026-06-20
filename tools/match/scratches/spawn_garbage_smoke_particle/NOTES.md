@@ -116,3 +116,8 @@ Rejected source-shape probes:
   leaves the same missing `lea velocity; add position-base` pair plus direct
   x-velocity store. This confirms the tail residual is shared VC6 scheduling
   debt across both smoke emitters, not a Golb-specific member-layout issue.
+- 2026-06-20 garbage-frontier retry: reading `color.r` back into a
+  `scaled_x` local immediately after the x velocity multiply is codegen-neutral
+  at 85.14%. VC6 still keeps x on the x87 stack and emits the same direct
+  `sprite + 0x54` store instead of native's stack-spilled `v15` reload. Keep
+  the current raw sprite-word tail and reused `Color4f` lanes.

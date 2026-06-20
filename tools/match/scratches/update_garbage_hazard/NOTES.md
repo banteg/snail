@@ -204,3 +204,20 @@ in the positive side-bias epilogue. Raw pointer-walk vector copies
 (80.18%-85.71%), separate switch-state temporaries (92.17%), named/precomputed
 z products (84.60%-90.78%), and common-store side-bias rewrites (at most
 87.04%) were all rejected. No shared header changes were required.
+
+## 2026-06-20 larger frontier retry
+
+Focused Wibo reverified the current frontier at 93.55%, 217/217 instructions,
+13/217 prefix, and 22 clean masked operands. Retesting the state-1 copy with
+destination-first pointer declarations and C++ references is codegen-neutral;
+explicit x/y/z field copies regress to 85.91% and lose the clean jump-table
+relocation. A `contact_radius` local still forces an x87 spill and regresses to
+86.44%. Commuting the z-scale multiply is neutral and leaves the missing
+`fxch`, while spelling the side-bias dispatch as a `switch` regresses to 87.10%
+and reintroduces the jump-table relocation mismatch.
+
+The related smoke emitters and the nearby near-proof scratches were also
+rechecked for reusable source-shape leads; their remaining gaps are the same
+documented scheduling artifacts, not new layout evidence. Keep this scratch
+pinned at 93.55% unless a real original-source lifetime lead explains one of
+the four local residuals above.
