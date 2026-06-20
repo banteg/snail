@@ -2,8 +2,8 @@
 
 int __cdecl parse_next_signed_int(char** cursor)
 {
-    if (**cursor != '-') {
-        char* current;
+    char* current = *cursor;
+    if (*current != '-') {
         do {
             current = *cursor;
             char value = *current;
@@ -17,22 +17,25 @@ int __cdecl parse_next_signed_int(char** cursor)
         } while (current[1] != '-');
     }
 
+    current = *cursor;
     int sign;
-    if (**cursor == '-') {
+    if (*current == '-') {
         sign = -1;
-        *cursor = *cursor + 1;
+        ++current;
+        *cursor = current;
     } else {
         sign = 1;
     }
 
     int value = 0;
-    while (**cursor >= '0') {
-        char* current = *cursor;
+    current = *cursor;
+    while (*current >= '0') {
         char digit = *current;
         if (digit > '9')
             break;
         value = digit + value * 10 - '0';
-        *cursor = current + 1;
+        ++current;
+        *cursor = current;
     }
 
     return value * sign;
