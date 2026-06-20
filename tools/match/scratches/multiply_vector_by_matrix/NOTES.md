@@ -16,3 +16,12 @@ by-value matrix ABI are pinned.
 VC6 pulled the first matrix load ahead of the source-vector copy. Keep the
 current expression order; the residual is still scheduling, not a different
 affine transform.
+
+2026-06-21 near-match scheduler audit: focused Wibo still reports 85.00%,
+40/40 instructions, no masked operands. Adding scalar `source_x/source_y/source_z`
+locals after the source-vector copy is codegen-neutral and does not prevent VC6
+from hoisting the first matrix load before the native source-copy stores.
+Combining those locals with the native z/y/x dot-product term order regresses to
+77.50% by disturbing the final z-lane x87 schedule. Keep the compact aggregate
+`Vector3 source = *this` plus current expression order; the mismatch remains a
+source-scheduler artifact, not evidence for a different matrix ABI.
