@@ -9,9 +9,9 @@ float cosine(float angle);
 void Quaternion::initialize_quaternion_from_axis(const Axis* axis)
 {
     double scale = sine(axis->angle * 0.5f);
-    x = (float)(scale * axis->x);
-    y = (float)(scale * axis->y);
-    z = (float)(scale * axis->z);
+    x = (float)scale * axis->x;
+    y = (float)scale * axis->y;
+    z = (float)scale * axis->z;
 
     w = cosine(axis->angle * 0.5f);
 }

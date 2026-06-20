@@ -15,15 +15,15 @@ TransformMatrix* TransformMatrix::initialize_matrix_from_quaternion(const Quater
     float zz = quaternion->z * quaternion->z;
     float zw = quaternion->w * quaternion->z;
 
-    basis_right.x = 1.0f - (zz + yy + zz + yy);
-    basis_up.x = xy - zw + xy - zw;
-    basis_forward.x = yw + xz + yw + xz;
-    basis_right.y = zw + xy + zw + xy;
-    basis_up.y = 1.0f - (zz + xx + zz + xx);
-    basis_forward.y = yz - xw + yz - xw;
-    basis_right.z = xz - yw + xz - yw;
-    basis_up.z = yz + xw + yz + xw;
-    basis_forward.z = 1.0f - (yy + xx + yy + xx);
+    basis_right.x = 1.0f - 2.0f * (zz + yy);
+    basis_up.x = 2.0f * (xy - zw);
+    basis_forward.x = 2.0f * (yw + xz);
+    basis_right.y = 2.0f * (zw + xy);
+    basis_up.y = 1.0f - 2.0f * (zz + xx);
+    basis_forward.y = 2.0f * (yz - xw);
+    basis_right.z = 2.0f * (xz - yw);
+    basis_up.z = 2.0f * (yz + xw);
+    basis_forward.z = 1.0f - 2.0f * (yy + xx);
     basis_forward_w = 0.0f;
     basis_up_w = 0.0f;
     basis_right_w = 0.0f;
