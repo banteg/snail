@@ -41,3 +41,16 @@ spill. Rewriting the inner scan as a preincremented `while
 the same stack-temp family as the previous postincrement probe. Keep the
 current 65.00% explicit preincrement-plus-break source; the remaining prologue
 and inner-success tail differences are scheduler/control-flow layout debt.
+
+2026-06-20 larger case-folding pass: focused Wibo improves from 65.00% to
+69.29%, with 64 candidate instructions versus 63 target instructions and 4
+clean masked operands. The retained source makes the inner termination explicit:
+when the searched string ends before the pattern, return null immediately;
+when both cursors end together, return the current searched cursor. That matches
+the native semantics more closely than the old `break` plus post-loop
+`*needle_cursor` test. Rejected followups: sharing null or success epilogues
+regressed to 65.55%, the IDA-style postincrement condition plus explicit null
+return regressed to 60.32%, and moving the searched cursor local inside the
+outer non-empty guard or spelling the outer loop as `do/while` was codegen
+neutral. The remaining debt is still the native pre-prologue searched-byte load
+and VC6's branchless select for the adjacent null/success returns.

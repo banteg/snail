@@ -69,3 +69,13 @@ Remaining residuals:
   `add ebx, 5` is not recovered by making the active result byte the add
   carrier. Keep the existing `enter_code` spelling because it is clearer and
   no worse.
+- 2026-06-20 larger case-folding pass: helper-call and promotion probes did not
+  produce a retained source change. Re-swapping the equality operands regressed
+  to 98.86%, changing the compare direction without fixing the stack/global
+  load order. Declaring `ascii_upper_if_lowercase` with an `int` parameter
+  regressed to 71.96% by changing the stack frame from the first instruction;
+  declaring its parameter as `unsigned char` was codegen-neutral. A
+  no-parameter declaration would model old C promotion, but the `.cpp` scratch
+  correctly rejects the calls with C2660, so it is not a valid source-shape lead
+  here. Keep the exact helper's `char` prototype and the current byte-shaped
+  repeat tail.

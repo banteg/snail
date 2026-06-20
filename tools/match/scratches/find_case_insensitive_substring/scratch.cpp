@@ -13,14 +13,15 @@ char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
                 int delta = haystack_cursor - needle;
                 while (1) {
                     ++needle_cursor;
-                    if (needle_cursor[delta] == 0)
-                        break;
+                    if (needle_cursor[delta] == 0) {
+                        if (*needle_cursor == 0)
+                            return haystack_cursor;
+                        return 0;
+                    }
                     char needle_upper = ascii_upper_if_lowercase(*needle_cursor);
                     if (needle_upper != ascii_upper_if_lowercase(needle_cursor[delta]))
                         goto advance_haystack;
                 }
-                if (*needle_cursor == 0)
-                    return haystack_cursor;
             }
 
 advance_haystack:
@@ -31,6 +32,5 @@ advance_haystack:
                 return 0;
         }
     }
-
     return 0;
 }
