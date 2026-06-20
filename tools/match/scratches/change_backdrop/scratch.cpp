@@ -7,10 +7,9 @@ void Backdrop::change_backdrop(LandscapeScriptRecord* record, char flip)
 {
     int refresh_pending = 0;
     unsigned char split_pair = record->split_backdrop_texture_pair;
-    int texture_id = record->backdrop_texture_id;
 
     if (split_pair != refresh_pending) {
-        if (texture_id != refresh_pending) {
+        if (record->backdrop_texture_id != refresh_pending) {
             refresh_pending = 1;
             pending_split_backdrop_pair = (unsigned char)refresh_pending;
             backdrop_change_queued = (unsigned char)refresh_pending;
@@ -20,7 +19,7 @@ void Backdrop::change_backdrop(LandscapeScriptRecord* record, char flip)
             pending_flip = flip;
         }
     } else {
-        if (texture_id != refresh_pending) {
+        if (record->backdrop_texture_id != refresh_pending) {
             pending_split_backdrop_pair = (unsigned char)refresh_pending;
             refresh_pending = 1;
             backdrop_change_queued = (unsigned char)refresh_pending;

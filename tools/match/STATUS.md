@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**470/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61072/325832** bytes (**18.74%**) are proof-grade, and overall fuzzy is **53.64%**.
+**471/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61183/325832** bytes (**18.78%**) are proof-grade, and overall fuzzy is **53.65%**.
 
-## Proof Grade (470)
+## Proof Grade (471)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -105,6 +105,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | update_frontend_state_machine | 0x4107d0 | 1116 | 180/180 | 100.00% | 180/180 | 69 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | change_backdrop | 0x410d50 | 111 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
 | ✅ | initialize_backdrop | 0x410e20 | 279 | 55/55 | 100.00% | 55/55 | 4 ok |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
@@ -557,7 +558,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (83)
+## Mid Progress (50-79.99%) (82)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -576,7 +577,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_game_input | 0x40aab0 | 71 | 30/30 | 63.33% | 4/30 | 3 ok |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 50.70% | 3/73 | 14 ok |  |
-| 🚧 | change_backdrop | 0x410d50 | 111 | 38/34 | 63.89% | 2/34 | - |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 66/67 | 72.18% | 0/67 | 6 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 264/287 | 79.85% | 6/287 | 1 mismatch, 49 ok |  |
 | 🚧 | render_camera | 0x411fa0 | 685 | 182/180 | 70.17% | 0/180 | 1 mismatch, 34 ok |  |

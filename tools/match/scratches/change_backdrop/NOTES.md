@@ -1,6 +1,6 @@
 # change_backdrop @ 0x410d50
 
-Current scratch: 63.89% (34 target insns, 38 candidate insns), clean masks.
+Current scratch: 100.00% (34/34 instructions), clean masks.
 
 Stages one parsed landscape script for the backdrop renderer.
 
@@ -16,9 +16,9 @@ The helper only updates pending backdrop fields when `backdrop_texture_id` is
 non-zero; otherwise it clears `backdrop_refresh_pending` and leaves the pending
 distort/flip fields unchanged.
 
-Open source-shape issue: native keeps `backdrop_refresh_pending`/zero in `edx`
-and the initial texture id in `esi`, producing `cmp bl, dl` and
-`cmp esi, edx`. The clean structured spelling currently gives VC6 the opposite
-allocation (`refresh_pending` in `esi`, texture id in `edx`) and emits `test`.
-Do not fix this with volatile or fake helper calls; resume from source shape or
-an idiom probe.
+2026-06-20 exact update: the scratch now re-reads
+`record->backdrop_texture_id` in both branch guards instead of preserving an
+initial `texture_id` local. That source shape gives VC6 the native zero lane in
+`edx`, path split byte in `bl`, and texture id in `esi`, recovering the
+`cmp bl, dl` / `cmp esi, edx` guards without volatile state or fake
+dependencies.
