@@ -19,3 +19,13 @@
 only reached 26.67% while moving the tail away from native offsets. The raw
 `unsigned char*` source remains clearer until a real cursor-register owner lead
 appears.
+
+2026-06-20 archive-cursor retry: the focused matcher still reports 26.37%,
+45/46 candidate/target instructions, and no masked operands. Reordering the
+initial `value`/`output` locals, switching to signed `char`, adding `const` to
+the input cursor, spelling the three extension checks as independent `if`
+statements, and trying the archive-family C mode (`/TC`) were all codegen
+neutral. A direct-dereference stem loop reached 30.77%, but it was rejected
+because it stores before advancing/loading the input cursor, unlike the native
+`inc eax; mov [edx], cl; inc edx; mov cl, [eax]` loop. Keep the retained source
+until a real `eax` cursor / `cl` byte owner lead appears.

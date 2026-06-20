@@ -24,3 +24,16 @@ Rejected/no-op variants:
   the signed `jl`/`jg` range tests to unsigned branches.
 - Splitting cursor/character initialization and spelling the subtraction as
   `requested_char = requested_char - 32` did not improve codegen.
+
+2026-06-20 archive-cursor retry:
+
+- Rerun baseline stayed at 66.12%, 61/60 candidate/target instructions, with
+  the same two clean masked global references.
+- Initializing `archive_cursor` before `requested_cursor` was codegen-neutral;
+  the candidate still keeps the archive cursor in `ecx` and the archive byte in
+  `dl` while native uses `edx` plus `cl`.
+- Replacing the shared `not_found` label with direct `return 0` exits compiled
+  identically, so the explicit label remains the clearest source for the native
+  shared not-found semantics.
+- The residual matches the classifier helper's register-owner pattern rather
+  than a local block-layout spelling issue.
