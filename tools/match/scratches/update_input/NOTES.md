@@ -19,3 +19,11 @@ the saved `edi` lifetime and shrinking the candidate to 16 instructions.
 Adding a `register` hint to `changed` is codegen-neutral at 37.84% and does not
 move the xor before `push esi`. Keep the precomputed locals until a real source
 idiom explains native's early `edx` allocation.
+
+2026-06-20 larger residual audit: staging `changed`, `pressed`, `inverse`, and
+`released` as mutable locals is codegen-neutral at 37.84%; VC6 still saves
+`esi` before loading `previous_buttons`. Snapshotting `previous_buttons` before
+`current_buttons` and typing the bit-mask locals as `unsigned int` are also
+neutral. These probes preserve the edge semantics but do not explain native's
+early `edx = previous ^ current` allocation, so the clearer precomputed-local
+source remains retained.

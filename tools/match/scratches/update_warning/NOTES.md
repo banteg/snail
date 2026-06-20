@@ -33,3 +33,10 @@ by the pause-gate test. An explicit `case 0` switch arm and a named
 `current_state` snapshot both regressed by changing register saves/control-flow,
 so they are rejected. Do not encode fake subtract-through-zero expressions just
 to chase that final instruction.
+
+2026-06-20 larger residual audit: removing the outer `state` guard and making
+`case 0`/`default` explicit regresses to 84.31% by deleting the native zero-state
+test before the decrement ladder. Splitting the combined guard into nested
+`if (!pause_gate) { if (!state) return; ... }` is codegen-neutral at 98.08% and
+leaves the same `cmp eax, edx` residual. The remaining gap still looks like VC6
+using a subtract for the zero test, not a source-level state-machine omission.
