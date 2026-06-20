@@ -79,3 +79,15 @@ Remaining residuals:
   correctly rejects the calls with C2660, so it is not a valid source-shape lead
   here. Keep the exact helper's `char` prototype and the current byte-shaped
   repeat tail.
+- 2026-06-20 larger near-proof continuation: focused Wibo still reports 99.09%,
+  440/440 instructions, 386/440 prefix, and 73 clean masked operands. Collapsing
+  the Enter/Ctrl path into `result = (is_key_down(0x1d) != 0) + 5`, commuting it
+  to `5 + (...)`, and assigning the expression through `repeat_code` first are
+  all codegen-neutral and keep `add bl, 5`. Re-swapping the repeat-tail
+  case-fold call order again regressed to 98.86% by changing the compare to
+  `cmp al, dl`; naming `folded_repeat` regressed to 98.75% by spilling the
+  first folded byte instead of preserving it in `dl`. Changing
+  `g_text_input_last_repeat_code` from unsigned to signed `char` is neutral.
+  The retained source remains the best shape; native's full-register
+  `add ebx, 5` and stack/global repeat-fold load order are caller scheduling
+  artifacts, not evidence for different text-input state.

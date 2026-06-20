@@ -70,3 +70,11 @@ local with a direct `((MouseCursorState*)(base + 0x290))->is_mouse_captured()`
 call is codegen-neutral at 97.78%. It does not move the native
 `lea ecx, [base+0x290]` before the accumulator store, so the retained named
 local remains the clearer source shape.
+
+2026-06-20 near-proof continuation: focused Wibo still reports 97.78%,
+135/135 instructions, 18/135 prefix, and 23 clean masked operands. Recasting
+the mouse receiver as a C++ reference (`MouseCursorState& mouse =
+*(MouseCursorState*)(base + 0x290)`) is codegen-neutral and still schedules
+the frame-accumulator `fstp [base+0x518]` before `lea ecx, [base+0x290]`.
+Keep the pointer local; the residual remains statement scheduling around the
+mouse receiver and cursor-quad tint/layer evaluation.
