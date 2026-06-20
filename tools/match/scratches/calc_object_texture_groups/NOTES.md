@@ -59,3 +59,15 @@ slot view, and casting the byte offset to an unsigned local are all
 codegen-neutral and leave the same `[ecx+eax+0x0c]` versus native
 `[eax+ecx+0x0c]` SIB ownership residual. Keep the byte-offset loop; the
 remaining byte is an addressing encoding artifact, not a layout lead.
+
+## 2026-06-20 SIB ownership retry
+
+Focused Wibo still reports `98.18%`, `55/55` instructions, `18/55` prefix,
+and one clean masked operand. Spelling the active texture reload as
+`((TextureRef**)((char*)facequads + offset))[3]`, as a short-lived
+`char* active_quad` plus `+0x0c`, and as a raw `unsigned int` pointer-sized
+load are all codegen-neutral and leave the same equivalent SIB byte. A typed
+`ObjectFaceQuad* active_quad = &facequads[face_index]` regresses to `35.90%`
+by changing register ownership and adding a stack spill. Keep the current
+byte-offset expression; the residual remains encoding/scheduler debt rather
+than evidence for a different facequad layout.
