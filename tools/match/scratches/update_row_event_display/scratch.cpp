@@ -5,16 +5,13 @@
 #include "input_state.h"
 #include "player.h"
 #include "row_event_display.h"
+#include "subgame_runtime.h"
 #include "track_parcel_runtime.h"
 #include "vector3.h"
 
 extern char* g_game_base; // data_4df904
 
 typedef Vector3 Vec3;
-
-struct GameRuntime {
-    TrackParcelRuntime* spawn_track_parcel(float* world_position, void* owner);
-};
 
 void __fastcall update_row_event_display(RowEventDisplayController* controller)
 {
@@ -53,7 +50,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
                 controller->staged_parcel_count = staged_parcel_count;
                 char* game = g_game_base;
                 TrackParcelRuntime* parcel =
-                    ((GameRuntime*)(game + 0x74618))->spawn_track_parcel((float*)(game + 0x433f34), game + 0x42fd7c);
+                    ((SubgameRuntime*)(game + 0x74618))->spawn_track_parcel((Vector3*)(game + 0x433f34), game + 0x42fd7c);
                 Sprite* sprite = parcel->sprite;
                 parcel->state = 6;
                 sprite->size_end = 0.0f;

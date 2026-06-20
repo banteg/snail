@@ -31,3 +31,9 @@ remaining diff is still broad register ownership: VC6 keeps `this` outside
 `ecx` and strength-reduces the two-lane stamp. Adjacent exact
 `is_neighbor_cell_solid` independently confirms the same `TrackRowCell`
 `tile_id +0x3c` and `lane_and_flags +0x40` layout.
+
+2026-06-20 shared-owner consolidation: `runtime_row_count` and the
+`+0x3bfb04` tile-byte cursor now live in `SubgameRuntime`, matching the exact
+`rebuild_track_runtime_from_segments` caller and the Android `cRSubGame`
+symbol. Focused Wibo stays at 36.27%; an index-only scan and a do/while
+lateral-offset loop both regressed, so the prior pointer scan remains.

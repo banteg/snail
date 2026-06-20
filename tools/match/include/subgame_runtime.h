@@ -12,6 +12,7 @@
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
+#include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
 
 class Player;
@@ -114,7 +115,9 @@ public:
     int nuke_rate_state; // +0x3bdec0
     char unknown_3bdec4[0x3be0c0 - 0x3bdec4];
     float nuke_rate_progress; // +0x3be0c0
-    char unknown_3be0c4[0x68b4c8 - 0x3be0c4];
+    char unknown_3be0c4[0x3bfb04 - 0x3be0c4];
+    TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
+    char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
     HighScoreBank high_score_bank; // +0x68b4c8
     HighScoreRecord current_high_score_record; // +0xfd2b10
     unsigned char selected_level_record_active; // +0xff25d0

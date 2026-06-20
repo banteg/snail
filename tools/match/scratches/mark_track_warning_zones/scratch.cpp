@@ -2,23 +2,13 @@
 // cRSubGame::WarnTrack() per Android symbols: stamps a 6-row x 2-col
 // warning footprint (flags |= 0x18) behind every hazard-bearing tile.
 
-#include "track_row_cell_tile_views.h"
+#include "subgame_runtime.h"
 
-class GameRuntime {
-public:
-    void mark_track_warning_zones();
-
-    char unknown_00[0x54];
-    int runtime_row_count; // +0x54
-    char unknown_58[0x3bfb04 - 0x58];
-    TrackRowCellTileByteView cells[1]; // +0x3bfb04, row-major tile-byte view
-};
-
-void GameRuntime::mark_track_warning_zones()
+void SubgameRuntime::mark_track_warning_zones()
 {
     int row = 0;
     if (runtime_row_count - 1 > 0) {
-        TrackRowCellTileByteView* cell = cells;
+        TrackRowCellTileByteView* cell = runtime_cell_tiles;
         do {
             for (int col = 0; col < 8; ++col, ++cell) {
                 char t = cell->tile_id;
@@ -31,7 +21,7 @@ void GameRuntime::mark_track_warning_zones()
                         for (int dc = -1; dc < 1; ++dc) {
                             if (row >= 0 && row < runtime_row_count - 1
                                 && dc + col >= 0 && dc + col < 8)
-                                cells[idx + dc].lane_and_flags |= 0x18;
+                                runtime_cell_tiles[idx + dc].lane_and_flags |= 0x18;
                         }
                         --row;
                         idx -= 8;
