@@ -51,9 +51,9 @@ early after the easier prefix. Its major phases are:
 - The two challenge hazard scalars use separate normalized locals. Combining
   the expressions lets MSVC fold the constants to approximately `0.008f`,
   which loses the target's two-stage multiply sequence.
-- `g_completion_bonus_x_source` is declared as two adjacent words so index 0
-  can be consumed as an integer and index 1 as the neighboring float without a
-  speculative second global.
+- `g_completion_bonus_x_source` and the neighboring
+  `g_config_default_challenge_speed_slider` are declared separately now that the
+  saved-config scalar split is curated in the global reference manifest.
 - `rebuild_track_runtime_from_segments(level_index)` stays as a member call and
   is not reimplemented inline.
 - The landscape default branch uses a local alias of the incoming level index.
@@ -82,8 +82,9 @@ early after the easier prefix. Its major phases are:
   `TrackParcelPool`, `FrontendWidget`, `LandscapeScriptBank`,
   `ActiveLandscapeEntry`, `BodList`, `BodNode`, `MouseCursorState`, and
   `Player::initialize_subgoldy` were replaced by shared headers. The focused
-  matcher remains unchanged at `79.82%`, `555/555`, `177/555` prefix, with the
-  same `99 ok / 2 unresolved / 1` masked audit. The type auditor moved this
+  matcher remains unchanged at `79.82%`, `555/555`, `177/555` prefix; the later
+  config-scalar naming pass leaves this at `101 ok / 0 unresolved / 1` in the
+  masked audit. The type auditor moved this
   scratch out of the `FrontendWidget`, `Player`, `GolbPathBank`,
   `SubLazerPool`, and `SaltHazardPool` rows.
 
@@ -105,8 +106,8 @@ code generation.
 
 The two compiler-generated jump tables are now content-audited. The later
 track dispatch table matches, while the first state dispatch table is a real
-masked-operand mismatch. The two remaining unresolved operands are the
-completion-bonus globals at `g_completion_bonus_x_source+0x4`.
+masked-operand mismatch. The former completion-bonus `+0x4` operands are now
+resolved to `g_config_default_challenge_speed_slider`.
 
 ## Rejected trials
 

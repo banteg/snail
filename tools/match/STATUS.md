@@ -612,7 +612,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 4 mismatch, 20 ok |  |
 | 🚧 | initialize_subgame | 0x4374b0 | 1632 | 385/396 | 63.25% | 1/396 | 6 mismatch, 3 unresolved, 65 ok |  |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 79.82% | 177/555 | 1 mismatch, 2 unresolved, 99 ok |  |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 79.82% | 177/555 | 1 mismatch, 101 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1046/1033 | 67.53% | 9/1033 | 2 mismatch, 108 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |

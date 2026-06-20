@@ -16,8 +16,8 @@ tools/match/match.sh \
 | Target instructions | 555 | 555 |
 | Candidate instructions | 1 | **555** |
 | Common prefix | 0 / 555 | **177 / 555** |
-| Masked operands OK | 0 | **100** |
-| Masked operands unresolved | 0 | **2** |
+| Masked operands OK | 0 | **101** |
+| Masked operands unresolved | 0 | **0** |
 | Masked operand mismatches | 0 | **1** |
 
 This is a 79.46 percentage-point improvement over the starter skeleton. The
@@ -30,9 +30,9 @@ candidate[177] jne L396
 
 The compiler-generated jump tables at target instructions 23 and 185 are now
 content-audited. The later track dispatch table matches; the first state
-dispatch table is a real masked-operand mismatch. The two remaining unresolved
-masked operands are the completion-bonus globals at
-`g_completion_bonus_x_source+0x4`.
+dispatch table is a real masked-operand mismatch. The former unresolved
+completion-bonus `+0x4` operands are now resolved to the neighboring
+`g_config_default_challenge_speed_slider` scalar.
 
 ## Accepted source-shape changes
 
