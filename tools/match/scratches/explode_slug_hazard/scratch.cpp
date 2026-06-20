@@ -32,8 +32,9 @@ int SlugHazardRuntime::explode_slug_hazard()
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
-        float intensity = (float)next_math_random_value() * 0.0000091552738f + 0.69999999f;
-        sprite->color.set_color_grayscale(intensity);
+        sprite->color.set_color_grayscale(
+            (float)next_math_random_value() * 0.0000091552738f
+            + 0.69999999f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;
         float track_center = owner_game->track_center_x;

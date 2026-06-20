@@ -1,4 +1,4 @@
-# Structure-first scratch - 73.22%, 148/147 insns
+# Structure-first scratch - 81.63%, 147/147 insns
 
 `explode_slug_hazard` is recovered as the 70-particle slug goo burst spawned
 by `kill_slug_hazard`. Each iteration allocates sprite texture `129`, sets
@@ -41,6 +41,24 @@ Known residuals:
   `position_offset`, and `staged_position` locals because they preserve the
   closest native stack shape.
 
-Do not force the remaining frame/register residuals with volatile, dummy
-locals, or raw offset macros. This scratch is useful as a semantic map for the
-slug death particle burst; exact matching needs a concrete source-shape lead.
+2026-06-20 call-argument staging pass:
+
+- Focused Wibo improves from 73.22% to 81.63% and recovers the instruction
+  count to 147/147, with 32 clean masked operands.
+- Retained: inlining the grayscale intensity expression directly in the
+  `set_color_grayscale` call. This matches native's source shape where VC6
+  reserves the cdecl argument slot first, computes the float directly into
+  `[esp]`, and then calls the color helper. The previous named `intensity`
+  local forced a store/reload/push sequence and created an extra candidate
+  instruction.
+- Rejected: saving the second RNG draw as an `int up_seed` regresses to 79.04%
+  by using an integer multiply path; naming scalar velocity components is
+  codegen-neutral at 81.63%; decompiler-shaped scalar position offsets regress
+  to 81.38% and shrink the frame to `0x2c`; moving `Game* game` before the up
+  RNG is score-neutral but loads `owner_game` too early; and a single-result
+  loop spelling is still neutral and does not remove the final `xor eax, eax`.
+
+Remaining residuals are now the `0x40` versus `0x38` frame, side/up stack-slot
+ownership, velocity x87 ordering, final position-copy scheduling, and the
+known loop-return zeroing. Do not force them with volatile, dummy locals, raw
+offset macros, or fake aliases.
