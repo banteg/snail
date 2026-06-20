@@ -22,3 +22,15 @@ clear, but native keeps the image pointer in `edx`, offset in `ecx`, and uses
 loads, raw byte-buffer parameters, unsigned bpp locals, register hints, and
 stepwise RGB packing did not improve the allocation, so this remains an honest
 relationship scratch rather than a forced match.
+
+2026-06-20 parser/resource helper retry: focused Wibo still reports `25.29%`,
+`38/49` candidate/target instructions, and no masked operands. Removing the
+`pixel` pointer and indexing `image->pixels[offset + n]` directly regressed to
+`16.09%` by moving the image owner to `esi` and offset to `eax`. Naming an
+`int bits_per_pixel` local regressed to `22.99%` and introduced signed-shift
+shape; a raw byte-buffer header view regressed to `25.00%` with a stack byte
+spill. Stepwise RGB packing was codegen-neutral at `25.29%` and still did not
+recover native's `esi`/`edi` byte lanes. Keep the current typed
+`TgaImageView` plus `pixel` pointer source as the best relationship scratch;
+the residual is register allocation around the image base, offset, and RGB
+packing lanes.

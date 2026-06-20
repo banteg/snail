@@ -55,3 +55,12 @@ known 58.91% regression, and reading the decimal-loop byte as `*current` was
 codegen-neutral. Reading the pre-scan classifier as `*current` under the
 retained `if`/`do` shape regressed to 43.41% by moving the owner to `edx`. Keep
 the current dot-first decimal loop and owner-read pre-scan.
+
+2026-06-20 parser/resource helper retry: focused Wibo still reports `63.57%`,
+`65/64` candidate/target instructions, `1/64` prefix, and nine clean masked
+operands. Naming only the initial `char* initial = *cursor` before the
+pre-scan guard is codegen-neutral: VC6 still folds the first owner read into
+`edx` instead of native's separate `eax = [ecx]` / `cmp byte [eax], '-'`
+sequence. The retained source remains the best known float-specific shape; the
+first mismatch is still cursor-owner register allocation, not a missing
+semantic pre-scan branch.
