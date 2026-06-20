@@ -22,14 +22,16 @@ Current focused result:
 - match: 79.32%
 - target/candidate instructions: 367 / 339
 - prefix: 91 / 367
-- masked operands: 57 clean, 1 unresolved, 0 mismatched
+- masked operands: 57 clean, 0 unresolved, 1 mismatched
 
 Remaining gap:
 
 The scratch matches the setup prefix and preserves the orientation/edge-selector
 structure, but it is still a high mid-progress reconstruction. The recovered
-UV-rotation helper clears the six former unresolved call operands; the only
-remaining unresolved masked operand is the orientation jump table image operand
-at `0x41a581` / `0x41a9fc`. The main code-shape differences are register choice
-for the negative X/Z constants in the orientation cases and shorter edge-selector
-blocks where MSVC still simplifies some repeated sign tests.
+UV-rotation helper clears the six former unresolved call operands, and the
+orientation jump table at `0x41a581` / `0x41a9fc` is now curated as
+`initialize_backdrop_tile_quad_orientation_jump_table`. Its target/candidate
+entries remain a real audited mismatch. The main code-shape differences are
+register choice for the negative X/Z constants in the orientation cases and
+shorter edge-selector blocks where MSVC still simplifies some repeated sign
+tests.

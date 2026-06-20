@@ -463,6 +463,14 @@
       "description": "Compiler-emitted switch jump table used by update_golb_ai."
     },
     {
+      "address": "0x41a9fc",
+      "name": "initialize_backdrop_tile_quad_orientation_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x10",
+      "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
+    },
+    {
       "address": "0x42fd14",
       "name": "g_used_fringe_bods_count_offset",
       "kind": "offset",
