@@ -6,14 +6,15 @@
 void ObjectList::replace_object_list_texture_refs(TextureRef* new_texture,
     TextureRef* old_texture)
 {
+    int object_cursor = 0;
     int object_index = 0;
-    int object_offset = 0;
     if (count <= 0) {
         return;
     }
 
+    int object_offset = 0;
     do {
-        Object* object = (Object*)((char*)objects + object_offset);
+        Object* object = (Object*)((char*)objects + object_cursor);
         if (object->vertex_count != 0) {
             int face_index = 0;
             if (object->facequad_count > 0) {
@@ -31,7 +32,8 @@ void ObjectList::replace_object_list_texture_refs(TextureRef* new_texture,
 
             replace_object_group_texture_refs(object, new_texture, old_texture);
         }
+        object_cursor = object_offset + 0xdc;
         ++object_index;
-        object_offset += 0xdc;
+        object_offset = object_cursor;
     } while (object_index < count);
 }
