@@ -26,6 +26,13 @@ stack slot before passing it to `square_root`.
 
 No inline assembly, fake globals, volatile padding, or dummy aliases are used.
 
+2026-06-20 type consolidation: the shared four-float `Quaternion` layout now
+lives in `include/quaternion.h` with the axis/matrix conversion declarations.
+The Android symbol still identifies this body as a constructor, so the header
+keeps the constructor overloads needed by `interpolate_matrix_rotation`; the
+type scanner now treats overloads within one definition as normal C++ rather
+than a cross-scratch ABI conflict.
+
 ## Current status
 
 Focused Wibo result: 92.47%, 186 candidate instructions versus 186 target

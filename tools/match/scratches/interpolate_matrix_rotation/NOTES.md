@@ -11,3 +11,11 @@ Residuals: copy-propagation whims (second epsilon compares read the
 extracted slot instead of working), tail rebuild-copy scheduling.
 Combined with linear_interpolate_matrix this fully specifies native
 pose interpolation for the cluster-1 mirror transform lane.
+
+2026-06-20 Quaternion consolidation: this scratch now consumes the shared
+`include/quaternion.h` layout. Rewriting the extract step as
+`extracted.initialize_quaternion_from_matrix(...)` cleared the type report but
+regressed the focused matcher to 65.12% with only a 4-instruction prefix, so the
+constructor spelling is retained. Focused rerun remains pinned at 71.89%,
+112/105 instructions, 30-instruction prefix, with 12 masked operands OK and the
+two known call-symbol mismatches.

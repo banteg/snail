@@ -1,13 +1,7 @@
 // initialize_matrix_from_quaternion @ 0x44d820 (thiscall)
 
+#include "quaternion.h"
 #include "transform_matrix.h"
-
-struct Quaternion {
-    float x;
-    float y;
-    float z;
-    float w;
-};
 
 TransformMatrix* TransformMatrix::initialize_matrix_from_quaternion(const Quaternion* quaternion)
 {

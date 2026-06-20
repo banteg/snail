@@ -1307,6 +1307,39 @@ def test_type_consolidation_flags_method_abi_conflicts(tmp_path: Path) -> None:
     )
 
 
+def test_type_consolidation_allows_overloads_within_one_definition(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    scratches = match_root / "scratches"
+    (scratches / "a").mkdir(parents=True)
+    (include_dir / "quaternion.h").write_text(
+        """
+struct Quaternion {
+    Quaternion();
+    Quaternion(const float* rows);
+    float x;
+    float y;
+    float z;
+    float w;
+};
+""".lstrip()
+    )
+    (scratches / "a" / "scratch.cpp").write_text(
+        """
+struct Quaternion {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+""".lstrip()
+    )
+
+    findings = {finding.name: finding for finding in type_consolidation_findings(match_root)}
+    assert findings["Quaternion"].status == "header-compatible"
+
+
 def test_type_consolidation_flags_virtual_owner_collisions(tmp_path: Path) -> None:
     match_root = tmp_path / "match"
     (match_root / "include").mkdir(parents=True)

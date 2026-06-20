@@ -1,16 +1,10 @@
 // initialize_axis_from_quaternion @ 0x44d580 (thiscall)
 
 #include "axis.h"
+#include "quaternion.h"
 
 float sine(float angle);
 float arccosine(float value);
-
-struct Quaternion {
-    float x;
-    float y;
-    float z;
-    float w;
-};
 
 void Axis::initialize_axis_from_quaternion(const Quaternion* quaternion)
 {

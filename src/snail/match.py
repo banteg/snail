@@ -3212,28 +3212,36 @@ def _method_abi_entries(definition: TypeDefinition) -> tuple[tuple[str, str], ..
     return tuple(sorted(set(entries)))
 
 
+def _method_abi_map(definition: TypeDefinition) -> dict[str, set[str]]:
+    method_abis: dict[str, set[str]] = {}
+    for method_name, abi in _method_abi_entries(definition):
+        method_abis.setdefault(method_name, set()).add(abi)
+    return method_abis
+
+
 def _has_method_abi_conflict(definitions: list[TypeDefinition]) -> bool:
-    method_abis_by_name: dict[str, set[str]] = {}
-    method_entry_sets: list[tuple[tuple[str, str], ...]] = []
+    method_maps: list[dict[str, set[str]]] = []
     for definition in definitions:
-        entries = _method_abi_entries(definition)
-        if not entries:
+        method_abis = _method_abi_map(definition)
+        if not method_abis:
             continue
-        method_entry_sets.append(entries)
-        for method_name, abi in entries:
-            method_abis_by_name.setdefault(method_name, set()).add(abi)
+        method_maps.append(method_abis)
 
-    if any(len(abis) > 1 for abis in method_abis_by_name.values()):
-        return True
-
-    for index, first_entries in enumerate(method_entry_sets):
-        first_names = {name for name, _abi in first_entries}
-        first_has_virtual = any(abi.startswith("virtual:") for _name, abi in first_entries)
-        for second_entries in method_entry_sets[index + 1 :]:
-            second_names = {name for name, _abi in second_entries}
-            if first_names & second_names:
+    for index, first_methods in enumerate(method_maps):
+        first_names = set(first_methods)
+        first_has_virtual = any(
+            abi.startswith("virtual:") for abis in first_methods.values() for abi in abis
+        )
+        for second_methods in method_maps[index + 1 :]:
+            second_names = set(second_methods)
+            shared_names = first_names & second_names
+            if shared_names:
+                if any(first_methods[name].isdisjoint(second_methods[name]) for name in shared_names):
+                    return True
                 continue
-            second_has_virtual = any(abi.startswith("virtual:") for _name, abi in second_entries)
+            second_has_virtual = any(
+                abi.startswith("virtual:") for abis in second_methods.values() for abi in abis
+            )
             if first_has_virtual != second_has_virtual:
                 return True
     return False

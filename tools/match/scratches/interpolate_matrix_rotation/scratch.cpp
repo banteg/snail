@@ -3,17 +3,8 @@
 // snap near-zero imaginary lanes, convert to axis-angle, scale the angle
 // by alpha, recompose. When the axis collapses, rebuild from the snapped
 // quaternion directly; when the angle is exactly zero, leave the matrix.
+#include "quaternion.h"
 #include "transform_matrix.h"
-
-struct Quaternion {
-    Quaternion(); // out-of-line default ctor in the image
-    Quaternion(const float* matrix_rows); // initialize_quaternion_from_matrix
-
-    float x;
-    float y;
-    float z;
-    float w;
-};
 
 struct AxisAngle {
     AxisAngle(); // out-of-line default ctor in the image

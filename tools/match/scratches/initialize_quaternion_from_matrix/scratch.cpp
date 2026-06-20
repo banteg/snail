@@ -1,17 +1,10 @@
 // initialize_quaternion_from_matrix @ 0x44d5d0 (thiscall, ret 0x4)
 // Builds a quaternion from the rotational basis rows of a transform matrix.
 
+#include "quaternion.h"
+
 float square_root(float value);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
-
-struct Quaternion {
-    float x;
-    float y;
-    float z;
-    float w;
-
-    Quaternion* initialize_quaternion_from_matrix(const float* matrix_rows);
-};
 
 Quaternion* Quaternion::initialize_quaternion_from_matrix(const float* matrix_rows)
 {
