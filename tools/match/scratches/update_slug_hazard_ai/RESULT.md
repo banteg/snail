@@ -8,7 +8,7 @@ Final focused run:
 match: 66.15%
 target: 464 insns, candidate: 434 insns
 prefix: 0/464 target insns
-masked operands: 47 ok, 1 unresolved, 1 mismatch
+masked operands: 47 ok, 0 unresolved, 2 mismatch
 ```
 
 The scratch covers the active slug update, lateral movement state, death-toss
@@ -18,8 +18,10 @@ sprite texture/color changes, nuke kill, and final facing/voice update tail.
 Known residuals:
 
 - Target stack frame is `0x14`; candidate frame is `0x10`.
-- The unresolved masked operand is the local switch jump-table relocation.
-- The single masked mismatch is a list-removal string-order alignment issue:
+- The state switch jump table is now named at `0x440008`; its content audits as
+  a real table-layout mismatch rather than an unresolved local-label
+  relocation.
+- The other masked mismatch is a list-removal string-order alignment issue:
   target `0x43ff7e` pushes `"List remove"`, while the aligned candidate pushes
   `"List remove NEXTBOD"`.
 - Remaining mismatches are allocator/scheduler shape around state-2 toss setup

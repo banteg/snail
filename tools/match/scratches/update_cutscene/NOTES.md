@@ -46,3 +46,9 @@ Focused match:
 - Rejected probes: swapping the two matrix locals for states `11`/`6` regressed
   to 38.17%, and a shared `float` local for `0.00833333377f` produced no score
   movement or saved-register constant hoist.
+
+2026-06-20 switch-table audit: the cutscene state table at `0x446e00` is now
+named `update_cutscene_state_jump_table` with candidate alias `$L2639`.
+Focused Wibo remains `46.29%`; masked audit is now `33 ok / 1 unresolved / 2
+mismatch`. The switch table is a real layout mismatch; the remaining unresolved
+operand is the `0x42fec4` byte store in the state-7 entry path.

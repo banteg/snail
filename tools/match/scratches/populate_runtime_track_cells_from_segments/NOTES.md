@@ -129,6 +129,12 @@ helpers `get_track_skirt_color`, `spawn_track_parcel`,
 prove the root offsets kept in `subgame_runtime.h`, while populate still needs
 separate source-shape work for the frame and glyph-switch residuals.
 
+2026-06-20 glyph switch-table audit: the normalized-glyph jump table at
+`0x437194` and byte lookup at `0x437204` are now named. Focused Wibo remains
+`28.25%`, `1190/1245`; masked audit is now `57 ok / 0 unresolved / 1 mismatch`.
+The remaining glyph-switch debt is a real table-layout mismatch, not an
+unknown local-label relocation.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else

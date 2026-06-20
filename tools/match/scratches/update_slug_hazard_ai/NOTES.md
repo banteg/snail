@@ -16,8 +16,8 @@ Initial source-shaped scratch reconstructs the slug hazard runtime update:
 - inline BOD-list removal through the global `g_game_base + 0x5a8` free list.
 
 2026-06-19 focused result: 66.15%, 464 target instructions vs 434 candidate
-instructions, 0-instruction prefix, 47 masked operands ok, 1 unresolved switch
-jump-table relocation, and 1 masked string-order mismatch.
+instructions, 0-instruction prefix, 47 masked operands ok, 0 unresolved
+operands, and 2 masked mismatches after the state switch table was named.
 
 Recovered shape changes that improved the scratch:
 
@@ -40,6 +40,9 @@ Remaining residuals:
 - The inline list-removal blocks still tail-merge differently. The masked audit
   reports target `0x43ff7e` as `"List remove"` while the aligned candidate push
   is `"List remove NEXTBOD"`.
+- The state switch table at `0x440008` is now audited as
+  `update_slug_hazard_ai_state_jump_table`; its remaining difference is a real
+  table-layout mismatch, not an unresolved relocation.
 - State-2 death-direction sign correction and list-removal scheduling remain
   register/x87 allocation debt rather than missing behavior.
 

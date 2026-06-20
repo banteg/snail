@@ -42,3 +42,9 @@ presets flowing through `+0x1ec/+0x1fc/+0x1bc/+0x1cc`. Restoring the native
 `0x104` color-temporary frame was the key source-shape change; making
 `copy_color` inline before that frame rewrite regressed to `47.55%`, but after
 the frame rewrite it improved the scratch to the final `62.18%`.
+
+2026-06-20 switch-table audit: the widget-type table at `0x402484` is now
+named `initialize_frontend_widget_type_jump_table` with candidate alias
+`$L1110`. The focused matcher remains `62.18%`; masked audit is now `32 ok / 0
+unresolved / 1 mismatch`, classifying the style-preset switch as table-layout
+debt rather than an unknown relocation.

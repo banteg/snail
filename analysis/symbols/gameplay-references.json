@@ -77,6 +77,16 @@
       "description": "Thiscall object-constructor thunk that calls initialize_object at 0x42f6f0, preserves the original this pointer, and returns it."
     },
     {
+      "address": "0x402484",
+      "name": "initialize_frontend_widget_type_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1110"
+      ],
+      "size": "0x10",
+      "description": "Compiler-emitted widget-type switch jump table used by initialize_frontend_widget for widget types 20 through 23."
+    },
+    {
       "address": "0x405018",
       "name": "update_row_event_display_jump_table",
       "kind": "jump_table",
@@ -793,6 +803,26 @@
       "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
     },
     {
+      "address": "0x437194",
+      "name": "populate_runtime_track_cells_glyph_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L2874"
+      ],
+      "size": "0x70",
+      "description": "Compiler-emitted normalized-glyph switch jump table used by populate_runtime_track_cells_from_segments."
+    },
+    {
+      "address": "0x437204",
+      "name": "populate_runtime_track_cells_glyph_lookup_table",
+      "kind": "lookup_table",
+      "aliases": [
+        "$L2873"
+      ],
+      "size": "0x5e",
+      "description": "Compiler-emitted byte lookup table mapping glyph values 0x20..0x7d to populate_runtime_track_cells_from_segments switch case indexes."
+    },
+    {
       "address": "0x437418",
       "name": "normalize_segment_glyph_for_track_flags_jump_table",
       "kind": "jump_table",
@@ -811,6 +841,26 @@
       ],
       "size": "0x5e",
       "description": "Compiler-emitted byte lookup table mapping glyph values 0x20..0x7d to normalize_segment_glyph_for_track_flags switch case indexes."
+    },
+    {
+      "address": "0x437adc",
+      "name": "initialize_subgame_level_mode_startup_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1764"
+      ],
+      "size": "0x14",
+      "description": "Compiler-emitted level-mode switch jump table used by initialize_subgame for startup setup."
+    },
+    {
+      "address": "0x437af0",
+      "name": "initialize_subgame_level_mode_bottom_hud_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1765"
+      ],
+      "size": "0x20",
+      "description": "Compiler-emitted level-mode switch jump table used by initialize_subgame for bottom HUD setup."
     },
     {
       "address": "0x4386dc",
@@ -886,6 +936,16 @@
       "description": "Compiler-emitted state switch jump table used by update_garbage_hazard."
     },
     {
+      "address": "0x440008",
+      "name": "update_slug_hazard_ai_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1811"
+      ],
+      "size": "0x14",
+      "description": "Compiler-emitted state switch jump table used by update_slug_hazard_ai."
+    },
+    {
       "address": "0x440380",
       "name": "add_subgoldy_score_jump_table",
       "kind": "jump_table",
@@ -904,6 +964,36 @@
       ],
       "size": "0x10",
       "description": "Compiler-emitted state switch jump table used by update_invincible_shell."
+    },
+    {
+      "address": "0x445bf0",
+      "name": "set_snail_weapon_movement_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1413"
+      ],
+      "size": "0x1c",
+      "description": "Compiler-emitted movement-flag switch jump table used by set_snail_weapon after the sparse byte lookup."
+    },
+    {
+      "address": "0x445c0c",
+      "name": "set_snail_weapon_movement_lookup_table",
+      "kind": "lookup_table",
+      "aliases": [
+        "$L1412"
+      ],
+      "size": "0xc0",
+      "description": "Compiler-emitted byte lookup table mapping movement flags 1..192 to set_snail_weapon switch case indexes."
+    },
+    {
+      "address": "0x446e00",
+      "name": "update_cutscene_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L2639"
+      ],
+      "size": "0x30",
+      "description": "Compiler-emitted cutscene-state switch jump table used by update_cutscene."
     },
     {
       "address": "0x446e60",

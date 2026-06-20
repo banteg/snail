@@ -30,3 +30,10 @@ currently keeps state1 in `ebx`, saves `ebp` only around the first block, and
 therefore shifts most later blocks. The source has been reshaped to the native
 decrement/goto ladders; do not add dummy aliasing or asm to force the remaining
 register ownership.
+
+2026-06-20 lookup-table audit: the sparse movement dispatch now names
+`set_snail_weapon_movement_jump_table` at `0x445bf0` and
+`set_snail_weapon_movement_lookup_table` at `0x445c0c`. Focused Wibo remains
+`39.43%`; masked audit is now `15 ok / 0 unresolved / 2 mismatch`, so the
+former lookup-table relocation is clean and the remaining debt is the existing
+register/layout mismatch.
