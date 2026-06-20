@@ -50,3 +50,9 @@ Rejected/source-neutral probes:
   links) and removes the synthetic `result`. Rechecking explicit active-head
   stores still regressed to 47.19%, so the `memset`-style source remains the
   best honest baseline for now.
+- 2026-06-20 presentation-helper audit: focused Wibo remains 50.55%, 46/45
+  candidate/target instructions, with 1 clean masked operand. Retesting the
+  direct five-store active-head clear against the current scratch still
+  regresses to 47.19%: VC6 drops the separate `eax` zero register, hoists
+  `push edi`, and uses `ebx` for the direct stores. Keep the fixed-size
+  `memset`-style clear even though the native listing prints direct stores.

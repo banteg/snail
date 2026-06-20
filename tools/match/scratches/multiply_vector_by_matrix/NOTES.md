@@ -25,3 +25,11 @@ Combining those locals with the native z/y/x dot-product term order regresses to
 77.50% by disturbing the final z-lane x87 schedule. Keep the compact aggregate
 `Vector3 source = *this` plus current expression order; the mismatch remains a
 source-scheduler artifact, not evidence for a different matrix ABI.
+
+2026-06-20 presentation-helper audit: focused Wibo remains 85.00%, 40/40
+instructions, with no masked operands. Rechecking this next to
+`update_sprite_facing_angle` confirms the residual class is the same kind of
+caller/local scheduler debt: native copies the source vector before the first
+matrix-column `fld`, while VC6 hoists that `fld` ahead of the copy under all
+source-plausible shapes tried so far. Keep the by-value matrix ABI and aggregate
+source copy pinned.

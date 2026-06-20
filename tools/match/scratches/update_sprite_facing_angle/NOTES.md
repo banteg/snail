@@ -55,3 +55,11 @@ an explicit returned-pointer temporary before copying to `rotated` regresses to
 72.94%; and naming `angle_x`/`angle_y` temporaries regresses to 68.13% by
 expanding argument staging. Keep the current value-copy spelling until there is
 stronger evidence for a real local-lifetime source idiom.
+
+2026-06-20 presentation-helper audit: focused Wibo remains 97.67%, 86/86
+instructions, with 8 clean masked operands. The exact
+`rotate_vector_by_matrix` helper was rechecked at 100.00%, confirming the
+residual is caller-side only. The full normalized listing shows the two
+mismatches are still only the dead returned-`z` spill address after the rotate
+call; forcing that address would require an artificial unused copy and is not a
+valid source-shape lead.

@@ -65,3 +65,11 @@ Rejected source-shape probes:
   are all codegen-neutral and leave the same early `add esi, 0x48` schedule.
   Keep this scratch source-shaped at 94.17%; the remaining tail is a local
   lifetime/scheduling residual unless new original-source evidence appears.
+- 2026-06-20 presentation-helper audit: focused Wibo still reports 94.17%,
+  103/103 instructions, 78/103 prefix, and 21 clean masked operands. The
+  residual tail remains only scheduling around the final random-x multiply,
+  aggregate velocity copy, and position-base advance: native completes the
+  multiply and velocity stores before `add esi, 0x48`, while VC6 hoists the
+  position base advance. Do not rewrite this into manual lane stores; previous
+  lane-level position/velocity copies regress badly and lose the aggregate
+  source shape.
