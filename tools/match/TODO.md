@@ -289,6 +289,13 @@ These are not gameplay owners, but several mirrors depend on them.
   sampled helpers already have focused NOTES identifying their remaining
   residuals as local scheduling/register ownership. Treat this set as pinned
   unless a new callsite, type-layout, or original-source idiom lead appears.
+- 2026-06-20 audio-family audit: reran and inspected
+  `register_sound_sample`, `load_registered_sound_sample_from_bytes`, and
+  `play_sound_effect_at_position`. Branch-local path reload spellings,
+  one-argument debug-report prototypes, distance declaration order, and
+  min-distance comparison forms either compile identically or regress. Treat the
+  remaining misses as local branch-hoist, cdecl cleanup-selection, and
+  x87/local-lifetime residuals unless a new original-source idiom appears.
 
 ## Operating Plan
 

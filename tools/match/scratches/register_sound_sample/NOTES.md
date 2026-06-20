@@ -41,3 +41,9 @@ Residual:
   `rstrcpy_checked_ascii` path-name copy inside both backend-load arms also
   fails to tail-merge; it emits a 60-instruction 30.63% candidate. Keep the
   single shared copy/count/error tail.
+- 2026-06-20 audio-family audit: spelling the archive-arm saved path as
+  `&path[0]` is codegen-neutral at 93.07%, so expression spelling is not the
+  reason native keeps the `esi = path` reloads branch-local. Rechecking the
+  filesystem-arm delayed `source_path = path` shape still regresses to 77.67%:
+  it recovers the late reload but moves the backend call and count-tail register
+  ownership away from native. Keep the structured shared-tail source.

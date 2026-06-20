@@ -18,3 +18,9 @@ same variadic surface used by other callsites does not change that cleanup.
 `debug_report_stub(char*, ...)` surface and direct failure return. Mirroring that
 source shape in the byte loader preserved the 88.89% object and confirmed the
 residual is the one-argument cleanup selection, not failure-branch semantics.
+
+2026-06-20 audio-family audit: declaring the one-argument failure call as
+`debug_report_stub(char*)` is codegen-neutral at 88.89% and still emits
+`add esp, 0x4`. The exact path sibling remains the stronger surface evidence,
+so keep the shared variadic declaration and treat the final `pop ecx` versus
+`add esp, 0x4` cleanup as a local cdecl cleanup-selection residual.

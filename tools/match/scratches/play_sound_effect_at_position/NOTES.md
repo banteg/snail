@@ -39,3 +39,10 @@ Rejected source-shape probes:
 - A narrower scalar staging attempt that delayed `z`, plus conditional-assignment
   and ternary min-distance spellings, either regressed or compiled identically to
   the accepted two-vector shape.
+- 2026-06-20 audio-family audit: assignment-in-condition
+  `if ((magnitude = vector_magnitude()) < distance)` and comparing against the
+  literal `1.0e10f` are codegen-neutral at 83.72%; moving the `distance`
+  declaration after `g_game_base` is also neutral. Reversing the comparison to
+  `distance > magnitude` regresses to 81.54% by forcing a spilled magnitude and
+  reversed x87 compare. Keep the current two-vector source and treat the missing
+  initial distance store plus magnitude-temp spill as x87/local-lifetime debt.
