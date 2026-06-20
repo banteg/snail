@@ -1826,6 +1826,26 @@
       "description": "Renderable BOD vtable installed by initialize_renderable_bod."
     },
     {
+      "address": "0x49aff0",
+      "name": "g_iid_idirectmusic",
+      "kind": "global",
+      "aliases": [
+        "data_49aff0"
+      ],
+      "size": "0x10",
+      "description": "IDirectMusic interface IID passed to CoCreateInstance by the startup DirectX runtime probe."
+    },
+    {
+      "address": "0x49b000",
+      "name": "g_clsid_directmusic",
+      "kind": "global",
+      "aliases": [
+        "data_49b000"
+      ],
+      "size": "0x10",
+      "description": "DirectMusic COM class ID passed to CoCreateInstance by the startup DirectX runtime probe."
+    },
+    {
       "address": "0x49b010",
       "name": "g_directinput_keyboard_guid",
       "kind": "global",
@@ -1856,6 +1876,46 @@
       ],
       "size": "0x10",
       "description": "IDirectInput8A interface IID passed to DirectInput8Create by controller, keyboard, and mouse DirectInput initialization."
+    },
+    {
+      "address": "0x49b0d0",
+      "name": "g_iid_idirectdrawsurface4",
+      "kind": "global",
+      "aliases": [
+        "data_49b0d0"
+      ],
+      "size": "0x10",
+      "description": "IDirectDrawSurface4 interface IID used by the startup DirectDraw surface capability probe."
+    },
+    {
+      "address": "0x49b0e0",
+      "name": "g_iid_idirectdrawsurface3",
+      "kind": "global",
+      "aliases": [
+        "data_49b0e0"
+      ],
+      "size": "0x10",
+      "description": "IDirectDrawSurface3 interface IID used by the startup DirectDraw surface capability probe."
+    },
+    {
+      "address": "0x49b0f0",
+      "name": "g_iid_idirectdraw7",
+      "kind": "global",
+      "aliases": [
+        "data_49b0f0"
+      ],
+      "size": "0x10",
+      "description": "IDirectDraw7 interface IID passed to DirectDrawCreateEx by the startup DirectX runtime probe."
+    },
+    {
+      "address": "0x49b100",
+      "name": "g_iid_idirectdraw2",
+      "kind": "global",
+      "aliases": [
+        "data_49b100"
+      ],
+      "size": "0x10",
+      "description": "IDirectDraw2 interface IID used by the startup DirectDraw capability probe."
     },
     {
       "address": "0x49b2fc",

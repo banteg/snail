@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**480/705** mapped gameplay functions matched, **704/705** mapped gameplay functions have a scratch, **60494/325759** bytes (**18.57%**) are proof-grade, and overall fuzzy is **53.40%**.
+**481/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **61506/325759** bytes (**18.88%**) are proof-grade, and overall fuzzy is **53.71%**.
 
-## Proof Grade (480)
+## Proof Grade (481)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -398,6 +398,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | font_slot_index_for_char | 0x449d20 | 358 | 145/145 | 100.00% | 145/145 | - |  |
 | ✅ | draw_queued_font_quad_instance | 0x44a6d0 | 95 | 41/41 | 100.00% | 41/41 | 2 ok |  |
 | ✅ | draw_font_text_queue | 0x44a730 | 83 | 31/31 | 100.00% | 31/31 | 4 ok |  |
+| ✅ | query_directx_runtime_version | 0x44afc0 | 1012 | 370/370 | 100.00% | 370/370 | 57 ok |  |
 | ✅ | enumerate_input_controllers | 0x44b3c0 | 196 | 71/71 | 100.00% | 71/71 | 14 ok |  |
 | ✅ | append_enumerated_input_controller_callback | 0x44b490 | 69 | 22/22 | 100.00% | 22/22 | 5 ok |  |
 | ✅ | configure_input_controller_axis_range_callback | 0x44b4e0 | 131 | 42/42 | 100.00% | 42/42 | 3 ok |  |
@@ -732,12 +733,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
-
-## No Scratch (0%) (1)
-
-| | function | address | bytes | insns | match | prefix | masked | build |
-|---|---|---|---|---|---|---|---|---|
-| ⬜ | query_directx_runtime_version | 0x44afc0 | 1012 | 0/370 | 0.00% | 0/370 | - |  |
 
 ## Type Consolidation
 
