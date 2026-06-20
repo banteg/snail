@@ -10,3 +10,9 @@ Residual: VC6 schedules the first matrix-column load before the native
 source-vector copy and then uses the same arithmetic in a different x87 load
 order. The remaining diff is scheduling only; the transform semantics and
 by-value matrix ABI are pinned.
+
+2026-06-20 larger-helper pass: rewriting the three dot products in native
+`source.z`, `source.y`, `source.x` arithmetic order regressed to 62.50% because
+VC6 pulled the first matrix load ahead of the source-vector copy. Keep the
+current expression order; the residual is still scheduling, not a different
+affine transform.

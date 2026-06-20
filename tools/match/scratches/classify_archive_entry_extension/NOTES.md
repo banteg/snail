@@ -12,3 +12,10 @@
   (`eax` input cursor, `edx` output cursor, `cl` byte), but it also emits a
   compact loop/tail-return shape that does not match native. Keep the default
   compiler flags unless a source-shape explanation accounts for both halves.
+
+2026-06-20 larger-helper pass: rewriting the function to the IDA-style
+`char* cursor` / direct `stem_out++` loop was score-neutral once the native
+`*++cursor` extension shape was restored (26.37%), and the no-increment variant
+only reached 26.67% while moving the tail away from native offsets. The raw
+`unsigned char*` source remains clearer until a real cursor-register owner lead
+appears.

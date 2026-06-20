@@ -27,3 +27,8 @@ source shape: VC6 now saves `esi`/`edi` at entry and keeps the caller cursor in
 caller cursor in `ecx`. Narrower owner-alias rewrites compiled back to the old
 28.87% object; related classifier/TGA/archive-entry cursor probes were neutral
 or regressed, so no shared parser/header change was accepted.
+
+2026-06-20 larger-helper pass: a more literal decompiler-style `**cursor`
+pre-scan plus scoped digit-loop cursor regressed to 25.49% and introduced an
+extra saved register. The retained loop-carried `current` source remains the
+best observed parser shape.

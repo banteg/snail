@@ -29,3 +29,9 @@ IDA-style `do` loop over the original arguments also regressed to 35.85% by
 materializing `sub 0x20` lanes and extra tests. Keep the peeled-loop source
 until a source shape preserves the native `dl`/`bl` raw-byte lanes without
 introducing the pointer-delta form.
+
+2026-06-20 larger-helper pass: retesting the native left-byte outer gate with
+raw-byte locals declared before folded-byte locals regressed to 36.19% by
+switching to `sub 0x20` lanes and extra zero tests. Changing only the outer gate
+was score-neutral at 66.02% and merely swapped the scratch raw-byte lane roles,
+so the retained source stays on the existing peeled-loop spelling.

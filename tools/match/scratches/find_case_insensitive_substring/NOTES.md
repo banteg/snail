@@ -27,3 +27,8 @@ The remaining residual is the prologue/cursor ownership: native loads the
 searched cursor and its first byte before saving registers, while VC6 still
 saves registers first. A direct mutation of the `haystack` argument regressed to
 34.11%, so the retained source keeps the separate `haystack_cursor` local.
+
+2026-06-20 larger-helper pass: spelling the inner loop as the IDA-style
+postincrement condition `(needle_cursor++)[delta + 1]` regressed to 39.39% by
+adding a stack temp, `push ecx`, and a wider branch tail. The existing
+preincrement-plus-break loop remains the only accepted compact scan shape.
