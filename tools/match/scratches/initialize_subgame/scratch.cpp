@@ -36,9 +36,6 @@ extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
-extern char g_zero_text[]; // 0x4a493c
-extern char g_snailmail_cfg_path[]; // 0x4a170c
-extern char g_unknown_game_mode_text[]; // 0x4a4d10
 extern char g_config_blob; // 0x4df918
 extern int data_4df9b8; // 0x4df9b8
 extern int g_landscape_backdrop_variant_selector; // 0x4df9bc
@@ -121,7 +118,7 @@ void Game::initialize_subgame()
     *(FrontendWidget**)(game + 0x35bb88) = top_score;
     top_score->initialize_frontend_widget(
         0x400002,
-        g_zero_text,
+        "0",
         0x14,
         400.0f,
         14.0f,
@@ -152,7 +149,7 @@ void Game::initialize_subgame()
         *(FrontendWidget**)(game + 0x35bb94) = life_score;
         life_score->initialize_frontend_widget(
             0x400002,
-            g_zero_text,
+            "0",
             0x14,
             47.0f,
             80.0f,
@@ -209,7 +206,7 @@ void Game::initialize_subgame()
     *(FrontendWidget**)(game + 0x35bb8c) = bottom_score;
     bottom_score->initialize_frontend_widget(
         0x400002,
-        g_zero_text,
+        "0",
         0x14,
         40.0f,
         14.0f,
@@ -275,7 +272,7 @@ void Game::initialize_subgame()
                     *(int*)(game + 0x44) = next_level;
                     if (next_level > data_4df9b8) {
                         data_4df9b8 = next_level;
-                        save_config_file(g_snailmail_cfg_path, &g_config_blob, 0xc4);
+                        save_config_file("SnailMail.cfg", &g_config_blob, 0xc4);
                     }
                     g_landscape_backdrop_variant_selector = *(int*)(game + 0x44);
                 }
@@ -293,7 +290,7 @@ void Game::initialize_subgame()
                 reset_subgame();
                 return;
             default:
-                report_errorf(g_unknown_game_mode_text);
+                report_errorf("Unknown game mode");
                 reset_subgame();
                 return;
             }

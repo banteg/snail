@@ -31,8 +31,8 @@ Known partials:
 
 - The opening clear loop still differs in register allocation from native
   (`edi` active cell / `edx` outer count in native).
-- Several string and data-address operands remain symbolic in the scratch
-  (`"0"`, `SnailMail.cfg`, `Unknown game mode`, builtins table, config max).
+- Some data-address operands remain symbolic in the scratch (builtins table,
+  config max).
 - The two large switch tables have the right mode semantics but not native
   table placement/code layout yet.
 
@@ -47,3 +47,12 @@ mode-switch tables remain classified as real layout mismatches.
 to `include/time_trial_string_formatter.h`, matching the same call shape used by
 `update_challenge_setup_screen` and `update_subgame`. This removes a duplicate
 method-only type row; the focused matcher stayed at 63.25%.
+
+2026-06-20 literal cleanup: replaced the stale scratch-only aliases for the
+`"0"`, `"SnailMail.cfg"`, and `"Unknown game mode"` literals with direct string
+literals, matching BN's decompile and the target string references. Focused
+match remains `63.25%`, but the masked audit improves from `66 ok / 8 mismatch`
+to `71 ok / 3 mismatch`. The remaining mismatches are the two switch-table
+labels and the known mode-HUD alignment miss where the target's
+`border_add_text_number` call aligns against the candidate time-trial formatter
+call.
