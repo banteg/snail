@@ -122,3 +122,15 @@ Rejected source-shape probe:
   view produces the same regression. Keep the 96.36% typed-pointer baseline;
   the remaining residual is still a one-instruction materialization order debt,
   not a missing layout field.
+- 2026-06-20 larger ring-family retry: focused Wibo still reports 96.36%,
+  55/55 candidate/target instructions, 28/55 prefix, and 5 clean masked
+  operands. A `Vector3(...)` constructor for `staged_position` regresses to
+  72.73% by moving cleanup and the final copy schedule away from native. Reversing
+  the X expression to `parent_position->x + orbit_x`, spelling the parent as an
+  inherited `RenderableBod*`, and forming the position pointer directly from
+  `parent->transform.position` are codegen-neutral and leave the same
+  `add eax, 0x68; fadd [eax]` residual. Splitting X into `staged_position.x =
+  orbit_x; staged_position.x += parent_position->x` regresses to 94.55% by
+  hoisting `fmul [this+0x1c]` before the parent/sprite reloads. The promoted
+  parent layout is still accepted; no tested source spelling explains native's
+  single X-lane materialization order while preserving y/z pointer use.

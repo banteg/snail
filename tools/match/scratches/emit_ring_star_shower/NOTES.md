@@ -84,6 +84,13 @@ Rejected/source-shape probes:
   vector-copy register shape, even though they place the gravity store before
   the z write. Keep the semantic `*star_position = *source_position` copy until
   a real source-lifetime lead explains native's `0x18` frame.
+- 2026-06-20 allocation/tail lifetime retry: explicit `owner_slot` and
+  `star_sprite_id` locals regress to 58.46% by changing register ownership from
+  allocation through the velocity and position-copy blocks while still keeping
+  the smaller `0x0c` frame. Naming `Sprite* source_sprite = sprite` before the
+  aggregate position copy is codegen-neutral at 90.77% and leaves the same
+  gravity-before-z residual. The remaining mismatch is therefore not explained
+  by allocation-argument locals or by a missing source-sprite lifetime.
 
 Type consolidation:
 
