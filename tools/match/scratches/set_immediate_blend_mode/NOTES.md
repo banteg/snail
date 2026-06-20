@@ -34,3 +34,11 @@ Source-shape notes:
 - 2026-06-20 render-state family audit: a mode-1-only `source_blend = 5` local
   also compiled identically at `85.50%` and did not split the native mode 1/mode
   4 duplicate full blocks. The source stays in the simpler semantic switch form.
+- 2026-06-20 larger render-state audit: a mode-1 result-overwriting local also
+  compiles identically at 85.50%, so return-value lifetime is not what keeps
+  native's mode-1 block distinct. Reordering the two `dest=2` case groups is
+  codegen-neutral. A broader `source_blend` shared-suffix rewrite for the
+  `dest=6` and `dest=2` families regresses to 70.00%, confirming that this
+  helper wants duplicated full blocks rather than the `set_blend_mode` suffix
+  idiom. Replacing the shared Direct3D view with a local narrow view is also
+  neutral and leaves the same jump-table masked mismatch.

@@ -303,6 +303,12 @@ These are not gameplay owners, but several mirrors depend on them.
   remaining misses as allocator-cleanup/cursor materialization and archive-index
   install-store scheduling residuals unless a stronger original-source or
   layout lead appears.
+- 2026-06-20 render-state family audit: reran and inspected `set_blend_mode`
+  and `set_immediate_blend_mode` against exact `configure_sprite_render_state`.
+  Literal source-blend calls, mode-1 result locals, destination-2 case ordering,
+  broad shared-suffix rewrites, and local Direct3D views either compile
+  identically or regress. Treat the remaining misses as switch-table/tail-sharing
+  ownership residuals unless new original-source layout evidence appears.
 
 ## Operating Plan
 

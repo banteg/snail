@@ -26,6 +26,13 @@ Expected residuals:
   the retained explicit suffix keeps that value in a register instead. A narrower
   pair of immediate-valued `goto` labels regressed back to 81.52% by letting VC6
   choose the old wrong full-block owner, so keep the `source_blend` spelling.
+- 2026-06-20 render-state family audit: rechecked the literal source-blend call
+  plus shared destination suffix against the current headers. It still regresses
+  to 78.26%, duplicating the wrong full blocks and dropping two masked
+  references, so the `source_blend` local remains the best source-shaped owner
+  for the native shared `dest=6` suffix. Replacing the shared
+  `direct3d_device8_view.h` include with a local narrow device/vtable view is
+  codegen-neutral at 92.39% and leaves the same jump-table masked mismatch.
 
 `render_object` calls this helper before applying the object tint and grouped
 draw call.
