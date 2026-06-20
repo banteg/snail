@@ -36,8 +36,7 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     replay_cursor = compact->replay_cursor;
 
     int lateral_index = 0;
-    short* source_lateral =
-        (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES);
+    short* source_lateral = compact->lateral_samples();
     if (replay_sample_count > 0) {
         ReplayRunRecord* lateral_run = run_records;
         do {
@@ -49,11 +48,8 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     }
 
     int delta_z_index = 0;
-    int delta_z_count = replay_sample_count;
-    short* source_delta_z =
-        (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES
-            + delta_z_count * sizeof(short));
-    if (delta_z_count > 0) {
+    short* source_delta_z = compact->delta_z_samples(replay_sample_count);
+    if (replay_sample_count > 0) {
         short* delta_z_destination = &run_records[0].delta_z;
         do {
             ++delta_z_index;
@@ -64,9 +60,7 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     }
 
     int flag_index = 0;
-    unsigned char* source_flags =
-        (unsigned char*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES
-            + replay_sample_count * 4);
+    unsigned char* source_flags = compact->flag_samples(replay_sample_count);
     if (replay_sample_count > 0) {
         ReplayRunRecord* flag_run = run_records;
         do {

@@ -28,3 +28,11 @@ Current residual:
   the native replay-count reloads and reshaping the whole scalar tail. Keep
   the accepted pre-branch source cursor initialization plus direct
   `replay_sample_count` loop bounds.
+- Current chunk: promoted compact replay payload accessors onto
+  `CompactHighScoreRecord` and rewrote the three output-lane bases through
+  `lateral_samples()`, `delta_z_samples(count)`, and `flag_samples(count)`.
+  This is codegen-neutral at 93.58%, but removes raw header-byte arithmetic
+  from the paired serializer/deserializer without hiding the remaining register
+  scheduling residual.
+- Retried per-lane count aliases with the accessors; they are also
+  codegen-neutral and were dropped to keep the accepted source shape minimal.

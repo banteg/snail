@@ -26,3 +26,11 @@ Evidence from the paired serializer:
   destination as a `ReplayRunRecord*` field store is codegen-neutral at 92.98%.
   Keep the current raw `short*` destination and pre-branch packed source cursor
   shape.
+- Current chunk: the compact payload bases now use shared
+  `CompactHighScoreRecord` accessors for lateral, delta-z, and flag lanes. The
+  rewrite is codegen-neutral at 92.98% and keeps the masked audit clean while
+  making the packed `int16[]`, `int16[]`, `uint8[]` layout explicit for both
+  persistence directions.
+- Retried direct `replay_sample_count` spelling for the delta-z packed source
+  offset after adding the accessors; it stayed codegen-neutral and leaves the
+  same native `ecx` count / candidate `edx` count ownership residual.

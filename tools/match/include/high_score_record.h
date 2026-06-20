@@ -71,6 +71,21 @@ struct CompactHighScoreRecord {
     int unknown_80; // +0x80
     int unknown_84; // +0x84
     char replay_payload[1]; // +0x88, variable: int16 lateral_x, int16 delta_z, byte flags
+
+    short* lateral_samples()
+    {
+        return (short*)replay_payload;
+    }
+
+    short* delta_z_samples(int sample_count)
+    {
+        return (short*)(replay_payload + sample_count * sizeof(short));
+    }
+
+    unsigned char* flag_samples(int sample_count)
+    {
+        return (unsigned char*)(replay_payload + sample_count * 4);
+    }
 };
 
 class HighScoreRecord {
