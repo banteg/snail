@@ -70,6 +70,17 @@ Rejected source-shaped probes:
   `sprite->velocity = Vector3(...)` regresses to 61.36% by disturbing the
   constant schedule. Keep the current local-vector copy until new evidence
   explains native's saved-`esi` zero lane.
+- 2026-06-20 impact retry: focused Wibo still reports 63.64%, 43/45 candidate
+  instructions, 3/45 prefix, and 3 clean masked operands. Moving
+  `sprite->flags = flags` immediately after the OR is codegen-neutral: VC6
+  still stores one local-vector zero lane before the flag write. A `Player*`
+  owner local is also codegen-neutral and keeps the same non-native slot-load
+  push order as the `int owner` local. Making `flags` unsigned is likewise
+  neutral. A C-style aggregate initializer for the local `Vector3` is not a
+  viable source spelling under VC6 because the shared `Vector3` has
+  constructors and is rejected as a non-aggregate. Leave the scratch at the
+  current real local-vector spelling; the remaining residual is still saved-ESI
+  allocation plus split stack-vector scheduling, not field layout.
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.
