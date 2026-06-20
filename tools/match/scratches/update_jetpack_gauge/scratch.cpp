@@ -39,14 +39,13 @@ void JetpackGaugeController::update_jetpack_gauge()
 {
     int zero = 0;
 
-    switch (state) {
-    case 0:
+    int live_state = state;
+    live_state -= zero;
+    if (live_state == 0)
         return;
-    case 1:
-        break;
-    default:
+    --live_state;
+    if (live_state != 0)
         return;
-    }
 
     {
         float next_progress = progress + progress_step;

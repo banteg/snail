@@ -46,3 +46,11 @@ scratch-local `UpdateJetpackPresentationView`, paired with
 shared unresolved-layout row without promoting any unproven
 `PlayerPresentationController` fields. Rebuilt matcher stays at 85.82% with
 34 clean masked operands; `arm_jetpack_gauge` remains exact at 18/18.
+
+2026-06-20 state-dispatch retry: spelling the state gate as an explicit
+`live_state` ladder recovers native's early `xor edi, edi` before testing the
+controller state and improves focused Wibo to `85.93%`, with prefix `6/131`
+and the same 34 clean masked operands. VC6 still uses `cmp eax, edi` plus a
+separate `test eax, eax` after `dec eax`, while native reuses flags from
+`sub eax, edi` and `dec eax`; a `switch (state - zero)` spelling regressed to
+`84.29%` and disturbed the progress-add x87 order, so keep the ladder.
