@@ -4,12 +4,15 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `81.79%`, `147/144` candidate/target instructions, with `9` masked
+- `86.60%`, `147/144` candidate/target instructions, with `9` masked
   operands ok.
 - The scratch now uses the promoted `TrackJetpackPickup` field names and the
   shared `BodList`/`BodNode` active-list shape. Prefix improves to `44/144`;
   the first remaining mismatch is the lane-wall tile compare spelling
   (`mov cl, 0xe` in native versus the current byte-load/constant compare).
+- The sprite output copy is now the same typed `Vector3` assignment accepted in
+  the health spawner, reducing the tail residual to the bob-phase store versus
+  `world_z` conversion scheduling.
 
 Evidence:
 
@@ -76,6 +79,14 @@ masked operands. Naming the wall-tile constant as either `unsigned char` or
 `int` is codegen-neutral and still leaves VC6 lowering the compares as
 load-byte-then-`al = 0xe`, not native's early `cl = 0xe`. A destination
 `Sprite* out_sprite` local for the final position copy is also neutral and
-does not recover native's `edx` ownership. The current source remains the best
-pickup-spawner shape; the first residual is still lane-wall compare scheduling,
-followed by list-splice and position-copy register ownership.
+does not recover native's `edx` ownership. Before the typed copy below, the
+first residual was still lane-wall compare scheduling, followed by list-splice
+and position-copy register ownership.
+
+2026-06-20 typed sprite-position copy: replacing the raw `DWORD*`
+`out_position[0..2]` stores with `sprite->position = *live_position` improves
+focused Wibo from `81.79%` to `86.60%`, with candidate size still `147/144`,
+prefix `44/144`, and nine clean masked operands. The retained residual is now
+the lane-wall constant/register schedule plus the independent bob-phase zero
+store moving after the `world_z` `fld`; the typed copy matches the health
+spawner's accepted source idiom.

@@ -71,10 +71,7 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
     slot->health_pickups[0].sprite->size_start = 0.60000002f;
     slot->health_pickups[0].sprite->size_end = 0.60000002f;
 
-    DWORD* out_position = (DWORD*)&slot->health_pickups[0].sprite->position;
-    out_position[0] = *(DWORD*)&live_position->x;
-    out_position[1] = *(DWORD*)&live_position->y;
-    out_position[2] = *(DWORD*)&live_position->z;
+    slot->health_pickups[0].sprite->position = *live_position;
     slot->health_pickups[0].source_cell = cell;
     slot->health_pickups[0].bob_phase = 0.0f;
     if (((int)slot->health_pickups[0].world_position.z & 1) != 0)

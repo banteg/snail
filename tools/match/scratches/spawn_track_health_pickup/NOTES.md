@@ -4,12 +4,15 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `74.80%`, `124/122` candidate/target instructions, with `7` masked operands
+- `85.37%`, `124/122` candidate/target instructions, with `7` masked operands
   ok.
 - The scratch now uses the promoted `TrackHealthPickup` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
   cell position through a normal `Vector3` local, not the older raw-bit
   `PositionBits` view.
+- The sprite output copy is now the normal `Vector3` assignment from the live
+  pickup position into `sprite->position`; VC6 emits the same scalar stores
+  with the native destination-register ownership.
 
 Evidence:
 
@@ -51,6 +54,9 @@ Remaining mismatch:
   multiply/subtract versus the late `cell` reload.
 - The active-list splice is now expressed through `BodList`/`BodNode`, but it
   still differs in register allocation and branch layout from the native splice.
+- The remaining sprite/setup tail residual after the typed `Vector3` copy is
+  the independent zero bob-phase store being scheduled after the `world_z`
+  `fld`; native stores zero first and then enters the `__ftol` lane.
 
 2026-06-16 list-splice branch-order pass: reordered the shared active-list
 insert source so the empty-list case is the fallthrough and the non-empty insert
@@ -87,3 +93,11 @@ subtract first. Explicit raw `zero` and `size_bits` locals for the sprite setup
 are also neutral and leave the existing `ecx`/`eax` register reversal. Keep the
 current shifted `SubgameRuntime*` view and typed sprite stores; the remaining
 gaps are scheduling/register ownership, not a new pickup layout.
+
+2026-06-20 typed sprite-position copy: replacing the raw `DWORD*`
+`out_position[0..2]` stores with `sprite->position = *live_position` improves
+focused Wibo from `74.80%` to `85.37%`, with candidate size still `124/122`,
+prefix `16/122`, and seven clean masked operands. This also matches the
+jetpack spawner's accepted source idiom. A separate `node_flags` snapshot and
+an explicit `slot_words = 29 * slot_index` local were codegen-neutral, leaving
+the initial slot arithmetic and active-list register reversal unchanged.

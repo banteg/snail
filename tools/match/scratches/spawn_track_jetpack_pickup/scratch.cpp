@@ -80,10 +80,7 @@ int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* playe
     slot->jetpack_pickup.sprite->size_start = 1.5f;
     slot->jetpack_pickup.sprite->size_end = 1.5f;
 
-    DWORD* out_position = (DWORD*)&slot->jetpack_pickup.sprite->position;
-    out_position[0] = *(DWORD*)&live_position->x;
-    out_position[1] = *(DWORD*)&live_position->y;
-    out_position[2] = *(DWORD*)&live_position->z;
+    slot->jetpack_pickup.sprite->position = *live_position;
     slot->jetpack_pickup.source_cell = cell;
     slot->jetpack_pickup.bob_phase = 0.0f;
 

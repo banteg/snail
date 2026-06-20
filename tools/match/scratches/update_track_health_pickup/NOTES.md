@@ -99,3 +99,12 @@ Wibo reproduces 87.94%, 129/128 instructions, 6/128 prefix, and 21 clean masked
 operands; `health_collect_particles` remains exact at 100.00%. The remaining
 residual is the extra state-one sprite snapshot load before the diagnostic
 tails; the native shape reloads `sprite` directly into `ecx`.
+
+2026-06-20 larger health-family retry: moving the state-one `Sprite*` reload
+inside each diagnostic branch after `report_errorf` removes the early snapshot
+source-wise, but VC6 folds the duplicated unlink/error tails and regresses to
+`58.47%`, `108/128` candidate/target instructions, with 12 clean masked
+operands. Spelling the state-one diagnostics as explicit local labels regresses
+further to `51.69%`, `108/128`, with 9 clean masked operands. Keep the shared
+state-one sprite snapshot until a natural source form preserves both the
+native tail placement and the separate teardown shape.
