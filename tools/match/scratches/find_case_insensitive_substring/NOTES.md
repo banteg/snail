@@ -54,3 +54,11 @@ return regressed to 60.32%, and moving the searched cursor local inside the
 outer non-empty guard or spelling the outer loop as `do/while` was codegen
 neutral. The remaining debt is still the native pre-prologue searched-byte load
 and VC6's branchless select for the adjacent null/success returns.
+
+2026-06-20 larger helper sweep: focused Wibo still reports 69.29%, 64/63
+candidate/target instructions, 0/63 prefix, and four clean masked operands.
+Inverting only the inner `needle_cursor[delta] == 0` success/null test was
+codegen-neutral: VC6 still selected the same branchless pointer-or-null tail
+instead of native's explicit searched-ended-before-pattern branch. Keep the
+current explicit termination source; the remaining gap is tail layout and the
+pre-prologue searched-byte load, not a different substring semantic.

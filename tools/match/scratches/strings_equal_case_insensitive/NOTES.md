@@ -54,3 +54,12 @@ swapped the scratch raw/fold byte lanes (`bl`/`dl`) without approaching the
 native initial `dl`/`bl` ownership. Keep the current peeled-loop source; the
 exact `strings_equal_case_insensitive_path` increment-before-fold style is not
 evidence for changing this prefix-style comparator.
+
+2026-06-20 larger helper sweep: focused Wibo still reports 66.02%, 53/50
+candidate/target instructions, 5/50 prefix, and no masked operands. A stricter
+IDA-shaped prefix comparator with explicit left/right cursor locals regressed
+to 29.09% by reintroducing the pointer-delta and stack-byte family. Naming the
+tail byte before `return tail == 0` was codegen-neutral and kept the same
+early-zeroed boolean epilogue. The retained peeled-loop source is still the
+best observed shape; the residual is byte-register allocation/test scheduling,
+not missing prefix-comparison control flow.

@@ -49,3 +49,12 @@ the remaining original-looking row/index spellings: `mask->pixels[(row + x) *
 (`imul esi, eax` native versus `imul eax, esi` candidate). Keep the clearer
 raw-base source; the miss remains a local multiply destination choice, not
 evidence for another mask layout.
+
+2026-06-20 larger helper sweep: focused Wibo still reports 98.29%, 117/117
+instructions, 73/117 prefix, and five clean masked operands. Two decompiler-
+plausible product-owner probes were neutral: mutating the live clamped `y`
+local with `y *= width` before indexing, and initializing `pixel_index` from
+`y` before multiplying by `width`. Both still emit the candidate
+`imul eax, esi` / `lea eax, [eax+edi+6]` pair. Keep the explicit
+`row = width; row *= y` source; native's `imul esi, eax` remains an isolated
+multiply-destination residual.
