@@ -105,3 +105,16 @@ Known shape gaps:
 - The remaining unresolved operands are app-shell call targets
   `0x44afc0`, `0x406d70`, `0x412a00`, and `0x4134c0`; leave them uncurated
   until their bodies have stronger names than the current scratch placeholders.
+
+2026-06-20 frame-state helper curation:
+
+- Named the startup frame-loop reset helper at `0x406d70` as
+  `initialize_main_loop_frame_state` after raw disassembly showed it clears
+  the frame timer, window-deactivation latches, object texture transform
+  matrix, and main-loop timing counters before loading-screen construction.
+- Added the exact `clear_frame_timer_state` helper at `0x407910`, which clears
+  the frame timer's primary timestamp and elapsed lanes. The adjacent
+  `0x407920` helper remains the separate minimized-window restore reset that
+  only clears the secondary timestamp lane.
+- The startup masked audit now leaves three unresolved app-shell call targets:
+  `0x44afc0`, `0x412a00`, and `0x4134c0`.

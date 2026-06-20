@@ -1,6 +1,7 @@
 // game_window_proc @ 0x4074b0 (stdcall, ret 0x10)
 
 #include "audio_system.h"
+#include "frame_timer_state.h"
 
 typedef int HWND;
 typedef unsigned int UINT;
@@ -17,11 +18,6 @@ extern int debug_report_stub(char* format, ...); // @ 0x449c00
 extern int handle_game_window_activate();        // @ 0x4072f0
 extern char handle_game_window_deactivate();     // @ 0x407440
 extern int restore_desktop_display_mode();       // @ 0x407860
-
-class FrameTimerState {
-public:
-    void reset_frame_timer_state(); // @ 0x407920
-};
 
 extern unsigned char g_left_mouse_button_latch[2];  // data_4b7764
 extern unsigned char g_left_mouse_button_state[2];  // data_4b7234

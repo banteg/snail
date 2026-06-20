@@ -271,6 +271,11 @@
       "name": "log_startup_timestamp"
     },
     {
+      "address": "0x406d70",
+      "name": "initialize_main_loop_frame_state",
+      "description": "Resets the frame timer, window deactivation latches, object texture transform matrix, and main-loop timing counters before startup enters the active frame loop."
+    },
+    {
       "address": "0x406dc0",
       "name": "game_startup_and_main_loop"
     },
@@ -328,6 +333,11 @@
       "address": "0x4078b0",
       "name": "read_current_display_resolution",
       "description": "Reads the current desktop width and height into the supplied outputs, falling back to `640x480` if `EnumDisplaySettingsA` fails."
+    },
+    {
+      "address": "0x407910",
+      "name": "clear_frame_timer_state",
+      "description": "Clears the primary timestamp and elapsed-frame lanes of the shared frame timer state."
     },
     {
       "address": "0x407a10",
