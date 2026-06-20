@@ -37,3 +37,14 @@ Residuals are intentionally left to the matcher rather than papered over:
   scratch byte-stable at `71.35%`, `176/180`, while leaving the shared
   `mouse_cursor_state.h` layout for helpers and frame/update callsites that
   agree on the full ABI.
+- 2026-06-20 proof pass: removing the stale `volatile` from direct `g_game`
+  lifts the focused match from 71.35% to 93.33%, restores exact instruction
+  count parity, and extends the prefix to 131/180. The remaining residual is
+  the subgame restore/thanks/help tail. Spelling state 27 as an explicit
+  `destroy_subgame(); initialize_subgame(); goto restore_saved_state;` source
+  path, rather than sharing the source label with state 28, lets MSVC tail-merge
+  the native case-27/case-28 labels and proves the scratch: 100.00%, 180/180,
+  prefix 180/180, 69 masked operands OK, no unresolved or mismatched operands.
+  Rejected/neutral in this pass: local-owner spelling for the shared
+  initialize label, direct/local owner swaps in the thanks/help fallthroughs,
+  and warning-actor guard rewrites.

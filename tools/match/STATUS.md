@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**466/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **58829/325832** bytes (**18.06%**) are proof-grade, and overall fuzzy is **53.21%**.
+**467/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **59945/325832** bytes (**18.40%**) are proof-grade, and overall fuzzy is **53.30%**.
 
-## Proof Grade (466)
+## Proof Grade (467)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -103,6 +103,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 9 ok |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | update_frontend_state_machine | 0x4107d0 | 1116 | 180/180 | 100.00% | 180/180 | 69 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
 | ✅ | initialize_backdrop | 0x410e20 | 279 | 55/55 | 100.00% | 55/55 | 4 ok |  |
@@ -550,7 +551,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (87)
+## Mid Progress (50-79.99%) (86)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -567,7 +568,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_game_input | 0x40aab0 | 71 | 30/30 | 63.33% | 4/30 | 3 ok |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
-| 🚧 | update_frontend_state_machine | 0x4107d0 | 1116 | 176/180 | 71.35% | 12/180 | 2 mismatch, 52 ok |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 50.70% | 3/73 | 14 ok |  |
 | 🚧 | change_backdrop | 0x410d50 | 111 | 38/34 | 63.89% | 2/34 | - |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 66/67 | 72.18% | 0/67 | 6 ok |  |

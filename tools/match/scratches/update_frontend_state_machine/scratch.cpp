@@ -13,7 +13,7 @@ struct FrontendMouseCaptureView {
     void capture_mouse_cursor();
 };
 
-extern GameRoot* volatile g_game; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
@@ -156,7 +156,8 @@ int FrontendStateMachine::update_frontend_state_machine()
         {
             GameRoot* owner = g_game;
             owner->subgame.destroy_subgame();
-            goto initialize_subgame_then_restore;
+            g_game->subgame.initialize_subgame();
+            goto restore_saved_state;
         }
         case 28:
         {
@@ -164,7 +165,6 @@ int FrontendStateMachine::update_frontend_state_machine()
             owner->subgame.destroy_subgame();
         }
             g_game->ordinary_rebuild_selector = 0;
-        initialize_subgame_then_restore:
             g_game->subgame.initialize_subgame();
         restore_saved_state: {
             int saved_state = *(int*)(self + 0x98);
