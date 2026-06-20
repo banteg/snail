@@ -31,3 +31,6 @@ Source-shape notes:
   identically and did not split the merged blocks.
 - An explicit `goto` from mode `6` into the destination-2 tail regressed the
   helper to `50.20%`, so the semantic return spelling stays.
+- 2026-06-20 render-state family audit: a mode-1-only `source_blend = 5` local
+  also compiled identically at `85.50%` and did not split the native mode 1/mode
+  4 duplicate full blocks. The source stays in the simpler semantic switch form.
