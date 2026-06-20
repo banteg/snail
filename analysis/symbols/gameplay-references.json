@@ -3830,6 +3830,16 @@
       "description": "Second text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
     },
     {
+      "address": "0x7772f8",
+      "name": "g_font_sheets",
+      "kind": "global",
+      "aliases": [
+        "data_7772f8"
+      ],
+      "size": "0x828",
+      "description": "FontSheet record containing atlas texture references, glyph-width lanes at +0x40c, and spacing/width scales consumed by font measurement and draw helpers."
+    },
+    {
       "address": "0x777b20",
       "name": "g_registered_font_count",
       "kind": "global",

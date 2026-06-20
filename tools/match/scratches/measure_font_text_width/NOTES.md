@@ -2,17 +2,18 @@
 
 Initial scratch for the atlas-width accumulator at `0x449e90`.
 
-Wibo result after casting mapper slots through `char`: 26.17%, 60 target
-instructions versus 47 candidate instructions, 0/60 prefix, 3 masked operands
-ok. The relationship is still useful, and the cast matches native's
-`movsx eax, al` treatment of the `font_slot_index_for_char` result.
+Current Wibo result is 81.67%, 60/60 instructions, 39/60 prefix, and five
+masked operands ok. Rewriting the body as native-style font lanes recovers the
+saved-`ebp` text cursor, `esi` font id, the delayed `ebx`/`edi` saves inside the
+non-empty path, the argument-home width accumulator, and the split
+`font * 0x20a` glyph lane / `font * 0x828` sheet-offset lane.
 
-Remaining residual is still register/prologue shape: native keeps the text
-cursor in saved `ebp`, font id in `esi`, pushes `ebx`/`edi` only for the
-non-empty loop, and reuses the argument home for the width accumulator. The
-current source keeps the cursor in `edi`, font id in `ebx`, and carries a
-`FontSheet*` base instead of the native split glyph-index and sheet-offset
-lanes.
+The remaining residual is the trailing-space adjustment after the main loop:
+native keeps the `font_slot_index_for_char(' ')` result in `al`, recomputes the
+font lanes, then sign-extends into `eax`; VC6 sign-extends earlier and uses
+`eax`/`ecx` for the sheet/glyph lanes. Tail-only attempts to delay the cast or
+name a separate trailing accumulator regressed the prologue by forcing an early
+`edi` save, so keep the accepted lane form.
 
 Recovered relationships:
 
@@ -22,3 +23,9 @@ Recovered relationships:
 - Per-font spacing and width scale live at `+0x818` and `+0x81c`.
 - The return includes a trailing-space adjustment using the space glyph width
   and `(1.0 - width_scale)`.
+
+2026-06-20 lane-shape update: the scratch now indexes `g_font_sheets` through
+the same decompiler-visible narrow lanes used by `measure_font_text_width` and
+`draw_font_text_instance`. The reference manifest now gives `g_font_sheets`
+its `0x828` extent, so the raw `+0x40c`, `+0x818`, and `+0x81c` relocations
+audit cleanly instead of appearing as unresolved symbol+addend operands.

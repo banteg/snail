@@ -5,21 +5,43 @@
 float measure_font_text_width(char* text, int font_id, float scale)
 {
     char* cursor = text;
-    int font = font_id;
     float width = 0.0f;
 
     if (*cursor != '\0') {
-        FontSheet* sheet = &g_font_sheets[font];
+        int glyph_lane_base = font_id;
+        int sheet_lane_base = font_id;
+        glyph_lane_base <<= 6;
+        sheet_lane_base <<= 6;
+        glyph_lane_base += font_id;
+        sheet_lane_base += font_id;
+        glyph_lane_base = font_id + glyph_lane_base * 4;
+        sheet_lane_base = font_id + sheet_lane_base * 4;
+        glyph_lane_base <<= 1;
+        sheet_lane_base <<= 3;
         do {
             int slot = (char)font_slot_index_for_char(*cursor);
             ++cursor;
-            float glyph_width = sheet->glyph_width[slot] * sheet->spacing_scale;
-            width += glyph_width * sheet->width_scale * scale;
+            float glyph_width =
+                ((float*)((char*)g_font_sheets + 0x40c))[glyph_lane_base + slot];
+            glyph_width *= *(float*)((char*)g_font_sheets + sheet_lane_base + 0x818);
+            glyph_width *= *(float*)((char*)g_font_sheets + sheet_lane_base + 0x81c);
+            width += glyph_width * scale;
         } while (*cursor != '\0');
     }
 
     int space_slot = (char)font_slot_index_for_char(' ');
-    FontSheet* sheet = &g_font_sheets[font];
-    return width + (1.0f - sheet->width_scale) *
-        sheet->glyph_width[space_slot] * sheet->spacing_scale * scale;
+    int glyph_lane_base = font_id;
+    int sheet_lane_base = font_id;
+    glyph_lane_base <<= 6;
+    glyph_lane_base += font_id;
+    sheet_lane_base <<= 6;
+    sheet_lane_base += font_id;
+    glyph_lane_base = font_id + glyph_lane_base * 4;
+    sheet_lane_base = font_id + sheet_lane_base * 4;
+    glyph_lane_base <<= 1;
+    sheet_lane_base <<= 3;
+    return width +
+        (1.0f - *(float*)((char*)g_font_sheets + sheet_lane_base + 0x81c)) *
+            ((float*)((char*)g_font_sheets + 0x40c))[glyph_lane_base + space_slot] *
+            *(float*)((char*)g_font_sheets + sheet_lane_base + 0x818) * scale;
 }

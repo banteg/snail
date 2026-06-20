@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**470/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61072/325832** bytes (**18.74%**) are proof-grade, and overall fuzzy is **53.60%**.
+**470/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61072/325832** bytes (**18.74%**) are proof-grade, and overall fuzzy is **53.64%**.
 
 ## Proof Grade (470)
 
@@ -496,7 +496,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (55)
+## High Progress (80-94.99%) (56)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -551,6 +551,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_squidge | 0x4449c0 | 253 | 84/80 | 84.15% | 6/80 | 14 ok |  |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 72 ok |  |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
+| 🚧 | measure_font_text_width | 0x449e90 | 182 | 60/60 | 81.67% | 39/60 | 5 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
@@ -644,7 +645,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 64/63 | 69.29% | 0/63 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (72)
+## Early Progress (>0-49.99%) (71)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -710,7 +711,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 1 unresolved, 14 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 1 mismatch, 2 unresolved, 33 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
-| 🚧 | measure_font_text_width | 0x449e90 | 182 | 47/60 | 26.17% | 0/60 | 3 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 230/274 | 27.78% | 0/274 | 18 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 224/272 | 32.66% | 0/272 | 18 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
