@@ -55,3 +55,13 @@ Rejected source-shape probes:
   sprite base to `position` before the final multiply. Keep the shorter source
   until a form delays that base advance without changing the aggregate
   velocity copy.
+- 2026-06-20 continuation audit: focused Wibo still reports 94.17%, 103/103
+  instructions, 78/103 prefix, and 21 clean masked operands. Explicit
+  x/y/z position stores without the mid-copy decrement also regress to 59.51%
+  by changing saved-register ownership. Narrowing the aggregate position-copy
+  pointer with an inner block, copying through a `Vector3 source_position`
+  local, spelling the loop decrement as a separate `--remaining; while
+  (remaining != 0)`, and viewing the input as `float*` with an aggregate cast
+  are all codegen-neutral and leave the same early `add esi, 0x48` schedule.
+  Keep this scratch source-shaped at 94.17%; the remaining tail is a local
+  lifetime/scheduling residual unless new original-source evidence appears.
