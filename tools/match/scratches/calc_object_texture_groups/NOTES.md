@@ -71,3 +71,17 @@ load are all codegen-neutral and leave the same equivalent SIB byte. A typed
 by changing register ownership and adding a stack spill. Keep the current
 byte-offset expression; the residual remains encoding/scheduler debt rather
 than evidence for a different facequad layout.
+
+## 2026-06-20 object texture-group family retry
+
+Focused Wibo still reports `98.18%`, `55/55` candidate/target instructions,
+`18/55` prefix, and one clean masked operand. The exact
+`request_object_texture_groups` and `replace_object_group_texture_refs` siblings
+confirm the current `Object +0x64/+0x68/+0x6c` and `Object +0xd0` layout, so the
+remaining SIB byte is not a reason to split the texture-group fields or change
+`ObjectFaceQuad`. Explicitly reloading `quads = (char*)facequads` inside the
+`flags & 0x400` block before the active texture load is codegen-neutral and
+still emits `[ecx+eax+0x0c]`. Spelling the same load as
+`*(TextureRef**)&quads[offset + 0x0c]` is also neutral. Keep the direct
+byte-offset member reload; the tested C spellings that preserve native's
+`mov eax, [esi+0x5c]` all leave the equivalent base/index encoding residual.
