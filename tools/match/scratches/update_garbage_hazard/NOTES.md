@@ -174,3 +174,33 @@ Residuals:
   `fld velocity.x; fadd world_position.x`. Keep the current `next_x` spelling
   because the pointer-lifetime variant does not explain the operand-order or
   frame-size residual.
+
+## 2026-06-20 oracle-frontier source-shape improvement
+
+A focused source-shape pass improves the scratch from 80.00% to 93.55%. The
+candidate now has the exact 217-instruction count, a 13/217 common prefix, and
+22 clean masked operands with no unresolved operands or mismatches. The native
+`0x1c` frame and shared state-0 jump-table epilogue are both recovered.
+
+Accepted forms:
+
+- the return accumulator also carries the switch value, allowing case 0 to
+  branch to the final epilogue instead of emitting a duplicate early return;
+- state 1 uses a typed `Vector3` copy through source/destination pointers;
+- state 2 stages random x/y in a `Vector3`, retains random z as `double`, reads
+  rate as `float`, and widens rate after the x calculation for the y/z x87
+  schedule;
+- collision side 1 uses a double-valued absolute-value ternary, while side 2
+  keeps the direct memory ternary;
+- state 3 declares position before movement and computes x through both
+  pointers;
+- functional casts on the staged y/z stores preserve the best code while
+  removing C4244 warnings.
+
+The remaining four regions are allocation/scheduling residuals: rotated
+register ownership in the state-1 vector copy, EAX-versus-EDX ownership for the
+contact radius push, one missing z-scale `fxch`, and the balancing extra store
+in the positive side-bias epilogue. Raw pointer-walk vector copies
+(80.18%-85.71%), separate switch-state temporaries (92.17%), named/precomputed
+z products (84.60%-90.78%), and common-store side-bias rewrites (at most
+87.04%) were all rejected. No shared header changes were required.

@@ -20,19 +20,18 @@ double random_float_below(float upper_bound, const char* tag);
 
 GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 {
-    Game* result = game;
-    if (!result->subgame_pause_gate) {
-        switch (state) {
+    Game* pause_game = game;
+    GarbageHazardSlot* result = (GarbageHazardSlot*)pause_game;
+    if (!pause_game->subgame_pause_gate) {
+        result = (GarbageHazardSlot*)state;
+        switch ((unsigned int)result) {
         case 0:
-            return 0;
+            goto function_return;
 
         case 1: {
             Vector3* position = &world_position;
-            Sprite* visual = sprite;
-            Vector3* visual_position = &visual->position;
-            visual_position->x = position->x;
-            visual_position->y = position->y;
-            visual_position->z = position->z;
+            Vector3* visual_position = &sprite->position;
+            *visual_position = *position;
 
             Player* owner = player;
             if (world_position.z < owner->interaction_max_z)
@@ -58,30 +57,31 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
         case 2: {
             state = 3;
-            float random_x = (float)random_signed_float_below(0.1f, "GDI");
-            float random_y = (float)random_float_below(0.2f, 0) + 0.1f;
+            Vector3 random_velocity;
+            random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
+            random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
             double random_z = random_float_below(0.30000001f, 0);
             Game* rate_game = game;
             Vector3* burst_velocity = &velocity;
-            double rate = rate_game->subgame_rate;
+            float rate = rate_game->subgame_rate;
             Vector3 staged_velocity;
 
-            staged_velocity.x = (float)(rate * random_x);
-            staged_velocity.y = (float)(random_y * rate);
-            staged_velocity.z = (float)(random_z * rate);
+            staged_velocity.x = rate * random_velocity.x;
+            double wide_rate = rate;
+            staged_velocity.y = float(random_velocity.y * wide_rate);
+            staged_velocity.z = float(random_z * wide_rate);
             *burst_velocity = staged_velocity;
 
             int side = collision_side;
             if (side == 1) {
-                float adjusted_x = burst_velocity->x;
-                if (adjusted_x < 0.0f)
-                    adjusted_x = -adjusted_x;
-                burst_velocity->x = adjusted_x;
+                double adjusted_x = burst_velocity->x < 0.0f
+                    ? -(double)burst_velocity->x
+                    : (double)burst_velocity->x;
+                burst_velocity->x = (float)adjusted_x;
             } else if (side == 2) {
-                float adjusted_x = burst_velocity->x;
-                if (adjusted_x < 0.0f)
-                    adjusted_x = -adjusted_x;
-                burst_velocity->x = -adjusted_x;
+                burst_velocity->x = -(burst_velocity->x < 0.0f
+                    ? -burst_velocity->x
+                    : burst_velocity->x);
             }
 
             int sign;
@@ -104,9 +104,9 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             // fall through
 
         case 3: {
-            float next_x = velocity.x + world_position.x;
-            Vector3* movement = &velocity;
             Vector3* position = &world_position;
+            Vector3* movement = &velocity;
+            float next_x = movement->x + position->x;
             position->x = next_x;
             position->y = movement->y + position->y;
             position->z = movement->z + position->z;
@@ -142,5 +142,6 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             sprite->facing_angle = roll_result->follow_orientation_b + sprite->facing_angle;
         return (GarbageHazardSlot*)roll_result;
     }
-    return (GarbageHazardSlot*)result;
+function_return:
+    return result;
 }

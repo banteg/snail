@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**467/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **59945/325832** bytes (**18.40%**) are proof-grade, and overall fuzzy is **53.30%**.
+**467/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **59945/325832** bytes (**18.40%**) are proof-grade, and overall fuzzy is **53.34%**.
 
 ## Proof Grade (467)
 
@@ -532,7 +532,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 92.79% | 48/160 | 16 ok |  |
 | 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 90.77% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 332/336 | 88.92% | 9/336 | 1 mismatch, 33 ok |  |
-| 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |
+| 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 267/268 | 93.08% | 122/268 | 63 ok |  |
