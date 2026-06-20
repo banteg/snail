@@ -3006,6 +3006,15 @@
       "description": "Current autorepeat step used by read_repeating_text_input_key_code after the held text-input key changes."
     },
     {
+      "address": "0x5033b0",
+      "name": "g_input_controller_slots_end",
+      "kind": "offset",
+      "aliases": [
+        "data_5033b0"
+      ],
+      "description": "One-past end sentinel for the two 0x38-byte input-controller slots reset by initialize_game_data_archive."
+    },
+    {
       "address": "0x508890",
       "name": "g_input_region_top",
       "kind": "global",

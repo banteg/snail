@@ -1,6 +1,7 @@
 // initialize_game_data_archive @ 0x430e40 (cdecl)
 
 #include "golb.h"
+#include "input_controller_state.h"
 
 extern int g_tracked_allocation_total_bytes; // data_5108b4
 extern int g_tracked_allocation_depth;       // data_5108c0
@@ -10,8 +11,6 @@ extern unsigned char g_text_input_last_repeat_code; // data_53c7f5
 extern unsigned char g_archive_startup_flag; // data_53c7f4
 extern int g_archive_data_base;              // data_53c7ec
 extern char* g_music_memory_buffer;          // data_53c7e8
-extern int g_input_slot0_axis_y;             // data_503340
-
 char load_archive_index(char* path);
 void reset_registered_sound_sample_count();
 void* allocate_tracked_memory(int size, char* name);
@@ -40,15 +39,15 @@ char initialize_game_data_archive()
 
     int authored_x = 0x43a00000;
     int authored_y = 0x43700000;
-    int* slot_axis_y = &g_input_slot0_axis_y;
+    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;
     do {
-        slot_axis_y[-1] = 0;
-        slot_axis_y[0] = 0;
-        slot_axis_y[1] = 0;
-        slot_axis_y[4] = authored_x;
-        slot_axis_y[5] = authored_y;
-        slot_axis_y[6] = 0;
-        slot_axis_y += 0xe;
+        *(int*)(slot_axis_y - 4) = 0;
+        *(int*)slot_axis_y = 0;
+        *(int*)(slot_axis_y + 4) = 0;
+        *(int*)(slot_axis_y + 0x10) = authored_x;
+        *(int*)(slot_axis_y + 0x14) = authored_y;
+        *(int*)(slot_axis_y + 0x18) = 0;
+        slot_axis_y += 0x38;
     } while ((int)slot_axis_y < 0x5033b0);
 
     GetClipCursor(clip_rect);
