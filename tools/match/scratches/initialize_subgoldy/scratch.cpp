@@ -171,9 +171,10 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x3f4c) = 0x3bde0163;
     *(unsigned char*)(self + 0x84) = (unsigned char)zero;
     camera_target[2] = position_z;
-    *(int*)(self + 0x418) = zero;
-    *(int*)(self + 0x414) = zero;
-    *(int*)(self + 0x410) = zero;
+    int* velocity_lanes = (int*)(self + 0x410);
+    velocity_lanes[2] = zero;
+    velocity_lanes[1] = zero;
+    velocity_lanes[0] = zero;
 
     int active_slot = *(int*)(self + 0x380);
     char* control_source;

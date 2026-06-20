@@ -34,7 +34,7 @@ Known partials:
 
 Latest focused result:
 
-- match: 95.14%
+- match: 95.86%
 - target/candidate instructions: 279 / 276
 - prefix: 190 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
@@ -80,3 +80,18 @@ Latest focused result:
   `self+0x2964` stores. The remaining residual is the cached-target base
   materialization plus the existing control-source/transform-loop register
   ownership.
+
+2026-06-20 velocity-lane tail pass:
+
+- Focused Wibo improves from 95.50% to 95.86% while keeping 276/279 candidate
+  instructions, the 190/279 prefix, and 27 clean masked operands.
+- Retained: spelling the velocity clear through a raw `int* velocity_lanes`
+  keeps the `player_slot` load after the z/y/x velocity zero stores, matching
+  native's post-camera-target tail order.
+- Rejected: moving the zero-y temporary earlier and naming cached-target y/z
+  lane pointers are codegen-neutral and still fold `self+0x2964` into direct
+  stores. Including the promoted `player.h` declaration is also codegen-neutral
+  but does not improve this raw-offset scratch. Hoisting a shared `g_game_base`
+  local for the control-source branch regresses to 95.14%, and naming the
+  transform-loop game pointer regresses to 94.43% by keeping the game pointer in
+  `ebp` and spilling the loop count.

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**469/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60567/325832** bytes (**18.59%**) are proof-grade, and overall fuzzy is **53.48%**.
+**469/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60567/325832** bytes (**18.59%**) are proof-grade, and overall fuzzy is **53.49%**.
 
 ## Proof Grade (469)
 
@@ -490,7 +490,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 99.09% | 386/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 97.54% | 29/122 | 18 ok |  |
-| 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.50% | 190/279 | 27 ok |  |
+| 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |

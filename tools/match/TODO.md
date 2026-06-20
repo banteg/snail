@@ -303,6 +303,11 @@ These are not gameplay owners, but several mirrors depend on them.
   to 95.50% by preserving the live x/y zero-store order. Remaining debt is still
   cached-target base materialization plus control-source/transform-loop register
   ownership; details and rejected typed/byte-pointer probes are in NOTES.
+- 2026-06-20 subgoldy velocity-lane follow-up: a raw `velocity_lanes` pointer
+  improves `initialize_subgoldy` from 95.50% to 95.86% by keeping the
+  `player_slot` load after native's z/y/x velocity zero stores. Cached-target
+  y/z lane aliases were neutral, while shared control-source and transform-loop
+  game locals regressed; details are in NOTES.
 - 2026-06-20 audio-family audit: reran and inspected
   `register_sound_sample`, `load_registered_sound_sample_from_bytes`, and
   `play_sound_effect_at_position`. Branch-local path reload spellings,
