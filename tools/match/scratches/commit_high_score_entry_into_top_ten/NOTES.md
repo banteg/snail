@@ -38,3 +38,8 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
   regressed shape. Keep the current `source_cursor += stride; source =
   source_cursor - stride` spelling; it is less pretty but better matches the
   native memcpy schedule.
+- A second explicit `source = source_cursor; source_cursor += stride` probe in
+  the larger high-score audit reproduced that tradeoff: it recovers the native
+  `+0x17c108` source displacement and raises the exact prefix to 16, but drops
+  focused Wibo to 81.82% because VC6 emits the `rep movsd` before both cursor
+  increments. Keep the retained byte post-increment shape.

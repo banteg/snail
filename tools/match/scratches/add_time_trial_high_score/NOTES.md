@@ -17,7 +17,8 @@ Behavior:
 - After a persistent replacement, the route-index field is written again at
   `route_record + 0x40`.
 
-Match status: 83.67% (49/49 instruction count, 20/49 exact prefix).
+Match status: 84.85% (50 candidate instructions versus 49 target, 20/49 exact
+prefix).
 
 Residual:
 
@@ -49,7 +50,15 @@ Rejected source-shape probes:
   without changing layout or codegen.
 - 2026-06-20 route-base retry: materializing a `HighScoreBank*` for the selected
   route and then taking `route_bank->time_trial_route_records`, or spelling the
-  same address through an incremented `char* route_base`, are both codegen-neutral
+  same address through an incremented `char* route_base`, were both codegen-neutral
   at 83.67%. Native still adds the route stride into the `this` register before
-  the compare, so the current array-shaped source remains the least misleading
-  expression of the recovered layout.
+  the compare, so this remained the key residual.
+- 2026-06-20 larger high-score audit: spelling the selected route window as a
+  shifted byte base and comparing through a raw `stored_seconds` lane improves
+  focused Wibo from 83.67% to 84.85%. This recovers the native "route stride plus
+  owner base" compare shape enough to beat the typed array source, although MSVC
+  still emits `add ecx, ebp` plus one extra `lea` instead of native `add ebp,
+  ecx`. Splitting the byte-base increment and an IDA-style integer base are
+  codegen-neutral at 84.85%; a typed `HighScoreRecord* route_record` before the
+  compare collapses back to 83.67%, and direct raw stores through the shifted base
+  regress to 55.10% by changing prologue/register ownership.

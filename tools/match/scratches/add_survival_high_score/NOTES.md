@@ -47,3 +47,8 @@ Residual:
   switching the shift loop to `while`, forcing a shared `shift_rank` limit, and
   reshaping the impossible `rank == -1` return path all regressed. A late
   active-bank local and an explicit saved-bank alias were codegen-neutral.
+- 2026-06-20 larger high-score audit: combining the `int*` score cursor with a
+  raw late active-bank pointer regressed to 65.03% by changing the prologue and
+  moving bank ownership into `ebx`. A narrower raw late active-bank local stayed
+  codegen-neutral at 82.14%, so the retained typed `bank->survival_records`
+  spelling remains the best source shape.
