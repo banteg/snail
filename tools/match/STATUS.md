@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**469/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60567/325832** bytes (**18.59%**) are proof-grade, and overall fuzzy is **53.49%**.
+**470/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **61072/325832** bytes (**18.74%**) are proof-grade, and overall fuzzy is **53.49%**.
 
-## Proof Grade (469)
+## Proof Grade (470)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -268,6 +268,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
+| ✅ | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 100.00% | 143/143 | 16 ok |  |
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  |
 | ✅ | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 100.00% | 65/65 | 9 ok |  |
 | ✅ | update_track_speedup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
@@ -478,7 +479,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (13)
+## Near Match (95-99.99%) (12)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -491,7 +492,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1387 | 440/440 | 99.09% | 386/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 97.54% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
-| 🚧 | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 99.30% | 48/143 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |

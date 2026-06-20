@@ -4,31 +4,46 @@
 
 | Metric | Before | After |
 | --- | ---: | ---: |
-| Match | 99.30% | 99.30% |
+| Match | 99.30% | 100.00% |
 | Instructions | target 143 / candidate 143 | target 143 / candidate 143 |
-| Common prefix | 48 / 143 | 48 / 143 |
+| Common prefix | 48 / 143 | 143 / 143 |
 | Masked operands | 16 ok, 0 unresolved, 0 mismatch | 16 ok, 0 unresolved, 0 mismatch |
 
 ## Accepted changes
 
-None. The existing x/z/y `Vector3` staging remains the best measured source
-shape, so `scratch.cpp` is unchanged.
+- Declare the staged `Vector3` before evaluating its vertical lane.
+- Bind `staged_y` as a reference to `staged_position.y`, then perform the
+  existing radius-first two-step accumulation through that reference.
+- Remove the later copy from an independent `staged_y` temporary into the
+  vector, since the reference already writes the vector lane.
+
+This source shape preserves the staged-vector copy and all surrounding register
+ownership while reproducing the native projection schedule exactly: `fld
+[radius]`, `fadd [cell->anchor_position.y]`, then the x/z dword loads.
 
 ## Rejected trials
 
-- Moving the y expression ahead of the vector stores and testing expression
-  orders x/y/z, x/z/y, and y/x/z produced 98.60%, 143/143 instructions, and a
-  47/143 prefix.
-- Split x/y/z ordering was codegen-neutral only for the existing effective
-  schedule (99.30%); y/x/z fell to 97.20%, while z-first orders produced
-  92.68%-94.08% and often grew to 144 candidate instructions.
-- These trials preserved the clean 16-operand audit, but none improved the
-  single localized scheduling region.
+- Anchor references/pointers, a comma-expression chain, a nested y scope,
+  declaration-only reordering, an explicit cast, a POD staging record, and a
+  separately declared scalar y temporary were codegen-neutral: 99.30%,
+  143/143 instructions, 48/143 prefix, and 16 clean masked operands.
+- Writing the vector y lane directly in two steps regressed to 97.90%,
+  143/143 instructions, and a 46/143 prefix. A direct sum or `const` scalar y
+  produced 98.60%, 143/143, and a 47/143 prefix.
+- `Vector3` constructor spellings regressed to 91.29%-92.68%, grew the
+  candidate to 144 instructions, and left a 47/143 prefix.
+- Named x/z float locals regressed to 93.38% with 144 candidate instructions.
+  Explicit x/z bit locals produced 89.75% with 140 candidate instructions;
+  a z-only bit local produced 90.14% with 141 candidate instructions.
+- Hoisting `live_position` ahead of staging regressed to 80.56%, grew the
+  candidate to 145 instructions, reduced the prefix to 37/143, and dropped the
+  masked audit to 15 clean operands.
+- A pointer alias to `staged_position.y` also matched exactly, but the reference
+  spelling was selected because it is narrower and clearer.
+- A union wrapper was rejected at compile time by VC6 (`C2620`) because
+  `Vector3` has a user-defined constructor.
 
 ## Next region
 
-Target instruction 48 in the projection staging block. Native performs
-`fadd [cell->anchor_position.y]` before loading the x and z dwords; the current
-candidate loads x/z first and then performs the same `fadd`. The next useful
-probe needs a plausible source construct that changes only this x87/integer-load
-interleave without disturbing the staged-vector copy.
+None. The target is exact under `msvc6.5 /O2 /G5 /W3`: 143/143 common-prefix
+instructions with no mismatch regions and a clean 16-operand mask audit.

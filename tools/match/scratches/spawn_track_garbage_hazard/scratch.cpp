@@ -72,12 +72,12 @@ DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
     ((DWORD*)slot_base_words)[GARBAGE_SLOT_STATE_WORD] = 1;
     set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + GARBAGE_SLOT_MATRIX_WORD));
 
-    float staged_y = *radius;
-    staged_y += cell->anchor_position.y;
     Vector3 staged_position;
+    float& staged_y = staged_position.y;
+    staged_y = *radius;
+    staged_y += cell->anchor_position.y;
     staged_position.x = cell->anchor_position.x;
     staged_position.z = cell->anchor_position.z;
-    staged_position.y = staged_y;
     Vector3* live_position = (Vector3*)(slot_base_words + GARBAGE_SLOT_WORLD_POSITION_FLOAT);
     *live_position = staged_position;
     project_position_onto_track_attachment(live_position, slot_base_words + GARBAGE_SLOT_SPRITE_Y_OFFSET_WORD);

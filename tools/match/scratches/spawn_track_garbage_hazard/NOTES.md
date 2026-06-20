@@ -165,3 +165,12 @@ Residuals:
   regresses to 98.60% by inverting the native x87 load order (`fld cell_y`,
   then `fadd radius`). Keep the radius-first `staged_y` and x/z/y field-copy
   spelling.
+- 2026-06-20 proof pass: declaring the staged `Vector3` first, then binding a
+  narrow `float& staged_y = staged_position.y`, lets the radius-first two-step
+  y accumulation write through the real vector lane before the x/z field loads.
+  Focused Wibo is now exact: 100.00%, 143/143 instructions, 143/143 prefix,
+  and 16 clean masked operands. The target/candidate dump confirms the native
+  projection schedule (`fld [radius]`, `fadd [cell->anchor_position.y]`, x/z
+  dword loads, staged vector copy, then projection call). A pointer alias to
+  `staged_position.y` also matched, but the reference spelling is retained as
+  the narrower original-looking C++ source shape. No residual remains.
