@@ -17,7 +17,7 @@ int parse_next_signed_int(char** cursor); // @ 0x44e710
 float parse_next_float32(char** cursor); // @ 0x431f20
 int report_errorf(char* format, ...); // @ 0x431cc0
 
-extern char data_4b2f50[]; // 0x80-byte X mesh enumeration names
+extern char g_x_animation_clip_enumeration_names[]; // data_4b2f50
 
 struct XAnimationKeyframe : public BodBase {
     char unknown_38[0x7c - 0x38];
@@ -47,7 +47,8 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
         *cursor++ = '2';
     *cursor++ = 0;
 
-    enumerate_matching_archive_or_fs_entries("X", path_pattern, &keyframe_count, data_4b2f50);
+    enumerate_matching_archive_or_fs_entries("X", path_pattern, &keyframe_count,
+        g_x_animation_clip_enumeration_names);
 
     keyframes = (XAnimationKeyframe*)allocate_tracked_memory(
         keyframe_count << 7, "Anim Key frame bods");
@@ -55,7 +56,7 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     duplicate_vertices.active_count = 0;
     if (keyframe_count > 0) {
         int i = 0;
-        char* mesh_path = data_4b2f50;
+        char* mesh_path = g_x_animation_clip_enumeration_names;
         XAnimationKeyframe* keyframe = keyframes;
         do {
             keyframe->set_bod_object(g_object_list.add_object_to_list());
@@ -73,7 +74,7 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     }
 
     duplicate_vertices.clean_duplicate_vertices(keyframe_count);
-    load_x_mesh(data_4b2f50, object, 0);
+    load_x_mesh(g_x_animation_clip_enumeration_names, object, 0);
     object->request_object_vertices_copy();
     object->flags |= 0x800000;
 

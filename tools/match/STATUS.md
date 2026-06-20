@@ -569,7 +569,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | match_cheat_text | 0x4047d0 | 85 | 43/42 | 68.24% | 12/42 | 2 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 3 unresolved, 42 ok |  |
+| 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 45 ok |  |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 5 mismatch, 6 unresolved, 119 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 77.94% | 38/233 | 2 unresolved, 38 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |

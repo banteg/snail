@@ -2119,6 +2119,16 @@
       "description": "Shared gameplay environment/completion flag byte read by complete_subgame and update_subgoldy."
     },
     {
+      "address": "0x4b2f50",
+      "name": "g_x_animation_clip_enumeration_names",
+      "kind": "global",
+      "aliases": [
+        "data_4b2f50"
+      ],
+      "size": "0x42e0",
+      "description": "Temporary X-animation mesh-name enumeration buffer used by load_x_animation_clip as an array of 0x80-byte per-frame keyframe mesh paths."
+    },
+    {
       "address": "0x4b7230",
       "name": "g_right_mouse_button_latch",
       "kind": "global",
