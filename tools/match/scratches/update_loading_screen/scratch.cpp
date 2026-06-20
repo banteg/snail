@@ -1,42 +1,13 @@
 // update_loading_screen @ 0x418e80 (thiscall, ret)
 
+#include "direct3d_device8_view.h"
 #include "loading_screen.h"
 #include "loading_vertex.h"
 #include "vertex_buffer_view.h"
 
-class Direct3DDevice8;
-class Direct3DTexture8;
-
 struct RendererVertexBufferResource {
     char unknown_00[0x08];
     VertexBuffer* vertex_buffer; // +0x08
-};
-
-struct Direct3DDevice8Vtbl {
-    char unknown_000[0x88];
-    int (__stdcall* BeginScene)(Direct3DDevice8* self);
-    int (__stdcall* EndScene)(Direct3DDevice8* self);
-    int (__stdcall* Clear)(Direct3DDevice8* self, unsigned int count, void* rects,
-        unsigned int flags, unsigned int color, float z, unsigned int stencil);
-    char unknown_094[0xf4 - 0x94];
-    int (__stdcall* SetTexture)(Direct3DDevice8* self, unsigned int stage,
-        Direct3DTexture8* texture);
-    char unknown_0f8[0xfc - 0xf8];
-    int (__stdcall* SetTextureStageState)(Direct3DDevice8* self, unsigned int stage,
-        unsigned int type, unsigned int value);
-    char unknown_100[0x118 - 0x100];
-    int (__stdcall* DrawPrimitive)(Direct3DDevice8* self, unsigned int primitive_type,
-        unsigned int start_vertex, unsigned int primitive_count);
-    char unknown_11c[0x130 - 0x11c];
-    int (__stdcall* SetVertexShader)(Direct3DDevice8* self, unsigned int shader);
-    char unknown_134[0x14c - 0x134];
-    int (__stdcall* SetStreamSource)(Direct3DDevice8* self, unsigned int stream,
-        VertexBuffer* buffer, unsigned int stride);
-};
-
-class Direct3DDevice8 {
-public:
-    Direct3DDevice8Vtbl* vtbl;
 };
 
 extern int g_last_loading_budget; // data_4df9c4

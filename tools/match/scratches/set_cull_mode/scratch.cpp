@@ -1,9 +1,6 @@
 // set_cull_mode @ 0x4129f0 (cdecl)
 
-class Direct3DRenderer {
-public:
-    int direct3d_renderer_set_cull_mode(char cull_front);
-};
+#include "direct3d_renderer.h"
 
 extern Direct3DRenderer g_direct3d_renderer; // data_4f7458
 

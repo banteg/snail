@@ -13,19 +13,6 @@ struct ImmediateVertex {
     float v;
 };
 
-struct Direct3DDevice8Vtbl {
-    char unknown_000[0xc8];
-    int (__stdcall* SetRenderState)(Direct3DDevice8* self, int state, int value);
-    char unknown_0cc[0x118 - 0xcc];
-    int (__stdcall* DrawPrimitive)(Direct3DDevice8* self, int primitive_type, int start_vertex,
-        int primitive_count);
-    char unknown_11c[0x130 - 0x11c];
-    int (__stdcall* SetVertexShader)(Direct3DDevice8* self, int shader);
-    char unknown_134[0x14c - 0x134];
-    int (__stdcall* SetStreamSource)(Direct3DDevice8* self, int stream, VertexBuffer* buffer,
-        int stride);
-};
-
 extern Direct3DDevice8* g_d3d_device;      // data_502fec
 extern RendererState* g_renderer_state;    // data_502fe0
 extern int g_render_triangle_count;        // data_4f7450

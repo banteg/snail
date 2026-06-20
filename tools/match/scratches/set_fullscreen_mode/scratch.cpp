@@ -1,9 +1,6 @@
 // set_fullscreen_mode @ 0x414260 (cdecl)
 
-class Direct3DRenderer {
-public:
-    int direct3d_renderer_set_fullscreen_mode(int enabled);
-};
+#include "direct3d_renderer.h"
 
 extern Direct3DRenderer g_direct3d_renderer; // data_4f7458
 

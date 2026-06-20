@@ -1,5 +1,7 @@
 // initialize_d3d8_device @ 0x411730 (thiscall, ret 0x4)
 
+#include "direct3d_renderer.h"
+
 #include <string.h>
 
 typedef unsigned int UINT;
@@ -13,37 +15,7 @@ struct D3DDisplayMode {
     UINT format;
 };
 
-struct D3DPresentParameters {
-    UINT back_buffer_width;
-    UINT back_buffer_height;
-    UINT back_buffer_format;
-    UINT back_buffer_count;
-    UINT multisample_type;
-    UINT swap_effect;
-    HWND device_window;
-    int windowed;
-    int enable_auto_depth_stencil;
-    UINT auto_depth_stencil_format;
-    UINT flags;
-    UINT fullscreen_refresh_rate_hz;
-    UINT fullscreen_presentation_interval;
-};
-
-typedef char D3DPresentParameters_must_be_0x34[
-    (sizeof(D3DPresentParameters) == 0x34) ? 1 : -1];
-
 struct Direct3D8;
-struct Direct3DDevice8;
-
-struct Direct3DDevice8Vtbl {
-    char unknown_000[0xc8];
-    HRESULT (__stdcall* SetRenderState)(
-        Direct3DDevice8* self, UINT state, UINT value);
-};
-
-struct Direct3DDevice8 {
-    Direct3DDevice8Vtbl* vtbl;
-};
 
 struct Direct3D8Vtbl {
     char unknown_00[0x20];
@@ -62,28 +34,6 @@ struct Direct3D8Vtbl {
 
 struct Direct3D8 {
     Direct3D8Vtbl* vtbl;
-};
-
-class Direct3DRenderer {
-public:
-    int initialize_d3d8_device(char use_present_interval_one);
-    void reset_direct3d_render_state(); // @ 0x4118b0
-    int query_direct3d_device_caps();   // @ 0x414600
-
-    char unknown_0000[0xbb8c];
-    unsigned char device_initialized; // +0xbb8c
-    char unknown_bb8d[0xbb90 - 0xbb8d];
-    Direct3D8* d3d;                 // +0xbb90
-    Direct3DDevice8* device;        // +0xbb94
-    D3DPresentParameters present;   // +0xbb98
-    char unknown_bbcc[0xbca0 - 0xbbcc];
-    UINT display_format;            // +0xbca0
-    UINT requested_width;           // +0xbca4
-    UINT requested_height;          // +0xbca8
-    UINT create_device_flags;       // +0xbcac
-    char unknown_bcb0[0xbcb8 - 0xbcb0];
-    UINT depth_stencil_format;      // +0xbcb8
-    UINT multisample_type;          // +0xbcbc
 };
 
 extern Direct3D8* __stdcall Direct3DCreate8(UINT sdk_version);

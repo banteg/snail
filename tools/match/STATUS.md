@@ -728,8 +728,8 @@ Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 17 type name(s)
 - unresolved-layout: 16 type name(s)
-- header-compatible: 13 type name(s)
-- partial-compatible: 7 type name(s)
+- header-compatible: 12 type name(s)
+- partial-compatible: 5 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -767,7 +767,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| header-compatible | Direct3DDevice8 | 4 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
@@ -779,8 +778,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| partial-compatible | Direct3DDevice8Vtbl | 9 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | Direct3DRenderer | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | SlugVoiceManager | 4 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

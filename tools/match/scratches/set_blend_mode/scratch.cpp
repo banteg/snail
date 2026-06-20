@@ -2,11 +2,6 @@
 
 #include "direct3d_device8_view.h"
 
-struct Direct3DDevice8Vtbl {
-    char unknown_000[0xc8];
-    int (__stdcall* SetRenderState)(Direct3DDevice8* self, int state, int value);
-};
-
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
 int set_blend_mode(int blend_mode)

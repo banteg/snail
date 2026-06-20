@@ -1,26 +1,10 @@
 // initialize_loading_screen @ 0x418b50 (thiscall, ret)
 
+#include "direct3d_device8_view.h"
 #include "loading_screen.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
 #include "render_buffer_factories.h"
-
-class Direct3DDevice8;
-class Direct3DTexture8;
-
-struct Direct3DDevice8Vtbl {
-    char unknown_000[0xf4];
-    int (__stdcall* SetTexture)(Direct3DDevice8* self, unsigned int stage,
-        Direct3DTexture8* texture);
-    char unknown_0f8[0xfc - 0xf8];
-    int (__stdcall* SetTextureStageState)(Direct3DDevice8* self, unsigned int stage,
-        unsigned int type, unsigned int value);
-};
-
-class Direct3DDevice8 {
-public:
-    Direct3DDevice8Vtbl* vtbl;
-};
 
 extern int g_last_loading_budget; // data_4df9c4
 extern Direct3DDevice8* g_d3d_device; // data_502fec

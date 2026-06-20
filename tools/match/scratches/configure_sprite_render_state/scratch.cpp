@@ -1,19 +1,10 @@
 // configure_sprite_render_state @ 0x413670 (cdecl, ret)
 
+#include "direct3d_device8_view.h"
+
 struct Sprite {
     char unknown_00[0x28];
     int draw_mode; // +0x28
-};
-
-struct Direct3DDevice8;
-
-struct Direct3DDevice8Vtbl {
-    char unknown_00[0xc8];
-    int (__stdcall* SetRenderState)(Direct3DDevice8* self, int state, int value);
-};
-
-struct Direct3DDevice8 {
-    Direct3DDevice8Vtbl* vtbl;
 };
 
 extern Direct3DDevice8* g_d3d_device; // data_502fec
