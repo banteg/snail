@@ -5,16 +5,15 @@
 int InputState::update_input()
 {
     int result = current_buttons;
-    int previous = previous_buttons;
-    int changed = previous ^ result;
+    int changed = previous_buttons ^ result;
     int pressed = changed & result;
-    previous_buttons = result;
-    pressed_buttons = pressed;
     int inverse = result;
     inverse = ~inverse;
-    int released = inverse;
+    int released = inverse & changed;
+
+    previous_buttons = result;
+    pressed_buttons = pressed;
     inverse_current_buttons = inverse;
-    released &= changed;
     current_buttons = 0;
     released_buttons = released;
     return result;

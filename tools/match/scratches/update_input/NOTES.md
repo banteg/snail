@@ -7,6 +7,8 @@ The function folds `current_buttons` and `previous_buttons` into per-frame
 `inverse_current_buttons`, and clears `current_buttons` for the next input
 sampling pass.
 
-Current Wibo result is 34.29%. The recovered semantics and member spelling are
-clear from `update_game_input`, but VC6 currently collapses the native `edx`,
-`esi`, and `edi` lifetimes into a shorter register schedule.
+Current Wibo result is 37.84%. Computing `changed`, `pressed`, `inverse`, and
+`released` before any member stores gives VC6 the native saved-`edi` lifetime
+and removes one instruction of length debt. The first residual remains the same
+early allocation split: native keeps `changed` in `edx` before saving `esi`,
+while this source shape still saves `esi` first and uses it for `changed`.
