@@ -210,6 +210,14 @@ source-shape issue is solved.
   from the conflict list, `update_subgoldy` drops out of the `VoiceManager` and
   `SoundEffectManager` rows, and `Backdrop` no longer lists this scratch, though
   the type tool still reports a header-only `Backdrop` residual.
+- 2026-06-20 attachment view naming: the compact local attachment/follow
+  declarations are now named `SubgoldyAttachmentPathTemplateView`,
+  `SubgoldyTrackRowCellView`, and `SubgoldyFollowStateView`. This preserves the
+  by-value swept-entry caller shape that beat the scalar shared-header call
+  spelling above, while making the type report stop advertising these local
+  views as ready-to-promote `AttachmentPathTemplate`, `TrackRowCell`, or
+  `FollowState` copies. Focused evidence stayed unchanged at `72.51%`,
+  `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

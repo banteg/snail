@@ -40,7 +40,7 @@ struct PathFollow {
     void initialize_path_follow_golb(int cell, void* position, void* shot);
 };
 
-struct TrackRowCell {
+struct GolbTrackRowCellTileView {
     char unknown_00[0x3c];
     unsigned char tile_id; // +0x3c
 };
@@ -186,12 +186,12 @@ void GolbShot::update_golb_ai()
         source_matrix.position.y = position.y;
         source_matrix.position.z = position.z;
         if (path_entry_z_latch < source_matrix.position.z && position.y < 1.0f && position.y > 0.0f) {
-            TrackRowCell* cell = (TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position);
+            GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position);
             if (cell->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z;
                 path_follow.initialize_path_follow_golb((int)cell, &position, this);
             }
-            if (velocity.z > 1.0f && ((TrackRowCell*)((char*)cell - 672))->tile_id == 30) {
+            if (velocity.z > 1.0f && ((GolbTrackRowCellTileView*)((char*)cell - 672))->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z + 1.0f;
                 path_follow.initialize_path_follow_golb((int)((char*)cell - 672), &position, this);
             }
@@ -354,7 +354,7 @@ slugs:
                 }
                 ++slug_index;
             }
-            if (((TrackRowCell*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position))->tile_id != 14)
+            if (((GolbTrackRowCellTileView*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position))->tile_id != 14)
                 return;
             wall_impact.x = source_matrix.position.x;
             wall_impact.y = source_matrix.position.y;

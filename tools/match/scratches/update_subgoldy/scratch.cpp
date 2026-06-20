@@ -55,9 +55,9 @@ struct Nuke {
     void uninit_nuke();
 };
 
-struct TrackRowCell;
+struct SubgoldyTrackRowCellView;
 
-struct AttachmentPathTemplate {
+struct SubgoldyAttachmentPathTemplateView {
     char unknown_00[0x38];
     int kind; // +0x38: 15 DETOUR, 24 WORM
     char unknown_3c[0x44 - 0x3c];
@@ -66,14 +66,14 @@ struct AttachmentPathTemplate {
     AttachmentSample* primary_samples; // +0x58
 
     void try_enter_track_attachment_from_swept_motion(Vector3 position, Vector3 sweep,
-                                                      TrackRowCell* cell);
+                                                      SubgoldyTrackRowCellView* cell);
 };
 
-struct TrackRowCell {
+struct SubgoldyTrackRowCellView {
     char unknown_00[0x10];
     Vector3 anchor_position; // +0x10
     char unknown_1c[0x38 - 0x1c];
-    AttachmentPathTemplate* attachment_template_record; // +0x38
+    SubgoldyAttachmentPathTemplateView* attachment_template_record; // +0x38
     unsigned char tile_id;       // +0x3c
     unsigned char tile_flags_3d; // +0x3d
 
@@ -84,11 +84,11 @@ struct TrackRowCell {
 
 struct Player;
 
-struct FollowState {
+struct SubgoldyFollowStateView {
     unsigned char active; // +0x00
     char unknown_01[3];
-    AttachmentPathTemplate* template_record; // +0x04
-    TrackRowCell* source_cell;               // +0x08
+    SubgoldyAttachmentPathTemplateView* template_record; // +0x04
+    SubgoldyTrackRowCellView* source_cell;               // +0x08
     int sample_index;                        // +0x0c
     char unknown_10[0x2c - 0x10];
     Vector3 output_position; // +0x2c
@@ -96,8 +96,8 @@ struct FollowState {
     unsigned char flag_3c;   // +0x3c
     char unknown_3d[3];
 
-    AttachmentPathTemplate* begin_track_attachment_follow_state(
-        TrackRowCell* cell, const Vector3* position, Player* player);
+    SubgoldyAttachmentPathTemplateView* begin_track_attachment_follow_state(
+        SubgoldyTrackRowCellView* cell, const Vector3* position, Player* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,
                                              Vector3* velocity);
 };
@@ -199,7 +199,7 @@ struct Game {
     int runtime_row_count;      // +0x54
     int completion_row_start;   // +0x58
 
-    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
+    SubgoldyTrackRowCellView* get_track_grid_cell_at_world_position(Vector3* position);
     float sample_track_floor_height_at_position(Vector3* position);
     void complete_subgame(int completed);
 };
@@ -248,7 +248,7 @@ struct Player {
     float nuke_effect_progress;      // +0x374
     float nuke_effect_progress_step; // +0x378
     char unknown_37c[0x384 - 0x37c];
-    FollowState follow_state; // +0x384
+    SubgoldyFollowStateView follow_state; // +0x384
     DamageGauge damage_gauge; // +0x3c4
     ProgressBar progress_bar; // +0x3f0
     WarningActor warning;     // +0x3f4
@@ -322,7 +322,7 @@ void Player::update_subgoldy()
     }
 
     if (follow_state.active == 1) {
-        AttachmentPathTemplate* template_record = follow_state.template_record;
+        SubgoldyAttachmentPathTemplateView* template_record = follow_state.template_record;
         int sample = follow_state.sample_index + 3;
         int segment_count = template_record->segment_count;
         if (sample >= segment_count)
@@ -487,7 +487,7 @@ steering_stored:
     if (resurrect_active)
         update_subgoldy_resurrect();
 
-    TrackRowCell* source_cell = game->get_track_grid_cell_at_world_position(p_position);
+    SubgoldyTrackRowCellView* source_cell = game->get_track_grid_cell_at_world_position(p_position);
     Game* event_game = game;
     char* row_record =
         (char*)event_game + 244 * source_cell->get_track_cell_row_index() + 0x5ccac8;
@@ -599,7 +599,7 @@ steering_stored:
             velocity.x = 0.0f;
         }
         if (!completion_handoff_active) {
-            TrackRowCell* slide_cell;
+            SubgoldyTrackRowCellView* slide_cell;
             if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 15
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 16
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 18
@@ -631,7 +631,7 @@ steering_stored:
             velocity.z = quantum + quantum + velocity.z;
             attachment_exit_pending = 0;
         } else {
-            TrackRowCell* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
+            SubgoldyTrackRowCellView* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
             if (attachment_exit_pending) {
                 Game* drag_game = game;
                 if ((*(int*)((char*)drag_game + 244 * landing_cell->get_track_cell_row_index()
@@ -647,13 +647,13 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    (*(TrackRowCell**)((char*)game
+                    (*(SubgoldyTrackRowCellView**)((char*)game
                                        + 244 * landing_cell->get_track_cell_row_index()
                                        + 0x5ccb6c))
                         ->attachment_template_record
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            *(TrackRowCell**)((char*)game
+                            *(SubgoldyTrackRowCellView**)((char*)game
                                               + 244 * landing_cell->get_track_cell_row_index()
                                               + 0x5ccb6c));
                 }
@@ -665,13 +665,13 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    (*(TrackRowCell**)((char*)game
+                    (*(SubgoldyTrackRowCellView**)((char*)game
                                        + 244 * landing_cell->get_track_cell_row_index()
                                        + 0x5ccb70))
                         ->attachment_template_record
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            *(TrackRowCell**)((char*)game
+                            *(SubgoldyTrackRowCellView**)((char*)game
                                               + 244 * landing_cell->get_track_cell_row_index()
                                               + 0x5ccb70));
                 }
@@ -786,7 +786,7 @@ steering_stored:
                 float gravity = rate * rate * -0.0099999998f;
                 velocity.y = gravity + velocity.y;
             }
-            TrackRowCell* trampoline_cell =
+            SubgoldyTrackRowCellView* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
             if (trampoline_cell->tile_id == 22
                 && trampoline_cell->anchor_position.y + 0.49000001f > live_matrix.position.y

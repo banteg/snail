@@ -114,6 +114,14 @@ added a `Player` class/struct warning and an extra masked operand mismatch
 around the late `kill_golb`/grid-cell call region. Keep the compact local
 tile-id view until the surrounding owner/vector scheduling is less fragile.
 
+2026-06-20 tile-view naming cleanup: the compact local row-cell view is now
+`GolbTrackRowCellTileView`, making it explicit that this scratch only needs the
+`tile_id +0x3c` byte and should not be promoted to the full shared
+`TrackRowCell` header yet. Focused evidence stayed unchanged at `49.85%`,
+`646/694`, `9/694` prefix, and the existing `52 ok / 1` masked call mismatch;
+`uv run snail match types TrackRowCell --paths` now reports no consolidation
+candidates.
+
 Measured source-shape rejections:
 
 - before the `TransformMatrix` recovery, replacing the `kind` trail dispatch

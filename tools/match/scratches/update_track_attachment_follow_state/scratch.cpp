@@ -30,7 +30,16 @@ struct AttachmentRuntimeRecord {
     float scalar_a4;
 };
 
-class FollowState {
+struct AttachmentPathTemplateKind42CallView {
+    int compute_kind42_attachment_transform(
+        float radius,
+        float x,
+        float y,
+        TransformMatrix* transform,
+        float* out_angle);
+};
+
+class AttachmentFollowStateMatrixView {
 public:
     int update_track_attachment_follow_state(float path_factor, Vec3* out_position, Vec3* motion);
 
@@ -56,16 +65,7 @@ extern char* g_game_base; // data_4df904
 extern AttachmentFollowRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
 
 void __fastcall set_matrix_identity(TransformMatrix* transform);
-struct AttachmentPathTemplate {
-    int compute_kind42_attachment_transform(
-        float radius,
-        float x,
-        float y,
-        TransformMatrix* transform,
-        float* out_angle);
-};
-
-int FollowState::update_track_attachment_follow_state(
+int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
     float path_factor,
     Vec3* out_position,
     Vec3* motion)
@@ -168,7 +168,7 @@ int FollowState::update_track_attachment_follow_state(
 
         if (current_template->kind == 42) {
             arg2 = out_position->x - v85;
-            ((AttachmentPathTemplate*)current_template)->compute_kind42_attachment_transform(
+            ((AttachmentPathTemplateKind42CallView*)current_template)->compute_kind42_attachment_transform(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {

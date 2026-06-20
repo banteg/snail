@@ -195,3 +195,14 @@ includes the recovered `+0x3c` flag byte and tail padding, matching the shared
 0x40 layout used by `track_attachment_types.h` and `update_subgoldy`. This is
 codegen neutral: focused match remains `69.38%`, target `726`, candidate `672`,
 prefix `122/726`, masks `53/0/0`.
+
+2026-06-20 matrix-view naming cleanup: the source now names the local owner
+`AttachmentFollowStateMatrixView` and the kind-42 member-call cast
+`AttachmentPathTemplateKind42CallView`. Including `track_attachment_types.h`
+directly is rejected here because it defines the full shared `FollowState`,
+while this scratch still needs a matrix-backed template/sample view for its
+current 0x180-frame codegen. The rename is codegen neutral at `69.38%`,
+`672/726`, `122/726` prefix, and `53/0/0` masks, and
+`uv run snail match types AttachmentPathTemplate --paths` /
+`uv run snail match types FollowState --paths` now report no consolidation
+candidates.
