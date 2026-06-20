@@ -21,3 +21,10 @@ Current residual:
 - Rewriting the word-lane source cursors as `ReplayRunRecord*` compiles
   identically to the old 85.32% baseline, so the improvement is the cursor
   lifetime, not the typed source view.
+- 2026-06-20 follow-up: splitting each source cursor into a declaration before
+  the branch and assignment inside the branch regresses to the old 85.32%
+  source/destination swap. Reusing the top `sample_count` local for every
+  payload bound and byte-count computation regresses to 20.28% by collapsing
+  the native replay-count reloads and reshaping the whole scalar tail. Keep
+  the accepted pre-branch source cursor initialization plus direct
+  `replay_sample_count` loop bounds.

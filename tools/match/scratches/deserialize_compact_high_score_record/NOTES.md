@@ -20,3 +20,9 @@ Evidence from the paired serializer:
 - Removing the `delta_z_count` alias and using `replay_sample_count` directly
   is codegen-neutral at 92.98%; the ECX/EDX cursor swap remains the only
   localized mismatch.
+- 2026-06-20 follow-up: moving the second-lane packed source cursor assignment
+  inside the non-empty branch regresses to 90.35% by moving the loop index into
+  `edx` and changing the source/destination setup order. Rewriting the
+  destination as a `ReplayRunRecord*` field store is codegen-neutral at 92.98%.
+  Keep the current raw `short*` destination and pre-branch packed source cursor
+  shape.
