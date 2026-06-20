@@ -58,13 +58,15 @@ public:
 
 void Player::handle_subgoldy_collisions()
 {
-    Vec3 delta;        // v69
-    Vec3 probe_salt;   // vector (also rings/effects source)
     Vec3 probe_b;      // v67
     Vec3 probe_c;      // v68
+    Vec3 delta;        // v69
+    Vec3 hit_velocity; // v70/v71/v72
+    Vec3 probe_salt;   // vector (also rings/effects source)
+    Vec3 burst_offset;
+    float burst_position[3]; // v76
     Vec3 probe_rings;  // v77
     Vec3 probe_fx;     // v78
-    float burst_position[3];
 
     if (!attachment_exit_pending && !boost_one_tick && !control_override_active) {
         if ((movement_flags & 0x80) == 0) {
@@ -135,21 +137,15 @@ void Player::handle_subgoldy_collisions()
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
                         if ((movement_flags & 0x80) == 0) {
-                            if (control_override_active) {
-                                float rate = game->subgame_rate;
-                                float scaled_rate = rate * rate * 0.0040000002f;
-                                velocity.z = scaled_rate * -8.0f;
-                                damage_gauge.apply_damage_gauge_delta(1.0f, 0);
-                            } else {
+                            if (!control_override_active) {
                                 Game* hit_game = game;
                                 control_override_active = 1;
                                 follow_active = 0;
                                 float rate = hit_game->subgame_rate;
-                                velocity.x = 0.0f;
-                                float lift = rate * 0.2f;
-                                velocity.y = lift;
-                                float knockback = rate * -0.2f;
-                                velocity.z = knockback;
+                                hit_velocity.x = 0.0f;
+                                hit_velocity.y = rate * 0.2f;
+                                hit_velocity.z = rate * -0.2f;
+                                velocity = hit_velocity;
                                 begin_post_follow_carryover();
                                 presentation.cutscene_ai.state = 10;
                                 slug->player_encounter_latched = 1;
@@ -157,16 +153,22 @@ void Player::handle_subgoldy_collisions()
                                     34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                                 float half = distance * 0.5f;
                                 presentation.wobble_lift_phase_step = 0.0f;
-                                float burst_x = half * probe_b.x;
-                                float burst_y = probe_b.y * half;
-                                probe_salt.x = burst_x + cached_camera_target_world.x;
+                                burst_offset.x = half * probe_b.x;
+                                burst_offset.y = probe_b.y * half;
+                                burst_offset.z = half * probe_b.z;
+                                probe_salt.x = burst_offset.x + cached_camera_target_world.x;
                                 burst_position[0] = probe_salt.x;
                                 int slot_id = player_slot;
-                                probe_salt.y = burst_y + cached_camera_target_world.y;
+                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;
                                 burst_position[1] = probe_salt.y;
-                                probe_salt.z = half * probe_b.z + cached_camera_target_world.z;
+                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;
                                 burst_position[2] = probe_salt.z;
                                 firework_shoot(burst_position, slot_id, 92, 80);
+                            } else {
+                                float rate = game->subgame_rate;
+                                float scaled_rate = rate * rate * 0.0040000002f;
+                                velocity.z = scaled_rate * -8.0f;
+                                damage_gauge.apply_damage_gauge_delta(1.0f, 0);
                             }
                         } else {
                             slug->kill_slug_hazard();
