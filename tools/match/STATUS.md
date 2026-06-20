@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.53%**.
+**453/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **54641/325832** bytes (**16.77%**) are proof-grade, and overall fuzzy is **52.54%**.
 
 ## Proof Grade (453)
 
@@ -478,10 +478,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (57)
+## High Progress (80-94.99%) (58)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 86.44% | 21/177 | 20 ok |  |
 | 🚧 | kill_border | 0x403360 | 90 | 31/30 | 88.52% | 18/30 | - |  |
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 87.87% | 5/218 | 23 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
@@ -540,12 +541,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (88)
+## Mid Progress (50-79.99%) (87)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_sprite_button | 0x401a70 | 699 | 156/157 | 69.01% | 35/157 | 7 ok |  |
-| 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 174/177 | 78.06% | 21/177 | 20 ok |  |
 | 🚧 | update_cheat | 0x404750 | 124 | 46/52 | 67.35% | 9/52 | 7 ok |  |
 | 🚧 | match_cheat_text | 0x4047d0 | 85 | 43/42 | 68.24% | 12/42 | 2 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |

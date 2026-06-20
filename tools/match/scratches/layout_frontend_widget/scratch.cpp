@@ -78,9 +78,9 @@ int FrontendWidget::layout_frontend_widget()
         }
 
         int layout_left_bits = *(int*)layout_left_ptr;
-        int layout_top_bits = *(int*)layout_top_ptr;
         *(int*)&widget->texture_hit_x = layout_left_bits;
         unsigned int flags = widget->widget_flags;
+        int layout_top_bits = *(int*)layout_top_ptr;
         *(int*)&widget->texture_hit_y = layout_top_bits;
         if ((flags & 0x20000000) == 0) {
             float right = *layout_left_ptr + widget->hot_padding;
@@ -104,8 +104,7 @@ int FrontendWidget::layout_frontend_widget()
             }
 
             float dx = widget->texture_hit_x - *layout_left_ptr;
-            result = flags;
-            result &= 0x100000;
+            result = flags & 0x100000;
             widget->layout_center_x = dx + widget->layout_center_x;
             widget->layout_anchor_x = dx + widget->layout_anchor_x;
             widget->layout_anchor_y =
@@ -117,7 +116,7 @@ int FrontendWidget::layout_frontend_widget()
             float clamped_top_local = clamped_top;
             *layout_top_ptr = clamped_top_local;
 
-            if (result != 0) {
+            if ((flags & 0x100000) != 0) {
                 WIDGET_FLOAT_AT(widget, 0x184) =
                     widget->layout_width * 0.100000001f + clamped_left + 4.0f -
                     12.0f;
