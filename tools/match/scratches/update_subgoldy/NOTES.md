@@ -185,6 +185,15 @@ source-shape issue is solved.
   `AnimManager` at channel `+0x108`, and the channel stride is `0x3dc`.
   `update_subgoldy` can use the shared channel header without changing its
   headline score; this replaces the stale local `WeaponChannel` view.
+- 2026-06-20 app-shell consolidation: `AppShell` now lives in
+  `app_shell.h`, with the shared `FrontendFade` split out of
+  `border_delay_lane.h` so this scratch does not pull in
+  `frontend_widget.h`/`sprite.h`. `update_subgoldy` remains 72.51% with the
+  same masked jump-table mismatch; `update_subgoldy_resurrect` and the small
+  fade callers stayed exact. The type report no longer has an `AppShell`
+  partial-compatible row. `FrontendFade` is now a remaining unresolved-layout
+  cleanup because `game_startup_and_main_loop` still keeps a minimal local
+  startup-only declaration.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

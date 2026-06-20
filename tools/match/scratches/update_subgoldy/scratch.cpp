@@ -9,6 +9,7 @@
 // and the replay cursor / times-up tail.
 
 #include "attachment_sample.h"
+#include "app_shell.h"
 #include "high_score_record.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
@@ -34,32 +35,6 @@ extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 extern unsigned char g_environment_flags; // byte_4B2F40
 extern float g_steering_sensitivity[];    // flt_4DF950
-
-struct FrontendFade {
-    int state;
-    void begin_frontend_fade_in();
-    void begin_frontend_fade_out(int mode);
-};
-
-struct HudRow {
-    int values[16];
-};
-
-// keep the App struct simple: members through +0x30c, far fields raw.
-struct AppShell {
-    char unknown_00[0x24];
-    FrontendFade fade;     // +0x24
-    char unknown_28[0x15c - 0x28];
-    HudRow hud_source;     // +0x15c
-    char unknown_19c[0x1b8 - 0x19c];
-    int frontend_state;    // +0x1b8
-    int frontend_substate; // +0x1bc
-    char unknown_1c0[0x2cc - 0x1c0];
-    HudRow hud_target;       // +0x2cc (the scroll float at +0x300 sits inside)
-    unsigned char skip_flag; // +0x30c
-};
-
-extern AppShell* g_app; // data_4df904
 
 struct TipDefinition {
     int flags;             // +0x00

@@ -13,3 +13,7 @@ Exact match.
   `0x1a`, arcade continue state `0x1a/2`, or fallback state `0x1b`.
 - The exact source shape keeps the respawn/final-loss branches explicit so VC6
   can hoist shared `game`/`g_app` loads between condition tests and branches.
+- 2026-06-20 shared view: the local `AppShell`/`FrontendFade` slice was
+  replaced with `app_shell.h` plus `frontend_fade.h`. The exact 76-instruction
+  match is unchanged, and the final arcade route now names
+  `high_score_entry_pending` at app offset `+0x30d`.

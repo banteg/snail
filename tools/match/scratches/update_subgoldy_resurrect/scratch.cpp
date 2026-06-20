@@ -1,22 +1,6 @@
 // update_subgoldy_resurrect @ 0x441fd0 (thiscall, ret)
 
-struct FrontendFade {
-    int state; // +0x00
-
-    void begin_frontend_fade_out(int mode);
-};
-
-struct AppShell {
-    char unknown_000[0x24];
-    FrontendFade fade; // +0x24
-    char unknown_028[0x1b8 - 0x28];
-    int frontend_state;    // +0x1b8
-    int frontend_substate; // +0x1bc
-    char unknown_1c0[0x30d - 0x1c0];
-    unsigned char unknown_30d; // +0x30d
-};
-
-extern AppShell* g_app; // data_4df904
+#include "app_shell.h"
 
 class Game {
 public:
@@ -74,7 +58,7 @@ void Player::update_subgoldy_resurrect()
     Game* route_game = game;
     if (route_game->level_mode == 0) {
         AppShell* route_app = g_app;
-        if (route_app->unknown_30d == 0) {
+        if (route_app->high_score_entry_pending == 0) {
             route_app->frontend_state = 0x1a;
             g_app->frontend_substate = 2;
             return;

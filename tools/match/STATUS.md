@@ -726,10 +726,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ABI-conflict: 17 type name(s)
-- unresolved-layout: 15 type name(s)
+- ABI-conflict: 16 type name(s)
+- unresolved-layout: 16 type name(s)
 - header-compatible: 12 type name(s)
-- partial-compatible: 1 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -740,7 +739,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | ABI-conflict | Quaternion | 5 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | RuntimeSlot | 4 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | RuntimeCallback | 4 | 0 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | FrontendFade | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Vector3 (aliases: Vec3) | 3 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | MouseCursorState | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | VoiceManager | 3 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
@@ -758,6 +756,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
+| unresolved-layout | FrontendFade | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
@@ -777,4 +776,3 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | Sprite | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TimerCounters | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
