@@ -1,14 +1,6 @@
 // update_slug_voice_manager @ 0x43f5e0 (thiscall, ret)
 
-class SlugVoiceManager {
-public:
-    void update_slug_voice_manager();
-
-    unsigned char active; // +0x00
-    char pad_01[3];
-    float progress;      // +0x04
-    float step;          // +0x08
-};
+#include "slug_voice_manager.h"
 
 void SlugVoiceManager::update_slug_voice_manager()
 {

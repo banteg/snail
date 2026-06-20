@@ -1,6 +1,7 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
 #include "high_score_record.h"
+#include "slug_voice_manager.h"
 
 class StarField {
 public:
@@ -84,11 +85,6 @@ public:
 class Player {
 public:
     int initialize_subgoldy(int player_slot);
-};
-
-class SlugVoiceManager {
-public:
-    void initialize_slug_voice_manager();
 };
 
 class Game {

@@ -6,6 +6,7 @@
 #include "high_score_record.h"
 #include "new_game_menu.h"
 #include "salt_hazard_types.h"
+#include "slug_voice_manager.h"
 #include "sprite.h"
 #include "star_field.h"
 #include "timer_counters.h"
@@ -17,11 +18,6 @@
 class ChallengeSetupController {
 public:
     int update_challenge_setup_screen();
-};
-
-class SlugVoiceManager {
-public:
-    void update_slug_voice_manager();
 };
 
 class TutorialRuntime {
