@@ -18,6 +18,11 @@ This promotes `AttachmentPathTemplate +0x24` as `strip_mesh`, widens
 `AttachmentSample::inverse_matrix` to the full 16-float transform window, and
 names the strip mesh flag lane at `+0x10`.
 
+2026-06-20 follow-up: `AttachmentSample::inverse_matrix` now uses the shared
+`TransformMatrix` type directly. The source can call
+`sample->inverse_matrix.invert_matrix_from_source(&sample->transform)` without
+the old cast, and the matcher stays at the existing 69.41% baseline.
+
 The remaining mismatch is compiler shape in the cross/dot segment loop:
 native keeps the sample offset in `edi`, reloads `primary_samples`, stores the
 dot result with `fstp`, then reloads the lateral source for mirror/clamp.

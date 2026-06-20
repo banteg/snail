@@ -21,7 +21,7 @@ bool AttachmentPathTemplate::is_point_inside_track_attachment(
     while (idx >= 0) {
         sample_origin.x = anchor_x + secondary_samples[idx].transform.position.x;
         sample_origin.y = anchor_y + secondary_samples[idx].transform.position.y;
-        float* inverse_matrix = secondary_samples[idx].inverse_matrix;
+        TransformMatrix* inverse_matrix = &secondary_samples[idx].inverse_matrix;
         sample_origin.z = anchor_z + secondary_samples[idx].transform.position.z;
         origin_y = sample_origin.y;
         origin_z = sample_origin.z;

@@ -7,7 +7,7 @@
 
 struct AttachmentSample {            // stride 0xa8
     TransformMatrix transform;        // +0x00
-    float inverse_matrix[16];         // +0x40, full local-frame transform
+    TransformMatrix inverse_matrix;   // +0x40, full local-frame transform
     Vector3 delta_dir_to_next;        // +0x80
     float delta_length;               // +0x8c, segment length (the swept-entry
                                       // "depth limit" gate is z < this)

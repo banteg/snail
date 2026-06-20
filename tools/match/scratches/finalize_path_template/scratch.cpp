@@ -28,12 +28,10 @@ void __fastcall finalize_path_template(AttachmentPathTemplate* path)
         int sample_offset = 0;
         do {
             AttachmentSample* primary = (AttachmentSample*)((char*)path->primary_samples + sample_offset);
-            ((TransformMatrix*)primary->inverse_matrix)->invert_matrix_from_source(
-                (TransformMatrix*)&primary->transform);
+            primary->inverse_matrix.invert_matrix_from_source(&primary->transform);
 
             AttachmentSample* secondary = (AttachmentSample*)((char*)path->secondary_samples + sample_offset);
-            ((TransformMatrix*)secondary->inverse_matrix)->invert_matrix_from_source(
-                (TransformMatrix*)&secondary->transform);
+            secondary->inverse_matrix.invert_matrix_from_source(&secondary->transform);
 
             ++i;
             sample_offset += sizeof(AttachmentSample);
