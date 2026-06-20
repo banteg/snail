@@ -229,10 +229,8 @@ void GolbShot::update_golb_ai()
         ((VapourTrail*)vapour)->add_vapour_point(&source_matrix);
         break;
     case 0: {
-        float* body_position = (float*)((char*)owner_body + 72);
-        body_position[0] = source_matrix.position.x;
-        body_position[1] = source_matrix.position.y;
-        body_position[2] = source_matrix.position.z;
+        Vec3* body_position = (Vec3*)((char*)owner_body + 72);
+        *body_position = source_matrix.position;
         spawn_golb_trail_sprite(&source_matrix.position);
         float third_x = direction.x * 0.30000001f;
         float third_y = direction.y * 0.30000001f;
@@ -266,9 +264,7 @@ void GolbShot::update_golb_ai()
     }
     lived = lifetime_step + lifetime;
     lifetime = lived;
-    previous_output.x = source_matrix.position.x;
-    previous_output.y = source_matrix.position.y;
-    previous_output.z = source_matrix.position.z;
+    previous_output = source_matrix.position;
     if (lived <= 1.0f) {
         Player* bounds_player = player;
         if (position.z >= bounds_player->golb_band_min_z

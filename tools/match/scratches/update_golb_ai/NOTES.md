@@ -1,4 +1,23 @@
-# WIP scratch — 69.45%, 625/694 insns (2026-06-20)
+# WIP scratch — 72.67%, 627/694 insns (2026-06-20)
+
+## 2026-06-20 kind-0 vector-copy follow-up
+
+The retained follow-up improves from `69.45%`, target `694`, candidate `625`,
+prefix `9/694`, with `69 ok, 0 unresolved, 0 mismatch`, to `72.67%`, target
+`694`, candidate `627`, prefix `9/694`, with a clean masked audit of `67 ok,
+0 unresolved, 0 mismatch`.
+
+Accepted source-shape changes:
+
+- the kind-0 owner-body position write is now a `Vec3` aggregate copy into the
+  row at `owner_body + 72`, matching native's pointer-shaped three-dword copy;
+- the late `previous_output` refresh is now a `Vec3` aggregate assignment from
+  `source_matrix.position`. Earlier aggregate-copy attempts regressed before the
+  kind-0 body-position copy recovered the surrounding owner schedule.
+
+Rejected follow-up: routing the whole kind-0 trail block through a named
+`output_position` pointer was score-neutral at `72.67%`, `627/694`, with the
+same masked audit, so it was reverted as churn.
 
 ## 2026-06-20 effects/member follow-up
 
