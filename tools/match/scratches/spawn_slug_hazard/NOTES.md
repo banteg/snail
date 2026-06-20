@@ -49,3 +49,9 @@ Rejected probes:
   and do not recover the native x87 zero stores.
 - Staging `g_game_base + 0x5a8` and the initial node flags as raw locals is
   neutral after the prefix fix; the typed BOD idiom is the accepted list shape.
+- 2026-06-20 continuation velocity audit: direct destination stores through a
+  named `Vector3* velocity` regress to 91.37% by moving the BOD-list tail setup
+  before the native velocity stack staging. Ordering the local vector as
+  `z` seed, x/y zero, then z scale is codegen-neutral at 92.79%; VC6 still
+  pre-multiplies z before the integer zero stores. Keep the accepted local
+  vector copy until new source evidence explains the native `fld zero` form.

@@ -151,13 +151,14 @@ int Player::initialize_subgoldy(int player_slot)
     int zero_x = zero;
     *(int*)(self + 0x1d8) = 0x3d4ede62;
     *(int*)(self + 0x1e0) = 0x3d4ede62;
+    int* live_position = (int*)(self + 0x68);
     int* camera_target = (int*)(self + 0x2964);
     int zero_y = zero;
-    *(int*)(self + 0x68) = zero;
-    *(int*)(self + 0x6c) = zero;
+    live_position[0] = zero;
+    live_position[1] = zero;
     camera_target[0] = zero_x;
     *(float*)(self + 0x70) = 4.0f;
-    int position_z = *(int*)(self + 0x70);
+    int position_z = live_position[2];
     *(int*)(self + 0x37c) = zero;
     camera_target[1] = zero_y;
     *(int*)(self + 0x328) = zero;

@@ -64,3 +64,19 @@ Latest focused result:
   `set_matrix_identity` call is codegen-neutral and still reloads the game
   pointer through `eax` instead of native `edx`. Keep the direct store from
   `self + 0x408`.
+
+2026-06-20 live-position lane pass:
+
+- Focused Wibo improves from 95.14% to 95.50% while keeping 276/279 candidate
+  instructions, the 190/279 prefix, and 27 clean masked operands.
+- Retained: spelling the live-matrix position lanes at `self+0x68` through a
+  raw `int* live_position` before copying z into `cached_camera_target_world`.
+  This recovers the native order for the `+0x68/+0x6c` zero stores after the
+  damage/surface reaction constants instead of letting VC6 hoist the x lane.
+- Rejected: a typed `Vector3*` camera-target view regresses to 92.61% by
+  materializing the z constant in a register and disturbing the control-source
+  tail. Naming the reaction-step constant and spelling the cached target as a
+  byte-offset `char*` are codegen-neutral at 95.50% and still fold the
+  `self+0x2964` stores. The remaining residual is the cached-target base
+  materialization plus the existing control-source/transform-loop register
+  ownership.
