@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**468/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60181/325832** bytes (**18.47%**) are proof-grade, and overall fuzzy is **53.45%**.
+**469/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60567/325832** bytes (**18.59%**) are proof-grade, and overall fuzzy is **53.48%**.
 
-## Proof Grade (468)
+## Proof Grade (469)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -253,6 +253,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 | - |  |
 | ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  |
+| ✅ | health_collect_particles | 0x43a010 | 386 | 104/104 | 100.00% | 104/104 | 13 ok |  |
 | ✅ | update_movement_flag_emitters | 0x43a300 | 97 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | 17/17 | 1 ok |  |
@@ -551,7 +552,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (86)
+## Mid Progress (50-79.99%) (85)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -608,7 +609,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 79.82% | 177/555 | 1 mismatch, 2 unresolved, 99 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1046/1033 | 67.53% | 9/1033 | 2 mismatch, 108 ok |  |
-| 🚧 | health_collect_particles | 0x43a010 | 386 | 100/104 | 69.61% | 1/104 | 13 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 124/122 | 74.80% | 16/122 | 7 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 223/347 | 51.23% | 22/347 | 8 mismatch, 34 ok |  |

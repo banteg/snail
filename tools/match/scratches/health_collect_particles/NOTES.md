@@ -4,10 +4,12 @@ Live source map for the health-pickup collection burst.
 
 Current match:
 
-- `69.61%`, `100/104` candidate/target instructions, with `13` masked operands
-  ok and no masked mismatch.
-- The burst now spells the shared `Sprite` fields directly; VC6 still emits
-  the exact `0xb951b717` gravity constant for `-0.00019999999f`.
+- Exact: `100.00%`, `104/104` candidate/target instructions, with a
+  `104/104` common prefix.
+- All `13` masked operands audit cleanly with no unresolved or mismatched
+  references.
+- The burst spells the shared `Sprite` fields directly; VC6 emits the exact
+  `0xb951b717` gravity constant for `-0.00019999999f`.
 
 Evidence:
 
@@ -43,13 +45,17 @@ Evidence:
   candidate length from `98/104` to `100/104`. This is the only retained
   stack-shape improvement from this audit.
 
-Remaining mismatch:
+Exact closure:
 
-- Native uses a `0x34` byte stack frame, keeps `this` in `ebx`, and updates the
-  loop index through the stack slot. The current candidate uses a `0x28` byte
-  frame, keeps `this` in `ebx`, but still keeps the loop index in `ebp`. The
-  mismatch is now mostly the remaining stack-frame/register allocation and the
-  dword-vs-byte flag OR.
+- A named `Vector3` burst value makes VC6 evaluate constructor arguments in the
+  native z/cosine/sine order, restores the `0x34` byte frame, spills the loop
+  index to the native stack slot, and recovers the dword `0x800` flag OR.
+- Declaring the angle after copying the source position preserves the native
+  integer/x87 scheduling around the position copy while still compiling the
+  angle calculation at its native location.
+- Default-constructing `pickup_offset`, assigning x/y/z in order, and advancing
+  the loop after the final position update recovers the native x87 tail and
+  closes the final scheduling residual.
 
 Rejected source-shape probes:
 
@@ -63,28 +69,40 @@ Rejected source-shape probes:
 - 2026-06-16 pickup/Sprite slice: spelling the loop result as a post-loop
   assignment after `++index` raises the focused match from 43.35% to 43.56%
   and better reflects native's increment-before-final-z-store order. Explicit
-  burst velocity y/z staging regressed to 42.57%, so keep the direct velocity
-  stores.
+  burst velocity y/z staging regressed to 42.57%; that earlier scalar slice
+  remained pinned until the later aggregate-vector shape recovered the full
+  frame and register allocation.
 - 2026-06-19 stack-frame probes: moving the angle calculation to the decompiler
   order, spelling the `0x800` update through an explicit flag local, and using
   a raw dword lane all stayed neutral at `66.34%` before the offset-vector
   change. The raw dword lane was not kept because it moves away from the shared
   `Sprite::flags` field without improving codegen.
-- 2026-06-19 offset probes: an aggregate `Vector3 burst_velocity_value` plus
-  `Vector3 pickup_offset` grew the frame only to `0x2c` and regressed to
-  `64.39%`. A scalar `offset_x/offset_y/offset_z` spelling collapsed back to
-  the old `0x1c` frame and `66.34%`. Moving `++index` after the final z-store
-  was neutral at `69.61%` but made the tail less like native, so the increment
-  stays before the z assignment.
+- 2026-06-19 offset probes: constructing both an aggregate
+  `Vector3 burst_velocity_value` and `Vector3 pickup_offset` grew the frame only
+  to `0x2c` and regressed to `64.39%`. A scalar
+  `offset_x/offset_y/offset_z` spelling collapsed back to the old `0x1c` frame
+  and `66.34%`. Moving `++index` after the final z-store was codegen-neutral in
+  that older scalar-burst shape; it becomes the exact tail only after the burst
+  and pickup temporaries are recovered together.
 - 2026-06-20 particle-family retry: focused Wibo still reports 69.61%,
   100/104 candidate instructions, 1/104 prefix, and 13 clean masked operands.
   An explicit `sprite_flags` local and the commuted
   `sprite->flags = 0x800u | sprite->flags` spelling are both codegen-neutral
   and still compile to the same byte-OR residual. Splitting `loop_index` from
   the loop counter is also codegen-neutral; VC6 keeps the counter in `ebp`
-  instead of recovering native's stack index slot. Keep the current direct
-  flag update and single `index` local until a stronger register-pressure or
-  source-idiom lead appears.
+  instead of recovering native's stack index slot. The final exact shape keeps
+  the direct flag update and single `index` local; the named burst vector
+  supplies the missing register pressure.
+
+2026-06-20 exact source-shape pass:
+
+- Removing the duplicate angle temporary and constructing the burst as a real
+  `Vector3` first raised the focused match to `93.27%` with `104/104`
+  instruction-count parity. Moving the angle declaration below the
+  source-position copy raised it to `97.12%`; spelling `pickup_offset` as a
+  default-constructed vector with ordered component writes raised it to
+  `99.04%`; moving the loop increment after the final z update produced the
+  exact `100.00%`, `104/104` match with all `13` masks clean.
 
 Type consolidation:
 
