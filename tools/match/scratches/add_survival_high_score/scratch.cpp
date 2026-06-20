@@ -18,15 +18,15 @@ int HighScoreBank::add_survival_high_score(HighScoreRecord* record)
 
     int score = record->score;
     HighScoreRecord* cursor = bank->survival_records;
-    for (;;) {
+    while (rank < HIGH_SCORE_TOP_TEN_COUNT) {
         if (score > cursor->score)
-            break;
+            goto insert_record;
         ++rank;
         ++cursor;
-        if (rank >= HIGH_SCORE_TOP_TEN_COUNT)
-            return rank;
     }
+    return rank;
 
+insert_record:
     int shift_rank = HIGH_SCORE_TOP_TEN_COUNT;
     do {
         bank->survival_records[shift_rank] = bank->survival_records[shift_rank - 1];

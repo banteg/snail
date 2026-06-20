@@ -18,14 +18,16 @@ Behavior:
 The extra `rank != -1` gate is source-shaped from native even though this local
 rank search only produces non-negative ranks.
 
-Match status: 66.67%, 81/84 instructions, 3/84 exact prefix, five masked
+Match status: 82.14%, 84/84 instructions, 2/84 exact prefix, five masked
 operands resolved.
 
 Residual:
 
-- Native keeps the bank owner in `ebp` and spills it before the rank scan.
-  The current source-shaped shared-layout scratch assigns the bank owner to
-  `ebx`, but preserves the top-tested score cursor and full record copies.
+- Native keeps the bank owner in `ebp`, spills it before the rank scan, and
+  saves `ebx` in the prologue. The current source-shaped scratch now keeps the
+  bank owner in `ebp`, but VC6 shrink-wraps the `ebx` save to the insertion
+  path and still hoists a `survival_records` base for the later active-bank
+  frontend pointer.
 - The high-score frontend arm is semantically aligned, including the native
   `rank != -1` gate, but global reload and active-bank materialization differ
   in register ownership.
@@ -34,3 +36,14 @@ Residual:
   source shape here regressed survival to 55.95%. MSVC then kept constant `1`
   in `ebp` and left the bank in `ebx`, moving further away from native, so the
   survival scratch keeps the existing `do while` shift loop.
+- 2026-06-20 follow-up pass: mirroring arcade's bounded rank scan did improve
+  survival when the score comparison exits through `goto insert_record` and the
+  no-place path falls through to `return rank`. This raised the match from
+  66.67% to 82.14% and restored native-style bank ownership in `ebp`.
+- Keeping the original in-loop no-place return while changing only `break` to a
+  label was neutral at 66.67%, so the bounded scan and out-of-loop return are
+  the important parts of the accepted shape.
+- Rewriting the score scan as an `int*` cursor, adding an explicit shift guard,
+  switching the shift loop to `while`, forcing a shared `shift_rank` limit, and
+  reshaping the impossible `rank == -1` return path all regressed. A late
+  active-bank local and an explicit saved-bank alias were codegen-neutral.
