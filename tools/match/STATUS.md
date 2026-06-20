@@ -570,7 +570,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 45 ok |  |
-| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 5 mismatch, 6 unresolved, 119 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 337/325 | 63.14% | 1/325 | 5 mismatch, 4 unresolved, 121 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 77.94% | 38/233 | 40 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 16/19 | 51.43% | 5/19 | - |  |
@@ -611,7 +611,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 56/58 | 54.39% | 7/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 4 mismatch, 20 ok |  |
-| 🚧 | initialize_subgame | 0x4374b0 | 1632 | 385/396 | 63.25% | 1/396 | 8 mismatch, 1 unresolved, 65 ok |  |
+| 🚧 | initialize_subgame | 0x4374b0 | 1632 | 385/396 | 63.25% | 1/396 | 8 mismatch, 66 ok |  |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 79.82% | 177/555 | 1 mismatch, 101 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1046/1033 | 67.53% | 9/1033 | 2 mismatch, 108 ok |  |
@@ -693,7 +693,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 392/437 | 17.13% | 0/437 | 1 mismatch, 11 ok |  |
 | 🚧 | calc_object_facequad_normals_simple | 0x430230 | 441 | 131/139 | 10.37% | 0/139 | 2 mismatch |  |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 201/227 | 39.72% | 0/227 | 1 mismatch, 11 ok |  |
-| 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 1 unresolved, 13 ok |  |
+| 🚧 | request_object_animation | 0x430a70 | 793 | 220/231 | 41.24% | 0/231 | 1 mismatch, 14 ok |  |
 | 🚧 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 189/182 | 49.60% | 0/182 | 23 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 179/247 | 34.74% | 0/247 | 25 ok |  |
 | 🚧 | update_star_positions | 0x434800 | 860 | 101/106 | 32.85% | 1/106 | 11 ok |  |
@@ -714,7 +714,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 230/274 | 27.78% | 0/274 | 18 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 224/272 | 32.66% | 0/272 | 18 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 146/155 | 39.87% | 0/155 | 8 ok |  |
-| 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 1 unresolved, 8 ok |  |
+| 🚧 | initialize_font3d_objects | 0x44ae10 | 1444 | 94/126 | 40.00% | 3/126 | 1 mismatch, 8 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1109 | 300/325 | 44.80% | 0/325 | 5 mismatch, 36 ok |  |
 | 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |

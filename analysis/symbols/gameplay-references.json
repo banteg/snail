@@ -1349,6 +1349,16 @@
       "description": "CRT rand helper used to seed the gameplay random table and random-float wrappers."
     },
     {
+      "address": "0x48c0bc",
+      "name": "floor",
+      "kind": "function",
+      "aliases": [
+        "_floor",
+        "sub_48c0bc"
+      ],
+      "description": "Statically linked CRT floor helper used by request_object_animation when selecting generated frame times."
+    },
+    {
       "address": "0x48c460",
       "name": "CIacos",
       "kind": "function",
@@ -2242,6 +2252,17 @@
       "description": "Worm-path camera FOV debug-report format string used by update_cameraman."
     },
     {
+      "address": "0x4a63d0",
+      "name": "g_builtin_segment_definitions",
+      "kind": "global",
+      "aliases": [
+        "off_4a63d0",
+        "off_4A63D0",
+        "data_4a63d0"
+      ],
+      "description": "Pointer table of shipped built-in segment definitions copied by load_builtin_segment_definitions for the default level segment catalog."
+    },
+    {
       "address": "0x4ac5c8",
       "name": "g_default_tip_message",
       "kind": "global",
@@ -2350,6 +2371,17 @@
       ],
       "size": "0x1",
       "description": "Window deactivation latch set by activate/deactivate handling, read by click_mouse_screen and subgame update paths."
+    },
+    {
+      "address": "0x4b775c",
+      "name": "g_current_display_height",
+      "kind": "global",
+      "aliases": [
+        "data_4b775c",
+        "unk_4b775c"
+      ],
+      "size": "0x4",
+      "description": "Current display height output written by read_current_display_resolution during startup before the authored viewport height is seeded."
     },
     {
       "address": "0x4b7760",
@@ -2468,6 +2500,17 @@
         "HIGH_SCORE_SAVE_BUFFER_SIZE"
       ],
       "description": "Five-million-byte temporary buffer size used while serializing ScoreA/B/C high-score files."
+    },
+    {
+      "address": "0x4df858",
+      "name": "g_current_display_width",
+      "kind": "global",
+      "aliases": [
+        "data_4df858",
+        "unk_4df858"
+      ],
+      "size": "0x4",
+      "description": "Current display width output written by read_current_display_resolution during startup before the authored viewport width is seeded."
     },
     {
       "address": "0x4df85c",
@@ -4038,6 +4081,17 @@
         "unk_7772e8"
       ],
       "description": "First global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
+    },
+    {
+      "address": "0x7770e8",
+      "name": "g_font3d_scales",
+      "kind": "global",
+      "aliases": [
+        "data_7770e8",
+        "unk_7770e8"
+      ],
+      "size": "0x200",
+      "description": "Per-glyph 3D font width-scale cache filled by initialize_font3d_objects and read by intro-screen text layout."
     },
     {
       "address": "0x7772ec",

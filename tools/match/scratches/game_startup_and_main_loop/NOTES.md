@@ -94,3 +94,14 @@ Known shape gaps:
   `frame_count * mean` clears the two masked-operand mismatches at the
   `fld`/`fmul` pair by matching native's `fld frame_count; fmul mean` load
   order.
+
+2026-06-20 display-resolution curation:
+
+- Named the startup display-mode outputs as `g_current_display_width`
+  (`0x4df858`) and `g_current_display_height` (`0x4b775c`), matching
+  `read_current_display_resolution`.
+- Focused matcher remains 63.14%; masked audit is now
+  `121 ok / 4 unresolved / 5 mismatch`.
+- The remaining unresolved operands are app-shell call targets
+  `0x44afc0`, `0x406d70`, `0x412a00`, and `0x4134c0`; leave them uncurated
+  until their bodies have stronger names than the current scratch placeholders.

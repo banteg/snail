@@ -39,9 +39,9 @@ Known partials:
 2026-06-20 switch-table audit: `initialize_subgame_level_mode_startup_jump_table`
 (`0x437adc`) and `initialize_subgame_level_mode_bottom_hud_jump_table`
 (`0x437af0`) are now content-audited. Focused matcher remains `63.25%`; masked
-audit is now `65 ok / 1 unresolved / 8 mismatch`. The remaining unresolved
-operand is the built-in segment definition table push, while both mode-switch
-tables are now classified as real layout mismatches.
+audit is now `66 ok / 0 unresolved / 8 mismatch`. The built-in segment
+definition table push now resolves as `g_builtin_segment_definitions`; both
+mode-switch tables remain classified as real layout mismatches.
 
 2026-06-20 type cleanup: the member-style time-trial formatter receiver moved
 to `include/time_trial_string_formatter.h`, matching the same call shape used by

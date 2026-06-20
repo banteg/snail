@@ -31,3 +31,10 @@ generated frame count, while `+0x0c` is the playback/progress value used by
 that shared declaration while keeping the relationship-first loop body for match
 shape. Focused Wibo remains `41.24%`, `220/231`, with `13 ok`, `1 unresolved`,
 and `1 mismatch` masked operands.
+
+2026-06-20 CRT helper curation: the native call target at `0x48c0bc` is now
+named `floor`, matching the scratch's CRT declaration. Focused Wibo remains
+`41.24%`, `220/231`; masked audit is now `14 ok / 0 unresolved / 1 mismatch`.
+The remaining masked mismatch is the frame-buffer allocation label scheduling
+(`"Object Animation Frame FaceQuad Normals"` versus `"Object Animation Frame
+Vertices"`).

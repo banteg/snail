@@ -19,6 +19,13 @@ Recovered relationships:
 
 Initial match: 40.00%, 94 candidate instructions versus 126 target
 instructions. The residual is mostly cursor/register ownership: native walks
-the object pointer field at `data_77550c`, the scale cache at `data_7770e8`,
-and the atlas arrays as separate cursors. The current scratch keeps those as
-narrow named globals; two masked operands remain unresolved for those globals.
+the object pointer field at `data_77550c`, the scale cache at
+`g_font3d_scales`, and the atlas arrays as separate cursors. The current
+scratch keeps those as narrow named globals; masked audit is `8 ok / 0
+unresolved / 1 mismatch`.
+
+2026-06-20 scale-cache curation: `0x7770e8` is now named `g_font3d_scales`.
+The remaining named mismatch is the native `ebp` scale-cache cursor aligned
+against the candidate's `g_font3d_bods+0x1c` cursor. A scale-only cursor source
+rewrite was neutral at 40.00%, while a broader object/atlas/scale cursor
+rewrite regressed to 32.00%, so the register-ownership residual is left visible.
