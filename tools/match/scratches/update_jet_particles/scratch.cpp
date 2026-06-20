@@ -39,11 +39,11 @@ void JetpackGaugeController::update_jet_particles()
         return;
     }
 
-    float forward_scale =
-        (float)next_math_random_value() * 0.00000152587893f + 0.400000006f;
-    int row = 0;
     float size_scale =
         (float)next_math_random_value() * 0.00000152587893f + 0.119999997f;
+    int row = 0;
+    float forward_scale =
+        (float)next_math_random_value() * 0.00000152587893f + 0.400000006f;
 
     do {
         int column = 0;
@@ -63,12 +63,13 @@ void JetpackGaugeController::update_jet_particles()
             Vector3* forward = &((JetPlayerView*)player)->basis_forward;
             float forward_offset =
                 -(row_fraction * forward_scale * warning_intensity);
-            float offset_x = forward_offset * forward->x;
-            float offset_y = forward_offset * forward->y;
-            float offset_z = forward_offset * forward->z;
-            base_position.x = base_position.x + offset_x;
-            base_position.y = base_position.y + offset_y;
-            base_position.z = base_position.z + offset_z;
+            Vector3 offset_position;
+            offset_position.x = forward_offset * forward->x;
+            offset_position.y = forward_offset * forward->y;
+            offset_position.z = forward_offset * forward->z;
+            base_position.x = base_position.x + offset_position.x;
+            base_position.y = base_position.y + offset_position.y;
+            base_position.z = base_position.z + offset_position.z;
 
             JetParticleSlot* slot =
                 (JetParticleSlot*)((char*)this + ((column + row * 2 + 2) << 4));

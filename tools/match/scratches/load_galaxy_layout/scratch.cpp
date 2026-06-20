@@ -44,16 +44,16 @@ int GalaxyRoute::load_galaxy_layout()
         galaxy_point_cursor += 2;
     } while ((int)galaxy_point_cursor < (int)g_galaxy_route_point_table_end);
 
-    int star_index = 0;
     level_progress_base = g_game_base + 0x74618;
 
     char* file_text = load_file_bytes_from_archive_or_fs(
         "Galaxy/_Galaxy.txt",
         get_archive_data_base(),
-        (void*)star_index);
+        (void*)0);
 
-    int galaxy_index = star_index;
-    int star_group_offset = star_index;
+    int galaxy_index = 0;
+    int star_group_offset = 0;
+    int star_index = 0;
     int* current_galaxy_point = g_galaxy_route_point_table;
     int* route_name_cursor = (int*)((char*)route_names + 0x84);
 

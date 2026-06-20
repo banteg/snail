@@ -27,8 +27,8 @@ consumer of the same offsets.
 
 Focused Wibo status:
 
-- Current scratch: 45.14%, target 181 insns, candidate 169 insns, 12 masked
-  operands OK and one constant-alignment mismatch.
+- Current scratch: 46.89%, target 181 insns, candidate 173 insns, 13 masked
+  operands OK and no unresolved or mismatched masked operands.
 - Corrected assumption: unlike `orthogonalize_matrix`, spelling the helper as a
   member did not by itself improve codegen; the free fastcall and member forms
   were effectively equivalent here. The useful source-shape fix was avoiding a
@@ -54,3 +54,10 @@ Focused Wibo status:
   to `*out_position = base_position` regresses to 43.87%. Keep the explicit
   field stores here: unlike the pickup spawners, aggregate assignment collapses
   the stack/local schedule this scratch still needs.
+- 2026-06-20 RNG/local-order correction: native consumes the first RNG value as
+  `size_scale` (`+0.119999997`) and the second as `forward_scale` (`+0.4`),
+  not the reverse. Keeping the projected forward offset as an explicit
+  `Vector3` stack local raises the frame from `0x38` to `0x44` and improves the
+  focused score from 45.14% to 46.89%. A matching `Vector3` local for the
+  emitted trail-puff velocity grows the frame again but regresses to 41.24%, so
+  the velocity remains split into scalar locals.
