@@ -667,7 +667,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 20 mismatch, 3 unresolved, 52 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 319/373 | 42.20% | 0/373 | 24 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 446/582 | 31.71% | 3/582 | 33 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |

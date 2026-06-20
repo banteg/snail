@@ -36,3 +36,10 @@ named startup wrapper at `0x432d20`:
 00432d39  add esp, 0x10
 00432d3c  ret
 ```
+
+2026-06-20 reference audit: promoted the remaining raw startup globals used by
+this semantic partial: `g_sprite_depth_buckets` (`0x4f7050`), the DirectX loader
+scratch buffer (`0x74eb18`), and the startup sound-bank table
+`g_sound_bank_entries` (`0x4a2140`). The existing built-in segment table is now
+referenced as `g_builtin_segment_definitions`. Focused Wibo is still `4.73%`,
+but masked audit now has no unresolved operands.

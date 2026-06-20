@@ -20,10 +20,10 @@
 extern char* g_game_base; // data_4df904
 extern int unk_4DF9BC; // data copied into +0x74654 during bootstrap
 extern char byte_4B2F40; // cheat-state storage
-extern char unk_74EB18; // cleared 0x15c-byte directx scratch
-extern char unk_4F7050; // cleared 0x400-byte root scratch
-extern void* off_4A2140; // sound bank table
-extern BuiltinSegmentDefinition* off_4A63D0[]; // builtin segment table
+extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
+extern char g_sprite_depth_buckets[]; // 0x4f7050, 0x400-byte sprite depth bucket heads
+extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
+extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
@@ -250,7 +250,7 @@ char GameRoot::initialize_game_assets_and_world()
     *(int*)(game + 0x5b0) = (int)(game + 0x570);
     *(int*)(game + 0x5ac) = 0;
     *(int*)(game + 0xb48) = 0;
-    memset(&unk_4F7050, 0, 0x400);
+    memset(g_sprite_depth_buckets, 0, 0x400);
 
     *(int*)(game + 0x5b8) = 0;
     *(int*)(game + 0x5bc) = 0x1000003;
@@ -262,7 +262,7 @@ char GameRoot::initialize_game_assets_and_world()
     *(unsigned char*)(game + 0x628) = 0;
     initialize_overlay_slot(game, 0x67c);
 
-    memset(&unk_74EB18, 0, 0x15c);
+    memset(g_directx_loader_scratch, 0, 0x15c);
     ((DirectXLoader*)(game + 0x48e00))->initialize_directx_loader();
     reset_landscape_manager(game + 0x106c218);
     load_segment_definitions(game + 0x1075fac);
@@ -276,12 +276,12 @@ char GameRoot::initialize_game_assets_and_world()
     ((GalaxyRoute*)(game + 0x12d3bb8))->load_galaxy_layout();
     ((CameramanState*)(game + 0x54e8c))->initialize_cameraman();
     ((LogoRuntime*)(game + 0x4f400))->open_logo();
-    initialize_sound_bank(&off_4A2140);
+    initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     apply_audio_config_volumes();
     load_level_definitions();
     ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Menubg.txt");
-    ((LevelSegmentSlotStore*)(game + 0x224a04))->load_builtin_segment_definitions(off_4A63D0);
+    ((LevelSegmentSlotStore*)(game + 0x224a04))->load_builtin_segment_definitions(g_builtin_segment_definitions);
 
     *(int*)(game + 0x5e0) = 1;
     *(int*)(game + 0x5e4) = 0x2000001;

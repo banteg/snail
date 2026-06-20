@@ -2022,6 +2022,17 @@
       "description": "Main-menu music path loaded by initialize_main_menu."
     },
     {
+      "address": "0x4a2140",
+      "name": "g_sound_bank_entries",
+      "kind": "global",
+      "aliases": [
+        "off_4a2140",
+        "off_4A2140",
+        "data_4a2140"
+      ],
+      "description": "Startup sound-bank entry table passed to initialize_sound_bank before voice and volume setup."
+    },
+    {
       "address": "0x4a347c",
       "name": "g_menu_background_script_path",
       "kind": "string",
@@ -3123,6 +3134,17 @@
         "data_4dfb08"
       ],
       "description": "Shared empty text buffer used to initialize the options-menu fullscreen toggle before update_options_menu writes the live label."
+    },
+    {
+      "address": "0x4f7050",
+      "name": "g_sprite_depth_buckets",
+      "kind": "global",
+      "aliases": [
+        "data_4f7050",
+        "unk_4F7050"
+      ],
+      "size": "0x400",
+      "description": "Sprite depth-sort bucket-head table cleared during root startup, filled by render_game_frame, and drained after visible sprites are sorted."
     },
     {
       "address": "0x4f7450",
@@ -4423,6 +4445,17 @@
       ],
       "size": "0x4",
       "description": "DirectInput mouse device handle polled by update_mouse and unacquired/released by release_mouse_input."
+    },
+    {
+      "address": "0x74eb18",
+      "name": "g_directx_loader_scratch",
+      "kind": "global",
+      "aliases": [
+        "data_74eb18",
+        "unk_74EB18"
+      ],
+      "size": "0x15c",
+      "description": "DirectX loader scratch buffer cleared during root startup immediately before initialize_directx_loader runs."
     },
     {
       "address": "0x777f38",
