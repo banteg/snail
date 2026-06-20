@@ -281,6 +281,15 @@ These are not gameplay owners, but several mirrors depend on them.
   `vector_magnitude`, `multiply_vector_by_matrix`,
   `initialize_quaternion_from_axis`, `orthogonalize_matrix`, and any scratch
   whose NOTES identify only register-allocation or x87 scheduling residuals.
+- 2026-06-20 larger near-proof triage: reran and inspected
+  `border_mouse_test`, `is_point_inside_track_attachment`,
+  `spawn_track_garbage_hazard`, `update_row_event_display`,
+  `read_repeating_text_input_key_code`, and `update_sprite_facing_angle`.
+  The new source probes for `border_mouse_test` and
+  `read_repeating_text_input_key_code` were codegen-neutral, and the other
+  sampled helpers already have focused NOTES identifying their remaining
+  residuals as local scheduling/register ownership. Treat this set as pinned
+  unless a new callsite, type-layout, or original-source idiom lead appears.
 
 ## Operating Plan
 

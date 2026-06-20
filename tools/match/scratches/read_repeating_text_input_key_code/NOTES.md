@@ -62,3 +62,10 @@ Remaining residuals:
   by moving the reset block before the accumulator block. Keep the current
   byte-shaped equality tail; the two remaining residuals are caller-side
   register/load-order artifacts, not evidence for different text-input state.
+- 2026-06-20 larger near-proof pass: focused Wibo still reports 99.09%,
+  440/440 instructions, 386/440 prefix, and 73 clean masked operands. Writing
+  the Enter/Ctrl boolean directly into `result` before `result += 5` is
+  codegen-neutral and still emits `add bl, 5`, so the native full-register
+  `add ebx, 5` is not recovered by making the active result byte the add
+  carrier. Keep the existing `enter_code` spelling because it is clearer and
+  no worse.

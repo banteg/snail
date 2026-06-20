@@ -39,3 +39,13 @@ surrounding register ownership and zero-extension shape: width-only drops to
 85.47% with `and esi, 0xffff`, height-only drops to 78.63% by swapping the mask
 and height registers, and both dimensions as shorts drop to 79.49%. Keep the
 32-bit dimension locals plus explicit `row` temporary.
+
+2026-06-20 larger near-proof pass: focused Wibo still reports 98.29%,
+117/117 instructions, 73/117 prefix, and five clean masked operands. Retried
+the remaining original-looking row/index spellings: `mask->pixels[(row + x) *
+3]`, a single `pixel_index` accumulator initialized from `width`, explicit
+`row = y; row *= width`, and a raw pointer advanced by row stride then
+`(x + 6) * 3`. All compile to the same two-instruction residual
+(`imul esi, eax` native versus `imul eax, esi` candidate). Keep the clearer
+raw-base source; the miss remains a local multiply destination choice, not
+evidence for another mask layout.
