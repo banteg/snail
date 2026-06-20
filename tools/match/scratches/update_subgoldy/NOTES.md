@@ -233,6 +233,15 @@ source-shape issue is solved.
   remains `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked
   audit; full shared `player.h` remains rejected for the include-boundary and
   relocation-shape reasons above.
+- 2026-06-20 Game ABI cleanup: the compact local game owner is now named
+  `SubgoldyGameView` rather than `Game`. This preserves the caller-local
+  `float sample_track_floor_height_at_position(...)` declaration that keeps the
+  native `fadd dword` shape here; forcing the standalone helper's exact
+  `double` return into this large caller regressed to `72.46%` and `289 ok / 1`.
+  The completion call surface was still narrowed to
+  `complete_subgame(unsigned char)`, matching `complete_subgame` and
+  `update_subgoldy_resurrect`. Focused Wibo remains `72.51%`, `2067/2087`,
+  with the same `290 ok / 1` jump-table masked audit.
 
 ## Named residuals (all register-allocation / micro-shape class)
 
