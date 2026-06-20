@@ -42,3 +42,13 @@ Source-shape notes:
   helper wants duplicated full blocks rather than the `set_blend_mode` suffix
   idiom. Replacing the shared Direct3D view with a local narrow view is also
   neutral and leaves the same jump-table masked mismatch.
+- 2026-06-20 render-state helper retry: focused Wibo still reports `85.50%`,
+  `126/136` candidate/target instructions, `2/136` prefix, nineteen clean
+  masked operands, and the expected jump-table masked mismatch. Swapping the
+  source order of the duplicate `source=5,dest=6` `case 1` and `case 4` blocks
+  is codegen-neutral: VC6 still emits the `source=1` shared suffix first and
+  keeps only one full `source=5,dest=6` block. The exact
+  `configure_sprite_render_state` helper confirms the semantic switch idiom,
+  but it does not provide a transferable way to force native's duplicated
+  mode-1 block without fakematching. Keep the current simple switch and leave
+  the remaining debt as block-order/tail-sharing codegen.

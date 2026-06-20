@@ -33,6 +33,17 @@ Expected residuals:
   for the native shared `dest=6` suffix. Replacing the shared
   `direct3d_device8_view.h` include with a local narrow device/vtable view is
   codegen-neutral at 92.39% and leaves the same jump-table masked mismatch.
+- 2026-06-20 render-state helper retry: focused Wibo still reports `92.39%`,
+  `92/92` candidate/target instructions, `2/92` prefix, fifteen clean masked
+  operands, and the expected jump-table masked mismatch. Changing the public
+  `blend_mode` parameter to `unsigned int` is codegen-neutral. Spelling the
+  decompiler-style source render-state calls explicitly before a shared
+  destination-six label regresses to `78.26%`: VC6 duplicates the full `src=5`
+  and `src=2` blocks and loses native's shared source-call suffix. Keep the
+  current `source_blend` local despite the register/immediate residual; it is
+  the only tested shape that preserves the native shared suffix. The exact
+  `configure_sprite_render_state` semantic-switch form does not expose a
+  transferable switch-order trick for this helper.
 
 `render_object` calls this helper before applying the object tint and grouped
 draw call.
