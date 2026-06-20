@@ -21,3 +21,10 @@ clean masked operands and one masked mismatch. The main remaining gap is block
 layout: native places the add-new-edge path before the found-edge merge/removal
 path, while this natural search/add-or-merge spelling still emits the add-new
 tail after the merge path.
+
+2026-06-20 branch-layout improvement: rewriting the post-search branch as
+`if (found_edge == 0) { add new edge; return; }` moves the add-new-edge path
+ahead of the merge/removal path in source and raises focused Wibo to 43.93%
+with 201/227 candidate/target instructions and 12 clean masked operands. The
+remaining gap is still broad register/frame ownership in the search and merge
+blocks, plus the existing shifted global-count/global-edge masked comparison.
