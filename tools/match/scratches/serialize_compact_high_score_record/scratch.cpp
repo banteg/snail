@@ -32,11 +32,10 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     compact->replay_cursor = replay_cursor;
 
     int lateral_index = 0;
-    int lateral_count = replay_sample_count;
     short* out_lateral =
         (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES);
-    if (lateral_count > 0) {
-        short* source_lateral = &run_records[0].lateral_x;
+    short* source_lateral = &run_records[0].lateral_x;
+    if (replay_sample_count > 0) {
         do {
             ++lateral_index;
             *out_lateral = *source_lateral;
@@ -46,12 +45,11 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     }
 
     int delta_z_index = 0;
-    int delta_z_count = replay_sample_count;
     short* out_delta_z =
         (short*)((char*)compact + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES
-            + delta_z_count * sizeof(short));
-    if (delta_z_count > 0) {
-        short* source_delta_z = &run_records[0].delta_z;
+            + replay_sample_count * sizeof(short));
+    short* source_delta_z = &run_records[0].delta_z;
+    if (replay_sample_count > 0) {
         do {
             ++delta_z_index;
             *out_delta_z = *source_delta_z;
