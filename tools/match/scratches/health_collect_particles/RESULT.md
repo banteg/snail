@@ -11,7 +11,7 @@
 - The exact result reproduced in two final runs. The companion
   `update_track_health_pickup` target remained at its baseline `71.88%`,
   `128/128`, prefix `6/128`, with all `15` masks clean.
-- `uv run pytest`: `63 passed, 1 skipped`.
+- `uv run pytest`: `92 passed`.
 
 ## Accepted changes
 

@@ -50,6 +50,16 @@ Rejected source-shaped probes:
   blocks until a structured spelling preserves both native branch polarity and
   the duplicated error exits.
 
+2026-06-20 health-family retry:
+
+- retesting the structured `if (world_z < interaction_max_z) { remove; }`
+  state-one arm again recovered the local branch direction but merged too much
+  of the duplicate unlink/error body, regressing to 58.47% with 108 candidate
+  instructions and 12 clean masked operands;
+- adding a natural `Sprite* bob_sprite` local for the final y-position store
+  was score-neutral at 71.88%, but it loaded the sprite through `edi` and kept
+  the broader bob-before-removal placement, so it was not retained.
+
 Keep this pinned unless a source-plausible dispatch spelling preserves both the
 duplicated unlink blocks and the native final bob-tail placement.
 
