@@ -82,3 +82,14 @@ Rejected probes:
   residual remains the same single independent reload/subtract scheduling swap
   in the local-vector constructor; keep this helper pinned unless a real
   original-source local-lifetime lead appears.
+- 2026-06-20 near-proof retry: focused Wibo still reports 99.10%, 111/111
+  instructions, 42/111 prefix, and six clean masked operands. Reading
+  `cell->anchor_position.x/y/z` directly instead of copying the aggregate
+  anchor first regresses to 66.97% by losing the native `add eax, 0x10`
+  anchor-copy shape and changing stack-slot ownership. Making `origin_y` /
+  `origin_z` loop-local, making the delta locals loop-local, and assigning the
+  constructed vector through a short-lived `Vector3* local_pointer` are all
+  codegen-neutral and leave the same `mov ecx [delta_y]` before
+  `fsub [origin_z]` swap. Keep the aggregate anchor copy and long-lived
+  local-vector assignment; the last gap remains scheduler debt rather than
+  layout or ABI evidence.
