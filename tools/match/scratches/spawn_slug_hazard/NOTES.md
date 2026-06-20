@@ -55,3 +55,15 @@ Rejected probes:
   `z` seed, x/y zero, then z scale is codegen-neutral at 92.79%; VC6 still
   pre-multiplies z before the integer zero stores. Keep the accepted local
   vector copy until new source evidence explains the native `fld zero` form.
+- 2026-06-20 larger velocity-construction audit: focused Wibo still reports
+  92.79%, 159/160 candidate/target instructions, 48/160 prefix, and 16 clean
+  masked operands. An assignment-chain zero (`velocity.x = velocity.y = 0.0f`)
+  plus delayed `velocity.z *= -0.2f`, and a zero-constructed
+  `Vector3(0.0f, 0.0f, 0.0f)` followed by z assignment/scale, are both
+  codegen-neutral. They move the z multiply after integer zero stores but still
+  do not produce native's `fld zero; fst/fstp` x87 zero spills. Removing the
+  scalar z local and assigning `velocity.z = game_rate` directly before x/y
+  zeroing is also neutral and returns to the premultiplied z schedule. Leave
+  the current compact local-vector spelling; recovering the native form likely
+  needs original evidence for a real floating zero producer, not artificial
+  arithmetic-zero source.
