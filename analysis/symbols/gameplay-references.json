@@ -2149,6 +2149,26 @@
       "description": "Per-frame 2D render queue gate toggled by the main loop and read by frontend widgets, slug hit flash, and font/quad queue producers."
     },
     {
+      "address": "0x4b7638",
+      "name": "g_mean_update_steps_per_frame",
+      "kind": "global",
+      "aliases": [
+        "data_4b7638"
+      ],
+      "size": "0x4",
+      "description": "Running mean of fixed-update steps per frame, maintained by the main loop as (frame_count * prev_mean + current_frame_steps) / (frame_count + 1)."
+    },
+    {
+      "address": "0x4b763c",
+      "name": "g_current_frame_update_steps",
+      "kind": "global",
+      "aliases": [
+        "data_4b763c"
+      ],
+      "size": "0x4",
+      "description": "Fixed-update step counter for the current frame, incremented once per main-loop timestep and reset to zero at the start of each frame."
+    },
+    {
       "address": "0x4b7640",
       "name": "g_right_mouse_button_state",
       "kind": "global",
@@ -2199,6 +2219,16 @@
       ],
       "size": "0x2",
       "description": "Left mouse button latch array cleared by read_left_mouse_button_state and updated by the game window procedure."
+    },
+    {
+      "address": "0x4b7768",
+      "name": "g_main_loop_frame_count",
+      "kind": "global",
+      "aliases": [
+        "data_4b7768"
+      ],
+      "size": "0x4",
+      "description": "Main-loop frame counter incremented once per rendered frame and used as the divisor for the running mean update-steps-per-frame average."
     },
     {
       "address": "0x4b776c",
@@ -2301,6 +2331,16 @@
       "description": "Pending window-deactivate flag read and cleared by handle_game_window_deactivate after optional fullscreen minimization."
     },
     {
+      "address": "0x4df864",
+      "name": "g_main_loop_exit_requested",
+      "kind": "global",
+      "aliases": [
+        "data_4df864"
+      ],
+      "size": "0x1",
+      "description": "Global exit flag tested alongside the local quit flag in the game_startup_and_main_loop continuation condition; the main loop keeps running while it stays zero and it is reset to zero during shutdown."
+    },
+    {
       "address": "0x4df868",
       "name": "g_current_display_mode",
       "kind": "global",
@@ -2319,6 +2359,16 @@
         "g_game"
       ],
       "description": "Global storage for the live game/application root pointer."
+    },
+    {
+      "address": "0x4df90c",
+      "name": "g_game_initialization_pending",
+      "kind": "global",
+      "aliases": [
+        "data_4df90c"
+      ],
+      "size": "0x1",
+      "description": "One-shot game initialization flag armed by game_startup_and_main_loop before the main loop; while set, the loop performs audio, window, renderer, and game-last initialization, then clears it. It is re-armed during shutdown."
     },
     {
       "address": "0x4df918",
@@ -2675,6 +2725,16 @@
       "description": "Hidden BASS audio window handle created by initialize_audio_subsystem and destroyed by shutdown_bass_audio_window."
     },
     {
+      "address": "0x4dfafc",
+      "name": "g_frame_time_accumulator",
+      "kind": "global",
+      "aliases": [
+        "data_4dfafc"
+      ],
+      "size": "0x4",
+      "description": "Fixed-timestep accumulator carried across frames by the main loop, fed by per-frame delta seconds, capped at 0.41666666f, and drained by 0.016666668f per fixed update step."
+    },
+    {
       "address": "0x4dfb00",
       "name": "g_previous_frame_timestamp_seconds",
       "kind": "global",
@@ -2683,6 +2743,16 @@
       ],
       "size": "0x4",
       "description": "Previous frame timestamp in seconds, refreshed by window activation/focus helpers and rolled forward by the main loop."
+    },
+    {
+      "address": "0x4dfb04",
+      "name": "g_current_frame_timestamp_seconds",
+      "kind": "global",
+      "aliases": [
+        "data_4dfb04"
+      ],
+      "size": "0x4",
+      "description": "Current frame timestamp in seconds sampled from timeGetTime by the main loop, stored alongside the previous-frame timestamp to compute per-frame delta seconds."
     },
     {
       "address": "0x4dfb08",
@@ -3372,6 +3442,15 @@
       ],
       "size": "0x4",
       "description": "Pointer to the level-definition filename currently being parsed; load_level_definition_file stores its input here and segment-copy diagnostics read it."
+    },
+    {
+      "address": "0x74ec78",
+      "name": "g_level_file_text_buffer",
+      "kind": "global",
+      "aliases": [
+        "data_74ec78"
+      ],
+      "description": "Shared level-definition text buffer immediately following g_current_level_definition_name; load_level_definition_file loads the parsed Levels/*.txt file into this buffer and walks it as the parse cursor."
     },
     {
       "address": "0x751478",

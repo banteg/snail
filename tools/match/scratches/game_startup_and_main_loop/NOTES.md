@@ -70,5 +70,27 @@ Known shape gaps:
   scratch still lets MSVC pick `ebp`/`edi` early and cache `1` in `ebx`.
 - The fixed timestep x87 comparisons are behaviorally modeled but not laid out
   like native.
-- Several app-shell globals still use scratch-local names, so the matcher reports
-  symbol-level mismatches around `data_4dfafc`/`data_4dfb04` and nearby flags.
+
+2026-06-21 main-loop timing global curation:
+
+- Curated five main-loop timing globals in
+  `analysis/symbols/gameplay-references.json`, recovering their names from this
+  scratch's own fixed-timestep and per-frame average modeling:
+  `g_frame_time_accumulator` (`0x4dfafc`),
+  `g_current_frame_timestamp_seconds` (`0x4dfb04`),
+  `g_current_frame_update_steps` (`0x4b763c`),
+  `g_mean_update_steps_per_frame` (`0x4b7638`), and
+  `g_main_loop_frame_count` (`0x4b7768`). The scratch externs now use these
+  recovered names; the `data_4xxxxxx` spellings remain as aliases.
+- Masked-audit debt dropped from `96 ok / 30 unresolved / 4 mismatch` to
+  `119 ok / 7 unresolved / 4 mismatch`. The focused score is unchanged at
+  63.14% because curation resolves masked operands without altering the
+  normalized instruction stream; the remaining unresolved entries are app-shell
+  call targets and flag bytes whose owners are still being recovered.
+- The per-frame running average is a true cumulative mean:
+  `mean = (frame_count * prev_mean + current_frame_steps) / (frame_count + 1)`,
+  with `g_main_loop_frame_count` incremented once per rendered frame. Spelling
+  the multiply as `mean * frame_count` (commutative) instead of
+  `frame_count * mean` clears the two masked-operand mismatches at the
+  `fld`/`fmul` pair by matching native's `fld frame_count; fmul mean` load
+  order.

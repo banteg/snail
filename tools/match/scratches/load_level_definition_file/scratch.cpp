@@ -7,8 +7,9 @@
 
 extern char* g_game_base; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
+extern char g_level_file_text_buffer[]; // data_74ec78
 
-#define LEVEL_FILE_BUFFER ((char*)&g_current_level_definition_name + 4)
+#define LEVEL_FILE_BUFFER g_level_file_text_buffer
 
 int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);

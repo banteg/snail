@@ -42,20 +42,20 @@ extern char g_config_fullscreen_enabled;     // data_4df920
 extern unsigned char g_config_load_valid_flag;
 extern int g_application_instance;           // data_4dfad8
 extern HWND g_main_window;                   // data_4dfaf0
-extern unsigned char data_4df864;
-extern unsigned char data_4df90c;
+extern unsigned char g_main_loop_exit_requested;  // g_main_loop_exit_requested
+extern unsigned char g_game_initialization_pending;  // g_game_initialization_pending
 extern unsigned char data_4b7759;
 extern unsigned char data_4b7758;
 extern unsigned char g_window_deactivated;   // data_4b7654
 extern unsigned char g_render_queue_active;  // data_4b7236
 extern float g_authored_view_width;          // data_4df85c
 extern float g_authored_view_height;         // data_4b7760
-extern float data_4dfafc;
+extern float g_frame_time_accumulator;  // g_frame_time_accumulator
 extern float g_previous_frame_timestamp_seconds; // data_4dfb00
-extern float data_4dfb04;
-extern float data_4b763c;
-extern float data_4b7638;
-extern float data_4b7768;
+extern float g_current_frame_timestamp_seconds;  // g_current_frame_timestamp_seconds
+extern float g_current_frame_update_steps;  // g_current_frame_update_steps
+extern float g_mean_update_steps_per_frame;  // g_mean_update_steps_per_frame
+extern float g_main_loop_frame_count;  // g_main_loop_frame_count
 
 extern unsigned char data_4df918;
 extern unsigned char g_config_validation_tail_start;
@@ -131,7 +131,7 @@ int __stdcall game_startup_and_main_loop(
     read_current_display_resolution(&data_4df858, &data_4b775c);
     g_authored_view_width = 640.0f;
     g_authored_view_height = 480.0f;
-    data_4df90c = 1;
+    g_game_initialization_pending = 1;
     g_window_deactivated = 0;
     log_startup_timestamp();
 
@@ -146,7 +146,7 @@ int __stdcall game_startup_and_main_loop(
             }
         }
 
-        if (data_4df90c != 0) {
+        if (g_game_initialization_pending != 0) {
             initialize_audio_subsystem();
             initialize_game_window_and_input_wrapper("SnailMail");
             noop_runtime_ai();
@@ -172,7 +172,7 @@ int __stdcall game_startup_and_main_loop(
 
             sub_412a00(1);
             ((GameRoot*)g_game_base)->initialize_game_last();
-            data_4df90c = 0;
+            g_game_initialization_pending = 0;
             data_4b7759 = 0;
             g_loading_screen.destroy_loading_screen();
             ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_in();
@@ -187,34 +187,34 @@ int __stdcall game_startup_and_main_loop(
         }
 
         do {
-            data_4dfb04 = (float)timeGetTime() * 0.001f;
-        } while (data_4dfafc + data_4dfb04 - g_previous_frame_timestamp_seconds
+            g_current_frame_timestamp_seconds = (float)timeGetTime() * 0.001f;
+        } while (g_frame_time_accumulator + g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds
             < 0.0008333333333333334);
 
-        float delta_seconds = data_4dfb04 - g_previous_frame_timestamp_seconds;
-        g_previous_frame_timestamp_seconds = data_4dfb04;
-        data_4dfafc = delta_seconds + data_4dfafc;
-        if (data_4dfafc > 0.41666666f)
-            data_4dfafc = 0.41666666f;
+        float delta_seconds = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
+        g_previous_frame_timestamp_seconds = g_current_frame_timestamp_seconds;
+        g_frame_time_accumulator = delta_seconds + g_frame_time_accumulator;
+        if (g_frame_time_accumulator > 0.41666666f)
+            g_frame_time_accumulator = 0.41666666f;
 
         data_4b7758 = 0;
-        data_4b763c = 0.0f;
+        g_current_frame_update_steps = 0.0f;
 
-        while (data_4dfafc > 0.0f) {
+        while (g_frame_time_accumulator > 0.0f) {
             if (data_4b7758 != 0 || quit_requested != 0)
                 break;
 
-            data_4b763c = data_4b763c + 1.0f;
-            data_4dfafc = data_4dfafc - 0.016666668f;
+            g_current_frame_update_steps = g_current_frame_update_steps + 1.0f;
+            g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668f;
 
-            float remaining = data_4dfafc;
+            float remaining = g_frame_time_accumulator;
             if (remaining < 0.0f)
                 remaining = -remaining;
 
             if (remaining >= 0.0000083333334f) {
-                g_render_queue_active = (data_4dfafc <= 0.0f);
+                g_render_queue_active = (g_frame_time_accumulator <= 0.0f);
             } else {
-                data_4dfafc = 0.0f;
+                g_frame_time_accumulator = 0.0f;
                 g_render_queue_active = 1;
             }
 
@@ -254,11 +254,11 @@ update_game:
         }
 
         data_4b7758 = 0;
-        float update_average_total = data_4b7768 * data_4b7638 + data_4b763c;
-        data_4b7768 = data_4b7768 + 1.0f;
-        data_4b7638 = update_average_total / data_4b7768;
+        float update_average_total = g_mean_update_steps_per_frame * g_main_loop_frame_count + g_current_frame_update_steps;
+        g_main_loop_frame_count = g_main_loop_frame_count + 1.0f;
+        g_mean_update_steps_per_frame = update_average_total / g_main_loop_frame_count;
         noop_runtime_ai();
-    } while (data_4df864 == 0 && quit_requested == 0);
+    } while (g_main_loop_exit_requested == 0 && quit_requested == 0);
 
     g_audio_backend.stop_audio_backend();
     sub_407b00();
@@ -273,8 +273,8 @@ update_game:
     uninitialize_game_data_archive();
     save_config_file("SnailMail.cfg", &data_4df918, 0xc4);
     uninitialize_input_devices();
-    data_4df90c = 1;
-    data_4df864 = 0;
+    g_game_initialization_pending = 1;
+    g_main_loop_exit_requested = 0;
     restore_desktop_display_mode();
     return 0;
 }

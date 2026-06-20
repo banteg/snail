@@ -40,3 +40,19 @@ Residuals:
 - `find_registered_sound_sample_id_by_name` resolves `Sample="..."` names to
   registered sound sample ids by scanning the path/name table populated by
   `register_sound_sample`.
+
+2026-06-21 level-file buffer curation:
+
+- Curated `g_level_file_text_buffer` at `0x74ec78` in
+  `analysis/symbols/gameplay-references.json`. This is the shared level-text
+  buffer immediately following `g_current_level_definition_name`; the scratch
+  previously spelled it as `(&g_current_level_definition_name + 4)`, which the
+  masked-operand resolver could not resolve past the 4-byte pointer extent, so
+  every buffer reference reported as unresolved.
+- The scratch now declares `extern char g_level_file_text_buffer[];` and uses it
+  directly as `LEVEL_FILE_BUFFER`. The focused score is unchanged at 75.17%
+  (curation resolves masked operands without altering the normalized
+  instruction stream), but the masked audit is now clean: `165 ok / 0
+  unresolved / 0 mismatch`, down from `147 ok / 18 unresolved / 0 mismatch`.
+  All 18 previously-unresolved `push ADDR`/`mov ... ADDR` buffer references
+  now resolve to the curated global.
