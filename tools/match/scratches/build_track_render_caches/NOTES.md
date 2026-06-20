@@ -72,6 +72,10 @@ Several ordinary C++ choices materially improved the match:
   to the native `+4` byte cursor without merging the two induction variables;
 - repeatedly dereferencing the cache-object reference, rather than retaining
   an `Object*` temporary, reproduces the native lock/copy/unlock scheduling.
+- the final cache-name switch is paired with
+  `build_track_render_caches_cache_name_jump_table` at `0x43381c`, so the
+  compiler-emitted Floor/Slide/Warn/Ramp/Fringe table is audited instead of
+  left as an unresolved local-label relocation.
 
 The first remaining public-body mismatch is an equivalent SIB encoding:
 

@@ -747,6 +747,16 @@
       "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
+      "address": "0x43381c",
+      "name": "build_track_render_caches_cache_name_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L2229"
+      ],
+      "size": "0x14",
+      "description": "Compiler-emitted final cache-name switch jump table used by build_track_render_caches for the Floor, Slide, Warn, Ramp, and Fringe labels."
+    },
+    {
       "address": "0x434248",
       "name": "update_thanks_for_playing_screen_jump_table",
       "kind": "jump_table",

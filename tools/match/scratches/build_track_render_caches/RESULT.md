@@ -8,12 +8,12 @@
 | Target instructions | 763 | 763 |
 | Candidate instructions | 2 | **475** |
 | Common prefix | 0 / 763 | **90 / 763** |
-| Masked operands | none | **14 clean, 1 unresolved, 0 mismatched** |
+| Masked operands | none | **15 clean, 0 unresolved, 0 mismatched** |
 
-The sole unresolved masked operand is the final cache-name switch jump-table
-relocation at target instruction 448. It resolves to the target image table on
-one side and the candidate's local switch label on the other; there are no
-masked operand mismatches.
+The final cache-name switch jump-table relocation at target instruction 448 is
+now audited through `build_track_render_caches_cache_name_jump_table`
+(`0x43381c`, size `0x14`) and candidate alias `$L2229`. There are no unresolved
+or mismatched masked operands.
 
 The first remaining mismatch is semantically equivalent address formation:
 
@@ -43,6 +43,7 @@ as separate candidate COMDAT sections, so they are not included in the
 | Indexed five-family flush loop | 73.28% | 476 | 35 | Retained |
 | Direct slot-field cursor | 73.34% | 475 | 35 | Retained |
 | Slot cursor declared before counter clears | **75.77%** | **475** | **90** | Final |
+| Cache-name switch table symbol | **75.77%** | **475** | **90** | Audits final table operand |
 
 ## Accepted source-shape changes
 
