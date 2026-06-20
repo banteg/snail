@@ -23,3 +23,18 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
   the prologue and loop ownership; a decompiler-style `(int)active_record_bank`
   expression was codegen-neutral at 81.82%; and a typed `source + 1`
   post-increment collapsed back to the old 81.82% schedule.
+
+2026-06-20 larger high-score audit:
+
+- Focused matcher still verifies the retained byte post-increment source at
+  84.85%, 33/33 instructions, 15/33 prefix, and no masked operands.
+- Spelling the copied source directly as `source_cursor` recovers the native
+  `+0x17c108` source-base displacement, but regresses to 81.82% because VC6
+  moves the source increment after `rep movsd` and changes destination register
+  ownership (`mov edi, [edx]; add edi, eax` instead of native `mov edi, eax;
+  add edi, [edx]`).
+- Adding an explicit `next_source_cursor` local and writing destination as
+  `offset + (char*)active_record_bank` are codegen-neutral on top of that
+  regressed shape. Keep the current `source_cursor += stride; source =
+  source_cursor - stride` spelling; it is less pretty but better matches the
+  native memcpy schedule.
