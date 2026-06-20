@@ -43,3 +43,16 @@ snapshot inside the pause-gated block and an `unsigned int state` field probe
 are also neutral at 98.08%, while the related initialize/start/stop warning
 entry points stay exact. The remaining gap still looks like VC6 using a
 subtract for the zero test, not a source-level state-machine omission.
+
+2026-06-20 warning-family retry: focused Wibo still reports `98.08%`, `52/52`
+candidate/target instructions, `8/52` prefix, and seven clean masked operands.
+The exact `initialize_warning`, `start_warning`, and `stop_warning` siblings
+still confirm the 16-byte actor layout and pause-gated byte field. An explicit
+early-return plus `current_state` snapshot after the pause gate is
+codegen-neutral and leaves `cmp eax, edx` versus native `sub eax, edx`. Rewriting
+the dispatch as decompiler-style `if (state == 2) ... else if (state == 1)`
+regresses to `80.39%` by replacing the native decrement ladder with literal
+compares. Spelling the pause gate as signed `char` is also neutral. Keep the
+compact `if (!pause_gate && state) switch (state)` source; the only known path
+to the target `sub` is the rejected subtract-through-zero expression, which is
+not durable original-looking source.
