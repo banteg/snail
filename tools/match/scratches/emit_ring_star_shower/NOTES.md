@@ -75,6 +75,15 @@ Rejected/source-shape probes:
   `sprite->position` into a local `Vector3` regressed to 79.39% and still kept
   the smaller `0x0c` frame, so the remaining `0x18` frame residual is not
   explained by a source-position local.
+- 2026-06-20 larger ring-family retry: focused Wibo still reports 90.77%,
+  65/65 candidate/target instructions, 1/65 prefix, and 9 clean masked
+  operands. Naming an explicit unscaled sine-x local is codegen-neutral overall:
+  it only moves the temporary spill to a different candidate stack offset while
+  keeping the `0x0c` frame. A semantic `float source_z` tail and a dword
+  `source_z_bits` tail both regress to 74.42% by losing the aggregate
+  vector-copy register shape, even though they place the gravity store before
+  the z write. Keep the semantic `*star_position = *source_position` copy until
+  a real source-lifetime lead explains native's `0x18` frame.
 
 Type consolidation:
 
