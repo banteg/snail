@@ -6,7 +6,7 @@ float __cdecl parse_next_float32(char** cursor)
         char* current;
         do {
             current = *cursor;
-            char value = *current;
+            char value = **cursor;
             if (value == '+')
                 break;
             if (value == '.')
@@ -29,13 +29,13 @@ float __cdecl parse_next_float32(char** cursor)
     float decimal_scale = 0.0f;
     while (1) {
         char* current = *cursor;
-        char digit = *current;
-        if ((digit < '0' || digit > '9') && digit != '.')
-            break;
+        char digit = **cursor;
         if (digit == '.') {
             decimal_scale = 1.0f;
             *cursor = current + 1;
         } else {
+            if (digit < '0' || digit > '9')
+                break;
             *cursor = current + 1;
             value = (float)(digit - '0') + value * 10.0f;
             decimal_scale *= 0.1f;

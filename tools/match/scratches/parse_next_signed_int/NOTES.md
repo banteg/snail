@@ -32,3 +32,26 @@ or regressed, so no shared parser/header change was accepted.
 pre-scan plus scoped digit-loop cursor regressed to 25.49% and introduced an
 extra saved register. The retained loop-carried `current` source remains the
 best observed parser shape.
+
+2026-06-20 parser-family owner-read pass: a hybrid source shape improves
+focused Wibo to 70.10%, still 50/47 candidate/target instructions and no
+masked operands. The accepted shape scopes the pre-scan `current` pointer but
+spells the caller-owned character reads as `**cursor`, then uses the exact
+`parse_next_int32` digit-loop idiom for the sign/digit tail. The related
+`parse_next_float32` scratch accepts the same pre-scan owner-read idiom, so this
+looks like a real parser-family source pattern rather than a one-off nudge.
+
+Rejected/neutral probes in this pass:
+
+- Adding a separate `initial = *cursor` gate before the pre-scan compiled
+  identically to the retained 70.10% object.
+- Rechecking `**cursor != '-'` in the do/while tail regressed to 69.39%.
+- A `for (;;)` pre-scan with explicit `continue` compiled identically to the
+  retained object.
+- Reading the pre-scan byte as `*current` regressed to the old 28.87% family.
+
+Remaining residual: native emits a distinct first `eax = *cursor; cmp [eax],
+'-'` gate before loading the loop cursor in `edx`, while VC6 folds that first
+minus check into the loop byte in the retained source. Native also delays the
+`esi`/`edi` saves until after the pre-scan; the accepted source still leaves
+three extra candidate instructions.
