@@ -727,9 +727,9 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 17 type name(s)
-- unresolved-layout: 16 type name(s)
+- unresolved-layout: 15 type name(s)
 - header-compatible: 12 type name(s)
-- partial-compatible: 4 type name(s)
+- partial-compatible: 3 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -761,7 +761,6 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | ObjectList | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
@@ -780,5 +779,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 | header-compatible | WarningActor | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | partial-compatible | BorderRuntime | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | AppShell | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
-| partial-compatible | CachedXMeshBank | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
 | partial-compatible | GameRuntime | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |

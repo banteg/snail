@@ -1,5 +1,6 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
+#include "cached_x_mesh_bank.h"
 #include "segment_catalog_types.h"
 
 extern char* g_game_base; // data_4df904
@@ -16,11 +17,6 @@ char* find_case_insensitive_substring(char* needle, char* haystack);
 char* advance_to_next_crlf_line(char* cursor); // @ 0x44e690
 int parse_next_signed_int(char** cursor);
 float parse_next_float32(char** cursor);
-
-class CachedXMeshBank {
-public:
-    int load_or_reuse_cached_x_mesh(char* mesh_name);
-};
 
 class SegmentPathTable {
 public:

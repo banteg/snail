@@ -1,5 +1,6 @@
 // load_landscape_script_by_name @ 0x4182f0 (thiscall, ret 0x4)
 
+#include "cached_x_mesh_bank.h"
 #include "landscape_script_bank.h"
 
 extern char* g_game_base; // data_4df904
@@ -14,11 +15,6 @@ int parse_next_signed_int(char** cursor);
 float parse_next_float32(char** cursor);
 char archive_or_file_exists(char* path, char force_filesystem);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
-
-class ObjectList {
-public:
-    int load_or_reuse_cached_x_mesh(char* mesh_name);
-};
 
 int LandscapeScriptBank::load_landscape_script_by_name(char* script_name)
 {
@@ -171,7 +167,7 @@ load_script:
             out[1] = 0;
 
             scripts[script_count].object_index =
-                ((ObjectList*)(g_game_base + 0x48e00))
+                ((CachedXMeshBank*)(g_game_base + 0x48e00))
                     ->load_or_reuse_cached_x_mesh(object_mesh_name);
         }
     }
