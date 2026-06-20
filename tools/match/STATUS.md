@@ -536,7 +536,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
-| 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 267/268 | 93.08% | 122/268 | 63 ok |  |
+| 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 81.11% | 5/218 | 23 ok |  |
 | 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 81.48% | 5/83 | 11 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |

@@ -84,3 +84,13 @@ Rejected in this pass: swapping the `alpha`/`mask_height` declarations, moving
 neutral after the accepted branch order. The remaining first mismatch is still
 a stack-slot allocation residual (`mask_height` at candidate `esp+4` versus
 native `esp+8`, with `alpha` mirrored), followed by x87/render scheduling.
+
+2026-06-20 render-tail audit: making the flash pulse an explicit source local
+matches the decompiler-backed native intermediate `(sine(pulse * tau) + 1) *
+0.5` and improves focused Wibo to 94.03%, 268/268 instructions, prefix
+122/268, with 65 masked operands OK. This recovers instruction-count parity and
+removes the earlier branch-label drift around the flash quad, but the first
+residual remains the same mirrored `mask_height`/`alpha` stack-slot allocation.
+Retested `alpha`/`mask_height` declaration order, `mask_v` hoisting, `Color4f`
+hoisting, and an initialized `alpha` local; all were neutral at 94.03%, so keep
+only the `flash_pulse` source split.
