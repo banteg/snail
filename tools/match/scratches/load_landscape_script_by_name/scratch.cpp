@@ -34,12 +34,12 @@ int LandscapeScriptBank::load_landscape_script_by_name(char* script_name)
         goto load_script;
 
     loaded_name = scripts[0].name;
-    do {
+    while (index < script_count) {
         if (strings_equal_case_insensitive_path(loaded_name, script_name) != 0)
             goto found_existing;
         ++index;
         loaded_name += sizeof(LandscapeScriptRecord);
-    } while (index < script_count);
+    }
     goto load_script;
 
 found_existing:

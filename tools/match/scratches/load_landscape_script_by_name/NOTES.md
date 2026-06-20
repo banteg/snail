@@ -11,8 +11,8 @@ Structure-first recovery for the landscape script cache loader.
 - Missing `Picture:` intentionally skips only the texture block, then still
   parses `Landscape:` and `Distort:` before adding the script.
 
-Current focused result is 88.95%, with 392/386 instructions, 63 masked operands
-ok, and no unresolved or mismatched operands. Remaining expected gaps are mostly
-the cache-scan register/loop layout, VC6 local-buffer placement, stack cleanup
-scheduling around varargs/helper calls, and label layout around the
-split-texture path.
+2026-06-20 exact match: the cache scan now keeps an explicit empty-count
+precheck, then uses a `while (index < script_count)` loop. That preserves the
+native `edi` index / `ebp` name-cursor ownership and avoids VC6's earlier
+duplicated compare-call layout. Focused Wibo now reports 100.00%, 386/386
+instructions, full prefix, and 63 clean masked operands.
