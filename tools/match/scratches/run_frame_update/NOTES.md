@@ -64,3 +64,9 @@ spelled as `RuntimeSlot::noop_runtime_ai()` in the three subgame/player
 callsite scratches. This leaves the local `RuntimeCallback` here scoped to the
 two frame-loop virtual `update()` slots at `base + 0x124` and `base + 0x31c`.
 Focused Wibo remains pinned at 97.78% with the same two scheduling residuals.
+
+2026-06-20 larger near-proof pass: replacing the named `MouseCursorState*`
+local with a direct `((MouseCursorState*)(base + 0x290))->is_mouse_captured()`
+call is codegen-neutral at 97.78%. It does not move the native
+`lea ecx, [base+0x290]` before the accumulator store, so the retained named
+local remains the clearer source shape.

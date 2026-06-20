@@ -35,3 +35,8 @@ Status:
   operands. Remaining residuals are the capacity seed register/scheduling
   block, the commuted slot-index `lea`, and the tail byte-count register choice
   (`eax` plus `lea edx,[eax+eax]` versus native `edx` plus `shl edx,1`).
+- 2026-06-20 larger near-proof pass: spelling the slot cursor as
+  `this + slot_base * 0x3c + i * 0x3c` to mirror the IDA expression
+  (`60 * row_base + 60 * i`) is codegen-neutral at 93.44%. VC6 still emits the
+  same commuted `lea eax, [edi+edx]`, so the compact `(slot_base + i) * 0x3c`
+  source remains retained.

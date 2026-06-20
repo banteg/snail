@@ -49,3 +49,14 @@ The native code lays out the not-less-than-diagonal dispatch first, while the
 best source retained here makes VC6 lay out the less-than dispatch first. The
 subsequent X/Y/Z radicand bodies and debug strings are still semantically
 aligned and have clean masked operands.
+
+2026-06-20 larger near-proof pass:
+
+- Rewriting the fallback as the IDA-shaped nested `if/else if` tree regresses
+  to 67.74% and moves the X arm into the first fallback body, producing a real
+  masked string mismatch (`"ERROR:sqt %f\n"` target versus `"ERROR:sqrt %f\n"`
+  candidate) at the first radicand report call. The decompiler grouping is
+  useful semantic evidence, but it is not the native source shape for VC6.
+- Spelling the first split as `!(m00 >= m11)` is codegen-neutral at 92.47% and
+  leaves the same `jne`/`je` branch-layout mismatch. Keep the clearer
+  `m00 < m11` source unless a new arm-order lead appears.
