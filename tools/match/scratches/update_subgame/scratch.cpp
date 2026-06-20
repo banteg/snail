@@ -9,6 +9,7 @@
 #include "slug_voice_manager.h"
 #include "sprite.h"
 #include "star_field.h"
+#include "time_trial_string_formatter.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
@@ -54,11 +55,6 @@ typedef char ActiveRuntimeRow_must_be_0xf4[
 struct RuntimeCellSlotBase {
     char before_cell[0x3bfac8];
     TrackRowCell cell;
-};
-
-class TimeTrialStringFormatter {
-public:
-    char* format_time_trial_string(TimerCounters* timer);
 };
 
 class Game {

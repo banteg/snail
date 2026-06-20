@@ -53,6 +53,17 @@ masked mismatches.
   operands), so the local audio declaration remains documented debt for a later
   shutdown-shape pass.
 
+2026-06-20 unresolved-layout cleanup:
+
+- Renamed the startup-only audio shell to `StartupAudioBackendView` so it no
+  longer masquerades as the real shared `AudioBackend` layout. The focused
+  startup matcher is unchanged at 63.14% with `96` ok / `30` unresolved / `4`
+  mismatched masked operands.
+- Rechecked the Binary Ninja decompile: `resume_audio_backend_if_paused` uses
+  the global backend at `0x753c58`, while `stop_audio_backend` remains the
+  global `__stdcall` helper. The source-truer shared-header rewrite is still
+  deferred because it has a measured score regression.
+
 Known shape gaps:
 
 - Native keeps `ebx` as the zero register and `edi` as the quit flag; this

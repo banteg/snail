@@ -35,3 +35,8 @@ Known partials:
   (`"0"`, `SnailMail.cfg`, `Unknown game mode`, builtins table, config max).
 - The two large switch tables have the right mode semantics but not native
   table placement/code layout yet.
+
+2026-06-20 type cleanup: the member-style time-trial formatter receiver moved
+to `include/time_trial_string_formatter.h`, matching the same call shape used by
+`update_challenge_setup_screen` and `update_subgame`. This removes a duplicate
+method-only type row; the focused matcher stayed at 63.25%.

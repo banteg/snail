@@ -21,7 +21,7 @@ typedef char Msg_must_be_0x1c[(sizeof(Msg) == 0x1c) ? 1 : -1];
 #include "high_score_bank.h"
 #include "loading_screen.h"
 
-class AudioBackend {
+class StartupAudioBackendView {
 public:
     int stop_audio_backend(); // @ 0x449b90
     void resume_audio_backend_if_paused(); // @ 0x449ba0
@@ -62,7 +62,7 @@ extern unsigned char g_config_validation_tail_start;
 extern int data_4df858;
 extern int data_4b775c;
 extern unsigned char data_753c70;
-extern AudioBackend g_audio_backend; // data_753c58
+extern StartupAudioBackendView g_audio_backend; // data_753c58
 
 int query_runtime_capability(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0

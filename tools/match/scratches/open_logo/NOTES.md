@@ -19,3 +19,9 @@ The retained source uses the native object-field cursor at `this + 0x2403c`.
 VC6 still strength-reduces the first loop into separate object-field and slot
 pointers, which adds an `ebx` save and shifts the local stack offsets. Typed
 renderable-array and raw byte-cursor variants compiled to the same residual.
+
+2026-06-20 type cleanup: `LogoRuntime` moved to a method-only shared header.
+Binary Ninja shows the caller uses the receiver at `game + 0x4f400`, but this
+function only proves the logo slot cursor, not a reusable full object layout.
+`open_logo` stayed at 69.35%, and the broad `initialize_game_assets_and_world`
+caller stayed at its previous semantic-partial score after including the header.

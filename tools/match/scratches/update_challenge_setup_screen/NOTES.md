@@ -50,3 +50,8 @@ Rejected probes:
 - Keeping a `Game*` local made VC6 save `ebx` and dropped the score to 62.36%.
 - A direct high-level `if/else` mode dispatch improved neither the sparse
   switch branch labels nor the physical case order.
+
+2026-06-20 type cleanup: `TimeTrialStringFormatter` now comes from the shared
+method-only header. This keeps the existing member-style `ecx = game+0xff25e0`
+source shape while removing the duplicate local type; the focused score stayed
+80.68%.

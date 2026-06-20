@@ -727,7 +727,6 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 13 type name(s)
-- unresolved-layout: 6 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -744,9 +743,3 @@ Run `uv run snail match types --paths` for the full path-level report.
 | ABI-conflict | MouseCursorState | 2 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | InputOkState | 1 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Backdrop | 0 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| unresolved-layout | PlayerPresentationController | 3 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | TimeTrialStringFormatter | 3 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | TutorialController | 2 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
-| unresolved-layout | LevelDefinitionLoader | 1 | 1 | 1 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |

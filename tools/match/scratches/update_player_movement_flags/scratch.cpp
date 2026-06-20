@@ -1,6 +1,6 @@
 // update_player_movement_flags @ 0x43a1a0 (thiscall, ret)
 
-class PlayerPresentationController {
+class PlayerMovementPresentationView {
 public:
     void set_snail_weapon(int movement_flags);
 };
@@ -17,7 +17,7 @@ public:
     char unknown_340[0x2734 - 0x340];
     float movement_fire_progress_step; // +0x2734
     char unknown_2738[0x2984 - 0x2738];
-    PlayerPresentationController presentation; // +0x2984
+    PlayerMovementPresentationView presentation; // +0x2984
 };
 
 int Player::update_player_movement_flags()

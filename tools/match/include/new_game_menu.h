@@ -7,11 +7,21 @@
 #include "input_state.h"
 #include "mouse_cursor_state.h"
 
+class Game;
+
 class TutorialController {
 public:
     void initialize_tutorial(); // @ 0x448da0
     void uninit_tutorial(); // @ 0x448dd0
+    void* update_tutorial(); // @ 0x448de0
+
+    int state; // +0x00
+    char unknown_04[0x0c - 0x04];
+    Game* game; // +0x0c
 };
+
+typedef char TutorialController_must_be_0x10[
+    (sizeof(TutorialController) == 0x10) ? 1 : -1];
 
 class NewGameMenu {
 public:

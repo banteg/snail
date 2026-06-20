@@ -1,6 +1,7 @@
 // open_logo @ 0x419110 (thiscall)
 
 #include "bod_types.h"
+#include "logo_runtime.h"
 #include "object_render_types.h"
 #include "sprite.h"
 
@@ -11,11 +12,6 @@ void enumerate_matching_archive_or_fs_entries(
     int* out_count,
     char* out_names); // @ 0x431740
 int sprintf(char* buffer, char* format, ...);
-
-class LogoRuntime {
-public:
-    int open_logo();
-};
 
 int LogoRuntime::open_logo()
 {

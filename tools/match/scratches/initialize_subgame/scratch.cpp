@@ -8,6 +8,7 @@
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "segment_catalog_types.h"
+#include "time_trial_string_formatter.h"
 #include "timer_counters.h"
 #include "transform_matrix.h"
 
@@ -17,11 +18,6 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 class RuntimeCallback {
 public:
     void noop_runtime_ai();
-};
-
-class TimeTrialStringFormatter {
-public:
-    char* format_time_trial_string(TimerCounters* timer);
 };
 
 class WarningRuntime {

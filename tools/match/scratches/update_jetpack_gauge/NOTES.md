@@ -39,3 +39,10 @@ Known residuals:
   early zero register setup;
 - `game`/`player` loads around the completion-row check use different registers,
   though the field offsets and behavior are aligned.
+
+2026-06-20 type cleanup: the jetpack presentation receiver is intentionally a
+scratch-local `UpdateJetpackPresentationView`, paired with
+`ArmJetpackPresentationView` in `arm_jetpack_gauge`. That removes the false
+shared unresolved-layout row without promoting any unproven
+`PlayerPresentationController` fields. Rebuilt matcher stays at 85.82% with
+34 clean masked operands; `arm_jetpack_gauge` remains exact at 18/18.

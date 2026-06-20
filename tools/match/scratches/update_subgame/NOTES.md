@@ -78,3 +78,8 @@ Rejected continuation trials:
 - moving the selected-level handoff to a tail `goto` label still emitted the same measured layout;
 - spelling the pause-state setup with raw offsets did not change the prologue mismatch;
 - materializing a time-trial `record` base local improved one address sequence but regressed the surrounding HUD/camera tail.
+
+2026-06-20 type cleanup: the shared `TimeTrialStringFormatter` header now owns
+the method-only formatter receiver used here and by the challenge setup/HUD
+callers. The broad `update_subgame` scratch stayed at 67.53%; no formatter
+fields are promoted because only the member-call source shape is proven.

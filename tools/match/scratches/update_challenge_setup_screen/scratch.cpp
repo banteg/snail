@@ -5,17 +5,13 @@
 #include "level_definition_loader.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"
+#include "time_trial_string_formatter.h"
 
 extern int data_4df9b8;
 extern int g_completion_bonus_x_source; // data_4df958
 extern int g_completion_bonus_y_source; // data_4df960
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
-
-class TimeTrialStringFormatter {
-public:
-    char* format_time_trial_string(TimerCounters* timer); // @ 0x448960
-};
 
 int ChallengeSetupScreen::update_challenge_setup_screen()
 {

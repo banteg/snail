@@ -9,6 +9,7 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
+#include "logo_runtime.h"
 #include "object_render_types.h"
 #include "segment_catalog_types.h"
 #include "sprite.h"
@@ -49,11 +50,6 @@ void mirror_path_template_pair_x(void* destination, void* source); // @ 0x41bf00
 void build_track_fringe_mesh(void* path, char* texture_path, float z_offset); // @ 0x420030-family
 char* __stdcall initialize_sound_bank(void* entries); // @ 0x44dcb0
 TextureRef* __stdcall register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
-
-class LogoRuntime {
-public:
-    int open_logo(); // @ 0x419110
-};
 
 static void link_root_bod(char* game, int offset)
 {

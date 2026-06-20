@@ -50,3 +50,9 @@ Residual:
   directly from the equal branch all compile back to the same 93.75% candidate
   with clean `2 ok` masks. Keep the clearer baseline final branch; the only
   residual remains VC6 tail-merging the native duplicate equal-mask epilogue.
+- 2026-06-20 unresolved-layout cleanup: the local presentation receiver is now
+  named `PlayerMovementPresentationView`, keeping this scratch out of the
+  shared `PlayerPresentationController` layout group. Full `player.h` remains
+  rejected for this helper because it changes the jump-table relocation audit,
+  while the compact shell keeps the 93.75% focused match and clean `2 ok`
+  masks.
