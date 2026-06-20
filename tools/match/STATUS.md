@@ -662,7 +662,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 678/712 | 39.42% | 0/712 | 3 mismatch, 39 ok |  |
+| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 26.37% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |

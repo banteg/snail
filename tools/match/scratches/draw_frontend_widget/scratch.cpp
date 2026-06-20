@@ -27,6 +27,12 @@ void FrontendWidget::draw_frontend_widget()
     Color4f glow_color;
     Color4f shadow_color;
     Color4f slider_color;
+    Color4f white;
+
+    glow_color.noop_this_constructor();
+    shadow_color.noop_this_constructor();
+    slider_color.noop_this_constructor();
+    white.noop_this_constructor();
 
     if (g_render_queue_active == 0)
         return;
@@ -88,7 +94,7 @@ void FrontendWidget::draw_frontend_widget()
             && this == *(FrontendWidget**)(g_game_base + 0x440f8)) {
             wobble = sine(*(float*)(g_game_base + 0x440f0) * 3.1415927f) * 3.0f;
             if (*(unsigned char*)(self + 0x5d) == 0)
-                wobble = -wobble;
+                wobble = wobble * -1.0f;
         }
 
         int texture = *(int*)(self + 0x270);
@@ -202,7 +208,6 @@ void FrontendWidget::draw_frontend_widget()
 
     if (*(unsigned char*)(g_game_base + 0x440ec) != 0
         && this == *(FrontendWidget**)(g_game_base + 0x440f8)) {
-        Color4f white;
         white.set_color_white();
         glow_color.store_color4f(white.r, white.g, white.b, 1.0f - *(float*)(g_game_base + 0x440f0));
         float glow_edge = (*(float*)(g_game_base + 0x440f0) * 0.69999999f + 1.0f) * edge;
