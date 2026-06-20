@@ -29,14 +29,17 @@ non-volatile `g_game` spelling recovers the native prologue load before
 decrement ladder; and spelling the fade arm as `phase < 0.5f` matches the
 native fallthrough into the alpha calculation. The only remaining difference is
 `cmp eax, edx` versus native `sub eax, edx` after `edx` has already been zeroed
-by the pause-gate test. An explicit `case 0` switch arm and a named
-`current_state` snapshot both regressed by changing register saves/control-flow,
-so they are rejected. Do not encode fake subtract-through-zero expressions just
-to chase that final instruction.
+by the pause-gate test. An explicit `case 0` switch arm and the
+`state - zero`/named-snapshot spelling both regressed by changing register
+saves/control-flow, so they are rejected. Do not encode fake
+subtract-through-zero expressions just to chase that final instruction.
 
 2026-06-20 larger residual audit: removing the outer `state` guard and making
 `case 0`/`default` explicit regresses to 84.31% by deleting the native zero-state
 test before the decrement ladder. Splitting the combined guard into nested
 `if (!pause_gate) { if (!state) return; ... }` is codegen-neutral at 98.08% and
-leaves the same `cmp eax, edx` residual. The remaining gap still looks like VC6
-using a subtract for the zero test, not a source-level state-machine omission.
+leaves the same `cmp eax, edx` residual. A plain `current_state = state`
+snapshot inside the pause-gated block and an `unsigned int state` field probe
+are also neutral at 98.08%, while the related initialize/start/stop warning
+entry points stay exact. The remaining gap still looks like VC6 using a
+subtract for the zero test, not a source-level state-machine omission.
