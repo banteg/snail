@@ -5,28 +5,32 @@
 
 void Object::calc_object_texture_groups()
 {
-    for (int pass = 0; pass < 2; ++pass) {
-        ObjectFaceQuad* quads = facequads;
+    int pass = 0;
+    do {
+        char* quads = (char*)facequads;
         int group = 0;
         int face_index = 0;
-        TextureRef* texture = quads[0].texture_ref;
+        TextureRef* texture = *(TextureRef**)(quads + 0x0c);
 
         if (facequad_count > 0) {
             int offset = 0;
             do {
-                ObjectFaceQuad* quad = (ObjectFaceQuad*)((char*)quads + offset);
-
                 if ((flags & 0x400) != 0) {
-                    quad->flags |= 2;
-                    quad->texture_ref->flags |= 0x20;
+                    quads[offset] |= 2;
+                    TextureRef* active_texture =
+                        *(TextureRef**)((char*)facequads + offset + 0x0c);
+                    active_texture->flags |= 0x20;
                 }
 
-                if (quad->texture_ref != texture || (quad->flags & 0x10) != 0) {
+                quads = (char*)facequads;
+                if (*(TextureRef**)(quads + offset + 0x0c) != texture
+                    || (quads[offset] & 0x10) != 0) {
                     if (pass == 1) {
                         texture_group_ends[group] = face_index;
                     }
                     ++group;
-                    texture = quad->texture_ref;
+                    quads = (char*)facequads;
+                    texture = *(TextureRef**)(quads + offset + 0x0c);
                 }
 
                 ++face_index;
@@ -39,5 +43,6 @@ void Object::calc_object_texture_groups()
         } else if (pass == 0) {
             request_object_texture_groups(group + 1);
         }
-    }
+        ++pass;
+    } while (pass < 2);
 }
