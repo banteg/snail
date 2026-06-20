@@ -16,3 +16,6 @@ used by `border_input_text`.
 The remaining mismatch is localized to the Enter/Ctrl normalization tail and
 the repeat-code comparison load order. Native uses `setne bl; add ebx, 5`,
 while the clear source spelling compiles as the equivalent `setne bl; add bl, 5`.
+The 2026-06-20 retry confirmed the exact pressed-key sibling and several
+Enter/Ctrl, signedness, and case-fold tail variants; none improved the 99.09%
+baseline without regressing block order or register preservation.

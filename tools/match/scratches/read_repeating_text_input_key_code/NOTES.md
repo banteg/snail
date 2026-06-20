@@ -50,3 +50,15 @@ Remaining residuals:
   `unsigned int` is codegen-neutral and still emits `add bl, 5`, confirming the
   full-register `add ebx, 5` residual is not recoverable through a narrow
   local type change while preserving the byte-shaped function body.
+- 2026-06-20 text-input repeat-family audit: exact sibling
+  `read_pressed_text_input_key_code` remains 100.00% and confirms the same
+  scancode-to-byte mapping. Mirroring its Enter/Ctrl `char ctrl_down` idiom is
+  codegen-neutral and still emits `add bl, 5`; removing the explicit `!= 0`
+  regresses to 97.84% by replacing native `test/setne` with `mov bl, al`.
+  Making `repeat_code` unsigned or declaring `ascii_upper_if_lowercase` as
+  returning `unsigned char` is codegen-neutral. A named folded repeat byte
+  regresses to 98.75% by spilling the folded value to the stack, and rewriting
+  the tail as a decompiler-shaped `!=` reset-first branch regresses to 97.27%
+  by moving the reset block before the accumulator block. Keep the current
+  byte-shaped equality tail; the two remaining residuals are caller-side
+  register/load-order artifacts, not evidence for different text-input state.
