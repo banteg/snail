@@ -47,3 +47,10 @@ Focused Wibo status:
   BN export now resolves the emitted trail-puff `Sprite` fields (`flags`,
   progress/lifetime, color, size, velocity, gravity, and position); the focused
   Wibo result remains 45.14% with the same stack/local-schedule residual.
+- 2026-06-20 shared position-copy audit: changing the regular grid sprite copy
+  from explicit `position.x/y/z` stores to `slot->sprite->position =
+  base_position` regresses to 39.43%, keeping the same mask mismatch. Changing
+  only the emitted trail-puff copy from explicit `out_position->x/y/z` stores
+  to `*out_position = base_position` regresses to 43.87%. Keep the explicit
+  field stores here: unlike the pickup spawners, aggregate assignment collapses
+  the stack/local schedule this scratch still needs.

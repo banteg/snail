@@ -67,3 +67,10 @@ Rejected probes:
   the current compact local-vector spelling; recovering the native form likely
   needs original evidence for a real floating zero producer, not artificial
   arithmetic-zero source.
+- 2026-06-20 shared position-copy audit: replacing the raw three-word sprite
+  position copy with `sprite->position = *live_position` is codegen-neutral at
+  92.79% with the same 159/160 instruction count, 48/160 prefix, and 16 clean
+  masked operands. Unlike the pickup spawners, this slug scratch already has
+  the native destination-register ownership for the position copy; the
+  remaining residual is still the velocity zero/x87 staging plus one tail
+  branch label.
