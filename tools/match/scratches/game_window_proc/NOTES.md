@@ -17,13 +17,17 @@ mouse movement therefore returns zero without changing the wheel latch.
 
 ## Current match notes
 
-Focused matcher result: 89.21%, 137 candidate instructions versus 141 target
-instructions, with 37 clean masked operands, 0 unresolved operands, and 2
+Focused matcher result: 91.49%, 141 candidate instructions versus 141 target
+instructions, with 36 clean masked operands, 0 unresolved operands, and 2
 audited jump-table mismatches. The `message - 2` byte lookup table is now
 content-audited as `game_window_proc_low_message_lookup_table`; the two
 remaining mismatches are the compiler-emitted jump tables for the `message - 2`
 and `message - 0x201` dispatches.
 
+Writing the `WM_KEYDOWN` arm as `if (wparam != 0x1b) return 0;` keeps the
+non-ESC return as a standalone block and recovers the missing four instructions.
 The main remaining source-shape difference is the shared close/ESC quit body:
-native lays out the `PostQuitMessage(0)` block before the `WM_KEYDOWN` ESC
-test, while this source compiles to the same behavior with the ESC test first.
+native lays out the `PostQuitMessage(0)` block before the ESC test, while this
+source still compiles to the same behavior with the ESC test first. The final
+`WM_RBUTTONUP` arm also delays `xor eax, eax` until after the two right-button
+state stores; target code zeroes `eax` before those stores.

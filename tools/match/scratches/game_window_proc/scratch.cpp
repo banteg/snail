@@ -43,10 +43,10 @@ post_quit_message:
                 return 0;
 
             case 0x100:
-                if (wparam == 0x1b) {
-                    goto post_quit_message;
+                if (wparam != 0x1b) {
+                    return 0;
                 }
-                return 0;
+                goto post_quit_message;
 
             case 2:
                 return 0;
