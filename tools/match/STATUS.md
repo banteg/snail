@@ -727,7 +727,7 @@ This is generated as part of `uv run snail match status --write tools/match/STAT
 Run `uv run snail match types --paths` for the full path-level report.
 
 - ABI-conflict: 16 type name(s)
-- unresolved-layout: 16 type name(s)
+- unresolved-layout: 14 type name(s)
 - header-compatible: 12 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
@@ -756,9 +756,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | LogoRuntime | 2 | 0 | 0 | definitions are method-only or lack parsed fields; inspect manually |
 | unresolved-layout | AudioBackend | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | DamageGaugeController | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | FrontendFade | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | GolbPathBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| unresolved-layout | HighScoreBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | LandscapeScriptBank | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SaltHazardPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |

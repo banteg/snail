@@ -34,6 +34,25 @@ masked mismatches.
   `scalar_delete` helper. This clears one masked unresolved operand in the
   teardown path while leaving the control-flow/register residuals visible.
 
+2026-06-20 startup shared-service type pass:
+
+- Replaced the scratch-local `FrontendFade` and `HighScoreBank` method-only
+  stubs with the shared headers. The focused startup matcher stays at 63.14%
+  (`337` candidate instructions, `96` resolved masked operands, `30`
+  unresolved, `4` mismatches), while those two type rows disappear from
+  `snail match types --paths`.
+- The owner scratches still match after the promotion:
+  `begin_frontend_fade_in`, `save_high_scores_and_config`,
+  `resume_audio_backend_if_paused`, and `stop_audio_backend` all report
+  100.00%.
+- IDA, Binary Ninja, and the `stop_audio_backend` scratch agree that
+  `0x449b90` is a global `__stdcall` helper, not an `AudioBackend` method.
+  Promoting `game_startup_and_main_loop` to `audio_system.h` and calling the
+  global helper is source-truer but currently regresses the focused startup
+  candidate to 62.93% (`336` candidate instructions, `95` resolved masked
+  operands), so the local audio declaration remains documented debt for a later
+  shutdown-shape pass.
+
 Known shape gaps:
 
 - Native keeps `ebx` as the zero register and `edi` as the quit flag; this

@@ -16,18 +16,10 @@ struct Msg {
 
 typedef char Msg_must_be_0x1c[(sizeof(Msg) == 0x1c) ? 1 : -1];
 
+#include "frontend_fade.h"
 #include "game_root.h"
+#include "high_score_bank.h"
 #include "loading_screen.h"
-
-class FrontendFade {
-public:
-    void begin_frontend_fade_in(); // @ 0x40abe0
-};
-
-class HighScoreBank {
-public:
-    char* save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
-};
 
 class AudioBackend {
 public:
