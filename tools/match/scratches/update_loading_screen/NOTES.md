@@ -24,3 +24,11 @@ The progress bar geometry is a 20-byte `{x, y, z, u, v}` vertex, not the
 24-byte object/sprite vertex with diffuse color. The fill quad is clipped from
 `x=192` to `x=192 + percent * 0.92 * 2.56`, with `percent > 98` forcing the
 displayed fill to 100%.
+
+2026-06-20 progress-bar vertex pass: spelling the first `u_end` store as an
+assignment expression (`vertices[1].u = u_end = ...`) recovers native's
+single live-x87 store into both the stack local and vertex lane, removing the
+extra candidate reload. Focused Wibo improves from `88.02%` to `90.20%`, with
+instruction-count parity at `204/204` and 24 clean masked operands. A nearby
+two-step `x_end` spelling was codegen-neutral at the same score but less clear,
+so the direct `x_end = bar_percent * 2.5599999f + 192.0f` expression remains.

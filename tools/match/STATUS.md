@@ -530,7 +530,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 50/49 | 84.85% | 20/49 | 1 ok |  |
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
-| 🚧 | update_loading_screen | 0x418e80 | 656 | 205/204 | 88.02% | 2/204 | 24 ok |  |
+| 🚧 | update_loading_screen | 0x418e80 | 656 | 204/204 | 90.20% | 2/204 | 24 ok |  |
 | 🚧 | update_intro_logo_renderable | 0x419a90 | 148 | 41/42 | 81.93% | 8/42 | 6 ok |  |
 | 🚧 | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 339/367 | 83.00% | 122/367 | 1 mismatch, 57 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |

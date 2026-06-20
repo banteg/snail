@@ -71,10 +71,10 @@ int LoadingScreen::update_loading_screen()
             vertices[0].v = 0.0f;
 
             vertices[1].x = x_end;
-            float u_end = bar_percent * 0.0099999998f;
             vertices[1].y = 289.0f;
             vertices[1].z = 0.0f;
-            vertices[1].u = u_end;
+            float u_end;
+            vertices[1].u = u_end = bar_percent * 0.0099999998f;
             vertices[1].v = 0.0f;
 
             vertices[2].x = x_end;
