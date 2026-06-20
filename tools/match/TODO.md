@@ -122,8 +122,8 @@ These should turn current verified port behavior into matched proof.
 | `explode_slug_hazard` | `0x43f680` | 81.63%, source-shaped | Slug death particle burst spawned by the exact `kill_slug_hazard` helper. | Direct grayscale call-argument staging is retained; remaining frame, side/up stack-slot ownership, velocity x87 ordering, position-copy scheduling, and loop-return residuals are documented in NOTES. |
 | `initialize_blink_random` / `advance_blink_random` | `0x4408c0` / `0x4408a0` | 100% | Exact 24-entry blink cadence table initialization and advance helper used by slug hazard AI. | Done; use as the RNG cadence source-of-truth before expanding `update_slug_hazard_ai`. |
 | `spawn_salt_hazard` | `0x441560` | 74.07%, pinned | Salt slot layout, velocity byte-poke bug, yaw RNG. | Semantics are pinned; free-scan layout residual and velocity.z byte-poke finding are documented in NOTES. |
-| `update_sub_lazer_projectile` | `0x4417d0` | 48.39%, pinned | Sub-lazer projectile integrate/removal state and attachment containment probes. | Semantics are pinned; velocity, bob phase, and probe residuals are documented in NOTES. |
-| `deactivate_sub_lazer_projectile` | `0x441740` | 62.79%, pinned | Sub-lazer collision/removal edge. | Semantics are pinned; duplicated error-block and register residuals are documented in NOTES. |
+| `update_sub_lazer_projectile` | `0x4417d0` | 81.11%, source-shaped | Sub-lazer projectile integrate/removal state and attachment containment probes. | Shared track attachment row/cell types are accepted; remaining zero-register and by-value `Vector3` spill residuals are documented in NOTES. |
+| `deactivate_sub_lazer_projectile` | `0x441740` | 100% | Sub-lazer collision/removal edge. | Exact live-list teardown helper; use as the state-2 inline removal anchor for `update_sub_lazer_projectile`. |
 | `update_salt_hazard` | `0x441c10` | 62.96%, pinned | Salt fade/update state installed by `initialize_salt_hazard_runtime`. | Field offsets are pinned; remaining residual is the state-2 error-string tail merge documented in NOTES. |
 
 ### P3 - Damage, Warning, Camera, And Presentation Control

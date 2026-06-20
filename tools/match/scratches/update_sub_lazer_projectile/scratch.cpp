@@ -4,34 +4,11 @@
 
 #include "vector3.h"
 #include "sub_lazer_types.h"
-
-struct RuntimeTrackCellRef;
-
-struct GridCell {
-    char unknown_00[0x3c];
-    unsigned char tile; // +0x3c
-};
-
-struct AttachmentBody {
-    bool is_point_inside_track_attachment(
-        Vector3 probe, Vector3 scaled_velocity, RuntimeTrackCellRef* owner);
-};
-
-struct AttachmentTemplateRecord {
-    char unknown_00[0x38];
-    AttachmentBody* body; // +0x38
-};
-
-struct RuntimeTrackCell {
-    unsigned char flags; // +0x00, 0x40 primary attachment, 0x80 secondary
-    char unknown_01[0xa4 - 0x01];
-    AttachmentTemplateRecord* primary_attachment;   // +0xa4
-    AttachmentTemplateRecord* secondary_attachment; // +0xa8
-};
+#include "track_attachment_types.h"
 
 struct TrackRuntime {
-    GridCell* get_track_grid_cell_at_world_position(Vector3* position);
-    RuntimeTrackCell* get_track_runtime_cell_at_world_z(Vector3* position);
+    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
+    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
 };
 
 class Game {
@@ -64,27 +41,27 @@ void SubLazerSlot::update_sub_lazer_projectile()
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
             state = 0;
-            return;
+        } else {
+            if ((flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+                state = 0;
+            } else {
+                next = list_next;
+                if (next)
+                    next->list_prev = list_prev;
+                prev = list_prev;
+                if (prev)
+                    prev->list_next = list_next;
+                else
+                    anchor->first = list_next;
+                list_next = anchor->free_top;
+                anchor->free_top = this;
+                int updated = list_flags;
+                state = 0;
+                updated &= ~0x200;
+                list_flags = updated;
+            }
         }
-        if ((flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-            state = 0;
-            return;
-        }
-        next = list_next;
-        if (next)
-            next->list_prev = list_prev;
-        prev = list_prev;
-        if (prev)
-            prev->list_next = list_next;
-        else
-            anchor->first = list_next;
-        list_next = anchor->free_top;
-        anchor->free_top = this;
-        int updated = list_flags;
-        state = 0;
-        updated &= ~0x200;
-        list_flags = updated;
         return;
     }
     case 1: {
@@ -101,20 +78,20 @@ void SubLazerSlot::update_sub_lazer_projectile()
         float* live_z = &live_position->z;
         *live_z = velocity.z + *live_z;
         if (position.y >= 0.0f && position.z >= owner_game->sub_lazer_kill_plane_z) {
-            GridCell* grid = ((Game*)g_game_base)->track_runtime.get_track_grid_cell_at_world_position(live_position);
-            RuntimeTrackCell* cell = ((Game*)g_game_base)->track_runtime.get_track_runtime_cell_at_world_z(live_position);
-            if (grid->tile != 14 || position.y >= 7.0f) {
+            TrackRowCell* grid = ((Game*)g_game_base)->track_runtime.get_track_grid_cell_at_world_position(live_position);
+            TrackAttachmentRuntimeRow* cell = ((Game*)g_game_base)->track_runtime.get_track_runtime_cell_at_world_z(live_position);
+            if (grid->tile_id != 14 || position.y >= 7.0f) {
                 if ((cell->flags & 0x40) == 0
-                    || !cell->primary_attachment->body->is_point_inside_track_attachment(
+                    || !cell->primary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                         Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
                         Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
-                        (RuntimeTrackCellRef*)cell->primary_attachment)) {
+                        cell->primary_attachment_cell)) {
                     if ((cell->flags & 0x80) == 0)
                         return;
-                    if (!cell->secondary_attachment->body->is_point_inside_track_attachment(
+                    if (!cell->secondary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                             Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
                             Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
-                            (RuntimeTrackCellRef*)cell->secondary_attachment))
+                            cell->secondary_attachment_cell))
                         return;
                 }
                 debug_report_stub(g_debug_report_arg);

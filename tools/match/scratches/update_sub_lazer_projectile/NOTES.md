@@ -82,3 +82,23 @@ introduces the shared `xor ebx, ebx` before `push edi`, uses `cmp ..., bl` for
 the pause byte and null checks, and stores `state = ebx` in state 2. Keep the
 plain truthiness test; the zero-register residual needs a stronger source owner
 than comparison spelling.
+
+2026-06-20 larger type audit: the local attachment body/record/runtime-cell
+stubs were replaced with the shared `TrackRowCell` and
+`TrackAttachmentRuntimeRow` model. This keeps the focused score at `81.11%`
+while aligning the call receiver (`attachment_template_record`) and owner
+argument (`primary_attachment_cell` / `secondary_attachment_cell`) with the
+near-exact `is_point_inside_track_attachment` scratch and the shared track
+headers. The state-2 removal source was also nested to mirror the exact
+`deactivate_sub_lazer_projectile` helper; this is codegen-neutral in the updater
+but keeps the source shape anchored to the proved helper.
+
+Rejected larger probes from the same audit: replacing the `switch` with
+explicit state tests regressed to `77.42%` and changed the state dispatch plus
+the y-lane add order; declaring `report_errorf` as `void` was codegen-neutral
+and contradicts the proved `report_errorf`/deactivate shape; spelling the
+primary hit as an early hit tail and scalarizing the six attachment-call floats
+both compiled back to the same `81.11%` candidate, so the compact constructor
+form remains the cleaner source. The remaining residual is still allocator
+choice for the shared zero register and by-value `Vector3` spill timing, not a
+known type or semantic gap.
