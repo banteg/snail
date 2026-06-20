@@ -1,18 +1,7 @@
 // destroy_high_score_screen @ 0x417220 (thiscall, ret)
 
 #include "border_manager.h"
-
-extern char* g_game_base; // data_4df904
-extern int g_high_score_selected_bank; // data_4df9c0
-
-class HighScoreScreen {
-public:
-    int destroy_high_score_screen();
-
-    int field_00;
-    int field_04;
-    int selected_bank; // +0x08
-};
+#include "high_score_screen.h"
 
 int HighScoreScreen::destroy_high_score_screen()
 {

@@ -111,7 +111,7 @@ struct DamageGauge {
     void update_damage_gauge();
 };
 
-struct WarningActor {
+struct SubgoldyWarningActorView {
     int state;
     float phase;
     float phase_step;
@@ -120,7 +120,7 @@ struct WarningActor {
     void update_warning();
 };
 
-struct PlayerControlSource {
+struct SubgoldyPlayerControlSourceView {
     int unknown_00;
     unsigned int control_flags_a; // +0x04
     int unknown_08;
@@ -150,7 +150,7 @@ struct VisualRoot {
     float squidge_secondary;       // +0x88
 };
 
-struct CutsceneAI {
+struct SubgoldyCutsceneAIStateView {
     char unknown_00[0x0c];
     int state; // +0x0c (presentation +0x1964)
     char unknown_10[0x5c - 0x10];
@@ -167,7 +167,7 @@ struct Presentation {
     PresentationAnimationChannel weapon_channels[3]; // +0x64c, stride 0x3dc
     PresentationAnimationChannel jetpack_channel; // +0x11e0
     char unknown_15bc[0x1958 - 0x15bc];
-    CutsceneAI cutscene_ai; // +0x1958, state at +0x1964
+    SubgoldyCutsceneAIStateView cutscene_ai; // +0x1958, state at +0x1964
     char unknown_19b4[0x19c0 - 0x19b4];
 
     void dispatch_cutscene_animation(int animation, unsigned char flag, int arg);
@@ -251,7 +251,7 @@ struct Player {
     SubgoldyFollowStateView follow_state; // +0x384
     DamageGauge damage_gauge; // +0x3c4
     ProgressBar progress_bar; // +0x3f0
-    WarningActor warning;     // +0x3f4
+    SubgoldyWarningActorView warning; // +0x3f4
     int lives;                // +0x404
     Game* game;               // +0x408
     int movement_mode_selector; // +0x40c
@@ -261,7 +261,7 @@ struct Player {
     char unknown_41e[0x434 - 0x41e];
     float attachment_exit_progress;      // +0x434
     float attachment_exit_progress_step; // +0x438
-    PlayerControlSource* control_source; // +0x43c
+    SubgoldyPlayerControlSourceView* control_source; // +0x43c
     unsigned char completion_handoff_active; // +0x440
     char unknown_441[3];
     float completion_handoff_timer;       // +0x444
@@ -466,7 +466,7 @@ steering_stored:
             if (control_source->control_flags_b & 0x4000)
                 *((unsigned char*)game + 6 * *(int*)((char*)game + 0xff25dc) + 0xfd2b84) |= 2;
         }
-        PlayerControlSource* source = control_source;
+        SubgoldyPlayerControlSourceView* source = control_source;
         if ((source->control_flags_b & 0x4000) == 0 && (source->control_flags_a & 0x4000) == 0)
             *((unsigned char*)game + 0xa854) = 1;
         Game* mark_game = game;

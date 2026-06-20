@@ -9,7 +9,7 @@ public:
     int release_mouse_cursor();
 };
 
-class PauseMenu {
+class PauseMenuTeardownView {
 public:
     int uninit_pause_menu();
 
@@ -18,7 +18,7 @@ public:
     FrontendWidget* resume_widget;   // +0x08
 };
 
-int PauseMenu::uninit_pause_menu()
+int PauseMenuTeardownView::uninit_pause_menu()
 {
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(options_widget);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(end_game_widget);

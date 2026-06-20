@@ -13,3 +13,7 @@ Small sprite-renderer state mapper used only by `draw_sprite_quad`.
   `0x1b/0x13/0x14`; other modes return the mode unchanged.
 - The native sparse switch lowers through a lookup table before the case jump
   table, so the repeated default path is intentional.
+- 2026-06-20 local view naming: the source now uses
+  `SpriteRenderStateView`, matching the narrow-view rule above. This keeps the
+  exact match at `100.00%`, `109/109`, with `18 ok` masked operands, while
+  removing the misleading `Sprite` header-compatible type candidate.
