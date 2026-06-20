@@ -1036,6 +1036,15 @@
       "description": "Compiler-generated static-destruction stub registered by cross_vectors for its function-local static result."
     },
     {
+      "address": "0x44d1d0",
+      "name": "multiply_matrix_in_place_forward_thunk",
+      "kind": "function",
+      "aliases": [
+        "sub_44d1d0"
+      ],
+      "description": "Small thiscall forwarder that pushes the rhs matrix argument and calls multiply_matrix_in_place at 0x44d1a0."
+    },
+    {
       "address": "0x44db50",
       "name": "noop_this_constructor",
       "kind": "function",

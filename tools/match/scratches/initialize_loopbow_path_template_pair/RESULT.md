@@ -17,18 +17,21 @@ the target's full local-frame size and six-argument epilogue.
 ## Masked operand audit
 
 ```text
-60 ok, 2 unresolved, 0 mismatch
+60 ok, 0 unresolved, 2 mismatch
 ```
 
-Both unresolved operands are calls to the scratch symbol
-`multiply_matrix_in_place` and align exactly with the target calls:
+Both mismatched operands are calls where native dispatches through the small
+`multiply_matrix_in_place_forward_thunk` at `0x44d1d0`, while the candidate
+calls the scratch symbol `multiply_matrix_in_place` directly. They align exactly
+with the target calls:
 
 ```text
 target/candidate instruction 348, relative offset +0x56c
 target/candidate instruction 354, relative offset +0x57d
 ```
 
-The target address for both is `0x44d1d0`.  No masked operand differs.
+The target address for both is `0x44d1d0`. No masked operand remains
+unresolved.
 
 ## Accepted source-shape changes
 

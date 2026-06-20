@@ -57,9 +57,10 @@ The accepted body follows the native phases in order:
    of `0.125f`, parity branch, and the two texture arguments.
 7. Call `finalize_path_template(this)`.
 
-The two `multiply_matrix_in_place` calls compile at the exact native relative
-addresses `+0x56c` and `+0x57d`.  Their symbol identity remains unresolved by
-the matcher, but their masked operands do not mismatch.
+2026-06-20 thunk audit: `0x44d1d0` is now named
+`multiply_matrix_in_place_forward_thunk`.  The two aligned calls at `+0x56c`
+and `+0x57d` now audit as direct-call-vs-forwarder mismatches (`60 ok / 0
+unresolved / 2 mismatch`), not unresolved symbol identity debt.
 
 ## Source-shape decisions
 
