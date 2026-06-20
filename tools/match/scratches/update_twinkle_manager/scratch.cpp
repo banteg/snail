@@ -2,11 +2,6 @@
 
 #include "twinkle_manager.h"
 
-class Twinkle {
-public:
-    int update_twinkle();
-};
-
 int TwinkleManager::update_twinkle_manager()
 {
     int result = active_state;
@@ -15,7 +10,7 @@ int TwinkleManager::update_twinkle_manager()
         result = twinkle_count;
         int index = 0;
         if (result > 0) {
-            Twinkle* twinkle = (Twinkle*)twinkles;
+            Twinkle* twinkle = twinkles;
             do {
                 twinkle->update_twinkle();
                 result = twinkle_count;

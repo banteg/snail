@@ -9,3 +9,8 @@ removed from the shared active BOD list and pushed onto the shared free stack at
 
 The exact source shape uses the same typed intrusive-list logic as exact
 `recycle_bod_to_free_list` and `refresh_fringe_object_draw_list`.
+
+2026-06-20 ABI cleanup: the runtime record now lives in
+`include/active_bod.h` with slot-0 `virtual void update_active_bod()`, list
+flags/links at `+0x04/+0x08/+0x0c`, and inherited `world_z` at `+0x38`.
+Focused matcher stayed exact at 50/50 instructions with 7 clean masked operands.

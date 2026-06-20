@@ -1,11 +1,13 @@
 #ifndef TWINKLE_MANAGER_H
 #define TWINKLE_MANAGER_H
 
+#include "twinkle.h"
+
 class TwinkleManager {
 public:
     int update_twinkle_manager(); // @ 0x404030
 
-    char twinkles[0xf0]; // +0x00, five stride-0x30 records
+    Twinkle twinkles[5]; // +0x00, five stride-0x30 records
     int active_state;    // +0xf0
     int twinkle_count;   // +0xf4
 };

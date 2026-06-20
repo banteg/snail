@@ -1,19 +1,9 @@
 // update_active_bod @ 0x433e80 (thiscall, ret)
 
+#include "active_bod.h"
 #include "bod_list.h"
 
 int report_errorf(char* format, ...);
-
-struct ActiveBod {
-    void update_active_bod();
-
-    int unknown_00;
-    unsigned int list_flags; // +0x04
-    ActiveBod* list_prev;    // +0x08
-    ActiveBod* list_next;    // +0x0c
-    char unknown_10[0x38 - 0x10];
-    float world_z;           // +0x38
-};
 
 extern char* g_game_base; // data_4df904
 

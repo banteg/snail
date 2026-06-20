@@ -8,6 +8,11 @@ calls `Twinkle::update_twinkle()` on each inline record.
 
 2026-06-20 type consolidation: `TwinkleManager` now lives in
 `include/twinkle_manager.h` as a 0xf8 shell over the inline twinkle storage.
-The `Twinkle` record itself stays local because its method declarations still
-conflict across scratches. `update_frontend_widget_interaction` also uses the
-shared manager header and keeps its existing 46.85% residual profile.
+`update_frontend_widget_interaction` also uses the shared manager header and
+keeps its existing 46.85% residual profile.
+
+2026-06-20 ABI cleanup: `Twinkle` was promoted to `include/twinkle.h`, and the
+manager now types the inline storage as `Twinkle twinkles[5]`. The local
+`int update_twinkle()` stub was replaced by the shared `void update_twinkle()`
+declaration. Focused matcher stayed exact at 23/23 instructions with 1 clean
+masked operand.

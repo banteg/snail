@@ -1,5 +1,6 @@
 // run_frame_update @ 0x40a2a0 (thiscall, ret)
 
+#include "active_bod.h"
 #include "audio_system.h"
 #include "cheat_state.h"
 #include "frontend_overlay_color_lerp.h"
@@ -21,15 +22,6 @@ public:
 class EnemyManager {
 public:
     void initialize_enemy_manager();
-};
-
-class ActiveBod {
-public:
-    virtual void update();
-
-    unsigned int flags; // +0x04
-    char unknown_08[0x0c - 0x08];
-    ActiveBod* next; // +0x0c
 };
 
 int report_errorf(const char* format, ...);
@@ -93,23 +85,23 @@ int GameRoot::run_frame_update()
             ActiveBod* bod = *(ActiveBod**)(base + 0x5ac);
             if (bod != 0) {
                 do {
-                    if ((bod->flags & 0x10) != 0) {
+                    if ((bod->list_flags & 0x10) != 0) {
                         report_errorf("Debug Bod AI");
                     }
 
-                    ActiveBod* next_bod = bod->next;
+                    ActiveBod* next_bod = bod->list_next;
                     if (next_bod != 0) {
-                        next_bod->flags |= 0x40;
+                        next_bod->list_flags |= 0x40;
                     }
 
-                    bod->update();
+                    bod->update_active_bod();
                     bod = next_bod;
                     ++bod_update_count;
                     if (next_bod == 0) {
                         break;
                     }
 
-                    next_bod->flags &= ~0x40;
+                    next_bod->list_flags &= ~0x40;
                 } while (true);
             }
 

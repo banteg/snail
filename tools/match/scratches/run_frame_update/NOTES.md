@@ -51,3 +51,10 @@ above the frame-accumulator temporary is codegen-neutral and keeps the early
 layer as a local `int layer = 7` is also codegen-neutral; the layer push still
 lands after `Color4f::set_color_rgba`. The residual remains argument/store
 scheduling, not a missing local name.
+
+2026-06-20 ActiveBod ABI cleanup: the frame loop now uses
+`include/active_bod.h` and calls the known slot-0 updater as
+`update_active_bod()`. This removes the scratch-local `virtual update()`
+conflict without changing the pinned 97.78% residual profile. The adjacent
+`RuntimeCallback` vtable row is still deliberately local because it spans
+larger partials with different callback names and needs a separate pass.
