@@ -7,6 +7,7 @@
 #include "attachment_sample.h"
 #include "bod_list.h"
 #include "bod_types.h"
+#include "object_render_types.h"
 #include "vector3.h"
 #include "vector_types.h"
 
@@ -23,6 +24,149 @@ struct TrackRowCell;
 
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
+    void initialize_looptheloop_path_template_pair(
+        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_looptheloopw_path_template_pair(
+        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_loopout_path_template_pair(
+        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_hump_path_template_pair(
+        float curve_source, float height_scale, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_dump_path_template_pair(
+        float curve_source, float height_scale, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_dip_path_template_pair(
+        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_screw_path_template_pair(
+        int curve_source, int width_cells_, char* texture_a, char* texture_b);
+    void initialize_slalom_path_template_pair(
+        int curve_source, int width_cells_, char* texture_a, char* texture_b);
+    int initialize_loopbow_path_template_pair(
+        float curve_scale,
+        unsigned int width_cells_arg,
+        char unused_mode,
+        char* texture_a,
+        char* texture_b,
+        char* unused_texture);
+    void initialize_invert_path_template_pair(
+        float radius,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_wibble_path_template_pair(
+        float radius,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_start_path_template_pair(
+        float length,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_turnunder_path_template_pair(
+        float turns,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_snake_path_template_pair(
+        float scale_arg,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_slalombig_path_template_pair(
+        int curve_segments,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_slalomdouble_path_template_pair(
+        int curve_segments,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_turnover_path_template_pair(
+        float length,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_turnoverdouble_path_template_pair(
+        float length,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_sweep_path_template_pair(
+        float scale_arg,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_supertramp_path_template_pair(
+        float length,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture,
+        char* underside_texture);
+    void initialize_hill_valley_path_template_pair(
+        int width_cells_,
+        float height,
+        float length,
+        int centered,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_sbend_path_template_pair(
+        int width_cells_,
+        float height,
+        float z_amplitude,
+        int centered,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_p_path_template_pair(
+        int variant,
+        float scale_arg,
+        int width_cells_,
+        float start_x,
+        float end_x,
+        int curve_segments,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
+    void initialize_toad_path_template_pair(
+        int turn_left, char* texture_a, char* texture_b, char* vertical_texture);
+    void initialize_twister_path_template_pair(
+        float height,
+        int width_cells_,
+        int handedness,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
+    void initialize_twister2_path_template_pair(
+        float height,
+        int width_cells_,
+        int handedness,
+        char* texture_a,
+        char* texture_b,
+        char* vertical_texture);
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
     void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0, cRPath::Mirror
@@ -38,7 +182,7 @@ struct AttachmentPathTemplate {
         Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90, cRPath::SearchPos
 
     char unknown_00[0x24];
-    PathTemplateStripMesh* strip_mesh; // +0x24
+    Object* strip_mesh;               // +0x24
     char unknown_28[0x38 - 0x28];
     int kind;                        // +0x38
     unsigned char is_mirrored_x;     // +0x3c

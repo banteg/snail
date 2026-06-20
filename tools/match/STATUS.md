@@ -762,7 +762,7 @@ Run `uv run snail match types --paths` for the full path-level report.
 | unresolved-layout | StarField | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | SubLazerPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
 | unresolved-layout | TrackParcelPool | 1 | 1 | 0 | header or scratch definitions lack parsed fields; inspect manually |
-| header-compatible | AttachmentPathTemplate | 31 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
+| header-compatible | AttachmentPathTemplate | 5 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | FollowState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TooltipState | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | TrackRowCell | 2 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |

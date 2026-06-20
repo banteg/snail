@@ -1,6 +1,7 @@
 // initialize_loopbow_path_template_pair @ 0x42ba80 (thiscall, ret 0x18)
 
 #include "attachment_sample.h"
+#include "track_attachment_types.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
@@ -34,35 +35,6 @@ struct LoopbowFaceQuad {
 
 typedef char LoopbowFaceQuad_must_be_0x30[
     (sizeof(LoopbowFaceQuad) == 0x30) ? 1 : -1];
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    int initialize_loopbow_path_template_pair(
-        float curve_scale,
-        unsigned int width_cells_arg,
-        char unused_mode,
-        char* texture_a,
-        char* texture_b,
-        char* unused_texture);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;                // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                          // +0x38
-    unsigned char is_mirrored_x;       // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;                // +0x40
-    int segment_count;                 // +0x44
-    int row_span_count;                // +0x48
-    float segment_count_f;             // +0x4c
-    float width_or_scale;              // +0x50
-    int width_cells;                   // +0x54
-    AttachmentSample* primary_samples; // +0x58
-    AttachmentSample* secondary_samples; // +0x5c
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c; // +0x9c
-};
 
 int __fastcall finalize_path_template(AttachmentPathTemplate* path);
 

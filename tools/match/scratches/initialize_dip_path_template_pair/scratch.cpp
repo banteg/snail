@@ -7,6 +7,7 @@
 #define PATH_VARIANT 5
 
 #include "attachment_sample.h"
+#include "track_attachment_types.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
@@ -18,31 +19,7 @@ typedef AttachmentSample PathAttachmentSample;
 
 typedef ObjectFaceQuad PathTemplateFaceQuad;
 
-class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    void PATH_FUNCTION(PATH_SIGNATURE);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;                    // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                              // +0x38
-    unsigned char is_mirrored_x;           // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;                    // +0x40
-    int segment_count;                     // +0x44
-    int row_span_count;                    // +0x48
-    float segment_count_f;                 // +0x4c
-    float width_or_scale;                  // +0x50
-    int width_cells;                       // +0x54
-    PathAttachmentSample* primary_samples; // +0x58
-    PathAttachmentSample* secondary_samples;// +0x5c
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c; // +0x9c
-};
 
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,

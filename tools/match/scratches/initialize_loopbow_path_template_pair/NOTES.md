@@ -99,6 +99,26 @@ concentrated in:
 No inline assembly, fake globals, volatile clutter, or artificial frame padding
 was used.
 
+## Shared Template Type Pass
+
+2026-06-20:
+
+- The sample-backed path-template initializers now include the shared
+  `track_attachment_types.h` `AttachmentPathTemplate` instead of duplicating
+  local class overlays. The pass covers the 26 initializer scratches that
+  already used shared `AttachmentSample`.
+- `AttachmentPathTemplate::strip_mesh` is now shared as an `Object*`, matching
+  the constructor family evidence: these functions request object vertices and
+  facequads, then write `ObjectFaceQuad` grids. The narrow
+  `PathTemplateStripMesh` prefix view remains for mirror/finalizer code that
+  only needs the `flags` word at `+0x10`.
+- The `worm`, `cage2`, and `kind42` initializers intentionally keep their local
+  template overlays for now because they still carry local sample/facequad
+  aliases that need a separate source-shape pass.
+- All 26 promoted initializer scratches kept their exact pre-pass matcher
+  results, and the existing non-initializer consumers of
+  `track_attachment_types.h` also reran without score drift.
+
 ## Next region to attack
 
 The highest-value next pass is the vertex-grid block beginning near target

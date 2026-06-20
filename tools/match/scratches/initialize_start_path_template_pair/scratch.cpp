@@ -1,6 +1,7 @@
 // initialize_start_path_template_pair @ 0x426400 (thiscall, ret 0x18)
 
 #include "attachment_sample.h"
+#include "track_attachment_types.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
@@ -10,37 +11,7 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    void initialize_start_path_template_pair(
-        float length,
-        int width_cells_,
-        int side_exit,
-        char* texture_a,
-        char* texture_b,
-        char* cap_texture);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;
-    char unknown_28[0x38 - 0x28];
-    int kind;
-    unsigned char is_mirrored_x;
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;
-    int segment_count;
-    int row_span_count;
-    float segment_count_f;
-    float width_or_scale;
-    int width_cells;
-    PathTemplateSample* primary_samples;
-    PathTemplateSample* secondary_samples;
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c;
-};
 
 static void initialize_pair_sample(
     AttachmentPathTemplate* path, int index, float center_x, float y, float z)
