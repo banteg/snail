@@ -25,10 +25,12 @@ public:
     int set_backdrop_texture_target(int texture_id); // @ 0x410f40
     int draw_split_backdrop(); // @ 0x410f90
 #ifdef BACKDROP_RENDER_BACKDROP_RETURNS_VOID
-    void render_backdrop(); // @ 0x411040
+#define BACKDROP_RENDER_BACKDROP_RESULT void
 #else
-    int render_backdrop(); // @ 0x411040
+#define BACKDROP_RENDER_BACKDROP_RESULT int
 #endif
+    BACKDROP_RENDER_BACKDROP_RESULT render_backdrop(); // @ 0x411040
+#undef BACKDROP_RENDER_BACKDROP_RESULT
     int update_backdrop(); // @ 0x4112f0
 
     char unknown_000[0x38];

@@ -12,8 +12,10 @@ mouse-cursor operands resolved.
 The earlier local names `title/resume/quit` were misleading but codegen-neutral.
 
 2026-06-20 local view naming: direct inclusion of `completion_screen.h` is
-rejected here because it collides with the scratch-local `MouseCursorState`
-return shape (`mouse_cursor_state.h` models `release_mouse_cursor` as `void`).
-The exact teardown keeps its local `PauseMenuTeardownView`, remains `100.00%`,
-`22/22`, with `8 ok` masked operands, and no longer appears as a promotable
-`PauseMenu` duplicate in the type report.
+rejected here because this exact tail-return shape needs a release call view
+whose `release_mouse_cursor()` returns `int`; `mouse_cursor_state.h` models the
+shared helper as `void`. The teardown now names that call surface
+`PauseMenuMouseCursorReleaseView` instead of overloading `MouseCursorState`,
+keeps its local `PauseMenuTeardownView`, remains `100.00%`, `22/22`, with `8
+ok` masked operands, and no longer appears as a promotable `PauseMenu` or
+`MouseCursorState` duplicate in the type report.

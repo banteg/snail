@@ -4,7 +4,7 @@
 
 extern char* g_game_base; // data_4df904
 
-class MouseCursorState {
+class PauseMenuMouseCursorReleaseView {
 public:
     int release_mouse_cursor();
 };
@@ -23,5 +23,6 @@ int PauseMenuTeardownView::uninit_pause_menu()
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(options_widget);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(end_game_widget);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(resume_widget);
-    return ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
+    return ((PauseMenuMouseCursorReleaseView*)(g_game_base + 0x290))
+        ->release_mouse_cursor();
 }

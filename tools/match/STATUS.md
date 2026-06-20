@@ -726,7 +726,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- ABI-conflict: 6 type name(s)
+- ABI-conflict: 4 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
@@ -734,5 +734,3 @@ Run `uv run snail match types --paths` for the full path-level report.
 | ABI-conflict | Player | 6 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | Quaternion | 5 | 0 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
 | ABI-conflict | GolbShot | 2 | 1 | 1 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | MouseCursorState | 2 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |
-| ABI-conflict | Backdrop | 0 | 1 | 0 | method declarations disagree by return, parameters, calling convention, or virtual status |

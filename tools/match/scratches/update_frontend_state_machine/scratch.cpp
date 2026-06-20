@@ -9,7 +9,7 @@ struct CameraAnchor {
     float camera_y; // +0x64
 };
 
-struct MouseCursorState {
+struct FrontendMouseCaptureView {
     void capture_mouse_cursor();
 };
 
@@ -66,7 +66,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         }
         case 1:
             *(int*)(self + 0x94) = 0;
-            ((MouseCursorState*)(self + 0x16c))->capture_mouse_cursor();
+            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
             g_game->new_game_menu.replay_attract_controller = 0;
         {
             GameRoot* owner = g_game;
@@ -75,7 +75,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         }
         case 2:
             *(int*)(self + 0x94) = 0;
-            ((MouseCursorState*)(self + 0x16c))->capture_mouse_cursor();
+            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->new_game_menu.initialize_new_game_menu();
@@ -85,7 +85,7 @@ int FrontendStateMachine::update_frontend_state_machine()
             break;
         case 3:
             *(int*)(self + 0x94) = 5;
-            ((MouseCursorState*)(self + 0x16c))->capture_mouse_cursor();
+            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
@@ -93,7 +93,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         }
         case 4:
             *(int*)(self + 0x94) = 5;
-            ((MouseCursorState*)(self + 0x16c))->capture_mouse_cursor();
+            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();

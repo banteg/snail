@@ -32,3 +32,8 @@ Residuals are intentionally left to the matcher rather than papered over:
 - 2026-06-18: Replaced the local 0x40 matrix view with shared
   `transform_matrix.h`; focused Wibo stays `71.35%`, `176/180`, with
   `53 ok, 1 mismatch`.
+- 2026-06-20: The local capture-only mouse call surface is now named
+  `FrontendMouseCaptureView` instead of `MouseCursorState`. This keeps the
+  scratch byte-stable at `71.35%`, `176/180`, while leaving the shared
+  `mouse_cursor_state.h` layout for helpers and frame/update callsites that
+  agree on the full ABI.

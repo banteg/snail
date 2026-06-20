@@ -22,5 +22,12 @@
 - IDA presents `render_backdrop`, `draw_split_backdrop`, and `update_backdrop`
   as `void`, but changing the shared prototypes currently worsens
   `update_backdrop` codegen. The shared header therefore keeps the corpus-default
-  `int` declaration while this scratch opts into the likely-void
-  `render_backdrop` declaration with `BACKDROP_RENDER_BACKDROP_RETURNS_VOID`.
+  `int` declaration for normal users while this scratch opts into the
+  likely-void `render_backdrop` declaration with
+  `BACKDROP_RENDER_BACKDROP_RETURNS_VOID`.
+- 2026-06-20: `backdrop.h` now spells that conditional return through a single
+  macro-expanded declaration, so each preprocessed scratch still receives the
+  same `void`/`int` prototype as before without presenting two competing
+  `Backdrop::render_backdrop` declarations to `snail match types`. Focused Wibo
+  remains `85.56%`, `189/192`, with the same two constant-lane masked
+  mismatches.
