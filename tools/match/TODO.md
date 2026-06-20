@@ -296,6 +296,13 @@ These are not gameplay owners, but several mirrors depend on them.
   min-distance comparison forms either compile identically or regress. Treat the
   remaining misses as local branch-hoist, cdecl cleanup-selection, and
   x87/local-lifetime residuals unless a new original-source idiom appears.
+- 2026-06-20 archive-family audit: reran and inspected
+  `initialize_game_data_archive` and `load_archive_index`. Controller-cursor
+  spellings, installed-global count ownership, chained assignment, and
+  assignment-in-condition forms either compile identically or regress. Treat the
+  remaining misses as allocator-cleanup/cursor materialization and archive-index
+  install-store scheduling residuals unless a stronger original-source or
+  layout lead appears.
 
 ## Operating Plan
 

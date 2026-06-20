@@ -30,3 +30,11 @@
   `g_input_slot0_buttons - 1` is codegen-neutral at 94.74%, while the
   one-before-axis variant shifts the physical stores and drops below baseline.
   The retained byte cursor remains the best evidence-backed source shape.
+- 2026-06-20 archive-family audit: reran the focused matcher and full listing
+  while checking the adjacent `load_archive_index` install-store residual. The
+  initializer still reports 94.74%, 48/47 candidate/target instructions, and 19
+  clean masked operands. The only localized mismatch remains allocator cleanup
+  versus controller-cursor materialization (`mov eax, buttons; add esp; sub
+  eax, 4` versus native `add esp; mov eax, axis_y`). No archive-index assignment
+  owner explained this scheduler choice, so keep the current byte cursor until
+  a stronger original-source or layout lead appears.

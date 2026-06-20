@@ -25,3 +25,11 @@ temporary and a raw integer base temporary both preserve the 92.54% object.
 Neither source shape moves VC6's `mov eax, esi` before stack cleanup or the
 global store, reinforcing that the residual is local scheduling rather than the
 source-level alias used for `g_archive_index_records`.
+
+2026-06-20 archive-family audit: making the installed global the explicit owner
+for the entry-count test (`g_archive_index_records = index; records =
+g_archive_index_records; if (records->count > 0)`), using a chained assignment
+(`g_archive_index_records = records = index`), and using the assignment result
+inside the count test all compile identically at 92.54%. None recover native's
+`mov eax, esi; add esp, 0x38; mov [global], eax` schedule. Keep the current
+clear `records = index; g_archive_index_records = records` source shape.
