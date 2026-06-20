@@ -2351,6 +2351,16 @@
       "description": "Right mouse button state array returned by read_right_mouse_button_state and updated by the game window procedure."
     },
     {
+      "address": "0x4b7644",
+      "name": "g_estimated_texture_vram_bytes",
+      "kind": "global",
+      "aliases": [
+        "data_4b7644"
+      ],
+      "size": "0x4",
+      "description": "Accumulated texture memory estimate updated by the startup texture registry loader before logging the kilobyte total."
+    },
+    {
       "address": "0x4b7648",
       "name": "g_object_list",
       "kind": "global",

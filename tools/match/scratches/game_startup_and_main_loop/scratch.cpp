@@ -64,7 +64,7 @@ extern int data_4b775c;
 extern unsigned char data_753c70;
 extern StartupAudioBackendView g_audio_backend; // data_753c58
 
-int query_runtime_capability(); // @ 0x44afc0
+int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
@@ -84,7 +84,7 @@ int initialize_main_loop_display_state(); // @ 0x406d70
 int construct_game_runtime(); // @ 0x407b60
 int set_tracked_allocation_mark(); // @ 0x431cb0
 char initialize_game_assets_and_world(GameRoot* game); // @ 0x40acf0
-int sub_412a00(int value); // @ 0x412a00
+void load_registered_texture_refs(int debug_fallback); // @ 0x412a00
 int show_and_focus_game_window(); // @ 0x4073b0
 BOOL sub_407490(); // @ 0x407490
 int render_game_frame_scene(); // @ 0x4134c0
@@ -111,7 +111,7 @@ int __stdcall game_startup_and_main_loop(
     if (FindWindowExA(0, 0, "SnailMailWindowClass", 0) != 0)
         return 0;
 
-    if (query_runtime_capability() < 0x801) {
+    if (query_directx_runtime_version() < 0x801) {
         abort_startup_with_3d_error();
         return 0;
     }
@@ -170,7 +170,7 @@ int __stdcall game_startup_and_main_loop(
             if (initialize_game_assets_and_world(game) == 0)
                 quit_requested = 1;
 
-            sub_412a00(1);
+            load_registered_texture_refs(1);
             ((GameRoot*)g_game_base)->initialize_game_last();
             g_game_initialization_pending = 0;
             data_4b7759 = 0;

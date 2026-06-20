@@ -36,14 +36,15 @@ struct ColorBGRA8 {
 
 struct TextureRef {
     unsigned int flags; // +0x00
-    char unknown_04[0x0c - 0x04];
+    int loaded_width; // +0x04, filled by load_registered_texture_ref
+    int loaded_height; // +0x08, filled by load_registered_texture_ref
     char name[0x8c - 0x0c]; // +0x0c, inline path/name used by kill_sprite error path
     int slot_index;         // +0x8c, texture-list slot id
     int frame_count;        // +0x90
     float frame_progress_step; // +0x94
     void* texture_ref;      // +0x98
     char unknown_9c[0xa0 - 0x9c];
-    int unknown_a0;         // +0xa0, initialized to 1 by get_or_create_texture_ref
+    int mip_levels;         // +0xa0, initialized to 1 by get_or_create_texture_ref
 };
 
 typedef char TextureRef_must_be_0xa4[

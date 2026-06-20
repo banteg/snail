@@ -1,0 +1,95 @@
+// load_registered_texture_ref @ 0x412a70 (cdecl)
+
+#include "texture_registry.h"
+
+extern Direct3DDevice8* g_d3d_device; // data_502fec
+
+char archive_or_file_exists(char* path, char force_filesystem); // @ 0x430fd0
+char* load_file_bytes(char* file_name, int* out_size); // @ 0x431520
+char is_archive_index_loaded(); // @ 0x431a80
+char* get_archive_data_base(); // @ 0x431a90
+char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
+char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer,
+    int byte_count);
+int report_warningf(char* format, ...); // @ 0x431d10
+int report_errorf(char* format, ...); // @ 0x431cc0
+
+extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,
+    void* src_data, unsigned int src_data_size, unsigned int width, unsigned int height,
+    unsigned int mip_levels, unsigned int usage, unsigned int format, unsigned int pool,
+    unsigned int filter, unsigned int mip_filter, unsigned int color_key, void* src_info,
+    void* palette, Direct3DTexture8** texture);
+extern "C" int __stdcall D3DXCreateTextureFromFileExA(Direct3DDevice8* device, char* path,
+    unsigned int width, unsigned int height, unsigned int mip_levels, unsigned int usage,
+    unsigned int format, unsigned int pool, unsigned int filter, unsigned int mip_filter,
+    unsigned int color_key, void* src_info, void* palette, Direct3DTexture8** texture);
+extern "C" int __stdcall D3DXCreateTextureFromFileA(
+    Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
+
+void load_registered_texture_ref(int texture_index, int debug_fallback)
+{
+    TextureRef* texture_ref = &g_texture_refs.entries[texture_index];
+    if ((texture_ref->flags & 0x8000) != 0) {
+        return;
+    }
+
+    char* path = texture_ref->name;
+    if (archive_or_file_exists(path, 0) == 0) {
+        report_warningf("Texture File Missing using Debug.tga (%s)", path);
+        D3DXCreateTextureFromFileA(
+            g_d3d_device, "Sprites/Debug.tga", &g_d3d_texture_slots[texture_index]);
+        return;
+    }
+
+    if ((texture_ref->flags & 0x20) != 0) {
+        texture_ref->texture_ref = load_file_bytes(path, 0);
+    } else {
+        texture_ref->texture_ref = 0;
+    }
+
+    char tga_header[0x14];
+    load_file_bytes_fixed_size_from_archive_or_fs(path, tga_header, sizeof(tga_header));
+
+    char fallback_mode = (char)debug_fallback;
+    unsigned int color_key = (fallback_mode == 0x20) ? 0x00ffffff : 0;
+    int texture_result;
+    if (is_archive_index_loaded() != 0) {
+        char* archive_base = get_archive_data_base();
+        int byte_count;
+        load_file_bytes_from_archive_or_fs(path, archive_base, &byte_count);
+        texture_result = D3DXCreateTextureFromFileInMemoryEx(g_d3d_device, archive_base,
+            byte_count, 0, 0, texture_ref->mip_levels, 0, 21, 1, 3, 3, color_key, 0, 0,
+            &g_d3d_texture_slots[texture_index]);
+    } else {
+        texture_result = D3DXCreateTextureFromFileExA(g_d3d_device, path, 0, 0,
+            texture_ref->mip_levels, 0, 21, 1, 3, 3, color_key, 0, 0,
+            &g_d3d_texture_slots[texture_index]);
+    }
+
+    if (texture_result < 0) {
+        report_errorf("Failed to Create DirectX Texture %s", path);
+        D3DXCreateTextureFromFileA(
+            g_d3d_device, "Sprites/Debug.tga", &g_d3d_texture_slots[texture_index]);
+        return;
+    }
+
+    g_d3d_device->vtbl->SetTexture(g_d3d_device, 0, g_d3d_texture_slots[texture_index]);
+    g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 16, 3);
+    g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 17, 3);
+
+    if (fallback_mode == 0x20) {
+        texture_ref->flags |= 0x10000;
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 1, 4);
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 2, 2);
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 3, 0);
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 4, 4);
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 5, 2);
+        g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 6, 0);
+    }
+
+    int width = *(unsigned short*)(tga_header + 0x0c);
+    int height = *(unsigned short*)(tga_header + 0x0e);
+    texture_ref->loaded_width = width;
+    texture_ref->loaded_height = height;
+    g_estimated_texture_vram_bytes += width * height * sizeof(unsigned int);
+}

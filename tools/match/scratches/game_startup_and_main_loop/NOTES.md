@@ -117,6 +117,8 @@ Known shape gaps:
   clears the queued view-sample count and current display-mode pointer. The
   adjacent `0x407920` helper clears the display-mode probe count after a
   minimized-window restore.
-- The startup masked audit now leaves two unresolved app-shell call targets:
-  `0x44afc0` and `0x412a00`; the render-scene call at `0x4134c0` is named as
-  `render_game_frame_scene`.
+- The startup masked audit now has no unresolved app-shell call targets. The
+  DirectX capability probe at `0x44afc0` is named as
+  `query_directx_runtime_version` and still awaits a dedicated scratch; the
+  texture registry loader at `0x412a00` and render-scene call at `0x4134c0`
+  are named as `load_registered_texture_refs` and `render_game_frame_scene`.
