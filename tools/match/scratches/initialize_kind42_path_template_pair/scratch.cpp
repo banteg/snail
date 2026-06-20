@@ -2,73 +2,12 @@
 
 #include "object_render_types.h"
 #include "sprite.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 
 float sine(float angle);
 
-struct Kind42AttachmentSample {
-    TransformMatrix transform;             // +0x00
-    float inverse_matrix[16];              // +0x40
-    Vector3 delta_dir_to_next;             // +0x80
-    float delta_length;                    // +0x8c
-    float center_x;                        // +0x90
-    float rotation_scalar_94;              // +0x94
-    float rotation_scalar_98;              // +0x98
-    float lateral_scale;                   // +0x9c
-    float special_scalar;                  // +0xa0
-    float lateral_source;                  // +0xa4
-};
-
-typedef char Kind42AttachmentSample_must_be_0xa8[
-    (sizeof(Kind42AttachmentSample) == 0xa8) ? 1 : -1];
-
-struct Kind42FaceQuad {
-    unsigned short flags;                  // +0x00
-    unsigned short vertex_0;               // +0x02
-    unsigned short vertex_1;               // +0x04
-    unsigned short vertex_2;               // +0x06
-    unsigned short vertex_3;               // +0x08
-    char unknown_0a[0x0c - 0x0a];
-    TextureRef* texture_ref;               // +0x0c
-    ObjectUv uv[4];                        // +0x10
-};
-
-typedef char Kind42FaceQuad_must_be_0x30[
-    (sizeof(Kind42FaceQuad) == 0x30) ? 1 : -1];
-
-class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    int compute_kind42_attachment_transform(
-        float radius, float x, float y, TransformMatrix* transform, float* out_angle);
-    void initialize_kind42_path_template_pair(
-        int unused_scale_bits,
-        int width_cells_,
-        int unused_kind_arg,
-        char* texture_a,
-        char* texture_b,
-        char* unused_path_version);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;                     // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                               // +0x38
-    unsigned char is_mirrored_x;            // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;                     // +0x40
-    int segment_count;                      // +0x44
-    int row_span_count;                     // +0x48
-    float segment_count_f;                  // +0x4c
-    float width_or_scale;                   // +0x50
-    int width_cells;                        // +0x54
-    Kind42AttachmentSample* primary_samples;// +0x58
-    Kind42AttachmentSample* secondary_samples;// +0x5c
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c;  // +0x9c
-};
 
 void AttachmentPathTemplate::initialize_kind42_path_template_pair(
     int unused_scale_bits,
@@ -216,7 +155,7 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
     strip_mesh->request_object_facequads(2 * segment_count * width_cells);
 
     Vector3* vertices = strip_mesh->vertices;
-    Kind42FaceQuad* facequads = (Kind42FaceQuad*)strip_mesh->facequads;
+    ObjectFaceQuad* facequads = strip_mesh->facequads;
     TransformMatrix kind42_transform;
     float out_angle[2];
     set_matrix_identity(&kind42_transform);
@@ -231,7 +170,7 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
             Vector3* vertex = &vertices[column + row * (width_cells + 1)];
             if (row == segment_count) {
                 TransformMatrix* previous =
-                    (TransformMatrix*)((char*)transform - sizeof(Kind42AttachmentSample));
+                    (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
                 Vector3 generated_position(
                     previous->position.x + lateral * previous->basis_right.x,
                     previous->position.y + lateral * previous->basis_right.y,
@@ -254,12 +193,12 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
                 0.0f,
                 &kind42_transform,
                 out_angle);
-            if (sample_offset > sizeof(Kind42AttachmentSample) && row != segment_count) {
+            if (sample_offset > sizeof(AttachmentSample) && row != segment_count) {
                 vertex->x = kind42_transform.position.x;
                 vertex->y = kind42_transform.position.y;
             }
         }
-        sample_offset += sizeof(Kind42AttachmentSample);
+        sample_offset += sizeof(AttachmentSample);
     }
 
     for (int mesh_row = 0; mesh_row < segment_count; ++mesh_row) {
@@ -273,10 +212,10 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
                 float u0 = (float)mesh_column * 0.125f;
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
-                    Kind42FaceQuad* face =
+                    ObjectFaceQuad* face =
                         &facequads[2 * mesh_column
                             + 2 * mesh_row * width_cells + face_index];
-                    face->flags = 0;
+                    face->header_word = 0;
                     if (face_index == 0) {
                         face->vertex_0 = mesh_column
                             + mesh_row * ((unsigned short)width_cells + 1);

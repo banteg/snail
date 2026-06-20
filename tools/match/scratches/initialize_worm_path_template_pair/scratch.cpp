@@ -2,23 +2,8 @@
 
 #include "font_system.h"
 #include "object_render_types.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
-
-struct WormPathSample {
-    TransformMatrix transform;             // +0x00
-    float inverse_matrix[16];              // +0x40
-    Vector3 delta_dir_to_next;             // +0x80
-    float delta_length;                    // +0x8c
-    float center_x;                        // +0x90
-    float rotation_scalar_94;              // +0x94
-    float rotation_scalar_98;              // +0x98
-    float lateral_scale;                   // +0x9c
-    float special_scalar;                  // +0xa0
-    float lateral_source;                  // +0xa4
-};
-
-typedef char WormPathSample_must_be_0xa8[
-    (sizeof(WormPathSample) == 0xa8) ? 1 : -1];
 
 struct WormFaceQuad {
     unsigned short flags;                  // +0x00
@@ -40,29 +25,6 @@ struct WormFaceQuad {
 
 typedef char WormFaceQuad_must_be_0x30[
     (sizeof(WormFaceQuad) == 0x30) ? 1 : -1];
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    void initialize_worm_path_template_pair(char* texture_path);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;                    // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                              // +0x38
-    unsigned char is_mirrored_x;           // +0x3c
-    char unknown_3d[3];
-    int side_exit_mode;                    // +0x40
-    int segment_count;                     // +0x44
-    int row_span_count;                    // +0x48
-    float segment_count_f;                 // +0x4c
-    float width_or_scale;                  // +0x50
-    int width_cells;                       // +0x54
-    WormPathSample* primary_samples;       // +0x58
-    WormPathSample* secondary_samples;     // +0x5c
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c; // +0x9c
-};
 
 void __fastcall request_object_vertex_colours(Object* object);
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);

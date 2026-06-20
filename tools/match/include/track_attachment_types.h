@@ -24,6 +24,16 @@ struct TrackRowCell;
 
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
+    void initialize_worm_path_template_pair(char* texture_path);
+    void initialize_cage2_path_template_pair(
+        int width_cells_, char* texture_a, char* texture_b, char* vertical_texture);
+    void initialize_kind42_path_template_pair(
+        int unused_scale_bits,
+        int width_cells_,
+        int unused_kind_arg,
+        char* texture_a,
+        char* texture_b,
+        char* unused_path_version);
     void initialize_looptheloop_path_template_pair(
         float curve_source, int width_cells_, char* texture_a, char* texture_b);
     void initialize_looptheloopw_path_template_pair(

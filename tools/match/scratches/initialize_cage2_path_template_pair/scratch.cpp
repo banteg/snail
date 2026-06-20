@@ -2,66 +2,12 @@
 
 #include "object_render_types.h"
 #include "sprite.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 
 float cosine(float angle);
 
-struct CageAttachmentSample {
-    TransformMatrix transform;             // +0x00
-    float inverse_matrix[16];              // +0x40
-    Vector3 delta_dir_to_next;             // +0x80
-    float delta_length;                    // +0x8c
-    float center_x;                        // +0x90
-    float rotation_scalar_94;              // +0x94
-    float rotation_scalar_98;              // +0x98
-    float lateral_scale;                   // +0x9c
-    float special_scalar;                  // +0xa0
-    float lateral_source;                  // +0xa4
-};
-
-typedef char CageAttachmentSample_must_be_0xa8[
-    (sizeof(CageAttachmentSample) == 0xa8) ? 1 : -1];
-
-struct CageFaceQuad {
-    unsigned short flags;                  // +0x00
-    unsigned short vertex_0;               // +0x02
-    unsigned short vertex_1;               // +0x04
-    unsigned short vertex_2;               // +0x06
-    unsigned short vertex_3;               // +0x08
-    char unknown_0a[0x0c - 0x0a];
-    TextureRef* texture_ref;                // +0x0c
-    ObjectUv uv[4];                         // +0x10
-};
-
-typedef char CageFaceQuad_must_be_0x30[
-    (sizeof(CageFaceQuad) == 0x30) ? 1 : -1];
-
-class AttachmentPathTemplate;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
-
-class AttachmentPathTemplate {
-public:
-    void allocate_path_template_samples();
-    void initialize_cage2_path_template_pair(
-        int width_cells_, char* texture_a, char* texture_b, char* vertical_texture);
-
-    char unknown_00[0x24];
-    Object* strip_mesh;                     // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                               // +0x38
-    unsigned char is_mirrored_x;            // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;                     // +0x40
-    int segment_count;                      // +0x44
-    int row_span_count;                     // +0x48
-    float segment_count_f;                  // +0x4c
-    float width_or_scale;                   // +0x50
-    int width_cells;                        // +0x54
-    CageAttachmentSample* primary_samples;  // +0x58
-    CageAttachmentSample* secondary_samples;// +0x5c
-    char unknown_60[0x9c - 0x60];
-    unsigned char special_runtime_flag_9c;  // +0x9c
-};
 
 void AttachmentPathTemplate::initialize_cage2_path_template_pair(
     int width_cells_, char* texture_a, char* texture_b, char* vertical_texture)
@@ -205,7 +151,7 @@ void AttachmentPathTemplate::initialize_cage2_path_template_pair(
     strip_mesh->request_object_facequads(2 * width_cells * segment_count);
 
     Vector3* vertices = strip_mesh->vertices;
-    CageFaceQuad* facequads = (CageFaceQuad*)strip_mesh->facequads;
+    ObjectFaceQuad* facequads = strip_mesh->facequads;
 
     for (int row = 0; row <= segment_count; ++row) {
         int column = 0;
@@ -216,7 +162,7 @@ void AttachmentPathTemplate::initialize_cage2_path_template_pair(
             Vector3* vertex = &vertices[column + row * (width_cells + 1)];
             if (row == segment_count) {
                 TransformMatrix* previous =
-                    (TransformMatrix*)((char*)transform - sizeof(CageAttachmentSample));
+                    (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
                 Vector3 lateral_offset(
                     lateral * previous->basis_right.x,
                     lateral * previous->basis_right.y,
@@ -234,7 +180,7 @@ void AttachmentPathTemplate::initialize_cage2_path_template_pair(
                 *vertex = generated_position;
             }
         }
-        mesh_cursor += sizeof(CageAttachmentSample);
+        mesh_cursor += sizeof(AttachmentSample);
     }
 
     mesh_cursor = 0;
@@ -249,10 +195,10 @@ void AttachmentPathTemplate::initialize_cage2_path_template_pair(
                 float u0 = (float)mesh_column * 0.125f;
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
-                    CageFaceQuad* face =
+                    ObjectFaceQuad* face =
                         &facequads[2 * mesh_column
                             + 2 * mesh_cursor * width_cells + face_index];
-                    face->flags = 0;
+                    face->header_word = 0;
                     if (face_index == 0) {
                         face->vertex_0 = mesh_column
                             + mesh_cursor * ((unsigned short)width_cells + 1);

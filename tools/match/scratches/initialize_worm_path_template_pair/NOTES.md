@@ -109,3 +109,21 @@ rejected rather than using frame size as a metric-only goal. Likewise, an
 explicit duplicated texture-parity branch fell to 62.27%; face aliases,
 alternate `for` spellings, and several operator-return variants were neutral or
 regressive.
+
+## 2026-06-20 shared type pass
+
+The sample and owner overlays now use the shared `AttachmentSample` and
+`AttachmentPathTemplate` declarations from `track_attachment_types.h`. The
+matcher stayed at the accepted baseline:
+
+```text
+match: 72.28%
+target: 736 insns, candidate: 725 insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch
+```
+
+The local `WormFaceQuad` overlay is deliberately retained. Rewriting it to the
+shared `ObjectFaceQuad` with equivalent offsets and `header_word` stores
+regressed the matcher to `67.95%` and shortened the candidate to 724
+instructions, so the UV field-name overlay is a real source-shape constraint for
+this scratch rather than a removable duplicate.
