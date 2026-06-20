@@ -17,6 +17,7 @@ struct Vector3 {
     void cross_vectors(const Vector3* lhs, const Vector3* rhs); // @ 0x44cd40
     float vector_magnitude(); // @ 0x44ccf0, thiscall, returns st0
     void multiply_vector_by_matrix(TransformMatrix matrix); // @ 0x44cb90, matrix by value
+    Vector3* multiply_vector_by_matrix_copy(Vector3* out, const TransformMatrix* matrix) const; // @ 0x44cac0
     void rotate_vector_by_matrix(const float* matrix); // thiscall, matrix on stack
     Vector3* rotate_vector_by_matrix(const TransformMatrix* matrix); // @ 0x44cc20
 };

@@ -3,6 +3,7 @@
 #include "bod_types.h"
 #include "border_manager.h"
 #include "render_camera_slot.h"
+#include "runtime_slot.h"
 #include "sprite.h"
 
 void* operator new(unsigned int size);
@@ -22,29 +23,6 @@ extern void* g_border_manager_callback_table;   // data_4972e8
 extern void* g_overlay_callback_table;          // data_4972ec
 extern void* g_unknown_runtime_callback_table;  // data_4972f0
 extern void* g_overlay_stream_callback_table;   // data_4972b0
-
-class RuntimeSlot {
-public:
-    void initialize_bod_base();
-    void initialize_renderable_bod();
-    void noop_runtime_slot_constructor();
-    void initialize_runtime_pools_and_path_template_bank();
-    void initialize_border_record();
-    void initialize_cached_x_mesh_slot();
-    void initialize_intro_logo_renderable();
-    void initialize_unknown_408000();
-    void initialize_unknown_408040();
-
-    void* vtable;
-};
-
-typedef void (RuntimeSlot::*RuntimeSlotConstructor)();
-
-void __stdcall initialize_array_with_constructor(
-    RuntimeSlot* base,
-    int stride,
-    int count,
-    RuntimeSlotConstructor constructor);
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
     debug_report_stub("Size of cRGame %i\n", 0x12e6ff4); \

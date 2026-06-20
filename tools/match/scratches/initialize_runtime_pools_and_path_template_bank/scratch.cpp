@@ -1,44 +1,7 @@
 // initialize_runtime_pools_and_path_template_bank @ 0x408060 (thiscall, ret)
 
+#include "runtime_slot.h"
 #include "sprite.h"
-
-class RuntimeSlot {
-public:
-    void initialize_active_bod();
-    void noop_runtime_slot_constructor();
-    void initialize_bod_base();
-    void initialize_track_speedup_runtime();
-    void initialize_track_jetpack_pickup_runtime();
-    void initialize_track_health_pickup_runtime();
-    void initialize_slug_hazard_runtime();
-    void initialize_sub_lazer_runtime();
-    void initialize_salt_hazard_runtime();
-    void initialize_garbage_hazard();
-    void initialize_track_ring_or_special_effect_runtime();
-    void initialize_fringe_object();
-    void initialize_renderable_bod();
-    void initialize_click_start_controller_runtime();
-    void initialize_golb_shot();
-    void initialize_enemy_manager_runtime();
-    void initialize_bod();
-    void initialize_track_row_runtime();
-    void initialize_path_template_record_pair();
-    void initialize_active_landscape_entry();
-    void initialize_landscape_script_record();
-    void sub_42F6E0();
-    void initialize_track_parcel_runtime();
-    void sub_408880();
-
-    void* vtable; // +0x00 for bod-like slots
-};
-
-typedef void (RuntimeSlot::*RuntimeSlotConstructor)();
-
-void __stdcall initialize_array_with_constructor(
-    RuntimeSlot* base,
-    int stride,
-    int count,
-    RuntimeSlotConstructor constructor);
 
 extern void* g_banner_callback_table;        // data_497304
 extern void* g_subgoldy_callback_table;      // data_497300

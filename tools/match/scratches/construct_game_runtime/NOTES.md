@@ -31,3 +31,14 @@ and tip manager.
 The helper constructors at `0x408000` and `0x408040` only appear in this
 constructor in the current exports, so the scratch keeps them as local
 `initialize_unknown_*` methods rather than adding speculative names.
+
+2026-06-20 runtime-slot ABI pass:
+
+- Promoted the neutral `RuntimeSlot` method set and the shared constructor
+  callback typedef to `tools/match/include/runtime_slot.h`.
+- The callback ABI is pointer-returning (`RuntimeSlot* (RuntimeSlot::*)()`),
+  matching the exact `noop_runtime_slot_constructor` body while keeping
+  `initialize_array_with_constructor` itself source-spelled as a void helper.
+- Rechecked this scratch plus the three RuntimeSlot anchors. The anchors stayed
+  exact, this scratch remained 80.40%, and the `RuntimeSlot` ABI-conflict row
+  disappeared from `uv run snail match types --paths`.

@@ -2,17 +2,9 @@
 
 #include "transform_matrix.h"
 
-struct Vec3 {
-    float x;
-    float y;
-    float z;
-
-    void multiply_vector_by_matrix(TransformMatrix matrix);
-};
-
-void Vec3::multiply_vector_by_matrix(TransformMatrix matrix)
+void Vector3::multiply_vector_by_matrix(TransformMatrix matrix)
 {
-    Vec3 source = *this;
+    Vector3 source = *this;
 
     x = source.x * matrix.basis_right.x + source.y * matrix.basis_up.x + source.z * matrix.basis_forward.x + matrix.position.x;
     y = matrix.basis_right.y * source.x + matrix.basis_up.y * source.y + matrix.basis_forward.y * source.z + matrix.position.y;

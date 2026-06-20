@@ -12,3 +12,8 @@ runtime-pool callsites.
 The exact count guard is `if (--count < 0) return;`, which lets VC6 branch on
 the flags from `dec eax`. Spelling the loop as `count > 0` emitted a separate
 `test eax, eax` and missed the native prologue.
+
+2026-06-20 ABI note: the `RuntimeSlot` callback declaration now lives in
+`tools/match/include/runtime_slot.h` and returns `RuntimeSlot*`. This keeps the
+exact helper body unchanged while aligning the callers with the no-op
+constructor's proven `return this` shape.
