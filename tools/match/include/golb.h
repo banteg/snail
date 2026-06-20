@@ -76,8 +76,9 @@ struct GolbShotHomingStateOverlay {
 typedef char GolbShotHomingStateOverlay_must_be_0x28[
     (sizeof(GolbShotHomingStateOverlay) == 0x28) ? 1 : -1];
 
-// Shot sprite/list view shared by the small Golb helpers. The larger
-// update/create scratches still keep scheduling-sensitive local GolbShot views.
+// Shot sprite/list view shared by the Golb helpers. update_golb_ai still keeps
+// a scheduling-sensitive local field slice for its low-score movement/collision
+// body, but the header layout is compatible with that slice.
 class GolbShot {
 public:
     GolbShot* initialize_golb_shot(); // @ 0x408690

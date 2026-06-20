@@ -95,3 +95,8 @@ Residuals:
   moves the `&5` anchor-copy body out-of-line, matching the native tree shape
   better without changing spawn semantics. Focused Wibo improves to `31.71%`,
   `446/582`, and the masked operand audit is now clean at `33 ok`, `0 mismatch`.
+- 2026-06-20 GolbShot type split: the scratch now consumes `include/golb.h` for
+  the `GolbShot::create_golb(Player*, int, int)` declaration. The final slot-0
+  callback is still spelled through a local `GolbShotPrimaryBodyView`, matching
+  the renderable BOD vtable installed at offset zero by `initialize_golb_shot`.
+  Focused Wibo stays `31.71%`, `446/582`, with `33 ok` masked operands.

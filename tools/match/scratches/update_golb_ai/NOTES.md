@@ -93,15 +93,13 @@ recovering the native `0x70` frame. Remaining homing residuals are the y/z
 velocity owner operands (`[edi+4]`/`[edi+8]` versus direct member offsets) and
 the downstream path/collision scheduling.
 
-Historical tooling cleanup note: `uv run snail match types Game Player PathFollow
-TrackRowCell GolbShot Vec3 ResultRecord RunRecord` reports `Player` and
-`TrackRowCell` as header-covered candidates, but `Game`, `GolbShot`, and
-`Vec3` are still divergent across scratches. After the typed transform pass,
-`uv run snail match types TransformMatrix GolbShot Vec3` also reports
-`TransformMatrix`, `GolbShot`, and `Vec3` as divergent. The TransformMatrix
-piece is superseded by the 2026-06-18 consolidation below; keep the broader
-gameplay owner/projectile/vector views scratch-local until more matching
-islands agree.
+Historical tooling cleanup note: earlier `uv run snail match types Game Player
+PathFollow TrackRowCell GolbShot Vec3 ResultRecord RunRecord` passes reported
+`Game`, `GolbShot`, and `Vec3` as divergent across scratches. The
+TransformMatrix piece is superseded by the 2026-06-18 consolidation below, and
+the GolbShot method-surface conflict is superseded by the 2026-06-20
+create-dispatch split below; keep the broader gameplay owner and vector views
+scratch-local until more matching islands agree.
 
 2026-06-18 TransformMatrix consolidation: the scratch now uses shared
 `transform_matrix.h` instead of its local 0x40 matrix view. Focused Wibo stays
@@ -121,6 +119,14 @@ tile-id view until the surrounding owner/vector scheduling is less fragile.
 `646/694`, `9/694` prefix, and the existing `52 ok / 1` masked call mismatch;
 `uv run snail match types TrackRowCell --paths` now reports no consolidation
 candidates.
+
+2026-06-20 GolbShot header compatibility: `create_golb` now consumes
+`include/golb.h` and moves its slot-0 virtual callback spelling into a separate
+local primary-body view. `uv run snail match types GolbShot --paths` now reports
+the remaining `update_golb_ai` local slice as header-compatible with
+`golb.h`. This scratch intentionally keeps its local `GolbShot` fields because
+the current residuals are source scheduling and owner-register issues inside
+the large update body.
 
 Measured source-shape rejections:
 
