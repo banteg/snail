@@ -7,14 +7,10 @@
 - The straight-track family branch covers tile ids `1`, `0x14`, `0x15`,
   `0x1b`, `0x21`, and `0x22`; non-ramp non-excluded cells use the alternate
   variant banks.
-- Current retained shape is 94.55% with 220/220 instructions, 18 clean masked
-  operands, and no unresolved operands after naming
-  `select_track_tile_edge_variants_jump_table`. The remaining gap is instruction
-  scheduling around independent tile/flag loads versus stores; no artificial
-  dependency was kept to force exact order.
-- 2026-06-20 larger-chunk audit: the shared tile-byte layout still matches BN
-  and IDA (`tile_id +0x00`, `tile_flags_3d +0x01`,
-  `lane_and_flags +0x04`). Current source already clears `tile_flags_3d` and
-  writes the `lane_and_flags` mask before reloading `tile_id`; VC6 hoists the
-  independent tile load in the candidate. Treat the repeated case-body gaps as
-  scheduling debt unless a real source dependency appears.
+- 2026-06-20 larger-chunk proof: exact at 100.00%, 220/220 instructions,
+  prefix 220/220, with 18 clean masked operands and no unresolved operands.
+  The key source shape is keeping byte/dword pointers for the tile flag byte
+  and `lane_and_flags` word inside the row-cell tile-byte cursor. That pointer
+  view matches the decompiler's byte-pointer walk and stops VC6 from hoisting
+  the independent tile-id loads across the flag stores without using volatile
+  or artificial dependencies.

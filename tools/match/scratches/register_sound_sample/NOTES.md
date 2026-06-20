@@ -37,3 +37,7 @@ Residual:
   is codegen-neutral at 93.07%. Duplicating the shared store/count/error tail
   inside both backend-load arms regresses to 42.11% by emitting real duplicate
   tail code, so the single shared tail is the durable source shape.
+- 2026-06-20 larger-chunk retry: duplicating only the
+  `rstrcpy_checked_ascii` path-name copy inside both backend-load arms also
+  fails to tail-merge; it emits a 60-instruction 30.63% candidate. Keep the
+  single shared copy/count/error tail.

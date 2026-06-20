@@ -24,8 +24,10 @@ void SubgameRuntime::select_track_tile_edge_variants()
         do {
             int lane = 0;
             do {
-                cell->tile_flags_3d = 0;
-                cell->lane_and_flags &= ~0x8000u;
+                unsigned char* tile_flags_3d = &cell->tile_flags_3d;
+                unsigned int* lane_and_flags = &cell->lane_and_flags;
+                *tile_flags_3d = 0;
+                *lane_and_flags &= ~0x8000u;
 
                 unsigned char skip_tile = cell->tile_id;
                 if (skip_tile != 0 && skip_tile != 0x23 && skip_tile != 0x1c
@@ -53,7 +55,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
 
                     switch (cell->tile_flags_3d) {
                     case 9:
-                        cell->lane_and_flags |= variant_flag;
+                        *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
@@ -70,7 +72,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         break;
 
                     case 5:
-                        cell->lane_and_flags |= variant_flag;
+                        *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
@@ -87,7 +89,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         break;
 
                     case 10:
-                        cell->lane_and_flags |= variant_flag;
+                        *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
@@ -104,7 +106,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         break;
 
                     case 6:
-                        cell->lane_and_flags |= variant_flag;
+                        *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {

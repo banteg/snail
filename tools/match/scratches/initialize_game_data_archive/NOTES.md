@@ -24,3 +24,9 @@
   cursor regressed to the old 82.47% `esi`/`axis_y + 4` shape. The raw
   sentinel immediate is kept in C, but the reference table now names it so the
   mask audit stays clean.
+- 2026-06-20 larger-chunk retries: the decompiler-style float cursor and the
+  direct `g_input_slot0_axis_y` integer cursor both reproduce the 82.47%
+  `esi`/`axis_y + 4` regression. Spelling the current byte cursor as
+  `g_input_slot0_buttons - 1` is codegen-neutral at 94.74%, while the
+  one-before-axis variant shifts the physical stores and drops below baseline.
+  The retained byte cursor remains the best evidence-backed source shape.
