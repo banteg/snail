@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
+#include "border_runtime.h"
 #include "frontend_widget.h"
 #include "landscape_script_bank.h"
 #include "sprite.h"
@@ -16,7 +17,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 class ThanksBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 void ThanksScreen::initialize_thanks_for_playing_screen()
@@ -33,7 +33,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
             (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
                 script_index * sizeof(LandscapeScriptRecord)),
             0);
-    ((ThanksBorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
     message_widget = ((ThanksBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     message_widget->initialize_frontend_widget(

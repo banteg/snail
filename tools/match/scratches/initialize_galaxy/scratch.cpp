@@ -1,6 +1,7 @@
 // initialize_galaxy @ 0x408cf0 (thiscall)
 
 #include "backdrop.h"
+#include "border_runtime.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
@@ -19,7 +20,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 class GalaxyBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 FrontendWidget* GalaxyRoute::initialize_galaxy()
@@ -38,7 +38,7 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
                 landscape_index * sizeof(LandscapeScriptRecord)),
             0);
 
-    ((GalaxyBorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
     *(int*)(g_game_base + 0x56c) = 2;
 

@@ -3,17 +3,13 @@
 
 #include "active_landscape_entry.h"
 #include "backdrop.h"
+#include "border_runtime.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_landscape_backdrop_variant_selector; // data_4df9bc, from level_mode_arg
 
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
-
-class BorderRuntime {
-public:
-    int set_border_justify_centre(int justify_centre);
-};
 
 void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
 {

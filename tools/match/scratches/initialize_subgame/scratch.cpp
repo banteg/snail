@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
+#include "border_runtime.h"
 #include "challenge_setup_screen.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
@@ -31,7 +32,6 @@ public:
 class SubgameBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 class Game {
@@ -90,7 +90,7 @@ void Game::initialize_subgame()
                 (LandscapeScriptRecord*)(g_game_base + 0x106c7bc
                     + script_index * sizeof(LandscapeScriptRecord)),
                 (char)zero);
-        ((SubgameBorderManager*)(g_game_base + 0xb4c))
+        ((BorderRuntime*)(g_game_base + 0xb4c))
             ->set_border_justify_centre(0x41c80000);
     }
 

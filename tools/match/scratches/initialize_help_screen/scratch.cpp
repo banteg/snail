@@ -1,6 +1,7 @@
 // initialize_help_screen @ 0x416800 (thiscall)
 
 #include "backdrop.h"
+#include "border_runtime.h"
 #include "help_screen.h"
 #include "landscape_script_bank.h"
 
@@ -15,7 +16,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 class HelpBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 void HelpScreen::initialize_help_screen()
@@ -31,7 +31,7 @@ void HelpScreen::initialize_help_screen()
             (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
                 script_index * sizeof(LandscapeScriptRecord)),
             0);
-    ((HelpBorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
     back_button = ((HelpBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     back_button->initialize_frontend_widget(

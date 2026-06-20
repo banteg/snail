@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "bod_types.h"
+#include "border_runtime.h"
 #include "font_system.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
@@ -35,11 +36,6 @@ public:
 class IntroScreen {
 public:
     int initialize_intro_screen(char* file_name);
-};
-
-class IntroBorderManager {
-public:
-    int set_border_justify_centre(int justify_centre);
 };
 
 static void add_intro_renderable_to_active_list(IntroRenderable* bod)
@@ -95,7 +91,7 @@ int IntroScreen::initialize_intro_screen(char* file_name)
             (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
                 script_index * sizeof(LandscapeScriptRecord)),
             0);
-    ((IntroBorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
     ((StarField*)(g_game_base + 0x4f33c))->unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);

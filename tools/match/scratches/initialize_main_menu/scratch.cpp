@@ -1,6 +1,7 @@
 // initialize_main_menu @ 0x419b50 (thiscall)
 
 #include "backdrop.h"
+#include "border_runtime.h"
 #include "completion_screen.h"
 #include "landscape_script_bank.h"
 
@@ -15,11 +16,6 @@ extern char g_options_text[]; // 0x4a3b60
 extern char g_credits_text[]; // 0x4a3b58
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
-
-class BorderRuntime {
-public:
-    int set_border_justify_centre(int justify_centre); // raw 25.0f bits here
-};
 
 void MainMenu::initialize_main_menu()
 {

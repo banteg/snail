@@ -2,6 +2,7 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
+#include "border_runtime.h"
 #include "high_score_screen.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
@@ -19,7 +20,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 class HighScoreBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 static void init_score_text_widget(
@@ -53,7 +53,7 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
             (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
                 script_index * sizeof(LandscapeScriptRecord)),
             0);
-    ((HighScoreBorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0x41c80000);
+    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0x41c80000);
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
 
     Color4f color;

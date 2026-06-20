@@ -1,6 +1,7 @@
 // initialize_new_game_menu @ 0x417bc0 (thiscall)
 
 #include "backdrop.h"
+#include "border_runtime.h"
 #include "completion_screen.h"
 #include "landscape_script_bank.h"
 
@@ -20,7 +21,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 class NewGameBorderManager {
 public:
     FrontendWidget* allocate_border();
-    int set_border_justify_centre(int justify_centre);
 };
 
 void NewGameMenu::initialize_new_game_menu()
@@ -37,7 +37,7 @@ void NewGameMenu::initialize_new_game_menu()
             (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
                 script_index * sizeof(LandscapeScriptRecord)),
             0);
-    ((NewGameBorderManager*)(g_game_base + 0xb4c))
+    ((BorderRuntime*)(g_game_base + 0xb4c))
         ->set_border_justify_centre(0x41c80000);
     ((CompletionGameView*)g_game_base)->render_skip_countdown = 2;
 
