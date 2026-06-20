@@ -13,3 +13,9 @@
   `+0x3bfac8`; an explicit byte-offset cursor recovered the native offsets in
   the body but destabilized the prologue/register allocation and fell to
   32.37%, so it was rejected.
+- 2026-06-20 continuation: removing the `next`/`previous` neighbor locals and
+  spelling the neighbor cells inline looked closer to BN's direct-offset view,
+  but regressed to 48.09%. VC6 shrank the frame to `0x0c`, moved the
+  transition flag into `ebp`, and used `ebx` for the lane counter, losing the
+  native prologue/register skeleton. Keep the neighbor locals with the typed
+  `TrackRowCell*` cursor.

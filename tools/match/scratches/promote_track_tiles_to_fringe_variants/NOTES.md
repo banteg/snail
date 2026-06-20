@@ -13,3 +13,10 @@
   but VC6 hoisted `cell_marker - 0x24` into `ebx`, spilled the lane counter,
   and fell to 66.67%. `register`, integer-cast, inline-helper, and
   marker-struct variants produced the same hoist and were rejected.
+- 2026-06-20 continuation: a stricter `char* object_cursor` form with the
+  `BodBase*` adjustment only at the `set_bod_object` callsite still reproduced
+  the same 66.67% regression. Splitting the neighbor pointer into a local and
+  replacing the `promoted_flag` local with immediate `0x20` were also
+  codegen-identical to the bad shape. Keep the typed `TrackRowCell*` cursor
+  until a source form can recover the object-slot base without stealing `ebx`
+  from the native `0x20` flag.

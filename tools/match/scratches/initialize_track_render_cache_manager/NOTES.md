@@ -40,3 +40,9 @@ Status:
   (`60 * row_base + 60 * i`) is codegen-neutral at 93.44%. VC6 still emits the
   same commuted `lea eax, [edi+edx]`, so the compact `(slot_base + i) * 0x3c`
   source remains retained.
+- 2026-06-20 continuation: splitting the shared index-buffer byte count into a
+  local and applying `<<= 1` regressed to 92.62%; it produced a shift, but in
+  `eax` rather than native `edx` and disturbed the tail region. Naming locals
+  for the repeated capacity constants (`560`, `1280`, `160`) was codegen-neutral
+  and left the same seed-register residual. Keep the current direct capacity
+  stores and `index_buffer_count << 1` tail.
