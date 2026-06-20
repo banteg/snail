@@ -81,3 +81,22 @@ byte-lane `and ch, 0xfd` update. Rewriting the final scan as an explicit
 `do/while` cursor loop is codegen-neutral. Keep the local `object` loop and the
 shared typed remover; the remaining residual is the CSE/register-allocation
 tradeoff, not a missing `FringeObject` layout field.
+
+## 2026-06-20 continuation audit
+
+Focused Wibo still reports 91.19%, 130/131 candidate/target instructions, an
+87-instruction exact prefix, and 17 clean masked operands. Retesting the nearby
+`is_point_inside_track_attachment` helper first confirmed it is still pinned at
+99.10% with only the known independent `delta_y` reload / `delta_z` subtract
+scheduling swap, so the sub-lazer teardown path remains the better place to
+look for structural progress.
+
+The final fringe scan still compiles identically when spelled closer to the IDA
+tail as a `do/while` pointer cursor with a second `*fringe` null read before the
+local `object` active check. A final-tail-only `FringeObject*` remover is also
+codegen-neutral, proving the residual is not caused by casting the fringe object
+through the shared `BodNode` prefix. Do not chase a non-void method signature:
+IDA infers a stale `_DWORD*` return from the last fringe expression, but the
+known callers (`wall2_emitter_maybe_fire_sub_lazer` and `remove_subgame_bods`)
+ignore the result and the shared header's `void destroy_sub_lazer_projectile()`
+remains the source-plausible shape.
