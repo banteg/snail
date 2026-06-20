@@ -4,24 +4,17 @@
 
 | Metric | Result |
 |---|---:|
-| Match | 80.00% |
+| Match | 100.00% |
 | Target instructions | 61 |
-| Candidate instructions | 59 |
-| Common prefix | 14 / 61 |
-| Masked operands | 4 clean |
+| Candidate instructions | 61 |
+| Common prefix | 61 / 61 |
+| Masked operands | 7 clean |
 
 The source models the full renderable unlink loop, shared free-list push, and
 frontend-state handoff. There are no unresolved or mismatched masked operands.
 
-The first remaining mismatch is the early loop-exit label identity:
-
-```text
-target[14]    jle Lb5
-candidate[14] jle Lad
-```
-
-The main body difference is source shape around the two error paths. The target
-emits separate `report_errorf("List remove")` and
-`report_errorf("List remove NEXTBOD")` call sites; the candidate tail-merges
-the calls after pushing the selected string. The list unlink/free-list logic
-otherwise uses the native cursor at `slot + 0x0c` (`BodNode::list_next`).
+The proof-grade shape keeps the loop cursor at `slot + 0x0c`
+(`BodNode::list_next`) and uses explicit `goto next_renderable` exits after
+the two list-removal diagnostics. That prevents VC6 from tail-merging the
+`report_errorf("List remove")` and `report_errorf("List remove NEXTBOD")`
+calls, matching the native separate callsites before the shared loop advance.

@@ -12,7 +12,18 @@ Layout recovered from the target loop:
 - each slot starts with a `BodNode`, so the native loop cursor at slot `+0x0c`
   is the node's `list_next` field.
 
-The retained source mirrors the existing matched BOD list removal idiom and
-uses the native `node->list_next` cursor shape. The remaining mismatch is
-source-shape noise: VC6 merges the two `report_errorf` error-call sites in the
-candidate, while the target keeps separate calls before the shared loop tail.
+The proof-grade source mirrors the existing matched BOD list removal idiom and
+uses the native `node->list_next` cursor shape. The final fix was spelling the
+two diagnostic paths as explicit `goto next_renderable` exits before the shared
+loop update. With simple locals hoisted above the jumps, VC6 emits the native
+separate `report_errorf` callsites and lands at `61/61` instructions,
+`100.00%`, with seven clean masked operands.
+
+Rejected same-family probes:
+
+- flattening the equivalent state-2 error checks in `update_salt_hazard`
+  remained neutral at `75.78%`; its residual is a duplicated error-tail shape
+  plus `game+0x5a8` materialization, not the intro-loop tail merge;
+- `destroy_sub_lazer_projectile` was rechecked at `91.19%`; its documented
+  residual is the fringe-loop active-flag reload/register-allocation tradeoff,
+  so this goto-tail insight should not be transplanted there.

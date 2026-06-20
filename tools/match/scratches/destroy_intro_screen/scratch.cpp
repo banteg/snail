@@ -25,31 +25,36 @@ int IntroScreenRuntime::destroy_intro_screen()
             unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
             unsigned int flags = *flags_ref;
             BodList* list = (BodList*)(g_game_base + 0x5a8);
+            BodNode* next;
+            BodNode* prev;
+            int updated;
             if ((flags & 0x200) == 0) {
                 report_errorf("List remove");
-            } else {
-                if ((flags & 0x40) == 0) {
-                    BodNode* next = *next_ref;
-                    if (next != 0)
-                        next->list_prev = *(BodNode**)((char*)next_ref - 4);
-
-                    BodNode* prev = *(BodNode**)((char*)next_ref - 4);
-                    if (prev != 0)
-                        prev->list_next = *next_ref;
-                    else
-                        list->first = *next_ref;
-
-                    *next_ref = list->free_top;
-                    list->free_top = (BodNode*)((char*)next_ref - 0xc);
-
-                    int updated = *flags_ref;
-                    updated &= ~0x200;
-                    *flags_ref = updated;
-                } else {
-                    report_errorf("List remove NEXTBOD");
-                }
+                goto next_renderable;
+            }
+            if ((flags & 0x40) != 0) {
+                report_errorf("List remove NEXTBOD");
+                goto next_renderable;
             }
 
+            next = *next_ref;
+            if (next != 0)
+                next->list_prev = *(BodNode**)((char*)next_ref - 4);
+
+            prev = *(BodNode**)((char*)next_ref - 4);
+            if (prev != 0)
+                prev->list_next = *next_ref;
+            else
+                list->first = *next_ref;
+
+            *next_ref = list->free_top;
+            list->free_top = (BodNode*)((char*)next_ref - 0xc);
+
+            updated = *flags_ref;
+            updated &= ~0x200;
+            *flags_ref = updated;
+
+next_renderable:
             result = renderable_count;
             ++index;
             next_ref = (BodNode**)((char*)next_ref + sizeof(IntroRenderableSlot));
