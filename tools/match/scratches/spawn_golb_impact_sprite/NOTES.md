@@ -61,6 +61,15 @@ Rejected source-shaped probes:
   moving the `out_velocity` declaration down all stay at 63.64%. Keep the
   current real `Vector3` temporary and treat the remaining gap as the saved-`esi`
   zero-lane and split velocity-copy schedule.
+- 2026-06-20 particle-family retry: focused Wibo still reports 63.64%,
+  43/45 candidate instructions, 3/45 prefix, and 3 clean masked operands.
+  Making the velocity destination pointer live immediately after allocation
+  and using the inline `Vector3(0.0f, 0.05f, 0.0f)` constructor are both
+  codegen-neutral. Combining the early destination pointer with inline
+  `owner_player->player_slot` regresses to 54.55%, and assigning
+  `sprite->velocity = Vector3(...)` regresses to 61.36% by disturbing the
+  constant schedule. Keep the current local-vector copy until new evidence
+  explains native's saved-`esi` zero lane.
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.

@@ -76,6 +76,15 @@ Rejected source-shape probes:
   the old `0x1c` frame and `66.34%`. Moving `++index` after the final z-store
   was neutral at `69.61%` but made the tail less like native, so the increment
   stays before the z assignment.
+- 2026-06-20 particle-family retry: focused Wibo still reports 69.61%,
+  100/104 candidate instructions, 1/104 prefix, and 13 clean masked operands.
+  An explicit `sprite_flags` local and the commuted
+  `sprite->flags = 0x800u | sprite->flags` spelling are both codegen-neutral
+  and still compile to the same byte-OR residual. Splitting `loop_index` from
+  the loop counter is also codegen-neutral; VC6 keeps the counter in `ebp`
+  instead of recovering native's stack index slot. Keep the current direct
+  flag update and single `index` local until a stronger register-pressure or
+  source-idiom lead appears.
 
 Type consolidation:
 
