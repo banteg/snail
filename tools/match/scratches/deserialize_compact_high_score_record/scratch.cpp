@@ -50,12 +50,9 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     int delta_z_index = 0;
     short* source_delta_z = compact->delta_z_samples(replay_sample_count);
     if (replay_sample_count > 0) {
-        short* delta_z_destination = &run_records[0].delta_z;
         do {
+            run_records[delta_z_index].delta_z = source_delta_z[delta_z_index];
             ++delta_z_index;
-            *delta_z_destination = *source_delta_z;
-            delta_z_destination += 3;
-            ++source_delta_z;
         } while (delta_z_index < replay_sample_count);
     }
 

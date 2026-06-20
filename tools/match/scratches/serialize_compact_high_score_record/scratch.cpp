@@ -33,25 +33,19 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
 
     int lateral_index = 0;
     short* out_lateral = compact->lateral_samples();
-    short* source_lateral = &run_records[0].lateral_x;
     if (replay_sample_count > 0) {
         do {
+            out_lateral[lateral_index] = run_records[lateral_index].lateral_x;
             ++lateral_index;
-            *out_lateral = *source_lateral;
-            source_lateral += 3;
-            ++out_lateral;
         } while (lateral_index < replay_sample_count);
     }
 
     int delta_z_index = 0;
     short* out_delta_z = compact->delta_z_samples(replay_sample_count);
-    short* source_delta_z = &run_records[0].delta_z;
     if (replay_sample_count > 0) {
         do {
+            out_delta_z[delta_z_index] = run_records[delta_z_index].delta_z;
             ++delta_z_index;
-            *out_delta_z = *source_delta_z;
-            source_delta_z += 3;
-            ++out_delta_z;
         } while (delta_z_index < replay_sample_count);
     }
 

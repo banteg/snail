@@ -4,14 +4,10 @@ This scratch is the forward direction for the compact ScoreA/B/C on-disk record.
 It confirms the same `0x88 + replay_sample_count * 5` byte count and the same
 three packed replay lanes as the deserializer.
 
-Current residual:
-- the replay lane loops are semantically correct pointer walks. The accepted
-  word-lane shape now gives VC6 the native source/destination cursor ownership
-  (`source` in `ecx`, compact output in `edx`), but the candidate still keeps
-  the replay count/test in `esi` and hoists the source cursor before the empty
-  branch, while native tests `ecx` and materializes the source cursor after the
-  `jle`.
-- no masked operand mismatches are present
+Current result: exact. The replay lane loops use indexed source/destination
+access for the two packed word lanes and a pointer walk for the byte flags lane,
+matching native register ownership while keeping the `int16[]`, `int16[]`,
+`uint8[]` compact payload explicit.
 
 2026-06-20 larger-chunk audit:
 - Moving the lateral and delta-z source cursor declarations before the branch
@@ -36,3 +32,7 @@ Current residual:
   scheduling residual.
 - Retried per-lane count aliases with the accessors; they are also
   codegen-neutral and were dropped to keep the accepted source shape minimal.
+- 2026-06-20 exact pass: applying the deserializer's indexed word-lane insight
+  to both lateral and delta-z output loops fixes the remaining count/cursor
+  scheduling residuals. Focused Wibo is now 100.00%, 109/109 instructions,
+  109/109 prefix, and one clean masked operand.

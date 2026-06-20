@@ -2,8 +2,7 @@
 
 This scratch recovers the compact ScoreA/B/C record bridge into the expanded
 `HighScoreRecord` layout. The scalar block, checksum, player name, and replay
-payload offsets are source-shaped; the remaining mismatch is a pure ECX/EDX
-cursor swap in the second replay lane copy loop.
+payload offsets are exact.
 
 Evidence from the paired serializer:
 - compact header size is `0x88`
@@ -34,3 +33,8 @@ Evidence from the paired serializer:
 - Retried direct `replay_sample_count` spelling for the delta-z packed source
   offset after adding the accessors; it stayed codegen-neutral and leaves the
   same native `ecx` count / candidate `edx` count ownership residual.
+- 2026-06-20 exact pass: rewriting only the second word lane as indexed source
+  and destination access (`run_records[i].delta_z = source_delta_z[i]`) recovers
+  the native count/source/destination register ownership without changing the
+  packed payload layout. Focused Wibo is now 100.00%, 114/114 instructions,
+  114/114 prefix, and one clean masked operand.
