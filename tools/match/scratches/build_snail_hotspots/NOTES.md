@@ -33,3 +33,11 @@ Probes: a `TextureRef**` scan matched the conceptual native slot walk but caused
 VC6 to spill the model pointer and dropped the score to 43.54%. A `register`
 hint on the face index had no effect. Keep this clearer pinned form until a
 stronger original-source idiom explains the scan registers.
+
+2026-06-20 reference audit: the hotpoint name pointer table is now curated as
+`g_snail_hotspot_texture_names` (`0x4a4aa0`, 19 pointers) with the one-past
+sentinel `g_snail_hotspot_texture_names_end` at `0x4a4aec`. The latter address
+also begins the trailing `X/CameraIntroTalk` string data, which is why the raw
+target operand previously resolved as a string literal. Focused Wibo remains
+60.27%, but the masked audit is now clean at seven operands ok and no
+mismatches.

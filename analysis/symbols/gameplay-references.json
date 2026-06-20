@@ -2320,6 +2320,25 @@
       "description": "Galaxy missing-level route-record map Y coordinate source indexed by load_galaxy_layout."
     },
     {
+      "address": "0x4a4aa0",
+      "name": "g_snail_hotspot_texture_names",
+      "kind": "global",
+      "aliases": [
+        "data_4a4aa0"
+      ],
+      "size": "0x4c",
+      "description": "Nineteen-entry texture-name pointer table walked by build_snail_hotspots to map model facequads into local snail hotspot slots."
+    },
+    {
+      "address": "0x4a4aec",
+      "name": "g_snail_hotspot_texture_names_end",
+      "kind": "global",
+      "aliases": [
+        "aXCameraIntroTa"
+      ],
+      "description": "One-past sentinel for the snail hotspot texture-name pointer table; the address also begins the trailing X/CameraIntroTalk string data."
+    },
+    {
       "address": "0x4df860",
       "name": "g_pending_window_deactivate",
       "kind": "global",
