@@ -29,3 +29,10 @@ the same decompiler-visible narrow lanes used by `measure_font_text_width` and
 `draw_font_text_instance`. The reference manifest now gives `g_font_sheets`
 its `0x828` extent, so the raw `+0x40c`, `+0x818`, and `+0x81c` relocations
 audit cleanly instead of appearing as unresolved symbol+addend operands.
+
+2026-06-20 tail-width fix: keeping the trailing space slot as a `char` local
+instead of immediately widening it to `int` gives VC6 the native schedule after
+`font_slot_index_for_char(' ')`: both font lanes are recomputed from `font_id`
+while the returned glyph remains live in `al`, then it is sign-extended for the
+final glyph-width lookup. Focused Wibo is now exact: 100.00%, 60/60
+instructions, 60/60 prefix, and 9 clean masked operands.

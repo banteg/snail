@@ -29,7 +29,7 @@ float measure_font_text_width(char* text, int font_id, float scale)
         } while (*cursor != '\0');
     }
 
-    int space_slot = (char)font_slot_index_for_char(' ');
+    char space_slot = font_slot_index_for_char(' ');
     int glyph_lane_base = font_id;
     int sheet_lane_base = font_id;
     glyph_lane_base <<= 6;

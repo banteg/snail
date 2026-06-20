@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**483/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **63030/325759** bytes (**19.35%**) are proof-grade, and overall fuzzy is **53.84%**.
+**484/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **63212/325759** bytes (**19.40%**) are proof-grade, and overall fuzzy is **53.85%**.
 
-## Proof Grade (483)
+## Proof Grade (484)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -398,6 +398,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_font_wave_state | 0x449c70 | 41 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | update_font_wave_state | 0x449ca0 | 121 | 25/25 | 100.00% | 25/25 | 17 ok |  |
 | ✅ | font_slot_index_for_char | 0x449d20 | 358 | 145/145 | 100.00% | 145/145 | - |  |
+| ✅ | measure_font_text_width | 0x449e90 | 182 | 60/60 | 100.00% | 60/60 | 9 ok |  |
 | ✅ | draw_queued_font_quad_instance | 0x44a6d0 | 95 | 41/41 | 100.00% | 41/41 | 2 ok |  |
 | ✅ | draw_font_text_queue | 0x44a730 | 83 | 31/31 | 100.00% | 31/31 | 4 ok |  |
 | ✅ | query_directx_runtime_version | 0x44afc0 | 1012 | 370/370 | 100.00% | 370/370 | 57 ok |  |
@@ -510,7 +511,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (57)
+## High Progress (80-94.99%) (56)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -566,7 +567,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_squidge | 0x4449c0 | 253 | 84/80 | 84.15% | 6/80 | 14 ok |  |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 72 ok |  |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
-| 🚧 | measure_font_text_width | 0x449e90 | 182 | 60/60 | 81.67% | 39/60 | 5 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
