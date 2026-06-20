@@ -7,17 +7,17 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 void VapourTrail::add_vapour_point(const TransformMatrix* point)
 {
     int* result = (int*)this;
-    int point_index = result[32];
-    int point_limit = result[33];
-    if (point_index < point_limit) {
+    if (result[32] < result[33]) {
+        int point_index = result[32];
         memcpy((void*)(result[36] + (point_index << 6)), point, 0x40);
         ++result[32];
         return;
     }
 
+    int point_limit = result[33];
+    int shift_offset = 0;
     int shift_index = 0;
     if (point_limit - 1 > 0) {
-        int shift_offset = 0;
         do {
             int point_base = result[36];
             ++shift_index;
