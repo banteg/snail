@@ -1,4 +1,29 @@
-# WIP scratch — 72.67%, 627/694 insns (2026-06-20)
+# WIP scratch — 73.34%, 645/694 insns (2026-06-20)
+
+## 2026-06-20 trail-offset vector follow-up
+
+The retained follow-up improves from `72.67%`, target `694`, candidate `627`,
+prefix `9/694`, with `67 ok, 0 unresolved, 0 mismatch`, to `73.34%`, target
+`694`, candidate `645`, prefix `9/694`, with a clean masked audit of `68 ok,
+0 unresolved, 0 mismatch`.
+
+Accepted source-shape changes:
+
+- the rocket smoke offset is now staged as a `Vec3 half_offset` before building
+  `smoke_position`;
+- the kind-0 trail offsets are now staged as separate `Vec3 third_offset` and
+  `Vec3 deep_offset` locals before building the second and third trail sprites.
+
+This keeps the recovered formulas unchanged, but gives VC6 real stack-vector
+temporaries around the native `out - direction * scale` lanes.
+
+Rejected splits: only vectorizing the first kind-0 trail offset reached
+`72.95%`, `633/694`, with `67 ok`; only vectorizing the second kind-0 trail
+offset reached `72.80%`, `633/694`, with `68 ok`; reusing a single offset
+vector for both kind-0 trails regressed to `69.92%` by shifting earlier homing
+stack locals. The small `spawn_golb_smoke` and `spawn_golb_impact_sprite`
+helpers were also rechecked first and remain pinned at their documented
+residuals.
 
 ## 2026-06-20 kind-0 vector-copy follow-up
 

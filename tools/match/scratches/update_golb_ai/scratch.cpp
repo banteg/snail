@@ -216,12 +216,13 @@ void GolbShot::update_golb_ai()
         if (spun > 6.2831855f)
             spin = spun - 6.2831855f;
         spawn_golb_smoke(&source_matrix.position);
-        float half_x = direction.x * 0.5f;
-        float half_y = direction.y * 0.5f;
-        float half_z = direction.z * 0.5f;
-        smoke_position.x = source_matrix.position.x - half_x;
-        smoke_position.y = source_matrix.position.y - half_y;
-        smoke_position.z = source_matrix.position.z - half_z;
+        Vec3 half_offset;
+        half_offset.x = direction.x * 0.5f;
+        half_offset.y = direction.y * 0.5f;
+        half_offset.z = direction.z * 0.5f;
+        smoke_position.x = source_matrix.position.x - half_offset.x;
+        smoke_position.y = source_matrix.position.y - half_offset.y;
+        smoke_position.z = source_matrix.position.z - half_offset.z;
         spawn_golb_smoke(&smoke_position);
         break;
     }
@@ -232,19 +233,21 @@ void GolbShot::update_golb_ai()
         Vec3* body_position = (Vec3*)((char*)owner_body + 72);
         *body_position = source_matrix.position;
         spawn_golb_trail_sprite(&source_matrix.position);
-        float third_x = direction.x * 0.30000001f;
-        float third_y = direction.y * 0.30000001f;
-        float third_z = direction.z * 0.30000001f;
-        trail_a.x = source_matrix.position.x - third_x;
-        trail_a.y = source_matrix.position.y - third_y;
-        trail_a.z = source_matrix.position.z - third_z;
+        Vec3 third_offset;
+        third_offset.x = direction.x * 0.30000001f;
+        third_offset.y = direction.y * 0.30000001f;
+        third_offset.z = direction.z * 0.30000001f;
+        trail_a.x = source_matrix.position.x - third_offset.x;
+        trail_a.y = source_matrix.position.y - third_offset.y;
+        trail_a.z = source_matrix.position.z - third_offset.z;
         spawn_golb_trail_sprite(&trail_a);
-        float deep_x = direction.x * 0.60000002f;
-        float deep_y = direction.y * 0.60000002f;
-        float deep_z = direction.z * 0.60000002f;
-        trail_b.x = source_matrix.position.x - deep_x;
-        trail_b.y = source_matrix.position.y - deep_y;
-        trail_b.z = source_matrix.position.z - deep_z;
+        Vec3 deep_offset;
+        deep_offset.x = direction.x * 0.60000002f;
+        deep_offset.y = direction.y * 0.60000002f;
+        deep_offset.z = direction.z * 0.60000002f;
+        trail_b.x = source_matrix.position.x - deep_offset.x;
+        trail_b.y = source_matrix.position.y - deep_offset.y;
+        trail_b.z = source_matrix.position.z - deep_offset.z;
         spawn_golb_trail_sprite(&trail_b);
         break;
     }
