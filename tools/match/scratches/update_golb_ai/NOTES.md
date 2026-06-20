@@ -1,13 +1,35 @@
-# WIP scratch — 49.63%, 646/700 insns (2026-06-14)
+# WIP scratch — 57.21%, 631/694 insns (2026-06-20)
 
-Structure complete and mostly ordered; the 54-insn gap is the original's
-staging-local stores (IDA v69-v76: compute into named stack floats, then
-store to the destination — same class the collisions golf documents) and
-the duplicated early-return epilogues. The frame now matches native at `0x70`
-after recovering the homing target/result temporaries, and the prefix reaches
-9/700. Next golf pass: transcribe the remaining staging flow per block
-(velocity-owner operands in the homing blend, path-output copies, and collision
-probes) and let the early returns duplicate.
+## 2026-06-20 accepted collision-lane pass
+
+The packaged baseline was `49.85%`, target `694`, candidate `646`, prefix
+`9/694`, with masked operands `52 ok, 0 unresolved, 1 mismatch`. The accepted
+source shape now reports `57.21%`, target `694`, candidate `631`, prefix
+`9/694`, with a clean masked audit of `57 ok, 0 unresolved, 0 mismatch`.
+
+Three coupled source-level corrections produced the clean gain:
+
+- model `Player::add_subgoldy_score` and `SlugHazardRuntime::hit_slug_hazard`
+  as member calls, recovering their `thiscall` ownership;
+- keep the already-existing `new_output` pointer as the shot-position owner
+  through garbage, slug, splash, and wall probes;
+- spell the garbage scan as a sentinel loop, route its null exit through the
+  slug scan, and keep the garbage-hit impact/splash path as the fall-through
+  return before the labelled wall probe.
+
+The strongest dirty trial reached `60.73%`, `630/694`, but retained two masked
+call mismatches, so it was rejected. Declaring the track-grid lookup as a
+member call also remained rejected: on the accepted control-flow shape it
+reached `59.09%`, `626/694`, but introduced one masked mismatch. No shared
+header was changed.
+
+Next region: homing blend target `[158:211]` (native approximately
+`0x414a45`–`0x414aa3`), especially the retained y/z velocity-owner operands and
+rescale stores. Earlier branch-local or outer movement-pointer spellings
+hoisted the owner into the wrong register and regressed to `47.61%`–`47.76%`,
+so another attempt needs stronger source-shape evidence.
+
+## Earlier source-shaping history
 
 Latest matching change: the homing blend now stages the pull and keep
 components as named source terms before storing the normalized velocity. This
