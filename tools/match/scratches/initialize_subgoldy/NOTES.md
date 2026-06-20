@@ -48,3 +48,19 @@ Latest focused result:
 - The normal type-consolidation report no longer lists either helper as
   `partial-compatible`; remaining initializer debt is still the cached camera
   target/control-source tail described above.
+
+2026-06-20 larger near-proof tail audit:
+
+- Focused Wibo still reports 95.14%, 276/279 candidate/target instructions,
+  190/279 prefix, and 27 clean masked operands.
+- Rejected cached-camera-target probes: using the shared `PositionBits` raw-copy
+  view and moving the `zero_x`/`zero_y` assignments into the target block are
+  both codegen-neutral. VC6 still folds the `self + 0x2964` target pointer into
+  direct stores instead of keeping native `eax` live across the x/y/z writes.
+- Rejected control-source probe: spelling the IDA-style checks as
+  `g_game_base != (char*)-0x44/-0xb4` regresses to 92.95% and removes two
+  candidate instructions. Keep the current pointer-after-add truthiness test.
+- Rejected transform-loop probe: naming a `game` local after each
+  `set_matrix_identity` call is codegen-neutral and still reloads the game
+  pointer through `eax` instead of native `edx`. Keep the direct store from
+  `self + 0x408`.

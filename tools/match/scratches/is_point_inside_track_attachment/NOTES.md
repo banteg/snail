@@ -76,3 +76,9 @@ Rejected probes:
   effect and spelling the third argument as `delta_z - origin_z` are both
   codegen-neutral at 99.10%. They still leave the lone `mov ecx` /
   `fsub [origin_z]` scheduling swap, so the clearer baseline is retained.
+- 2026-06-20 larger near-proof continuation: declaration order for `local` and
+  `sample_origin`, subtracting directly from `sample_origin.z`, and assigning
+  through a temporary `local_delta` are all codegen-neutral at 99.10%. The
+  residual remains the same single independent reload/subtract scheduling swap
+  in the local-vector constructor; keep this helper pinned unless a real
+  original-source local-lifetime lead appears.

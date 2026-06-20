@@ -290,6 +290,14 @@ These are not gameplay owners, but several mirrors depend on them.
   sampled helpers already have focused NOTES identifying their remaining
   residuals as local scheduling/register ownership. Treat this set as pinned
   unless a new callsite, type-layout, or original-source idiom lead appears.
+- 2026-06-20 larger near-proof continuation: reran
+  `is_point_inside_track_attachment`, inspected its sub-lazer caller, retested
+  `spawn_track_garbage_hazard`, `update_sprite_facing_angle`, and
+  `update_row_event_display`, then probed `initialize_subgoldy`'s cached
+  camera target/control-source/transform-loop tail. No source change was
+  retained: the new helper probes were neutral, the IDA-style control-source
+  comparison regressed, and the other sampled targets still have only
+  documented local scheduling/register residuals.
 - 2026-06-20 audio-family audit: reran and inspected
   `register_sound_sample`, `load_registered_sound_sample_from_bytes`, and
   `play_sound_effect_at_position`. Branch-local path reload spellings,
