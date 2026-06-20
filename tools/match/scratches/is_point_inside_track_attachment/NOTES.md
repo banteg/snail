@@ -72,3 +72,7 @@ Rejected probes:
   before `local.z -= origin_z` regresses to 52.86% by adding saved `ebp` and
   flipping the Z subtract to `fsubr`. The long-lived aggregate assignment
   remains the only accepted frame shape.
+- 2026-06-20 follow-up: making the Z subtract a constructor-argument side
+  effect and spelling the third argument as `delta_z - origin_z` are both
+  codegen-neutral at 99.10%. They still leave the lone `mov ecx` /
+  `fsub [origin_z]` scheduling swap, so the clearer baseline is retained.

@@ -2,6 +2,7 @@
 #ifndef COMPLETION_SCREEN_H
 #define COMPLETION_SCREEN_H
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 #include "high_score_screen.h"
 #include "main_menu.h"
@@ -9,14 +10,6 @@
 #include "options_menu.h"
 #include "sprite.h"
 #include "star_field.h"
-
-class BorderManager {
-public:
-    FrontendWidget* allocate_border(); // @ 0x4032a0
-    void hide_all_borders();           // @ 0x4033f0
-    int unhide_all_borders();          // @ 0x403400
-    int kill_border(FrontendWidget* border);
-};
 
 class SubgameController {
 public:

@@ -1,13 +1,9 @@
 // uninit_thanks_screen @ 0x4340c0 (thiscall, ret)
 
+#include "border_manager.h"
 #include "thanks_screen.h"
 
 extern char* g_game_base; // data_4df904
-
-class BorderManager {
-public:
-    int kill_border(void* border);
-};
 
 void ThanksScreen::uninit_thanks_screen()
 {

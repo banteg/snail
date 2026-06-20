@@ -1,14 +1,11 @@
 // initialize_tip @ 0x448a40 (thiscall, ret 0x8)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 #include "tip_manager.h"
 
 extern char* g_game_base; // data_4df904
 extern TipMessageDefinition g_default_tip_message; // data_4ac5c8
-
-struct BorderManager {
-    FrontendWidget* allocate_border();
-};
 
 void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable_button)
 {

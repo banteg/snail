@@ -1,12 +1,9 @@
 // show_times_up_message @ 0x445e90 (thiscall, ret)
 
+#include "border_manager.h"
 #include "times_up_controller.h"
 
 extern char* g_game_base; // data_4df904
-
-struct BorderManager {
-    FrontendWidget* allocate_border();
-};
 
 void TimesUpController::show_times_up_message()
 {

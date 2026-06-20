@@ -6,12 +6,12 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-BorderRecord* BorderManager::allocate_border()
+FrontendWidget* BorderManager::allocate_border()
 {
     for (int i = 0; i < 150; ++i) {
         if (borders[i].flags == 0) {
             borders[i].created_time = *(int*)(g_game_base + 0x51c);
-            return &borders[i];
+            return (FrontendWidget*)&borders[i];
         }
     }
 

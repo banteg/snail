@@ -1,5 +1,6 @@
 // initialize_frontend_widget @ 0x401d30 (thiscall, ret 0x20)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
@@ -7,11 +8,6 @@ extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
-
-class BorderManager {
-public:
-    FrontendWidget* allocate_border();
-};
 
 static void copy_color(Color4f* out, Color4f* in)
 {

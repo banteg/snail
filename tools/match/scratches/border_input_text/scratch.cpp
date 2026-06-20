@@ -1,20 +1,12 @@
 // border_input_text @ 0x4035b0 (thiscall)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
+#include "input_ok_state.h"
 
 extern char* g_game_base; // data_4df904
 
 char read_repeating_text_input_key_code();
-
-class InputOkState {
-public:
-    int update_input_ok();
-};
-
-class BorderManager {
-public:
-    int kill_border(void* border);
-};
 
 static void remove_char_at(char* text)
 {
@@ -231,5 +223,6 @@ void FrontendWidget::border_input_text()
     *(unsigned int*)(self + 0x1a0) = flags;
     layout_frontend_widget();
     if ((*(int*)(self + 0x70c) & 0x0c) != 0)
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(*(void**)(self + 0x2c8));
+        ((BorderManager*)(g_game_base + 0xb4c))
+            ->kill_border((FrontendWidget*)*(void**)(self + 0x2c8));
 }

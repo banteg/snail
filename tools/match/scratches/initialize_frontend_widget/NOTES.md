@@ -26,3 +26,8 @@ exact `initialize_exit_prompt` branches that return the initializer result in
 view was removed in favor of `include/frontend_widget.h`. Focused matcher
 evidence stayed unchanged at `45.21%`, `270/429` candidate/target
 instructions, with the same `38 ok / 1 unresolved / 1 mismatch` masked audit.
+
+2026-06-20 BorderManager ABI pass: the scratch now uses
+`include/border_manager.h` for slider-child `allocate_border()` calls. The
+shared allocator returns a `FrontendWidget*` view over `BorderRecord` storage,
+so no local manager stub is needed. Focused matcher remains unchanged.

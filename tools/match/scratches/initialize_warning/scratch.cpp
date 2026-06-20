@@ -1,12 +1,9 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
+#include "border_manager.h"
 #include "warning_actor.h"
 
 extern char* g_game_base; // data_4df904
-
-struct BorderManager {
-    FrontendWidget* allocate_border();
-};
 
 void WarningActor::initialize_warning()
 {

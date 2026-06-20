@@ -37,7 +37,9 @@ typedef char BorderRecord_must_be_0x724[
 
 class BorderManager {
 public:
-    BorderRecord* allocate_border(); // @ 0x4032a0
+    // The backing storage is BorderRecord-sized, but frontend callers use the
+    // returned record through the FrontendWidget view.
+    FrontendWidget* allocate_border(); // @ 0x4032a0
     void activate_all_borders(); // @ 0x403300
     int kill_all_borders(); // @ 0x4033c0
     int hide_all_borders(); // @ 0x4033f0

@@ -2,14 +2,9 @@
 #ifndef CLICK_START_H
 #define CLICK_START_H
 
+#include "border_manager.h"
 #include "bod_types.h"
 #include "frontend_widget.h"
-
-class BorderManager {
-public:
-    FrontendWidget* allocate_border(); // @ 0x4032a0
-    int kill_border(FrontendWidget* border);
-};
 
 class ClickStartPlayer {
 public:

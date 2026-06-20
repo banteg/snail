@@ -1,15 +1,10 @@
 // update_tooltip @ 0x403c20 (thiscall)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
-
-class BorderManager {
-public:
-    FrontendWidget* allocate_border();
-    int kill_border(FrontendWidget* border);
-};
 
 void TooltipState::update_tooltip()
 {
