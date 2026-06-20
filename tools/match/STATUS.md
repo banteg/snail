@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**462/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **56969/325832** bytes (**17.48%**) are proof-grade, and overall fuzzy is **53.00%**.
+**463/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **57076/325832** bytes (**17.52%**) are proof-grade, and overall fuzzy is **53.01%**.
 
-## Proof Grade (462)
+## Proof Grade (463)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -467,6 +467,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | rstrcpy_checked_ascii | 0x44e5b0 | 72 | 31/31 | 100.00% | 31/31 | 2 ok |  |
 | ✅ | advance_to_next_crlf_line | 0x44e690 | 47 | 22/22 | 100.00% | 22/22 | - |  |
 | ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  |
+| ✅ | parse_next_signed_int | 0x44e710 | 107 | 47/47 | 100.00% | 47/47 | - |  |
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
@@ -546,7 +547,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (89)
+## Mid Progress (50-79.99%) (88)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -638,7 +639,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/61 | 51.79% | 0/61 | 6 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 64/63 | 69.29% | 0/63 | 4 ok |  |
-| 🚧 | parse_next_signed_int | 0x44e710 | 107 | 50/47 | 70.10% | 1/47 | - |  |
 
 ## Early Progress (>0-49.99%) (76)
 

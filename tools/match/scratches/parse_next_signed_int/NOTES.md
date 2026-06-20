@@ -55,3 +55,14 @@ Remaining residual: native emits a distinct first `eax = *cursor; cmp [eax],
 minus check into the loop byte in the retained source. Native also delays the
 `esi`/`edi` saves until after the pre-scan; the accepted source still leaves
 three extra candidate instructions.
+
+2026-06-20 numeric parser pre-scan pass: focused Wibo is now exact, 100.00%,
+47/47 instructions, with no masked operands. The accepted source spells the
+pre-scan as `while (**cursor != '-')`, but reads the classifier byte through
+the scoped `current` pointer. That preserves the native first `eax = *cursor;
+cmp [eax], '-'` gate, keeps the loop cursor in `edx`, and still delays the
+`esi`/`edi` saves until after the scan. Intermediate probes were informative:
+an explicit `goto after_scan` first gate and a first-byte local were both
+codegen-neutral at 70.10%, while the `while` form with owner-read `**cursor`
+improved only to 75.79% because VC6 inserted `mov eax, edx` before loading the
+classifier byte.

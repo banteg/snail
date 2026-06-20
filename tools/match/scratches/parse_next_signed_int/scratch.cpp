@@ -2,19 +2,17 @@
 
 int __cdecl parse_next_signed_int(char** cursor)
 {
-    if (**cursor != '-') {
+    while (**cursor != '-') {
         char* current;
-        do {
-            current = *cursor;
-            char value = **cursor;
-            if (value == '+')
-                break;
-            if (value == '.')
-                break;
-            if (value >= '0' && value <= '9')
-                break;
-            *cursor = current + 1;
-        } while (current[1] != '-');
+        current = *cursor;
+        char value = *current;
+        if (value == '+')
+            break;
+        if (value == '.')
+            break;
+        if (value >= '0' && value <= '9')
+            break;
+        *cursor = current + 1;
     }
 
     int sign;

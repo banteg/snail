@@ -38,3 +38,9 @@ Rejected probes:
   regressed the object to 58.91% by moving the dot case below the digit arm.
 - A staged `digit_value` local was neutral after the dot-first loop; the simpler
   digit expression is retained.
+- The exact `parse_next_signed_int` pre-scan idiom does not transfer directly.
+  Rewriting this pre-scan as `while (**cursor != '-')` with either a scoped
+  `*current` classifier byte or an owner-read `**cursor` regressed to 36.51% and
+  36.22% respectively by moving the caller cursor owner from `ecx` to `eax`.
+  Keep the retained `if` plus `do/while` pre-scan until a float-specific owner
+  lifetime lead appears.
