@@ -45,3 +45,12 @@ regressed further to 36.00% by swapping the active fold/raw lanes away from the
 native `dl`/`bl` story. The retained 66.02% peeled-loop source remains the best
 observed form; remaining debt is byte-register allocation and test order, not a
 missing semantic branch.
+
+2026-06-20 parser/string helper follow-up: after proving the adjacent signed
+integer parser, the full decompiler guard spelling was retested in the peeled
+local style: outer gate on the left byte, loop gate on the right byte, and an
+explicit folded mismatch break. Focused Wibo stayed neutral at 66.02% and only
+swapped the scratch raw/fold byte lanes (`bl`/`dl`) without approaching the
+native initial `dl`/`bl` ownership. Keep the current peeled-loop source; the
+exact `strings_equal_case_insensitive_path` increment-before-fold style is not
+evidence for changing this prefix-style comparator.

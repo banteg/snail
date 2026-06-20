@@ -44,3 +44,14 @@ Rejected probes:
   36.22% respectively by moving the caller cursor owner from `ecx` to `eax`.
   Keep the retained `if` plus `do/while` pre-scan until a float-specific owner
   lifetime lead appears.
+
+2026-06-20 follow-up after proving `parse_next_signed_int`: focused Wibo remains
+63.57%, 65/64 instructions, with 9 clean masked operands. Retesting the signed
+integer pre-scan with an explicit `owner` local still regressed to 36.51% by
+moving the caller cursor owner to `eax`. Decimal-loop probes also did not land:
+the decompiler-style combined non-digit/non-dot rejection regressed to 63.24%
+by duplicating the dot block, the cleaner range-first branch reproduced the
+known 58.91% regression, and reading the decimal-loop byte as `*current` was
+codegen-neutral. Reading the pre-scan classifier as `*current` under the
+retained `if`/`do` shape regressed to 43.41% by moving the owner to `edx`. Keep
+the current dot-first decimal loop and owner-read pre-scan.
