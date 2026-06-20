@@ -4,16 +4,17 @@
 
 #include "score_stats.h"
 #include "transform_matrix.h"
+#include "vapour_trail.h"
 #include "vector3.h"
 
 typedef Vector3 Vec3;
 struct Sprite;
 
 float __fastcall normalize_vector(Vec3* vector);
-char* get_track_grid_cell_at_world_position(char* game, Vec3* position);
-void add_vapour_point(void* vapour, const void* matrix);
 
 struct Game {
+    char* get_track_grid_cell_at_world_position(Vec3* position);
+
     char unknown_00[0x9];
     unsigned char subgame_pause_gate; // +0x09
     char unknown_0a[0x38 - 0x0a];
@@ -135,7 +136,11 @@ void GolbShot::update_golb_ai()
         switch (path_follow.calc_path_length_z(path_factor, &position, &velocity)) {
         case 1:
         case 3:
-            source_matrix.position = position;
+            {
+                Vec3* raw_position = &position;
+                Vec3* output_position = &source_matrix.position;
+                *output_position = *raw_position;
+            }
             break;
         case 0:
         case 2:
@@ -176,24 +181,22 @@ void GolbShot::update_golb_ai()
             pull_delta.z = delta.z * pull;
             float keep = 1.0f - homing_blend * 1.5f;
             kept_velocity.x = keep * velocity.x;
-            kept_velocity.y = keep * velocity.y;
-            kept_velocity.z = keep * velocity.z;
+            kept_velocity.y = keep * movement->y;
+            kept_velocity.z = keep * movement->z;
             blended_velocity.x = kept_velocity.x + pull_delta.x;
             blended_velocity.y = kept_velocity.y + pull_delta.y;
             blended_velocity.z = kept_velocity.z + pull_delta.z;
             velocity = blended_velocity;
             normalize_vector(&velocity);
             velocity.x = speed * velocity.x;
-            velocity.y = speed * velocity.y;
-            velocity.z = speed * velocity.z;
+            movement->y = speed * movement->y;
+            movement->z = speed * movement->z;
             if (speed < 0.1f)
                 goto retire;
         }
-        source_matrix.position.x = position.x;
-        source_matrix.position.y = position.y;
-        source_matrix.position.z = position.z;
+        source_matrix.position = position;
         if (path_entry_z_latch < source_matrix.position.z && position.y < 1.0f && position.y > 0.0f) {
-            GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)get_track_grid_cell_at_world_position((char*)game, &source_matrix.position);
+            GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(&source_matrix.position);
             if (cell->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z;
                 path_follow.initialize_path_follow_golb((int)cell, &position, this);
@@ -223,7 +226,7 @@ void GolbShot::update_golb_ai()
         break;
     }
     case 1:
-        add_vapour_point(vapour + (0x80 - 0x80), &source_matrix);
+        ((VapourTrail*)vapour)->add_vapour_point(&source_matrix);
         break;
     case 0: {
         float* body_position = (float*)((char*)owner_body + 72);
@@ -284,13 +287,13 @@ void GolbShot::update_golb_ai()
                         *(int*)(garbage + 136) = probe.x >= 0.0f ? 1 : 2;
                         player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         if (kind != 1)
-                            break;
+                            goto garbage_hit;
                     }
                 }
                 garbage = *(int*)(garbage + 128);
             }
 
-            if (!garbage) {
+            {
                 int slug_index = 0;
                 for (int m = 0; m < 1888; m += 236) {
                     char* slot = (char*)game + m;
@@ -341,6 +344,7 @@ void GolbShot::update_golb_ai()
                 goto wall_probe;
             }
 
+garbage_hit:
             kill_golb();
             spawn_golb_impact_sprite(new_output);
             if (kind == 2) {
@@ -363,7 +367,7 @@ void GolbShot::update_golb_ai()
             return;
 
 wall_probe:
-            if (((GolbTrackRowCellTileView*)get_track_grid_cell_at_world_position((char*)game, new_output))->tile_id != 14)
+            if (((GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(new_output))->tile_id != 14)
                 return;
             wall_impact.x = new_output->x;
             wall_impact.y = new_output->y;

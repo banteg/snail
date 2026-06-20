@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**467/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **59945/325832** bytes (**18.40%**) are proof-grade, and overall fuzzy is **53.34%**.
+**468/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **60181/325832** bytes (**18.47%**) are proof-grade, and overall fuzzy is **53.45%**.
 
-## Proof Grade (467)
+## Proof Grade (468)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -268,6 +268,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  |
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  |
+| ✅ | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 100.00% | 65/65 | 9 ok |  |
 | ✅ | update_track_speedup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 | 6 ok |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 | 1 ok |  |
@@ -494,7 +495,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (52)
+## High Progress (80-94.99%) (51)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -530,7 +531,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 81.79% | 44/144 | 9 ok |  |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 92.79% | 48/160 | 16 ok |  |
-| 🚧 | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 90.77% | 1/65 | 9 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 332/336 | 88.92% | 9/336 | 1 mismatch, 33 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
@@ -577,7 +577,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | render_object | 0x4126c0 | 815 | 197/196 | 69.72% | 8/196 | 21 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 123/127 | 63.20% | 25/127 | 8 ok |  |
-| 🚧 | update_golb_ai | 0x414820 | 2656 | 631/694 | 57.21% | 9/694 | 57 ok |  |
+| 🚧 | update_golb_ai | 0x414820 | 2656 | 625/694 | 69.45% | 9/694 | 69 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |

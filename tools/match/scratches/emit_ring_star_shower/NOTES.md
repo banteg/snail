@@ -4,10 +4,11 @@ Live source map for the star burst emitted by
 `update_ring_or_special_effect_particle` when the parent cadence counter is
 zero.
 
-Current match: 90.77%, 65 candidate instructions versus 65 target instructions,
-with 9 clean masked operands. The scratch deliberately uses shared `sprite.h`,
-`player.h`, and `ring_special_effect_types.h`, confirming the already-promoted
-Sprite lanes used by this emitter:
+Current match: 100.00%, 65 candidate instructions versus 65 target
+instructions, with a 65/65 common prefix and 9 clean masked operands. The
+scratch deliberately uses shared `sprite.h`, `player.h`, and
+`ring_special_effect_types.h`, confirming the already-promoted Sprite lanes
+used by this emitter:
 
 - `progress`, `progress_step`, `size_start`, `size_end`, and `gravity_step`
 - `velocity` and `position`
@@ -15,15 +16,12 @@ Sprite lanes used by this emitter:
   `RingOrSpecialEffectParent`
 - owner `Player::player_slot` at `+0x380`
 
-Residual:
+Resolved:
 
-- Native reserves a `0x18` stack frame immediately after loading
-  `g_render_flags`. The current source still compiles to a smaller `0x0c`
-  frame, but matches the native velocity, sprite-flag, and position-copy
-  register ownership.
-- Native stores `gravity_step = 0.0f` before writing the copied position z lane.
-  The natural `Vector3` assignment writes x/y/z first, then stores gravity.
-  The only known caller ignores the incidental low-byte result.
+- A second semantic `Vector3` for the unscaled orbit velocity recovers native's
+  `0x18` stack frame.
+- Direct `star->position = sprite->position` assignment preserves the aggregate
+  copy registers and recovers native's gravity-before-z store schedule.
 
 Rejected/source-shape probes:
 
@@ -91,6 +89,12 @@ Rejected/source-shape probes:
   aggregate position copy is codegen-neutral at 90.77% and leaves the same
   gravity-before-z residual. The remaining mismatch is therefore not explained
   by allocation-argument locals or by a missing source-sprite lifetime.
+
+- 2026-06-20 exact-match pass: staging the unscaled sine/cosine results in
+  `Vector3 orbit_velocity`, scaling into `velocity`, and using direct Sprite
+  position assignment improves focused Wibo from `90.77%` to `100.00%`.
+  Candidate and target are both 65 instructions, the common prefix is 65/65,
+  and all 9 masked operands audit cleanly.
 
 Type consolidation:
 

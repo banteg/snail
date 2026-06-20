@@ -1,62 +1,65 @@
-# `update_golb_ai` result
+# `update_golb_ai` follow-up result
 
 ## Matcher summary
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 49.85% | **57.21%** |
+| Match | 57.21% | **69.45%** |
 | Target instructions | 694 | 694 |
-| Candidate instructions | 646 | **631** |
+| Candidate instructions | 631 | **625** |
 | Common prefix | 9 / 694 | 9 / 694 |
-| Masked operands | 52 ok, 0 unresolved, 1 mismatch | **57 ok, 0 unresolved, 0 mismatch** |
+| Masked operands | 57 ok, 0 unresolved, 0 mismatch | **69 ok, 0 unresolved, 0 mismatch** |
 
-The accepted pass improves the match by **7.36 percentage points**, removes
-15 candidate instructions, and clears the packaged baseline's masked call
-mismatch at target instruction 549.
+The accepted pass improves the packaged baseline by **12.24 percentage
+points**, removes 6 candidate instructions, and keeps the masked-operand audit
+fully clean.
 
 ## Accepted changes
 
-- Declared `Player::add_subgoldy_score` as a member call, recovering the native
-  player-owned `thiscall` shape.
-- Declared a local `SlugHazardRuntime::hit_slug_hazard` member call for the two
-  slug-contact modes.
-- Reused the existing `new_output` pointer as the collision-position owner for
-  garbage, slug, splash, and wall probes and for direct impact presentation.
-- Reconstructed the collision scheduler as a sentinel garbage loop: a null
-  exit enters the slug sweep, a garbage hit falls through to impact/splash and
-  return, and the no-hit slug path branches to the wall probe.
-- Kept `get_track_grid_cell_at_world_position` in its existing free-call shape;
-  changing it to a member call did not pass the clean-mask criterion.
+- Recovered the two track-cell lookups as `Game` member calls, matching their
+  game-owned `thiscall` shape without changing a shared header.
+- Recovered vapour emission as the existing
+  `VapourTrail::add_vapour_point` member call.
+- Kept homing y/z retained-velocity loads and final rescale stores on the
+  already-live `movement` pointer while leaving the native-looking x accesses
+  direct.
+- Copied the post-homing position into `source_matrix.position` as one `Vec3`
+  assignment rather than three scalar stores.
+- Recovered the path-follow raw-position output case as an aggregate copy
+  through named source/destination `Vec3*` pointers.
+- Routed a non-laser garbage hit directly to a `garbage_hit` cleanup label.
+  A null garbage-list exit now falls through to the slug sweep, whose no-hit
+  path branches to `wall_probe`; this restores the native collision-block
+  ordering without synthetic state or stack padding.
 
 ## Rejected trials
 
 | Trial | Match | Candidate | Mask audit | Reason rejected |
 |---|---:|---:|---:|---|
-| Player + slug member ABI only | 54.40% | 637 | 4 mismatches | Better score, dirtier call alignment. |
-| Track lookup member ABI only | 49.29% | 641 | 54 / 0 / 0 | Clean, but below baseline score. |
-| `new_output` + slug + track ABI | 60.73% | 630 | 2 mismatches | Best headline score, not a clean audit. |
-| `new_output` + player ABI | 60.39% | 634 | 2 mismatches | Dirty masked calls. |
-| Explicit label variant | 60.73% | 630 | 2 mismatches | Same dirty result as the strongest trial. |
-| Slug-kind `switch` variant | 60.12% | 630 | 2 mismatches | Worse and still dirty. |
-| Accepted scheduler + track member ABI | 59.09% | 626 | 1 mismatch | Higher score, but reintroduced a mismatch. |
-| Accepted scheduler, no player member ABI, track member ABI | 56.75% | 631 | 58 / 0 / 0 | Clean, but below the accepted score. |
+| Homing y/z owner recovery only | 57.81% | 631 | 57 / 0 / 0 | Clean gain, superseded by the combined pass. |
+| Homing y/z plus aggregate position copy | 60.69% | 634 | 57 / 0 / 2 | Better score, but two masked mismatches. |
+| Vapour member call plus homing | 60.02% | 629 | 59 / 0 / 1 | One masked mismatch. |
+| Track member calls plus homing/aggregate copy | 59.56% | 629 | 57 / 0 / 0 | Clean gain, superseded by the combined pass. |
+| Vapour + track members before collision relayout | 61.77% | 627 | 59 / 0 / 1 | One masked mismatch caused by downstream block ordering. |
+| Post-loop collision `goto` variant | 69.19% | 627 | 69 / 0 / 0 | Clean, but lower score and two more instructions than accepted. |
+| Late shared homing-return label | 44.93% | 637 | 57 / 0 / 4 | Large regression and four masked mismatches. |
+| Path-copy staging through one y local | 56.34% | 630 | 56 / 0 / 1 | Regressed below baseline and dirtied the audit. |
+| Raw-position scalar field stores | 59.89% | 625 | 66 / 0 / 2 | Regressed and dirtied switch/call alignment. |
 
-Masked-audit triples are `ok / unresolved / mismatch` where written
-numerically.
+Masked-audit triples are `ok / unresolved / mismatch`.
 
 ## Next region to attack
 
-Homing blend target instructions `[158:211]`, approximately native
-`0x414a45`–`0x414aa3`: recover the y/z retained-velocity owner and final
-rescale-store scheduling without forcing the velocity pointer into the wrong
-register. After that, revisit path-output copy staging around target
-instructions `[28:50]`.
+Target instructions `[31:48]`, the narrow path-follow raw-position output-copy
+slice. The accepted build already aligns this region at 88.24% with equal
+17-instruction spans; the remaining two changed instructions are a better
+localized target than reopening the broad trail/collision blocks.
 
 ## Final audit
 
 - Fixed toolchain: `msvc6.5 /O2 /G5 /W3`.
 - No inline assembly, naked functions, volatile padding, fake globals,
-  synthetic constants, dummy externs, or stack-padding tricks.
+  synthetic constants, dummy externs, or stack-frame padding.
 - No shared headers or unrelated scratches changed.
-- Final matcher output: `57.21%`, target `694`, candidate `631`, prefix `9`,
-  masks `57 ok, 0 unresolved, 0 mismatch`.
+- Final matcher output: `69.45%`, target `694`, candidate `625`, prefix `9`,
+  masks `69 ok, 0 unresolved, 0 mismatch`.

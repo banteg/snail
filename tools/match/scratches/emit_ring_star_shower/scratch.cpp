@@ -13,6 +13,7 @@ void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
 {
     if ((g_render_flags & 0x10) != 0) {
         Vector3 velocity;
+        Vector3 orbit_velocity;
         velocity.z = 0.0f;
         Sprite* star = g_sprite_manager.allocate_sprite(
             owner->player_slot,
@@ -25,15 +26,13 @@ void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
         star->size_start = 0.40000001f;
         star->size_end = 0.2f;
 
-        velocity.x = sine(phase + 1.0471976f) * radius;
-        velocity.y = cosine(phase + 1.0471976f) * radius;
-        velocity.x *= 0.30000001f;
-        velocity.y *= 0.30000001f;
+        orbit_velocity.x = sine(phase + 1.0471976f) * radius;
+        orbit_velocity.y = cosine(phase + 1.0471976f) * radius;
+        velocity.x = orbit_velocity.x * 0.30000001f;
+        velocity.y = orbit_velocity.y * 0.30000001f;
         star->velocity = velocity;
 
-        Vector3* source_position = &sprite->position;
-        Vector3* star_position = &star->position;
-        *star_position = *source_position;
+        star->position = sprite->position;
         star->gravity_step = 0.0f;
     }
 }

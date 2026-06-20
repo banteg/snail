@@ -1,4 +1,31 @@
-# WIP scratch — 57.21%, 631/694 insns (2026-06-20)
+# WIP scratch — 69.45%, 625/694 insns (2026-06-20)
+
+## 2026-06-20 effects/member follow-up
+
+The retained follow-up reports `69.45%`, target `694`, candidate `625`, prefix
+`9/694`, with a clean masked audit of `69 ok, 0 unresolved, 0 mismatch`.
+
+Accepted source-shape changes after the collision-lane baseline:
+
+- `Game::get_track_grid_cell_at_world_position` is now modeled as a member
+  call at both track-cell probes, matching the existing helper scratch and
+  recovered callsites.
+- The kind-1 vapour trail emission calls
+  `VapourTrail::add_vapour_point(&source_matrix)`, matching the already
+  promoted `VapourTrail` thiscall helper.
+- The homing y/z retained-velocity and final rescale lanes stay on the live
+  movement pointer, while the post-homing output copy remains one semantic
+  `Vec3` assignment.
+- The path-follow raw-position output case now uses named source/destination
+  `Vec3*` pointers for the aggregate copy. This improves the follow-up from
+  `69.29%` to `69.45%` without changing candidate size or the masked audit.
+- The garbage-hit scheduler keeps the clean fallthrough ordering from the
+  collision-lane pass.
+
+Rejected follow-ups: scalar field stores for the raw-position output copy
+regressed to `59.89%` and introduced two masked mismatches; swapping the
+source/destination pointer declaration order for the accepted aggregate copy
+was codegen-neutral.
 
 ## 2026-06-20 accepted collision-lane pass
 
