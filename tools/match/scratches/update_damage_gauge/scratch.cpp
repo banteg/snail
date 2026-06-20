@@ -28,7 +28,7 @@ struct Game {
     int drain_exit_word; // +0x434064
 };
 
-extern Game* volatile g_game; // data_4df904
+extern Game* g_game; // data_4df904
 
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(
@@ -119,13 +119,12 @@ render_after_refresh:
 render:
     float alpha;
     float mask_height;
-    if (display_fill <= 0.99900001f) {
-        if (display_fill >= 0.0099999998f)
-            mask_height = 351.0f - display_fill * 308.0f;
-        else
-            mask_height = 396.0f;
-    } else {
+    if (display_fill > 0.99900001f) {
         mask_height = 0.0f;
+    } else if (display_fill < 0.0099999998f) {
+        mask_height = 396.0f;
+    } else {
+        mask_height = 351.0f - display_fill * 308.0f;
     }
 
     if (!game->pause_gate)
@@ -135,16 +134,15 @@ render:
 
     Color4f color;
     if (display_fill > 0.89999998f || state) {
-        if (display_fill <= 0.89999998f) {
-            if (display_fill < 0.1f)
-                alpha = display_fill * 10.0f;
+        if (display_fill > 0.89999998f) {
+            if (!state)
+                alpha = (display_fill - 0.89999998f) * 10.0f;
             else
                 alpha = 1.0f;
-        } else if (!state) {
-            alpha = (display_fill - 0.89999998f) * 10.0f;
-        } else {
+        } else if (display_fill < 0.1f)
+            alpha = display_fill * 10.0f;
+        else
             alpha = 1.0f;
-        }
 
         float flash_alpha = alpha - (sine(pulse_progress * 6.2831855f) + 1.0f) * 0.5f * alpha * 0.5f;
         queue_axis_aligned_textured_quad_uv(

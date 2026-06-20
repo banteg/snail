@@ -15,7 +15,7 @@ public:
     float salt_kill_plane_z; // +0x3be0e4
 };
 
-extern Game* volatile g_game; // data_4df904
+extern Game* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void SaltHazardSlot::update_salt_hazard()

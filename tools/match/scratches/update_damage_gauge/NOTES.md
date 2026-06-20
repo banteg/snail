@@ -71,3 +71,16 @@ ignores it. Match remains 80.60%.
 
 2026-06-16 five-target audit: focused Wibo still verifies 80.60%, 268/268
 insns, with 58 masked operands OK and no unresolved or mismatched operands.
+
+2026-06-20 volatile audit: spelling direct `g_game` as a normal external (not
+`volatile`) improves focused Wibo from 80.60% to 88.97% and extends the prefix
+to 121/268. Reordering the mask-height thresholds to test the full-fill case
+first, then spelling the flash-alpha ladder as the high-fill branch first,
+raises the scratch to 93.08%, 267/268 insns, prefix 122/268, with 63 masked
+operands OK and no unresolved or mismatched operands.
+
+Rejected in this pass: swapping the `alpha`/`mask_height` declarations, moving
+`Color4f color`, and splitting `mask_v` into a separate render local were all
+neutral after the accepted branch order. The remaining first mismatch is still
+a stack-slot allocation residual (`mask_height` at candidate `esp+4` versus
+native `esp+8`, with `alpha` mirrored), followed by x87/render scheduling.

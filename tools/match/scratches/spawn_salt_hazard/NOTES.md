@@ -1,4 +1,4 @@
-# Pinned — 74.07%, 67/68 insns, layout-only residual
+# Pinned — 77.04%, 67/68 insns, layout-only residual
 
 The free-scan loop is the only divergence: the original lays it out as a
 single top test with the bound compare as conditional back-edge; every
@@ -35,3 +35,10 @@ zero-offset live-list overlay and writes the matrix position row at `+0x68`;
 updater drives `color +0x28`. Focused Wibo remains `74.07%`, with `8` masked
 operands OK. The `+0x94` low-byte poke remains spelled as an overlay on
 `velocity.z` until more source evidence gives it a better semantic name.
+
+2026-06-20 volatile audit: direct `g_game` no longer needs `volatile` in this
+spawn path. Focused Wibo improves from 74.07% to 77.04%, still 67 target / 68
+candidate instructions, with 9 masked operands OK and no unresolved or
+mismatched operands. The remaining mismatch is still the free-scan rotation and
+spawn scheduling/register choices; no fake loop labels or volatile locals were
+used.

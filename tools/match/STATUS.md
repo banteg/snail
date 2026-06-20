@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**466/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **58829/325832** bytes (**18.06%**) are proof-grade, and overall fuzzy is **53.06%**.
+**466/692** mapped gameplay functions matched, **692/692** mapped gameplay functions have a scratch, **58829/325832** bytes (**18.06%**) are proof-grade, and overall fuzzy is **53.21%**.
 
 ## Proof Grade (466)
 
@@ -493,7 +493,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (51)
+## High Progress (80-94.99%) (52)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -534,8 +534,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 218/217 | 80.00% | 0/217 | 1 mismatch, 19 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
 | 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
-| 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 80.60% | 6/268 | 58 ok |  |
+| 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 267/268 | 93.08% | 122/268 | 63 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 81.11% | 5/218 | 23 ok |  |
+| 🚧 | update_salt_hazard | 0x441c10 | 301 | 79/83 | 81.48% | 5/83 | 11 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
 | 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 101/106 | 81.16% | 15/106 | 5 ok |  |
@@ -549,7 +550,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (86)
+## Mid Progress (50-79.99%) (87)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -576,6 +577,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | render_object | 0x4126c0 | 815 | 197/196 | 69.72% | 8/196 | 21 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 123/127 | 63.20% | 25/127 | 8 ok |  |
+| 🚧 | update_golb_ai | 0x414820 | 2656 | 631/694 | 57.21% | 9/694 | 57 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
@@ -615,11 +617,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 1 mismatch, 1 unresolved, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 494/501 | 59.90% | 6/501 | 2 mismatch, 58 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 95/94 | 60.32% | 0/94 | 1 mismatch, 13 ok |  |
-| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 74.07% | 0/67 | 8 ok |  |
-| 🚧 | update_salt_hazard | 0x441c10 | 301 | 78/83 | 75.78% | 5/83 | 10 ok |  |
+| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 68/67 | 77.04% | 0/67 | 9 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 63.83% | 3/47 | - |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 260/312 | 60.14% | 0/312 | 1 mismatch, 32 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
 | 🚧 | set_snail_jetpack | 0x445860 | 185 | 59/62 | 54.55% | 0/62 | 8 ok |  |
 | 🚧 | update_snail_skin | 0x445cd0 | 128 | 43/44 | 57.47% | 6/44 | 1 ok |  |
 | 🚧 | build_snail_hotspots | 0x445d50 | 208 | 72/74 | 60.27% | 9/74 | 2 mismatch, 5 ok |  |
@@ -640,7 +642,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 64/63 | 69.29% | 0/63 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (76)
+## Early Progress (>0-49.99%) (74)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -652,7 +654,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_input | 0x40aa80 | 44 | 18/19 | 37.84% | 1/19 | - |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 253/5411 | 4.66% | 0/5411 | 20 mismatch, 4 unresolved, 51 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 319/373 | 42.20% | 0/373 | 24 ok |  |
-| 🚧 | update_golb_ai | 0x414820 | 2656 | 646/694 | 49.85% | 9/694 | 1 mismatch, 52 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 446/582 | 31.71% | 3/582 | 33 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 26.42% | 0/521 | 3 mismatch, 33 ok |  |
@@ -706,7 +707,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 178/171 | 44.70% | 0/171 | 1 unresolved, 18 ok |  |
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 648/673 | 47.99% | 0/673 | 1 mismatch, 77 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 1 unresolved, 14 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 1 mismatch, 2 unresolved, 33 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |

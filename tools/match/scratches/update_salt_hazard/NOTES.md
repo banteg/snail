@@ -34,3 +34,10 @@ unresolved / 0 mismatch`). The remaining state-2 residual is still real:
 native materializes `game+0x5a8` as an anchor pointer in `ecx`, while the
 candidate keeps the game base and folds anchor accesses to `+0x5ac/+0x5b0`;
 the first error-report call also remains tail-merged in candidate code.
+
+2026-06-20 volatile audit: direct `g_game` is now a normal external here too.
+Focused Wibo improves from 75.78% to 81.48%, with 83 target / 79 candidate
+instructions and 11 masked operands OK. This keeps the game-base lifetime
+consistent with the damage/salt family and avoids stale volatile reloads; the
+remaining residual is still state-2 control-flow/tail merging plus anchor
+materialization.

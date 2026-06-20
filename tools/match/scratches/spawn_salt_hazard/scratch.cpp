@@ -10,7 +10,7 @@ public:
     SaltHazardSlot salt_list_head; // +0x3ca224, node-shaped anchor
 };
 
-extern Game* volatile g_game; // data_4df904
+extern Game* g_game; // data_4df904
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
