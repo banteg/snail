@@ -97,3 +97,7 @@ Rejected source-shape probes:
   codegen-neutral at 85.14%. Interleaving the X velocity store immediately
   after computing `color.r` also stays at 85.14% but is less native because it
   emits a direct `fstp [sprite+0x54]`. Keep the accepted raw-tail shape.
+- 2026-06-20 larger-chunk audit: a standalone `scaled_x` local for the first
+  velocity component regresses to 81.08%. It makes VC6 load/scale X after Y/Z,
+  which is the opposite of native's stack-spilled `v15 = x * 0.2` order. Keep
+  the reused `Color4f` lanes for the velocity staging.

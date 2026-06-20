@@ -12,3 +12,11 @@ Evidence from the paired serializer:
   then byte `flags[]`
 - compact load zero-extends each flags byte into the expanded record's `+0x04`
   word, clearing the reserved byte at `+0x05`
+
+2026-06-20 larger-chunk audit:
+- Moving the second-lane destination cursor declaration before the packed
+  source cursor regresses to 86.84% and disturbs the flags loop. It does not
+  explain the native `source_delta_z` in EDX / destination in ECX ownership.
+- Removing the `delta_z_count` alias and using `replay_sample_count` directly
+  is codegen-neutral at 92.98%; the ECX/EDX cursor swap remains the only
+  localized mismatch.

@@ -12,3 +12,9 @@
   `select_track_tile_edge_variants_jump_table`. The remaining gap is instruction
   scheduling around independent tile/flag loads versus stores; no artificial
   dependency was kept to force exact order.
+- 2026-06-20 larger-chunk audit: the shared tile-byte layout still matches BN
+  and IDA (`tile_id +0x00`, `tile_flags_3d +0x01`,
+  `lane_and_flags +0x04`). Current source already clears `tile_flags_3d` and
+  writes the `lane_and_flags` mask before reloading `tile_id`; VC6 hoists the
+  independent tile load in the candidate. Treat the repeated case-body gaps as
+  scheduling debt unless a real source dependency appears.

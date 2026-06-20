@@ -49,3 +49,9 @@ Rejected source-shape probes:
   the velocity lanes instead of preserving the typed aggregate copy.
 - A `Sprite* position_sprite` alias for the final position copy is codegen-neutral
   at 94.17%, so keep the clearer `Vector3* out_position` spelling.
+- 2026-06-20 larger-chunk audit: naming the final X RNG result as an
+  `int velocity_x_seed`, then storing `depth_offset` before scaling it, matches
+  the IDA ordering but is codegen-neutral at 94.17%. VC6 still advances the
+  sprite base to `position` before the final multiply. Keep the shorter source
+  until a form delays that base advance without changing the aggregate
+  velocity copy.
