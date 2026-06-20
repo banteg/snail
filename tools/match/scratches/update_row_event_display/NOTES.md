@@ -98,3 +98,13 @@ staging `int sound_id = 0x31`, and calling through a real
 `SoundEffectManager*` pointer were all codegen-neutral. Keep the current clear
 bonus-award source until a stronger owner/lifetime lead explains the call setup
 order.
+
+2026-06-20 call-setup follow-up: focused Wibo still reports 99.53%, 213/213
+instructions, 102/213 prefix, and 37 clean masked operands. A
+`SoundEffectManager&` reference is codegen-neutral, as are direct `g_game_base`
+reads in the bonus-award branch, removing the `bonus_enabled` local, and
+staging `Player* player` plus `int bonus_score` before `add_subgoldy_score`.
+Those variants leave the exact same residual (`mov ecx, ADDR; push 0x31`
+instead of native `push 0x31; mov ecx, ADDR`). Keep this scratch pinned; the
+remaining mismatch is a call-setup scheduling artifact with no new
+source-plausible lifetime lead.
