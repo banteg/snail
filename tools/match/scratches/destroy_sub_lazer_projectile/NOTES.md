@@ -65,3 +65,19 @@ tradeoff:
 Keep the local `FringeObject* object` loop as the pinned shape. It preserves the
 native prologue, loop counter, and dword unlink mask; the lone missing reload is
 less damaging than the expression-form register cascade.
+
+## 2026-06-20 larger fringe-tail audit
+
+Focused Wibo still reports 91.19%, 130/131 candidate/target instructions, an
+87-instruction exact prefix, and 17 clean masked operands. Viewing the fringe
+object as a `BodNode*` for both the active precheck and remover is codegen-neutral
+and leaves the same CSE of the precheck flags. A fringe-tail-only remover that
+reloads flags through a raw `node + 4` word after materializing
+`g_game_base + 0x5a8` also compiles back to the same candidate, so the typed
+macro spelling is not the blocker by itself. Passing `fringe[i]` as the remover
+expression still recovers the native inner reload but regresses to 71.76% by
+dropping `push ebx`, moving the unlink mask into `edi`, and ending with a
+byte-lane `and ch, 0xfd` update. Rewriting the final scan as an explicit
+`do/while` cursor loop is codegen-neutral. Keep the local `object` loop and the
+shared typed remover; the remaining residual is the CSE/register-allocation
+tradeoff, not a missing `FringeObject` layout field.
