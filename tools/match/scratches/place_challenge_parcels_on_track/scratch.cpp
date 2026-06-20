@@ -7,6 +7,7 @@ double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
 extern char g_zero_parcel_buckets[]; // 0x53d190
+extern char g_zero_parcel_bucket_count_lane_end; // 0x643390
 extern int g_challenge_parcel_rows[]; // 0x6447e8
 
 struct Game {
@@ -29,7 +30,7 @@ int Game::place_challenge_parcels_on_track()
     *(int*)((char*)this + 0x1b01e8) = required;
 
     int* bucket_count = (int*)(g_zero_parcel_buckets + 0x200);
-    while ((int)bucket_count < (int)(g_zero_parcel_buckets + 0x106200)) {
+    while ((int)bucket_count < (int)&g_zero_parcel_bucket_count_lane_end) {
         *bucket_count = 0;
         bucket_count = (int*)((char*)bucket_count + 0x20c);
     }

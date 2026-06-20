@@ -719,7 +719,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 97/125 | 49.55% | 0/125 | 28 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
-| 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 178/171 | 44.70% | 0/171 | 1 unresolved, 18 ok |  |
+| 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 178/171 | 44.70% | 0/171 | 19 ok |  |
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 1 unresolved, 33 ok |  |
