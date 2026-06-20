@@ -7,9 +7,8 @@ coordinates, clips the system cursor against the active client rectangle, and
 forwards the current pointer state into slot 0 through
 `update_input_controller_pointer_region`.
 
-The four `g_mouse_*clip*` globals at `0x4b7770..0x4b778c` are scratch-local
-names for recovered Win32 client/clip offsets that are not yet named in the
-manifest.
+The `g_mouse_*client*` and `g_mouse_*clip*` globals at `0x4b7770..0x4b778c`
+are recovered Win32 client/clip offsets now named in the reference manifest.
 
 ## Source-shape notes
 
@@ -25,18 +24,18 @@ manifest.
   the expected `Acquire` loop while the mouse device reports input lost.
 
 Focused matcher result: 73.68%, 294 candidate instructions versus 295 target
-instructions, 5-instruction prefix, and 61 clean masked operands.
+instructions, 5-instruction prefix, and 70 clean masked operands.
 
-The remaining unresolved masked operands are the six scratch-local mouse
-client/clip offset globals at `0x4b7770..0x4b778c`. The remaining masked
-mismatch reports `GetClientRect` versus `GetWindowRect` because the normalized
-diff aligns the target's second Win32 call with the candidate's first call after
-earlier control-flow drift; the candidate object itself contains distinct
-`__imp__GetWindowRect@8` and `__imp__GetClientRect@8` relocations.
+The former nine unresolved masked operands were the mouse client/clip offset
+globals at `0x4b7770..0x4b778c`; those now resolve cleanly. The remaining
+masked mismatch reports `GetClientRect` versus `GetWindowRect` because the
+normalized diff aligns the target's second Win32 call with the candidate's
+first call after earlier control-flow drift; the candidate object itself
+contains distinct `__imp__GetWindowRect@8` and `__imp__GetClientRect@8`
+relocations.
 
 2026-06-20 type consolidation: `Rect` now comes from `include/rect.h` here,
 `update_mouse_authored_scale`, and `initialize_game_window_and_input`.
 Focused rerun preserves the prior result at 73.68%, 294 candidate
-instructions versus 295 target instructions, with 61 masked operands OK, 9
-unresolved scratch-local globals, and the same Win32 import alignment
-mismatch.
+instructions versus 295 target instructions, with 70 masked operands OK and
+the same Win32 import alignment mismatch.

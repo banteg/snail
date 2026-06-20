@@ -2251,6 +2251,66 @@
       "description": "Controller count output storage passed to enumerate_input_controllers during game window/input initialization."
     },
     {
+      "address": "0x4b7770",
+      "name": "g_mouse_captured_client_left",
+      "kind": "global",
+      "aliases": [
+        "data_4b7770"
+      ],
+      "size": "0x4",
+      "description": "Left client-rectangle offset subtracted by update_mouse when forwarding captured pointer bounds."
+    },
+    {
+      "address": "0x4b7774",
+      "name": "g_mouse_captured_client_top",
+      "kind": "global",
+      "aliases": [
+        "data_4b7774"
+      ],
+      "size": "0x4",
+      "description": "Top client-rectangle offset subtracted by update_mouse when forwarding captured pointer bounds."
+    },
+    {
+      "address": "0x4b7780",
+      "name": "g_mouse_uncaptured_clip_left",
+      "kind": "global",
+      "aliases": [
+        "data_4b7780"
+      ],
+      "size": "0x4",
+      "description": "Left clip-rectangle offset subtracted by update_mouse when clipping or forwarding uncaptured pointer bounds."
+    },
+    {
+      "address": "0x4b7784",
+      "name": "g_mouse_uncaptured_clip_top",
+      "kind": "global",
+      "aliases": [
+        "data_4b7784"
+      ],
+      "size": "0x4",
+      "description": "Top clip-rectangle offset subtracted by update_mouse when clipping or forwarding uncaptured pointer bounds."
+    },
+    {
+      "address": "0x4b7788",
+      "name": "g_mouse_uncaptured_clip_right",
+      "kind": "global",
+      "aliases": [
+        "data_4b7788"
+      ],
+      "size": "0x4",
+      "description": "Right clip-rectangle offset subtracted by update_mouse when clipping uncaptured pointer bounds."
+    },
+    {
+      "address": "0x4b778c",
+      "name": "g_mouse_uncaptured_clip_bottom",
+      "kind": "global",
+      "aliases": [
+        "data_4b778c"
+      ],
+      "size": "0x4",
+      "description": "Bottom clip-rectangle offset subtracted by update_mouse when clipping uncaptured pointer bounds."
+    },
+    {
       "address": "0x4b7790",
       "name": "g_texture_refs",
       "kind": "global",

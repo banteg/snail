@@ -638,7 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 69.70% | 3/65 | 13 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 76.12% | 2/66 | 4 mismatch, 11 ok |  |
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
-| 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 9 unresolved, 61 ok |  |
+| 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 74.46% | 3/115 | 32 ok |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
 | 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/61 | 51.79% | 0/61 | 6 ok |  |

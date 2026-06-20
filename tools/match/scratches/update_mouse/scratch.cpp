@@ -23,12 +23,12 @@ extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
 extern DirectInputDevice* g_mouse_device; // data_777d9c
 
-extern int g_mouse_captured_client_left; // data_4b7770
-extern int g_mouse_captured_client_top; // data_4b7774
-extern int g_mouse_uncaptured_clip_left; // data_4b7780
-extern int g_mouse_uncaptured_clip_top; // data_4b7784
-extern int g_mouse_uncaptured_clip_right; // data_4b7788
-extern int g_mouse_uncaptured_clip_bottom; // data_4b778c
+extern int g_mouse_captured_client_left;
+extern int g_mouse_captured_client_top;
+extern int g_mouse_uncaptured_clip_left;
+extern int g_mouse_uncaptured_clip_top;
+extern int g_mouse_uncaptured_clip_right;
+extern int g_mouse_uncaptured_clip_bottom;
 
 int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y); // @ 0x44c100
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
