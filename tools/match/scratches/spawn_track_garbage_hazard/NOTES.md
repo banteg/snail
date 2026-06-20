@@ -147,3 +147,13 @@ Residuals:
   `staged_y = staged_y + cell->anchor_position.y`, or with a temporary pointer
   to `cell->anchor_position.y`, is codegen-neutral and leaves the same first
   mismatch. Keep the current two-step additive spelling.
+- 2026-06-20 projection residual audit: focused Wibo still reports 99.30%,
+  143/143 instructions, 48/143 prefix, and 16 clean masked operands. A
+  `Vector3& anchor_position` alias and a `float* anchor_components` view both
+  compile to the same residual (`mov x`, `mov z`, then `fadd y`). Assigning the
+  y sum directly into `staged_position.y` is also codegen-neutral. Copying the
+  full `cell->anchor_position` vector after computing the y sum regresses to
+  82.64%, grows the candidate to 145 instructions, and drops the masked audit
+  to 15 clean operands. Keep the existing field-by-field staged `Vector3`; the
+  remaining mismatch is still a local x87/integer-load scheduling residual, not
+  evidence for a different slot or row-cell layout.
