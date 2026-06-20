@@ -69,3 +69,13 @@ the position copy stayed neutral at `79.30%`, direct typed `position.x/y/z`
 stores regressed to `77.62%`, splitting the lane-wall test into nested or
 independent `if` blocks stayed neutral at `79.30%`, and a `switch(lane)`
 regressed to `76.49%`.
+
+2026-06-20 pickup-family retry: focused Wibo still reports `81.79%`,
+`147/144` candidate/target instructions, `44/144` prefix, and nine clean
+masked operands. Naming the wall-tile constant as either `unsigned char` or
+`int` is codegen-neutral and still leaves VC6 lowering the compares as
+load-byte-then-`al = 0xe`, not native's early `cl = 0xe`. A destination
+`Sprite* out_sprite` local for the final position copy is also neutral and
+does not recover native's `edx` ownership. The current source remains the best
+pickup-spawner shape; the first residual is still lane-wall compare scheduling,
+followed by list-splice and position-copy register ownership.

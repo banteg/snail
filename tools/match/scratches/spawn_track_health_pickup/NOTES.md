@@ -77,3 +77,13 @@ the target tail direction better and improves focused Wibo from `72.95%` to
 Native stores zero before `__ftol`, stores zero again on the odd path, and
 jumps over the even `0.5f` store to the shared step-index tail; this source now
 keeps that explicit odd-zero lane.
+
+2026-06-20 pickup-family retry: focused Wibo still reports `74.80%`,
+`124/122` candidate/target instructions, `16/122` prefix, and seven clean
+masked operands. Spelling the 29-word slot stride as
+`slot_index + (slot_index * 7) * 4` is codegen-neutral: VC6 still schedules the
+late `cell` reload before `sub eax, ebx`, while native finishes the slot-index
+subtract first. Explicit raw `zero` and `size_bits` locals for the sprite setup
+are also neutral and leave the existing `ecx`/`eax` register reversal. Keep the
+current shifted `SubgameRuntime*` view and typed sprite stores; the remaining
+gaps are scheduling/register ownership, not a new pickup layout.
