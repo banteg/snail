@@ -19,9 +19,9 @@ Important type notes:
 
 Current focused result:
 
-- match: 79.32%
+- match: 83.00%
 - target/candidate instructions: 367 / 339
-- prefix: 91 / 367
+- prefix: 122 / 367
 - masked operands: 57 clean, 0 unresolved, 1 mismatched
 
 Remaining gap:
@@ -35,3 +35,10 @@ entries remain a real audited mismatch. The main code-shape differences are
 register choice for the negative X/Z constants in the orientation cases and
 shorter edge-selector blocks where MSVC still simplifies some repeated sign
 tests.
+
+2026-06-20 orientation lane correction: case 2 now writes vertex 2's z lane as
+`-0.5f`, matching both the target stores and the IDA/BN decompilers. The prior
+scratch used `-0.89999998f`, which was a real transcription error rather than
+register noise. Focused Wibo improves from `79.32%` to `83.00%`, and the exact
+prefix advances from `91/367` to `122/367`; the remaining masked mismatch is
+still only the curated orientation jump-table label.

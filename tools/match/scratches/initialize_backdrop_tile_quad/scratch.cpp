@@ -87,7 +87,7 @@ void initialize_backdrop_tile_quad(
         vertices[1].x = -0.89999998f;
         vertices[1].z = row_offset + 0.5f;
         vertices[2].x = -0.5f;
-        vertices[2].z = -0.89999998f;
+        vertices[2].z = -0.5f;
         vertices[3].x = -0.89999998f;
         vertices[3].z = -0.5f - column_offset;
         break;
