@@ -10,8 +10,7 @@ Object* ObjectList::add_object_to_list()
         report_errorf("Too many Objects - Increase ObjectList.Init(MAX) in G0.cpp");
     }
 
-    int object_slot = 11 * count++;
-    Object* object = (Object*)((char*)objects + 20 * object_slot);
+    Object* object = &objects[count++];
     object->initialize_object();
     return object;
 }
