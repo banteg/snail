@@ -1,6 +1,6 @@
 # set_backdrop_distort @ 0x410c40
 
-Current scratch: 50.70% (73 target insns, 69 candidate insns), clean masks.
+Current scratch: 54.93% (73 target insns, 69 candidate insns), clean masks.
 
 Seeds the 8x8 backdrop distortion grid from the parsed landscape `Distort:`
 scalar.
@@ -28,3 +28,10 @@ probe.
 repeating the full indexed store expression is codegen-neutral at 50.70%. VC6
 still strength-reduces to the moving pointer cursor, so direct source indexing
 alone does not recover the native recomputed branch addresses.
+
+2026-06-21 explicit border predicate: hoisting the four edge tests into a
+`border` local and spelling the cell offset as `(row + column) * 6` improves the
+focused Wibo score to 54.93% with the same clean masks. The remaining mismatch
+is still structural: VC6 keeps a moving cell pointer and places one zero-store
+case before the random path, while native keeps row/column registers and a
+shared zero block after the random path.

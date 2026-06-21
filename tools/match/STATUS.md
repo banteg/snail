@@ -611,7 +611,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 78.37% | 62/233 | 40 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
-| 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 50.70% | 3/73 | 14 ok |  |
+| 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 66/67 | 72.18% | 0/67 | 6 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 135/139 | 59.85% | 7/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
