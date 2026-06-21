@@ -30,11 +30,13 @@ char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
             }
 
 advance_haystack:
-            if (*needle_cursor == 0)
-                return haystack_cursor;
-            ++haystack_cursor;
-            if (*haystack_cursor == 0)
-                return 0;
+            if (*needle_cursor != 0) {
+                ++haystack_cursor;
+                if (*haystack_cursor == 0)
+                    return 0;
+                continue;
+            }
+            return haystack_cursor;
         }
     }
     return 0;

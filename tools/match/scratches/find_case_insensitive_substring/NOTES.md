@@ -90,3 +90,12 @@ byte locals do not recover the native `al`-owned success tail. Direct
 byte locals range from 57.14%-67.19%, and a `break` to a success return also
 lands at 69.29%. The current shared-label spelling remains the only tested form
 that preserves the native early haystack load and 73.17% score.
+
+2026-06-21 advance-tail inversion: spelling `advance_haystack` as the
+non-success path first (`if (*needle_cursor != 0) { ++haystack_cursor; ... }`)
+preserves the native early haystack load and flips the final epilogue order to
+match native's null-return-before-success layout. Focused Wibo improves to
+85.25%, with 59 candidate instructions versus 63 target instructions and the
+same four clean masked operands. A scoped searched-byte/needle-byte tail local
+regressed to 73.33% by losing the pre-save haystack-byte load and spilling the
+searched byte, so keep the direct indexed reads.
