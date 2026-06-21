@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**504/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69481/325759** bytes (**21.33%**) are proof-grade, and overall fuzzy is **55.99%**.
+**505/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69609/325759** bytes (**21.37%**) are proof-grade, and overall fuzzy is **56.01%**.
 
-## Proof Grade (504)
+## Proof Grade (505)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -348,6 +348,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_invincible_shell | 0x444ae0 | 97 | 21/21 | 100.00% | 21/21 | 4 ok |  |
 | ✅ | update_invincible_shell | 0x444b50 | 416 | 98/98 | 100.00% | 98/98 | 28 ok |  |
 | ✅ | kill_subgoldy | 0x445840 | 17 | 6/6 | 100.00% | 6/6 | 1 ok |  |
+| ✅ | update_snail_skin | 0x445cd0 | 128 | 44/44 | 100.00% | 44/44 | 1 ok |  |
 | ✅ | update_times_up | 0x445e20 | 75 | 26/26 | 100.00% | 26/26 | 5 ok |  |
 | ✅ | uninit_times_up | 0x445e70 | 27 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | show_times_up_message | 0x445e90 | 116 | 31/31 | 100.00% | 31/31 | 6 ok |  |
@@ -591,7 +592,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 64/66 | 89.23% | 3/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (66)
+## Mid Progress (50-79.99%) (65)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -650,7 +651,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 260/312 | 60.14% | 0/312 | 1 mismatch, 32 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
-| 🚧 | update_snail_skin | 0x445cd0 | 128 | 43/44 | 57.47% | 6/44 | 1 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |

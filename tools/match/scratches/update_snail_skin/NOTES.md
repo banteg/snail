@@ -14,17 +14,11 @@ The world bank feeds `update_cutscene`, including the known camera anchors
 `CameraSkidStop` at slot `12`, `CameraSlugDeath` at slot `17`, and
 `CameraIntroTalk` at slot `18`.
 
-Focused Wibo result: 57.47%, 43/44 candidate/target instructions. The by-value
-`TransformMatrix` argument preserves the native `0x40`-byte stack copy before
-`multiply_vector_by_matrix`. Remaining drift is mostly register ownership:
-native keeps the loop index in `ebx` and the world-hotspot cursor in `ebp`;
-this source keeps those reversed. A `register` index hint and declaration-order
-probe did not improve the score, so keep the clear source until a stronger VC6
-idiom explains the split.
-
-2026-06-21 loop-owner retry: index-driven `for`/`do` loops that derive
-`snail_hotspots_local[index]` and `snail_hotspots_world[index]` are neutral or
-only marginally better (58.14%) while leaving the same `ebx`/`ebp` ownership
-swap. A raw byte cursor regresses badly by changing the prologue. Keep the
-world-hotspot cursor source because it better matches the native pointer-walk
-intent despite the current register allocation.
+2026-06-21 index-loop pass: rewriting the loop as a plain indexed transform
+over `snail_hotspots_local[index]` into `snail_hotspots_world[index]` exact
+matches the native function: 100.00%, 44/44 instructions, 44/44 prefix, and the
+single masked operand clean. The index-driven source keeps the native loop
+index in `ebx`, the world-hotspot cursor in `ebp`, and preserves the by-value
+`TransformMatrix` stack copy before `multiply_vector_by_matrix`. Earlier
+pointer-walk and dual-pointer forms either swapped `ebx`/`ebp` ownership or
+changed the prologue.
