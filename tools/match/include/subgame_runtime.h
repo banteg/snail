@@ -30,6 +30,8 @@ public:
     void initialize_subgame(); // @ 0x4374b0
     void reset_subgame(); // @ 0x437b10
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
+    float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
+    void build_subgame_level(int level_index); // @ 0x437eb0
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
         TrackRowCell* cell, Player* player); // @ 0x43d6c0

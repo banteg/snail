@@ -90,6 +90,16 @@ early after the easier prefix. Its major phases are:
   masked audit. The type auditor moved this
   scratch out of the `FrontendWidget`, `Player`, `GolbPathBank`,
   `SubLazerPool`, and `SaltHazardPool` rows.
+- 2026-06-21 receiver cleanup: the scratch now defines
+  `SubgameRuntime::build_subgame_level` directly and declares the unused-receiver
+  `calc_slider_to_rate` call surface on `SubgameRuntime`. Focused Wibo stays at
+  `86.10%`, `560/555`, prefix `244/555`, with the same `105 ok / 1 mismatch`
+  masked audit. A trial using the standalone `__stdcall calc_slider_to_rate`
+  signature regressed to `73.56%`, `557/555`, prefix `62/555`; the caller wants
+  the native `mov ecx, esi` receiver setup even though the callee body does not
+  consume it. `uv run snail match types --paths` now reports
+  `partial-compatible Game: 2`, removing this scratch from the generic owner
+  list.
 
 ## Remaining differences
 

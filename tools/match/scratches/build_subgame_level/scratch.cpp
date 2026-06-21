@@ -13,19 +13,10 @@
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
 #include "star_field.h"
+#include "subgame_runtime.h"
 #include "sub_lazer_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-class Game {
-public:
-    void build_subgame_level(int level_index);
-    void hide_gameplay_scores();
-    void unhide_gameplay_scores();
-    float calc_slider_to_rate(float slider);
-    int rebuild_track_runtime_from_segments(int level_index);
-    void calc_subgame_rate();
-};
 
 extern char* g_game_base;
 extern VoiceManager g_voice_manager;
@@ -41,7 +32,7 @@ int report_errorf(char* format, ...);
 int sprintf(char* buffer, char* format, ...);
 void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
-void Game::build_subgame_level(int level_index)
+void SubgameRuntime::build_subgame_level(int level_index)
 {
     char* game = (char*)this;
 

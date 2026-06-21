@@ -746,4 +746,4 @@ Run `uv run snail match types --paths` for the full path-level report.
 |---|---|---:|---:|---:|---|
 | header-compatible | GolbShot | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| partial-compatible | Game | 3 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
+| partial-compatible | Game | 2 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
