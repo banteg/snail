@@ -115,7 +115,9 @@ public:
     int nuke_rate_state; // +0x3bdec0
     char unknown_3bdec4[0x3be0c0 - 0x3bdec4];
     float nuke_rate_progress; // +0x3be0c0
-    char unknown_3be0c4[0x3bfb04 - 0x3be0c4];
+    char unknown_3be0c4[0x3be0e4 - 0x3be0c4];
+    float subgame_kill_plane_z; // +0x3be0e4, shared cull/live-window boundary
+    char unknown_3be0e8[0x3bfb04 - 0x3be0e8];
     TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
     char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
     HighScoreBank high_score_bank; // +0x68b4c8
