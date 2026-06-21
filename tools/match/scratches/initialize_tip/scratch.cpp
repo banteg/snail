@@ -16,8 +16,11 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
         definition = &g_default_tip_message;
 
     widget_main = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    TipMessageDefinition* current_definition = definition;
-    unsigned int alignment = (int)(char)~(definition->flags & 0xff);
+    TipMessageDefinition* flags_definition =
+        *(TipMessageDefinition* volatile*)&this->definition;
+    TipMessageDefinition* current_definition =
+        *(TipMessageDefinition* volatile*)&this->definition;
+    unsigned int alignment = (int)(char)~(flags_definition->flags & 0xff);
     alignment &= 4;
     Color4f color;
     widget_main->initialize_frontend_widget(

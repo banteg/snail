@@ -30,3 +30,10 @@ expressions moves focused Wibo to 81.70%, 152/154 candidate/target
 instructions, with 25 clean masked operands. Remaining residual is source-shape
 scheduling around the initial `widget_main` store versus definition reload,
 main-widget argument load order, and final owner restore.
+
+2026-06-21 post-allocation reload pass: reloading the stored definition member
+through a narrow volatile view after allocating `widget_main` recovers native's
+`widget_main` store before the two definition loads. Focused Wibo improves to
+82.74%, with 153/154 candidate/target instructions, prefix 19/154, and the same
+25 clean masked operands. Non-volatile member reloads are codegen-neutral at
+81.70%, while local widget aliases perturb the prologue and drop to 69.90%.
