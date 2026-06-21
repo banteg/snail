@@ -38,3 +38,15 @@ Residual:
 - Because of that cleanup split, the compiler also duplicates the zero-return
   epilogue instead of sharing the native `pop esi; ret` tail. The value in
   `eax` is still the tested zero score.
+
+2026-06-21 report-prototype pass: the stripped report helper compiles closer
+when viewed as a fixed two-argument cdecl function for the seven formatted
+integer reports. Casting the final newline call back to a one-argument cdecl
+view preserves the real single-argument call while letting VC6 coalesce the
+non-zero path cleanup into the native `add esp, 0x3c`. Focused Wibo improves
+from 90.28% (77/67 candidate/target instructions) to 96.35% (70/67), with all
+16 masks still clean. A default-argument prototype left an extra zero push for
+the newline and only reached 94.20%; explicit shared-result returns changed
+register ownership and regressed to 70.00%; omitting the zero-path return hit
+the current Wibo missing-`lstrcpynA` path. The remaining residual is only the
+extra explicit zero-return epilogue.

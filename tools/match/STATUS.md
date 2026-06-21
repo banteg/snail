@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.09%**.
+**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.10%**.
 
 ## Proof Grade (489)
 
@@ -498,7 +498,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (14)
+## Near Match (95-99.99%) (15)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -513,11 +513,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
+| 🚧 | display_score_stats | 0x4403c0 | 241 | 70/67 | 96.35% | 4/67 | 16 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 97.87% | 42/47 | - |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (56)
+## High Progress (80-94.99%) (55)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -560,7 +561,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 128/127 | 87.84% | 6/127 | 20 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
-| 🚧 | display_score_stats | 0x4403c0 | 241 | 77/67 | 90.28% | 4/67 | 16 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 81.11% | 5/218 | 23 ok |  |
 | 🚧 | shoot_subgoldy | 0x441ad0 | 154 | 49/48 | 88.66% | 16/48 | 2 ok |  |

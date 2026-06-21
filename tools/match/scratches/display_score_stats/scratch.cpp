@@ -1,7 +1,8 @@
 // display_score_stats @ 0x4403c0 (thiscall)
 #include "score_stats.h"
 
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
+int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
+typedef int (__cdecl *DebugReportOneArg)(char* format);
 
 int RunScoreStats::display_score_stats()
 {
@@ -13,7 +14,7 @@ int RunScoreStats::display_score_stats()
         debug_report_stub("Parcel Collect:%i%%\n", (score_buckets[SUBGOLDY_SCORE_PARCEL_COLLECT] * 100) / total_score);
         debug_report_stub("Parcel Deliver:%i%%\n", (score_buckets[SUBGOLDY_SCORE_PARCEL_DELIVER] * 100) / total_score);
         debug_report_stub("Bonus         :%i%%\n", (score_buckets[SUBGOLDY_SCORE_BONUS] * 100) / total_score);
-        return debug_report_stub("\n");
+        return ((DebugReportOneArg)debug_report_stub)("\n");
     }
     return total_score;
 }
