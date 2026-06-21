@@ -38,13 +38,14 @@ int SaltHazardPool::spawn_salt_hazard(const Vector3* position)
     live_matrix->rotate_matrix_world_y(
         ((float)next_math_random_value() - 16384.0f) * 0.0001917476f);
     *(unsigned char*)&slot->velocity.z = 1;
+    int* list_flags = &slot->list_flags;
     SaltHazardSlot* head = &g_game->salt_list_head;
-    if ((slot->list_flags & 0x200) != 0)
+    if ((*list_flags & 0x200) != 0)
         return report_errorf("List ADDafter");
     slot->list_prev = head;
     slot->list_next = head->list_next;
     head->list_next = slot;
     if (slot->list_next)
         slot->list_next->list_prev = slot;
-    return slot->list_flags |= 0x200;
+    return *list_flags |= 0x200;
 }

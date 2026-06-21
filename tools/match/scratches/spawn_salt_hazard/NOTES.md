@@ -1,4 +1,4 @@
-# Improved — 98.51%, 67/67 insns, one scheduling residual
+# Matched — 100.00%, 67/67 insns
 
 The free-scan loop is the only divergence: the original lays it out as a
 single top test with the bound compare as conditional back-edge; every
@@ -51,3 +51,9 @@ push the argument slot first and fill it through x87 like native. Focused Wibo
 is now 98.51%, 67/67 instructions, and 10 clean masked operands. Rewriting the
 `+0x94` low-byte poke as a raw byte pointer was neutral; the only residual is
 VC6 loading `list_flags` before that independent byte store.
+
+2026-06-20 exact update: after the live-byte store, keeping a real
+`int* list_flags = &slot->list_flags` owner for the intrusive-list flag check
+and final OR prevents VC6 from hoisting the flag load above the independent
+`+0x94` byte poke. Focused Wibo now reports a proof-grade `100.00%`, `67/67`
+instructions, full prefix, and `10` clean masked operands.
