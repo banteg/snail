@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.63%**.
+**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.64%**.
 
 ## Proof Grade (498)
 
@@ -584,7 +584,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (72)
+## Mid Progress (50-79.99%) (73)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -592,6 +592,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 433/429 | 62.18% | 0/429 | 1 mismatch, 32 ok |  |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 579/647 | 52.85% | 42/647 | 4 mismatch, 65 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
+| 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 44/46 | 66.67% | 0/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 45 ok |  |
 | 🚧 | initialize_main_loop_display_state | 0x406d70 | 79 | 11/23 | 64.71% | 7/23 | 9 ok |  |
@@ -661,13 +662,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 63/63 | 71.43% | 8/63 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (68)
+## Early Progress (>0-49.99%) (67)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
-| 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 46/46 | 28.26% | 0/46 | - |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 475/492 | 46.74% | 10/492 | 4 mismatch, 67 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |

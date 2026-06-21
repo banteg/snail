@@ -36,5 +36,16 @@ checking the extension selector as direct `*path` reads. This makes VC6 preserve
 the native-style reusable `'A'` byte in `dl` across the TGA/WAV checks. Reloading
 the selector into `value` after the increment falls back to the old 26.37% tail,
 and `/Os` is still a hard regression despite its attractive opening register
-allocation. The remaining first mismatch is still the input cursor/value lane:
-native uses `eax` plus `cl`, while this source keeps `ecx` plus `al`.
+allocation. At this point the first mismatch was the input cursor/value lane:
+native used `eax` plus `cl`, while the source kept `ecx` plus `al`.
+
+2026-06-21 primed-loop pass: rewriting the stem copy as a primed
+`while (1)` loop with explicit zero/dot breaks recovers the native input cursor
+and byte owner (`eax` plus `cl`) under the default flags while preserving the
+native copy order (`inc path`, store prior byte, advance output). Focused Wibo
+improves from 28.26% to 66.67% and moves the scratch into Mid Progress. The
+retained residual is that VC6 emits a shorter top-tested loop with an
+unconditional jump back to the reload, while native uses a bottom
+`mov cl, [eax]` / `test cl, cl` / `jne` pair; attempts to combine the primed
+register ownership with the original bottom-tested source fall back to the old
+`ecx`/`al` cursor allocation.
