@@ -29,3 +29,24 @@ The remaining named mismatch is the native `ebp` scale-cache cursor aligned
 against the candidate's `g_font3d_bods+0x1c` cursor. A scale-only cursor source
 rewrite was neutral at 40.00%, while a broader object/atlas/scale cursor
 rewrite regressed to 32.00%, so the register-ownership residual is left visible.
+
+2026-06-21 object-call reload pass:
+
+- Reloading `bod->object` for the `load_object_definition("Objects/Font3D", ...)`
+  call, while keeping the existing `object` local for the following quad,
+  vertex, ready, and flag writes, improves the focused matcher from 40.00% to
+  44.34%. The candidate grows from 94 to 95 instructions, keeps the 3/126
+  prefix, and adds one clean masked operand.
+- Reloading the object again for the final flag OR clears the old
+  `g_font3d_scales` versus `g_font3d_bods` mask mismatch, but scores lower at
+  43.24%, so the higher-scoring loader-call reload is retained and the cursor
+  mismatch remains documented.
+- Removing the cached facequad pointer, removing the cached vertices pointer,
+  combining those removals, and removing the texture-ref local all regress or
+  stay neutral. Those forms add instructions but lose the current register
+  skeleton, so the scratch keeps the local `object`, `quad`, and `vertices`
+  views after the loader call.
+- Moving the `object` local until after the load/clear block collapses the
+  prologue and drops below 30%, while scale-cursor variants around
+  `g_font3d_scales` regress to roughly 36%. Keep the indexed scale store until
+  a stronger object-field cursor lead appears.

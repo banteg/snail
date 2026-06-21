@@ -46,7 +46,7 @@ int initialize_font3d_objects(short font_id)
             bod->set_bod_object(add_object_to_list(&g_object_list));
 
             Font3DObject* object = (Font3DObject*)bod->object;
-            load_object_definition("Objects/Font3D", object);
+            load_object_definition("Objects/Font3D", (Font3DObject*)bod->object);
             bod->render_arg_1c = 0;
             bod->render_arg_20 = 0.0f;
 
