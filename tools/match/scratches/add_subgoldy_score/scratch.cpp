@@ -1,23 +1,11 @@
 // add_subgoldy_score @ 0x4402c0 (thiscall, ret 8)
 
-#include "score_stats.h"
+#include "player.h"
 #include "sound_effect_manager.h"
 
 extern char* g_game_base; // data_4df904
 
 void report_errorf(const char* message, ...);
-
-class Player {
-public:
-    void add_subgoldy_score(int score_kind, int bonus_score);
-
-    char unknown_0000[0x2e4];
-    int total_score; // +0x2e4
-    char unknown_02e8[0x310 - 0x2e8];
-    int score_buckets[SUBGOLDY_SCORE_BUCKET_COUNT]; // +0x310
-    char unknown_0328[0x4340 - 0x328];
-    int visible_life_stock; // +0x4340
-};
 
 void Player::add_subgoldy_score(int score_kind, int bonus_score)
 {

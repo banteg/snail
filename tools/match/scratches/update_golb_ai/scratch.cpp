@@ -2,17 +2,19 @@
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
+#include "player.h"
 #include "score_stats.h"
 #include "transform_matrix.h"
 #include "vapour_trail.h"
 #include "vector3.h"
 
 typedef Vector3 Vec3;
-struct Sprite;
+class Sprite;
 
 float __fastcall normalize_vector(Vec3* vector);
 
-struct Game {
+class Game {
+public:
     char* get_track_grid_cell_at_world_position(Vec3* position);
 
     char unknown_00[0x9];
@@ -21,16 +23,6 @@ struct Game {
     float subgame_rate; // +0x38
     char unknown_3c[0x359140 - 0x3c];
     int garbage_list_head; // +0x359140
-};
-
-class Player {
-public:
-    void add_subgoldy_score(int score_kind, int value);
-
-    char unknown_00[0x70];
-    float live_position_z; // +0x70
-    char unknown_74[0x2980 - 0x74];
-    float golb_band_min_z; // +0x2980
 };
 
 class SlugHazardRuntime {
@@ -270,8 +262,8 @@ void GolbShot::update_golb_ai()
     previous_output = source_matrix.position;
     if (lived <= 1.0f) {
         Player* bounds_player = player;
-        if (position.z >= bounds_player->golb_band_min_z
-            && bounds_player->live_position_z + 46.0f >= position.z) {
+        if (position.z >= bounds_player->interaction_max_z
+            && bounds_player->position.z + 46.0f >= position.z) {
             int garbage = game->garbage_list_head;
             while (garbage) {
                 if (*(int*)(garbage + 132) == 1) {

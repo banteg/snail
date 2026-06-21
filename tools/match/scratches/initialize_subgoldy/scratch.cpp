@@ -6,6 +6,7 @@
 #include "damage_gauge.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
+#include "player.h"
 #include "runtime_slot.h"
 #include "score_stats.h"
 #include "snail_skin.h"
@@ -15,12 +16,6 @@
 class CutsceneAIState {
 public:
     int initialize_cutscene_ai();
-};
-
-class Player {
-public:
-    int initialize_subgoldy(int player_slot);
-    int initialize_subgoldy_ghost(int owner);
 };
 
 extern char* g_game_base; // data_4df904

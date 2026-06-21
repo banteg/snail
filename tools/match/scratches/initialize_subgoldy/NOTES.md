@@ -90,8 +90,10 @@ Latest focused result:
   native's post-camera-target tail order.
 - Rejected: moving the zero-y temporary earlier and naming cached-target y/z
   lane pointers are codegen-neutral and still fold `self+0x2964` into direct
-  stores. Including the promoted `player.h` declaration is also codegen-neutral
-  but does not improve this raw-offset scratch. Hoisting a shared `g_game_base`
-  local for the control-source branch regresses to 95.14%, and naming the
-  transform-loop game pointer regresses to 94.43% by keeping the game pointer in
-  `ebp` and spilling the loop count.
+  stores. Hoisting a shared `g_game_base` local for the control-source branch
+  regresses to 95.14%, and naming the transform-loop game pointer regresses to
+  94.43% by keeping the game pointer in `ebp` and spilling the loop count.
+- 2026-06-20 Player header consolidation: including the promoted `player.h`
+  declaration is codegen-neutral at the retained `95.86%`, `276/279`,
+  `27 ok / 0` profile. The body stays raw-offset shaped because the remaining
+  debt is cached-target/control-source scheduling, not missing field names.

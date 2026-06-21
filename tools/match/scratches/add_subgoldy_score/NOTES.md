@@ -24,12 +24,10 @@ operands.
   is not crossed or the visible life stock is capped, matching the IDA and
   Binary Ninja decompile nesting. Moving the sound gate inside `if (lives < 9)`
   recovers the native epilogue placement and proves the helper.
-- 2026-06-16 shared-`Player` probe: `total_score`, `score_buckets`, and
-  `visible_life_stock` are present in `player.h`, but including it here preserved
-  the instruction stream while changing the switch-table relocation audit from
-  `6 ok` to `5 ok, 1 mismatch` (`$L460` instead of
-  `add_subgoldy_score_jump_table`). Keep the compact local shell until that
-  symbol-shape issue has a targeted fix.
+- 2026-06-20 Player header consolidation: the current shared `player.h`
+  declaration preserves the proof-grade instruction stream and switch-table
+  audit (`100.00%`, `58/58`, `6 ok / 0`), so this scratch no longer carries a
+  compact local `Player` shell.
 - 2026-06-16 shared-audio probe: replacing the local `SoundEffectManager`
   call view with `audio_system.h` produced the same switch-table audit
   regression (`5 ok, 1 mismatch`). Keep the compact local sound view here too.
