@@ -73,3 +73,13 @@ double-test/`else` spelling fell back to the old branchless select at 69.29%.
 The retained residual is now the inner success tail: native keeps the searched
 byte in `al` and branches directly back to the compare loop, while the scratch
 emits an extra post-compare pattern-ended check.
+
+2026-06-21 inner-compare retry: inverting the inner compare so matching bytes
+`continue` the scan improves focused Wibo to 73.17%, with 60 candidate
+instructions versus 63 target instructions, an 8/63 prefix, and four clean
+masked operands. Letting the shared `advance_haystack` label own the
+pattern-ended success check is better than checking it before the `goto`
+(72.00%) and avoids a duplicated `cmp byte [esi], 0x0`. The equivalent `else`
+form and a named searched-byte local both regressed by losing the native
+prologue allocation, so the retained source keeps direct `needle_cursor[delta]`
+reads.

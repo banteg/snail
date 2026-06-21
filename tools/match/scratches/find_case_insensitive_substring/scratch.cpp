@@ -21,12 +21,11 @@ char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
                     if (needle_cursor[delta] != 0) {
                         char needle_upper =
                             ascii_upper_if_lowercase(*needle_cursor);
-                        if (needle_upper != ascii_upper_if_lowercase(needle_cursor[delta]))
-                            goto advance_haystack;
+                        if (needle_upper == ascii_upper_if_lowercase(needle_cursor[delta]))
+                            continue;
                     }
 
-                    if (*needle_cursor == 0)
-                        return haystack_cursor;
+                    goto advance_haystack;
                 }
             }
 
