@@ -109,6 +109,17 @@ simple position. Keep it as `Vector3 projection_payload` for now because the
 tail still treats it as vector-shaped storage; promote to a union only after
 another row consumer agrees on the lane meanings.
 
+## Receiver cleanup (2026-06-21)
+
+The scratch now defines `SubgameRuntime::place_parcels_on_track` directly and
+calls the shared `place_challenge_parcels_on_track` declaration for mode 1.
+The fragile candidate-bank and segment-record shapes stay scratch-local, with
+the segment base still addressed as `this + 0xa878`. Focused Wibo remains
+26.30%, 646/639 candidate instructions, prefix 0/639, with 26 clean masked
+operands and the same five masked mismatches. `uv run snail match types --paths`
+now reports `partial-compatible Game: 5`, with both parcel placement scratches
+removed from the remaining generic owner list.
+
 ## Rejected projection-tail probes (2026-06-16)
 
 Two source-shape probes tried to chase the native projection tail order and both

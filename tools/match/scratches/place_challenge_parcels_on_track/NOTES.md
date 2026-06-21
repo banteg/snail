@@ -6,6 +6,12 @@ This is the challenge-mode parcel placer called by `place_parcels_on_track` when
 
 ## Source-shape findings
 
+- 2026-06-21 receiver cleanup: the scratch now defines
+  `SubgameRuntime::place_challenge_parcels_on_track` directly, using the shared
+  receiver fields for `completion_bonus_x_source`,
+  `challenge_difficulty_scalar`, and `runtime_row_count`. Focused Wibo remains
+  44.70%, 178/171 candidate instructions, prefix 0/171, with 19 clean masked
+  operands. This removes the local `Game` shell from the type census.
 - `g_challenge_parcel_rows @ 0x6447e8` is a recovered row-index scratch array. It is only referenced by this helper.
 - The zero-bucket reset is best expressed as a pointer walk from `g_zero_parcel_buckets + 0x200` to `g_zero_parcel_buckets + 0x106200`; the signed pointer cast keeps the native `jl`.
 - The quota expression needs the two native multiplies by `50.0f` and `0.00999999978f`; otherwise VC folds them into `0.5f` and creates a masked constant mismatch.

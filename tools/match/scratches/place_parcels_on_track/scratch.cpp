@@ -7,6 +7,7 @@
 
 #include "track_attachment.h"
 #include "transform_matrix.h"
+#include "subgame_runtime.h"
 
 double random_float_below(float upper_bound, const char* tag);
 void report_errorf(const char* format, ...);
@@ -43,25 +44,12 @@ struct SegmentRecord { // game+0xa878, stride 16928
     // +0x814: AuthoredParcelRecord rows[], 56-byte stride
 };
 
-struct Game {
-    char unknown_00[0x40];
-    int level_mode; // +0x40
-    char unknown_44[0x54 - 0x44];
-    int runtime_row_count; // +0x54
-    char unknown_58[0xa874 - 0x58];
-    int level_segment_count; // +0xa874
-    SegmentRecord segments[1]; // +0xa878 stride 16928
-
-    int place_parcels_on_track();
-    int place_challenge_parcels_on_track();
-};
-
 // row records at game + 244*row + 0x5ccac8: flags +0x00 (0x01 live, 0x10
 // parcel occupied, 0x11 written on claim, 0x20 mirror lateral, 0x40
 // attachment row), payload vec3 +0x90, count accumulator +0x94, row-center
 // accumulator +0x98, attachment cell ptr +0xa4.
 
-int Game::place_parcels_on_track()
+int SubgameRuntime::place_parcels_on_track()
 {
     if (level_mode == 1)
         return place_challenge_parcels_on_track();
@@ -80,7 +68,7 @@ int Game::place_parcels_on_track()
     int max_set_size = 0;
 
     for (int segment = 0; segment < level_segment_count; ++segment) {
-        SegmentRecord* record = (SegmentRecord*)((char*)segments + 16928 * segment);
+        SegmentRecord* record = (SegmentRecord*)((char*)this + 0xa878 + 16928 * segment);
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
             CandidateEntry* set_entry = &g_parcel_set_buckets[set_entry_count];
@@ -170,7 +158,7 @@ int Game::place_parcels_on_track()
             for (int spot = 0; spot < entry->candidate_count; ++spot) {
                 int absolute_row =
                     entry->candidates[spot].row
-                    + ((SegmentRecord*)((char*)segments + 16928 * entry->segment_index))
+                    + ((SegmentRecord*)((char*)this + 0xa878 + 16928 * entry->segment_index))
                           ->row_base;
                 TrackAttachmentRuntimeRow* row_record =
                     (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
@@ -213,7 +201,7 @@ int Game::place_parcels_on_track()
             placed += entry->candidate_count;
             int absolute_row =
                 entry->candidates[0].row
-                + ((SegmentRecord*)((char*)segments + 16928 * entry->segment_index))->row_base;
+                + ((SegmentRecord*)((char*)this + 0xa878 + 16928 * entry->segment_index))->row_base;
             TrackAttachmentRuntimeRow* row_record =
                 (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
             if (row_record->flags & 0x10)

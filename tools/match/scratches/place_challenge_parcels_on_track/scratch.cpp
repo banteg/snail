@@ -2,6 +2,7 @@
 
 #include "track_attachment.h"
 #include "transform_matrix.h"
+#include "subgame_runtime.h"
 
 double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
@@ -10,18 +11,7 @@ extern char g_zero_parcel_buckets[]; // 0x53d190
 extern char g_zero_parcel_bucket_count_lane_end; // 0x643390
 extern int g_challenge_parcel_rows[]; // 0x6447e8
 
-struct Game {
-    char unknown_00[0x28];
-    int completion_bonus_x_source; // +0x28
-    char unknown_2c[0x34 - 0x2c];
-    float challenge_difficulty_scalar; // +0x34
-    char unknown_38[0x54 - 0x38];
-    int runtime_row_count; // +0x54
-
-    int place_challenge_parcels_on_track();
-};
-
-int Game::place_challenge_parcels_on_track()
+int SubgameRuntime::place_challenge_parcels_on_track()
 {
     float source_scaled = (float)completion_bonus_x_source * 50.0f;
     source_scaled = source_scaled * 0.00999999978f;

@@ -53,7 +53,8 @@ public:
     char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
     void complete_subgame(unsigned char completed);
     void build_track_colours();
-    void place_parcels_on_track();
+    int place_parcels_on_track();
+    int place_challenge_parcels_on_track();
     void select_track_tile_edge_variants();
     void promote_track_tiles_to_fringe_variants();
     void harmonize_center_lane_floor_slide_variants();
