@@ -5,14 +5,15 @@
 
 #define SHRINK_BACKDROP_TILE_COMPONENT(component_expr)     \
     do {                                                   \
-        float component_value = (component_expr);           \
         float* component = &(component_expr);               \
+        float component_value = *(volatile float*)component;\
         int sign;                                          \
         if (component_value < 0.0f) {                       \
             sign = -1;                                     \
         } else {                                           \
+            float zero_check = *component;                  \
             sign = 0;                                      \
-            if (*component != 0.0f)                         \
+            if (zero_check != 0.0f)                         \
                 sign = 1;                                  \
         }                                                  \
         *component = *component - (float)sign * 0.2f;       \
@@ -105,35 +106,36 @@ void initialize_backdrop_tile_quad(
         break;
     }
 
+    int edge_index = edge_selector - 1;
     float* z_component = &vertices[0].z;
     int vertex_count = 4;
     do {
-        switch (edge_selector) {
-        case 1:
+        switch (edge_index) {
+        case 0:
             if (z_component[-2] < 0.0f && *z_component < 0.0f) {
                 SHRINK_BACKDROP_TILE_COMPONENT(z_component[-2]);
                 SHRINK_BACKDROP_TILE_COMPONENT(*z_component);
             }
             break;
-        case 2:
+        case 1:
             if (z_component[-2] < 0.0f && *z_component > 0.0f) {
                 SHRINK_BACKDROP_TILE_COMPONENT(z_component[-2]);
                 SHRINK_BACKDROP_TILE_COMPONENT(*z_component);
             }
             break;
-        case 3:
+        case 2:
             if (z_component[-2] > 0.0f && *z_component < 0.0f) {
                 SHRINK_BACKDROP_TILE_COMPONENT(z_component[-2]);
                 SHRINK_BACKDROP_TILE_COMPONENT(*z_component);
             }
             break;
-        case 4:
+        case 3:
             if (z_component[-2] > 0.0f && *z_component > 0.0f) {
                 SHRINK_BACKDROP_TILE_COMPONENT(z_component[-2]);
                 SHRINK_BACKDROP_TILE_COMPONENT(*z_component);
             }
             break;
-        case 5:
+        case 4:
             if (z_component[-2] > 0.0f) {
                 if (*z_component > 0.0f) {
                     if (*(int*)z_component == 0x3f000000)
@@ -143,7 +145,7 @@ void initialize_backdrop_tile_quad(
                 }
             }
             break;
-        case 6:
+        case 5:
             if (*z_component > 0.0f) {
                 if (*(int*)z_component == 0x3f000000)
                     z_component[-1] = z_component[-1] + 0.5f;
@@ -151,7 +153,7 @@ void initialize_backdrop_tile_quad(
                     z_component[-1] = z_component[-1] + 0.60000002f;
             }
             break;
-        case 7:
+        case 6:
             if (z_component[-2] < 0.0f) {
                 if (*z_component > 0.0f) {
                     if (*(int*)z_component == 0x3f000000)

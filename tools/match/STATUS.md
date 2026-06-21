@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**500/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66972/325759** bytes (**20.56%**) are proof-grade, and overall fuzzy is **55.87%**.
+**500/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66972/325759** bytes (**20.56%**) are proof-grade, and overall fuzzy is **55.94%**.
 
 ## Proof Grade (500)
 
@@ -509,6 +509,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
+## Audit Needed (1)
+
+| | function | address | bytes | insns | match | prefix | masked | build |
+|---|---|---|---|---|---|---|---|---|
+| ⚠ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 1 mismatch, 62 ok |  |
+
 ## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
@@ -530,7 +536,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (55)
+## High Progress (80-94.99%) (54)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -550,7 +556,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | update_loading_screen | 0x418e80 | 656 | 204/204 | 91.67% | 2/204 | 26 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
-| 🚧 | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 339/367 | 83.00% | 122/367 | 1 mismatch, 57 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 192/188 | 85.26% | 9/188 | 32 ok |  |

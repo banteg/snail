@@ -42,3 +42,13 @@ scratch used `-0.89999998f`, which was a real transcription error rather than
 register noise. Focused Wibo improves from `79.32%` to `83.00%`, and the exact
 prefix advances from `91/367` to `122/367`; the remaining masked mismatch is
 still only the curated orientation jump-table label.
+
+2026-06-21 edge shrink shape pass: precomputing `edge_selector - 1` as the
+switch key gives VC6 the native `esi` switch index / `edi` vertex counter split.
+The shrink macro then needs a volatile first reload plus a zero-check temporary;
+that prevents VC6 from reusing the outer sign predicates and restores the full
+native inlined sign test. Focused Wibo now has a 100.00% normalized instruction
+stream, 367/367 instructions, and a 367/367 prefix. The newly exposed
+edge-selector jump table at `0x41aa0c` now has a curated reference and audits
+cleanly. The only remaining masked operand issue is the older orientation table
+label mismatch.
