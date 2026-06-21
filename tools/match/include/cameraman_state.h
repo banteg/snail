@@ -4,8 +4,8 @@
 
 #include "transform_matrix.h"
 
-class Game;
 class Player;
+class SubgameRuntime;
 
 class CameramanState {
 public:
@@ -16,7 +16,7 @@ public:
     TransformMatrix desired_matrix;          // +0x40
     TransformMatrix previous_desired_matrix; // +0x80
     Player* player;                          // +0xc0
-    Game* game;                              // +0xc4
+    SubgameRuntime* game;                    // +0xc4
     float fov_degrees;                       // +0xc8
     unsigned char unresolved_cc;             // +0xcc
     char unknown_cd[3];

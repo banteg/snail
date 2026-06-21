@@ -14,3 +14,7 @@ This initializes the shared `CameramanState` layout:
 2026-06-16 consolidation: `CameramanState` now lives in
 `include/cameraman_state.h` and is shared with `update_cameraman`. The focused
 match remains exact.
+
+2026-06-21 owner typing: `CameramanState::game` is now a `SubgameRuntime*`.
+The initializer keeps the same exact `100%`, `20/20` match with an explicit
+cast from `g_game_base + 0x74618`.

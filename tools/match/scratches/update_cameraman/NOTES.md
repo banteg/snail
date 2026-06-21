@@ -128,3 +128,10 @@ updater remains at `92.55%`, `322/322`, with the same single masked call
 mismatch. The shared layout is live/desired/previous matrices at
 `0x00/0x40/0x80`, `player +0xc0`, `game +0xc4`, `fov_degrees +0xc8`, scratch
 byte `+0xcc`, and lift envelope fields `+0xd0/+0xd4`.
+
+## 2026-06-21 subgame owner typing
+
+`CameramanState::game` is now typed as `SubgameRuntime*`, removing this
+scratch's local `Game` shell. The two consumed owner lanes were already shared
+as `SubgameRuntime::subgame_rate` and `first_block_row_count`; focused Wibo
+remains at `92.55%`, `322/322`, with the same single masked call mismatch.

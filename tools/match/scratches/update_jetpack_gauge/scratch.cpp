@@ -2,18 +2,11 @@
 // Jetpack countdown/warning controller used by update_subgoldy.
 
 #include "jetpack_gauge.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "vector3.h"
 
 extern char* g_game_base; // data_4df904
-
-class Game {
-public:
-    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
-
-    char unknown_00[0x58];
-    int completion_row_start; // +0x58
-};
 
 class PlayerForJetpackGauge {
 public:
@@ -51,7 +44,7 @@ void JetpackGaugeController::update_jetpack_gauge()
         float next_progress = progress + progress_step;
         progress = next_progress;
 
-        Game* live_game = (Game*)game;
+        SubgameRuntime* live_game = game;
         PlayerForJetpackGauge* live_player = (PlayerForJetpackGauge*)player;
         if (next_progress > 1.0f
             || (float)(live_game->completion_row_start - 5) < live_player->position_z) {
@@ -70,7 +63,7 @@ void JetpackGaugeController::update_jetpack_gauge()
         } else {
             warning_intensity = 1.0f;
             TrackAttachmentRuntimeRow* runtime_cell =
-                ((Game*)(g_game_base + 0x74618))
+                ((SubgameRuntime*)(g_game_base + 0x74618))
                     ->get_track_runtime_cell_at_world_z((Vector3*)(g_game_base + 0x42fde4));
             if ((runtime_cell->flags & 0x8000) != 0) {
                 progress = 0.94f;

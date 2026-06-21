@@ -4,6 +4,7 @@
 #define JETPACK_GAUGE_H
 
 class Sprite;
+class SubgameRuntime;
 
 struct JetParticleSlot {
     Sprite* sprite; // +0x00
@@ -33,7 +34,7 @@ public:
     float wobble_y; // +0x18
     float wobble_alpha; // +0x1c
     JetParticleSlot particle_slots[15][2]; // +0x20
-    void* game; // +0x200
+    SubgameRuntime* game; // +0x200
     char unknown_204[0x20c - 0x204];
     float warning_intensity_latch; // +0x20c
     float warning_intensity; // +0x210

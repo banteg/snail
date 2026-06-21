@@ -54,3 +54,9 @@ and the same 34 clean masked operands. VC6 still uses `cmp eax, edi` plus a
 separate `test eax, eax` after `dec eax`, while native reuses flags from
 `sub eax, edi` and `dec eax`; a `switch (state - zero)` spelling regressed to
 `84.29%` and disturbed the progress-add x87 order, so keep the ladder.
+
+2026-06-21 subgame owner typing: `JetpackGaugeController::game` is now typed
+as `SubgameRuntime*`, and the global row-sampler cast uses the same shared
+runtime view at `g_game_base + 0x74618`. This removes the scratch-local
+generic `Game` shell without moving the codegen; focused Wibo remains at
+`85.93%`, `132/131`, prefix `6/131`, with 34 clean masked operands.

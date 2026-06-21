@@ -9,7 +9,7 @@ int JetpackGaugeController::initialize_jetpack_gauge(int player_slot)
     progress = 0.0f;
     char* game_ptr = g_game_base + 0x74618;
     progress_step = 0.00166666671f;
-    game = game_ptr;
+    game = (SubgameRuntime*)game_ptr;
     char* player_ptr = g_game_base + 0x42fd7c;
     state = 0;
     player = player_ptr;

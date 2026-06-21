@@ -4,15 +4,8 @@
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
 #include "cameraman_state.h"
 #include "player.h"
+#include "subgame_runtime.h"
 #include "track_attachment.h"
-
-class Game {
-public:
-    char unknown_00[0x38];
-    float subgame_rate;        // +0x38
-    char unknown_3c[0x50 - 0x3c];
-    int first_block_row_count; // +0x50
-};
 
 float cosine(float angle);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
@@ -136,7 +129,7 @@ void CameramanState::update_cameraman()
     } else {
         desired_fov = 110.0f;
     }
-    Game* rate_game = game;
+    SubgameRuntime* rate_game = game;
     fov_degrees = (desired_fov - fov_degrees) * 0.30000001f + fov_degrees;
     live_matrix.linear_interpolate_matrix(
         &previous_desired_matrix,
