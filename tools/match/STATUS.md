@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**486/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **63725/325759** bytes (**19.56%**) are proof-grade, and overall fuzzy is **53.92%**.
+**487/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **63920/325759** bytes (**19.62%**) are proof-grade, and overall fuzzy is **53.95%**.
 
-## Proof Grade (486)
+## Proof Grade (487)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -462,6 +462,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_quaternion_from_axis | 0x44d530 | 74 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | ✅ | initialize_matrix_from_quaternion | 0x44d820 | 247 | 82/82 | 100.00% | 82/82 | 3 ok |  |
+| ✅ | linear_interpolate_matrix | 0x44da90 | 195 | 61/61 | 100.00% | 61/61 | 6 ok |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | 7/7 | - |  |
@@ -575,7 +576,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 | 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 85/78 | 82.21% | 16/78 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (78)
+## Mid Progress (50-79.99%) (77)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -654,7 +655,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 74.46% | 3/115 | 32 ok |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
-| 🚧 | linear_interpolate_matrix | 0x44da90 | 195 | 51/61 | 51.79% | 0/61 | 6 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 64/63 | 69.29% | 0/63 | 4 ok |  |
 

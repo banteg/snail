@@ -12,16 +12,22 @@ void TransformMatrix::linear_interpolate_matrix(
     interpolate_matrix_rotation(alpha);
     premultiply_matrix_in_place(from);
     orthogonalize_matrix();
-    float ty = alpha * to->position.y;
-    float tz = alpha * to->position.z;
+
+    Vector3 to_weighted;
+    to_weighted.x = alpha * to->position.x;
+    to_weighted.y = alpha * to->position.y;
+    to_weighted.z = alpha * to->position.z;
+
     float inv = 1.0f - alpha;
-    float fx = inv * from->position.x;
-    float fy = inv * from->position.y;
-    float fz = inv * from->position.z;
-    float ox = fx + alpha * to->position.x;
-    position.x = ox;
-    float oy = fy + ty;
-    position.y = oy;
-    float oz = fz + tz;
-    position.z = oz;
+
+    Vector3 from_weighted;
+    from_weighted.x = inv * from->position.x;
+    from_weighted.y = inv * from->position.y;
+    from_weighted.z = inv * from->position.z;
+
+    Vector3 blended;
+    blended.x = from_weighted.x + to_weighted.x;
+    blended.y = from_weighted.y + to_weighted.y;
+    blended.z = from_weighted.z + to_weighted.z;
+    position = blended;
 }
