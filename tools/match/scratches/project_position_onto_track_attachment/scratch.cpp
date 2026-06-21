@@ -52,11 +52,9 @@ char* Game::project_position_onto_track_attachment(Vector3* position, float* out
             projected.z = anchored_base.z + lateral_contribution.z;
 
             projected.x += vertical_contribution.x;
-            position->x = projected.x;
             projected.y += vertical_contribution.y;
-            position->y = projected.y;
             projected.z += vertical_contribution.z;
-            position->z = projected.z;
+            *position = projected;
             return (char*)*(int*)&projected.x;
         }
     }

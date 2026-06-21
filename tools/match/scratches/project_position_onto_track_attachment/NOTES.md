@@ -53,8 +53,15 @@ Residuals:
   `Vector3*` instead of `float*`, and the garbage-hazard caller passes its live
   `Vector3` without a cast. Focused Wibo is unchanged at 81.16%, 101/106
   instructions, with masked operands 5 ok / 0 unresolved / 0 mismatch.
+- 2026-06-21 projected-vector write-back pass: assigning the completed
+  `projected` vector back with `*position = projected` improves focused Wibo
+  from 81.16% to 88.68%, restores instruction parity at `106/106`, and moves
+  the exact prefix from `15/106` to `67/106` while keeping the masked audit at
+  `5 ok / 0 unresolved / 0 mismatch`. Declaration-order probes for lateral,
+  vertical, anchored, and projected locals are codegen-neutral on top of the
+  aggregate tail; computing lateral before vertical regresses to 72.12%, and
+  z-before-y write-back regresses to 80.19%.
 - Remaining diff is source-shape/register allocation rather than a known
-  semantic gap: the kind-42 branch target label and local transform offsets
-  differ, and the non-kind42 vector locals have different slot ordering around
-  the final projected writes. Do not introduce dummy volatile locals or inline
-  assembly to coerce these offsets.
+  semantic gap: the non-kind42 vector locals still use different stack slots
+  around the lateral and anchored-base components. Do not introduce dummy
+  volatile locals or inline assembly to coerce these offsets.
