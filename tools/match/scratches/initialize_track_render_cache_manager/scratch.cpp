@@ -69,8 +69,8 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
             allocate_tracked_memory((*(int*)((char*)vertex_buffers - 0x28) * 3) << 3,
                 "GDX Cache Vertex Buffer");
         vertex_buffers[0] = vertex_buffer;
-        int index_buffer_count = *(int*)((char*)vertex_buffers - 0x14);
-        result = allocate_tracked_memory(index_buffer_count << 1,
+        int* index_buffer_count = (int*)((char*)vertex_buffers - 0x14);
+        result = allocate_tracked_memory((*index_buffer_count) << 1,
             "GDX Cache Index Buffer");
         vertex_buffers[5] = result;
         ++vertex_buffers;

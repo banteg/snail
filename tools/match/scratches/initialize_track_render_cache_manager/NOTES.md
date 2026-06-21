@@ -62,3 +62,11 @@ Status:
   expression, and `(slot_base + i)` cursor. Remaining residuals are the
   equivalent slot-index `lea` SIB order and the tail byte-count register/shift
   idiom.
+- 2026-06-20 index-count owner pass: keeping the shared index-capacity lane as
+  `int* index_buffer_count = (int*)((char*)vertex_buffers - 0x14)` and applying
+  the shift through `(*index_buffer_count) << 1` recovers native's `edx; shl`
+  byte-count setup without hoisting the load before the vertex-buffer store.
+  Focused Wibo improves from 97.54% to 99.18%, with 122/122 instructions and
+  all 18 masked operands still clean. A separate `slot_index = i; slot_index +=
+  slot_base` spelling is codegen-neutral; the only remaining residual is the
+  equivalent slot-index `lea` SIB order.
