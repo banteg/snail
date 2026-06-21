@@ -91,7 +91,7 @@ char initialize_direct3d_renderer(); // @ 0x4129c0
 int initialize_keyboard_input(HWND hwnd); // @ 0x44b7d0
 void release_keyboard_input(); // @ 0x44b670
 int enumerate_input_controllers(HWND hwnd, int* out_count); // @ 0x44b3c0
-int initialize_mouse_input(HWND hwnd, int fullscreen_active); // @ 0x44c310 caller shape
+int initialize_mouse_input(HWND hwnd, unsigned char fullscreen_active); // @ 0x44c310 caller shape
 int set_cull_mode(int cull_front); // @ 0x4129f0
 
 int initialize_game_window_and_input(char* window_name)
@@ -104,33 +104,33 @@ int initialize_game_window_and_input(char* window_name)
 
     switch (g_config_display_mode_index) {
     case 0:
+        authored_width = 320;
         width = 320;
         height = 240;
-        authored_width = 320;
         break;
     case 1:
         goto use_640x480;
     case 2:
+        authored_width = 800;
         width = 800;
         height = 600;
-        authored_width = 800;
         break;
     case 3:
+        authored_width = 1024;
         width = 1024;
         height = 768;
-        authored_width = 1024;
         break;
     case 4:
+        authored_width = 1600;
         width = 1600;
         height = 1200;
-        authored_width = 1600;
         break;
     default:
         g_config_display_mode_index = 1;
 use_640x480:
+        authored_width = 640;
         width = 640;
         height = 480;
-        authored_width = 640;
         break;
     }
 
@@ -176,26 +176,26 @@ use_640x480:
             g_fullscreen_active = 0;
     }
 
-    if (g_fullscreen_active == 0) {
-        ex_style = 0x40100;
-        style = 0x10ca0000;
-        x = 100;
-        y = 100;
-        width = 640;
-        height = 480;
-    } else {
+    if (g_fullscreen_active != 0) {
         ex_style = 0x40000;
         style = 0x80000000;
         ShowCursor(0);
         x = 0;
         y = 0;
         update_mouse_authored_scale((float)authored_width, (float)height);
+    } else {
+        ex_style = 0x40100;
+        style = 0x10ca0000;
+        x = 100;
+        y = 100;
+        width = 640;
+        height = 480;
     }
 
     Rect rect;
     rect.left = 0;
-    rect.top = 0;
     rect.right = width;
+    rect.top = 0;
     rect.bottom = height;
     AdjustWindowRectEx(&rect, style, 0, ex_style);
 

@@ -40,3 +40,15 @@ Remaining gaps are mostly code-layout shape rather than unknown behavior:
 the existing result at 79.85%, 264 candidate instructions versus 287 target
 instructions, 49 masked operands OK, and the same jump-table relocation
 mismatch.
+
+2026-06-21 branch layout pass: moving the authored-width assignment before the
+case-local width/height stores recovers the native per-case stack write shape,
+inverting the second fullscreen check restores the native fullscreen/windowed
+block layout, and spelling the unused mouse fullscreen argument as a byte-sized
+parameter removes the extra zero-extension before the final input call. The
+rectangle setup now writes `left`, `right`, `top`, `bottom` to match native
+store order. Focused Wibo improves to 87.88%, with 266/287 instructions, a
+6/287 prefix, 53 clean masked operands, and the same resolution jump-table
+label mismatch. The remaining pinned residuals are the `0x400` constant hoist
+into `ebp` and the local cleanup thunk/tail bytes still included in the target
+extent.
