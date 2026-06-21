@@ -12,10 +12,6 @@ typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
 
-struct GolbPathSampleBank {
-    void* search_path_for_golb(Vec3* position);
-};
-
 class GolbShotPrimaryBodyView {
 public:
     virtual int create_dispatch();
@@ -205,7 +201,8 @@ after_movement_flag_source:
                 words[102] = 0;
 
                 char* node = self + 0x118;
-                if ((words[71] & 0x200) != 0) {
+                DWORD* node_words = (DWORD*)node;
+                if ((node_words[1] & 0x200) != 0) {
                     report_errorf("List ADD");
                 } else {
                     char* anchor = g_game_base + 0x5ac;
@@ -218,23 +215,23 @@ after_movement_flag_source:
                         *(DWORD*)(next + 8) = 0;
                     } else {
                         *(DWORD*)anchor = (DWORD)node;
-                        words[72] = 0;
+                        node_words[2] = 0;
                         *(DWORD*)(*(DWORD*)anchor + 12) = 0;
                     }
-                    words[71] |= 0x200;
+                    node_words[1] |= 0x200;
                 }
 
                 words[157] = emitter_index;
-                void* found = ((GolbPathSampleBank*)(words[156] + 0x1270fd4))
-                                  ->search_path_for_golb(position);
+                GolbPathSample* found = ((GolbPathBank*)(words[156] + 0x1270fd4))
+                                          ->search_path_for_golb(position);
                 if (found) {
                     DWORD* found_words = (DWORD*)found;
                     words[102] = found_words[5];
                     if (!found_words[0])
                         *(DWORD*)(found_words[5] + 4) |= 0x1000;
-                    words[103] = found_words[1];
-                    words[104] = found_words[2];
-                    words[105] = found_words[3];
+                    Vec3* homing_target = (Vec3*)(self + 0x19c);
+                    Vec3* found_position = (Vec3*)(found_words + 1);
+                    *homing_target = *found_position;
                     words[107] = 0;
                     words[108] = 1023969417;
                 }

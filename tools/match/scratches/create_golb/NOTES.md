@@ -27,7 +27,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 31.71% (`tools/match/match.sh
+- Current matcher result: 34.79% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -82,10 +82,10 @@ Residuals:
   half-width bits at `+0x88`, optional z-floor/clamp pointer slot at `+0x8c`,
   and points `+0x90`; `create_golb` remains unchanged at 30.96%, 445/582
   instructions.
-- The kind-specific setup lanes are complete, but vapour/list insertion,
-  sprite color copy, and path-search hit handling still differ in local
-  ordering. Do not add dummy temporaries solely to force those byte layouts
-  without stronger source evidence.
+- The kind-specific setup lanes are complete, but vapour/list insertion, sprite
+  color copy, and some path-search/list handling still differ in local ordering.
+  Do not add dummy temporaries solely to force those byte layouts without
+  stronger source evidence.
 - 2026-06-18 vector alias cleanup: the scratch-local `Vec3` view now aliases the
   shared `Vector3` type, including the existing `vector_magnitude` method
   surface. Focused Wibo remained `30.96%`, `445/582`, with `31 ok` masked
@@ -106,3 +106,13 @@ Residuals:
   `31.94%`, `445/582`, with `33 ok` masked operands. This matches the native
   kind-1 vapour call surface (`ecx = self + 0x80`, one matrix argument) and
   removes the extra caller stack cleanup from the old free-function spelling.
+- 2026-06-21 kind-2 path-hit pass: the `self + 0x118` node is now exposed as a
+  local word slice for its active-list flags/links, the stale local
+  `GolbPathSampleBank` shim is replaced by the shared `GolbPathBank` member
+  call, and the path-search hit copies the three coordinate words through a
+  `Vec3` view rooted at `sample + 4`. Focused Wibo improves to `34.79%`,
+  `447/582`, with `35 ok` masked operands. Rejected neighbors: using the real
+  `GolbPathBank` call alone was score-neutral, using the coordinate `Vec3` copy
+  without the node word slice regressed to `28.18%` with a mask mismatch, and
+  applying the same word-slice treatment to the kind-1 vapour node either
+  stayed lower or regressed combined variants.
