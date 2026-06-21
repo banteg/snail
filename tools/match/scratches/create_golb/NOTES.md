@@ -100,3 +100,9 @@ Residuals:
   callback is still spelled through a local `GolbShotPrimaryBodyView`, matching
   the renderable BOD vtable installed at offset zero by `initialize_golb_shot`.
   Focused Wibo stays `31.71%`, `446/582`, with `33 ok` masked operands.
+- 2026-06-21 helper surface pass: replacing the stale free
+  `add_vapour_point(vapour, matrix)` call with the recovered
+  `VapourTrail::add_vapour_point` member call improves focused Wibo to
+  `31.94%`, `445/582`, with `33 ok` masked operands. This matches the native
+  kind-1 vapour call surface (`ecx = self + 0x80`, one matrix argument) and
+  removes the extra caller stack cleanup from the old free-function spelling.

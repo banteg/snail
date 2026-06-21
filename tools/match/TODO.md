@@ -69,7 +69,7 @@ garbage/projectile divergence.
 | `spawn_golb_smoke` | `0x415c60` | 84.29%, pinned | Smoke sprite producer used by the rotating/smoke Golb presentation path; confirms sprite id, lifetime/rate lanes, scale, velocity scaling, and position copy. | Raw float-lane sprite tail is accepted and shared with garbage smoke; remaining residual is native `lea velocity; add position-base` setup plus stack-staged velocity reload scheduling documented in NOTES. |
 | `spawn_golb_impact_sprite` | `0x415d80` | 63.64%, structure-first | Impact sprite producer used when Golb shots are killed or hit terminal collision points. | Semantics are mapped; remaining residual is native stack-vector and saved-`esi` scheduling around the impact velocity copy documented in NOTES. |
 | `calc_path_length_z` | `0x4217b0` | 40.58%, structure complete | Golb path-follow riding; sibling of `update_track_attachment_follow_state`. | Scalar/base declaration-order trials are exhausted; continue only with stronger evidence around overflow block placement, matrix-copy layout, and terminal/side-exit shot-position ownership documented in NOTES. |
-| `create_golb` | `0x415280` | 28.63%, structure complete | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Pointer lifetimes, movement-flag reloads, previous-output whole-copy, and the shared `(flags & 5)` movement-source label now better match native setup; continue around remaining movement-flag branch sharing, direction copy staging, and kind-specific setup locals documented in NOTES. |
+| `create_golb` | `0x415280` | 31.94%, structure complete | Seeds projectile kind, velocity/spread, homing target, and RNG stream consumers. | Pointer lifetimes, movement-flag reloads, previous-output whole-copy, the shared `(flags & 5)` movement-source label, and the kind-1 `VapourTrail::add_vapour_point` call surface now better match native setup; continue around remaining movement-flag branch sharing, direction copy staging, and kind-specific setup locals documented in NOTES. |
 
 ### P1 - Player Motion And Attachment Exit
 
@@ -314,7 +314,10 @@ These are not gameplay owners, but several mirrors depend on them.
   one-argument debug-report prototypes, distance declaration order, and
   min-distance comparison forms either compile identically or regress. Treat the
   remaining misses as local branch-hoist, cdecl cleanup-selection, and
-  x87/local-lifetime residuals unless a new original-source idiom appears.
+  x87/local-lifetime residuals unless a new original-source idiom appears. The
+  positional helper is now promoted to the `SoundEffectManager` member surface
+  proven by `shoot_subgoldy`; that signature is codegen-neutral in the helper
+  body because the receiver is unused.
 - 2026-06-20 archive-family audit: reran and inspected
   `initialize_game_data_archive` and `load_archive_index`. Controller-cursor
   spellings, installed-global count ownership, chained assignment, and

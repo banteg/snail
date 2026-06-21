@@ -26,7 +26,6 @@ extern char* g_game_base; // data_4df904
 void __fastcall set_matrix_identity(void* transform);
 int report_errorf(char* format, ...);
 int next_math_random_value();
-void add_vapour_point(void* vapour, void* matrix);
 
 int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
 {
@@ -261,7 +260,7 @@ after_movement_flag_source:
             ((VapourTrail*)(self + 0x80))->reset_vapour(spawn_selector);
             ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             words[157] = emitter_index;
-            add_vapour_point(self + 0x80, self + 0x1c4);
+            ((VapourTrail*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));
             ((VapourTrail*)node)->update_vapour();
         }
     } else {
