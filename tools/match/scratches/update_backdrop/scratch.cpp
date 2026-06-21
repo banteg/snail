@@ -8,6 +8,7 @@ float cosine(float radians); // @ 0x44c980
 int Backdrop::update_backdrop()
 {
     float phase;
+    int phase_bits;
 
     if (backdrop_change_queued != 0) {
         change_backdrop_real();
@@ -22,7 +23,9 @@ int Backdrop::update_backdrop()
         do {
             phase = cell[1];
             phase += cell[0];
-            cell[0] = phase;
+            phase_bits = *(int*)&phase;
+            *(int*)cell = phase_bits;
+            phase = *(float*)&phase_bits;
             if (phase > 6.28318548f) {
                 cell[0] = phase - 6.28318548f;
             }
