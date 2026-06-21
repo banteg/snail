@@ -41,3 +41,17 @@ instructions and 11 masked operands OK. This keeps the game-base lifetime
 consistent with the damage/salt family and avoids stale volatile reloads; the
 remaining residual is still state-2 control-flow/tail merging plus anchor
 materialization.
+
+2026-06-21 state-2 cleanup split: preserving the native order for the first
+error path requires `report_errorf("List remove")` before clearing `state`, but
+that straight-line spelling tail-merges with the later `NEXTBOD` path. A local
+`goto first_remove_error` after the first report gives the compiler the same
+unique cleanup tail as native without changing side effects. Focused Wibo is
+now exact: `100.00%`, `83/83` target/candidate instructions, `83/83` prefix,
+and `12 ok / 0 unresolved / 0 mismatch` masked operands.
+
+Rejected variants: clearing `state` before the first report also reached
+`98.80%`, but it reverses observable error-report ordering. Flattening the
+error branches, storing the report result in a local, introducing a state-value
+local, and spelling the unlink guard without `else` all stayed at `81.48%`.
+Clearing state before both reports and forcing a positive live branch regressed.

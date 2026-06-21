@@ -30,8 +30,7 @@ void SaltHazardSlot::update_salt_hazard()
         int flags = list_flags;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
-            state = 0;
-            return;
+            goto first_remove_error;
         } else {
             if ((flags & 0x40) != 0) {
                 report_errorf("List remove NEXTBOD");
@@ -52,6 +51,9 @@ void SaltHazardSlot::update_salt_hazard()
                 list_flags = updated;
             }
         }
+        return;
+    first_remove_error:
+        state = 0;
         return;
     }
     case 1: {
