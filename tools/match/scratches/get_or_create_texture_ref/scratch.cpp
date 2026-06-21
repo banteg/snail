@@ -18,12 +18,12 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
 
     if ((flags & 0x800) == 0 && count > 0) {
         char* cursor = entries[0].name;
-        do {
+        while (i < count) {
             if (strings_equal_case_insensitive(cursor, texture_path) != 0)
-                return &entries[i];
+                goto found_existing;
             ++i;
             cursor += sizeof(TextureRef);
-        } while (i < count);
+        }
     }
 
     copy_c_string(entries[count].name, texture_path);
@@ -37,4 +37,7 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
     result = &entries[count];
     ++count;
     return result;
+
+found_existing:
+    return &entries[i];
 }

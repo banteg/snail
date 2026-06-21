@@ -21,9 +21,9 @@ Recovered relationships:
 This scratch exists primarily to correct and consolidate texture-list structure
 evidence used by sprite texture registration and runtime sprite allocation.
 
-Focused Wibo result after preserving the new-entry pointer before incrementing
-`count`: 82.21%, 85/78 candidate/target instructions, with 4 masked operands OK
-and no unresolved or mismatched operands. The accepted source shape uses
+Focused Wibo result after the structured scan-loop pass: 92.41%, 80/78
+candidate/target instructions, with 4 masked operands OK and no unresolved or
+mismatched operands. The accepted allocation source still uses
 `result = &entries[count]; ++count; return result;`, matching the native
 allocation return more closely than the previous `result_index = count; count =
 result_index + 1; return &entries[result_index];` spelling.
@@ -40,3 +40,11 @@ Rejected/no-op variants:
   was still exactly neutral at 82.21%. The retained structured scan is clearer,
   and the remaining residual is confirmed as found-block placement plus the
   allocation tail's count/index scheduling, not missing texture-list semantics.
+- 2026-06-21 structured scan-loop pass: spelling the reuse scan as
+  `while (i < count)` with a `found_existing` label after the allocation return
+  moves VC6's found block after the allocator and improves focused Wibo from
+  `82.21%`, `85/78` to `92.41%`, `80/78`. The direct `do` loop, `while
+  (!match)` form, and boolean `found` flag either kept the old inline found
+  return or regressed. The remaining residual is now only the scan-entry
+  `count` test form (`cmp [esi], 0` versus `mov/test eax`) plus one duplicate
+  return at the final epilogue.
