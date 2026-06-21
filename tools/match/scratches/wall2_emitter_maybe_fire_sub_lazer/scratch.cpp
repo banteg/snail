@@ -108,7 +108,7 @@ cull_check:
         return;
     }
     case 22:
-        if (position.z >= g_game->cull_plane_z)
+        if (g_game->cull_plane_z <= position.z)
             return;
         goto destroy;
     case 29:

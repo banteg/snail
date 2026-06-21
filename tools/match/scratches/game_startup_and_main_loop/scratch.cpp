@@ -208,7 +208,7 @@ int __stdcall game_startup_and_main_loop(
             g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668f;
 
             float remaining = g_frame_time_accumulator;
-            if (remaining < 0.0f)
+            if (0.0f > remaining)
                 remaining = -remaining;
 
             if (remaining >= 0.0000083333334f) {

@@ -33,3 +33,9 @@ behavior is per-function, worth remembering when modeling globals.
 2026-06-16 pin audit: focused matcher verifies 42.34%, 172/187 insns.
 Keep pinned; RNG tags, emitter cadence, projectile spawn direction, and cull
 semantics are recovered, with only source-shape/register golf remaining.
+
+2026-06-21 comparison-shape sweep: spelling the tile-22 cull as
+`g_game->cull_plane_z <= position.z` instead of `position.z >=
+g_game->cull_plane_z` improves focused Wibo to 43.90%, 182/187 candidate/target
+instructions, with 27 clean masked operands. The branch semantics are identical;
+the remaining gaps are still broad switch/register allocation shape.

@@ -71,6 +71,14 @@ Known shape gaps:
 - The fixed timestep x87 comparisons are behaviorally modeled but not laid out
   like native.
 
+2026-06-21 comparison-shape sweep:
+
+- Spelling the fixed-timestep absolute-value check as `0.0f > remaining`
+  instead of `remaining < 0.0f` improves focused Wibo from 63.14% to 63.65%.
+  The candidate is still structurally mismatched in the main-loop register
+  ownership, but this recovers one x87 comparison direction without changing
+  behavior.
+
 2026-06-21 main-loop timing global curation:
 
 - Curated five main-loop timing globals in
