@@ -90,3 +90,13 @@ prefix `44/144`, and nine clean masked operands. The retained residual is now
 the lane-wall constant/register schedule plus the independent bob-phase zero
 store moving after the `world_z` `fld`; the typed copy matches the health
 spawner's accepted source idiom.
+
+2026-06-21 bob-phase pointer scheduling: writing the bob phase through a local
+`float* bob_phase` keeps the initial zero store ahead of the `world_z` `__ftol`
+conversion and improves focused Wibo from `86.60%` to `87.29%`, still with
+`147/144` candidate/target instructions, prefix `44/144`, and nine clean
+masked operands. The same score is possible with a raw `DWORD*`, but the float
+pointer keeps the source semantic. Lane-wall probes using local
+`unsigned char`, `char`, `int`, nested `if`, constant-left comparisons, and a
+`switch` did not recover native's `mov cl, 0xe` compare schedule; the switch
+form regressed to `83.85%`.
