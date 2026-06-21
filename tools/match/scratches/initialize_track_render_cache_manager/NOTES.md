@@ -70,3 +70,10 @@ Status:
   all 18 masked operands still clean. A separate `slot_index = i; slot_index +=
   slot_base` spelling is codegen-neutral; the only remaining residual is the
   equivalent slot-index `lea` SIB order.
+- 2026-06-21 slot-index SIB retry: broader source spellings for the remaining
+  `lea` encoding all stayed at 99.18% with the same `[edx+edi]` versus
+  `[edi+edx]` residual. Tested forms included
+  `slot_index = slot_base; slot_index += i`, byte-offset locals, split scaled
+  terms, volatile reads of either addend, and separate row-base pointers.
+  Volatile forms regressed by disturbing the prologue; non-volatile forms
+  compile back to the same SIB base/index choice.

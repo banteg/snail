@@ -15,3 +15,9 @@ operands moving to 34 clean, 0 unresolved, and 2 mismatches. The remaining
 mismatches are D3D device/texture-slot load scheduling around the two D3DX
 create calls; entry-local slot/device pointer probes regress by changing the
 prologue and are not retained.
+
+2026-06-21 local-layout retry: moving `fallback_mode`, `texture_result`, and
+`color_key` before or around the 0x14-byte TGA header buffer is neutral at
+73.78%, except for hoisting `color_key` before the header load, which regresses
+to 69.61%. The apparent fallback-byte stack-slot difference in the D3DX setup is
+not fixed by declaration order; keep the current clearer local layout.

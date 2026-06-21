@@ -15,3 +15,10 @@ local and returning `p_input->update_input()` directly regresses to 53.33%,
 because VC6 materializes `esi` before the first pointer-argument `lea`. Keep the
 direct `input.*` call spelling; native only takes `esi = &input` midway through
 the push chain.
+
+2026-06-21 argument-owner retry: declaring pointer aliases in native
+right-to-left push order (`pointer_y`, `pointer_x`, `pointer_value`,
+`authored_y`, `authored_x`, `axis_y`, `axis_x`, buttons, slot) is codegen-neutral
+at 63.33%. Naming only the first three pointer arguments is also neutral, while
+the explicit `InputState*` local still regresses to 53.33%. The residual remains
+the equivalent `eax`/`edx` LEA scheduling for the copy helper arguments.
