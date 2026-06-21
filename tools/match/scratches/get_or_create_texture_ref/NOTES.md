@@ -48,3 +48,11 @@ Rejected/no-op variants:
   return or regressed. The remaining residual is now only the scan-entry
   `count` test form (`cmp [esi], 0` versus `mov/test eax`) plus one duplicate
   return at the final epilogue.
+- 2026-06-21 count-gate ordering pass: changing only the scan gate from
+  `count > 0` to `0 < count` makes VC6 emit native's memory compare
+  (`cmp dword [esi], 0`) instead of loading `count` into `eax` for a `test`.
+  Focused Wibo improves from `92.41%` to `99.36%`, with the full `78/78`
+  target instruction prefix matched and the same four clean masked operands.
+  Nested-count, `!(count <= 0)`, `count != 0`, and shared-return spellings were
+  neutral or regressive. The only remaining residual is the extra candidate
+  `ret 0xc` after the target extent at the found-existing epilogue.

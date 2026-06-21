@@ -498,7 +498,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (15)
+## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -517,8 +517,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 97.87% | 42/47 | - |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
+| 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 79/78 | 99.36% | 78/78 | 4 ok |  |
 
-## High Progress (80-94.99%) (55)
+## High Progress (80-94.99%) (54)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -576,7 +577,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
-| 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 80/78 | 92.41% | 16/78 | 4 ok |  |
 
 ## Mid Progress (50-79.99%) (75)
 
