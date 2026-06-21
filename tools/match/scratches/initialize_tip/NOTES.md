@@ -37,3 +37,11 @@ through a narrow volatile view after allocating `widget_main` recovers native's
 82.74%, with 153/154 candidate/target instructions, prefix 19/154, and the same
 25 clean masked operands. Non-volatile member reloads are codegen-neutral at
 81.70%, while local widget aliases perturb the prologue and drop to 69.90%.
+
+2026-06-21 live-flags pass: keeping a separate `live_flags` dword for the
+post-widget auto-dismiss/modal gates improves focused Wibo to 84.42% and
+restores instruction-count parity at 154/154 while preserving the 25 clean
+masked operands. Reusing the initial flags value for all later gates regresses
+to 59.74% by overextending the first definition load, and signed-byte alignment
+locals regress slightly; keep the scalar `definition_flags` for alignment and
+the later `live_flags` reload for the gate checks.

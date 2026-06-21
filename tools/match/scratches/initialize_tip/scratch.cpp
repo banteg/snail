@@ -20,7 +20,8 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
         *(TipMessageDefinition* volatile*)&this->definition;
     TipMessageDefinition* current_definition =
         *(TipMessageDefinition* volatile*)&this->definition;
-    unsigned int alignment = (int)(char)~(flags_definition->flags & 0xff);
+    int definition_flags = flags_definition->flags;
+    unsigned int alignment = (int)(char)~definition_flags;
     alignment &= 4;
     Color4f color;
     widget_main->initialize_frontend_widget(
@@ -34,12 +35,13 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
         current_definition->layout_y);
 
     TipMessageDefinition* live_definition = definition;
-    if ((live_definition->flags & 2) != 0) {
+    int live_flags = live_definition->flags;
+    if ((live_flags & 2) != 0) {
         dismiss_progress = 0.0f;
         dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);
     }
 
-    if ((live_definition->flags & 1) != 0) {
+    if ((live_flags & 1) != 0) {
         widget_ok = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
         if (hide_disable_button == 0) {
             widget_ok->initialize_frontend_widget(
