@@ -4,23 +4,14 @@
 
 #include "garbage_hazard_slot.h"
 #include "player.h"
-
-class Game {
-public:
-    char unknown_00[0x09];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x38 - 0x0a];
-    float subgame_rate; // +0x38
-    char unknown_3c[0x1270fd4 - 0x3c];
-    ContactTargetRegistry contact_targets; // +0x1270fd4
-};
+#include "subgame_runtime.h"
 
 double random_signed_float_below(float upper_bound, const char* tag);
 double random_float_below(float upper_bound, const char* tag);
 
 GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 {
-    Game* pause_game = game;
+    SubgameRuntime* pause_game = game;
     GarbageHazardSlot* result = (GarbageHazardSlot*)pause_game;
     if (!pause_game->subgame_pause_gate) {
         result = (GarbageHazardSlot*)state;
@@ -61,7 +52,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
             random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
             random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
             double random_z = random_float_below(0.30000001f, 0);
-            Game* rate_game = game;
+            SubgameRuntime* rate_game = game;
             Vector3* burst_velocity = &velocity;
             float rate = rate_game->subgame_rate;
             Vector3 staged_velocity;
@@ -113,7 +104,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
 
             sprite->position = *position;
 
-            Game* owner_game = game;
+            SubgameRuntime* owner_game = game;
             float gravity_step = owner_game->subgame_rate
                 * owner_game->subgame_rate
                 * -0.0099999998f;

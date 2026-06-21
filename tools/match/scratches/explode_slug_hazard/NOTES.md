@@ -62,3 +62,12 @@ Remaining residuals are now the `0x40` versus `0x38` frame, side/up stack-slot
 ownership, velocity x87 ordering, final position-copy scheduling, and the
 known loop-return zeroing. Do not force them with volatile, dummy locals, raw
 offset macros, or fake aliases.
+
+2026-06-21 owner-view cleanup:
+
+- The generic scratch-local `Game` shell is now a named `SlugExplosionGameView`
+  sparse owner view. Focused Wibo remains at 81.63%, 147/147 instructions, and
+  32 clean masked operands.
+- A broad `SubgameRuntime*` hoist was rejected. It regressed to 69.86% by
+  shrinking the frame and extending the owner register lifetime through the
+  burst setup, so the local sparse view remains the closer source shape.

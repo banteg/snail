@@ -1,14 +1,13 @@
 // Shared garbage hazard slot view, cross-checked by spawn smoke, update,
-// contact-target append, collision, BOD-list, and destroy paths. Game stays a
-// scratch-local context view.
+// contact-target append, collision, BOD-list, and destroy paths.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
 #include "bod_list.h"
 #include "sprite.h"
 
-class Game;
 class Player;
+class SubgameRuntime;
 struct TrackRowCell;
 
 class GarbageHazardSlot : public BodNode {
@@ -37,7 +36,7 @@ public:
     GarbageHazardSlot* next_active; // +0x80
     int state;                      // +0x84
     int collision_side;             // +0x88, 1 right / 2 left
-    Game* game;                     // +0x8c
+    SubgameRuntime* game;           // +0x8c
     Vector3 velocity;               // +0x90
     float radius;                   // +0x9c
     float sprite_y_offset;          // +0xa0

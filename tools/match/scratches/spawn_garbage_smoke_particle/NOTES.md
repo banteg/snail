@@ -121,3 +121,7 @@ Rejected source-shape probes:
   at 85.14%. VC6 still keeps x on the x87 stack and emits the same direct
   `sprite + 0x54` store instead of native's stack-spilled `v15` reload. Keep
   the current raw sprite-word tail and reused `Color4f` lanes.
+- 2026-06-21 garbage owner cleanup: `GarbageHazardSlot::game` is now a shared
+  `SubgameRuntime*`, removing this scratch's generic owner `Game` shell without
+  changing codegen. Focused Wibo remains at 85.14%, 72/76 candidate
+  instructions, 5/76 prefix, and 9 clean masked operands.

@@ -3,7 +3,7 @@
 #include "slug_hazard_types.h"
 #include "sprite.h"
 
-class Game {
+class SlugExplosionGameView {
 public:
     char unknown_00[0x38];
     float subgame_rate;            // +0x38
@@ -28,7 +28,7 @@ int SlugHazardRuntime::explode_slug_hazard()
         float progress_step =
             1.0f
             / (((float)next_math_random_value() * 0.000015258789f + 0.60000002f) * 60.0f)
-            * owner_game->subgame_rate;
+            * ((SlugExplosionGameView*)owner_game)->subgame_rate;
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
@@ -37,14 +37,14 @@ int SlugHazardRuntime::explode_slug_hazard()
             + 0.69999999f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;
-        float rate = owner_game->subgame_rate;
+        float rate = ((SlugExplosionGameView*)owner_game)->subgame_rate;
         float gravity_step = rate * rate;
         gravity_step *= -0.0099999998f;
         sprite->gravity_step = gravity_step * 2.2f;
 
         float side = ((float)next_math_random_value() - 16384.0f) * spread * 0.000061035156f;
         float up = (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;
-        Game* game = owner_game;
+        SlugExplosionGameView* game = (SlugExplosionGameView*)owner_game;
         float forward =
             (float)next_math_random_value() * spread * 0.000030517578f
             + game->slug_explosion_base_z;

@@ -221,3 +221,11 @@ rechecked for reusable source-shape leads; their remaining gaps are the same
 documented scheduling artifacts, not new layout evidence. Keep this scratch
 pinned at 93.55% unless a real original-source lifetime lead explains one of
 the four local residuals above.
+
+## 2026-06-21 garbage owner cleanup
+
+`GarbageHazardSlot::game` is now shared as `SubgameRuntime*`, and the shared
+runtime exposes the contact target registry at `+0x1270fd4`. This removes the
+scratch-local generic `Game` shell without changing the pinned source shape.
+Focused Wibo remains at 93.55%, 217/217 instructions, 13/217 prefix, and
+22 clean masked operands.

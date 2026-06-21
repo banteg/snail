@@ -2,12 +2,7 @@
 
 #include "garbage_hazard_slot.h"
 #include "player.h"
-
-class Game {
-public:
-    char unknown_00[0x38];
-    float subgame_rate; // +0x38
-};
+#include "subgame_runtime.h"
 
 extern unsigned char g_render_flags; // byte_4df934
 

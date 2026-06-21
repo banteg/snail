@@ -9,6 +9,7 @@
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "cameraman_state.h"
+#include "contact_target.h"
 #include "score_stats.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -126,7 +127,9 @@ public:
     int bonus_rate_state; // +0x3bbb28
     char unknown_3bbb2c[0x3bbb48 - 0x3bbb2c];
     float bonus_rate_phase; // +0x3bbb48
-    char unknown_3bbb4c[0x3bbba4 - 0x3bbb4c];
+    char unknown_3bbb4c[0x3bbb7c - 0x3bbb4c];
+    float slug_explosion_base_z; // +0x3bbb7c
+    char unknown_3bbb80[0x3bbba4 - 0x3bbb80];
     unsigned char time_trial_route_active; // +0x3bbba4
     char unknown_3bbba5[0x3bdec0 - 0x3bbba5];
     int nuke_rate_state; // +0x3bdec0
@@ -156,6 +159,8 @@ public:
     int source_timer_b; // +0x125ffdc
     char unknown_125ffe0[0x1270fc8 - 0x125ffe0];
     int subgame_rebuild_selector; // +0x1270fc8
+    char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
+    ContactTargetRegistry contact_targets; // +0x1270fd4, per-frame target append window
 };
 
 #endif
