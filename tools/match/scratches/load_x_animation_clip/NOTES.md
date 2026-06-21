@@ -10,3 +10,8 @@ Starter semantic scratch for the X animation clip loader.
   `data_4b2f50` retained as an alias. Focused Wibo remains `69.32%`,
   `225/228`, `3/228` prefix, but the masked audit improves from
   `42 ok / 3 unresolved` to `45 ok / 0 unresolved`.
+- 2026-06-21 argument-owner probe: adding local aliases for `mesh_name`,
+  `object`, or both, including a `register` mesh-name alias, is codegen-neutral
+  at 69.32%. VC6 still loads `mesh_name` into `ebp` before saving `esi`/`edi`,
+  while native saves all registers first and uses `edi` for the mesh-name
+  argument. The prologue miss is not fixed by simple argument-local ownership.

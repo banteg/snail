@@ -34,3 +34,10 @@ matches native's close block before the ESC test and improves focused Wibo from
 until after the two right-button state stores; staged `LRESULT`, `int`, and
 `unsigned char` zero locals were codegen-neutral, so leave that as a scheduler
 residual.
+
+2026-06-21 right-button-up zero probe: a volatile `LRESULT result = 0` local in
+the `WM_RBUTTONUP` arm raises fuzzy score to 97.53% by aligning branch distances,
+but it adds a non-native stack spill/reload around the two byte stores. Plain
+result locals, comma returns, assignment returns, and a local `unsigned char`
+zero are codegen-neutral at 94.33%, so keep the current source and treat the
+late `xor eax, eax` as scheduler debt.

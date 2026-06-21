@@ -21,3 +21,10 @@ native keeps the loop index in `ebx` and the world-hotspot cursor in `ebp`;
 this source keeps those reversed. A `register` index hint and declaration-order
 probe did not improve the score, so keep the clear source until a stronger VC6
 idiom explains the split.
+
+2026-06-21 loop-owner retry: index-driven `for`/`do` loops that derive
+`snail_hotspots_local[index]` and `snail_hotspots_world[index]` are neutral or
+only marginally better (58.14%) while leaving the same `ebx`/`ebp` ownership
+swap. A raw byte cursor regresses badly by changing the prologue. Keep the
+world-hotspot cursor source because it better matches the native pointer-walk
+intent despite the current register allocation.

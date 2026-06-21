@@ -38,3 +38,8 @@ were unresolved or mismatched in the initial run.
 - A dedicated pulse-alpha temporary and register/copy variants for the line
   cursor are codegen-neutral. Hoisting a long-lived `FontSheet*` outside the
   delimiter block regresses to 53.85% by expanding the frame to `0x420`.
+- 2026-06-21 local-initialization retry: separating the `max_right`,
+  `cursor_y`, `source`, and `out` initializers, moving `source` before the
+  floats, and adding `register` hints for the text cursors are neutral or worse.
+  The retained residual remains early local store order and line-buffer cursor
+  register choice, not a missing line-layout branch.

@@ -48,3 +48,9 @@ Rejected probes:
 
 - Hoisting `row_count` into a local regressed to 39.00% and moved the argument
   owner back out of `ebx`; the baseline reads `source->row_count` at use sites.
+- 2026-06-21 selected-entry owner probe: carrying the search cursor forward as
+  `source = scan` or scanning with an explicit filename cursor regresses to the
+  mid-30% range by disturbing the prologue/search-loop ownership. Removing the
+  separate `entries` local is codegen-neutral at 54.10%. Keep the recomputed
+  `&entries[index]` source until a form preserves the 42-instruction prefix and
+  still lets native own the selected entry in `edx`.

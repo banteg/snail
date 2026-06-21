@@ -66,3 +66,10 @@ Residual:
   `bank = this`, normal `insert_bank`/slot/source locals, and address/reference
   aliases all compile back to the previous schedule; volatile source-record
   reloads regress the prologue.
+- 2026-06-21 guarded-return tail probe: moving the final return into the
+  `rank != -1` frontend block looked like it could reuse native's last
+  `g_game_base` load and remove the scratch's impossible-path reload. VC6
+  instead duplicates the guarded control flow, grows the candidate to 91/92
+  instructions, and drops focused Wibo to roughly 82%. Keep the current
+  impossible-path reload; the reachable frontend body remains the better
+  source-shaped tradeoff.
