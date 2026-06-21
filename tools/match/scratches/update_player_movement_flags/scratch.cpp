@@ -1,24 +1,6 @@
 // update_player_movement_flags @ 0x43a1a0 (thiscall, ret)
 
-class PlayerMovementPresentationView {
-public:
-    void set_snail_weapon(int movement_flags);
-};
-
-class Player {
-public:
-    int update_player_movement_flags();
-
-    char unknown_000[0x308];
-    int movement_flag_selector; // +0x308
-    char unknown_30c[0x338 - 0x30c];
-    unsigned int movement_flags; // +0x338
-    unsigned int previous_movement_flags; // +0x33c
-    char unknown_340[0x2734 - 0x340];
-    float movement_fire_progress_step; // +0x2734
-    char unknown_2738[0x2984 - 0x2738];
-    PlayerMovementPresentationView presentation; // +0x2984
-};
+#include "player.h"
 
 int Player::update_player_movement_flags()
 {

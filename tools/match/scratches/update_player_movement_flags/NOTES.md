@@ -26,11 +26,10 @@ Residual:
   branch's final return sequence for the clean C++ spelling. The old
   38/64-instruction reading was stale; the current curated extent is 50 target
   instructions with the first 38 matching exactly.
-- 2026-06-16 shared-`Player` probe: the offsets now exist in `player.h`, but
-  including it here changed the switch-table relocation audit from `2 ok` to
-  `1 ok, 1 mismatch` (`$L441` instead of
-  `update_player_movement_flags_jump_table`). Keep the compact local shell until
-  that symbol-shape issue has a targeted fix.
+- 2026-06-16 shared-`Player` probe: the offsets existed in `player.h`, but the
+  then-current reference audit changed from `2 ok` to `1 ok, 1 mismatch`
+  (`$L441` instead of `update_player_movement_flags_jump_table`), so the compact
+  local shell was retained until the table owner was curated.
 - 2026-06-16 equal-branch probes: inverting the final comparison or spelling the
   equal path as an explicit `else` kept the 93.75% score but dirtied the
   jump-table symbol audit (`$L321`/`$L322` versus the curated table symbol).
@@ -50,9 +49,12 @@ Residual:
   directly from the equal branch all compile back to the same 93.75% candidate
   with clean `2 ok` masks. Keep the clearer baseline final branch; the only
   residual remains VC6 tail-merging the native duplicate equal-mask epilogue.
-- 2026-06-20 unresolved-layout cleanup: the local presentation receiver is now
-  named `PlayerMovementPresentationView`, keeping this scratch out of the
-  shared `PlayerPresentationController` layout group. Full `player.h` remains
-  rejected for this helper because it changes the jump-table relocation audit,
-  while the compact shell keeps the 93.75% focused match and clean `2 ok`
-  masks.
+- 2026-06-20 unresolved-layout cleanup: the local presentation receiver was
+  renamed `PlayerMovementPresentationView`, keeping this scratch out of the
+  shared `PlayerPresentationController` layout group while the table audit was
+  still unresolved.
+- 2026-06-21 shared-header retry: including `player.h` directly is now
+  codegen-neutral at the same 93.75% focused match, 46/50 candidate/target
+  instructions, 38/50 prefix, and clean `2 ok` masked operands. The retained
+  residual remains the equal-mask tail merge, but this scratch no longer carries
+  a private `Player` shell.
