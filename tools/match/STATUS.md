@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**494/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **65469/325759** bytes (**20.10%**) are proof-grade, and overall fuzzy is **55.27%**.
+**495/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **65710/325759** bytes (**20.17%**) are proof-grade, and overall fuzzy is **55.28%**.
 
-## Proof Grade (494)
+## Proof Grade (495)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -299,6 +299,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | serialize_compact_high_score_record | 0x440170 | 326 | 109/109 | 100.00% | 109/109 | 1 ok |  |
 | ✅ | add_subgoldy_score | 0x4402c0 | 190 | 58/58 | 100.00% | 58/58 | 6 ok |  |
 | ✅ | clear_subgoldy_score_buckets | 0x4403a0 | 18 | 7/7 | 100.00% | 7/7 | - |  |
+| ✅ | display_score_stats | 0x4403c0 | 241 | 67/67 | 100.00% | 67/67 | 16 ok |  |
 | ✅ | set_subgame_rate | 0x4404c0 | 15 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | calc_subgame_rate | 0x4404d0 | 297 | 84/84 | 100.00% | 84/84 | 16 ok |  |
 | ✅ | uninit_pause_menu | 0x440600 | 82 | 22/22 | 100.00% | 22/22 | 8 ok |  |
@@ -503,7 +504,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (17)
+## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -518,7 +519,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | display_score_stats | 0x4403c0 | 241 | 69/67 | 97.06% | 4/67 | 16 ok |  |
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 97.87% | 42/47 | - |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |

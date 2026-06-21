@@ -20,7 +20,7 @@ The function is source-shaped:
 by the warning/error report helpers, so the scratch keeps the real literal
 instead of inventing a placeholder global.
 
-Match status: 90.28%, pinned.
+Match status: proof-grade.
 
 2026-06-16 type split: a probe promoted this as `Player::display_score_stats`
 because the score offsets match the player producer window. BN xrefs and
@@ -60,3 +60,11 @@ the retained early guard is the best tested source shape for suppressing the
 spurious zero materialization. A `score` local, an `else` return, and a `goto`
 spelling are either codegen-neutral with the old epilogue or compile to the
 same early-zero shape.
+
+2026-06-21 guarded-result pass: keeping `result = total_score`, guarding the
+report body with `if (total_score != 0)`, and assigning the final newline report
+result into that local matches native exactly. This recovers the forward
+zero-score branch to the shared epilogue, preserves the batched `add esp, 0x3c`
+cleanup for the stripped report calls, and keeps zero-score returns as the
+already-loaded total score. Focused Wibo is now 100.00%, 67/67 instructions,
+full prefix, and 16 clean masked operands.
