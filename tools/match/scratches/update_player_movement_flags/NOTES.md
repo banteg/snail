@@ -58,3 +58,12 @@ Residual:
   instructions, 38/50 prefix, and clean `2 ok` masked operands. The retained
   residual remains the equal-mask tail merge, but this scratch no longer carries
   a private `Player` shell.
+- 2026-06-21 equal-tail volatile reload: reading `movement_flags` back through a
+  narrow volatile view only in the equal branch prevents VC6 from tail-merging
+  the equal store with the changed-mask return path. This recovers the native
+  duplicate `mov ecx, [esi+0x338]; mov [esi+0x33c], ecx` epilogue without
+  changing the returned value. Focused Wibo is now proof-grade: 100.00%, 50/50
+  instructions, a 50/50 prefix, and two clean masked operands. Returning the
+  volatile value itself stayed at 93.75%, while equal-first and source-label
+  variants recovered the instruction count but regressed branch layout to
+  90.00%.
