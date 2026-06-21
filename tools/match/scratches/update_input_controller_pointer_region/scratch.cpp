@@ -20,13 +20,13 @@ void update_input_controller_pointer_region(
     char capture_when_outside,
     char force_clamp)
 {
-    int x = screen_x;
-    int y = screen_y;
-
     g_input_region_left[slot] = left;
     g_input_region_top[slot] = top;
     g_input_region_right[slot] = right;
     g_input_region_bottom[slot] = bottom;
+
+    int x = screen_x;
+    int y = screen_y;
 
     if (x >= left && x < right && y >= top && y < bottom) {
         set_hide_system_cursor_flag(1);

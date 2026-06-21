@@ -630,7 +630,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 211/206 | 65.71% | 10/206 | 31 ok |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 65/64 | 63.57% | 1/64 | 9 ok |  |
-| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 141/134 | 53.09% | 0/134 | 26 ok |  |
+| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 139/134 | 57.14% | 4/134 | 26 ok |  |
 | 🚧 | build_track_render_caches | 0x433220 | 2310 | 475/763 | 75.77% | 90/763 | 15 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 56.41% | 7/58 | 4 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
