@@ -23,3 +23,8 @@ load and declaring `star_group_offset` before `star_index` makes VC6 keep the
 inner star index in `ebx` and the group offset on the stack, matching the
 native ownership through the file-load setup. Rewriting the later null check or
 the loop-tail finalization branch was neutral, so those spellings stay honest.
+
+2026-06-21 cursor-spill retry: spelling the galaxy marker search as an
+assignment inside the null-check condition is codegen-neutral at 78.37%. VC6
+still stores the `find_case_insensitive_substring` result to the cursor local
+before testing it, while native compares against zero before the spill.

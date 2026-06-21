@@ -38,3 +38,8 @@ publishes the count after the caller-provided `layer` store and before clearing
 the default `blend`; moving it after `blend` was slightly worse at 87.88%.
 The remaining residual is the same zero-return epilogue plus count-store
 scheduling around the aggregate color copy.
+- 2026-06-21 raw color-lane retry: splitting the color copy into integer lanes
+  so RGB copy before `g_font_queue_count` and alpha copy after it regresses to
+  34.92% and dirties five masked globals. The aggregate `entry->color = *color`
+  remains necessary for saved-register/global-relocation shape despite the
+  count-store residual.

@@ -19,3 +19,7 @@ Object bounds pass at `0x42fb10`.
   codegen-neutral, and `register` on the byte offset stayed at 58.12%. The
   remaining mismatch is initialization store order plus compare-branch
   scheduling, not a recovered field-layout issue.
+- 2026-06-21 partial min-bound retry: splitting only the min x/y stores before
+  `bounding_radius = 0.0f` and writing min z afterward also regresses to
+  51.33%. It recovers the desired local store order but loses the native
+  saved-register/prologue shape, so the aggregate min vector remains retained.

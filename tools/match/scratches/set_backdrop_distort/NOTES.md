@@ -23,3 +23,8 @@ row index in `edi`, column in `esi`, zero in `edx`, and recomputes the
 `(row + column) * 0x18` address inside the zero/random branches. Do not close
 this with volatile or dummy helper calls; resume from a loop-shape or idiom
 probe.
+
+2026-06-21 direct-index retry: removing the `result`/`cell` pointer locals and
+repeating the full indexed store expression is codegen-neutral at 50.70%. VC6
+still strength-reduces to the moving pointer cursor, so direct source indexing
+alone does not recover the native recomputed branch addresses.

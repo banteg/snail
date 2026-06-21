@@ -19,3 +19,7 @@ Current scratch status:
 - Masked operands: 23 ok, 0 unresolved, 0 mismatch.
 - Main remaining shape gap is compiler scheduling/register allocation in the
   float compare loops, not unresolved object layout.
+- 2026-06-21 owner-local retry: adding an explicit `ObjectDistort* self = this`
+  and reading all three distort fields through it is codegen-neutral at 52.15%.
+  VC6 still anchors `this` in `ebp` instead of native `edi`; a simple owner
+  name does not free `ebp` for the loop/index role.

@@ -20,3 +20,8 @@ resource.
 `sub_4533c4`, `sub_453404`, and `sub_453467` are D3DX texture creation wrappers:
 the in-memory archive path, file-path `...ExA` path, and simple debug fallback,
 respectively.
+
+2026-06-21 owner-register retry: naming `LoadingScreen* screen = this` for the
+tail state stores, with and without `register`, is codegen-neutral at 83.00%.
+VC6 still keeps `this` in `edi` and archive data in `ebx`, opposite native's
+`ebx`/`edi` split. The mismatch is not fixed by a simple owner local.

@@ -18,3 +18,8 @@ Focused Wibo result: 59.09%, 111/109 instructions, prefix 0/109, with 12 clean
 masked operands. Remaining differences are allocator/scheduling shape: the
 scratch keeps the output pointer on the stack while the native keeps it in
 `ebp`, and the compiler folds later channel additions into `fiadd`.
+
+2026-06-21 sample-pointer retry: marking the output `SampleOutput* sample` as
+`register` is codegen-neutral at 59.09%. VC6 still spills the output cursor and
+only saves `ebp` inside the loop, so the native `ebp` sample-cursor ownership
+needs a different source shape.
