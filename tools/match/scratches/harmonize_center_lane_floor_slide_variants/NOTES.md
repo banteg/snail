@@ -19,3 +19,10 @@
   transition flag into `ebp`, and used `ebx` for the lane counter, losing the
   native prologue/register skeleton. Keep the neighbor locals with the typed
   `TrackRowCell*` cursor.
+- 2026-06-21 predicate-direction fix: the four floor/slide helper predicates
+  were reversed relative to the object replacements. The native masked audit
+  expects floor-current/slide-neighbor before promoting floor objects to slide
+  variants, and slide-current/floor-neighbor before reverting them. Swapping
+  those calls keeps the focused score at 58.98% but improves the masked audit
+  from `20 ok / 4 mismatch` to `24 ok / 0 mismatch`; the remaining fuzzy gap is
+  still the typed-cell cursor displacement/register tradeoff documented above.
