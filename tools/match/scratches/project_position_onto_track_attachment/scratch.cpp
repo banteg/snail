@@ -1,12 +1,9 @@
 // project_position_onto_track_attachment @ 0x4444b0 (thiscall, ret 0x8)
+#include "subgame_runtime.h"
 #include "track_attachment.h"
 #include "transform_matrix.h"
 
-struct Game {
-    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
-};
-
-char* Game::project_position_onto_track_attachment(Vector3* position, float* out_angle)
+char* SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
     TrackAttachmentRuntimeRow* row =
         (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position->z);

@@ -99,3 +99,11 @@ the same `47 ok` masked operands. This ties the fringe suppression bit back to
 the row table built by `populate_runtime_track_cells_from_segments` and reused
 by parcel placement/projection, without changing the still-open register-shape
 residuals.
+
+## 2026-06-21 subgame receiver cleanup
+
+The scratch now defines `SubgameRuntime::build_track_fringe_objects`, and the
+shared declaration was corrected from `void` to `int` to match the native
+release-stripped debug-report tail. Focused Wibo is unchanged at `53.76%`,
+`476/495`, with `47` clean masked operands; the remaining diff is still the
+known register-ownership and bool-normalization shape.

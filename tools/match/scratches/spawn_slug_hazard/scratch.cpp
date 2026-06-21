@@ -6,25 +6,18 @@
 #include "player.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
 typedef unsigned int DWORD;
-
-class Game {
-public:
-    int spawn_slug_hazard(TrackRowCell* cell, Player* player);
-    char* project_position_onto_track_attachment(
-        Vector3* position,
-        float* out_angle);
-};
 
 extern char* g_game_base; // data_4df904
 
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-int Game::spawn_slug_hazard(TrackRowCell* cell, Player* player)
+int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;

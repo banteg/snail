@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "ring_special_effect_types.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
@@ -10,29 +11,12 @@ extern char* g_game_base; // data_4df904
 float random_float_below(float upper_bound, const char* tag);
 int report_errorf(const char* format, ...);
 
-class Game {
-public:
-    TrackRowCell* spawn_track_ring_or_special_effect(
-        TrackRowCell* cell,
-        int requested_kind,
-        Player* player,
-        float ring_speed);
-    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
-
-    char unknown_00[0x38];
-    float subgame_rate; // +0x38
-    char unknown_3c[0x40 - 0x3c];
-    int level_mode; // +0x40
-    char unknown_44[0x48 - 0x44];
-    float base_subgame_rate; // +0x48
-};
-
 class RingOrSpecialEffectVirtual {
 public:
     virtual TrackRowCell* update_ring_or_special_effect_parent(); // vtable slot 0
 };
 
-TrackRowCell* Game::spawn_track_ring_or_special_effect(
+TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
     TrackRowCell* cell,
     int requested_kind,
     Player* player,

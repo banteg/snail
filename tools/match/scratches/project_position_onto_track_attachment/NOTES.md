@@ -65,3 +65,7 @@ Residuals:
   semantic gap: the non-kind42 vector locals still use different stack slots
   around the lateral and anchored-base components. Do not introduce dummy
   volatile locals or inline assembly to coerce these offsets.
+- 2026-06-21 subgame receiver cleanup: the method now lives on
+  `SubgameRuntime`, matching its `cRSubGame` call surface and the shared
+  declaration used by garbage/slug callers. Focused Wibo is unchanged at
+  `88.68%`, `106/106`, with `5` clean masked operands.

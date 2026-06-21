@@ -32,6 +32,7 @@ public:
         TrackRowCell* cell, Player* player); // @ 0x43d6c0
     int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
     unsigned int* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player); // @ 0x43da80
+    int spawn_slug_hazard(TrackRowCell* cell, Player* player); // @ 0x43dc80
     TrackRowCell* spawn_track_ring_or_special_effect(
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
@@ -56,7 +57,7 @@ public:
     void harmonize_center_lane_floor_slide_variants();
     void merge_track_tile_runs();
     void mark_track_warning_zones();
-    void build_track_fringe_objects();
+    int build_track_fringe_objects();
     bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 

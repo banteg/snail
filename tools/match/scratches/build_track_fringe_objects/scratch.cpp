@@ -3,6 +3,7 @@
 
 #include "track_attachment_types.h"
 #include "fringe_object.h"
+#include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 extern unsigned char g_track_render_flags; // byte_4df934
@@ -16,23 +17,13 @@ struct Vec3Bits {
     int z;
 };
 
-class Game {
-public:
-    int build_track_fringe_objects();
-    bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
-    Color4f* get_track_skirt_color(Color4f* scratch);
-
-    char unknown_00[0x54];
-    int runtime_row_count; // +0x54
-};
-
 int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
-int Game::build_track_fringe_objects()
+int SubgameRuntime::build_track_fringe_objects()
 {
-    Game* game = this;
-    Game* original_game = game;
+    SubgameRuntime* game = this;
+    SubgameRuntime* original_game = game;
     ((FringeManager*)(g_game_base + 0x3d01d4))->initialize_fringe_manager();
 
     int edge_a = 0;

@@ -74,3 +74,7 @@ Rejected probes:
   the native destination-register ownership for the position copy; the
   remaining residual is still the velocity zero/x87 staging plus one tail
   branch label.
+- 2026-06-21 subgame receiver cleanup: the allocator now lives on
+  `SubgameRuntime`, sharing the recovered slug spawn declaration and projection
+  call surface without changing the raw slot layout. Focused Wibo remains
+  `92.79%`, `159/160`, with `16` clean masked operands.

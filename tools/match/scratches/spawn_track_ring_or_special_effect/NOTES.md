@@ -89,3 +89,9 @@ Type consolidation:
   `0x1f8`, total `0x3f0`. This is promoted from the spawner's pool scan and
   corroborated by the collision consumer; the spawner source remains
   raw/base-shaped because that is part of its current best codegen form.
+- 2026-06-21 subgame receiver cleanup: the method now uses the shared
+  `SubgameRuntime` receiver and its existing `subgame_rate`, `level_mode`,
+  `base_subgame_rate`, and `get_track_grid_cell_at_world_position` members
+  instead of a scratch-local `Game` shell. Focused Wibo remains `51.23%`,
+  `223/347`, with the same `34` clean masked operands and the same eight known
+  switch-grouping mismatches.
