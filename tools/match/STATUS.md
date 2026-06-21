@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.10%**.
+**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.11%**.
 
 ## Proof Grade (489)
 
@@ -498,11 +498,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (16)
+## Near Match (95-99.99%) (17)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
+| 🚧 | match_cheat_text | 0x4047d0 | 85 | 42/42 | 95.24% | 24/42 | 2 ok |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | initialize_d3d8_device | 0x411730 | 378 | 106/106 | 97.17% | 44/106 | 12 ok |  |
@@ -578,7 +579,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (75)
+## Mid Progress (50-79.99%) (74)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -586,7 +587,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 433/429 | 62.18% | 0/429 | 1 mismatch, 32 ok |  |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 579/647 | 52.85% | 42/647 | 4 mismatch, 65 ok |  |
 | 🚧 | update_cheat | 0x404750 | 124 | 46/52 | 67.35% | 9/52 | 7 ok |  |
-| 🚧 | match_cheat_text | 0x4047d0 | 85 | 43/42 | 68.24% | 12/42 | 2 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 45 ok |  |
