@@ -27,11 +27,7 @@ scan_entry:
     {
         char* requested_cursor = requested_path;
         char* archive_cursor = entry->path;
-        char archive_char;
-
-        archive_char = *archive_cursor;
-
-        while (archive_char != 0) {
+        while (*archive_cursor != 0) {
             char requested_char = *requested_cursor;
             if (requested_char == 0) {
                 break;
@@ -41,11 +37,10 @@ scan_entry:
                 requested_char = requested_char - 32;
             }
 
-            if (archive_char != requested_char) {
+            if (*archive_cursor != requested_char) {
                 break;
             }
 
-            archive_char = archive_cursor[1];
             ++requested_cursor;
             ++archive_cursor;
         }
