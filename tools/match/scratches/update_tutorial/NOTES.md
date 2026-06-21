@@ -11,3 +11,8 @@ Exact tutorial update thunk.
   the Binary Ninja decompile.
 - Focused matcher remains exact at 5/5 instructions with 1 clean masked
   operand.
+
+2026-06-21 subgame-header consolidation: the controller's `game` field is now a
+`SubgameRuntime*`, so this thunk can call `get_track_grid_cell_at_world_position`
+through the shared subgame header instead of a scratch-local method-only `Game`
+view.

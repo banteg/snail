@@ -7,7 +7,7 @@
 #include "input_state.h"
 #include "mouse_cursor_state.h"
 
-class Game;
+class SubgameRuntime;
 
 class TutorialController {
 public:
@@ -17,7 +17,7 @@ public:
 
     int state; // +0x00
     char unknown_04[0x0c - 0x04];
-    Game* game; // +0x0c
+    SubgameRuntime* game; // +0x0c
 };
 
 typedef char TutorialController_must_be_0x10[
