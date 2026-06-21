@@ -19,3 +19,22 @@ Initial match: 39.87%, 146 candidate instructions versus 155 target
 instructions. The residual is stack-frame/local placement plus branch-shape
 around line copying and the measure-only/pulsed-alpha gates. No masked operands
 were unresolved or mismatched in the initial run.
+
+2026-06-21 single-cursor layout pass:
+
+- Rewriting the copy path as one outer loop with a persistent `out` cursor,
+  reset only after a `>` delimiter or `NUL`, recovers the native line-buffer
+  topology. This preserves empty-line height advancement while avoiding the
+  earlier nested copy loop that rebuilt the line cursor for each segment.
+- The native max-width update is strict (`right > max_right`), not `>=`.
+  Combining the single-cursor loop with the strict comparison improves the
+  focused matcher to 88.39%, with exact 155/155 instruction count, a 22/155
+  prefix, and nine clean masked operands.
+- Spelling the line-step through direct `g_font_sheets[font_id]` field reads
+  recovers the native offset-loop shape and raises the score to 94.19%, but the
+  plain expression swaps the `height_scale` and `line_marker_y` masked operands.
+  The retained explicit `line_height` staging keeps the 94.19% score while
+  clearing the audit to 12 clean masks and no mismatches.
+- A dedicated pulse-alpha temporary and register/copy variants for the line
+  cursor are codegen-neutral. Hoisting a long-lived `FontSheet*` outside the
+  delimiter block regresses to 53.85% by expanding the frame to `0x420`.

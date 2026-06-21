@@ -31,44 +31,45 @@ float* layout_and_queue_wrapped_font_text(
     char line[0x400];
 
     char ch;
+    char* out = line;
     do {
-        char* out = line;
         ch = *source;
-        while (ch != '>' && ch != 0) {
+        if (ch == '>' || ch == 0) {
+            *out = 0;
+
+            if (out != line) {
+                float width = measure_font_text_width(line, font_id, text_scale);
+                float right = width + x;
+                if (right > max_right)
+                    max_right = right;
+
+                if (measure_only == 0) {
+                    if (pulse_alpha != 0)
+                        color.a = sine(cursor_y * 0.00654498488f);
+                    queue_font_text_instance(
+                        line,
+                        font_id,
+                        text_scale,
+                        x,
+                        cursor_y,
+                        horizontal_align,
+                        anchor_x,
+                        flags,
+                        &color,
+                        text_wave_amplitude,
+                        text_wave_enabled);
+                }
+            }
+
+            out = line;
+            float line_height = g_font_sheets[font_id].height_scale;
+            line_height *= g_font_sheets[font_id].spacing_scale;
+            line_height *= g_font_sheets[font_id].line_marker_y;
+            cursor_y = line_height * text_scale + cursor_y;
+        } else {
             *out = ch;
             ++out;
-            ++source;
-            ch = *source;
         }
-        *out = 0;
-
-        if (out != line) {
-            float width = measure_font_text_width(line, font_id, text_scale);
-            float right = width + x;
-            if (right >= max_right)
-                max_right = right;
-
-            if (measure_only == 0) {
-                if (pulse_alpha != 0)
-                    color.a = sine(cursor_y * 0.00654498488f);
-                queue_font_text_instance(
-                    line,
-                    font_id,
-                    text_scale,
-                    x,
-                    cursor_y,
-                    horizontal_align,
-                    anchor_x,
-                    flags,
-                    &color,
-                    text_wave_amplitude,
-                    text_wave_enabled);
-            }
-        }
-
-        FontSheet* sheet = &g_font_sheets[font_id];
-        cursor_y = sheet->height_scale * sheet->spacing_scale
-            * sheet->line_marker_y * text_scale + cursor_y;
         ++source;
     } while (ch != 0);
 
