@@ -15,15 +15,17 @@ char CheatState::match_cheat_text(const char* text)
         return 0;
     }
 
+    int index = 0;
     if (0 < length) {
         char* cursor = (char*)this;
         cursor += length + 7;
-        for (int index = 0; index < length; ++index) {
+        for (; index < length;) {
             char expected = text[index];
             char actual = *cursor;
             if (expected != actual) {
                 return 0;
             }
+            ++index;
             --cursor;
         }
     }

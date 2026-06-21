@@ -4,19 +4,24 @@
 ends with a supplied uppercase cheat word. Native rejects words of length eight
 or more with `"Cheat text too long"`.
 
-Current result: 95.24%, 42/42 candidate/target instructions, two clean masked
+Current result: 100.00%, 42/42 candidate/target instructions, two clean masked
 operands. Semantics match the decompile: `strlen(text)`, length guard, reverse
 suffix compare against `CheatState::recent_text_*`, and success/failure byte
 return.
 
-Residual:
+Source-shape notes:
 
 - `0 < length` is required for VC6 to emit the native `test esi, esi` gate and
   avoid the extra candidate tail instruction from the previous `length > 0`
   spelling.
-- The remaining mismatch is the compare loop register split: native stages the
-  rolling-buffer byte through `cl` while the candidate uses `dl`.
+- Hoisting `index` above the empty-length gate is required for the native
+  `xor eax, eax` before `test esi, esi`.
+- Keeping the `for` increment empty and spelling `++index; --cursor;` in the
+  loop body is required for the native `inc eax` before `dec edx` tail order.
+
+Rejected source-shape probes:
+
 - Explicit byte temporaries, `strlen(text) + 1` spelling, a duplicated
   length local, and `register` on the length were all codegen-neutral or worse.
-  Do not force the remaining register ownership with fake locals or dummy
-  aliases.
+- An IDA-style equality loop and a `do` loop both regressed sharply by changing
+  saved-register ownership.
