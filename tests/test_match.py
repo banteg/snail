@@ -1298,7 +1298,11 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
     assert findings["Covered"].status == "header-compatible"
     assert findings["HeaderConflict"].status == "header-conflict"
     assert findings["MethodOnly"].status == "partial-compatible"
-    assert findings["BitView"].status == "partial-compatible"
+    assert findings["BitView"].status == "name-conflict"
+    assert (
+        findings["BitView"].recommendation
+        == "compatible field slots use different names; align semantics before promoting"
+    )
 
     filtered = type_consolidation_findings(match_root, names={"Shared", "Missing"})
     assert [finding.name for finding in filtered] == ["Shared"]

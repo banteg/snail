@@ -95,9 +95,9 @@ Useful analysis helpers:
   Running one or more cases compiles tiny standalone snippets with the same
   compiler flags and prints normalized asm.
 - `uv run snail match types [Name ...]` scans scratch-local `struct`/`class`
-  definitions and reports which names are ready, already covered, or too
-  divergent for shared-header consolidation. Pass names such as `Game
-  TrackRowCell` to focus a cleanup decision. `snail match status --write`
+  definitions and reports which names are ready, already covered, conflicted by
+  field names, or too divergent for shared-header consolidation. Pass names
+  such as `Game TrackRowCell` to focus a cleanup decision. `snail match status --write`
   includes a concise type-consolidation summary so this stays a regular pass
   while matching, not an end-of-project cleanup.
 

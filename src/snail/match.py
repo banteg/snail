@@ -3244,8 +3244,22 @@ def _has_layout_conflict(
         if not scratch.layout_fields:
             continue
         if any(_layout_definitions_conflict(header, scratch) for header in field_headers):
-            return True
+                return True
     return False
+
+
+def _has_field_name_conflict(definitions: list[TypeDefinition]) -> bool:
+    slot_names: dict[tuple[int, int], set[str]] = {}
+    slot_paths: dict[tuple[int, int], set[Path]] = {}
+    for definition in definitions:
+        for layout_field in definition.layout_fields:
+            slot = (layout_field.offset, layout_field.width)
+            slot_names.setdefault(slot, set()).add(layout_field.name)
+            slot_paths.setdefault(slot, set()).add(definition.path)
+    return any(
+        len(slot_names[slot]) > 1 and len(paths) > 1
+        for slot, paths in slot_paths.items()
+    )
 
 
 def _method_abi_entries(definition: TypeDefinition) -> tuple[tuple[str, str], ...]:
@@ -3338,6 +3352,11 @@ def type_consolidation_findings(
                 recommendation = (
                     "header exists but at least one scratch field layout conflicts; inspect before including"
                 )
+            elif _has_field_name_conflict(scratch_definitions):
+                status = "name-conflict"
+                recommendation = (
+                    "compatible field slots use different names; align semantics before promoting"
+                )
             else:
                 status = "header-compatible"
                 recommendation = (
@@ -3348,7 +3367,12 @@ def type_consolidation_findings(
             recommendation = "definitions are method-only or lack parsed fields; inspect manually"
         elif layout_group_count == 1 and len(scratch_definitions) >= threshold:
             scratch_signatures = {definition.signature for definition in scratch_definitions}
-            if len(scratch_signatures) == 1:
+            if _has_field_name_conflict(scratch_definitions):
+                status = "name-conflict"
+                recommendation = (
+                    "compatible field slots use different names; align semantics before promoting"
+                )
+            elif len(scratch_signatures) == 1:
                 status = "ready"
                 recommendation = "same scratch-local layout appears repeatedly; consider a header"
             else:
@@ -3385,10 +3409,11 @@ TYPE_CONSOLIDATION_STATUS_ORDER = {
     "ABI-conflict": 1,
     "overbroad-header": 2,
     "divergent": 3,
-    "unresolved-layout": 4,
-    "header-compatible": 5,
-    "partial-compatible": 6,
-    "ready": 7,
+    "name-conflict": 4,
+    "unresolved-layout": 5,
+    "header-compatible": 6,
+    "partial-compatible": 7,
+    "ready": 8,
 }
 
 
@@ -3432,8 +3457,8 @@ def render_type_consolidation_markdown(
         "",
         "This is generated as part of `uv run snail match status --write "
         "tools/match/STATUS.md`. Keep types scratch-local until multiple "
-        "scratches agree, then promote deliberately; divergent names are "
-        "semantic debt, not merge candidates.",
+        "scratches agree, then promote deliberately; divergent or conflicting "
+        "names are semantic debt, not merge candidates.",
         "Run `uv run snail match types --paths` for the full path-level report.",
         "",
     ]

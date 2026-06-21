@@ -736,14 +736,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Type Consolidation
 
-This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent names are semantic debt, not merge candidates.
+This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent or conflicting names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
+- name-conflict: 1 type name(s)
 - header-compatible: 2 type name(s)
-- partial-compatible: 1 type name(s)
 
 | status | type | scratch | header | layouts | recommendation |
 |---|---|---:|---:|---:|---|
+| name-conflict | Game | 40 | 0 | 1 | compatible field slots use different names; align semantics before promoting |
 | header-compatible | GolbShot | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
 | header-compatible | Player | 1 | 1 | 1 | header layout is compatible with scratch-local field slices; replace copies deliberately |
-| partial-compatible | Game | 40 | 0 | 1 | scratch-local field slices are layout-compatible; consider one shared header or alias |
