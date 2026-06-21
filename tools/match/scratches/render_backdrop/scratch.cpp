@@ -24,8 +24,8 @@ void Backdrop::render_backdrop()
             if (flip == 0) {
                 next_column = column + 1.0f;
                 float next_row = row + 1.0f;
-                float right_y = next_column * 68.5714264f;
                 float left_x = row * 91.4285736f;
+                float right_y = next_column * 68.5714264f;
                 float right_x = next_row * 91.4285736f;
                 float left_y = column * 68.5714264f;
                 queue_textured_quad_corners(
@@ -51,8 +51,8 @@ void Backdrop::render_backdrop()
             } else {
                 next_column = column + 1.0f;
                 float next_row = row + 1.0f;
-                float right_y = next_column * 68.5714264f;
                 float left_x = row * 91.4285736f;
+                float right_y = next_column * 68.5714264f;
                 float right_x = next_row * 91.4285736f;
                 float left_y = column * 68.5714264f;
                 queue_textured_quad_corners(

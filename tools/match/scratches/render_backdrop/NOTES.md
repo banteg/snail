@@ -31,3 +31,12 @@
   `Backdrop::render_backdrop` declarations to `snail match types`. Focused Wibo
   remains `85.56%`, `189/192`, with the same two constant-lane masked
   mismatches.
+- 2026-06-21 coordinate-lane sweep: a small permutation sweep over the branch
+  local coordinate declaration order found that declaring `left_x` before
+  `right_y` in both render branches improves focused Wibo from `85.56%` to
+  `86.61%`, keeps the candidate at `189/192` instructions, and clears the two
+  previous masked constant-lane mismatches (`26 ok`, no unresolved or
+  mismatched operands). The remaining first mismatch is still the branch-invariant
+  coordinate hoist before the `active_flip` test and the duplicated flipped-path
+  stack-slot schedule; `volatile`/direct `active_flip` spellings either regressed
+  or were neutral.
