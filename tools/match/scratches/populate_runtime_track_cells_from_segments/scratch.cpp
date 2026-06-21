@@ -36,32 +36,7 @@ int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 ColorBGRA8* set_object_color(void* object, Color4f color);
 
-class Game {
-public:
-    void populate_runtime_track_cells_from_segments();
-    bool switch_track_mirror();
-    char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
-
-    char unknown_00[2];
-    bool track_mirror_enabled; // +0x02
-    char pad_03;
-    int track_mirror_repeat_count; // +0x04
-    char unknown_08[0x34 - 0x08];
-    float challenge_difficulty_scalar; // +0x34
-    float subgame_rate; // +0x38
-    int subgame_state; // +0x3c
-    int level_mode; // +0x40
-    int level_mode_arg; // +0x44
-    float base_subgame_rate; // +0x48
-    unsigned int runtime_flags; // +0x4c
-    int first_block_row_count; // +0x50
-    int runtime_row_count; // +0x54
-    int completion_row_start; // +0x58
-    char unknown_5c[0xa874 - 0x5c];
-    int level_segment_count; // +0xa874
-};
-
-void Game::populate_runtime_track_cells_from_segments()
+void SubgameRuntime::populate_runtime_track_cells_from_segments()
 {
     char* base = (char*)this;
     int runtime_build_seed;
