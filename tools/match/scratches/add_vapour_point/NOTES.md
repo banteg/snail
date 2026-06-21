@@ -61,3 +61,10 @@ the candidate uses the equivalent `eax+edx*1-0x40`. Rejected final-tail probes:
 integer-only destination construction, byte-pointer arithmetic, direct shifted
 expressions, pre-decremented typed indices, and explicit byte-offset locals were
 all codegen-neutral at 97.87%; a volatile base regressed badly by spilling.
+
+2026-06-21 final-tail typed-field pass: leaving the raw-offset append/shift
+paths intact but spelling only the final overwrite through `this->points` and
+`this->point_count` recovers the native `lea edi, [edx+eax-0x40]` encoding and
+promotes the function to 100.00%, 47/47 instructions. The mixed source shape is
+intentional: previous full typed-field promotion regressed the shift loop, while
+the final tail alone lets VC6 preserve the exact native load order and SIB base.

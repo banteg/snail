@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**503/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69340/325759** bytes (**21.29%**) are proof-grade, and overall fuzzy is **55.99%**.
+**504/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69481/325759** bytes (**21.33%**) are proof-grade, and overall fuzzy is **55.99%**.
 
-## Proof Grade (503)
+## Proof Grade (504)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -331,6 +331,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_click_start | 0x442170 | 277 | 79/79 | 100.00% | 79/79 | 13 ok |  |
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 | - |  |
+| ✅ | add_vapour_point | 0x442560 | 141 | 47/47 | 100.00% | 47/47 | - |  |
 | ✅ | update_row_model | 0x443070 | 186 | 60/60 | 100.00% | 60/60 | 6 ok |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
@@ -512,7 +513,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (16)
+## Near Match (95-99.99%) (15)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -527,7 +528,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 97.87% | 42/47 | - |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |

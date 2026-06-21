@@ -26,7 +26,7 @@ void VapourTrail::add_vapour_point(const TransformMatrix* point)
         } while (shift_index < result[33] - 1);
     }
 
-    int count = result[32];
-    result = (int*)result[36];
-    memcpy(&result[16 * count - 16], point, 0x40);
+    TransformMatrix* points = this->points;
+    int count = this->point_count;
+    memcpy(&points[count - 1], point, 0x40);
 }
