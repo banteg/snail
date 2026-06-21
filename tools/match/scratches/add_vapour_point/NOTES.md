@@ -49,3 +49,15 @@ dropping the `point_limit` local, folding the copy arguments directly, and
 `while (1)` tail-break forms were score-neutral or worse. The retained residual
 is now the early `xor edx` plus source/destination cursor materialization inside
 the full-buffer shift loop.
+
+2026-06-21 typed-slot pass: replacing the raw byte-offset shift cursor with a
+typed `TransformMatrix*` base and integer slot cursor improves focused Wibo from
+89.36% to 97.87%, with 47/47 instructions, a 42/47 exact prefix, and no masked
+operands. This source shape matches the native shift loop exactly: `ebx` owns
+the copy count, `edx` owns the slot cursor, and the compiler naturally emits the
+native `inc ebx` before the source/destination LEAs. The only residual is the
+final overwrite address SIB encoding, where target uses `edx+eax*1-0x40` and
+the candidate uses the equivalent `eax+edx*1-0x40`. Rejected final-tail probes:
+integer-only destination construction, byte-pointer arithmetic, direct shifted
+expressions, pre-decremented typed indices, and explicit byte-offset locals were
+all codegen-neutral at 97.87%; a volatile base regressed badly by spilling.

@@ -16,15 +16,13 @@ void VapourTrail::add_vapour_point(const TransformMatrix* point)
 
     int point_limit = result[33];
     int shift_index = 0;
-    int shift_offset = 0;
+    int shift_slot = 0;
     if (point_limit - 1 > 0) {
         do {
-            int point_base = result[36];
-            const void* source = (const void*)(shift_offset + point_base + 0x40);
-            void* destination = (void*)(shift_offset + point_base);
-            memcpy(destination, source, 0x40);
-            shift_offset += 0x40;
+            TransformMatrix* point_base = (TransformMatrix*)result[36];
             ++shift_index;
+            memcpy(&point_base[shift_slot], &point_base[shift_slot + 1], 0x40);
+            ++shift_slot;
         } while (shift_index < result[33] - 1);
     }
 
