@@ -30,3 +30,12 @@ an object. This is the same harness limitation documented for other incidental
 return scratches, so the explicit final zero remains. The residual masked
 operand mismatches are still queue-store scheduling around the UV/layer/blend
 tail, not evidence that the two unused zero arguments are consumed.
+
+2026-06-21 count-store sweep: moving `g_font_queue_count = index + 1` later in
+the entry-fill sequence improves focused Wibo from 64.29% to 87.14%, with 71
+candidate instructions versus 69 target instructions and 18 clean masked
+operands. The best-scoring spelling publishes the count after the final corner
+coordinate (`y3`) and before clearing the axis-aligned width/height lanes;
+placing it after the height clear removed the residual masked mismatches but
+scored lower at 81.43%. Keep the corner-coordinate placement as the retained
+shape for now.

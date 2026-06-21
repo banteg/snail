@@ -28,7 +28,6 @@ int queue_axis_aligned_textured_quad_uv(
                 entry->flags = flags | 2;
                 entry->texture_id = texture_id;
                 entry->color = *color;
-                g_font_queue_count = index + 1;
                 entry->x0 = x;
                 entry->y0 = y;
                 entry->width = width;
@@ -39,6 +38,7 @@ int queue_axis_aligned_textured_quad_uv(
                 entry->v1 = v1;
                 entry->layer = layer;
                 entry->blend = blend;
+                g_font_queue_count = index + 1;
                 return offset;
             }
         }

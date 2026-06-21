@@ -31,3 +31,11 @@ integer-lane copies, including variants that write RGB, update
 range and adds/moves masked queue-offset mismatches. The aggregate `Color4f`
 copy remains the only source-plausible shape that preserves the saved-register
 copy sequence.
+
+2026-06-21 count-store sweep: moving the `g_font_queue_count` publish after the
+entry field stores improves focused Wibo from 76.12% to 92.54%, with 68
+candidate instructions versus 66 target instructions and all 19 masked operands
+clean. Intermediate placements monotonically recovered the queue-field offsets;
+the retained after-`blend` spelling removes the previous masked offset
+mismatches while preserving the aggregate color copy. The residual is now only
+the moved count store plus the known shared zero-return epilogue.

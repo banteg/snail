@@ -36,7 +36,6 @@ int queue_textured_quad_corners(
         entry->flags = flags | 2;
         entry->texture_id = texture_id;
         entry->color = *color;
-        g_font_queue_count = index + 1;
         entry->x0 = x0;
         entry->y0 = y0;
         entry->x1 = x1;
@@ -45,6 +44,7 @@ int queue_textured_quad_corners(
         entry->y2 = y2;
         entry->x3 = x3;
         entry->y3 = y3;
+        g_font_queue_count = index + 1;
         entry->width = 0.0f;
         entry->height = 0.0f;
         entry->u0 = u0;

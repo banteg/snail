@@ -29,3 +29,12 @@ for a stack load, so it is not retained. Splitting `entry->color = *color` into
 readable float field assignments regressed to 33.33% by switching the gate to
 `test al, al`, dropping the saved-register copy shape, and emitting x87 alpha
 stores. Keep the aggregate color copy and explicit final zero for now.
+
+2026-06-21 count-store sweep: mirroring the explicit-UV helper, moving
+`g_font_queue_count = index + 1` later in the entry-fill sequence improves the
+default-UV helper from 69.70% to 89.39%, with 67 candidate instructions versus
+65 target instructions and 17 clean masked operands. The best source shape
+publishes the count after the caller-provided `layer` store and before clearing
+the default `blend`; moving it after `blend` was slightly worse at 87.88%.
+The remaining residual is the same zero-return epilogue plus count-store
+scheduling around the aggregate color copy.

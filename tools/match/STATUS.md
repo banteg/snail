@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**500/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66972/325759** bytes (**20.56%**) are proof-grade, and overall fuzzy is **55.82%**.
+**500/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66972/325759** bytes (**20.56%**) are proof-grade, and overall fuzzy is **55.87%**.
 
 ## Proof Grade (500)
 
@@ -530,7 +530,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (52)
+## High Progress (80-94.99%) (55)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -582,12 +582,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 1 mismatch, 72 ok |  |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 152/154 | 81.70% | 16/154 | 25 ok |  |
+| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 89.39% | 3/65 | 17 ok |  |
+| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 92.54% | 2/66 | 19 ok |  |
+| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 87.14% | 3/69 | 2 mismatch, 18 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (70)
+## Mid Progress (50-79.99%) (67)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -653,9 +656,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 66.02% | 4/269 | 58 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 267/274 | 72.46% | 4/274 | 1 mismatch, 48 ok |  |
-| 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 69.70% | 3/65 | 13 ok |  |
-| 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 76.12% | 2/66 | 4 mismatch, 11 ok |  |
-| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 64.29% | 3/69 | 2 mismatch, 11 ok |  |
 | 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 74.46% | 3/115 | 32 ok |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
