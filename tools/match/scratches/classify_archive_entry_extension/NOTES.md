@@ -58,3 +58,10 @@ instructions, and a 4/46 prefix. This recovers the native opening load order
 still regresses to the old cursor-allocation family, so the remaining residual
 is unchanged: VC6 emits a shorter top-tested reload jump where native keeps the
 bottom `mov/test/jne` pair.
+
+2026-06-21 bottom-test follow-up: source spellings that looked closer to the
+native loop tail still lose the retained cursor ownership. `while (value != 0
+&& value != '.')`, split `while (value != 0)` plus dot break, `for` forms,
+guarded `do/while`, and an explicit break after the reload all regress to
+28.26%-34.04% with a zero-instruction prefix. Keep the primed `while (1)` loop
+until a form preserves `eax`/`cl` and also emits the bottom zero test.

@@ -34,3 +34,10 @@ but regresses to 66.67% by losing the better switch/register split; flattening
 the tail as `if target == 4 else if target == 0` reaches 82.93%; checking the
 clear path first regresses to 71.54%. Keep the nested shared-store tail unless
 a real VC6 source idiom explains the remaining prologue split.
+
+2026-06-21 mapping follow-up: removing the `register` hint and switching
+directly on `state` are both codegen-neutral at 86.18% and keep the first
+mismatch at the pre-save argument load. Rewriting the mapping as an `if` ladder
+recovers only a three-instruction prefix and regresses to 81.30%. The current
+switch remains the best mapping shape even though it saves `ebx` before loading
+the argument.

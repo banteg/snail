@@ -28,3 +28,10 @@ Status:
   call block. An explicit shared-label probe made the function much worse, so
   keep this as a documented source-shaped partial until there is a better
   idiom lead.
+
+2026-06-21 argument-order follow-up: `sprintf(&path[0], ...)`, a reusable
+`char* path_ptr`, and declaring that pointer immediately before the switch are
+all codegen-neutral at 81.36% and leave the same indexed-call tail sharing
+residual. A volatile path pointer collapses the prologue and regresses to
+31.67%. Keep the direct `sprintf(path, ...)` calls; argument spelling alone does
+not recover native's shared path/call tail.

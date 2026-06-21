@@ -51,3 +51,9 @@ Expected residuals:
   jump. The append tail also differs in x87 scheduling versus integer copies
   for unchanged float words. Further work needs a real source idiom for that
   layout, not return-goto reshuffling or raw-offset append nudging.
+
+2026-06-21 found-label follow-up: an explicit found label after the append block
+is codegen-neutral at 63.20% once the skipped `appended`/`result` declarations
+are hoisted for C++ legality. A guarded found label before the append block
+regresses to 62.70%. The retained direct returns remain the clearest source;
+the loop-tail `jge`/`jmp` residual is not fixed by legal label spelling alone.

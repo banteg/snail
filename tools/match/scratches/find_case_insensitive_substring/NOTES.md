@@ -83,3 +83,10 @@ pattern-ended success check is better than checking it before the `goto`
 form and a named searched-byte local both regressed by losing the native
 prologue allocation, so the retained source keeps direct `needle_cursor[delta]`
 reads.
+
+2026-06-21 inner-tail follow-up: explicit success returns and named searched
+byte locals do not recover the native `al`-owned success tail. Direct
+`return haystack_cursor` on both-cursors-ended falls back to 69.29%, searched
+byte locals range from 57.14%-67.19%, and a `break` to a success return also
+lands at 69.29%. The current shared-label spelling remains the only tested form
+that preserves the native early haystack load and 73.17% score.

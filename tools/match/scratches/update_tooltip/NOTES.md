@@ -42,3 +42,11 @@ Focused Wibo improves to `89.70%`, still `219/218` candidate/target
 instructions with `23 ok` masked operands. The remaining leading residual is
 the extra `test eax, eax` after the third state-dispatch decrement; native
 reuses the `dec` flags directly.
+
+2026-06-21 dispatch follow-up: spelling the nested state checks with
+pre-decrement expressions is codegen-neutral at 89.70% and still emits the
+extra `test eax, eax`. A label-based dispatch that preserves the native physical
+case order (`state 3`, then `state 2`, then `state 1`) requires scoped case
+bodies in C++ and regresses to 75.97% by disturbing the layout body. Keep the
+nested source shape; the remaining leading `dec`/`test` split is not fixed by
+surface dispatch syntax.

@@ -37,3 +37,10 @@
   height lanes are codegen-neutral at 97.18%; the remaining local residual is
   the width load/store placement plus the known recursive self-call relocation
   spelling.
+- 2026-06-21 width/top scheduling follow-up: moving the authored width load and
+  layout-width store toward the addressed native order regresses to
+  96.05%-96.61% by shortening the exact prefix to 21 instructions. Moving the
+  `layout_top_bits` load before `texture_hit_x` store is worse (89.27% on the
+  retained branch shape), while placing it between the X store and flags reload
+  is codegen-neutral at 97.18%. The current volatile-width ordering remains the
+  best whole-function tradeoff despite the local diff.

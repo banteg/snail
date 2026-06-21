@@ -21,3 +21,11 @@ alignment. The candidate COFF relocations for `g_object_edge_build_edges` and
 `g_object_edge_build_count` are source-correct; the mismatch report pairs a
 shifted setup store against the wrong native store until the prologue/local
 shape is improved.
+
+2026-06-21 removal-loop follow-up: swapping the two setup stores is
+codegen-neutral at 71.63% and leaves the same shifted masked-pairing report.
+Replacing the byte-offset removal loop with a pointer cursor reduces the masked
+mismatch count, but regresses the instruction stream to 56.83% by losing the
+native face-loop and local-slot shape; a pointer variant that reuses the reloaded
+count drops further to 53.57%. Keep the offset loop until a form preserves the
+opening face traversal as well as the cleanup region.
