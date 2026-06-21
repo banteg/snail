@@ -21,7 +21,6 @@ int load_object_definition(char* path, Object* object)
     char texture_name[0x80];
     int byte_count;
     int vertex_count;
-    int facequad_count;
 
     char* file_text = get_archive_data_base();
     sprintf(object_file_path, "%s/_Object.txt", path);
@@ -31,7 +30,6 @@ int load_object_definition(char* path, Object* object)
 
     char* cursor = file_text;
     vertex_count = 0;
-    facequad_count = 0;
 
     if (*cursor != '\0') {
         do {
@@ -65,6 +63,7 @@ int load_object_definition(char* path, Object* object)
                             vertex->z = z;
                         }
                     } else if (strings_equal_case_insensitive(cursor, "[FACEQUAD START]")) {
+                        int facequad_count = 0;
                         skip_to_next_line(&cursor);
 
                         char* count_cursor = cursor;
