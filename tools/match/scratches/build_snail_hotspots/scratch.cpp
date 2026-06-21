@@ -20,7 +20,8 @@ void PlayerPresentationController::build_snail_hotspots()
         hotspot_z[-1] = 0.0f;
         hotspot_z[-2] = 0.0f;
 
-        TextureRef* texture = g_texture_refs.get_or_create_texture_ref(*name_cursor, 0, 0);
+        char* texture_name = *name_cursor;
+        TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_name, 0, 0);
         int facequad_count = model->facequad_count;
         int face_index = 0;
 
@@ -28,7 +29,9 @@ void PlayerPresentationController::build_snail_hotspots()
             report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
         } else {
             ObjectFaceQuad* facequad = model->facequads;
-            while (facequad->texture_ref != texture) {
+            while (1) {
+                if (facequad->texture_ref == texture)
+                    break;
                 ++face_index;
                 ++facequad;
                 if (face_index >= facequad_count) {
@@ -37,7 +40,7 @@ void PlayerPresentationController::build_snail_hotspots()
                 }
             }
 
-            int vertex_index = facequad->vertex_0;
+            int vertex_index = model->facequads[face_index].vertex_0;
             Vector3* vertex = &model->vertices[vertex_index];
             hotspot_z[-2] += vertex->x;
             hotspot_z[-1] += vertex->y;

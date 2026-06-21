@@ -41,3 +41,19 @@ also begins the trailing `X/CameraIntroTalk` string data, which is why the raw
 target operand previously resolved as a string literal. Focused Wibo remains
 60.27%, but the masked audit is now clean at seven operands ok and no
 mismatches.
+
+2026-06-21 scan-shape retry: staging `char* texture_name = *name_cursor` before
+the texture lookup recovers native's zero/call setup and improves focused Wibo
+to 64.83%, with a 20/74 prefix. Rewriting the face scan as an explicit
+break-on-match loop and reloading the found vertex through
+`model->facequads[face_index]` improves further to 83.78%, with exact
+instruction count (74/74), 22/74 prefix, and seven clean masked operands.
+This matches native's face-index based vertex reload and preserves the clear
+hotspot semantics.
+
+Rejected followups: a positive `facequad_count > 0` guard with a shared error
+tail recovered the written branch sense on paper but shortened the candidate to
+69 instructions and scored 82.52%; redundant self-stores after x/y/z
+accumulation did not recover native's tail stores. Shared zero locals were also
+neutral or worse. The remaining residual is branch layout around the zero-count
+error path plus the native redundant final hotspot self-stores.
