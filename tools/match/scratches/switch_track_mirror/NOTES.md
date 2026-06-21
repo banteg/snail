@@ -32,3 +32,10 @@ the clear strict-threshold source.
 The callsites in `populate_runtime_track_cells_from_segments` and the row-flag
 consumer prove +0x02 is the current track mirror flag, not a generic
 `last_coin`, and +0x04 is the repeat guard for that flag.
+
+2026-06-21 tail-duplication retry: explicit `>= 4` branching, returning the
+stored field on either arm, volatile stores on either arm, result locals, hot
+and cold temporary result locals, and boolean-expression inversion all compile
+to the same 91.23% object. VC6 continues to cross-jump-merge the identical
+`track_mirror_enabled = mirror_enabled; return` tails, leaving the native
+duplicated hot return tail unrecovered.

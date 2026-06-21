@@ -39,3 +39,10 @@ clean. Intermediate placements monotonically recovered the queue-field offsets;
 the retained after-`blend` spelling removes the previous masked offset
 mismatches while preserving the aggregate color copy. The residual is now only
 the moved count store plus the known shared zero-return epilogue.
+
+2026-06-21 granular count-store retry: placements before color and after each
+field through `layer` were retested. Scores rise monotonically from 59.09% to
+89.55% as the store moves later, but only the retained after-`blend` placement
+reaches 92.54% and keeps all 19 masked operands clean. Native's earlier count
+publish remains a scheduling tradeoff; moving it back reintroduces field-offset
+mismatches.

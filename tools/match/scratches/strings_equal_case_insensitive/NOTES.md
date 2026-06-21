@@ -75,3 +75,11 @@ qualifiers, signed/const argument spellings, and return types; none improved
 the remaining lane allocation, and raw-byte-first forms still regress by
 switching the fold math to the worse `sub 0x20` family. Remaining debt is the
 raw-before-fold byte-register allocation only.
+
+2026-06-21 byte-lane retry: raw-byte-first reloads, right-fold-first ordering,
+left-then-right reloads, unsigned byte locals, volatile raw loads, a
+macro-style fold expression, and a fold-at-top `for (;;)` loop were retested.
+All raw-first source shapes still fall into the bad 31-43% codegen family with
+extra instructions or different fold arithmetic. `register` annotations are
+neutral at 84.00%. Keep the current folded-byte-first source despite the
+remaining `dl`/`bl` raw-lane ownership mismatch.

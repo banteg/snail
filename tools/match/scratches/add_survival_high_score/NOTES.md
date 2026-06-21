@@ -80,3 +80,9 @@ Residual:
   global reload while preserving native's behavior if that guard were ever
   false; early-return and block-return forms still duplicate control flow and
   regress to roughly 82%.
+- 2026-06-21 source-record scheduling retry: naming the incoming record before
+  the volatile bank reload is codegen-neutral at 95.24% and does not move
+  native's `mov esi, edx` before the rank-slot address arithmetic. Destination
+  slot locals and raw slot-base views grow the candidate to 87 instructions and
+  drop to 86.55%, while volatile record reloads perturb the prologue and fall to
+  67.86%. Keep the current direct record copy after the volatile bank reload.

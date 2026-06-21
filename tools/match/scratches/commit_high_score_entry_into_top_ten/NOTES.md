@@ -43,3 +43,11 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
   `+0x17c108` source displacement and raises the exact prefix to 16, but drops
   focused Wibo to 81.82% because VC6 emits the `rep movsd` before both cursor
   increments. Keep the retained byte post-increment shape.
+- 2026-06-21 cursor-lifetime retry: source-old/cursor-next variants that
+  increment both the byte source cursor and the byte offset before the copy still
+  score only 81.82%. They recover the native `+0x17c108` displacement but keep
+  destination ownership as `mov edi, [edx]` instead of native `mov edi, eax; add
+  edi, [edx]`. Rank writes through the destination pointer, row-indexed typed
+  records, and reordered source/destination declarations regress much further.
+  The retained post-increment/subtract source remains the best available copy
+  schedule.

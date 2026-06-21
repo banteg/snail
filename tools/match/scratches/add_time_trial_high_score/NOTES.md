@@ -72,3 +72,10 @@ Rejected source-shape probes:
   `HighScoreBank*`, signed/unsigned integer-base, and `volatile route_offset`
   spellings; each either collapses to the older 84.85% schedule or regresses by
   disturbing the prologue/register ownership.
+- 2026-06-21 shifted-base retry: forcing a persistent shifted route base as
+  `char*`, `void*`, `HighScoreBank*`, `HighScoreRecord*`, `float*` stored-seconds
+  view, unsigned integer address, and delayed base reassignment did not beat the
+  retained inline-offset shape. The pointer-base variants fall back to 84.85% or
+  83.67%, while the typed shifted-bank form drops to 55.10%. Keep the named
+  route-offset source; the remaining `add ebp, ecx` versus folded address is a
+  register-scheduler residual.

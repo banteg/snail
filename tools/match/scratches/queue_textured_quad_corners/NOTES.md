@@ -39,3 +39,10 @@ coordinate (`y3`) and before clearing the axis-aligned width/height lanes;
 placing it after the height clear removed the residual masked mismatches but
 scored lower at 81.43%. Keep the corner-coordinate placement as the retained
 shape for now.
+
+2026-06-21 color/count split retry: native publishes the queue count between
+the RGB and alpha lanes of the aggregate `Color4f` copy, but spelling that
+split in source is much worse. RGB/count/alpha, earlier split points, explicit
+RGBA then count, and delayed alpha variants all collapse to the 20-45% family
+with a different prologue and many offset mismatches. The aggregate color copy
+plus post-`y3` count store remains the best corner-quad source shape.
