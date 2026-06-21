@@ -417,11 +417,22 @@ def _read_object_jump_table_entries(
     data: bytes,
     table_offset: int,
     relocation_by_offset: dict[int, ObjectRelocationReference],
+    byte_count: int | None = None,
 ) -> tuple[int, ...] | None:
+    if byte_count is not None:
+        if byte_count <= 0 or byte_count % 4 != 0:
+            return None
+        if not (0 <= table_offset <= len(data) - byte_count):
+            return None
+        end_offset = table_offset + byte_count
+    else:
+        end_offset = len(data)
     entries: list[int] = []
-    for entry_offset in range(table_offset, len(data), 4):
+    for entry_offset in range(table_offset, end_offset, 4):
         reference = relocation_by_offset.get(entry_offset)
         if reference is None:
+            if byte_count is not None:
+                return None
             break
         if reference.symbol_offset is None:
             return None
@@ -505,6 +516,19 @@ def _reference_symbol_by_name(
     return by_name
 
 
+def _reference_symbol_by_local_label(
+    reference_manifest: ReferenceSymbolManifest | None,
+) -> dict[str, ReferenceSymbol]:
+    if reference_manifest is None:
+        return {}
+    by_name: dict[str, ReferenceSymbol] = {}
+    for symbol in reference_manifest.symbols:
+        for alias in symbol.aliases:
+            if alias.startswith("$L"):
+                by_name[alias] = symbol
+    return by_name
+
+
 def _reference_key_by_name(
     reference_manifest: ReferenceSymbolManifest | None,
 ) -> dict[str, str]:
@@ -526,6 +550,13 @@ def _reference_symbol_for_symbol_name(
     name: str,
 ) -> ReferenceSymbol | None:
     return _reference_symbol_by_name(reference_manifest).get(_canonical_symbol_name(name))
+
+
+def _reference_symbol_for_local_label(
+    reference_manifest: ReferenceSymbolManifest | None,
+    name: str,
+) -> ReferenceSymbol | None:
+    return _reference_symbol_by_local_label(reference_manifest).get(name)
 
 
 def _format_addend_suffix(addend: int) -> str:
@@ -1047,24 +1078,38 @@ def disassemble_normalized_function(
         jump_table_entries = None
         audited_bytes = None
         local_data_bytes = None
+        reference_symbol = None
+        local_reference_symbol = None
+        if reference is not None:
+            reference_symbol = _reference_symbol_for_symbol_name(
+                reference_manifest,
+                reference.symbol_name,
+            )
+            local_reference_symbol = _reference_symbol_for_local_label(
+                reference_manifest,
+                reference.symbol_name,
+            )
         if (
             reference is not None
             and reference.symbol_name.startswith("$L")
             and reference.symbol_offset is not None
         ):
             local_offset = reference.symbol_offset + (reference.addend or 0)
+            local_jump_table_size = (
+                local_reference_symbol.size
+                if local_reference_symbol is not None
+                and local_reference_symbol.kind == "jump_table"
+                else None
+            )
             jump_table_entries = _read_object_jump_table_entries(
                 data,
                 local_offset,
                 relocation_by_offset,
+                byte_count=local_jump_table_size,
             )
             if 0 <= local_offset < len(data):
                 local_data_bytes = data[local_offset:]
         if reference is not None:
-            reference_symbol = _reference_symbol_for_symbol_name(
-                reference_manifest,
-                reference.symbol_name,
-            )
             if (
                 reference_symbol is not None
                 and reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS

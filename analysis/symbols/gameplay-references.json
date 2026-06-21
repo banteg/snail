@@ -484,7 +484,9 @@
       "address": "0x41a9fc",
       "name": "initialize_backdrop_tile_quad_orientation_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L1028"
+      ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
     },

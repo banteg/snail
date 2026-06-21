@@ -643,6 +643,87 @@ def test_masked_operand_audit_accepts_matching_local_jump_table_contents() -> No
     assert entry.candidate_references[0].jump_table_entries == (0, 7)
 
 
+def test_masked_operand_audit_bounds_adjacent_local_jump_table_alias() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("ff248500000000c3") + (b"\x00" * 16),
+        relocation_offsets=frozenset({3, 8, 12, 16, 20}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=3,
+                symbol_name="$Ltable",
+                text="sym:$Ltable",
+                key="name:$Ltable",
+                explained=True,
+                addend=0,
+                symbol_offset=8,
+            ),
+            ObjectRelocationReference(
+                offset=8,
+                symbol_name="$Lcase0",
+                text="sym:$Lcase0",
+                key="name:$Lcase0",
+                explained=True,
+                addend=0,
+                symbol_offset=0,
+            ),
+            ObjectRelocationReference(
+                offset=12,
+                symbol_name="$Lcase1",
+                text="sym:$Lcase1",
+                key="name:$Lcase1",
+                explained=True,
+                addend=0,
+                symbol_offset=7,
+            ),
+            ObjectRelocationReference(
+                offset=16,
+                symbol_name="$Lother0",
+                text="sym:$Lother0",
+                key="name:$Lother0",
+                explained=True,
+                addend=0,
+                symbol_offset=0,
+            ),
+            ObjectRelocationReference(
+                offset=20,
+                symbol_name="$Lother1",
+                text="sym:$Lother1",
+                key="name:$Lother1",
+                explained=True,
+                addend=0,
+                symbol_offset=7,
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("ff248500204000c3"),
+        candidate,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    aliases=("$Ltable",),
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.candidate_references[0].key == "name:$Ltable"
+    assert entry.candidate_references[0].jump_table_entries == (0, 7)
+
+
 def test_masked_operand_audit_rejects_permuted_local_jump_table_contents() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)

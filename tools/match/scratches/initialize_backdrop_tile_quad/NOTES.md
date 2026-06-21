@@ -50,5 +50,12 @@ that prevents VC6 from reusing the outer sign predicates and restores the full
 native inlined sign test. Focused Wibo now has a 100.00% normalized instruction
 stream, 367/367 instructions, and a 367/367 prefix. The newly exposed
 edge-selector jump table at `0x41aa0c` now has a curated reference and audits
-cleanly. The only remaining masked operand issue is the older orientation table
-label mismatch.
+cleanly.
+
+2026-06-21 adjacent jump-table audit: the orientation table at `0x41a9fc` is
+immediately followed by the edge-selector table at `0x41aa0c`, so the local
+candidate label scan originally over-read both tables as one 11-entry table.
+Adding `$L1028` as the candidate alias and teaching the matcher to honor curated
+jump-table sizes for local labels clears the masked audit. Focused Wibo is now
+proof-grade: 100.00%, 367/367 instructions, a 367/367 prefix, and 63 clean
+masked operands.
