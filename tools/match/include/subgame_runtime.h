@@ -6,6 +6,7 @@
 #define SUBGAME_RUNTIME_H
 
 #include "frontend_widget.h"
+#include "garbage_hazard_slot.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "cameraman_state.h"
@@ -101,7 +102,9 @@ public:
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
-    char unknown_3563a0[0x35bb88 - 0x3563a0];
+    char unknown_3563a0[0x359140 - 0x3563a0];
+    GarbageHazardPool garbage_hazards; // +0x359140
+    char unknown_35b78c[0x35bb88 - 0x35b78c];
     FrontendWidget* score_widget_a; // +0x35bb88
     FrontendWidget* score_widget_b; // +0x35bb8c
     FrontendWidget* lives_icon_widget; // +0x35bb90

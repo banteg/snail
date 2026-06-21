@@ -67,5 +67,9 @@ Rejected source-shaped probes:
   x-velocity store. Keep the raw float-lane source; the remaining gap is VC6
   choosing not to materialize native's `lea velocity; add position-base` cursor
   pair or the separate x-velocity stack spill.
+- 2026-06-21 owner-header cleanup: `GolbShot::game` is now promoted to the
+  shared `SubgameRuntime*`, so this scratch includes `subgame_runtime.h` before
+  reading `subgame_rate`. Focused Wibo remains pinned at 84.29%, 68/72
+  candidate instructions, 43/72 prefix, and eight clean masked operands.
 
 Keep pinned unless a new source idiom explains the delayed sprite-base advance.

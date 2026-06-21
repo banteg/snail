@@ -1,6 +1,7 @@
 // spawn_golb_smoke @ 0x415c60 (thiscall, ret 0x4)
 
 #include "golb.h"
+#include "subgame_runtime.h"
 
 void GolbShot::spawn_golb_smoke(Vector3* position)
 {

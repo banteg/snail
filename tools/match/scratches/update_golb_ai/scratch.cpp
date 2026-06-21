@@ -4,6 +4,7 @@
 
 #include "player.h"
 #include "score_stats.h"
+#include "subgame_runtime.h"
 #include "transform_matrix.h"
 #include "vapour_trail.h"
 #include "vector3.h"
@@ -12,18 +13,6 @@ typedef Vector3 Vec3;
 class Sprite;
 
 float __fastcall normalize_vector(Vec3* vector);
-
-class Game {
-public:
-    char* get_track_grid_cell_at_world_position(Vec3* position);
-
-    char unknown_00[0x9];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x38 - 0x0a];
-    float subgame_rate; // +0x38
-    char unknown_3c[0x359140 - 0x3c];
-    int garbage_list_head; // +0x359140
-};
 
 class SlugHazardRuntime {
 public:
@@ -79,7 +68,7 @@ struct GolbShot {
     float path_factor;               // +0x264 (this+612)
     float lifetime;                  // +0x268 (this+616)
     float lifetime_step;             // +0x26c (this+620)
-    Game* game;                      // +0x270 (this+624)
+    SubgameRuntime* game;            // +0x270 (this+624)
     char unknown_274[4];
     Player* player;                  // +0x278 (this+632)
     // the source transform at +636 spans 0x40 bytes whose POSITION ROW is
@@ -264,7 +253,7 @@ void GolbShot::update_golb_ai()
         Player* bounds_player = player;
         if (position.z >= bounds_player->interaction_max_z
             && bounds_player->position.z + 46.0f >= position.z) {
-            int garbage = game->garbage_list_head;
+            int garbage = (int)game->garbage_hazards.active_head;
             while (garbage) {
                 if (*(int*)(garbage + 132) == 1) {
                     probe.x = *(float*)(garbage + 104) - new_output->x;
@@ -339,7 +328,7 @@ garbage_hit:
             kill_golb();
             spawn_golb_impact_sprite(new_output);
             if (kind == 2) {
-                for (int splash = game->garbage_list_head; splash; splash = *(int*)(splash + 128)) {
+                for (int splash = (int)game->garbage_hazards.active_head; splash; splash = *(int*)(splash + 128)) {
                     if (*(int*)(splash + 132) == 1) {
                         probe.x = *(float*)(splash + 104) - new_output->x;
                         probe.y = *(float*)(splash + 108) - new_output->y;

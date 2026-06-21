@@ -9,6 +9,8 @@
 #include "sprite.h"
 #include "vector3.h"
 
+class SubgameRuntime;
+
 // stride 0x18 sample bank entry; only the position triple is typed so far
 struct GolbPathSample {
     float unknown_00;
@@ -50,12 +52,6 @@ struct GolbPathSourceCell {
     Vector3 anchor_position; // +0x10
     char unknown_1c[0x38 - 0x1c];
     GolbPathTemplate* path_template; // +0x38
-};
-
-class GolbShotGameView {
-public:
-    char unknown_00[0x38];
-    float subgame_rate; // +0x38
 };
 
 // Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
@@ -114,7 +110,7 @@ public:
     float path_factor;           // +0x264
     float lifetime;              // +0x268
     float lifetime_step;         // +0x26c
-    GolbShotGameView* game;      // +0x270
+    SubgameRuntime* game;        // +0x270
     void* object_ref;            // +0x274
     Player* owner_player;        // +0x278
 };

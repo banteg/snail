@@ -1,5 +1,25 @@
 # WIP scratch — 73.34%, 645/694 insns (2026-06-20)
 
+## 2026-06-21 subgame owner cleanup
+
+The retained cleanup removes this scratch's generic `Game` owner shell. Shared
+`SubgameRuntime` now exposes the garbage hazard pool at `+0x359140`, so the
+two garbage scans read `game->garbage_hazards.active_head` instead of the local
+`garbage_list_head` placeholder. `GolbShot::game` is now the same
+`SubgameRuntime*` owner used by the promoted header.
+
+Focused Wibo stays pinned at `73.34%`, target `694`, candidate `645`, prefix
+`9/694`, with `68 ok, 0 unresolved, 0 mismatch`. The exact Golb helper users
+that include `golb.h` stayed exact, and the known partial consumers kept their
+dashboard baselines. `uv run snail match types --paths` now reports
+`partial-compatible Game: 7`, with this scratch removed from the remaining
+generic owner list.
+
+Keep the local `GolbShot` slice for now: it remains header-compatible with
+`include/golb.h`, but this function's scheduling-sensitive fields are still
+better isolated until the surrounding 645-instruction body has stronger shape
+evidence.
+
 ## 2026-06-20 trail-offset vector follow-up
 
 The retained follow-up improves from `72.67%`, target `694`, candidate `627`,
