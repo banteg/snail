@@ -13,13 +13,14 @@ cutscene/presentation animation ids.
 
 Current focused result:
 
-- 94.55% fuzzy match, 55 candidate insns / 55 native insns
+- 98.18% fuzzy match, 55 candidate insns / 55 native insns
 - prefix 48/55
 - masked comparison: 3 ok, 0 mismatch
 
 Remaining known shape issues are the same as the adjacent
-`set_weapon_animation` helper: the queued branch allocates the animation id /
-queue-count registers opposite to native.
+`set_weapon_animation` helper: the queued branch now uses the native store
+registers, but still reloads the animation id before the queue count while
+native does the reverse.
 
 2026-06-20 larger-chunk audit: replacing the queued branch locals with a direct
 `anim_manager.queued_animations[anim_manager.queue_count] = animation_id`
@@ -37,3 +38,12 @@ code-shape barrier for the manager lane, not a new type/layout claim. Plain
 locals, declaration-order changes, direct queue subscripts, and raw queue stores
 remain codegen-neutral; the only retained residual is the queued branch's
 `queue_count`/`animation_id` register ownership.
+
+2026-06-21 queued-argument barrier: reading the queued `animation_id` through a
+narrow volatile pointer recovers the native queued-array store register shape
+for both animation helpers. Focused Wibo improves from 94.55% to 98.18%,
+staying at 55/55 instructions and 48/55 prefix with `3 ok / 0 mismatch` masked
+operands. Combining this with volatile queue-count reads, explicit queue-slot
+pointers, raw slot stores, and direct subscripts did not recover the final load
+order; the only remaining diff is native loading `queue_count` before reloading
+the stack argument.

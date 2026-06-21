@@ -19,9 +19,9 @@ Recovered behavior:
 - immediate activation clears the queue, stores the selected visual root at
   channel `+0x24`, and ORs bit `0x20` into the target model flags.
 
-Focused Wibo result: 94.55%, 55/55 candidate/target instructions, 48/55 exact
-prefix, and three clean masked operands. The remaining shape debt is register
-selection in the queued-animation tail.
+Focused Wibo result: 98.18%, 55/55 candidate/target instructions, 48/55 exact
+prefix, and three clean masked operands. The remaining shape debt is final load
+order in the queued-animation tail.
 
 2026-06-17 consolidation: `PresentationAnimationChannel` is now shared in
 `tools/match/include/presentation_animation_channel.h`. The repeated
@@ -37,3 +37,11 @@ recovers the native reload before `progress = 0.0f`, matching the paired
 declaration-order changes, direct queue subscripts, and raw queue stores are
 codegen-neutral; the queued branch still keeps `queue_count` in `eax` and
 `animation_id` in `edx`, opposite native.
+
+2026-06-21 queued-argument barrier: matching the paired dispatch helper, reading
+the queued `animation_id` through a narrow volatile pointer recovers the native
+queued-array store register shape. Focused Wibo improves from 94.55% to 98.18%,
+still at 55/55 instructions and 48/55 prefix with `3 ok / 0 mismatch` masked
+operands. Volatile queue-count reads, explicit queue-slot pointers, raw slot
+stores, and direct subscripts do not recover the final load order; native still
+loads `queue_count` before reloading the stack argument.

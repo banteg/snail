@@ -48,7 +48,7 @@ int PresentationAnimationChannel::set_weapon_animation(
     }
 
     int queue_count = anim_manager.queue_count;
-    int queued_animation = animation_id;
+    int queued_animation = *(int volatile*)&animation_id;
     anim_manager.queued_animations[queue_count] = queued_animation;
     int result = anim_manager.queue_count + 1;
     anim_manager.queue_count = result;
