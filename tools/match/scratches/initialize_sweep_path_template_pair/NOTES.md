@@ -10,3 +10,9 @@ sample deltas, strip mesh quads, and `finalize_path_template`.
 
 Residuals are expected. This is a semantic starter with local helper routines,
 not an instruction-scheduled match attempt.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 7.04% (115/652
+candidate/target instructions) to 13.71% (544/652), with masked operands
+improving from 4 ok, 0 unresolved, 6 mismatch to 24 ok, 0 unresolved, 1
+mismatch.

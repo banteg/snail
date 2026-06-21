@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **54.10%**.
+**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.08%**.
 
 ## Proof Grade (489)
 
@@ -681,26 +681,26 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.02% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 613/685 | 18.80% | 0/685 | 4 mismatch, 19 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 615/696 | 19.22% | 0/696 | 3 mismatch, 19 ok |  |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 131/696 | 7.98% | 0/696 | 5 mismatch, 6 ok |  |
-| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 115/652 | 7.04% | 0/652 | 6 mismatch, 4 ok |  |
-| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 112/652 | 8.90% | 0/652 | 5 mismatch, 8 ok |  |
-| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 144/552 | 8.62% | 0/552 | 6 mismatch, 4 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 575/696 | 19.35% | 0/696 | 3 mismatch, 18 ok |  |
+| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 544/652 | 13.71% | 0/652 | 1 mismatch, 24 ok |  |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 542/652 | 13.74% | 0/652 | 4 mismatch, 23 ok |  |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 473/552 | 15.61% | 0/552 | 4 mismatch, 23 ok |  |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 281/318 | 42.07% | 0/318 | 17 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 303/421 | 17.13% | 0/421 | 17 ok |  |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 129/683 | 10.59% | 0/683 | 5 mismatch, 12 ok |  |
-| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 134/679 | 10.58% | 0/679 | 8 mismatch, 6 ok |  |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 124/610 | 10.90% | 0/610 | 6 mismatch, 8 ok |  |
-| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 173/671 | 8.77% | 0/671 | 7 mismatch, 9 ok |  |
-| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 176/680 | 9.81% | 0/680 | 7 mismatch, 14 ok |  |
-| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 197/687 | 8.37% | 0/687 | 10 mismatch, 6 ok |  |
-| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 115/608 | 9.41% | 0/608 | 8 mismatch, 7 ok |  |
-| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 116/600 | 8.66% | 0/600 | 7 mismatch, 7 ok |  |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 574/683 | 22.28% | 0/683 | 1 mismatch, 31 ok |  |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 561/679 | 18.55% | 0/679 | 6 mismatch, 19 ok |  |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 530/610 | 14.56% | 0/610 | 2 mismatch, 23 ok |  |
+| 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 563/671 | 22.85% | 0/671 | 1 mismatch, 28 ok |  |
+| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 571/680 | 23.98% | 0/680 | 1 mismatch, 32 ok |  |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 598/687 | 14.79% | 0/687 | 7 mismatch, 13 ok |  |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 510/608 | 22.54% | 0/608 | 4 mismatch, 20 ok |  |
+| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 509/600 | 20.20% | 0/600 | 2 mismatch, 14 ok |  |
 | 🚧 | initialize_kind42_path_template_pair | 0x429b20 | 2592 | 667/707 | 35.95% | 0/707 | 1 mismatch, 45 ok |  |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 125/677 | 10.97% | 0/677 | 8 mismatch, 11 ok |  |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 125/677 | 10.97% | 0/677 | 8 mismatch, 11 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 590/677 | 14.36% | 0/677 | 3 mismatch, 26 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 590/677 | 14.36% | 0/677 | 3 mismatch, 26 ok |  |
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
-| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 175/663 | 9.55% | 0/663 | 8 mismatch, 5 ok |  |
-| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 124/668 | 7.58% | 0/668 | 5 mismatch, 7 ok |  |
+| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 594/663 | 19.25% | 0/663 | 3 mismatch, 16 ok |  |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 583/668 | 12.31% | 0/668 | 3 mismatch, 19 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 503/579 | 20.52% | 0/579 | 4 mismatch, 23 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 629/1029 | 43.55% | 0/1029 | 1 mismatch, 39 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 392/437 | 17.13% | 0/437 | 1 mismatch, 11 ok |  |

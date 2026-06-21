@@ -9,3 +9,9 @@ for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
 Residuals are expected.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 10.90% (124/610
+candidate/target instructions) to 14.56% (530/610), with masked operands
+improving from 8 ok, 0 unresolved, 6 mismatch to 23 ok, 0 unresolved, 2
+mismatch.

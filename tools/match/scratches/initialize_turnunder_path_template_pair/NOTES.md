@@ -10,3 +10,9 @@ interior samples, recomputed deltas, generated strip mesh, and
 
 Residuals are expected in the induction variables, x87 temporary scheduling, and
 mesh/face loop register allocation. No flags or fakematching tricks were used.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 8.37% (197/687
+candidate/target instructions) to 14.79% (598/687), with masked operands
+improving from 6 ok, 0 unresolved, 10 mismatch to 13 ok, 0 unresolved, 7
+mismatch.

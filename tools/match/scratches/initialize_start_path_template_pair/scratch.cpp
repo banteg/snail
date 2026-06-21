@@ -13,7 +13,7 @@ typedef AttachmentSample PathTemplateSample;
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-static void initialize_pair_sample(
+static __forceinline void initialize_pair_sample(
     AttachmentPathTemplate* path, int index, float center_x, float y, float z)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
@@ -37,7 +37,7 @@ static void initialize_pair_sample(
     secondary->delta_length = 1.0f;
 }
 
-static void orient_previous_with_right(
+static __forceinline void orient_previous_with_right(
     PathTemplateSample* samples, int current_index, int first_index)
 {
     PathTemplateSample* previous = &samples[current_index - 1];
@@ -59,7 +59,7 @@ static void orient_previous_with_right(
         &previous->transform.basis_right);
 }
 
-static void compute_direct_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
 {
     int i;
     for (i = 0; i < path->segment_count; ++i) {
@@ -81,7 +81,7 @@ static void compute_direct_deltas(AttachmentPathTemplate* path)
     }
 }
 
-static void build_direct_strip_mesh(AttachmentPathTemplate* path, char* texture)
+static __forceinline void build_direct_strip_mesh(AttachmentPathTemplate* path, char* texture)
 {
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));

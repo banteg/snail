@@ -13,7 +13,7 @@ typedef AttachmentSample PathTemplateSample;
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-static void initialize_pair_sample(
+static __forceinline void initialize_pair_sample(
     AttachmentPathTemplate* path, int index, float center_x, float y, float z)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
@@ -37,7 +37,7 @@ static void initialize_pair_sample(
     secondary->delta_length = 1.0f;
 }
 
-static void orient_turnover_sample(
+static __forceinline void orient_turnover_sample(
     PathTemplateSample* sample, PathTemplateSample* previous, float angle)
 {
     sample->transform.basis_up = Vector3(sine(angle), cosine(angle), 0.0f);
@@ -51,7 +51,7 @@ static void orient_turnover_sample(
         &sample->transform.basis_forward);
 }
 
-static void copy_secondary_from_primary(PathTemplateSample* secondary, PathTemplateSample* primary)
+static __forceinline void copy_secondary_from_primary(PathTemplateSample* secondary, PathTemplateSample* primary)
 {
     secondary->transform = primary->transform;
     secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
@@ -59,7 +59,7 @@ static void copy_secondary_from_primary(PathTemplateSample* secondary, PathTempl
     secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
 }
 
-static void compute_terminal_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_terminal_deltas(AttachmentPathTemplate* path)
 {
     int i;
     for (i = 0; i < path->segment_count - 1; ++i) {
@@ -89,7 +89,7 @@ static void compute_terminal_deltas(AttachmentPathTemplate* path)
     last_secondary->delta_length = 1.0f;
 }
 
-static void build_strip_mesh(AttachmentPathTemplate* path, char* texture_a, char* texture_b)
+static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));

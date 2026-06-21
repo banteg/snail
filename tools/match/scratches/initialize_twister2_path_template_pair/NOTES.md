@@ -8,3 +8,9 @@ decompile.
 
 Residuals mirror the first twister scratch: loop induction and transform
 orientation scheduling remain partial.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 10.97% (125/677
+candidate/target instructions) to 14.36% (590/677), with masked operands
+improving from 11 ok, 0 unresolved, 8 mismatch to 26 ok, 0 unresolved, 3
+mismatch.

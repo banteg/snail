@@ -9,3 +9,9 @@ flat approach, circular supertramp arc, separate secondary radius, direct mesh
 rows, deltas, and finalization.
 
 Residuals are expected.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 8.62% (144/552
+candidate/target instructions) to 15.61% (473/552), with masked operands
+improving from 4 ok, 0 unresolved, 6 mismatch to 23 ok, 0 unresolved, 4
+mismatch.

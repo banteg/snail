@@ -13,7 +13,7 @@ typedef AttachmentSample PathTemplateSample;
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-static void initialize_pair_sample(
+static __forceinline void initialize_pair_sample(
     AttachmentPathTemplate* path, int index, float center_x, float y, float z)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
@@ -37,7 +37,7 @@ static void initialize_pair_sample(
     secondary->delta_length = 1.0f;
 }
 
-static void orient_arc_sample(PathTemplateSample* sample, float radius)
+static __forceinline void orient_arc_sample(PathTemplateSample* sample, float radius)
 {
     sample->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
     sample->transform.basis_up = Vector3(
@@ -50,7 +50,7 @@ static void orient_arc_sample(PathTemplateSample* sample, float radius)
         &sample->transform.basis_up);
 }
 
-static void compute_direct_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
 {
     int i;
     for (i = 0; i < path->segment_count; ++i) {
@@ -72,7 +72,7 @@ static void compute_direct_deltas(AttachmentPathTemplate* path)
     }
 }
 
-static void build_direct_strip_mesh(
+static __forceinline void build_direct_strip_mesh(
     AttachmentPathTemplate* path,
     char* top_texture,
     char* bottom_texture,

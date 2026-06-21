@@ -10,3 +10,9 @@ sinusoidal lateral motion, raised Y motion, orientation, deltas, strip mesh, and
 `finalize_path_template`.
 
 Residuals are expected. This is a semantic starter, not a tuned byte match.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 10.59% (129/683
+candidate/target instructions) to 22.28% (574/683), with masked operands
+improving from 12 ok, 0 unresolved, 5 mismatch to 31 ok, 0 unresolved, 1
+mismatch.

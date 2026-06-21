@@ -13,3 +13,9 @@ segment deltas, emits the strip mesh, and calls `finalize_path_template`.
 
 Residuals are expected. The scratch uses small semantic helpers for the repeated
 sample/orientation/mesh idioms instead of attempting instruction scheduling.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 7.98% (131/696
+candidate/target instructions) to 19.35% (575/696), with masked operands
+improving from 6 ok, 0 unresolved, 5 mismatch to 18 ok, 0 unresolved, 3
+mismatch.

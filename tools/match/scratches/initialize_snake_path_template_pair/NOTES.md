@@ -10,3 +10,9 @@ orientation, delta generation, mesh quads, and `finalize_path_template`.
 
 Residuals are expected; this is intentionally semantic starter source rather
 than an instruction-scheduled near match.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 8.90% (112/652
+candidate/target instructions) to 13.74% (542/652), with masked operands
+improving from 8 ok, 0 unresolved, 5 mismatch to 23 ok, 0 unresolved, 4
+mismatch.

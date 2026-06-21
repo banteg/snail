@@ -8,3 +8,9 @@ side. The scratch models the recovered double-turnover angle folding, secondary
 up-vector offset, deltas, strip mesh, and finalization.
 
 Residuals are expected; the source is semantic starter code.
+
+2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
+Forcing those helpers inline moves focused Wibo from 9.81% (176/680
+candidate/target instructions) to 23.98% (571/680), with masked operands
+improving from 14 ok, 0 unresolved, 7 mismatch to 32 ok, 0 unresolved, 1
+mismatch.
