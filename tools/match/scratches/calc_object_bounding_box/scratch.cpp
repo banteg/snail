@@ -11,15 +11,15 @@ int Object::calc_object_bounding_box()
     *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);
     int offset = 0;
     bounding_radius = 0.0f;
-    int index = 0;
 
     int result = vertex_count;
     if (result > 0) {
+        result = 0;
         do {
             Vector3* vertex = (Vector3*)((char*)vertices + offset);
 
             float max_x;
-            if (vertex->x >= max->x) {
+            if (max->x <= vertex->x) {
                 max_x = vertex->x;
             } else {
                 max_x = bounds_max.x;
@@ -28,7 +28,7 @@ int Object::calc_object_bounding_box()
             max->x = max_x;
 
             float min_x;
-            if (min->x >= vertex->x) {
+            if (vertex->x <= min->x) {
                 min_x = vertex->x;
             } else {
                 min_x = bounds_min.x;
@@ -37,7 +37,7 @@ int Object::calc_object_bounding_box()
             min->x = min_x;
 
             float max_y;
-            if (vertex->y >= bounds_max.y) {
+            if (bounds_max.y <= vertex->y) {
                 max_y = vertex->y;
             } else {
                 max_y = bounds_max.y;
@@ -45,7 +45,7 @@ int Object::calc_object_bounding_box()
             bounds_max.y = max_y;
 
             float min_y;
-            if (bounds_min.y >= vertex->y) {
+            if (vertex->y <= bounds_min.y) {
                 min_y = vertex->y;
             } else {
                 min_y = bounds_min.y;
@@ -53,7 +53,7 @@ int Object::calc_object_bounding_box()
             bounds_min.y = min_y;
 
             float max_z;
-            if (vertex->z >= bounds_max.z) {
+            if (bounds_max.z <= vertex->z) {
                 max_z = vertex->z;
             } else {
                 max_z = bounds_max.z;
@@ -61,7 +61,7 @@ int Object::calc_object_bounding_box()
             bounds_max.z = max_z;
 
             float min_z;
-            if (bounds_min.z >= vertex->z) {
+            if (vertex->z <= bounds_min.z) {
                 min_z = vertex->z;
             } else {
                 min_z = bounds_min.z;
@@ -73,10 +73,9 @@ int Object::calc_object_bounding_box()
                 bounding_radius = radius;
             }
 
-            result = index + 1;
+            ++result;
             offset += sizeof(Vector3);
-            ++index;
-        } while (index < vertex_count);
+        } while (result < vertex_count);
     }
 
     return result;
