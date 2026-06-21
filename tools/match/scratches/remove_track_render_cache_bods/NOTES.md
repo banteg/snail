@@ -49,3 +49,13 @@ the global BOD-list anchor; the remaining dominant residual is still the native
 full-dword mask lifetime (`ebx = 0x200`, `ebp = ~0x200`) versus VC6 folding the
 tests/clear into `bh`/`ah`. Signed flag types and explicit assignment for the
 final clear were tested and were codegen-neutral, so they are not retained.
+
+2026-06-21 live-bit gate pass: focused Wibo improves to 56.41%, with 59/58
+candidate/target instructions and 4 clean masked operands, by spelling the
+single-bit live test as `(*flags_ref & live_mask) == live_mask` and making the
+masks unsigned. This is equivalent for the `0x200` live bit and avoids the
+signed/unsigned warning produced by the first equality probe. Register hints,
+computed mask initializers, count-loop rewrites, and unsigned not-zero casts
+were neutral. Hoisting `flags = *flags_ref` before the live test scored higher
+numerically but removed the native redundant `"List remove"` diagnostic path
+and produced a masked string mismatch, so it is rejected.

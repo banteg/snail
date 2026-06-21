@@ -9,14 +9,14 @@ void TrackRenderCacheManager::remove_track_render_cache_bods()
 {
     BodNode** next_ref = &slots[0][0].bod.list_next;
     int rows = 0x8f;
-    int live_mask = 0x200;
-    int clear_live_mask = ~0x200;
+    unsigned int live_mask = 0x200;
+    unsigned int clear_live_mask = 0xfffffdff;
 
     do {
         int count = 5;
         do {
             unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
-            if ((*flags_ref & live_mask) != 0) {
+            if ((*flags_ref & live_mask) == live_mask) {
                 BodList* list = (BodList*)(g_game_base + 0x5a8);
                 unsigned int flags = *flags_ref;
                 if ((live_mask & flags) == 0) {
