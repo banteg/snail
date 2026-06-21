@@ -12,20 +12,20 @@ tools/match/match.sh \
 
 | Metric | Starter | Final scratch |
 |---|---:|---:|
-| Match | 0.36% | **79.82%** |
+| Match | 0.36% | **86.10%** |
 | Target instructions | 555 | 555 |
-| Candidate instructions | 1 | **555** |
-| Common prefix | 0 / 555 | **177 / 555** |
-| Masked operands OK | 0 | **101** |
+| Candidate instructions | 1 | **560** |
+| Common prefix | 0 / 555 | **244 / 555** |
+| Masked operands OK | 0 | **105** |
 | Masked operands unresolved | 0 | **0** |
 | Masked operand mismatches | 0 | **1** |
 
-This is a 79.46 percentage-point improvement over the starter skeleton. The
+This is an 85.74 percentage-point improvement over the starter skeleton. The
 first mismatch is:
 
 ```text
-target[177]    jne L398
-candidate[177] jne L396
+target[244]    mov dword [esi+0x359098], ebx
+candidate[244] push ebp
 ```
 
 The compiler-generated jump tables at target instructions 23 and 185 are now
@@ -44,21 +44,22 @@ completion-bonus `+0x4` operands are now resolved to the neighboring
   constant folding.
 - Added parcel-slot setup, optional widget hiding, and the exact track rebuild
   member call.
-- Reconstructed landscape selection, activation, and starfield mirroring.
-- Added the two early `ADDafter` row-controller insertions and their field
-  initialization.
+- Reconstructed landscape selection, activation, and starfield mirroring,
+  including the default stack reload.
+- Added the two early `ADDafter` row-controller insertions and improved their
+  field initialization lifetimes.
 - Added latch resets, mouse release, and Subgoldy initialization.
 - Reconstructed the repeated active-list tail, voice-node attachment, mode-zero
   HUD update, pointer resets, and final subgame-rate calculation.
-- Kept the candidate at exactly the target's 555 instructions with a clean
-  masked-operand mismatch audit.
+- Kept the masked-operand audit clean except for the known first state
+  jump-table mismatch.
 
 ## Rejected trials
 
 - Algebraically combining challenge-scale expressions changed target constant
   sequencing.
-- Preinitializing the landscape result or removing its incoming-index alias
-  lowered the score or changed instruction count.
+- Preinitializing the landscape result lowered the score. The old incoming-index
+  alias is now removed because the volatile stack reload is the stronger shape.
 - Typed row overlays, chained zero stores, and completion-row permutations
   worsened scheduling or did not improve the score.
 - Member/free inline helpers for repeated list insertion changed inlining,
@@ -67,11 +68,13 @@ completion-bonus `+0x4` operands are now resolved to the neighboring
   EDI player / EBP `0x200` register assignment.
 - A direct `flags |= 0x80` visible-body update reduced the candidate to 552
   instructions and scored lower.
+- Retesting player-node and membership-flag register hints on the improved row
+  setup was still codegen-neutral or worse.
 
 ## Next region to attack
 
-First, recover the landscape switch default as a stack reload of `level_index`;
-that should remove the two-byte label displacement beginning at instruction
-177. Then focus on the active-list tail beginning near target instruction 297,
-where preserving the player pointer in EDI and carrying the `0x200` membership
-flag in EBP should unlock the repeated insertion regions.
+First, investigate whether the delayed `push ebp` in the first row-controller
+setup can be recovered without artificial dead stores. Then focus on the
+active-list tail beginning near target instruction 305, where preserving the
+player pointer in EDI and carrying the `0x200` membership flag in EBP should
+unlock the repeated insertion regions.

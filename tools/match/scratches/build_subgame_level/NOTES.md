@@ -56,15 +56,18 @@ early after the easier prefix. Its major phases are:
   saved-config scalar split is curated in the global reference manifest.
 - `rebuild_track_runtime_from_segments(level_index)` stays as a member call and
   is not reimplemented inline.
-- The landscape default branch uses a local alias of the incoming level index.
-  It keeps the branch semantically tied to the caller-provided index and gives
-  an exact 555-instruction candidate under the fixed compiler.
+- The landscape default branch reloads the incoming `level_index` through a
+  volatile parameter view. This recovers the native stack reload in the random
+  space-landscape switch and removes the old two-byte label drift after the
+  track-rebuild call.
 - Start/completion row node pointers are scoped to their individual
   `ADDafter` operations. Shortening their lifetimes delayed the EBP save and
   substantially improved the row-controller region.
-- The first row's flag commit occurs after its owner, position, and alpha
-  setup. That ordering improved the measured result while remaining a natural
-  initialization sequence.
+- The start and completion row zero lanes use volatile stores so VC6 keeps the
+  native redundant zero writes before the later position overwrite. The start
+  row commits flags before alpha, and the completion row clears the low flags
+  byte explicitly; together these keep the row setup closer to the target while
+  preserving the later alpha local lifetime.
 - The repeated active-list operations are written as explicit intrusive-list
   insertions. Extracting them into a helper changed both code size and register
   allocation.
@@ -90,12 +93,10 @@ early after the easier prefix. Its major phases are:
 
 ## Remaining differences
 
-The exact prefix ends at target instruction 177, at the branch entering the
-landscape-selection block. The first substantive code-generation difference is
-inside the space-landscape switch: the target's default case reloads
-`level_index` from the stack, whereas the candidate reuses EDI. This also moves
-nearby labels by two bytes, so several otherwise-equivalent branch targets are
-reported as changed.
+The exact prefix now reaches target instruction 244. The first remaining
+source-shape difference is in the first row-controller setup: VC6 saves `ebp`
+before the volatile zero stores, while native delays `push ebp` until after the
+start-row flag load and player pointer materialization.
 
 The largest later mismatch is register allocation in the repeated active-list
 tail. The target keeps the player object in EDI and the `0x200` membership flag
@@ -115,10 +116,28 @@ resolved to `g_config_default_challenge_speed_slider`.
 |---|---|
 | Combine the challenge scalar expressions | MSVC folded the two multiplies into one constant; prefix and relocation audit regressed. |
 | Preinitialize `landscape_index` | Changed switch lowering and reduced the overall score. |
-| Remove the landscape index alias | Produced 556 candidate instructions and a lower score. |
+| Remove the landscape index alias before the volatile stack reload | Produced 556 candidate instructions and a lower score in the older 79.82% baseline. |
 | Use a typed row-controller overlay | Shortened the exact prefix to 62 instructions and dropped the score to 58.99%. |
 | Chain the row zero assignments | Changed scheduling and scored below the explicit stores. |
 | Extract active-list insertion into a member or free inline helper | Produced 545 or 556 instructions and scored 61.45% or 75.79%. |
 | Make `Player` inherit the list-node view, or keep a persistent typed player pointer | Did not recover the target's EDI/EBP assignment. |
 | Replace the low-byte visible flag update with a direct word OR | Produced 552 instructions and a lower full-function score. |
-| Reorder completion-row stores or vary alpha integer types | No improvement beyond the accepted 79.82% candidate. |
+| Earlier completion-row store permutations or alpha integer types | No improvement in the older 79.82% baseline; the retained low-byte clear supersedes those probes. |
+
+## 2026-06-20 landscape and row-lifetime pass
+
+Focused Wibo improves from `79.82%`, `555/555`, `177/555` prefix to `86.10%`,
+`560/555`, `244/555` prefix, with `105 ok / 0 unresolved / 1 mismatch` in the
+masked audit. The retained changes are:
+
+- stack-reloading the random landscape default from `level_index` and removing
+  the old pointer alias;
+- volatile zero stores for the start/completion row position lanes;
+- storing the start-row flags before the alpha lane; and
+- spelling the completion-row flag clear through the low byte.
+
+Rejected follow-ups: keeping the fallback alias was lower at `84.74%`; the
+plain stack-reload alone improved prefix but dropped the full score to
+`79.64%`; row zeroes without the completion low-byte clear reached only
+`81.19%`; and renewed player-node / membership-flag register probes did not move
+the active-list tail.

@@ -152,7 +152,6 @@ void Game::build_subgame_level(int level_index)
     rebuild_track_runtime_from_segments(level_index);
 
     if (*(int*)(game + 0x1b01e4) == 5) {
-        int* fallback_level_index = &level_index;
         int landscape_index;
         switch ((unsigned int)random_float_below(4.0f, 0)) {
         case 0:
@@ -176,7 +175,7 @@ void Game::build_subgame_level(int level_index)
                     ->load_landscape_script_by_name("SpaceRed.txt");
             break;
         default:
-            landscape_index = *fallback_level_index;
+            landscape_index = *(volatile int*)&level_index;
             break;
         }
 
@@ -206,15 +205,15 @@ void Game::build_subgame_level(int level_index)
         }
     }
 
-    *(int*)(game + 0x359098) = zero;
-    *(int*)(game + 0x359094) = zero;
-    *(int*)(game + 0x359090) = zero;
+    *(volatile int*)(game + 0x359098) = zero;
+    *(volatile int*)(game + 0x359094) = zero;
+    *(volatile int*)(game + 0x359090) = zero;
     unsigned int start_flags = *(unsigned int*)(game + 0x359084);
     *(void**)(game + 0x3590d4) = game + 0x3bb764;
     *(float*)(game + 0x359098) = (float)*(int*)(game + 0x50);
     int row_alpha = 0x3f7fbe77;
-    *(int*)(game + 0x3590b4) = row_alpha;
     *(unsigned int*)(game + 0x359084) = start_flags & ~0x20;
+    *(int*)(game + 0x3590b4) = row_alpha;
 
     {
         BodNode* completion_row = (BodNode*)(game + 0x3590e0);
@@ -230,13 +229,14 @@ void Game::build_subgame_level(int level_index)
         }
     }
 
-    *(int*)(game + 0x3590f8) = zero;
-    *(int*)(game + 0x3590f4) = zero;
-    *(int*)(game + 0x3590f0) = zero;
+    *(volatile int*)(game + 0x3590f8) = zero;
+    *(volatile int*)(game + 0x3590f4) = zero;
+    *(volatile int*)(game + 0x3590f0) = zero;
     unsigned int completion_flags = *(unsigned int*)(game + 0x3590e4);
     *(void**)(game + 0x359134) = game + 0x3bb764;
-    *(unsigned int*)(game + 0x3590e4) = completion_flags & ~0x20;
     *(float*)(game + 0x3590f8) = (float)*(int*)(game + 0x58);
+    ((unsigned char*)&completion_flags)[0] &= 0xdf;
+    *(unsigned int*)(game + 0x3590e4) = completion_flags;
     *(int*)(game + 0x359114) = row_alpha;
 
     *(unsigned char*)(game + 0xa854) = (unsigned char)zero;
