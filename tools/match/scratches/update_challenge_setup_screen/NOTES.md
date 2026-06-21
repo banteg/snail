@@ -55,3 +55,8 @@ Rejected probes:
 method-only header. This keeps the existing member-style `ecx = game+0xff25e0`
 source shape while removing the duplicate local type; the focused score stayed
 80.68%.
+
+2026-06-21 validation after the shared `SubgameRuntime` front-controller
+promotion: focused Wibo is still `80.68%`, `354/355`, prefix `8/355`, and the
+masked audit is now clean at `35 ok / 0 unresolved / 0 mismatch` under the
+current symbol set.

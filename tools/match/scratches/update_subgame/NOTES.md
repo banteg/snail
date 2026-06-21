@@ -83,3 +83,14 @@ Rejected continuation trials:
 the method-only formatter receiver used here and by the challenge setup/HUD
 callers. The broad `update_subgame` scratch stayed at 67.53%; no formatter
 fields are promoted because only the member-call source shape is proven.
+
+2026-06-21 receiver cleanup: the scratch now defines
+`SubgameRuntime::update_subgame` directly and uses the shared
+`SubgameRuntime` front-controller window for pause menu, challenge setup,
+galaxy route, selected replay state, and rebuild selector fields. Focused Wibo
+is unchanged at `67.53%`, `1046/1033`, prefix `9/1033`, with the same
+`108 ok / 2 mismatch` masked audit. `spawn_track_speedup` remains a
+member-style call surface on `SubgameRuntime` because this caller wants the
+historical receiver lookup even though the standalone helper body is
+`__stdcall`/receiver-free. `uv run snail match types --paths` still reports no
+generic `Game` owner row.

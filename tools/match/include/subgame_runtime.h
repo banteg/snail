@@ -5,6 +5,8 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
+#include "challenge_setup_screen.h"
+#include "completion_screen.h"
 #include "frontend_widget.h"
 #include "garbage_hazard_slot.h"
 #include "high_score_bank.h"
@@ -32,9 +34,11 @@ public:
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
+    void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
         TrackRowCell* cell, Player* player); // @ 0x43d6c0
+    int spawn_track_speedup(TrackRowCell* cell, Player* player); // @ 0x43d880, receiver unused by body
     int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
     unsigned int* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player); // @ 0x43da80
     int spawn_slug_hazard(TrackRowCell* cell, Player* player); // @ 0x43dc80
@@ -67,14 +71,18 @@ public:
     bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
-    char unknown_000000[0x01];
+    unsigned char scan_reset; // +0x00, row scanner start-window reset
     unsigned char camera_snap_requested; // +0x01, transient camera source switch flag
     bool track_mirror_enabled; // +0x02
     char unknown_000003;
     int track_mirror_repeat_count; // +0x04
-    char unknown_000008;
+    unsigned char resume_requested; // +0x08, pause-menu resume handoff
     unsigned char subgame_pause_gate; // +0x09
-    char unknown_00000a[0x28 - 0x0a];
+    char unknown_00000a[0x0c - 0x0a];
+    float pause_fade; // +0x0c
+    float pause_fade_step; // +0x10
+    PauseMenu pause_menu; // +0x14
+    char unknown_000020[0x28 - 0x20];
     int completion_bonus_x_source; // +0x28, raw result snapshot lane
     int completion_bonus_y_source; // +0x2c, raw result snapshot lane
     union {
@@ -166,7 +174,10 @@ public:
     TrackParcelPool parcel_pool; // +0x125e480
     int source_timer_a; // +0x125ffd8
     int source_timer_b; // +0x125ffdc
-    char unknown_125ffe0[0x1270fc8 - 0x125ffe0];
+    ChallengeSetupScreen challenge_setup; // +0x125ffe0
+    char unknown_1260008[0x1260020 - (0x125ffe0 + sizeof(ChallengeSetupScreen))];
+    CompletionGalaxyRoute galaxy; // +0x1260020
+    char unknown_1260021[0x1270fc8 - 0x1260021];
     int subgame_rebuild_selector; // +0x1270fc8
     char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
     ContactTargetRegistry contact_targets; // +0x1270fd4, per-frame target append window

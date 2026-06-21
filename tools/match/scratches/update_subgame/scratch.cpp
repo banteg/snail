@@ -9,17 +9,13 @@
 #include "slug_voice_manager.h"
 #include "sprite.h"
 #include "star_field.h"
+#include "subgame_runtime.h"
 #include "time_trial_string_formatter.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "track_render_cache.h"
 #include "vector3.h"
-
-class ChallengeSetupController {
-public:
-    int update_challenge_setup_screen();
-};
 
 class TutorialRuntime {
 public:
@@ -57,48 +53,6 @@ struct RuntimeCellSlotBase {
     TrackRowCell cell;
 };
 
-class Game {
-public:
-    void update_subgame();
-    void calc_subgame_rate();
-    void build_subgame_level(int level_index);
-    void destroy_subgame();
-    void update_subgame_camera();
-    Color4f* get_track_skirt_color(Color4f* out);
-    TrackParcelRuntime* spawn_track_parcel(Vector3* world_position, void* owner_hint);
-    unsigned int* spawn_track_health_pickup(TrackRowCell* cell, Player* player);
-    int spawn_track_speedup(TrackRowCell* cell, Player* player);
-    int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player);
-    unsigned int* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player);
-    int spawn_slug_hazard(TrackRowCell* cell, Player* player);
-    TrackRowCell* spawn_track_ring_or_special_effect(
-        TrackRowCell* cell, int requested_kind, Player* player, float ring_speed);
-
-    unsigned char scan_reset;                   // +0x00
-    char unknown_000001[0x08 - 0x01];
-    unsigned char resume_requested;             // +0x08
-    unsigned char subgame_pause_gate;           // +0x09
-    char unknown_00000a[0x0c - 0x0a];
-    float pause_fade;                            // +0x0c
-    float pause_fade_step;                       // +0x10
-    PauseMenu pause_menu;                        // +0x14
-    char unknown_000020[0x3c - 0x20];
-    int subgame_state;                           // +0x3c
-    int level_mode;                              // +0x40
-    int level_mode_arg;                          // +0x44
-    char unknown_000048[0xff25d0 - 0x48];
-    unsigned char selected_level_record_active;     // +0xff25d0
-    unsigned char selected_level_record_persistent; // +0xff25d1
-    char unknown_ff25d2[2];
-    HighScoreRecord* selected_level_record;         // +0xff25d4
-    char unknown_ff25d8[0x125ffe0 - 0xff25d8];
-    ChallengeSetupController challenge_setup;       // +0x125ffe0
-    char unknown_125ffe1[0x1260020 - 0x125ffe1];
-    CompletionGalaxyRoute galaxy;                   // +0x1260020
-    char unknown_1260021[0x1270fc8 - 0x1260021];
-    int subgame_rebuild_selector;                   // +0x1270fc8
-};
-
 extern char* g_game_base;
 extern int g_completion_bonus_x_source;
 extern int g_completion_bonus_y_source;
@@ -124,7 +78,7 @@ int queue_axis_aligned_textured_quad_uv(
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
-void Game::update_subgame()
+void SubgameRuntime::update_subgame()
 {
     char* game = (char*)this;
     int cell_index;
@@ -220,7 +174,7 @@ void Game::update_subgame()
             return;
 
         case 1:
-            result = ((ChallengeSetupController*)(game + 0x125ffe0))->update_challenge_setup_screen();
+            result = ((ChallengeSetupScreen*)(game + 0x125ffe0))->update_challenge_setup_screen();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 build_subgame_level(0);
@@ -433,7 +387,7 @@ void Game::update_subgame()
                                     node->list_flags |= 0x200;
                                 }
                                 Color4f* color =
-                                    ((Game*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
+                                    ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
                                 (*fringe)->color = *color;
                             }
                             ++fringe;
