@@ -54,32 +54,40 @@ int register_font_texture_sheet(
     int run_width = -1;
     int slot = 0;
     int last_x = 0;
-    FontSheet* sheet = &g_font_sheets[g_registered_font_count];
 
     while (x < image->width) {
         int pixel = sample_tga_pixel_rgb(image, x, 0);
         if (pixel == 0xffffff) {
             int glyph_left = x - run_width;
-            sheet->glyph_width[slot] = (float)run_width;
+            g_font_sheets[g_registered_font_count].glyph_width[slot] =
+                (float)run_width;
 
             float centered_left = (float)glyph_left + 0.5f;
             float centered_last = (float)last_x + 0.5f;
-            sheet->u0[slot] = centered_left / (float)image->width;
-            sheet->v0[slot] = centered_last / (float)image->width;
-            sheet->texture_page[slot] = 0;
+            g_font_sheets[g_registered_font_count].v0[slot] =
+                centered_left / (float)image->width;
+            g_font_sheets[g_registered_font_count].u0[slot] =
+                centered_last / (float)image->width;
+            g_font_sheets[g_registered_font_count].texture_page[slot] = 0;
 
             if (image->width == 0x800) {
                 if (glyph_left > split_x) {
-                    sheet->u0[slot] = ((float)(glyph_left - split_x) + 0.5f)
-                        * 0.0009765625f;
-                    sheet->v0[slot] = ((float)(x - split_x) + 0.5f)
-                        / (float)(image->width >> 1);
-                    sheet->texture_page[slot] = 1;
+                    g_font_sheets[g_registered_font_count].u0[slot] =
+                        ((float)(glyph_left - split_x) + 0.5f)
+                            * 0.0009765625f;
+                    g_font_sheets[g_registered_font_count].v0[slot] =
+                        ((float)(x - split_x) + 0.5f)
+                            / (float)(image->width >> 1);
+                    g_font_sheets[g_registered_font_count].texture_page[slot] =
+                        1;
                 } else {
-                    sheet->u0[slot] = centered_left * 0.0009765625f;
-                    sheet->v0[slot] = centered_last
+                    g_font_sheets[g_registered_font_count].u0[slot] =
+                        centered_left * 0.0009765625f;
+                    g_font_sheets[g_registered_font_count].v0[slot] =
+                        centered_last
                         / (float)(image->width >> 1);
-                    sheet->texture_page[slot] = 0;
+                    g_font_sheets[g_registered_font_count].texture_page[slot] =
+                        0;
                 }
             }
 
@@ -97,40 +105,47 @@ int register_font_texture_sheet(
     if (image->height > 1) {
         while (1) {
             if (sample_tga_pixel_rgb(image, 0, line_marker_y) == 0xffffff) {
-                sheet->line_marker_y = (float)line_marker_y;
+                g_font_sheets[g_registered_font_count].line_marker_y =
+                    (float)line_marker_y;
                 break;
             }
             ++line_marker_y;
             if (line_marker_y >= image->height) {
-                sheet->line_marker_y = (float)line_marker_y;
+                g_font_sheets[g_registered_font_count].line_marker_y =
+                    (float)line_marker_y;
                 break;
             }
         }
     }
 
-    sheet->line_step = 3.0f / (float)(image->height - 1);
-    sheet->line_marker_fraction = sheet->line_marker_y / (float)(image->height - 1);
-    sheet->slot_count = slot;
-    sheet->font_kind = font_kind;
+    g_font_sheets[g_registered_font_count].line_step =
+        3.0f / (float)(image->height - 1);
+    g_font_sheets[g_registered_font_count].line_marker_fraction =
+        g_font_sheets[g_registered_font_count].line_marker_y
+            / (float)(image->height - 1);
+    g_font_sheets[g_registered_font_count].slot_count = slot;
+    g_font_sheets[g_registered_font_count].font_kind = font_kind;
 
     if (image->width == 0x800) {
         TextureRef* texture_0 = g_texture_refs.get_or_create_texture_ref(texture_path_0, 0, 0);
-        sheet->texture_ref_a = texture_0;
+        g_font_sheets[g_registered_font_count].texture_ref_a = texture_0;
         texture_0->flags |= 0x420;
 
         TextureRef* texture_1 = g_texture_refs.get_or_create_texture_ref(texture_path_1, 0, 0);
-        sheet->texture_ref_b = texture_1;
+        g_font_sheets[g_registered_font_count].texture_ref_b = texture_1;
         texture_1->flags |= 0x420;
     } else {
         TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-        sheet->texture_ref_a = texture;
+        g_font_sheets[g_registered_font_count].texture_ref_a = texture;
         texture->flags |= 0x400;
     }
 
-    sheet->spacing_scale = 1.0f;
-    *(int*)&sheet->width_scale = width_scale_bits;
-    sheet->height_scale = height_scale;
-    sheet->line_marker_y = height_scale * sheet->line_marker_y;
+    g_font_sheets[g_registered_font_count].spacing_scale = 1.0f;
+    *(int*)&g_font_sheets[g_registered_font_count].width_scale =
+        width_scale_bits;
+    g_font_sheets[g_registered_font_count].height_scale = height_scale;
+    g_font_sheets[g_registered_font_count].line_marker_y =
+        height_scale * g_font_sheets[g_registered_font_count].line_marker_y;
 
     free_tracked_memory(image);
 
