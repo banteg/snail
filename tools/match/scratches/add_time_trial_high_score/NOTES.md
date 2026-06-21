@@ -62,3 +62,13 @@ Rejected source-shape probes:
   codegen-neutral at 84.85%; a typed `HighScoreRecord* route_record` before the
   compare collapses back to 83.67%, and direct raw stores through the shifted base
   regress to 55.10% by changing prologue/register ownership.
+- 2026-06-21 delayed route-offset pass: keeping only the scaled route offset as
+  a named local and spelling the compare/replacement addresses inline improves
+  focused Wibo from 84.85% to 89.80%, with 49/49 instructions and the exact
+  prefix moving from 20/49 to 29/49. This removes the extra late `lea` and
+  matches the native route-stride arithmetic through the shift chain, but MSVC
+  still folds the owner base into the compare as `[ecx+ebp+0x2b8c90]` instead of
+  mutating `ebp` with native `add ebp, ecx`. Retried mutable `char*`,
+  `HighScoreBank*`, signed/unsigned integer-base, and `volatile route_offset`
+  spellings; each either collapses to the older 84.85% schedule or regresses by
+  disturbing the prologue/register ownership.

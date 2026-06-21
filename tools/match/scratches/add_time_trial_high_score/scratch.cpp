@@ -17,13 +17,12 @@ void HighScoreBank::add_time_trial_high_score(
     current_result_record = *record;
 
     if (route_active) {
-        char* route_bank_base = (char*)this;
-        route_bank_base += route_index * HIGH_SCORE_RECORD_STRIDE;
-        float* stored_seconds = (float*)(route_bank_base + 0x2b8c90);
-        if (record->total_seconds < *stored_seconds
-            || *stored_seconds == 0.0f) {
+        int route_offset = route_index * HIGH_SCORE_RECORD_STRIDE;
+        if (record->total_seconds
+                < *(float*)((char*)this + route_offset + 0x2b8c90)
+            || *(float*)((char*)this + route_offset + 0x2b8c90) == 0.0f) {
             HighScoreRecord* route_record =
-                (HighScoreRecord*)(route_bank_base + 0x2b8c88);
+                (HighScoreRecord*)((char*)this + route_offset + 0x2b8c88);
             *route_record = *record;
             route_record->route_or_rank_index = route_index;
         }
