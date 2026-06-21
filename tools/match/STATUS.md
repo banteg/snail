@@ -589,7 +589,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
-| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
+| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 64/66 | 89.23% | 3/66 | 10 ok |  |
 
 ## Mid Progress (50-79.99%) (66)
 

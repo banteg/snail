@@ -51,3 +51,13 @@ Rejected source-shape probes:
   Promoting this scratch body to the same member signature is codegen-neutral at
   83.72%, confirming that the receiver is unused in the helper body while the
   call surface is still a real `SoundEffectManager` method.
+- 2026-06-21 distance-slot barrier: forcing the sentinel through a narrow
+  volatile write to the `distance` local recovers the native stack slot and
+  raises focused Wibo to 89.23%, with 64/66 candidate/target instructions and
+  ten clean masked operands. VC6 still schedules the sentinel store one
+  instruction before the native `position` argument load, and it keeps the
+  magnitude result in the temporary slot rather than native's min-distance
+  slot. Naming `position` as a local before the store, making all later reads use
+  that local, and using a volatile distance declaration all failed to recover
+  the native prologue order; the declaration form also regressed saved-register
+  ownership.

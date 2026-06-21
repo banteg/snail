@@ -14,8 +14,9 @@ void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan
 
 void SoundEffectManager::play_sound_effect_at_position(int sound_id, const float* position)
 {
-    float distance = 1.0e10f;
+    float distance;
     GameAudioListenerView* game = g_game_base;
+    *(volatile float*)&distance = 1.0e10f;
     Vector3 delta;
     delta.x = position[0] - game->listener_position.x;
     delta.y = position[1] - game->listener_position.y;
