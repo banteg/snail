@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**497/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **65983/325759** bytes (**20.26%**) are proof-grade, and overall fuzzy is **55.61%**.
+**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.63%**.
 
-## Proof Grade (497)
+## Proof Grade (498)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -33,6 +33,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | border_sprite_extend | 0x404540 | 55 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
+| ✅ | update_cheat | 0x404750 | 124 | 52/52 | 100.00% | 52/52 | 7 ok |  |
 | ✅ | match_cheat_text | 0x4047d0 | 85 | 42/42 | 100.00% | 42/42 | 2 ok |  |
 | ✅ | flush_row_event_display | 0x404830 | 233 | 67/67 | 100.00% | 67/67 | 19 ok |  |
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
@@ -583,14 +584,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (73)
+## Mid Progress (50-79.99%) (72)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_sprite_button | 0x401a70 | 699 | 156/157 | 69.01% | 35/157 | 7 ok |  |
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 433/429 | 62.18% | 0/429 | 1 mismatch, 32 ok |  |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 579/647 | 52.85% | 42/647 | 4 mismatch, 65 ok |  |
-| 🚧 | update_cheat | 0x404750 | 124 | 46/52 | 67.35% | 9/52 | 7 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_x_animation_clip | 0x405d60 | 754 | 225/228 | 69.32% | 3/228 | 45 ok |  |

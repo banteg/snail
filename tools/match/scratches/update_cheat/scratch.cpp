@@ -10,11 +10,11 @@ char CheatState::update_cheat()
     }
 
     if (key >= 'A' && key <= 'Z') {
-        char* cursor = ((char*)this) + 15;
+        int index = 7;
         do {
-            *cursor = *(cursor - 1);
-            --cursor;
-        } while ((int)(cursor - 8 - (char*)this) > 0);
+            ((char*)this)[index + 8] = ((char*)this)[index + 7];
+            --index;
+        } while (index > 0);
 
         ((char*)this)[8] = key;
 
@@ -26,7 +26,10 @@ char CheatState::update_cheat()
         }
         key = match_cheat_text("SHEEP");
         if (key != 0) {
-            flags |= 4;
+            int value = flags;
+            value |= 4;
+            flags = value;
+            key = (char)value;
         }
     }
 

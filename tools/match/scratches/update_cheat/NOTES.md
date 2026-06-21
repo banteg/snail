@@ -4,8 +4,8 @@
 uppercase, shifts the eight-byte rolling cheat buffer, and enables the native
 `NEWTON`, `AUTUMN`, and `SHEEP` flags.
 
-Current result: 67.35%, 46/52 candidate/target instructions, seven clean
-masked operands. The recovered behavior is:
+Earlier partial result: 67.35%, 46/52 candidate/target instructions, seven
+clean masked operands. The recovered behavior is:
 
 - consume `read_pressed_text_input_key_code()`;
 - convert `a..z` to uppercase by subtracting `0x20`;
@@ -24,3 +24,12 @@ Residual:
 - The IDA-style pointer expression and separated `-8` local were tested; both
   were neutral or regressed register ownership. Keep this as an honest partial
   until there is stronger source-shape evidence.
+
+2026-06-21 exact pass: rewriting the rolling buffer shift as an integer index
+loop (`7` down to `1`) recovers native's `edx = -8 - this` sentinel, `bl`
+copy byte, and `edi` loop-test temporary. The final `SHEEP` branch matches
+native after staging `flags` in an `int value`, storing the updated word, and
+copying the low byte back into `key`; that preserves the native
+load/`or al, 4`/store tail instead of collapsing to `or dword [this], 4`.
+Focused matcher result is now 100.00%, 52/52 instructions, full 52/52 prefix,
+and seven clean masked operands.
