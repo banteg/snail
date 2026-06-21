@@ -40,6 +40,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(unsigned char*)(self + 0x234) = 0;
     *(int*)(self + 0x178) = 0x40800000;
     *(int*)(self + 0x6ec) = 0;
+    Color4f* idle_fill = (Color4f*)(self + 0x1bc);
     *(int*)(self + 0x6f0) = 0x3f800000;
     *(int*)(self + 0x214) = 0x41200000;
     *(int*)(self + 0x218) = 0x41700000;
@@ -49,13 +50,13 @@ void FrontendWidget::initialize_frontend_sprite_button(
     unhide_border_init();
 
     int widget_flags = flags | 0x40801;
-    *(float*)(self + 0x6f8) = y;
     *(int*)(self + 0x1a0) = widget_flags;
     *(int*)(self + 0x1a4) = widget_flags;
     *(unsigned char*)(self + 0x2cc) = 0;
     *(float*)(self + 0x6f4) = x;
+    *(float*)(self + 0x6f8) = y;
 
-    *(Color4f*)(self + 0x1bc) = *color;
+    *idle_fill = *color;
     *(Color4f*)(self + 0x1cc) = *color;
 
     Color4f white;
@@ -76,18 +77,18 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(int*)(self + 0x228) = 0;
     *(int*)(self + 0x25c) = 0;
     *(float*)(self + 0x260) = anchor_x;
+    float adjusted_anchor_x = anchor_x + *(float*)(g_game_base + 0x440fc);
     *(float*)(self + 0x238) = x;
     *(float*)(self + 0x23c) = y;
-    *(float*)(self + 0x260) = anchor_x + *(float*)(g_game_base + 0x440fc);
+    *(float*)(self + 0x260) = adjusted_anchor_x;
 
-    TextureRef* texture = g_sprite_texture_table[sprite];
-    *(float*)(self + 0x248) = (float)*(int*)((char*)texture + 4);
-    *(int*)(self + 0x250) = *(int*)(self + 0x248);
+    layout_width = (float)g_sprite_texture_table[sprite]->loaded_width;
+    layout_height = (float)g_sprite_texture_table[sprite]->loaded_height;
+    texture_hit_width = layout_width;
+    texture_hit_height = layout_height;
+    layout_anchor_x = x;
     *(int*)(self + 0x270) = sprite;
-    *(float*)(self + 0x24c) = (float)*(int*)((char*)texture + 8);
-    *(int*)(self + 0x254) = *(int*)(self + 0x24c);
-    *(float*)(self + 0x6f4) = x;
-    *(float*)(self + 0x6f8) = y;
+    layout_anchor_y = y;
     *(int*)(self + 0x274) = layer;
     *(int*)(self + 0x264) = 0;
     *(int*)(self + 0x268) = 0;
