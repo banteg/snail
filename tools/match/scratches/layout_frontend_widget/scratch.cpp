@@ -46,14 +46,14 @@ int FrontendWidget::layout_frontend_widget()
         } else if ((result & 0x10000) != 0) {
             result = *(int*)&widget->frame_x;
             int authored_top = *(int*)&widget->frame_y;
-            int authored_width = *(int*)&widget->frame_width;
             layout_left_ptr = &widget->layout_x;
             layout_top_ptr = &widget->layout_y;
-            *(int*)&widget->layout_width = authored_width;
             *(int*)layout_left_ptr = result;
-            int authored_height = *(int*)&widget->frame_height;
+            int authored_width = *(volatile int*)&widget->frame_width;
+            *(int*)&widget->layout_width = authored_width;
+            result = *(int*)&widget->frame_height;
             *(int*)layout_top_ptr = authored_top;
-            *(int*)&widget->layout_height = authored_height;
+            *(int*)&widget->layout_height = result;
         } else {
             layout_top_ptr = &widget->layout_y;
             layout_left_ptr = &widget->layout_x;

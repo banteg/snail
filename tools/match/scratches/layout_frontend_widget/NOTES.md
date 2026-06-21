@@ -26,3 +26,14 @@
   `texture_hit_x` regresses to 78.53% by moving the preserved flags owner from
   `ecx` to `edx` and disturbing the recursive tail. Keep the current
   post-call read/store schedule.
+- 2026-06-21 authored-frame pass: delaying the frame-width read until after the
+  authored-left store and reading that lane through a narrow volatile view
+  improves focused Wibo from 86.44% to 97.18%, keeps 177/177 instructions, and
+  keeps all 20 masked operands clean. Reusing `result` for the authored-height
+  temporary restores the wrapped-text call argument setup. Forcing the
+  authored-left load volatile makes the authored-frame branch exact through
+  instruction 32, but regresses the full function to 88.14% by disturbing the
+  wrapped-text call registers. Pointer/ref spellings for the retained width and
+  height lanes are codegen-neutral at 97.18%; the remaining local residual is
+  the width load/store placement plus the known recursive self-call relocation
+  spelling.
