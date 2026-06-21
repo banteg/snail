@@ -18,16 +18,32 @@ void __fastcall update_tip(TipSlot* slot)
 
     FrontendWidget* button = slot->widget_ok;
     unsigned int flags;
-    if ((button != 0 && (flags = button->widget_flags, ((unsigned char)flags & 0x20) != 0))
-        || ((button = slot->widget_disable) != 0
-            && (flags = button->widget_flags, ((unsigned char)flags & 0x20) != 0))) {
-        button->widget_flags = flags & ~0x20;
-        *(int*)(g_game_base + 0x1b8) = slot->previous_outer_owner;
-        slot->kill_tip_widgets();
-        ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
-        slot->active = 0;
-        return;
-    } else if ((slot->definition->flags & 2) != 0) {
+    if (button != 0) {
+        flags = button->widget_flags;
+        if (((unsigned char)flags & 0x20) != 0) {
+            button->widget_flags = flags & ~0x20;
+            *(int*)(g_game_base + 0x1b8) = slot->previous_outer_owner;
+            slot->kill_tip_widgets();
+            ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
+            slot->active = 0;
+            return;
+        }
+    }
+
+    button = slot->widget_disable;
+    if (button != 0) {
+        flags = button->widget_flags;
+        if (((unsigned char)flags & 0x20) != 0) {
+            button->widget_flags = flags & ~0x20;
+            *(int*)(g_game_base + 0x1b8) = slot->previous_outer_owner;
+            slot->kill_tip_widgets();
+            ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
+            slot->active = 0;
+            return;
+        }
+    }
+
+    if ((slot->definition->flags & 2) != 0) {
         float progress = slot->dismiss_step + slot->dismiss_progress;
         slot->dismiss_progress = progress;
         if (progress > 1.0f) {

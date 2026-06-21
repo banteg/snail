@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**499/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66806/325759** bytes (**20.51%**) are proof-grade, and overall fuzzy is **55.78%**.
+**500/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66972/325759** bytes (**20.56%**) are proof-grade, and overall fuzzy is **55.80%**.
 
-## Proof Grade (499)
+## Proof Grade (500)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -370,6 +370,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  |
 | ✅ | format_time_trial_string | 0x448960 | 113 | 36/36 | 100.00% | 36/36 | 12 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | kill_tip_widgets | 0x4489e0 | 81 | 24/24 | 100.00% | 24/24 | 6 ok |  |
+| ✅ | update_tip | 0x448c40 | 166 | 51/51 | 100.00% | 51/51 | 9 ok |  |
 | ✅ | initialize_tip_manager | 0x448cf0 | 21 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | uninit_tips | 0x448d10 | 31 | 14/14 | 100.00% | 14/14 | 1 ok |  |
 | ✅ | enqueue_tip_message | 0x448d30 | 69 | 26/26 | 100.00% | 26/26 | 3 ok |  |
@@ -585,7 +586,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 63/66 | 83.72% | 4/66 | 10 ok |  |
 
-## Mid Progress (50-79.99%) (72)
+## Mid Progress (50-79.99%) (71)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -650,7 +651,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
-| 🚧 | update_tip | 0x448c40 | 166 | 53/51 | 73.08% | 11/51 | 9 ok |  |
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 66.02% | 4/269 | 58 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 267/274 | 72.46% | 4/274 | 1 mismatch, 48 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 69.70% | 3/65 | 13 ok |  |

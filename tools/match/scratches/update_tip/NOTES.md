@@ -1,7 +1,7 @@
-# Source-shaped pinned match
+# Exact match
 
-`update_tip` currently matches at 73.08%, 51 target instructions versus 53
-candidate instructions, with an 11/51 exact prefix.
+`update_tip` now matches at 100.00%, 51/51 instructions, with nine clean masked
+operands.
 
 The scratch covers the full recovered behavior:
 
@@ -13,12 +13,11 @@ The scratch covers the full recovered behavior:
 - advance auto-dismiss progress for timed tips and kill the slot after it
   passes `1.0f`.
 
-The remaining localized residual is codegen shape, not a known semantic gap.
-Native keeps the candidate button pointer in `ecx` and stores to
-`[ecx+0x1a0]`; the best typed source found so far keeps the pointer in `eax`,
-materializes `&button->widget_flags` in `ecx`, and stores to `[ecx]`. This adds
-two `lea` instructions and shifts branch labels, which makes the percentage look
-worse than the semantic gap.
+The exact source shape duplicates the clicked-tip teardown block for the OK and
+Disable buttons. That keeps each candidate button pointer in `ecx` through the
+flag clear and matches the native `[ecx+0x1a0]` store. A shared `||` condition
+or source `goto` tail is semantically equivalent, but makes VC6 materialize
+`&button->widget_flags` and adds two `lea` instructions.
 
 Rejected source-shaped probes:
 
@@ -26,18 +25,23 @@ Rejected source-shaped probes:
   extra `eax` save/restore moves;
 - a `_DWORD*`/word-index view of the button widgets emitted the same code as the
   named `FrontendWidget::widget_flags` field, so the named field is kept;
-- explicit label/goto button checks moved the clicked teardown block after the
-  timed-tip block and regressed the score;
+- direct `button->widget_flags &= ~0x20`, explicit label/goto button checks,
+  and a `flags_ptr` helper all compile back to the old 73.08% shared-tail
+  shape;
 - a shared `widget_main` local made the pause gate use a shorter prefix; using
   branch-local `slot->widget_main` is the accepted source shape.
 
 Keep pinned unless a new source idiom explains the button pointer ownership.
 
 2026-06-16 type consolidation: the local `FrontendWidget` view was replaced by
-`frontend_widget.h`. The matcher remains at 73.08%, preserving the known
-button-pointer residual described above.
+`frontend_widget.h`. The matcher remained at 73.08% until the clicked-tip body
+was duplicated.
 
 2026-06-16 type consolidation: the local `TipSlot` and
 `TipMessageDefinition` views were replaced by shared `tip_manager.h`. The
-matcher still reports 73.08%, 51 target instructions versus 53 candidate
+matcher still reported 73.08%, 51 target instructions versus 53 candidate
 instructions, preserving the same button-pointer residual.
+
+2026-06-21 clicked-button split: duplicating the OK and Disable clicked-teardown
+body exactly matches native. Focused Wibo reports 100.00%, 51/51 instructions,
+51/51 prefix, and nine clean masked operands.
