@@ -80,6 +80,7 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
         slot->health_pickups[0].bob_phase = 0.5f;
 
     int step_index = slot_index + 30156;
-    game_words[29 * step_index] = 0x3c520d21;
-    return (DWORD*)(7 * step_index);
+    int result = 7 * step_index;
+    game_words[step_index + (result << 2)] = 0x3c520d21;
+    return (DWORD*)result;
 }

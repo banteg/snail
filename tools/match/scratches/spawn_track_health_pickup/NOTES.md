@@ -4,7 +4,7 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `85.37%`, `124/122` candidate/target instructions, with `7` masked operands
+- `86.07%`, `122/122` candidate/target instructions, with `7` masked operands
   ok.
 - The scratch now uses the promoted `TrackHealthPickup` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
@@ -55,8 +55,9 @@ Remaining mismatch:
 - The active-list splice is now expressed through `BodList`/`BodNode`, but it
   still differs in register allocation and branch layout from the native splice.
 - The remaining sprite/setup tail residual after the typed `Vector3` copy is
-  the independent zero bob-phase store being scheduled after the `world_z`
-  `fld`; native stores zero first and then enters the `__ftol` lane.
+  the independent zero bob-phase store being scheduled before the `world_z`
+  `fld`; native loads `world_z`, then stores zero before entering the `__ftol`
+  lane.
 
 2026-06-16 list-splice branch-order pass: reordered the shared active-list
 insert source so the empty-list case is the fallthrough and the non-empty insert
@@ -101,3 +102,13 @@ prefix `16/122`, and seven clean masked operands. This also matches the
 jetpack spawner's accepted source idiom. A separate `node_flags` snapshot and
 an explicit `slot_words = 29 * slot_index` local were codegen-neutral, leaving
 the initial slot arithmetic and active-list register reversal unchanged.
+
+2026-06-21 native-tail value pass: spelling the decompiler-backed incidental
+return as `result = 7 * (slot_index + 30156)` and using
+`step_index + (result << 2)` for the 29-word bob-step store improves focused
+Wibo from `85.37%` to `86.07%` and restores `122/122` instruction-count
+parity. A separate `store_index = 29 * step_index` local is codegen-neutral and
+keeps the extra multiply in the tail, while the `result`-based address reuses
+the native live return value. The first mismatch remains the earlier
+slot-index subtract versus late `cell` reload; the active-list register
+reversal and bob-phase `fld` schedule are unchanged.
