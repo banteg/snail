@@ -18,6 +18,10 @@ Source-shape details retained:
   append block.
 - Case 13 reuses the existing `g_tutorial_text` data string at `0x4a38e4`;
   emitting a fresh `"Tutorial"` literal creates a real masked operand mismatch.
+- The voice-set sweep is spelled as a header-increment `for` loop starting from
+  the local zero value. Equivalent while/do-while spellings keep the same
+  behavior, but the `for` shape moves the loop cursor closer to native and
+  improves the retained match from 61.78% to 66.02%.
 - The scratch avoids register-forcing tricks. The main retained differences are
   register allocation around `ebx`/`ebp` and the line cursor, plus the placement
   of the missing-set error tail.

@@ -28,8 +28,7 @@ void VoiceManager::initialize_voice_manager()
     char* file_text = get_archive_data_base();
     load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", file_text, (int*)zero);
 
-    int set_index = zero;
-    do {
+    for (int set_index = zero; set_index < 16; ++set_index) {
         rstrcpy_checked_ascii(set_tag, "Set:");
 
         char* set_name;
@@ -128,8 +127,7 @@ void VoiceManager::initialize_voice_manager()
             ++entry_index;
         }
 
-        ++set_index;
-    } while (set_index < 16);
+    }
 
     char* cursor = find_case_insensitive_substring("NormalizeMusic:", file_text);
     cursor = find_case_insensitive_substring(":", cursor);

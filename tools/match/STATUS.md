@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**499/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66806/325759** bytes (**20.51%**) are proof-grade, and overall fuzzy is **55.77%**.
+**499/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66806/325759** bytes (**20.51%**) are proof-grade, and overall fuzzy is **55.78%**.
 
 ## Proof Grade (499)
 
@@ -651,7 +651,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 93/92 | 52.97% | 0/92 | - |  |
 | 🚧 | update_tip | 0x448c40 | 166 | 53/51 | 73.08% | 11/51 | 9 ok |  |
-| 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 61.78% | 4/269 | 56 ok |  |
+| 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 66.02% | 4/269 | 58 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 267/274 | 72.46% | 4/274 | 1 mismatch, 48 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 69.70% | 3/65 | 13 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 76.12% | 2/66 | 4 mismatch, 11 ok |  |

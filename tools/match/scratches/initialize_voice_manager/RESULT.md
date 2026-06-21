@@ -4,11 +4,11 @@
 
 | Metric | Final |
 |---|---:|
-| Match | **61.78%** |
+| Match | **66.02%** |
 | Target instructions | 269 |
 | Candidate instructions | 249 |
 | Common prefix | 4 / 269 |
-| Masked operands | 56 clean, 0 unresolved, 0 mismatched |
+| Masked operands | 58 clean, 0 unresolved, 0 mismatched |
 
 The first remaining mismatch is early register allocation:
 
@@ -31,6 +31,9 @@ line cursor in `esi`.
   `Frequency:`, then calls `g_audio_backend.set_audio_normalization_scales()`
   and stores `global_frequency_seconds`.
 - Uses the real `g_tutorial_text` data symbol for the Tutorial set name.
+- Uses a header-increment `for` loop for the 16-set sweep. Other loop-bound
+  spellings compile equivalently after the improvement, while the original
+  do-while spelling leaves the lower 61.78% shape.
 
 ## Rejected Trials
 
@@ -40,3 +43,5 @@ line cursor in `esi`.
   around `get_archive_data_base()` and a lower 54.93% match.
 - `register` hints for the zero and set-index locals did not change codegen, so
   they were removed.
+- Adding an explicit `case 15` or initializing the case-15 name through a
+  default-local path was neutral or regressed masked operand cleanliness.
