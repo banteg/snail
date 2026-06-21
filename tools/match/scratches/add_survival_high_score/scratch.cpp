@@ -37,6 +37,7 @@ insert_record:
         --shift_rank;
     } while (shift_rank > rank);
 
+    bank = *(HighScoreBank* volatile*)&bank;
     bank->survival_records[rank] = *record;
     bank->survival_records[rank].high_score_mode_tag = 1;
     bank->survival_records[rank].route_or_rank_index = rank;

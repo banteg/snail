@@ -59,3 +59,10 @@ Residual:
   `rank >= shift_rank` guard is the accepted source shape. Break-plus-guard
   variants reached only 88.34% or worse, and result-view/impossible-return tail
   locals regressed by changing argument setup and callee-save ownership.
+- 2026-06-21 post-shift owner reload: a narrow volatile reload of the saved
+  `bank` local before writing `survival_records[rank]` moves the post-shift
+  owner restore ahead of the rank-slot address arithmetic like native, raising
+  the focused match from 93.49% to 94.67% with six clean masks. Plain
+  `bank = this`, normal `insert_bank`/slot/source locals, and address/reference
+  aliases all compile back to the previous schedule; volatile source-record
+  reloads regress the prologue.

@@ -542,7 +542,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 19 ok |  |
 | 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 68/72 | 84.29% | 43/72 | 8 ok |  |
 | 🚧 | update_challenge_setup_screen | 0x416370 | 1166 | 354/355 | 80.68% | 8/355 | 35 ok |  |
-| 🚧 | add_survival_high_score | 0x417780 | 289 | 85/84 | 93.49% | 36/84 | 6 ok |  |
+| 🚧 | add_survival_high_score | 0x417780 | 289 | 85/84 | 94.67% | 36/84 | 6 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  |
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
