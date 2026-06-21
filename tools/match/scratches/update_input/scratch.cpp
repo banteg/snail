@@ -2,7 +2,7 @@
 
 #include "input_state.h"
 
-int InputState::update_input()
+void InputState::update_input()
 {
     int result = current_buttons;
     int changed = previous_buttons ^ result;
@@ -12,5 +12,4 @@ int InputState::update_input()
     inverse_current_buttons = result;
     current_buttons = 0;
     released_buttons = changed & result;
-    return previous_buttons;
 }

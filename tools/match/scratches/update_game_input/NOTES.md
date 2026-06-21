@@ -22,3 +22,10 @@ right-to-left push order (`pointer_y`, `pointer_x`, `pointer_value`,
 at 63.33%. Naming only the first three pointer arguments is also neutral, while
 the explicit `InputState*` local still regresses to 53.33%. The residual remains
 the equivalent `eax`/`edx` LEA scheduling for the copy helper arguments.
+
+2026-06-21 void bridge pass: `InputState::update_input()` is side-effect-only at
+this callsite; native does not consume a declared return after the call. Changing
+both the shared updater and `GameInputOwner::update_game_input()` signatures to
+`void`, and dropping the scratch return-value carrier, recovers the native
+right-to-left argument LEA schedule and exact-matches the bridge at 100.00%,
+30/30 instructions, with 3 clean masked operands.

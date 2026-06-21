@@ -15,9 +15,8 @@ float* copy_active_input_controller_state(
     float* pointer_x,
     float* pointer_y);
 
-void* GameInputOwner::update_game_input()
+void GameInputOwner::update_game_input()
 {
-    void* result = g_game_base;
     if (*(g_game_base + 0x520) != 0) {
         copy_active_input_controller_state(
             input.controller_slot,
@@ -29,7 +28,6 @@ void* GameInputOwner::update_game_input()
             &input.pointer_value,
             &input.pointer_x,
             &input.pointer_y);
-        result = (void*)input.update_input();
+        input.update_input();
     }
-    return result;
 }

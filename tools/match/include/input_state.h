@@ -4,7 +4,7 @@
 class InputState {
 public:
     int initialize_input();
-    int update_input();
+    void update_input();
 
     int controller_slot;          // +0x00
     int pressed_buttons;          // +0x04, current-frame down edges
@@ -26,7 +26,7 @@ typedef char InputState_must_be_0x38[(sizeof(InputState) == 0x38) ? 1 : -1];
 
 class GameInputOwner {
 public:
-    void* update_game_input();
+    void update_game_input();
 
     char unknown_00[0x38];
     InputState input; // +0x38

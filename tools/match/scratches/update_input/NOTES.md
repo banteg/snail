@@ -34,3 +34,10 @@ reaches 52.94% by avoiding the explicit reload return, but the shared
 `InputState` header and `update_game_input` owner bridge still model the return
 value, so do not apply a leaf-only signature split without reconciling that
 callsite.
+
+2026-06-21 bridge-signature reconciliation: `update_game_input` ignores the
+edge updater's source-level return and just falls through with the incidental
+`eax` left by the call. Promoting `InputState::update_input()` to `void`
+coherently with the owner bridge exact-matches `update_game_input` and keeps the
+leaf at the known 52.94% shape. The remaining leaf residual is still the native
+`edi` lifetime for `released_buttons`, not evidence for a real return value.
