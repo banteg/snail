@@ -25,3 +25,10 @@ respectively.
 tail state stores, with and without `register`, is codegen-neutral at 83.00%.
 VC6 still keeps `this` in `edi` and archive data in `ebx`, opposite native's
 `ebx`/`edi` split. The mismatch is not fixed by a simple owner local.
+
+2026-06-21 archive-register retry: hoisting `archive_base` out of the two
+archive branches, marking the branch-local archive pointer `register`, and
+rewriting the tail state stores through a raw `char* screen` are all
+codegen-neutral at 83.00%. These forms keep the same inverted register split:
+candidate `edi=this` / `ebx=archive_base`, native `ebx=this` /
+`edi=archive_base`.

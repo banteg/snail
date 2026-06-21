@@ -47,3 +47,9 @@ operands. Combining this with volatile queue-count reads, explicit queue-slot
 pointers, raw slot stores, and direct subscripts did not recover the final load
 order; the only remaining diff is native loading `queue_count` before reloading
 the stack argument.
+
+2026-06-21 queue-count-only retry: making only the queue-count read volatile
+while leaving `animation_id` plain loads the queue count first, but into `eax`,
+and moves the stack argument to `edx`, regressing the paired store-register
+shape to 94.55%. A plain queue-count pointer local is codegen-neutral at 98.18%
+and still loads the stack argument before the queue count.

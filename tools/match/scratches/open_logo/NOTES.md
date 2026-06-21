@@ -37,3 +37,10 @@ typed `Object**` cursor and a named allocated-object temporary before
 `set_bod_object`, both fell back to the old 69.35% three-register shape. Keep
 the BOD-slot source until an object-field spelling preserves the two-register
 loop.
+
+2026-06-21 raw object-cursor retry: spelling the loop around a `char*`
+`this+0x2403c` object-field cursor does recover the native `lea esi,
+[ecx+0x2403c]` and `lea ecx, [esi-0x24]` arithmetic, but VC6 keeps a second
+persistent receiver cursor in `edi`, saves `ebx`, shifts the stack frame, and
+regresses back to 69.35%. The retained BOD-slot cursor is still the better
+two-register source shape.
