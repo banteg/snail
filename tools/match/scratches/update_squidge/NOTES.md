@@ -16,3 +16,13 @@ Residual:
   semantics but emits an extra `fld`/`fstp st(0)` pair in each lane.
 - Rejected variant: mutating the output local in place removed that duplicate
   local but regressed the earlier velocity store shape from 84.15% to 75.15%.
+
+2026-06-21 exact match: spelling the output absolute-value source as an
+explicit negative/positive assignment,
+`if (new_output < 0.0f) abs_output = -new_output; else abs_output = new_output`,
+matches the native x87 reload schedule in both y and z lanes. Focused Wibo now
+reports 100.00%, 80/80 instructions, with 14 clean masked operands. Rejected
+nearby spellings during the retry: `0.0f > abs_output` regressed to 79.27%,
+copying from the output field improved only to 84.81% while changing instruction
+count, mutating `new_output` in place reproduced the old 75.15% regression, and
+volatile locals regressed badly.

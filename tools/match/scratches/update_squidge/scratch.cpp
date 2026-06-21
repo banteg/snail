@@ -13,9 +13,11 @@ void SquidgeState::update_squidge()
         if (y_abs_velocity < 0.0f)
             y_abs_velocity = -y_abs_velocity;
         if (y_abs_velocity < 0.001f) {
-            float y_abs_output = y_new_output;
-            if (y_abs_output < 0.0f)
-                y_abs_output = -y_abs_output;
+            float y_abs_output;
+            if (y_new_output < 0.0f)
+                y_abs_output = -y_new_output;
+            else
+                y_abs_output = y_new_output;
             if (y_abs_output < 0.001f) {
                 y_velocity = 0.0f;
                 y_output = 0.0f;
@@ -32,9 +34,11 @@ void SquidgeState::update_squidge()
         if (z_abs_velocity < 0.0f)
             z_abs_velocity = -z_abs_velocity;
         if (z_abs_velocity < 0.001f) {
-            float z_abs_output = z_new_output;
-            if (z_abs_output < 0.0f)
-                z_abs_output = -z_abs_output;
+            float z_abs_output;
+            if (z_new_output < 0.0f)
+                z_abs_output = -z_new_output;
+            else
+                z_abs_output = z_new_output;
             if (z_abs_output < 0.001f) {
                 z_velocity = 0.0f;
                 z_output = 0.0f;
