@@ -20,11 +20,17 @@ Focused match:
 
 - 2026-06-18: 49.55%, 125 target instructions versus 97 candidate
   instructions.
+- 2026-06-21: 88.80%, 125 target instructions versus 125 candidate
+  instructions, 32 ok masks. Staging the release vector through a stack
+  `Vector3`, making the `random_y + 0.5f` adjustment explicit, and reusing the
+  staged `z` slot for the raw forward velocity recovers the native component
+  spill/store shape.
 - This callsite needs the two-argument `random_float_below(1.0f, 0)` view.
 - This callsite also behaves better with a float return view for
   `random_float_below`; the native instruction stream uses `fadd/fmul dword`
   constants for the returned value.
-- Main remaining shape gap is temporary placement: native keeps each random
-  component and scaled vector component in the stack frame before storing x/y/z,
-  while the current source still optimizes most stores directly into the channel
-  fields.
+- Remaining shape gap is local-frame layout: native reserves `0x1c` bytes and
+  uses larger stack offsets for the raw random/forward components, while the
+  current candidate uses a `0x10` frame. Splitting raw forward-Z into a separate
+  scalar looked plausible but regressed to 74.38%, because the compiler delayed
+  the owner-velocity load again.
