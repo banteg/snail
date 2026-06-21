@@ -47,20 +47,18 @@ void __fastcall finalize_path_template(AttachmentPathTemplate* path)
                 (Vector3*)((char*)path->primary_samples + sample_offset + 0x20),
                 (Vector3*)((char*)path->primary_samples + sample_offset + 0xc8));
 
-            float* lateral_source =
-                (float*)((char*)path->primary_samples + sample_offset + 0xa4);
-            *lateral_source =
-                (float)cross.dot_vector(
-                    (Vector3*)((char*)path->primary_samples + sample_offset));
+            Vector3* right = (Vector3*)((char*)path->primary_samples + sample_offset);
+            *(float*)((char*)path->primary_samples + sample_offset + 0xa4) =
+                (float)cross.dot_vector(right);
 
             if (path->is_mirrored_x)
-                *lateral_source *= -1.0f;
+                *(float*)((char*)path->primary_samples + sample_offset + 0xa4) *= -1.0f;
 
-            if (*lateral_source > 0.0f)
-                *lateral_source = 0.0f;
+            if (*(float*)((char*)path->primary_samples + sample_offset + 0xa4) > 0.0f)
+                *(float*)((char*)path->primary_samples + sample_offset + 0xa4) = 0.0f;
 
-            if (*lateral_source < -0.1f)
-                *lateral_source = -0.1f;
+            if (*(float*)((char*)path->primary_samples + sample_offset + 0xa4) < -0.1f)
+                *(float*)((char*)path->primary_samples + sample_offset + 0xa4) = -0.1f;
 
             ++segment_index;
             sample_offset += sizeof(AttachmentSample);

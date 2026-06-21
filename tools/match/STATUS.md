@@ -621,7 +621,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 400/425 | 55.52% | 0/425 | 7 ok |  |
 | 🚧 | mirror_path_template_pair_x | 0x421dc0 | 1058 | 310/314 | 79.17% | 31/314 | 15 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 2 mismatch, 60 ok |  |
-| 🚧 | finalize_path_template | 0x42c600 | 363 | 106/113 | 69.41% | 24/113 | 1 mismatch, 7 ok |  |
+| 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 74.67% | 24/113 | 1 mismatch, 7 ok |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 36 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 114/119 | 67.81% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |

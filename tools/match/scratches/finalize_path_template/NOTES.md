@@ -23,8 +23,17 @@ names the strip mesh flag lane at `+0x10`.
 `sample->inverse_matrix.invert_matrix_from_source(&sample->transform)` without
 the old cast, and the matcher stays at the existing 69.41% baseline.
 
+2026-06-21 segment-loop pass: keeping the dot source as a `Vector3* right`
+while spelling the lateral-source writes as repeated sample-offset lvalues
+raises the scratch from 69.41% to 74.67%. This recovers the native `edi`
+byte-offset lifetime through the mirror/clamp reloads and the `fstp` dot-result
+store, without changing the real `Vector3` member-call ABI. A tempting free
+`__fastcall` declaration for `cross_vectors`/`dot_vector` scored 75.34% and
+cleared the masked mismatch, but it is rejected because native cross-vector
+calls pass the output in `ecx` and push both vector arguments.
+
 The remaining mismatch is compiler shape in the cross/dot segment loop:
-native keeps the sample offset in `edi`, reloads `primary_samples`, stores the
-dot result with `fstp`, then reloads the lateral source for mirror/clamp.
-The scratch uses the same semantic offset walk, but VC6 still keeps a sample
-pointer for part of the loop and schedules the x87 stack differently.
+native schedules `cross_vectors` by pushing both arguments before loading the
+local cross-product `this` pointer, while VC6 still materializes the local
+address before the pushes for the member-call spelling. Secondary inverse-loop
+base-local probes were codegen-neutral, and segment-limit locals regressed.
