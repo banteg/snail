@@ -114,8 +114,8 @@ TransformMatrix* render_camera(
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 23, 4);
 
     if (draw_world != 0 && *(g_game_base + 4) != 0) {
-        int fog_start = *(int*)(g_game_base + 8);
-        int fog_end = *(int*)(g_game_base + 0x0c);
+        volatile int fog_start = *(int*)(g_game_base + 8);
+        volatile int fog_end = *(int*)(g_game_base + 0x0c);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 1);
 
         ColorBGRA8 packed_fog;

@@ -58,3 +58,19 @@ Declaring fog start as a float and passing its raw bits did move one fog value
 to the stack, but it regressed the result to 66.85% and introduced call/global
 operand mismatches around `pack_color_rgba_u8`. The retained scratch keeps the
 cleaner integer render-state values.
+
+## Fog spill win (2026-06-21)
+
+Declaring both fog range values as `volatile int` locals forces the native stack
+spills for render states 36 and 37, removes the candidate-only `edi`/`ebp`
+saves in the fog branch, and fixes the local frame from `0xc4` to `0xc8`.
+Focused match rises from 70.17% to 97.78%, with 180/180 instructions, a 116/180
+prefix, and 37 clean masked operands.
+
+Both fog values must be stack-forced. Only one volatile local keeps the old
+frame and regresses to the mid-60s, reloading the globals at the render-state
+calls reaches only 75.42%, and moving `fog_end` after state 28 disrupts the
+branch body. A volatile two-element array ties the score but is less faithful
+to the scalar source. The remaining residual is just fog-branch scheduling:
+native delays the second spill until after the state-28 call setup and loads the
+device vtable after pushing state/value for states 36 and 37.

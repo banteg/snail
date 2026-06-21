@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**506/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69680/325759** bytes (**21.39%**) are proof-grade, and overall fuzzy is **56.19%**.
+**506/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69680/325759** bytes (**21.39%**) are proof-grade, and overall fuzzy is **56.25%**.
 
 ## Proof Grade (506)
 
@@ -515,7 +515,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (17)
+## Near Match (95-99.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -523,6 +523,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
+| 🚧 | render_camera | 0x411fa0 | 685 | 180/180 | 97.78% | 116/180 | 37 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 84/84 | 95.24% | 36/84 | 6 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
@@ -594,7 +595,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 
-## Mid Progress (50-79.99%) (65)
+## Mid Progress (50-79.99%) (64)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -612,7 +613,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 50.70% | 3/73 | 14 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 66/67 | 72.18% | 0/67 | 6 ok |  |
-| 🚧 | render_camera | 0x411fa0 | 685 | 182/180 | 70.17% | 0/180 | 1 mismatch, 34 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 135/139 | 59.85% | 7/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | render_object | 0x4126c0 | 640 | 197/196 | 69.72% | 8/196 | 21 ok |  |
