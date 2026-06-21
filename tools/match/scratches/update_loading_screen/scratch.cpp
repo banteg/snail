@@ -32,12 +32,12 @@ int LoadingScreen::update_loading_screen()
         }
 
         int percent = (last_loading_budget * 100) / budget;
-        int clamped_percent = percent;
         if (percent < 0) {
-            clamped_percent = 0;
+            percent = 0;
         } else if (percent > 100) {
-            clamped_percent = 100;
+            percent = 100;
         }
+        int clamped_percent = percent;
 
         result = clamped_percent - previous_percent;
         if (result >= 1) {

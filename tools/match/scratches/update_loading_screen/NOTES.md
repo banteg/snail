@@ -42,3 +42,11 @@ variant (`vertices[1].x = x_end = ...`) tied the same score, so the clearer
 delayed declaration is retained. The remaining visible mismatch is the early
 register allocation (`this` in `edi`, clamped percent in `ebx` versus native's
 opposite pairing), plus the matching final `previous_percent` store.
+
+2026-06-21 clamped-percent owner pass: reusing `percent` for the bounded value
+and then naming `clamped_percent` from that value recovers native's register
+ownership (`this` in `ebx`, displayed percent in `edi`) and completes the
+helper at `100.00%`, `204/204` instructions, with 26 clean masked operands.
+Explicit receiver locals, `register` hints, and declaration-only shuffles were
+codegen-neutral at 91.67%; the key source-shape change is shortening the
+pre-render lifetime of the clamped value.
