@@ -65,9 +65,9 @@ int Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
     present.enable_auto_depth_stencil = 1;
     present.auto_depth_stencil_format = depth_stencil_format;
     present.device_window = g_main_window;
-    present.back_buffer_format = display_mode.format;
-    present.back_buffer_height = requested_height;
     present.back_buffer_width = requested_width;
+    present.back_buffer_height = requested_height;
+    present.back_buffer_format = display_mode.format;
     present.multisample_type = multisample_type;
     present.fullscreen_refresh_rate_hz = 0;
     if (use_present_interval_one != 0) {

@@ -58,6 +58,13 @@ width/height/multisample loads. Local `device_window` and dimension temporaries
 were either codegen-neutral at 97.17% or regressed, so the retained change is
 the minimal source-order spelling.
 
+2026-06-21 full store-order sweep: exhaustively permuting the five independent
+window/format/width/height/multisample assignments found one proof-grade source
+order: `device_window`, `back_buffer_width`, `back_buffer_height`,
+`back_buffer_format`, then `multisample_type`. This recovers the native
+presentation-parameter store schedule and moves the scratch to `100.00%`,
+`106/106`, with the same 12 clean masked operands.
+
 ## Added reference
 
 `0x47bdf4` is now named `Direct3DCreate8`, the Direct3D 8 import thunk used by
