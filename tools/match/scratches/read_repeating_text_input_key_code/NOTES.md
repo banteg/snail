@@ -91,3 +91,14 @@ Remaining residuals:
   The retained source remains the best shape; native's full-register
   `add ebx, 5` and stack/global repeat-fold load order are caller scheduling
   artifacts, not evidence for different text-input state.
+- 2026-06-21 Enter/Ctrl retry: spelling the Enter/Ctrl byte code as the explicit
+  ternary `is_key_down(0x1d) ? 6 : 5` improves focused Wibo from 99.09% to
+  99.32% and extends the exact prefix from 386/440 to 408/440 while preserving
+  all 73 clean masks. This recovers the native full-register add cluster without
+  widening the top-level `result` byte. The remaining residual is only the
+  repeat-tail fold order: target folds the stack `repeat_code` first and then
+  the global last-repeat byte, while the best candidate folds the global first.
+  Named folded-byte temporaries recover the call order but spill the first fold
+  result to the stack and regress to 98.98%; `int` folded temporaries change the
+  frame from the prologue. Keep the ternary and leave the repeat-tail residual
+  pinned.

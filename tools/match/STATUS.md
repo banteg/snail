@@ -505,7 +505,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
-| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.09% | 386/440 | 73 ok |  |
+| 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |

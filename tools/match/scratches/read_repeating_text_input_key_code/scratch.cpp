@@ -226,9 +226,7 @@ after_letters:
         repeat_code = result;
     }
     if (is_key_down(0x1c)) {
-        int enter_code = is_key_down(0x1d) != 0;
-        enter_code += 5;
-        result = (char)enter_code;
+        result = is_key_down(0x1d) ? 6 : 5;
         repeat_code = result;
     } else if (result == 0) {
         g_text_input_repeat_accumulator = 0.0f;
