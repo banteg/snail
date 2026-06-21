@@ -15,15 +15,15 @@ int sprintf(char* buffer, char* format, ...);
 
 int LogoRuntime::open_logo()
 {
-    char* object_cursor = (char*)this + 0x2403c;
+    BodBase* slot = (BodBase*)((char*)this + 0x24018);
     int logo_count = 0x20;
     do {
-        ((BodBase*)(object_cursor - 0x24))->set_bod_object(g_object_list.add_object_to_list());
-        Object* object = *(Object**)object_cursor;
+        slot->set_bod_object(g_object_list.add_object_to_list());
+        Object* object = *(Object**)((char*)slot + 0x24);
         load_object_definition("Objects/Font3D", object);
-        object = *(Object**)object_cursor;
+        object = *(Object**)((char*)slot + 0x24);
         object->flags |= 4;
-        object_cursor += 0x90;
+        slot = (BodBase*)((char*)slot + 0x90);
         --logo_count;
     } while (logo_count != 0);
 
