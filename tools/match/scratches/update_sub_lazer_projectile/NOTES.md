@@ -102,3 +102,9 @@ both compiled back to the same `81.11%` candidate, so the compact constructor
 form remains the cleaner source. The remaining residual is still allocator
 choice for the shared zero register and by-value `Vector3` spill timing, not a
 known type or semantic gap.
+
+2026-06-21 subgame-owner consolidation: `SubLazerSlot::owner_game` now points
+at `SubgameRuntime`, and the track-cell probes call the shared subgame accessors
+through `g_game_base +0x74618` instead of a local `Game::track_runtime` shell.
+Focused Wibo remains at `81.11%`, `216/218` candidate/target instructions,
+with `23` clean masked operands.

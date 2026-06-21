@@ -10,7 +10,7 @@
 #include "sprite.h"
 #include "vector3.h"
 
-class Game;
+class SubgameRuntime;
 
 class SubLazerSlot : public BodNode {
 public:
@@ -37,7 +37,7 @@ public:
     char unknown_78[0x80 - 0x78];
     int state;                // +0x80, pool free/live state
     char unknown_84[0x88 - 0x84];
-    Game* owner_game;         // +0x88
+    SubgameRuntime* owner_game; // +0x88
     Vector3 velocity;         // +0x8c
     float sprite_bob_phase;   // +0x98
     float sprite_bob_phase_step; // +0x9c

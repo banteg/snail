@@ -52,3 +52,8 @@ now records the renderable transform rows at `+0x38..+0x77`, with
 origin into that row, and the updater/collision paths consume the same field.
 The slot stays `BodNode`-based in the type because the zero-offset list overlay
 is also real and used by the live/free-list helpers.
+
+2026-06-21 subgame-owner consolidation: `SubLazerSlot::owner_game` is now a
+`SubgameRuntime*`, with the node-shaped sub-lazer list head exposed at
+`SubgameRuntime +0x355bd4`. Focused Wibo remains exact at `100.00%`, `63/63`
+instructions, with `6` clean masked operands.

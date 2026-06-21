@@ -2,28 +2,11 @@
 // cRSubGame::CameraAI(): choose the active camera source and update the shared
 // camera matrix, snapping only when the selected source requests it.
 
-#include "cameraman_state.h"
-
-class Game {
-public:
-    void update_subgame_camera();
-
-    char unknown_00[0x01];
-    unsigned char camera_snap_requested; // +0x01, transient source switch flag
-    char unknown_02[0x3c - 0x02];
-    int subgame_state; // +0x3c
-    char unknown_40[0x3bb964 - 0x40];
-    CameramanState cameraman; // +0x3bb964
-    char unknown_3bba3c[0x3bfa4c - 0x3bba3c];
-    int override_camera_active; // +0x3bfa4c
-    TransformMatrix override_camera_matrix; // +0x3bfa50
-    char unknown_3bfa90[0x3bfa98 - 0x3bfa90];
-    unsigned char override_camera_snap; // +0x3bfa98
-};
+#include "subgame_runtime.h"
 
 extern int g_game_base; // data_4df904
 
-void Game::update_subgame_camera()
+void SubgameRuntime::update_subgame_camera()
 {
     int state = subgame_state;
     TransformMatrix from = *(TransformMatrix*)(g_game_base + 0x15c);

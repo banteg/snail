@@ -5,7 +5,7 @@
 #include "progress_bar.h"
 #include "sprite.h"
 
-struct Game {
+struct ProgressBarGameView {
     char unknown_000000[0x42fdec];
     float player_row_position; // +0x42fdec
 };
@@ -16,7 +16,7 @@ struct GameActiveRowWindow {
     int active_row_end; // +0x74670
 };
 
-extern Game* g_game; // data_4df904
+extern ProgressBarGameView* g_game; // data_4df904
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -35,7 +35,7 @@ int queue_axis_aligned_textured_quad_uv(
 
 void ProgressBar::update_progress_bar()
 {
-    Game* game = g_game;
+    ProgressBarGameView* game = g_game;
     GameActiveRowWindow* active_rows =
         (GameActiveRowWindow*)((char*)game + 0x74668);
     float progress =

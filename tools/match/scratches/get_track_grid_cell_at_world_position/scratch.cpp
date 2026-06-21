@@ -1,13 +1,9 @@
 // get_track_grid_cell_at_world_position @ 0x43d410 (thiscall, ret)
 
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-class Game {
-public:
-    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
-};
-
-TrackRowCell* Game::get_track_grid_cell_at_world_position(Vector3* position)
+TrackRowCell* SubgameRuntime::get_track_grid_cell_at_world_position(Vector3* position)
 {
     int lane = (int)(position->x + 4.0f);
     int row = (int)position->z;

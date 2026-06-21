@@ -35,3 +35,8 @@ Source-shape notes:
 `Player +0x3f0`. Focused rerun remains exact at 100.00%, 110/110
 instructions, with 19 masked operands OK. The `update_subgoldy` callsite uses
 the shared header and keeps its existing 72.51% residual profile.
+
+2026-06-21 root-view naming cleanup: the root-level progress source is now a
+`ProgressBarGameView` instead of another local `Game` shell. Focused Wibo
+remains exact at `100.00%`, `110/110` instructions, with `19` clean masked
+operands.

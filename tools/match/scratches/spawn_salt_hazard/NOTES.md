@@ -57,3 +57,9 @@ VC6 loading `list_flags` before that independent byte store.
 and final OR prevents VC6 from hoisting the flag load above the independent
 `+0x94` byte poke. Focused Wibo now reports a proof-grade `100.00%`, `67/67`
 instructions, full prefix, and `10` clean masked operands.
+
+2026-06-21 subgame-owner consolidation: `SaltHazardSlot::owner_game` now points
+at `SubgameRuntime`; this spawner reads `subgame_rate` through
+`g_game +0x74618` and keeps the root salt list head as a byte-addressed
+`g_game +0x3ca224` anchor. Focused Wibo remains exact at `100.00%`, `67/67`
+instructions, with `10` clean masked operands.

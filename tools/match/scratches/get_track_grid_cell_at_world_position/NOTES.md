@@ -12,3 +12,8 @@ Exact helper: clamps world x to lane `0..7`, clamps world z to runtime row
 `sizeof(TrackRowCell) == 0x54`. This exact accessor pins the row-major cell
 stride, and the same stride is used by the builder, fringe, warning-zone, and
 row-index scratches.
+
+2026-06-21 subgame-header consolidation: the accessor now lives on the shared
+`SubgameRuntime` owner instead of a scratch-local `Game` shell. Focused Wibo
+remains exact at `100.00%`, `34/34` instructions, with `3` clean masked
+operands.

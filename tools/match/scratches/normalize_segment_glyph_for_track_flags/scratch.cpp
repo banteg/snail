@@ -1,18 +1,8 @@
 // normalize_segment_glyph_for_track_flags @ 0x437270 (thiscall, ret 0xc)
 
-class Game {
-public:
-    char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
+#include "subgame_runtime.h"
 
-    char unknown_00[0x02];
-    unsigned char track_mirror_enabled; // +0x02
-    char unknown_03[0x4c - 0x03];
-    unsigned int runtime_flags; // +0x4c
-    char unknown_50[0x58 - 0x50];
-    int completion_row_start; // +0x58
-};
-
-char Game::normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row)
+char SubgameRuntime::normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row)
 {
     if (row > completion_row_start)
         return glyph;

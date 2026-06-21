@@ -1,20 +1,11 @@
 // is_neighbor_cell_solid @ 0x434b60 (thiscall, ret 0xc)
 
+#include "subgame_runtime.h"
 #include "track_attachment.h"
 
 unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell);
 
-class Game {
-public:
-    bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
-
-    char unknown_00[0x54];
-    int runtime_row_count; // +0x54
-    char unknown_58[0x3bfac8 - 0x58];
-    TrackRowCell runtime_cells[1]; // +0x3bfac8, 8 cells per row
-};
-
-bool Game::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
+bool SubgameRuntime::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
     int lane = cell->lane_and_flags & 7;

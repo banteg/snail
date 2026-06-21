@@ -1,14 +1,7 @@
 // spawn_sub_lazer_projectile @ 0x441670 (thiscall, ret 0x8)
 #include "sub_lazer_types.h"
+#include "subgame_runtime.h"
 #include "transform_matrix.h"
-
-class Game {
-public:
-    char unknown_00[0x38];
-    float subgame_rate;
-    char unknown_3c[0x355bd4 - 0x3c];
-    char sub_lazer_list_head[0x10];
-};
 
 int report_errorf(char* format, ...);
 

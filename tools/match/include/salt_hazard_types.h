@@ -6,7 +6,7 @@
 #include "bod_types.h"
 #include "vector3.h"
 
-class Game;
+class SubgameRuntime;
 
 class SaltHazardSlot : public BodNode {
 public:
@@ -32,7 +32,7 @@ public:
     char unknown_78[0x80 - 0x78];
     int state;                 // +0x80
     char unknown_84[0x88 - 0x84];
-    Game* owner_game;          // +0x88
+    SubgameRuntime* owner_game; // +0x88
     Vector3 velocity;          // +0x8c, spawn-time velocity; updater reuses +0x8c as fade alpha
 };
 

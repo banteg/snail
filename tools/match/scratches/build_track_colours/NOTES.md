@@ -14,3 +14,8 @@ The exact source shape has two useful idioms:
 
 Native intentionally calls bank J twice and bank K twice for each slot. Keep
 those duplicate mutator calls; removing either breaks the exact call sequence.
+
+2026-06-21 subgame-header consolidation: the helper now uses
+`SubgameRuntime::build_track_colours` instead of a scratch-local `Game` owner.
+Focused Wibo remains exact at `100.00%`, `37/37` instructions, with `24` clean
+masked operands.

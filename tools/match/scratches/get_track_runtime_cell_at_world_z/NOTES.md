@@ -18,3 +18,8 @@ on the same runtime row shape.
 `initialize_bod_base()` at `this + 0xb0`; the matcher include keeps the same
 bytes flattened for now because no scratch consumes the tail through the row
 record yet.
+
+2026-06-21 subgame-header consolidation: the accessor is now declared on
+`SubgameRuntime` and returns the shared `TrackAttachmentRuntimeRow*` directly.
+Focused Wibo remains exact at `100.00%`, `23/23` instructions, with `3` clean
+masked operands.

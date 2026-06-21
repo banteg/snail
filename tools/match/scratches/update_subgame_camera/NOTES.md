@@ -17,3 +17,8 @@ The final correction was source shape, not a missing-return trick: callers ignor
 the decompiler's apparent `char` return, and the original source shape is a
 `void` camera update helper. Keeping a local snap byte preserves the native
 snap-path `al` test while avoiding the bogus blend-path reload.
+
+2026-06-21 subgame-header consolidation: the camera snap byte, `CameramanState`,
+override camera matrix, and override snap byte now live in `SubgameRuntime`.
+Focused Wibo remains exact at `100.00%`, `70/70` instructions, with `9` clean
+masked operands.

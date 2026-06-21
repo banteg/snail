@@ -4,24 +4,8 @@
 
 #include "vector3.h"
 #include "sub_lazer_types.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
-
-struct TrackRuntime {
-    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
-    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
-};
-
-class Game {
-public:
-    char unknown_00[0x9];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x5a8 - 0x0a];
-    SubLazerListAnchor sub_lazer_free_anchor; // +0x5a8
-    char unknown_5b4[0x74618 - 0x5b4];
-    TrackRuntime track_runtime; // +0x74618
-    char unknown_74619[0x3be0e4 - 0x74619];
-    float subgame_kill_plane_z; // +0x3be0e4
-};
 
 extern char* g_game_base; // data_4df904
 extern char g_debug_report_arg[];
@@ -78,8 +62,10 @@ void SubLazerSlot::update_sub_lazer_projectile()
         float* live_z = &live_position->z;
         *live_z = velocity.z + *live_z;
         if (position.y >= 0.0f && position.z >= owner_game->subgame_kill_plane_z) {
-            TrackRowCell* grid = ((Game*)g_game_base)->track_runtime.get_track_grid_cell_at_world_position(live_position);
-            TrackAttachmentRuntimeRow* cell = ((Game*)g_game_base)->track_runtime.get_track_runtime_cell_at_world_z(live_position);
+            TrackRowCell* grid =
+                ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_grid_cell_at_world_position(live_position);
+            TrackAttachmentRuntimeRow* cell =
+                ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_runtime_cell_at_world_z(live_position);
             if (grid->tile_id != 14 || position.y >= 7.0f) {
                 if ((cell->flags & 0x40) == 0
                     || !cell->primary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(

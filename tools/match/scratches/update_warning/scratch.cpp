@@ -6,12 +6,12 @@
 #include "audio_system.h"
 #include "warning_actor.h"
 
-struct Game {
+struct WarningGameView {
     char unknown_00[0x74621];
     unsigned char pause_gate; // +0x74621
 };
 
-extern Game* g_game; // data_4df904
+extern WarningGameView* g_game; // data_4df904
 
 void WarningActor::update_warning()
 {

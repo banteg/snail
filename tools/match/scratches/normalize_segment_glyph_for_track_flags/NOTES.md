@@ -21,3 +21,8 @@ masked table operands:
 - `normalize_segment_glyph_for_track_flags_jump_table @ 0x437418`, 13 entries.
 - `normalize_segment_glyph_for_track_flags_lookup_table @ 0x43744c`, 94 bytes
   for glyph indexes `0x20..0x7d`.
+
+2026-06-21 subgame-header consolidation: the glyph normalizer now uses
+`SubgameRuntime` for the mirror flag, runtime flags, and completion-row fields.
+Focused Wibo remains exact at `100.00%`, `160/160` instructions, with `2` clean
+masked operands.

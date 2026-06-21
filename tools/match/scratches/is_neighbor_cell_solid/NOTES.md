@@ -27,3 +27,8 @@ Rejected source-shape probes:
   changed the native `*21` multiply idiom;
 - reading tile through the typed neighbor pointer kept the explicit stride but
   changed the byte-load register from `ecx` to `edx`.
+
+2026-06-21 subgame-header consolidation: the helper now uses the shared
+`SubgameRuntime` owner for `runtime_row_count` while keeping the proven raw
+runtime-cell byte-offset idiom. Focused Wibo remains exact at `100.00%`,
+`47/47` instructions, with `2` clean masked operands.

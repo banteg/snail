@@ -8,6 +8,7 @@
 #include "frontend_widget.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
+#include "cameraman_state.h"
 #include "score_stats.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -16,6 +17,7 @@
 #include "track_speedup.h"
 
 class Player;
+struct TrackAttachmentRuntimeRow;
 struct TrackRowCell;
 
 class SubgameRuntime {
@@ -36,12 +38,14 @@ public:
     void remove_subgame_bods(); // @ 0x440910
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
+    void update_subgame_camera(); // @ 0x446020
     Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120
     TrackParcelRuntime* spawn_track_parcel(
         Vector3* world_position,
         void* owner_hint); // @ 0x443730
     TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
-    float sample_track_floor_height_at_position(Vector3* position);
+    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
+    double sample_track_floor_height_at_position(Vector3* position);
     void complete_subgame(unsigned char completed);
     void build_track_colours();
     void place_parcels_on_track();
@@ -51,8 +55,11 @@ public:
     void merge_track_tile_runs();
     void mark_track_warning_zones();
     void build_track_fringe_objects();
+    bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
+    char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
-    char unknown_000000[0x02];
+    char unknown_000000[0x01];
+    unsigned char camera_snap_requested; // +0x01, transient camera source switch flag
     bool track_mirror_enabled; // +0x02
     char unknown_000003;
     int track_mirror_repeat_count; // +0x04
@@ -84,7 +91,9 @@ public:
     float track_skirt_r; // +0x1b0140
     float track_skirt_g; // +0x1b0144
     float track_skirt_b; // +0x1b0148
-    char unknown_1b014c[0x355db0 - 0x1b014c];
+    char unknown_1b014c[0x355bd4 - 0x1b014c];
+    char sub_lazer_list_head[0x10]; // +0x355bd4, node-shaped live-list anchor
+    char unknown_355be4[0x355db0 - 0x355be4];
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
@@ -97,8 +106,13 @@ public:
     char unknown_35bbbc[0x3bb764 - 0x35bbbc];
     char score_stats; // +0x3bb764, owner anchor used by parcels
     char unknown_3bb765[0x3bb7d4 - 0x3bb765];
-    float completion_progress_z; // +0x3bb7d4
-    char unknown_3bb7d8[0x3bba48 - 0x3bb7d8];
+    union {
+        float completion_progress_z; // +0x3bb7d4
+        float salt_fade_start_z; // +0x3bb7d4
+    };
+    char unknown_3bb7d8[0x3bb964 - 0x3bb7d8];
+    CameramanState cameraman; // +0x3bb964
+    char unknown_3bba3c[0x3bba48 - 0x3bba3c];
     int source_score; // +0x3bba48
     ScoreBucketBlock source_stats; // +0x3bba4c
     int source_score_tail; // +0x3bba64
@@ -117,7 +131,12 @@ public:
     float nuke_rate_progress; // +0x3be0c0
     char unknown_3be0c4[0x3be0e4 - 0x3be0c4];
     float subgame_kill_plane_z; // +0x3be0e4, shared cull/live-window boundary
-    char unknown_3be0e8[0x3bfb04 - 0x3be0e8];
+    char unknown_3be0e8[0x3bfa4c - 0x3be0e8];
+    int override_camera_active; // +0x3bfa4c
+    TransformMatrix override_camera_matrix; // +0x3bfa50
+    char unknown_3bfa90[0x3bfa98 - 0x3bfa90];
+    unsigned char override_camera_snap; // +0x3bfa98
+    char unknown_3bfa99[0x3bfb04 - 0x3bfa99];
     TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
     char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
     HighScoreBank high_score_bank; // +0x68b4c8

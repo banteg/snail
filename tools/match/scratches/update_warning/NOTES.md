@@ -56,3 +56,8 @@ compares. Spelling the pause gate as signed `char` is also neutral. Keep the
 compact `if (!pause_gate && state) switch (state)` source; the only known path
 to the target `sub` is the rejected subtract-through-zero expression, which is
 not durable original-looking source.
+
+2026-06-21 root-view naming cleanup: the root pause-gate view is now
+`WarningGameView` instead of a scratch-local `Game` shell. Focused Wibo remains
+`98.08%`, `52/52` instructions, with `7` clean masked operands and the same
+`sub eax, edx` versus `cmp eax, edx` residual.

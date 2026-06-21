@@ -2,20 +2,15 @@
 
 #include "salt_hazard_types.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 
-class Game {
+class RootBodListView {
 public:
-    char unknown_00[0x09];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x5a8 - 0x0a];
+    char unknown_00[0x5a8];
     SaltListAnchor salt_free_anchor; // +0x5a8
-    char unknown_5b4[0x3bb7d4 - 0x5b4];
-    float salt_fade_start_z; // +0x3bb7d4
-    char unknown_3bb7d8[0x3be0e4 - 0x3bb7d8];
-    float subgame_kill_plane_z; // +0x3be0e4
 };
 
-extern Game* g_game; // data_4df904
+extern RootBodListView* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void SaltHazardSlot::update_salt_hazard()
@@ -25,7 +20,7 @@ void SaltHazardSlot::update_salt_hazard()
 
     switch (state) {
     case 2: {
-        Game* game = g_game;
+        RootBodListView* game = g_game;
         SaltListAnchor* anchor = &game->salt_free_anchor;
         int flags = list_flags;
         if ((flags & 0x200) == 0) {

@@ -55,3 +55,9 @@ Rejected variants: clearing `state` before the first report also reached
 error branches, storing the report result in a local, introducing a state-value
 local, and spelling the unlink guard without `else` all stayed at `81.48%`.
 Clearing state before both reports and forcing a positive live branch regressed.
+
+2026-06-21 subgame-owner consolidation: `SaltHazardSlot::owner_game` is now a
+`SubgameRuntime*` for the pause gate, fade start, and kill-plane fields. The
+root free-list anchor is kept as a narrow `RootBodListView` at `g_game +0x5a8`
+instead of another ambiguous local `Game` shell. Focused Wibo remains exact at
+`100.00%`, `83/83` instructions, with `12` clean masked operands.

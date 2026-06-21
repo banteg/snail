@@ -1,13 +1,9 @@
 // get_track_runtime_cell_at_world_z @ 0x43d480 (thiscall, ret)
 
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-class Game {
-public:
-    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
-};
-
-TrackAttachmentRuntimeRow* Game::get_track_runtime_cell_at_world_z(Vector3* position)
+TrackAttachmentRuntimeRow* SubgameRuntime::get_track_runtime_cell_at_world_z(Vector3* position)
 {
     int row = (int)position->z;
 
