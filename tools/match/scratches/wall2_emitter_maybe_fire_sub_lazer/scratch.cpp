@@ -73,27 +73,26 @@ void FringeRuntimeObject::wall2_emitter_maybe_fire_sub_lazer()
         return;
     if (g_game->pause_gate)
         return;
-    switch (tile) {
-    case 14: {
+    if (tile == 14) {
         if ((float)g_game->active_row_start >= g_game->player.position.z)
             goto cull_check;
         if (random_float_below(100.0f, "W") < 4.0f) {
             float spawn[3];
-            float spawn_y = position.y + 8.0f;
             float spawn_z = position.z;
+            float spawn_y = position.y + 8.0f;
             spawn[0] = position.x;
-            int lane = (int)((flags >> 8) & 0xF);
-            spawn[1] = spawn_y;
+            unsigned int lane = (flags >> 8) & 0xF;
             spawn[2] = spawn_z;
+            spawn[1] = spawn_y;
             spawn[0] = (float)lane * 0.5f + spawn[0];
             float jitter = random_signed_float_below(3.0f, "Wall2");
-            float target_y = g_game->player.position.y;
             float target_z = jitter + 8.0f + g_game->player.position.z;
+            float target_y = g_game->player.position.y;
             float direction[3];
+            direction[2] = target_z - spawn_z;
             direction[0] = g_game->player.position.x - spawn[0];
             direction[1] = target_y - spawn_y;
-            float dz = target_z - spawn_z;
-            direction[2] = dz;
+            float dz = direction[2];
             if (dz >= -4.0f)
                 goto cull_check;
             normalize_vector(direction);
@@ -107,12 +106,14 @@ cull_check:
             destroy_sub_lazer_projectile();
         return;
     }
-    case 22:
+
+    if (tile == 22) {
         if (g_game->cull_plane_z <= position.z)
             return;
         goto destroy;
-    case 29:
-    case 30: {
+    }
+
+    if (tile == 29 || tile == 30) {
         if (owner->kind == 24) {
             fade = fade - g_game->subgame_rate * 0.033333335f;
             set_color_alpha(color, 1061997773);
@@ -126,14 +127,12 @@ cull_check:
         record[3] = skirt[3];
         if (g_game->cull_plane_z - ((float)owner->row_count + 5.0f) > position.z)
             destroy_sub_lazer_projectile();
-        break;
+        return;
     }
-    default:
-        if (position.z < g_game->cull_plane_z
-            && (float)(g_game->active_row_end - 5) > position.z) {
+
+    if (position.z < g_game->cull_plane_z
+        && (float)(g_game->active_row_end - 5) > position.z) {
 destroy:
-            destroy_sub_lazer_projectile();
-        }
-        break;
+        destroy_sub_lazer_projectile();
     }
 }

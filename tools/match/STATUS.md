@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.65%**.
+**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.66%**.
 
 ## Proof Grade (498)
 
@@ -716,7 +716,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 275/276 | 21.78% | 0/276 | 8 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 mismatch, 57 ok |  |
-| 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 182/187 | 43.90% | 0/187 | 27 ok |  |
+| 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 185/187 | 46.77% | 0/187 | 30 ok |  |
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 173/181 | 46.89% | 0/181 | 13 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |

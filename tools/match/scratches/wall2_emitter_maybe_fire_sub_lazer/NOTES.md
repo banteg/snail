@@ -1,4 +1,4 @@
-# Pinned — 42.34%, 172/187 insns (structure aligned, register golf remains)
+# Pinned — 46.77%, 185/187 insns (structure aligned, register golf remains)
 
 Really a fringe runtime object update, not just the emitter. It shares the
 BOD/color prefix used by pooled `FringeObject`, but extends past the pooled
@@ -39,3 +39,15 @@ semantics are recovered, with only source-shape/register golf remaining.
 g_game->cull_plane_z` improves focused Wibo to 43.90%, 182/187 candidate/target
 instructions, with 27 clean masked operands. The branch semantics are identical;
 the remaining gaps are still broad switch/register allocation shape.
+
+2026-06-21 tile-dispatch pass: replacing the `switch` with the native-shaped
+compare ladder for tiles 14, 22, 29/30, and default removes VC6's jump table and
+improves focused Wibo to 45.41%. Keeping the lane nibble as `unsigned int`
+recovers the native unsigned conversion class (`fild qword`) and improves to
+46.36%, with 30 clean masked operands. Reordering the wall2 spawn staging so
+`spawn_z` is captured before `spawn_y`, and reading the z delta back from
+`direction[2]`, improves the retained shape to 46.77%, 185/187
+candidate/target instructions. Function-scope scratch buffers and extra
+lane/spawn temporaries were neutral or regressive, so the remaining residual is
+still frame/register scheduling around the wall2 vector setup and skirt-color
+sync.
