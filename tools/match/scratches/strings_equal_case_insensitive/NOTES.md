@@ -12,15 +12,16 @@ Recovered relationships:
   comparison loop. This means prefix-style matches can succeed when `right`
   ends at the current comparison point.
 
-Focused Wibo result after the peeled-loop rewrite: 66.02%, 53/50
+Focused Wibo result after the left-byte loop rewrite: 84.00%, 50/50
 candidate/target instructions, 5/50 prefix, no masked operands. The source now
-keeps the prefix-style semantics (`right` reaching NUL is success) while
-avoiding the old pointer-delta loop shape.
+keeps the prefix-style semantics (`right` reaching NUL is success), tests the
+left byte as the loop gate, and preserves the native explicit boolean tail.
 
 Remaining residual: native loads the initial right/left raw bytes straight into
-`dl`/`bl`, copies them to `cl`/`al`, and tests left then right. The current
-source still has VC6 load the fold lanes first (`cl`/`al`), then copy to
-`dl`/`bl`, with the same recovered semantics but different byte-lane ordering.
+`dl`/`bl`, copies them to `cl`/`al`, and repeats that raw-before-fold lane
+ownership in the loop. The current source still has VC6 load the fold lanes
+first (`cl`/`al`), then copy to `dl`/`bl`, with the same recovered semantics
+but different byte-lane ordering.
 
 2026-06-20 caller-shape pass: two direct decompiler-shaped rewrites were tested
 and rejected. Explicit `left_cursor`/`right_cursor` locals made VC6 collapse the
@@ -63,3 +64,14 @@ tail byte before `return tail == 0` was codegen-neutral and kept the same
 early-zeroed boolean epilogue. The retained peeled-loop source is still the
 best observed shape; the residual is byte-register allocation/test scheduling,
 not missing prefix-comparison control flow.
+
+2026-06-21 byte-lane/control-flow pass: promoting the source to a plain
+`while (left_value != 0)` loop with explicit `right_value == 0` and folded
+mismatch breaks recovered the native branch topology and improved focused Wibo
+from 66.02% to 77.23%. Spelling the tail as explicit true/false returns
+recovered instruction-count parity and improved the score to 84.00%. Retested
+raw-byte-first declarations, declaration/reload order matrices, `register`
+qualifiers, signed/const argument spellings, and return types; none improved
+the remaining lane allocation, and raw-byte-first forms still regress by
+switching the fold math to the worse `sub 0x20` family. Remaining debt is the
+raw-before-fold byte-register allocation only.
