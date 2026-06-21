@@ -9,9 +9,9 @@ enum ArchiveEntryExtensionClass {
 
 int __cdecl classify_archive_entry_extension(unsigned char* path, unsigned char* stem_out)
 {
-    unsigned char* output = stem_out;
     unsigned char value;
     value = *path;
+    unsigned char* output = stem_out;
     while (1) {
         if (value == 0)
             break;

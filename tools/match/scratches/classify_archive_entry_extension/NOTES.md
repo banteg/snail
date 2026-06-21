@@ -49,3 +49,12 @@ unconditional jump back to the reload, while native uses a bottom
 `mov cl, [eax]` / `test cl, cl` / `jne` pair; attempts to combine the primed
 register ownership with the original bottom-tested source fall back to the old
 `ecx`/`al` cursor allocation.
+
+2026-06-21 local-order pass: moving the `stem_out` cursor initialization after
+the initial byte read improves focused Wibo to 70.33%, 45/46 candidate/target
+instructions, and a 4/46 prefix. This recovers the native opening load order
+(`path`, `stem_out`, then `cl = *path`) while preserving the primed loop's
+`eax`/`cl` ownership. Reintroducing a bottom-tested loop with this local order
+still regresses to the old cursor-allocation family, so the remaining residual
+is unchanged: VC6 emits a shorter top-tested reload jump where native keeps the
+bottom `mov/test/jne` pair.
