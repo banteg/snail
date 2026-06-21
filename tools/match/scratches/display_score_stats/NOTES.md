@@ -50,3 +50,13 @@ the newline and only reached 94.20%; explicit shared-result returns changed
 register ownership and regressed to 70.00%; omitting the zero-path return hit
 the current Wibo missing-`lstrcpynA` path. The remaining residual is only the
 extra explicit zero-return epilogue.
+
+2026-06-21 zero-guard pass: rewriting the zero-score case as an early
+`return total_score` removes the extra `xor eax, eax` zero epilogue and
+improves focused Wibo from 96.35% to 97.06% (69/67 candidate/target
+instructions, 16 clean masks). The native still uses a forward zero branch to
+the shared tail, so the first mismatch remains the conditional branch direction;
+the retained early guard is the best tested source shape for suppressing the
+spurious zero materialization. A `score` local, an `else` return, and a `goto`
+spelling are either codegen-neutral with the old epilogue or compile to the
+same early-zero shape.
