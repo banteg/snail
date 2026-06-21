@@ -1,9 +1,6 @@
-# Improved — 85.42%, 48/48 insns, loop-layout residual
+# Exact — 100.00%, 48/48 insns
 
-Same scan-rotation residual class as spawn_salt_hazard (the target's
-single-test loop re-spills the index at the top because it later feeds
-the fild stagger; our build rotates with a duplicated test). Semantics
-complete:
+Semantics:
 
 - free scan over the 20-slot pool (state +0x80, stride 0xb0), silent
   return when exhausted
@@ -51,3 +48,13 @@ order and improving focused Wibo to 88.66% with a 16/48 prefix. The retained
 residual is one extra post-loop `cmp eax, 0x14` before the spawn body, plus the
 same missing dead `mov ecx, ADDR` before the positional sound call. Origin
 pointer aliases and a `register` hint were codegen-neutral on this shape.
+
+2026-06-21 exact pass: moving the empty-slot branch into the bounded scan as
+`goto found_slot` removes the redundant post-loop guard while preserving the
+native exhausted-return block before the spawn body. Calling positional sound as
+`g_sound_effect_manager.play_sound_effect_at_position(15, origin)` supplies the
+otherwise-unused `ecx` receiver load before the `ret 0x8` positional sound
+helper. Focused Wibo is now exact at 100.00%, 48/48 instructions, and 4 clean
+masked operands. This is call-site evidence that `play_sound_effect_at_position`
+belongs on `SoundEffectManager` even though the helper body itself does not read
+the receiver.

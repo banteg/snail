@@ -6,6 +6,7 @@ class SoundEffectManager {
 public:
     void play_sound_effect(int sound_id);
     void play_sound_effect_scaled(int sound_id, float gain);
+    void play_sound_effect_at_position(int sound_id, const float* position);
     int play_warning_sample_backend(int sample_id);
     void stop_warning_sample_handle(int handle);
 };
