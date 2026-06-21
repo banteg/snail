@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**506/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69680/325759** bytes (**21.39%**) are proof-grade, and overall fuzzy is **56.25%**.
+**506/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69680/325759** bytes (**21.39%**) are proof-grade, and overall fuzzy is **56.26%**.
 
 ## Proof Grade (506)
 
@@ -515,7 +515,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (18)
+## Near Match (95-99.99%) (19)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -531,6 +531,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 96.72% | 16/122 | 7 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
@@ -538,7 +539,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 98.48% | 3/66 | 11 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (52)
+## High Progress (80-94.99%) (51)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -569,7 +570,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 86.89% | 16/122 | 7 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 87.29% | 44/144 | 9 ok |  |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 159/160 | 92.79% | 48/160 | 16 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 332/336 | 88.92% | 9/336 | 1 mismatch, 33 ok |  |

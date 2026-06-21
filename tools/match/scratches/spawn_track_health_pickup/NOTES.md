@@ -120,3 +120,11 @@ ahead of the `world_z` `__ftol` conversion and improves focused Wibo from
 operands preserved. A raw `DWORD*` pointer looked equivalent semantically but
 regressed to `67.21%` by changing the sprite setup and tail into bit-mask
 arithmetic, so keep the typed float pointer.
+
+2026-06-21 empty-list splice pass: writing the empty-list successor directly as
+`node->list_next = 0` instead of reloading `(*first_ref)->list_next` improves
+focused Wibo to `96.72%`, preserves `122/122` instruction-count parity, and
+keeps all seven masked operands clean. The tied direct-zero variants all keep
+the same score, while reload-through-`first_ref` spellings fall back to
+`86.89%`; the remaining residual is the earlier slot-index subtract versus
+late `cell` reload plus the target's reuse of the known-zero `first` value.

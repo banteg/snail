@@ -48,7 +48,7 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
         if (first == 0) {
             *first_ref = node;
             node->list_prev = 0;
-            (*first_ref)->list_next = 0;
+            node->list_next = 0;
         } else {
             first->list_prev = node;
             (*first_ref)->list_prev->list_next = *first_ref;
