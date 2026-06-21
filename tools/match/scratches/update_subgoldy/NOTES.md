@@ -233,6 +233,13 @@ source-shape issue is solved.
   remains `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked
   audit; full shared `player.h` remains rejected for the include-boundary and
   relocation-shape reasons above.
+- 2026-06-21 Player type-row cleanup: the scheduling-sensitive local owner is
+  now named `SubgoldyPlayerView`, with `typedef SubgoldyPlayerView Player` kept
+  only so the scratch still emits the `Player::update_subgoldy` method symbol.
+  This is codegen-neutral at `72.51%`, `2067/2087`, with the same
+  `290 ok / 1` jump-table masked audit, and it makes
+  `uv run snail match types --paths` report no remaining consolidation
+  candidates. Full shared `player.h` remains intentionally unforced.
 - 2026-06-20 Game ABI cleanup: the compact local game owner is now named
   `SubgoldyGameView` rather than `Game`. This preserves the caller-local
   `float sample_track_floor_height_at_position(...)` declaration that keeps the

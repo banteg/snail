@@ -82,7 +82,8 @@ struct SubgoldyTrackRowCellView {
     unsigned char is_slide_cache_tile_family();
 };
 
-struct Player;
+struct SubgoldyPlayerView;
+typedef SubgoldyPlayerView Player;
 
 struct SubgoldyFollowStateView {
     unsigned char active; // +0x00
@@ -204,7 +205,7 @@ struct SubgoldyGameView {
     void complete_subgame(unsigned char completed);
 };
 
-struct Player {
+struct SubgoldyPlayerView {
     char unknown_00[0x38];
     TransformMatrix live_matrix; // +0x38 (position at +0x68)
     char unknown_78[0x84 - 0x78];
