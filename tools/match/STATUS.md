@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **54.04%**.
+**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **54.10%**.
 
 ## Proof Grade (489)
 
@@ -701,7 +701,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 175/663 | 9.55% | 0/663 | 8 mismatch, 5 ok |  |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 124/668 | 7.58% | 0/668 | 5 mismatch, 7 ok |  |
-| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 118/579 | 10.90% | 0/579 | 6 mismatch, 11 ok |  |
+| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 503/579 | 20.52% | 0/579 | 4 mismatch, 23 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 3397 | 629/1029 | 43.55% | 0/1029 | 1 mismatch, 39 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 392/437 | 17.13% | 0/437 | 1 mismatch, 11 ok |  |
 | 🚧 | calc_object_facequad_normals_simple | 0x430230 | 441 | 131/139 | 10.37% | 0/139 | 2 mismatch |  |
