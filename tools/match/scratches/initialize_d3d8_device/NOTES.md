@@ -47,6 +47,17 @@ temporaries for `one`, depth format, window, width, height, and multisample
 regressed to 64.76% by making VC6 allocate `ebx` as a live `one` value instead
 of preserving it as the native zero register.
 
+2026-06-21 present-store order pass: a bounded adjacent-swap sweep over the
+independent `D3DPresentParameters` stores found that filling the device window
+before the back-buffer format, then spelling height/width/multisample, recovers
+the native call register ownership and improves focused Wibo from 86.79% to
+97.17% with 106/106 instructions and 12 clean masked operands. Pure field-order
+permutations cannot recover the final dimension/multisample scheduling: the
+best tied spellings leave only one store-order region around the
+width/height/multisample loads. Local `device_window` and dimension temporaries
+were either codegen-neutral at 97.17% or regressed, so the retained change is
+the minimal source-order spelling.
+
 ## Added reference
 
 `0x47bdf4` is now named `Direct3DCreate8`, the Direct3D 8 import thunk used by
