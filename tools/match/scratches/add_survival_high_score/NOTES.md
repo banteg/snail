@@ -18,19 +18,18 @@ Behavior:
 The extra `rank != -1` gate is source-shaped from native even though this local
 rank search only produces non-negative ranks.
 
-Match status: 82.14%, 84/84 instructions, 2/84 exact prefix, five masked
+Match status: 93.49%, 84/84 target instructions, 36/84 exact prefix, six masked
 operands resolved.
 
 Residual:
 
-- Native keeps the bank owner in `ebp`, spills it before the rank scan, and
-  saves `ebx` in the prologue. The current source-shaped scratch now keeps the
-  bank owner in `ebp`, but VC6 shrink-wraps the `ebx` save to the insertion
-  path and still hoists a `survival_records` base for the later active-bank
-  frontend pointer.
+- Native keeps the bank owner in `ebp`, spills it before the rank scan, saves
+  `ebx` in the prologue, scans scores through the `score` field address, and
+  keeps a redundant guarded insertion block after the no-place return. The
+  current scratch mirrors that shape.
 - The high-score frontend arm is semantically aligned, including the native
-  `rank != -1` gate, but global reload and active-bank materialization differ
-  in register ownership.
+  `rank != -1` gate, but one impossible-path global reload and a small
+  post-shift reload scheduling difference remain.
 - 2026-06-20 high-score insertion pass: the arcade helper improved when its
   down-shift loop was spelled as a pre-tested `while`, but applying the same
   source shape here regressed survival to 55.95%. MSVC then kept constant `1`
@@ -43,12 +42,20 @@ Residual:
 - Keeping the original in-loop no-place return while changing only `break` to a
   label was neutral at 66.67%, so the bounded scan and out-of-loop return are
   the important parts of the accepted shape.
-- Rewriting the score scan as an `int*` cursor, adding an explicit shift guard,
-  switching the shift loop to `while`, forcing a shared `shift_rank` limit, and
-  reshaping the impossible `rank == -1` return path all regressed. A late
-  active-bank local and an explicit saved-bank alias were codegen-neutral.
+- Rewriting the score scan as an `int*` cursor or adding an explicit shift guard
+  alone regressed or stayed neutral in older shapes, but the two combined with
+  the bounded `goto insert_record` scan match native prologue ownership and the
+  redundant post-scan compare, raising the scratch from 82.14% to 93.49%.
+  Switching the shift loop to `while`, forcing a shared `shift_rank` limit in
+  the older cursor shape, and reshaping the impossible `rank == -1` return path
+  all regressed. A late active-bank local and an explicit saved-bank alias were
+  codegen-neutral.
 - 2026-06-20 larger high-score audit: combining the `int*` score cursor with a
   raw late active-bank pointer regressed to 65.03% by changing the prologue and
   moving bank ownership into `ebx`. A narrower raw late active-bank local stayed
   codegen-neutral at 82.14%, so the retained typed `bank->survival_records`
   spelling remains the best source shape.
+- 2026-06-20 guard/cursor pass: `goto` + `int*` score cursor + redundant
+  `rank >= shift_rank` guard is the accepted source shape. Break-plus-guard
+  variants reached only 88.34% or worse, and result-view/impossible-return tail
+  locals regressed by changing argument setup and callee-save ownership.

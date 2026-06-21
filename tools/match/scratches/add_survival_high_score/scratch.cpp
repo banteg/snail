@@ -17,17 +17,20 @@ int HighScoreBank::add_survival_high_score(HighScoreRecord* record)
     bank->survival_pending_record = *record;
 
     int score = record->score;
-    HighScoreRecord* cursor = bank->survival_records;
+    int* score_cursor = &bank->survival_records[0].score;
     while (rank < HIGH_SCORE_TOP_TEN_COUNT) {
-        if (score > cursor->score)
+        if (score > *score_cursor)
             goto insert_record;
         ++rank;
-        ++cursor;
+        score_cursor += HIGH_SCORE_RECORD_STRIDE / sizeof(int);
     }
     return rank;
 
 insert_record:
     int shift_rank = HIGH_SCORE_TOP_TEN_COUNT;
+    if (rank >= shift_rank)
+        return rank;
+
     do {
         bank->survival_records[shift_rank] = bank->survival_records[shift_rank - 1];
         bank->survival_records[shift_rank].route_or_rank_index = shift_rank;
