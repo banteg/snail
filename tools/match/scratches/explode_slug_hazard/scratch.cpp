@@ -6,7 +6,7 @@
 class Game {
 public:
     char unknown_00[0x38];
-    float track_center_x;          // +0x38
+    float subgame_rate;            // +0x38
     char unknown_3c[0x3bbb7c - 0x3c];
     float slug_explosion_base_z;   // +0x3bbb7c
 };
@@ -28,7 +28,7 @@ int SlugHazardRuntime::explode_slug_hazard()
         float progress_step =
             1.0f
             / (((float)next_math_random_value() * 0.000015258789f + 0.60000002f) * 60.0f)
-            * owner_game->track_center_x;
+            * owner_game->subgame_rate;
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
@@ -37,8 +37,8 @@ int SlugHazardRuntime::explode_slug_hazard()
             + 0.69999999f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;
-        float track_center = owner_game->track_center_x;
-        float gravity_step = track_center * track_center;
+        float rate = owner_game->subgame_rate;
+        float gravity_step = rate * rate;
         gravity_step *= -0.0099999998f;
         sprite->gravity_step = gravity_step * 2.2f;
 
@@ -48,7 +48,7 @@ int SlugHazardRuntime::explode_slug_hazard()
         float forward =
             (float)next_math_random_value() * spread * 0.000030517578f
             + game->slug_explosion_base_z;
-        float speed = game->track_center_x;
+        float speed = game->subgame_rate;
         Vector3 staged_velocity;
         staged_velocity.x = speed * side;
         staged_velocity.y = up * speed;

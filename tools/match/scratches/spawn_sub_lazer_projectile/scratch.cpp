@@ -5,7 +5,7 @@
 class Game {
 public:
     char unknown_00[0x38];
-    float track_center_x;
+    float subgame_rate;
     char unknown_3c[0x355bd4 - 0x3c];
     char sub_lazer_list_head[0x10];
 };
@@ -21,7 +21,7 @@ void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vecto
     *position = *origin;
     velocity = *direction;
     sprite_bob_phase = 0.0f;
-    sprite_bob_phase_step = owner_game->track_center_x * 0.0055555557f;
+    sprite_bob_phase_step = owner_game->subgame_rate * 0.0055555557f;
 
     SubLazerSlot* head = (SubLazerSlot*)owner_game->sub_lazer_list_head;
     if ((list_flags & 0x200) != 0) {

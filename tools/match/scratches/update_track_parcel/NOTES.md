@@ -8,8 +8,9 @@ Recovered relationships:
   0x74618`), not the root game base. Its `+0x09` byte is the
   `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
-  `subgame+0x3be0e4`, mirrors `world_position` into the sprite, and copies the
-  owner facing angle from `owner+0x370`, optionally adding `owner+0x3a0`.
+  `subgame_kill_plane_z` at `subgame+0x3be0e4`, mirrors `world_position` into
+  the sprite, and copies the owner facing angle from `owner+0x370`, optionally
+  adding `owner+0x3a0`.
 - State `4` starts the collected-parcel home arc: it applies the final bob lift,
   computes distance from `subgame+0x3bf91c`, stores the normalized
   `travel_dir`, then falls into state `5`.

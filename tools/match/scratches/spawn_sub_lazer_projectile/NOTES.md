@@ -9,7 +9,7 @@ Semantics covered:
 - origin is copied into the matrix position row at `+0x68`
 - direction is copied into velocity at `+0x8c`
 - sprite bob phase starts at zero and the bob step is
-  `owner_game->track_center_x * 0.0055555557`
+  `owner_game->subgame_rate * 0.0055555557`
 - slot is added after the `owner_game+0x355bd4` sub-lazer list head with
   list flag `0x200`, or reports `"List ADDafter"` if already linked
 - matrix forward axis is rebuilt from velocity through

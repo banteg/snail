@@ -20,7 +20,7 @@ public:
     char unknown_000000[0x09];
     unsigned char subgame_pause_gate; // +0x09
     char unknown_00000a[0x3be0e4 - 0x0a];
-    float parcel_kill_plane_z; // +0x3be0e4
+    float subgame_kill_plane_z; // +0x3be0e4
     char unknown_3be0e8[0x3be130 - 0x3be0e8];
     Vector3 delivery_arc_basis; // +0x3be130
     char unknown_3be13c[0x3bf91c - 0x3be13c];
@@ -40,7 +40,7 @@ void TrackParcelRuntime::update_track_parcel()
         return;
 
     case 1: {
-        if (subgame->parcel_kill_plane_z - 10.0f > world_position.z) {
+        if (subgame->subgame_kill_plane_z - 10.0f > world_position.z) {
             sprite->kill_sprite();
             state = 0;
         }

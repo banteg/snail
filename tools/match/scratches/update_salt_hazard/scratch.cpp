@@ -12,7 +12,7 @@ public:
     char unknown_5b4[0x3bb7d4 - 0x5b4];
     float salt_fade_start_z; // +0x3bb7d4
     char unknown_3bb7d8[0x3be0e4 - 0x3bb7d8];
-    float salt_kill_plane_z; // +0x3be0e4
+    float subgame_kill_plane_z; // +0x3be0e4
 };
 
 extern Game* g_game; // data_4df904
@@ -67,7 +67,7 @@ void SaltHazardSlot::update_salt_hazard()
         }
         fade_alpha() = alpha;
         color.set_color_alpha(0x3f666666);
-        if (position.z < owner_game->salt_kill_plane_z)
+        if (position.z < owner_game->subgame_kill_plane_z)
             state = 2;
         return;
     }
