@@ -43,3 +43,11 @@ removes the caller cleanup. Focused Wibo is now 85.42%, 48/48 instructions, and
 continue; return;` and using an explicit `goto found_slot` were codegen-neutral;
 the remaining gap is the rotated exhausted-return block plus native's dead
 `ecx` load before the positional sound call.
+
+2026-06-20 post-scan exhaustion pass: spelling the free-slot search as
+`while (index < 20 && *state != 0)` followed by `if (index >= 20) return`
+places the exhausted return before the spawn body, matching the native block
+order and improving focused Wibo to 88.66% with a 16/48 prefix. The retained
+residual is one extra post-loop `cmp eax, 0x14` before the spawn body, plus the
+same missing dead `mov ecx, ADDR` before the positional sound call. Origin
+pointer aliases and a `register` hint were codegen-neutral on this shape.

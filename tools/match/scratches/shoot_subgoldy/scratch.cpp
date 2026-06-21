@@ -10,14 +10,12 @@ void SubLazerPool::shoot_subgoldy(const float* origin, const Vector3* direction)
 {
     int index = 0;
     int* state = &slots[0].state;
-    while (1) {
-        if (*state == 0)
-            break;
+    while (index < 20 && *state != 0) {
         index++;
         state += 44;
-        if (index >= 20)
-            return;
     }
+    if (index >= 20)
+        return;
 
     Vector3 raw;
     Vector3 staged;
