@@ -27,7 +27,8 @@ int PlayerPresentationController::dispatch_cutscene_animation(
             anim_manager.progress_step = step;
             anim_manager.progress = step + 1.0f;
         } else {
-            ObjectAnimation* active_animation = anim_manager.active_animation;
+            ObjectAnimation* active_animation =
+                *(ObjectAnimation* volatile*)&anim_manager.active_animation;
             anim_manager.progress = 0.0f;
             float step;
             if (active_animation->progress_step < 0.0f)

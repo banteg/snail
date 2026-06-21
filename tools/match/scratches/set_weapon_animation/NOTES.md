@@ -19,9 +19,9 @@ Recovered behavior:
 - immediate activation clears the queue, stores the selected visual root at
   channel `+0x24`, and ORs bit `0x20` into the target model flags.
 
-Focused Wibo result: 88.07%, 54/55 candidate/target instructions. The
-remaining shape debt is one native reload of `active_animation` in the
-non-reverse branch plus register selection in the queued-animation tail.
+Focused Wibo result: 94.55%, 55/55 candidate/target instructions, 48/55 exact
+prefix, and three clean masked operands. The remaining shape debt is register
+selection in the queued-animation tail.
 
 2026-06-17 consolidation: `PresentationAnimationChannel` is now shared in
 `tools/match/include/presentation_animation_channel.h`. The repeated
@@ -29,3 +29,11 @@ presentation blocks start at the full channel bases (`+0x64c`, `+0xa28`,
 `+0xe04`, and jetpack `+0x11e0`), with `selected_state` at channel `+0x104`
 and the `AnimManager` at channel `+0x108`. Earlier local views that started at
 the manager lane were shifted and should not be reused.
+
+2026-06-21 active-animation reload pass: reading the non-reversing branch's
+`anim_manager.active_animation` lane through a narrow volatile pointer view
+recovers the native reload before `progress = 0.0f`, matching the paired
+`dispatch_cutscene_animation` helper through the immediate path. Plain locals,
+declaration-order changes, direct queue subscripts, and raw queue stores are
+codegen-neutral; the queued branch still keeps `queue_count` in `eax` and
+`animation_id` in `edx`, opposite native.
