@@ -25,10 +25,14 @@ int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char 
     char texture_path[0x100];
     int byte_count;
 
-    if (is_archive_index_loaded() == 0 || mesh_path[strlen(mesh_path) - 1] == '2')
+    if (is_archive_index_loaded() != 0) {
+        if (mesh_path[strlen(mesh_path) - 1] != '2')
+            sprintf(mesh_file_path, "X/%s2", mesh_path);
+        else
+            sprintf(mesh_file_path, "X/%s", mesh_path);
+    } else {
         sprintf(mesh_file_path, "X/%s", mesh_path);
-    else
-        sprintf(mesh_file_path, "X/%s2", mesh_path);
+    }
 
     load_file_bytes_from_archive_or_fs(mesh_file_path, file_text, &byte_count);
     file_text[byte_count - 2] = 0;
