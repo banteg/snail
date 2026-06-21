@@ -19,11 +19,18 @@ Recovered behavior:
   sound `16`, and stores selected state `4`;
 - entering target state `0` clears the channel with animation `-1`.
 
-Focused Wibo result: 54.55%, 59/62 candidate/target instructions. The switch
-spelling for the input-state mapping is better than the direct `if` ladder
-(50.00%); the remaining drift is register ownership. Native loads `state`
-before saving registers, keeps `this` in `edi`, keeps `target_state` in `ebx`,
-and only saves `esi` around the enter-state-4 block. The current source keeps
-`this` in `esi` and `target_state` in `edi`, then constant-folds the selected
-state store in the state-4 return path. Keep this as a clean relationship
-scratch unless a real VC6 source idiom explains that register split.
+Focused Wibo result after the shared selected-state tail: 86.18%, 61/62
+candidate/target instructions. The switch spelling for the input-state mapping
+is still better than the direct `if` ladder, while sharing the final
+`selected_state = target_state` store across the enter-state-4 and clear paths
+removes the old constant-folded state-4 return tail.
+
+The remaining drift is register ownership. Native loads `state` before saving
+registers, keeps `this` in `edi`, keeps `target_state` in `ebx`, and only saves
+`esi` around the enter-state-4 block. The retained source still saves `ebx`
+before loading `state`, but now preserves the native shared tail shape. Tested
+variants: initializing `target_state = state` recovers the first argument load
+but regresses to 66.67% by losing the better switch/register split; flattening
+the tail as `if target == 4 else if target == 0` reaches 82.93%; checking the
+clear path first regresses to 71.54%. Keep the nested shared-store tail unless
+a real VC6 source idiom explains the remaining prologue split.

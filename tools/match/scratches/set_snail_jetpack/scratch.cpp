@@ -34,8 +34,6 @@ void PlayerPresentationController::set_snail_jetpack(int state)
                 jetpack_channel.set_weapon_animation(1, immediate, target_state);
                 jetpack_channel.set_weapon_animation(0, 0, -1);
                 g_sound_effect_manager.play_sound_effect(16);
-                jetpack_channel.selected_state = target_state;
-                return;
             }
         } else {
             jetpack_channel.set_weapon_animation(-1, 0, -1);
