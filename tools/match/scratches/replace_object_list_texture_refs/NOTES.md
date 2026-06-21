@@ -48,3 +48,19 @@ base in `ecx` instead of native's `add eax, [objects]` cursor shape. Keep the
 current byte-cursor source because it preserves the verified loop-bottom
 offset recurrence, and treat the object-address register ownership as the next
 real residual.
+
+## 2026-06-21 loop-tail schedule pass
+
+Focused Wibo improves to `74.77%`, `54/53` candidate/target instructions,
+`14/53` prefix, and one clean masked operand after moving `++object_index`
+before the byte-cursor advance at the loop bottom. This matches native's tail
+order: reload object index, reload byte offset, reload count, increment the
+index, add `0xdc` to the byte offset, compare, then store both locals.
+
+Object-address ownership remains the first mismatch. Spelling the object
+address as `(Object*)(object_cursor + (int)objects)`, unsigned variants,
+split integer address locals, mutating the cursor through an absolute address,
+raw field loads, or a vertex-count pointer are all codegen-neutral once the
+tail-order fix is present. They keep `objects` in `ecx` instead of native's
+`add eax, [objects]`, so the retained typed byte-cursor source is still the
+best evidence-backed shape.

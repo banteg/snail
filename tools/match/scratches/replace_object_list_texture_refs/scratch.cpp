@@ -32,8 +32,8 @@ void ObjectList::replace_object_list_texture_refs(TextureRef* new_texture,
 
             replace_object_group_texture_refs(object, new_texture, old_texture);
         }
-        object_cursor = object_offset + 0xdc;
         ++object_index;
+        object_cursor = object_offset + 0xdc;
         object_offset = object_cursor;
     } while (object_index < count);
 }
