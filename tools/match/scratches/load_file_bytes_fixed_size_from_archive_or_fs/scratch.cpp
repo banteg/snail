@@ -39,9 +39,9 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
             do {
                 char* archive_cursor = *entry_path;
                 char* request_cursor = file_name;
-                char archive_char = *archive_cursor;
 
-                while (archive_char != 0) {
+                while (*archive_cursor != 0) {
+                    char archive_char = *archive_cursor;
                     char request_char = *request_cursor;
                     if (request_char == 0) {
                         break;
@@ -55,7 +55,6 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
                         break;
                     }
 
-                    archive_char = archive_cursor[1];
                     ++request_cursor;
                     ++archive_cursor;
                 }
