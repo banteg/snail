@@ -27,6 +27,7 @@ public:
     int set_subgame_features(); // @ 0x435df0
     bool switch_track_mirror(); // @ 0x435e60
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
+    void initialize_subgame(); // @ 0x4374b0
     void reset_subgame(); // @ 0x437b10
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     void destroy_subgame(); // @ 0x438850

@@ -12,6 +12,7 @@
 #include "time_trial_string_formatter.h"
 #include "timer_counters.h"
 #include "transform_matrix.h"
+#include "subgame_runtime.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
@@ -24,12 +25,6 @@ public:
 class SubgameBorderManager {
 public:
     FrontendWidget* allocate_border();
-};
-
-class Game {
-public:
-    void initialize_subgame();
-    void reset_subgame();
 };
 
 extern char* g_game_base; // data_4df904
@@ -46,7 +41,7 @@ void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 int report_errorf(char* format, ...); // @ 0x431cc0
 
-void Game::initialize_subgame()
+void SubgameRuntime::initialize_subgame()
 {
     char* game = (char*)this;
     int scratch[6];
