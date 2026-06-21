@@ -657,7 +657,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 66.02% | 4/269 | 58 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 267/274 | 72.46% | 4/274 | 1 mismatch, 48 ok |  |
 | 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
-| 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 74.46% | 3/115 | 32 ok |  |
+| 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 60/63 | 73.17% | 8/63 | 4 ok |  |

@@ -21,3 +21,10 @@ Focused Wibo result: 74.46%, 116/115 instructions, prefix 3/115, with 32 clean
 masked operands. The remaining differences are source-shape/register allocation
 residuals around branch distances, output-zeroing blocks, and API-call setup
 registers.
+
+2026-06-21 zero-output store pass: writing the failure-path output zeros in
+`y` then `x` order improves focused Wibo to 77.06%, still 116/115 instructions
+with a 3/115 prefix and 32 clean masked operands. The swap nudges VC6's pointer
+register choice in all three GetCursorPos failure blocks while preserving the
+same observable zeroed outputs. The remaining residual is still branch distance
+and API-call setup register ownership.

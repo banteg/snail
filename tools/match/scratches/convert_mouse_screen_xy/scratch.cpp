@@ -35,8 +35,8 @@ int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
             *y = (float)point.y;
             return (int)y;
         }
-        *x = 0.0f;
         *y = 0.0f;
+        *x = 0.0f;
         return result;
     }
 
@@ -52,8 +52,8 @@ int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
                     g_steering_sensitivity[sensitivity_slot])
                 * g_mouse_screen_to_authored_y_scale;
         } else {
-            *x = 0.0f;
             *y = 0.0f;
+            *x = 0.0f;
         }
 
         result = GetActiveWindow();
@@ -70,8 +70,8 @@ int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
             *y += ((float)point.y - g_authored_view_height * 0.5f)
                 * g_mouse_screen_to_authored_y_scale;
         } else {
-            *x = 0.0f;
             *y = 0.0f;
+            *x = 0.0f;
         }
 
         result = GetActiveWindow();
