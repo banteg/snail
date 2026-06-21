@@ -112,3 +112,11 @@ keeps the extra multiply in the tail, while the `result`-based address reuses
 the native live return value. The first mismatch remains the earlier
 slot-index subtract versus late `cell` reload; the active-list register
 reversal and bob-phase `fld` schedule are unchanged.
+
+2026-06-21 bob-phase pointer scheduling: matching the jetpack spawner, writing
+the bob phase through a local `float* bob_phase` keeps the initial zero store
+ahead of the `world_z` `__ftol` conversion and improves focused Wibo from
+`86.07%` to `86.89%`, with instruction-count parity and seven clean masked
+operands preserved. A raw `DWORD*` pointer looked equivalent semantically but
+regressed to `67.21%` by changing the sprite setup and tail into bit-mask
+arithmetic, so keep the typed float pointer.
