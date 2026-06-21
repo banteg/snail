@@ -2588,7 +2588,8 @@
       "aliases": [
         "data_4b7790"
       ],
-      "description": "Shared TextureRefList backing get_or_create_texture_ref and sprite texture registration."
+      "size": "0x14058",
+      "description": "Shared TextureRefList backing get_or_create_texture_ref and sprite texture registration; startup initializes capacity 500, giving count/capacity plus 500 inline 0xa4-byte TextureRef records."
     },
     {
       "address": "0x4c4b40",

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.66%**.
+**498/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **66107/325759** bytes (**20.29%**) are proof-grade, and overall fuzzy is **55.68%**.
 
 ## Proof Grade (498)
 
@@ -608,7 +608,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 135/139 | 59.85% | 7/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | render_object | 0x4126c0 | 640 | 197/196 | 69.72% | 8/196 | 21 ok |  |
-| 🚧 | load_registered_texture_ref | 0x412a70 | 647 | 215/216 | 61.25% | 6/216 | 2 mismatch, 23 ok |  |
+| 🚧 | load_registered_texture_ref | 0x412a70 | 647 | 215/216 | 73.78% | 10/216 | 2 mismatch, 34 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 123/127 | 63.20% | 25/127 | 8 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 645/694 | 73.34% | 9/694 | 68 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |

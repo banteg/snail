@@ -5,10 +5,13 @@ the high loaded flag, falls back to `Sprites/Debug.tga` when the requested file
 is missing or D3DX creation fails, sets the default texture/stage states, and
 records the TGA header width/height into the descriptor.
 
-Scratch result: 61.25%, 215 candidate instructions versus 216 target
-instructions, with no unresolved masks. The main residual is source shape:
-native keeps an `index * 0xa4` offset in `esi` and uses image-base field
-displacements, while the cleaner shared-header source keeps a `TextureRef*`
-pointer in `esi`. An offset-shaped experiment reached 73.78% but created
-unhelpful unresolved masks for interior `g_texture_refs.entries` addresses, so
-this scratch keeps the auditable pointer shape.
+2026-06-21 texture-entry offset pass: retained the native-shaped
+`texture_index * 0xa4` offset carrier and raw `g_texture_refs.entries` field
+accesses. `g_texture_refs` is now sized in the reference manifest as the
+startup-initialized 500-entry inline `TextureRefList`, so the interior entry
+references audit cleanly instead of appearing as raw image addresses. Focused
+Wibo improves from 61.25% to 73.78% (`215/216` instructions), with masked
+operands moving to 34 clean, 0 unresolved, and 2 mismatches. The remaining
+mismatches are D3D device/texture-slot load scheduling around the two D3DX
+create calls; entry-local slot/device pointer probes regress by changing the
+prologue and are not retained.
