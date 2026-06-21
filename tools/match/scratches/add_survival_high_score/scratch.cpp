@@ -45,14 +45,17 @@ insert_record:
     ((HighScoreGameView*)g_game_base)->frontend_next_state = 20;
     ((HighScoreGameView*)g_game_base)->high_score_entry_pending = 1;
 
+    int result = rank;
     if (rank != -1) {
         record->high_score_mode_tag = 1;
         bank->survival_records[rank].high_score_mode_tag = 1;
         ((HighScoreGameView*)g_game_base)->high_score_records.active_record_bank =
             bank->survival_records;
         ((HighScoreGameView*)g_game_base)->high_score_entry_rank = rank;
-        ((HighScoreGameView*)g_game_base)->high_score_entry_bank = 1;
+        HighScoreGameView* game = (HighScoreGameView*)g_game_base;
+        game->high_score_entry_bank = 1;
+        result = (int)game;
     }
 
-    return (int)(HighScoreGameView*)g_game_base;
+    return result;
 }

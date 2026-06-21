@@ -73,3 +73,10 @@ Residual:
   instructions, and drops focused Wibo to roughly 82%. Keep the current
   impossible-path reload; the reachable frontend body remains the better
   source-shaped tradeoff.
+- 2026-06-21 result-local tail pass: carrying `int result = rank` through the
+  redundant `rank != -1` guard and assigning it from the final `g_game_base`
+  load inside the reachable frontend arm improves focused Wibo to 95.24% with
+  matching 84/84 instruction counts. This removes the extra impossible-path
+  global reload while preserving native's behavior if that guard were ever
+  false; early-return and block-return forms still duplicate control flow and
+  regress to roughly 82%.
