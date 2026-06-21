@@ -49,11 +49,11 @@ void DamageGaugeController::apply_damage_gauge_delta(float delta, char force)
         float updated = delta + fill;
         fill = updated;
         if (updated < 0.0f) {
-            fill = 0.0f;
+            updated = 0.0f;
         } else {
             if (updated > 1.0f)
                 updated = 1.0f;
-            fill = updated;
         }
+        fill = updated;
     }
 }

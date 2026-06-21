@@ -132,7 +132,7 @@ These are medium blast-radius systems already partly understood.
 
 | function | address | current | why it matters | next matching move |
 |---|---:|---|---|---|
-| `apply_damage_gauge_delta` | `0x4413f0` | 60.32%, pinned | Hit-flash gate, damage/recovery clamp, side effects. | Semantics are pinned; corrected voice-failure animation nesting, constant relocation mismatch, and rejected local-shape probes are documented in NOTES. |
+| `apply_damage_gauge_delta` | `0x4413f0` | 72.43%, pinned | Hit-flash gate, damage/recovery clamp, side effects. | Semantics are pinned; corrected voice-failure animation nesting and the single-final-store clamp shape now clear the constant mask mismatch; remaining register/materialization residuals and rejected owner/voice probes are documented in NOTES. |
 | `update_damage_gauge` | `0x440fd0` | 94.03%, source-shaped | Drain, state transitions, warning interaction. | Explicit flash-pulse local recovers instruction-count parity; remaining residual is mirrored `mask_height`/`alpha` stack-slot allocation plus render-tail x87 scheduling documented in NOTES. |
 | `update_warning` | `0x446f80` | 98.08%, near-proof | Warning actor loop, stop sample handle, global gates. | Only `cmp eax, edx` versus native `sub eax, edx` remains after the pause gate has already zeroed `edx`; case-0, nested-guard, state-snapshot, and unsigned-state probes are documented in NOTES. |
 | `enqueue_tip_message` | `0x448d30` | 100% | Exact three-slot gameplay tip allocator used by `update_subgoldy` row-event and tutorial prompt paths. | Done; keep the `while (1)` scan idiom with exact tip manager init/update/uninit helpers as the tip slot lifecycle anchor. |

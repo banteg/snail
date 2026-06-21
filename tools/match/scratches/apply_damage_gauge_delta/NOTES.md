@@ -1,4 +1,4 @@
-# Pinned — 60.32%, 95 candidate / 94 target insns (register/materialization residuals remain)
+# Pinned — 72.43%, 91 candidate / 94 target insns (register/materialization residuals remain)
 
 Semantics complete and they REFINE the harvested hit-flash plan:
 
@@ -50,3 +50,13 @@ known clamp-tail `0.0f` versus `1.0f` constant materialization mismatch. An
 explicit `char* game_base` local with the non-volatile declaration regresses to
 53.76% by adding another saved register and moving `this`, so the direct
 global-offset spelling remains retained.
+
+2026-06-21 clamp-tail pass: keeping the accumulated `updated` local as the
+single final `fill` store improves focused Wibo to 72.43% (91/94 candidate/
+target instructions) and clears the stale constant relocation mismatch; the
+mask audit is now 18 clean operands. The retained source still matches the
+native clamp semantics (`fill` is first written with the raw sum, then clamped
+through `updated`). Rejected followups on top of this shape: explicit
+`game_base` locals still regress badly, `state` snapshots regress, and
+goto/common-flag spellings for the voice-success progress store are neutral or
+worse.
