@@ -863,6 +863,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                             "header_count": finding.header_count,
                             "layout_count": finding.signature_count,
                             "recommendation": finding.recommendation,
+                            "details": list(finding.details),
                             "paths": [str(path) for path in finding.paths],
                         }
                         for finding in findings
@@ -881,6 +882,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"{finding.scratch_count} scratch, {finding.header_count} header, "
                 f"{finding.signature_count} layout group(s) - {finding.recommendation}"
             )
+            for detail in finding.details:
+                print(f"  {detail}")
             if args.paths:
                 for path in finding.paths:
                     print(f"  {path}")

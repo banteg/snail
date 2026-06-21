@@ -1303,6 +1303,7 @@ def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> Non
         findings["BitView"].recommendation
         == "compatible field slots use different names; align semantics before promoting"
     )
+    assert findings["BitView"].details == ("+0x000000 w4: x, x_bits",)
 
     filtered = type_consolidation_findings(match_root, names={"Shared", "Missing"})
     assert [finding.name for finding in filtered] == ["Shared"]

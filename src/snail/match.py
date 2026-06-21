@@ -2750,6 +2750,7 @@ class TypeConsolidationFinding:
     signature_count: int
     paths: tuple[Path, ...]
     recommendation: str
+    details: tuple[str, ...] = ()
 
 
 _TYPE_DEFINITION_RE = re.compile(r"\b(struct|class)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{")
@@ -3248,7 +3249,9 @@ def _has_layout_conflict(
     return False
 
 
-def _has_field_name_conflict(definitions: list[TypeDefinition]) -> bool:
+def _field_name_conflict_slots(
+    definitions: list[TypeDefinition],
+) -> tuple[tuple[int, int, tuple[str, ...]], ...]:
     slot_names: dict[tuple[int, int], set[str]] = {}
     slot_paths: dict[tuple[int, int], set[Path]] = {}
     for definition in definitions:
@@ -3256,10 +3259,32 @@ def _has_field_name_conflict(definitions: list[TypeDefinition]) -> bool:
             slot = (layout_field.offset, layout_field.width)
             slot_names.setdefault(slot, set()).add(layout_field.name)
             slot_paths.setdefault(slot, set()).add(definition.path)
-    return any(
-        len(slot_names[slot]) > 1 and len(paths) > 1
-        for slot, paths in slot_paths.items()
+
+    return tuple(
+        (slot[0], slot[1], tuple(sorted(slot_names[slot])))
+        for slot, paths in sorted(slot_paths.items())
+        if len(slot_names[slot]) > 1 and len(paths) > 1
     )
+
+
+def _field_name_conflict_details(
+    definitions: list[TypeDefinition],
+    *,
+    limit: int = 8,
+) -> tuple[str, ...]:
+    slots = _field_name_conflict_slots(definitions)
+    details = [
+        f"+0x{offset:06x} w{width}: {', '.join(names)}"
+        for offset, width, names in slots[:limit]
+    ]
+    omitted = len(slots) - limit
+    if omitted > 0:
+        details.append(f"... {omitted} more conflicting slot(s)")
+    return tuple(details)
+
+
+def _has_field_name_conflict(definitions: list[TypeDefinition]) -> bool:
+    return bool(_field_name_conflict_slots(definitions))
 
 
 def _method_abi_entries(definition: TypeDefinition) -> tuple[tuple[str, str], ...]:
@@ -3332,6 +3357,7 @@ def type_consolidation_findings(
         scratch_layout_groups = _compatible_layout_groups(scratch_definitions)
         layout_group_count = len(scratch_layout_groups)
         paths = tuple(sorted({definition.path for definition in named_definitions}))
+        details: tuple[str, ...] = ()
         if _has_method_abi_conflict(named_definitions):
             status = "ABI-conflict"
             recommendation = (
@@ -3357,6 +3383,7 @@ def type_consolidation_findings(
                 recommendation = (
                     "compatible field slots use different names; align semantics before promoting"
                 )
+                details = _field_name_conflict_details(scratch_definitions)
             else:
                 status = "header-compatible"
                 recommendation = (
@@ -3372,6 +3399,7 @@ def type_consolidation_findings(
                 recommendation = (
                     "compatible field slots use different names; align semantics before promoting"
                 )
+                details = _field_name_conflict_details(scratch_definitions)
             elif len(scratch_signatures) == 1:
                 status = "ready"
                 recommendation = "same scratch-local layout appears repeatedly; consider a header"
@@ -3399,6 +3427,7 @@ def type_consolidation_findings(
                 signature_count=layout_group_count,
                 paths=paths,
                 recommendation=recommendation,
+                details=details,
             )
         )
     return findings
