@@ -7,19 +7,10 @@
 #include "player.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "voice_manager.h"
 
 typedef unsigned int DWORD;
-
-class Game {
-public:
-    char unknown_00[0x09];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x38 - 0x0a];
-    float subgame_rate; // +0x38
-    char unknown_3c[0x1270fd4 - 0x3c];
-    ContactTargetRegistry contact_targets; // +0x1270fd4
-};
 
 extern char* g_game_base; // data_4df904
 

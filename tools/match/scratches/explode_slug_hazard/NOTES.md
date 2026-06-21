@@ -71,3 +71,6 @@ offset macros, or fake aliases.
 - A broad `SubgameRuntime*` hoist was rejected. It regressed to 69.86% by
   shrinking the frame and extending the owner register lifetime through the
   burst setup, so the local sparse view remains the closer source shape.
+- After `SlugHazardRuntime::owner_game` was promoted to `SubgameRuntime*`, this
+  scratch still keeps the explicit `SlugExplosionGameView` cast for the proven
+  source shape. Focused Wibo remains unchanged at 81.63%.

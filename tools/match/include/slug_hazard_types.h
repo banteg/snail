@@ -1,13 +1,14 @@
 // Shared slug hazard runtime view, recovered from hit/kill/voice/explosion paths.
-// Game stays scratch-local because each caller only needs a sparse game view.
+// The owner is the embedded subgame runtime; helpers may still use sparse casts
+// when a focused source-shape proof requires them.
 #ifndef SLUG_HAZARD_TYPES_H
 #define SLUG_HAZARD_TYPES_H
 
 #include "bod_types.h"
 
-class Game;
 class Player;
 class Sprite;
+class SubgameRuntime;
 struct TrackRowCell;
 
 class SlugHazardRuntime : public RenderableBod {
@@ -23,7 +24,7 @@ public:
     char unknown_78[0x80 - 0x78];
     int state;                         // +0x80
     int death_toss_direction;          // +0x84
-    Game* owner_game;                  // +0x88
+    SubgameRuntime* owner_game;        // +0x88
     Vector3 velocity;                  // +0x8c
     char unknown_98[0xac - 0x98];
     Sprite* sprite;                    // +0xac
