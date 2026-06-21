@@ -14,7 +14,7 @@ struct TipMessageDefinition {
 
 class TipSlot {
 public:
-    void initialize_tip(TipMessageDefinition* definition, int show_disable_button); // @ 0x448a40
+    void initialize_tip(TipMessageDefinition* definition, int hide_disable_button); // @ 0x448a40
     void kill_tip_widgets(); // @ 0x4489e0
     void update_tip(); // @ 0x448c40
 
@@ -32,7 +32,7 @@ class TipManager {
 public:
     void initialize_tip_manager(); // @ 0x448cf0
     void uninit_tips(); // @ 0x448d10
-    TipSlot* enqueue_tip_message(TipMessageDefinition* definition, int show_disable_button); // @ 0x448d30
+    TipSlot* enqueue_tip_message(TipMessageDefinition* definition, int hide_disable_button); // @ 0x448d30
     void update_tip_manager(); // @ 0x448d80
 
     char unknown_00[0x38];

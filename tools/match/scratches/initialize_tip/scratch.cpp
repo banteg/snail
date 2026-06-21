@@ -7,7 +7,7 @@
 extern char* g_game_base; // data_4df904
 extern TipMessageDefinition g_default_tip_message; // data_4ac5c8
 
-void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable_button)
+void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable_button)
 {
     active = 1;
     if (definition_ != 0)
@@ -17,8 +17,8 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
 
     widget_main = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
     TipMessageDefinition* current_definition = definition;
-    float layout_y = current_definition->layout_y;
-    int alignment = ((int)(char)~(current_definition->flags & 0xff) & 4) >> 1;
+    unsigned int alignment = (int)(char)~(definition->flags & 0xff);
+    alignment &= 4;
     Color4f color;
     widget_main->initialize_frontend_widget(
         2,
@@ -27,8 +27,8 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
         current_definition->layout_y,
         current_definition->text_scale,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
-        alignment,
-        layout_y);
+        alignment >> 1,
+        current_definition->layout_y);
 
     TipMessageDefinition* live_definition = definition;
     if ((live_definition->flags & 2) != 0) {
@@ -38,9 +38,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
 
     if ((live_definition->flags & 1) != 0) {
         widget_ok = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        if (show_disable_button != 0) {
-            TipMessageDefinition* buttons_definition = definition;
-            float ok_y = buttons_definition->layout_y + 40.0f;
+        if (hide_disable_button == 0) {
             widget_ok->initialize_frontend_widget(
                 0x14,
                 "OK",
@@ -49,10 +47,9 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                ok_y);
+                definition->layout_y + 40.0f);
 
             widget_disable = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-            float disable_y = definition->layout_y - 60.0f;
             widget_disable->initialize_frontend_widget(
                 0x14,
                 "Disable",
@@ -61,11 +58,10 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                disable_y);
+                definition->layout_y - 60.0f);
             widget_disable->stack_widget_below(widget_main);
             widget_ok->stack_widget_below(widget_main);
         } else {
-            float ok_y = definition->layout_y;
             widget_ok->initialize_frontend_widget(
                 0x14,
                 "OK",
@@ -74,7 +70,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int show_disable
                 0.0f,
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                ok_y);
+                definition->layout_y);
             widget_disable = 0;
             widget_ok->stack_widget_below(widget_main);
         }

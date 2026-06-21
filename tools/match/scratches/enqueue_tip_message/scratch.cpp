@@ -6,7 +6,7 @@ int report_errorf(char* format, ...);
 
 TipSlot* TipManager::enqueue_tip_message(
     TipMessageDefinition* definition,
-    int show_disable_button)
+    int hide_disable_button)
 {
     int index = 0;
     TipSlot* slot;
@@ -26,6 +26,6 @@ TipSlot* TipManager::enqueue_tip_message(
     }
 
     TipSlot* result = &slots[index];
-    result->initialize_tip(definition, show_disable_button);
+    result->initialize_tip(definition, hide_disable_button);
     return result;
 }
