@@ -32,19 +32,18 @@ void queue_font_text_instance(
             ((FontQueueEntry*)((char*)g_font_queue + offset))->text_wave_amplitude = text_wave_amplitude;
             ((FontQueueEntry*)((char*)g_font_queue + offset))->text_wave_enabled = text_wave_enabled;
 
-            if (*text != '\0') {
-                do {
-                    if (cursor - g_font_text_buffer > 0x7fe) {
-                        *cursor = '\0';
-                        char* next = g_font_text_cursor + 1;
-                        g_font_text_cursor = next;
-                        return;
-                    }
-                    *cursor = *text;
-                    cursor = g_font_text_cursor + 1;
-                    ++text;
-                    g_font_text_cursor = cursor;
-                } while (*text != '\0');
+            register char* source = text;
+            while (*source != '\0') {
+                if (cursor - g_font_text_buffer > 0x7fe) {
+                    *cursor = '\0';
+                    char* next = g_font_text_cursor + 1;
+                    g_font_text_cursor = next;
+                    return;
+                }
+                *cursor = *source;
+                cursor = g_font_text_cursor + 1;
+                ++source;
+                g_font_text_cursor = cursor;
             }
 
             *cursor = '\0';

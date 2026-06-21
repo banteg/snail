@@ -21,3 +21,13 @@ Recovered relationships:
 
 2026-06-17 cleanup: the queue writes now use the shared `FontQueueEntry` fields
 instead of re-spelling the same offsets through local byte-pointer casts.
+
+2026-06-21 text-copy owner pass: focused Wibo is now proof-grade at 100.00%,
+73/73 instructions, full prefix, with 24 clean masked operands. Rewriting the
+copy loop from `if (*text) do { ... } while (*text)` to a plain
+`while (*source != '\0')` over a `register char* source = text` local keeps the
+source pointer in `eax`, lets the buffer-bound check use `edx`, and confines
+the saved `esi` lifetime to the `Color4f` aggregate copy like native. The plain
+`while (*text)` spelling improved to 75.68% but still saved `esi` across the
+whole function; a `for` update was codegen-neutral with that shape, while an
+explicit `goto` loop regressed to the old duplicated-loop family.
