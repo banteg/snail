@@ -100,7 +100,9 @@ public:
     float track_skirt_r; // +0x1b0140
     float track_skirt_g; // +0x1b0144
     float track_skirt_b; // +0x1b0148
-    char unknown_1b014c[0x355bd4 - 0x1b014c];
+    char unknown_1b014c[0x1b01e0 - 0x1b014c];
+    int parcel_total; // +0x1b01e0
+    char unknown_1b01e4[0x355bd4 - 0x1b01e4];
     char sub_lazer_list_head[0x10]; // +0x355bd4, node-shaped live-list anchor
     char unknown_355be4[0x355db0 - 0x355be4];
     TrackSpeedupRuntime speedup_pickup; // +0x355db0

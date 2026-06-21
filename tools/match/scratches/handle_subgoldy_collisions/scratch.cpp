@@ -12,6 +12,7 @@
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
 #include "sound_effect_manager.h"
+#include "subgame_runtime.h"
 #include "sub_lazer_types.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -28,33 +29,6 @@ void noop_runtime_ai();
 int sprintf(char* buffer, const char* format, ...);
 
 extern char g_parcel_format[];
-
-class Game {
-public:
-    char unknown_00[0x38];
-    float subgame_rate; // +0x38
-    char unknown_3c[0x40 - 0x3c];
-    int level_mode; // +0x40
-    int level_mode_arg; // +0x44
-    float base_subgame_rate; // +0x48
-    unsigned int runtime_flags; // +0x4c
-    char unknown_50[0x1b01e0 - 0x50];
-    int parcel_total; // +0x1b01e0
-    char unknown_1b01e4[0x355db0 - 0x1b01e4];
-    TrackSpeedupRuntime speedup_pickup; // +0x355db0
-    TrackJetpackPickup jetpack_pickup; // +0x355e64
-    TrackHealthPickup health_pickups[8]; // +0x356000
-    SlugHazardRuntime slug_slots[8]; // +0x3563a0, stride 0xec
-    SubLazerSlot lazer_slots[20]; // +0x356b00, stride 0xb0
-    SaltHazardSlot salt_slots[40]; // +0x3578c0, live byte is velocity.z low byte
-    char unknown_359080[0x359140 - (0x3578c0 + 6080)];
-    GarbageHazardPool garbage_hazards; // +0x359140
-    RingOrSpecialEffectPool ring_effects; // +0x35b78c
-    char unknown_35bb7c[0x35bb94 - (0x35b78c + 0x3f0)];
-    int hud_text_owner; // +0x35bb94
-    char unknown_35bb98[0x125e480 - 0x35bb98];
-    TrackParcelPool track_parcels; // +0x125e480
-};
 
 void Player::handle_subgoldy_collisions()
 {
@@ -138,7 +112,7 @@ void Player::handle_subgoldy_collisions()
                     if (distance < 1.5675001f) {
                         if ((movement_flags & 0x80) == 0) {
                             if (!control_override_active) {
-                                Game* hit_game = game;
+                                SubgameRuntime* hit_game = game;
                                 control_override_active = 1;
                                 follow_active = 0;
                                 float rate = hit_game->subgame_rate;
@@ -190,12 +164,12 @@ void Player::handle_subgoldy_collisions()
                     g_voice_manager.play_voice_manager(10, 1, -1);
                     g_sound_effect_manager.play_sound_effect(27);
                     parcel->state = 4;
-                    Game* parcel_game = game;
+                    SubgameRuntime* parcel_game = game;
                     int collected = parcels_collected + 1;
                     parcels_collected = collected;
                     if (!parcel_game->level_mode)
                         sprintf(
-                            (char*)(parcel_game->hud_text_owner + 716),
+                            (char*)parcel_game->lives_text_widget + 716,
                             g_parcel_format,
                             collected,
                             parcel_game->parcel_total);
@@ -270,7 +244,7 @@ void Player::handle_subgoldy_collisions()
                 if (normalize_vector(&probe_fx) < 0.98000002f) {
                     effect->state = 2;
                     if (!completion_handoff_active) {
-                        Game* effect_game = game;
+                        SubgameRuntime* effect_game = game;
                         int kind = effect->kind;
                         if (kind == 3 || kind == 7) {
                             velocity.z = -0.1f;
@@ -279,7 +253,7 @@ void Player::handle_subgoldy_collisions()
                             velocity.z = effect_game->subgame_rate * 0.5f;
                         }
                     }
-                    Game* ladder_game = game;
+                    SubgameRuntime* ladder_game = game;
                     int effect_kind = effect->kind;
                     if (effect_kind == 4 || effect_kind == 5) {
                         int current_lives = lives;

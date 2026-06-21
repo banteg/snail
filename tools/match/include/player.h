@@ -24,9 +24,9 @@ struct AttachmentPathTemplate;
 struct Object;
 struct TrackRowCell;
 
-class Game;
 class Player;
 class Sprite;
+class SubgameRuntime;
 class TrackHealthPickup;
 
 struct PlayerLiveMatrixRows {
@@ -255,7 +255,7 @@ public:
     DamageGaugeController damage_gauge;     // +0x3c4
     char unknown_3f0[0x404 - 0x3f0];
     int lives;                            // +0x404
-    Game* game;                            // +0x408
+    SubgameRuntime* game;                  // +0x408
     int movement_mode_selector;            // +0x40c
     Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
     unsigned char boost_one_tick;          // +0x41c — DEAD: only ever written 0

@@ -164,6 +164,16 @@ sets cutscene state `5` during completion handoff. The scratch keeps its broad
 local `Player` window because replacing it with the shared header would also
 pull in include-sensitive math/sprite/controller views.
 
+2026-06-21 runtime owner cleanup: `Player::game` is now a `SubgameRuntime*`,
+and the collision scratch includes `subgame_runtime.h` directly instead of
+carrying a local `Game` field window. `SubgameRuntime` now exposes the proven
+`parcel_total` lane at `+0x1b01e0`; the parcel HUD writer uses the existing
+`lives_text_widget` field at `+0x35bb94`. Focused Wibo is unchanged at
+`52.85%`, `659/673`, prefix `8/673`, with `86 ok / 0 mismatch` in the masked
+audit. `uv run snail match types --paths` no longer reports any generic
+`Game` owner row; only the intended header-compatible `GolbShot` and `Player`
+rows remain.
+
 2026-06-16 pickup/runtime offset correction pass: corrected the scratch-local
 `Game` and `Player` windows to agree with the already matched/update-spawner
 evidence:
@@ -220,7 +230,8 @@ misalignment.
 
 Asm-verified field finds (cross-findings for the campaign):
 
-- player+0x408 = Game* (the back-pointer)
+- player+0x408 = SubgameRuntime* (the back-pointer; previously tracked as a
+  scratch-local `Game*`)
 - player+0x440 = completion_handoff_active — cross-confirms the
   unification's "damage-warning drain blocker at 0x4301bc"
 - nuke_effect_progress/step at player+0x374/+0x378 (NOT 0x4180);
