@@ -52,10 +52,10 @@ ObjectAnimation* Object::request_object_animation(
             (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
         animation->frames[frame]->vertices =
             (Vector3*)allocate_tracked_memory(vertex_count * 0xc,
-                "Object Animation Frame Vertices");
+                "Object Animation Frame FaceQuad Normals");
         animation->frames[frame]->facequad_normals =
             (Vector3*)allocate_tracked_memory(facequad_count * 0x18,
-                "Object Animation Frame FaceQuad Normals");
+                "Object Animation Frame Vertices");
 
         float frame_time_float =
             (float)(last_frame * frame) / (float)generated_frame_count;

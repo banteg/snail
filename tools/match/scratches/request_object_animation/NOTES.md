@@ -38,3 +38,12 @@ named `floor`, matching the scratch's CRT declaration. Focused Wibo remains
 The remaining masked mismatch is the frame-buffer allocation label scheduling
 (`"Object Animation Frame FaceQuad Normals"` versus `"Object Animation Frame
 Vertices"`).
+
+2026-06-21 frame-buffer label alignment: the native debug allocation labels are
+swapped relative to the semantic frame slots. The first generated buffer is
+stored into `ObjectAnimationFrame::vertices` but uses the `"Object Animation
+Frame FaceQuad Normals"` label; the second buffer is stored into
+`facequad_normals` but uses `"Object Animation Frame Vertices"`. Swapping only
+those scratch string literals preserves the proven ownership/order and clears
+the final masked mismatch. Focused Wibo remains `41.24%`, `220/231`, with
+`15 ok / 0 unresolved / 0 mismatch` masked operands.
