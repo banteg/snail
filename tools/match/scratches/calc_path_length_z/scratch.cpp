@@ -182,13 +182,13 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         vertical_offset = motion->y + vertical_offset;
 
         float local_x = input_position->x - center_x;
-        Vec3 right_offset(
-            local_x * transform.basis_right.x,
-            transform.basis_right.y * local_x,
-            local_x * transform.basis_right.z);
-        output->x = right_offset.x + base_x;
-        output->y = right_offset.y + base_y;
-        output->z = right_offset.z + base_z;
+        Vec3 result(
+            local_x * transform.basis_right.x + base_x,
+            transform.basis_right.y * local_x + base_y,
+            local_x * transform.basis_right.z + base_z);
+        output->x = result.x;
+        output->y = result.y;
+        output->z = result.z;
     }
 
     Vec3* basis_right = &shot->basis_right_scratch;

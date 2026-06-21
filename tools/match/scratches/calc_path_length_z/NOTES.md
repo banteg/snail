@@ -186,3 +186,13 @@ The remaining precise lead is the ordinary result staging: native reserves
 before the transform at `esp+0x44`. Straight named-`Vec3` spellings allocate
 four bytes too much and regress, so the next experiment should target the
 original vector-expression/temporary shape rather than add padding.
+
+2026-06-21 ordinary result staging retry: replacing the intermediate
+`right_offset` vector with a direct final `Vec3 result` improves focused Wibo
+from 55.41% to 55.52% (`400/425` candidate/target instructions) while keeping
+the `0xec` frame and the 7 clean masked operands. Direct output-field writes
+without a result vector regress to 54.46%, and aggregate assignment
+`*output = result` regresses to 54.50% by expanding the copy. Product-scalar
+variants compile identically to the retained result constructor, so the scratch
+keeps the smaller source spelling until a stronger lead explains native's
+separate rotated-product stack slots.
