@@ -61,3 +61,10 @@ Rejected source-shape probes:
   that local, and using a volatile distance declaration all failed to recover
   the native prologue order; the declaration form also regressed saved-register
   ownership.
+- 2026-06-21 distance-gate read pass: reading the min-distance slot through a
+  narrow volatile `audible_distance` local before the radius gate preserves the
+  native conditional `distance = magnitude` store and raises focused Wibo to
+  98.48%, with 66/66 instructions and 11 clean masked operands. Volatile writes
+  inside the min branch regress to the low 70% range; a plain pointer view is
+  neutral at 89.23%. The only remaining diff is the known sentinel-store order
+  before the first `position` argument load.

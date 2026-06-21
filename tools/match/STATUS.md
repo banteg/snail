@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**505/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69609/325759** bytes (**21.37%**) are proof-grade, and overall fuzzy is **56.01%**.
+**505/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69609/325759** bytes (**21.37%**) are proof-grade, and overall fuzzy is **56.02%**.
 
 ## Proof Grade (505)
 
@@ -514,7 +514,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (16)
+## Near Match (95-99.99%) (17)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -533,9 +533,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
+| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 98.48% | 3/66 | 11 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (52)
+## High Progress (80-94.99%) (51)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -590,7 +591,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | multiply_vector_by_matrix | 0x44cb90 | 135 | 40/40 | 85.00% | 2/40 | - |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
-| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 64/66 | 89.23% | 3/66 | 10 ok |  |
 
 ## Mid Progress (50-79.99%) (65)
 

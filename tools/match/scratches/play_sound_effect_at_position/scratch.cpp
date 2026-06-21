@@ -26,8 +26,9 @@ void SoundEffectManager::play_sound_effect_at_position(int sound_id, const float
     float magnitude = magnitude_delta.vector_magnitude();
     if (magnitude < distance)
         distance = magnitude;
+    float audible_distance = *(volatile float*)&distance;
 
-    if (distance <= 25.0f) {
+    if (audible_distance <= 25.0f) {
         float gain = 1.0f - distance * 0.039999999f;
         float pan = position[0] * -0.25f;
         pan *= 100.0f;
