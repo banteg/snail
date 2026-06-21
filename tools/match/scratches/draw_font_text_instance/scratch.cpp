@@ -20,17 +20,16 @@ int draw_font_text_instance(FontQueueEntry* entry)
 
     char* cursor = entry->text;
     float wave_index = 0.0f;
-    char ch = *cursor;
-    while (ch != 0) {
-        int slot = font_slot_index_for_char(ch);
+    while (*cursor != 0) {
+        int slot = font_slot_index_for_char(*cursor);
         int font_id = entry->font_id;
         FontSheet* sheet = &g_font_sheets[font_id];
 
-        float u0 = sheet->u0[slot];
-        float u1 = sheet->v0[slot];
-        int texture_page = sheet->texture_page[slot];
-        float v0 = sheet->line_step;
-        float v1 = sheet->line_marker_fraction;
+        float u0 = g_font_sheets[font_id].u0[slot];
+        float u1 = g_font_sheets[font_id].v0[slot];
+        int texture_page = g_font_sheets[font_id].texture_page[slot];
+        float v0 = g_font_sheets[font_id].line_step;
+        float v1 = g_font_sheets[font_id].line_marker_fraction;
 
         float wave_x = sine(g_font_wave_phase_a + wave_index) * entry->text_wave_amplitude * 2.0f;
         float wave_y = cosine(wave_index * 3.0f + g_font_wave_phase_a) * entry->text_wave_amplitude * 4.0f;
@@ -92,11 +91,10 @@ int draw_font_text_instance(FontQueueEntry* entry)
         }
 
         int advance = (int)sheet->glyph_width[slot];
-        ch = cursor[1];
         ++cursor;
         cursor_x = (float)advance * sheet->width_scale * sheet->spacing_scale
             * entry->text_scale + cursor_x;
     }
 
-    return ch;
+    return *cursor;
 }
