@@ -28,3 +28,10 @@ the loop-tail finalization branch was neutral, so those spellings stay honest.
 assignment inside the null-check condition is codegen-neutral at 78.37%. VC6
 still stores the `find_case_insensitive_substring` result to the cursor local
 before testing it, while native compares against zero before the spill.
+
+2026-06-21 local-owner retry: swapping the declarations of `star_index` and
+`star_group_offset`, comparing the marker cursor against `star_index` instead
+of literal null, and adding a `star_count` temporary did not recover native's
+`ebx` star-index lifetime. The declaration/compare forms are neutral at 78.37%,
+while the `star_count` temporary grows the frame and regresses to 55.36% with
+masked call mismatches. Keep the current local order.

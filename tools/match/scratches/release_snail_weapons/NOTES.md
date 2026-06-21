@@ -34,3 +34,9 @@ Focused match:
   current candidate uses a `0x10` frame. Splitting raw forward-Z into a separate
   scalar looked plausible but regressed to 74.38%, because the compiler delayed
   the owner-velocity load again.
+- 2026-06-21 follow-up release-vector audit: spelling
+  `random_float_below(...) + 0.5f` inline and giving each forward-z load a
+  distinct source local are both codegen-neutral at 88.80%; they do not move the
+  frame to native's 0x1c layout. Direct scalar stores for the release vectors
+  shrink the frame and regress to the low-50% range. Keep the staged `Vector3`
+  source.

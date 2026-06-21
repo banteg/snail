@@ -46,3 +46,10 @@ field through `layer` were retested. Scores rise monotonically from 59.09% to
 reaches 92.54% and keeps all 19 masked operands clean. Native's earlier count
 publish remains a scheduling tradeoff; moving it back reintroduces field-offset
 mismatches.
+
+2026-06-21 signature/tail retry: a `void` helper removes the explicit zero
+return in source, but it also changes the saved-register set and drops the
+focused match to 24.43%. Removing only the success `return offset` keeps the
+`int` signature but falls to 67.67% and dirties the queue-offset audit. Keep the
+current runnable `int` source with the explicit skip return despite the native
+incidental return register.

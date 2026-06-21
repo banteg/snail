@@ -23,3 +23,10 @@ Object bounds pass at `0x42fb10`.
   `bounding_radius = 0.0f` and writing min z afterward also regresses to
   51.33%. It recovers the desired local store order but loses the native
   saved-register/prologue shape, so the aggregate min vector remains retained.
+- 2026-06-21 scalar-temp sweep: forcing vertex x/y/z through scalar locals,
+  forcing only x through a scalar, adding a byte cursor for the vertex array,
+  and combining those with the split manual init order all failed to beat the
+  retained 67.81% shape. The scalar variants either overgrew the frame or moved
+  the prologue off the native saved-register set; the byte cursor lost the
+  native prefix almost immediately. Keep the aggregate min/max initialization
+  and direct vertex expression form.

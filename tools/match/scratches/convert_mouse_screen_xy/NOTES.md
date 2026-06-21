@@ -28,3 +28,10 @@ with a 3/115 prefix and 32 clean masked operands. The swap nudges VC6's pointer
 register choice in all three GetCursorPos failure blocks while preserving the
 same observable zeroed outputs. The remaining residual is still branch distance
 and API-call setup register ownership.
+
+2026-06-21 follow-up zero-store audit: target-looking `x` then `y` zero stores,
+raw integer zero stores, output pointer aliases, and an IDA-ordered captured
+branch all failed to beat the retained `y` then `x` source. The `x` then `y`
+forms preserve `eax == 0` locally but drop back to 74.46% overall; putting the
+captured branch first reshapes the body to 53.28%. Keep the current
+counterintuitive zero order until a broader branch-owner lead appears.

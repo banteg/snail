@@ -40,3 +40,9 @@
   coordinate hoist before the `active_flip` test and the duplicated flipped-path
   stack-slot schedule; `volatile`/direct `active_flip` spellings either regressed
   or were neutral.
+- 2026-06-21 common-tail retry: refactoring the two render branches to set only
+  UV/color locals and share one corner calculation plus one
+  `queue_textured_quad_corners` call matches the IDA shape conceptually, but
+  VC6 over-optimizes the source into a different frame/register layout. The
+  common-tail variants score only 41.46% and 38.53%, so the intentionally
+  duplicated branch calls remain the better compiler-shape evidence.

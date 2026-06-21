@@ -41,3 +41,9 @@ edge updater's source-level return and just falls through with the incidental
 coherently with the owner bridge exact-matches `update_game_input` and keeps the
 leaf at the known 52.94% shape. The remaining leaf residual is still the native
 `edi` lifetime for `released_buttons`, not evidence for a real return value.
+
+2026-06-21 leaf-lifetime retry: IDA-style mutable locals for `current`,
+`changed`, `pressed`, `inverse`, and `released`, plus a `register released`
+hint, are codegen-neutral at 52.94% and still do not force native's saved `edi`
+tail. A `volatile released` local grows the body to 19 instructions but loses
+the native prefix and drops to 47.37%. Keep the compact void body.
