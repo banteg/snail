@@ -175,7 +175,7 @@ int IntroScreen::initialize_intro_screen(char* file_name)
                 ++cursor;
             }
 
-            if (count > 0) {
+            if (0 < count) {
                 float x = width * 0.5f * 0.80000001f;
                 char* glyph = line;
                 while (count != 0) {
