@@ -43,11 +43,13 @@ void __fastcall finalize_path_template(AttachmentPathTemplate* path)
         int sample_offset = 0;
         do {
             Vector3 cross;
+            AttachmentSample* primary = (AttachmentSample*)((char*)path->primary_samples + sample_offset);
+            AttachmentSample* next = primary + 1;
             cross.cross_vectors(
-                (Vector3*)((char*)path->primary_samples + sample_offset + 0x20),
-                (Vector3*)((char*)path->primary_samples + sample_offset + 0xc8));
+                &primary->transform.basis_forward,
+                &next->transform.basis_forward);
 
-            Vector3* right = (Vector3*)((char*)path->primary_samples + sample_offset);
+            Vector3* right = (Vector3*)primary;
             *(float*)((char*)path->primary_samples + sample_offset + 0xa4) =
                 (float)cross.dot_vector(right);
 

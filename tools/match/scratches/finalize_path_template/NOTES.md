@@ -37,3 +37,12 @@ native schedules `cross_vectors` by pushing both arguments before loading the
 local cross-product `this` pointer, while VC6 still materializes the local
 address before the pushes for the member-call spelling. Secondary inverse-loop
 base-local probes were codegen-neutral, and segment-limit locals regressed.
+
+2026-06-21 adjacent-sample typing pass: spelling the cross-product inputs as a
+typed `primary`/`next` sample pair while keeping the lateral-source writes as
+raw repeated lvalues raises the scratch from 74.67% to 75.34% and clears the
+masked call mismatch without changing the `Vector3::cross_vectors` thiscall
+ABI. The key is keeping `primary` live for the subsequent dot call; scoped
+typed arguments or raw-right recomputation regress to 71.11%, inline casts fall
+back to the old 74.67% masked mismatch, and explicit segment-limit locals
+reshape the prologue down near 60%.
