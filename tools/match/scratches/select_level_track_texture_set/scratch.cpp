@@ -25,7 +25,7 @@ void TextureSetSelector::select_level_track_texture_set(int texture_set)
         selected = (int)random_float_below(4.0f, 0);
         break;
     default:
-        selected = texture_set;
+        selected = *(volatile int*)&texture_set;
         break;
     }
 

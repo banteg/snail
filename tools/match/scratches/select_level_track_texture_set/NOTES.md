@@ -17,6 +17,15 @@ whatever the texture-replacement helper leaves in `eax`, so this is modeled as a
 Two source-plausible selector forms were codegen-neutral at `76.19%`: reusing
 the `texture_set` parameter as the selected value, and initializing
 `int selected = texture_set` before a no-op default case. Neither recovers the
-native pre-save `mov eax, [esp+4]` switch selector. Keep the clearer explicit
-`selected` local and default assignment; the prologue residual is not evidence
-for different texture-bank semantics.
+native pre-save `mov eax, [esp+4]` switch selector, so the remaining residual
+was dispatch/local lifetime rather than texture-bank semantics.
+
+## 2026-06-20 switch default reload fix
+
+The exact native shape needs the default case to reload `texture_set` from the
+stack after the jump table. A plain `selected = texture_set` lets VC6 pre-load
+the argument into `edi` and reuse it as both the selector and selected value,
+dropping to `76.19%`. Reading the default through a volatile parameter view
+keeps the switch selector in `eax`, copies only the default value into `edi`,
+and matches exactly: `100.00%`, `43/43` instructions, `43/43` prefix, with the
+curated `select_level_track_texture_set_jump_table` mask audited cleanly.
