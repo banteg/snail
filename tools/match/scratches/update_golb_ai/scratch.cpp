@@ -2,6 +2,7 @@
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
+#include "golb.h"
 #include "player.h"
 #include "score_stats.h"
 #include "subgame_runtime.h"
@@ -10,8 +11,6 @@
 #include "vector3.h"
 
 typedef Vector3 Vec3;
-class Sprite;
-
 float __fastcall normalize_vector(Vec3* vector);
 
 class SlugHazardRuntime {
@@ -19,63 +18,9 @@ public:
     void hit_slug_hazard(int mode);
 };
 
-struct PathFollow {
-    unsigned char active; // +0x00
-    char unknown_01[0x18 - 0x01];
-    Vec3 output_position; // +0x18 (this+724)
-    char unknown_24[0x28 - 0x24];
-
-    int calc_path_length_z(float path_factor, Vec3* position, Vec3* velocity);
-    void initialize_path_follow_golb(int cell, void* position, void* shot);
-};
-
 struct GolbTrackRowCellTileView {
     char unknown_00[0x3c];
     unsigned char tile_id; // +0x3c
-};
-
-struct GolbShot {
-    void update_golb_ai();
-    void kill_golb();
-    void spawn_golb_impact_sprite(Vec3* position);
-    void spawn_golb_smoke(Vec3* position);
-    Sprite* spawn_golb_trail_sprite(Vec3* position);
-
-    char unknown_000[0x80];
-    char vapour[0x150 - 0x80];       // +0x80 vapour trail object
-    TransformMatrix live_matrix;     // +0x150 (this+336)
-    char unknown_190[0x198 - 0x190];
-    int homing_target_active;        // +0x198 (this+408)
-    Vec3 homing_target;              // +0x19c (this+412)
-    char unknown_1a8[4];
-    float homing_blend;              // +0x1ac (this+428)
-    float homing_blend_step;         // +0x1b0 (this+432)
-    float spin;                      // +0x1b4 (this+436)
-    float spin_step;                 // +0x1b8 (this+440)
-    unsigned char skip_one_tick;     // +0x1bc (this+444)
-    unsigned char slug_bounce_armed; // +0x1bd (this+445)
-    char unknown_1be[2];
-    int kind;                        // +0x1c0 (this+448): 0 golb, 1 lazer, 2 rocket
-    char unknown_1c4[0x1f4 - 0x1c4];
-    Vec3 position;                   // +0x1f4 (this+500)
-    char unknown_200[0x234 - 0x200];
-    Vec3 previous_output;            // +0x234 (this+564)
-    char unknown_240[0x244 - 0x240];
-    int state;                       // +0x244 (this+580)
-    void* owner_body;                // +0x248 (this+584)
-    Vec3 velocity;                   // +0x24c (this+588)
-    Vec3 direction;                  // +0x258 (this+600)
-    float path_factor;               // +0x264 (this+612)
-    float lifetime;                  // +0x268 (this+616)
-    float lifetime_step;             // +0x26c (this+620)
-    SubgameRuntime* game;            // +0x270 (this+624)
-    char unknown_274[4];
-    Player* player;                  // +0x278 (this+632)
-    // the source transform at +636 spans 0x40 bytes whose POSITION ROW is
-    // the live output position at +684.
-    TransformMatrix source_matrix;   // +0x27c (this+636)
-    PathFollow path_follow;          // +0x2bc (this+700)
-    float path_entry_z_latch;        // +0x2e4 (this+740)
 };
 
 void GolbShot::update_golb_ai()
@@ -180,11 +125,11 @@ void GolbShot::update_golb_ai()
             GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(&source_matrix.position);
             if (cell->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z;
-                path_follow.initialize_path_follow_golb((int)cell, &position, this);
+                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)cell, &position, this);
             }
             if (velocity.z > 1.0f && ((GolbTrackRowCellTileView*)((char*)cell - 672))->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z + 1.0f;
-                path_follow.initialize_path_follow_golb((int)((char*)cell - 672), &position, this);
+                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)((char*)cell - 672), &position, this);
             }
         }
     }

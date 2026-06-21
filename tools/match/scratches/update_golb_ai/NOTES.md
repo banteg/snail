@@ -1,4 +1,23 @@
-# WIP scratch — 73.34%, 645/694 insns (2026-06-20)
+# WIP scratch — 73.34%, 645/694 insns (2026-06-21)
+
+## 2026-06-21 GolbShot header consolidation
+
+The local `GolbShot` and `PathFollow` field slices are now promoted into
+`include/golb.h`. The shared projectile layout keeps the existing exact-helper
+names (`primary_body`, `secondary_body`, `tertiary_body`, `render_body_owner`,
+`object_ref`, `owner_player`) and adds the update-only overlays for the
+vapour/live-matrix lane at `+0x80..+0x190`, homing state at `+0x198..+0x1bf`,
+`owner_body`/`player` aliases, the source matrix at `+0x27c`, path-follow state
+at `+0x2bc`, and the path-entry z latch at `+0x2e4`.
+
+Focused Wibo for this scratch stays pinned at `73.34%`, target `694`,
+candidate `645`, prefix `9/694`, with `68 ok, 0 unresolved, 0 mismatch`.
+Exact Golb helper sentinels (`initialize_golb_shot`, `kill_golb`,
+`spawn_golb_trail_sprite`, `initialize_path_follow_golb`) remain exact, and the
+documented partial Golb consumers (`spawn_golb_smoke`,
+`spawn_golb_impact_sprite`, `calc_path_length_z`) keep their dashboard
+baselines. `uv run snail match types --paths` now reports only the remaining
+`Player` header-compatible row.
 
 ## 2026-06-21 subgame owner cleanup
 
@@ -12,13 +31,8 @@ Focused Wibo stays pinned at `73.34%`, target `694`, candidate `645`, prefix
 `9/694`, with `68 ok, 0 unresolved, 0 mismatch`. The exact Golb helper users
 that include `golb.h` stayed exact, and the known partial consumers kept their
 dashboard baselines. `uv run snail match types --paths` now reports
-`partial-compatible Game: 7`, with this scratch removed from the remaining
+no `Game` row, with this scratch removed from the remaining
 generic owner list.
-
-Keep the local `GolbShot` slice for now: it remains header-compatible with
-`include/golb.h`, but this function's scheduling-sensitive fields are still
-better isolated until the surrounding 645-instruction body has stronger shape
-evidence.
 
 ## 2026-06-20 trail-offset vector follow-up
 
