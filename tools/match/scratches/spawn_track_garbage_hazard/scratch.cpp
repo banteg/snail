@@ -6,6 +6,7 @@
 #include "sprite.h"
 #include "player.h"
 #include "garbage_hazard_slot.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
@@ -32,12 +33,6 @@ struct GarbageHazardPoolSlotView {
     GarbageHazardSlot slot;
 };
 
-class Game {
-public:
-    DWORD* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player);
-    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
-};
-
 extern char* g_game_base; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
@@ -45,7 +40,7 @@ int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
-DWORD* Game::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
+DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;

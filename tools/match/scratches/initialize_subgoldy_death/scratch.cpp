@@ -1,16 +1,11 @@
 // initialize_subgoldy_death @ 0x446e30 (thiscall, ret)
 
 #include "player.h"
-
-class Game {
-public:
-    char unknown_00[0x40];
-    int level_mode; // +0x40
-};
+#include "subgame_runtime.h"
 
 int Player::initialize_subgoldy_death()
 {
-    int mode = game->level_mode;
+    int mode = ((SubgameRuntime*)game)->level_mode;
 
     switch (mode) {
     case 0:

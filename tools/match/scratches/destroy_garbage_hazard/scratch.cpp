@@ -9,12 +9,6 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-class Game {
-public:
-    char unknown_00[0x359140];
-    GarbageHazardPool garbage_hazards; // +0x359140
-};
-
 GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
 {
     state = 0;
@@ -48,11 +42,10 @@ GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
 
     sprite->kill_sprite();
 
-    Game* owner = game;
-    GarbageHazardSlot* result = owner->garbage_hazards.active_head;
+    GarbageHazardSlot* result = *(GarbageHazardSlot**)((char*)game + 0x359140);
     if (result == this) {
         result = next_active;
-        owner->garbage_hazards.active_head = result;
+        *(GarbageHazardSlot**)((char*)game + 0x359140) = result;
         return result;
     } else if (result) {
         while (1) {

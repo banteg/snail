@@ -1,8 +1,9 @@
 // update_subgoldy_resurrect @ 0x441fd0 (thiscall, ret)
 
 #include "app_shell.h"
+#include "player.h"
 
-class Game {
+class SubgoldyResurrectGameView {
 public:
     void complete_subgame(unsigned char completed);
 
@@ -13,8 +14,6 @@ public:
     char unknown_ff25d2[0x1270fc8 - 0xff25d2];
     int subgame_rebuild_selector; // +0x1270fc8
 };
-
-#include "player.h"
 
 void Player::update_subgoldy_resurrect()
 {
@@ -33,7 +32,7 @@ void Player::update_subgoldy_resurrect()
         return;
 
     if (resurrect_final_loss == 0) {
-        Game* current_game = game;
+        SubgoldyResurrectGameView* current_game = (SubgoldyResurrectGameView*)game;
         if (current_game->level_mode == 0)
             visible_life_stock -= 1;
         g_app->frontend_substate = g_app->frontend_state;
@@ -41,11 +40,11 @@ void Player::update_subgoldy_resurrect()
         return;
     }
 
-    Game* current_game = game;
+    SubgoldyResurrectGameView* current_game = (SubgoldyResurrectGameView*)game;
     current_game->subgame_rebuild_selector = 2;
-    game->complete_subgame(1);
+    ((SubgoldyResurrectGameView*)game)->complete_subgame(1);
 
-    Game* persistent_game = game;
+    SubgoldyResurrectGameView* persistent_game = (SubgoldyResurrectGameView*)game;
     if (persistent_game->selected_level_record_persistent != 0) {
         AppShell* app = g_app;
         app->frontend_substate = app->frontend_state;
@@ -55,7 +54,7 @@ void Player::update_subgoldy_resurrect()
 
     AppShell* app = g_app;
     app->frontend_substate = app->frontend_state;
-    Game* route_game = game;
+    SubgoldyResurrectGameView* route_game = (SubgoldyResurrectGameView*)game;
     if (route_game->level_mode == 0) {
         AppShell* route_app = g_app;
         if (route_app->high_score_entry_pending == 0) {

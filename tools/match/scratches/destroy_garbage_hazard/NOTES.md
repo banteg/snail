@@ -19,9 +19,15 @@ Residuals:
   configuration. The final loop source uses the native assign-then-test shape:
   probe `result->next_active` for `this`, then assign `result =
   result->next_active` and test `result` for the end of the chain.
-- 2026-06-16 garbage-pool consolidation: the scratch now consumes
-  `GarbageHazardPool` for the game slice at `+0x359140` and
+- 2026-06-16 garbage-pool consolidation: the shared header records the
+  `GarbageHazardPool` slice at `+0x359140`, while this scratch consumes
   `GarbageHazardListAnchor` for the shared BOD anchor at `data_4df904+0x5a8`.
   This records the cross-function evidence from destroy, collision, and spawn:
   active garbage head at `+0x359140`, 50 slots at `+0x359144`, total pool view
   size `0x264c`. Focused Wibo remains exact.
+- 2026-06-21 owner cleanup: the final active-chain unlink now casts the opaque
+  slot owner through raw `game+0x359140` loads/stores instead of carrying a
+  scratch-local `Game` view. A typed `GarbageHazardPool*` temporary regressed
+  to `89.60%` by compiling to `add ecx, 0x359140; mov eax, [ecx]`; the raw
+  offset spelling preserves the native `[ecx+0x359140]` address generation and
+  remains exact at `100.00%`, `62/62`.

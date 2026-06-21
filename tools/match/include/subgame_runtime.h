@@ -31,6 +31,7 @@ public:
     unsigned int* spawn_track_health_pickup(
         TrackRowCell* cell, Player* player); // @ 0x43d6c0
     int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
+    unsigned int* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player); // @ 0x43da80
     TrackRowCell* spawn_track_ring_or_special_effect(
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
@@ -46,6 +47,7 @@ public:
     TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
     TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
+    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
     void complete_subgame(unsigned char completed);
     void build_track_colours();
     void place_parcels_on_track();
@@ -151,6 +153,8 @@ public:
     TrackParcelPool parcel_pool; // +0x125e480
     int source_timer_a; // +0x125ffd8
     int source_timer_b; // +0x125ffdc
+    char unknown_125ffe0[0x1270fc8 - 0x125ffe0];
+    int subgame_rebuild_selector; // +0x1270fc8
 };
 
 #endif

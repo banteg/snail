@@ -174,3 +174,8 @@ Residuals:
   dword loads, staged vector copy, then projection call). A pointer alias to
   `staged_position.y` also matched, but the reference spelling is retained as
   the narrower original-looking C++ source shape. No residual remains.
+- 2026-06-21 subgame owner cleanup: the method now lives on
+  `SubgameRuntime`, sharing the recovered garbage allocator and
+  `project_position_onto_track_attachment` call surface without changing the
+  raw slot-walk shape. Focused Wibo remains exact at `100.00%`, `143/143`
+  instructions, with `16` clean masked operands.

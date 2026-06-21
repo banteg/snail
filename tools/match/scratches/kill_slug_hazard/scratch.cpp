@@ -5,12 +5,6 @@
 
 int next_math_random_value();
 
-class Game {
-public:
-    char unknown_00[0x3bb764];
-    Player player; // +0x3bb764
-};
-
 void SlugHazardRuntime::kill_slug_hazard()
 {
     if (state == 1) {
@@ -22,7 +16,7 @@ void SlugHazardRuntime::kill_slug_hazard()
             death_toss_direction = 1;
         else
             death_toss_direction = 2;
-        owner_game->player.add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
+        ((Player*)((char*)owner_game + 0x3bb764))->add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
         explode_slug_hazard();
     }
 }

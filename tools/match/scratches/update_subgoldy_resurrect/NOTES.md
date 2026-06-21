@@ -17,3 +17,9 @@ Exact match.
   replaced with `app_shell.h` plus `frontend_fade.h`. The exact 76-instruction
   match is unchanged, and the final arcade route now names
   `high_score_entry_pending` at app offset `+0x30d`.
+- 2026-06-21 owner cleanup: the sparse owner view is now named
+  `SubgoldyResurrectGameView` instead of the generic scratch-local `Game`.
+  Replacing it with broad `SubgameRuntime*` casts was rejected because it
+  changed VC6 hoisting around `resurrect_final_loss` and regressed the scratch
+  to `76.51%`; the sparse renamed view keeps the exact `100.00%`, `76/76`
+  source shape.
