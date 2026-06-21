@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**496/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **65864/325759** bytes (**20.22%**) are proof-grade, and overall fuzzy is **55.59%**.
+**497/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **65983/325759** bytes (**20.26%**) are proof-grade, and overall fuzzy is **55.61%**.
 
-## Proof Grade (496)
+## Proof Grade (497)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -500,6 +500,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | advance_to_next_crlf_line | 0x44e690 | 47 | 22/22 | 100.00% | 22/22 | - |  |
 | ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  |
 | ✅ | parse_next_signed_int | 0x44e710 | 107 | 47/47 | 100.00% | 47/47 | - |  |
+| ✅ | sample_tga_pixel_rgb | 0x44e780 | 119 | 49/49 | 100.00% | 49/49 | - |  |
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
 | ✅ | get_or_create_texture_ref | 0x44e810 | 228 | 79/79 | 100.00% | 79/79 | 4 ok |  |
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
@@ -660,7 +661,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 63/63 | 71.43% | 8/63 | 4 ok |  |
 
-## Early Progress (>0-49.99%) (69)
+## Early Progress (>0-49.99%) (68)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -729,7 +730,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 95/126 | 44.34% | 3/126 | 1 mismatch, 9 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1109 | 300/325 | 44.80% | 0/325 | 5 mismatch, 36 ok |  |
-| 🚧 | sample_tga_pixel_rgb | 0x44e780 | 119 | 38/49 | 25.29% | 0/49 | - |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
 | 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |

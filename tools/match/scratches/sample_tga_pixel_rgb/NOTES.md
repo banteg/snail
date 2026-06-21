@@ -30,7 +30,16 @@ relationship scratch rather than a forced match.
 `int bits_per_pixel` local regressed to `22.99%` and introduced signed-shift
 shape; a raw byte-buffer header view regressed to `25.00%` with a stack byte
 spill. Stepwise RGB packing was codegen-neutral at `25.29%` and still did not
-recover native's `esi`/`edi` byte lanes. Keep the current typed
-`TgaImageView` plus `pixel` pointer source as the best relationship scratch;
-the residual is register allocation around the image base, offset, and RGB
-packing lanes.
+recover native's `esi`/`edi` byte lanes. At that point the typed `TgaImageView`
+plus `pixel` pointer source was the best relationship scratch; the residual was
+register allocation around the image base, offset, and RGB packing lanes.
+
+2026-06-21 exact pass: generated source-shape variants showed the missed shape
+was not the `TgaImageView` layout, but the lifetime of the bits-per-pixel byte
+and the RGB result locals. Removing the named pixel pointer, using direct
+`image->bits_per_pixel` reads, and folding both 8-bit and 24-bit cases through
+one `red`/`green`/`blue` return path recovers native's `edx` image base,
+`ecx` byte offset, and `esi`/`edi` packing registers. For grayscale, assigning
+the sampled value in `blue`, `green`, then `red` order gives the native
+`ecx -> edi -> esi` copy chain. Focused matcher result is now 100.00%, 49/49
+instructions, full 49/49 prefix, and no masked operands.
