@@ -14,13 +14,19 @@ char* __cdecl find_case_insensitive_substring(char* needle, char* haystack)
                 while (1) {
                     ++needle_cursor;
                     if (needle_cursor[delta] == 0) {
-                        if (*needle_cursor == 0)
-                            return haystack_cursor;
-                        return 0;
+                        if (*needle_cursor != 0)
+                            return 0;
                     }
-                    char needle_upper = ascii_upper_if_lowercase(*needle_cursor);
-                    if (needle_upper != ascii_upper_if_lowercase(needle_cursor[delta]))
-                        goto advance_haystack;
+
+                    if (needle_cursor[delta] != 0) {
+                        char needle_upper =
+                            ascii_upper_if_lowercase(*needle_cursor);
+                        if (needle_upper != ascii_upper_if_lowercase(needle_cursor[delta]))
+                            goto advance_haystack;
+                    }
+
+                    if (*needle_cursor == 0)
+                        return haystack_cursor;
                 }
             }
 

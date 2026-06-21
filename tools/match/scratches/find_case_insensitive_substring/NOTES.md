@@ -62,3 +62,14 @@ codegen-neutral: VC6 still selected the same branchless pointer-or-null tail
 instead of native's explicit searched-ended-before-pattern branch. Keep the
 current explicit termination source; the remaining gap is tail layout and the
 pre-prologue searched-byte load, not a different substring semantic.
+
+2026-06-21 split-zero retry: separating the searched-ended-first null return
+from the both-cursors-ended success return, without naming a byte temporary,
+moves focused Wibo to 71.43%, with 63/63 instructions, an 8/63 prefix, and four
+clean masked operands. This recovers native's initial searched-pointer load and
+first-byte test before the saved-register block. A named `haystack_value` local
+also recovered the prologue but regressed to 66.67% by spilling the byte; a
+double-test/`else` spelling fell back to the old branchless select at 69.29%.
+The retained residual is now the inner success tail: native keeps the searched
+byte in `al` and branches directly back to the compare loop, while the scratch
+emits an extra post-compare pattern-ended check.

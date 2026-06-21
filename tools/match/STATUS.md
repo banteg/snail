@@ -656,7 +656,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 74.46% | 3/115 | 32 ok |  |
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 112/105 | 71.89% | 30/105 | 2 mismatch, 12 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
-| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 64/63 | 69.29% | 0/63 | 4 ok |  |
+| 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 63/63 | 71.43% | 8/63 | 4 ok |  |
 
 ## Early Progress (>0-49.99%) (71)
 
