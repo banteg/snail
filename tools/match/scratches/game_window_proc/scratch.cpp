@@ -38,7 +38,6 @@ LRESULT __stdcall game_window_proc(
 
         switch (message) {
             case 0x10:
-post_quit_message:
                 PostQuitMessage(0);
                 return 0;
 
@@ -46,7 +45,8 @@ post_quit_message:
                 if (wparam != 0x1b) {
                     return 0;
                 }
-                goto post_quit_message;
+                PostQuitMessage(0);
+                return 0;
 
             case 2:
                 return 0;
