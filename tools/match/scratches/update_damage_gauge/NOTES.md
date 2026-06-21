@@ -94,3 +94,9 @@ residual remains the same mirrored `mask_height`/`alpha` stack-slot allocation.
 Retested `alpha`/`mask_height` declaration order, `mask_v` hoisting, `Color4f`
 hoisting, and an initialized `alpha` local; all were neutral at 94.03%, so keep
 only the `flash_pulse` source split.
+
+2026-06-21 root-view naming: the scratch-local root object slice is now
+`DamageGaugeGameView` instead of generic `Game`. This is intentionally not a
+`SubgameRuntime` view; all offsets are root-game global offsets. Focused Wibo
+remains 94.03%, 268/268 instructions, prefix 122/268, with 65 clean masked
+operands.

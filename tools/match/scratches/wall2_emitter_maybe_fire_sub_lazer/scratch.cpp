@@ -27,7 +27,7 @@ struct PlayerBlock {
     Vector3 position; // +0x68
 };
 
-struct Game {
+struct Wall2EmitterGameView {
     char unknown_00[0x74621];
     unsigned char pause_gate;     // +0x74621
     char unknown_74622[0x74650 - 0x74622];
@@ -48,7 +48,7 @@ struct Game {
     int row_color_records[1];    // +0x6411b8, 244-byte stride per row
 };
 
-extern Game* g_game; // data_4df904 (this TU caches the base, reloading after calls)
+extern Wall2EmitterGameView* g_game; // data_4df904 (this TU caches the base, reloading after calls)
 
 struct FringeRuntimeObject {
     void wall2_emitter_maybe_fire_sub_lazer();

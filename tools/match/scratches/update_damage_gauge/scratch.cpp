@@ -7,7 +7,7 @@
 #include "voice_manager.h"
 #include "warning_actor.h"
 
-struct Game {
+struct DamageGaugeGameView {
     char unknown_000000[0x74621];
     unsigned char pause_gate; // +0x74621
     char unknown_074622[0x42fde8 - 0x74622];
@@ -28,7 +28,7 @@ struct Game {
     int drain_exit_word; // +0x434064
 };
 
-extern Game* g_game; // data_4df904
+extern DamageGaugeGameView* g_game; // data_4df904
 
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(
@@ -48,7 +48,7 @@ int queue_axis_aligned_textured_quad_uv(
 
 void DamageGaugeController::update_damage_gauge()
 {
-    Game* game = g_game;
+    DamageGaugeGameView* game = g_game;
     if (!game->pause_gate) {
         display_fill = (fill - display_fill) * 0.2f + display_fill;
 
@@ -89,7 +89,7 @@ void DamageGaugeController::update_damage_gauge()
         }
 
         case 2: {
-            Game* skin_game = g_game;
+            DamageGaugeGameView* skin_game = g_game;
             skin_game->snail_skin_transition.change_snail_skin(1, 0.2f);
             apply_damage_gauge_delta(-0.0016666667f, 1);
             skin_hold_ticks = 5;

@@ -51,3 +51,9 @@ candidate/target instructions. Function-scope scratch buffers and extra
 lane/spawn temporaries were neutral or regressive, so the remaining residual is
 still frame/register scheduling around the wall2 vector setup and skirt-color
 sync.
+
+2026-06-21 root-view naming: the cached global owner slice is now
+`Wall2EmitterGameView` instead of generic `Game`, documenting that the offsets
+are root-game globals rather than the embedded `SubgameRuntime`. Focused Wibo
+remains 46.77%, 185/187 candidate/target instructions, with 30 clean masked
+operands.
