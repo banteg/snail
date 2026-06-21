@@ -25,13 +25,13 @@ int __cdecl classify_archive_entry_extension(unsigned char* path, unsigned char*
     if (value == 0)
         return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;
 
-    value = *++path;
+    ++path;
     char letter_a = 'A';
-    if (value == 'T' && path[1] == 'G' && path[2] == letter_a)
+    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)
         return ARCHIVE_ENTRY_EXTENSION_TGA;
-    else if (value == 'W' && path[1] == letter_a && path[2] == 'V')
+    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')
         return ARCHIVE_ENTRY_EXTENSION_WAV;
-    else if (value == 'M' && path[1] == 'P' && path[2] == '3')
+    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')
         return ARCHIVE_ENTRY_EXTENSION_MP3;
     return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;
 }

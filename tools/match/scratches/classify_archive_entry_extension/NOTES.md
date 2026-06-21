@@ -29,3 +29,12 @@ neutral. A direct-dereference stem loop reached 30.77%, but it was rejected
 because it stores before advancing/loading the input cursor, unlike the native
 `inc eax; mov [edx], cl; inc edx; mov cl, [eax]` loop. Keep the retained source
 until a real `eax` cursor / `cl` byte owner lead appears.
+
+2026-06-21 extension-tail retry: focused Wibo improves to 28.26%, with
+46/46 candidate/target instructions, by keeping the explicit `++path` but
+checking the extension selector as direct `*path` reads. This makes VC6 preserve
+the native-style reusable `'A'` byte in `dl` across the TGA/WAV checks. Reloading
+the selector into `value` after the increment falls back to the old 26.37% tail,
+and `/Os` is still a hard regression despite its attractive opening register
+allocation. The remaining first mismatch is still the input cursor/value lane:
+native uses `eax` plus `cl`, while this source keeps `ecx` plus `al`.
