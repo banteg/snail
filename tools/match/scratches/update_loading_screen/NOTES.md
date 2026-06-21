@@ -32,3 +32,13 @@ extra candidate reload. Focused Wibo improves from `88.02%` to `90.20%`, with
 instruction-count parity at `204/204` and 24 clean masked operands. A nearby
 two-step `x_end` spelling was codegen-neutral at the same score but less clear,
 so the direct `x_end = bar_percent * 2.5599999f + 192.0f` expression remains.
+
+2026-06-21 x-end scheduling pass: moving the `x_end` calculation below the
+first vertex's constant stores lets VC6 start the x87 multiply after
+`vertices[0].x`, matching native's progress-fill vertex setup. Focused Wibo
+improves from `90.20%` to `91.67%`; instruction count remains `204/204`, and
+masked operands improve from 24 to 26 clean references. An assignment-expression
+variant (`vertices[1].x = x_end = ...`) tied the same score, so the clearer
+delayed declaration is retained. The remaining visible mismatch is the early
+register allocation (`this` in `edi`, clamped percent in `ebx` versus native's
+opposite pairing), plus the matching final `previous_percent` store.

@@ -62,14 +62,13 @@ int LoadingScreen::update_loading_screen()
                 g_loading_bar_vertex_buffer->vertex_buffer, 0, sizeof(LoadingVertex) * 4,
                 (void**)&vertices, 0);
 
-            float x_end = bar_percent * 2.5599999f + 192.0f;
-
             vertices[0].x = 192.0f;
             vertices[0].y = 289.0f;
             vertices[0].z = 0.0f;
             vertices[0].u = 0.0f;
             vertices[0].v = 0.0f;
 
+            float x_end = bar_percent * 2.5599999f + 192.0f;
             vertices[1].x = x_end;
             vertices[1].y = 289.0f;
             vertices[1].z = 0.0f;
