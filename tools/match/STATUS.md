@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**489/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64329/325759** bytes (**19.75%**) are proof-grade, and overall fuzzy is **55.20%**.
+**490/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **64557/325759** bytes (**19.82%**) are proof-grade, and overall fuzzy is **55.20%**.
 
-## Proof Grade (489)
+## Proof Grade (490)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -495,10 +495,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | strings_equal_case_insensitive_path | 0x44e6c0 | 69 | 33/33 | 100.00% | 33/33 | - |  |
 | ✅ | parse_next_signed_int | 0x44e710 | 107 | 47/47 | 100.00% | 47/47 | - |  |
 | ✅ | initialize_texture_list | 0x44e800 | 16 | 4/4 | 100.00% | 4/4 | - |  |
+| ✅ | get_or_create_texture_ref | 0x44e810 | 228 | 79/79 | 100.00% | 79/79 | 4 ok |  |
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (17)
+## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -518,7 +519,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_vapour_point | 0x442560 | 141 | 47/47 | 97.87% | 42/47 | - |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
-| 🚧 | get_or_create_texture_ref | 0x44e810 | 227 | 79/78 | 99.36% | 78/78 | 4 ok |  |
 
 ## High Progress (80-94.99%) (54)
 

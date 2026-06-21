@@ -56,3 +56,9 @@ Rejected/no-op variants:
   Nested-count, `!(count <= 0)`, `count != 0`, and shared-return spellings were
   neutral or regressive. The only remaining residual is the extra candidate
   `ret 0xc` after the target extent at the found-existing epilogue.
+- 2026-06-21 extent audit: the source body is actually proof-grade. The stale
+  scratch-local `END=0x44e8f3` cut one byte before the native found-existing
+  `ret 0xc` completed, so the status path reported `99.36%` with a missing
+  target ret. Removing the obsolete extent override uses the manifest next
+  symbol at `0x44e900`, yielding `100.00%`, `79/79`, and the same four clean
+  masked operands.
