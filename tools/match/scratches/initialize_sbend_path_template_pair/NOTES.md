@@ -35,3 +35,10 @@ operands unchanged at 24 ok, 0 unresolved, 1 mismatch.
 setup requests facequads before vertices for this constructor. Swapping only
 the two strip-mesh allocation calls moves focused Wibo to 23.33% (501/579) and
 clears the masked audit to 25 ok, 0 unresolved, 0 mismatch.
+
+2026-07-04 vertices-first request-order retest: the Binary Ninja decompile
+labels the mesh calls as vertices before facequads, but replaying that source
+shape regressed focused Wibo from 23.33% to 22.59% (501/579) and reintroduced
+one masked call mismatch (`target request_object_facequads` against candidate
+`request_object_vertices`). Keep the retained facequads-first spelling until a
+larger mesh-loop rewrite changes the alignment context.

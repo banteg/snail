@@ -30,7 +30,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_turnoverdouble_path_template_pair` | 27.60% | Turnover sibling; the retained two-iteration facequad loop improves the focused matcher while the seed-X reload remains rejected. |
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score; mesh request-order remains vertices-first after a neutral rejected probe. |
-| `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
+| `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit; a vertices-first request-order retest regressed despite the decompile labels. |
 | `initialize_snake_path_template_pair` | 22.15% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; curved-body orientation scheduling now leaves only the mesh allocation call pairing; mesh-vertex staging is rejected; mesh request-order retest stayed neutral after orientation expansion. |
 | `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton; the snake orientation-scheduling expansion regressed. |
 
