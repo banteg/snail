@@ -3585,3 +3585,95 @@ def render_type_consolidation_markdown(
                 )
     lines.append("")
     return lines
+
+
+@dataclass(frozen=True, slots=True)
+class ExternLintFinding:
+    """One shared-address extern divergence across headers/scratches."""
+
+    status: str  # "type-conflict" or "uncurated-alias"
+    address: int
+    name: str
+    detail: str
+    paths: tuple[Path, ...]
+
+
+_EXTERN_DECL_PATTERN = re.compile(
+    r"^extern\s+([^;=\n(]+?)\s*\b(g_\w+)\s*(\[\w*\])?\s*;"
+    r"\s*//.*?\b(?:data|byte|word|dword|unk)_([0-9a-fA-F]{6,8})\b",
+    re.M,
+)
+
+
+def lint_extern_declarations(
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    reference_manifest: ReferenceSymbolManifest | None = None,
+) -> list[ExternLintFinding]:
+    """Lint extern globals annotated with a data_ address across the match tree.
+
+    Flags two shared-address hazards before they become compile breaks or
+    semantic drift:
+    - type-conflict: the same identifier at the same address is declared with
+      different types in different translation units. The moment header
+      consolidation joins two such TUs, VC6 stops compiling (C2040/C2373).
+    - uncurated-alias: the same address is used under multiple identifiers,
+      and at least one name is not recorded as an alias in the reference
+      manifest. Divergent names encode unverified ownership assumptions.
+    """
+    if reference_manifest is None:
+        reference_manifest = load_default_reference_symbol_manifest()
+    curated_names: dict[int, set[str]] = {}
+    for symbol in reference_manifest.symbols:
+        curated_names.setdefault(symbol.address, set()).update(
+            (symbol.name, *symbol.aliases)
+        )
+
+    sources = sorted(match_root.glob("include/*.h")) + sorted(
+        match_root.glob("scratches/*/scratch.cpp")
+    )
+    by_decl: dict[tuple[int, str], dict[str, list[Path]]] = {}
+    names_by_address: dict[int, dict[str, list[Path]]] = {}
+    for path in sources:
+        for match in _EXTERN_DECL_PATTERN.finditer(path.read_text()):
+            declared_type = match.group(1).strip() + (match.group(3) or "")
+            name = match.group(2)
+            address = int(match.group(4), 16)
+            by_decl.setdefault((address, name), {}).setdefault(
+                declared_type, []
+            ).append(path)
+            names_by_address.setdefault(address, {}).setdefault(name, []).append(path)
+
+    findings: list[ExternLintFinding] = []
+    for (address, name), types in sorted(by_decl.items()):
+        if len(types) <= 1:
+            continue
+        paths = tuple(sorted({p for ps in types.values() for p in ps}))
+        detail = ", ".join(
+            f"`{declared_type}` ({len(ps)})" for declared_type, ps in sorted(types.items())
+        )
+        findings.append(
+            ExternLintFinding(
+                status="type-conflict",
+                address=address,
+                name=name,
+                detail=detail,
+                paths=paths,
+            )
+        )
+    for address, names in sorted(names_by_address.items()):
+        if len(names) <= 1:
+            continue
+        uncurated = set(names) - curated_names.get(address, set())
+        if not uncurated:
+            continue
+        paths = tuple(sorted({p for ps in names.values() for p in ps}))
+        findings.append(
+            ExternLintFinding(
+                status="uncurated-alias",
+                address=address,
+                name="/".join(sorted(names)),
+                detail=f"uncurated: {', '.join(sorted(uncurated))}",
+                paths=paths,
+            )
+        )
+    return findings

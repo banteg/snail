@@ -17,6 +17,7 @@ from .match import (
     IDIOM_CASES_BY_NAME,
     compile_idiom_case,
     collect_masked_operand_issues,
+    lint_extern_declarations,
     collect_scratch_statuses,
     diff_regions,
     manifest_cluster_totals,
@@ -601,6 +602,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compiler flags to use (default: /O2 /G5 /W3).",
     )
 
+    match_lint_parser = match_subparsers.add_parser(
+        "lint",
+        help="Lint shared-address extern declarations across headers and scratches.",
+    )
+    match_lint_parser.add_argument(
+        "--paths",
+        action="store_true",
+        help="Print declaring files for each finding.",
+    )
+    match_lint_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print findings as JSON.",
+    )
+
     match_types_parser = match_subparsers.add_parser(
         "types",
         help="Report scratch-local type definitions that are ready or not ready to consolidate.",
@@ -886,6 +902,37 @@ def main(argv: Sequence[str] | None = None) -> int:
             for line in result.instructions:
                 print(line)
         return 0
+
+    if args.command == "match" and args.match_command == "lint":
+        findings = lint_extern_declarations()
+        if args.json:
+            print(
+                json.dumps(
+                    [
+                        {
+                            "status": finding.status,
+                            "address": finding.address,
+                            "name": finding.name,
+                            "detail": finding.detail,
+                            "paths": [str(path) for path in finding.paths],
+                        }
+                        for finding in findings
+                    ],
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0 if not findings else 1
+        if not findings:
+            print("extern lint: clean")
+            return 0
+        print(f"extern lint: {len(findings)} finding(s)")
+        for finding in findings:
+            print(f"  {finding.status} 0x{finding.address:x} {finding.name}: {finding.detail}")
+            if args.paths:
+                for path in finding.paths:
+                    print(f"    {path}")
+        return 1
 
     if args.command == "match" and args.match_command == "types":
         findings = type_consolidation_findings(

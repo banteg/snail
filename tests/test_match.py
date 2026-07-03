@@ -2028,3 +2028,64 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     os.utime(header, (base, base))
     os.utime(scratch_dir / "scratch.conf", (base + 20, base + 20))
     assert not _scratch_object_is_current(obj_path, config, match_root)
+
+
+def test_lint_extern_declarations_flags_conflicts(tmp_path: Path) -> None:
+    from snail.match import ReferenceSymbol, ReferenceSymbolManifest, lint_extern_declarations
+
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    (include_dir / "a.h").write_text(
+        "extern char* g_base; // data_4df904\n"
+        "extern int g_flags; // data_4df934\n"
+    )
+    scratch_one = match_root / "scratches/one"
+    scratch_one.mkdir(parents=True)
+    (scratch_one / "scratch.cpp").write_text(
+        "extern int g_base; // data_4df904\n"
+        "extern unsigned char g_flags; // byte_4df934\n"
+    )
+    scratch_two = match_root / "scratches/two"
+    scratch_two.mkdir(parents=True)
+    (scratch_two / "scratch.cpp").write_text(
+        "extern char* g_root; // data_4df904\n"
+    )
+
+    manifest = ReferenceSymbolManifest(
+        name="test",
+        symbols=(
+            ReferenceSymbol(
+                address=0x4DF904,
+                name="g_base",
+                kind="global",
+                aliases=("data_4df904", "g_root"),
+            ),
+        ),
+    )
+    findings = lint_extern_declarations(match_root, reference_manifest=manifest)
+    by_status = {(finding.status, finding.name): finding for finding in findings}
+
+    # same name, same address, different types in different TUs
+    assert ("type-conflict", "g_base") in by_status
+    assert ("type-conflict", "g_flags") in by_status
+    # g_base/g_root share 0x4df904 but g_root is a curated alias: no finding
+    assert not any(status == "uncurated-alias" and "g_root" in name for status, name in by_status)
+
+
+def test_lint_extern_declarations_flags_uncurated_alias(tmp_path: Path) -> None:
+    from snail.match import ReferenceSymbolManifest, lint_extern_declarations
+
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches/one"
+    scratch.mkdir(parents=True)
+    (scratch / "scratch.cpp").write_text("extern float g_scales[]; // data_7770e8\n")
+    other = match_root / "scratches/two"
+    other.mkdir(parents=True)
+    (other / "scratch.cpp").write_text("extern float g_widths[]; // data_7770e8\n")
+
+    findings = lint_extern_declarations(
+        match_root, reference_manifest=ReferenceSymbolManifest(name="empty")
+    )
+    assert [finding.status for finding in findings] == ["uncurated-alias"]
+    assert findings[0].name == "g_scales/g_widths"

@@ -79,6 +79,16 @@ Useful analysis helpers:
 - `uv run snail match audit --exact-only` groups unresolved/mismatched masked
   operands across all 100% scratches. Use it before editing the reference
   manifest so repeated target addresses and wrong aliases are visible together.
+  Scratches that fail to compile are listed as audit failures and make the
+  command exit non-zero; so does `snail match status --check`.
+- `uv run snail match lint` cross-checks every `extern ... g_name; // data_xxx`
+  annotation across headers and scratches. It flags the same identifier
+  declared with different types at one address (a future C2040/C2373 compile
+  break the moment header consolidation joins those TUs) and addresses used
+  under names that are not curated aliases in
+  `analysis/symbols/gameplay-references.json`. Scratch-local typed views are
+  fine while exploring, but keep one canonical spelling per name; run the lint
+  before promoting types or headers.
 - `analysis/symbols/gameplay-references.json` is the curated escape hatch for
   recovered globals, offsets, and helper symbols that are not in the function
   manifest. Add entries only when a scratch note, decompiler label, or matched

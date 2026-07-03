@@ -4217,7 +4217,8 @@
       "kind": "global",
       "aliases": [
         "data_7770e8",
-        "unk_7770e8"
+        "unk_7770e8",
+        "g_font_glyph_widths"
       ],
       "size": "0x200",
       "description": "Per-glyph 3D font width-scale cache filled by initialize_font3d_objects and read by intro-screen text layout."
