@@ -27,3 +27,13 @@ interpolated lateral value in `center_x` but leaves transform `position.x` at
 0.0f. Spelling that through the sample initializer moves focused Wibo from
 22.70% (502/608) to 22.72% (501/608), with masked operands unchanged at 20 ok,
 0 unresolved, 4 mismatch.
+
+2026-07-03 retained roll schedule cleanup: recomputing
+`sine(roll_phase) * 0.30000001f` separately for the cosine and sine basis-up
+components, with `roll_phase` materialized before sample initialization but the
+outer roll calls after it, moves focused Wibo from 22.72% (501/608) to 24.46%
+(504/608), clearing the masked audit from 20 ok, 0 unresolved, 4 mismatch to
+27 ok, 0 unresolved, 0 mismatch. Rejected/lesser splits were: folded roll
+schedule after init at 23.86% with one mismatch, split turn phase before init at
+23.84% with one mismatch, and roll calls after init at 23.92% with one
+mismatch.

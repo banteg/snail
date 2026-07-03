@@ -24,7 +24,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion is rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
-| `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
+| `initialize_wibble_path_template_pair` | 24.46% | Interior roll schedule now recomputes the native sine/cosine basis-up values and clears the focused masked audit. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
 | `initialize_turnoverdouble_path_template_pair` | 27.60% | Turnover sibling; the retained two-iteration facequad loop improves the focused matcher while the seed-X reload remains rejected. |
@@ -387,6 +387,14 @@ to 22.72% (`502/608` to `501/608`, masked operands unchanged at
 `20 ok / 4 mismatch`) and `invert` from 22.89% to 23.82% (`501/600` to
 `500/600`), clearing the invert masked audit from `18 ok / 2 mismatch` to
 `21 ok / 0 mismatch`.
+
+The next retained `wibble` slice recomputes the native roll basis separately for
+the cosine and sine up-vector components. Focused Wibo moved from 22.72% to
+24.46% (`501/608` to `504/608`), clearing the masked audit from
+`20 ok / 4 mismatch` to `27 ok / 0 mismatch`. Three nearby schedules were
+rejected as lesser fits: folded roll after initialization at 23.86%, split turn
+phase before initialization at 23.84%, and roll calls after initialization at
+23.92%, each still leaving one masked mismatch.
 
 For `supertramp`, the retained arc schedule cleanup matches the native order
 that initializes both primary and secondary arc sample positions before

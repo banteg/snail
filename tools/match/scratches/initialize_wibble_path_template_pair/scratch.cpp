@@ -172,10 +172,13 @@ void AttachmentPathTemplate::initialize_wibble_path_template_pair(
         float center = primary_samples[0].center_x
             + (primary_samples[31].center_x - primary_samples[0].center_x)
                 * local_index * 0.033333335f;
-        float roll = sine(local_index * 0.20943952f * 3.0f) * 0.3f;
+        float turn_phase = local_index * 0.20943952f;
+        float roll_phase = turn_phase * 3.0f;
         initialize_sample(&primary_samples[i], center, 0.0f, 0.0f, (float)i);
-        primary_samples[i].transform.basis_up.x = sine(roll);
-        primary_samples[i].transform.basis_up.y = cosine(roll);
+        float basis_y = cosine(sine(roll_phase) * 0.30000001f);
+        float basis_x = sine(sine(roll_phase) * 0.30000001f);
+        primary_samples[i].transform.basis_up.x = basis_x;
+        primary_samples[i].transform.basis_up.y = basis_y;
         primary_samples[i].transform.basis_up.z = 0.0f;
         copy_secondary_from_primary(this, i);
     }
