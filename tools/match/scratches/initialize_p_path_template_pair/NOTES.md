@@ -42,3 +42,9 @@ but simply flipped the remaining mesh call mismatch from target vertices vs
 candidate facequads to target facequads vs candidate vertices. Masked operands
 stayed at 19 ok, 0 unresolved, 6 mismatch, so the shared vertices-first helper
 remains retained until the earlier loop/call alignment debt moves.
+
+2026-07-03 mesh-face loop probe rejected: replacing the direct `a`/`b` face
+writes with the two-iteration `face_index` loop regressed focused Wibo from
+19.26% (557/679) to 18.14% (567/679). Masked operands dropped from 19 ok, 0
+unresolved, 6 mismatch to 16 ok, 0 unresolved, 6 mismatch, so the direct face
+writer stays retained for now.

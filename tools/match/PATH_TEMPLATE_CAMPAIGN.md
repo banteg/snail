@@ -449,6 +449,9 @@ operands stayed at `19 ok / 6 mismatch`.
 A `p` mesh request-order probe was also rejected: swapping to
 facequads-before-vertices stayed neutral at 19.26% (`557/679`) and only flipped
 the mesh call mismatch, leaving masked operands at `19 ok / 6 mismatch`.
+Replacing the direct `a`/`b` face writer with the shared two-iteration
+`face_index` loop was rejected too: focused Wibo regressed to 18.14%
+(`567/679`) and masked operands dropped to `16 ok / 6 mismatch`.
 
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail
