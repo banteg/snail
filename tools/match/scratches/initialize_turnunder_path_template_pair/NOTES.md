@@ -35,3 +35,9 @@ focused Wibo from 20.96% (582/687) to 18.08% (563/687), with masked operands
 dropping from 22 ok, 0 unresolved, 5 mismatch to 19 ok, 0 unresolved, 5
 mismatch. Left out; the current turnunder layout still depends on the older
 scalar traffic until the interior loop shape is rebuilt.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-texture `face_index` loop moves focused Wibo from 20.96% (582/687)
+to 23.92% (592/687). Masked operands improve from 22 ok, 0 unresolved,
+5 mismatch to 24 ok, 0 unresolved, 5 mismatch. The remaining audit debt stays
+in the turn angle/interior orientation schedule.

@@ -23,7 +23,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_start_path_template_pair` | 18.04% | Low tail target; direct sample loops plus the retained face loop improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
-| `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
+| `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
@@ -315,6 +315,12 @@ seeded primary centers. Focused Wibo moved from 14.79% to 20.96% (`598/687` to
 Swapping the start/end center expressions and precomputing an explicit
 `interior_count_f` radius were both rejected because they reduced the focused
 score.
+
+The retained `turnunder` mesh-face slice applies the same two-texture
+`face_index` loop. Focused Wibo moved from 20.96% to 23.92% (`582/687` to
+`592/687`) and improved the masked audit from `22 ok / 5 mismatch` to
+`24 ok / 5 mismatch`. The remaining residuals are still in the turn
+angle/interior orientation schedule.
 
 For `turnover`, the retained slice narrows the straight seed helper by reloading
 secondary X from the primary center field after it has been written. Focused Wibo
