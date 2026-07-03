@@ -59,10 +59,10 @@ static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
 
 static __forceinline void build_direct_strip_mesh(AttachmentPathTemplate* path, char* texture)
 {
-    path->strip_mesh->request_object_vertices(
-        (path->width_cells + 1) * (path->segment_count + 1));
     path->strip_mesh->request_object_facequads(
         2 * path->width_cells * path->segment_count);
+    path->strip_mesh->request_object_vertices(
+        (path->width_cells + 1) * (path->segment_count + 1));
 
     Vector3* vertices = path->strip_mesh->vertices;
     ObjectFaceQuad* facequads = path->strip_mesh->facequads;

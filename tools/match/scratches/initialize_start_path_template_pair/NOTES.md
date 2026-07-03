@@ -89,6 +89,13 @@ moves from 18.04% (521/610) to 20.56% (528/610), and masked operands improve
 from 24 ok, 0 unresolved, 2 mismatch to 26 ok, 0 unresolved, 2 mismatch. The
 known prologue debt remains: candidate frame 0x48 versus native 0x44.
 
+2026-07-04 retained mesh request-order cleanup: after mesh-vertex staging,
+requesting facequads before vertices moves focused Wibo from 20.56% (528/610)
+to 21.27% (528/610), and improves masked operands from 26 ok, 0 unresolved,
+2 mismatch to 27 ok, 0 unresolved, 1 mismatch. The remaining mismatch still
+pairs a native orientation call against the local mesh allocation call, so this
+only narrows the allocation-call alignment debt.
+
 2026-07-03 rejected curved byte-offset probe: replacing the curved body loop's
 `primary_samples[sample_index]` / `secondary_samples[sample_index]` pointers
 with an explicit `sample_offset` regressed focused Wibo from 20.56% to 18.72%

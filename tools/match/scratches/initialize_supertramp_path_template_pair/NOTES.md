@@ -72,6 +72,13 @@ calculation through a local `Vector3 generated_position` before assigning
 cap-texture facequad writes remain direct because the earlier two-iteration
 `face_index` probe regressed sharply.
 
+2026-07-04 retained mesh request-order cleanup: after mesh-vertex staging,
+requesting facequads before vertices moves focused Wibo from 17.10% (477/552)
+to 18.66% (477/552), and improves masked operands from 26 ok, 0 unresolved,
+1 mismatch to 27 ok, 0 unresolved, 1 mismatch. The remaining mismatch still
+pairs a native orientation call against the local mesh allocation call, so the
+cap-texture face writer and larger frame residual stay explicit.
+
 2026-07-03 neutral ownership retests after mesh-vertex staging: re-expanding
 the seven flat lead-in samples out of `initialize_pair_sample` remained exactly
 neutral at 17.10% (477/552), with masked operands unchanged at 26 ok,

@@ -20,8 +20,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
-| `initialize_start_path_template_pair` | 20.56% | Low tail target; direct sample loops, the retained face loop, and staged mesh vertices improve fuzzy score, with the lost prefix/frame debt called out. |
-| `initialize_supertramp_path_template_pair` | 17.10% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`. |
+| `initialize_start_path_template_pair` | 21.27% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, and facequads-first mesh allocation improve fuzzy score, with the lost prefix/frame debt called out. |
+| `initialize_supertramp_path_template_pair` | 18.66% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`; mesh allocation is facequads-first. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion and mesh-vertex staging are rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
 | `initialize_wibble_path_template_pair` | 29.95% | Interior roll schedule and the retained two-iteration facequad loop now both clear the focused masked audit. |
@@ -504,6 +504,16 @@ staging each row vertex through a local `Vector3` improves the focused matcher
 from 16.96% to 17.10% (`474/552` to `477/552`) while keeping the masked audit at
 `26 ok / 1 mismatch`. The cap-texture facequad loop remains direct because the
 earlier two-iteration `face_index` probe regressed sharply.
+
+The retained extra-row mesh request-order slice applies to both `start` and
+`supertramp`: request facequads before vertices, matching the call alignment
+that survived after mesh-vertex staging. Focused Wibo moved `start` from 20.56%
+to 21.27% (`528/610` unchanged), improving the masked audit from
+`26 ok / 2 mismatch` to `27 ok / 1 mismatch`, and moved `supertramp` from
+17.10% to 18.66% (`477/552` unchanged), improving masked operands from
+`26 ok / 1 mismatch` to `27 ok / 1 mismatch`. The remaining mismatch is still a
+mesh allocation call aligned against native orientation work, so this does not
+claim the prologue/interior residual is solved.
 
 A `supertramp` float-count lifetime probe was rejected: materializing a separate
 `curve_segments_f` local for radius and angle division was exactly neutral at
