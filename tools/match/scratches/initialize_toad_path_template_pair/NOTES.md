@@ -28,3 +28,10 @@ signature to `char turn_left` moves focused Wibo to 19.71% (595/663), exposes a
 1-instruction prefix, and leaves masked operands unchanged at 18 ok, 0
 unresolved, 2 mismatch. The remaining focused residual is stack-frame and
 interior orientation/copy scheduling, not call ABI width.
+
+2026-07-03 sample-scalar retry after ABI cleanup: after narrowing the branch
+selector to `char`, removing the scratch-only `lateral_source` writes from the
+primary initializer and secondary copy now improves focused Wibo from 19.71%
+(595/663) to 19.79% (590/663). The 1-instruction prefix and masked audit stay
+at 18 ok, 0 unresolved, 2 mismatch, so this is a small source-shape win while
+the interior orientation/copy scheduling residual remains.

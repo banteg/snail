@@ -27,7 +27,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
-| `initialize_toad_path_template_pair` | 19.71% | Selector argument now matches native byte-width ABI; remaining residual is orientation/copy scheduling. |
+| `initialize_toad_path_template_pair` | 19.79% | Selector argument now matches native byte-width ABI; sample scalar cleanup removes scratch-only lateral_source traffic; remaining residual is orientation/copy scheduling. |
 | `initialize_hill_valley_path_template_pair` | 18.00% | Native phase counter and endpoint-center recompute lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 15.50% | Curved body now reloads the seeded right sample and recomputes Y inside expanded primary/secondary setup. |
@@ -345,6 +345,11 @@ shared path-template declaration and scratch signature after focused head diff
 showed the native byte load. Focused Wibo moved from 19.40% to 19.71%
 (`595/663` unchanged), exposing a 1-instruction prefix while leaving the masked
 audit unchanged at `18 ok / 2 mismatch`.
+
+Retrying only the `toad` sample-scalar cleanup after the byte-width ABI fix is
+now retained: removing scratch-only `lateral_source` traffic moves focused Wibo
+from 19.71% to 19.79% (`595/663` to `590/663`), while the prefix and
+`18 ok / 2 mismatch` audit remain unchanged.
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a

@@ -21,7 +21,6 @@ static __forceinline void initialize_sample(
     sample->rotation_scalar_98 = 0.0f;
     sample->lateral_scale = 1.0f;
     sample->special_scalar = 0.0f;
-    sample->lateral_source = 0.0f;
     set_matrix_identity(&sample->transform);
     sample->transform.position.x = x;
     sample->transform.position.y = y;
@@ -55,7 +54,6 @@ static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* pa
     secondary->rotation_scalar_98 = primary->rotation_scalar_98;
     secondary->lateral_scale = primary->lateral_scale;
     secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_source = primary->lateral_source;
     secondary->transform = primary->transform;
     secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
     secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
