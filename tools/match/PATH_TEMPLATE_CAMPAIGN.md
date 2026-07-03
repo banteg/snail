@@ -198,6 +198,12 @@ masked operands unchanged at `25 ok / 4 mismatch`). The same spelling was
 rejected for `sweep` because it regressed to 14.17% and worsened the masked
 audit to `22 ok / 4 mismatch`.
 
+A `snake` orientation-bound probe was rejected: extending the identity branch
+from `current_index <= first_index` to `current_index <= first_index + 1` left
+focused Wibo and the masked audit unchanged at 14.53% (`532/652`) and
+`25 ok / 4 mismatch`, so the apparent identity-vs-normalize pairings remain
+documented alignment drift.
+
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and
 exit seed samples into separate primary/secondary identity initializers, sets

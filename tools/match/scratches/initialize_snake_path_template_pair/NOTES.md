@@ -33,3 +33,10 @@ integer index and perform the int-to-float Z conversion inside the inlined
 helper after the primary identity call. Focused Wibo moves from 14.49%
 (535/652) to 14.53% (532/652), with masked operands unchanged at 25 ok,
 0 unresolved, 4 mismatch.
+
+2026-07-03 orientation-bound probe rejected: extending the identity-orientation
+branch from `current_index <= first_index` to `current_index <= first_index + 1`
+did not change focused Wibo (14.53%, 532/652) or the masked audit (25 ok,
+0 unresolved, 4 mismatch). The native `set_matrix_rotation_identity` vs
+candidate `normalize_vector` pairings therefore remain treated as alignment
+drift rather than a retained semantic change.
