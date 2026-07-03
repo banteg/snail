@@ -9,3 +9,9 @@ vertices/faces, and finalization.
 
 This is a starter partial. The unusual native layout around endpoint samples and
 VC6 x87 scheduling remains open.
+
+2026-07-03 ABI cleanup: the constructor callsite passes six stack arguments and
+the native tail is `ret 0x18`. Updating the scratch and shared declaration from
+the stale four-argument prototype moves focused Wibo from 30.02% (564/655) to
+30.19% (564/655), with masked operands unchanged at 30 ok, 0 unresolved, 1
+mismatch.

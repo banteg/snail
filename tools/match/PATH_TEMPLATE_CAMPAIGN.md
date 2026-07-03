@@ -11,9 +11,11 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_loopout_path_template_pair` | 37.37% | Same large strip-mesh skeleton, one masked mismatch. |
 | `initialize_looptheloop_path_template_pair` | 35.59% | Loop-family macro scratch, still no prefix. |
 | `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
+| `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
 | `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
+| `initialize_slalom_path_template_pair` | 19.37% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
@@ -144,3 +146,9 @@ The recovered constructor callsite passes six stack arguments and the target tai
 cleans up `0x18` bytes; the unused mode/cap arguments are now explicit in both
 the scratch and shared declaration. Focused Wibo moved from 18.80% to 18.95%
 (`613/685` unchanged, masked operands unchanged at `19 ok / 4 mismatch`).
+
+The same callsite/tail audit applies to `dip` and `slalom`, which were still on
+stale four-argument prototypes despite native six-argument calls. Making the
+unused mode/cap arguments explicit moved `dip` from 30.02% to 30.19% (`564/655`
+unchanged, `30 ok / 1 mismatch`) and `slalom` from 19.22% to 19.37% (`615/696`
+unchanged, `19 ok / 3 mismatch`).
