@@ -21,7 +21,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
 | `initialize_start_path_template_pair` | 20.56% | Low tail target; direct sample loops, the retained face loop, and staged mesh vertices improve fuzzy score, with the lost prefix/frame debt called out. |
-| `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
+| `initialize_supertramp_path_template_pair` | 17.10% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion is rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
 | `initialize_wibble_path_template_pair` | 24.46% | Interior roll schedule now recomputes the native sine/cosine basis-up values and clears the focused masked audit. |
@@ -442,6 +442,12 @@ The next `supertramp` slice materializes `last_segment_index = curve_segments +
 mismatch` to `26 ok / 1 mismatch`. Reloading flat lead-in X from the written
 primary `center_x` was rejected because it regressed to 16.75% and restored the
 two masked mismatches.
+
+The next retained `supertramp` mesh-vertex slice mirrors the `start` finding:
+staging each row vertex through a local `Vector3` improves the focused matcher
+from 16.96% to 17.10% (`474/552` to `477/552`) while keeping the masked audit at
+`26 ok / 1 mismatch`. The cap-texture facequad loop remains direct because the
+earlier two-iteration `face_index` probe regressed sharply.
 
 A `supertramp` float-count lifetime probe was rejected: materializing a separate
 `curve_segments_f` local for radius and angle division was exactly neutral at

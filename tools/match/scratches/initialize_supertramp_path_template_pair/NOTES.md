@@ -64,3 +64,10 @@ Reloading arc primary transform X from `primary->center_x`, matching the
 decompiler spelling, also regressed to 16.76% (474/552) with 25 ok,
 0 unresolved, 2 mismatch. The retained arc loop keeps those scalar writes and
 the constant primary X store.
+
+2026-07-03 retained mesh-vertex staging: like `start`, routing the row vertex
+calculation through a local `Vector3 generated_position` before assigning
+`*vertex` improves the focused matcher from 16.96% (474/552) to 17.10%
+(477/552). The masked audit stays at 26 ok, 0 unresolved, 1 mismatch, and the
+cap-texture facequad writes remain direct because the earlier two-iteration
+`face_index` probe regressed sharply.
