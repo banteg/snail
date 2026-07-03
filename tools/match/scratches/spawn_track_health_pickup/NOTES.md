@@ -4,7 +4,7 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `86.07%`, `122/122` candidate/target instructions, with `7` masked operands
+- `97.54%`, `122/122` candidate/target instructions, with `7` masked operands
   ok.
 - The scratch now uses the promoted `TrackHealthPickup` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
@@ -128,3 +128,23 @@ keeps all seven masked operands clean. The tied direct-zero variants all keep
 the same score, while reload-through-`first_ref` spellings fall back to
 `86.89%`; the remaining residual is the earlier slot-index subtract versus
 late `cell` reload plus the target's reuse of the known-zero `first` value.
+
+2026-07-03 empty-splice node-reuse pass: native reloads the freshly stored head
+back into `ecx` before the `+0xc` next store, and the working spelling is
+reassigning the existing `node` local (`node = *first_ref; node->list_next = 0;`)
+between the prev and next stores. That reuses a live register lane instead of
+allocating a fresh local, improving focused Wibo from `96.72%` to `97.54%` with
+`122/122` instruction parity and all seven masked operands clean. Probed
+alternatives all stayed at `86.89%` or worse: a fresh `head`/`reloaded` local,
+a `BodNode*&` reference alias to the list head, repointing `first_ref` at the
+next link, reusing `first` for the reload, storing `first` instead of literal
+zero without the reload, the exact 100% `initialize_click_start` splice
+spelling, and a `BodList*` typed local. Full-native splice spellings that
+store through `(*first_ref)->list_next` flip the whole flags-test/OR region's
+`eax`/`ecx` allocation and regress to `86.89%`. Storing `first` versus `0` in
+the reuse shape is codegen-neutral; the literal-zero form is retained as the
+clearer source. The only remaining residuals are the prologue `sub eax, ebx`
+versus `mov ebp, [esp+0x1c]` scheduling swap (region 1) and the single
+non-empty-splice `mov ecx, [ecx]` versus `mov eax, [ecx]` reload lane; staged
+`cell`/`player` locals, split 29-word arithmetic, owner-store reordering, and
+anchor-pointer staging were all codegen-neutral at `97.54%`.
