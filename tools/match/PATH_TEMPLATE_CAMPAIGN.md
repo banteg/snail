@@ -216,6 +216,10 @@ does not zero-write Y/Z before the final sine-derived values. It also follows
 the native order of X write, `sine(angle)`, local counter increment, then final
 Y/Z stores. Focused Wibo moved both twins from 21.58% to 21.67% (`574/677` to
 `569/677`), with the same `33 ok / 3 mismatch` constant-reference audit.
+The `snake`/dump/hump half-angle cleanup does not transfer here yet: removing
+the `half_angle` local regressed both twister twins to 21.40% (`566/677`) while
+leaving the masked audit unchanged, so the current twister loop shape keeps the
+local.
 
 The next `hill_valley` slice keeps the length-to-steps conversion ahead of
 `width_or_scale`, materializes `last = steps + 1` before allocation, and reloads

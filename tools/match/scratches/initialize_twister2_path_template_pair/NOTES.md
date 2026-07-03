@@ -54,3 +54,9 @@ that sine call, and then writes the final Y/Z values once. Focused Wibo moves
 from 21.58% (574/677) to 21.67% (569/677). The masked audit is unchanged at
 33 ok, 0 unresolved, 3 mismatch, all still the shifted constant-reference
 pairings.
+
+2026-07-03 rejected half-angle inline probe: unlike `snake` and `hump`/`dump`,
+removing the `half_angle` local and spelling the Y expression as
+`sine(angle * 0.5f) * angle_sine * height` regressed focused Wibo from 21.67%
+to 21.40% (569/677 to 566/677), with masked operands unchanged at 33 ok, 0
+unresolved, 3 mismatch. Keep the local for the current twister loop shape.
