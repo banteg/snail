@@ -479,8 +479,10 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     }
 #elif PATH_VARIANT == 7
     kind = 0x16;
-    segment_count = curve_count + 8;
-    segment_count_f = (float)(curve_count + 8);
+    int lead_out_start = curve_count + 4;
+    int total_segments = lead_out_start + 4;
+    segment_count = total_segments;
+    segment_count_f = (float)total_segments;
     allocate_path_template_samples();
     special_runtime_flag_9c = 0;
 
@@ -496,7 +498,7 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     }
 
     for (i = 0; i < 4; ++i) {
-        int sample_index = curve_count + 4 + i;
+        int sample_index = lead_out_start + i;
         initialize_sample_pair(
             &primary_samples[sample_index],
             &secondary_samples[sample_index],

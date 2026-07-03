@@ -28,3 +28,9 @@ Splitting the folded scratch expression moves focused Wibo from 19.37%
 case is left to the helper. Removing the scratch-local guard moves focused Wibo
 from 20.68% (629/696) to 20.84% (619/696), with masked operands unchanged at
 24 ok, 0 unresolved, 1 mismatch.
+
+2026-07-03 lead-out bound spelling: native keeps the first trailing straight
+sample index as `curve_count + 4` and derives the total segment count from that
+local. Spelling those as `lead_out_start` and `total_segments` moves focused
+Wibo from 20.84% (619/696) to 20.97% (620/696), with masked operands unchanged
+at 24 ok, 0 unresolved, 1 mismatch.
