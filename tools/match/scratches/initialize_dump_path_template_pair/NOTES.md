@@ -46,3 +46,9 @@ larger x87/frame residual is still explicit.
 decompiler expression directly. This is score-neutral in focused Wibo at
 `19.43%` (`607/690`) and leaves the masked audit at `28 ok / 1 mismatch`, so it
 is retained as source-shape cleanup rather than claimed as a matcher win.
+
+2026-07-03 mesh request order probe rejected: swapping the strip-mesh requests
+to facequads-before-vertices regressed focused Wibo from `19.43%` (`607/690`,
+`28 ok / 1 mismatch`) to `18.50%` (`607/690`, `27 ok / 1 mismatch`). The
+remaining mismatch stayed the half-angle constant pairing, so dump keeps the
+shared vertices-before-facequads order.

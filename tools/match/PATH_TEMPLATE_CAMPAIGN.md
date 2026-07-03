@@ -140,6 +140,11 @@ The later inline half-angle cleanup spells the same center expression as
 `cosine(angle * 0.5f)` instead of a `half_angle` local. It is score-neutral for
 both twins and leaves the single masked mismatch unchanged, so it is recorded as
 source-shape cleanup only.
+A hump/dump mesh request-order probe was rejected: swapping the local
+strip-mesh calls to facequads-before-vertices regressed `hump` from 19.53% to
+18.60% and `dump` from 19.43% to 18.50%, with both masked audits dropping from
+`28 ok / 1 mismatch` to `27 ok / 1 mismatch`. The remaining mismatch stayed the
+half-angle constant pairing, so the twins keep the shared vertices-first order.
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`
