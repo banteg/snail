@@ -239,6 +239,9 @@ the cosine-derived height after secondary identity. Focused Wibo moved from
 14.53% to 15.50% (`532/652` to `535/652`), with masked operands improving from
 `25 ok / 4 mismatch` to `29 ok / 3 mismatch`. Retesting the orientation-bound
 probe after this expansion stayed neutral, so that branch remains unchanged.
+Expanding the remaining snake lead-in and lead-out helper calls was rejected
+because it regressed focused Wibo to 15.41% (`542/652`) without improving the
+masked audit.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and

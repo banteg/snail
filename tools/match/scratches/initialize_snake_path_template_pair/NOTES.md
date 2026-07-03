@@ -50,3 +50,9 @@ operands improving from 25 ok, 0 unresolved, 4 mismatch to 29 ok, 0 unresolved,
 3 mismatch. Retesting the `current_index <= first_index + 1` orientation-bound
 probe against this expanded body stayed exactly neutral at 15.50%, so the
 original bound remains retained.
+
+Rejected: expanding the six lead-in samples and three lead-out samples from the
+generic pair helper regressed focused Wibo from 15.50% (535/652) to 15.41%
+(542/652), with the masked audit unchanged at 29 ok, 0 unresolved, 3 mismatch.
+The lead/tail helper shape stays retained despite the decompiler's flattened
+loops.
