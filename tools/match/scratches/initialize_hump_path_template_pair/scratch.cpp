@@ -346,9 +346,12 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     if (curve_count > 0) {
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 7;
+            int sample_offset = sample_index * (int)sizeof(PathAttachmentSample);
             float angle = (float)i * 6.2831855f / curve_count_f;
-            PathAttachmentSample* primary = &primary_samples[sample_index];
-            PathAttachmentSample* secondary = &secondary_samples[sample_index];
+            PathAttachmentSample* primary =
+                (PathAttachmentSample*)((char*)primary_samples + sample_offset);
+            PathAttachmentSample* secondary =
+                (PathAttachmentSample*)((char*)secondary_samples + sample_offset);
             primary->center_x = cosine(angle * 0.5f) * primary_samples[0].center_x;
             primary->rotation_scalar_98 = 0.0f;
             primary->rotation_scalar_94 = 0.0f;
@@ -365,16 +368,20 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
             secondary->transform.position.y =
                 (1.0f - cosine(angle)) * hump_radius * height_scale_value + 0.49000001f;
             secondary->transform.position.z = z;
-            if (sample_index <= 7) {
-                primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
-                secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
+            PathAttachmentSample* previous_primary =
+                (PathAttachmentSample*)((char*)primary - (int)sizeof(PathAttachmentSample));
+            PathAttachmentSample* previous_secondary =
+                (PathAttachmentSample*)((char*)secondary - (int)sizeof(PathAttachmentSample));
+            if (sample_offset <= 7 * (int)sizeof(PathAttachmentSample)) {
+                previous_primary->transform.set_matrix_rotation_identity();
+                previous_secondary->transform.set_matrix_rotation_identity();
             } else {
                 orient_previous_with_fixed_right(
-                    &primary_samples[sample_index - 1],
-                    &primary_samples[sample_index]);
+                    previous_primary,
+                    primary);
                 orient_previous_with_fixed_right(
-                    &secondary_samples[sample_index - 1],
-                    &secondary_samples[sample_index]);
+                    previous_secondary,
+                    secondary);
             }
         }
     }

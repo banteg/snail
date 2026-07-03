@@ -78,3 +78,10 @@ non-terminal strip-mesh vertex branches through local `Vector3
 generated_position` temporaries regressed focused Wibo from `20.49%` (`613/685`)
 to `20.31%` (`625/685`). The masked audit stayed clean at `33 ok / 0 mismatch`,
 so the scratch keeps direct component writes in the vertex loop.
+
+2026-07-03 middle-loop byte-offset pass: spelling the curved sample loop's
+primary/secondary pointers and orientation guard through an explicit
+`sample_offset` matches the native byte-offset ownership without reviving the
+rejected mesh `vertex_index` rewrite. Focused Wibo moves from `20.49%`
+(`613/685`) to `30.38%` (`612/685`), and the masked audit improves from
+`33 ok / 0 mismatch` to `38 ok / 0 mismatch`.
