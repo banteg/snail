@@ -1728,6 +1728,13 @@ class ScratchMaskedOperandIssue:
     entry: MaskedOperandAuditEntry
 
 
+@dataclass(frozen=True, slots=True)
+class ScratchAuditFailure:
+    config: ScratchConfig
+    address: int
+    error: str
+
+
 def load_scratch_config(directory: Path) -> ScratchConfig:
     import shlex
 
@@ -2331,6 +2338,34 @@ def collect_scratch_statuses(
     return statuses
 
 
+def _summarize_error(error: Exception) -> str:
+    """One-line error summary, preferring the first line that names an error."""
+    lines = [line.strip() for line in str(error).splitlines() if line.strip()]
+    if not lines:
+        return "unknown error"
+    for line in lines:
+        if "error" in line.lower():
+            return line
+    return lines[0]
+
+
+@dataclass(frozen=True, slots=True)
+class MaskedOperandAuditReport:
+    """Repo-wide masked-operand audit outcome.
+
+    `issues` are audit entries from scratches that compiled and matched;
+    `failures` are scratches that could not be audited at all. A report is
+    only clean when both are empty.
+    """
+
+    issues: list[ScratchMaskedOperandIssue]
+    failures: list[ScratchAuditFailure]
+
+    @property
+    def clean(self) -> bool:
+        return not self.issues and not self.failures
+
+
 def collect_masked_operand_issues(
     manifest: FunctionSymbolManifest,
     image_path: Path,
@@ -2338,32 +2373,45 @@ def collect_masked_operand_issues(
     *,
     statuses: frozenset[str] = frozenset(("unresolved", "mismatch")),
     exact_only: bool = False,
-) -> list[ScratchMaskedOperandIssue]:
-    """Collect detailed masked-operand audit issues across scratch matches."""
+) -> MaskedOperandAuditReport:
+    """Collect detailed masked-operand audit issues across scratch matches.
+
+    Scratches that fail to compile or match are reported as failures instead
+    of aborting the whole audit; one broken scratch must not hide the rest.
+    """
     image = load_image(image_path, manifest.image_base)
     reference_manifest = load_default_reference_symbol_manifest()
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     issues: list[ScratchMaskedOperandIssue] = []
+    failures: list[ScratchAuditFailure] = []
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
-        start, end = resolve_function_extent(manifest, config.function, config.end_va)
-        target_data = image.function_bytes(start, end)
-        obj_path = compile_scratch(config, match_root)
-        obj = parse_coff_object(obj_path.read_bytes())
-        candidate = extract_object_function(
-            obj,
-            config.symbol or config.function,
-            reference_manifest=reference_manifest,
-        )
-        result = match_function(
-            target_data,
-            candidate,
-            image=image,
-            target_va=start,
-            manifest=manifest,
-            reference_manifest=reference_manifest,
-        )
+        try:
+            start, end = resolve_function_extent(manifest, config.function, config.end_va)
+            target_data = image.function_bytes(start, end)
+            obj_path = compile_scratch(config, match_root)
+            obj = parse_coff_object(obj_path.read_bytes())
+            candidate = extract_object_function(
+                obj,
+                config.symbol or config.function,
+                reference_manifest=reference_manifest,
+            )
+            result = match_function(
+                target_data,
+                candidate,
+                image=image,
+                target_va=start,
+                manifest=manifest,
+                reference_manifest=reference_manifest,
+            )
+        except (ValueError, RuntimeError) as error:
+            failures.append(
+                ScratchAuditFailure(
+                    config=config, address=address, error=_summarize_error(error)
+                )
+            )
+            continue
         if exact_only and result.ratio != 1.0:
             continue
         for entry in result.masked_operand_audit.entries:
@@ -2377,7 +2425,7 @@ def collect_masked_operand_issues(
                     entry=entry,
                 )
             )
-    return issues
+    return MaskedOperandAuditReport(issues=issues, failures=failures)
 
 
 @dataclass(frozen=True, slots=True)

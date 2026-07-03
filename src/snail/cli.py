@@ -77,6 +77,15 @@ def _audit_issue_group_key(issue) -> tuple:
     return (entry.status, target, candidate)
 
 
+def _print_masked_audit_failures(failures) -> None:
+    if not failures:
+        return
+    print()
+    print(f"audit failures: {len(failures)} scratch(es) could not be audited")
+    for failure in failures:
+        print(f"  {failure.config.function} 0x{failure.address:x}: {failure.error}")
+
+
 def _print_masked_audit_issues(issues, *, limit: int | None = None) -> None:
     if not issues:
         print("masked audit issues: none")
@@ -781,7 +790,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             audit_statuses = frozenset(("unresolved", "mismatch"))
         else:
             audit_statuses = frozenset((args.status,))
-        issues = collect_masked_operand_issues(
+        report = collect_masked_operand_issues(
             manifest,
             image_path,
             statuses=audit_statuses,
@@ -790,38 +799,50 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.json:
             print(
                 json.dumps(
-                    [
-                        {
-                            "function": issue.config.function,
-                            "scratch": str(issue.config.directory),
-                            "address": issue.address,
-                            "match": issue.ratio,
-                            "status": issue.entry.status,
-                            "instruction": issue.entry.instruction,
-                            "target_index": issue.entry.target_index,
-                            "candidate_index": issue.entry.candidate_index,
-                            "target_offset": issue.entry.target_offset,
-                            "candidate_offset": issue.entry.candidate_offset,
-                            "target_address": issue.entry.target_address,
-                            "candidate_address": issue.entry.candidate_address,
-                            "target_references": [
-                                _masked_reference_payload(ref)
-                                for ref in issue.entry.target_references
-                            ],
-                            "candidate_references": [
-                                _masked_reference_payload(ref)
-                                for ref in issue.entry.candidate_references
-                            ],
-                        }
-                        for issue in issues
-                    ],
+                    {
+                        "issues": [
+                            {
+                                "function": issue.config.function,
+                                "scratch": str(issue.config.directory),
+                                "address": issue.address,
+                                "match": issue.ratio,
+                                "status": issue.entry.status,
+                                "instruction": issue.entry.instruction,
+                                "target_index": issue.entry.target_index,
+                                "candidate_index": issue.entry.candidate_index,
+                                "target_offset": issue.entry.target_offset,
+                                "candidate_offset": issue.entry.candidate_offset,
+                                "target_address": issue.entry.target_address,
+                                "candidate_address": issue.entry.candidate_address,
+                                "target_references": [
+                                    _masked_reference_payload(ref)
+                                    for ref in issue.entry.target_references
+                                ],
+                                "candidate_references": [
+                                    _masked_reference_payload(ref)
+                                    for ref in issue.entry.candidate_references
+                                ],
+                            }
+                            for issue in report.issues
+                        ],
+                        "failures": [
+                            {
+                                "function": failure.config.function,
+                                "scratch": str(failure.config.directory),
+                                "address": failure.address,
+                                "error": failure.error,
+                            }
+                            for failure in report.failures
+                        ],
+                    },
                     indent=2,
                     sort_keys=True,
                 )
             )
-            return 0
-        _print_masked_audit_issues(issues, limit=args.limit)
-        return 0
+            return 0 if report.clean else 1
+        _print_masked_audit_issues(report.issues, limit=args.limit)
+        _print_masked_audit_failures(report.failures)
+        return 0 if report.clean else 1
 
     if args.command == "match" and args.match_command == "idioms":
         if args.list:
