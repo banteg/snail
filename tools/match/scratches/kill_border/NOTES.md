@@ -32,3 +32,18 @@ only object difference before the placeholder return load is the same recursive
 self-call relocation (`call L0` target versus `call ADDR` candidate). Keep this
 scratch pinned as a harness/link model residual, not a source-control-flow
 lead.
+
+2026-07-03 tail-return probes: the 3-instruction residual is the epilogue —
+native falls through to `pop edi; pop esi; ret 4` with no defined return
+value, while every VC6 shape that names a return value emits an extra
+`mov eax, [esp+0xc]` load (returning the `border` argument) before the pops.
+The natural original source is `int kill_border(...)` that falls off the end
+after the three recursive child calls (native leaves the last child call's
+eax live). Under wibo 1.1.0 that exact shape cannot be compiled: the C4715
+"not all control paths return a value" diagnostic path in VC6's c2 calls
+kernel32 `lstrcpynA`, which wibo 1.1.0 does not implement, and cl aborts
+after writing a 0-byte object. `#pragma warning(disable:4715)` does not help
+because c2 still formats the message. wibo main already implements lstrcpynA
+(dll/kernel32/winbase.cpp), so retry this scratch after the next wibo release;
+expected result is 100%. `result = kill_border(child2)` compiles but regresses
+to 71.88% by rotating the flags register through eax.
