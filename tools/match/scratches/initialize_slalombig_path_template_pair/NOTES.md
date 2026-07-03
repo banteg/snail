@@ -30,3 +30,9 @@ straight sample as `curve_segments + 4`, then derives the total segment count
 from that local. Spelling `lead_out_start` and `total_segments` in the scratch
 moves focused Wibo from 20.39% (589/696) to 20.44% (586/696), with masked
 operands unchanged at 23 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-iteration `face_index` loop moves focused Wibo from 20.44% (586/696)
+to 21.71% (594/696). Masked operands improve from 23 ok, 0 unresolved,
+2 mismatch to 25 ok, 0 unresolved, 1 mismatch; the remaining mismatch is the
+interior orientation call pairing.

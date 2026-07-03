@@ -16,7 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hump_path_template_pair` | 19.53% | Worst front-half family target; direct sample setup improves the masked audit to one mismatch. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
-| `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
+| `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
 | `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.58% | Twister twin; same retained facequad inner-loop skeleton and masked-audit caveat as twister. |
@@ -475,6 +475,12 @@ For `slalombig`, the retained lead-out bound spelling materializes
 local, matching the native header calculation. Focused Wibo moved from 20.39%
 to 20.44% (`589/696` to `586/696`, masked operands unchanged at
 `23 ok / 2 mismatch`).
+
+The next retained `slalombig` mesh-face slice follows `slalom` and replaces the
+direct `a`/`b` facequad writes with the two-iteration `face_index` loop. Focused
+Wibo moved from 20.44% to 21.71% (`586/696` to `594/696`), with the masked audit
+improving from `23 ok / 2 mismatch` to `25 ok / 1 mismatch`. The remaining
+masked mismatch is still the interior orientation call pairing.
 
 For `slalomdouble`, the retained fixed-sample initializer spelling reloads
 primary and secondary X from the stored primary `center_x`, then delays the
