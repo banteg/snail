@@ -17,6 +17,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
+| `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
+| `initialize_sweep_path_template_pair` | 13.88% | Low tail target; same sample X reload as snake, with loop split rejected. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -110,3 +112,8 @@ reloads both primary and secondary sample X from the primary `center_x` field.
 Focused Wibo moved from 14.56% to 15.86% (`530/610` to `525/610`) and exposed a
 7-instruction prefix. An explicit count-of-11 tail loop was rejected because it
 reduced the score to 15.63% and worsened the masked operand audit.
+
+For `sweep` and `snake`, the retained slice applies the same primary-center X
+reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
+and `snake` from 13.74% to 13.98%. The earlier `sweep` loop-split probe was
+left out because it worsened the masked audit despite a tiny score increase.

@@ -16,3 +16,10 @@ Forcing those helpers inline moves focused Wibo from 7.04% (115/652
 candidate/target instructions) to 13.71% (544/652), with masked operands
 improving from 4 ok, 0 unresolved, 6 mismatch to 24 ok, 0 unresolved, 1
 mismatch.
+
+2026-07-03 Phase B pass: reloading primary and secondary sample X from the
+primary `center_x` field instead of the constant argument moves focused Wibo to
+13.88% (544/652), with masked operands unchanged at 24 ok, 0 unresolved, 1
+mismatch. A loop split with delayed sine-derived Y/Z stores was rejected: it
+nudged the score only to 13.74% (556/652) while worsening the masked audit to
+21 ok, 0 unresolved, 2 mismatch.

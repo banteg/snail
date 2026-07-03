@@ -25,12 +25,12 @@ static __forceinline void initialize_pair_sample(
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
     set_matrix_identity(&primary->transform);
-    primary->transform.position.x = center_x;
+    primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
 
     set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = center_x;
+    secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
 }

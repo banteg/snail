@@ -16,3 +16,8 @@ Forcing those helpers inline moves focused Wibo from 8.90% (112/652
 candidate/target instructions) to 13.74% (542/652), with masked operands
 improving from 8 ok, 0 unresolved, 5 mismatch to 23 ok, 0 unresolved, 4
 mismatch.
+
+2026-07-03 Phase B pass: reloading primary and secondary sample X from the
+primary `center_x` field instead of the constant argument moves focused Wibo to
+13.98% (535/652), with masked operands unchanged at 23 ok, 0 unresolved, 4
+mismatch.
