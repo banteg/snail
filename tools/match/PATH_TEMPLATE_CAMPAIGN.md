@@ -27,7 +27,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
-| `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
+| `initialize_toad_path_template_pair` | 19.71% | Selector argument now matches native byte-width ABI; remaining residual is orientation/copy scheduling. |
 | `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_sbend_path_template_pair` | 22.59% | Helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
 | `initialize_snake_path_template_pair` | 14.53% | Delayed the width-derived `right` local and moved Z conversion into the seed helper. |
@@ -247,6 +247,12 @@ For `toad`, the retained slice splits the turn-angle expression so the native
 Focused Wibo moved from 19.25% to 19.40% (`594/663` to `595/663`, masked
 operands `16 ok / 3 mismatch` to `18 ok / 2 mismatch`). A neutral-sample
 writeback probe was rejected because it reduced the focused score to 19.26%.
+
+The next `toad` slice narrows the branch selector from `int` to `char` in the
+shared path-template declaration and scratch signature after focused head diff
+showed the native byte load. Focused Wibo moved from 19.40% to 19.71%
+(`595/663` unchanged), exposing a 1-instruction prefix while leaving the masked
+audit unchanged at `18 ok / 2 mismatch`.
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a

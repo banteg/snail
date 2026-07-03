@@ -204,7 +204,7 @@ struct AttachmentPathTemplate {
         char* texture_b,
         char* cap_texture);
     void initialize_toad_path_template_pair(
-        int turn_left, char* texture_a, char* texture_b, char* vertical_texture);
+        char turn_left, char* texture_a, char* texture_b, char* vertical_texture);
     void initialize_twister_path_template_pair(
         float height,
         int width_cells_,

@@ -180,7 +180,7 @@ static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* t
 }
 
 void AttachmentPathTemplate::initialize_toad_path_template_pair(
-    int turn_left, char* texture_a, char* texture_b, char* vertical_texture)
+    char turn_left, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int lead_count;
     int tail_count;
