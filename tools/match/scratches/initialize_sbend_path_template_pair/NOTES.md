@@ -24,3 +24,9 @@ Wibo to 20.70% with 24 ok, 0 unresolved, 2 mismatch. Splitting the interior loop
 so each primary sample is initialized with neutral Y/Z before the computed Y and
 Z writebacks moves the retained result to 22.51% (505/579), with masked operands
 at 24 ok, 0 unresolved, 1 mismatch.
+
+2026-07-03 retained helper/copy scalar cleanup: sample setup now omits the
+scratch-only `lateral_source` store and orders scalar stores/copies as
+`rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`, `lateral_scale`.
+Focused Wibo moves from 22.51% (505/579) to 22.59% (501/579), with masked
+operands unchanged at 24 ok, 0 unresolved, 1 mismatch.

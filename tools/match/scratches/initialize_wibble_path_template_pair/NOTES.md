@@ -15,3 +15,9 @@ Forcing those helpers inline moves focused Wibo from 9.41% (115/608
 candidate/target instructions) to 22.54% (510/608), with masked operands
 improving from 7 ok, 0 unresolved, 8 mismatch to 20 ok, 0 unresolved, 4
 mismatch.
+
+2026-07-03 retained helper/copy scalar cleanup: sample setup now omits the
+scratch-only `lateral_source` store and orders scalar stores/copies as
+`rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`, `lateral_scale`.
+Focused Wibo moves from 22.54% (510/608) to 22.70% (502/608), with masked
+operands unchanged at 20 ok, 0 unresolved, 4 mismatch.

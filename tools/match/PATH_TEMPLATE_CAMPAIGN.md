@@ -23,10 +23,12 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
+| `initialize_wibble_path_template_pair` | 22.70% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
+| `initialize_invert_path_template_pair` | 22.89% | Invert sibling; the same helper/copy scalar cleanup also improves the masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
 | `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
-| `initialize_sbend_path_template_pair` | 22.51% | Delayed step conversion and split interior y/z writeback now follow native order better. |
+| `initialize_sbend_path_template_pair` | 22.59% | Helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
 | `initialize_snake_path_template_pair` | 14.49% | Delayed the width-derived `right` local until after the zero lead-in seed loop. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
 
@@ -166,6 +168,15 @@ initializes each interior primary sample before writing the computed Y and Z
 positions in native arithmetic order. Focused Wibo moved from 20.52% to 22.51%
 (`503/579` to `505/579`, masked operands `23 ok / 4 mismatch` to
 `24 ok / 1 mismatch`).
+
+For `sbend`, `wibble`, and `invert`, the retained helper/copy scalar cleanup
+removes scratch-only `lateral_source` traffic and orders scalar stores/copies as
+`rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`, `lateral_scale`.
+Focused Wibo moved `sbend` from 22.51% to 22.59% (`505/579` to `501/579`,
+masked operands unchanged at `24 ok / 1 mismatch`), `wibble` from 22.54% to
+22.70% (`510/608` to `502/608`, masked operands unchanged at `20 ok / 4
+mismatch`), and `invert` from 20.20% to 22.89% (`509/600` to `501/600`, masked
+operands `14 ok / 2 mismatch` to `18 ok / 2 mismatch`).
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
