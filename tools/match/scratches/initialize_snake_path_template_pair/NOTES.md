@@ -95,3 +95,10 @@ call pairing.
 regressed focused Wibo from 21.33% (548/652) to 20.55% (555/652). Masked
 operands dropped from 33 ok, 0 unresolved, 3 mismatch to 31 ok, 0 unresolved,
 3 mismatch, so `snake` keeps direct vertex component stores.
+
+2026-07-04 post-orientation mesh request-order retest rejected: after the
+retained orientation scheduling expansion, swapping strip-mesh allocation to
+facequads-before-vertices stayed neutral at 22.15% (549/652) with masked
+operands unchanged at 35 ok, 0 unresolved, 1 mismatch. The single mismatch
+only flipped from target vertices vs candidate facequads to target facequads vs
+candidate vertices, so the helper keeps vertices-first order.

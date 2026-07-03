@@ -31,7 +31,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score; mesh request-order remains vertices-first after a neutral rejected probe. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
-| `initialize_snake_path_template_pair` | 22.15% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; curved-body orientation scheduling now leaves only the mesh allocation call pairing; mesh-vertex staging is rejected. |
+| `initialize_snake_path_template_pair` | 22.15% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; curved-body orientation scheduling now leaves only the mesh allocation call pairing; mesh-vertex staging is rejected; mesh request-order retest stayed neutral after orientation expansion. |
 | `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton; the snake orientation-scheduling expansion regressed. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
@@ -417,6 +417,11 @@ then build both right-vector orientation frames inline. Focused Wibo moved from
 21.33% to 22.15% (`548/652` to `549/652`), and masked operands improved from
 `33 ok / 3 mismatch` to `35 ok / 1 mismatch`; the remaining mismatch is only
 the mesh allocation call pairing.
+A post-orientation `snake` mesh request-order retest was rejected: swapping to
+facequads-before-vertices stayed neutral at 22.15% (`549/652`) with masked
+operands unchanged at `35 ok / 1 mismatch`, only flipping the single allocation
+pairing from target vertices vs candidate facequads to target facequads vs
+candidate vertices.
 A `snake` mesh-vertex staging probe was rejected: routing each row vertex
 through a local `Vector3 generated_position`, as retained by `start` and
 `supertramp`, regressed focused Wibo from 21.33% to 20.55% (`548/652` to
