@@ -57,28 +57,34 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
     } while (i < 16);
 
     int exit_index = 0;
-    for (i = 50; i < 66; ++i) {
+    int exit_sample_offset = 50 * sizeof(AttachmentSample);
+    do {
+        AttachmentSample* primary =
+            (AttachmentSample*)((char*)primary_samples + exit_sample_offset);
+        AttachmentSample* secondary =
+            (AttachmentSample*)((char*)secondary_samples + exit_sample_offset);
         float angle_base = 1.0f - (float)exit_index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary_samples[i].center_x = 4.0f - (float)width_cells * 0.5f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = (depth * depth + 16.0f) / (depth + depth);
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = (float)(exit_index + 50);
-        primary_samples[i].delta_length = 1.0f;
+        primary->center_x = 4.0f - (float)width_cells * 0.5f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = (depth * depth + 16.0f) / (depth + depth);
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = (float)(exit_index + 50);
+        primary->delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = (float)(exit_index + 50);
-        secondary_samples[i].delta_length = 1.0f;
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = (float)(exit_index + 50);
+        secondary->delta_length = 1.0f;
         ++exit_index;
-    }
+        exit_sample_offset += sizeof(AttachmentSample);
+    } while (exit_sample_offset < 66 * sizeof(AttachmentSample));
 
     int middle = 0;
     for (i = 16; i < 50; ++i) {

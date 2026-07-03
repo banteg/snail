@@ -102,3 +102,20 @@ Remaining local debt: native still keeps the vertex base in `edi`, the row in
 `esi`, the column in `ebx`, and the sample byte offset on the stack. The current
 candidate still differs in that register/lifetime split, and the stack frame is
 still `0x7c` instead of native `0x9c`.
+
+## 2026-07-03 exit-loop byte-offset pass
+
+Focused matcher after separating the exit sample byte offset from the logical
+exit counter:
+
+```text
+match: 37.04%
+target: 707 insns, candidate: 659 insns
+masked operands: 45 ok, 0 unresolved, 1 mismatch
+```
+
+The retained spelling mirrors the native exit loop's separate sample-offset and
+small counter ownership better than the old indexed `for (i = 50; i < 66; ++i)`
+shape. It drops one audited masked operand compared with the vertex-grid pass,
+but keeps the same single relocation mismatch and materially improves the
+focused fuzzy score.

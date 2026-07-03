@@ -7,7 +7,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 
 | target | score | notes |
 |---|---:|---|
-| `initialize_kind42_path_template_pair` | 36.22% | Best non-cage anchor; uses exact `allocate_path_template_samples` and exact `compute_kind42_attachment_transform`. |
+| `initialize_kind42_path_template_pair` | 37.04% | Best non-cage anchor; uses exact `allocate_path_template_samples` and exact `compute_kind42_attachment_transform`. |
 | `initialize_loopout_path_template_pair` | 37.52% | Same large strip-mesh skeleton; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
@@ -82,6 +82,12 @@ instead of a pinned `Vector3*` cursor moved `kind42` from 35.95% to 36.22% and
 raised audited masked operands from 45 to 46. The native strip-mesh loop still
 keeps different row/column/sample-offset register ownership, so leave the next
 probe focused on that local lifetime problem.
+
+Second retained probe: spelling the exit-sample loop with a separate byte
+offset and logical exit counter moved `kind42` from 36.22% to 37.04%
+(`668` candidate insns to `659`). The masked audit keeps the same single
+relocation mismatch but drops from `46 ok` to `45 ok`, so the remaining
+call-audit debt is still explicit.
 
 ## Expansion Order
 
