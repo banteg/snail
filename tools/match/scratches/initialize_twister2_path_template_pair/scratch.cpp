@@ -33,12 +33,6 @@ static __forceinline void initialize_secondary_flat(AttachmentPathTemplate* path
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
 
-    secondary->center_x = primary->center_x;
-    secondary->rotation_scalar_94 = primary->rotation_scalar_94;
-    secondary->rotation_scalar_98 = primary->rotation_scalar_98;
-    secondary->lateral_scale = primary->lateral_scale;
-    secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_source = primary->lateral_source;
     set_matrix_identity(&secondary->transform);
     secondary->transform.position.x = primary->transform.position.x;
     secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
@@ -214,11 +208,16 @@ void AttachmentPathTemplate::initialize_twister2_path_template_pair(
         if (!handedness)
             angle += 3.1415927f;
 
-        float center = 2.5f - (cosine(angle) + 1.0f) * 0.5f * 5.0f;
-        float y = sine(half_angle) * sine(angle) * height;
+        float center_scale = cosine(angle) + 1.0f;
+        center_scale = center_scale * 0.5f;
+        center_scale = center_scale * 5.0f;
+        float center = 2.5f - center_scale;
         ++local_index;
 
-        initialize_sample(&primary_samples[i], center, center, y, (float)local_index);
+        initialize_sample(&primary_samples[i], center, center, 0.0f, 0.0f);
+        float y = sine(half_angle) * sine(angle) * height;
+        primary_samples[i].transform.position.y = y;
+        primary_samples[i].transform.position.z = (float)local_index;
         initialize_secondary_flat(this, i);
         orient_previous_sample_pair(this, i);
     }

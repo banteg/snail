@@ -13,8 +13,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
 | `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
-| `initialize_twister_path_template_pair` | 14.36% | Worst twin target; compact 34-sample nonlinear constructor. |
-| `initialize_twister2_path_template_pair` | 14.36% | Twister twin; same source shape with 52 samples. |
+| `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
+| `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -85,3 +85,9 @@ dump/hump twins. The retained second code slice instead removes precomputed
 `start_center` / `end_center` lifetime pressure from `dump` and `hump` by
 spelling the fixed seed centers directly from `width_cells` and the middle
 cosine center from `primary_samples[0].center_x`.
+
+For the twister twins, the retained slice narrows secondary sample
+initialization to transform-only writes, preserves the native `0.5f * 5.0f`
+center scale spelling, and delays primary `y` / `z` stores until after the
+identity call. That clears the focused masked operand audit for both twins
+without pretending the larger loop/register residual is solved.
