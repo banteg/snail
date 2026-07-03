@@ -92,3 +92,10 @@ address primary/secondary samples through an explicit byte offset remains
 exactly neutral after the facequads-first allocation cleanup. Focused Wibo stays
 18.66% (477/552), with masked operands unchanged at 27 ok, 0 unresolved,
 1 mismatch, so the indexed arc pointers remain retained.
+
+2026-07-04 rejected direct-orientation expansion: spelling the arc orientation
+inline with direct `basis_right` / `basis_up` component stores, instead of
+calling the retained local helper, regressed focused Wibo from 18.66% (477/552)
+to 17.98% (449/552). Masked operands worsened from 27 ok, 0 unresolved,
+1 mismatch to 20 ok, 0 unresolved, 3 mismatch, so the helper-routed orientation
+stays retained.

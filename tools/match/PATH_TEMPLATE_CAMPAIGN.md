@@ -578,6 +578,10 @@ probe was also neutral at 17.10% with the same `26 ok / 1 mismatch` audit.
 Two arc-loop scalar probes were rejected: dropping secondary scalar-field writes
 regressed to 16.49% (`467/552`, `22 ok / 2 mismatch`), and reloading arc primary
 X from `center_x` regressed to 16.76% (`474/552`, `25 ok / 2 mismatch`).
+After the request-order cleanup, expanding the arc orientation helper into direct
+`basis_right` / `basis_up` stores was rejected: it regressed focused Wibo from
+18.66% to 17.98% (`477/552` to `449/552`) and worsened the masked audit from
+`27 ok / 1 mismatch` to `20 ok / 3 mismatch`.
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
