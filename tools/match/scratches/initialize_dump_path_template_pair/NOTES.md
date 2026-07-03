@@ -19,3 +19,9 @@ member-width center calculation and shrinks the candidate without inventing
 dummy locals. Rejected adjacent probe: the kind42-style mesh `vertex_index`
 rewrite dropped the score to `14.05%`, despite removing one masked mismatch, so
 the strip-mesh cursor remains pinned as `Vector3* vertex`.
+
+2026-07-03 ABI cleanup: focused tail dump confirms the native constructor uses
+`ret 0x1c`, not the stale five-argument `ret 0x14` scratch signature. Adding
+the explicit unused `side_exit` and `cap_texture` arguments moves focused Wibo
+from `18.90%` (`601/690`, `23 ok / 4 mismatch`) to `19.05%` (`601/690`,
+`23 ok / 4 mismatch`).

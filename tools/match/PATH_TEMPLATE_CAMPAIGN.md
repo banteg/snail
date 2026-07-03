@@ -12,8 +12,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
-| `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
-| `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
+| `initialize_dump_path_template_pair` | 19.05% | Hump twin, inverted vertical lane; recovered seven-argument ABI and native `ret 0x1c`. |
+| `initialize_hump_path_template_pair` | 18.99% | Worst front-half family target; recovered seven-argument ABI and native `ret 0x1c`. |
 | `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
 | `initialize_slalom_path_template_pair` | 20.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
 | `initialize_slalombig_path_template_pair` | 20.39% | Same two-temporary falloff split as slalom, with the wider `4.4444447f` scale. |
@@ -102,6 +102,13 @@ dump/hump twins. The retained second code slice instead removes precomputed
 `start_center` / `end_center` lifetime pressure from `dump` and `hump` by
 spelling the fixed seed centers directly from `width_cells` and the middle
 cosine center from `primary_samples[0].center_x`.
+
+The same callsite/tail audit used on the loop-family constructors also applies
+to `hump` and `dump`: focused tail dumps show native `ret 0x1c`, while the
+scratches still compiled as five-argument `ret 0x14` members. Making the unused
+`side_exit` and `cap_texture` arguments explicit moved `hump` from 18.83% to
+18.99% (`600/685`, `22 ok / 4 mismatch`) and `dump` from 18.90% to 19.05%
+(`601/690`, `23 ok / 4 mismatch`).
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`

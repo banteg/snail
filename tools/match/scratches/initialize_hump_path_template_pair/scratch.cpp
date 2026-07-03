@@ -1,7 +1,7 @@
-// initialize_hump_path_template_pair @ 0x41d030 (thiscall, ret 0x14)
+// initialize_hump_path_template_pair @ 0x41d030 (thiscall, ret 0x1c)
 
 #define PATH_FUNCTION initialize_hump_path_template_pair
-#define PATH_SIGNATURE float curve_source, float height_scale, int width_cells_, char* texture_a, char* texture_b
+#define PATH_SIGNATURE float curve_source, float height_scale, int width_cells_, int side_exit, char* texture_a, char* texture_b, char* cap_texture
 #define PATH_CURVE_COUNT ((int)(curve_source * 4.0f))
 #define PATH_HEIGHT_SCALE (height_scale)
 #define PATH_VARIANT 3
@@ -666,4 +666,6 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     }
 
     finalize_path_template(this);
+    (void)side_exit;
+    (void)cap_texture;
 }

@@ -680,8 +680,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.74% | 0/721 | 39 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 664/745 | 28.11% | 0/745 | 1 mismatch, 21 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 636/718 | 37.52% | 0/718 | 1 mismatch, 41 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 600/685 | 18.83% | 0/685 | 4 mismatch, 22 ok |  |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 601/690 | 18.90% | 0/690 | 4 mismatch, 23 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 600/685 | 18.99% | 0/685 | 4 mismatch, 22 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 601/690 | 19.05% | 0/690 | 4 mismatch, 23 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.19% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 613/685 | 18.95% | 0/685 | 4 mismatch, 19 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 619/696 | 20.84% | 0/696 | 1 mismatch, 24 ok |  |
