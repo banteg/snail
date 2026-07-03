@@ -119,3 +119,18 @@ small counter ownership better than the old indexed `for (i = 50; i < 66; ++i)`
 shape. It drops one audited masked operand compared with the vertex-grid pass,
 but keeps the same single relocation mismatch and materially improves the
 focused fuzzy score.
+
+## 2026-07-03 mesh request-order pass
+
+Focused matcher after requesting facequads before vertices:
+
+```text
+match: 37.34%
+target: 707 insns, candidate: 659 insns
+masked operands: 46 ok, 0 unresolved, 0 mismatch
+```
+
+Unlike the rejected/neutral sibling probes, the kind-42 target really does align
+better with the strip-mesh allocation calls in facequads-before-vertices order.
+The retained spelling clears the single masked relocation mismatch while moving
+focused Wibo from 37.04% to 37.34%.
