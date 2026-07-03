@@ -148,3 +148,12 @@ versus `mov ebp, [esp+0x1c]` scheduling swap (region 1) and the single
 non-empty-splice `mov ecx, [ecx]` versus `mov eax, [ecx]` reload lane; staged
 `cell`/`player` locals, split 29-word arithmetic, owner-store reordering, and
 anchor-pointer staging were all codegen-neutral at `97.54%`.
+
+2026-07-03 empty-list reload probes: the remaining 3-instruction residual is
+one prologue transposition (`sub eax, ebx` vs the `player` arg load) plus the
+empty-list branch reload register (`mov ecx, [ecx]` native vs `mov eax, [ecx]`
+candidate). Three source shapes for the reload — direct
+`(*first_ref)->list_next = 0`, a fresh `installed` local, and reusing the
+`first` local — all regress to 86.89% by rotating eax/ecx ownership through
+the earlier flags-test block. The `node = *first_ref` reuse is the only shape
+that holds 97.54%. Treat as pinned register-ownership residual.
