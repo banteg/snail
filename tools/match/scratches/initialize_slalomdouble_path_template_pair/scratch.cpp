@@ -14,7 +14,7 @@ typedef AttachmentSample PathTemplateSample;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
 static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, float z)
+    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -25,12 +25,13 @@ static __forceinline void initialize_pair_sample(
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
     set_matrix_identity(&primary->transform);
-    primary->transform.position.x = center_x;
+    float z = (float)z_index;
+    primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
 
     set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = center_x;
+    secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
 }
@@ -179,10 +180,10 @@ void AttachmentPathTemplate::initialize_slalomdouble_path_template_pair(
 
     int i;
     for (i = 0; i < 4; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
 
     for (i = 66; i < 70; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
 
     for (i = 4; i < 66; ++i) {
         float t = (float)(i - 4) * 0.016129032f;
@@ -198,7 +199,7 @@ void AttachmentPathTemplate::initialize_slalomdouble_path_template_pair(
 
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         float y = 1.0f - cosine(angle * 0.5f);
-        initialize_pair_sample(this, i, center, y, (float)i);
+        initialize_pair_sample(this, i, center, y, i);
         orient_previous_with_up(primary_samples, i, 4, primary_samples[i - 1].center_x * 0.2617994f);
         orient_previous_with_up(secondary_samples, i, 4, primary_samples[i - 1].center_x * 0.2617994f);
     }

@@ -28,3 +28,15 @@ sample through `rotate_matrix_world_z(roll_angle)` after the up/cross-vector
 orientation frame. Removing the zero-roll guard moves focused Wibo from 22.66%
 (588/683) to 22.84% (578/683), with masked operands unchanged at 32 ok,
 0 unresolved, 1 mismatch.
+
+2026-07-03 fixed-sample initializer spelling: reload primary and secondary X
+from the stored primary `center_x` field, then delay the integer-to-float Z
+conversion until inside the inlined sample initializer after the primary
+identity call. Focused Wibo moves from 22.84% (578/683) to 23.14% (570/683);
+the masked audit keeps the same single call mismatch but has one fewer audited
+ok (31 ok, 0 unresolved, 1 mismatch).
+
+Rejected: spelling the fixed trailing straight samples with `lead_out_start =
+66` and `total_segments = lead_out_start + 4` regressed focused Wibo to 22.61%
+(582/683) and worsened the masked audit to 30 ok, 0 unresolved, 2 mismatch, so
+the fixed `70` / `66` constants stay in the scratch.

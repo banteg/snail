@@ -17,7 +17,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
-| `initialize_slalomdouble_path_template_pair` | 22.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
+| `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
@@ -229,6 +229,14 @@ For `slalombig`, the retained lead-out bound spelling materializes
 local, matching the native header calculation. Focused Wibo moved from 20.39%
 to 20.44% (`589/696` to `586/696`, masked operands unchanged at
 `23 ok / 2 mismatch`).
+
+For `slalomdouble`, the retained fixed-sample initializer spelling reloads
+primary and secondary X from the stored primary `center_x`, then delays the
+integer-to-float Z conversion until inside the inlined initializer after primary
+identity. Focused Wibo moved from 22.84% to 23.14% (`578/683` to `570/683`);
+the masked audit keeps one call mismatch but drops from `32 ok` to `31 ok`.
+The analogous fixed lead-out local (`66`, then `+ 4`) was rejected because it
+regressed to 22.61% and added a second masked mismatch.
 
 The loop-family callsite/tail audit applies to `loopout`, `looptheloop`, and
 `looptheloopw` as well: focused diffs showed native `ret 0x18` tails while the
