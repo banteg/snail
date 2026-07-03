@@ -323,6 +323,10 @@ mismatch` to `26 ok / 1 mismatch`. Reloading flat lead-in X from the written
 primary `center_x` was rejected because it regressed to 16.75% and restored the
 two masked mismatches.
 
+A `supertramp` float-count lifetime probe was rejected: materializing a separate
+`curve_segments_f` local for radius and angle division was exactly neutral at
+16.96% (`474/552`), with masked operands unchanged at `26 ok / 1 mismatch`.
+
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
 Focused Wibo moved from 19.25% to 19.40% (`594/663` to `595/663`, masked

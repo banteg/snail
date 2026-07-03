@@ -38,3 +38,8 @@ from 25 ok, 0 unresolved, 2 mismatch to 26 ok, 0 unresolved, 1 mismatch.
 Rejected adjacent probe: reloading flat lead-in helper X from the written
 primary `center_x` regressed the focused score to 16.75% (475/552) and restored
 the two masked mismatches, so the flat helper keeps the constant X argument.
+
+Rejected: materializing a separate `curve_segments_f` float local for both
+radius and angle division, like the decompiler's stored float count, was exactly
+neutral at 16.96% (474/552) with masked operands unchanged at 26 ok,
+0 unresolved, 1 mismatch. The shorter direct casts remain retained.
