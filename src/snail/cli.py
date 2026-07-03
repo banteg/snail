@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from collections import defaultdict
 import difflib
 import json
@@ -532,6 +533,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Write the markdown dashboard to this path in addition to stdout.",
     )
+    match_status_parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero if any scratch fails to compile or match.",
+    )
 
     match_audit_parser = match_subparsers.add_parser(
         "audit",
@@ -779,6 +785,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ),
                 encoding="utf-8",
             )
+        if args.check:
+            errored = [status for status in statuses if status.state == "error"]
+            if errored:
+                print(
+                    f"\nstatus check failed: {len(errored)} scratch(es) errored",
+                    file=sys.stderr,
+                )
+                for status in errored:
+                    print(
+                        f"  {status.config.function}: {status.error}",
+                        file=sys.stderr,
+                    )
+                return 1
         return 0
 
     if args.command == "match" and args.match_command == "audit":

@@ -2330,7 +2330,7 @@ def collect_scratch_statuses(
                 "masked_ok": 0,
                 "masked_unresolved": 0,
                 "masked_mismatches": 0,
-                "error": str(error).splitlines()[0] if str(error) else "unknown error",
+                "error": _summarize_error(error),
             }
         else:
             _store_cached_status(config, image_path, fields, match_root)
