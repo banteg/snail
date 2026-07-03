@@ -128,6 +128,10 @@ A dump/hump curve-count scheduling probe was rejected: delaying the
 `curve_source * 4.0f` integer conversion until after header writes, even with
 `kind` before the conversion and `width_or_scale` after it, regressed `hump` to
 16.65% and `dump` to 16.58% while reducing masked operand matches to 18.
+Retesting the same prologue ordering after the later direct-loop and vertical
+cleanup slices still regressed (`hump` 20.49% to 20.02%, `dump` 19.94% to
+19.31%) and reintroduced the mesh allocation call pairing, so this campaign
+keeps the early conversion despite the decompiler's native-looking schedule.
 
 The next retained dump/hump slice expands the fixed seed loops and curved middle
 loop instead of routing through the generic sample-pair helper. This keeps Z

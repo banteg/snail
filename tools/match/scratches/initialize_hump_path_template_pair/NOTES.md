@@ -31,7 +31,11 @@ from `18.83%` (`600/685`, `22 ok / 4 mismatch`) to `18.99%` (`600/685`,
 `curve_source * 4.0f` integer conversion until after the header writes, including
 the corrected native-looking order with `kind` before the conversion and
 `width_or_scale` after it, regressed focused Wibo from `18.99%` (`600/685`,
-`22 ok / 4 mismatch`) to `16.65%` (`600/685`, `18 ok / 4 mismatch`).
+`22 ok / 4 mismatch`) to `16.65%` (`600/685`, `18 ok / 4 mismatch`). Retesting
+that prologue shape after the later loop cleanups still regressed from `20.49%`
+(`613/685`, `33 ok / 0 mismatch`) to `20.02%` (`614/685`,
+`34 ok / 1 mismatch`) and reintroduced a mesh allocation call pairing, so the
+scratch keeps the early conversion.
 
 2026-07-03 direct sample setup pass: the fixed seed loops and curved middle
 loop now spell sample writes directly instead of calling the generic sample-pair
