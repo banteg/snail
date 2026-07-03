@@ -47,7 +47,12 @@ struct AttachmentPathTemplate {
     void initialize_dip_path_template_pair(
         float curve_source, int width_cells_, char* texture_a, char* texture_b);
     void initialize_screw_path_template_pair(
-        int curve_source, int width_cells_, char* texture_a, char* texture_b);
+        int curve_source,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
     void initialize_slalom_path_template_pair(
         int curve_source, int width_cells_, char* texture_a, char* texture_b);
     int initialize_loopbow_path_template_pair(

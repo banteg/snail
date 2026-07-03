@@ -1,7 +1,7 @@
-// initialize_screw_path_template_pair @ 0x41eda0 (thiscall, ret 0x10)
+// initialize_screw_path_template_pair @ 0x41eda0 (thiscall, ret 0x18)
 
 #define PATH_FUNCTION initialize_screw_path_template_pair
-#define PATH_SIGNATURE int curve_source, int width_cells_, char* texture_a, char* texture_b
+#define PATH_SIGNATURE int curve_source, int width_cells_, int side_exit, char* texture_a, char* texture_b, char* cap_texture
 #define PATH_CURVE_COUNT (curve_source)
 #define PATH_HEIGHT_SCALE 1.0f
 #define PATH_VARIANT 6
@@ -666,4 +666,6 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     }
 
     finalize_path_template(this);
+    (void)side_exit;
+    (void)cap_texture;
 }

@@ -13,6 +13,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
 | `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
+| `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
@@ -137,3 +138,9 @@ temporary before storing the float radius. Focused Wibo moved from 18.55% to
 mismatch`). Reloading sample X from `primary->center_x`, reloading secondary Y
 from the primary transform, and branching through `kind - 0x21` were rejected
 because they reduced the focused score.
+
+For `screw`, the retained slice fixes the stale four-argument scratch prototype.
+The recovered constructor callsite passes six stack arguments and the target tail
+cleans up `0x18` bytes; the unused mode/cap arguments are now explicit in both
+the scratch and shared declaration. Focused Wibo moved from 18.80% to 18.95%
+(`613/685` unchanged, masked operands unchanged at `19 ok / 4 mismatch`).
