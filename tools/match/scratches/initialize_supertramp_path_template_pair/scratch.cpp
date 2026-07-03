@@ -188,7 +188,6 @@ void AttachmentPathTemplate::initialize_supertramp_path_template_pair(
         primary->transform.position.x = 0.0f;
         primary->transform.position.z = sine(angle) * radius + 7.0f;
         primary->transform.position.y = radius - cosine(angle) * radius;
-        orient_arc_sample(primary, radius);
 
         secondary->center_x = 0.0f;
         secondary->rotation_scalar_98 = 0.0f;
@@ -196,9 +195,10 @@ void AttachmentPathTemplate::initialize_supertramp_path_template_pair(
         secondary->special_scalar = 0.0f;
         secondary->lateral_scale = 1.0f;
         set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = 0.0f;
+        secondary->transform.position.x = primary->center_x;
         secondary->transform.position.z = sine(angle) * secondary_radius + 7.0f;
         secondary->transform.position.y = radius - cosine(angle) * secondary_radius;
+        orient_arc_sample(primary, radius);
         orient_arc_sample(secondary, radius);
     }
 

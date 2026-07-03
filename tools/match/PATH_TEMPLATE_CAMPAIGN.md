@@ -21,6 +21,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
+| `initialize_supertramp_path_template_pair` | 16.20% | Arc sample schedule now initializes both lanes before either orientation pass. |
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_wibble_path_template_pair` | 22.70% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
@@ -177,6 +178,12 @@ masked operands unchanged at `24 ok / 1 mismatch`), `wibble` from 22.54% to
 22.70% (`510/608` to `502/608`, masked operands unchanged at `20 ok / 4
 mismatch`), and `invert` from 20.20% to 22.89% (`509/600` to `501/600`, masked
 operands `14 ok / 2 mismatch` to `18 ok / 2 mismatch`).
+
+For `supertramp`, the retained arc schedule cleanup matches the native order
+that initializes both primary and secondary arc sample positions before
+orienting either sample. Focused Wibo moved from 15.61% to 16.20% (`473/552`
+unchanged), shrank the candidate stack frame from `0x48` to `0x44`, and improved
+masked operands from `23 ok / 4 mismatch` to `25 ok / 2 mismatch`.
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.

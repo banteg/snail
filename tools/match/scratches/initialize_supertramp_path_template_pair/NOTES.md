@@ -15,3 +15,11 @@ Forcing those helpers inline moves focused Wibo from 8.62% (144/552
 candidate/target instructions) to 15.61% (473/552), with masked operands
 improving from 4 ok, 0 unresolved, 6 mismatch to 23 ok, 0 unresolved, 4
 mismatch.
+
+2026-07-03 arc schedule cleanup: native initializes both primary and secondary
+arc sample positions before orienting either sample. Moving primary orientation
+after the secondary position writes and reloading secondary X from the written
+primary `center_x` moves focused Wibo from 15.61% to 16.20% (473/552 unchanged),
+shrinks the candidate stack frame from 0x48 to 0x44, and improves masked
+operands from 23 ok, 0 unresolved, 4 mismatch to 25 ok, 0 unresolved, 2
+mismatch.
