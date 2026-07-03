@@ -41,3 +41,10 @@ the interior orientation/copy scheduling residual remains.
 mismatch, but regressed focused Wibo to 19.70% (586/663). Left out to preserve
 the retained 19.79% source shape until the flat seed loop is rebuilt more
 substantially.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-texture `face_index` loop moves focused Wibo from 19.79% (590/663)
+to 25.97% (600/663). The 1-instruction prefix is preserved and masked operands
+improve from 18 ok, 0 unresolved, 2 mismatch to 22 ok, 0 unresolved,
+2 mismatch. The remaining audit debt stays in the interior orientation/copy
+schedule.

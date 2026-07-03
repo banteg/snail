@@ -27,7 +27,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
-| `initialize_toad_path_template_pair` | 19.79% | Selector argument now matches native byte-width ABI; sample scalar cleanup removes scratch-only lateral_source traffic; remaining residual is orientation/copy scheduling. |
+| `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; orientation residuals remain explicit. |
@@ -404,6 +404,12 @@ from 19.71% to 19.79% (`595/663` to `590/663`), while the prefix and
 Removing the remaining flat-secondary `lateral_source` copy was rejected: it
 improved the masked audit to `18 ok / 1 mismatch` but regressed focused Wibo to
 19.70% (`586/663`), so the retained source keeps that copy for now.
+
+The retained `toad` mesh-face slice applies the same two-texture `face_index`
+loop as `hill_valley`. Focused Wibo moved from 19.79% to 25.97% (`590/663` to
+`600/663`), preserved the 1-instruction prefix, and improved the masked audit
+from `18 ok / 2 mismatch` to `22 ok / 2 mismatch`. The remaining masked
+pairings are still in the interior orientation/copy schedule.
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a
