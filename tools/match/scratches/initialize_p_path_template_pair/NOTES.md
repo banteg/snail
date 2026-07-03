@@ -48,3 +48,13 @@ writes with the two-iteration `face_index` loop regressed focused Wibo from
 19.26% (557/679) to 18.14% (567/679). Masked operands dropped from 19 ok, 0
 unresolved, 6 mismatch to 16 ok, 0 unresolved, 6 mismatch, so the direct face
 writer stays retained for now.
+
+2026-07-03 endpoint expansion probe rejected: flattening the first and terminal
+sample setup out of `initialize_pair_sample`, matching the decompile's direct
+endpoint writes and `center_x` reloads, regressed focused Wibo from 19.26%
+(557/679) to 18.61% (557/679), with masked operands unchanged at 19 ok,
+0 unresolved, 6 mismatch. Splitting the probe was also negative: first sample
+only dropped to 18.28% and worsened the masked audit to 16 ok, 0 unresolved,
+6 mismatch; terminal sample only matched the full regression at 18.61%. The
+endpoint helper calls remain retained until the earlier loop/call alignment
+debt moves.
