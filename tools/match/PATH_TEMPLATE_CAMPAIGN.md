@@ -12,8 +12,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
-| `initialize_dump_path_template_pair` | 19.05% | Hump twin, inverted vertical lane; recovered seven-argument ABI and native `ret 0x1c`. |
-| `initialize_hump_path_template_pair` | 18.99% | Worst front-half family target; recovered seven-argument ABI and native `ret 0x1c`. |
+| `initialize_dump_path_template_pair` | 19.43% | Hump twin, inverted vertical lane; direct sample setup improves the masked audit to one mismatch. |
+| `initialize_hump_path_template_pair` | 19.53% | Worst front-half family target; direct sample setup improves the masked audit to one mismatch. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
@@ -120,6 +120,15 @@ A dump/hump curve-count scheduling probe was rejected: delaying the
 `curve_source * 4.0f` integer conversion until after header writes, even with
 `kind` before the conversion and `width_or_scale` after it, regressed `hump` to
 16.65% and `dump` to 16.58% while reducing masked operand matches to 18.
+
+The next retained dump/hump slice expands the fixed seed loops and curved middle
+loop instead of routing through the generic sample-pair helper. This keeps Z
+conversion after primary identity and spells the curved center/height cosine
+order from the decompilers, reducing the masked audit to a single half-angle
+constant mismatch. Focused Wibo moved `hump` from 18.99% to 19.53%
+(`600/685` to `605/685`, masked operands `22 ok / 4 mismatch` to
+`28 ok / 1 mismatch`) and `dump` from 19.05% to 19.43% (`601/690` to
+`607/690`, masked operands `23 ok / 4 mismatch` to `28 ok / 1 mismatch`).
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`

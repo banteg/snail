@@ -306,43 +306,68 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     special_runtime_flag_9c = 0;
 
     for (i = 0; i < 7; ++i) {
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            -(float)width_cells * 0.5f + 4.0f,
-            0.0f,
-            0.49000001f,
-            (float)i,
-            0);
+        PathAttachmentSample* primary = &primary_samples[i];
+        PathAttachmentSample* secondary = &secondary_samples[i];
+        primary->center_x = -(float)width_cells * 0.5f + 4.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        float z = (float)i;
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
     }
 
     for (i = 0; i < 7; ++i) {
         int sample_index = curve_count + 7 + i;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            (float)width_cells * 0.5f - 4.0f,
-            0.0f,
-            0.49000001f,
-            (float)(curve_count + 7 + i),
-            0);
+        PathAttachmentSample* primary = &primary_samples[sample_index];
+        PathAttachmentSample* secondary = &secondary_samples[sample_index];
+        primary->center_x = (float)width_cells * 0.5f - 4.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        float z = (float)sample_index;
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
     }
 
     if (curve_count > 0) {
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 7;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            float y = vertical_sign
-                * (1.0f - cosine(angle)) * hump_radius * height_scale_value;
-            float center = cosine(angle * 0.5f) * primary_samples[0].center_x;
-            initialize_sample_pair(
-                &primary_samples[sample_index],
-                &secondary_samples[sample_index],
-                center,
-                y,
-                y + 0.49000001f,
-                (float)(i + 7),
-                0);
+            float half_angle = angle * 0.5f;
+            PathAttachmentSample* primary = &primary_samples[sample_index];
+            PathAttachmentSample* secondary = &secondary_samples[sample_index];
+            primary->center_x = cosine(half_angle) * primary_samples[0].center_x;
+            primary->rotation_scalar_98 = 0.0f;
+            primary->rotation_scalar_94 = 0.0f;
+            primary->special_scalar = 0.0f;
+            primary->lateral_scale = 1.0f;
+            set_matrix_identity(&primary->transform);
+            primary->transform.position.x = primary->center_x;
+            primary->transform.position.y =
+                vertical_sign * (1.0f - cosine(angle)) * hump_radius * height_scale_value;
+            float z = (float)sample_index;
+            primary->transform.position.z = z;
+            set_matrix_identity(&secondary->transform);
+            secondary->transform.position.x = primary->center_x;
+            secondary->transform.position.y =
+                vertical_sign * (1.0f - cosine(angle)) * hump_radius * height_scale_value
+                + 0.49000001f;
+            secondary->transform.position.z = z;
             if (sample_index <= 7) {
                 primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
                 secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();

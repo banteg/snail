@@ -32,3 +32,12 @@ from `18.83%` (`600/685`, `22 ok / 4 mismatch`) to `18.99%` (`600/685`,
 the corrected native-looking order with `kind` before the conversion and
 `width_or_scale` after it, regressed focused Wibo from `18.99%` (`600/685`,
 `22 ok / 4 mismatch`) to `16.65%` (`600/685`, `18 ok / 4 mismatch`).
+
+2026-07-03 direct sample setup pass: the fixed seed loops and curved middle
+loop now spell sample writes directly instead of calling the generic sample-pair
+helper. This keeps Z conversion after primary identity and follows the
+decompiler order for curved center/height cosine setup. Focused Wibo moves from
+`18.99%` (`600/685`, `22 ok / 4 mismatch`) to `19.53%` (`605/685`,
+`28 ok / 1 mismatch`). The remaining masked mismatch is the half-angle `0.5f`
+multiply being paired against the angle-scale `6.28318548f` multiply, so the
+larger x87/frame residual is still explicit.
