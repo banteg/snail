@@ -531,7 +531,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 96.72% | 16/122 | 7 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 97.54% | 16/122 | 7 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
@@ -739,8 +739,4 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 This is generated as part of `uv run snail match status --write tools/match/STATUS.md`. Keep types scratch-local until multiple scratches agree, then promote deliberately; divergent or conflicting names are semantic debt, not merge candidates.
 Run `uv run snail match types --paths` for the full path-level report.
 
-- header-compatible: 0 type name(s)
-- partial-compatible: 0 type name(s)
-
-| status | type | scratch | header | layouts | recommendation |
-|---|---|---:|---:|---:|---|
+No consolidation candidates at the current threshold.
