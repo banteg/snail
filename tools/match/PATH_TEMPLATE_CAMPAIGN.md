@@ -11,8 +11,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_loopout_path_template_pair` | 37.37% | Same large strip-mesh skeleton, one masked mismatch. |
 | `initialize_looptheloop_path_template_pair` | 35.59% | Loop-family macro scratch, still no prefix. |
 | `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
-| `initialize_hump_path_template_pair` | 14.72% | Worst front-half family target; shares the macro skeleton with dump and other curve families. |
-| `initialize_dump_path_template_pair` | 14.67% | Hump twin, inverted vertical lane. |
+| `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
+| `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_twister_path_template_pair` | 14.36% | Worst twin target; compact 34-sample nonlinear constructor. |
 | `initialize_twister2_path_template_pair` | 14.36% | Twister twin; same source shape with 52 samples. |
 
@@ -78,3 +78,10 @@ family scores first:
 
 For each target, update its `NOTES.md` with the tried spelling, focused matcher
 result, and any rejected source-shape probes.
+
+The kind42 `vertex_index` spelling was rejected for `twister`, `twister2`,
+`dump`, and `hump`: it was neutral for the twister twins and regressed the
+dump/hump twins. The retained second code slice instead removes precomputed
+`start_center` / `end_center` lifetime pressure from `dump` and `hump` by
+spelling the fixed seed centers directly from `width_cells` and the middle
+cosine center from `primary_samples[0].center_x`.

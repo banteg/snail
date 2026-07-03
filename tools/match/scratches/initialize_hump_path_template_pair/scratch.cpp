@@ -309,7 +309,7 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
         initialize_sample_pair(
             &primary_samples[i],
             &secondary_samples[i],
-            start_center,
+            (float)width_cells * 0.5f - 4.0f,
             0.0f,
             0.49000001f,
             (float)i,
@@ -321,7 +321,7 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
         initialize_sample_pair(
             &primary_samples[sample_index],
             &secondary_samples[sample_index],
-            end_center,
+            4.0f - (float)width_cells * 0.5f,
             0.0f,
             0.49000001f,
             (float)(curve_count + 7 + i),
@@ -334,7 +334,7 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
             float angle = (float)i * 6.2831855f / curve_count_f;
             float y = vertical_sign
                 * (1.0f - cosine(angle)) * hump_radius * height_scale_value;
-            float center = cosine(angle * 0.5f) * start_center;
+            float center = cosine(angle * 0.5f) * primary_samples[0].center_x;
             initialize_sample_pair(
                 &primary_samples[sample_index],
                 &secondary_samples[sample_index],

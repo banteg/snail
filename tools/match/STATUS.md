@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**507/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69770/325759** bytes (**21.42%**) are proof-grade, and overall fuzzy is **56.33%**.
+**507/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69770/325759** bytes (**21.42%**) are proof-grade, and overall fuzzy is **56.40%**.
 
 ## Proof Grade (507)
 
@@ -680,8 +680,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.59% | 0/721 | 39 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 664/745 | 27.96% | 0/745 | 1 mismatch, 21 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 636/718 | 37.37% | 0/718 | 1 mismatch, 41 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 606/685 | 14.72% | 0/685 | 4 mismatch, 15 ok |  |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 605/690 | 14.67% | 0/690 | 4 mismatch, 15 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 600/685 | 18.83% | 0/685 | 4 mismatch, 22 ok |  |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 601/690 | 18.90% | 0/690 | 4 mismatch, 23 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.02% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 613/685 | 18.80% | 0/685 | 4 mismatch, 19 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 615/696 | 19.22% | 0/696 | 3 mismatch, 19 ok |  |
