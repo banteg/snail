@@ -20,7 +20,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
 | `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.58% | Twister twin; same retained facequad inner-loop skeleton and masked-audit caveat as twister. |
-| `initialize_start_path_template_pair` | 17.31% | Low tail target; allocation count, direct sample loops, and native Z/Y scheduling now expose a real prefix. |
+| `initialize_start_path_template_pair` | 18.04% | Low tail target; direct sample loops plus the retained face loop improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
@@ -236,6 +236,14 @@ with the 7-instruction prefix preserved and masked operands improving from
 Retesting the `start` raised-Y local after direct sample-loop expansion was
 rejected again: it regressed focused Wibo from 17.31% to 17.02% (`511/610` to
 `518/610`) while leaving the prefix and masked audit unchanged.
+
+The retained `start` mesh-face slice uses a target-specific two-iteration
+`face_index` loop: both faces keep the same texture, while the second face keeps
+the native `flags = 4` spelling. Focused Wibo moved from 17.31% to 18.04%
+(`511/610` to `521/610`) and improved the masked audit from `22 ok / 2
+mismatch` to `24 ok / 2 mismatch`. This is not a clean prefix/prologue win:
+the 7-instruction prefix disappears and the candidate stack frame grows from
+the native `0x44` to `0x48`, so those debts remain explicit.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%

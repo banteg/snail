@@ -55,3 +55,11 @@ orientation calls aligned against the later strip-mesh allocation calls.
 regressed focused Wibo from 17.31% (511/610) to 17.02% (518/610). The
 7-instruction prefix and masked audit stayed unchanged at 22 ok, 0 unresolved,
 2 mismatch, so the inline `radius + radius` expression remains retained.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with a two-iteration `face_index` loop moves focused Wibo from 17.31% (511/610)
+to 18.04% (521/610), with masked operands improving from 22 ok, 0 unresolved,
+2 mismatch to 24 ok, 0 unresolved, 2 mismatch. This is an intentionally
+qualified source-shape win: the previous 7-instruction prefix is lost and the
+candidate frame grows from the native 0x44 to 0x48, so the prologue/register
+lifetime debt remains open.
