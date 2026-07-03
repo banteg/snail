@@ -32,15 +32,22 @@ static __forceinline void initialize_secondary_flat(AttachmentPathTemplate* path
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
 
-    secondary->center_x = primary->center_x;
-    secondary->rotation_scalar_94 = primary->rotation_scalar_94;
-    secondary->rotation_scalar_98 = primary->rotation_scalar_98;
-    secondary->lateral_scale = primary->lateral_scale;
-    secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_source = primary->lateral_source;
     set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->transform.position.x;
+    secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
+    secondary->transform.position.z = primary->transform.position.z;
+}
+
+static __forceinline void initialize_secondary_hill(
+    AttachmentPathTemplate* path, int index, float phase, float height)
+{
+    PathTemplateSample* primary = &path->primary_samples[index];
+    PathTemplateSample* secondary = &path->secondary_samples[index];
+
+    set_matrix_identity(&secondary->transform);
+    secondary->transform.position.x = primary->center_x;
+    float y = (1.0f - cosine(phase)) * 0.5f * height;
+    secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = primary->transform.position.z;
 }
 
@@ -181,13 +188,12 @@ void AttachmentPathTemplate::initialize_hill_valley_path_template_pair(
     int width_cells_, float height, float length, int centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    int steps = (int)length;
-
     kind = 0x10;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
     width_or_scale = 1.0f;
+    int steps = (int)length;
     segment_count = steps + 2;
     segment_count_f = (float)(steps + 2);
     allocate_path_template_samples();
@@ -203,9 +209,11 @@ void AttachmentPathTemplate::initialize_hill_valley_path_template_pair(
 
     for (int i = 1; i <= steps; ++i) {
         float phase = (float)(i - 1) * 6.2831855f / (float)steps;
+        initialize_sample(&primary_samples[i], center_x, center_x, 0.0f, 0.0f);
         float y = (1.0f - cosine(phase)) * 0.5f * height;
-        initialize_sample(&primary_samples[i], center_x, center_x, y, (float)i);
-        initialize_secondary_flat(this, i);
+        primary_samples[i].transform.position.y = y;
+        primary_samples[i].transform.position.z = (float)i;
+        initialize_secondary_hill(this, i, phase, height);
         orient_previous_hill_pair(this, i);
     }
 

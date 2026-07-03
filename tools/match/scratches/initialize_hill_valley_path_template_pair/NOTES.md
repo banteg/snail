@@ -14,3 +14,17 @@ Forcing those helpers inline moves focused Wibo from 7.58% (124/668
 candidate/target instructions) to 12.31% (583/668), with masked operands
 improving from 7 ok, 0 unresolved, 5 mismatch to 19 ok, 0 unresolved, 3
 mismatch.
+
+2026-07-03 path-template secondary-order sweep: delayed the length-to-steps
+conversion until after the first header writes, narrowed secondary sample
+initialization to transform-only writes, copied secondary X from the primary
+center field, delayed loop primary `y` / `z` stores until after identity, and
+added a loop-specific secondary initializer that recomputes the cosine-derived
+height after secondary identity. Focused Wibo moves from 12.31% (583/668) to
+14.62% (563/668), with masked operands improving from 19 ok, 0 unresolved, 3
+mismatch to 27 ok, 0 unresolved, 2 mismatch.
+
+Rejected probe: recomputing the centered/non-centered center for the last
+endpoint reduced the remaining mask audit to one mismatch, but lowered the
+focused fuzzy score to 13.56% and grew the candidate to 571/668, so it was not
+retained.

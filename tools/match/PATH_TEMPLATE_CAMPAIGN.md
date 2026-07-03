@@ -15,6 +15,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
+| `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -91,3 +92,13 @@ initialization to transform-only writes, preserves the native `0.5f * 5.0f`
 center scale spelling, and delays primary `y` / `z` stores until after the
 identity call. That clears the focused masked operand audit for both twins
 without pretending the larger loop/register residual is solved.
+
+For `hill_valley`, the retained slice delays the length-to-steps conversion
+until after the first header writes, applies the same transform-only secondary
+sample rule, copies secondary X from the primary center field, delays primary
+loop `y` / `z` stores until after identity, and uses a loop-specific secondary
+initializer that recomputes the cosine-derived height after secondary identity.
+Focused Wibo moved from 12.31% to 14.62% (`583/668` to `563/668`, masked
+operands `19 ok / 3 mismatch` to `27 ok / 2 mismatch`). A last-endpoint center
+recompute probe improved the mask audit to one mismatch but reduced fuzzy score
+to 13.56%, so it was left out.
