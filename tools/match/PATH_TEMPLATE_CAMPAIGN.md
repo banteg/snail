@@ -15,7 +15,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_dump_path_template_pair` | 29.78% | Hump twin, inverted vertical lane; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_hump_path_template_pair` | 30.38% | Worst front-half family target; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
-| `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
+| `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
 | `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
@@ -634,6 +634,12 @@ fixed lead-out sample loops from the generic helper. Focused Wibo moved from
 regressed to 20.84% with `23 ok / 1 mismatch`, and expanding all three loops
 reached only 21.33% while also reducing the masked audit to `23 ok / 1
 mismatch`.
+
+A `slalom` mesh request-order probe was rejected: swapping strip-mesh requests
+to facequads-before-vertices stayed neutral at 21.46% (`618/696`), with masked
+operands unchanged at `24 ok / 1 mismatch` on the same `cross_vectors` vs
+`rotate_matrix_world_z` orientation call pairing. The target keeps
+vertices-before-facequads order.
 
 For `slalombig`, the retained lead-out bound spelling materializes
 `lead_out_start = curve_segments + 4` and derives `total_segments` from that

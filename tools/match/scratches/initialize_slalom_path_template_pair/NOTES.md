@@ -44,3 +44,9 @@ regressed the audit to 22 ok, 0 unresolved, 1 mismatch at 20.84%, curved-body
 only regressed to 20.84% with 23 ok, 0 unresolved, 1 mismatch, and expanding
 all three loops reached only 21.33% while reducing the audit to 23 ok,
 0 unresolved, 1 mismatch.
+
+2026-07-04 mesh request-order probe rejected: swapping strip-mesh requests to
+facequads-before-vertices stayed neutral at 21.46% (618/696), with masked
+operands unchanged at 24 ok, 0 unresolved, 1 mismatch on the same
+`cross_vectors` vs `rotate_matrix_world_z` orientation call pairing. The helper
+keeps vertices-first order.
