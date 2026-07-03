@@ -165,12 +165,11 @@ void AttachmentPathTemplate::initialize_sbend_path_template_pair(
     int width_cells_, float height, float z_amplitude, int centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    int steps = (int)(height * 3.1415927f);
-
     kind = 0x10;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
+    int steps = (int)(height * 3.1415927f);
     width_or_scale = 1.0f;
     segment_count = steps + 1;
     segment_count_f = (float)(steps + 1);
@@ -183,11 +182,12 @@ void AttachmentPathTemplate::initialize_sbend_path_template_pair(
 
     for (int i = 1; i <= steps; ++i) {
         float phase = (float)(i - 1) * 6.2831855f / (float)steps;
+        initialize_sample(&primary_samples[i], center_x, center_x, 0.0f, 0.0f);
         float y = (1.0f - cosine(phase * 0.5f)) * 0.5f * height;
-        float z = (1.0f - cosine(phase * 1.5f)) * 0.5f * z_amplitude * 0.33333334f
-            + 1.0f;
-
-        initialize_sample(&primary_samples[i], center_x, center_x, y, z);
+        primary_samples[i].transform.position.y = y;
+        float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
+        z = z * z_amplitude * 0.33333334f + 1.0f;
+        primary_samples[i].transform.position.z = z;
         orient_current_sbend(this, i);
         copy_secondary_from_primary(this, i);
     }

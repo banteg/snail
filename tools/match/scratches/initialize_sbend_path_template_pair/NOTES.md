@@ -17,3 +17,10 @@ is cumulative: sample-only 8.32%, small sample/orient helpers 13.99%, no-mesh
 helpers 16.74%, mesh-only 13.29%, and the full helper layer 20.52%. Plain
 `static inline` is not usable in this scratch under the current Wibo harness
 because it reaches a missing `lstrcpynA` import path.
+
+2026-07-03 step/y-z order: keeping the early `height * pi` x87 load but delaying
+the integer step conversion until after the first header stores moves focused
+Wibo to 20.70% with 24 ok, 0 unresolved, 2 mismatch. Splitting the interior loop
+so each primary sample is initialized with neutral Y/Z before the computed Y and
+Z writebacks moves the retained result to 22.51% (505/579), with masked operands
+at 24 ok, 0 unresolved, 1 mismatch.

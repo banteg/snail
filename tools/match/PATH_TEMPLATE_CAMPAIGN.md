@@ -23,6 +23,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
+| `initialize_sbend_path_template_pair` | 22.51% | Delayed step conversion and split interior y/z writeback now follow native order better. |
 | `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
 | `initialize_sweep_path_template_pair` | 13.88% | Low tail target; same sample X reload as snake, with loop split rejected. |
 
@@ -139,6 +140,13 @@ secondary X from the primary center field after it has been written. Focused Wib
 moved from 22.85% to 23.36% (`563/671` to `562/671`, masked operands
 `28 ok / 1 mismatch` to `29 ok / 1 mismatch`). The same spelling was rejected
 for `turnoverdouble` because it reduced that sibling from 23.98% to 23.68%.
+
+For `sbend`, the retained slice keeps the native early `height * pi` x87 load but
+delays the integer step conversion until after the first header stores, then
+initializes each interior primary sample before writing the computed Y and Z
+positions in native arithmetic order. Focused Wibo moved from 20.52% to 22.51%
+(`503/579` to `505/579`, masked operands `23 ok / 4 mismatch` to
+`24 ok / 1 mismatch`).
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a
