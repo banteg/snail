@@ -21,6 +21,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
+| `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 | `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
 | `initialize_sweep_path_template_pair` | 13.88% | Low tail target; same sample X reload as snake, with loop split rejected. |
@@ -132,6 +133,12 @@ seeded primary centers. Focused Wibo moved from 14.79% to 20.96% (`598/687` to
 Swapping the start/end center expressions and precomputing an explicit
 `interior_count_f` radius were both rejected because they reduced the focused
 score.
+
+For `turnover`, the retained slice narrows the straight seed helper by reloading
+secondary X from the primary center field after it has been written. Focused Wibo
+moved from 22.85% to 23.36% (`563/671` to `562/671`, masked operands
+`28 ok / 1 mismatch` to `29 ok / 1 mismatch`). The same spelling was rejected
+for `turnoverdouble` because it reduced that sibling from 23.98% to 23.68%.
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a

@@ -14,3 +14,7 @@ Forcing those helpers inline moves focused Wibo from 9.81% (176/680
 candidate/target instructions) to 23.98% (571/680), with masked operands
 improving from 14 ok, 0 unresolved, 7 mismatch to 32 ok, 0 unresolved, 1
 mismatch.
+
+2026-07-03 rejected seed-X reload: applying turnover's secondary-X reload from
+the primary center field reduces focused Wibo to 23.68% (570/680), so this
+sibling keeps the original argument-based seed helper spelling.

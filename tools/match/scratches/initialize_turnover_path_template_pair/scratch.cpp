@@ -31,7 +31,7 @@ static __forceinline void initialize_pair_sample(
     primary->delta_length = 1.0f;
 
     set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = center_x;
+    secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
     secondary->delta_length = 1.0f;
