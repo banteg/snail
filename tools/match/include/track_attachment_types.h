@@ -35,11 +35,26 @@ struct AttachmentPathTemplate {
         char* texture_b,
         char* unused_path_version);
     void initialize_looptheloop_path_template_pair(
-        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+        float curve_source,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
     void initialize_looptheloopw_path_template_pair(
-        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+        float curve_source,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
     void initialize_loopout_path_template_pair(
-        float curve_source, int width_cells_, char* texture_a, char* texture_b);
+        float curve_source,
+        int width_cells_,
+        int side_exit,
+        char* texture_a,
+        char* texture_b,
+        char* cap_texture);
     void initialize_hump_path_template_pair(
         float curve_source, float height_scale, int width_cells_, char* texture_a, char* texture_b);
     void initialize_dump_path_template_pair(

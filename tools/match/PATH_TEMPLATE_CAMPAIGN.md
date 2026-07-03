@@ -8,9 +8,9 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | target | score | notes |
 |---|---:|---|
 | `initialize_kind42_path_template_pair` | 36.22% | Best non-cage anchor; uses exact `allocate_path_template_samples` and exact `compute_kind42_attachment_transform`. |
-| `initialize_loopout_path_template_pair` | 37.37% | Same large strip-mesh skeleton, one masked mismatch. |
-| `initialize_looptheloop_path_template_pair` | 35.59% | Loop-family macro scratch, still no prefix. |
-| `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
+| `initialize_loopout_path_template_pair` | 37.52% | Same large strip-mesh skeleton; recovered six-argument ABI and native `ret 0x18`. |
+| `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
+| `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
 | `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
@@ -152,3 +152,10 @@ stale four-argument prototypes despite native six-argument calls. Making the
 unused mode/cap arguments explicit moved `dip` from 30.02% to 30.19% (`564/655`
 unchanged, `30 ok / 1 mismatch`) and `slalom` from 19.22% to 19.37% (`615/696`
 unchanged, `19 ok / 3 mismatch`).
+
+The loop-family callsite/tail audit applies to `loopout`, `looptheloop`, and
+`looptheloopw` as well: focused diffs showed native `ret 0x18` tails while the
+scratches still compiled as four-argument `ret 0x10` members. The retained ABI
+cleanup moved `loopout` from 37.37% to 37.52% (`636/718`, `41 ok / 1 mismatch`),
+`looptheloop` from 35.59% to 35.74% (`639/721`, `39 ok / 0 mismatch`), and
+`looptheloopw` from 27.96% to 28.11% (`664/745`, `21 ok / 1 mismatch`).
