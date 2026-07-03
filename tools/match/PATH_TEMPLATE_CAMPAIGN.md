@@ -15,7 +15,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_dump_path_template_pair` | 19.77% | Hump twin, inverted vertical lane; departure seed indexing clears the focused masked audit. |
 | `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
-| `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
+| `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
 | `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
@@ -493,6 +493,14 @@ header idiom as `slalombig`: keep `lead_out_start = curve_count + 4`, then
 derive `total_segments` from that local. Focused Wibo moved from 20.84% to
 20.97% (`619/696` to `620/696`, masked operands unchanged at
 `24 ok / 1 mismatch`).
+
+The next retained `slalom` slice expands only the four fixed lead-in and four
+fixed lead-out sample loops from the generic helper. Focused Wibo moved from
+20.97% to 21.46% (`620/696` to `618/696`), with the masked audit unchanged at
+`24 ok / 1 mismatch`. The curved body stays helper-routed: curved-only
+regressed to 20.84% with `23 ok / 1 mismatch`, and expanding all three loops
+reached only 21.33% while also reducing the masked audit to `23 ok / 1
+mismatch`.
 
 For `slalombig`, the retained lead-out bound spelling materializes
 `lead_out_start = curve_segments + 4` and derives `total_segments` from that

@@ -34,3 +34,13 @@ sample index as `curve_count + 4` and derives the total segment count from that
 local. Spelling those as `lead_out_start` and `total_segments` moves focused
 Wibo from 20.84% (619/696) to 20.97% (620/696), with masked operands unchanged
 at 24 ok, 0 unresolved, 1 mismatch.
+
+2026-07-03 fixed-loop expansion: expanding only the four lead-in and four
+lead-out fixed sample loops from the generic helper moves focused Wibo from
+20.97% (620/696) to 21.46% (618/696), with masked operands unchanged at
+24 ok, 0 unresolved, 1 mismatch. Splitting the probe showed why this stays
+limited to the fixed loops: lead-in alone reached 21.14%, lead-out alone
+regressed the audit to 22 ok, 0 unresolved, 1 mismatch at 20.84%, curved-body
+only regressed to 20.84% with 23 ok, 0 unresolved, 1 mismatch, and expanding
+all three loops reached only 21.33% while reducing the audit to 23 ok,
+0 unresolved, 1 mismatch.

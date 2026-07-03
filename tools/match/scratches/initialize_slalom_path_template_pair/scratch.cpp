@@ -487,26 +487,46 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     special_runtime_flag_9c = 0;
 
     for (i = 0; i < 4; ++i) {
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            0.0f,
-            0.0f,
-            0.49000001f,
-            (float)i,
-            0);
+        PathAttachmentSample* primary = &primary_samples[i];
+        PathAttachmentSample* secondary = &secondary_samples[i];
+
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        float z = (float)i;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
     }
 
     for (i = 0; i < 4; ++i) {
         int sample_index = lead_out_start + i;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            0.0f,
-            0.0f,
-            0.49000001f,
-            (float)(curve_count + 4 + i),
-            0);
+        PathAttachmentSample* primary = &primary_samples[sample_index];
+        PathAttachmentSample* secondary = &secondary_samples[sample_index];
+
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        float z = (float)(curve_count + 4 + i);
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
     }
 
     if (curve_count > 0) {
