@@ -61,3 +61,10 @@ stack frame grows from 0x44 to 0x48 and masked operands improve from 27 ok,
 masked mismatch is still the `request_object_vertices` /
 `request_object_facequads` alignment pairing, not a retained request-order
 change.
+
+2026-07-04 mesh-vertex staging probe rejected: unlike `start` and `supertramp`,
+routing the vertex row calculation through a local `Vector3 generated_position`
+regressed focused Wibo from 25.04% (546/652) to 17.26% (553/652). It did clear
+the masked audit from 32 ok, 0 unresolved, 1 mismatch to 25 ok, 0 unresolved,
+0 mismatch, but the score loss is too large for the Phase B ratchet. Keep the
+direct component stores in the sweep vertex loop.

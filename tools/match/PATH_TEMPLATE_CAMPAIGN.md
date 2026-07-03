@@ -341,6 +341,10 @@ the curved body reloads the seeded primary `center_x`, and secondary Y derives
 from the written primary Y. Focused Wibo moved from 14.30% to 14.85%
 (`537/652` to `533/652`), with masked operands improving from `26 ok / 1
 mismatch` to `27 ok / 1 mismatch`.
+The later `start`/`supertramp` mesh-vertex staging pattern was rejected here:
+it cleared sweep's masked audit but regressed focused Wibo from 25.04% to
+17.26% (`546/652` to `553/652`), so the sweep vertex loop keeps direct
+component stores.
 
 A sweep/snake curved-counter spelling was rejected: using a separate zero-based
 logical counter for angle/Z, like the decompiler, regressed `sweep` from 14.85%
