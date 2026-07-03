@@ -29,7 +29,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.71% | Selector argument now matches native byte-width ABI; remaining residual is orientation/copy scheduling. |
 | `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
-| `initialize_sbend_path_template_pair` | 22.59% | Helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
+| `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 14.53% | Delayed the width-derived `right` local and moved Z conversion into the seed helper. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
 
@@ -222,6 +222,11 @@ masked operands unchanged at `24 ok / 1 mismatch`), `wibble` from 22.54% to
 22.70% (`510/608` to `502/608`, masked operands unchanged at `20 ok / 4
 mismatch`), and `invert` from 20.20% to 22.89% (`509/600` to `501/600`, masked
 operands `14 ok / 2 mismatch` to `18 ok / 2 mismatch`).
+
+The next retained `sbend` slice follows the focused masked audit and swaps the
+two local strip-mesh allocation calls so facequads are requested before
+vertices. Focused Wibo moved from 22.59% to 23.33% (`501/579` unchanged), and
+the masked audit cleared from `24 ok / 1 mismatch` to `25 ok / 0 mismatch`.
 
 The next retained `wibble`/`invert` slice follows the decompiler-backed interior
 sample shape: the interpolated lateral value belongs in `center_x`, while

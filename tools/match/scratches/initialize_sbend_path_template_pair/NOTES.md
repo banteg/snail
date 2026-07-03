@@ -30,3 +30,8 @@ scratch-only `lateral_source` store and orders scalar stores/copies as
 `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`, `lateral_scale`.
 Focused Wibo moves from 22.51% (505/579) to 22.59% (501/579), with masked
 operands unchanged at 24 ok, 0 unresolved, 1 mismatch.
+
+2026-07-03 mesh request order: the focused masked audit showed the native mesh
+setup requests facequads before vertices for this constructor. Swapping only
+the two strip-mesh allocation calls moves focused Wibo to 23.33% (501/579) and
+clears the masked audit to 25 ok, 0 unresolved, 0 mismatch.
