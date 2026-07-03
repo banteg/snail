@@ -50,3 +50,11 @@ facequads-before-vertices stayed neutral at 21.46% (618/696), with masked
 operands unchanged at 24 ok, 0 unresolved, 1 mismatch on the same
 `cross_vectors` vs `rotate_matrix_world_z` orientation call pairing. The helper
 keeps vertices-first order.
+
+2026-07-04 retained orientation scheduling split: expanding the curved-body
+orientation block enough to build both primary and secondary fixed-up frames
+before rotating either frame moves focused Wibo from 21.46% (618/696) to
+27.36% (620/696). Masked operands improve from 24 ok, 0 unresolved, 1 mismatch
+to 28 ok, 0 unresolved, 1 mismatch. The remaining pairing is still an
+orientation-schedule mismatch, now native `normalize_vector` against candidate
+`rotate_matrix_world_z`, so the broader call-alignment debt remains explicit.

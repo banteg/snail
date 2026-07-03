@@ -684,7 +684,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 613/690 | 29.78% | 0/690 | 34 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.19% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 601/685 | 30.95% | 0/685 | 33 ok |  |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 618/696 | 21.46% | 0/696 | 1 mismatch, 24 ok |  |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 620/696 | 27.36% | 0/696 | 1 mismatch, 28 ok |  |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 600/696 | 21.76% | 0/696 | 1 mismatch, 25 ok |  |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 546/652 | 25.04% | 0/652 | 1 mismatch, 32 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 548/652 | 21.33% | 0/652 | 3 mismatch, 33 ok |  |

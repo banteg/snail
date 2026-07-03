@@ -557,20 +557,39 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
                 secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
             } else {
                 float roll = primary_samples[sample_index - 1].center_x * 0.2617994f;
-                orient_previous_with_fixed_up(
-                    &primary_samples[sample_index - 1],
-                    &primary_samples[sample_index],
-                    0.0f,
-                    1.0f,
-                    0.0f,
-                    roll);
-                orient_previous_with_fixed_up(
-                    &secondary_samples[sample_index - 1],
-                    &secondary_samples[sample_index],
-                    0.0f,
-                    1.0f,
-                    0.0f,
-                    roll);
+                PathAttachmentSample* primary_previous = &primary_samples[sample_index - 1];
+                PathAttachmentSample* primary_current = &primary_samples[sample_index];
+                PathAttachmentSample* secondary_previous = &secondary_samples[sample_index - 1];
+                PathAttachmentSample* secondary_current = &secondary_samples[sample_index];
+
+                primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+                primary_previous->transform.basis_forward = Vector3(
+                    primary_current->transform.position.x
+                        - primary_previous->transform.position.x,
+                    primary_current->transform.position.y
+                        - primary_previous->transform.position.y,
+                    primary_current->transform.position.z
+                        - primary_previous->transform.position.z);
+                primary_previous->transform.basis_forward.normalize_vector();
+                primary_previous->transform.basis_right.cross_vectors(
+                    &primary_previous->transform.basis_up,
+                    &primary_previous->transform.basis_forward);
+
+                secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+                secondary_previous->transform.basis_forward = Vector3(
+                    secondary_current->transform.position.x
+                        - secondary_previous->transform.position.x,
+                    secondary_current->transform.position.y
+                        - secondary_previous->transform.position.y,
+                    secondary_current->transform.position.z
+                        - secondary_previous->transform.position.z);
+                secondary_previous->transform.basis_forward.normalize_vector();
+                secondary_previous->transform.basis_right.cross_vectors(
+                    &secondary_previous->transform.basis_up,
+                    &secondary_previous->transform.basis_forward);
+
+                primary_previous->transform.rotate_matrix_world_z(roll);
+                secondary_previous->transform.rotate_matrix_world_z(roll);
             }
         }
     }

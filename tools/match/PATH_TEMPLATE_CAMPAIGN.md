@@ -15,7 +15,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_dump_path_template_pair` | 29.78% | Hump twin, inverted vertical lane; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_hump_path_template_pair` | 30.38% | Worst front-half family target; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
-| `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
+| `initialize_slalom_path_template_pair` | 27.36% | Curved-body orientation now builds both fixed-up frames before either roll call; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
 | `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded; mesh request-order probe regressed. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit; mesh request-order probe regressed. |
@@ -667,6 +667,13 @@ to facequads-before-vertices stayed neutral at 21.46% (`618/696`), with masked
 operands unchanged at `24 ok / 1 mismatch` on the same `cross_vectors` vs
 `rotate_matrix_world_z` orientation call pairing. The target keeps
 vertices-before-facequads order.
+The retained `slalom` orientation scheduling split expands just the curved-body
+orientation block so the primary and secondary fixed-up frames are both built
+before either frame is rolled. Focused Wibo moves from 21.46% to 27.36%
+(`618/696` to `620/696`), and the masked audit improves from
+`24 ok / 1 mismatch` to `28 ok / 1 mismatch`. The remaining mismatch is still
+orientation call alignment, now native `normalize_vector` against candidate
+`rotate_matrix_world_z`.
 
 For `slalombig`, the retained lead-out bound spelling materializes
 `lead_out_start = curve_segments + 4` and derives `total_segments` from that
