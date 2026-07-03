@@ -134,3 +134,27 @@ Unlike the rejected/neutral sibling probes, the kind-42 target really does align
 better with the strip-mesh allocation calls in facequads-before-vertices order.
 The retained spelling clears the single masked relocation mismatch while moving
 focused Wibo from 37.04% to 37.34%.
+
+## 2026-07-04 middle-loop byte-offset retest
+
+A direct byte-offset rewrite of the middle sample loop was rejected. It mirrored
+the native decompiler's `0xa80`-to-`0x20d0` sample-offset counter and explicit
+primary/secondary pointers, but it lowered the focused matcher:
+
+```text
+match: 32.21%
+target: 707 insns, candidate: 634 insns
+masked operands: 44 ok, 0 unresolved, 0 mismatch
+```
+
+Restoring the indexed `for (i = 16; i < 50; ++i)` loop brings the scratch back
+to the current baseline:
+
+```text
+match: 37.34%
+target: 707 insns, candidate: 659 insns
+masked operands: 46 ok, 0 unresolved, 0 mismatch
+```
+
+The native-looking byte-offset ownership is therefore not portable to this loop
+without also solving the surrounding stack-frame and transform-copy lifetime.

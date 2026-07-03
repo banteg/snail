@@ -97,6 +97,13 @@ unlike the current shared helper default. Focused Wibo moved from 37.04% to
 portable: `p` and `hill_valley` rejected or neutralized adjacent allocation
 order probes, so only back-propagate it where focused evidence agrees.
 
+A direct middle-loop byte-offset transfer was rejected for `kind42`: rewriting
+samples 16 through 49 with explicit primary/secondary sample pointers and a
+`0xa80`-to-`0x20d0` byte counter regressed focused Wibo from 37.34% to 32.21%
+(`659/707` to `634/707`) while dropping audited operands from `46 ok` to
+`44 ok`. The indexed middle loop remains the retained spelling until the
+surrounding stack-frame and transform-copy lifetime are isolated.
+
 ## Expansion Order
 
 After `kind42` moves, apply the proven spelling mechanically to the four lowest
