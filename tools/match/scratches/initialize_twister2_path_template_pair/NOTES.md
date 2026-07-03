@@ -22,3 +22,9 @@ spelling, and storing the sine-derived primary `y` / `z` after
 operands cleaned up to 30 ok, 0 unresolved, 0 mismatch. Rejected adjacent probe:
 the kind42-style mesh `vertex_index` spelling was neutral at 14.36%, so the
 strip-mesh vertex cursor remains pointer-shaped for now.
+
+2026-07-03 retained sample-scalar cleanup: primary sample setup now omits the
+scratch-only `lateral_source` zero store and follows the native scalar store
+order: `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
+`lateral_scale`. Focused Wibo moves from 15.25% (556/677) to 15.27%
+(554/677), with masked operands unchanged at 30 ok, 0 unresolved, 0 mismatch.

@@ -18,14 +18,14 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalom_path_template_pair` | 20.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
 | `initialize_slalombig_path_template_pair` | 20.39% | Same two-temporary falloff split as slalom, with the wider `4.4444447f` scale. |
 | `initialize_slalomdouble_path_template_pair` | 22.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
-| `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
-| `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
+| `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
+| `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
-| `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
+| `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_sbend_path_template_pair` | 22.51% | Delayed step conversion and split interior y/z writeback now follow native order better. |
 | `initialize_snake_path_template_pair` | 14.49% | Delayed the width-derived `right` local until after the zero lead-in seed loop. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
@@ -115,6 +115,15 @@ Focused Wibo moved from 12.31% to 14.62% (`583/668` to `563/668`, masked
 operands `19 ok / 3 mismatch` to `27 ok / 2 mismatch`). A last-endpoint center
 recompute probe improved the mask audit to one mismatch but reduced fuzzy score
 to 13.56%, so it was left out.
+
+For `hill_valley` and the twister twins, the retained sample-scalar cleanup
+removes the scratch-only `lateral_source` zero store and orders scalar setup as
+`rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`, `lateral_scale`.
+Focused Wibo moved `hill_valley` from 14.62% to 14.65% (`563/668` to
+`561/668`, masked operands unchanged at `27 ok / 2 mismatch`) and each twister
+twin from 15.25% to 15.27% (`556/677` to `554/677`, masked operands unchanged
+at `30 ok / 0 mismatch`). A twister endpoint-handedness helper was rejected
+because it regressed to 15.00% and reintroduced two masked call mismatches.
 
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and

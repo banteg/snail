@@ -28,3 +28,9 @@ Rejected probe: recomputing the centered/non-centered center for the last
 endpoint reduced the remaining mask audit to one mismatch, but lowered the
 focused fuzzy score to 13.56% and grew the candidate to 571/668, so it was not
 retained.
+
+2026-07-03 retained sample-scalar cleanup: primary sample setup now omits the
+scratch-only `lateral_source` zero store and follows the native scalar store
+order: `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
+`lateral_scale`. Focused Wibo moves from 14.62% (563/668) to 14.65%
+(561/668), with masked operands unchanged at 27 ok, 0 unresolved, 2 mismatch.

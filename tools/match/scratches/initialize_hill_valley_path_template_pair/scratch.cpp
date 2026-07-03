@@ -16,11 +16,10 @@ static __forceinline void initialize_sample(
     PathTemplateSample* sample, float center_x, float x, float y, float z)
 {
     sample->center_x = center_x;
-    sample->rotation_scalar_94 = 0.0f;
     sample->rotation_scalar_98 = 0.0f;
-    sample->lateral_scale = 1.0f;
+    sample->rotation_scalar_94 = 0.0f;
     sample->special_scalar = 0.0f;
-    sample->lateral_source = 0.0f;
+    sample->lateral_scale = 1.0f;
     set_matrix_identity(&sample->transform);
     sample->transform.position.x = x;
     sample->transform.position.y = y;
