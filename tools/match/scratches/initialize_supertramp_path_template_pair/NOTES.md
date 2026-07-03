@@ -71,3 +71,11 @@ calculation through a local `Vector3 generated_position` before assigning
 (477/552). The masked audit stays at 26 ok, 0 unresolved, 1 mismatch, and the
 cap-texture facequad writes remain direct because the earlier two-iteration
 `face_index` probe regressed sharply.
+
+2026-07-03 neutral ownership retests after mesh-vertex staging: re-expanding
+the seven flat lead-in samples out of `initialize_pair_sample` remained exactly
+neutral at 17.10% (477/552), with masked operands unchanged at 26 ok,
+0 unresolved, 1 mismatch. Rewriting the arc loop to address samples through an
+explicit byte offset was also neutral at 17.10% (477/552) with the same masked
+audit. Keep the helper-routed lead-in and indexed arc pointers until a
+non-neutral lifetime lead appears.

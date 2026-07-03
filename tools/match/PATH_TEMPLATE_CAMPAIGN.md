@@ -317,6 +317,10 @@ native stack-spill shape in the vertex row loop. Focused Wibo moved from 18.04%
 to 20.56% (`521/610` to `528/610`) and improved the masked audit from
 `24 ok / 2 mismatch` to `26 ok / 2 mismatch`. The prefix/frame debt remains:
 the candidate still starts at a `0x48` frame against native `0x44`.
+A curved-loop byte-offset probe was rejected for `start`: replacing the curved
+body's indexed sample pointers with explicit byte-offset ownership regressed
+focused Wibo to 18.72% (`533/610`) and reduced the masked audit to
+`22 ok / 2 mismatch`, so the current `start` body keeps indexed pointers.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
@@ -500,6 +504,9 @@ that mesh keeps the direct `a`/`b` facequad writes.
 A flat lead-in expansion was also neutral at 16.96% (`474/552`) with
 `26 ok / 1 mismatch`, so the seven fixed lead-in samples stay helper-routed
 until another source-shape lead appears.
+Retesting after the retained mesh-vertex staging kept that flat lead-in
+expansion neutral at 17.10% (`477/552`), and the arc-loop byte-offset ownership
+probe was also neutral at 17.10% with the same `26 ok / 1 mismatch` audit.
 Two arc-loop scalar probes were rejected: dropping secondary scalar-field writes
 regressed to 16.49% (`467/552`, `22 ok / 2 mismatch`), and reloading arc primary
 X from `center_x` regressed to 16.76% (`474/552`, `25 ok / 2 mismatch`).
