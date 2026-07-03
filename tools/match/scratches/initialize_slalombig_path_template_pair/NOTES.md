@@ -24,3 +24,9 @@ mismatch.
 native absolute-distance temporaries. Focused Wibo moves from 19.35% (575/696)
 to 20.39% (589/696), with masked operands improving from 18 ok, 0 unresolved,
 3 mismatch to 23 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 lead-out bound spelling: native materializes the first trailing
+straight sample as `curve_segments + 4`, then derives the total segment count
+from that local. Spelling `lead_out_start` and `total_segments` in the scratch
+moves focused Wibo from 20.39% (589/696) to 20.44% (586/696), with masked
+operands unchanged at 23 ok, 0 unresolved, 2 mismatch.

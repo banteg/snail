@@ -16,7 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hump_path_template_pair` | 18.99% | Worst front-half family target; recovered seven-argument ABI and native `ret 0x1c`. |
 | `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
 | `initialize_slalom_path_template_pair` | 20.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
-| `initialize_slalombig_path_template_pair` | 20.39% | Same two-temporary falloff split as slalom, with the wider `4.4444447f` scale. |
+| `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
 | `initialize_slalomdouble_path_template_pair` | 22.84% | Orientation helper now always dispatches `rotate_matrix_world_z`, matching the native source shape. |
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
@@ -217,6 +217,12 @@ stale four-argument prototypes despite native six-argument calls. Making the
 unused mode/cap arguments explicit moved `dip` from 30.02% to 30.19% (`564/655`
 unchanged, `30 ok / 1 mismatch`) and `slalom` from 19.22% to 19.37% (`615/696`
 unchanged, `19 ok / 3 mismatch`).
+
+For `slalombig`, the retained lead-out bound spelling materializes
+`lead_out_start = curve_segments + 4` and derives `total_segments` from that
+local, matching the native header calculation. Focused Wibo moved from 20.39%
+to 20.44% (`589/696` to `586/696`, masked operands unchanged at
+`23 ok / 2 mismatch`).
 
 The loop-family callsite/tail audit applies to `loopout`, `looptheloop`, and
 `looptheloopw` as well: focused diffs showed native `ret 0x18` tails while the

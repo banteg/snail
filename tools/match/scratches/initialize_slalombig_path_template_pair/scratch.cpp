@@ -173,8 +173,10 @@ void AttachmentPathTemplate::initialize_slalombig_path_template_pair(
     side_exit_mode = 0;
     width_cells = width_cells_;
     width_or_scale = 1.0f;
-    segment_count = curve_segments + 8;
-    segment_count_f = (float)(curve_segments + 8);
+    int lead_out_start = curve_segments + 4;
+    int total_segments = lead_out_start + 4;
+    segment_count = total_segments;
+    segment_count_f = (float)total_segments;
     allocate_path_template_samples();
     special_runtime_flag_9c = 0;
 
@@ -182,7 +184,7 @@ void AttachmentPathTemplate::initialize_slalombig_path_template_pair(
     for (i = 0; i < 4; ++i)
         initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
 
-    for (i = curve_segments + 4; i < curve_segments + 8; ++i)
+    for (i = lead_out_start; i < total_segments; ++i)
         initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
 
     for (i = 0; i < curve_segments; ++i) {
