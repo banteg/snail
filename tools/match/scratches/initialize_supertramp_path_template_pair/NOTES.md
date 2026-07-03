@@ -50,3 +50,9 @@ twister twins, replacing the direct `a`/`b` facequad writes with a two-iteration
 (488/552), and regressed the masked audit from 26 ok, 0 unresolved, 1 mismatch
 to 7 ok, 0 unresolved, 3 mismatch. The cap-texture mesh keeps the direct
 facequad writes for now.
+
+2026-07-03 neutral flat lead-in expansion: expanding the seven flat lead-in
+samples out of `initialize_pair_sample`, while keeping the earlier rejected
+`center_x` reload out, was exactly neutral at 16.96% (474/552), with masked
+operands unchanged at 26 ok, 0 unresolved, 1 mismatch. The helper-routed source
+stays retained until a non-neutral lifetime lead appears.

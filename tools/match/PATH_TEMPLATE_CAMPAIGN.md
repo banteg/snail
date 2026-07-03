@@ -410,6 +410,9 @@ A facequad inner-loop probe was also rejected for `supertramp`: applying the
 mesh regressed focused Wibo from 16.96% to 10.19% (`474/552` to `488/552`) and
 reduced the masked audit from `26 ok / 1 mismatch` to `7 ok / 3 mismatch`, so
 that mesh keeps the direct `a`/`b` facequad writes.
+A flat lead-in expansion was also neutral at 16.96% (`474/552`) with
+`26 ok / 1 mismatch`, so the seven fixed lead-in samples stay helper-routed
+until another source-shape lead appears.
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
