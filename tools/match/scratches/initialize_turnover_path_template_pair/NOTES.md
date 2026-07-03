@@ -20,3 +20,8 @@ mismatch.
 reload from the already-written primary center field moves focused Wibo to
 23.36% (562/671), with masked operands improving to 29 ok, 0 unresolved, 1
 mismatch.
+
+Rejected: moving the curved sample Y/cosine write before the X/sine write raised
+focused Wibo only to 23.52% (562/671) while worsening the masked audit from
+29 ok, 0 unresolved, 1 mismatch to 28 ok, 0 unresolved, 2 mismatch. The retained
+order keeps X before Y until the sine/cosine pairing is better understood.

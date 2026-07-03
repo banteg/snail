@@ -206,6 +206,9 @@ secondary X from the primary center field after it has been written. Focused Wib
 moved from 22.85% to 23.36% (`563/671` to `562/671`, masked operands
 `28 ok / 1 mismatch` to `29 ok / 1 mismatch`). The same spelling was rejected
 for `turnoverdouble` because it reduced that sibling from 23.98% to 23.68%.
+Reordering the curved `turnover` position writes to compute Y/cosine before
+X/sine was also rejected: it raised fuzzy score to 23.52% but worsened the
+masked audit from `29 ok / 1 mismatch` to `28 ok / 2 mismatch`.
 
 For `sbend`, the retained slice keeps the native early `height * pi` x87 load but
 delays the integer step conversion until after the first header stores, then
