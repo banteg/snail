@@ -8,7 +8,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | target | score | notes |
 |---|---:|---|
 | `initialize_kind42_path_template_pair` | 37.34% | Best non-cage anchor; exact transform helper, exact sample allocation, and native mesh request order now clear the focused masked audit. |
-| `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit. |
+| `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit; mesh request-order probe regressed. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
@@ -793,3 +793,8 @@ moves focused Wibo from 37.52% to 37.64% (`636/718` to `637/718`) while clearing
 the focused masked audit from `41 ok / 1 mismatch` to `43 ok / 0 mismatch`.
 A bare source-order swap was codegen-neutral, and the opposite named-local order
 reversed the two constants and worsened the audit to two mismatches.
+A `loopout` mesh request-order probe was rejected: swapping strip-mesh requests
+to facequads-before-vertices regressed focused Wibo from 37.64% to 36.46%
+(`637/718` unchanged) and worsened the masked audit from `43 ok / 0 mismatch`
+to `41 ok / 2 mismatch`, explicitly pairing the allocation calls in the wrong
+order. The loopout helper stays vertices-before-facequads.

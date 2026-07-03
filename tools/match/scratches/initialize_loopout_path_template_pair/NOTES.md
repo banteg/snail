@@ -26,3 +26,10 @@ Rejected neighbors: merely swapping the source constant order compiled
 identically and kept the folded `0.0333333351` mismatch; naming
 `z * 0.30000001f` first improved fuzzy score but reversed the two constants and
 worsened the audit to 41 ok, 0 unresolved, 2 mismatch.
+
+2026-07-04 mesh request-order retest: swapping the strip-mesh allocation calls
+to facequads-before-vertices, as retained by `kind42`, regressed focused Wibo
+from 37.64% (637/718) to 36.46% (637/718). The masked audit worsened from
+43 ok, 0 unresolved, 0 mismatch to 41 ok, 0 unresolved, 2 mismatch, pairing
+the native `request_object_vertices` and `request_object_facequads` calls in
+the wrong order. Keep loopout vertices-first.
