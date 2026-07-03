@@ -18,3 +18,9 @@ mismatch.
 2026-07-03 rejected seed-X reload: applying turnover's secondary-X reload from
 the primary center field reduces focused Wibo to 23.68% (570/680), so this
 sibling keeps the original argument-based seed helper spelling.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-iteration `face_index` loop moves focused Wibo from 23.98% (571/680)
+to 27.60% (581/680). Masked operands improve from 32 ok, 0 unresolved,
+1 mismatch to 34 ok, 0 unresolved, 1 mismatch; the remaining mismatch is still
+the sine/cosine pairing in the curved interior.

@@ -27,6 +27,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
+| `initialize_turnoverdouble_path_template_pair` | 27.60% | Turnover sibling; the retained two-iteration facequad loop improves the focused matcher while the seed-X reload remains rejected. |
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
@@ -336,6 +337,11 @@ The retained `turnover` mesh-face slice applies the same two-texture
 to 26.85% (`562/671` to `573/671`), and the masked audit improved from
 `29 ok / 1 mismatch` to `31 ok / 1 mismatch`. The remaining mismatch is still
 the sine/cosine pairing in the curved interior.
+
+The retained `turnoverdouble` mesh-face slice follows the same helper rewrite.
+Focused Wibo moved from 23.98% to 27.60% (`571/680` to `581/680`), and the
+masked audit improved from `32 ok / 1 mismatch` to `34 ok / 1 mismatch`. The
+same sine/cosine pairing remains as the sole masked mismatch.
 
 For `sbend`, the retained slice keeps the native early `height * pi` x87 load but
 delays the integer step conversion until after the first header stores, then
