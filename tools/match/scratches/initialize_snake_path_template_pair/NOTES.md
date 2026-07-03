@@ -81,3 +81,9 @@ honest residuals.
 score neutral at 21.33% (548/652), with masked operands unchanged at 33 ok,
 0 unresolved, 3 mismatch. The cleanup is retained as decompiler-shaped source
 only; the same orientation and mesh-request residuals remain.
+
+2026-07-04 mesh-vertex staging probe rejected: applying the `start` and
+`supertramp` local `Vector3 generated_position` vertex-row staging to `snake`
+regressed focused Wibo from 21.33% (548/652) to 20.55% (555/652). Masked
+operands dropped from 33 ok, 0 unresolved, 3 mismatch to 31 ok, 0 unresolved,
+3 mismatch, so `snake` keeps direct vertex component stores.
