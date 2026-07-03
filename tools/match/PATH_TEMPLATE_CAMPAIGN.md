@@ -444,6 +444,9 @@ that mesh keeps the direct `a`/`b` facequad writes.
 A flat lead-in expansion was also neutral at 16.96% (`474/552`) with
 `26 ok / 1 mismatch`, so the seven fixed lead-in samples stay helper-routed
 until another source-shape lead appears.
+Two arc-loop scalar probes were rejected: dropping secondary scalar-field writes
+regressed to 16.49% (`467/552`, `22 ok / 2 mismatch`), and reloading arc primary
+X from `center_x` regressed to 16.76% (`474/552`, `25 ok / 2 mismatch`).
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.

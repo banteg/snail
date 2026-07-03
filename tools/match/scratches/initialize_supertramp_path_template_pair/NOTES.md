@@ -56,3 +56,11 @@ samples out of `initialize_pair_sample`, while keeping the earlier rejected
 `center_x` reload out, was exactly neutral at 16.96% (474/552), with masked
 operands unchanged at 26 ok, 0 unresolved, 1 mismatch. The helper-routed source
 stays retained until a non-neutral lifetime lead appears.
+
+2026-07-03 rejected arc-loop scalar probes: removing the arc secondary sample's
+scalar-field writes regressed focused Wibo from 16.96% (474/552) to 16.49%
+(467/552) and worsened the masked audit to 22 ok, 0 unresolved, 2 mismatch.
+Reloading arc primary transform X from `primary->center_x`, matching the
+decompiler spelling, also regressed to 16.76% (474/552) with 25 ok,
+0 unresolved, 2 mismatch. The retained arc loop keeps those scalar writes and
+the constant primary X store.
