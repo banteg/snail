@@ -22,7 +22,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
 | `initialize_start_path_template_pair` | 16.96% | Low tail target; allocation count, sample X reloads, and in-helper Z conversion now expose a real prefix. |
 | `initialize_supertramp_path_template_pair` | 16.20% | Arc sample schedule now initializes both lanes before either orientation pass. |
-| `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
+| `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_wibble_path_template_pair` | 22.70% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
 | `initialize_invert_path_template_pair` | 22.89% | Invert sibling; the same helper/copy scalar cleanup also improves the masked audit. |
@@ -218,6 +218,11 @@ temporary before storing the float radius. Focused Wibo moved from 18.55% to
 mismatch`). Reloading sample X from `primary->center_x`, reloading secondary Y
 from the primary transform, and branching through `kind - 0x21` were rejected
 because they reduced the focused score.
+
+The next `p` slice keeps the pair helper's Z input as an integer sample index
+and performs the int-to-float conversion inside the inlined helper after primary
+identity. Focused Wibo moved from 19.22% to 19.26% (`559/679` to `557/679`),
+with masked operands unchanged at `19 ok / 6 mismatch`.
 
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail

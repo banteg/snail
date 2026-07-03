@@ -24,3 +24,8 @@ x87 temporary before storing the float radius. Focused Wibo moved from 18.55%
 unresolved, 6 mismatch. Rejected adjacent probes: reloading primary/secondary X
 from `primary->center_x`, reloading secondary Y from the primary transform, and
 branching on `kind - 0x21`; all reduced the focused score.
+
+2026-07-03 Z-index helper spelling: keep the pair helper Z input as an integer
+sample index and perform the int-to-float conversion inside the inlined helper
+after primary identity. Focused Wibo moves from 19.22% (559/679) to 19.26%
+(557/679), with masked operands unchanged at 19 ok, 0 unresolved, 6 mismatch.
