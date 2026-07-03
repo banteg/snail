@@ -174,18 +174,21 @@ void AttachmentPathTemplate::initialize_p_path_template_pair(
     side_exit_mode = 0;
     width_cells = width_cells_;
     width_or_scale = 1.0f;
-    segment_count = curve_segments + 2;
-    segment_count_f = (float)(curve_segments + 2);
+    int last_index = curve_segments + 1;
+    int sample_count = last_index + 1;
+    segment_count = sample_count;
+    segment_count_f = (float)sample_count;
 
-    float radius = (end_x - start_x) * 0.5f;
-    if (radius < 0.0f)
-        radius = -radius;
+    double radius_calc = (end_x - start_x) * 0.5f;
+    if (radius_calc < 0.0f)
+        radius_calc = -radius_calc;
+    float radius = (float)radius_calc;
 
     allocate_path_template_samples();
     special_runtime_flag_9c = 0;
 
     initialize_pair_sample(this, 0, start_x, 0.0f, 0.0f);
-    initialize_pair_sample(this, curve_segments + 1, end_x, 0.0f, (float)(curve_segments + 1));
+    initialize_pair_sample(this, last_index, end_x, 0.0f, (float)last_index);
 
     int i;
     for (i = 1; i <= curve_segments; ++i) {

@@ -16,6 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
+| `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 | `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
@@ -128,3 +129,11 @@ seeded primary centers. Focused Wibo moved from 14.79% to 20.96% (`598/687` to
 Swapping the start/end center expressions and precomputing an explicit
 `interior_count_f` radius were both rejected because they reduced the focused
 score.
+
+For `p`, the retained slice materializes the endpoint `last_index` and
+`sample_count` locals before allocation and keeps the radius sign check on a
+temporary before storing the float radius. Focused Wibo moved from 18.55% to
+19.22% (`561/679` to `559/679`, masked operands unchanged at `19 ok / 6
+mismatch`). Reloading sample X from `primary->center_x`, reloading secondary Y
+from the primary transform, and branching through `kind - 0x21` were rejected
+because they reduced the focused score.

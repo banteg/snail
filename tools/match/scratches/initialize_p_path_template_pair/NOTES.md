@@ -15,3 +15,12 @@ Forcing those helpers inline moves focused Wibo from 10.58% (134/679
 candidate/target instructions) to 18.55% (561/679), with masked operands
 improving from 6 ok, 0 unresolved, 8 mismatch to 19 ok, 0 unresolved, 6
 mismatch.
+
+2026-07-03 path-template count/radius sweep: materialized the endpoint
+`last_index = curve_segments + 1` and allocation `sample_count = last_index + 1`
+spelling used by the native constructor, then kept the radius sign check on an
+x87 temporary before storing the float radius. Focused Wibo moved from 18.55%
+(561/679) to 19.22% (559/679), with masked operands unchanged at 19 ok, 0
+unresolved, 6 mismatch. Rejected adjacent probes: reloading primary/secondary X
+from `primary->center_x`, reloading secondary Y from the primary transform, and
+branching on `kind - 0x21`; all reduced the focused score.
