@@ -260,6 +260,9 @@ probe after this expansion stayed neutral, so that branch remains unchanged.
 Expanding the remaining snake lead-in and lead-out helper calls was rejected
 because it regressed focused Wibo to 15.41% (`542/652`) without improving the
 masked audit.
+A `snake` mesh request-order probe matched the earlier `sweep` rejection:
+swapping to facequads-before-vertices stayed neutral at 15.50% (`535/652`) with
+`29 ok / 3 mismatch`, only flipping the remaining mesh call mismatch.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and

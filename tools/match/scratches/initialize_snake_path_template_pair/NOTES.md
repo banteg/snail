@@ -61,3 +61,9 @@ Rejected: spelling the curved body with a separate zero-based logical counter
 for angle/Z, like the decompiler, regressed focused Wibo from 15.50% (535/652)
 to 15.46% (538/652). The masked audit stayed at 29 ok, 0 unresolved,
 3 mismatch, so the `i - 6` angle spelling remains retained for now.
+
+Rejected: swapping the strip-mesh allocation calls to request facequads before
+vertices stayed neutral at 15.50% (535/652), with masked operands unchanged at
+29 ok, 0 unresolved, 3 mismatch. It only flipped the mesh call mismatch from
+target vertices vs candidate facequads to target facequads vs candidate
+vertices, matching the earlier `sweep` rejection pattern.
