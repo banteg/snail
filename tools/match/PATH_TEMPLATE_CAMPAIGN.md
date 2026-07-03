@@ -23,7 +23,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_start_path_template_pair` | 21.65% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, facequads-first mesh allocation, and the retested count-of-11 flat-tail loop improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 18.66% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`; mesh allocation is facequads-first. |
 | `initialize_p_path_template_pair` | 19.40% | Low tail target; endpoint index/count spelling, radius lifetime, in-helper Z conversion, and curved-body orientation expansion now match the native setup better; endpoint expansion, mesh-vertex staging, and zero-based loop-counter spelling are rejected for now. |
-| `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
+| `initialize_turnunder_path_template_pair` | 27.22% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, retained two-iteration facequad loop, and native-style interior angle/trig/orientation scheduling improve the focused matcher. The prologue-radius lifetime retest cleared the masked audit but lowered focused Wibo, so the retained scratch keeps one constant-lifetime mismatch. |
 | `initialize_wibble_path_template_pair` | 29.95% | Interior roll schedule and the retained two-iteration facequad loop now both clear the focused masked audit. |
 | `initialize_invert_path_template_pair` | 29.37% | Invert sibling; interior-X cleanup and the retained two-iteration facequad loop now clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
@@ -438,6 +438,15 @@ The retained `turnunder` mesh-face slice applies the same two-texture
 `592/687`) and improved the masked audit from `22 ok / 5 mismatch` to
 `24 ok / 5 mismatch`. The remaining residuals are still in the turn
 angle/interior orientation schedule.
+
+The retained `turnunder` interior-loop slice switches the body to the recovered
+negative one-turn angle, computes the count-derived radius, orders the
+half-angle/full-angle/Y/roll trig calls like the native loop, and builds
+`basis_forward`/`basis_right` before copying the secondary sample. Focused Wibo
+improves from 23.92% to 27.22% (`592/687` to `628/687`), with masked operands
+moving from `24 ok / 5 mismatch` to `38 ok / 1 mismatch`. Retesting the
+prologue-radius lifetime cleared the masked audit (`37 ok / 0 mismatch`) but
+reduced focused Wibo to 26.62%, so it remains rejected for now.
 
 For `turnover`, the retained slice narrows the straight seed helper by reloading
 secondary X from the primary center field after it has been written. Focused Wibo

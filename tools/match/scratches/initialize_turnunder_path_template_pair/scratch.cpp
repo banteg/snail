@@ -210,22 +210,35 @@ void AttachmentPathTemplate::initialize_turnunder_path_template_pair(
 
     float start_center = primary_samples[0].center_x;
     float end_center = primary_samples[interior_count + 6].center_x;
+    float interior_count_f = (float)interior_count;
+    float radius = interior_count_f * 0.15915494f;
 
     for (int k = 0; k < interior_count; ++k) {
         int index = k + 6;
-        float phase = (float)k / (float)interior_count;
-        float angle = phase * 6.2831855f * turns;
-        float half_angle = angle * 0.5f;
-        float roll = sine(angle) * 1.0471976f;
+        float phase = (float)k / interior_count_f;
+        float angle = phase * -6.2831855f;
         float center = start_center + (end_center - start_center) * phase;
+        float half_angle = angle * 0.5f;
+        float half_side = sine(half_angle);
         float side = sine(angle);
-        float offset = 2.0f * side * sine(half_angle);
-        float y = (turns - cosine(angle) * turns) * -0.2f;
+        float offset = side * half_side + side * half_side;
+        float y = (radius - cosine(angle) * radius) * -0.2f;
+        float roll_cos = cosine(sine(angle) * 1.0471976f);
+        float roll_sin = sine(sine(angle) * 1.0471976f);
 
         initialize_sample(&primary_samples[index], center, center - offset, y, (float)index);
-        primary_samples[index].transform.basis_up.x = -sine(roll);
-        primary_samples[index].transform.basis_up.y = cosine(roll);
+        primary_samples[index].transform.basis_up.x = -roll_sin;
+        primary_samples[index].transform.basis_up.y = roll_cos;
         primary_samples[index].transform.basis_up.z = 0.0f;
+        PathTemplateSample* previous = &primary_samples[index - 1];
+        primary_samples[index].transform.basis_forward = Vector3(
+            primary_samples[index].transform.position.x - previous->transform.position.x,
+            primary_samples[index].transform.position.y - previous->transform.position.y,
+            primary_samples[index].transform.position.z - previous->transform.position.z);
+        primary_samples[index].transform.basis_forward.normalize_vector();
+        primary_samples[index].transform.basis_right.cross_vectors(
+            &primary_samples[index].transform.basis_up,
+            &primary_samples[index].transform.basis_forward);
         copy_secondary_from_primary(this, index);
     }
 

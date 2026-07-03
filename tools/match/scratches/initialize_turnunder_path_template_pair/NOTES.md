@@ -41,3 +41,13 @@ with the two-texture `face_index` loop moves focused Wibo from 20.96% (582/687)
 to 23.92% (592/687). Masked operands improve from 22 ok, 0 unresolved,
 5 mismatch to 24 ok, 0 unresolved, 5 mismatch. The remaining audit debt stays
 in the turn angle/interior orientation schedule.
+
+2026-07-04 retained interior-loop schedule: switched the nonlinear body to the
+recovered negative one-turn angle, count-derived radius, native-style
+half-angle/full-angle/Y/roll trig order, and primary `basis_forward` /
+`basis_right` construction before copying the secondary lane. Focused Wibo moves
+from 23.92% (592/687) to 27.22% (628/687), with masked operands improving from
+24 ok, 0 unresolved, 5 mismatch to 38 ok, 0 unresolved, 1 mismatch. Retesting
+the prologue-radius lifetime clears the masked audit at 37 ok, 0 unresolved,
+0 mismatch, but lowers focused Wibo to 26.62%, so the retained source keeps the
+loop-local radius spelling for now.
