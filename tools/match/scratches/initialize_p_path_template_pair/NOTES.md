@@ -79,3 +79,9 @@ Focused Wibo moves from 19.26% (557/679) to 19.40% (558/679). This is not a
 masked-audit cleanup: masked operands worsen from 19 ok, 0 unresolved,
 6 mismatch to 19 ok, 0 unresolved, 9 mismatch, so the new residual call
 pairings remain explicit.
+
+Post-orientation mesh request-order retest: swapping strip-mesh requests to
+facequads-before-vertices stayed neutral at 19.40% (558/679), with masked
+operands unchanged at 19 ok, 0 unresolved, 9 mismatch, and only flipped the
+remaining mesh allocation call pairing. The vertices-first order remains
+retained.
