@@ -40,3 +40,13 @@ did not change focused Wibo (14.53%, 532/652) or the masked audit (25 ok,
 0 unresolved, 4 mismatch). The native `set_matrix_rotation_identity` vs
 candidate `normalize_vector` pairings therefore remain treated as alignment
 drift rather than a retained semantic change.
+
+2026-07-03 middle-loop expansion: expanding the curved body sample setup out of
+the generic pair helper matches the native ordering better. The center reloads
+the seeded right-side sample, primary Y is computed after primary identity, and
+secondary Y recomputes the cosine-derived height after secondary identity.
+Focused Wibo moves from 14.53% (532/652) to 15.50% (535/652), with masked
+operands improving from 25 ok, 0 unresolved, 4 mismatch to 29 ok, 0 unresolved,
+3 mismatch. Retesting the `current_index <= first_index + 1` orientation-bound
+probe against this expanded body stayed exactly neutral at 15.50%, so the
+original bound remains retained.

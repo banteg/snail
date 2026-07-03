@@ -190,9 +190,24 @@ void AttachmentPathTemplate::initialize_snake_path_template_pair(
     for (i = 6; i < 24; ++i) {
         float angle = (float)(i - 6) * 0.34906587f;
         float half_angle = angle * 0.5f;
-        float center = (0.5f - cosine(half_angle) * 0.5f) * right;
-        float y = -(1.0f - cosine(angle));
-        initialize_pair_sample(this, i, center, y, i);
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+        primary->center_x = (0.5f - cosine(half_angle) * 0.5f)
+            * primary_samples[24].center_x;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = -(1.0f - cosine(angle));
+        float z = (float)i;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f - (1.0f - cosine(angle));
+        secondary->transform.position.z = z;
         orient_previous_with_right(primary_samples, i, 6);
         orient_previous_with_right(secondary_samples, i, 6);
     }

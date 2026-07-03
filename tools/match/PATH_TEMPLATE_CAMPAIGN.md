@@ -30,7 +30,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 19.71% | Selector argument now matches native byte-width ABI; remaining residual is orientation/copy scheduling. |
 | `initialize_hill_valley_path_template_pair` | 14.67% | Prologue conversion order and primary transform X reload now match the native setup a little more closely. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
-| `initialize_snake_path_template_pair` | 14.53% | Delayed the width-derived `right` local and moved Z conversion into the seed helper. |
+| `initialize_snake_path_template_pair` | 15.50% | Curved body now reloads the seeded right sample and recomputes Y inside expanded primary/secondary setup. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
@@ -206,6 +206,14 @@ from `current_index <= first_index` to `current_index <= first_index + 1` left
 focused Wibo and the masked audit unchanged at 14.53% (`532/652`) and
 `25 ok / 4 mismatch`, so the apparent identity-vs-normalize pairings remain
 documented alignment drift.
+
+For `snake`, the retained curved-body expansion follows the same decompiler
+shape as the direct sample-setup slices: center reloads the seeded right-side
+sample, primary Y is computed after primary identity, and secondary Y recomputes
+the cosine-derived height after secondary identity. Focused Wibo moved from
+14.53% to 15.50% (`532/652` to `535/652`), with masked operands improving from
+`25 ok / 4 mismatch` to `29 ok / 3 mismatch`. Retesting the orientation-bound
+probe after this expansion stayed neutral, so that branch remains unchanged.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and
