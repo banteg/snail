@@ -24,3 +24,12 @@ with the two-iteration `face_index` loop moves focused Wibo from 23.98% (571/680
 to 27.60% (581/680). Masked operands improve from 32 ok, 0 unresolved,
 1 mismatch to 34 ok, 0 unresolved, 1 mismatch; the remaining mismatch is still
 the sine/cosine pairing in the curved interior.
+
+2026-07-04 cosine-center probe rejected: replacing the center-X expression
+`sine(slalom_angle + 1.5707964f) * left` with the semantic equivalent
+`cosine(slalom_angle) * left` regressed focused Wibo from 27.60% (581/680) to
+25.76% (578/680). Masked operands worsened from 34 ok, 0 unresolved,
+1 mismatch to 31 ok, 0 unresolved, 2 mismatch, adding a target `sine` vs
+candidate `cosine` pairing before the existing target `cosine` vs candidate
+`sine` residual. Keep the phase-shifted sine spelling until the surrounding
+curved-call schedule changes.
