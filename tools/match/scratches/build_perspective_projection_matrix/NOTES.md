@@ -21,3 +21,10 @@ before dividing. The retained scratch models that argument/local aliasing in
 source and uses a raw 16-float matrix view. VC6 still emits separate
 `fcos`/`fsin` plus integer zero stores for this source. That is documented as
 source-shape debt rather than closed with inline assembly.
+
+2026-07-03 provenance identification: this is `D3DXMatrixPerspectiveFovRH`
+from the D3DX8 static library (cot(fov/2) y-scale, `m22 = zf/(zn-zf)`,
+`m23 = -1`, `m32 = zn*zf/(zn-zf)` are the RH variant exactly). The native
+`fsincos` scheduling is VC7 build-9178 codegen that msvc6.5 cannot emit; per
+the toolchain rule this is link-the-original-lib territory, and the scratch is
+a semantic reference only.

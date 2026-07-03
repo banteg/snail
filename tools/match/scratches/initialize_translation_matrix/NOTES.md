@@ -20,3 +20,11 @@ native helper stores zero and one via `fldz`/`fld1` plus `fstp`, while VC6.5
 under the normal scratch flags folds the same float constants into integer
 stores. Trials with `/Op`, C mode, no `/O2`, double literals, and long-double
 literals did not recover the x87 constant-store form.
+
+2026-07-03 provenance identification: this is `D3DXMatrixTranslation` from the
+DirectX 8 SDK's D3DX8 static library, not game code. The signature matches
+exactly (stdcall `(pOut, x, y, z)`, returns `pOut`, translation into
+m[12..14], identity elsewhere), and the `fldz`/`fld1` x87 constant stores are
+the VC7 build-9178 idiom named in the Rich-header provenance. Per the project
+toolchain rule ("link the original libs, never decompile these"), this scratch
+is a semantic reference only and is expected to stay unmatched under msvc6.5.

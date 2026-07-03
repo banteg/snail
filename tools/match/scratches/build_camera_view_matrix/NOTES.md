@@ -23,3 +23,11 @@ The current scratch is semantic rather than proof-grade. Native keeps an
 constant stores. This is consistent with the existing
 `initialize_translation_matrix` scratch: these late matrix helpers are D3DX8
 static-library code, not ordinary game translation units.
+
+2026-07-03 provenance identification: this is `D3DXMatrixLookAtRH` from the
+D3DX8 static library (`forward = normalize(eye - at)` is the RH convention,
+and the normalizations go through the real `D3DXVec3Normalize` import thunk at
+`0x44ebc1`). Together with `D3DXMatrixTranslation @ 0x44fd90` and
+`D3DXMatrixPerspectiveFovRH @ 0x450314`, all three late matrix helpers are
+VC7-built library objects; the scratch stays semantic-only per the
+link-the-original-libs rule.
