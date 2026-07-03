@@ -86,3 +86,9 @@ neutral at 17.10% (477/552), with masked operands unchanged at 26 ok,
 explicit byte offset was also neutral at 17.10% (477/552) with the same masked
 audit. Keep the helper-routed lead-in and indexed arc pointers until a
 non-neutral lifetime lead appears.
+
+2026-07-04 post-request-order arc ownership retest: rewriting the arc loop to
+address primary/secondary samples through an explicit byte offset remains
+exactly neutral after the facequads-first allocation cleanup. Focused Wibo stays
+18.66% (477/552), with masked operands unchanged at 27 ok, 0 unresolved,
+1 mismatch, so the indexed arc pointers remain retained.
