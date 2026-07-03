@@ -167,21 +167,21 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
             float lateral = (float)column - (float)width_cells * 0.5f;
             TransformMatrix* transform =
                 (TransformMatrix*)((char*)&primary_samples[0].transform + sample_offset);
-            Vector3* vertex = &vertices[column + row * (width_cells + 1)];
-            if (row == segment_count) {
+            int vertex_index = column + row * (width_cells + 1);
+            if (row != segment_count) {
+                Vector3 generated_position(
+                    transform->position.x + lateral * transform->basis_right.x,
+                    transform->position.y + lateral * transform->basis_right.y,
+                    transform->position.z + lateral * transform->basis_right.z);
+                vertices[vertex_index] = generated_position;
+            } else {
                 TransformMatrix* previous =
                     (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
                 Vector3 generated_position(
                     previous->position.x + lateral * previous->basis_right.x,
                     previous->position.y + lateral * previous->basis_right.y,
                     previous->position.z + 1.0f + lateral * previous->basis_right.z);
-                *vertex = generated_position;
-            } else {
-                Vector3 generated_position(
-                    transform->position.x + lateral * transform->basis_right.x,
-                    transform->position.y + lateral * transform->basis_right.y,
-                    transform->position.z + lateral * transform->basis_right.z);
-                *vertex = generated_position;
+                vertices[vertex_index] = generated_position;
             }
 
             int radius_sample = row - 1;
@@ -189,13 +189,13 @@ void AttachmentPathTemplate::initialize_kind42_path_template_pair(
                 radius_sample = row;
             compute_kind42_attachment_transform(
                 primary_samples[radius_sample].special_scalar,
-                vertex->x,
+                vertices[vertex_index].x,
                 0.0f,
                 &kind42_transform,
                 out_angle);
             if (sample_offset > sizeof(AttachmentSample) && row != segment_count) {
-                vertex->x = kind42_transform.position.x;
-                vertex->y = kind42_transform.position.y;
+                vertices[vertex_index].x = kind42_transform.position.x;
+                vertices[vertex_index].y = kind42_transform.position.y;
             }
         }
         sample_offset += sizeof(AttachmentSample);

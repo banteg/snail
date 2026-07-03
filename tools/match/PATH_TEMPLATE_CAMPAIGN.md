@@ -7,7 +7,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 
 | target | score | notes |
 |---|---:|---|
-| `initialize_kind42_path_template_pair` | 35.95% | Best non-cage anchor; uses exact `allocate_path_template_samples` and exact `compute_kind42_attachment_transform`. |
+| `initialize_kind42_path_template_pair` | 36.22% | Best non-cage anchor; uses exact `allocate_path_template_samples` and exact `compute_kind42_attachment_transform`. |
 | `initialize_loopout_path_template_pair` | 37.37% | Same large strip-mesh skeleton, one masked mismatch. |
 | `initialize_looptheloop_path_template_pair` | 35.59% | Loop-family macro scratch, still no prefix. |
 | `initialize_looptheloopw_path_template_pair` | 27.96% | Loop-family sibling with roll term. |
@@ -59,6 +59,12 @@ semantics are already close enough to expose source-shape debt:
 The first retained source probe should improve the focused matcher for
 `initialize_kind42_path_template_pair` without changing flags, inventing dummy
 symbols, or moving `loopbow`/`worm`.
+
+First retained probe: spelling the vertex grid through a stable `vertex_index`
+instead of a pinned `Vector3*` cursor moved `kind42` from 35.95% to 36.22% and
+raised audited masked operands from 45 to 46. The native strip-mesh loop still
+keeps different row/column/sample-offset register ownership, so leave the next
+probe focused on that local lifetime problem.
 
 ## Expansion Order
 

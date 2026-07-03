@@ -79,3 +79,26 @@ masked operands: 45 ok, 0 unresolved, 1 mismatch
 
 This removes the initializer from the `AttachmentPathTemplate` scratch-local
 type row while keeping the documented six-argument call shape.
+
+## 2026-07-03 vertex-grid source-shape pass
+
+Focused matcher after the retained vertex-index spelling:
+
+```text
+match: 36.22%
+target: 707 insns, candidate: 668 insns
+masked operands: 46 ok, 0 unresolved, 1 mismatch
+```
+
+Two source-shape probes were tried in the strip-mesh vertex loop:
+
+- spelling the non-terminal row first matches the native branch order but is
+  score-neutral by itself; and
+- replacing the pinned `Vector3* vertex` cursor with a stable `vertex_index`
+  is retained because it improves the vertex-loop region and adds one more
+  masked operand to the audited set.
+
+Remaining local debt: native still keeps the vertex base in `edi`, the row in
+`esi`, the column in `ebx`, and the sample byte offset on the stack. The current
+candidate still differs in that register/lifetime split, and the stack frame is
+still `0x7c` instead of native `0x9c`.
