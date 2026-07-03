@@ -32,7 +32,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score; mesh request-order remains vertices-first after a neutral rejected probe. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 22.15% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; curved-body orientation scheduling now leaves only the mesh allocation call pairing; mesh-vertex staging is rejected. |
-| `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton. |
+| `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton; the snake orientation-scheduling expansion regressed. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -403,6 +403,10 @@ single `face->uv[3].v` tail store. Focused Wibo moved `sweep` from 14.85% to
 `548/652`, masked operands `29 ok / 3 mismatch` to `33 ok / 3 mismatch`).
 The remaining mesh call mismatch is still an alignment pairing, so the retained
 request order stays vertices-before-facequads.
+The `p`/`snake` orientation scheduling expansion does not transfer back to
+`sweep`: expanding both lane orientations inline regressed focused Wibo from
+25.04% to 20.02% (`546/652` to `547/652`) and reduced masked operands from
+`32 ok / 1 mismatch` to `29 ok / 1 mismatch`, so the compact helper calls stay.
 For `snake`, the follow-up half-angle cleanup removes the scratch-only
 `half_angle` local and spells the curved-body center as `cosine(angle * 0.5f)`.
 This is neutral at 21.33% (`548/652`) with the masked audit still at

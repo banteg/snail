@@ -62,6 +62,12 @@ masked mismatch is still the `request_object_vertices` /
 `request_object_facequads` alignment pairing, not a retained request-order
 change.
 
+Rejected: the `p`/`snake` orientation scheduling expansion does not transfer to
+`sweep`. Expanding both lane orientations inline regressed focused Wibo from
+25.04% (546/652) to 20.02% (547/652), and reduced masked operands from
+32 ok, 0 unresolved, 1 mismatch to 29 ok, 0 unresolved, 1 mismatch. The compact
+helper calls stay retained.
+
 2026-07-04 mesh-vertex staging probe rejected: unlike `start` and `supertramp`,
 routing the vertex row calculation through a local `Vector3 generated_position`
 regressed focused Wibo from 25.04% (546/652) to 17.26% (553/652). It did clear
