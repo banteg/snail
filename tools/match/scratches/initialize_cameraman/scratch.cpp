@@ -1,7 +1,7 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
 #include "cameraman_state.h"
 
-extern int g_game_base; // data_4df904
+extern char* g_game_base; // data_4df904
 
 void CameramanState::initialize_cameraman()
 {

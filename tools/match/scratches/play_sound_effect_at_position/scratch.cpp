@@ -8,14 +8,14 @@ struct GameAudioListenerView {
     Vector3 listener_position; // +0x22c, active camera/listener origin
 };
 
-extern GameAudioListenerView* g_game_base; // data_4df904
+extern char* g_game_base; // data_4df904
 
 void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 
 void SoundEffectManager::play_sound_effect_at_position(int sound_id, const float* position)
 {
     float distance;
-    GameAudioListenerView* game = g_game_base;
+    GameAudioListenerView* game = (GameAudioListenerView*)g_game_base;
     *(volatile float*)&distance = 1.0e10f;
     Vector3 delta;
     delta.x = position[0] - game->listener_position.x;
