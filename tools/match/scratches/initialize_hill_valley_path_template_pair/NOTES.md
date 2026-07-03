@@ -59,3 +59,12 @@ the native two-iteration `face_index` loop moves focused Wibo from 18.00%
 unresolved, 4 mismatch to 28 ok, 0 unresolved, 4 mismatch; the remaining
 residuals are still the half-scale/phase pairing, two orientation call pairings,
 and the vertices-vs-facequads allocation alignment.
+
+2026-07-03 rejected loop-body probes: fully expanding the interior hill loop in
+the decompiler order clears the half-scale/phase and orientation call residuals
+but regresses focused Wibo from 21.53% (577/668) to 19.22% (560/668), leaving
+only the mesh allocation call mismatch. A narrower center-source probe that
+keeps the helper shape but initializes loop samples from
+`primary_samples[0].center_x` also regresses to 19.94% (576/668), with masked
+operands at 28 ok, 0 unresolved, 2 mismatch. Both probes are left out; the
+current helper-routed loop keeps the better fuzzy alignment.

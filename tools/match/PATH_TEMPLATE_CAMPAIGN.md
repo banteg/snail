@@ -238,6 +238,13 @@ Wibo moved from 18.00% to 21.53% (`565/668` to `577/668`) and improved the
 masked audit from `26 ok / 4 mismatch` to `28 ok / 4 mismatch`. The same
 orientation and mesh-allocation residuals remain explicit.
 
+Two tempting `hill_valley` loop-body cleanups are rejected for now. Fully
+expanding the interior hill loop in decompiler order clears the phase/orientation
+call residuals but regresses focused Wibo to 19.22% (`560/668`), and narrowing
+only the loop center source to `primary_samples[0].center_x` regresses to
+19.94% (`576/668`) despite reducing the masked audit to two mismatches. The
+helper-routed loop remains the better Phase B fuzzy-alignment baseline.
+
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and
 reloads both primary and secondary sample X from the primary `center_x` field.
