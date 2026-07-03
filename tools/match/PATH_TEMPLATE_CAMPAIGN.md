@@ -351,6 +351,10 @@ now retained: removing scratch-only `lateral_source` traffic moves focused Wibo
 from 19.71% to 19.79% (`595/663` to `590/663`), while the prefix and
 `18 ok / 2 mismatch` audit remain unchanged.
 
+Removing the remaining flat-secondary `lateral_source` copy was rejected: it
+improved the masked audit to `18 ok / 1 mismatch` but regressed focused Wibo to
+19.70% (`586/663`), so the retained source keeps that copy for now.
+
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a
 temporary before storing the float radius. Focused Wibo moved from 18.55% to

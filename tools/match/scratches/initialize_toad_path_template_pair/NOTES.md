@@ -35,3 +35,9 @@ primary initializer and secondary copy now improves focused Wibo from 19.71%
 (595/663) to 19.79% (590/663). The 1-instruction prefix and masked audit stay
 at 18 ok, 0 unresolved, 2 mismatch, so this is a small source-shape win while
 the interior orientation/copy scheduling residual remains.
+
+2026-07-03 secondary-flat scalar probe: removing the remaining flat secondary
+`lateral_source` copy improved the masked audit to 18 ok, 0 unresolved, 1
+mismatch, but regressed focused Wibo to 19.70% (586/663). Left out to preserve
+the retained 19.79% source shape until the flat seed loop is rebuilt more
+substantially.
