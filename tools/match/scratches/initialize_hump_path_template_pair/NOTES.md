@@ -53,3 +53,12 @@ to facequads-before-vertices regressed focused Wibo from `19.53%` (`605/685`,
 `28 ok / 1 mismatch`) to `18.60%` (`605/685`, `27 ok / 1 mismatch`). The
 remaining mismatch stayed the half-angle constant pairing, so hump keeps the
 shared vertices-before-facequads order.
+
+2026-07-03 departure seed indexing pass: spelling only the second fixed seed
+loop directly through `primary_samples[sample_index]` / `secondary_samples`
+keeps the native byte-offset ownership for that loop and moves focused Wibo from
+`19.53%` (`605/685`) to `20.49%` (`613/685`). The focused masked audit clears
+from `28 ok / 1 mismatch` to `33 ok / 0 mismatch`. Applying the same indexed
+spelling to both fixed seed loops was rejected because it regressed to `18.02%`
+and made the mesh allocation call pairing worse; the first fixed seed loop
+alone was also rejected at `19.38%`.

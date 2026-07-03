@@ -12,8 +12,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
-| `initialize_dump_path_template_pair` | 19.43% | Hump twin, inverted vertical lane; direct sample setup improves the masked audit to one mismatch. |
-| `initialize_hump_path_template_pair` | 19.53% | Worst front-half family target; direct sample setup improves the masked audit to one mismatch. |
+| `initialize_dump_path_template_pair` | 19.77% | Hump twin, inverted vertical lane; departure seed indexing clears the focused masked audit. |
+| `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
@@ -146,6 +146,15 @@ strip-mesh calls to facequads-before-vertices regressed `hump` from 19.53% to
 18.60% and `dump` from 19.43% to 18.50%, with both masked audits dropping from
 `28 ok / 1 mismatch` to `27 ok / 1 mismatch`. The remaining mismatch stayed the
 half-angle constant pairing, so the twins keep the shared vertices-first order.
+
+The next retained dump/hump slice narrows only the departure seed loop to direct
+indexed `primary_samples[sample_index]` / `secondary_samples[sample_index]`
+writes. Focused Wibo moved `hump` from 19.53% to 20.49% (`605/685` to
+`613/685`, masked operands `28 ok / 1 mismatch` to `33 ok / 0 mismatch`) and
+`dump` from 19.43% to 19.77% (`607/690` to `615/690`, masked operands
+`28 ok / 1 mismatch` to `29 ok / 0 mismatch`). Applying the indexed spelling to
+both fixed seed loops regressed `hump` to 18.02%, and the first fixed seed loop
+alone regressed to 19.38%, so the approach loop remains pointer-local.
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`

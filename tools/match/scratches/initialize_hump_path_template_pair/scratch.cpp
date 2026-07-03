@@ -326,22 +326,22 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
 
     for (i = 0; i < 7; ++i) {
         int sample_index = curve_count + 7 + i;
-        PathAttachmentSample* primary = &primary_samples[sample_index];
-        PathAttachmentSample* secondary = &secondary_samples[sample_index];
-        primary->center_x = 4.0f - (float)width_cells * 0.5f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
+        primary_samples[sample_index].center_x = 4.0f - (float)width_cells * 0.5f;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar = 0.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[sample_index].transform);
         float z = (float)sample_index;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        primary_samples[sample_index].transform.position.y = 0.0f;
+        primary_samples[sample_index].transform.position.z = z;
+        set_matrix_identity(&secondary_samples[sample_index].transform);
+        secondary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        secondary_samples[sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[sample_index].transform.position.z = z;
     }
 
     if (curve_count > 0) {
