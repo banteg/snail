@@ -16,7 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit; mesh-vertex staging is rejected. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
-| `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
+| `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
@@ -581,6 +581,14 @@ direct `a`/`b` facequad writes with the two-iteration `face_index` loop. Focused
 Wibo moved from 20.44% to 21.71% (`586/696` to `594/696`), with the masked audit
 improving from `23 ok / 2 mismatch` to `25 ok / 1 mismatch`. The remaining
 masked mismatch is still the interior orientation call pairing.
+
+The follow-up `slalombig` fixed-sample slice expands only the four lead-in
+samples from the generic helper. Focused Wibo moved from 21.71% to 21.76%
+(`594/696` to `600/696`), with the masked audit unchanged at `25 ok / 1
+mismatch`. The sibling full fixed-loop spelling does not transfer wholesale:
+expanding both fixed loops regressed to 21.62%, and lead-out-only regressed to
+21.22% while reducing the masked audit to `23 ok / 1 mismatch`, so the trailing
+fixed samples stay helper-routed.
 
 For `slalomdouble`, the retained fixed-sample initializer spelling reloads
 primary and secondary X from the stored primary `center_x`, then delays the

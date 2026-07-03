@@ -185,8 +185,26 @@ void AttachmentPathTemplate::initialize_slalombig_path_template_pair(
     special_runtime_flag_9c = 0;
 
     int i;
-    for (i = 0; i < 4; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+    for (i = 0; i < 4; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        float z = (float)i;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+    }
 
     for (i = lead_out_start; i < total_segments; ++i)
         initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);

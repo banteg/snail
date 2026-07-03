@@ -36,3 +36,11 @@ with the two-iteration `face_index` loop moves focused Wibo from 20.44% (586/696
 to 21.71% (594/696). Masked operands improve from 23 ok, 0 unresolved,
 2 mismatch to 25 ok, 0 unresolved, 1 mismatch; the remaining mismatch is the
 interior orientation call pairing.
+
+2026-07-03 lead-in fixed-loop expansion: expanding only the four lead-in fixed
+samples from the generic helper moves focused Wibo from 21.71% (594/696) to
+21.76% (600/696), with masked operands unchanged at 25 ok, 0 unresolved,
+1 mismatch. The sibling slalom full fixed-loop spelling does not transfer
+wholesale: expanding both fixed loops regresses to 21.62% (599/696), and
+lead-out-only regresses to 21.22% (595/696) with the masked audit dropping to
+23 ok, 0 unresolved, 1 mismatch.
