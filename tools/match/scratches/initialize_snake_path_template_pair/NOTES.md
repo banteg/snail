@@ -56,3 +56,8 @@ generic pair helper regressed focused Wibo from 15.50% (535/652) to 15.41%
 (542/652), with the masked audit unchanged at 29 ok, 0 unresolved, 3 mismatch.
 The lead/tail helper shape stays retained despite the decompiler's flattened
 loops.
+
+Rejected: spelling the curved body with a separate zero-based logical counter
+for angle/Z, like the decompiler, regressed focused Wibo from 15.50% (535/652)
+to 15.46% (538/652). The masked audit stayed at 29 ok, 0 unresolved,
+3 mismatch, so the `i - 6` angle spelling remains retained for now.

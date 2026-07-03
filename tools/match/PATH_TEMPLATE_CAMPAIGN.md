@@ -225,6 +225,11 @@ from the written primary Y. Focused Wibo moved from 14.30% to 14.85%
 (`537/652` to `533/652`), with masked operands improving from `26 ok / 1
 mismatch` to `27 ok / 1 mismatch`.
 
+A sweep/snake curved-counter spelling was rejected: using a separate zero-based
+logical counter for angle/Z, like the decompiler, regressed `sweep` from 14.85%
+to 14.81% (`533/652` to `536/652`) and `snake` from 15.50% to 15.46%
+(`535/652` to `538/652`), with masked audits unchanged.
+
 For `snake`, retaining the sample helper's Z input as an integer index and
 performing the int-to-float conversion inside the inlined helper after primary
 identity moved focused Wibo from 14.49% to 14.53% (`535/652` to `532/652`,

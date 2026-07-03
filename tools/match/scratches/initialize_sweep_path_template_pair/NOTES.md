@@ -47,3 +47,8 @@ primary identity, the curved body reloads the seeded primary `center_x`, and
 secondary Y derives from the written primary Y. Focused Wibo moves from 14.30%
 (537/652) to 14.85% (533/652), with masked operands improving from 26 ok,
 0 unresolved, 1 mismatch to 27 ok, 0 unresolved, 1 mismatch.
+
+Rejected: spelling the curved body with a separate zero-based logical counter
+for angle/Z, like the decompiler, regressed focused Wibo from 14.85% (533/652)
+to 14.81% (536/652). The masked audit stayed at 27 ok, 0 unresolved,
+1 mismatch, so the `i - 3` angle spelling remains retained for now.
