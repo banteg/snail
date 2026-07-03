@@ -26,7 +26,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
-| `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
+| `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
@@ -330,6 +330,12 @@ for `turnoverdouble` because it reduced that sibling from 23.98% to 23.68%.
 Reordering the curved `turnover` position writes to compute Y/cosine before
 X/sine was also rejected: it raised fuzzy score to 23.52% but worsened the
 masked audit from `29 ok / 1 mismatch` to `28 ok / 2 mismatch`.
+
+The retained `turnover` mesh-face slice applies the same two-texture
+`face_index` loop as the other strip-mesh wins. Focused Wibo moved from 23.36%
+to 26.85% (`562/671` to `573/671`), and the masked audit improved from
+`29 ok / 1 mismatch` to `31 ok / 1 mismatch`. The remaining mismatch is still
+the sine/cosine pairing in the curved interior.
 
 For `sbend`, the retained slice keeps the native early `height * pi` x87 load but
 delays the integer step conversion until after the first header stores, then

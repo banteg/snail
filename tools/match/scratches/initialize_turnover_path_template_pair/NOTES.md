@@ -25,3 +25,9 @@ Rejected: moving the curved sample Y/cosine write before the X/sine write raised
 focused Wibo only to 23.52% (562/671) while worsening the masked audit from
 29 ok, 0 unresolved, 1 mismatch to 28 ok, 0 unresolved, 2 mismatch. The retained
 order keeps X before Y until the sine/cosine pairing is better understood.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-iteration `face_index` loop moves focused Wibo from 23.36% (562/671)
+to 26.85% (573/671). Masked operands improve from 29 ok, 0 unresolved,
+1 mismatch to 31 ok, 0 unresolved, 1 mismatch; the remaining mismatch is still
+the sine/cosine pairing in the curved interior.
