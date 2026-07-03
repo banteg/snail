@@ -28,3 +28,8 @@ scratch-only `lateral_source` zero store and follows the native scalar store
 order: `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
 `lateral_scale`. Focused Wibo moves from 15.25% (556/677) to 15.27%
 (554/677), with masked operands unchanged at 30 ok, 0 unresolved, 0 mismatch.
+
+2026-07-03 rejected interior-X probe: unlike `wibble`/`invert`, forcing the
+interior sample initializer to keep transform `position.x` at 0.0f regressed
+focused Wibo from 15.27% (554/677) to 14.16% (552/677) and regressed the masked
+audit from 30 ok, 0 unresolved, 0 mismatch to 20 ok, 0 unresolved, 4 mismatch.

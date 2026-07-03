@@ -140,6 +140,10 @@ Focused Wibo moved `hill_valley` from 14.62% to 14.65% (`563/668` to
 twin from 15.25% to 15.27% (`556/677` to `554/677`, masked operands unchanged
 at `30 ok / 0 mismatch`). A twister endpoint-handedness helper was rejected
 because it regressed to 15.00% and reintroduced two masked call mismatches.
+The `wibble`/`invert` interior-X spelling was also rejected for both twister
+twins: forcing transform `position.x` to `0.0f` regressed each focused Wibo
+score from 15.27% to 14.16% (`554/677` to `552/677`) and reintroduced four
+masked operand mismatches.
 
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and
