@@ -225,12 +225,19 @@ void AttachmentPathTemplate::initialize_twister2_path_template_pair(
         center_scale = center_scale * 0.5f;
         center_scale = center_scale * 5.0f;
         float center = 2.5f - center_scale;
-        ++local_index;
 
-        initialize_sample(&primary_samples[i], center, center, 0.0f, 0.0f);
-        float y = sine(half_angle) * sine(angle) * height;
-        primary_samples[i].transform.position.y = y;
-        primary_samples[i].transform.position.z = (float)local_index;
+        PathTemplateSample* primary = &primary_samples[i];
+        primary->center_x = center;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        float angle_sine = sine(angle);
+        ++local_index;
+        primary->transform.position.y = sine(half_angle) * angle_sine * height;
+        primary->transform.position.z = (float)local_index;
         initialize_secondary_flat(this, i);
         orient_previous_sample_pair(this, i);
     }

@@ -700,8 +700,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 504/608 | 24.46% | 0/608 | 27 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 500/600 | 23.82% | 0/600 | 21 ok |  |
 | 🚧 | initialize_kind42_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.34% | 0/707 | 46 ok |  |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 574/677 | 21.58% | 0/677 | 3 mismatch, 33 ok |  |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 574/677 | 21.58% | 0/677 | 3 mismatch, 33 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 569/677 | 21.67% | 0/677 | 3 mismatch, 33 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 569/677 | 21.67% | 0/677 | 3 mismatch, 33 ok |  |
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 51/56 | 41.12% | 8/56 | - |  |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 600/663 | 25.97% | 1/663 | 2 mismatch, 22 ok |  |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 577/668 | 21.53% | 0/668 | 4 mismatch, 28 ok |  |

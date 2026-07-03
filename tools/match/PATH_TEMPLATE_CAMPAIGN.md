@@ -18,8 +18,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
 | `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
-| `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
-| `initialize_twister2_path_template_pair` | 21.58% | Twister twin; same retained facequad inner-loop skeleton and masked-audit caveat as twister. |
+| `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
+| `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
 | `initialize_start_path_template_pair` | 18.04% | Low tail target; direct sample loops plus the retained face loop improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion is rejected for now. |
@@ -204,6 +204,12 @@ twins from 15.66% to 21.58% (`562/677` to `574/677`). This is a source-shape
 and fuzzy-score win, not a masked-audit cleanup: masked operands move from
 `30 ok / 0 mismatch` to `33 ok / 3 mismatch`, with the new pairings all in
 constant references exposed by the shifted alignment.
+
+The next retained twister slice expands the interior primary sample setup so it
+does not zero-write Y/Z before the final sine-derived values. It also follows
+the native order of X write, `sine(angle)`, local counter increment, then final
+Y/Z stores. Focused Wibo moved both twins from 21.58% to 21.67% (`574/677` to
+`569/677`), with the same `33 ok / 3 mismatch` constant-reference audit.
 
 The next `hill_valley` slice keeps the length-to-steps conversion ahead of
 `width_or_scale`, materializes `last = steps + 1` before allocation, and reloads

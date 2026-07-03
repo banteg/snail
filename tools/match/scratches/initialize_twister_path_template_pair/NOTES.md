@@ -49,3 +49,11 @@ handedness helper, moves focused Wibo from 15.27% (554/677) to 15.66%
 win, not a masked-audit cleanup: masked operands move from 30 ok, 0 unresolved,
 0 mismatch to 33 ok, 0 unresolved, 3 mismatch, with the new pairings all in
 constant references exposed by the shifted alignment.
+
+2026-07-03 retained interior primary sample order: spelling the middle-loop
+primary sample setup directly avoids the scratch-only zero Y/Z writes, stores
+`position.x` before `sine(angle)`, increments the local sample counter after
+that sine call, and then writes the final Y/Z values once. Focused Wibo moves
+from 21.58% (574/677) to 21.67% (569/677). The masked audit is unchanged at
+33 ok, 0 unresolved, 3 mismatch, all still the shifted constant-reference
+pairings.
