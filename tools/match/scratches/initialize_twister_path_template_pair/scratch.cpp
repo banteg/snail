@@ -136,43 +136,53 @@ static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* t
     }
 
     for (row = 0; row < path->segment_count; ++row) {
-        float v0 = (float)(row % 8) * 0.125f;
-        float v1 = (float)(row % 8 + 1) * 0.125f;
-        for (column = 0; column < path->width_cells; ++column) {
-            float u0 = (float)column * 0.125f;
-            float u1 = (float)(column + 1) * 0.125f;
-
-            ObjectFaceQuad* face = &facequads[2 * (column + row * path->width_cells)];
-            face->flags = 0;
-            face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
-            face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-            face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
-            face->uv[0].u = u0;
-            face->uv[0].v = v0;
-            face->uv[1].u = u1;
-            face->uv[1].v = v0;
-            face->uv[2].u = u1;
-            face->uv[2].v = v1;
-            face->uv[3].u = u0;
-            face->uv[3].v = v1;
-
-            ++face;
-            face->flags = 0;
-            face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
-            face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-            face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
-            face->uv[0].u = u1;
-            face->uv[0].v = v0;
-            face->uv[1].u = u0;
-            face->uv[1].v = v0;
-            face->uv[2].u = u0;
-            face->uv[2].v = v1;
-            face->uv[3].u = u1;
-            face->uv[3].v = v1;
+        if (path->width_cells > 0) {
+            float v0 = (float)(row % 8) * 0.125f;
+            float v1 = (float)(row % 8 + 1) * 0.125f;
+            for (column = 0; column < path->width_cells; ++column) {
+                float u0 = (float)column * 0.125f;
+                float u1 = (float)(column + 1) * 0.125f;
+                int face_index;
+                for (face_index = 0; face_index < 2; ++face_index) {
+                    ObjectFaceQuad* face =
+                        &facequads[2 * column + 2 * row * path->width_cells + face_index];
+                    face->header_word = 0;
+                    if (face_index == 0) {
+                        face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
+                        face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        face->vertex_2 =
+                            (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                        face->vertex_3 =
+                            column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                        face->texture_ref =
+                            g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        face->uv[0].u = u0;
+                        face->uv[0].v = v0;
+                        face->uv[1].u = u1;
+                        face->uv[1].v = v0;
+                        face->uv[2].u = u1;
+                        face->uv[2].v = v1;
+                        face->uv[3].u = u0;
+                    } else {
+                        face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
+                        face->vertex_2 =
+                            column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                        face->vertex_3 =
+                            (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                        face->texture_ref =
+                            g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        face->uv[0].u = u1;
+                        face->uv[0].v = v0;
+                        face->uv[1].u = u0;
+                        face->uv[1].v = v0;
+                        face->uv[2].u = u0;
+                        face->uv[2].v = v1;
+                        face->uv[3].u = u1;
+                    }
+                    face->uv[3].v = v1;
+                }
+            }
         }
     }
 }

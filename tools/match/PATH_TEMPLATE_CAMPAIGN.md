@@ -18,8 +18,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
-| `initialize_twister_path_template_pair` | 15.66% | Final endpoint now recomputes the width-derived center inline, keeping the focused masked audit clean. |
-| `initialize_twister2_path_template_pair` | 15.66% | Twister twin; same retained final-endpoint center recompute as twister. |
+| `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
+| `initialize_twister2_path_template_pair` | 21.58% | Twister twin; same retained facequad inner-loop skeleton and masked-audit caveat as twister. |
 | `initialize_start_path_template_pair` | 17.31% | Low tail target; allocation count, direct sample loops, and native Z/Y scheduling now expose a real prefix. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
@@ -168,6 +168,13 @@ recompute inline instead of reusing the first endpoint local or extracting the
 rejected handedness helper. Focused Wibo moved both twins from 15.27% to 15.66%
 (`554/677` to `562/677`), with masked operands unchanged at
 `30 ok / 0 mismatch`.
+
+The retained twister mesh-face slice applies the same native two-iteration
+`face_index` facequad loop proven by `sweep`/`snake`. Focused Wibo moved both
+twins from 15.66% to 21.58% (`562/677` to `574/677`). This is a source-shape
+and fuzzy-score win, not a masked-audit cleanup: masked operands move from
+`30 ok / 0 mismatch` to `33 ok / 3 mismatch`, with the new pairings all in
+constant references exposed by the shifted alignment.
 
 The next `hill_valley` slice keeps the length-to-steps conversion ahead of
 `width_or_scale`, materializes `last = steps + 1` before allocation, and reloads

@@ -42,3 +42,10 @@ width-derived center for the final endpoint instead of reusing the first
 endpoint local. Keeping that recompute inline, without extracting the rejected
 handedness helper, moves focused Wibo from 15.27% (554/677) to 15.66%
 (562/677), with masked operands unchanged at 30 ok, 0 unresolved, 0 mismatch.
+
+2026-07-03 retained facequad inner loop: applying the native two-iteration
+`face_index` mesh emission skeleton from `sweep` moves focused Wibo from
+15.66% (562/677) to 21.58% (574/677). This is a source-shape and fuzzy-score
+win, not a masked-audit cleanup: masked operands move from 30 ok, 0 unresolved,
+0 mismatch to 33 ok, 0 unresolved, 3 mismatch, with the new pairings all in
+constant references exposed by the shifted alignment.
