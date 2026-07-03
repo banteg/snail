@@ -95,8 +95,7 @@ static inline void orient_previous_with_fixed_up(
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
-    if (roll != 0.0f)
-        previous->transform.rotate_matrix_world_z(roll);
+    previous->transform.rotate_matrix_world_z(roll);
 }
 
 void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)

@@ -22,3 +22,9 @@ native absolute-distance temporaries before the sine/scale multiply. Focused
 Wibo moves from 22.28% (574/683) to 22.66% (588/683), with masked operands
 improving from 31 ok, 0 unresolved, 1 mismatch to 32 ok, 0 unresolved, 1
 mismatch.
+
+2026-07-03 orientation guard: native source shape always dispatches the previous
+sample through `rotate_matrix_world_z(roll_angle)` after the up/cross-vector
+orientation frame. Removing the zero-roll guard moves focused Wibo from 22.66%
+(588/683) to 22.84% (578/683), with masked operands unchanged at 32 ok,
+0 unresolved, 1 mismatch.
