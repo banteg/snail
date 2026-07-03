@@ -44,3 +44,10 @@ samples from the generic helper moves focused Wibo from 21.71% (594/696) to
 wholesale: expanding both fixed loops regresses to 21.62% (599/696), and
 lead-out-only regresses to 21.22% (595/696) with the masked audit dropping to
 23 ok, 0 unresolved, 1 mismatch.
+
+2026-07-04 mesh request-order probe rejected: swapping strip-mesh requests to
+facequads-before-vertices regressed focused Wibo from 21.76% (600/696) to
+20.99% (600/696). Masked operands worsened from 25 ok, 0 unresolved,
+1 mismatch to 23 ok, 0 unresolved, 3 mismatch, adding explicit vertices vs
+facequads allocation call pairings alongside the existing orientation call
+pairing. The helper keeps vertices-first order.
