@@ -18,8 +18,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
 | `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded; mesh request-order probe regressed. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
-| `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
-| `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
+| `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit; mesh request-order probe regressed. |
+| `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister; mesh request-order probe regressed. |
 | `initialize_start_path_template_pair` | 21.27% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, and facequads-first mesh allocation improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 18.66% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`; mesh allocation is facequads-first. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion and mesh-vertex staging are rejected for now. |
@@ -239,6 +239,12 @@ stronger direct primary/secondary pointer helper variant regressed further to
 20.10% (`567/677`) and reintroduced a `cross_vectors` / `normalize_vector`
 masked call mismatch, so the twister twins keep the indexed loop while the
 score ratchet is the campaign gate.
+
+A twister-family mesh request-order probe was rejected for both twins: swapping
+strip-mesh requests to facequads-before-vertices regressed each focused Wibo
+from 21.67% to 20.87% (`569/677` unchanged) and worsened the masked audit from
+`33 ok / 3 mismatch` to `31 ok / 5 mismatch`, adding explicit allocation call
+pairings. The twister helper keeps vertices-before-facequads order.
 
 The next `hill_valley` slice keeps the length-to-steps conversion ahead of
 `width_or_scale`, materializes `last = steps + 1` before allocation, and reloads

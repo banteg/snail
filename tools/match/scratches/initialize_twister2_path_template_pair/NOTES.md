@@ -69,3 +69,10 @@ direct primary/secondary helper pointers regressed further to 20.10% (567/677)
 and reintroduced one masked call mismatch, pairing native `cross_vectors` with
 candidate `normalize_vector`. Keep the indexed loop until the pointer ownership
 can move without losing the score ratchet.
+
+2026-07-04 mesh request-order probe rejected: swapping strip-mesh requests to
+facequads-before-vertices regressed focused Wibo from 21.67% (569/677) to
+20.87% (569/677). Masked operands worsened from 33 ok, 0 unresolved,
+3 mismatch to 31 ok, 0 unresolved, 5 mismatch, adding explicit vertices vs
+facequads allocation call pairings alongside the existing constant-reference
+residuals. The helper keeps vertices-first order.
