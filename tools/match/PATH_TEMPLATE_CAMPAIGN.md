@@ -807,3 +807,8 @@ improves in volume but not cleanliness, moving from `21 ok / 1 mismatch` to
 `40 ok / 2 mismatch`; the remaining pairings are the shifted
 `normalize_vector`/`rotate_matrix_world_z` call and a mesh allocation call
 pairing, so this is retained as a score/schedule slice with explicit residuals.
+A facequads-first request-order probe is rejected even though it nudged Wibo to
+30.85%, because it made the allocation-order residual source-false: the masked
+audit added explicit `request_object_vertices`/`request_object_facequads`
+cross-pairings and worsened to `40 ok / 3 mismatch`. Keep the W-loop mesh setup
+vertices-first until the surrounding alignment is fixed honestly.
