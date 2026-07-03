@@ -27,3 +27,9 @@ the right lead-out and raised body samples, not the six zero lead-in samples.
 Delaying that local until after the lead-in seed loop moves focused Wibo from
 13.98% (535/652) to 14.49% (535/652), with masked operands improving from
 23 ok, 0 unresolved, 4 mismatch to 25 ok, 0 unresolved, 4 mismatch.
+
+2026-07-03 Z-index helper spelling: keep the sample helper argument as an
+integer index and perform the int-to-float Z conversion inside the inlined
+helper after the primary identity call. Focused Wibo moves from 14.49%
+(535/652) to 14.53% (532/652), with masked operands unchanged at 25 ok,
+0 unresolved, 4 mismatch.

@@ -29,3 +29,7 @@ after the three left lead-in samples. Delaying the `right` local until after
 that seed loop moves focused Wibo from 13.88% (544/652) to 14.30% (537/652),
 with masked operands improving from 24 ok, 0 unresolved, 1 mismatch to 26 ok,
 0 unresolved, 1 mismatch.
+
+Rejected: applying the snake-style integer Z-index helper spelling regressed
+focused Wibo to 14.17% (534/652) and worsened the masked audit to 22 ok,
+0 unresolved, 4 mismatch, so sweep keeps the float-Z helper argument.

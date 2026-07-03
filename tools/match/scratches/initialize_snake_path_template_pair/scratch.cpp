@@ -14,7 +14,7 @@ typedef AttachmentSample PathTemplateSample;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
 static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, float z)
+    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -25,6 +25,7 @@ static __forceinline void initialize_pair_sample(
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
     set_matrix_identity(&primary->transform);
+    float z = (float)z_index;
     primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
@@ -179,19 +180,19 @@ void AttachmentPathTemplate::initialize_snake_path_template_pair(
     int i;
 
     for (i = 0; i < 6; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
 
     float right = 4.0f - (float)width_cells * 0.5f;
 
     for (i = 24; i < 27; ++i)
-        initialize_pair_sample(this, i, right, 0.0f, (float)i);
+        initialize_pair_sample(this, i, right, 0.0f, i);
 
     for (i = 6; i < 24; ++i) {
         float angle = (float)(i - 6) * 0.34906587f;
         float half_angle = angle * 0.5f;
         float center = (0.5f - cosine(half_angle) * 0.5f) * right;
         float y = -(1.0f - cosine(angle));
-        initialize_pair_sample(this, i, center, y, (float)i);
+        initialize_pair_sample(this, i, center, y, i);
         orient_previous_with_right(primary_samples, i, 6);
         orient_previous_with_right(secondary_samples, i, 6);
     }

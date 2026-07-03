@@ -30,7 +30,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
 | `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_sbend_path_template_pair` | 22.59% | Helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
-| `initialize_snake_path_template_pair` | 14.49% | Delayed the width-derived `right` local until after the zero lead-in seed loop. |
+| `initialize_snake_path_template_pair` | 14.53% | Delayed the width-derived `right` local and moved Z conversion into the seed helper. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
@@ -153,6 +153,13 @@ from 13.88% to 14.30% (`544/652` to `537/652`, masked operands `24 ok / 1
 mismatch` to `26 ok / 1 mismatch`) and `snake` from 13.98% to 14.49%
 (`535/652` unchanged, masked operands `23 ok / 4 mismatch` to `25 ok / 4
 mismatch`).
+
+For `snake`, retaining the sample helper's Z input as an integer index and
+performing the int-to-float conversion inside the inlined helper after primary
+identity moved focused Wibo from 14.49% to 14.53% (`535/652` to `532/652`,
+masked operands unchanged at `25 ok / 4 mismatch`). The same spelling was
+rejected for `sweep` because it regressed to 14.17% and worsened the masked
+audit to `22 ok / 4 mismatch`.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and
