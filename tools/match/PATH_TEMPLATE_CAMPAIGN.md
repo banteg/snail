@@ -156,6 +156,13 @@ writes. Focused Wibo moved `hump` from 19.53% to 20.49% (`605/685` to
 both fixed seed loops regressed `hump` to 18.02%, and the first fixed seed loop
 alone regressed to 19.38%, so the approach loop remains pointer-local.
 
+The follow-up vertical-sign cleanup specializes the curved Y expressions to the
+decompiler spelling instead of carrying a shared `vertical_sign` local. This is
+score-neutral for `hump` at 20.49% (`613/685`, `33 ok / 0 mismatch`) and moves
+`dump` from 19.77% to 19.94% (`615/690` to `614/690`, `29 ok / 0 mismatch`).
+The remaining dump/hump front-line residual is still the native `0x4c` frame
+against the candidate `0x44` frame, not an operand-audit mismatch.
+
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`
 center scale spelling, and delays primary `y` / `z` stores until after the

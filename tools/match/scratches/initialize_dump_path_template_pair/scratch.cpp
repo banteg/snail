@@ -294,7 +294,6 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
     float end_center = 4.0f - (float)width_cells * 0.5f;
 #else
     kind = 0x11;
-    float vertical_sign = -1.0f;
     float start_center = -(float)width_cells * 0.5f + 4.0f;
     float end_center = (float)width_cells * 0.5f - 4.0f;
 #endif
@@ -358,14 +357,13 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
             set_matrix_identity(&primary->transform);
             primary->transform.position.x = primary->center_x;
             primary->transform.position.y =
-                vertical_sign * (1.0f - cosine(angle)) * hump_radius * height_scale_value;
+                -((1.0f - cosine(angle)) * hump_radius * height_scale_value);
             float z = (float)sample_index;
             primary->transform.position.z = z;
             set_matrix_identity(&secondary->transform);
             secondary->transform.position.x = primary->center_x;
             secondary->transform.position.y =
-                vertical_sign * (1.0f - cosine(angle)) * hump_radius * height_scale_value
-                + 0.49000001f;
+                0.49000001f - (1.0f - cosine(angle)) * hump_radius * height_scale_value;
             secondary->transform.position.z = z;
             if (sample_index <= 7) {
                 primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();

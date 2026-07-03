@@ -62,3 +62,9 @@ from `28 ok / 1 mismatch` to `33 ok / 0 mismatch`. Applying the same indexed
 spelling to both fixed seed loops was rejected because it regressed to `18.02%`
 and made the mesh allocation call pairing worse; the first fixed seed loop
 alone was also rejected at `19.38%`.
+
+2026-07-03 vertical-sign cleanup: removing the hump-only `vertical_sign = 1.0f`
+local and spelling the curved Y writes as the positive decompiler expression is
+focused-score neutral at `20.49%` (`613/685`) with the masked audit still clean
+at `33 ok / 0 mismatch`. This is retained as source-shape cleanup only; the
+native/candidate frame split remains `0x4c` versus `0x44`.

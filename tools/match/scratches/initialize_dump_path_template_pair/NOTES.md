@@ -60,3 +60,9 @@ keeps the native byte-offset ownership for that loop and moves focused Wibo from
 from `28 ok / 1 mismatch` to `29 ok / 0 mismatch`. The hump split-probe showed
 that indexing both fixed seed loops or the first fixed seed loop alone is not
 the retained shape, so this pass keeps the approach loop in pointer-local form.
+
+2026-07-03 vertical-sign cleanup: removing the dump-only `vertical_sign = -1.0f`
+local and spelling the curved Y writes as direct negative decompiler expressions
+moves focused Wibo from `19.77%` (`615/690`) to `19.94%` (`614/690`). The masked
+audit stays clean at `29 ok / 0 mismatch`; the first residual remains the
+native/candidate frame split, `0x4c` versus `0x44`.
