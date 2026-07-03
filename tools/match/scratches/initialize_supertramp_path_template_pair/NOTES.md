@@ -23,3 +23,9 @@ primary `center_x` moves focused Wibo from 15.61% to 16.20% (473/552 unchanged),
 shrinks the candidate stack frame from 0x48 to 0x44, and improves masked
 operands from 23 ok, 0 unresolved, 4 mismatch to 25 ok, 0 unresolved, 2
 mismatch.
+
+2026-07-03 Z-index helper spelling: keep the flat lead-in pair helper Z input
+as an integer sample index and perform the int-to-float conversion inside the
+inlined helper after primary identity. Focused Wibo moves from 16.20% to
+16.59% (473/552 unchanged), with masked operands unchanged at 25 ok, 0
+unresolved, 2 mismatch.
