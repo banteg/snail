@@ -38,3 +38,14 @@ explicit `raised_y` local regresses focused Wibo from 16.96% (522/610) to
 16.95% (523/610). The emitted code stores and reloads the doubled radius before
 adding the secondary offset, while the current source keeps the x87 value live.
 The source shape was reverted.
+
+2026-07-03 direct sample-loop expansion: expanding the lead-in, flat tail, and
+curved body samples to match the native direct setup removes the remaining
+generic pair helper from the scratch. The retained shape stores primary X from
+`center_x`, keeps the curved Z conversion before the cosine-derived Y, copies
+the flat tail secondary Z from the written primary transform, and derives the
+curved secondary Y from the written primary Y. Focused Wibo moves from 16.96%
+(522/610) to 17.31% (511/610), with the 7-instruction prefix preserved and
+masked operands improving from 21 ok, 0 unresolved, 2 mismatch to 22 ok,
+0 unresolved, 2 mismatch. The remaining masked mismatches are still the
+orientation calls aligned against the later strip-mesh allocation calls.

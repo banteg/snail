@@ -20,7 +20,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
-| `initialize_start_path_template_pair` | 16.96% | Low tail target; allocation count, sample X reloads, and in-helper Z conversion now expose a real prefix. |
+| `initialize_start_path_template_pair` | 17.31% | Low tail target; allocation count, direct sample loops, and native Z/Y scheduling now expose a real prefix. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
@@ -181,6 +181,15 @@ from `19 ok / 2 mismatch` to `21 ok / 2 mismatch`.
 An explicit `raised_y = radius + radius` lead-in local was rejected because it
 regressed focused Wibo to 16.95% (`523/610`) by forcing a store/reload before
 the secondary offset add.
+
+The next `start` slice expands all three sample loops instead of routing through
+the generic pair helper. The retained source follows the native direct setup:
+the lead-in keeps the doubled radius expression live, the flat tail copies
+secondary Z from the written primary transform, and the curved body stores Z
+before computing cosine-derived Y while deriving secondary Y from the written
+primary Y. Focused Wibo moved from 16.96% to 17.31% (`522/610` to `511/610`),
+with the 7-instruction prefix preserved and masked operands improving from
+`21 ok / 2 mismatch` to `22 ok / 2 mismatch`.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%

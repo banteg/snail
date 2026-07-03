@@ -13,31 +13,6 @@ typedef AttachmentSample PathTemplateSample;
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    primary->center_x = center_x;
-    primary->rotation_scalar_98 = 0.0f;
-    primary->rotation_scalar_94 = 0.0f;
-    primary->special_scalar = 0.0f;
-    primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
-    float z = (float)z_index;
-    primary->transform.position.x = primary->center_x;
-    primary->transform.position.y = y;
-    primary->transform.position.z = z;
-    primary->delta_length = 1.0f;
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->center_x;
-    secondary->transform.position.y = y + 0.49000001f;
-    secondary->transform.position.z = z;
-    secondary->delta_length = 1.0f;
-}
-
 static __forceinline void orient_previous_with_right(
     PathTemplateSample* samples, int current_index, int first_index)
 {
@@ -174,17 +149,72 @@ void AttachmentPathTemplate::initialize_start_path_template_pair(
     segment_count = segment_count - 1;
 
     int i;
-    for (i = 0; i < 5; ++i)
-        initialize_pair_sample(this, i, 0.0f, radius + radius, i);
+    for (i = 0; i < 5; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
 
-    for (i = curve_segments + 5; i <= curve_segments + 15; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = radius + radius;
+        float z = (float)i;
+        primary->transform.position.z = z;
+        primary->delta_length = 1.0f;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = radius + radius + 0.49000001f;
+        secondary->transform.position.z = z;
+        secondary->delta_length = 1.0f;
+    }
+
+    for (i = curve_segments + 5; i <= curve_segments + 15; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = (float)i;
+        primary->delta_length = 1.0f;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = primary->transform.position.z;
+        secondary->delta_length = 1.0f;
+    }
 
     for (i = 0; i < curve_segments; ++i) {
         int sample_index = i + 5;
+        PathTemplateSample* primary = &primary_samples[sample_index];
+        PathTemplateSample* secondary = &secondary_samples[sample_index];
+
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        float z = (float)sample_index;
+        primary->transform.position.z = z;
         float angle = (float)i * 3.1415927f / (float)curve_segments;
-        float y = (cosine(angle) + 1.0f) * radius;
-        initialize_pair_sample(this, sample_index, 0.0f, y, sample_index);
+        primary->transform.position.y = (cosine(angle) + 1.0f) * radius;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.z = z;
+        secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
         orient_previous_with_right(primary_samples, sample_index, 5);
         orient_previous_with_right(secondary_samples, sample_index, 5);
     }
