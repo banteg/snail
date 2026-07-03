@@ -232,6 +232,13 @@ The `snake`/dump/hump half-angle cleanup does not transfer here yet: removing
 the `half_angle` local regressed both twister twins to 21.40% (`566/677`) while
 leaving the masked audit unchanged, so the current twister loop shape keeps the
 local.
+A follow-up middle-loop byte-offset probe also stays rejected for both twister
+twins: it cleared the focused masked audit (`33 ok / 3 mismatch` to
+`36 ok / 0 mismatch`) but regressed focused Wibo to 21.42% (`574/677`). The
+stronger direct primary/secondary pointer helper variant regressed further to
+20.10% (`567/677`) and reintroduced a `cross_vectors` / `normalize_vector`
+masked call mismatch, so the twister twins keep the indexed loop while the
+score ratchet is the campaign gate.
 
 The next `hill_valley` slice keeps the length-to-steps conversion ahead of
 `width_or_scale`, materializes `last = steps + 1` before allocation, and reloads

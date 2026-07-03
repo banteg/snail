@@ -60,3 +60,12 @@ removing the `half_angle` local and spelling the Y expression as
 `sine(angle * 0.5f) * angle_sine * height` regressed focused Wibo from 21.67%
 to 21.40% (569/677 to 566/677), with masked operands unchanged at 33 ok, 0
 unresolved, 3 mismatch. Keep the local for the current twister loop shape.
+
+2026-07-03 rejected middle-loop byte-offset probes: spelling the interior loop
+through `sample_offset` cleared the focused masked audit from 33 ok, 0
+unresolved, 3 mismatch to 36 ok, 0 unresolved, 0 mismatch, but regressed
+focused Wibo from 21.67% to 21.42% (569/677 to 574/677). Extending that into
+direct primary/secondary helper pointers regressed further to 20.10% (567/677)
+and reintroduced one masked call mismatch, pairing native `cross_vectors` with
+candidate `normalize_vector`. Keep the indexed loop until the pointer ownership
+can move without losing the score ratchet.
