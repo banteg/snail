@@ -31,7 +31,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hill_valley_path_template_pair` | 14.67% | Prologue conversion order and primary transform X reload now match the native setup a little more closely. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 15.50% | Curved body now reloads the seeded right sample and recomputes Y inside expanded primary/secondary setup. |
-| `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
+| `initialize_sweep_path_template_pair` | 14.85% | Direct sample loops now match the decompiler setup shape. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -202,6 +202,14 @@ from 13.88% to 14.30% (`544/652` to `537/652`, masked operands `24 ok / 1
 mismatch` to `26 ok / 1 mismatch`) and `snake` from 13.98% to 14.49%
 (`535/652` unchanged, masked operands `23 ok / 4 mismatch` to `25 ok / 4
 mismatch`).
+
+For `sweep`, the retained direct sample-loop expansion follows the decompiler
+shape for the three lead-in samples, three lead-out samples, and curved body.
+The lead-in/tail loops keep the index float conversion after primary identity,
+the curved body reloads the seeded primary `center_x`, and secondary Y derives
+from the written primary Y. Focused Wibo moved from 14.30% to 14.85%
+(`537/652` to `533/652`), with masked operands improving from `26 ok / 1
+mismatch` to `27 ok / 1 mismatch`.
 
 For `snake`, retaining the sample helper's Z input as an integer index and
 performing the int-to-float conversion inside the inlined helper after primary

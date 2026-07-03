@@ -39,3 +39,11 @@ vertices stayed at 14.30% (537/652) and simply flipped the single masked
 mismatch from target `request_object_vertices` vs candidate
 `request_object_facequads` to the reverse pairing. The retained order remains
 vertices before facequads.
+
+2026-07-03 direct sample loops: expanding the three lead-in samples, three
+lead-out samples, and curved body from the generic pair helper follows the
+decompiler shape. The lead-in/tail loops keep the index float conversion after
+primary identity, the curved body reloads the seeded primary `center_x`, and
+secondary Y derives from the written primary Y. Focused Wibo moves from 14.30%
+(537/652) to 14.85% (533/652), with masked operands improving from 26 ok,
+0 unresolved, 1 mismatch to 27 ok, 0 unresolved, 1 mismatch.

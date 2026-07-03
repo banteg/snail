@@ -13,28 +13,6 @@ typedef AttachmentSample PathTemplateSample;
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, float z)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    primary->center_x = center_x;
-    primary->rotation_scalar_98 = 0.0f;
-    primary->rotation_scalar_94 = 0.0f;
-    primary->special_scalar = 0.0f;
-    primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
-    primary->transform.position.x = primary->center_x;
-    primary->transform.position.y = y;
-    primary->transform.position.z = z;
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->center_x;
-    secondary->transform.position.y = y + 0.49000001f;
-    secondary->transform.position.z = z;
-}
-
 static __forceinline void orient_previous_with_up(
     PathTemplateSample* samples, int current_index, int first_index, float roll_angle)
 {
@@ -182,19 +160,70 @@ void AttachmentPathTemplate::initialize_sweep_path_template_pair(
     int i;
     float left = (float)width_cells * 0.5f - 4.0f;
 
-    for (i = 0; i < 3; ++i)
-        initialize_pair_sample(this, i, left, 0.0f, (float)i);
+    for (i = 0; i < 3; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+
+        primary->center_x = left;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        float z = (float)i;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+    }
 
     float right = 4.0f - (float)width_cells * 0.5f;
 
-    for (i = 27; i < 30; ++i)
-        initialize_pair_sample(this, i, right, 0.0f, (float)i);
+    for (i = 27; i < 30; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+
+        primary->center_x = right;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        float z = (float)i;
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+    }
 
     for (i = 3; i < 27; ++i) {
         float angle = (float)(i - 3) * 0.1308997f;
-        float center = cosine(angle) * left;
-        float y = sine(angle) * -0.30000001f;
-        initialize_pair_sample(this, i, center, y, (float)i);
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+
+        primary->center_x = cosine(angle) * primary_samples[0].center_x;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = sine(angle) * -0.30000001f;
+        float z = (float)i;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
+        secondary->transform.position.z = z;
         orient_previous_with_up(primary_samples, i, 3, 0.0f);
         orient_previous_with_up(secondary_samples, i, 3, 0.0f);
     }
