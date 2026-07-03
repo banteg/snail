@@ -26,3 +26,9 @@ masked mismatch, so the strip-mesh cursor remains pinned as `Vector3* vertex`.
 the explicit unused `side_exit` and `cap_texture` arguments moves focused Wibo
 from `18.83%` (`600/685`, `22 ok / 4 mismatch`) to `18.99%` (`600/685`,
 `22 ok / 4 mismatch`).
+
+2026-07-03 rejected curve-count scheduling probe: delaying the
+`curve_source * 4.0f` integer conversion until after the header writes, including
+the corrected native-looking order with `kind` before the conversion and
+`width_or_scale` after it, regressed focused Wibo from `18.99%` (`600/685`,
+`22 ok / 4 mismatch`) to `16.65%` (`600/685`, `18 ok / 4 mismatch`).

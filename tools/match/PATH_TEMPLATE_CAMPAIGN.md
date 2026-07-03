@@ -116,6 +116,11 @@ scratches still compiled as five-argument `ret 0x14` members. Making the unused
 18.99% (`600/685`, `22 ok / 4 mismatch`) and `dump` from 18.90% to 19.05%
 (`601/690`, `23 ok / 4 mismatch`).
 
+A dump/hump curve-count scheduling probe was rejected: delaying the
+`curve_source * 4.0f` integer conversion until after header writes, even with
+`kind` before the conversion and `width_or_scale` after it, regressed `hump` to
+16.65% and `dump` to 16.58% while reducing masked operand matches to 18.
+
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`
 center scale spelling, and delays primary `y` / `z` stores until after the
