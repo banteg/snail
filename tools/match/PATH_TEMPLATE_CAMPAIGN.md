@@ -22,7 +22,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister; mesh request-order probe regressed. |
 | `initialize_start_path_template_pair` | 21.27% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, and facequads-first mesh allocation improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 18.66% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`; mesh allocation is facequads-first. |
-| `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion and mesh-vertex staging are rejected for now. |
+| `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion, mesh-vertex staging, and zero-based loop-counter spelling are rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
 | `initialize_wibble_path_template_pair` | 29.95% | Interior roll schedule and the retained two-iteration facequad loop now both clear the focused masked audit. |
 | `initialize_invert_path_template_pair` | 29.37% | Invert sibling; interior-X cleanup and the retained two-iteration facequad loop now clear the focused masked audit. |
@@ -600,6 +600,12 @@ through a local `Vector3` was rejected for `p`: focused Wibo regressed from
 19.26% to 13.01% (`557/679` to `566/679`) and masked operands dropped from
 `19 ok / 6 mismatch` to `14 ok / 5 mismatch`, so direct component writes remain
 retained.
+
+A zero-based `p` curved-body loop-counter probe was rejected: spelling the loop
+with `sample_index = i + 1` regressed focused Wibo from 19.26% to 18.74%
+(`557/679` to `559/679`) and reduced the masked audit from
+`19 ok / 6 mismatch` to `16 ok / 6 mismatch`. The one-based loop with `(i - 1)`
+angle ownership remains the better current alignment.
 
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail

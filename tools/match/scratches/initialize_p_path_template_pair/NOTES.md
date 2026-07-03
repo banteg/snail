@@ -65,3 +65,9 @@ debt moves.
 from 19.26% (557/679) to 13.01% (566/679). Masked operands dropped from 19 ok,
 0 unresolved, 6 mismatch to 14 ok, 0 unresolved, 5 mismatch, so the `p` scratch
 keeps direct component writes for now.
+
+2026-07-04 loop-counter probe rejected: rewriting the curved body as a
+zero-based counter with `sample_index = i + 1` regressed focused Wibo from
+19.26% (557/679) to 18.74% (559/679). Masked operands dropped from 19 ok,
+0 unresolved, 6 mismatch to 16 ok, 0 unresolved, 6 mismatch, so the current
+one-based loop with `(i - 1)` angle ownership stays retained.
