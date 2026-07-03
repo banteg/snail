@@ -11,7 +11,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_loopout_path_template_pair` | 37.52% | Same large strip-mesh skeleton; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
-| `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
+| `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
 | `initialize_dump_path_template_pair` | 19.43% | Hump twin, inverted vertical lane; direct sample setup improves the masked audit to one mismatch. |
 | `initialize_hump_path_template_pair` | 19.53% | Worst front-half family target; direct sample setup improves the masked audit to one mismatch. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
@@ -297,6 +297,12 @@ stale four-argument prototypes despite native six-argument calls. Making the
 unused mode/cap arguments explicit moved `dip` from 30.02% to 30.19% (`564/655`
 unchanged, `30 ok / 1 mismatch`) and `slalom` from 19.22% to 19.37% (`615/696`
 unchanged, `19 ok / 3 mismatch`).
+
+For `dip`, the retained prologue cleanup keeps the native early
+`curve_source * 5.0f` x87 multiply but delays the integer curve-count conversion
+until after the header kind/flag/width stores. Focused Wibo remains 30.19%
+(`564/655`, masked operands unchanged at `30 ok / 1 mismatch`), so this is
+recorded as source-shape alignment rather than a score win.
 
 For `slalom`, the retained lead-out bound spelling follows the same native
 header idiom as `slalombig`: keep `lead_out_start = curve_count + 4`, then

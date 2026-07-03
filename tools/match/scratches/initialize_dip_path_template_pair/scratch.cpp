@@ -101,14 +101,24 @@ static inline void orient_previous_with_fixed_up(
 
 void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
 {
+#if PATH_VARIANT == 5
+    float curve_count_source = curve_source * 5.0f;
+    int curve_count;
+#else
     int curve_count = PATH_CURVE_COUNT;
+#endif
     float height_scale_value = PATH_HEIGHT_SCALE;
     int i;
 
+#if PATH_VARIANT == 5
+    kind = 0x14;
+#endif
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
+#if PATH_VARIANT != 5
     width_or_scale = 1.0f;
+#endif
 
 #if PATH_VARIANT == 0 || PATH_VARIANT == 1
     float loop_wiggle = 0.0f;
@@ -357,7 +367,8 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 5
-    kind = 0x14;
+    curve_count = (int)curve_count_source;
+    width_or_scale = 1.0f;
     segment_count = curve_count + 2;
     segment_count_f = (float)(curve_count + 2);
     float curve_count_f = (float)curve_count;
