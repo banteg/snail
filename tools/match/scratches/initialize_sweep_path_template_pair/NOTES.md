@@ -52,3 +52,12 @@ Rejected: spelling the curved body with a separate zero-based logical counter
 for angle/Z, like the decompiler, regressed focused Wibo from 14.85% (533/652)
 to 14.81% (536/652). The masked audit stayed at 27 ok, 0 unresolved,
 1 mismatch, so the `i - 3` angle spelling remains retained for now.
+
+2026-07-03 facequad inner loop: spelling mesh face emission as the native
+two-iteration `face_index` loop, with a single `face->uv[3].v` tail store,
+moves focused Wibo from 14.85% (533/652) to 25.04% (546/652). The candidate
+stack frame grows from 0x44 to 0x48 and masked operands improve from 27 ok,
+0 unresolved, 1 mismatch to 32 ok, 0 unresolved, 1 mismatch. The remaining
+masked mismatch is still the `request_object_vertices` /
+`request_object_facequads` alignment pairing, not a retained request-order
+change.

@@ -67,3 +67,11 @@ vertices stayed neutral at 15.50% (535/652), with masked operands unchanged at
 29 ok, 0 unresolved, 3 mismatch. It only flipped the mesh call mismatch from
 target vertices vs candidate facequads to target facequads vs candidate
 vertices, matching the earlier `sweep` rejection pattern.
+
+2026-07-03 facequad inner loop: applying the same retained mesh spelling as
+`sweep` emits the native two-iteration `face_index` loop and shared
+`face->uv[3].v` tail store. Focused Wibo moves from 15.50% (535/652) to
+21.33% (548/652), and masked operands improve from 29 ok, 0 unresolved,
+3 mismatch to 33 ok, 0 unresolved, 3 mismatch. The two orientation
+identity-vs-normalize pairings and the mesh request alignment pairing remain
+honest residuals.

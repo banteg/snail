@@ -30,8 +30,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 19.79% | Selector argument now matches native byte-width ABI; sample scalar cleanup removes scratch-only lateral_source traffic; remaining residual is orientation/copy scheduling. |
 | `initialize_hill_valley_path_template_pair` | 18.00% | Native phase counter and endpoint-center recompute lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
-| `initialize_snake_path_template_pair` | 15.50% | Curved body now reloads the seeded right sample and recomputes Y inside expanded primary/secondary setup. |
-| `initialize_sweep_path_template_pair` | 14.85% | Direct sample loops now match the decompiler setup shape. |
+| `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; orientation residuals remain explicit. |
+| `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -263,6 +263,15 @@ masked audit.
 A `snake` mesh request-order probe matched the earlier `sweep` rejection:
 swapping to facequads-before-vertices stayed neutral at 15.50% (`535/652`) with
 `29 ok / 3 mismatch`, only flipping the remaining mesh call mismatch.
+
+For `sweep` and `snake`, the retained mesh-face slice replaces the straight
+`a`/`b` facequad writes with the native two-iteration `face_index` loop and a
+single `face->uv[3].v` tail store. Focused Wibo moved `sweep` from 14.85% to
+25.04% (`533/652` to `546/652`, masked operands `27 ok / 1 mismatch` to
+`32 ok / 1 mismatch`) and `snake` from 15.50% to 21.33% (`535/652` to
+`548/652`, masked operands `29 ok / 3 mismatch` to `33 ok / 3 mismatch`).
+The remaining mesh call mismatch is still an alignment pairing, so the retained
+request order stays vertices-before-facequads.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and
