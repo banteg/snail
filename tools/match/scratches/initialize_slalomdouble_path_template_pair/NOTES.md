@@ -40,3 +40,9 @@ Rejected: spelling the fixed trailing straight samples with `lead_out_start =
 66` and `total_segments = lead_out_start + 4` regressed focused Wibo to 22.61%
 (582/683) and worsened the masked audit to 30 ok, 0 unresolved, 2 mismatch, so
 the fixed `70` / `66` constants stay in the scratch.
+
+2026-07-03 retained mesh-face loop: replacing the direct `a`/`b` face writes
+with the two-iteration `face_index` loop moves focused Wibo from 23.14% (570/683)
+to 26.92% (580/683). Masked operands change from 31 ok, 0 unresolved,
+1 mismatch to 32 ok, 0 unresolved, 3 mismatch; the extra residuals are in the
+interior orientation call pairings.

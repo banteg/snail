@@ -17,7 +17,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
-| `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
+| `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.58% | Same retained facequad inner-loop skeleton as sweep; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.58% | Twister twin; same retained facequad inner-loop skeleton and masked-audit caveat as twister. |
 | `initialize_start_path_template_pair` | 18.04% | Low tail target; direct sample loops plus the retained face loop improve fuzzy score, with the lost prefix/frame debt called out. |
@@ -489,6 +489,13 @@ identity. Focused Wibo moved from 22.84% to 23.14% (`578/683` to `570/683`);
 the masked audit keeps one call mismatch but drops from `32 ok` to `31 ok`.
 The analogous fixed lead-out local (`66`, then `+ 4`) was rejected because it
 regressed to 22.61% and added a second masked mismatch.
+
+The retained `slalomdouble` mesh-face slice follows the same `face_index` loop
+as `slalom` and `slalombig`. Focused Wibo moved from 23.14% to 26.92%
+(`570/683` to `580/683`), but the masked audit changed from
+`31 ok / 1 mismatch` to `32 ok / 3 mismatch`. The remaining mismatches are in
+the interior orientation call pairings, so this is kept as a score/candidate
+gain with explicit residual debt.
 
 The loop-family callsite/tail audit applies to `loopout`, `looptheloop`, and
 `looptheloopw` as well: focused diffs showed native `ret 0x18` tails while the
