@@ -12,8 +12,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
-| `initialize_dump_path_template_pair` | 19.94% | Hump twin, inverted vertical lane; departure seed indexing and vertical-sign cleanup clear the focused masked audit. |
-| `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit. |
+| `initialize_dump_path_template_pair` | 19.94% | Hump twin, inverted vertical lane; departure seed indexing and vertical-sign cleanup clear the focused masked audit; mesh-vertex staging is rejected. |
+| `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit; mesh-vertex staging is rejected. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
 | `initialize_slalombig_path_template_pair` | 21.71% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, and the retained two-iteration facequad loop. |
@@ -162,6 +162,12 @@ score-neutral for `hump` at 20.49% (`613/685`, `33 ok / 0 mismatch`) and moves
 `dump` from 19.77% to 19.94% (`615/690` to `614/690`, `29 ok / 0 mismatch`).
 The remaining dump/hump front-line residual is still the native `0x4c` frame
 against the candidate `0x44` frame, not an operand-audit mismatch.
+
+A local `Vector3 generated_position` mesh-vertex staging probe was rejected for
+both twins: `hump` regressed from 20.49% to 20.31% (`613/685` to `625/685`) and
+`dump` regressed from 19.94% to 19.76% (`614/690` to `626/690`). Both masked
+audits stayed clean, so this is frame/local-shape debt and the vertex loop keeps
+direct component writes.
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`

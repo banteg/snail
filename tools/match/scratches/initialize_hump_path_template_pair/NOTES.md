@@ -68,3 +68,9 @@ local and spelling the curved Y writes as the positive decompiler expression is
 focused-score neutral at `20.49%` (`613/685`) with the masked audit still clean
 at `33 ok / 0 mismatch`. This is retained as source-shape cleanup only; the
 native/candidate frame split remains `0x4c` versus `0x44`.
+
+2026-07-03 mesh-vertex staging probe rejected: routing both terminal and
+non-terminal strip-mesh vertex branches through local `Vector3
+generated_position` temporaries regressed focused Wibo from `20.49%` (`613/685`)
+to `20.31%` (`625/685`). The masked audit stayed clean at `33 ok / 0 mismatch`,
+so the scratch keeps direct component writes in the vertex loop.
