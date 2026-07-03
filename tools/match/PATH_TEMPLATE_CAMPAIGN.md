@@ -12,7 +12,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
-| `initialize_dump_path_template_pair` | 19.77% | Hump twin, inverted vertical lane; departure seed indexing clears the focused masked audit. |
+| `initialize_dump_path_template_pair` | 19.94% | Hump twin, inverted vertical lane; departure seed indexing and vertical-sign cleanup clear the focused masked audit. |
 | `initialize_hump_path_template_pair` | 20.49% | Worst front-half family target; departure seed indexing clears the focused masked audit. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 21.46% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded. |
@@ -20,7 +20,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister. |
-| `initialize_start_path_template_pair` | 18.04% | Low tail target; direct sample loops plus the retained face loop improve fuzzy score, with the lost prefix/frame debt called out. |
+| `initialize_start_path_template_pair` | 20.56% | Low tail target; direct sample loops, the retained face loop, and staged mesh vertices improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion is rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
@@ -271,6 +271,16 @@ A `start` flat-tail bound probe was rejected: using `last_segment_index` as the
 upper bound instead of spelling `curve_segments + 15` regressed focused Wibo
 from 18.04% to 17.88% (`521/610` to `520/610`) with the masked audit unchanged
 at `24 ok / 2 mismatch`, so the direct bound stays retained.
+Retesting direct array-index writes in the `start` lead-in loop was rejected:
+removing the primary/secondary sample pointer locals regressed focused Wibo from
+18.04% to 17.79% (`521/610` to `537/610`) with the same `24 ok / 2 mismatch`
+masked audit.
+The next retained `start` mesh-vertex slice stages each generated vertex
+through a local `Vector3` before assigning it to the vertex array, matching the
+native stack-spill shape in the vertex row loop. Focused Wibo moved from 18.04%
+to 20.56% (`521/610` to `528/610`) and improved the masked audit from
+`24 ok / 2 mismatch` to `26 ok / 2 mismatch`. The prefix/frame debt remains:
+the candidate still starts at a `0x48` frame against native `0x44`.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%

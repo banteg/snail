@@ -74,12 +74,11 @@ static __forceinline void build_direct_strip_mesh(AttachmentPathTemplate* path, 
             PathTemplateSample* sample = &path->primary_samples[row];
             float lateral = (float)column - (float)path->width_cells * 0.5f;
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z;
+            Vector3 generated_position(
+                sample->transform.position.x + lateral * sample->transform.basis_right.x,
+                sample->transform.position.y + lateral * sample->transform.basis_right.y,
+                sample->transform.position.z + lateral * sample->transform.basis_right.z);
+            *vertex = generated_position;
         }
     }
 

@@ -75,3 +75,16 @@ loop variable out of the `for` header, matching the spelling used by several
 other path-template helpers, was exactly neutral at 18.04% (521/610). The
 candidate frame stayed at 0x48 and the masked audit stayed at 24 ok, 0
 unresolved, 2 mismatch, so the block-scoped loop variable remains.
+
+2026-07-03 lead-in direct-index rejection: removing the primary/secondary
+sample pointer locals from the first five-sample loop and spelling the writes
+directly as `primary_samples[i]` / `secondary_samples[i]` regressed focused
+Wibo from 18.04% (521/610) to 17.79% (537/610). The masked audit stayed at
+24 ok, 0 unresolved, 2 mismatch, so the pointer locals remain retained.
+
+2026-07-03 retained mesh-vertex staging: routing the row vertex calculation
+through a local `Vector3 generated_position` before assigning `*vertex` matches
+the native stack-spill shape better than direct component stores. Focused Wibo
+moves from 18.04% (521/610) to 20.56% (528/610), and masked operands improve
+from 24 ok, 0 unresolved, 2 mismatch to 26 ok, 0 unresolved, 2 mismatch. The
+known prologue debt remains: candidate frame 0x48 versus native 0x44.
