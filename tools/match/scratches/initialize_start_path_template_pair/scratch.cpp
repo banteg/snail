@@ -25,13 +25,13 @@ static __forceinline void initialize_pair_sample(
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
     set_matrix_identity(&primary->transform);
-    primary->transform.position.x = center_x;
+    primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
     primary->delta_length = 1.0f;
 
     set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = center_x;
+    secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
     secondary->delta_length = 1.0f;
@@ -163,9 +163,10 @@ void AttachmentPathTemplate::initialize_start_path_template_pair(
     width_cells = width_cells_;
 
     int curve_segments = (int)(length * 3.1415927f);
+    int last_segment_index = curve_segments + 15;
     width_or_scale = 1.0f;
-    segment_count = curve_segments + 16;
-    segment_count_f = (float)(curve_segments + 15);
+    segment_count = last_segment_index + 1;
+    segment_count_f = (float)last_segment_index;
     float radius = (float)curve_segments * 0.31830987f;
     allocate_path_template_samples();
     special_runtime_flag_9c = 0;

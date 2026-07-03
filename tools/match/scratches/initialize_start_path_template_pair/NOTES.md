@@ -15,3 +15,14 @@ Forcing those helpers inline moves focused Wibo from 10.90% (124/610
 candidate/target instructions) to 14.56% (530/610), with masked operands
 improving from 8 ok, 0 unresolved, 6 mismatch to 23 ok, 0 unresolved, 2
 mismatch.
+
+2026-07-03 Phase B pass: spelling the allocation count through
+`curve_segments + 15`, then setting `segment_count` from that local plus one,
+matches the target's `add 0xf` / `inc` setup shape and shrinks the candidate
+frame to `0x48`. Reloading primary and secondary X from the primary
+`center_x` field instead of the constant argument then brings the final frame
+to the native `0x44` and moves the focused matcher to 15.86% (525/610), with a
+7-instruction prefix and masked operands at 19 ok, 0 unresolved, 2 mismatch.
+An explicit count-of-11 tail loop was rejected: it made the tail counter look
+more native but dropped the score to 15.63% and worsened the masked audit to
+20 ok, 0 unresolved, 2 mismatch.
