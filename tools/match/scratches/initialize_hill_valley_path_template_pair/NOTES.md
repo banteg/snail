@@ -43,3 +43,12 @@ unchanged at 27 ok, 0 unresolved, 2 mismatch. Rejected adjacent probe: spelling
 sample 0's centered/non-centered branch directly against `primary_samples[0]`
 regressed focused Wibo to 14.63% (562/668), so the existing `center_x` local is
 retained.
+
+2026-07-03 loop counter plus endpoint recompute: spelling the hill loop with
+the native zero-based phase counter and pre-incremented Z counter moves the
+focused score to 15.66% (558/668) on its own. Retrying the last-endpoint center
+recompute in that loop shape is now retained: focused Wibo moves from 14.67%
+(559/668) to 18.00% (565/668). This is not a clean call-audit win; masked
+operands move from 27 ok, 0 unresolved, 2 mismatch to 26 ok, 0 unresolved,
+4 mismatch, adding two orientation identity-vs-normalize pairings alongside
+the existing half-scale/phase and strip-mesh allocation residuals.

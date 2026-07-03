@@ -203,15 +203,18 @@ void AttachmentPathTemplate::initialize_hill_valley_path_template_pair(
     float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
     initialize_sample(&primary_samples[0], center_x, 0.0f, 0.0f);
     initialize_secondary_flat(this, 0);
-    initialize_sample(&primary_samples[last], center_x, 0.0f, (float)last);
+    float last_center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
+    initialize_sample(&primary_samples[last], last_center_x, 0.0f, (float)last);
     initialize_secondary_flat(this, last);
 
-    for (int i = 1; i <= steps; ++i) {
-        float phase = (float)(i - 1) * 6.2831855f / (float)steps;
+    int phase_index = 0;
+    for (int i = 1; phase_index < steps; ++i) {
+        float phase = (float)phase_index * 6.2831855f / (float)steps;
         initialize_sample(&primary_samples[i], center_x, 0.0f, 0.0f);
         float y = (1.0f - cosine(phase)) * 0.5f * height;
         primary_samples[i].transform.position.y = y;
-        primary_samples[i].transform.position.z = (float)i;
+        ++phase_index;
+        primary_samples[i].transform.position.z = (float)phase_index;
         initialize_secondary_hill(this, i, phase, height);
         orient_previous_hill_pair(this, i);
     }
