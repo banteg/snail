@@ -28,6 +28,37 @@ static __forceinline void initialize_sample(
     sample->transform.position.z = z;
 }
 
+static __forceinline void initialize_pair_sample(
+    AttachmentPathTemplate* path, int index, float center_x, float x, float y, float z)
+{
+    PathTemplateSample* primary = &path->primary_samples[index];
+    PathTemplateSample* secondary = &path->secondary_samples[index];
+
+    primary->center_x = center_x;
+    primary->rotation_scalar_94 = 0.0f;
+    primary->rotation_scalar_98 = 0.0f;
+    primary->lateral_scale = 1.0f;
+    primary->special_scalar = 0.0f;
+    primary->lateral_source = 0.0f;
+    set_matrix_identity(&primary->transform);
+    primary->transform.position.x = x;
+    primary->transform.position.y = y;
+    primary->transform.position.z = z;
+    primary->delta_length = 1.0f;
+
+    secondary->center_x = center_x;
+    secondary->rotation_scalar_94 = 0.0f;
+    secondary->rotation_scalar_98 = 0.0f;
+    secondary->lateral_scale = 1.0f;
+    secondary->special_scalar = 0.0f;
+    secondary->lateral_source = 0.0f;
+    set_matrix_identity(&secondary->transform);
+    secondary->transform.position.x = x;
+    secondary->transform.position.y = y + 0.49000001f;
+    secondary->transform.position.z = z;
+    secondary->delta_length = 1.0f;
+}
+
 static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* path, int index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
@@ -43,12 +74,6 @@ static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* pa
     secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
     secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
     secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
-}
-
-static __forceinline void orient_straight_sample_pair(AttachmentPathTemplate* path, int index)
-{
-    path->primary_samples[index].transform.set_matrix_rotation_identity();
-    path->secondary_samples[index].transform.set_matrix_rotation_identity();
 }
 
 static __forceinline void compute_path_deltas(AttachmentPathTemplate* path)
@@ -156,33 +181,32 @@ void AttachmentPathTemplate::initialize_turnunder_path_template_pair(
     float turns, int width_cells_, int side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    int interior_count = (int)(turns * 6.2831855f);
+    float scaled_turns = turns * 6.2831855f;
 
     kind = 0x27;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
+    int interior_count = (int)scaled_turns;
     width_or_scale = 1.0f;
     segment_count = interior_count + 8;
     segment_count_f = (float)segment_count;
     allocate_path_template_samples();
 
     special_runtime_flag_9c = 0;
-    float start_center = (float)width_cells * 0.5f - 4.0f;
-    float end_center = 4.0f - (float)width_cells * 0.5f;
-
     for (int i = 0; i < 6; ++i) {
-        initialize_sample(&primary_samples[i], start_center, start_center, 0.0f, (float)i);
-        copy_secondary_from_primary(this, i);
-        orient_straight_sample_pair(this, i);
+        float center = (float)width_cells * 0.5f - 4.0f;
+        initialize_pair_sample(this, i, center, center, 0.0f, (float)i);
     }
 
     for (int j = 0; j < 2; ++j) {
         int index = interior_count + 6 + j;
-        initialize_sample(&primary_samples[index], end_center, end_center, 0.0f, (float)index);
-        copy_secondary_from_primary(this, index);
-        orient_straight_sample_pair(this, index);
+        float center = 4.0f - (float)width_cells * 0.5f;
+        initialize_pair_sample(this, index, center, center, 0.0f, (float)index);
     }
+
+    float start_center = primary_samples[0].center_x;
+    float end_center = primary_samples[interior_count + 6].center_x;
 
     for (int k = 0; k < interior_count; ++k) {
         int index = k + 6;

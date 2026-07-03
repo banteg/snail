@@ -16,6 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
+| `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 | `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
 | `initialize_sweep_path_template_pair` | 13.88% | Low tail target; same sample X reload as snake, with loop split rejected. |
@@ -117,3 +118,13 @@ For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
 and `snake` from 13.74% to 13.98%. The earlier `sweep` loop-split probe was
 left out because it worsened the masked audit despite a tiny score increase.
+
+For `turnunder`, the retained slice delays the `turns * 2pi` to integer
+conversion until after the first header stores, splits the straight lead-in and
+exit seed samples into separate primary/secondary identity initializers, sets
+their `delta_length`, and reloads the nonlinear interpolation endpoints from the
+seeded primary centers. Focused Wibo moved from 14.79% to 20.96% (`598/687` to
+`582/687`, masked operands `13 ok / 7 mismatch` to `22 ok / 5 mismatch`).
+Swapping the start/end center expressions and precomputing an explicit
+`interior_count_f` radius were both rejected because they reduced the focused
+score.
