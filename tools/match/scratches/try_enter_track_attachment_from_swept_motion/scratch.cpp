@@ -7,6 +7,7 @@
 // The shared scratch follow state and the player both live at fixed offsets
 // from the relocatable game base; g_game_base is volatile so every statement
 // re-derives it like the original.
+extern char* volatile g_game_base;
 #define FOLLOW ((FollowState*)(g_follow_state_block + (int)g_game_base))
 #define PLAYER ((Player*)(g_player_block + (int)g_game_base))
 

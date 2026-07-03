@@ -4,7 +4,6 @@
 
 #include "subgame_runtime.h"
 
-extern int g_game_base; // data_4df904
 
 void SubgameRuntime::update_subgame_camera()
 {

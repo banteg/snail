@@ -11,9 +11,11 @@
 #include "track_attachment_types.h"
 
 // data_4df904: relocatable game-allocation base; structures below live at
-// fixed VA offsets added to it. volatile: native code re-reads it around
-// every store through derived pointers.
-extern char* volatile g_game_base;
+// fixed VA offsets added to it. The extern lives in each scratch, not here:
+// most scratches use the plain `extern char* g_game_base;` (as in the
+// frontend headers), while the attachment-entry scratches declare it
+// `volatile` locally because native code re-reads it around every store
+// through derived pointers and that reload schedule is part of their match.
 extern char g_row_heading_table[]; // 0x64118c, 61 dwords per row
 extern char g_follow_state_block[]; // 0x430100 = g_player_block + 0x384, size 0x40
 extern char g_player_block[];       // 0x42fd7c
