@@ -109,3 +109,11 @@ loop now moves focused Wibo from 21.27% (528/610) to 21.65% (526/610). Masked
 operands stay at 27 ok, 0 unresolved, 1 mismatch, and the prefix/frame debt
 remains unchanged at candidate frame 0x48 versus native 0x44, so this is a
 small current-shape win rather than a prologue fix.
+
+2026-07-04 retained orientation scheduling expansion: spelling the curved-body
+orientation work inline, with the first curved sample setting both previous
+transforms to identity and later samples building primary and secondary
+right-vector frames directly, moves focused Wibo from 21.65% (526/610) to
+22.01% (526/610). Masked operands stay at 27 ok, 0 unresolved, 1 mismatch; the
+remaining mismatch is still native orientation work aligned against the local
+mesh allocation call.
