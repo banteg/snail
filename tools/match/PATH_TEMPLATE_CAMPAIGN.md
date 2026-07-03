@@ -28,7 +28,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.79% | Selector argument now matches native byte-width ABI; sample scalar cleanup removes scratch-only lateral_source traffic; remaining residual is orientation/copy scheduling. |
-| `initialize_hill_valley_path_template_pair` | 18.00% | Native phase counter and endpoint-center recompute lift the fuzzy score, with explicit masked-audit residuals. |
+| `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; orientation residuals remain explicit. |
 | `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton. |
@@ -202,6 +202,12 @@ from 14.67% to 18.00% (`559/668` to `565/668`). This is a fuzzy-score and
 source-shape improvement, not a masked-audit cleanup: masked operands move from
 `27 ok / 2 mismatch` to `26 ok / 4 mismatch`, with two added orientation
 identity-vs-normalize pairings still called out as residual alignment drift.
+
+The next retained `hill_valley` mesh-face slice applies the same native
+two-iteration `face_index` loop proven by `sweep`/`snake`/`twister`. Focused
+Wibo moved from 18.00% to 21.53% (`565/668` to `577/668`) and improved the
+masked audit from `26 ok / 4 mismatch` to `28 ok / 4 mismatch`. The same
+orientation and mesh-allocation residuals remain explicit.
 
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and

@@ -52,3 +52,10 @@ recompute in that loop shape is now retained: focused Wibo moves from 14.67%
 operands move from 27 ok, 0 unresolved, 2 mismatch to 26 ok, 0 unresolved,
 4 mismatch, adding two orientation identity-vs-normalize pairings alongside
 the existing half-scale/phase and strip-mesh allocation residuals.
+
+2026-07-03 retained mesh-face loop: replacing the two straight face writes with
+the native two-iteration `face_index` loop moves focused Wibo from 18.00%
+(565/668) to 21.53% (577/668). Masked operands improve from 26 ok, 0
+unresolved, 4 mismatch to 28 ok, 0 unresolved, 4 mismatch; the remaining
+residuals are still the half-scale/phase pairing, two orientation call pairings,
+and the vertices-vs-facequads allocation alignment.
