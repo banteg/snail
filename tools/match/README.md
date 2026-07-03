@@ -32,18 +32,23 @@ tail duplication, register pinning) turned out to be a source idiom.
 
 ## Setup
 
-1. wibo runner. Put a `wibo` binary on `PATH`, set `WIBO=/path/to/wibo`,
-   or place it at `tools/match/bin/wibo`. On macOS/Apple Silicon, the
-   `wibo-macos` x86_64 release runs under Rosetta 2:
+1. wibo runner. Put a current `wibo` binary on `PATH`, set
+   `WIBO=/path/to/wibo`, or place it at `tools/match/bin/wibo`. The 1.1.0 and
+   1.1.1 releases do not include the `kernel32!lstrcpynA` shim needed by some
+   VC6 diagnostic paths, so build Wibo from main until a newer release contains
+   decompals/wibo commit `af24a30` or later. On macOS/Apple Silicon, the
+   release-macos build is an x86_64 binary that runs under Rosetta 2:
 
    ```sh
+   git clone https://github.com/decompals/wibo.git ~/dev/decompals/wibo
+   cmake --preset release-macos -S ~/dev/decompals/wibo
+   cmake --build ~/dev/decompals/wibo/build/release --target wibo
    mkdir -p tools/match/bin
-   curl -L -o tools/match/bin/wibo \
-     https://github.com/decompals/wibo/releases/download/1.1.0/wibo-macos
-   chmod +x tools/match/bin/wibo
+   cp ~/dev/decompals/wibo/build/release/wibo tools/match/bin/wibo
    ```
 
-   On Linux, use the matching `wibo-i686` or `wibo-x86_64` release asset.
+   On Linux, use the matching release preset and copy the built `wibo` binary
+   into `tools/match/bin/wibo`.
 2. Compilers (gitignored, ~40 MB each) — the decomp.me production bundles:
 
    ```sh

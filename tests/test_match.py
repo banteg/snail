@@ -1839,6 +1839,30 @@ def test_normalize_masks_relocated_call_targets() -> None:
     assert plain[0] == "call L5"
 
 
+def test_normalize_resolves_relocated_local_call_targets() -> None:
+    # MSVC COFF can emit a relocation for a recursive call to the current
+    # function. In the linked image that is just an intra-function branch.
+    code = bytes.fromhex("e800000000") + bytes.fromhex("c3")
+    references = (
+        ObjectRelocationReference(
+            offset=1,
+            symbol_name="_foo",
+            text="sym:foo",
+            key="name:foo",
+            explained=True,
+            addend=0,
+            symbol_offset=0,
+        ),
+    )
+    lines = disassemble_normalized_function(
+        code,
+        relocation_offsets=frozenset({1}),
+        relocation_references=references,
+    )
+    assert lines[0].text == "call L0"
+    assert lines[0].masked_references == ()
+
+
 def test_normalize_strips_untargeted_terminal_padding() -> None:
     code = bytes.fromhex("c3") + bytes.fromhex("8d4900") + (b"\x00" * 4) + (b"\x90" * 4)
     assert normalize_function(code) == ("ret",)

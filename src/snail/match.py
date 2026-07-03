@@ -1069,6 +1069,14 @@ def disassemble_normalized_function(
                 return relocation_by_offset[rel_offset]
         return None
 
+    def relocated_local_branch_target(reference: ObjectRelocationReference | None) -> int | None:
+        if reference is None or reference.symbol_offset is None:
+            return None
+        target_offset = reference.symbol_offset + (reference.addend or 0)
+        if 0 <= target_offset < size:
+            return target_offset
+        return None
+
     def relocated_reference(
         reference: ObjectRelocationReference | None,
         *,
@@ -1204,14 +1212,22 @@ def disassemble_normalized_function(
                 # a relocated branch target is external even when the zero
                 # displacement happens to land inside the function
                 if imm_masked:
-                    operands.append("ADDR")
-                    masked_references.append(
-                        relocated_reference(
-                            imm_relocation,
-                            operand_index=operand_index,
-                            kind="imm",
-                        )
+                    local_target = (
+                        relocated_local_branch_target(imm_relocation)
+                        if is_branch
+                        else None
                     )
+                    if local_target is not None:
+                        operands.append(f"L{local_target:x}")
+                    else:
+                        operands.append("ADDR")
+                        masked_references.append(
+                            relocated_reference(
+                                imm_relocation,
+                                operand_index=operand_index,
+                                kind="imm",
+                            )
+                        )
                 elif is_branch and 0 <= target_offset < size:
                     operands.append(f"L{target_offset:x}")
                 elif is_masked_value(value):

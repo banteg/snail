@@ -2,6 +2,10 @@
 
 #include "border_manager.h"
 
+// Keep the native fallthrough return while blocking VC6's final
+// self-tail-recursion.
+#pragma warning(disable:4716)
+
 int BorderManager::kill_border(FrontendWidget* border)
 {
     int result;
@@ -14,10 +18,9 @@ int BorderManager::kill_border(FrontendWidget* border)
                 if ((flags & 0x100000) != 0) {
                     kill_border(border->child_widget_0);
                     kill_border(border->child_widget_1);
-                    kill_border(border->child_widget_2);
+                    result = kill_border(border->child_widget_2);
                 }
             }
         }
     }
-    return result;
 }
