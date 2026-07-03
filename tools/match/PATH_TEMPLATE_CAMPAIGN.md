@@ -254,6 +254,10 @@ the native `flags = 4` spelling. Focused Wibo moved from 17.31% to 18.04%
 mismatch` to `24 ok / 2 mismatch`. This is not a clean prefix/prologue win:
 the 7-instruction prefix disappears and the candidate stack frame grows from
 the native `0x44` to `0x48`, so those debts remain explicit.
+A `start` flat-tail bound probe was rejected: using `last_segment_index` as the
+upper bound instead of spelling `curve_segments + 15` regressed focused Wibo
+from 18.04% to 17.88% (`521/610` to `520/610`) with the masked audit unchanged
+at `24 ok / 2 mismatch`, so the direct bound stays retained.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%

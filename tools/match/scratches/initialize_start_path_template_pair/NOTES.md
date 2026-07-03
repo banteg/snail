@@ -63,3 +63,9 @@ to 18.04% (521/610), with masked operands improving from 22 ok, 0 unresolved,
 qualified source-shape win: the previous 7-instruction prefix is lost and the
 candidate frame grows from the native 0x44 to 0x48, so the prologue/register
 lifetime debt remains open.
+
+2026-07-03 tail-bound local rejection: replacing the flat tail upper bound
+`curve_segments + 15` with the existing `last_segment_index` local regressed
+focused Wibo from 18.04% (521/610) to 17.88% (520/610). The masked audit stayed
+unchanged at 24 ok, 0 unresolved, 2 mismatch, so the direct expression remains
+retained.
