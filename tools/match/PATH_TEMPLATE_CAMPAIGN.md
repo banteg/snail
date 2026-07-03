@@ -14,7 +14,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
 | `initialize_dump_path_template_pair` | 19.05% | Hump twin, inverted vertical lane; recovered seven-argument ABI and native `ret 0x1c`. |
 | `initialize_hump_path_template_pair` | 18.99% | Worst front-half family target; recovered seven-argument ABI and native `ret 0x1c`. |
-| `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
+| `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 20.97% | Orientation helper now always dispatches `rotate_matrix_world_z`; lead-out bound spelling matches the native header. |
 | `initialize_slalombig_path_template_pair` | 20.44% | Same two-temporary falloff split as slalom, with native lead-out bound spelling and the wider `4.4444447f` scale. |
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
@@ -257,6 +257,14 @@ The recovered constructor callsite passes six stack arguments and the target tai
 cleans up `0x18` bytes; the unused mode/cap arguments are now explicit in both
 the scratch and shared declaration. Focused Wibo moved from 18.80% to 18.95%
 (`613/685` unchanged, masked operands unchanged at `19 ok / 4 mismatch`).
+
+The next retained `screw` slice expands the screw-specific three-sample entrance,
+five-sample exit, and helical middle loops instead of routing them through the
+generic sample-pair helper. This delays each Z conversion until after primary
+identity, removes the extra helical secondary-X store, and spells the previous
+sample up-vector cosine/sine temporaries in native order. Focused Wibo moved
+from 18.95% to 30.95% (`613/685` to `601/685`) and the masked audit improved
+from `19 ok / 4 mismatch` to `33 ok / 0 mismatch`.
 
 The same callsite/tail audit applies to `dip` and `slalom`, which were still on
 stale four-argument prototypes despite native six-argument calls. Making the
