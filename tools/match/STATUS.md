@@ -693,7 +693,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 303/421 | 17.13% | 0/421 | 17 ok |  |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 570/683 | 23.14% | 0/683 | 1 mismatch, 31 ok |  |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 559/679 | 19.22% | 0/679 | 6 mismatch, 19 ok |  |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 525/610 | 15.86% | 7/610 | 2 mismatch, 19 ok |  |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 522/610 | 16.96% | 7/610 | 2 mismatch, 21 ok |  |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 562/671 | 23.36% | 0/671 | 1 mismatch, 29 ok |  |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 571/680 | 23.98% | 0/680 | 1 mismatch, 32 ok |  |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 582/687 | 20.96% | 0/687 | 5 mismatch, 22 ok |  |

@@ -14,7 +14,7 @@ typedef AttachmentSample PathTemplateSample;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
 static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, float z)
+    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -25,6 +25,7 @@ static __forceinline void initialize_pair_sample(
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
     set_matrix_identity(&primary->transform);
+    float z = (float)z_index;
     primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
@@ -174,16 +175,16 @@ void AttachmentPathTemplate::initialize_start_path_template_pair(
 
     int i;
     for (i = 0; i < 5; ++i)
-        initialize_pair_sample(this, i, 0.0f, radius + radius, (float)i);
+        initialize_pair_sample(this, i, 0.0f, radius + radius, i);
 
     for (i = curve_segments + 5; i <= curve_segments + 15; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
 
     for (i = 0; i < curve_segments; ++i) {
         int sample_index = i + 5;
         float angle = (float)i * 3.1415927f / (float)curve_segments;
         float y = (cosine(angle) + 1.0f) * radius;
-        initialize_pair_sample(this, sample_index, 0.0f, y, (float)sample_index);
+        initialize_pair_sample(this, sample_index, 0.0f, y, sample_index);
         orient_previous_with_right(primary_samples, sample_index, 5);
         orient_previous_with_right(secondary_samples, sample_index, 5);
     }

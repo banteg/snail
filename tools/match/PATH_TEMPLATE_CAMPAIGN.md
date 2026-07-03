@@ -20,7 +20,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 23.14% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X and delays Z conversion. |
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
-| `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |
+| `initialize_start_path_template_pair` | 16.96% | Low tail target; allocation count, sample X reloads, and in-helper Z conversion now expose a real prefix. |
 | `initialize_supertramp_path_template_pair` | 16.20% | Arc sample schedule now initializes both lanes before either orientation pass. |
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
@@ -141,6 +141,12 @@ reloads both primary and secondary sample X from the primary `center_x` field.
 Focused Wibo moved from 14.56% to 15.86% (`530/610` to `525/610`) and exposed a
 7-instruction prefix. An explicit count-of-11 tail loop was rejected because it
 reduced the score to 15.63% and worsened the masked operand audit.
+
+The next `start` slice keeps the pair helper's Z input as an integer sample
+index and performs the int-to-float conversion inside the inlined helper after
+primary identity. Focused Wibo moved from 15.86% to 16.96% (`525/610` to
+`522/610`), with the same 7-instruction prefix and masked operands improving
+from `19 ok / 2 mismatch` to `21 ok / 2 mismatch`.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%

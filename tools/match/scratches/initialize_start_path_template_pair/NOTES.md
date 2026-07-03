@@ -26,3 +26,9 @@ to the native `0x44` and moves the focused matcher to 15.86% (525/610), with a
 An explicit count-of-11 tail loop was rejected: it made the tail counter look
 more native but dropped the score to 15.63% and worsened the masked audit to
 20 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 Z-index helper spelling: keep the pair helper Z input as an integer
+sample index and perform the int-to-float conversion inside the inlined helper
+after primary identity. Focused Wibo moves from 15.86% (525/610) to 16.96%
+(522/610), with masked operands improving from 19 ok, 0 unresolved, 2 mismatch
+to 21 ok, 0 unresolved, 2 mismatch.
