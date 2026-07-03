@@ -32,3 +32,9 @@ sample index and perform the int-to-float conversion inside the inlined helper
 after primary identity. Focused Wibo moves from 15.86% (525/610) to 16.96%
 (522/610), with masked operands improving from 19 ok, 0 unresolved, 2 mismatch
 to 21 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 lead-in Y lifetime rejection: spelling `radius + radius` as an
+explicit `raised_y` local regresses focused Wibo from 16.96% (522/610) to
+16.95% (523/610). The emitted code stores and reloads the doubled radius before
+adding the secondary offset, while the current source keeps the x87 value live.
+The source shape was reverted.

@@ -178,6 +178,9 @@ index and performs the int-to-float conversion inside the inlined helper after
 primary identity. Focused Wibo moved from 15.86% to 16.96% (`525/610` to
 `522/610`), with the same 7-instruction prefix and masked operands improving
 from `19 ok / 2 mismatch` to `21 ok / 2 mismatch`.
+An explicit `raised_y = radius + radius` lead-in local was rejected because it
+regressed focused Wibo to 16.95% (`523/610`) by forcing a store/reload before
+the secondary offset add.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
