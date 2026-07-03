@@ -37,3 +37,9 @@ outer roll calls after it, moves focused Wibo from 22.72% (501/608) to 24.46%
 schedule after init at 23.86% with one mismatch, split turn phase before init at
 23.84% with one mismatch, and roll calls after init at 23.92% with one
 mismatch.
+
+2026-07-04 retained mesh-face loop cleanup: replacing the direct two-face
+`a`/`b` writes with the shared two-iteration `face_index` loop and single
+`uv[3].v` tail store moves focused Wibo from 24.46% (504/608) to 29.95%
+(514/608), with masked operands improving from 27 ok, 0 unresolved,
+0 mismatch to 29 ok, 0 unresolved, 0 mismatch.

@@ -24,8 +24,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_supertramp_path_template_pair` | 17.10% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion and mesh-vertex staging are rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
-| `initialize_wibble_path_template_pair` | 24.46% | Interior roll schedule now recomputes the native sine/cosine basis-up values and clears the focused masked audit. |
-| `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
+| `initialize_wibble_path_template_pair` | 29.95% | Interior roll schedule and the retained two-iteration facequad loop now both clear the focused masked audit. |
+| `initialize_invert_path_template_pair` | 29.37% | Invert sibling; interior-X cleanup and the retained two-iteration facequad loop now clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
 | `initialize_turnoverdouble_path_template_pair` | 27.60% | Turnover sibling; the retained two-iteration facequad loop improves the focused matcher while the seed-X reload remains rejected. |
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
@@ -472,6 +472,14 @@ the cosine and sine up-vector components. Focused Wibo moved from 22.72% to
 rejected as lesser fits: folded roll after initialization at 23.86%, split turn
 phase before initialization at 23.84%, and roll calls after initialization at
 23.92%, each still leaving one masked mismatch.
+
+The retained `wibble`/`invert` mesh-face slice applies the same two-texture
+`face_index` loop proven by `sweep`/`snake`/twister/toad. Focused Wibo moved
+`wibble` from 24.46% to 29.95% (`504/608` to `514/608`, masked operands
+`27 ok / 0 mismatch` to `29 ok / 0 mismatch`) and `invert` from 23.82% to
+29.37% (`500/600` to `510/600`, masked operands `21 ok / 0 mismatch` to
+`23 ok / 0 mismatch`). The remaining residual is still the larger frame and
+interior loop/codegen shape, not an operand-audit mismatch.
 
 For `supertramp`, the retained arc schedule cleanup matches the native order
 that initializes both primary and secondary arc sample positions before

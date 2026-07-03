@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**507/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69770/325759** bytes (**21.42%**) are proof-grade, and overall fuzzy is **57.21%**.
+**507/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **69770/325759** bytes (**21.42%**) are proof-grade, and overall fuzzy is **57.44%**.
 
 ## Proof Grade (507)
 
@@ -685,7 +685,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.19% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 601/685 | 30.95% | 0/685 | 33 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 618/696 | 21.46% | 0/696 | 1 mismatch, 24 ok |  |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 594/696 | 21.71% | 0/696 | 1 mismatch, 25 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 600/696 | 21.76% | 0/696 | 1 mismatch, 25 ok |  |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 546/652 | 25.04% | 0/652 | 1 mismatch, 32 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 548/652 | 21.33% | 0/652 | 3 mismatch, 33 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 477/552 | 17.10% | 0/552 | 1 mismatch, 26 ok |  |
@@ -697,8 +697,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 573/671 | 26.85% | 0/671 | 1 mismatch, 31 ok |  |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 581/680 | 27.60% | 0/680 | 1 mismatch, 34 ok |  |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 592/687 | 23.92% | 0/687 | 5 mismatch, 24 ok |  |
-| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 504/608 | 24.46% | 0/608 | 27 ok |  |
-| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 500/600 | 23.82% | 0/600 | 21 ok |  |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 514/608 | 29.95% | 0/608 | 29 ok |  |
+| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 510/600 | 29.37% | 0/600 | 23 ok |  |
 | 🚧 | initialize_kind42_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.34% | 0/707 | 46 ok |  |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 569/677 | 21.67% | 0/677 | 3 mismatch, 33 ok |  |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 569/677 | 21.67% | 0/677 | 3 mismatch, 33 ok |  |
