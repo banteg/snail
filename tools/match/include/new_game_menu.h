@@ -45,7 +45,6 @@ public:
     FrontendWidget* back_button; // +0x44
 };
 
-extern char* g_game_base; // data_4df904
 extern unsigned char g_new_game_tutorial_started; // data_4df9d8
 
 char read_pressed_text_input_key_code(); // @ 0x432440

@@ -3,6 +3,7 @@
 #define HIGH_SCORE_SCREEN_H
 
 #include "frontend_widget.h"
+#include "game_base.h"
 #include "high_score_bank.h"
 #include "sprite.h"
 
@@ -67,7 +68,6 @@ public:
     FrontendWidget* replay_row_widgets[1]; // +0xcc, active_record_count entries
 };
 
-extern char* g_game_base; // data_4df904
 extern int g_high_score_selected_bank; // data_4df9c0
 extern char g_last_entered_player_name[]; // data_4df978
 

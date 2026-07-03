@@ -119,7 +119,6 @@ public:
     int total_score; // +0x4c
 };
 
-extern char* g_game_base; // data_4df904
 extern int g_completion_bonus_x_source; // data_4df958
 extern int g_completion_bonus_y_source; // data_4df960
 extern int g_completion_bonus_y_table[]; // data_4a1194
