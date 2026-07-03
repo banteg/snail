@@ -278,6 +278,11 @@ and performs the int-to-float conversion inside the inlined helper after primary
 identity. Focused Wibo moved from 19.22% to 19.26% (`559/679` to `557/679`),
 with masked operands unchanged at `19 ok / 6 mismatch`.
 
+A follow-up `p` radius compare probe was rejected: collapsing the sign check
+from the double temporary to a float local made the visible compare use a dword
+operand, but the focused score regressed to 19.19% (`561/679`) while masked
+operands stayed at `19 ok / 6 mismatch`.
+
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail
 cleans up `0x18` bytes; the unused mode/cap arguments are now explicit in both

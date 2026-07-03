@@ -29,3 +29,9 @@ branching on `kind - 0x21`; all reduced the focused score.
 sample index and perform the int-to-float conversion inside the inlined helper
 after primary identity. Focused Wibo moves from 19.22% (559/679) to 19.26%
 (557/679), with masked operands unchanged at 19 ok, 0 unresolved, 6 mismatch.
+
+2026-07-03 radius compare probe rejected: collapsing the radius sign check from
+the double temporary to a float local made the visible compare use a dword
+operand, but focused Wibo regressed from 19.26% (557/679) to 19.19% (561/679).
+Masked operands stayed at 19 ok, 0 unresolved, 6 mismatch, so the native-shaped
+temporary remains the retained spelling.
