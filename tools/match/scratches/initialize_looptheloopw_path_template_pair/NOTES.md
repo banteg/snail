@@ -15,3 +15,12 @@ the constructor uses the same six-argument stack cleanup as the surrounding path
 template callsites. Updating the scratch and shared declaration from the stale
 four-argument prototype moves focused Wibo from 27.96% (664/745) to 28.11%
 (664/745), with masked operands unchanged at 21 ok, 0 unresolved, 1 mismatch.
+
+2026-07-04 W-roll schedule: the curved-body loop now computes the W-loop roll
+scalar immediately after `angle` instead of just before the two
+`rotate_matrix_world_z` calls. Focused Wibo moves from 28.11% (664/745) to
+30.56% (662/745). This is a score and source-schedule win, not a clean audit:
+masked operands move from 21 ok, 0 unresolved, 1 mismatch to 40 ok,
+0 unresolved, 2 mismatch. The remaining mismatches pair a native
+`normalize_vector` with candidate `rotate_matrix_world_z`, and a mesh allocation
+call pairing; keep those residuals explicit.

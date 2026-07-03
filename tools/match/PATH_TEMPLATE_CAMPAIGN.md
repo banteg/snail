@@ -10,7 +10,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_kind42_path_template_pair` | 37.34% | Best non-cage anchor; exact transform helper, exact sample allocation, and native mesh request order now clear the focused masked audit. |
 | `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit; mesh request-order probe regressed. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
-| `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
+| `initialize_looptheloopw_path_template_pair` | 30.56% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`; W-roll scalar schedule now matches the native loop better with explicit residual call pairings. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
 | `initialize_dump_path_template_pair` | 29.78% | Hump twin, inverted vertical lane; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_hump_path_template_pair` | 30.38% | Worst front-half family target; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
@@ -798,3 +798,12 @@ to facequads-before-vertices regressed focused Wibo from 37.64% to 36.46%
 (`637/718` unchanged) and worsened the masked audit from `43 ok / 0 mismatch`
 to `41 ok / 2 mismatch`, explicitly pairing the allocation calls in the wrong
 order. The loopout helper stays vertices-before-facequads.
+
+For `looptheloopw`, the retained W-roll schedule computes
+`sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f` immediately after the
+loop angle instead of just before the two `rotate_matrix_world_z` calls. Focused
+Wibo moves from 28.11% to 30.56% (`664/745` to `662/745`). The masked audit
+improves in volume but not cleanliness, moving from `21 ok / 1 mismatch` to
+`40 ok / 2 mismatch`; the remaining pairings are the shifted
+`normalize_vector`/`rotate_matrix_world_z` call and a mesh allocation call
+pairing, so this is retained as a score/schedule slice with explicit residuals.

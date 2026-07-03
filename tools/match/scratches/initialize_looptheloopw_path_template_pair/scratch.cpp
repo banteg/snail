@@ -163,6 +163,9 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
             int sample_index = i + 7;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
+#if PATH_VARIANT == 1
+            float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
+#endif
             float center = (primary_samples[curve_count + 7].center_x
                     - primary_samples[0].center_x)
                 * sample_f / curve_count_f + primary_samples[0].center_x;
@@ -199,7 +202,6 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
                 7.0f - secondary_samples[sample_index].transform.position.z);
 
 #if PATH_VARIANT == 1
-            float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
             primary_samples[sample_index].transform.rotate_matrix_world_z(roll);
             secondary_samples[sample_index].transform.rotate_matrix_world_z(roll);
 #endif
