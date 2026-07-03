@@ -181,10 +181,11 @@ void AttachmentPathTemplate::initialize_sweep_path_template_pair(
 
     int i;
     float left = (float)width_cells * 0.5f - 4.0f;
-    float right = 4.0f - (float)width_cells * 0.5f;
 
     for (i = 0; i < 3; ++i)
         initialize_pair_sample(this, i, left, 0.0f, (float)i);
+
+    float right = 4.0f - (float)width_cells * 0.5f;
 
     for (i = 27; i < 30; ++i)
         initialize_pair_sample(this, i, right, 0.0f, (float)i);

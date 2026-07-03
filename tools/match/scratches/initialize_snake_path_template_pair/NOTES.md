@@ -21,3 +21,9 @@ mismatch.
 primary `center_x` field instead of the constant argument moves focused Wibo to
 13.98% (535/652), with masked operands unchanged at 23 ok, 0 unresolved, 4
 mismatch.
+
+2026-07-03 width-local lifetime: the width-derived `right` value is only used by
+the right lead-out and raised body samples, not the six zero lead-in samples.
+Delaying that local until after the lead-in seed loop moves focused Wibo from
+13.98% (535/652) to 14.49% (535/652), with masked operands improving from
+23 ok, 0 unresolved, 4 mismatch to 25 ok, 0 unresolved, 4 mismatch.

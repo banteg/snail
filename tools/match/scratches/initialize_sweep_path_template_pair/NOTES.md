@@ -23,3 +23,9 @@ primary `center_x` field instead of the constant argument moves focused Wibo to
 mismatch. A loop split with delayed sine-derived Y/Z stores was rejected: it
 nudged the score only to 13.74% (556/652) while worsening the masked audit to
 21 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 width-local lifetime: the right-side constant is not needed until
+after the three left lead-in samples. Delaying the `right` local until after
+that seed loop moves focused Wibo from 13.88% (544/652) to 14.30% (537/652),
+with masked operands improving from 24 ok, 0 unresolved, 1 mismatch to 26 ok,
+0 unresolved, 1 mismatch.

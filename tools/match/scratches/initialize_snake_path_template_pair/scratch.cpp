@@ -177,10 +177,11 @@ void AttachmentPathTemplate::initialize_snake_path_template_pair(
     special_runtime_flag_9c = 0;
 
     int i;
-    float right = 4.0f - (float)width_cells * 0.5f;
 
     for (i = 0; i < 6; ++i)
         initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+
+    float right = 4.0f - (float)width_cells * 0.5f;
 
     for (i = 24; i < 27; ++i)
         initialize_pair_sample(this, i, right, 0.0f, (float)i);

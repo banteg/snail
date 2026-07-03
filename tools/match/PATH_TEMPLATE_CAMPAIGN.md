@@ -27,8 +27,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 | `initialize_sbend_path_template_pair` | 22.51% | Delayed step conversion and split interior y/z writeback now follow native order better. |
-| `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
-| `initialize_sweep_path_template_pair` | 13.88% | Low tail target; same sample X reload as snake, with loop split rejected. |
+| `initialize_snake_path_template_pair` | 14.49% | Delayed the width-derived `right` local until after the zero lead-in seed loop. |
+| `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
@@ -127,6 +127,13 @@ For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
 and `snake` from 13.74% to 13.98%. The earlier `sweep` loop-split probe was
 left out because it worsened the masked audit despite a tiny score increase.
+
+The next retained sweep/snake slice delays the width-derived `right` local until
+after the lead-in seed samples that do not need it. Focused Wibo moved `sweep`
+from 13.88% to 14.30% (`544/652` to `537/652`, masked operands `24 ok / 1
+mismatch` to `26 ok / 1 mismatch`) and `snake` from 13.98% to 14.49%
+(`535/652` unchanged, masked operands `23 ok / 4 mismatch` to `25 ok / 4
+mismatch`).
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and
