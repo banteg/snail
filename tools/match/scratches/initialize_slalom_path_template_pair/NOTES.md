@@ -16,3 +16,9 @@ the native tail is `ret 0x18`. Updating the scratch and shared declaration from
 the stale four-argument prototype moves focused Wibo from 19.22% (615/696) to
 19.37% (615/696), with masked operands unchanged at 19 ok, 0 unresolved, 3
 mismatch.
+
+2026-07-03 falloff shape: the native sinusoidal center expression materializes
+two absolute-distance temporaries before multiplying `(1.0f - a) * (1.0f - b)`.
+Splitting the folded scratch expression moves focused Wibo from 19.37%
+(615/696) to 20.68% (629/696), with masked operands improving from 19 ok,
+0 unresolved, 3 mismatch to 24 ok, 0 unresolved, 1 mismatch.

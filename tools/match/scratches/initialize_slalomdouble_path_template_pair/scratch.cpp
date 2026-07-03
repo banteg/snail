@@ -189,10 +189,15 @@ void AttachmentPathTemplate::initialize_slalomdouble_path_template_pair(
         float t = (float)(i - 4) * 0.016129032f;
         float angle = t * 12.566371f;
         float folded = t - 0.5f;
+        float folded_copy;
+        if (folded >= 0.0f)
+            folded_copy = folded;
+        else
+            folded_copy = -folded;
         if (folded < 0.0f)
             folded = -folded;
 
-        float center = sine(angle) * (1.0f - folded) * (1.0f - folded) * 4.4444447f;
+        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         float y = 1.0f - cosine(angle * 0.5f);
         initialize_pair_sample(this, i, center, y, (float)i);
         orient_previous_with_up(primary_samples, i, 4, primary_samples[i - 1].center_x * 0.2617994f);

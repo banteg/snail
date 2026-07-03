@@ -515,9 +515,14 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
             float t = (float)i / curve_count_f;
             float angle = t * 6.2831855f;
             float falloff = t - 0.5f;
+            float falloff_copy;
+            if (falloff >= 0.0f)
+                falloff_copy = falloff;
+            else
+                falloff_copy = -falloff;
             if (falloff < 0.0f)
                 falloff = -falloff;
-            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff) * 5.0f;
+            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;
             initialize_sample_pair(
                 &primary_samples[sample_index],
                 &secondary_samples[sample_index],

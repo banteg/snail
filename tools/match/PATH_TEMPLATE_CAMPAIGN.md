@@ -15,7 +15,9 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_dump_path_template_pair` | 18.90% | Hump twin, inverted vertical lane; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_hump_path_template_pair` | 18.83% | Worst front-half family target; fixed-center seed calls now use native-style width/member-derived expressions. |
 | `initialize_screw_path_template_pair` | 18.95% | Low tail target; recovered six-argument ABI and native `ret 0x18` cleanup. |
-| `initialize_slalom_path_template_pair` | 19.37% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`. |
+| `initialize_slalom_path_template_pair` | 20.68% | Split the sinusoidal center falloff into two native absolute-distance temporaries. |
+| `initialize_slalombig_path_template_pair` | 20.39% | Same two-temporary falloff split as slalom, with the wider `4.4444447f` scale. |
+| `initialize_slalomdouble_path_template_pair` | 22.66% | Fixed 70-sample double slalom now uses the native two-temporary falloff split. |
 | `initialize_twister_path_template_pair` | 15.25% | Worst twin target; secondary sample writes and sine/store order now match the native call order. |
 | `initialize_twister2_path_template_pair` | 15.25% | Twister twin; same source-shape cleanup as twister. |
 | `initialize_start_path_template_pair` | 15.86% | Low tail target; allocation count spelling and sample X reloads now expose a real prefix. |

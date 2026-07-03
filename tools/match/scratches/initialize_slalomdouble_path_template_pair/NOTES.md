@@ -16,3 +16,9 @@ Forcing those helpers inline moves focused Wibo from 10.59% (129/683
 candidate/target instructions) to 22.28% (574/683), with masked operands
 improving from 12 ok, 0 unresolved, 5 mismatch to 31 ok, 0 unresolved, 1
 mismatch.
+
+2026-07-03 falloff shape: split the double-slalom center falloff into the two
+native absolute-distance temporaries before the sine/scale multiply. Focused
+Wibo moves from 22.28% (574/683) to 22.66% (588/683), with masked operands
+improving from 31 ok, 0 unresolved, 1 mismatch to 32 ok, 0 unresolved, 1
+mismatch.

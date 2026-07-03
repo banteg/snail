@@ -188,11 +188,16 @@ void AttachmentPathTemplate::initialize_slalombig_path_template_pair(
     for (i = 0; i < curve_segments; ++i) {
         float t = (float)i / (float)curve_segments;
         float folded = t - 0.5f;
+        float folded_copy;
+        if (folded >= 0.0f)
+            folded_copy = folded;
+        else
+            folded_copy = -folded;
         if (folded < 0.0f)
             folded = -folded;
 
         float angle = t * 6.2831855f;
-        float center = sine(angle) * (1.0f - folded) * (1.0f - folded) * 4.4444447f;
+        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         int sample_index = i + 4;
         initialize_pair_sample(this, sample_index, center, 0.0f, (float)sample_index);
         orient_previous_with_up(primary_samples, sample_index, primary_samples[sample_index - 1].center_x * 0.2617994f);
