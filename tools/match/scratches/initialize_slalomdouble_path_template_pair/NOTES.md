@@ -52,3 +52,18 @@ Expanding both lane orientations before either roll call reduced masked
 residuals from 32 ok, 0 unresolved, 3 mismatch to 30 ok, 0 unresolved,
 1 mismatch, but regressed focused Wibo from 26.92% (580/683) to 25.08%
 (577/683). The compact helper calls stay as the better current score baseline.
+
+2026-07-04 fixed-loop expansion retest rejected: expanding the four lead-in
+fixed samples from `initialize_pair_sample` compiled to the same focused Wibo
+result as the retained helper loop: 26.92% (580/683), with masked operands
+unchanged at 32 ok, 0 unresolved, 3 mismatch. Expanding only the four trailing
+fixed samples was also binary-neutral at the same score and audit. Keep both
+fixed loops in the compact helper form until a broader register-ownership
+change gives the expansion a different alignment context.
+
+2026-07-04 mesh request-order probe rejected: swapping strip-mesh requests to
+facequads-before-vertices regressed focused Wibo from 26.92% (580/683) to
+26.13% (580/683). Masked operands worsened from 32 ok, 0 unresolved,
+3 mismatch to 30 ok, 0 unresolved, 5 mismatch, adding explicit vertices vs
+facequads allocation call pairings alongside the existing orientation residuals.
+The helper keeps vertices-first order.
