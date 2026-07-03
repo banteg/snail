@@ -31,7 +31,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
 | `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
-| `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; orientation residuals remain explicit. |
+| `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; orientation residuals remain explicit. |
 | `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton. |
 
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
@@ -348,6 +348,10 @@ single `face->uv[3].v` tail store. Focused Wibo moved `sweep` from 14.85% to
 `548/652`, masked operands `29 ok / 3 mismatch` to `33 ok / 3 mismatch`).
 The remaining mesh call mismatch is still an alignment pairing, so the retained
 request order stays vertices-before-facequads.
+For `snake`, the follow-up half-angle cleanup removes the scratch-only
+`half_angle` local and spells the curved-body center as `cosine(angle * 0.5f)`.
+This is neutral at 21.33% (`548/652`) with the masked audit still at
+`33 ok / 3 mismatch`, so it is retained as source-shape cleanup only.
 
 For `turnunder`, the retained slice delays the `turns * 2pi` to integer
 conversion until after the first header stores, splits the straight lead-in and

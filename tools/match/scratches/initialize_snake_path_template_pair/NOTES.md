@@ -75,3 +75,9 @@ vertices, matching the earlier `sweep` rejection pattern.
 3 mismatch to 33 ok, 0 unresolved, 3 mismatch. The two orientation
 identity-vs-normalize pairings and the mesh request alignment pairing remain
 honest residuals.
+
+2026-07-03 half-angle cleanup: spelling the curved-body center expression as
+`cosine(angle * 0.5f)` instead of materializing a `half_angle` local is focused
+score neutral at 21.33% (548/652), with masked operands unchanged at 33 ok,
+0 unresolved, 3 mismatch. The cleanup is retained as decompiler-shaped source
+only; the same orientation and mesh-request residuals remain.
