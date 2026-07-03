@@ -43,3 +43,10 @@ Rejected: materializing a separate `curve_segments_f` float local for both
 radius and angle division, like the decompiler's stored float count, was exactly
 neutral at 16.96% (474/552) with masked operands unchanged at 26 ok,
 0 unresolved, 1 mismatch. The shorter direct casts remain retained.
+
+2026-07-03 rejected facequad inner-loop probe: unlike `sweep`/`snake` and the
+twister twins, replacing the direct `a`/`b` facequad writes with a two-iteration
+`face_index` loop regressed focused Wibo from 16.96% (474/552) to 10.19%
+(488/552), and regressed the masked audit from 26 ok, 0 unresolved, 1 mismatch
+to 7 ok, 0 unresolved, 3 mismatch. The cap-texture mesh keeps the direct
+facequad writes for now.

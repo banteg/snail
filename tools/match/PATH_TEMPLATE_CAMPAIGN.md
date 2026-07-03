@@ -352,6 +352,11 @@ two masked mismatches.
 A `supertramp` float-count lifetime probe was rejected: materializing a separate
 `curve_segments_f` local for radius and angle division was exactly neutral at
 16.96% (`474/552`), with masked operands unchanged at `26 ok / 1 mismatch`.
+A facequad inner-loop probe was also rejected for `supertramp`: applying the
+`sweep`/`snake`/twister two-iteration `face_index` skeleton to the cap-texture
+mesh regressed focused Wibo from 16.96% to 10.19% (`474/552` to `488/552`) and
+reduced the masked audit from `26 ok / 1 mismatch` to `7 ok / 3 mismatch`, so
+that mesh keeps the direct `a`/`b` facequad writes.
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
