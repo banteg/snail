@@ -15,3 +15,14 @@ the constructor uses the same six-argument stack cleanup as the surrounding path
 template callsites. Updating the scratch and shared declaration from the stale
 four-argument prototype moves focused Wibo from 37.37% (636/718) to 37.52%
 (636/718), with masked operands unchanged at 41 ok, 0 unresolved, 1 mismatch.
+
+2026-07-04 approach taper split: the first ten approach samples now keep the
+native two-step taper multiply by naming `z * 0.11111111f` before applying the
+`0.30000001f` loop-out scale. Focused Wibo moves from 37.52% (636/718) to
+37.64% (637/718), and the masked audit improves from 41 ok, 0 unresolved,
+1 mismatch to 43 ok, 0 unresolved, 0 mismatch.
+
+Rejected neighbors: merely swapping the source constant order compiled
+identically and kept the folded `0.0333333351` mismatch; naming
+`z * 0.30000001f` first improved fuzzy score but reversed the two constants and
+worsened the audit to 41 ok, 0 unresolved, 2 mismatch.

@@ -8,7 +8,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | target | score | notes |
 |---|---:|---|
 | `initialize_kind42_path_template_pair` | 37.34% | Best non-cage anchor; exact transform helper, exact sample allocation, and native mesh request order now clear the focused masked audit. |
-| `initialize_loopout_path_template_pair` | 37.52% | Same large strip-mesh skeleton; recovered six-argument ABI and native `ret 0x18`. |
+| `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 28.11% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
@@ -785,3 +785,11 @@ scratches still compiled as four-argument `ret 0x10` members. The retained ABI
 cleanup moved `loopout` from 37.37% to 37.52% (`636/718`, `41 ok / 1 mismatch`),
 `looptheloop` from 35.59% to 35.74% (`639/721`, `39 ok / 0 mismatch`), and
 `looptheloopw` from 27.96% to 28.11% (`664/745`, `21 ok / 1 mismatch`).
+
+The retained `loopout` approach taper split names `z * 0.11111111f` before
+applying the `0.30000001f` scale in the first ten fixed samples. That prevents
+VC6 from folding the expression to the non-native `0.0333333351` constant and
+moves focused Wibo from 37.52% to 37.64% (`636/718` to `637/718`) while clearing
+the focused masked audit from `41 ok / 1 mismatch` to `43 ok / 0 mismatch`.
+A bare source-order swap was codegen-neutral, and the opposite named-local order
+reversed the two constants and worsened the audit to two mismatches.

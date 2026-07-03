@@ -216,8 +216,9 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
 
     for (i = 0; i < 10; ++i) {
         float z = (float)i;
+        float z_taper = z * 0.11111111f;
         float center = (float)width_cells * 0.5f - 4.0f
-            - z * 0.11111111f * 0.30000001f;
+            - z_taper * 0.30000001f;
         initialize_sample_pair(
             &primary_samples[i],
             &secondary_samples[i],
