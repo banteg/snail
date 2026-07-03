@@ -17,7 +17,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 27.36% | Curved-body orientation now builds both fixed-up frames before either roll call; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
 | `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded; mesh request-order and slalom orientation-split transfers regressed. |
-| `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
+| `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat; slalom orientation-split transfer regressed. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit; mesh request-order probe regressed. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister; mesh request-order probe regressed. |
 | `initialize_start_path_template_pair` | 21.65% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, facequads-first mesh allocation, and the retested count-of-11 flat-tail loop improve fuzzy score, with the lost prefix/frame debt called out. |
@@ -720,6 +720,11 @@ as `slalom` and `slalombig`. Focused Wibo moved from 23.14% to 26.92%
 `31 ok / 1 mismatch` to `32 ok / 3 mismatch`. The remaining mismatches are in
 the interior orientation call pairings, so this is kept as a score/candidate
 gain with explicit residual debt.
+A `slalomdouble` orientation scheduling split was rejected for the same reason
+as `slalombig`: expanding both lane orientations before either roll call reduced
+the masked residuals to `30 ok / 1 mismatch`, but regressed focused Wibo from
+26.92% to 25.08% (`580/683` to `577/683`). The helper calls stay as the current
+score baseline.
 
 The loop-family callsite/tail audit applies to `loopout`, `looptheloop`, and
 `looptheloopw` as well: focused diffs showed native `ret 0x18` tails while the

@@ -46,3 +46,9 @@ with the two-iteration `face_index` loop moves focused Wibo from 23.14% (570/683
 to 26.92% (580/683). Masked operands change from 31 ok, 0 unresolved,
 1 mismatch to 32 ok, 0 unresolved, 3 mismatch; the extra residuals are in the
 interior orientation call pairings.
+
+Rejected: the `slalom` orientation scheduling split does not transfer here.
+Expanding both lane orientations before either roll call reduced masked
+residuals from 32 ok, 0 unresolved, 3 mismatch to 30 ok, 0 unresolved,
+1 mismatch, but regressed focused Wibo from 26.92% (580/683) to 25.08%
+(577/683). The compact helper calls stay as the better current score baseline.
