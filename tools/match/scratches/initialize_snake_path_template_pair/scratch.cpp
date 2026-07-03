@@ -217,8 +217,35 @@ void AttachmentPathTemplate::initialize_snake_path_template_pair(
         secondary->transform.position.x = primary->center_x;
         secondary->transform.position.y = 0.49000001f - (1.0f - cosine(angle));
         secondary->transform.position.z = z;
-        orient_previous_with_right(primary_samples, i, 6);
-        orient_previous_with_right(secondary_samples, i, 6);
+        PathTemplateSample* primary_previous = &primary_samples[i - 1];
+        PathTemplateSample* primary_current = &primary_samples[i];
+        PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
+        PathTemplateSample* secondary_current = &secondary_samples[i];
+
+        if (i <= 6) {
+            primary_previous->transform.set_matrix_rotation_identity();
+            secondary_previous->transform.set_matrix_rotation_identity();
+        } else {
+            primary_previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+            primary_previous->transform.basis_forward = Vector3(
+                primary_current->transform.position.x - primary_previous->transform.position.x,
+                primary_current->transform.position.y - primary_previous->transform.position.y,
+                primary_current->transform.position.z - primary_previous->transform.position.z);
+            primary_previous->transform.basis_forward.normalize_vector();
+            primary_previous->transform.basis_up.cross_vectors(
+                &primary_previous->transform.basis_forward,
+                &primary_previous->transform.basis_right);
+
+            secondary_previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+            secondary_previous->transform.basis_forward = Vector3(
+                secondary_current->transform.position.x - secondary_previous->transform.position.x,
+                secondary_current->transform.position.y - secondary_previous->transform.position.y,
+                secondary_current->transform.position.z - secondary_previous->transform.position.z);
+            secondary_previous->transform.basis_forward.normalize_vector();
+            secondary_previous->transform.basis_up.cross_vectors(
+                &secondary_previous->transform.basis_forward,
+                &secondary_previous->transform.basis_right);
+        }
     }
 
     compute_terminal_deltas(this);

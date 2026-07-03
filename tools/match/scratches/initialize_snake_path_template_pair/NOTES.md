@@ -82,6 +82,14 @@ score neutral at 21.33% (548/652), with masked operands unchanged at 33 ok,
 0 unresolved, 3 mismatch. The cleanup is retained as decompiler-shaped source
 only; the same orientation and mesh-request residuals remain.
 
+2026-07-04 retained orientation scheduling expansion: expanding the curved-body
+orientation helper calls in place keeps the first curved sample's identity
+branch paired across both lanes, then builds both right-vector orientation
+frames inline. Focused Wibo moves from 21.33% (548/652) to 22.15% (549/652),
+and masked operands improve from 33 ok, 0 unresolved, 3 mismatch to 35 ok,
+0 unresolved, 1 mismatch. The remaining mismatch is only the mesh allocation
+call pairing.
+
 2026-07-04 mesh-vertex staging probe rejected: applying the `start` and
 `supertramp` local `Vector3 generated_position` vertex-row staging to `snake`
 regressed focused Wibo from 21.33% (548/652) to 20.55% (555/652). Masked
