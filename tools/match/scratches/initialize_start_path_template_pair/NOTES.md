@@ -69,3 +69,9 @@ lifetime debt remains open.
 focused Wibo from 18.04% (521/610) to 17.88% (520/610). The masked audit stayed
 unchanged at 24 ok, 0 unresolved, 2 mismatch, so the direct expression remains
 retained.
+
+2026-07-03 neutral face-index lifetime probe: hoisting the mesh `face_index`
+loop variable out of the `for` header, matching the spelling used by several
+other path-template helpers, was exactly neutral at 18.04% (521/610). The
+candidate frame stayed at 0x48 and the masked audit stayed at 24 ok, 0
+unresolved, 2 mismatch, so the block-scoped loop variable remains.
