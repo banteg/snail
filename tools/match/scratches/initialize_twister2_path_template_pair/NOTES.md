@@ -33,3 +33,9 @@ order: `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
 interior sample initializer to keep transform `position.x` at 0.0f regressed
 focused Wibo from 15.27% (554/677) to 14.16% (552/677) and regressed the masked
 audit from 30 ok, 0 unresolved, 0 mismatch to 20 ok, 0 unresolved, 4 mismatch.
+
+2026-07-03 retained endpoint-center recompute: native recomputes the
+width-derived center for the final endpoint instead of reusing the first
+endpoint local. Keeping that recompute inline moves focused Wibo from 15.27%
+(554/677) to 15.66% (562/677), with masked operands unchanged at 30 ok, 0
+unresolved, 0 mismatch.

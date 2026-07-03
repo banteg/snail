@@ -197,7 +197,11 @@ void AttachmentPathTemplate::initialize_twister2_path_template_pair(
 
     initialize_sample(&primary_samples[0], end_center, end_center, 0.0f, 0.0f);
     initialize_secondary_flat(this, 0);
-    initialize_sample(&primary_samples[51], end_center, end_center, 0.0f, 51.0f);
+    float last_center = (float)width_cells * 0.5f - 4.0f;
+    if (!handedness)
+        last_center = last_center * -1.0f;
+
+    initialize_sample(&primary_samples[51], last_center, last_center, 0.0f, 51.0f);
     initialize_secondary_flat(this, 51);
 
     int local_index = 0;
