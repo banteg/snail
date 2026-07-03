@@ -85,3 +85,9 @@ facequads-before-vertices stayed neutral at 19.40% (558/679), with masked
 operands unchanged at 19 ok, 0 unresolved, 9 mismatch, and only flipped the
 remaining mesh allocation call pairing. The vertices-first order remains
 retained.
+
+Post-orientation branch-shape retest: rewriting the curved center selection as
+independent `kind == 0x21` / `0x22` / `0x23` branches, matching the decompiler's
+surface spelling, regressed focused Wibo from 19.40% (558/679) to 19.31%
+(564/679). Masked operands stayed at 19 ok, 0 unresolved, 9 mismatch, so the
+retained source keeps the `else if` branch chain.

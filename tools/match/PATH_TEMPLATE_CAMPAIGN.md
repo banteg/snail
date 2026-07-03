@@ -653,6 +653,10 @@ paired across both lanes. Focused Wibo moved from 19.26% to 19.40% (`557/679`
 to `558/679`), but masked operands worsened from `19 ok / 6 mismatch` to
 `19 ok / 9 mismatch`, so this is retained only as a source-shape/fuzzy-score
 win with explicit call-pairing debt.
+Retesting the decompiler-looking independent `kind == 0x21` / `0x22` / `0x23`
+branches after that orientation expansion regressed focused Wibo to 19.31%
+(`564/679`) with masked operands unchanged at `19 ok / 9 mismatch`, so the
+current `else if` branch spelling remains retained.
 
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail
