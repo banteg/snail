@@ -16,7 +16,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_hump_path_template_pair` | 30.38% | Worst front-half family target; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
 | `initialize_slalom_path_template_pair` | 27.36% | Curved-body orientation now builds both fixed-up frames before either roll call; lead-out bound spelling matches the native header; fixed lead-in/lead-out sample loops are expanded; mesh request-order probe was neutral. |
-| `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded; mesh request-order probe regressed. |
+| `initialize_slalombig_path_template_pair` | 21.76% | Same two-temporary falloff split as slalom, with native lead-out bound spelling, the wider `4.4444447f` scale, the retained two-iteration facequad loop, and lead-in fixed samples expanded; mesh request-order and slalom orientation-split transfers regressed. |
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit; mesh request-order probe regressed. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister; mesh request-order probe regressed. |
@@ -700,6 +700,11 @@ requests to facequads-before-vertices regressed focused Wibo from 21.76% to
 20.99% (`600/696` unchanged) and worsened the masked audit from
 `25 ok / 1 mismatch` to `23 ok / 3 mismatch`, adding explicit allocation call
 pairings. This sibling also keeps vertices-before-facequads order.
+The new `slalom` orientation scheduling split does not transfer to
+`slalombig`: expanding both lane orientations before either roll call clears
+the masked audit to `26 ok / 0 mismatch`, but regresses focused Wibo from
+21.76% to 18.68% (`600/696` to `589/696`). The compact helper calls remain the
+better current fuzzy baseline.
 
 For `slalomdouble`, the retained fixed-sample initializer spelling reloads
 primary and secondary X from the stored primary `center_x`, then delays the

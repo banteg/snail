@@ -51,3 +51,9 @@ facequads-before-vertices regressed focused Wibo from 21.76% (600/696) to
 1 mismatch to 23 ok, 0 unresolved, 3 mismatch, adding explicit vertices vs
 facequads allocation call pairings alongside the existing orientation call
 pairing. The helper keeps vertices-first order.
+
+2026-07-04 slalom orientation-split transfer rejected: expanding the curved-body
+orientation block so both lanes build fixed-up frames before either roll call
+cleared the masked audit to 26 ok, 0 unresolved, 0 mismatch, but regressed
+focused Wibo from 21.76% (600/696) to 18.68% (589/696). Unlike `slalom`, this
+target keeps the compact `orient_previous_with_up` helper calls.
