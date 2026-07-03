@@ -204,8 +204,35 @@ void AttachmentPathTemplate::initialize_p_path_template_pair(
         }
 
         initialize_pair_sample(this, i, center, 0.0f, i);
-        orient_previous_with_up(primary_samples, i, 1);
-        orient_previous_with_up(secondary_samples, i, 1);
+        PathTemplateSample* primary_previous = &primary_samples[i - 1];
+        PathTemplateSample* primary_current = &primary_samples[i];
+        PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
+        PathTemplateSample* secondary_current = &secondary_samples[i];
+
+        if (i <= 1) {
+            primary_previous->transform.set_matrix_rotation_identity();
+            secondary_previous->transform.set_matrix_rotation_identity();
+        } else {
+            primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            primary_previous->transform.basis_forward = Vector3(
+                primary_current->transform.position.x - primary_previous->transform.position.x,
+                primary_current->transform.position.y - primary_previous->transform.position.y,
+                primary_current->transform.position.z - primary_previous->transform.position.z);
+            primary_previous->transform.basis_forward.normalize_vector();
+            primary_previous->transform.basis_right.cross_vectors(
+                &primary_previous->transform.basis_up,
+                &primary_previous->transform.basis_forward);
+
+            secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            secondary_previous->transform.basis_forward = Vector3(
+                secondary_current->transform.position.x - secondary_previous->transform.position.x,
+                secondary_current->transform.position.y - secondary_previous->transform.position.y,
+                secondary_current->transform.position.z - secondary_previous->transform.position.z);
+            secondary_previous->transform.basis_forward.normalize_vector();
+            secondary_previous->transform.basis_right.cross_vectors(
+                &secondary_previous->transform.basis_up,
+                &secondary_previous->transform.basis_forward);
+        }
     }
 
     compute_terminal_deltas(this);

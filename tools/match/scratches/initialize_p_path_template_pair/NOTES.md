@@ -71,3 +71,11 @@ zero-based counter with `sample_index = i + 1` regressed focused Wibo from
 19.26% (557/679) to 18.74% (559/679). Masked operands dropped from 19 ok,
 0 unresolved, 6 mismatch to 16 ok, 0 unresolved, 6 mismatch, so the current
 one-based loop with `(i - 1)` angle ownership stays retained.
+
+2026-07-04 retained orientation scheduling expansion: expanding the curved-body
+orientation helper calls in place matches the native shape that builds both lane
+orientations inside the loop and keeps the `i <= 1` identity branch together.
+Focused Wibo moves from 19.26% (557/679) to 19.40% (558/679). This is not a
+masked-audit cleanup: masked operands worsen from 19 ok, 0 unresolved,
+6 mismatch to 19 ok, 0 unresolved, 9 mismatch, so the new residual call
+pairings remain explicit.
