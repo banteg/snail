@@ -27,3 +27,11 @@ mismatch to 22 ok, 0 unresolved, 5 mismatch. Rejected adjacent probes: swapping
 the start/end center expressions regressed to 20.80%, and materializing
 `interior_count_f` / `radius = interior_count_f * 0.15915494f` before allocation
 regressed to 20.33% despite one extra clean masked operand.
+
+2026-07-03 scalar-order cleanup probe: applying the sibling sample-scalar
+spelling (`rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
+`lateral_scale`) and removing scratch-only `lateral_source` traffic regressed
+focused Wibo from 20.96% (582/687) to 18.08% (563/687), with masked operands
+dropping from 22 ok, 0 unresolved, 5 mismatch to 19 ok, 0 unresolved, 5
+mismatch. Left out; the current turnunder layout still depends on the older
+scalar traffic until the interior loop shape is rebuilt.
