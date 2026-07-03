@@ -41,3 +41,9 @@ decompiler order for curved center/height cosine setup. Focused Wibo moves from
 `28 ok / 1 mismatch`). The remaining masked mismatch is the half-angle `0.5f`
 multiply being paired against the angle-scale `6.28318548f` multiply, so the
 larger x87/frame residual is still explicit.
+
+2026-07-03 inline half-angle cleanup: spelling the curved center as
+`cosine(angle * 0.5f)` instead of materializing a `half_angle` local matches the
+decompiler expression directly. This is score-neutral in focused Wibo at
+`19.53%` (`605/685`) and leaves the masked audit at `28 ok / 1 mismatch`, so it
+is retained as source-shape cleanup rather than claimed as a matcher win.

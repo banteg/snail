@@ -129,6 +129,10 @@ constant mismatch. Focused Wibo moved `hump` from 18.99% to 19.53%
 (`600/685` to `605/685`, masked operands `22 ok / 4 mismatch` to
 `28 ok / 1 mismatch`) and `dump` from 19.05% to 19.43% (`601/690` to
 `607/690`, masked operands `23 ok / 4 mismatch` to `28 ok / 1 mismatch`).
+The later inline half-angle cleanup spells the same center expression as
+`cosine(angle * 0.5f)` instead of a `half_angle` local. It is score-neutral for
+both twins and leaves the single masked mismatch unchanged, so it is recorded as
+source-shape cleanup only.
 
 For the twister twins, the retained slice narrows secondary sample
 initialization to transform-only writes, preserves the native `0.5f * 5.0f`

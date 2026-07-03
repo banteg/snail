@@ -348,10 +348,9 @@ void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 7;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            float half_angle = angle * 0.5f;
             PathAttachmentSample* primary = &primary_samples[sample_index];
             PathAttachmentSample* secondary = &secondary_samples[sample_index];
-            primary->center_x = cosine(half_angle) * primary_samples[0].center_x;
+            primary->center_x = cosine(angle * 0.5f) * primary_samples[0].center_x;
             primary->rotation_scalar_98 = 0.0f;
             primary->rotation_scalar_94 = 0.0f;
             primary->special_scalar = 0.0f;
