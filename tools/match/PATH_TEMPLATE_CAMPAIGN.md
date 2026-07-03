@@ -359,6 +359,9 @@ A follow-up `p` radius compare probe was rejected: collapsing the sign check
 from the double temporary to a float local made the visible compare use a dword
 operand, but the focused score regressed to 19.19% (`561/679`) while masked
 operands stayed at `19 ok / 6 mismatch`.
+A `p` mesh request-order probe was also rejected: swapping to
+facequads-before-vertices stayed neutral at 19.26% (`557/679`) and only flipped
+the mesh call mismatch, leaving masked operands at `19 ok / 6 mismatch`.
 
 For `screw`, the retained slice fixes the stale four-argument scratch prototype.
 The recovered constructor callsite passes six stack arguments and the target tail

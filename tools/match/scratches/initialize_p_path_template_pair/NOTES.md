@@ -35,3 +35,10 @@ the double temporary to a float local made the visible compare use a dword
 operand, but focused Wibo regressed from 19.26% (557/679) to 19.19% (561/679).
 Masked operands stayed at 19 ok, 0 unresolved, 6 mismatch, so the native-shaped
 temporary remains the retained spelling.
+
+2026-07-03 mesh request order probe rejected: swapping the strip-mesh requests
+to facequads-before-vertices was neutral in focused Wibo at 19.26% (557/679),
+but simply flipped the remaining mesh call mismatch from target vertices vs
+candidate facequads to target facequads vs candidate vertices. Masked operands
+stayed at 19 ok, 0 unresolved, 6 mismatch, so the shared vertices-first helper
+remains retained until the earlier loop/call alignment debt moves.
