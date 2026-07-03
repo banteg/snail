@@ -227,6 +227,9 @@ The next retained `sbend` slice follows the focused masked audit and swaps the
 two local strip-mesh allocation calls so facequads are requested before
 vertices. Focused Wibo moved from 22.59% to 23.33% (`501/579` unchanged), and
 the masked audit cleared from `24 ok / 1 mismatch` to `25 ok / 0 mismatch`.
+Trying the same mesh-request swap for `sweep` was rejected because it stayed at
+14.30% (`537/652`) and only flipped the single masked mismatch to the opposite
+request call alignment.
 
 The next retained `wibble`/`invert` slice follows the decompiler-backed interior
 sample shape: the interpolated lateral value belongs in `center_x`, while

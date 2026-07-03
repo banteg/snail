@@ -33,3 +33,9 @@ with masked operands improving from 24 ok, 0 unresolved, 1 mismatch to 26 ok,
 Rejected: applying the snake-style integer Z-index helper spelling regressed
 focused Wibo to 14.17% (534/652) and worsened the masked audit to 22 ok,
 0 unresolved, 4 mismatch, so sweep keeps the float-Z helper argument.
+
+Rejected: swapping the strip-mesh allocation calls to request facequads before
+vertices stayed at 14.30% (537/652) and simply flipped the single masked
+mismatch from target `request_object_vertices` vs candidate
+`request_object_facequads` to the reverse pairing. The retained order remains
+vertices before facequads.
