@@ -58,3 +58,10 @@ only dropped to 18.28% and worsened the masked audit to 16 ok, 0 unresolved,
 6 mismatch; terminal sample only matched the full regression at 18.61%. The
 endpoint helper calls remain retained until the earlier loop/call alignment
 debt moves.
+
+2026-07-03 mesh-vertex staging probe rejected: unlike `start` and
+`supertramp`, routing the strip-mesh vertex calculation through a local
+`Vector3 generated_position` before assigning `*vertex` regressed focused Wibo
+from 19.26% (557/679) to 13.01% (566/679). Masked operands dropped from 19 ok,
+0 unresolved, 6 mismatch to 14 ok, 0 unresolved, 5 mismatch, so the `p` scratch
+keeps direct component writes for now.
