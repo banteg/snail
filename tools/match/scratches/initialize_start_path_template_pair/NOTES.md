@@ -102,3 +102,10 @@ with an explicit `sample_offset` regressed focused Wibo from 20.56% to 18.72%
 (528/610 to 533/610) and reduced the masked audit from 26 ok, 0 unresolved,
 2 mismatch to 22 ok, 0 unresolved, 2 mismatch. Keep the indexed sample pointers
 for the current `start` loop shape.
+
+2026-07-04 retained tail-count retest: after mesh-vertex staging and the
+facequads-first mesh request order, retesting the explicit count-of-11 flat-tail
+loop now moves focused Wibo from 21.27% (528/610) to 21.65% (526/610). Masked
+operands stay at 27 ok, 0 unresolved, 1 mismatch, and the prefix/frame debt
+remains unchanged at candidate frame 0x48 versus native 0x44, so this is a
+small current-shape win rather than a prologue fix.

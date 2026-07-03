@@ -20,7 +20,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_slalomdouble_path_template_pair` | 26.92% | Orientation helper now always dispatches `rotate_matrix_world_z`; fixed-sample initializer reloads X, delays Z conversion, and now uses the retained two-iteration facequad loop with a masked-audit caveat. |
 | `initialize_twister_path_template_pair` | 21.67% | Interior primary sample order now avoids scratch-only zero Y/Z writes; constant-reference residuals remain explicit; mesh request-order probe regressed. |
 | `initialize_twister2_path_template_pair` | 21.67% | Twister twin; same retained interior primary sample order and masked-audit caveat as twister; mesh request-order probe regressed. |
-| `initialize_start_path_template_pair` | 21.27% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, and facequads-first mesh allocation improve fuzzy score, with the lost prefix/frame debt called out. |
+| `initialize_start_path_template_pair` | 21.65% | Low tail target; direct sample loops, retained face loop, staged mesh vertices, facequads-first mesh allocation, and the retested count-of-11 flat-tail loop improve fuzzy score, with the lost prefix/frame debt called out. |
 | `initialize_supertramp_path_template_pair` | 18.66% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local; mesh vertices stage through a local `Vector3`; mesh allocation is facequads-first. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better; endpoint expansion, mesh-vertex staging, and zero-based loop-counter spelling are rejected for now. |
 | `initialize_turnunder_path_template_pair` | 23.92% | Low tail target; delayed turn conversion, straight primary/secondary seed loops, and the retained two-iteration facequad loop improve the focused matcher. Applying the sibling scalar-order cleanup was rejected: removing `lateral_source` traffic and reordering scalar writes/copies regressed focused Wibo from 20.96% to 18.08% (`582/687` to `563/687`) and reduced the masked audit from `22 ok / 5 mismatch` to `19 ok / 5 mismatch`. |
@@ -333,6 +333,11 @@ A curved-loop byte-offset probe was rejected for `start`: replacing the curved
 body's indexed sample pointers with explicit byte-offset ownership regressed
 focused Wibo to 18.72% (`533/610`) and reduced the masked audit to
 `22 ok / 2 mismatch`, so the current `start` body keeps indexed pointers.
+Retesting the explicit count-of-11 flat-tail loop after mesh-vertex staging and
+the extra-row request-order cleanup is now retained: focused Wibo moves from
+21.27% to 21.65% (`528/610` to `526/610`), with masked operands unchanged at
+`27 ok / 1 mismatch`. The candidate frame is still `0x48` versus native `0x44`,
+so this is a loop-shape win, not a prefix/prologue fix.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
@@ -526,6 +531,11 @@ to 21.27% (`528/610` unchanged), improving the masked audit from
 `26 ok / 1 mismatch` to `27 ok / 1 mismatch`. The remaining mismatch is still a
 mesh allocation call aligned against native orientation work, so this does not
 claim the prologue/interior residual is solved.
+
+Retesting the native count-of-11 flat-tail loop on top of that retained
+`start` shape moves it again from 21.27% to 21.65% (`528/610` to `526/610`);
+the masked audit remains `27 ok / 1 mismatch`, so the source keeps the explicit
+tail counter while leaving the allocation/orientation mismatch documented.
 
 A `supertramp` float-count lifetime probe was rejected: materializing a separate
 `curve_segments_f` local for radius and angle division was exactly neutral at

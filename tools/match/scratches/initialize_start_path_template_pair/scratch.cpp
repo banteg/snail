@@ -174,7 +174,9 @@ void AttachmentPathTemplate::initialize_start_path_template_pair(
         secondary->delta_length = 1.0f;
     }
 
-    for (i = curve_segments + 5; i <= curve_segments + 15; ++i) {
+    int tail_count = 11;
+    i = curve_segments + 5;
+    do {
         PathTemplateSample* primary = &primary_samples[i];
         PathTemplateSample* secondary = &secondary_samples[i];
 
@@ -194,7 +196,9 @@ void AttachmentPathTemplate::initialize_start_path_template_pair(
         secondary->transform.position.y = 0.49000001f;
         secondary->transform.position.z = primary->transform.position.z;
         secondary->delta_length = 1.0f;
-    }
+        ++i;
+        --tail_count;
+    } while (tail_count != 0);
 
     for (i = 0; i < curve_segments; ++i) {
         int sample_index = i + 5;
