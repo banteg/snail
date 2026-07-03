@@ -34,3 +34,12 @@ scratch-only `lateral_source` zero store and follows the native scalar store
 order: `rotation_scalar_98`, `rotation_scalar_94`, `special_scalar`,
 `lateral_scale`. Focused Wibo moves from 14.62% (563/668) to 14.65%
 (561/668), with masked operands unchanged at 27 ok, 0 unresolved, 2 mismatch.
+
+2026-07-03 prologue/X reload cleanup: keep the length-to-steps conversion
+before `width_or_scale`, materialize `last = steps + 1` before allocation, and
+reload primary transform X from `center_x` inside the sample helper. Focused
+Wibo moves from 14.65% (561/668) to 14.67% (559/668), with masked operands
+unchanged at 27 ok, 0 unresolved, 2 mismatch. Rejected adjacent probe: spelling
+sample 0's centered/non-centered branch directly against `primary_samples[0]`
+regressed focused Wibo to 14.63% (562/668), so the existing `center_x` local is
+retained.

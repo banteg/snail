@@ -28,7 +28,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.71% | Selector argument now matches native byte-width ABI; remaining residual is orientation/copy scheduling. |
-| `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
+| `initialize_hill_valley_path_template_pair` | 14.67% | Prologue conversion order and primary transform X reload now match the native setup a little more closely. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 14.53% | Delayed the width-derived `right` local and moved Z conversion into the seed helper. |
 | `initialize_sweep_path_template_pair` | 14.30% | Delayed the width-derived `right` local until after the left lead-in seed loop. |
@@ -158,6 +158,13 @@ The `wibble`/`invert` interior-X spelling was also rejected for both twister
 twins: forcing transform `position.x` to `0.0f` regressed each focused Wibo
 score from 15.27% to 14.16% (`554/677` to `552/677`) and reintroduced four
 masked operand mismatches.
+
+The next `hill_valley` slice keeps the length-to-steps conversion ahead of
+`width_or_scale`, materializes `last = steps + 1` before allocation, and reloads
+primary transform X from `center_x` inside the sample helper. Focused Wibo moved
+from 14.65% to 14.67% (`561/668` to `559/668`), with masked operands unchanged
+at `27 ok / 2 mismatch`. A direct sample-0 centered/non-centered branch rewrite
+was rejected because it regressed to 14.63% (`562/668`).
 
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and

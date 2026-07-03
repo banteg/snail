@@ -13,7 +13,7 @@ typedef AttachmentSample PathTemplateSample;
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
 static __forceinline void initialize_sample(
-    PathTemplateSample* sample, float center_x, float x, float y, float z)
+    PathTemplateSample* sample, float center_x, float y, float z)
 {
     sample->center_x = center_x;
     sample->rotation_scalar_98 = 0.0f;
@@ -21,7 +21,7 @@ static __forceinline void initialize_sample(
     sample->special_scalar = 0.0f;
     sample->lateral_scale = 1.0f;
     set_matrix_identity(&sample->transform);
-    sample->transform.position.x = x;
+    sample->transform.position.x = sample->center_x;
     sample->transform.position.y = y;
     sample->transform.position.z = z;
 }
@@ -191,24 +191,24 @@ void AttachmentPathTemplate::initialize_hill_valley_path_template_pair(
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
-    width_or_scale = 1.0f;
     int steps = (int)length;
-    segment_count = steps + 2;
-    segment_count_f = (float)(steps + 2);
+    int last = steps + 1;
+    width_or_scale = 1.0f;
+    segment_count = last + 1;
+    segment_count_f = (float)(last + 1);
     allocate_path_template_samples();
 
     special_runtime_flag_9c = 0;
-    float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
-    int last = steps + 1;
 
-    initialize_sample(&primary_samples[0], center_x, center_x, 0.0f, 0.0f);
+    float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
+    initialize_sample(&primary_samples[0], center_x, 0.0f, 0.0f);
     initialize_secondary_flat(this, 0);
-    initialize_sample(&primary_samples[last], center_x, center_x, 0.0f, (float)last);
+    initialize_sample(&primary_samples[last], center_x, 0.0f, (float)last);
     initialize_secondary_flat(this, last);
 
     for (int i = 1; i <= steps; ++i) {
         float phase = (float)(i - 1) * 6.2831855f / (float)steps;
-        initialize_sample(&primary_samples[i], center_x, center_x, 0.0f, 0.0f);
+        initialize_sample(&primary_samples[i], center_x, 0.0f, 0.0f);
         float y = (1.0f - cosine(phase)) * 0.5f * height;
         primary_samples[i].transform.position.y = y;
         primary_samples[i].transform.position.z = (float)i;
