@@ -29,7 +29,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_turnover_path_template_pair` | 26.85% | Seed helper now reloads secondary X from the written primary center field, and the retained two-iteration facequad loop improves the focused matcher. |
 | `initialize_turnoverdouble_path_template_pair` | 27.60% | Turnover sibling; the retained two-iteration facequad loop improves the focused matcher while the seed-X reload remains rejected. |
 | `initialize_toad_path_template_pair` | 25.97% | Selector ABI and sample-scalar cleanup now pair with the retained two-iteration facequad loop. |
-| `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score, with explicit masked-audit residuals. |
+| `initialize_hill_valley_path_template_pair` | 21.53% | Native phase counter plus the two-iteration facequad loop lift the fuzzy score; mesh request-order remains vertices-first after a neutral rejected probe. |
 | `initialize_sbend_path_template_pair` | 23.33% | Mesh setup now requests facequads before vertices, clearing the focused masked audit. |
 | `initialize_snake_path_template_pair` | 21.33% | Same retained facequad inner-loop skeleton as sweep; neutral half-angle cleanup is retained; orientation residuals remain explicit. |
 | `initialize_sweep_path_template_pair` | 25.04% | Facequad emission now uses the native two-iteration inner-loop skeleton. |
@@ -267,6 +267,12 @@ call residuals but regresses focused Wibo to 19.22% (`560/668`), and narrowing
 only the loop center source to `primary_samples[0].center_x` regresses to
 19.94% (`576/668`) despite reducing the masked audit to two mismatches. The
 helper-routed loop remains the better Phase B fuzzy-alignment baseline.
+
+A `hill_valley` mesh request-order probe was also rejected: swapping to
+facequads-before-vertices stayed neutral at 21.53% (`577/668`) and only flipped
+the remaining allocation mismatch from target vertices vs candidate facequads to
+target facequads vs candidate vertices. Masked operands stayed at
+`28 ok / 4 mismatch`, so this target keeps vertices-before-facequads order.
 
 For `start`, the retained slice spells the allocation count as
 `curve_segments + 15`, writes `segment_count` from that local plus one, and

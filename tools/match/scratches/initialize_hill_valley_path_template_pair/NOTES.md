@@ -68,3 +68,9 @@ keeps the helper shape but initializes loop samples from
 `primary_samples[0].center_x` also regresses to 19.94% (576/668), with masked
 operands at 28 ok, 0 unresolved, 2 mismatch. Both probes are left out; the
 current helper-routed loop keeps the better fuzzy alignment.
+
+2026-07-04 mesh request-order probe rejected: swapping strip-mesh requests to
+facequads-before-vertices stayed neutral at 21.53% (577/668) and simply flipped
+the remaining allocation call mismatch from target vertices vs candidate
+facequads to target facequads vs candidate vertices. Masked operands stayed at
+28 ok, 0 unresolved, 4 mismatch, so the helper keeps vertices-first order.
