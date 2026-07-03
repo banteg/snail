@@ -49,3 +49,9 @@ curved secondary Y from the written primary Y. Focused Wibo moves from 16.96%
 masked operands improving from 21 ok, 0 unresolved, 2 mismatch to 22 ok,
 0 unresolved, 2 mismatch. The remaining masked mismatches are still the
 orientation calls aligned against the later strip-mesh allocation calls.
+
+2026-07-03 raised-Y retry after direct loops: retesting the native-looking
+`raised_y = radius + radius` local after direct sample-loop expansion still
+regressed focused Wibo from 17.31% (511/610) to 17.02% (518/610). The
+7-instruction prefix and masked audit stayed unchanged at 22 ok, 0 unresolved,
+2 mismatch, so the inline `radius + radius` expression remains retained.

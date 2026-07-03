@@ -204,6 +204,9 @@ before computing cosine-derived Y while deriving secondary Y from the written
 primary Y. Focused Wibo moved from 16.96% to 17.31% (`522/610` to `511/610`),
 with the 7-instruction prefix preserved and masked operands improving from
 `21 ok / 2 mismatch` to `22 ok / 2 mismatch`.
+Retesting the `start` raised-Y local after direct sample-loop expansion was
+rejected again: it regressed focused Wibo from 17.31% to 17.02% (`511/610` to
+`518/610`) while leaving the prefix and masked audit unchanged.
 
 For `sweep` and `snake`, the retained slice applies the same primary-center X
 reload to both sample arrays. Focused Wibo moved `sweep` from 13.71% to 13.88%
