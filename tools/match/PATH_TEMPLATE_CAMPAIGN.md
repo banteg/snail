@@ -351,6 +351,12 @@ to 26.85% (`562/671` to `573/671`), and the masked audit improved from
 `29 ok / 1 mismatch` to `31 ok / 1 mismatch`. The remaining mismatch is still
 the sine/cosine pairing in the curved interior.
 
+A `turnover` curved-call materialization probe was rejected. Materializing
+`sine(angle)`, `cosine(angle)`, and `sine(half)` in straight order regressed to
+24.88% (`567/671`) and kept one masked mismatch; interleaving the calls as
+`sine(angle)`, `cosine(angle)`, `sine(half)` cleared the masked audit to
+`30 ok / 0 mismatch` but regressed fuzzy score further to 24.54% (`568/671`).
+
 The retained `turnoverdouble` mesh-face slice follows the same helper rewrite.
 Focused Wibo moved from 23.98% to 27.60% (`571/680` to `581/680`), and the
 masked audit improved from `32 ok / 1 mismatch` to `34 ok / 1 mismatch`. The

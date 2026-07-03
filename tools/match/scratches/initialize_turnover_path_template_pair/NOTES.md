@@ -31,3 +31,10 @@ with the two-iteration `face_index` loop moves focused Wibo from 23.36% (562/671
 to 26.85% (573/671). Masked operands improve from 29 ok, 0 unresolved,
 1 mismatch to 31 ok, 0 unresolved, 1 mismatch; the remaining mismatch is still
 the sine/cosine pairing in the curved interior.
+
+Rejected: materializing the curved `sine(angle)`, `cosine(angle)`, and
+`sine(half)` calls cleared the masked audit but regressed focused Wibo. The
+straight local order fell to 24.88% (567/671) and kept one mismatch; the
+interleaved `sine(angle)`, `cosine(angle)`, `sine(half)` order fell to 24.54%
+(568/671), with masked operands moving to 30 ok, 0 unresolved, 0 mismatch. Keep
+the inline expression until a schedule preserves the fuzzy score.
