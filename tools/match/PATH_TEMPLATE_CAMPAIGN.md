@@ -24,8 +24,8 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_supertramp_path_template_pair` | 16.59% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
-| `initialize_wibble_path_template_pair` | 22.70% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic and follows native scalar store order. |
-| `initialize_invert_path_template_pair` | 22.89% | Invert sibling; the same helper/copy scalar cleanup also improves the masked audit. |
+| `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
+| `initialize_invert_path_template_pair` | 23.82% | Invert sibling; interior samples now keep transform X at zero and clear the focused masked audit. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
 | `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
 | `initialize_hill_valley_path_template_pair` | 14.65% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
@@ -204,6 +204,14 @@ masked operands unchanged at `24 ok / 1 mismatch`), `wibble` from 22.54% to
 22.70% (`510/608` to `502/608`, masked operands unchanged at `20 ok / 4
 mismatch`), and `invert` from 20.20% to 22.89% (`509/600` to `501/600`, masked
 operands `14 ok / 2 mismatch` to `18 ok / 2 mismatch`).
+
+The next retained `wibble`/`invert` slice follows the decompiler-backed interior
+sample shape: the interpolated lateral value belongs in `center_x`, while
+transform `position.x` remains `0.0f`. Focused Wibo moved `wibble` from 22.70%
+to 22.72% (`502/608` to `501/608`, masked operands unchanged at
+`20 ok / 4 mismatch`) and `invert` from 22.89% to 23.82% (`501/600` to
+`500/600`), clearing the invert masked audit from `18 ok / 2 mismatch` to
+`21 ok / 0 mismatch`.
 
 For `supertramp`, the retained arc schedule cleanup matches the native order
 that initializes both primary and secondary arc sample positions before

@@ -174,7 +174,7 @@ void AttachmentPathTemplate::initialize_invert_path_template_pair(
             + (primary_samples[33].center_x - primary_samples[0].center_x)
                 * local_index * 0.03125f;
         float angle = local_index * 0.19634955f;
-        initialize_sample(&primary_samples[i], center, center, 0.0f, (float)i);
+        initialize_sample(&primary_samples[i], center, 0.0f, 0.0f, (float)i);
         primary_samples[i].rotation_scalar_98 = angle * 0.5f;
         primary_samples[i].transform.basis_up.x = sine(angle);
         primary_samples[i].transform.basis_up.y = cosine(angle);

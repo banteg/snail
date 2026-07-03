@@ -21,3 +21,9 @@ scratch-only `lateral_source` store and orders scalar stores/copies as
 Focused Wibo moves from 20.20% (509/600) to 22.89% (501/600), with masked
 operands improving from 14 ok, 0 unresolved, 2 mismatch to 18 ok, 0 unresolved,
 2 mismatch.
+
+2026-07-03 retained interior-X cleanup: the native interior loop stores the
+interpolated lateral value in `center_x` but leaves transform `position.x` at
+0.0f. Spelling that through the sample initializer moves focused Wibo from
+22.89% (501/600) to 23.82% (500/600), and clears the masked audit from
+18 ok, 0 unresolved, 2 mismatch to 21 ok, 0 unresolved, 0 mismatch.
