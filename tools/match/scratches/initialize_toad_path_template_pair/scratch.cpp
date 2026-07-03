@@ -228,7 +228,8 @@ void AttachmentPathTemplate::initialize_toad_path_template_pair(
     for (int k = 0; k < 26; ++k) {
         int index = lead_count + k;
         float phase = (float)k * 0.24166098f;
-        float angle = (1.0f - cosine(phase)) * 0.5f * turn_sign * 1.5707964f;
+        float angle = (1.0f - cosine(phase)) * 0.5f;
+        angle = angle * turn_sign * 1.5707964f;
         float x = start_x + 2.0f * sine(angle);
 
         initialize_sample(

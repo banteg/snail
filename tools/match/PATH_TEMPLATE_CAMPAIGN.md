@@ -22,6 +22,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_p_path_template_pair` | 19.22% | Low tail target; endpoint index/count spelling and radius lifetime now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_turnover_path_template_pair` | 23.36% | Seed helper now reloads secondary X from the written primary center field. |
+| `initialize_toad_path_template_pair` | 19.40% | Split turn-angle arithmetic to preserve native `0.5f` multiply before turn sign/quarter-turn scaling. |
 | `initialize_hill_valley_path_template_pair` | 14.62% | Low tail target; loop secondary samples now recompute the cosine-derived height in native order. |
 | `initialize_sbend_path_template_pair` | 22.51% | Delayed step conversion and split interior y/z writeback now follow native order better. |
 | `initialize_snake_path_template_pair` | 13.98% | Low tail target; sample X reloads now use primary center fields. |
@@ -147,6 +148,12 @@ initializes each interior primary sample before writing the computed Y and Z
 positions in native arithmetic order. Focused Wibo moved from 20.52% to 22.51%
 (`503/579` to `505/579`, masked operands `23 ok / 4 mismatch` to
 `24 ok / 1 mismatch`).
+
+For `toad`, the retained slice splits the turn-angle expression so the native
+`0.5f` multiply remains separate from the turn sign and quarter-turn scale.
+Focused Wibo moved from 19.25% to 19.40% (`594/663` to `595/663`, masked
+operands `16 ok / 3 mismatch` to `18 ok / 2 mismatch`). A neutral-sample
+writeback probe was rejected because it reduced the focused score to 19.26%.
 
 For `p`, the retained slice materializes the endpoint `last_index` and
 `sample_count` locals before allocation and keeps the radius sign check on a

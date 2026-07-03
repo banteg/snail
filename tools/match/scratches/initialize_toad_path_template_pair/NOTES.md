@@ -14,3 +14,9 @@ Forcing those helpers inline moves focused Wibo from 9.55% (175/663
 candidate/target instructions) to 19.25% (594/663), with masked operands
 improving from 5 ok, 0 unresolved, 8 mismatch to 16 ok, 0 unresolved, 3
 mismatch.
+
+2026-07-03 angle-order split: spelling the turn angle as a separate `0.5f`
+multiply before applying the branch sign and quarter-turn scale moves focused
+Wibo to 19.40% (595/663), with masked operands improving to 18 ok, 0
+unresolved, 2 mismatch. A neutral-sample/writeback probe raised the operand
+count but reduced fuzzy score to 19.26%, so it was left out.
