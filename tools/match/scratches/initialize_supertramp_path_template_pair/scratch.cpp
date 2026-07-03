@@ -161,9 +161,10 @@ void AttachmentPathTemplate::initialize_supertramp_path_template_pair(
     width_cells = width_cells_;
 
     int curve_segments = (int)(length * 1.0461504f);
+    int last_segment_index = curve_segments + 7;
     width_or_scale = 1.0f;
-    segment_count = curve_segments + 8;
-    segment_count_f = (float)(curve_segments + 7);
+    segment_count = last_segment_index + 1;
+    segment_count_f = (float)last_segment_index;
     float radius = (float)curve_segments * 0.95588547f;
     allocate_path_template_samples();
     special_runtime_flag_9c = 0;

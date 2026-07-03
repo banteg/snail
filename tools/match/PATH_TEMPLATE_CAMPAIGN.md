@@ -21,7 +21,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_twister_path_template_pair` | 15.27% | Primary sample setup now omits the unused `lateral_source` store and follows native scalar store order. |
 | `initialize_twister2_path_template_pair` | 15.27% | Twister twin; same retained sample-scalar cleanup as twister. |
 | `initialize_start_path_template_pair` | 16.96% | Low tail target; allocation count, sample X reloads, and in-helper Z conversion now expose a real prefix. |
-| `initialize_supertramp_path_template_pair` | 16.59% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper. |
+| `initialize_supertramp_path_template_pair` | 16.96% | Arc sample schedule now initializes both lanes before either orientation pass; flat lead-in keeps Z conversion inside the helper; allocation count now uses the native last-index local. |
 | `initialize_p_path_template_pair` | 19.26% | Low tail target; endpoint index/count spelling, radius lifetime, and in-helper Z conversion now match the native setup better. |
 | `initialize_turnunder_path_template_pair` | 20.96% | Low tail target; delayed turn conversion and straight primary/secondary seed loops now match the native setup better. |
 | `initialize_wibble_path_template_pair` | 22.72% | Fixed-sample helper/copy cleanup removes scratch-only `lateral_source` traffic; interior samples now keep transform X at zero. |
@@ -268,6 +268,13 @@ The next `supertramp` slice keeps the flat lead-in helper's Z input as an
 integer sample index and performs the int-to-float conversion inside the inlined
 helper after primary identity. Focused Wibo moved from 16.20% to 16.59%
 (`473/552` unchanged), with masked operands unchanged at `25 ok / 2 mismatch`.
+
+The next `supertramp` slice materializes `last_segment_index = curve_segments +
+7` before deriving `segment_count`. Focused Wibo moved from 16.59% to 16.96%
+(`473/552` to `474/552`), with masked operands improving from `25 ok / 2
+mismatch` to `26 ok / 1 mismatch`. Reloading flat lead-in X from the written
+primary `center_x` was rejected because it regressed to 16.75% and restored the
+two masked mismatches.
 
 For `toad`, the retained slice splits the turn-angle expression so the native
 `0.5f` multiply remains separate from the turn sign and quarter-turn scale.
