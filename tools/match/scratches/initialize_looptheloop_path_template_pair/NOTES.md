@@ -17,3 +17,10 @@ the constructor uses the same six-argument stack cleanup as the surrounding path
 template callsites. Updating the scratch and shared declaration from the stale
 four-argument prototype moves focused Wibo from 35.59% (639/721) to 35.74%
 (639/721), with masked operands unchanged at 39 ok, 0 unresolved, 0 mismatch.
+
+2026-07-04 prologue order cleanup: the native entry compares `width_cells_`
+against 4 and selects the loop wiggle before starting the `curve_source *
+6.2831855f` integer conversion; it also writes `width_or_scale` after that
+conversion. Delaying `PATH_CURVE_COUNT` and `width_or_scale` to match that
+order keeps focused Wibo at 35.74% (639/721) but improves the masked audit from
+39 ok to 40 ok, with 0 unresolved and 0 mismatch.

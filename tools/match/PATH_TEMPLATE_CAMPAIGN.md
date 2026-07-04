@@ -9,7 +9,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 |---|---:|---|
 | `initialize_kind42_path_template_pair` | 37.34% | Best non-cage anchor; exact transform helper, exact sample allocation, and native mesh request order now clear the focused masked audit. |
 | `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit; mesh request-order probe regressed. |
-| `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
+| `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`; prologue now keeps the width-4 wiggle decision before curve-count conversion. |
 | `initialize_looptheloopw_path_template_pair` | 30.56% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`; W-roll scalar schedule now matches the native loop better with explicit residual call pairings. |
 | `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order; direct middle initializer expansion regressed. |
 | `initialize_dump_path_template_pair` | 29.78% | Hump twin, inverted vertical lane; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
@@ -44,6 +44,13 @@ calls was rejected. It regressed focused Wibo from 30.19% to 23.50%
 `28 ok`, while the remaining masked call mismatch still paired native `cosine`
 against candidate matrix identity setup. The retained scratch keeps the shared
 middle sample helper spelling.
+
+For plain `looptheloop`, the retained prologue cleanup delays
+`PATH_CURVE_COUNT` and `width_or_scale` until after the `width_cells_ == 4`
+wiggle selection. Focused Wibo stays 35.74% (`639/721`), but the masked audit
+improves from `39 ok` to `40 ok` with no unresolved or mismatched operands,
+matching the native entry order without claiming the remaining frame/local
+lifetime debt is solved.
 
 ## Shared Skeleton
 
