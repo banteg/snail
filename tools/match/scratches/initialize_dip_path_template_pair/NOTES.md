@@ -22,3 +22,11 @@ curve-count conversion before `width_or_scale` and `segment_count`. The scratch
 now preserves that order. Focused Wibo remains 30.19% (564/655), with masked
 operands unchanged at 30 ok, 0 unresolved, 1 mismatch, so this is retained as
 source-shape documentation rather than a score win.
+
+2026-07-04 middle initializer expansion rejection: expanding the curved middle
+sample initializer into direct primary/secondary writes regressed focused Wibo
+from 30.19% (564/655) to 23.50% (579/655). The masked audit also dropped from
+30 ok, 0 unresolved, 1 mismatch to 28 ok, 0 unresolved, 1 mismatch, with the
+remaining call mismatch still pairing native `cosine` against matrix identity
+setup. The scratch keeps the shared `initialize_sample_pair` spelling for the
+middle loop until the surrounding endpoint/local lifetime is isolated.

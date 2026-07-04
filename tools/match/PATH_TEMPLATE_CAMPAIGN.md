@@ -11,7 +11,7 @@ Current board checkpoint from `tools/match/STATUS.md`:
 | `initialize_loopout_path_template_pair` | 37.64% | Same large strip-mesh skeleton; retained approach taper split now clears the focused masked audit; mesh request-order probe regressed. |
 | `initialize_looptheloop_path_template_pair` | 35.74% | Loop-family macro scratch; recovered six-argument ABI and native `ret 0x18`. |
 | `initialize_looptheloopw_path_template_pair` | 30.56% | Loop-family sibling with roll term; recovered six-argument ABI and native `ret 0x18`; W-roll scalar schedule now matches the native loop better with explicit residual call pairings. |
-| `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order. |
+| `initialize_dip_path_template_pair` | 30.19% | Shared ABI cleanup; recovered six-argument callsite and native `ret 0x18`; prologue now preserves native curve-count conversion order; direct middle initializer expansion regressed. |
 | `initialize_dump_path_template_pair` | 29.78% | Hump twin, inverted vertical lane; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_hump_path_template_pair` | 30.38% | Worst front-half family target; middle loop now uses native byte-offset ownership and keeps the focused masked audit clean. |
 | `initialize_screw_path_template_pair` | 30.95% | Screw-specific seed/middle loops now follow native sample setup lifetime and clear the masked audit. |
@@ -37,6 +37,13 @@ Current board checkpoint from `tools/match/STATUS.md`:
 `initialize_loopbow_path_template_pair` and `initialize_worm_path_template_pair`
 are intentionally excluded from this campaign slice because they are claimed by
 other work.
+
+For `dip`, a direct expansion of the curved middle `initialize_sample_pair`
+calls was rejected. It regressed focused Wibo from 30.19% to 23.50%
+(`564/655` to `579/655`) and reduced masked operand matches from `30 ok` to
+`28 ok`, while the remaining masked call mismatch still paired native `cosine`
+against candidate matrix identity setup. The retained scratch keeps the shared
+middle sample helper spelling.
 
 ## Shared Skeleton
 
