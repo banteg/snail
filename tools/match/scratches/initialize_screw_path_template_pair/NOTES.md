@@ -26,3 +26,10 @@ secondary-X store, and computes the previous-sample up-vector cosine before the
 negated sine. Focused Wibo moves from 18.95% (613/685) to 30.95% (601/685),
 with the masked audit improving from 19 ok, 0 unresolved, 4 mismatch to 33 ok,
 0 unresolved, 0 mismatch.
+
+2026-07-04 header schedule probe rejected: moving the mirror/side/scale header
+writes into the active screw branch so `width_cells`, `kind`, and segment-count
+setup precede them matched the native-looking entry order more closely, but was
+metric-neutral at 30.95% (601/685) with the masked audit unchanged at 33 ok, 0
+unresolved, 0 mismatch. The scratch keeps the shared header spelling rather
+than adding branch-local boilerplate without a matcher win.
