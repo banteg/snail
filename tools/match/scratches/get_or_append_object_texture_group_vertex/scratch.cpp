@@ -58,7 +58,6 @@ int get_or_append_object_texture_group_vertex(
 
     g_object_grouped_vertex_scratch[i].source_vertex = vertex_index;
 
-    int result = g_object_grouped_vertex_cursor;
-    g_object_grouped_vertex_cursor = result + 1;
-    return result;
+    ++g_object_grouped_vertex_cursor;
+    return g_object_grouped_vertex_cursor - 1;
 }

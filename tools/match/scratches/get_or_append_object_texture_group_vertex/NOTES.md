@@ -3,8 +3,8 @@
 Relationship-first scratch for the private grouped-vertex append helper at
 `0x413bb0`.
 
-Current Wibo result: 63.20%, 123/127 candidate/target instruction shape,
-prefix 25/127, masked operands 8 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 65.34%, 124/127 candidate/target instruction shape,
+prefix 25/127, masked operands 9 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -57,3 +57,13 @@ is codegen-neutral at 63.20% once the skipped `appended`/`result` declarations
 are hoisted for C++ legality. A guarded found label before the append block
 regresses to 62.70%. The retained direct returns remain the clearest source;
 the loop-tail `jge`/`jmp` residual is not fixed by legal label spelling alone.
+
+2026-07-09 append-return shape: spelling the cursor update as
+`++g_object_grouped_vertex_cursor; return g_object_grouped_vertex_cursor - 1;`
+recovers native's `inc` / store / `dec` epilogue and raises focused Wibo from
+63.20% to 65.34% (124/127 insns, 25/127 prefix, 9 clean masks). The older
+`result = cursor; cursor = result + 1; return result` form left a non-native
+`lea` return path. Typed `appended->` for the default diffuse store and a
+shared `flipped_v` local both regress, so only the cursor return change is
+retained. Remaining debt is still loop-exit branch layout and append float
+store scheduling.
