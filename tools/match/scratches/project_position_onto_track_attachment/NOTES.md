@@ -69,3 +69,8 @@ Residuals:
   `SubgameRuntime`, matching its `cRSubGame` call surface and the shared
   declaration used by garbage/slug callers. Focused Wibo is unchanged at
   `88.68%`, `106/106`, with `5` clean masked operands.
+
+2026-07-09 local-shape campaign: two-temp / basis-temp / pure-scalar / lateral-
+first rewrites of the non-kind42 projection all collapse the 67-instruction
+prefix and score 55–69%. The four-vector staging remains the only known form
+that keeps the long exact prefix at 88.68%.

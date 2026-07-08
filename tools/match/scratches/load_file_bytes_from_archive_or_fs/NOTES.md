@@ -23,3 +23,9 @@ Known residuals:
   label identities;
 - native coalesces `ftell` and `_getcwd` stack cleanup into later calls, while
   this C++ scratch emits local cleanup for those call sites.
+
+2026-07-09 sibling-transfer campaign: fixed-size `while (*archive_cursor)`
+compare still regresses this helper to 61.39%. Goto-scan loop packaging is
+codegen-neutral at 65.71%. Inlining the found-entry body like the fixed-size
+scratch (no `goto found`) collapses to 33.84%. Keep the goto-split archive vs
+filesystem topology.

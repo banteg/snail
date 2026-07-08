@@ -31,3 +31,7 @@ instead of native `sub al, 0x20`; unsigned/int byte lanes regress by growing the
 frame or changing the compare loop. The same direct-cursor idiom regresses the
 variable-size sibling `load_file_bytes_from_archive_or_fs` to `61.39%`, so keep
 that scratch's broader control-flow shape separate.
+
+2026-07-09 shape campaign: goto-scan loop form is codegen-neutral at 85.26%.
+Typed `ArchiveEntry*` cursor regresses to 53.26% with three masked mismatches.
+Retain the `char**` entry-path walk.

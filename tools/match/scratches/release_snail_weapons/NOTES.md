@@ -40,3 +40,7 @@ Focused match:
   frame to native's 0x1c layout. Direct scalar stores for the release vectors
   shrink the frame and regress to the low-50% range. Keep the staged `Vector3`
   source.
+
+2026-07-09 frame campaign: dead pad floats are optimized away (still 0x10).
+Persistent raw `slot_x/y/z` locals before the 0.3 scale regress to 72.73%. Keep
+the staged `Vector3` form at 88.80%.

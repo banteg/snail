@@ -57,3 +57,8 @@ tail recovered the written branch sense on paper but shortened the candidate to
 accumulation did not recover native's tail stores. Shared zero locals were also
 neutral or worse. The remaining residual is branch layout around the zero-count
 error path plus the native redundant final hotspot self-stores.
+
+2026-07-09 self-store campaign: explicit float reload/store, `Vector3` copy,
+double-store, volatile self-assign, and `> 0` guard + self-store all fail to
+recover native's six-instruction hotspot self-copy tail (best 80.52%, worse
+than 83.78%). Keep the current break-on-match scan.

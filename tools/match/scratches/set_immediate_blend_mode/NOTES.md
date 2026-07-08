@@ -52,3 +52,8 @@ Source-shape notes:
   but it does not provide a transferable way to force native's duplicated
   mode-1 block without fakematching. Keep the current simple switch and leave
   the remaining debt as block-order/tail-sharing codegen.
+
+2026-07-09 switch-shape campaign: device-local reloads on case 1, shared
+`source_blend` dest=6 suffix (as in `set_blend_mode`), and if-ladder mode
+dispatch all fail to recover native's fully expanded mode-1 block. Best remains
+85.50% with the jump-table content mismatch.

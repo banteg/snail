@@ -43,3 +43,6 @@ scheduling around the aggregate color copy.
   34.92% and dirties five masked globals. The aggregate `entry->color = *color`
   remains necessary for saved-register/global-relocation shape despite the
   count-store residual.
+
+2026-07-09 family sync: count-at-end (UV order) drops to 87.88%. Combined
+`width && height` guard is neutral at 89.39%. Keep blend-after-count.

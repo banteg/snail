@@ -53,3 +53,6 @@ focused match to 24.43%. Removing only the success `return offset` keeps the
 `int` signature but falls to 67.67% and dirties the queue-offset audit. Keep the
 current runnable `int` source with the explicit skip return despite the native
 incidental return register.
+
+2026-07-09 family sync: count-before-blend (axis-aligned non-UV order) drops to
+89.55%. Early-out rewrite is neutral at 92.54%. Keep blend-before-count.

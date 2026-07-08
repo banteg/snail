@@ -46,3 +46,9 @@ split in source is much worse. RGB/count/alpha, earlier split points, explicit
 RGBA then count, and delayed alpha variants all collapse to the 20-45% family
 with a different prologue and many offset mismatches. The aggregate color copy
 plus post-`y3` count store remains the best corner-quad source shape.
+
+2026-07-09 field-order campaign: count-after-width/height still cleans the
+masked audit at 81.43% (worse score). Count-at-end, color-after-corners,
+UV-helper order, blend-before-layer, and early width/height all score ≤87.14%
+and usually dirty the UV/layer/blend offsets. Keep post-`y3` count at 87.14%
+with the two known masked schedule mismatches.
