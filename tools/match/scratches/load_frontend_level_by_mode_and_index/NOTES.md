@@ -35,3 +35,11 @@ all codegen-neutral at 81.36% and leave the same indexed-call tail sharing
 residual. A volatile path pointer collapses the prologue and regresses to
 31.67%. Keep the direct `sprintf(path, ...)` calls; argument spelling alone does
 not recover native's shared path/call tail.
+
+2026-07-09 shared-tail campaign: format-pointer locals, combined case 0/4,
+post-switch format dispatch, if-ladder mode selection, and goto-shared
+indexed/`plain` sprintf epilogues all failed to recover native's
+`push index; push format; jmp shared_lea_path` merge between arcade and
+time-trial-extra. Best remains 81.36% with the direct switch + call shape.
+The jump-table masked mismatch is still the local `$L` vs image table pair
+while body block sizes differ.

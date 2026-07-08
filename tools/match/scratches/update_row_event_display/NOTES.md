@@ -49,6 +49,10 @@ Remaining residual: the bonus award sound call still schedules `mov ecx,
 ADDR` and `push 0x31` in the opposite order from native. Do not force this
 with fake helpers or dummy symbols.
 
+2026-07-09 thiscall setup retry: block-scoped `SoundEffectManager*`, named
+`sound_id = 0x31`, and manager+id pairs are all codegen-neutral at 99.53% and
+leave the same `push 0x31` / `mov ecx` order residual.
+
 ## Pin audit (2026-06-13)
 
 Focused verification now reports 99.53%, 213/213 instructions

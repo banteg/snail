@@ -47,3 +47,12 @@ Expected residuals:
 
 `render_object` calls this helper before applying the object tint and grouped
 draw call.
+
+2026-07-09 jump-table content audit: the masked mismatch is real layout debt,
+not a bad reference alias. Native jump-table entries are
+`(28, 83, 115, 170, 225, 279)`; the retained source emits
+`(28, 83, 116, 171, 226, 284)` because the shared `src`/`dest=6` suffix keeps
+the blend value in a register (`mov ecx, 5; jmp`) instead of native's
+`push 5; mov edx,[eax]; jmp`. Fully expanded case bodies and immediate-valued
+shared labels still regress to 81.52%. Do not add `$L###` aliases to clear the
+audit while the table contents diverge.

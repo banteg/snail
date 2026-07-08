@@ -44,3 +44,8 @@ loop.
 persistent receiver cursor in `edi`, saves `ebx`, shifts the stack frame, and
 regresses back to 69.35%. The retained BOD-slot cursor is still the better
 two-register source shape.
+
+2026-07-09 object-cursor transfer from the promote campaign: retested
+`void**` / `char*` / dual BOD+object-slot / named allocated-object temps.
+Every object-field primary cursor still falls to 69.35% with the three-register
+frame. Keep the BOD-slot source at 90.00%.

@@ -20,3 +20,25 @@
   codegen-identical to the bad shape. Keep the typed `TrackRowCell*` cursor
   until a source form can recover the object-slot base without stealing `ebx`
   from the native `0x20` flag.
+
+2026-07-09 dual-cursor / CSE campaign (no score gain; retain 81.33%):
+
+Native wants `esi = this+0x3bfaec`, `ebx = 0x20`, `ebp = lane`, neighbor as
+`lea ecx,[esi+0x27c]`, and `lea ecx,[esi-0x24]` only at `set_bod_object`.
+Object-cursor forms recover that base but VC6 CSEs `cursor-0x24` into `ebx`
+and rewrites neighbor as `lea ecx,[ebx+0x2a0]`, spilling the lane counter
+(`sub esp,0xc` / `mov [esp],8`) and dropping to 66.67%.
+
+Rejected probes (all ≤81.33%, most 55–75%):
+
+- dual `TrackRowCell*` + `void** object_slot` (codegen-neutral at 81.33%)
+- separate neighbor cursor advanced in lockstep (61–70%)
+- `TrackCellObjectView` starting at the object field (66.67%)
+- free/`__fastcall` set_bod wrappers (≤66.67%)
+- local/`volatile` displacement barriers for `0x27c` / `-0x24` (66–75%)
+- int-cast address arithmetic for neighbor/bod (66.67%)
+
+Root cause: once the source mentions both `cursor-0x24` and `cursor+0x27c`,
+VC6 algebraically shares the `-0x24` base and steals `ebx` from the promoted
+flag. No durable original-looking spelling broke that without regressing the
+two-register cell-cursor frame. Pin the typed `TrackRowCell*` source.
