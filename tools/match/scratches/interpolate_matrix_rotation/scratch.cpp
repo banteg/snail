@@ -4,6 +4,7 @@
 // by alpha, recompose. When the axis collapses, rebuild from the snapped
 // quaternion directly; when the angle is exactly zero, leave the matrix.
 #include "quaternion.h"
+#include "axis.h"
 #include "transform_matrix.h"
 
 struct AxisAngle {
@@ -14,10 +15,6 @@ struct AxisAngle {
     float z;
     float angle;
 };
-
-void initialize_axis_from_quaternion(AxisAngle* axis, const Quaternion* quaternion);
-void initialize_quaternion_from_axis(Quaternion* quaternion, const AxisAngle* axis);
-TransformMatrix* initialize_matrix_from_quaternion(TransformMatrix* out, const Quaternion* quaternion);
 
 void TransformMatrix::interpolate_matrix_rotation(float alpha)
 {
@@ -30,21 +27,21 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
     working.w = extracted.w;
     if (working.x > -0.001f && working.x < 0.001f)
         working.x = 0.0f;
-    if (working.y > -0.001f && working.y < 0.001f)
+    if (*(volatile float*)&working.y > -0.001f && *(volatile float*)&working.y < 0.001f)
         working.y = 0.0f;
-    if (working.z > -0.001f && working.z < 0.001f)
+    if (*(volatile float*)&working.z > -0.001f && *(volatile float*)&working.z < 0.001f)
         working.z = 0.0f;
     if (working.x == 0.0f && working.y == 0.0f && working.z == 0.0f) {
         TransformMatrix rebuilt;
-        ::initialize_matrix_from_quaternion(&rebuilt, &working);
+        rebuilt.initialize_matrix_from_quaternion(&working);
         *this = rebuilt;
     } else {
-        initialize_axis_from_quaternion(&axis, &working);
+        ((Axis*)&axis)->initialize_axis_from_quaternion(&working);
         if (axis.angle != 0.0f) {
             axis.angle = axis.angle * alpha;
-            initialize_quaternion_from_axis(&working, &axis);
+            working.initialize_quaternion_from_axis((Axis*)&axis);
             TransformMatrix rebuilt;
-            ::initialize_matrix_from_quaternion(&rebuilt, &working);
+            rebuilt.initialize_matrix_from_quaternion(&working);
             *this = rebuilt;
         }
     }
