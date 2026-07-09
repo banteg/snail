@@ -239,7 +239,7 @@ These are not gameplay owners, but several mirrors depend on them.
 | `initialize_quaternion_from_axis` | `0x44d530` | 100% | Axis-angle to quaternion conversion through exact sine/cosine helpers. | Done; keep the `(float)scale * axis->lane` spelling that preserves native x87 sine duplication before each axis multiply. |
 | `initialize_axis_from_quaternion` | `0x44d580` | 100% | Exact quaternion to axis-angle conversion through exact arccosine/sine helpers. | Done; keep repeated `sine(half_angle)` calls, matching native source shape. |
 | `initialize_matrix_from_quaternion` | `0x44d820` | 100% | Quaternion to matrix conversion used by rotation interpolation and transform setup. | Done; keep the `2.0f * (...)` doubled-term formulas that match native x87 stack slots and zero-store schedule. |
-| `interpolate_matrix_rotation` | `0x44d920` | 71.89% | Native rotation interpolation for attachments/camera. | Improve only with plausible x87/source staging. |
+| `interpolate_matrix_rotation` | `0x44d920` | 100% | Exact quaternion rotation interpolation for attachments/camera. | Done; keep the recovered member-call ABI and narrow volatile y/z reads that preserve VC6's working-quaternion stack slots. |
 | `linear_interpolate_matrix` | `0x44da90` | 100% | Matrix-space interpolation; already invalidated old pose lerp. | Done; confirms the matrix-space interpolation and orthogonalization call shape used by camera/attachment blend consumers. |
 
 ## Already Matched Or Pinned Dependencies
