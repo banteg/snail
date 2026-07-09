@@ -1072,6 +1072,15 @@
       "description": "Small thiscall forwarder that pushes the rhs matrix argument and calls multiply_matrix_in_place at 0x44d1a0."
     },
     {
+      "address": "0x44d5d0",
+      "name": "initialize_quaternion_from_matrix",
+      "kind": "function",
+      "aliases": [
+        "??0Quaternion@@QAE@PBM@Z"
+      ],
+      "description": "Quaternion matrix-argument constructor; Android symbols identify the recovered helper as tQuaternian::tQuaternian(const tMatrix&)."
+    },
+    {
       "address": "0x44db50",
       "name": "noop_this_constructor",
       "kind": "function",
@@ -1079,6 +1088,8 @@
         "?0AxisAngle",
         "?0NoopAiCallback",
         "?0Quaternion",
+        "??0AxisAngle@@QAE@XZ",
+        "??0Quaternion@@QAE@XZ",
         "sub_44db50"
       ],
       "description": "No-op this-returning constructor thunk reused by trivial default constructors before later real initialization."

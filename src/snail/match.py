@@ -152,7 +152,13 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
         if allow_one_past and size is None:
             raise ValueError(f"symbols[{index}].allow_one_past requires size")
         for raw_name in (name_value, *aliases_value):
-            for checked_name in {raw_name, _canonical_symbol_name(raw_name)}:
+            checked_names = {raw_name}
+            # A fully decorated C++ name carries its overload signature. Its
+            # shortened display name does not, so different overloads may
+            # legitimately share that canonical spelling.
+            if not (raw_name.startswith("?") and "@" in raw_name):
+                checked_names.add(_canonical_symbol_name(raw_name))
+            for checked_name in checked_names:
                 previous_symbol = seen_names.get(checked_name)
                 if previous_symbol is not None and previous_symbol != name_value:
                     raise ValueError(
@@ -508,12 +514,19 @@ def _reference_symbol_by_name(
     if reference_manifest is None:
         return {}
     by_name: dict[str, ReferenceSymbol] = {}
+    # Populate canonical fallbacks first, then let exact manifest spellings
+    # override them. This preserves convenient C-style aliases while allowing
+    # decorated C++ overloads to resolve independently.
+    for symbol in reference_manifest.symbols:
+        for name in (symbol.name, *symbol.aliases):
+            if name.startswith("$L"):
+                continue
+            by_name.setdefault(_canonical_symbol_name(name), symbol)
     for symbol in reference_manifest.symbols:
         for name in (symbol.name, *symbol.aliases):
             if name.startswith("$L"):
                 continue
             by_name[name] = symbol
-            by_name[_canonical_symbol_name(name)] = symbol
     return by_name
 
 
@@ -543,14 +556,16 @@ def _reference_key_for_symbol_name(
     reference_manifest: ReferenceSymbolManifest | None,
     name: str,
 ) -> str | None:
-    return _reference_key_by_name(reference_manifest).get(_canonical_symbol_name(name))
+    by_name = _reference_key_by_name(reference_manifest)
+    return by_name.get(name) or by_name.get(_canonical_symbol_name(name))
 
 
 def _reference_symbol_for_symbol_name(
     reference_manifest: ReferenceSymbolManifest | None,
     name: str,
 ) -> ReferenceSymbol | None:
-    return _reference_symbol_by_name(reference_manifest).get(_canonical_symbol_name(name))
+    by_name = _reference_symbol_by_name(reference_manifest)
+    return by_name.get(name) or by_name.get(_canonical_symbol_name(name))
 
 
 def _reference_symbol_for_local_label(

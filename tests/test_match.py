@@ -32,6 +32,7 @@ from snail.match import (
     render_status_table,
     resolve_function_extent,
     TypeConsolidationFinding,
+    _reference_symbol_for_symbol_name,
     type_consolidation_findings,
 )
 from snail.symbols import (
@@ -310,6 +311,52 @@ def test_reference_symbol_manifest_rejects_duplicate_aliases(tmp_path: Path) -> 
     )
     with pytest.raises(ValueError, match="duplicate reference symbol name or alias"):
         load_reference_symbol_manifest(manifest_path)
+
+
+def test_reference_symbol_manifest_distinguishes_cpp_constructor_overloads(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "overloaded constructor references",
+  "symbols": [
+    {
+      "address": "0x401000",
+      "name": "noop_constructor",
+      "kind": "function",
+      "aliases": [
+        "?0Quaternion",
+        "??0Quaternion@@QAE@XZ"
+      ]
+    },
+    {
+      "address": "0x402000",
+      "name": "quaternion_from_matrix",
+      "kind": "function",
+      "aliases": [
+        "??0Quaternion@@QAE@PBM@Z"
+      ]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    manifest = load_reference_symbol_manifest(manifest_path)
+
+    default_ctor = _reference_symbol_for_symbol_name(
+        manifest, "??0Quaternion@@QAE@XZ"
+    )
+    matrix_ctor = _reference_symbol_for_symbol_name(
+        manifest, "??0Quaternion@@QAE@PBM@Z"
+    )
+    canonical_fallback = _reference_symbol_for_symbol_name(manifest, "?0Quaternion")
+    assert default_ctor is not None and default_ctor.name == "noop_constructor"
+    assert matrix_ctor is not None and matrix_ctor.name == "quaternion_from_matrix"
+    assert canonical_fallback is not None and canonical_fallback.name == "noop_constructor"
 
 
 def test_reference_symbol_manifest_rejects_one_past_without_size(tmp_path: Path) -> None:

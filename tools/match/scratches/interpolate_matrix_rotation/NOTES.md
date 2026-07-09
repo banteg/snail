@@ -1,4 +1,4 @@
-# Audit-pending exact stream — 100.00%, 105/105 insns
+# Proof-grade exact match — 100.00%, 105/105 insns
 
 Semantics complete: extract quaternion from the 3x3 (matrix-arg ctor),
 copy to a working quat, snap |x|,|y|,|z| < 0.001 to zero (w untouched),
@@ -13,12 +13,11 @@ member-call surfaces, which restores the native `thiscall` helper ABI. Narrow
 volatile reads on the working quaternion's y/z epsilon checks prevent VC6 from
 copy-propagating those reads back to the extracted quaternion slots.
 
-One relocation audit mismatch remains: the exact call at target `0x44d5d0` is
-named `initialize_quaternion_from_matrix` by the function manifest, while the
-candidate object names the same matrix-argument constructor
-`??0Quaternion@@QAE@PBM@Z`. This is an overloaded-symbol provenance issue, not
-an instruction mismatch, so the scratch remains audit-pending rather than
-proof-grade.
+All 17 masked operands audit cleanly. The call at target `0x44d5d0` is named
+`initialize_quaternion_from_matrix` by the function manifest and resolves from
+the candidate object's exact matrix-argument constructor symbol
+`??0Quaternion@@QAE@PBM@Z`; the matcher keeps it distinct from the no-op default
+constructor `??0Quaternion@@QAE@XZ`.
 
 Combined with linear_interpolate_matrix this fully specifies native pose
 interpolation for the cluster-1 mirror transform lane.
@@ -35,4 +34,11 @@ helpers with the recovered member calls raised the focused result from 71.89%
 mismatches) to 96.19% with exact instruction-count parity. Volatile y/z reads
 then removed the final four normalized stack-slot differences, yielding
 100.00%, 105/105 instructions, a 105-instruction prefix, 16 masked operands OK,
-and the single overloaded-constructor name mismatch described above.
+and one overloaded-constructor name mismatch, resolved by the provenance update
+below.
+
+2026-07-09 constructor provenance: overload-aware exact decorated-symbol
+resolution and the Android-backed matrix-constructor alias clear the final
+audit mismatch without relaxing the instruction or reference checks. Final
+focused result is proof-grade at 100.00%, 105/105 instructions, a 105-instruction
+prefix, and 17 masked operands OK.
