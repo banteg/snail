@@ -67,7 +67,10 @@ tail duplication, register pinning) turned out to be a source idiom.
    - `scratch.conf` — `FUNCTION=<manifest name>`, optional `END`, `SYMBOL`,
      `COMPILER`, `CFLAGS`
 2. Run `tools/match/match.sh scratches/<function>` (append `--full` for a
-   side-by-side listing instead of a unified diff).
+   side-by-side listing instead of a unified diff). The script is a thin
+   wrapper around `uv run snail match scratch <directory>`, so focused work
+   uses the same config parser, no-fakematching validation, compile cache,
+   extent resolution, normalization, and operand audit as the status sweep.
 3. Iterate the source until the diff is empty. Exit code 0 means 100%.
 
 Useful analysis helpers:

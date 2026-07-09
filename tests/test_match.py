@@ -155,6 +155,15 @@ def test_normalize_keeps_struct_offsets_exact() -> None:
     assert lines[0] == "mov dword [ecx+0x14], 0x1"
 
 
+def test_normalize_preserves_segment_overrides() -> None:
+    # mov eax, fs:[0]; ret must not compare equal to mov eax, [0]; ret
+    segmented = normalize_function(bytes.fromhex("64a100000000c3"))
+    unsegmented = normalize_function(bytes.fromhex("a100000000c3"))
+
+    assert segmented[0] == "mov eax, dword fs:[0x0]"
+    assert segmented != unsegmented
+
+
 def test_common_prefix_length() -> None:
     assert common_prefix_length(("push ebp", "mov ebp, esp"), ("push ebp", "ret")) == 1
     assert common_prefix_length(("push ebp",), ("push ebp", "ret")) == 1
@@ -1507,6 +1516,45 @@ def test_render_status_rows_includes_prefix() -> None:
     assert render_status_rows([status])[0][6] == "2/4"
 
 
+def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch/foo"),
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x1000,
+        target_size=2,
+        ratio=1.0,
+        prefix_instructions=2,
+        target_instructions=2,
+        candidate_instructions=2,
+        error=None,
+    )
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="missing.exe",
+        reference_target="missing.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(FunctionSymbol(address=0x1000, name="foo"),),
+    )
+
+    rows = render_status_rows(
+        [status],
+        manifest=manifest,
+        image_path=Path("missing.exe"),
+    )
+
+    assert len(rows) == 1
+    assert rows[0][1] == "foo"
+
+
 def test_render_status_rows_include_missing_manifest_functions() -> None:
     config = ScratchConfig(
         directory=Path("scratch/exact"),
@@ -1884,6 +1932,37 @@ def test_normalize_keeps_targeted_terminal_padding() -> None:
     assert normalize_function(code) == ("jmp L3", "ret", "nop")
 
 
+def test_normalize_keeps_jump_table_targeted_code_after_ret() -> None:
+    code = bytes.fromhex("ff24850020400031c0c3b801000000c3")
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401007, 0x40100A)
+    lines = disassemble_normalized_function(
+        code,
+        address_range=(0x400000, 0x403000),
+        base_address=0x401000,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    size=8,
+                ),
+            ),
+        ),
+    )
+
+    assert tuple(line.text for line in lines) == (
+        "jmp dword [eax*4+ADDR]",
+        "xor eax, eax",
+        "ret",
+        "mov eax, 0x1",
+        "ret",
+    )
+
+
 def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
     from snail.match import validate_scratch_source
 
@@ -1898,6 +1977,38 @@ def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
             validate_scratch_source(dirty)
 
 
+def test_run_scratch_match_rejects_inline_asm(tmp_path: Path) -> None:
+    from snail.match import run_scratch_match
+
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    scratch_dir.mkdir(parents=True)
+    (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
+    (scratch_dir / "scratch.cpp").write_text(
+        'extern "C" void foo() { __asm ret }\n'
+    )
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="missing.exe",
+        reference_target="missing.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="foo"),
+            FunctionSymbol(address=0x1010, name="next_function"),
+        ),
+    )
+
+    with pytest.raises(ValueError, match="no fakematching"):
+        run_scratch_match(
+            directory=scratch_dir,
+            image_path=tmp_path / "missing.exe",
+            manifest=manifest,
+            match_root=match_root,
+        )
+
+
 def test_load_scratch_config_rejects_match_args(tmp_path: Path) -> None:
     from snail.match import load_scratch_config
 
@@ -1910,7 +2021,12 @@ def test_load_scratch_config_rejects_match_args(tmp_path: Path) -> None:
 
 
 def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
-    from snail.match import ScratchConfig, _load_cached_status, _store_cached_status
+    from snail.match import (
+        ScratchConfig,
+        _function_manifest_cache_digest,
+        _load_cached_status,
+        _store_cached_status,
+    )
 
     match_root = tmp_path / "match"
     scratch_dir = match_root / "scratches/foo"
@@ -1931,8 +2047,31 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         end_va=None,
         symbol=None,
     )
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="image.exe",
+        reference_target="image.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="foo"),
+            FunctionSymbol(address=0x1010, name="next_function"),
+        ),
+    )
+    manifest_digest = _function_manifest_cache_digest(manifest)
 
-    assert _load_cached_status(config, image, match_root) is None
+    def load_status(
+        candidate_config: ScratchConfig = config,
+        candidate_manifest: FunctionSymbolManifest = manifest,
+    ) -> dict[str, object] | None:
+        return _load_cached_status(
+            candidate_config,
+            image,
+            match_root,
+            manifest_digest=_function_manifest_cache_digest(candidate_manifest),
+        )
+
     fields = {
         "target_size": 10,
         "ratio": 1.0,
@@ -1944,8 +2083,33 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         "masked_mismatches": 0,
         "error": None,
     }
-    _store_cached_status(config, image, fields, match_root)
-    assert _load_cached_status(config, image, match_root) == fields
+
+    def store_status() -> None:
+        _store_cached_status(
+            config,
+            image,
+            fields,
+            match_root,
+            manifest_digest=manifest_digest,
+        )
+
+    assert load_status() is None
+    store_status()
+    assert load_status() == fields
+
+    changed_manifest = FunctionSymbolManifest(
+        name=manifest.name,
+        primary_target=manifest.primary_target,
+        reference_target=manifest.reference_target,
+        image_base=manifest.image_base,
+        unwrapped_sha256=manifest.unwrapped_sha256,
+        source_database=manifest.source_database,
+        functions=(
+            manifest.functions[0],
+            FunctionSymbol(address=0x1020, name="next_function"),
+        ),
+    )
+    assert load_status(candidate_manifest=changed_manifest) is None
 
     changed_flags = ScratchConfig(
         directory=scratch_dir,
@@ -1955,7 +2119,7 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         end_va=None,
         symbol=None,
     )
-    assert _load_cached_status(changed_flags, image, match_root) is None
+    assert load_status(changed_flags) is None
 
     changed_compiler = ScratchConfig(
         directory=scratch_dir,
@@ -1965,7 +2129,7 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         end_va=None,
         symbol=None,
     )
-    assert _load_cached_status(changed_compiler, image, match_root) is None
+    assert load_status(changed_compiler) is None
 
     # editing the source or a shared include invalidates the cache
     import os
@@ -1973,17 +2137,17 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
 
     stamp = time.time() + 10
     os.utime(scratch_dir / "scratch.cpp", (stamp, stamp))
-    assert _load_cached_status(config, image, match_root) is None
+    assert load_status() is None
 
-    _store_cached_status(config, image, fields, match_root)
+    store_status()
     stamp += 10
     os.utime(scratch_dir / "scratch.conf", (stamp, stamp))
-    assert _load_cached_status(config, image, match_root) is None
+    assert load_status() is None
 
-    _store_cached_status(config, image, fields, match_root)
+    store_status()
     stamp += 10
     os.utime(header, (stamp, stamp))
-    assert _load_cached_status(config, image, match_root) is None
+    assert load_status() is None
 
 
 def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:

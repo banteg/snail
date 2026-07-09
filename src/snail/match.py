@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import difflib
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -1027,7 +1028,8 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     elif mem.disp != 0 or not parts:
         parts.append(f"0x{mem.disp:x}" if mem.disp >= 0 else f"-0x{-mem.disp:x}")
     size = _OPERAND_SIZE_NAMES.get(operand.size, str(operand.size))
-    return f"{size} [{'+'.join(parts)}]"
+    segment = f"{insn.reg_name(mem.segment)}:" if mem.segment != 0 else ""
+    return f"{size} {segment}[{'+'.join(parts)}]"
 
 
 def _prefers_rdata_f32(insn, operand) -> bool:
@@ -1281,6 +1283,8 @@ def _strip_trailing_unreferenced_lines(
         tail_offsets = {line.offset for line in lines[trim_start:]}
         for line in lines[:trim_start]:
             targets = {int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text)}
+            for reference in line.masked_references:
+                targets.update(reference.jump_table_entries or ())
             if targets & tail_offsets:
                 break
         else:
@@ -1893,6 +1897,26 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     return obj_path
 
 
+def run_scratch_match(
+    *,
+    directory: Path,
+    image_path: Path,
+    manifest: FunctionSymbolManifest,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> MatchResult:
+    """Compile and match one scratch through the same path used by status."""
+    config = load_scratch_config(directory)
+    obj_path = compile_scratch(config, match_root)
+    return run_match(
+        obj_path=obj_path,
+        function_name=config.function,
+        image_path=image_path,
+        manifest=manifest,
+        symbol_name=config.symbol,
+        end_va=config.end_va,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class IdiomCase:
     name: str
@@ -2225,13 +2249,28 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 6
+CACHE_VERSION = 7
+
+
+def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
+    """Hash the manifest fields that affect target extents and reference audits."""
+    payload = {
+        "image_base": manifest.image_base,
+        "functions": [
+            [symbol.address, symbol.name]
+            for symbol in manifest.functions
+        ],
+    }
+    encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _scratch_cache_key(
     config: ScratchConfig,
     image_path: Path,
     match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    manifest_digest: str,
 ) -> dict:
     return {
         "version": CACHE_VERSION,
@@ -2243,6 +2282,7 @@ def _scratch_cache_key(
         },
         "image_mtime": _mtime_ns(image_path),
         "matcher_mtime": _mtime_ns(Path(__file__)),
+        "function_manifest": manifest_digest,
         "reference_manifest_mtime": _mtime_ns(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
@@ -2251,6 +2291,8 @@ def _load_cached_status(
     config: ScratchConfig,
     image_path: Path,
     match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    manifest_digest: str,
 ) -> dict | None:
     import json
 
@@ -2261,7 +2303,12 @@ def _load_cached_status(
         cached = json.loads(cache_path.read_text())
     except (json.JSONDecodeError, OSError):
         return None
-    if cached.get("key") != _scratch_cache_key(config, image_path, match_root):
+    if cached.get("key") != _scratch_cache_key(
+        config,
+        image_path,
+        match_root,
+        manifest_digest=manifest_digest,
+    ):
         return None
     return cached.get("status")
 
@@ -2271,13 +2318,25 @@ def _store_cached_status(
     image_path: Path,
     status: dict,
     match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    manifest_digest: str,
 ) -> None:
     import json
 
     cache_path = config.directory / "build/match-cache.json"
     cache_path.parent.mkdir(exist_ok=True)
     cache_path.write_text(
-        json.dumps({"key": _scratch_cache_key(config, image_path, match_root), "status": status})
+        json.dumps(
+            {
+                "key": _scratch_cache_key(
+                    config,
+                    image_path,
+                    match_root,
+                    manifest_digest=manifest_digest,
+                ),
+                "status": status,
+            }
+        )
     )
 
 
@@ -2289,19 +2348,28 @@ def collect_scratch_statuses(
     """Match every scratch, reusing cached results for unchanged ones.
 
     The cache keys on scratch source/conf, shared headers, compiler inputs,
-    image, and matcher mtimes, so an unchanged scratch costs one stat() pass
-    instead of a compile + disassembly + diff while normalizer changes still
+    image, function/reference manifests, and matcher mtimes. An unchanged
+    scratch therefore costs a dependency-stat pass instead of a compile,
+    disassembly, and diff while target-map or normalizer changes still
     invalidate old scores.
     """
     image: LoadedImage | None = None
     reference_manifest = load_default_reference_symbol_manifest()
+    manifest_digest = _function_manifest_cache_digest(manifest)
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     statuses: list[ScratchStatus] = []
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
 
-        if (cached := _load_cached_status(config, image_path, match_root)) is not None:
+        if (
+            cached := _load_cached_status(
+                config,
+                image_path,
+                match_root,
+                manifest_digest=manifest_digest,
+            )
+        ) is not None:
             statuses.append(ScratchStatus(config=config, address=address, **cached))
             continue
 
@@ -2349,7 +2417,13 @@ def collect_scratch_statuses(
                 "error": _summarize_error(error),
             }
         else:
-            _store_cached_status(config, image_path, fields, match_root)
+            _store_cached_status(
+                config,
+                image_path,
+                fields,
+                match_root,
+                manifest_digest=manifest_digest,
+            )
         statuses.append(ScratchStatus(config=config, address=address, **fields))
     return statuses
 
@@ -2560,11 +2634,15 @@ def _format_masked_counts(status: ScratchStatus) -> str:
 def _manifest_function_rows(
     manifest: FunctionSymbolManifest,
     image: LoadedImage,
+    *,
+    function_names: set[str] | None = None,
 ) -> list[tuple[int, int, str, int]]:
     reference_manifest = load_default_reference_symbol_manifest()
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
     rows: list[tuple[int, int, str, int]] = []
     for index, symbol in enumerate(functions):
+        if function_names is not None and symbol.name not in function_names:
+            continue
         start = symbol.address
         if index + 1 < len(functions):
             end = functions[index + 1].address
@@ -2592,16 +2670,23 @@ def _missing_scratch_status_rows(
 ) -> list[tuple[str, ...]]:
     if manifest is None:
         return []
+    scratched_functions = {status.config.function for status in statuses}
+    missing_functions = {
+        symbol.name for symbol in manifest.functions if symbol.name not in scratched_functions
+    }
+    if not missing_functions:
+        return []
     if image is None:
         if image_path is None:
             return []
         image = load_image(image_path, manifest.image_base)
 
-    scratched_functions = {status.config.function for status in statuses}
     rows: list[tuple[str, ...]] = []
-    for address, target_size, name, target_instructions in _manifest_function_rows(manifest, image):
-        if name in scratched_functions:
-            continue
+    for address, target_size, name, target_instructions in _manifest_function_rows(
+        manifest,
+        image,
+        function_names=missing_functions,
+    ):
         rows.append(
             (
                 MISSING_SCRATCH_ICON,

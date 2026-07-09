@@ -25,6 +25,7 @@ from .match import (
     render_status_table,
     run_match,
     run_match_dump,
+    run_scratch_match,
     type_consolidation_findings,
 )
 from .recon import inspect_path, sha256_bytes
@@ -407,6 +408,48 @@ def build_parser() -> argparse.ArgumentParser:
         help="Matching-islands workflow: diff scratches against the original image.",
     )
     match_subparsers = match_parser.add_subparsers(dest="match_command", required=True)
+
+    match_scratch_parser = match_subparsers.add_parser(
+        "scratch",
+        help="Compile and diff one scratch through the canonical matching pipeline.",
+    )
+    match_scratch_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing scratch.cpp and scratch.conf.",
+    )
+    match_scratch_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_scratch_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_scratch_parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Print both normalized listings side by side instead of only the diff.",
+    )
+    match_scratch_parser.add_argument(
+        "--regions",
+        action="store_true",
+        help="Print localized mismatch region summaries before the diff/listing.",
+    )
+    match_scratch_parser.add_argument(
+        "--region-context",
+        type=int,
+        default=4,
+        help="Instruction context to include around each mismatch region (default: 4).",
+    )
+    match_scratch_parser.add_argument(
+        "--max-regions",
+        type=int,
+        help="Maximum number of mismatch regions to print.",
+    )
 
     match_diff_parser = match_subparsers.add_parser(
         "diff",
@@ -1011,17 +1054,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             print_listing("candidate", dump.candidate_lines)
         return 0
 
-    if args.command == "match" and args.match_command == "diff":
+    if args.command == "match" and args.match_command in ("scratch", "diff"):
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
-        result = run_match(
-            obj_path=args.obj,
-            function_name=args.function,
-            image_path=image_path,
-            manifest=manifest,
-            symbol_name=args.symbol,
-            end_va=args.end,
-        )
+        if args.match_command == "scratch":
+            result = run_scratch_match(
+                directory=args.directory.resolve(),
+                image_path=image_path,
+                manifest=manifest,
+            )
+        else:
+            result = run_match(
+                obj_path=args.obj,
+                function_name=args.function,
+                image_path=image_path,
+                manifest=manifest,
+                symbol_name=args.symbol,
+                end_va=args.end,
+            )
         print(f"match: {result.ratio:.2%}")
         print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
         print(f"prefix: {result.prefix_instructions}/{len(result.target_lines)} target insns")
