@@ -719,12 +719,12 @@
     {
       "address": "0x412a00",
       "name": "load_registered_texture_refs",
-      "description": "Allocates the Direct3D texture slot array, loads each registered texture reference, and reports the estimated texture memory budget."
+      "description": "Allocates the Direct3D texture slot array, forwards its legacy mode argument while loading each registered texture reference, and reports the estimated texture memory budget."
     },
     {
       "address": "0x412a70",
       "name": "load_registered_texture_ref",
-      "description": "Loads one registered texture reference from the archive or filesystem, installs its Direct3D texture slot, applies stage-state defaults, and records the loaded dimensions."
+      "description": "Loads one registered texture reference from the archive or filesystem, installs its Direct3D texture slot, derives color-key and texture-stage behavior from the TGA bits-per-pixel header field, and records the loaded dimensions. Its forwarded legacy second argument is unused."
     },
     {
       "address": "0x412d00",

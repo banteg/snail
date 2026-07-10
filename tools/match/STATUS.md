@@ -627,7 +627,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 134/139 | 60.81% | 41/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
-| 🚧 | load_registered_texture_ref | 0x412a70 | 647 | 215/216 | 73.78% | 10/216 | 2 mismatch, 34 ok |  |
+| 🚧 | load_registered_texture_ref | 0x412a70 | 647 | 215/216 | 74.71% | 10/216 | 2 mismatch, 34 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 645/694 | 73.34% | 9/694 | 68 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |

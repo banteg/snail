@@ -21,3 +21,15 @@ prologue and are not retained.
 73.78%, except for hoisting `color_key` before the header load, which regresses
 to 69.61%. The apparent fallback-byte stack-slot difference in the D3DX setup is
 not fixed by declaration order; keep the current clearer local layout.
+
+2026-07-10 TGA-header ownership correction: the byte tested against `0x20` is
+the TGA `bits_per_pixel` lane at header offset `+0x10`, not the wrapper's second
+argument. Native reads the same stack-resident header byte to choose the white
+color key and the 32-bit texture-stage configuration. The wrapper still passes
+its legacy second argument at its sole callsite, but the callee never reads it;
+both signatures now say so without changing their cdecl ABI. Reusing the shared
+0x14-byte `TgaImageView` also replaces raw `+0x0c/+0x0e` casts with the proven
+width/height fields. Focused Wibo rises from 73.78% to 74.71% (215/216 insns,
+10/216 prefix, 34 clean masks and the same two D3D scheduling mismatches), while
+exact `load_registered_texture_refs` remains 100%. The earlier
+`fallback_mode` stack-slot explanation is superseded by this header evidence.

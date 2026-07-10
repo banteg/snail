@@ -1,6 +1,7 @@
 // load_registered_texture_ref @ 0x412a70 (cdecl)
 
 #include "texture_registry.h"
+#include "tga_image_view.h"
 
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
@@ -28,7 +29,7 @@ extern "C" int __stdcall D3DXCreateTextureFromFileA(
 
 #define TEXTURE_FIELD(offset) ((char*)&g_texture_refs.entries[0] + texture_offset + (offset))
 
-void load_registered_texture_ref(int texture_index, int debug_fallback)
+void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
 {
     int texture_offset = texture_index * sizeof(TextureRef);
     if ((*(unsigned int*)TEXTURE_FIELD(0) & 0x8000) != 0) {
@@ -49,11 +50,12 @@ void load_registered_texture_ref(int texture_index, int debug_fallback)
         *(void**)TEXTURE_FIELD(0x98) = 0;
     }
 
-    char tga_header[0x14];
-    load_file_bytes_fixed_size_from_archive_or_fs(path, tga_header, sizeof(tga_header));
+    TgaImageView tga_header;
+    load_file_bytes_fixed_size_from_archive_or_fs(
+        path, (char*)&tga_header, sizeof(tga_header));
 
-    char fallback_mode = (char)debug_fallback;
-    unsigned int color_key = (fallback_mode == 0x20) ? 0x00ffffff : 0;
+    unsigned int color_key =
+        (tga_header.bits_per_pixel == 0x20) ? 0x00ffffff : 0;
     int texture_result;
     if (is_archive_index_loaded() != 0) {
         char* archive_base = get_archive_data_base();
@@ -79,7 +81,7 @@ void load_registered_texture_ref(int texture_index, int debug_fallback)
     g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 16, 3);
     g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 17, 3);
 
-    if (fallback_mode == 0x20) {
+    if (tga_header.bits_per_pixel == 0x20) {
         *(unsigned int*)TEXTURE_FIELD(0) |= 0x10000;
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 1, 4);
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 2, 2);
@@ -89,8 +91,8 @@ void load_registered_texture_ref(int texture_index, int debug_fallback)
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 6, 0);
     }
 
-    int width = *(unsigned short*)(tga_header + 0x0c);
-    int height = *(unsigned short*)(tga_header + 0x0e);
+    int width = tga_header.width;
+    int height = tga_header.height;
     *(int*)TEXTURE_FIELD(4) = width;
     *(int*)TEXTURE_FIELD(8) = height;
     g_estimated_texture_vram_bytes += width * height * sizeof(unsigned int);
