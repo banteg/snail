@@ -13,6 +13,9 @@ Recovered semantics covered by this scratch:
 - handles all movement-flag spawn-anchor families used by
   `update_movement_flag_emitters`: side offsets at `+0x4134/+0x414c/+0x4164`,
   attachment lanes at `+0x417c/+0x4188`, and the rocket lane at `+0x41ac`;
+- for the `flags & 0x18` attachment family, repurposes the incoming selector as
+  the optional vapour z-floor pointer at `player+0x4184` when the live-matrix
+  forward-z lane at `player+0x60` is positive, otherwise passing null;
 - seeds velocity from `player+0x418`, including the side-biased `+/-0.1`,
   `+/-0.5` x offsets, kind `1` velocity doubling, and kind `2` `0.8` scale;
 - copies velocity to direction, sets per-kind lifetime step from game rate,
@@ -27,7 +30,7 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 34.79% (`tools/match/match.sh
+- Current matcher result: 36.08% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
@@ -116,3 +119,25 @@ Residuals:
   without the node word slice regressed to `28.18%` with a mask mismatch, and
   applying the same word-slice treatment to the kind-1 vapour node either
   stayed lower or regressed combined variants.
+- 2026-07-10 attachment z-floor and ownership pass: Windows instructions
+  `0x415565..0x4155b9` and the independent iOS
+  `cRSubGolb::Create(cRSubGoldy*, int, int)` implementation in `Golb.o` both
+  show that the `flags & 0x18` lane overwrites the incoming selector with an
+  optional `float*`. When the live-matrix forward-z lane at `player+0x60` is
+  positive it points at `player+0x4184`, the z component of the first
+  `player+0x417c` attachment anchor; otherwise it is null. This value is later
+  passed to `VapourTrail::reset_vapour` as its z-floor/clamp pointer. The
+  scratch no longer mistakes selector values `1` and `2` for raw pointers.
+  Narrowing the owner lifetime, using the owned `GolbShot::velocity` fields,
+  and preserving the typed player owner through sprite allocation improves the
+  focused result to `36.15%`, `458/582`, with `35 ok` masked operands. The
+  follow-state tail now copies the typed owner record, including the whole
+  output-position vector and its z latch, matching the native ownership and
+  aggregate-copy evidence; that clarification is retained at `36.08%`,
+  `460/582`, despite the `0.07` point SequenceMatcher movement.
+- Rejected 2026-07-10 neighbors: narrowing only the player pointer regressed to
+  `30.37%`; staging every velocity assignment through `Vec3` temporaries
+  regressed to `34.59%` with a masked-operand mismatch; doing so only in the
+  attachment lane regressed to `29.44%` with a mismatch; moving the position
+  declaration earlier was score-neutral but hoisted its address before the
+  native lifetime begins.

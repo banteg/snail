@@ -25,7 +25,6 @@ int next_math_random_value();
 
 int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
 {
-    char* player = (char*)player_;
     char* self = (char*)this;
     DWORD* words = (DWORD*)self;
 
@@ -51,8 +50,8 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
         words[1] |= 0x200;
     }
 
-    words[158] = (DWORD)player;
-    DWORD kind_flags = *(DWORD*)(player + 0x338);
+    words[158] = (DWORD)player_;
+    DWORD kind_flags = player_->movement_flags;
     if ((kind_flags & 7) != 0) {
         words[112] = 0;
     } else if ((kind_flags & 0x18) != 0) {
@@ -65,7 +64,7 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
     words[145] = 1;
 
     Vec3* position = (Vec3*)(self + 0x1f4);
-    Vec3* velocity = (Vec3*)(self + 0x24c);
+    char* player = (char*)owner_player;
     Vec3* player_position = (Vec3*)(player + 0x68);
     position->x = player_position->x;
     position->y = player_position->y;
@@ -90,9 +89,9 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
                 position->z = source->z;
                 position->x -= 0.5f;
             }
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 1.0f;
         } else if ((movement_flags & 0x18) != 0) {
             Vec3* source;
             if (spawn_selector == 2)
@@ -102,26 +101,30 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
             position->x = source->x;
             position->y = source->y;
             position->z = source->z;
+            if (*(float*)(player + 0x60) > 0.0f)
+                spawn_selector = (int)(player + 0x4184);
+            else
+                spawn_selector = 0;
             self[0x1bc] = 1;
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 1.0f;
         } else if ((movement_flags & 0x60) != 0) {
             Vec3* source = (Vec3*)(player + 0x41ac);
             position->x = source->x;
             position->y = source->y;
             position->z = source->z;
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 0.60000002f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 0.60000002f;
         } else if ((movement_flags & 0x29) != 0) {
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 1.0f;
         } else if ((movement_flags & 0x52) != 0) {
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 1.0f;
             if (spawn_selector == 2)
                 position->x += 0.5f;
             else
@@ -152,42 +155,43 @@ after_movement_flag_source:
 
         if ((*(unsigned char*)(player + 0x338) & 4) != 0) {
             if (spawn_selector == 3) {
-                velocity->x = 0.1f;
-                velocity->y = 0.0f;
-                velocity->z = *(float*)(player + 0x418) + 1.0f;
+                velocity.x = 0.1f;
+                velocity.y = 0.0f;
+                velocity.z = *(float*)(player + 0x418) + 1.0f;
                 position->x += 0.5f;
             } else if (spawn_selector == 2) {
-                velocity->x = -0.1f;
-                velocity->y = 0.0f;
-                velocity->z = *(float*)(player + 0x418) + 1.0f;
+                velocity.x = -0.1f;
+                velocity.y = 0.0f;
+                velocity.z = *(float*)(player + 0x418) + 1.0f;
                 position->x -= 0.5f;
             } else {
-                velocity->x = 0.0f;
-                velocity->y = 0.0f;
-                velocity->z = *(float*)(player + 0x418) + 1.0f;
+                velocity.x = 0.0f;
+                velocity.y = 0.0f;
+                velocity.z = *(float*)(player + 0x418) + 1.0f;
             }
         } else {
-            velocity->x = 0.0f;
-            velocity->y = 0.0f;
-            velocity->z = *(float*)(player + 0x418) + 1.0f;
+            velocity.x = 0.0f;
+            velocity.y = 0.0f;
+            velocity.z = *(float*)(player + 0x418) + 1.0f;
         }
     }
 
     if (words[112] == 1) {
-        velocity->x += velocity->x;
-        velocity->y += velocity->y;
-        velocity->z += velocity->z;
+        velocity.x += velocity.x;
+        velocity.y += velocity.y;
+        velocity.z += velocity.z;
     }
     if (words[112] == 2) {
-        velocity->x *= 0.80000001f;
-        velocity->y *= 0.80000001f;
-        velocity->z *= 0.80000001f;
+        velocity.x *= 0.80000001f;
+        velocity.y *= 0.80000001f;
+        velocity.z *= 0.80000001f;
     }
 
     Vec3* direction = (Vec3*)(self + 0x258);
-    direction->x = velocity->x;
-    direction->y = velocity->y;
-    direction->z = velocity->z;
+    Vec3* movement = &velocity;
+    direction->x = movement->x;
+    direction->y = movement->y;
+    direction->z = movement->z;
 
     if (words[112]) {
         int adjusted_kind = words[112] - 1;
@@ -264,7 +268,7 @@ after_movement_flag_source:
         words[154] = 0;
         ((float*)self)[155] = *(float*)(words[156] + 0x38) * 0.041666668f;
         Sprite* sprite = g_sprite_manager.allocate_sprite(
-            *(DWORD*)(player + 0x380),
+            owner_player->player_slot,
             130,
             -1,
             -1);
@@ -285,24 +289,22 @@ after_movement_flag_source:
         words[157] = emitter_index;
     }
 
-    if (*(unsigned char*)(player + 0x384) == 1 && *(float*)(player + 0x398) < 0.5f) {
-        self[0x2bc] = 1;
-        words[176] = *(DWORD*)(player + 0x388);
-        words[177] = *(DWORD*)(player + 0x38c);
-        words[178] = *(DWORD*)(player + 0x390);
-        words[179] = *(DWORD*)(player + 0x394);
-        words[180] = 0;
-        words[181] = *(DWORD*)(player + 0x3b0);
-        words[182] = *(DWORD*)(player + 0x3b4);
-        words[183] = *(DWORD*)(player + 0x3b8);
-        words[184] = (DWORD)self;
-        words[185] = *(DWORD*)(player + 0x3b8);
+    if (owner_player->follow_active == 1 && owner_player->follow_vertical_offset < 0.5f) {
+        path_follow.active = 1;
+        path_follow.template_record = (GolbPathTemplate*)owner_player->follow_template;
+        path_follow.source_cell = (GolbPathSourceCell*)owner_player->follow_source_cell;
+        path_follow.sample_index = owner_player->follow_sample_index;
+        path_follow.progress = owner_player->follow_progress;
+        path_follow.vertical_offset = 0.0f;
+        path_follow.output_position = owner_player->follow_output_position;
+        path_follow.shot = this;
+        path_entry_z_latch = owner_player->follow_output_position.z;
     } else {
-        self[0x2bc] = 0;
-        words[185] = 0xbf800000;
+        path_follow.active = 0;
+        path_entry_z_latch = -1.0f;
     }
 
-    ((float*)self)[153] = velocity->vector_magnitude();
+    ((float*)self)[153] = velocity.vector_magnitude();
     Vec3* previous_output = (Vec3*)(self + 0x234);
     *previous_output = *position;
 

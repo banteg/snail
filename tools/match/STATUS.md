@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.59%**.
+**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.60%**.
 
 ## Proof Grade (508)
 
@@ -673,7 +673,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |
 | 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 319/373 | 42.20% | 0/373 | 24 ok |  |
-| 🚧 | create_golb | 0x415280 | 2349 | 447/582 | 34.79% | 3/582 | 35 ok |  |
+| 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |
 | 🚧 | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 74/75 | 41.61% | 1/75 | - |  |
