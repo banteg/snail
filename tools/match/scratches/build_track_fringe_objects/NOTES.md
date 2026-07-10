@@ -107,3 +107,34 @@ shared declaration was corrected from `void` to `int` to match the native
 release-stripped debug-report tail. Focused Wibo is unchanged at `53.76%`,
 `476/495`, with `47` clean masked operands; the remaining diff is still the
 known register-ownership and bool-normalization shape.
+
+## 2026-07-10 bool-shape and ownership pass
+
+Focused Wibo now reaches `60.39%`, with `492/495` candidate instructions,
+prefix `3/495`, and `48` clean masked operands. Explicitly preserving the
+native helper-result contract recovered the useful gain: the current-cell
+probe compares `== 1`, diagonal probes compare `!= 1`, and the edge selectors
+derive `(probe != 1) + 1`. VC6 then emits the native `cmp al, 1` branches and
+`dec/neg/sbb/neg/inc` 1-or-2 normalization instead of the shorter truthy form.
+Putting the open-side allocation first added a smaller structural gain and
+keeps the clear-handle leg after it, matching the native branch layout.
+
+The pool boundary is now explicit. Root `+0x3d01d4` is subgame
+`+0x35bbbc`, exactly the start of a 0x5fb44-byte `FringeManager`; root
+`+0x42fd14` is the same manager's `count` at subgame `+0x3bb6fc`.
+`SubgameRuntime` therefore owns all 7,000 fixed `FringeObject` records.
+`initialize_fringe_manager()` only rewinds the cursor, and each
+`TrackRowCell::fringe_*` field is a non-owning handle into that storage. The
+builder uses the singleton's typed `fringe_manager` member at every native
+global reload and reports the typed count at the tail.
+
+The local `game`/`original_game` aliases were codegen-neutral and have been
+removed: the member receiver is a borrowed view of the same live subgame, not
+a second owner. Function-scope `family`/`edge_b` scratch, staged anchor
+pointers, and the explicit singleton skirt-color receiver were also tested.
+The first three were neutral; the singleton color spelling enlarged the frame
+to `0x54` and regressed to `42.25%`, so all were reverted. Remaining debt is
+honest register scheduling: native keeps the receiver in `ebp`, family in
+`edi`, edge-a in `ebx`, and temporarily reuses `ebp` for edge-b, while the
+candidate keeps receiver/family in `edi`/`ebp` and spills edge-b. Do not force
+that swap with volatile locals, register tricks, or raw-offset aliases.

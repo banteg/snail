@@ -11,6 +11,7 @@
 #include "challenge_setup_screen.h"
 #include "completion_screen.h"
 #include "frontend_widget.h"
+#include "fringe_object.h"
 #include "garbage_hazard_slot.h"
 #include "galaxy_route_types.h"
 #include "high_score_bank.h"
@@ -148,7 +149,10 @@ public:
     FrontendWidget* lives_icon_widget; // +0x35bb90
     FrontendWidget* lives_text_widget; // +0x35bb94
     FrontendWidget* life_stock_widgets[9]; // +0x35bb98
-    char unknown_35bbbc[0x3bb764 - 0x35bbbc];
+    // Fixed visual pool owned by SubgameRuntime. TrackRowCell fringe fields
+    // only borrow handles into this storage while a built track is live.
+    FringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
+    char unknown_3bb700[0x3bb764 - 0x3bb700];
     union {
         // VC6 rejects non-trivial class members in a union, so preserve the
         // exact Player extent as storage and cast it at typed callsites.
