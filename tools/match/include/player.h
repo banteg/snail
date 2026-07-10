@@ -112,7 +112,7 @@ public:
     char unknown_78[0x80 - 0x78];
     TransformMatrix previous_live_matrix;   // +0x80
     TransformMatrix cached_cutscene_matrix; // +0xc0
-    Player* owner_player;                   // +0x100
+    Player* owner_player;                   // +0x100, non-owning backlink to containing Player
     AnimManager anim_manager;               // +0x104
     char unknown_14c[0x170 - 0x14c];
     char cutscene_animation_slot_table[0x64c - 0x170]; // +0x170, 0x80-byte records
@@ -255,6 +255,8 @@ public:
     DamageGaugeController damage_gauge;     // +0x3c4
     char unknown_3f0[0x404 - 0x3f0];
     int lives;                            // +0x404
+    // Non-owning backlink to the SubgameRuntime that embeds this Player.
+    // initialize_subgoldy is its sole setter; teardown never frees through it.
     SubgameRuntime* game;                  // +0x408
     int movement_mode_selector;            // +0x40c
     Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
@@ -274,6 +276,7 @@ public:
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_b")
     float attachment_exit_progress;        // +0x434
     float attachment_exit_progress_step;    // +0x438
+    // Borrowed input view inside the root game object, selected by player_slot.
     PlayerControlSource* control_source;    // +0x43c
     unsigned char completion_handoff_active; // +0x440
     char unknown_441[0x44c - 0x441];

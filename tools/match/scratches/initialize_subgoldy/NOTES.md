@@ -97,3 +97,19 @@ Latest focused result:
   declaration is codegen-neutral at the retained `95.86%`, `276/279`,
   `27 ok / 0` profile. The body stays raw-offset shaped because the remaining
   debt is cached-target/control-source scheduling, not missing field names.
+
+2026-07-10 ownership pass:
+
+- Binary Ninja xrefs confirm this function is the sole setter of both
+  `Player::game +0x408` and `Player::control_source +0x43c`. The former points
+  back to the `SubgameRuntime` that embeds the Player; the latter borrows one
+  of two input-controller views from the root game object.
+- The self-links at `NukeController::owner_player` and
+  `PlayerPresentationController::owner_player`, plus the embedded
+  `follow_active` lane, are now expressed through shared `Player` fields in the
+  scratch instead of raw offsets. Focused Wibo is byte-shape neutral at the
+  retained `95.86%`, `276/279`, `27 ok / 0` result.
+- A fully typed `Vector3` spelling of the cached-camera/live-position block was
+  rejected: it regressed to `92.97%` and changed the native constant/register
+  schedule. The honest residual remains the three-instruction camera-target
+  pointer materialization plus control-source/attachment-loop register choice.

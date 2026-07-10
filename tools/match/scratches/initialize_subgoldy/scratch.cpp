@@ -25,13 +25,13 @@ int Player::initialize_subgoldy(int player_slot)
     char* self = (char*)this;
     int zero = 0;
 
-    *(int*)(self + 0x380) = player_slot;
-    *(char**)(self + 0x408) = g_game_base + 0x74618;
+    this->player_slot = player_slot;
+    this->game = (SubgameRuntime*)(g_game_base + 0x74618);
     *(int*)(self + 0x370) = zero;
     *(int*)(self + 0x1e8) = zero;
     *(unsigned char*)(self + 0x2d8) = (unsigned char)zero;
-    *(char**)(self + 0x154) = self;
-    *(int*)(self + 0x150) = zero;
+    this->nuke.owner_player = this;
+    this->nuke.state = zero;
     *(unsigned char*)(self + 0x14c) = (unsigned char)zero;
     *(int*)(self + 0x8c) = zero;
     *(int*)(self + 0x444) = zero;
@@ -134,7 +134,7 @@ int Player::initialize_subgoldy(int player_slot)
     ((CutsceneAIState*)(self + 0x42dc))->initialize_cutscene_ai();
     if (*(unsigned char*)(*(char**)(self + 0x408) + 0xff25d0) == 0)
         *(int*)(self + 0x42e8) = 1;
-    *(char**)(self + 0x2a84) = self;
+    this->presentation.owner_player = this;
     set_matrix_identity((TransformMatrix*)(self + 0x29bc));
     set_matrix_identity((TransformMatrix*)(self + 0x2a44));
     set_matrix_identity((TransformMatrix*)(self + 0x2a04));
@@ -188,13 +188,13 @@ int Player::initialize_subgoldy(int player_slot)
         else
             control_source = 0;
     }
-    *(char**)(self + 0x43c) = control_source;
+    this->control_source = (PlayerControlSource*)control_source;
     *(int*)(self + 0x2730) = zero;
     *(unsigned char*)(self + 0x440) = (unsigned char)zero;
     *(int*)(self + 0x2738) = zero;
     ((DamageGaugeController*)(self + 0x3c4))->initialize_damage_gauge();
     ((RuntimeSlot*)(self + 0x3f0))->noop_runtime_ai();
-    *(unsigned char*)(self + 0x384) = (unsigned char)zero;
+    this->follow_active = (unsigned char)zero;
 
     char* transform = self + 0x614;
     int transform_count = 12;
