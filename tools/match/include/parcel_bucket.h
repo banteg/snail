@@ -3,24 +3,35 @@
 #ifndef PARCEL_BUCKET_H
 #define PARCEL_BUCKET_H
 
-class ParcelBucketSlot {
+#include "vector3.h"
+
+class ParcelCandidate {
 public:
     void noop_runtime_slot_constructor(); // sub_408600
 
-    char unknown_00[0x10];
+    int row;          // +0x00, row within the source segment
+    Vector3 position; // +0x04, authored or glyph-derived local position
 };
 
-typedef void (ParcelBucketSlot::*ParcelBucketSlotConstructor)();
+typedef void (ParcelCandidate::*ParcelCandidateConstructor)();
 
 void __stdcall initialize_array_with_constructor(
-    ParcelBucketSlot* base,
+    ParcelCandidate* base,
     int stride,
     int count,
-    ParcelBucketSlotConstructor constructor);
+    ParcelCandidateConstructor constructor);
 
 struct ParcelBucket {
-    ParcelBucketSlot slots[0x20]; // +0x000
-    char unknown_200[0x20c - 0x200];
+    ParcelCandidate candidates[0x20]; // +0x000
+    int candidate_count;              // +0x200
+    int set_id;                       // +0x204
+    int segment_index;                // +0x208
 };
+
+typedef char ParcelBucket_must_be_0x20c[
+    (sizeof(ParcelBucket) == 0x20c) ? 1 : -1];
+
+extern ParcelBucket g_parcel_set_buckets[0x800];  // data_6487e8
+extern ParcelBucket g_zero_parcel_buckets[0x800]; // data_53d190
 
 #endif

@@ -155,9 +155,9 @@ void Player::handle_subgoldy_collisions()
             TrackParcelRuntime* parcel =
                 (TrackParcelRuntime*)((char*)game + n + 0x125e480);
             if (parcel->state == 1) {
-                probe_salt.x = parcel->world_position.x - cached_camera_target_world.x;
-                probe_salt.y = parcel->world_position.y - cached_camera_target_world.y;
-                probe_salt.z = parcel->world_position.z - cached_camera_target_world.z;
+                probe_salt.x = parcel->position.x - cached_camera_target_world.x;
+                probe_salt.y = parcel->position.y - cached_camera_target_world.y;
+                probe_salt.z = parcel->position.z - cached_camera_target_world.z;
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
                     add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
@@ -172,7 +172,7 @@ void Player::handle_subgoldy_collisions()
                             (char*)parcel_game->lives_text_widget + 716,
                             g_parcel_format,
                             collected,
-                            parcel_game->parcel_total);
+                            parcel_game->level_definition.parcel_count);
                 }
             }
         }

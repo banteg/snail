@@ -286,3 +286,10 @@ the checklist: slug first-hit/repeat velocity lanes and the garbage
 0.18/0.1 knockback pair. The eventual full match is proof-polish over a
 now-verified model, so cluster 3's priority drops below the cameraman
 and golb matches.
+
+## Parcel ownership follow-up (2026-07-10)
+
+The collision path now consumes inherited `TrackParcelRuntime::position`, and
+the HUD total comes from the embedded
+`SubgameRuntime::level_definition.parcel_count`. The focused result remains
+52.85%, 659/673, prefix 8/673, with all 86 masked operands clean.

@@ -2,13 +2,18 @@
 
 #include "track_parcel_runtime.h"
 
+class TrackParcelVirtualUpdater {
+public:
+    virtual void update_track_parcel();
+};
+
 void TrackParcelPool::update_track_parcels()
 {
     TrackParcelRuntime* slot = slots;
     int count = 50;
     do {
         if (slot->state != 0) {
-            slot->update_track_parcel();
+            ((TrackParcelVirtualUpdater*)slot)->update_track_parcel();
         }
         ++slot;
         --count;

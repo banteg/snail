@@ -16,6 +16,7 @@
 #include "galaxy_route_types.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
+#include "level_definition_loader.h"
 #include "cameraman_state.h"
 #include "contact_target.h"
 #include "new_game_menu.h"
@@ -46,6 +47,8 @@ public:
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
     Player* embedded_player(); // typed view of owned player_storage at +0x3bb764
+    Vector3* parcel_delivery_arc_basis(); // Player.presentation.live_matrix.basis_up
+    Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
     TimeTrialStringFormatter* time_trial_formatter(); // embedded service view at +0xff25e0
@@ -68,7 +71,7 @@ public:
     Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120
     TrackParcelRuntime* spawn_track_parcel(
         Vector3* world_position,
-        void* owner_hint); // @ 0x443730
+        Player* ignored_player); // @ 0x443730, native binds embedded_player()
     TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
     TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
@@ -120,14 +123,10 @@ public:
     char unknown_00005c[0xa858 - 0x5c];
     TutorialController tutorial; // +0xa858, embedded tutorial-mode controller
     char unknown_00a868[0xa874 - 0xa868];
-    int level_segment_count; // +0xa874
-    char unknown_00a878[0x1b0140 - 0xa878];
-    float track_skirt_r; // +0x1b0140
-    float track_skirt_g; // +0x1b0144
-    float track_skirt_b; // +0x1b0148
-    char unknown_1b014c[0x1b01e0 - 0x1b014c];
-    int parcel_total; // +0x1b01e0
-    char unknown_1b01e4[0x355bd4 - 0x1b01e4];
+    // Embedded level-definition owner. Its exact extent accounts for the
+    // authored segment slots and all parsed level metadata through parcel_quota.
+    LevelDefinitionLoader level_definition; // +0xa874, ends at +0x1b01ec
+    char unknown_1b01ec[0x355bd4 - 0x1b01ec];
     char sub_lazer_list_head[0x10]; // +0x355bd4, node-shaped live-list anchor
     char unknown_355be4[0x355d94 - 0x355be4];
     int active_level_score; // +0x355d94, copied from the selected bank record
@@ -236,6 +235,16 @@ public:
 inline Player* SubgameRuntime::embedded_player()
 {
     return (Player*)player_storage;
+}
+
+inline Vector3* SubgameRuntime::parcel_delivery_arc_basis()
+{
+    return &embedded_player()->presentation.live_matrix.basis_up;
+}
+
+inline Vector3* SubgameRuntime::parcel_home_anchor()
+{
+    return &embedded_player()->presentation.snail_hotspots_world[11];
 }
 
 inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()

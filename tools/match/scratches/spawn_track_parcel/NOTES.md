@@ -3,9 +3,9 @@
 Exact match.
 
 - Spawns one runtime parcel from the exact `allocate_track_parcel_slot` pool.
-- The function is a full root `Game` method with two stack arguments. Callers
-  pass an owner hint as the second argument, but native ignores it and stores
-  `game+0x3bb764` as the owner pointer.
+- The function is a `SubgameRuntime` method with two stack arguments. Callers
+  pass a `Player*` hint as the second argument, but native ignores it and binds
+  the runtime's owned `embedded_player()` at `subgame+0x3bb764`.
 - The parcel starts in state `1`, copies the requested world position to both
   parcel and sprite positions, assigns the score-stats owner pointer, and
   initializes the parcel sprite as white, visible, unrotated, and unit-scale.
@@ -15,7 +15,7 @@ Exact match.
   return.
 - The exact source shape keeps the non-null body explicit, returns from both
   bob-phase branches, and leaves the null return as the final tail block.
-- The shared sparse `SubgameRuntime` root now carries the parcel pool at
-  +0x125e480, the score-stats owner anchor at +0x3bb764, and the sprite owner
-  handle at +0x3bbae4. Keeping this scratch exact proves those offsets for the
-  larger track-runtime builders.
+- The shared `SubgameRuntime` now carries the fixed parcel pool at +0x125e480;
+  `TrackParcelRuntime` inherits its position from `BodBase` and borrows the
+  embedded Player and SpriteManager handle. Keeping this scratch exact proves
+  those ownership links for the update and collision paths.

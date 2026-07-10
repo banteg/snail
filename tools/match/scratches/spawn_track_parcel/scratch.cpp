@@ -2,13 +2,13 @@
 
 #include "subgame_runtime.h"
 
-TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, void*)
+TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
 {
     TrackParcelRuntime* parcel = parcel_pool.allocate_track_parcel_slot();
     if (parcel != 0) {
         parcel->state = 1;
-        parcel->world_position = *world_position;
-        parcel->owner = &score_stats;
+        parcel->position = *world_position;
+        parcel->owner_player = embedded_player();
 
         Sprite* sprite = g_sprite_manager.allocate_sprite(parcel_sprite_owner, 0x79, -1, -1);
         parcel->sprite = sprite;
@@ -21,7 +21,7 @@ TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, 
         parcel->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
         parcel->sprite->size_start = 1.0f;
         parcel->sprite->size_end = 1.0f;
-        parcel->sprite->position = parcel->world_position;
+        parcel->sprite->position = parcel->position;
 
         if (((int)world_position->z & 1) != 0) {
             parcel->bob_phase = 0.0f;

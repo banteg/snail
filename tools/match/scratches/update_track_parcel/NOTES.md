@@ -1,16 +1,17 @@
 # update_track_parcel
 
-First structured scratch for `update_track_parcel` @ `0x4431d0`.
+Structured scratch for `update_track_parcel` @ `0x4431d0`.
 
 Recovered relationships:
 
-- `TrackParcelRuntime::game` is a subgame-base pointer (`g_game_base +
-  0x74618`), not the root game base. Its `+0x09` byte is the
+- `TrackParcelRuntime::owner_subgame` is a borrowed subgame-base pointer
+  (`g_game_base + 0x74618`), not the root game base. Its `+0x09` byte is the
   `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
-  `subgame_kill_plane_z` at `subgame+0x3be0e4`, mirrors `world_position` into
-  the sprite, and copies the owner facing angle from `owner+0x370`, optionally
-  adding `owner+0x3a0`.
+  `Player::interaction_max_z` at `subgame+0x3be0e4`, mirrors inherited
+  `BodBase::position` into the sprite, and copies `Player::heading_roll` from
+  the borrowed `owner_player`, optionally adding `follow_orientation_b` when
+  `follow_active` is set.
 - State `4` starts the collected-parcel home arc: it applies the final bob lift,
   computes distance from `subgame+0x3bf91c`, stores the normalized
   `travel_dir`, then falls into state `5`.
@@ -21,13 +22,16 @@ Recovered relationships:
   `RowEventDisplayController::widget_world_*` at `subgame+0x12727d8`, then
   calls `register_parcel_delivery()`.
 
-The shared parcel header now names the tail as `progress`, `progress_step`,
-`target_distance`, `travel_dir`, and `delivery_offset`, matching BN's existing
-field evidence while using `Vector3` for the two three-float groups.
+The shared parcel header now models `TrackParcelRuntime : BodBase`; the exact
+initializer proves the inherited body prefix and the fixed `TrackParcelPool`
+proves 50 owned slots. The parcel itself only borrows its `SubgameRuntime`,
+embedded `Player`, and SpriteManager sprite handles. The tail remains named as
+`progress`, `progress_step`, `target_distance`, `travel_dir`, and
+`delivery_offset`.
 
-Current result: 60.14%, 260/312 instructions, with 32 clean masked operands.
-The switch still lowers as a narrowed `state - 1` jump table even with explicit
-empty states; avoid contorting that until the stack/local shape is closer. The
-main remaining shape gap is temporary-vector staging: native reserves `0x28`
-bytes and keeps `edi` live from the prologue, while the structured scratch
-direct-stores several vector components and only needs `0x10` bytes.
+Current result: 63.79%, 290/312 instructions, prefix 8/312, with 34 clean
+masked operands. Function-scope delta temporaries, staged vector results, and
+the direct state 0..7 switch recover native's prologue and substantially more
+of the vector-copy shape. The sole audit mismatch is real: BN proves
+`0x44362c` is the target's eight-entry state jump table, but the candidate's
+table entries differ because the residual control-flow tails still differ.

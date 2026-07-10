@@ -2,12 +2,12 @@
 
 #include "track_attachment.h"
 #include "transform_matrix.h"
+#include "parcel_bucket.h"
 #include "subgame_runtime.h"
 
 double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
-extern char g_zero_parcel_buckets[]; // 0x53d190
 extern char g_zero_parcel_bucket_count_lane_end; // 0x643390
 extern int g_challenge_parcel_rows[]; // 0x6447e8
 
@@ -16,10 +16,10 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     float source_scaled = (float)completion_bonus_x_source * 50.0f;
     source_scaled = source_scaled * 0.00999999978f;
     int required = (int)(source_scaled + challenge_difficulty_scalar * 50.0f) + 1;
-    *(int*)((char*)this + 0x1b01e0) = required;
-    *(int*)((char*)this + 0x1b01e8) = required;
+    level_definition.parcel_count = required;
+    level_definition.parcel_quota = required;
 
-    int* bucket_count = (int*)(g_zero_parcel_buckets + 0x200);
+    int* bucket_count = &g_zero_parcel_buckets[0].candidate_count;
     while ((int)bucket_count < (int)&g_zero_parcel_bucket_count_lane_end) {
         *bucket_count = 0;
         bucket_count = (int*)((char*)bucket_count + 0x20c);
@@ -29,8 +29,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int row_index = 0;
     int remaining = 0;
     if (runtime_row_count > 0) {
-        TrackAttachmentRuntimeRow* row =
-            (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8);
+        TrackAttachmentRuntimeRow* row = runtime_rows;
         do {
             if ((row->flags & 1) != 0 && row->parcel_set_id == 0) {
                 g_challenge_parcel_rows[candidate_count] = row_index;
@@ -43,7 +42,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     }
 
     int placed = 0;
-    if (*(int*)((char*)this + 0x1b01e0) > 0) {
+    if (level_definition.parcel_count > 0) {
         int last_index = candidate_count - 1;
         while (remaining > 0) {
             int picked = (int)random_float_below((float)remaining, "P3");
@@ -51,8 +50,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
             int* selected_slot = &g_challenge_parcel_rows[picked];
             ++placed;
 
-            TrackAttachmentRuntimeRow* runtime_row =
-                (TrackAttachmentRuntimeRow*)((char*)this + selected_row * 0xf4 + 0x5ccac8);
+            TrackAttachmentRuntimeRow* runtime_row = &runtime_rows[selected_row];
             runtime_row->flags |= 0x11;
             runtime_row->projection_payload.y += 1.0f;
             if ((runtime_row->flags & 0x20) != 0) {
@@ -74,20 +72,19 @@ int SubgameRuntime::place_challenge_parcels_on_track()
 
             --remaining;
             --last_index;
-            if (placed >= *(int*)((char*)this + 0x1b01e0)) {
+            if (placed >= level_definition.parcel_count) {
                 break;
             }
         }
     }
 
-    *(int*)((char*)this + 0x1b01e0) = placed;
+    level_definition.parcel_count = placed;
     debug_report_stub("Challenge parcel count %i\n", placed);
 
     int result = runtime_row_count;
     int scan = 0;
     if (result > 0) {
-        TrackAttachmentRuntimeRow* row =
-            (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8);
+        TrackAttachmentRuntimeRow* row = runtime_rows;
         do {
             if ((row->flags & 1) != 0 && (row->flags & 0x40) != 0) {
                 TrackRowCell* cell = row->primary_attachment_cell;

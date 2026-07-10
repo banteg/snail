@@ -10,7 +10,7 @@ void TrackParcelPool::initialize_track_parcel_slots()
     int count = 50;
     do {
         slot->state = 0;
-        slot->game = g_game_base + 0x74618;
+        slot->owner_subgame = (SubgameRuntime*)(g_game_base + 0x74618);
         ++slot;
         --count;
     } while (count != 0);

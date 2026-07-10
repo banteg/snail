@@ -6,9 +6,9 @@ Color4f* SubgameRuntime::get_track_skirt_color(Color4f* out)
 {
     Color4f color;
     *out = *color.set_color_rgba(
-        track_skirt_r,
-        track_skirt_g,
-        track_skirt_b,
+        level_definition.fringe_color.r,
+        level_definition.fringe_color.g,
+        level_definition.fringe_color.b,
         0.400000006f);
     return out;
 }

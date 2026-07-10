@@ -29,3 +29,12 @@ This is the challenge-mode parcel placer called by `place_parcels_on_track` when
 - Hoisting `TransformMatrix` and `out_angle` to function scope kept the score flat but worsened the frame to `0x50`.
 - Reordering selected-slot/selected-row declarations dropped to 34.29%.
 - The original offset-based zero-bucket reset was cleanly audited but only scored 43.87% after the quota constant was fixed.
+
+## Shared ownership pass (2026-07-10)
+
+The computed count and quota now land in the embedded
+`LevelDefinitionLoader`, and both row scans walk SubgameRuntime's owned
+`runtime_rows[3200]` array. The reset cursor uses the same shared
+`ParcelBucket::candidate_count` lane proven by the exact zero-bank constructor.
+The focused result remains 44.70% (178/171) with all 19 masked operands clean;
+these promotions are score-neutral ownership clarification.

@@ -112,7 +112,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         }
         if (*(unsigned char*)(base + 0x1b013c) == 0) {
             runtime_row_count = *(int*)(base + 0x1a7cfc) + *(int*)(base + 0x1abf1c);
-            for (int i = 0; i < level_segment_count; ++i)
+            for (int i = 0; i < level_definition.segment_count; ++i)
                 runtime_row_count += *(int*)(base + 0xa87c + 0x4220 * i);
             segment_cursor = 0;
         }
@@ -182,7 +182,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     }
 
     if (*(unsigned char*)(base + 0x1b013c) == 1) {
-        for (int i = 0; i < level_segment_count; ++i)
+        for (int i = 0; i < level_definition.segment_count; ++i)
             *(unsigned char*)(base + 0xa880 + 0x4220 * i) = 0;
     }
 
@@ -210,12 +210,12 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (level_mode == 1) {
                     segment_pick_range =
                         (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)
-                        * (float)level_segment_count;
+                        * (float)level_definition.segment_count;
                     int picked = (int)random_float_below(segment_pick_range, "Segdif");
                     picked = (int)((float)picked * base_subgame_rate);
                     active_segment = base + 0xa878 + 0x4220 * picked;
                 } else {
-                    segment_pick_range = (float)level_segment_count;
+                    segment_pick_range = (float)level_definition.segment_count;
                     int picked = (int)random_float_below(segment_pick_range, "Segtra");
                     picked = (int)((float)picked * base_subgame_rate);
                     active_segment = base + 0xa878 + 0x4220 * picked;

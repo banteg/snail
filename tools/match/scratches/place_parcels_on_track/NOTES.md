@@ -134,3 +134,20 @@ regressed, so neither should be kept as an assumed fix:
   call in the non-kind42 path, but the typed `TrackAttachmentRuntimeRow` source
   remains the better baseline until another code-shape constraint explains that
   ordering.
+
+## Embedded level owner and candidate-bank consolidation (2026-07-10)
+
+`SubgameRuntime +0xa874` is now the exact embedded `LevelDefinitionLoader`,
+not a loose segment-count field followed by anonymous storage. Its `0x1a5978`
+extent accounts for the 100 authored `LevelSegmentSlot` records, first/last
+segments, level display name, parcel count, texture set, and quota through
+`subgame+0x1b01e8`. Placement now walks those shared slots and authored rows
+directly and writes the owned `runtime_rows[absolute_row]` slab.
+
+The two global candidate banks now share `ParcelBucket`: 32 semantic
+`ParcelCandidate` records followed by `candidate_count`, `set_id`, and
+`segment_index`. Both exact 2048-entry pool constructors remain 100%, proving
+the `0x20c` bucket stride and that these banks are global scratch storage, not
+SubgameRuntime-owned state. The placement scratch remains honestly at 26.30%
+(646/639, 26 clean operands and five known mismatches); the ownership rewrite
+neither improves nor regresses its code-shape score.

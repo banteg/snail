@@ -3,6 +3,8 @@
 #ifndef SEGMENT_CATALOG_TYPES_H
 #define SEGMENT_CATALOG_TYPES_H
 
+#include "vector3.h"
+
 union AuthoredFloatBits {
     int bits;
     float value;
@@ -23,6 +25,11 @@ struct AuthoredSegmentRow {
     AuthoredFloatBits object_velocity_z; // +0x2c
     int path_template_index;       // +0x30
     AuthoredFloatBits ring_speed;  // +0x34
+
+    Vector3* parcel_position()
+    {
+        return (Vector3*)&local_x;
+    }
 };
 
 typedef char AuthoredSegmentRow_must_be_0x38[

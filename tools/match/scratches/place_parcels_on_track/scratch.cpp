@@ -7,42 +7,13 @@
 
 #include "track_attachment.h"
 #include "transform_matrix.h"
+#include "parcel_bucket.h"
 #include "subgame_runtime.h"
 
 double random_float_below(float upper_bound, const char* tag);
 void report_errorf(const char* format, ...);
 void compute_kind42_attachment_transform(float scale, float x, float y,
                                          TransformMatrix* transform, float* out_angle);
-
-struct ParcelCandidate { // 16 bytes
-    int row;             // +0x00 row within the segment
-    Vector3 position;    // +0x04
-};
-
-struct CandidateEntry {              // 524 bytes (131 dwords)
-    ParcelCandidate candidates[32];  // +0x000
-    int candidate_count;             // +0x200
-    int set_id;                      // +0x204
-    int segment_index;               // +0x208
-};
-
-extern CandidateEntry g_parcel_set_buckets[2048];  // 0x6487e8
-extern CandidateEntry g_zero_parcel_buckets[2048]; // 0x53d190
-
-struct AuthoredParcelRecord { // segment +0x814, one per row, 56 bytes
-    int flags;                // bit 1 = flagged parcel
-    int set_id;
-    Vector3 position;
-    char unknown_14[0x38 - 0x14];
-};
-
-struct SegmentRecord { // game+0xa878, stride 16928
-    int row_base;      // +0x00 absolute row of the segment start
-    int row_count;     // +0x04
-    char unknown_08[0x14 - 0x08];
-    char grid[8][256]; // +0x14 lane-major authored characters
-    // +0x814: AuthoredParcelRecord rows[], 56-byte stride
-};
 
 // row records at game + 244*row + 0x5ccac8: flags +0x00 (0x01 live, 0x10
 // parcel occupied, 0x11 written on claim, 0x20 mirror lateral, 0x40
@@ -67,29 +38,28 @@ int SubgameRuntime::place_parcels_on_track()
     int set_entry_count = 0;
     int max_set_size = 0;
 
-    for (int segment = 0; segment < level_segment_count; ++segment) {
-        SegmentRecord* record = (SegmentRecord*)((char*)this + 0xa878 + 16928 * segment);
+    for (int segment = 0; segment < level_definition.segment_count; ++segment) {
+        LevelSegmentSlot* record = &level_definition.segment_slots[segment];
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
-            CandidateEntry* set_entry = &g_parcel_set_buckets[set_entry_count];
+            ParcelBucket* set_entry = &g_parcel_set_buckets[set_entry_count];
             for (int row = 0; row < record->row_count; ++row) {
-                AuthoredParcelRecord* authored =
-                    (AuthoredParcelRecord*)((char*)record + 0x814 + 56 * row);
-                if ((authored->flags & 1) != 0 && authored->set_id == set) {
+                AuthoredSegmentRow* authored = &record->rows[row];
+                if ((authored->flags & 1) != 0 && authored->parcel_set_id == set) {
                     if (set) {
                         set_entry->segment_index = segment;
                         set_entry->candidates[set_entry->candidate_count].row = row;
                         set_entry->candidates[set_entry->candidate_count].position =
-                            authored->position;
+                            *authored->parcel_position();
                         set_entry->set_id = set;
                         ++set_entry->candidate_count;
                     } else {
-                        CandidateEntry* zero_entry =
+                        ParcelBucket* zero_entry =
                             &g_zero_parcel_buckets[zero_entry_count];
                         zero_entry->segment_index = segment;
                         zero_entry->candidates[zero_entry->candidate_count].row = row;
                         zero_entry->candidates[zero_entry->candidate_count].position =
-                            authored->position;
+                            *authored->parcel_position();
                         zero_entry->set_id = 0;
                         ++zero_entry_count;
                         ++zero_entry->candidate_count;
@@ -97,7 +67,7 @@ int SubgameRuntime::place_parcels_on_track()
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
-                    if (record->grid[lane][row] == set + 48) {
+                    if (record->glyph_rows[lane][row] == set + 48) {
                         if (set) {
                             set_entry->segment_index = segment;
                             set_entry->candidates[set_entry->candidate_count].row = row;
@@ -108,7 +78,7 @@ int SubgameRuntime::place_parcels_on_track()
                             set_entry->set_id = set;
                             ++set_entry->candidate_count;
                         } else {
-                            CandidateEntry* zero_entry =
+                            ParcelBucket* zero_entry =
                                 &g_zero_parcel_buckets[zero_entry_count];
                             zero_entry->segment_index = segment;
                             zero_entry->candidates[zero_entry->candidate_count].row = row;
@@ -135,36 +105,34 @@ int SubgameRuntime::place_parcels_on_track()
         }
     }
 
-    int required = *(int*)((char*)this + 0x1b01e0);
+    int required = level_definition.parcel_count;
     int set_target = 80 * required / 100 - max_set_size;
     int reachable = zero_candidate_total;
-    for (int check = 0; check < level_segment_count; ++check) {
+    for (int check = 0; check < level_definition.segment_count; ++check) {
         if (min_set_sizes[check] != 10000)
             reachable += min_set_sizes[check];
     }
     if (reachable < required)
         report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets",
-                      (char*)this + 0x1b0150);
-    if (*(int*)((char*)this + 0x1b01e0) - set_target > zero_candidate_total)
+                      level_definition.level_display_name);
+    if (level_definition.parcel_count - set_target > zero_candidate_total)
         report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ",
-                      (char*)this + 0x1b0150);
+                      level_definition.level_display_name);
 
     int placed = 0;
     if (set_target > 0) {
         while (set_entry_count > 0) {
             int picked = (int)random_float_below((float)set_entry_count, "P1");
-            CandidateEntry* entry = &g_parcel_set_buckets[picked];
+            ParcelBucket* entry = &g_parcel_set_buckets[picked];
             placed += entry->candidate_count;
             for (int spot = 0; spot < entry->candidate_count; ++spot) {
                 int absolute_row =
                     entry->candidates[spot].row
-                    + ((SegmentRecord*)((char*)this + 0xa878 + 16928 * entry->segment_index))
-                          ->row_base;
-                TrackAttachmentRuntimeRow* row_record =
-                    (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
+                    + level_definition.segment_slots[entry->segment_index].row_base;
+                TrackAttachmentRuntimeRow* row_record = &runtime_rows[absolute_row];
                 if (row_record->flags & 0x10)
                     report_errorf("Duplicate Parcel Request in %s.",
-                                  (char*)this + 0x1b0150);
+                                  level_definition.level_display_name);
                 row_record->flags |= 0x11;
                 row_record->projection_payload = entry->candidates[spot].position;
                 row_record->projection_payload.z =
@@ -177,8 +145,8 @@ int SubgameRuntime::place_parcels_on_track()
             for (int scan = 0; scan < set_entry_count; ++scan) {
                 if (g_parcel_set_buckets[scan].segment_index == placed_segment) {
                     for (int move = scan; move < set_entry_count - 1; ++move) {
-                        CandidateEntry* destination = &g_parcel_set_buckets[move];
-                        CandidateEntry* source = &g_parcel_set_buckets[move + 1];
+                        ParcelBucket* destination = &g_parcel_set_buckets[move];
+                        ParcelBucket* source = &g_parcel_set_buckets[move + 1];
                         for (int copy = 0; copy < source->candidate_count; ++copy)
                             destination->candidates[copy] = source->candidates[copy];
                         destination->candidate_count = source->candidate_count;
@@ -194,18 +162,18 @@ int SubgameRuntime::place_parcels_on_track()
         }
     }
 
-    if (placed < *(int*)((char*)this + 0x1b01e0)) {
+    if (placed < level_definition.parcel_count) {
         while (zero_entry_count > 0) {
             int picked = (int)random_float_below((float)zero_entry_count, "P2");
-            CandidateEntry* entry = &g_zero_parcel_buckets[picked];
+            ParcelBucket* entry = &g_zero_parcel_buckets[picked];
             placed += entry->candidate_count;
             int absolute_row =
                 entry->candidates[0].row
-                + ((SegmentRecord*)((char*)this + 0xa878 + 16928 * entry->segment_index))->row_base;
-            TrackAttachmentRuntimeRow* row_record =
-                (TrackAttachmentRuntimeRow*)((char*)this + 244 * absolute_row + 0x5ccac8);
+                + level_definition.segment_slots[entry->segment_index].row_base;
+            TrackAttachmentRuntimeRow* row_record = &runtime_rows[absolute_row];
             if (row_record->flags & 0x10)
-                report_errorf("Duplicate Parcel Request in %s.", (char*)this + 0x1b0150);
+                report_errorf("Duplicate Parcel Request in %s.",
+                              level_definition.level_display_name);
             row_record->flags |= 0x11;
             row_record->projection_payload = entry->candidates[0].position;
             row_record->projection_payload.z =
@@ -214,34 +182,34 @@ int SubgameRuntime::place_parcels_on_track()
             if (row_record->flags & 0x20)
                 row_record->projection_payload.x = row_record->projection_payload.x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
-                CandidateEntry* destination = &g_zero_parcel_buckets[move];
-                CandidateEntry* source = &g_zero_parcel_buckets[move + 1];
+                ParcelBucket* destination = &g_zero_parcel_buckets[move];
+                ParcelBucket* source = &g_zero_parcel_buckets[move + 1];
                 destination->candidates[0] = source->candidates[0];
                 destination->candidate_count = source->candidate_count;
                 destination->set_id = 0;
                 destination->segment_index = source->segment_index;
             }
             --zero_entry_count;
-            if (placed >= *(int*)((char*)this + 0x1b01e0))
+            if (placed >= level_definition.parcel_count)
                 break;
         }
     }
 
-    if (placed != *(int*)((char*)this + 0x1b01e0)) {
+    if (placed != level_definition.parcel_count) {
         report_errorf("Did not generate required Parcels(%i) in %s",
-                      *(int*)((char*)this + 0x1b01e0), (char*)this + 0x1b0150);
-        if (*(int*)((char*)this + 0x1b01e8))
-            *(int*)((char*)this + 0x1b01e8) =
-                placed * *(int*)((char*)this + 0x1b01e0) / *(int*)((char*)this + 0x1b01e8);
+                      level_definition.parcel_count,
+                      level_definition.level_display_name);
+        if (level_definition.parcel_quota)
+            level_definition.parcel_quota =
+                placed * level_definition.parcel_count / level_definition.parcel_quota;
     }
-    *(int*)((char*)this + 0x1b01e0) = placed;
+    level_definition.parcel_count = placed;
 
     TransformMatrix transform;
     float out_angle;
     int result = runtime_row_count;
     for (int row = 0; row < runtime_row_count; ++row) {
-        TrackAttachmentRuntimeRow* row_record =
-            (TrackAttachmentRuntimeRow*)((char*)this + 244 * row + 0x5ccac8);
+        TrackAttachmentRuntimeRow* row_record = &runtime_rows[row];
         if ((row_record->flags & 1) != 0 && (row_record->flags & 0x40) != 0) {
             TrackRowCell* cell = row_record->primary_attachment_cell;
             int node =

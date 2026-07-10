@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.98%**.
+**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.99%**.
 
 ## Proof Grade (508)
 
@@ -575,7 +575,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 86.10% | 244/555 | 1 mismatch, 105 ok |  |
-| 🚧 | destroy_sub_lazer_projectile | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
+| 🚧 | destroy_sub_lazer_projectile | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 3 mismatch, 14 ok |  |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
@@ -658,7 +658,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 496/501 | 59.98% | 6/501 | 2 mismatch, 59 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 72.43% | 0/94 | 18 ok |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
-| 🚧 | update_track_parcel | 0x4431d0 | 1148 | 260/312 | 60.14% | 0/312 | 1 mismatch, 32 ok |  |
+| 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 119/125 | 54.10% | 42/125 | 5 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |

@@ -4,22 +4,24 @@
 #ifndef TRACK_PARCEL_RUNTIME_H
 #define TRACK_PARCEL_RUNTIME_H
 
-#include "sprite.h"
+#include "bod_types.h"
 
-struct TrackParcelRuntime {
-    virtual void update_track_parcel();
+class Player;
+class SubgameRuntime;
 
-    char unknown_04[0x10 - 0x04];
-    Vector3 world_position; // +0x10
-    char unknown_1c[0x38 - 0x1c];
+class TrackParcelRuntime : public BodBase {
+public:
+    TrackParcelRuntime* initialize_track_parcel_runtime(); // @ 0x408860
+    void update_track_parcel();
+
     int state; // +0x38
-    void* game; // +0x3c, initialized to root game +0x74618
+    SubgameRuntime* owner_subgame; // +0x3c, borrowed backlink
     char unknown_40[0x54 - 0x40];
-    Sprite* sprite; // +0x54
+    Sprite* sprite; // +0x54, borrowed SpriteManager handle
     char unknown_58[0x5c - 0x58];
     float bob_phase; // +0x5c
     float bob_phase_step; // +0x60
-    void* owner; // +0x64
+    Player* owner_player; // +0x64, borrowed embedded Player
     float progress; // +0x68
     float progress_step; // +0x6c
     float target_distance; // +0x70
@@ -35,7 +37,7 @@ struct TrackParcelPool {
     void initialize_track_parcel_slots();
     void update_track_parcels();
 
-    TrackParcelRuntime slots[50];
+    TrackParcelRuntime slots[50]; // fixed storage owned by SubgameRuntime
 };
 
 typedef char TrackParcelPool_must_be_0x1b58[

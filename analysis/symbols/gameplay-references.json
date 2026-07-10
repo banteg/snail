@@ -991,6 +991,16 @@
       "description": "Compiler-emitted score-kind switch jump table used by add_subgoldy_score."
     },
     {
+      "address": "0x44362c",
+      "name": "update_track_parcel_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L4349"
+      ],
+      "size": "0x20",
+      "description": "Compiler-emitted eight-entry state switch jump table used by update_track_parcel."
+    },
+    {
       "address": "0x444ce0",
       "name": "update_invincible_shell_jump_table",
       "kind": "jump_table",

@@ -135,7 +135,7 @@ void SubgameRuntime::merge_track_tile_runs()
                 if ((row_record->flags & 4) != 0) {
                     cell->bod.list_flags &= ~0x222;
                     cell->lane_and_flags &= ~0x4000u;
-                    row_record->bod.list_flags &= ~0x20;
+                    row_record->primary_body.list_flags &= ~0x20;
                 }
 
                 ++lane;

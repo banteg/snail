@@ -302,7 +302,9 @@ void SubgameRuntime::update_subgame()
 
             if ((((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->flags & 0x10) != zero
                 && (*(unsigned int*)(game + 0x4c) & 0x800000) != zero)
-                spawn_track_parcel(&((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->parcel_position, player_storage);
+                spawn_track_parcel(
+                    &((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->parcel_position,
+                    (Player*)player_storage);
 
             attachment_count = zero;
             while (attachment_count < 8) {
