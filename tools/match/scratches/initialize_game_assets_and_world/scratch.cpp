@@ -186,7 +186,7 @@ static void initialize_pillar_island(char* game)
         int offset = 0x445d0 + i * 0x38;
         ((BodBase*)(game + offset))->set_bod_object(g_object_list.add_object_to_list());
         ((DirectXLoader*)(game + 0x48e00))
-            ->load_x_mesh(meshes[i], *(void**)(game + offset + 0x24), 1);
+            ->load_x_mesh(meshes[i], ((BodBase*)(game + offset))->object, 1);
         ((BodBase*)(game + offset))->apply_bod_position(&matrix);
         ++i;
     } while (i < 8);
@@ -323,7 +323,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     ((BodBase*)(game + 0x44100))->set_bod_object(g_object_list.add_object_to_list());
     ((DirectXLoader*)(game + 0x48e00))
-        ->load_x_mesh((char*)"Tramp.x", *(void**)(game + 0x44124), 1);
+        ->load_x_mesh((char*)"Tramp.x", ((BodBase*)(game + 0x44100))->object, 1);
     *(int*)(*(int*)(game + 0x44124) + 0x14) = 6;
 
     ((BodBase*)(game + 0x441d0))->set_bod_object(g_object_list.add_object_to_list());

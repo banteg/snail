@@ -18,7 +18,7 @@ public:
     int count; // +0x04
     CachedXMeshSlot slots[1]; // +0x08
 
-    int load_x_mesh(char* mesh_path, void* object, unsigned char options_flags); // @ 0x405640
+    int load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags); // @ 0x405640
     int load_or_reuse_cached_x_mesh(char* mesh_name); // @ 0x405cc0
 };
 

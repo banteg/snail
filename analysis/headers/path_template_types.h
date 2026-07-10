@@ -384,8 +384,13 @@ typedef struct ObjectUv {
 } ObjectUv;
 
 typedef struct ObjectFaceQuad {
-    uint8_t flags;
-    uint8_t unknown_01;
+    union {
+        uint16_t header_word;
+        struct {
+            uint8_t flags;
+            uint8_t secondary_flags;
+        };
+    };
     uint16_t vertex_0;
     uint16_t vertex_1;
     uint16_t vertex_2;

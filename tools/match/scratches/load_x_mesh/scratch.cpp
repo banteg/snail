@@ -17,9 +17,8 @@ int free_tracked_memory(void* pointer); // @ 0x431bf0
 int report_errorf(char* format, ...); // @ 0x431cc0
 int report_warningf(char* format, ...); // @ 0x431d10
 
-int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char options_flags)
+int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags)
 {
-    Object* object = (Object*)object_raw;
     char* file_text = get_archive_data_base();
     char mesh_file_path[0x100];
     char texture_path[0x100];
@@ -58,8 +57,8 @@ int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char 
     material_header_cursor = find_case_insensitive_substring("{", material_header_cursor);
 
     parse_next_signed_int(&material_header_cursor);
-    int facequad_count = (short)parse_next_signed_int(&material_header_cursor);
-    int vertex_count = (short)parse_next_signed_int(&duplicate_cursor);
+    short facequad_count = (short)parse_next_signed_int(&material_header_cursor);
+    short vertex_count = (short)parse_next_signed_int(&duplicate_cursor);
     if (vertex_count != parse_next_signed_int(&mesh_cursor))
         report_errorf(
             "Mesh vertices count does not match vertext duplicate vertices count in %s",
@@ -99,8 +98,7 @@ int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char 
         report_errorf("Mesh face count does not match material face count in %s", mesh_file_path);
 
     for (i = 0; i < facequad_count; ++i) {
-        ObjectFaceQuad* quad = &object->facequads[i];
-        quad->flags = 0;
+        object->facequads[i].header_word = 0;
 
         int arity = parse_next_signed_int(&mesh_cursor);
         int vertex_2 = parse_next_signed_int(&mesh_cursor);
@@ -111,20 +109,24 @@ int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char 
             vertex_3 = parse_next_signed_int(&mesh_cursor);
         } else {
             vertex_3 = 0;
-            quad->flags |= 0x80;
+            object->facequads[i].flags |= 0x80;
         }
 
-        quad->uv[2] = texture_coords[vertex_2];
-        quad->uv[1] = texture_coords[vertex_1];
-        quad->uv[0] = texture_coords[vertex_0];
-        quad->uv[3] = texture_coords[vertex_3];
-        quad->texture_ref =
+        object->facequads[i].uv[2].u = texture_coords[vertex_2].u;
+        object->facequads[i].uv[2].v = texture_coords[vertex_2].v;
+        object->facequads[i].uv[1].u = texture_coords[vertex_1].u;
+        object->facequads[i].uv[1].v = texture_coords[vertex_1].v;
+        object->facequads[i].uv[0].u = texture_coords[vertex_0].u;
+        object->facequads[i].uv[0].v = texture_coords[vertex_0].v;
+        object->facequads[i].uv[3].u = texture_coords[vertex_3].u;
+        object->facequads[i].uv[3].v = texture_coords[vertex_3].v;
+        object->facequads[i].texture_ref =
             g_texture_refs.get_or_create_texture_ref("X/snail-turbo.tga", 0, 0);
-        quad->texture_ref->flags |= 0x1000;
-        quad->vertex_2 = (unsigned short)vertex_2;
-        quad->vertex_1 = (unsigned short)vertex_1;
-        quad->vertex_0 = (unsigned short)vertex_0;
-        quad->vertex_3 = (unsigned short)vertex_3;
+        object->facequads[i].texture_ref->flags |= 0x1000;
+        object->facequads[i].vertex_2 = (unsigned short)vertex_2;
+        object->facequads[i].vertex_1 = (unsigned short)vertex_1;
+        object->facequads[i].vertex_0 = (unsigned short)vertex_0;
+        object->facequads[i].vertex_3 = (unsigned short)vertex_3;
     }
 
     object->flags |= 0x100000;
@@ -178,8 +180,9 @@ int DirectXLoader::load_x_mesh(char* mesh_path, void* object_raw, unsigned char 
     }
 
     for (i = 0; i < material_face_count; ++i) {
-        int material_index = parse_next_signed_int(&material_cursor);
-        object->facequads[i].texture_ref = materials[material_index];
+        TextureRef* material =
+            materials[(short)parse_next_signed_int(&material_cursor)];
+        object->facequads[i].texture_ref = material;
     }
 
     return free_tracked_memory(materials);

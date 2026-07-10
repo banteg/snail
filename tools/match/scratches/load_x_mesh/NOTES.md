@@ -42,3 +42,42 @@ Notable shape details:
 - A `register` hint on `frame_cursor` was codegen-neutral at 63.36%; the next
   residual is still frame cursor ownership (`edi` native versus `ebp`
   candidate), not the mesh-path branch.
+
+2026-07-10 object and authored-width ownership:
+
+- `load_x_mesh` now accepts the proven `Object*` owner in both loader class
+  views instead of a `void*` plus scratch-local cast. The animation loader,
+  exact cached-mesh loader, and raw game-asset callers all preserve their
+  codegen with the typed contract.
+- Parsed vertex and facequad counts are authored 16-bit values. Keeping them as
+  `short` locals delays native's sign extension until each Object allocation
+  or loop use and raises focused Wibo from 63.36% to 66.26%.
+- The native Windows loader really does allocate and free the `Mesh vertex
+  remap` buffer without populating or reading it. Cross-checking Binary Ninja
+  and IDA rejected the tempting but false missing-remap hypothesis; the dead
+  allocation remains explicit rather than inventing semantics.
+
+2026-07-10 face-array ownership:
+
+- Native keeps the face index/byte offset and reloads the Object-owned
+  `facequads` base for each field. Removing the cached `ObjectFaceQuad*` and
+  spelling owner-relative writes directly raises the match to 77.76%.
+- Each face begins with a full `header_word = 0`, clearing both primary and
+  secondary flag bytes. The old low-byte-only clear was semantically wrong;
+  correcting it raises the match to 77.96% and promotes the union member into
+  the shared C analysis headers.
+- U and V are copied as eight scalar component assignments, not four
+  `ObjectUv` struct assignments. This reproduces native's owner reloads and
+  reaches a 492/492 instruction shape at 79.47%.
+- Material-face indices are truncated to signed 16-bit values before indexing
+  the temporary `TextureRef**` table. Resolving that pointer in a temporary
+  before assigning the Object-owned face slot matches the native evaluation
+  order and yields 80.20% (493/492 instructions, 46/492 prefix, 93 clean
+  masks, no unresolved operands or mismatches).
+
+Rejected probes: an explicit working face-count alias is codegen-neutral; an
+advancing material-slot pointer regresses to 73.39% by disturbing unrelated
+stack ownership; storing the parsed material index as a standalone `short` or
+casting it inline reaches only 79.39% because VC6 schedules the destination
+owner first. None are retained. The remaining residuals are honest local-slot
+and register-lifetime differences, not missing mesh ownership.
