@@ -133,3 +133,19 @@ allocation around the difficulty/timer fields. High-score record pointer ownersh
 now matches native `ebp`; do not force the remaining byte-OR or store-schedule
 residuals with volatile, raw offset macros, or fake aliasing. Treat this
 scratch as pinned unless new source evidence explains the contextual byte-OR.
+
+## 2026-07-10 ownership audit
+
+The native call tail makes the lifetime boundary explicit: `ebp` is the
+address of `SubgameRuntime::current_high_score_record`, while `ecx` is the
+address of the same runtime's embedded `high_score_bank`. The three `add_*`
+helpers borrow that working record, normalize some metadata in place, and copy
+its value into bank-owned result/ranking arrays; no helper stores the input
+pointer. The replay run table is therefore owned by the working record, and
+the selected-level bytes are only dispatch gates, not alternate owners.
+
+A post-increment cursor spelling regressed the focused match to `71.91%` and
+was reverted. Moving the completion-bit operation behind an inline record
+method stayed at `75.28%` but worsened the localized address shape and was also
+reverted. The direct-memory byte `or` remains an honest compiler-context
+residual rather than a reason to introduce an alias or volatile fakematch.

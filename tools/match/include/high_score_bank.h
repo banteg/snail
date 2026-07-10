@@ -21,6 +21,10 @@ public:
     char* save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
     void noop_runtime_ai(); // shared empty lifecycle hook @ 0x407b50
 
+    // The add helpers borrow their caller-owned record for the duration of the
+    // call. They normalize it in place, then copy the value into this bank's
+    // embedded result/ranking storage; none of them retain the input pointer.
+
     // Borrowed view of whichever embedded record bank the front end exposes.
     // initialize_subgame selects one of the three arrays below; it never
     // allocates or transfers ownership through this pointer.

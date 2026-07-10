@@ -184,8 +184,11 @@ public:
     char unknown_3bfac8[0x3bfb04 - 0x3bfac8];
     TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
     char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
-    HighScoreBank high_score_bank; // +0x68b4c8
-    HighScoreRecord current_high_score_record; // +0xfd2b10
+    // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
+    // into current_high_score_record, then lends that record to high_score_bank
+    // for in-place normalization and value-copy persistence.
+    HighScoreBank high_score_bank; // +0x68b4c8, owns persistent record arrays
+    HighScoreRecord current_high_score_record; // +0xfd2b10, working run snapshot
     unsigned char selected_level_record_active; // +0xff25d0
     unsigned char selected_level_record_persistent; // +0xff25d1
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
