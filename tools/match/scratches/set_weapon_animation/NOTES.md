@@ -19,9 +19,10 @@ Recovered behavior:
 - immediate activation clears the queue, stores the selected visual root at
   channel `+0x24`, and ORs bit `0x20` into the target model flags.
 
-Focused Wibo result: 98.18%, 55/55 candidate/target instructions, 48/55 exact
-prefix, and three clean masked operands. The remaining shape debt is final load
-order in the queued-animation tail.
+Focused Wibo result: 94.55%, 55/55 candidate/target instructions, 48/55 exact
+prefix, and three clean masked operands. The immediate path is exact; remaining
+shape debt is the equivalent `eax`/`edx` ownership swap in the queued-animation
+tail.
 
 2026-06-17 consolidation: `PresentationAnimationChannel` is now shared in
 `tools/match/include/presentation_animation_channel.h`. The repeated
@@ -51,3 +52,11 @@ while leaving `animation_id` plain loads the queue count first, but into `eax`,
 and moves the stack argument to `edx`, regressing the paired store-register
 shape to 94.55%. A plain queue-count pointer local is codegen-neutral at 98.18%
 and still loads the stack argument before the queue count.
+
+2026-07-10 no-fakematch audit: the narrow volatile active-animation and argument
+reads were only register barriers and have been removed. Storing zero progress
+before declaring the non-reversing branch's local animation pointer emits the
+real native reload without coercion and preserves the 48-instruction exact
+prefix. The plain queue append remains an honest register-owner residual at
+94.55%; no dummy alias or compiler barrier is retained to recover the old
+98.18% score.

@@ -11,10 +11,9 @@ int PlayerPresentationController::dispatch_cutscene_animation(
     if (immediate != 0) {
         PresentationAnimationSlot* slot =
             (PresentationAnimationSlot*)(cutscene_animation_slot_table + animation_id * 0x80);
-        ObjectAnimation* active_animation = slot->visual_root->active_animation;
-        anim_manager.active_animation = active_animation;
+        anim_manager.active_animation = slot->visual_root->active_animation;
         if (initial_frame != -1)
-            active_animation->flags = (unsigned short)initial_frame;
+            anim_manager.active_animation->flags = (unsigned short)initial_frame;
 
         if ((anim_manager.active_animation->flags & 8) != 0) {
             ObjectAnimation* active_animation = anim_manager.active_animation;
@@ -27,9 +26,8 @@ int PlayerPresentationController::dispatch_cutscene_animation(
             anim_manager.progress_step = step;
             anim_manager.progress = step + 1.0f;
         } else {
-            ObjectAnimation* active_animation =
-                *(ObjectAnimation* volatile*)&anim_manager.active_animation;
             anim_manager.progress = 0.0f;
+            ObjectAnimation* active_animation = anim_manager.active_animation;
             float step;
             if (active_animation->progress_step < 0.0f)
                 step = -active_animation->progress_step;
@@ -47,10 +45,6 @@ int PlayerPresentationController::dispatch_cutscene_animation(
         return flags;
     }
 
-    int queue_count = anim_manager.queue_count;
-    int queued_animation = *(int volatile*)&animation_id;
-    anim_manager.queued_animations[queue_count] = queued_animation;
-    int result = anim_manager.queue_count + 1;
-    anim_manager.queue_count = result;
-    return result;
+    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;
+    return ++anim_manager.queue_count;
 }

@@ -13,14 +13,14 @@ cutscene/presentation animation ids.
 
 Current focused result:
 
-- 98.18% fuzzy match, 55 candidate insns / 55 native insns
+- 94.55% fuzzy match, 55 candidate insns / 55 native insns
 - prefix 48/55
 - masked comparison: 3 ok, 0 mismatch
 
 Remaining known shape issues are the same as the adjacent
-`set_weapon_animation` helper: the queued branch now uses the native store
-registers, but still reloads the animation id before the queue count while
-native does the reverse.
+`set_weapon_animation` helper: the immediate path matches exactly, while the
+queued branch uses the opposite `eax`/`edx` owners for the equivalent count,
+argument, and indexed store sequence.
 
 2026-06-20 larger-chunk audit: replacing the queued branch locals with a direct
 `anim_manager.queued_animations[anim_manager.queue_count] = animation_id`
@@ -53,3 +53,14 @@ while leaving `animation_id` plain loads the queue count first, but into `eax`,
 and moves the stack argument to `edx`, regressing the paired store-register
 shape to 94.55%. A plain queue-count pointer local is codegen-neutral at 98.18%
 and still loads the stack argument before the queue count.
+
+2026-07-10 no-fakematch audit: both retained volatile barriers were compiler
+coercions, not recovered ownership, and are removed. Writing `progress = 0`
+before taking the non-reversing branch's local `active_animation` naturally
+recovers native's member reload and keeps the entire immediate path exact.
+The plain queued assignment remains an honest three-instruction register-owner
+swap, so focused Wibo is 94.55%, 55/55, prefix 48, with three clean masks.
+Every native caller ignores the result, and a `void` declaration is codegen-
+neutral in both helpers and representative callers. Return ownership therefore
+remains unproven; the existing `int` ABI is retained conservatively rather than
+being inferred away from incidental callsite use.
