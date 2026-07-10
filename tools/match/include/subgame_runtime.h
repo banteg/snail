@@ -31,6 +31,7 @@
 #include "track_jetpack_pickup.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
+#include "track_render_cache.h"
 #include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
 
@@ -120,7 +121,10 @@ public:
     int first_block_row_count; // +0x50
     int runtime_row_count; // +0x54
     int completion_row_start; // +0x58
-    char unknown_00005c[0xa858 - 0x5c];
+    // Owns 143 rows x five render-family BOD slots and their shared staging
+    // buffers. Its owner_subgame field is a borrowed backlink to this object.
+    TrackRenderCacheManager track_render_cache; // +0x5c, ends at +0xa854
+    char unknown_00a854[0xa858 - 0xa854];
     TutorialController tutorial; // +0xa858, embedded tutorial-mode controller
     char unknown_00a868[0xa874 - 0xa868];
     // Embedded level-definition owner. Its exact extent accounts for the

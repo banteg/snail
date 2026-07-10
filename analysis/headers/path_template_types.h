@@ -423,29 +423,35 @@ typedef struct RenderObjectTextureGroups {
     int32_t* texture_group_primcounts;
 } RenderObjectTextureGroups;
 
+typedef struct ObjectRenderVertex {
+    float x;
+    float y;
+    float z;
+    uint32_t diffuse;
+    float u;
+    float v;
+} ObjectRenderVertex;
+
 typedef struct TrackRenderGrid {
     uint8_t _pad_00[0x54];
-    int32_t cell_count;
+    int32_t runtime_row_count;
     uint8_t _pad_58[0x3bfa70];
-    TrackRowCell cells[8];
+    TrackRowCell runtime_cells[0xc80][8];
 } TrackRenderGrid;
 
 typedef struct TrackRenderCacheSlot {
-    uint8_t _pad_00[0x24];
-    RenderObjectTextureGroups* render_object;
-    int32_t vertex_count;
-    uint8_t _pad_2c[0x10];
+    BodBase bod;
+    float cache_row_base;
 } TrackRenderCacheSlot;
 
 typedef struct TrackRenderCacheManager {
-    ColorBGRA8 clear_color;
+    ColorBGRA8 skirt_color_bgra;
     int32_t max_vertex_counts[5];
     int32_t max_index_counts[5];
-    void* shared_vertex_buffers[5];
-    void* shared_index_buffers[5];
-    TrackRenderGrid* track_render_grid;
-    TrackRenderCacheSlot slots[0x2cb];
-    uint8_t _pad_a7bc[0x30];
+    ObjectRenderVertex* shared_vertex_buffers[5];
+    uint16_t* shared_index_buffers[5];
+    TrackRenderGrid* owner_subgame;
+    TrackRenderCacheSlot slots[0x8f][5];
     float build_cache_row_base;
     float next_cache_row_z;
     int32_t next_cache_row_index;
@@ -1260,13 +1266,46 @@ char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
 
 double __cdecl parse_next_float32(char** cursor);
 
-void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
+void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
 
-int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);
+int32_t __thiscall build_track_render_caches(
+    TrackRenderCacheManager* manager,
+    Color4f skirt_color
+);
 
-void __fastcall update_track_render_cache_rows(TrackRenderCacheManager* manager);
+int32_t __thiscall add_track_cache_vertex(
+    TrackRenderCacheManager* manager,
+    PathTemplateStripMesh* source,
+    Vec3* position,
+    int32_t source_index,
+    float u,
+    float v,
+    ObjectRenderVertex* vertices,
+    int32_t* vertex_count,
+    int32_t max_vertices,
+    int32_t max_indices,
+    uint32_t color,
+    uint8_t project_uv
+);
 
-void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
+int32_t __thiscall append_track_cache_object(
+    TrackRenderCacheManager* manager,
+    int32_t row_index,
+    PathTemplateStripMesh* source,
+    Vec3* position,
+    ObjectRenderVertex* vertices,
+    int32_t* vertex_count,
+    uint16_t* indices,
+    int32_t* index_count,
+    int32_t max_vertices,
+    int32_t max_indices,
+    uint32_t color,
+    uint8_t project_uv
+);
+
+void __thiscall update_track_render_cache_rows(TrackRenderCacheManager* manager);
+
+void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
 
 int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
 

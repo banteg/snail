@@ -77,3 +77,10 @@ Status:
   terms, volatile reads of either addend, and separate row-base pointers.
   Volatile forms regressed by disturbing the prologue; non-volatile forms
   compile back to the same SIB base/index choice.
+
+2026-07-10 owner closure: three independent callers establish this manager as
+the embedded `SubgameRuntime::track_render_cache` at `+0x5c`. The exact
+`0xa7f8` manager size ends at subgame `+0xa854`; `owner_subgame +0x54` is a
+borrowed backlink, the `143 x 5` BOD grid is manager-owned, and the five shared
+vertex/index buffers are tracked allocations owned for the manager lifetime.
+The exact initializer remains 99.18%, 122/122, with 18 clean operands.

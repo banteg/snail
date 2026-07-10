@@ -566,7 +566,7 @@ after_authored_ring:
             *(unsigned char*)game = zero;
         }
 
-        ((TrackRenderCacheManager*)(game + 0x5c))->update_track_render_cache_rows();
+        track_render_cache.update_track_render_cache_rows();
 
         if (level_mode == 4) {
             TimeTrialStringFormatter* formatter = (TimeTrialStringFormatter*)(game + 0xff25e0);

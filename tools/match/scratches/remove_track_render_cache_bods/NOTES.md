@@ -56,6 +56,14 @@ single-bit live test as `(*flags_ref & live_mask) == live_mask` and making the
 masks unsigned. This is equivalent for the `0x200` live bit and avoids the
 signed/unsigned warning produced by the first equality probe. Register hints,
 computed mask initializers, count-loop rewrites, and unsigned not-zero casts
-were neutral. Hoisting `flags = *flags_ref` before the live test scored higher
+ were neutral. Hoisting `flags = *flags_ref` before the live test scored higher
 numerically but removed the native redundant `"List remove"` diagnostic path
 and produced a masked string mismatch, so it is rejected.
+
+2026-07-10 owner closure: the manager is now embedded at
+`SubgameRuntime +0x5c`, and each of its `143 x 5` slots owns a full `BodBase`
+node plus `cache_row_base`. Binary Ninja now decompiles this loop through
+`slots[row][family].bod.bod.{list_flags,list_prev,list_next}` instead of false
+slot-local render/vertex fields. The focused score remains 56.41%, 59/58,
+prefix 7/58, with all four operands clean; the retained residual is still
+register lifetime around the two full-dword masks.

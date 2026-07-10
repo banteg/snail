@@ -357,5 +357,13 @@ The checked-in render-cache owner slice now also exposes:
 - `TrackRenderCacheManager.max_index_counts[5]`
 - `TrackRenderCacheManager.shared_vertex_buffers[5]`
 - `TrackRenderCacheManager.shared_index_buffers[5]`
-- `TrackRenderCacheManager.track_render_grid`
+- `SubgameRuntime.track_render_cache` at `+0x5c`
+- `TrackRenderCacheManager.owner_subgame`, a borrowed backlink
+- `TrackRenderCacheManager.slots[143][5]`, owned `BodBase` cache nodes
+- `TrackRenderCacheSlot.cache_row_base` at `+0x38`
 - the generic render-object texture-group tail at `+0xc0..+0xd4`
+
+The cache mesh code is three functions, not one oversized extent:
+`build_track_render_caches @ 0x433220`, `add_track_cache_vertex @ 0x433830`,
+and `append_track_cache_object @ 0x433960`. Curating those boundaries raises
+the public builder to 99.79% while keeping both helpers independently auditable.

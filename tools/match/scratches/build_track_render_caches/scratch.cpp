@@ -37,141 +37,6 @@ struct TrackRenderGrid {
     TrackRowCell cells[8];
 };
 
-class TrackRenderCacheBuilder : public TrackRenderCacheManager {
-public:
-    int add_track_cache_vertex(
-        Object* source,
-        Vector3* position,
-        unsigned short source_index,
-        float u,
-        float v,
-        ObjectRenderVertex* vertices,
-        int* vertex_count,
-        int max_vertices,
-        int max_indices,
-        unsigned int color,
-        unsigned char project_uv);
-
-    void append_track_cache_object(
-        int row_index,
-        Object* source,
-        Vector3* position,
-        ObjectRenderVertex* vertices,
-        int* vertex_count,
-        unsigned short* indices,
-        int* index_count,
-        int max_vertices,
-        int max_indices,
-        unsigned int color,
-        unsigned char project_uv);
-};
-
-int TrackRenderCacheBuilder::add_track_cache_vertex(
-    Object* source,
-    Vector3* position,
-    unsigned short source_index,
-    float u,
-    float v,
-    ObjectRenderVertex* vertices,
-    int* vertex_count,
-    int max_vertices,
-    int max_indices,
-    unsigned int color,
-    unsigned char project_uv)
-{
-    float x = source->vertices[source_index].x + position->x;
-    float y = source->vertices[source_index].y + position->y;
-    float z = source->vertices[source_index].z + position->z;
-
-    if (project_uv) {
-        u = (x + 4.0f) * 0.125f;
-        v = (z - build_cache_row_base) * 0.125f;
-    }
-
-    int i = 0;
-    while (i < *vertex_count) {
-        ObjectRenderVertex* vertex = &vertices[i];
-        if (vertex->x == x
-            && vertex->y == y
-            && vertex->z == z
-            && vertex->u == u
-            && vertex->v == 1.0f - v) {
-            return i;
-        }
-        ++i;
-    }
-
-    ObjectRenderVertex* vertex = &vertices[i];
-    vertex->x = x;
-    vertex->y = y;
-    vertex->z = z;
-    vertex->diffuse = color;
-    vertex->u = u;
-    vertex->v = 1.0f - v;
-
-    ++*vertex_count;
-    if (*vertex_count > max_vertices)
-        report_errorf("Vertex Cache overflow increase RSEGMENTCACHE_VERTEX_MAX");
-
-    return *vertex_count - 1;
-}
-
-void TrackRenderCacheBuilder::append_track_cache_object(
-    int row_index,
-    Object* source,
-    Vector3* position,
-    ObjectRenderVertex* vertices,
-    int* vertex_count,
-    unsigned short* indices,
-    int* index_count,
-    int max_vertices,
-    int max_indices,
-    unsigned int color,
-    unsigned char project_uv)
-{
-    Vector3 local_position = *position;
-    int face_index = 0;
-    int face_offset = 0;
-
-    if (source->facequad_count > 0) {
-        do {
-            ObjectFaceQuad* face =
-                (ObjectFaceQuad*)((char*)source->facequads + face_offset);
-
-            indices[*index_count] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_0,
-                face->uv[0].u, face->uv[0].v,
-                vertices, vertex_count, max_vertices, max_indices, color, project_uv);
-            indices[*index_count + 1] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_1,
-                face->uv[1].u, face->uv[1].v,
-                vertices, vertex_count, max_vertices, max_indices, color, project_uv);
-            indices[*index_count + 2] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_2,
-                face->uv[2].u, face->uv[2].v,
-                vertices, vertex_count, max_vertices, max_indices, color, project_uv);
-
-            if ((face->flags & 0x80) == 0) {
-                indices[*index_count + 3] = indices[*index_count];
-                indices[*index_count + 4] = indices[*index_count + 2];
-                indices[*index_count + 5] = (unsigned short)add_track_cache_vertex(
-                    source, &local_position, face->vertex_3,
-                    face->uv[3].u, face->uv[3].v,
-                    vertices, vertex_count, max_vertices, max_indices, color, project_uv);
-                *index_count += 6;
-            } else {
-                *index_count += 3;
-            }
-
-            ++face_index;
-            face_offset += sizeof(ObjectFaceQuad);
-        } while (face_index < source->facequad_count);
-    }
-
-    if (*index_count > max_indices)
-        report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX");
-}
-
 int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
 {
     int row_index;
@@ -187,7 +52,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
     int index_counts[5];
 
     white_color.noop_this_constructor();
-    ((ColorBGRA8*)&unknown_00)->pack_color_rgba_u8(&skirt_color);
+    ((ColorBGRA8*)&skirt_color_bgra)->pack_color_rgba_u8(&skirt_color);
     *(int*)&white_color = -1;
     ((AudioBackend*)this)->noop_runtime_ai();
 
@@ -199,7 +64,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
             if (row_mod == 0) {
                 cache_row = row_index / 24;
 
-                int* slot_row_base = &slots[cache_row][0].unknown_38;
+                int* slot_row_base = (int*)&slots[cache_row][0].cache_row_base;
 
                 memset(index_counts, 0, sizeof(index_counts));
 
@@ -222,7 +87,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                     FringeObject* fringe_object =
                         *(FringeObject**)((char*)track_render_grid + fringe_offset);
                     if (fringe_object != 0) {
-                        ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                        append_track_cache_object(
                             row_index,
                             (Object*)fringe_object->object,
                             (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -232,7 +97,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                             &index_counts[4],
                             max_vertex_counts[4],
                             max_index_counts[4],
-                            *(unsigned int*)&unknown_00,
+                            skirt_color_bgra,
                             0);
 
                         ((Object*)slots[cache_row][4].bod.object)->group_texture_refs[0] =
@@ -246,7 +111,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
 
                 int flags = *(int*)((char*)track_render_grid + cell_offset + 0x3bfb08);
                 if ((flags & 0x20) != 0 && (flags & 0x4000) == 0x4000) {
-                    ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                    append_track_cache_object(
                         row_index,
                         *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                         (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -269,7 +134,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         & 0x4000) == 0x4000)) {
                     if ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x40) == 0x40) {
-                        ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                        append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                             (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -286,7 +151,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                             (*(Object**)((char*)track_render_grid + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     } else {
-                        ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                        append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                             (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -310,7 +175,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         & 0x4000) == 0x4000)) {
                     if ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x40) == 0x40) {
-                        ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                        append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                             (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -327,7 +192,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                             (*(Object**)((char*)track_render_grid + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     } else {
-                        ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                        append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                             (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
@@ -349,7 +214,7 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                     (TrackRowCell*)((char*)track_render_grid + cell_offset + 0x3bfac8))
                     && ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x4000) == 0x4000)) {
-                    ((TrackRenderCacheBuilder*)this)->append_track_cache_object(
+                    append_track_cache_object(
                         row_index,
                         *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
                         (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),

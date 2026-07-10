@@ -1716,6 +1716,16 @@
       "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
     },
     {
+      "address": "0x433830",
+      "name": "add_track_cache_vertex",
+      "description": "Transforms and deduplicates one source object vertex into a render-cache family staging buffer, optionally projecting track UVs."
+    },
+    {
+      "address": "0x433960",
+      "name": "append_track_cache_object",
+      "description": "Appends one source object's triangle or quad faces to a render-cache family by emitting deduplicated vertices and indices."
+    },
+    {
       "address": "0x433b30",
       "name": "update_track_render_cache_rows",
       "description": "Activates forward track-render cache row BODs while Goldy's current row position stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe slots into their active lists and seeding each slot color."

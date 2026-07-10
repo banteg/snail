@@ -99,7 +99,7 @@ void SubgameRuntime::remove_subgame_bods()
         --row_count;
     } while (row_count != 0);
 
-    ((TrackRenderCacheManager*)(game + 0x5c))->remove_track_render_cache_bods();
+    track_render_cache.remove_track_render_cache_bods();
 
     BodNode** health_next = (BodNode**)(game + 0x35600c);
     int health_count = 8;

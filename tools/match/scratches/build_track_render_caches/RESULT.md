@@ -4,11 +4,11 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.26% | **75.77%** |
-| Target instructions | 763 | 763 |
+| Match | 0.26% | **99.79%** |
+| Target instructions | 475 | 475 |
 | Candidate instructions | 2 | **475** |
-| Common prefix | 0 / 763 | **90 / 763** |
-| Masked operands | none | **15 clean, 0 unresolved, 0 mismatched** |
+| Common prefix | 0 / 475 | **90 / 475** |
+| Masked operands | none | **20 clean, 0 unresolved, 0 mismatched** |
 
 The final cache-name switch jump-table relocation at target instruction 448 is
 now audited through `build_track_render_caches_cache_name_jump_table`
@@ -22,13 +22,10 @@ target[90]    lea eax, dword [edi+eax*1+0x3bfad8]
 candidate[90] lea eax, dword [eax+edi*1+0x3bfad8]
 ```
 
-The public member keeps the target's instruction offsets and total byte length
-through its `ret 0x10`, apart from the localized operand/call differences above.
-The target range then continues through its switch-table bytes and two adjacent
-internal mesh helpers, producing 288 more decoded target instructions overall.
-The recovered helper C++ bodies are present in `scratch.cpp`, but VC6 emits them
-as separate candidate COMDAT sections, so they are not included in the
-475-instruction candidate range reported above.
+Binary Ninja confirms `0x433830` and `0x433960` are distinct native function
+starts. Curating those boundaries gives the public member its true
+475-instruction extent and moves the recovered helper bodies into independent
+scratches instead of counting adjacent functions as unmatched builder bytes.
 
 ## Measured progression
 
@@ -44,6 +41,7 @@ as separate candidate COMDAT sections, so they are not included in the
 | Direct slot-field cursor | 73.34% | 475 | 35 | Retained |
 | Slot cursor declared before counter clears | **75.77%** | **475** | **90** | Final |
 | Cache-name switch table symbol | **75.77%** | **475** | **90** | Audits final table operand |
+| Curate adjacent helper boundaries | **99.79%** | **475** | **90** | True public-function extent; 20 operands clean |
 
 ## Accepted source-shape changes
 
@@ -55,8 +53,8 @@ as separate candidate COMDAT sections, so they are not included in the
 - Implemented the row-group vertex/index buffer lock, copy, unlock, and object
   count updates.
 - Implemented the final five-family maximum-count and cache-name pass.
-- Added real vertex-deduplication and face-to-index helper methods for the
-  target code around `+0x610` and `+0x740`.
+- Split and typed the real vertex-deduplication and face-to-index helpers at
+  `0x433830` and `0x433960`.
 - Retained the by-value `Color4f` signature required by the exact caller.
 
 ## Rejected trials
@@ -82,11 +80,11 @@ as separate candidate COMDAT sections, so they are not included in the
 - No inline assembly, fake globals, dummy externs, stack padding, volatile
   clutter, or normalizer-specific workaround was retained.
 
-## Next region to attack
+## Helper results
 
-First isolate a natural typed row-cell cursor that makes VC6 choose the target
-base/index order for the fringe anchor without disturbing the 90-instruction
-prefix. Then measure and tune the two recovered helper COMDATs independently
-against target offsets `+0x610` and `+0x740`, especially the second helper's
-prologue/local-copy ordering. If the matcher gains multi-section candidate
-support, include those adjacent helper sections in the aggregate comparison.
+- `add_track_cache_vertex`: 99.03%, 103/103 instructions, prefix 74/103,
+  seven clean operands. The only residual is one equivalent scheduling window
+  around the final z/u/v/diffuse stores.
+- `append_track_cache_object`: 35.65%, 164/167 instructions, prefix 1/167,
+  five clean operands. Its semantics and ABI are recovered, but VC6 still
+  assigns the source/face-offset registers and local position copy differently.

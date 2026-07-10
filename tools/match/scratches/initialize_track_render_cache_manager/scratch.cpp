@@ -25,7 +25,7 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
     max_index_counts[3] = 160;
     max_vertex_counts[4] = 800;
     max_index_counts[4] = 1280;
-    track_render_grid = (TrackRenderGrid*)(g_game_base + 0x74618);
+    owner_subgame = (SubgameRuntime*)(g_game_base + 0x74618);
 
     int slot_base = 0;
     Object** skirt_object_ref = (Object**)&slots[0][4].bod.object;
@@ -61,7 +61,7 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
         skirt_object_ref += 75;
     } while (slot_base < 0x2cb);
 
-    void** vertex_buffers = shared_vertex_buffers;
+    void** vertex_buffers = (void**)shared_vertex_buffers;
     int count = 5;
     void* result;
     do {

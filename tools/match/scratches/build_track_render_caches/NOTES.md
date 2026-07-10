@@ -36,11 +36,10 @@ The active row slab is addressed from `TrackRenderGrid + 0x3bfac8`, with the
 anchor at `+0x10`, render object at `+0x24`, cache flags at `+0x40`, and the
 four fringe pointers at `+0x44..+0x50`.
 
-## Recovered internal mesh helpers
+## Recovered adjacent mesh helpers
 
-The target extent also covers the code at approximately `+0x610` and `+0x740`.
-The scratch implements these as real `TrackRenderCacheBuilder` member methods,
-not fake externs:
+Binary Ninja function boundaries prove the code at `0x433830` and `0x433960`
+is two adjacent native thiscall functions, not part of the public builder:
 
 - `add_track_cache_vertex` transforms a source vertex, optionally generates
   projected UVs from `(x + 4) * 0.125` and
@@ -50,11 +49,10 @@ not fake externs:
   the second triangle for quads, advances the 3/6-index count, and reports
   index overflow.
 
-VC6 emits these two recovered methods as separate COMDAT `.text` sections in
-the candidate object. The current matcher counts only the 475-instruction
-public-member section, while the linked target range continues through 288
-instructions belonging to the two adjacent helper bodies. The helpers remain
-in the scratch so the repeated calls have honest recovered source semantics.
+They now have manifest entries and independent scratches. With the public
+extent ending at `0x433830`, `build_track_render_caches` is 99.79% at 475/475
+instructions with 20 clean operands. `add_track_cache_vertex` is 99.03% at
+103/103; `append_track_cache_object` remains an honest 35.65% at 164/167.
 
 ## Matcher-sensitive source shape retained
 
@@ -62,10 +60,10 @@ Several ordinary C++ choices materially improved the match:
 
 - keeping the five tile-family dispatches as repeated branch bodies preserved
   the native control-flow and register allocation;
-- declaring the `unknown_38` field cursor before the two counter clears, then
+- declaring the `cache_row_base` field cursor before the two counter clears, then
   using two `memset` calls, reproduces the complete native row-group
   initializer and extends the common prefix to 90 instructions;
-- using an `int*` directly to `slots[cache_row][0].unknown_38` emits the native
+- using an `int*` directly to `slots[cache_row][0].cache_row_base` emits the native
   single `lea ... + 0x90` rather than a base `lea` followed by `add 0x38`;
 - expressing the flush counter as a normal `family_index` while independently
   incrementing the max-count pointer lets VC6 strength-reduce the array index
@@ -95,3 +93,17 @@ candidate encoding, so no unnatural pointer trick was retained.
 - `docs/re/track-runtime.md`, `docs/re/track-quad-tables.md`, and
   `analysis/runtime/track-render-cache-typing-2026-03-27.md`; and
 - the supplied target dump and regional matcher reports.
+
+## Ownership closure (2026-07-10)
+
+The exact callers prove `TrackRenderCacheManager` is embedded at
+`SubgameRuntime +0x5c`; its exact `0xa7f8` extent ends at `+0xa854`, four bytes
+before the tutorial controller. It owns `143 x 5` `BodBase` slots and the five
+typed vertex/index staging allocations. Each slot retains an ObjectList handle,
+while manager `+0x54` is a borrowed backlink to the enclosing SubgameRuntime.
+
+The previous cross-tool `TrackRenderCacheSlot::vertex_count +0x2c` was false:
+that offset is inside `BodBase::color`. Exact activation and removal prove the
+full embedded `BodBase` at `+0x00` and `cache_row_base +0x38`. The checked-in
+headers and Binary Ninja sync now agree on that layout and on the owned
+`runtime_cells[3200][8]` slab reached through the backlink.
