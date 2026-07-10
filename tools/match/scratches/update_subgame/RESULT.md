@@ -37,7 +37,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
   arguments through that owner without changing codegen or the operand audit.
 - Inverted the selected-level bridge so its handoff is the cold tail after the
   gameplay/HUD body, then preserved the native per-arm application-state
-  snapshot; the resulting tail instructions and all call/data operands agree.
+  snapshot. That stage recovered the native tail instructions; later retained
+  lifetime corrections let VC6 share the snapshot prefix again, but keep the
+  cold-tail topology and all call/data operands correct.
 - Inlined the contextual projected-cell address in its three ring arms,
   removing an invented long-lived pointer and recovering the native repeated
   address formation and shared last-Z store without growing the frame.
@@ -85,12 +87,21 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Keeping a named embedded-`Player*` across the pause/fade bridge scored
   70.53%, but displaced native register roles and introduced a false
   speedup-to-health call pairing in the masked audit, so it was rejected.
+- Retesting that named owner after the authored-garbage split regressed to
+  64.93%, grew to 1043 instructions, and retained the false call pairing;
+  shortening the application receiver and adding a row-window `goto` were
+  codegen-neutral at 78.22%.
 - Retesting the time-trial record local on the cold-tail layout, before the
   projected-cell lifetime correction, regressed from 68.94% to 67.95%; sharing
   ambient ring speed through a local regressed to 61.11% by growing the frame
   to `0x40`. The record owner was later accepted after the allocation changed.
 - No inline assembly, `volatile` clutter, fake globals, dummy externs, stack padding, or normalizer-specific tricks were retained.
 
-## Next region to attack
+## Pinned boundary
 
-Refine the remaining state-1 galaxy build/destroy scheduling, then revisit only the residual authored/ambient ring and HUD/handoff register schedules with source-backed shapes that preserve the `0x3c` frame.
+The semantic state machine, runtime rows, ownership, call/data operands,
+`0x3c` frame, and 1033-instruction extent are covered. Remaining differences
+are state-1, ring, HUD/handoff register scheduling and the two jump-table label
+identities. Do not force them with long-lived aliases, `volatile`, dummy
+symbols, raw offsets, or normalizer-specific control flow; resume only with
+new source or cross-port evidence.

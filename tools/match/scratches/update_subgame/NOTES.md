@@ -66,7 +66,8 @@ Focused matcher result: 78.22%, 1033 candidate instructions versus 1033 target i
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
-The largest remaining source-shape opportunities are:
+The semantic structure and ownership are pinned. The remaining non-proof-grade
+regions are:
 
 1. state-1 galaxy setup case ordering and shared build/destroy exits;
 2. residual authored/ambient ring register scheduling;
@@ -155,3 +156,13 @@ argument setup and shared call tail that the combined boolean expression had
 optimized away. Focused Wibo improves from `71.32%`, `1028/1033` to `78.22%`,
 `1033/1033`; the frame stays `0x3c`, all 116 audited call/data operands remain
 clean, and only the same two jump-table identities mismatch.
+
+Final no-fakematch boundary: retesting a named `Player*` across the complete
+state-2 body after the garbage-arm correction regressed to `64.93%`, grew the
+candidate to `1043` instructions, reduced the clean operand audit to `110`,
+and again paired target `spawn_track_speedup` with candidate
+`spawn_track_health_pickup`. Shortening the application-state receiver scope
+and adding an explicit row-window exit were codegen-neutral at `78.22%`.
+Neither is retained. The current scratch is pinned at the exact target
+instruction count with no unresolved or mismatched call/data operand; further
+register or label shaping needs new independent source evidence.
