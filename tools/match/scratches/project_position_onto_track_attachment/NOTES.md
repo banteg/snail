@@ -1,14 +1,13 @@
 # project_position_onto_track_attachment
 
 project_position_onto_track_attachment @ 0x4444b0 projects a mutable
-`position[3]` onto an attachment runtime row and returns either the row pointer
-or the kind-42 helper result.
+`position[3]` onto an attachment runtime row in place.
 
 Recovered semantics:
 
-- indexes the runtime row table at `game+0x5ccac8 + 0xf4 * (int)position.z`;
+- indexes the owned `SubgameRuntime::runtime_rows[(int)position.z]` slab;
 - clears `*out_angle` before checking the row attachment flag `0x40`;
-- returns the row pointer unchanged when the attachment flag is clear;
+- exits without modifying the position when the attachment flag is clear;
 - derives the attachment sample index from `(int)position.z -
   cell->get_track_cell_row_index()`;
 - for template kind `42`, calls the template record's
@@ -74,3 +73,16 @@ Residuals:
 first rewrites of the non-kind42 projection all collapse the 67-instruction
 prefix and score 55–69%. The four-vector staging remains the only known form
 that keeps the long exact prefix at 88.68%.
+
+## 2026-07-10 runtime-row and return-contract closure
+
+The raw `this + 0x5ccac8 + 0xf4 * row` cursor is now expressed as
+`SubgameRuntime::runtime_rows[row]`, the same owned slab proved by track
+construction and both parcel-placement passes. This is codegen-neutral at
+88.68%, 106/106 instructions, prefix 67/106, with five clean operands.
+
+Both native callers (`spawn_track_garbage_hazard` and `spawn_slug_hazard`)
+discard EAX immediately after the call. Removing the decompiler-derived
+`char*` return and spelling the helper as `void` also preserves identical
+codegen in this scratch and both caller scratches; the apparent row/helper/x
+returns were only whatever value happened to remain live in EAX.

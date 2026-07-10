@@ -77,7 +77,7 @@ public:
     TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
     TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
-    char* project_position_onto_track_attachment(Vector3* position, float* out_angle);
+    void project_position_onto_track_attachment(Vector3* position, float* out_angle);
     void complete_subgame(unsigned char completed);
     void build_track_colours();
     int place_parcels_on_track();

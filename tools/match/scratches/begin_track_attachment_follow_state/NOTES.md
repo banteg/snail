@@ -47,3 +47,14 @@ Recovered: FollowState layout (+0x00 active, +0x04 template, +0x08 cell,
 vertical_offset = y - 0.49f, +0x38 player); `get_track_cell_row_index`
 is thiscall on the cell; the cell shares the +0x18 anchor-z / +0x38
 template offsets with the golb path struct (likely sibling types).
+
+## 2026-07-10 installed-heading owner closure
+
+Root-relative `0x64118c` is not a standalone heading table. Subtracting the
+embedded subgame base (`0x74618`) and runtime-row base (`0x5ccac8`) leaves
+exactly `TrackAttachmentRuntimeRow::installed_heading_delta +0xac`; the
+61-dword step is the row's `0xf4`-byte stride. The curated symbol and scratch
+now name this as the field-first
+`g_runtime_row_installed_heading_fields` view. Focused matching remains
+94.55%, 28/27 instructions, prefix 23/27, with three clean operands; the only
+residual is still the equivalent folded-displacement schedule.

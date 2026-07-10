@@ -3730,12 +3730,13 @@
     },
     {
       "address": "0x64118c",
-      "name": "g_row_heading_table",
+      "name": "g_runtime_row_installed_heading_fields",
       "kind": "offset",
       "aliases": [
-        "data_64118c"
+        "data_64118c",
+        "g_row_heading_table"
       ],
-      "description": "Relocatable per-row heading table offset added to the live game root for attachment entry and follow seeding."
+      "description": "Relocatable field-first view of SubgameRuntime::runtime_rows[0].installed_heading_delta; attachment entry indexes successive 0xf4-byte runtime rows."
     },
     {
       "address": "0x643190",

@@ -16,7 +16,9 @@
 // frontend headers), while the attachment-entry scratches declare it
 // `volatile` locally because native code re-reads it around every store
 // through derived pointers and that reload schedule is part of their match.
-extern char g_row_heading_table[]; // 0x64118c, 61 dwords per row
+// Field-first view of SubgameRuntime::runtime_rows[0].installed_heading_delta;
+// successive fields are one 0xf4-byte TrackAttachmentRuntimeRow apart.
+extern char g_runtime_row_installed_heading_fields[]; // 0x64118c
 extern char g_follow_state_block[]; // 0x430100 = g_player_block + 0x384, size 0x40
 extern char g_player_block[];       // 0x42fd7c
 extern char g_player_position_offset[]; // 0x42fde4 = g_player_block + 0x68

@@ -53,3 +53,12 @@ Semantics fully recovered (see also the seeding writes in scratch.cpp):
   rotated local y, heading table write (61-dword row stride), then a
   validating `update_track_attachment_follow_state(player.velocity.z,
   &player.position, &player.velocity)` — thiscall, three args
+
+## 2026-07-10 installed-heading owner closure
+
+The seed's former `g_row_heading_table[row * 61]` read is the same field-first
+view of `SubgameRuntime::runtime_rows[row].installed_heading_delta` used by
+the direct follow-state initializer. Renaming the curated offset and source
+expression preserves the 79.80% match, 202/204 instructions, and all 36 clean
+operands while removing the last standalone-table ownership fiction from both
+attachment-entry paths.

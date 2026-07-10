@@ -3,10 +3,9 @@
 #include "track_attachment.h"
 #include "transform_matrix.h"
 
-char* SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
+void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
-    TrackAttachmentRuntimeRow* row =
-        (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8 + 0xf4 * (int)position->z);
+    TrackAttachmentRuntimeRow* row = &runtime_rows[(int)position->z];
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->primary_attachment_cell;
@@ -15,7 +14,7 @@ char* SubgameRuntime::project_position_onto_track_attachment(Vector3* position, 
         AttachmentSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {
             TransformMatrix transform;
-            int result = template_record->compute_kind42_attachment_transform(
+            template_record->compute_kind42_attachment_transform(
                 sample->special_scalar,
                 position->x,
                 position->y,
@@ -24,7 +23,7 @@ char* SubgameRuntime::project_position_onto_track_attachment(Vector3* position, 
             int y = *(int*)&transform.position.y;
             *(int*)&position->x = *(int*)&transform.position.x;
             *(int*)&position->y = y;
-            return (char*)result;
+            return;
         } else {
             float vertical = position->y;
             Vector3 vertical_contribution;
@@ -52,8 +51,7 @@ char* SubgameRuntime::project_position_onto_track_attachment(Vector3* position, 
             projected.y += vertical_contribution.y;
             projected.z += vertical_contribution.z;
             *position = projected;
-            return (char*)*(int*)&projected.x;
+            return;
         }
     }
-    return (char*)row;
 }
