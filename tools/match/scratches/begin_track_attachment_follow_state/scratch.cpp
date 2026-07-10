@@ -1,9 +1,7 @@
 // begin_track_attachment_follow_state @ 0x420c40 (thiscall, ret 0xc)
 #include "track_attachment.h"
 
-// data_4df904: volatile so every statement re-derives the base like the
-// original (per-statement reload schedule is part of this match).
-extern char* volatile g_game_base;
+extern char* g_game_base;
 
 AttachmentPathTemplate* FollowState::begin_track_attachment_follow_state(
     TrackRowCell* cell, const Vector3* world_position, Player* owning_player)

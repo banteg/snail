@@ -10,12 +10,10 @@
 
 #include "track_attachment_types.h"
 
-// data_4df904: relocatable game-allocation base; structures below live at
-// fixed VA offsets added to it. The extern lives in each scratch, not here:
-// most scratches use the plain `extern char* g_game_base;` (as in the
-// frontend headers), while the attachment-entry scratches declare it
-// `volatile` locally because native code re-reads it around every store
-// through derived pointers and that reload schedule is part of their match.
+// data_4df904 is the relocatable game-allocation base; structures below live at
+// fixed VA offsets added to it. Scratches use an ordinary singleton pointer;
+// repeated native reloads remain visible scheduling debt rather than being
+// reproduced with a volatile compiler barrier.
 // Field-first view of SubgameRuntime::runtime_rows[0].installed_heading_delta;
 // successive fields are one 0xf4-byte TrackAttachmentRuntimeRow apart.
 extern char g_runtime_row_installed_heading_fields[]; // 0x64118c

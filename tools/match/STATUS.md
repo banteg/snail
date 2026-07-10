@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**513/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72625/325754** bytes (**22.29%**) are proof-grade, and overall fuzzy is **59.22%**.
+**513/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72625/325754** bytes (**22.29%**) are proof-grade, and overall fuzzy is **59.21%**.
 
 ## Proof Grade (513)
 
@@ -574,7 +574,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
-| 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 28/27 | 94.55% | 23/27 | 3 ok |  |
+| 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 85.19% | 18/27 | 2 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 192/188 | 85.26% | 9/188 | 32 ok |  |
@@ -645,7 +645,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 52/56 | 77.78% | 8/56 | - |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 2 mismatch, 60 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 110/113 | 75.34% | 24/113 | 9 ok |  |
-| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 202/204 | 79.80% | 16/204 | 36 ok |  |
+| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 190/204 | 75.63% | 16/204 | 1 mismatch, 24 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 114/119 | 68.67% | 28/119 | 1 ok |  |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 225/227 | 61.95% | 0/227 | 28 ok |  |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |

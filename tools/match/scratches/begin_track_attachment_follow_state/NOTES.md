@@ -1,4 +1,4 @@
-# Residual diff — 94.55%, 28/27 insns
+# Residual diff — 85.19%, 27/27 insns
 
 The heading-table tail now keeps the ×61 index in `edx`, loads
 `data_4df904` into `ecx`, and schedules the `pop esi` like the target.
@@ -58,3 +58,13 @@ now name this as the field-first
 `g_runtime_row_installed_heading_fields` view. Focused matching remains
 94.55%, 28/27 instructions, prefix 23/27, with three clean operands; the only
 residual is still the equivalent folded-displacement schedule.
+
+## 2026-07-10 no-fakematch audit
+
+The scratch-local `volatile` qualifier on `g_game_base` existed only to force a
+late singleton reload and is removed. With the ordinary relocatable owner,
+focused Wibo is 85.19%, 27/27 instructions, prefix 18, and two clean masks.
+The remaining tail rotates the row-index and singleton owners across
+`eax/ecx/edx`; it does not change the proven field-first
+`runtime_rows[].installed_heading_delta` relationship. Keep that scheduling
+debt visible instead of restoring the old 94.55% through a qualifier barrier.

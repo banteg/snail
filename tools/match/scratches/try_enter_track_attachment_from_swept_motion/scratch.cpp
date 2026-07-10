@@ -4,10 +4,8 @@
 #include "track_attachment.h"
 #include "player.h"
 
-// The shared scratch follow state and the player both live at fixed offsets
-// from the relocatable game base; g_game_base is volatile so every statement
-// re-derives it like the original.
-extern char* volatile g_game_base;
+// The follow state is embedded in the fixed player owned by SubgameRuntime.
+extern char* g_game_base;
 #define FOLLOW ((FollowState*)(g_follow_state_block + (int)g_game_base))
 #define PLAYER ((Player*)(g_player_block + (int)g_game_base))
 
@@ -90,9 +88,8 @@ seed:
     // The follow child is embedded at player+0x384; velocity and exit state
     // are adjacent Player fields, not FollowState tail fields.
     *(unsigned char*)(g_player_attachment_exit_pending_offset + (int)g_game_base) = 0;
-    char* call_base = g_game_base;
-    ((SquidgeState*)(g_player_squidge_offset + (int)call_base))->start_squidge_y(
-        ((Vector3*)(g_player_velocity_offset + (int)call_base))->y);
+    ((SquidgeState*)(g_player_squidge_offset + (int)g_game_base))->start_squidge_y(
+        ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y);
     FOLLOW->active = 1;
     FOLLOW->template_record = this;
     FOLLOW->source_cell = cell;
@@ -101,17 +98,14 @@ seed:
     FOLLOW->vertical_offset = 0;
     PLAYER->position.y = local.y;
     ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y = 0;
-    char* player_base = g_game_base;
-    ((FollowState*)(g_follow_state_block + (int)player_base))->player =
-        (Player*)(g_player_block + (int)player_base);
+    FOLLOW->player = PLAYER;
     FOLLOW->template_record->installed_heading_delta =
         *(float*)(g_runtime_row_installed_heading_fields + (int)g_game_base
                   + 4 * (61 * cell->get_track_cell_row_index()));
     FOLLOW->orientation_b = 0;
     FOLLOW->orientation_a = 0;
-    char* update_base = g_game_base;
-    ((FollowState*)(g_follow_state_block + (int)update_base))->update_track_attachment_follow_state(
-        ((Vector3*)(g_player_velocity_offset + (int)update_base))->z,
-        (Vector3*)(g_player_position_offset + (int)update_base),
-        (Vector3*)(g_player_velocity_offset + (int)update_base));
+    FOLLOW->update_track_attachment_follow_state(
+        ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->z,
+        (Vector3*)(g_player_position_offset + (int)g_game_base),
+        (Vector3*)(g_player_velocity_offset + (int)g_game_base));
 }

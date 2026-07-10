@@ -1,4 +1,4 @@
-# WIP — 79.80% score, 202/204 insns on standard flags
+# WIP — 75.63% score, 190/204 insns on standard flags
 
 Now on the project-standard `msvc6.5 /O2 /G5 /W3` (the earlier `/Op`
 experiment reached 205/204 instructions, but flag changes remain only
@@ -13,9 +13,8 @@ experiments). Current source-shape wins:
   the native 0x64-byte frame and the stored world-y/z and swept-y/z lanes
 - two-step y/z subtracts (`v23 = py; v23 -= v31`) recover the target `fsub`
   polarity on the first probe; world x lanes still stay FPU-resident
-- `extern char* volatile g_game_base` reproduces the per-statement base
-  reloads in the seed block (this also moved
-  begin_track_attachment_follow_state from 85.19% to 88.89%)
+- the seed block uses the real Player-owned `FollowState`, velocity, squidge,
+  and attachment-exit fields rather than treating them as standalone globals
 
 Remaining residuals at 79.80%:
 
@@ -62,3 +61,14 @@ the direct follow-state initializer. Renaming the curated offset and source
 expression preserves the 79.80% match, 202/204 instructions, and all 36 clean
 operands while removing the last standalone-table ownership fiction from both
 attachment-entry paths.
+
+## 2026-07-10 no-fakematch audit
+
+The scratch no longer declares the relocatable singleton pointer `volatile` or
+caches three hand-staged copies around the seed calls. Direct owner expressions
+let normal call aliasing determine reloads. Focused Wibo is the honest 75.63%,
+190/204 instructions, prefix 16, with 24 clean masks and one remaining masked
+layout mismatch. The score loss is concentrated in repeated seed stores that
+VC6 now coalesces through one live Game/Player base; the recovered embedded
+Player, FollowState, runtime-row heading field, squidge, velocity, and exit-lane
+ownership is unchanged.
