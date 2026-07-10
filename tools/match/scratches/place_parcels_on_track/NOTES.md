@@ -151,3 +151,22 @@ the `0x20c` bucket stride and that these banks are global scratch storage, not
 SubgameRuntime-owned state. The placement scratch remains honestly at 26.30%
 (646/639, 26 clean operands and five known mismatches); the ownership rewrite
 neither improves nor regresses its code-shape score.
+
+## Direct runtime-row claims and kind-42 owner (2026-07-10)
+
+Both the parcel-set and digit-0 claim passes now preserve the source's direct
+`runtime_rows[absolute_row]` indexing instead of introducing a cached row
+pointer. That independently agrees with the survival placement routine and
+confirms that the claimed row remains owned by the `SubgameRuntime` slab while
+the selected `ParcelBucket` is temporary global pool state. The kind-42 tail
+also dispatches through `AttachmentPathTemplate`, matching the same member
+owner recovered in the survival path rather than treating the transform helper
+as a free function.
+
+Focused Wibo improves from 26.30% to 29.83%, with 635/639 candidate
+instructions and 40 clean masked operands. Three address alignments remain:
+two candidate-bank lanes and the zero-bank/runtime-row base. The native frame
+also remains 0x214 versus the candidate's 0x208. Constructor-shaped glyph
+temporaries and a container-of cursor can reproduce pieces of those byte
+patterns, but both were rejected: they regress the global comparison and do
+not add ownership evidence.

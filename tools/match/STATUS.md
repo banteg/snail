@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**507/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **68769/325754** bytes (**21.11%**) are proof-grade, and overall fuzzy is **58.21%**.
+**507/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **68769/325754** bytes (**21.11%**) are proof-grade, and overall fuzzy is **58.24%**.
 
 ## Proof Grade (507)
 
@@ -729,7 +729,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 173/181 | 46.89% | 0/181 | 13 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 646/639 | 26.30% | 0/639 | 5 mismatch, 26 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 29.83% | 0/639 | 3 mismatch, 40 ok |  |
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 34 ok |  |
