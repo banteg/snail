@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**514/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72876/325754** bytes (**22.37%**) are proof-grade, and overall fuzzy is **59.21%**.
+**516/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **72955/325736** bytes (**22.40%**) are proof-grade, and overall fuzzy is **59.24%**.
 
-## Proof Grade (514)
+## Proof Grade (516)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -68,6 +68,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | read_next_display_mode_view_sample | 0x407930 | 167 | 55/55 | 100.00% | 55/55 | - |  |
 | ✅ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 23 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
+| ✅ | initialize_game_player | 0x408000 | 61 | 17/17 | 100.00% | 17/17 | 6 ok |  |
+| ✅ | initialize_noop_renderable_bod | 0x408040 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 932 | 227/227 | 100.00% | 227/227 | 72 ok |  |
 | ✅ | initialize_border_record | 0x408410 | 92 | 21/21 | 100.00% | 21/21 | 9 ok |  |
 | ✅ | initialize_cached_x_mesh_slot | 0x408470 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
@@ -561,7 +563,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 493/492 | 80.20% | 46/492 | 93 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
-| 🚧 | construct_game_runtime | 0x407b60 | 1266 | 287/310 | 80.40% | 0/310 | 115 ok |  |
+| 🚧 | construct_game_runtime | 0x407b60 | 1169 | 287/268 | 87.93% | 0/268 | 119 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 266/287 | 87.88% | 6/287 | 1 mismatch, 53 ok |  |

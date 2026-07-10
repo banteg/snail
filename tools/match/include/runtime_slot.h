@@ -12,8 +12,6 @@ public:
     RuntimeSlot* initialize_border_record();
     RuntimeSlot* initialize_cached_x_mesh_slot();
     RuntimeSlot* initialize_intro_logo_renderable();
-    RuntimeSlot* initialize_unknown_408040();
-
     RuntimeSlot* initialize_active_bod();
     RuntimeSlot* initialize_track_speedup_runtime();
     RuntimeSlot* initialize_track_jetpack_pickup_runtime();

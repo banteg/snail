@@ -30,6 +30,7 @@ typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
 class RenderableBod : public BodBase {
 public:
     RenderableBod* initialize_renderable_bod(); // @ 0x42f650
+    RenderableBod* initialize_noop_renderable_bod(); // @ 0x408040
 
     TransformMatrix transform; // +0x38
 };

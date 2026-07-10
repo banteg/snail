@@ -1,0 +1,22 @@
+# initialize_game_player @ 0x408000
+
+Typed Windows `cRPlayer` constructor helper.
+
+Ownership evidence:
+
+- `construct_game_runtime` calls it twice over the 0x1f8-byte records at
+  `GameRoot +0x124/+0x31c`;
+- the outer record inherits `RenderableBod`;
+- the owned `RenderCamera`/cross-port `cRCamera` subobject begins at player
+  `+0xa0` and also inherits `RenderableBod`;
+- owned `Color4f` values are constructed at `+0x188/+0x198`; and
+- the outer callback at 0x4972f4 points to exact
+  `update_frontend_state_machine`, independently identified as
+  `cRPlayer::AI()` on iOS.
+
+The embedded camera receives the shared no-op AI callback at 0x4972b0. This is
+the constructor-side proof for the ownership later consumed by viewport
+attachment and positional audio.
+
+Focused Wibo is exact at 100.00%, 17/17 instructions, full prefix, and six
+clean masked operands.

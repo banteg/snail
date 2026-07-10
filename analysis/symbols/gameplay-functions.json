@@ -366,6 +366,16 @@
       "description": "Allocates the `cRGame` root object, seeds its embedded managers and callback tables, initializes the runtime pools, and publishes the live global game pointer at `data_4df904`."
     },
     {
+      "address": "0x408000",
+      "name": "initialize_game_player",
+      "description": "Constructs one 0x1f8-byte Windows cRPlayer record: initializes its inherited renderable body, constructs the owned cRCamera subobject at +0xa0, constructs two owned colors at +0x188/+0x198, and installs the cRPlayer::AI callback."
+    },
+    {
+      "address": "0x408040",
+      "name": "initialize_noop_renderable_bod",
+      "description": "Constructs one RenderableBod and replaces its callback with the shared noop_runtime_ai slot; construct_game_runtime uses it for the three passive overlay child bodies."
+    },
+    {
       "address": "0x408060",
       "name": "initialize_runtime_pools_and_path_template_bank",
       "description": "Initializes the embedded subgame pools, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914. Those records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias; their 0x52b0 extent ends at the barrier actor at +0xff7bc4."

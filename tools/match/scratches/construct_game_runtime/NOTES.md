@@ -4,12 +4,13 @@
 manager constructors, installs the known callback tables, publishes
 `g_game_base`, and reports constructor counters.
 
-Current focused result:
+Current focused result after splitting the two adjacent helpers into their own
+manifest functions:
 
-- match: 80.40%
-- target/candidate instructions: 310 / 287
-- prefix: 0 / 310
-- masked operands: 115 clean, 0 unresolved, 0 mismatched
+- match: 87.93%
+- target/candidate instructions: 268 / 287
+- prefix: 0 / 268
+- masked operands: 119 clean, 0 unresolved, 0 mismatched
 
 The remaining broad shape gap is the compiler-generated setup around the root
 allocation. The native function has MSVC EH registration and batches the
@@ -28,14 +29,19 @@ and tip manager.
   stream and root-slot callback tables, and `g_loc_mirror_count` without
   changing the source body or instruction-stream score.
 
-The no-op renderable helper at `0x408040` remains local because its three uses
-do not expose a narrower owner. The `0x408000` composite is now closed as the
-`GamePlayer`/Windows `cRPlayer` constructor helper: it initializes consecutive
+The `0x408000` composite is now closed as the `GamePlayer`/Windows `cRPlayer`
+constructor helper: it initializes consecutive
 0x1f8-byte records at root `+0x124/+0x31c`, constructs the owned camera
 subobject at player `+0xa0`, and installs the callback whose first entry is the
 exact `update_frontend_state_machine` (`cRPlayer::AI()`). The constructor loop
 therefore uses a typed `GamePlayer*` increment instead of raw `RuntimeSlot`
 stride arithmetic.
+
+The 0x408040 helper is independently mapped as
+`initialize_noop_renderable_bod`: its three root uses are passive overlay child
+bodies, and its installed callback slot at 0x4972b0 points to
+`noop_runtime_ai`. Splitting both helpers out of this manifest extent keeps
+`construct_game_runtime` focused on the actual cRGame constructor body.
 
 2026-06-20 runtime-slot ABI pass:
 

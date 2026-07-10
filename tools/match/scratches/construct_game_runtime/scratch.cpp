@@ -23,7 +23,7 @@ extern void* g_backdrop_callback_table;         // data_4972e4
 extern void* g_border_manager_callback_table;   // data_4972e8
 extern void* g_overlay_callback_table;          // data_4972ec
 extern void* g_unknown_runtime_callback_table;  // data_4972f0
-extern void* g_overlay_stream_callback_table;   // data_4972b0
+extern void* g_noop_runtime_callback_table;     // data_4972b0
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
     debug_report_stub("Size of cRGame %i\n", 0x12e6ff4); \
@@ -103,23 +103,23 @@ int construct_game_runtime()
 
         RuntimeSlot* overlay = SLOT(0x67c);
         overlay->initialize_renderable_bod();
-        ((RuntimeSlot*)((char*)overlay + 0x80))->initialize_unknown_408040();
+        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         overlay = SLOT(0x7c8);
         overlay->initialize_renderable_bod();
-        ((RuntimeSlot*)((char*)overlay + 0x80))->initialize_unknown_408040();
+        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         overlay = SLOT(0x914);
         overlay->initialize_renderable_bod();
-        ((RuntimeSlot*)((char*)overlay + 0x80))->initialize_unknown_408040();
+        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         overlay = SLOT(0xa60);
         overlay->initialize_renderable_bod();
         ((RuntimeSlot*)((char*)overlay + 0x80))->noop_runtime_slot_constructor();
-        overlay->vtable = &g_overlay_stream_callback_table;
+        overlay->vtable = &g_noop_runtime_callback_table;
 
         RuntimeSlot* border_manager = SLOT(0xb4c);
         border_manager->initialize_bod_base();

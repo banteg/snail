@@ -1478,13 +1478,14 @@
     },
     {
       "address": "0x4972b0",
-      "name": "g_overlay_stream_callback_table",
+      "name": "g_noop_runtime_callback_table",
       "kind": "vtable",
       "aliases": [
+        "g_overlay_stream_callback_table",
         "off_4972b0",
         "data_4972b0"
       ],
-      "description": "Overlay-stream renderable callback table installed on the root overlay stream slot and the helper sub-slots initialized by construct_game_runtime."
+      "description": "Shared callback slot whose first entry is noop_runtime_ai. It is installed on passive overlay child bodies and on the embedded cRCamera body constructed inside each GamePlayer."
     },
     {
       "address": "0x4972d8",
@@ -1558,13 +1559,14 @@
     },
     {
       "address": "0x4972f4",
-      "name": "g_unknown_composite_runtime_callback_table",
+      "name": "g_game_player_callback_table",
       "kind": "vtable",
       "aliases": [
+        "g_unknown_composite_runtime_callback_table",
         "off_4972f4",
         "data_4972f4"
       ],
-      "description": "Runtime callback table installed by the 0x408000 composite helper reached from construct_game_runtime."
+      "description": "Windows cRPlayer callback slot installed by initialize_game_player; its first entry is the exact update_frontend_state_machine / cross-port cRPlayer::AI function."
     },
     {
       "address": "0x4972f8",
