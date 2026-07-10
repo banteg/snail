@@ -8,12 +8,37 @@ Inside `rebuild_track_runtime_from_segments`:
 
 - the builder calls a missing `populate_runtime_track_cells_from_segments` stage after laying out the segment rows
 - later consumers prove that stage installed:
-  - row-cell attachment flag bit `0x40`
-  - a row-cell owner pointer at `+0xa4`
-  - an installed attachment record whose `+56` points at the live template
-- `project_position_onto_track_attachment` chooses the active sample by `current_row - owner_row`, so the runtime clearly uses an installed owner/source-row chain rather than raw parser metadata
+  - runtime-row attachment flags `0x40` / `0x80`
+  - primary/secondary entry-cell pointers at runtime-row `+0xa4/+0xa8`
+  - the selected `AttachmentPathTemplate*` at entry-cell `+0x38`
+- `project_position_onto_track_attachment` chooses the active sample by
+  `current_row - entry_cell_row`, so the runtime uses an installed entry-cell
+  owner chain rather than raw parser metadata
 
-This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata. The remaining unknowns are the exact `P/p` glyph-to-runtime-tile semantics and the fine details of which installed half is chosen in the `P/p` installer branch, not the overall authored-name bridge itself.
+This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata. `P -> 30`, `p -> 29`, and the separate mirror byte's primary/secondary selection are now recovered; the remaining entry questions concern overlap and exit behavior.
+
+## Current Bank And Transition Ownership
+
+The constructor bank and installed bank are the same embedded array:
+
+- `SubgameRuntime = GameRoot + 0x74618`
+- `SubgameRuntime + 0xff2914 = GameRoot + 0x1066f2c`
+- 126 initialized `0xa8` records form 63 `0x150` primary/secondary pairs
+- public path-table indices address pairs `0..50` directly
+- pairs `51..62` own auxiliary meshes used by public pairs `0..7`, `25..27`, and `41`
+
+The special follow branch is now typed through the installed primary entry
+cell, not a separate owner record. For templates with the `+0x9c` transition
+flag, it reads that cell's template pointer at `+0x38`, swaps the cell's
+`BodBase.object` (`+0x24`) to template `+0xa0` at progress `3/7`, sets alpha
+`0.6`, then restores template `+0xa4` and alpha `1.0` at the terminal sample.
+World init proves `+0xa0` is an auxiliary pair's strip mesh and `+0xa4` is the
+public pair's own strip mesh.
+
+The same callsite map closes the public nonlinear split: authored slot `42`
+calls `initialize_halfpipe_path_template_pair` directly and produces runtime
+kind `42`; authored slot `30` (`WARP`) has no Windows constructor and remains a
+generically initialized/unbuilt placeholder.
 
 ## How Attachments Reach The Player
 
@@ -21,10 +46,10 @@ The strong static chain from this bundle is:
 
 - authored `Path=` name -> `find_segment_path_index_by_name` returns one of `51` hardcoded name-table indices
 - `load_segment_definitions` stores that resolved public index on the parsed segment-row record at `+0x8bc`
-- `populate_runtime_track_cells_from_segments` later reads that stored index and selects an installed attachment pair as `path_index * 336 + (game + 0xff2914 / 0xff29bc)`
+- `populate_runtime_track_cells_from_segments` later reads that stored index and selects a pair as `path_index * 336 + SubgameRuntime + 0xff2914`; the secondary half is `+0xa8`
 - in that same installer branch, uppercase `P` becomes runtime tile `30` and lowercase `p` becomes runtime tile `29`, but the installed-bank root itself is chosen by a separate builder-state byte at `this + 2`, not directly by glyph case
-- the generated row cells carry attachment flag bit `0x40` plus an owner pointer at `+0xa4`
-- projection and entry then walk from the current row cell to that installed owner record and into the live template record at owner `+56`
+- generated runtime rows carry attachment flags `0x40/0x80` plus entry-cell pointers at `+0xa4/+0xa8`
+- each entry cell points directly to its selected template at cell `+0x38`
 
 Later, `update_subgoldy` can enter `try_enter_track_attachment_from_swept_motion`, but the entry test is against installed sampled geometry, not against row glyph metadata alone.
 
@@ -99,7 +124,7 @@ The current high-confidence follow-state layout is:
 
 - `+0x00`: active flag
 - `+0x04`: active attachment-template pointer
-- `+0x08`: owner attachment-runtime record
+- `+0x08`: source entry-cell pointer
 - `+0x0c`: current segment index
 - `+0x10`: progress within the current sampled segment
 - `+0x14`: local height above the attachment surface
@@ -113,7 +138,7 @@ Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 
 - sets the active flag to `1`
 - stores the selected attachment pointer from runtime cell `+0x38`
-- stores the owner attachment-runtime record
+- stores the source entry-cell pointer
 - zeros the segment index
 - seeds progress from `world_z - cell_anchor_z`
 - seeds local height from `world_y - 0.49`
@@ -184,7 +209,7 @@ Additional static detail from `update_track_attachment_follow_state`:
 - the current output position is written to follow-state `+0x2c`
 - the update terminates the follow state when the sample index reaches the template end
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
-- the mid/end row-cell writes in the special branch pull their payloads from the installed runtime record reached through the live source row, not from template `+0xa0/+0xa4` directly
+- the special branch reaches the installed primary entry cell through runtime-row `+0xa4`, follows cell `+0x38` to its template, and copies template `+0xa0/+0xa4` into the cell's `BodBase.object`
 
 Newer raw BN plus IDA reconciliation narrows one tempting audio port too:
 
@@ -199,9 +224,18 @@ The newer Windows-only package also tightened two family reads:
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family
 - kind `42` is the special nonlinear family used by both projection and live follow
 
-That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field used by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only. Android now tightens that further: its named `cRPath::BuildHalfPipe` and `cRPath::HalfPipePos` are strong structural matches for the Windows kind-`42` constructor and transform helper.
+That distinction matters because path-table slot `30` is the authored `WARP`
+name, path-table slot `42` is authored `HALFPIPE`, and runtime kind `42` is a
+record field. The direct Windows world-init call now pins `0x429b20` to public
+slot `42`, so the tracked name is `initialize_halfpipe_path_template_pair`.
+Android's `cRPath::BuildHalfPipe` and `cRPath::HalfPipePos` independently
+corroborate the constructor and transform shapes.
 
-Android also shows that the nonlinear family is not monolithic there: `cRGame::LoadPaths` directly maps public slot `57` (`HALFPIPE`) to `cRPath::BuildHalfPipe` and slot `58` (`HALFPOLE`) to `cRPath::BuildHalfPole`, while `cRPathFollowGoldy::Traverse` has dedicated `HalfPipePos` and `HalfPolePos` branches. `WARP` is a separate public slot `37` in the same Android path registry, and it does not show up as the same builder family in the recovered `LoadPaths` body. That does not prove the exact Windows public-name mapping yet, but it does strongly argue that Windows public `HALFPIPE` and public `WARP` should not be collapsed into one authored family.
+Android also shows that the nonlinear family is not monolithic there:
+`cRGame::LoadPaths` maps `HALFPIPE` and `HALFPOLE` to distinct builders while
+keeping `WARP` separate. Windows now supplies the matching public split by a
+different route: `HALFPIPE` is constructed directly, while the `WARP` pair is
+left unbuilt.
 
 Important caveat for this specific March 8 capture:
 
@@ -315,14 +349,13 @@ That capture materially changes the strongest current read:
 
 - public path `HALFPIPE` definitely installs into the live nonlinear kind-`42` family
 - runtime kind `42` is therefore not safely `WARP`-only
-- `sub_429b20` still looks like one constructor for the kind-`42` family, but Android now makes it safer to describe that as a `HALFPIPE` / `HALFPOLE`-style nonlinear branch while leaving public `WARP` unresolved
+- `initialize_halfpipe_path_template_pair` is now statically pinned to public slot `42`; Android supplies an independent name cross-check
 
 What is still missing even after this capture:
 
 - a clean live `attachment_end` interpretation for `HALFPIPE`
   - the local oracle now emits `follow_state_summary` on `attachment_end` from the pre-teardown snapshot so the next capture can answer this directly
-- the exact authored-name-to-constructor split inside the kind-`42` family
-- whether public `WARP` and public `HALFPIPE` are separate constructors producing the same runtime kind, or aliases into one constructor branch with different installer/bank choices
+- whether a live run through shipped `WARP` content confirms the statically unbuilt/no-op slot behavior
 
 ## Third Path-Oracle Capture
 
@@ -366,9 +399,8 @@ This is the current high-confidence static evidence that:
 Still missing:
 
 - the detailed semantics of each path-template constructor beyond the current family grouping
-- the exact constructor body for the named `HALFPIPE` slot
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
-- the remaining installer details around row-cell flag `0x40`, row-cell `+0xa4`, and the installed-owner/source-row chain
+- the remaining overlap/exit behavior after the now-typed runtime-row-to-entry-cell chain
 
 ## Practical Impact On The Rewrite
 
@@ -393,7 +425,7 @@ The current Zig port now goes materially farther than the old â€œrow hint onlyâ€
 - the `Segments` view renders those built families directly, including the current nonlinear kind-`42` branch
 - gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
 - the current shared nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
-- the recovered kind-`42` halfpipe scalar curve now mirrors `sub_429b20`: entry samples use `(step / 16 * pi) + pi/2`, exit samples use `((1 - step / 16) * pi) + pi/2`, and the stored `+0xa0` scalar is `((depth * depth) + 16) / (depth * 2)`
+- the recovered kind-`42` halfpipe scalar curve now mirrors `initialize_halfpipe_path_template_pair`: entry samples use `(step / 16 * pi) + pi/2`, exit samples use `((1 - step / 16) * pi) + pi/2`, and sample `+0xa0` stores `((depth * depth) + 16) / (depth * 2)`
 - entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, current-row gameplay begin now stays on the direct `29/30` cell path, and swept installed re-entry only probes the live current row while `attachment_exit_pending` is set, using the live `0x40` slot first and `0x80` second instead of any installed span
 - current-row and visited-row attachment-entry handling no longer fall back to a synthetic generic begin when the installed-owner map is empty; if the live row has no installed owner, the port now leaves it untouched instead of inventing a source-row path
 - immediate swept-entry success no longer looks like an early-clear lane: the native caller re-tests `attachment_exit_pending` right after the first helper call, and the helper itself does not show a direct clear, so overlapping rows still leave the `0x80` probe reachable in the same tick
@@ -402,7 +434,7 @@ That is still not the full Windows model.
 
 Current Zig gaps that remain clearly open:
 
-- the real installed runtime bank and owner-record chain
 - the later controller that finally retires `attachment_exit_pending` after swept re-entry, plus live confirmation of what happens when two geometrically valid overlapping probes both succeed
 - the exact family-specific semantics inside the nonlinear kind-`42` family
-- the exact installed-bank split between public names like `HALFPIPE` and `WARP`
+- adopting the exact 63-pair bank and 12 auxiliary entry-mesh transitions
+- deciding whether the port should preserve Windows' unbuilt `WARP` placeholder or intentionally implement it

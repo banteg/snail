@@ -1,5 +1,6 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
 #include "player.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 #include "voice_manager.h"
 #include "vector3.h"
@@ -9,25 +10,9 @@ typedef Vector3 Vec3;
 #include "track_attachment_matrix_path_view.h"
 #include "track_row_cell_anchor_view.h"
 
-struct AttachmentFollowRuntimeRow {
-    char unknown_00[0x04];
-    unsigned int flags;
-    char unknown_08[0x24 - 0x08];
-    float runtime_value_24;
-    char unknown_28[0x34 - 0x28];
-    float runtime_value_34;
-    void* attachment_runtime_record;
-};
-
 struct AttachmentFollowRuntimeRowSlot {
-    AttachmentFollowRuntimeRow* row;
+    TrackRowCell* primary_attachment_cell;
     char unknown_04[0xf4 - 0x04];
-};
-
-struct AttachmentRuntimeRecord {
-    char unknown_00[0xa0];
-    float scalar_a0;
-    float scalar_a4;
 };
 
 struct AttachmentPathTemplateKind42CallView {
@@ -110,20 +95,20 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
         }
 
         AttachmentPathTemplateMatrixView* runtime_template = this->template_record;
-        if (runtime_template->special_runtime_flag_9c) {
+        if (runtime_template->has_entry_mesh_transition) {
             int count = (int)runtime_template->segment_count;
             int current_index = (int)this->sample_index;
             if (current_index == count - 1) {
-                AttachmentRuntimeRecord* attached =
-                    (AttachmentRuntimeRecord*)((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->attachment_runtime_record;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->runtime_value_24 = attached->scalar_a4;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->runtime_value_34 = 1.0f;
+                AttachmentPathTemplate* attached =
+                    ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
+                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->flags |= 0x80;
-                AttachmentRuntimeRecord* attached =
-                    (AttachmentRuntimeRecord*)((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->attachment_runtime_record;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->runtime_value_24 = attached->scalar_a0;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].row->runtime_value_34 = 0.6f;
+                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->bod.list_flags |= 0x80;
+                AttachmentPathTemplate* attached =
+                    ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
+                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
             }
         }
 

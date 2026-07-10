@@ -2,7 +2,7 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 /* selector: update_track_attachment_follow_state */
 
-// Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported.
+// Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported. iOS Path.o names the player-follow advance family `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`.
 int32_t __thiscall update_track_attachment_follow_state(
         FollowState *follow_state,
         float path_factor,
@@ -166,16 +166,16 @@ LABEL_11:
       follow_state->output_position.y = y;
       follow_state->vertical_offset = v45;
       follow_state->output_position.z = v44;
-      v47 = (char *)MEMORY[0x4DF904] + 4390324;
-      *((float *)MEMORY[0x4DF904] + 1097581) = x;
+      v47 = (char *)g_game_base + 4390324;
+      *((float *)g_game_base + 1097581) = x;
       *((_DWORD *)v47 + 1) = LODWORD(transform.basis_right.y);
       *((_DWORD *)v47 + 2) = LODWORD(transform.basis_right.z);
-      v48 = (float *)((char *)&loc_42FDC4 + (_DWORD)MEMORY[0x4DF904]);
+      v48 = (float *)((char *)&loc_42FDC4 + (_DWORD)g_game_base);
       *v48 = transform.basis_up.x;
       v48[1] = transform.basis_up.y;
       v48[2] = transform.basis_up.z;
-      v49 = (char *)MEMORY[0x4DF904] + 4390356;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(transform.basis_forward.x);
+      v49 = (char *)g_game_base + 4390356;
+      *((_DWORD *)g_game_base + 1097589) = LODWORD(transform.basis_forward.x);
       *((_DWORD *)v49 + 1) = LODWORD(transform.basis_forward.y);
       *((_DWORD *)v49 + 2) = LODWORD(transform.basis_forward.z);
     }
@@ -225,16 +225,16 @@ LABEL_11:
       follow_state->output_position.y = v83;
       v84 = v57 + v55;
       follow_state->output_position.z = v84;
-      v59 = (char *)MEMORY[0x4DF904] + 4390324;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097581) = LODWORD(transform.basis_right.x);
+      v59 = (char *)g_game_base + 4390324;
+      *((_DWORD *)g_game_base + 1097581) = LODWORD(transform.basis_right.x);
       *((_DWORD *)v59 + 1) = LODWORD(transform.basis_right.y);
       *((_DWORD *)v59 + 2) = LODWORD(transform.basis_right.z);
-      v60 = (float *)((char *)&loc_42FDC4 + (_DWORD)MEMORY[0x4DF904]);
+      v60 = (float *)((char *)&loc_42FDC4 + (_DWORD)g_game_base);
       *v60 = transform.basis_up.x;
       v60[1] = transform.basis_up.y;
       v60[2] = transform.basis_up.z;
-      v61 = (char *)MEMORY[0x4DF904] + 4390356;
-      *((_DWORD *)MEMORY[0x4DF904] + 1097589) = LODWORD(transform.basis_forward.x);
+      v61 = (char *)g_game_base + 4390356;
+      *((_DWORD *)g_game_base + 1097589) = LODWORD(transform.basis_forward.x);
       *((_DWORD *)v61 + 1) = LODWORD(transform.basis_forward.y);
       *((_DWORD *)v61 + 2) = LODWORD(transform.basis_forward.z);
     }
@@ -342,42 +342,42 @@ LABEL_62:
       follow_state->sample_index = v11;
       v78 = v78 - v10;
       if ( v11 == 2 * template_record->segment_count )
-        play_voice_manager((int)unk_751498, 4, 1u, -1);
+        play_voice_manager((int)g_voice_manager, 4, 1u, -1);
       v12 = follow_state->template_record;
-      if ( v12->special_runtime_flag_9c )
+      if ( v12->has_entry_mesh_transition )
       {
         segment_count = v12->segment_count;
         v14 = follow_state->sample_index;
         if ( v14 == segment_count - 1 )
         {
-          v15 = *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                      + (_DWORD)MEMORY[0x4DF904]
-                                      + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          v15 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                      + (_DWORD)g_game_base
+                                      + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                           + 56);
-          *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                + (_DWORD)g_game_base
+                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                     + 36) = *(_DWORD *)(v15 + 164);
-          *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                + (_DWORD)g_game_base
+                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                     + 52) = 1065353216;
         }
         else if ( v14 == (int)(3 * segment_count) / 7 )
         {
-          track_cell_row_index = get_track_cell_row_index(follow_state->source_cell->_pad_00);
-          *(_DWORD *)(*(_DWORD *)((char *)&unk_641184 + (_DWORD)MEMORY[0x4DF904] + 244 * track_cell_row_index) + 4) |= 0x80u;
-          v17 = *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                      + (_DWORD)MEMORY[0x4DF904]
-                                      + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          track_cell_row_index = get_track_cell_row_index(&follow_state->source_cell->bod.vtable);
+          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows + (_DWORD)g_game_base + 244 * track_cell_row_index) + 4) |= 0x80u;
+          v17 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                      + (_DWORD)g_game_base
+                                      + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                           + 56);
-          *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                + (_DWORD)g_game_base
+                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                     + 36) = *(_DWORD *)(v17 + 160);
-          *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
-                                + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
+          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
+                                + (_DWORD)g_game_base
+                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
                     + 52) = 1058642330;
         }
       }
@@ -424,9 +424,9 @@ LABEL_62:
       v84 = v36;
       out_position->z = v84;
       out_position->x = v26;
-      follow_state->player->cutscene_pitch_cycle_step = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
+      follow_state->player->cutscene_pitch_cycle_step = *((float *)g_game_base + 119188) * 0.013888888;
       follow_state->player->cutscene_pitch_cycle = follow_state->player->cutscene_pitch_cycle_step;
-      play_voice_manager((int)unk_751498, 15, 0, -1);
+      play_voice_manager((int)g_voice_manager, 15, 0, -1);
     }
     else
     {

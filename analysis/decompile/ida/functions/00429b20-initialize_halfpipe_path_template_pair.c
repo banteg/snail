@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_kind42_path_template_pair @ 0x429b20 */
-/* selector: initialize_kind42_path_template_pair */
+/* function: initialize_halfpipe_path_template_pair @ 0x429b20 */
+/* selector: initialize_halfpipe_path_template_pair */
 
-// Builds one nonlinear kind-42 attachment template branch. The constructor seeds sample_count=66, writes the special per-sample scalar at +0xa0, and emits a generated strip mesh through the shared kind-42 transform helper. Android's cRPath::BuildHalfPipe is a strong structural match, but the exact Windows public-path mapping remains open.
-int32_t __thiscall initialize_kind42_path_template_pair(
+// Builds the Windows public HALFPIPE path-template pair at authored slot 42. The direct initialize_game_assets_and_world call targets pair base game+0x106a64c, seeds runtime kind 42 with 66 samples, and emits the generated strip mesh through the shared kind-42 transform helper; Android cRPath::BuildHalfPipe independently matches the shape.
+int32_t __thiscall initialize_halfpipe_path_template_pair(
         PathTemplate *self,
         int32_t arg2,
         char *texture_a,
@@ -108,7 +108,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
   self->segment_count = 66;
   self->segment_count_f = 66.0;
   allocate_path_template_samples(self);
-  self->special_runtime_flag_9c = 0;
+  self->has_entry_mesh_transition = 0;
   v53 = 0;
   v5 = 0;
   do
@@ -343,38 +343,38 @@ int32_t __thiscall initialize_kind42_path_template_pair(
         while ( 1 )
         {
           v49 = &facequads[2 * v47 + 2 * k * self->width_cells + v48];
-          v49->flags = 0;
+          *(_WORD *)&v49->flags = 0;
           if ( v48 )
           {
-            v49->vertex_index_a = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_index_b = v47 + k * (LOWORD(self->width_cells) + 1);
-            v49->vertex_index_c = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->vertex_index_d = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->texture_ref = get_or_create_texture_ref(&texture_list, v95, 0, 0);
-            v49->u0 = v81;
-            v49->v0 = v74;
-            v49->u1 = v58;
-            v49->v1 = v74;
-            v49->u2 = v58;
-            v49->v2 = v63;
-            v49->u3 = v81;
+            v49->vertex_0 = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
+            v49->vertex_1 = v47 + k * (LOWORD(self->width_cells) + 1);
+            v49->vertex_2 = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
+            v49->vertex_3 = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
+            v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, v95, 0, 0);
+            v49->uv[0].u = v81;
+            v49->uv[0].v = v74;
+            v49->uv[1].u = v58;
+            v49->uv[1].v = v74;
+            v49->uv[2].u = v58;
+            v49->uv[2].v = v63;
+            v49->uv[3].u = v81;
           }
           else
           {
-            v49->vertex_index_a = v47 + k * (LOWORD(self->width_cells) + 1);
-            v49->vertex_index_b = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_index_c = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_index_d = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->texture_ref = get_or_create_texture_ref(&texture_list, texture_path, 0, 0);
-            v49->u0 = v58;
-            v49->v0 = v74;
-            v49->u1 = v81;
-            v49->v1 = v74;
-            v49->u2 = v81;
-            v49->v2 = v63;
-            v49->u3 = v58;
+            v49->vertex_0 = v47 + k * (LOWORD(self->width_cells) + 1);
+            v49->vertex_1 = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
+            v49->vertex_2 = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
+            v49->vertex_3 = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
+            v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
+            v49->uv[0].u = v58;
+            v49->uv[0].v = v74;
+            v49->uv[1].u = v81;
+            v49->uv[1].v = v74;
+            v49->uv[2].u = v81;
+            v49->uv[2].v = v63;
+            v49->uv[3].u = v58;
           }
-          v49->v3 = v63;
+          v49->uv[3].v = v63;
           if ( ++v82 >= 2 )
             break;
           v48 = v82;

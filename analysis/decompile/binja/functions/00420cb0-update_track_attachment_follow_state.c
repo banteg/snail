@@ -23,26 +23,26 @@
 00420d23        if (sample_index_2 + 1 == template_record_6->segment_count << 1)
 00420d30        play_voice_manager(0x751498, 4, 1, 0xffffffff)
 00420d35        struct PathTemplate* template_record = follow_state->template_record
-00420d40        if (template_record->special_runtime_flag_9c != 0)
+00420d40        if (template_record->has_entry_mesh_transition != 0)
 00420d46        uint32_t segment_count = template_record->segment_count
 00420d49        uint32_t sample_index_4 = follow_state->sample_index
 00420d51        if (sample_index_4 != segment_count - 1)
 00420ddb        if (sample_index_4 == segment_count * 3 s/ 7)
 00420de4        int32_t eax_13 = get_track_cell_row_index(follow_state->source_cell)
-00420df7        void* eax_15 = *(data_4df904 + eax_13 * 0xf4 + 0x641184)
+00420df7        void* eax_15 = *(g_game_base + eax_13 * 0xf4 + 0x641184)
 00420e03        *(eax_15 + 4) |= 0x80
 00420e09        int32_t eax_16 = get_track_cell_row_index(follow_state->source_cell)
-00420e23        void* esi_1 = *(*(data_4df904 + eax_16 * 0xf4 + 0x641184) + 0x38)
+00420e23        void* esi_1 = *(*(g_game_base + eax_16 * 0xf4 + 0x641184) + 0x38)
 00420e29        int32_t eax_18 = get_track_cell_row_index(follow_state->source_cell)
-00420e4a        *(*(data_4df904 + eax_18 * 0xf4 + 0x641184) + 0x24) = *(esi_1 + 0xa0)
+00420e4a        *(*(g_game_base + eax_18 * 0xf4 + 0x641184) + 0x24) = *(esi_1 + 0xa0)
 00420e50        int32_t eax_21 = get_track_cell_row_index(follow_state->source_cell)
-00420e6a        *(*(data_4df904 + eax_21 * 0xf4 + 0x641184) + 0x34) = 0x3f19999a
+00420e6a        *(*(g_game_base + eax_21 * 0xf4 + 0x641184) + 0x34) = 0x3f19999a
 00420d56        int32_t eax_6 = get_track_cell_row_index(follow_state->source_cell)
-00420d74        void* esi = *(*(data_4df904 + eax_6 * 0xf4 + 0x641184) + 0x38)
+00420d74        void* esi = *(*(g_game_base + eax_6 * 0xf4 + 0x641184) + 0x38)
 00420d77        int32_t eax_8 = get_track_cell_row_index(follow_state->source_cell)
-00420d97        *(*(data_4df904 + eax_8 * 0xf4 + 0x641184) + 0x24) = *(esi + 0xa4)
+00420d97        *(*(g_game_base + eax_8 * 0xf4 + 0x641184) + 0x24) = *(esi + 0xa4)
 00420d9d        int32_t eax_10 = get_track_cell_row_index(follow_state->source_cell)
-00420db7        *(*(data_4df904 + eax_10 * 0xf4 + 0x641184) + 0x34) = 0x3f800000
+00420db7        *(*(g_game_base + eax_10 * 0xf4 + 0x641184) + 0x34) = 0x3f800000
 00420e6d        template_record_6 = follow_state->template_record
 00420e70        sample_index_2 = follow_state->sample_index
 00420e76        if (sample_index_2 == template_record_6->segment_count)
@@ -80,7 +80,7 @@
 00421005        out_position->y = fconvert.s(x87_r5_9)
 00421012        out_position->z = fconvert.s(fconvert.t(var_11c_1) + x87_r6_3)
 00421015        out_position->x = fconvert.s(x87_r7_15)
-0042102c        follow_state->player->cutscene_pitch_cycle_step = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.0138888881f))
+0042102c        follow_state->player->cutscene_pitch_cycle_step = fconvert.s(fconvert.t(*(g_game_base + 0x74650)) * fconvert.t(0.0138888881f))
 00421032        struct Player* player = follow_state->player
 0042103b        player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step
 00421046        play_voice_manager(0x751498, set_id, mode, sample_override)
@@ -135,12 +135,8 @@
 0042134b        long double x87_r7_58 = fconvert.t(var_17c)
 0042136d        struct TransformMatrix to
 0042136d        int32_t ecx_63 = __builtin_memcpy(&to, &template_record_3->secondary_samples[sample_index_3 + 1], 0x40)
-0042136f        from.position.z = 0
-0042137a        from.position.y = 0
-00421385        from.position.x = 0
-00421390        to.position.z = 0
-0042139b        to.position.y = 0
-004213a6        to.position.x = 0
+00421385        __builtin_memset(&from.position, 0, 0xc)
+004213a6        __builtin_memset(&to.position, 0, 0xc)
 004213b4        int32_t var_194_3 = ecx_63
 004213d3        linear_interpolate_matrix(&var_164, &from, &to, fconvert.s(x87_r7_58 / fconvert.t(*(&template_record_3->secondary_samples->delta_length + eax_29))))
 00421332        set_matrix_identity(&var_164)
@@ -161,16 +157,16 @@
 004214a1        long double x87_r6_27 = x87_r6_24 * fconvert.t(var_164.basis_right.z) + fconvert.t(var_16c_2) + x87_r7_67 * fconvert.t(var_164.basis_up.z)
 004214a3        esi_9->y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_164.basis_right.y) * x87_r6_24)) + fconvert.t(var_170_2))) + fconvert.t(fconvert.s(fconvert.t(var_164.basis_up.y) * x87_r7_67)))
 004214ae        esi_9->z = fconvert.s(x87_r6_27)
-004214ba        float* eax_62 = data_4df904 + 0x42fdb4
+004214ba        float* eax_62 = g_game_base + 0x42fdb4
 004214c1        *eax_62 = var_164.basis_right.x
 004214c7        eax_62[1] = var_164.basis_right.y
 004214ce        eax_62[2] = var_164.basis_right.z
-004214db        float* edx_37 = data_4df904 + 0x42fdc4
+004214db        float* edx_37 = g_game_base + 0x42fdc4
 004214e1        *edx_37 = var_164.basis_up.x
 004214e7        edx_37[1] = var_164.basis_up.y
 004214ee        edx_37[2] = var_164.basis_up.z
 004214f7        float x_2 = var_164.basis_forward.x
-004214fb        char* ecx_70 = data_4df904 + 0x42fdd4
+004214fb        char* ecx_70 = g_game_base + 0x42fdd4
 00421501        *ecx_70 = x_2.b
 00421501        ecx_70[1] = x_2:1.b
 00421501        ecx_70[2] = x_2:2.b
@@ -215,19 +211,19 @@
 00421274        follow_state->output_position.y = y
 00421277        follow_state->vertical_offset = fconvert.s(x87_r6_18)
 0042127a        follow_state->output_position.z = fconvert.s(x87_r7_43)
-00421283        float* edx_28 = data_4df904 + 0x42fdb4
+00421283        float* edx_28 = g_game_base + 0x42fdb4
 00421289        *edx_28 = x
 0042128f        edx_28[1] = var_164.basis_right.y
 00421296        edx_28[2] = var_164.basis_right.z
 0042129f        float x_1 = var_164.basis_up.x
-004212a3        char* ecx_56 = data_4df904 + 0x42fdc4
+004212a3        char* ecx_56 = g_game_base + 0x42fdc4
 004212a9        *ecx_56 = x_1.b
 004212a9        ecx_56[1] = x_1:1.b
 004212a9        ecx_56[2] = x_1:2.b
 004212a9        ecx_56[3] = x_1:3.b
 004212af        *(ecx_56 + 4) = var_164.basis_up.y
 004212b6        *(ecx_56 + 8) = var_164.basis_up.z
-004212c2        float* eax_58 = data_4df904 + 0x42fdd4
+004212c2        float* eax_58 = g_game_base + 0x42fdd4
 004212c7        *eax_58 = var_164.basis_forward.x
 004212cd        eax_58[1] = var_164.basis_forward.y
 004212d4        eax_58[2] = var_164.basis_forward.z

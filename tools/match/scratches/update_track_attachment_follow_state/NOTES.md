@@ -206,3 +206,23 @@ current 0x180-frame codegen. The rename is codegen neutral at `69.38%`,
 `uv run snail match types AttachmentPathTemplate --paths` /
 `uv run snail match types FollowState --paths` now report no consolidation
 candidates.
+
+## 2026-07-10 entry-mesh transition ownership
+
+The old local `AttachmentFollowRuntimeRow` / scalar overlay was misleading.
+`g_game_base +0x641184 + row*0xf4` is a field-first view of
+`TrackAttachmentRuntimeRow::primary_attachment_cell` at subgame row `+0xa4`.
+The pointed object is a `TrackRowCell`, so its `+0x24` and `+0x34` writes are
+`BodBase.object` and `Color4f.a`, not anonymous runtime scalars.
+
+For templates with `has_entry_mesh_transition` (`+0x9c`):
+
+- sample `(3 * count) / 7` sets the entry cell's list flag `0x80`, installs
+  `template->entry_transition_strip_mesh` (`+0xa0`), and sets alpha `0.6`;
+- sample `count - 1` restores `template->entry_base_strip_mesh` (`+0xa4`) and
+  alpha `1.0`.
+
+World init supplies those pointers from an auxiliary pair and the public pair
+respectively. Replacing the local fake overlay with the shared owner types is
+codegen neutral: focused matching remains `69.38%`, `672/726`, prefix
+`122/726`, masks `53/0/0`.

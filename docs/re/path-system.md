@@ -18,6 +18,7 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `find_segment_path_index_by_name` at `0x429ae0`
 - `initialize_garbage_hazard` at `0x408550`
 - `initialize_path_template_record_pair` at `0x4085c0`
+- `initialize_halfpipe_path_template_pair` at `0x429b20`
 - `mirror_path_template_pair_x` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
 - `load_level_definitions` at `0x448900`
@@ -74,16 +75,23 @@ The current high-confidence model is:
 
 - `Path=<name>` resolves through a hardcoded name table in the executable
 - `load_segment_definitions` resolves that authored name to one of the `51` table indices and stores it on the parsed segment-row record at `+0x8bc`
-- `populate_runtime_track_cells_from_segments` later uses that stored index directly as `path_index * 336` into the installed pair bank rooted at `game + 0xff2914` / `game + 0xff29bc`
+- `populate_runtime_track_cells_from_segments` later uses that stored index directly as `path_index * 336` into the embedded pair bank rooted at `SubgameRuntime + 0xff2914`; `+0xff29bc` is the secondary record `0xa8` bytes into each pair
+- that bank is the same storage constructed by `initialize_game_assets_and_world` at `GameRoot + 0x1066f2c`, because `SubgameRuntime = GameRoot + 0x74618`
 - the same `P/p` installer branch maps `P -> 30` and `p -> 29` for the runtime tile id, while the bank-root choice itself is controlled by a separate builder-state byte at `this + 2`
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the placed parcel runtime at `game + 0x125e480` is a dedicated 50-slot array that `spawn_track_parcel` allocates from, and it remains separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
-- the Zig port now mirrors that public `Path=` table in `attachment_builders.zig`, builds templates for every public family, renders them in the segment viewer, and uses those built templates for live follow/camera in gameplay; the remaining gap is the exact Windows installed bank and entry/exit semantics, not the existence of a separate path-template layer itself
+- the Windows bank is exactly 63 primary/secondary pairs: public slots `0..50`, then 12 auxiliary transition pairs for public slots `0..7`, `25..27`, and `41`
+- public `HALFPIPE` slot `42` is built directly by `initialize_halfpipe_path_template_pair`; public `WARP` slot `30` is only generically initialized and remains unbuilt in this executable
+- the Zig port mirrors the public `Path=` table in `attachment_builders.zig`, but still needs to adopt the exact embedded pair/transition behavior where parity matters
 
-The remaining unknowns are mostly about exact constructor semantics, unresolved public slots like `HALFPIPE`, and the last details of attachment entry or exit behavior. The big former gap is now closed: the public `Path=` table does not go through a later mystery remap stage in the runtime installer. The parser stores the 51-name index up front, and the builder uses that index directly when it installs the sampled attachment pair on `P/p` rows.
+The remaining unknowns are mostly constructor-local geometry semantics, whether
+primary/secondary deserves a stronger universal name, and the last details of
+attachment entry or exit behavior. The former ownership gaps are closed: there
+is no later remap or copy stage, and the 12 tail pairs own the transition meshes
+swapped onto flagged entry cells during follow progress.
 
 ## March 8 Runtime Capture
 

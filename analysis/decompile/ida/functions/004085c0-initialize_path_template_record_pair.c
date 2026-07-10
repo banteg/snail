@@ -2,12 +2,12 @@
 /* function: initialize_path_template_record_pair @ 0x4085c0 */
 /* selector: initialize_path_template_record_pair */
 
-// Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable.
-_DWORD *__thiscall sub_4085C0(_DWORD *this)
+// Constructs one 0xa8-byte path-template record by initializing its leading BodBase and embedded fringe BodBase at +0x60, then installs the shared callback table. The retained historical name says pair, but the primary/secondary path pair consists of two adjacent calls/records.
+_DWORD *__thiscall initialize_path_template_record_pair(_DWORD *this)
 {
   initialize_bod_base(this);
   initialize_bod_base(this + 24);
-  *this = off_497334;
+  *this = g_path_template_record_vtable;
   return this;
 }
 

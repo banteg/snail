@@ -28,8 +28,13 @@ struct AttachmentPathTemplateMatrixView {
         float installed_heading_delta;
         int installed_heading_bits;
     };                                     // +0x98
-    unsigned char special_runtime_flag_9c; // +0x9c
-    char unknown_9d[0xa8 - 0x9d];
+    union {
+        unsigned char has_entry_mesh_transition; // +0x9c
+        unsigned char special_runtime_flag_9c;
+    };
+    char unknown_9d[0xa0 - 0x9d];
+    void* entry_transition_strip_mesh; // +0xa0
+    void* entry_base_strip_mesh;       // +0xa4
 };
 
 #endif

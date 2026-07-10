@@ -310,7 +310,10 @@ typedef struct TextureRefList {
 typedef struct TrackRowCell {
     BodNode bod;
     Vec3 anchor_position;
-    uint8_t _pad_1c[0x1c];
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
@@ -735,39 +738,6 @@ typedef struct SelectedLevelRecord {
     SelectedLevelReplaySample replay_samples[1];
 } SelectedLevelRecord;
 
-typedef struct Game {
-    uint8_t _pad_00[0x34];
-    float challenge_difficulty_scalar;
-    float subgame_rate;
-    int32_t subgame_state;
-    int32_t level_mode;
-    int32_t level_mode_arg;
-    float base_subgame_rate;
-    uint32_t runtime_flags;
-    int32_t first_block_row_count;
-    int32_t runtime_row_count;
-    int32_t completion_row_start;
-    uint8_t _pad_5c[0xa7f8];
-    uint8_t track_state_latch;
-    uint8_t _pad_a855[0x3];
-    TutorialController tutorial;
-    uint8_t _pad_a868[0xc];
-    int32_t level_segment_count;
-    uint8_t _pad_a878[0x69da9];
-    uint8_t pause_gate;
-    uint8_t _pad_74622[0xf7dfae];
-    uint8_t selected_level_record_active;
-    uint8_t selected_level_record_persistent;
-    uint8_t _pad_ff25d2[0x2];
-    SelectedLevelRecord* selected_level_record;
-    int32_t selected_level_record_saved_return_owner;
-    int32_t replay_update_cursor;
-    uint8_t _pad_ff25e0[0x4];
-    int32_t runtime_track_index;
-    uint8_t _pad_ff25e8[0x2801f0];
-    RowEventDisplayController row_event_display;
-} Game;
-
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -802,11 +772,51 @@ typedef struct PathTemplate {
     PathTemplateSample* secondary_samples;
     uint8_t _pad_60[0x38];
     float installed_heading_delta;
-    uint8_t special_runtime_flag_9c;
+    uint8_t has_entry_mesh_transition;
     uint8_t _pad_9d[0x3];
-    float header_a0;
-    float header_a4;
+    PathTemplateStripMesh* entry_transition_strip_mesh;
+    PathTemplateStripMesh* entry_base_strip_mesh;
 } PathTemplate;
+
+typedef struct PathTemplatePair {
+    PathTemplate primary;
+    PathTemplate secondary;
+} PathTemplatePair;
+
+typedef struct Game {
+    uint8_t _pad_00[0x34];
+    float challenge_difficulty_scalar;
+    float subgame_rate;
+    int32_t subgame_state;
+    int32_t level_mode;
+    int32_t level_mode_arg;
+    float base_subgame_rate;
+    uint32_t runtime_flags;
+    int32_t first_block_row_count;
+    int32_t runtime_row_count;
+    int32_t completion_row_start;
+    uint8_t _pad_5c[0xa7f8];
+    uint8_t track_state_latch;
+    uint8_t _pad_a855[0x3];
+    TutorialController tutorial;
+    uint8_t _pad_a868[0xc];
+    int32_t level_segment_count;
+    uint8_t _pad_a878[0x69da9];
+    uint8_t pause_gate;
+    uint8_t _pad_74622[0xf7dfae];
+    uint8_t selected_level_record_active;
+    uint8_t selected_level_record_persistent;
+    uint8_t _pad_ff25d2[0x2];
+    SelectedLevelRecord* selected_level_record;
+    int32_t selected_level_record_saved_return_owner;
+    int32_t replay_update_cursor;
+    uint8_t _pad_ff25e0[0x4];
+    int32_t runtime_track_index;
+    uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
+    PathTemplatePair path_template_pairs[63];
+    uint8_t _pad_ff7bc4[0x12727d8 - 0xff7bc4];
+    RowEventDisplayController row_event_display;
+} Game;
 
 typedef struct FollowState {
     uint8_t active;
@@ -1061,7 +1071,7 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
     char* texture_c
 );
 
-int32_t __thiscall initialize_kind42_path_template_pair(
+int32_t __thiscall initialize_halfpipe_path_template_pair(
     PathTemplate* self,
     int32_t arg2,
     char* texture_a,

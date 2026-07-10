@@ -639,11 +639,11 @@
     },
     {
       "address": "0x429b20",
-      "windows_name": "initialize_kind42_path_template_pair",
+      "windows_name": "initialize_halfpipe_path_template_pair",
       "ios_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",
       "source_object": "Path.o",
-      "confidence": "medium",
-      "notes": "Structural evidence ties Windows kind 42 to the HalfPipe family, but the public authored-path mapping remains open."
+      "confidence": "high",
+      "notes": "The direct Windows world-init call constructs public authored slot 42 (HALFPIPE); Android independently supplies the matching BuildHalfPipe name."
     },
     {
       "address": "0x42a540",

@@ -1220,8 +1220,8 @@
     },
     {
       "address": "0x429b20",
-      "name": "initialize_kind42_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/00429b20-initialize_kind42_path_template_pair.c"
+      "name": "initialize_halfpipe_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/00429b20-initialize_halfpipe_path_template_pair.c"
     },
     {
       "address": "0x42a540",

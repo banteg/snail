@@ -68,7 +68,12 @@ Important corrections:
 - path-table index `42` is still the authored name `HALFPIPE`
 - the recovered **runtime kind** `42` is a different field entirely
 - a focused March 12 capture now proves authored `HALFPIPE` installs live into runtime kind `42`
-- `sub_429b20` still strongly matches one constructor for the nonlinear kind-`42` family, but kind `42` is no longer safely describable as `WARP`-only
+- the direct world-init call at `0x40cda0` constructs authored slot `42` at
+  `game + 0x106a64c`, so `initialize_halfpipe_path_template_pair` (`0x429b20`)
+  is the exact Windows `HALFPIPE` builder
+- public slot `30` (`WARP`) is different: its pair at `game + 0x106968c`
+  receives only the generic startup initialization and has no constructor or
+  later direct bank reference in the game-authored code range
 - Android now proves a stronger public split in its own path registry:
   - `HALFPIPE` is public slot `57` and `LoadPaths` builds it directly with `cRPath::BuildHalfPipe`
   - `HALFPOLE` is public slot `58` and `LoadPaths` builds it directly with `cRPath::BuildHalfPole`
@@ -76,41 +81,75 @@ Important corrections:
 
 ## Installed Pair Bank Bridge
 
-The parser and runtime installer now close most of the old bridge gap:
+There is no constructor-to-runtime copy stage. The two formerly separate
+address families are aliases of the same embedded storage:
 
-- `load_segment_definitions` parses `Path=...`, resolves it through `find_segment_path_index_by_name`, and stores the resulting public-table index on each parsed segment row at `+0x8bc`
-- `populate_runtime_track_cells_from_segments` later reads that stored index from the parsed row and selects an installed pair as `path_index * 336 + installed_pair_bank`
-- the two installed-pair bank roots used by the `P/p` branch are:
-  - `game + 0xff2914`
-  - `game + 0xff29bc`
-- uppercase `P` becomes runtime tile `30` and lowercase `p` becomes runtime tile `29`, but the choice between those two installed-pair roots comes from a separate builder-state byte at `this + 2`
-- those roots differ by exactly one `0xa8`-byte record, so one public path id resolves to a `336`-byte installed pair made of two adjacent template records
+```text
+SubgameRuntime = GameRoot + 0x74618
+0x74618 + 0xff2914 = 0x1066f2c
+```
 
-What this still does **not** prove:
+- `game_startup_and_main_loop` calls `initialize_game_assets_and_world` with
+  `g_game_base` at `0x406f56`
+- `initialize_runtime_pools_and_path_template_bank` receives
+  `GameRoot + 0x74618` and initializes `126` records at its `+0xff2914`
+- `initialize_game_assets_and_world` constructs public slot `i` directly at
+  `GameRoot + 0x1066f2c + i * 0x150`
+- `update_subgame` and `populate_runtime_track_cells_from_segments` use the
+  `SubgameRuntime` view of that same array
 
-- that the constructor-generation bank at the higher asset/world offsets is laid out identically to the installed runtime pair bank
-- that every constructor family uses the same left/right semantic for the two halves
-- the exact meaning of the `this + 2` branch in the `P/p` installer that chooses which half pointer is installed on the row
+The parser/runtime path is therefore direct:
+
+- `load_segment_definitions` resolves `Path=...` to a public-table index and
+  stores it on the parsed row at `+0x8bc`
+- the `P/p` builder reads that index and selects pair `i`
+- `SubgameRuntime + 0xff2914` selects the primary `0xa8` record and
+  `SubgameRuntime + 0xff29bc` selects the secondary record
+- uppercase `P` becomes tile `30` and lowercase `p` tile `29`; the independent
+  `track_mirror_enabled` byte chooses primary versus secondary
+
+The remaining uncertainty is semantic, not ownership: some constructors build
+both halves explicitly while others mirror X, so “primary/secondary” is safer
+than imposing one universal left/right meaning.
 
 ## Path Template Slot Layout
 
-Observed facts:
+The bank has an exact fixed extent:
 
-- the runtime path-template bank is rooted at `arg1 + 0xff2914`
-- the second half of each pair is rooted at `arg1 + 0xff29bc`, exactly `0xa8` bytes after the first
-- the init pass zeroes `126` records of size `0xa8`, which is enough space for `63` potential two-record pairings
+- one `AttachmentPathTemplate` record is `0xa8` bytes
+- one `AttachmentPathTemplatePair` is `0x150` bytes
+- `63 * 0x150 = 0x52b0`
+- `SubgameRuntime + 0xff2914 + 0x52b0 = +0xff7bc4`, exactly the embedded
+  `BarrierActor` that follows the bank
 
-Two generic helpers now make that layout clearer:
+`initialize_path_template_record_pair` retains a historical misleading name.
+Its body initializes one `0xa8` record: a leading `BodBase` and a second
+`BodBase` at `+0x60`, then the record callback table. Startup calls it 126
+times; adjacent calls form the 63 primary/secondary pairs.
 
-- `initialize_path_template_record_pair`
-- `mirror_path_template_pair_x`
+Pairs `0..50` correspond exactly to the public name table. Pairs `51..62` are
+not spare capacity: they are transition-only geometry owners for the 12 public
+families whose `+0x9c` flag is set.
 
-What is still **not** proven from this package:
+| Auxiliary pair | Public pair | Family |
+|---:|---:|---|
+| 51-58 | 0-7 | `LOOPTHELOOP*`, `LOOPTHELOOPW`, `LOOPBOW` |
+| 59-61 | 25-27 | `LOOPOUT`, `LOOPOUT3`, `LOOPOUTBIG` |
+| 62 | 41 | `INVERT` |
 
-- that the constructor-generation bank universally treats those `126` records as `63` contiguous left/right pairs
-- that the first/second record layout is the same for every constructor family
+World init copies each auxiliary record's `strip_mesh` into the corresponding
+public record at `+0xa0`, and copies the public record's own `strip_mesh` into
+`+0xa4`. During follow, `+0x9c` enables two entry-cell mesh milestones:
 
-`initialize_path_template_record_pair` proves record initialization at `+0x0` and `+0x18`, and `mirror_path_template_pair_x` proves one record can be mirrored into another, but the actual call sites that establish universal pair layout are still missing.
+- at sample `(3 * segment_count) / 7`, set list flag `0x80`, swap the installed
+  entry cell to the auxiliary mesh, and set alpha to `0.6`
+- at sample `segment_count - 1`, restore the public mesh and alpha `1.0`
+
+The objects and sample arrays are game-runtime lifetime assets. Constructors
+allocate them after `set_tracked_allocation_mark`; `destroy_subgame` only
+unlinks live BOD nodes and does not free the template bank. The main-loop
+shutdown calls `free_tracked_allocations_to_mark` before deleting the root game
+object.
 
 One more shared helper is now clear from the constructor xrefs:
 
@@ -157,7 +196,9 @@ High-confidence fields on the `0xa8`-byte record:
 - `+0x58`: pointer to the primary sampled-point array
 - `+0x5c`: pointer to the mirrored or secondary sampled-point array
 - `+0x98`: install-time row scalar written during entry/begin
-- `+0x9c`: template-side special flag checked by live update
+- `+0x9c`: entry-cell mesh-transition enable flag
+- `+0xa0`: auxiliary transition `strip_mesh` pointer
+- `+0xa4`: public/base `strip_mesh` pointer restored at the end
 
 This is the main reason the raw decompile reads so badly:
 
@@ -167,7 +208,6 @@ This is the main reason the raw decompile reads so badly:
 
 Still unresolved from this package:
 
-- whether `+0xa0/+0xa4` belong to the template record at all in the special update path
 - the exact semantic names for the mirror-copied header scalars at `+0x30/+0x34`
 
 High-confidence fields on the pointed-to `strip_mesh` object:
@@ -233,7 +273,7 @@ This matches the follow-state code path:
 | 25-27 | `LOOPOUT*` | `sub_41c5f0` | `LOOPOUT`, `LOOPOUT3`, `LOOPOUTBIG` |
 | 28 | `SWEEP` | `sub_422c00` | |
 | 29 | `SNAKE` | `sub_423580` | |
-| 30 | `WARP` | `sub_429b20`? | no longer safe as a direct public-name mapping; `sub_429b20` is now treated as one nonlinear kind-`42` constructor branch, and Android strongly suggests the same constructor shape as `cRPath::BuildHalfPipe` |
+| 30 | `WARP` | none | shipped authored placeholder; its pair is generically initialized but not constructed in this Windows executable |
 | 31 | `SUPERTRAMP` | `sub_423f10` | both halves are built explicitly |
 | 32 | `SLALOMDOUBLE` | `sub_425050` | |
 | 33-35 | `P0`, `P1`, `P2` | `sub_425a40` | |
@@ -243,7 +283,7 @@ This matches the follow-state code path:
 | 39 | `TURNUNDER` | `sub_427fe0` | |
 | 40 | `WIBBLE` | `sub_4289a0` | |
 | 41 | `INVERT` | `sub_429250` | |
-| 42 | `HALFPIPE` | unresolved | live capture now proves it installs as runtime kind `42` with `66` samples, but the exact constructor/install split is still missing |
+| 42 | `HALFPIPE` | `initialize_halfpipe_path_template_pair` (`0x429b20`) | direct world-init call at `0x40cda0`; runtime kind `42`, `66` samples |
 | 43-44 | `TWISTERA`, `TWISTERB` | `sub_42a540` | |
 | 45-46 | `TWISTER2A`, `TWISTER2B` | `sub_42af30` | |
 | 47-50 | `TOAD*` | `sub_42cbf0` | `TOAD0`, `TOAD1`, `TOADPAIR0`, `TOADPAIR1` |
@@ -253,20 +293,20 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - kind `31` has the dedicated launch-exit branch, matching `SUPERTRAMP`
 - kinds `33`, `34`, and `35` are the shared `P`-family constructor variants
 - kind `36` is the explicit `START` constructor family
-- kind `42` still has its own nonlinear projection or follow branch in both projection and live-update code
-- a March 12 path-oracle capture now proves authored `HALFPIPE` also resolves into that live kind-`42` family
-- `sub_429b20` remains the strongest current constructor match for one branch of the nonlinear family, but the exact Windows public-name mapping inside that family is still open
+- kind `42` has its own nonlinear projection or follow branch in both projection and live-update code
+- the March 12 path-oracle capture proves authored `HALFPIPE` resolves into that live kind-`42` family
+- the direct slot-42 call now identifies `0x429b20` as the Windows `HALFPIPE` constructor, independently corroborated by Android `cRPath::BuildHalfPipe`
 
 ## Practical Read
 
 - named `Path=` rows choose hardcoded template pairs rather than archive-defined path files
 - most names are family variants built from one constructor plus an X-mirror pass
-- `sub_429b20` remains the strongest recovered constructor for one nonlinear kind-`42` family branch
-- Android's named `cRPath::BuildHalfPipe` is a strong structural match for that constructor body
+- `initialize_halfpipe_path_template_pair` is the exact public slot-42 builder; runtime kind `42` remains a distinct record field
+- Android's named `cRPath::BuildHalfPipe` independently corroborates that constructor body
 - Android's `LoadPaths` also directly maps public slot `57` to `BuildHalfPipe` and slot `58` to `BuildHalfPole`, while keeping `WARP` as a separate public slot `37`
 - Android also has a neighboring `cRPath::BuildHalfPole`, and `cRPathFollowGoldy::Traverse` special-cases both `HalfPipePos` and `HalfPolePos`, so the nonlinear attachment family is at least split into those two named siblings on that port
-- `HALFPIPE` is no longer a purely static gap: it is now proven live as runtime kind `42`, but it still lacks a directly recovered constructor body
-- `WARP` still lacks a directly recovered live family mapping and should not be collapsed into the same public slot as `HALFPIPE`
+- `HALFPIPE` is closed statically and dynamically: direct constructor, pair slot, runtime kind, and sample count agree
+- `WARP` remains a shipped authored placeholder in this Windows build: lookup resolves slot `30`, but world init leaves its record unbuilt
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
 
 ## Matching Disposition
@@ -280,14 +320,12 @@ and the checked-in path-template type lane remain the durable semantic model.
 More path-template work is still useful when it closes a concrete ownership or
 runtime question:
 
-- how public path names select constructor outputs and runtime kinds,
-  especially the `HALFPIPE` / `WARP` nonlinear-family split;
-- how the constructor bank becomes the installed two-record runtime pair bank,
-  including the meaning of its two halves;
 - which consumers can name the remaining conservative header fields at
-  `+0x30`, `+0x34`, `+0xa0`, and `+0xa4`;
-- what `special_runtime_flag_9c` changes in the attachment-follow consumer;
-- where template/sample/strip-mesh lifetime teardown occurs.
+  `+0x30` and `+0x34`;
+- whether the primary/secondary half has a stronger family-independent
+  semantic than the proven mirror-selection behavior;
+- whether live execution of shipped `WARP` content confirms the static
+  unbuilt/no-op interpretation.
 
 Broad score polishing across every large constructor is not currently a good
 ownership investment. The common `PathTemplate`, `PathTemplateSample`, strip
@@ -312,8 +350,10 @@ The current Zig port now mirrors the public authored family set directly:
 
 What this does **not** mean:
 
-- the Zig port does **not** yet claim the exact Windows installed bank layout
-- it does **not** yet hard-code a universal `63`-pair constructor-bank rule
-- it does **not** yet claim the final public-name split inside the nonlinear kind-`42` family
+- the Zig port does **not** yet mirror the exact Windows embedded `63`-pair bank
+- it does **not** yet model the 12 auxiliary transition pairs or entry-cell mesh swaps
+- it should treat Windows `WARP` as an unbuilt public placeholder unless a deliberate port extension is desired
 
-So the current Zig scaffold is the right public-family layer for implementation, while the exact Windows bank/install semantics remain a live RE topic.
+So the current Zig scaffold remains a useful public-family layer, while the
+newly recovered Windows bank and transition ownership are concrete follow-up
+implementation work rather than open RE questions.

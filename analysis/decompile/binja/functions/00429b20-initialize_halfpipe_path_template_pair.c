@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: initialize_kind42_path_template_pair @ 0x429b20 */
+/* function: initialize_halfpipe_path_template_pair @ 0x429b20 */
 
 00429b3a        self->kind = PATH_TEMPLATE_KIND_NONLINEAR_42
 00429b41        self->is_mirrored_x = 0
@@ -11,7 +11,7 @@
 00429b4e        self->segment_count = 0x42
 00429b55        self->segment_count_f = 66f
 00429b5c        struct PathTemplateSample* secondary_samples = allocate_path_template_samples(self)
-00429b61        self->special_runtime_flag_9c = 0
+00429b61        self->has_entry_mesh_transition = 0
 00429b68        int32_t var_9c = 0
 00429b6c        int32_t i = 0
 00429c84        while (i s< 0xa80)

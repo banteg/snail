@@ -365,7 +365,8 @@
     },
     {
       "address": "0x408060",
-      "name": "initialize_runtime_pools_and_path_template_bank"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "description": "Initializes the embedded subgame pools, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914. Those records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias; their 0x52b0 extent ends at the barrier actor at +0xff7bc4."
     },
     {
       "address": "0x408410",
@@ -420,7 +421,7 @@
     {
       "address": "0x4085c0",
       "name": "initialize_path_template_record_pair",
-      "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
+      "description": "Constructs one 0xa8-byte path-template record by initializing its leading BodBase and embedded fringe BodBase at +0x60, then installs the shared callback table. The retained historical name says pair, but the primary/secondary path pair consists of two adjacent calls/records."
     },
     {
       "address": "0x4085e0",
@@ -586,7 +587,7 @@
     {
       "address": "0x40acf0",
       "name": "initialize_game_assets_and_world",
-      "description": "Bootstraps the shared app world, front-end managers, score tables, and star field, and clears the app-side persistent replay-launch bits before the first front-end or gameplay owner runs."
+      "description": "Bootstraps the shared app world, front-end managers, score tables, star field, and the embedded 63-pair path-template bank. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt."
     },
     {
       "address": "0x410710",
@@ -1250,8 +1251,8 @@
     },
     {
       "address": "0x429b20",
-      "name": "initialize_kind42_path_template_pair",
-      "description": "Builds one nonlinear kind-42 attachment template branch. The constructor seeds sample_count=66, writes the special per-sample scalar at +0xa0, and emits a generated strip mesh through the shared kind-42 transform helper. Android's cRPath::BuildHalfPipe is a strong structural match, but the exact Windows public-path mapping remains open."
+      "name": "initialize_halfpipe_path_template_pair",
+      "description": "Builds the Windows public HALFPIPE path-template pair at authored slot 42. The direct initialize_game_assets_and_world call targets pair base game+0x106a64c, seeds runtime kind 42 with 66 samples, and emits the generated strip mesh through the shared kind-42 transform helper; Android cRPath::BuildHalfPipe independently matches the shape."
     },
     {
       "address": "0x42a540",

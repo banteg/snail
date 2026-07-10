@@ -196,19 +196,40 @@ typedef struct CameramanState {
 } CameramanState;
 
 typedef struct PathTemplate {
-    uint8_t _pad_00[0x38];
+    uint8_t _pad_00[0x24];
+    void* strip_mesh;
+    uint8_t _pad_28[0x10];
     int32_t kind;
-    uint8_t _pad_3c[0x4];
+    uint8_t is_mirrored_x;
+    uint8_t _pad_3d[0x3];
     uint32_t side_exit_mode;
     uint32_t segment_count;
     uint32_t row_span_count;
     float segment_count_f;
+    float width_or_scale;
+    uint32_t width_cells;
+    void* primary_samples;
+    void* secondary_samples;
+    uint8_t _pad_60[0x38];
+    float installed_heading_delta;
+    uint8_t has_entry_mesh_transition;
+    uint8_t _pad_9d[0x3];
+    void* entry_transition_strip_mesh;
+    void* entry_base_strip_mesh;
 } PathTemplate;
+
+typedef struct PathTemplatePair {
+    PathTemplate primary;
+    PathTemplate secondary;
+} PathTemplatePair;
 
 typedef struct TrackRowCell {
     BodNode bod;
     Vec3 anchor_position;
-    uint8_t _pad_1c[0x1c];
+    int32_t render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;

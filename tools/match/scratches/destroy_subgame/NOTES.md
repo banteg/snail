@@ -46,3 +46,9 @@ live, and `destroy_subgame` recycles their links without freeing object
 storage. HUD fields remain borrowed `BorderManager` handles and are returned
 through `kill_border()`. Focused Wibo remains exact at `246/246` with all 41
 masked operands resolved.
+
+The same lifetime rule applies to the adjacent path-template bank at
+`SubgameRuntime +0xff2914`: `destroy_subgame` does not destruct its 63 embedded
+pairs or free their sample/mesh allocations. Those are game-runtime assets
+created after the tracked allocation mark and released together by
+`free_tracked_allocations_to_mark` during main-loop shutdown.

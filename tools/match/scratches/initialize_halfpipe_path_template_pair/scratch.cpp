@@ -1,4 +1,4 @@
-// initialize_kind42_path_template_pair @ 0x429b20 (thiscall, ret 0x18)
+// initialize_halfpipe_path_template_pair @ 0x429b20 (thiscall, ret 0x18)
 
 #include "object_render_types.h"
 #include "sprite.h"
@@ -9,7 +9,7 @@ float sine(float angle);
 
 void __fastcall finalize_path_template(AttachmentPathTemplate* path);
 
-void AttachmentPathTemplate::initialize_kind42_path_template_pair(
+void AttachmentPathTemplate::initialize_halfpipe_path_template_pair(
     int unused_scale_bits,
     int width_cells_,
     int unused_kind_arg,

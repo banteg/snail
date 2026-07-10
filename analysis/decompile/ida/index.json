@@ -1687,10 +1687,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_kind42_path_template_pair",
+      "selector": "initialize_halfpipe_path_template_pair",
       "address": "0x429b20",
-      "name": "initialize_kind42_path_template_pair",
-      "artifact": "analysis/decompile/ida/functions/00429b20-initialize_kind42_path_template_pair.c",
+      "name": "initialize_halfpipe_path_template_pair",
+      "artifact": "analysis/decompile/ida/functions/00429b20-initialize_halfpipe_path_template_pair.c",
       "removed_stale_artifacts": []
     },
     {

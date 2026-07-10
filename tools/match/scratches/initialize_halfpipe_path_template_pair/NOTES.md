@@ -1,9 +1,10 @@
-# `initialize_kind42_path_template_pair` reconstruction notes
+# `initialize_halfpipe_path_template_pair` reconstruction notes
 
 ## Recovered behavior
 
-This is an honest starter reconstruction for the kind-42 nonlinear attachment
-initializer at `0x429b20`. It models the observed source behavior:
+This is an honest starter reconstruction for the public `HALFPIPE` attachment
+initializer at `0x429b20`. The direct world-init call places it in authored
+slot `42`; its output also carries runtime kind `42`.
 
 - keeps the six stack-argument call shape from the game asset initializer
   (`ret 0x18`), using the `8` argument as the real width-cell count;
@@ -27,7 +28,7 @@ The callsite in `initialize_game_assets_and_world` passes six explicit
 arguments after `this`:
 
 ```cpp
-initialize_kind42_path_template_pair(this + ..., 1086324736, 8, 1,
+initialize_halfpipe_path_template_pair(this + ..., 1086324736, 8, 1,
     texture_a, texture_b, (int)aObjectsPathVer);
 ```
 

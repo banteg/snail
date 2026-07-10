@@ -43,3 +43,23 @@ scratch buffer (`0x74eb18`), and the startup sound-bank table
 `g_sound_bank_entries` (`0x4a2140`). The existing built-in segment table is now
 referenced as `g_builtin_segment_definitions`. Focused Wibo is still `4.73%`,
 but masked audit now has no unresolved operands.
+
+## 2026-07-10 path-constructor ownership
+
+The constructor island spans the same embedded bank initialized through the
+subgame view:
+
+```text
+GameRoot + 0x1066f2c
+= GameRoot + 0x74618 + 0xff2914
+= SubgameRuntime + 0xff2914
+```
+
+- Public `Path=` slots `0..50` occupy consecutive `0x150` pairs.
+- The call at `0x40cda0` targets pair `42` (`game +0x106a64c`) and proves
+  `initialize_halfpipe_path_template_pair` is the Windows `HALFPIPE` builder.
+- Public pair `30` (`WARP`, `game +0x106968c`) has no constructor or later
+  direct authored-code reference; it remains only generically initialized.
+- Pairs `51..62` duplicate public families `0..7`, `25..27`, and `41`. Their
+  strip meshes are installed as the public records' `+0xa0` transition meshes;
+  `+0xa4` points back to the public records' own strip meshes.

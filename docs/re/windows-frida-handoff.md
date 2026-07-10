@@ -594,8 +594,9 @@ uv run snail trace plan --limit 5
 The Windows agent should assume all of these are already established statically:
 
 - `Path=<name>` resolves through a `51`-entry hardcoded table in RWG.
-- Most public path names now map to concrete constructor families in the world-init block.
-- `WARP` is the only public path slot still missing from that aligned constructor table.
+- Public slots `0..50` index the same embedded pair bank constructed in world init; there is no later copy/remap stage.
+- `HALFPIPE` slot `42` calls `initialize_halfpipe_path_template_pair` directly and produces runtime kind `42` with 66 samples.
+- `WARP` slot `30` is deliberately absent from the constructor calls and remains generically initialized/unbuilt in this Windows executable.
 - `P/p` cells install runtime attachment pointers on neighboring cells.
 - the main player update can enter a dedicated attachment-follow state from those attachments.
 - `Salt:` and authored `&` are not the same system.

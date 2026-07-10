@@ -20,6 +20,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
     "PathTemplate",
+    "PathTemplatePair",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -130,6 +131,7 @@ GAME_FIELD_UPDATES = (
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e4", "runtime_track_index", "int32_t"),
+    ("0xff2914", "path_template_pairs", "PathTemplatePair[63]"),
     ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "row_event_display", "RowEventDisplayController"),
@@ -145,6 +147,10 @@ SNAIL_VISUAL_FIELD_UPDATES = (
 TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x00", "bod", "BodNode"),
     ("0x10", "anchor_position", "Vec3"),
+    ("0x1c", "render_arg_1c", "int32_t"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "void*"),
+    ("0x28", "color", "Color4f"),
     ("0x38", "attachment_template_record", "PathTemplate*"),
     ("0x3c", "tile_id", "uint8_t"),
     ("0x3d", "tile_flags_3d", "uint8_t"),
@@ -186,9 +192,9 @@ PATH_TEMPLATE_FIELD_UPDATES = (
     ("0x58", "primary_samples", "PathTemplateSample*"),
     ("0x5c", "secondary_samples", "PathTemplateSample*"),
     ("0x98", "installed_heading_delta", "float"),
-    ("0x9c", "special_runtime_flag_9c", "uint8_t"),
-    ("0xa0", "header_a0", "float"),
-    ("0xa4", "header_a4", "float"),
+    ("0x9c", "has_entry_mesh_transition", "uint8_t"),
+    ("0xa0", "entry_transition_strip_mesh", "PathTemplateStripMesh*"),
+    ("0xa4", "entry_base_strip_mesh", "PathTemplateStripMesh*"),
 )
 
 SALT_HAZARD_FIELD_UPDATES = (

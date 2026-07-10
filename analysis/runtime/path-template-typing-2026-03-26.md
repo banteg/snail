@@ -45,12 +45,22 @@ Recovered Windows `PathTemplate` fields that matter for the constructor/follow p
 - `+0x58`: `primary_samples`
 - `+0x5c`: `secondary_samples`
 - `+0x98`: `installed_heading_delta`
-- `+0x9c`: unresolved special runtime flag
+- `+0x9c`: entry-cell mesh-transition flag
+- `+0xa0`: auxiliary transition strip-mesh pointer
+- `+0xa4`: public/base strip-mesh pointer
 
 Two byte-lane clarifications from the constructor-family audit:
 
 - `is_mirrored_x` is a byte flag, not a `uint32_t`
-- `special_runtime_flag_9c` is also a byte flag; keep the name conservative because its exact gameplay meaning is still open
+- the `+0x9c` lane is a byte flag; the match header retains
+  `special_runtime_flag_9c` as a provenance alias for older scratches
+
+2026-07-10 correction: the constructor and installed banks are the same 63-pair
+array. World init wires the 12 tail pairs into flagged public templates at
+`+0xa0/+0xa4`, and the follow consumer swaps the installed entry-cell mesh at
+the `3/7` and terminal milestones. The direct public-slot-42 call also closes
+`0x429b20` as `initialize_halfpipe_path_template_pair`; Windows `WARP` slot 30
+is left unbuilt.
 
 `kind` is now carried in the checked-in header as a conservative `PathTemplateKind`
 enum for the constructor values that are actually closed. A few values remain
@@ -187,7 +197,7 @@ Applied in the live BN database:
 - `set_matrix_rotation_identity(TransformMatrix* transform)`
 - `normalize_vector(Vec3* vector)`
 - `cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs)`
-- `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
+- `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - `initialize_hump_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
@@ -232,7 +242,7 @@ It also cleaned up the repeated texture-path slots across the constructor family
 
 One caution remains:
 
-- the `thiscall` stack argument names on `initialize_kind42_path_template_pair` are still presentation-noisy in BN
+- the `thiscall` stack argument names on `initialize_halfpipe_path_template_pair` are still presentation-noisy in BN
 - keep the field model and array layout; do not over-trust the pretty parameter names there yet
 
 Earlier notes that called out `initialize_sweep_path_template_pair` and `initialize_sbend_path_template_pair` as typing holdouts are now stale. Both functions now read back in BN with the expected `PathTemplate* self` constructor shape.
@@ -246,7 +256,7 @@ The remaining rough edges in this family are presentation-level, not structural:
 
 - some quad-emission locals still display as `int16_t*` aliases instead of clean `ObjectFaceQuad*` locals
 - some sample-array writes still show `*(&self->primary_samples->field + i)` style indexing
-- `initialize_kind42_path_template_pair` still has noisier-than-average stack argument naming
+- `initialize_halfpipe_path_template_pair` still has noisier-than-average stack argument naming
 
 The current helper split is intentionally broader than the path-template family:
 

@@ -219,7 +219,11 @@ public:
     HighScoreRecord* selected_level_record; // +0xff25d4
     int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
     int replay_update_cursor; // +0xff25dc
-    char unknown_ff25e0[0xff7bc4 - 0xff25e0];
+    char unknown_ff25e0[0xff2914 - 0xff25e0];
+    // Startup constructs 126 records here. initialize_game_assets_and_world
+    // consumes them as 63 adjacent primary/secondary pairs; public Path=
+    // indices occupy 0..50 and transition-only auxiliary pairs occupy 51..62.
+    AttachmentPathTemplatePair path_template_pairs[ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
     BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
     ActiveLandscapePool active_landscapes; // +0xff7c00, fixed 10-slot owner
     char unknown_ff81a4[0x125e480 - 0xff81a4];

@@ -113,11 +113,11 @@ fields consumed by `begin_track_attachment_follow_state`,
 `project_position_onto_track_attachment`, `place_parcels_on_track`, and the
 player attachment-entry path.
 
-2026-06-16 layout assertion pass: `AttachmentPathTemplate` now carries
-explicit tail padding and asserts `sizeof(AttachmentPathTemplate) == 0x150`.
-The builder's `P`/`p` path selects from both template banks with that stride,
-while earlier fields through `+0xa8` remain the shared path-follow template
-view consumed by attachment entry/projection/follow scratches.
+2026-06-16 layout assertion pass originally padded
+`AttachmentPathTemplate` to `0x150` to preserve the observed index stride.
+The 2026-07-10 constructor callsite audit supersedes that temporary model: one
+record is exactly `0xa8`, `AttachmentPathTemplatePair` is `0x150`, and the two
+former bank roots are the primary/secondary fields of one 63-pair array.
 
 2026-06-17 runtime/root consolidation: the scratch now uses the shared sparse
 `SubgameRuntime` root and the named `TrackAttachmentRuntimeRow` fields
@@ -142,6 +142,14 @@ removes the duplicate local `Game` field window. Focused Wibo remains `28.25%`,
 mismatch` masked audit. `uv run snail match types --paths` now reports
 `partial-compatible Game: 3`, with this scratch removed from the remaining
 generic owner list.
+
+## 2026-07-10 pair-bank alias
+
+The raw `+0xff2914/+0xff29bc + index*0x150` spelling remains in this large
+scratch because the natural typed pair expression changes VC6 branch/address
+formation and globally reshuffles locals. The shared `SubgameRuntime` header
+now owns the exact `AttachmentPathTemplatePair[63]` field; retaining the native
+arithmetic here is source-shape preservation, not an unresolved owner.
 
 ## 2026-07-10 runtime slab ownership pass
 

@@ -5,5 +5,5 @@
 
 004085c3        initialize_bod_base(arg1)
 004085cb        initialize_bod_base(&arg1[0x18])
-004085d0        *arg1 = &data_497334
+004085d0        *arg1 = &g_path_template_record_vtable
 004085d9        return arg1

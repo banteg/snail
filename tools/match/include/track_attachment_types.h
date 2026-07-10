@@ -28,7 +28,7 @@ struct AttachmentPathTemplate {
     void initialize_worm_path_template_pair(char* texture_path);
     void initialize_cage2_path_template_pair(
         int width_cells_, char* texture_a, char* texture_b, char* vertical_texture);
-    void initialize_kind42_path_template_pair(
+    void initialize_halfpipe_path_template_pair(
         int unused_scale_bits,
         int width_cells_,
         int unused_kind_arg,
@@ -253,15 +253,31 @@ struct AttachmentPathTemplate {
         float installed_heading_delta;
         int installed_heading_bits;
     };                               // +0x98
-    unsigned char special_runtime_flag_9c; // +0x9c
-    char unknown_9d[0xa8 - 0x9d];
-    char unknown_a8[0x150 - 0xa8];
+    union {
+        // When set, follow progress swaps the installed entry cell to the
+        // auxiliary mesh at 3/7 and restores the public mesh at the end.
+        unsigned char has_entry_mesh_transition; // +0x9c
+        unsigned char special_runtime_flag_9c;   // provenance alias
+    };
+    char unknown_9d[0xa0 - 0x9d];
+    Object* entry_transition_strip_mesh; // +0xa0, borrowed from an auxiliary pair
+    Object* entry_base_strip_mesh;       // +0xa4, the public pair's own strip mesh
 
     int get_path_position_at_node(Vector3* out, int node, int row_index, float* local); // cRPath::GetPos
 };
 
-typedef char AttachmentPathTemplate_must_be_0x150[
-    (sizeof(AttachmentPathTemplate) == 0x150) ? 1 : -1];
+typedef char AttachmentPathTemplate_must_be_0xa8[
+    (sizeof(AttachmentPathTemplate) == 0xa8) ? 1 : -1];
+
+struct AttachmentPathTemplatePair {
+    AttachmentPathTemplate primary;   // +0x00
+    AttachmentPathTemplate secondary; // +0xa8, X-mirrored or explicitly built peer
+};
+
+typedef char AttachmentPathTemplatePair_must_be_0x150[
+    (sizeof(AttachmentPathTemplatePair) == 0x150) ? 1 : -1];
+
+enum { ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT = 63 };
 
 struct TrackRowCell {
     BodNode bod;                       // +0x00, active/free BOD prefix
@@ -269,7 +285,10 @@ struct TrackRowCell {
     void destroy_sub_lazer_projectile(); // @ 0x439bc0
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
-    char unknown_1c[0x38 - 0x1c];
+    int render_arg_1c;                  // +0x1c, inline BodBase tail
+    float render_arg_20;                // +0x20
+    Object* object;                     // +0x24, swapped by entry-mesh transitions
+    Color4f color;                      // +0x28, alpha at +0x34
     AttachmentPathTemplate* attachment_template_record; // +0x38, installed by P/p entry tiles
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d

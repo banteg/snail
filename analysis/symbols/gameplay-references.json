@@ -1723,13 +1723,13 @@
     },
     {
       "address": "0x497334",
-      "name": "g_path_template_record_pair_vtable",
+      "name": "g_path_template_record_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497334",
         "data_497334"
       ],
-      "description": "Paired path-template record vtable installed by initialize_path_template_record_pair."
+      "description": "Path-template record callback table installed once per 0xa8 record by initialize_path_template_record_pair; a public primary/secondary pair contains two such records."
     },
     {
       "address": "0x497338",

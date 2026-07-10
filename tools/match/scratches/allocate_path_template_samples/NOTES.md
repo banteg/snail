@@ -12,3 +12,10 @@ one path template using the native `0xa8` sample stride. It pins
 `sizeof(AttachmentSample) == 0xa8`. This allocation helper pins the native
 array stride, and the swept-entry, projection, path-length, and follow-state
 consumers index the same sample shape.
+
+2026-07-10 lifetime audit: these allocations occur inside
+`initialize_game_assets_and_world`, after the main loop records its tracked
+allocation mark. `destroy_subgame` does not free them between levels; shutdown
+unwinds all post-mark allocations with `free_tracked_allocations_to_mark`
+before deleting the root game object. The sample pointers are therefore
+borrowed game-runtime-lifetime storage from the tracked allocator.

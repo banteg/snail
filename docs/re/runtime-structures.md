@@ -1001,17 +1001,24 @@ High-confidence `PathTemplate` fields:
 - `+0x58`: `primary_samples`
 - `+0x5c`: `secondary_samples`
 - `+0x98`: `installed_heading_delta`
-- `+0x9c`: `special_runtime_flag_9c`
+- `+0x9c`: `has_entry_mesh_transition`
+- `+0xa0`: `entry_transition_strip_mesh`
+- `+0xa4`: `entry_base_strip_mesh`
 
 Byte-lane clarifications:
 
 - `is_mirrored_x` is a byte flag, not a `uint32_t`
-- `special_runtime_flag_9c` is also a byte flag; its exact gameplay meaning is still unresolved, so keep the name conservative
+- `has_entry_mesh_transition` is a byte flag; the provenance alias
+  `special_runtime_flag_9c` remains available in the match header for older
+  constructor scratches
 
-Still unresolved from the current Windows package:
+The tail ownership is now closed:
 
-- whether `+0xa0/+0xa4` are template fields at all in the special live-update branch
-- the exact producer that sets `special_runtime_flag_9c`
+- world init sets `+0xa0` from one of 12 auxiliary template-pair strip meshes
+  and `+0xa4` from the public template's own strip mesh
+- follow progress swaps the installed entry cell's object to `+0xa0` at `3/7`
+  with alpha `0.6`, then restores `+0xa4` at the terminal sample with alpha `1`
+- the 12 auxiliary pairs serve public pairs `0..7`, `25..27`, and `41`
 
 High-confidence `PathTemplateSample` fields:
 

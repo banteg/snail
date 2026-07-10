@@ -1278,7 +1278,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17212948) = 0;
   v130 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17213004), (int)v130);
-  initialize_kind42_path_template_pair(this + 17213004, 1086324736, 8, 1, texture_a, texture_b, (int)aObjectsPathVer);
+  initialize_halfpipe_path_template_pair(this + 17213004, 1086324736, 8, 1, texture_a, texture_b, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17213028) = 0;
   *(_DWORD *)(this + 17213024) = 0;
   *(_DWORD *)(this + 17213020) = 0;
@@ -2813,4 +2813,3 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 19813856) = 2;
   return 1;
 }
-
