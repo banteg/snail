@@ -1,6 +1,6 @@
 # calc_object_facequad_normals
 
-First source-shaped scratch for `calc_object_facequad_normals @ 0x42fcb0`.
+Ownership-recovered scratch for `calc_object_facequad_normals @ 0x42fcb0`.
 
 This is the full object normal rebuild used by object build and animation
 refresh paths. It extends the lighter `calc_object_facequad_normals_simple`
@@ -21,13 +21,32 @@ shape with per-vertex normal accumulation:
 - divides each vertex normal by its tally, normalizes it, then inverts it;
 - frees the temporary tally buffer.
 
-Focused matcher result: 17.13%, 392 candidate instructions versus 437 target
-instructions, with 11 clean masked operands and 1 masked constant mismatch from
-the current low-similarity accumulation alignment.
+2026-07-10 ownership recovery applies the exact value and alias shape proven by
+`calc_object_facequad_normals_simple`:
 
-The current scratch is intentionally relationship-first. The largest residual
-is stack/register ownership: native reserves a 0x68-byte frame, keeps `this` in
-`esi`, the tally buffer in `ebx`, face offset in `edi`, and normal offset in
-`ebp`; this source compiles through a tighter 0x44-byte frame and different
-nonvolatile roles. The repeated vertex-normal accumulation is semantically
-correct but not yet shaped to native's repeated raw-offset stores.
+- each vertex subtraction first owns a temporary `Vector3`, then copies into
+  the persistent `lhs` or `rhs` cross-product operand;
+- face and output-normal addresses are recomputed from their byte offsets
+  instead of retained as long-lived pointers;
+- quad normal construction/storage and quad accumulation are two independent
+  flag checks, matching the native control flow;
+- vertex-normal additions for all four face indices happen first, followed by
+  all four tally increments, for both the `1.0f` quad contribution and the
+  `2.0999999f` primary contribution;
+- final inversion owns a returned/temporary vector value which is copied back,
+  while the divide-only normal pointer ends before normalization;
+- the same source counter is reset between face and vertex phases, and tally
+  access remains the natural `normal_tally[index]` expression.
+
+Focused Wibo rises from 17.13% (392/437, one masked mismatch) to 90.03%,
+436/437 candidate/target instructions, prefix 27/437, and 22 clean masked
+operands with no unresolved or mismatched operands. Native now agrees on the
+0x68-byte frame, `this` in `esi`, tally allocation in `ebx`, and face offset in
+`edi`.
+
+The honest residual is VC6 allocation/encoding: it assigns the shared counter
+and normal offset to the opposite two stack slots, chooses the counter rather
+than the strength-reduced tally cursor for `ebp` in the final phase, and emits
+equivalent base/index ordering for repeated `facequads + face_offset` SIB
+operands. Explicit cursor, declaration-order, operand-order, and wider pointer
+lifetime probes did not recover that tie and were not retained.

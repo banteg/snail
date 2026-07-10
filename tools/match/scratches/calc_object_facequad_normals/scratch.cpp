@@ -9,14 +9,19 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* pointer);
 int report_errorf(char* format, ...);
 
-#define ACCUM_VERTEX_NORMAL(index_value, normal_value, weight_value) \
+#define ACCUM_VERTEX_NORMAL(index_value, normal_value) \
     do { \
         Vector3* normal_slot = &vertex_normals[(index_value)]; \
         normal_slot->x += (normal_value).x; \
         normal_slot->y += (normal_value).y; \
         normal_slot->z += (normal_value).z; \
-        normal_tally[(index_value)] += (weight_value); \
     } while (0)
+
+#define ACCUM_NORMAL_TALLY(index_value, weight_value) \
+    normal_tally[(index_value)] += (weight_value)
+
+#define CURRENT_FACE \
+    ((ObjectFaceQuad*)((char*)facequads + face_offset))
 
 void Object::calc_object_facequad_normals()
 {
@@ -26,112 +31,118 @@ void Object::calc_object_facequad_normals()
     memset(normal_tally, 0, vertex_count * 4);
 
     int face_offset = 0;
-    int normal_offset = 0;
-    int face_index = 0;
+    int index = 0;
+    int normal_offset;
     if (facequad_count > 0) {
+        normal_offset = 0;
         do {
-            Vector3* vertex_base = vertices;
-            ObjectFaceQuad* face = (ObjectFaceQuad*)((char*)facequads + face_offset);
+            Vector3* base_a = &vertices[CURRENT_FACE->vertex_0];
+            Vector3* base_b = &vertices[CURRENT_FACE->vertex_1];
+            Vector3 lhs_value;
+            lhs_value.x = base_b->x - base_a->x;
+            lhs_value.y = base_b->y - base_a->y;
+            lhs_value.z = base_b->z - base_a->z;
+            Vector3 lhs = lhs_value;
 
-            Vector3* base_a = &vertex_base[face->vertex_0];
-            Vector3* base_b = &vertex_base[face->vertex_1];
-            float lhs_x = base_b->x - base_a->x;
-            float lhs_y = base_b->y - base_a->y;
-            float lhs_z = base_b->z - base_a->z;
-
-            Vector3 lhs;
-            lhs.x = lhs_x;
-            lhs.y = lhs_y;
-            lhs.z = lhs_z;
-
-            base_a = &vertex_base[face->vertex_0];
-            Vector3* base_c = &vertex_base[face->vertex_2];
-            float rhs_x = base_c->x - base_a->x;
-            float rhs_y = base_c->y - base_a->y;
-            float rhs_z = base_c->z - base_a->z;
-
-            Vector3 rhs;
-            rhs.x = rhs_x;
-            rhs.y = rhs_y;
-            rhs.z = rhs_z;
+            base_a = &vertices[CURRENT_FACE->vertex_0];
+            Vector3* base_c = &vertices[CURRENT_FACE->vertex_2];
+            Vector3 rhs_value;
+            rhs_value.x = base_c->x - base_a->x;
+            rhs_value.y = base_c->y - base_a->y;
+            rhs_value.z = base_c->z - base_a->z;
+            Vector3 rhs = rhs_value;
 
             Vector3 normal_a;
             normal_a.cross_vectors(&lhs, &rhs);
             normal_a.normalize_vector();
 
-            Vector3* out = (Vector3*)((char*)facequad_normals + normal_offset);
-            out[0] = normal_a;
+            *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
 
-            if ((face->flags & 0x80) == 0) {
-                base_a = &vertex_base[face->vertex_0];
-                Vector3* base_d = &vertex_base[face->vertex_2];
-                lhs_x = base_d->x - base_a->x;
-                lhs_y = base_d->y - base_a->y;
-                lhs_z = base_d->z - base_a->z;
-                lhs.x = lhs_x;
-                lhs.y = lhs_y;
-                lhs.z = lhs_z;
+            Vector3 normal_b;
+            if ((CURRENT_FACE->flags & 0x80) == 0) {
+                base_a = &vertices[CURRENT_FACE->vertex_0];
+                Vector3* base_d = &vertices[CURRENT_FACE->vertex_2];
+                Vector3 quad_lhs_value;
+                quad_lhs_value.x = base_d->x - base_a->x;
+                quad_lhs_value.y = base_d->y - base_a->y;
+                quad_lhs_value.z = base_d->z - base_a->z;
+                lhs = quad_lhs_value;
 
-                base_a = &vertex_base[face->vertex_0];
-                Vector3* base_e = &vertex_base[face->vertex_3];
-                rhs_x = base_e->x - base_a->x;
-                rhs_y = base_e->y - base_a->y;
-                rhs_z = base_e->z - base_a->z;
-                rhs.x = rhs_x;
-                rhs.y = rhs_y;
-                rhs.z = rhs_z;
+                base_a = &vertices[CURRENT_FACE->vertex_0];
+                Vector3* base_e = &vertices[CURRENT_FACE->vertex_3];
+                Vector3 quad_rhs_value;
+                quad_rhs_value.x = base_e->x - base_a->x;
+                quad_rhs_value.y = base_e->y - base_a->y;
+                quad_rhs_value.z = base_e->z - base_a->z;
+                rhs = quad_rhs_value;
 
-                Vector3 normal_b;
                 normal_b.cross_vectors(&lhs, &rhs);
                 normal_b.normalize_vector();
 
-                out[1] = normal_b;
-
-                ACCUM_VERTEX_NORMAL(face->vertex_0, normal_b, 1.0f);
-                ACCUM_VERTEX_NORMAL(face->vertex_1, normal_b, 1.0f);
-                ACCUM_VERTEX_NORMAL(face->vertex_2, normal_b, 1.0f);
-                ACCUM_VERTEX_NORMAL(face->vertex_3, normal_b, 1.0f);
+                *(Vector3*)((char*)facequad_normals + normal_offset + sizeof(Vector3)) =
+                    normal_b;
             }
 
-            ACCUM_VERTEX_NORMAL(face->vertex_0, normal_a, 2.0999999f);
-            ACCUM_VERTEX_NORMAL(face->vertex_1, normal_a, 2.0999999f);
-            ACCUM_VERTEX_NORMAL(face->vertex_2, normal_a, 2.0999999f);
-            ACCUM_VERTEX_NORMAL(face->vertex_3, normal_a, 2.0999999f);
+            if ((CURRENT_FACE->flags & 0x80) == 0) {
+                ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_0, normal_b);
+                ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_1, normal_b);
+                ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_2, normal_b);
+                ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_3, normal_b);
+                ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_0, 1.0f);
+                ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_1, 1.0f);
+                ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_2, 1.0f);
+                ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_3, 1.0f);
+            }
 
-            if (face->vertex_0 > vertex_count || face->vertex_1 > vertex_count ||
-                face->vertex_2 > vertex_count || face->vertex_3 > vertex_count) {
+            ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_0, normal_a);
+            ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_1, normal_a);
+            ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_2, normal_a);
+            ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_3, normal_a);
+            ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_0, 2.0999999f);
+            ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_1, 2.0999999f);
+            ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_2, 2.0999999f);
+            ACCUM_NORMAL_TALLY(CURRENT_FACE->vertex_3, 2.0999999f);
+
+            if (CURRENT_FACE->vertex_0 > vertex_count ||
+                CURRENT_FACE->vertex_1 > vertex_count ||
+                CURRENT_FACE->vertex_2 > vertex_count ||
+                CURRENT_FACE->vertex_3 > vertex_count) {
                 report_errorf("Invalid Face Vertex Index");
             }
 
-            face_offset += sizeof(ObjectFaceQuad);
+            ++index;
             normal_offset += sizeof(Vector3) * 2;
-            ++face_index;
-        } while (face_index < facequad_count);
+            face_offset += sizeof(ObjectFaceQuad);
+        } while (index < facequad_count);
     }
 
     int vertex_offset = 0;
-    int vertex_index = 0;
+    index = 0;
     if (vertex_count > 0) {
-        float* tally_cursor = normal_tally;
         do {
-            float tally = *tally_cursor;
-            Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);
-            normal->x = normal->x / tally;
-            normal->y = normal->y / tally;
-            normal->z = normal->z / tally;
-            normal->normalize_vector();
-            ++tally_cursor;
+            float tally = normal_tally[index];
+            {
+                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);
+                normal->x = normal->x / tally;
+                normal->y = normal->y / tally;
+                normal->z = normal->z / tally;
+            }
+            ((Vector3*)((char*)vertex_normals + vertex_offset))->normalize_vector();
 
             Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);
             vertex_offset += sizeof(Vector3);
-            inverted->x = inverted->x * -1.0f;
-            inverted->y = inverted->y * -1.0f;
-            inverted->z = inverted->z * -1.0f;
-            ++vertex_index;
-        } while (vertex_index < vertex_count);
+            Vector3 inverted_value;
+            inverted_value.x = inverted->x * -1.0f;
+            inverted_value.y = inverted->y * -1.0f;
+            inverted_value.z = inverted->z * -1.0f;
+            *inverted = inverted_value;
+            ++index;
+        } while (index < vertex_count);
     }
 
     free_tracked_memory(normal_tally);
 }
 
+#undef CURRENT_FACE
+#undef ACCUM_NORMAL_TALLY
 #undef ACCUM_VERTEX_NORMAL
