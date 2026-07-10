@@ -4,8 +4,8 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `88.92%`, `332/336` candidate/target instructions, with `33` masked
-  operands ok and one known jump-table audit mismatch.
+- `98.21%`, `336/336` candidate/target instructions, with `37` masked
+  operands ok and no unresolved or mismatched operands.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
 - The method is modeled as `void`: native exits do not establish a meaningful
@@ -30,6 +30,14 @@ Evidence:
   by `+0.2` before the `0.939999998` scale.
 - The parent child-array evidence remains consistent with the other ring
   scratches: ten particles at `+0x90`, stride `0x20`.
+- Both radius-update paths compile as indexed walks over those ten embedded
+  records. The loop cursor is derived from parent `this + 0xac` (the first
+  child's `radius`), rather than following or transferring an external child
+  pointer.
+- Each embedded particle holds a separate `SpriteManager::allocate_sprite`
+  result. All three parent-removal exits call `kill_sprite()` for every child;
+  the parent owns the fixed particle records, while sprite storage stays under
+  the sprite manager's allocate/kill lifecycle.
 - The updater reads owner `+0x2964` as a target vector during state `3`; this
   is the same `cached_camera_target_world` field produced by the camera block in
   `update_subgoldy`.
@@ -85,13 +93,17 @@ Residual:
   raised it further to `86.35%`; the current target/current position pointer
   plus `scaled_delta` source shape raises it to `88.92%` while preserving the
   native `0x18` frame.
-- Remaining residuals are mostly switch-label, duplicated-removal-tail, and
-  state-3 x87 schedule differences. Native keeps target x and biased z live on
-  the FPU stack before materializing target y; the current source uses the
-  clearer target-position pointer and scaled-delta vector shape, but still
-  computes target lanes in a different order. The dispatch itself now matches
-  native's direct `0..5` jump table; the audit mismatch is only the local
-  candidate switch-table symbol versus the curated target table name.
+- 2026-07-10 ownership/source-shape pass: constructing the biased camera target
+  as a real `Vector3` value and expressing both radius loops as indexed walks
+  raises the focused match from `88.92%` (`332/336`) to `98.21%` (`336/336`).
+  This also recovers the native `this + 0xac` embedded-child cursor and removes
+  the prior jump-table audit mismatch.
+- The remaining residual is two local schedules: native keeps target X live on
+  the FPU stack while staging biased Z and target Y before deriving the child
+  cursor, and one duplicated removal tail materializes the shared list anchor
+  through a different general-purpose register. The source keeps the ordinary
+  `Vector3`/indexed-array model rather than encoding register or byte-layout
+  tricks for those six instruction-order differences.
 - 2026-06-16 state-1 branch-shape pass: spelling the z-threshold as
   `position.z < owner_player->interaction_max_z` with the removal path in the
   taken source block recovers the native physical order for the remove-vs-lives
@@ -133,3 +145,7 @@ Rejected/source-shape probes:
   collapsed the frame to a single pushed scratch slot, and shortened the
   candidate to `326/336` instructions. Keep the pointer-plus-`Vector3 delta`
   and `scaled_delta` form unless a stronger local-lifetime lead appears.
+- 2026-07-10 a chained `Vector3` operator expression grew the frame to `0x24`
+  and regressed to `85.17%`; copying the target value into `delta` before
+  subtracting grew the candidate to `342/336` and regressed to `89.97%`.
+  Neither reflects the native temporary lifetime, so both were rejected.

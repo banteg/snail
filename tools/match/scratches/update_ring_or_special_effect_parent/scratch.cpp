@@ -135,14 +135,18 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
             } while (count != 0);
             return;
         } else {
-            Vector3* target_position = &owner_player->cached_camera_target_world;
+            int count = 0;
+            Vector3* target_source =
+                &owner_player->cached_camera_target_world;
+            Vector3 target_position;
+            target_position.x = target_source->x;
+            target_position.z = target_source->z + 0.200000003f;
+            target_position.y = target_source->y;
             Vector3* current_position = &transform.position;
             Vector3 delta;
-            delta.x = target_position->x - current_position->x;
-            float target_y = target_position->y;
-            float target_z = target_position->z + 0.200000003f;
-            delta.y = target_y - current_position->y;
-            delta.z = target_z - current_position->z;
+            delta.x = target_position.x - current_position->x;
+            delta.y = target_position.y - current_position->y;
+            delta.z = target_position.z - current_position->z;
             Vector3 scaled_delta;
             scaled_delta.x = delta.x * 0.939999998f;
             scaled_delta.y = delta.y * 0.939999998f;
@@ -151,15 +155,11 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
             current_position->y += scaled_delta.y;
             current_position->z += scaled_delta.z;
 
-            int count = 10;
-            RingOrSpecialEffectParticle* particle =
-                particles;
             do {
-                particle->radius *= 0.939999998f;
-                particle->base_position = *current_position;
-                particle++;
-                count--;
-            } while (count != 0);
+                particles[count].radius *= 0.939999998f;
+                particles[count].base_position = *current_position;
+                count++;
+            } while (count < 10);
             return;
         }
 
@@ -212,15 +212,12 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
             } while (count != 0);
             return;
         } else {
-            int count = 10;
-            RingOrSpecialEffectParticle* particle =
-                particles;
+            int count = 0;
             do {
-                particle->radius *= 1.10000002f;
-                particle->base_position = transform.position;
-                particle++;
-                count--;
-            } while (count != 0);
+                particles[count].radius *= 1.10000002f;
+                particles[count].base_position = transform.position;
+                count++;
+            } while (count < 10);
             return;
         }
 

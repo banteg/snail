@@ -13,7 +13,8 @@ public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
     void emit_ring_star_shower(Player* owner); // @ 0x43e690
 
-    Sprite* sprite; // +0x00
+    // SpriteManager allocation handle; removal returns it through kill_sprite().
+    Sprite* sprite; // +0x00, not inline storage owned by the particle
     RingOrSpecialEffectParent* parent; // +0x04, non-owning backlink to embedded parent
     Vector3 base_position; // +0x08
     float phase; // +0x14
@@ -43,6 +44,8 @@ public:
     Player* owner_player; // +0x84, borrowed Player used for slot/lives state
     int kind; // +0x88
     int owner_lives_snapshot; // +0x8c
+    // Fixed child storage owned by this parent. Each child's sprite is a
+    // separate SpriteManager allocation released on every parent-removal path.
     RingOrSpecialEffectParticle particles[10]; // +0x90, embedded child records
     RingEffectRateSource* rate_source; // +0x1d0, borrowed SubgameRuntime view
     float transition_progress; // +0x1d4
