@@ -700,7 +700,7 @@
     {
       "address": "0x4123e0",
       "name": "render_object_toon",
-      "description": "Draws one object's optional toon edge pass by selecting visible outline segments against the current camera and submitting them as line primitives. Cross-port Android symbols match this helper to `G0RenderToon(cRObject*, tMatrix*)`."
+      "description": "Draws one object's optional toon edge pass by transforming the camera delta into object space, selecting boundary or silhouette edges against their two face normals, and submitting the selected vertex pairs as line primitives. The pass uses the global sprite manager for its line texture and the global D3D device for drawing. Cross-port Android symbols match this helper to `G0RenderToon(cRObject*, tMatrix*)`."
     },
     {
       "address": "0x4126c0",

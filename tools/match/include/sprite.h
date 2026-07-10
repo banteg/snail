@@ -116,6 +116,7 @@ public:
     Sprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
     void kill_game_sprites(); // @ 0x44e3d0
     char set_sprite_manager_paused(char paused_); // @ 0x44e540
+    TextureRef* get_sprite_texture(int texture_id); // @ 0x44e570
     void* get_sprite_texture_ref(int texture_id); // @ 0x44e580, callsite-view
 
     unsigned char paused; // +0x00000

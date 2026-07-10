@@ -10,7 +10,7 @@ struct ToonVector3 {
     float y;
     float z;
 
-    double dot_vector(ToonVector3* rhs); // @ 0x44cb70
+    float dot_vector(ToonVector3* rhs); // @ 0x44cb70
 };
 
 extern RenderObjectDevice* g_d3d_device; // data_502fec
@@ -25,7 +25,6 @@ extern float g_render_projection_far_z; // data_5031d0
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix, float arg2, float arg3, float near_z, float far_z); // @ 0x450314
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
-TextureRef* __stdcall get_sprite_texture(int texture_id); // @ 0x44e570
 
 int render_object_toon(Object* object, TransformMatrix* matrix)
 {
@@ -43,10 +42,11 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
         g_render_projection_far_z + 30.0f);
     g_d3d_device->vtbl->SetTransform(g_d3d_device, 3, &projection);
 
-    Vector3 view_vector;
-    view_vector.x = g_render_camera_source_matrix->position.x - matrix->position.x;
-    view_vector.y = g_render_camera_source_matrix->position.y - matrix->position.y;
-    view_vector.z = g_render_camera_source_matrix->position.z - matrix->position.z;
+    Vector3 camera_delta;
+    camera_delta.x = g_render_camera_source_matrix->position.x - matrix->position.x;
+    camera_delta.y = g_render_camera_source_matrix->position.y - matrix->position.y;
+    camera_delta.z = g_render_camera_source_matrix->position.z - matrix->position.z;
+    Vector3 view_vector = camera_delta;
 
     TransformMatrix inverse = *matrix;
     inverse.invert_matrix_in_place();
@@ -57,47 +57,61 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
     g_d3d_device->vtbl->SetStreamSource(
         g_d3d_device, 0, object->render_buffers->vertex_buffer, 0x18);
 
-    for (int i = 0; i < object->edge_count; ++i) {
-        ObjectToonEdge* edge = &object->edges[i];
+    int edge_index = 0;
+    if (object->edge_count > 0) {
+        int edge_offset = 0;
+        do {
+            int emitted = 0;
+            unsigned short* indices;
+            object->toon_index_buffer->buffer->vtbl->Lock(
+                object->toon_index_buffer->buffer, 0, object->vertex_count << 1,
+                (void**)&indices, 0);
 
-        unsigned short* indices;
-        object->toon_index_buffer->buffer->vtbl->Lock(
-            object->toon_index_buffer->buffer, 0, object->vertex_count << 1,
-            (void**)&indices, 0);
-
-        int emitted = 0;
-        if ((edge->flags & 1) != 0) {
-            indices[0] = edge->vertex_a;
-            indices[1] = edge->vertex_b;
-            emitted = 2;
-        } else {
-            Vector3* vertex = &object->vertices[edge->vertex_a];
-            ToonVector3 delta;
-            delta.x = view_vector.x - vertex->x;
-            delta.y = view_vector.y - vertex->y;
-            delta.z = view_vector.z - vertex->z;
-
-            double side_b =
-                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->facequad_normals[edge->normal_b]);
-            double side_a =
-                ((ToonVector3*)&delta)->dot_vector((ToonVector3*)&object->facequad_normals[edge->normal_a]);
-            if (side_a * side_b < 0.00999999978f) {
-                indices[0] = edge->vertex_a;
-                indices[1] = edge->vertex_b;
+            if ((((ObjectToonEdge*)((char*)object->edges + edge_offset))->flags & 1) != 0) {
+                indices[0] = ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a;
+                indices[1] = ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_b;
                 emitted = 2;
+            } else {
+                Vector3* normal_a = &object->facequad_normals[
+                    ((ObjectToonEdge*)((char*)object->edges + edge_offset))->normal_a];
+                Vector3* normal_b = &object->facequad_normals[
+                    ((ObjectToonEdge*)((char*)object->edges + edge_offset))->normal_b];
+                Vector3* vertex = &object->vertices[
+                    ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a];
+                ToonVector3 vertex_delta;
+                vertex_delta.x = view_vector.x - vertex->x;
+                vertex_delta.y = view_vector.y - vertex->y;
+                vertex_delta.z = view_vector.z - vertex->z;
+                ToonVector3 delta = vertex_delta;
+
+                float side_b =
+                    ((ToonVector3*)&delta)->dot_vector((ToonVector3*)normal_b);
+                if (((ToonVector3*)&delta)->dot_vector((ToonVector3*)normal_a) *
+                        side_b <
+                    0.00999999978f) {
+                    indices[0] =
+                        ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a;
+                    indices[1] =
+                        ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_b;
+                    emitted = 2;
+                }
             }
-        }
 
-        object->toon_index_buffer->buffer->vtbl->Unlock(object->toon_index_buffer->buffer);
+            object->toon_index_buffer->buffer->vtbl->Unlock(object->toon_index_buffer->buffer);
 
-        if (emitted > 0) {
-            bind_texture_ref(get_sprite_texture(0x5d));
-            int primitive_count = emitted / 2;
-            g_d3d_device->vtbl->DrawIndexedPrimitive(
-                g_d3d_device, 2, 0, object->grouped_vertex_count, 0, primitive_count);
-            g_render_triangle_count += primitive_count;
-            ++g_draw_primitive_call_count;
-        }
+            if (emitted > 0) {
+                bind_texture_ref(g_sprite_manager.get_sprite_texture(0x5d));
+                RenderObjectDevice* device = g_d3d_device;
+                int primitive_count = emitted / 2;
+                device->vtbl->DrawIndexedPrimitive(
+                    device, 2, 0, object->grouped_vertex_count, 0, primitive_count);
+                g_render_triangle_count += primitive_count;
+                ++g_draw_primitive_call_count;
+            }
+
+            ++edge_index;
+            edge_offset += sizeof(ObjectToonEdge);
+        } while (edge_index < object->edge_count);
     }
 
     build_perspective_projection_matrix(

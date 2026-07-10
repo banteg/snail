@@ -143,6 +143,7 @@ void __thiscall kill_sprite(Sprite* sprite);
 void __thiscall kill_game_sprites(SpriteManager* manager);
 void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix);
 uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused);
+struct TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
 
 GarbageHazardSlot* __thiscall initialize_garbage_hazard(GarbageHazardSlot* slot);
 GarbageHazardSlot* __thiscall update_garbage_hazard(GarbageHazardSlot* slot);

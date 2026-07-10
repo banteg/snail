@@ -3,8 +3,8 @@
 Relationship-first scratch for the private toon/outline render helper at
 `0x4123e0`.
 
-Current Wibo result: 57.76%, 200/219 candidate/target instruction shape,
-prefix 0/219, masked operands 28 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: exact, 219/219 instructions and full prefix, with 31
+clean masked operands and no unresolved or mismatched operands.
 
 Recovered relationships:
 
@@ -20,19 +20,26 @@ Recovered relationships:
   `build_object_texture_group_buffers`.
 - Uses `Object +0x70` edge count and `+0x74` 0x24-byte edge records, matching
   exact `request_object_edges`.
-- `ObjectToonEdge` now lives in `object_render_types.h`; focused Wibo remains
-  57.76%, so the consolidation is codegen-neutral.
-- Edge `+0x04/+0x08` are the two vertex indices written to the toon index
+- `ObjectToonEdge` lives in `object_render_types.h`; edge `+0x04/+0x08` are
+  full 32-bit vertex indices, truncated only when written to the 16-bit index
   buffer. Edge `+0x0c/+0x10` are normal indices into the facequad-normal array
   at `Object +0x60`.
 - If edge flag bit `1` is set, the edge is emitted unconditionally. If clear,
   native computes two dot products against the edge normals and emits when
   their product is below `0.00999999978f`.
-- Binds sprite texture id `0x5d` and draws `DrawIndexedPrimitive` primitive type
-  `2` with `Object +0xc4` grouped vertex count.
+- Binds sprite texture id `0x5d` through the global `SpriteManager` owner and
+  draws `DrawIndexedPrimitive` primitive type `2` through a cached global D3D
+  device with `Object +0xc4` grouped vertex count.
 
-Expected residuals:
+Exact source-shape recovery:
 
-- The source keeps the edge loop clear. Native re-locks the toon index buffer
-  for each edge, uses a large 0xb0-byte stack frame, and has delicate x87
-  scheduling around the two dot products and projection reset.
+- the camera delta and per-edge vertex delta each have a source value followed
+  by the copied value consumed by the matrix/vector operation;
+- the loop counter is stack-resident, while `ebp` owns the 0x24-byte edge
+  offset and the edge array is reloaded instead of cached;
+- named normal A/B pointers preserve normal A across the first dot-product
+  call, giving `edi` its native ownership;
+- `emitted` is initialized before the index-buffer lock, so its zero value also
+  supplies the lock offset and flags;
+- the dot-product result is a float local, and the member-style call returns a
+  float at this callsite, matching the native dword spill and comparison.
