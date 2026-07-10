@@ -2,7 +2,7 @@
 
 #include "render_camera_slot.h"
 
-int RenderCameraSlot::attach_render_camera_source(void* source_)
+int RenderCameraSlot::attach_render_camera_source(RenderCamera* source_)
 {
     source = source_;
     int result = flags;

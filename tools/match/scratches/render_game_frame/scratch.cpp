@@ -3,17 +3,10 @@
 #include "bod_types.h"
 #include "font_system.h"
 #include "game_root.h"
+#include "object_render_types.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
 #include "transform_matrix.h"
-
-struct RenderCameraSourceView {
-    char unknown_00[0x38];
-    TransformMatrix camera_matrix; // +0x38
-    char unknown_78[0x80 - 0x78];
-    TransformMatrix view_matrix;   // +0x80
-    int camera_mode;               // +0xc0
-};
 
 struct RenderBodTextureOwnerView;
 
@@ -63,13 +56,6 @@ int render_camera(
     TransformMatrix* view_matrix,
     char draw_world,
     char post_sprite_pass); // @ 0x411fa0
-int render_object(
-    void* object,
-    TransformMatrix* matrix,
-    float render_arg_1c,
-    float render_arg_20,
-    Color4f* color,
-    char after_sprites); // @ 0x4126c0
 int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
 void draw_font_text_queue(unsigned int render_mask);     // @ 0x44a730
 
@@ -79,11 +65,10 @@ extern RenderBodView* g_post_sprite_bods[];       // data_4dfb10
 
 int GameRoot::render_game_frame()
 {
-    char* base = (char*)this;
-    int skip_count = *(int*)(base + 0x56c);
+    int skip_count = render_skip_count;
     if (skip_count > 0) {
         --skip_count;
-        *(int*)(base + 0x56c) = skip_count;
+        render_skip_count = skip_count;
         return skip_count;
     }
 
@@ -101,7 +86,7 @@ int GameRoot::render_game_frame()
     camera_order[4] = -1;
 
     int active_camera_count = 0;
-    RenderCameraSlot* slots = (RenderCameraSlot*)(base + 0x5b4);
+    RenderCameraSlot* slots = render_camera_slots;
     int i;
     for (i = 0; i < 5; ++i) {
         if ((slots[i].flags & 1) != 0) {
@@ -109,8 +94,7 @@ int GameRoot::render_game_frame()
         }
     }
 
-    *(unsigned int*)(base + 0x5e4) =
-        (*(unsigned int*)(base + 0x5e4) & 0x00ffffff) | 0x02000000;
+    slots[1].flags = (slots[1].flags & 0x00ffffff) | 0x02000000;
 
     int ordered_count = 0;
     for (i = 0; i < 5; ++i) {
@@ -144,7 +128,7 @@ int GameRoot::render_game_frame()
         RenderCameraSlot* slot = &slots[camera_index];
 
         if ((slot->flags & 1) != 0) {
-            RenderCameraSourceView* source = (RenderCameraSourceView*)slot->source;
+            RenderCamera* source = slot->source;
             render_camera(
                 slot->viewport_x,
                 slot->viewport_y,
@@ -158,7 +142,7 @@ int GameRoot::render_game_frame()
 
             int post_sprite_count = 0;
             if ((slot->flags & 2) == 0) {
-                RenderBodView* bod = *(RenderBodView**)(base + 0x5ac);
+                RenderBodView* bod = (RenderBodView*)active_render_bod_head;
                 RenderBodView** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
                     unsigned int bod_flags = bod->list_flags;

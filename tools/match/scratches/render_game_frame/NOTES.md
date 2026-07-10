@@ -8,10 +8,10 @@ unresolved, and 0 mismatch. The helper calls at `0x414650`, `0x413540`,
 `0x413650`, `0x411e10`, and `0x411de0` now resolve to standalone exact
 scratches.
 
-This is deliberately not a promoted `GameRoot` or renderer layout yet. The
-scratch keeps the large game owner as raw offsets while using established
-shared views for `RenderCameraSlot`, `Sprite`, `TransformMatrix`, `Color4f`,
-and the font queue.
+The broader `GameRoot` remains sparse, but its renderer ownership window is now
+shared: the skip counter, borrowed active-BOD head, and owned five-entry
+viewport array are typed alongside `RenderCamera`, `Sprite`, `TransformMatrix`,
+`Color4f`, and the font queue.
 
 Recovered relationships:
 
@@ -20,9 +20,12 @@ Recovered relationships:
 - Five `RenderCameraSlot` entries live at `Game +0x5b4`, are filtered by
   `flags & 1`, insertion-sorted by `sort_key`, and each active slot controls a
   render-camera pass.
-- The camera source pointer at `RenderCameraSlot +0x20` has a matrix at `+0x38`,
-  an 8-byte gap, a second matrix at `+0x80`, and a camera mode lane at `+0xc0`.
-- `Game +0x5e4` has its high render-mask byte forced to `0x02` before passes.
+- The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` has a matrix at
+  `+0x38`, an 8-byte gap, a second matrix at `+0x80`, a camera mode lane at
+  `+0xc0`, and a render mask at `+0xc4`.
+- `Game +0x5e4` is not a standalone renderer flag: it is
+  `render_camera_slots[1].flags`, whose high render-mask byte is forced to
+  `0x02` before the passes.
 - `Game +0x5ac` is the active BOD/render object list walked before sprites
   unless the slot has `flags & 2`.
 - `BOD flags & 0x400` selects the embedded transform at `+0x38`; when clear,
@@ -60,3 +63,9 @@ Expected residuals:
   the renderer-specific pointer at `+0x78` and the unknown tail.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.
+
+2026-07-10 viewport/camera closure: startup attaches the two cameras embedded
+at `Game +0x1c4/+0x3bc` to viewport slots 1 and 4. iOS independently names the
+pair `cRViewport::SetCamera(cRCamera*)` and `cRViewport::cRViewport()`. Promoting
+that borrowed pointer and the owning GameRoot viewport array is codegen-neutral:
+focused Wibo remains the honest 35.31%, 422/439, with 21 clean masks.

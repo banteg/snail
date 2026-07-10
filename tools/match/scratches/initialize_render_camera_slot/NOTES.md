@@ -12,6 +12,9 @@ Recovered relationships:
 - `render_game_frame` later scans these five slots by `flags & 1`, sorts by
   `sort_key +0x04`, and passes `+0x0c/+0x10/+0x14/+0x18`, source-derived camera
   state, and `draw_world +0x24` into `render_camera`.
+- iOS names the constructor `cRViewport::cRViewport()` and its paired source
+  setter `cRViewport::SetCamera(cRCamera*)`, proving the fixed array owns
+  viewport records while each `+0x20` pointer only borrows a camera.
 
 The `unknown_1c` lane is kept generic for now. The immediate value is exactly
 `0x3f5f5c28` (`0.8725f`), but the render consumer that gives it a stable

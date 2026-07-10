@@ -6,14 +6,19 @@ Initial scratch for the tiny render-camera slot attachment helper at
 Recovered relationships:
 
 - Only xrefed from `initialize_game_assets_and_world`.
-- Stores the source render object at slot `+0x20`, then sets active flag bit 0
-  in the slot flags at `+0x08`.
+- Stores a borrowed camera at slot `+0x20`, then sets active flag bit 0 in the
+  slot flags at `+0x08`.
 - The owning array is five `0x28`-byte slots at `Game + 0x5b4`; `render_game_frame`
   counts and sorts active slots by fields inside that array before calling
   `render_camera`.
+- The two startup callsites attach cameras embedded at `Game +0x1c4` and
+  `Game +0x3bc` to slots 1 and 4 respectively. Neither slot allocates or frees
+  its source.
 
-The `RenderCameraSlot` name is conservative: it reflects the render-frame
-consumer, but backdrop/landscape setup still needs a larger class pass before
-this should be treated as the final source name.
+iOS provenance names this exact ownership edge
+`cRViewport::SetCamera(cRCamera*)`, while the paired slot initializer is
+`cRViewport::cRViewport()`. The Windows harness keeps its stable descriptive
+names, but the shared source pointer is now a typed `RenderCamera*` rather than
+an owning or untyped render-object pointer.
 
 Focused Wibo result: 100.00%, 6/6 instructions, no masked operands.
