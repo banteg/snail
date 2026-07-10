@@ -16,8 +16,8 @@ void sort_object_faces_by_texture_group(Object* object)
 
             if (scan_index < face_count) {
                 ObjectFaceQuad* scan_face = &facequads[scan_index];
-                ObjectFaceQuad* insert_face = &facequads[scan_index];
                 int insert_index = scan_index;
+                ObjectFaceQuad* insert_face = &facequads[base_index + 1];
 
                 do {
                     if (scan_face->texture_ref == texture_ref) {

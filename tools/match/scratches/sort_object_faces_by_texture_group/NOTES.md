@@ -10,9 +10,22 @@ is absorbed into the current group, which is why the decompiler shows `ebp`
 increments inside the inner loop as well as at the outer loop tail.
 
 `ObjectFaceQuad` assignment compiles to the expected three 12-dword
-`rep movsd` block copies. The residual mismatch is mostly register allocation
-and prologue layout: native keeps the object in `esi`, the base index in `ebp`,
-and the scan index in `ebx`, while the retained source gives VC6 `ecx`, `ebx`,
-and `ebp` respectively. C mode, `register` hints, return-type changes, and
-minor guard/compare rewrites did not improve the score, so the scratch keeps
-the readable C++ form and documents the remaining allocator gap.
+`rep movsd` block copies.
+
+2026-07-10 cursor ownership closure:
+
+- The scan cursor begins at `facequads[scan_index]`, while the insertion cursor
+  independently begins at `facequads[base_index + 1]`. Although both indices
+  have the same initial value, they have different owners and advance under
+  different conditions once matching faces are absorbed.
+- Modeling both cursors from `scan_index` let VC6 collapse one address
+  calculation and assigned the object/base/scan registers incorrectly, leaving
+  the old scratch at 41.61% with 74/75 instructions.
+- Preserving the distinct insertion anchor reproduces the native object in
+  `esi`, base index in `ebp`, scan index in `ebx`, both 0x30-byte cursor walks,
+  and the exact swap frame. Focused Wibo is now 100.00%, 75/75 instructions,
+  prefix 75/75, with no masked operands.
+
+Rejected probes retained from the earlier allocator audit: C mode, `register`
+hints, return-type changes, and guard/compare rewrites did not recover the
+missing relationship. No padding or dead work is present in the exact source.

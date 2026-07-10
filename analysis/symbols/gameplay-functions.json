@@ -1040,7 +1040,7 @@
     {
       "address": "0x419fd0",
       "name": "sort_object_faces_by_texture_group",
-      "description": "Sorts one built object's 0x30-byte face records by the texture-group key at `face + 0xc` so `calc_object_texture_groups` can collapse contiguous runs."
+      "description": "Sorts one Object's 0x30-byte face records into contiguous texture runs using independent scan and insertion cursors, swapping whole ObjectFaceQuad records so calc_object_texture_groups can retain cumulative run ends."
     },
     {
       "address": "0x41a0b0",
