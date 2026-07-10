@@ -4,19 +4,19 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.19% | **71.32%** |
+| Match | 0.19% | **78.22%** |
 | Target instructions | 1033 | 1033 |
-| Candidate instructions | 1 | 1028 |
+| Candidate instructions | 1 | 1033 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
 | Masked operands | none | **116 clean, 0 unresolved, 2 mismatched** |
 
-The final candidate is five instructions shorter than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
+The final candidate has the same 1033-instruction length as the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
 
 The first remaining mismatch is:
 
 ```text
 target[9]    ja Ld68
-candidate[9] ja Ld5f
+candidate[9] ja Ld6d
 ```
 
 The branch serves the same out-of-range/common-camera role; the label identity differs because the remaining body layout is not yet exact.
@@ -44,6 +44,8 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Materialized the time-trial record owner after the projected-cell lifetime
   correction; it now recovers the native base add and in-place timer-address
   reuse without disturbing the `0x3c` frame.
+- Kept authored tile-33 garbage spawning separate from the gated procedural
+  tiles, recovering the native argument-setup block and shared spawn tail.
 
 ## Measured progression
 
@@ -66,7 +68,8 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Cold selected-level bridge tail | 68.94% | 1047 | Kept; removed the 23-instruction early-body displacement |
 | Per-arm application-state snapshot | 69.45% | 1049 | Kept; 111 clean operands |
 | Inline projected-cell addresses | 70.97% | 1027 | Kept; 115 clean operands |
-| Time-trial record-base owner retest | **71.32%** | **1028** | Final retained result; 116 clean operands |
+| Time-trial record-base owner retest | 71.32% | 1028 | Kept; 116 clean operands |
+| Split authored/procedural garbage arms | **78.22%** | **1033** | Final retained result; exact target instruction count |
 
 ## Rejected trials
 

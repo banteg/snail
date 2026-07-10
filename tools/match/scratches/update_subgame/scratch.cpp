@@ -403,8 +403,10 @@ void SubgameRuntime::update_subgame()
                             spawn_track_jetpack_pickup(&cell_slot->cell, (Player*)player_storage);
 
                         unsigned char hazard_tile = cell_slot->cell.tile_id;
-                        if (hazard_tile == 33
-                            || ((cell_slot->cell.lane_and_flags & 0x10) == 0
+                        if (hazard_tile == 33) {
+                            spawn_track_garbage_hazard(
+                                &cell_slot->cell, (Player*)player_storage);
+                        } else if ((cell_slot->cell.lane_and_flags & 0x10) == 0
                                 && (hazard_tile == 1 || hazard_tile == 21)
                                 && (*(unsigned int*)(game + 0x4c) & 2) != 0
                                 && random_float_below(1.0f, "G")
@@ -428,7 +430,7 @@ void SubgameRuntime::update_subgame()
                                         <= *(float*)(game + 0x48) * 0.3f + 0.7f)
                                 && (level_mode != 0
                                     || random_float_below(1.0f, "G3")
-                                        <= *(float*)(game + 0x48) * 0.6f + 0.4f))) {
+                                        <= *(float*)(game + 0x48) * 0.6f + 0.4f)) {
                             spawn_track_garbage_hazard(
                                 &cell_slot->cell, (Player*)player_storage);
                         }

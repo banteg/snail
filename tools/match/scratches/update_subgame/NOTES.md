@@ -62,7 +62,7 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 71.32%, 1028 candidate instructions versus 1033 target instructions, 9-instruction prefix, 116 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 78.22%, 1033 candidate instructions versus 1033 target instructions, 9-instruction prefix, 116 clean masked operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
@@ -147,3 +147,11 @@ from `70.97%`, `1027/1033`, `115 ok` to `71.32%`, `1028/1033`, `116 ok` with
 the same two jump-table mismatches and no unresolved or mismatched call/data
 operand. The earlier record-local regressions remain useful allocation-history
 evidence, but no longer describe the retained layout.
+
+2026-07-10 authored garbage-hazard arm: tile `33` is a dedicated authored
+spawn case, while tiles `1`/`21` enter the gated procedural generator. Keeping
+those as sibling `if` / `else if` arms recovers the native five-instruction
+argument setup and shared call tail that the combined boolean expression had
+optimized away. Focused Wibo improves from `71.32%`, `1028/1033` to `78.22%`,
+`1033/1033`; the frame stays `0x3c`, all 116 audited call/data operands remain
+clean, and only the same two jump-table identities mismatch.
