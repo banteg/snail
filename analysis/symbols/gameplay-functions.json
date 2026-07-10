@@ -1416,7 +1416,8 @@
     },
     {
       "address": "0x42fb10",
-      "name": "calc_object_bounding_box"
+      "name": "calc_object_bounding_box",
+      "description": "Recomputes one cRObject's min/max bounds and maximum vertex magnitude in place. Its sole native caller discards EAX, confirming this is a void object mutator rather than the decompiler-derived count-returning helper."
     },
     {
       "address": "0x42fcb0",

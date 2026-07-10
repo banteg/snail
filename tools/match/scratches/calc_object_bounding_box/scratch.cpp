@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "vector3.h"
 
-int Object::calc_object_bounding_box()
+void Object::calc_object_bounding_box()
 {
     Vector3* max = &bounds_max;
     *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);
@@ -11,10 +11,8 @@ int Object::calc_object_bounding_box()
     *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);
     int offset = 0;
     bounding_radius = 0.0f;
-
-    int result = vertex_count;
-    if (result > 0) {
-        result = 0;
+    int result = 0;
+    if (vertex_count > 0) {
         do {
             Vector3* vertex = (Vector3*)((char*)vertices + offset);
 
@@ -77,6 +75,4 @@ int Object::calc_object_bounding_box()
             offset += sizeof(Vector3);
         } while (result < vertex_count);
     }
-
-    return result;
 }

@@ -30,3 +30,19 @@ Object bounds pass at `0x42fb10`.
   the prologue off the native saved-register set; the byte cursor lost the
   native prefix almost immediately. Keep the aggregate min/max initialization
   and direct vertex expression form.
+
+## 2026-07-10 void mutator and loop-owner correction
+
+The sole native caller in `cRObjects::BuildObjects()` checks that
+`vertex_count` is nonzero, calls this method, then immediately reloads the next
+object state without consuming EAX. The apparent count return is incidental:
+EAX holds `vertex_count` on the empty path and the final loop counter on the
+non-empty path. The shared declaration and scratch now model the real
+`void cRObject` mutator contract.
+
+Initializing the processed-vertex counter to zero before testing
+`vertex_count` also matches the native counter lifetime more closely and
+raises focused Wibo from 67.81% to 68.67%, with 114/119 instructions, prefix
+28/119, and one clean operand. Direct ternaries with both comparison
+polarities and additional scalar temporaries were rejected: they reduce the
+score and still fail to recover native's six `fld`/`fcompp` min/max schedules.

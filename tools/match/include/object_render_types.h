@@ -143,7 +143,7 @@ struct Object {
     void request_object_facequads(int facequad_count); // @ 0x42f8c0
     void request_object_texture_groups(int group_count); // @ 0x42f930
     void* apply_object_toon(int toon_flags); // @ 0x42fa80
-    int calc_object_bounding_box(); // @ 0x42fb10
+    void calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     int calc_object_facequad_normals_simple(); // @ 0x430230
     void calc_object_texture_groups(); // @ 0x4303f0
