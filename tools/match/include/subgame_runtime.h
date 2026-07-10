@@ -14,6 +14,7 @@
 #include "cameraman_state.h"
 #include "contact_target.h"
 #include "player.h"
+#include "ring_special_effect_types.h"
 #include "score_stats.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -119,7 +120,8 @@ public:
     TrackHealthPickup health_pickups[8]; // +0x356000
     char unknown_3563a0[0x359140 - 0x3563a0];
     GarbageHazardPool garbage_hazards; // +0x359140
-    char unknown_35b78c[0x35bb88 - 0x35b78c];
+    RingOrSpecialEffectPool ring_effects; // +0x35b78c, two embedded parent slots
+    char unknown_35bb7c[0x35bb88 - 0x35bb7c];
     FrontendWidget* score_widget_a; // +0x35bb88
     FrontendWidget* score_widget_b; // +0x35bb8c
     FrontendWidget* lives_icon_widget; // +0x35bb90

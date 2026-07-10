@@ -942,6 +942,14 @@
       "description": "Compiler-emitted switch jump table used by update_subgoldy in the attachment-follow handling region."
     },
     {
+      "address": "0x43e44c",
+      "name": "spawn_track_ring_or_special_effect_kind_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x24",
+      "description": "Compiler-emitted nine-entry kind switch table used by spawn_track_ring_or_special_effect."
+    },
+    {
       "address": "0x43ec9c",
       "name": "update_ring_or_special_effect_parent_state_jump_table",
       "kind": "jump_table",

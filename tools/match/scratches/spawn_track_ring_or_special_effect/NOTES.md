@@ -4,8 +4,9 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `51.23%`, `223/347` candidate/target instructions, with `34` masked
-  operands ok, `8` known switch-grouping mismatches, and no unresolved operands.
+- `53.45%`, `218/347` candidate/target instructions, prefix `28/347`, with
+  `34` masked operands ok, `9` known switch-grouping/table mismatches, and no
+  unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
   by the parent-field offsets below.
@@ -95,3 +96,25 @@ Type consolidation:
   instead of a scratch-local `Game` shell. Focused Wibo remains `51.23%`,
   `223/347`, with the same `34` clean masked operands and the same eight known
   switch-grouping mismatches.
+
+2026-07-10 pool ownership and source-order pass:
+
+- `SubgameRuntime` now owns a typed `RingOrSpecialEffectPool` at `+0x35b78c`.
+  The two parents and each parent's ten particle records are embedded storage;
+  `owner_player`, `rate_source`, and particle `parent` are non-owning links.
+  The source row cell is sampled for placement but is not retained by the
+  parent.
+- Computing the selected pool slot before the phase-rate expression lets VC6
+  retain the incoming Player in `ebx`, improving the focused score from
+  `51.23%` to `52.28%`. Using the typed embedded slot/transform view improves
+  it again to `52.37%` while removing raw `+0x35b78c/+0x68` ownership math.
+- Declaring the position view early but assigning it immediately before the
+  kind switch recovers six more exact prefix instructions and reaches
+  `53.45%`, `218/347`, prefix `28/347`.
+- The native nine-entry table at `0x43e44c` is now curated as
+  `spawn_track_ring_or_special_effect_kind_jump_table`. Its content honestly
+  mismatches the compilable grouped switch, converting the former unresolved
+  operand into an explicit ninth mismatch.
+- Retesting a separate authored kind-1 `RR2`/`RR3` arm still makes VC6 exit
+  without producing `scratch.obj`. The grouped switch remains an honest
+  partial; no duplicate arm or fake relocation was kept.

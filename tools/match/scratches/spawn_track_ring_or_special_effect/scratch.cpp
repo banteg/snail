@@ -35,6 +35,7 @@ TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
         return (TrackRowCell*)slot_index;
     }
 
+    RingOrSpecialEffectParent* slot = &ring_effects.slots[slot_index];
     float owner_scale = (float)player->movement_flag_selector;
     owner_scale *= 0.125f;
     float default_phase_step =
@@ -42,11 +43,8 @@ TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
     default_phase_step *= owner_scale;
     default_phase_step *= subgame_rate;
     default_phase_step *= 6.28318548f;
-    char* slot_base = (char*)this + slot_index * 0x1f8;
-    RingOrSpecialEffectParent* slot =
-        (RingOrSpecialEffectParent*)(slot_base + 0x35b78c);
-    Vector3* slot_position = (Vector3*)(slot_base + 0x35b7f4);
-    set_matrix_identity((TransformMatrix*)((char*)slot + 0x38));
+    Vector3* slot_position;
+    set_matrix_identity(&slot->transform);
 
     int kind = requested_kind;
     slot->owner_player = player;
@@ -57,6 +55,7 @@ TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
         }
     }
 
+    slot_position = &slot->transform.position;
     switch (kind) {
     case 0:
     case 1:

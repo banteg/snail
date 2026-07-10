@@ -14,7 +14,7 @@ public:
     void emit_ring_star_shower(Player* owner); // @ 0x43e690
 
     Sprite* sprite; // +0x00
-    RingOrSpecialEffectParent* parent; // +0x04
+    RingOrSpecialEffectParent* parent; // +0x04, non-owning backlink to embedded parent
     Vector3 base_position; // +0x08
     float phase; // +0x14
     float phase_step; // +0x18
@@ -40,11 +40,11 @@ public:
 
     char unknown_078[0x80 - 0x78];
     int state; // +0x80, 0 inactive; 1 normal; 2..5 transitions
-    Player* owner_player; // +0x84
+    Player* owner_player; // +0x84, borrowed Player used for slot/lives state
     int kind; // +0x88
     int owner_lives_snapshot; // +0x8c
-    RingOrSpecialEffectParticle particles[10]; // +0x90
-    RingEffectRateSource* rate_source; // +0x1d0
+    RingOrSpecialEffectParticle particles[10]; // +0x90, embedded child records
+    RingEffectRateSource* rate_source; // +0x1d0, borrowed SubgameRuntime view
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8
     unsigned char oscillate_x; // +0x1dc
@@ -63,6 +63,7 @@ typedef BodList RingOrSpecialEffectListAnchor;
 
 class RingOrSpecialEffectPool {
 public:
+    // Fixed storage owned by SubgameRuntime; active-list linkage never owns it.
     RingOrSpecialEffectParent slots[2]; // game +0x35b78c, stride 0x1f8
 };
 
