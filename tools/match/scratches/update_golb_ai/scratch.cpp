@@ -13,11 +13,6 @@
 typedef Vector3 Vec3;
 float __fastcall normalize_vector(Vec3* vector);
 
-class SlugHazardRuntime {
-public:
-    void hit_slug_hazard(int mode);
-};
-
 struct GolbTrackRowCellTileView {
     char unknown_00[0x3c];
     unsigned char tile_id; // +0x3c

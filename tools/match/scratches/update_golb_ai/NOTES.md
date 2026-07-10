@@ -1,5 +1,13 @@
 # WIP scratch — 73.34%, 645/694 insns (2026-06-21)
 
+## 2026-07-10 slug-pool owner closure
+
+The promoted `SubgameRuntime::slug_hazards` pool now supplies the exact
+`0xec`-byte `SlugHazardRuntime` and its `hit_slug_hazard` method, so the old
+method-only local class view is removed. This resolves the shared-header
+redefinition without changing code shape: focused Wibo remains 73.34%,
+645/694, prefix 9/694, with all 68 masked operands clean.
+
 ## 2026-06-21 GolbShot header consolidation
 
 The local `GolbShot` and `PathFollow` field slices are now promoted into
