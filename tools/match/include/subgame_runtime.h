@@ -13,6 +13,7 @@
 #include "high_score_record.h"
 #include "cameraman_state.h"
 #include "contact_target.h"
+#include "player.h"
 #include "score_stats.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -20,7 +21,6 @@
 #include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
 
-class Player;
 struct TrackAttachmentRuntimeRow;
 struct TrackRowCell;
 
@@ -125,41 +125,52 @@ public:
     FrontendWidget* lives_text_widget; // +0x35bb94
     FrontendWidget* life_stock_widgets[9]; // +0x35bb98
     char unknown_35bbbc[0x3bb764 - 0x35bbbc];
-    char score_stats; // +0x3bb764, owner anchor used by parcels
-    char unknown_3bb765[0x3bb7d4 - 0x3bb765];
     union {
-        float completion_progress_z; // +0x3bb7d4
-        float salt_fade_start_z; // +0x3bb7d4
+        // VC6 rejects non-trivial class members in a union, so preserve the
+        // exact Player extent as storage and cast it at typed callsites.
+        char player_storage[sizeof(Player)]; // +0x3bb764, ends at +0x3bfac8
+        struct {
+            char score_stats; // Player +0x000, owner anchor used by parcels
+            char unknown_player_001[0x070 - 0x001];
+            union {
+                float completion_progress_z; // Player.position.z +0x070
+                float salt_fade_start_z;      // Player.position.z +0x070
+            };
+            char unknown_player_074[0x200 - 0x074];
+            CameramanState cameraman; // Player.cameraman +0x200
+            char unknown_player_2d8[0x2e4 - 0x2d8];
+            int source_score; // Player.total_score +0x2e4
+            union {
+                ScoreBucketBlock source_stats; // Player timer/stat overlay +0x2e8
+                TimerCounters source_timer;
+            };
+            int source_score_tail; // Player +0x300
+            int source_tail; // Player.startup_track_index +0x304
+            char unknown_player_308[0x380 - 0x308];
+            int parcel_sprite_owner; // Player.player_slot +0x380
+            char unknown_player_384[0x3c4 - 0x384];
+            int bonus_rate_state; // Player.damage_gauge +0x00
+            char unknown_player_3c8[0x3e4 - 0x3c8];
+            float bonus_rate_phase; // Player.damage_gauge +0x20
+            char unknown_player_3e8[0x418 - 0x3e8];
+            float slug_explosion_base_z; // Player.velocity.z +0x418
+            char unknown_player_41c[0x440 - 0x41c];
+            unsigned char time_trial_route_active; // Player.completion_handoff_active +0x440
+            char unknown_player_441[0x275c - 0x441];
+            int nuke_rate_state; // Player.jetpack_gauge +0x0c
+            char unknown_player_2760[0x295c - 0x2760];
+            float nuke_rate_progress; // Player +0x295c
+            char unknown_player_2960[0x2980 - 0x2960];
+            float subgame_kill_plane_z; // Player.interaction_max_z +0x2980
+            char unknown_player_2984[0x42e8 - 0x2984];
+            int override_camera_active; // Player.presentation +0x1964
+            TransformMatrix override_camera_matrix; // Player.presentation +0x1968
+            char unknown_player_432c[0x4334 - 0x432c];
+            unsigned char override_camera_snap; // Player.presentation +0x19b0
+            char unknown_player_4335[0x4364 - 0x4335];
+        };
     };
-    char unknown_3bb7d8[0x3bb964 - 0x3bb7d8];
-    CameramanState cameraman; // +0x3bb964
-    char unknown_3bba3c[0x3bba48 - 0x3bba3c];
-    int source_score; // +0x3bba48
-    ScoreBucketBlock source_stats; // +0x3bba4c
-    int source_score_tail; // +0x3bba64
-    int source_tail; // +0x3bba68
-    char unknown_3bba6c[0x3bbae4 - 0x3bba6c];
-    int parcel_sprite_owner; // +0x3bbae4
-    char unknown_3bbae8[0x3bbb28 - 0x3bbae8];
-    int bonus_rate_state; // +0x3bbb28
-    char unknown_3bbb2c[0x3bbb48 - 0x3bbb2c];
-    float bonus_rate_phase; // +0x3bbb48
-    char unknown_3bbb4c[0x3bbb7c - 0x3bbb4c];
-    float slug_explosion_base_z; // +0x3bbb7c
-    char unknown_3bbb80[0x3bbba4 - 0x3bbb80];
-    unsigned char time_trial_route_active; // +0x3bbba4
-    char unknown_3bbba5[0x3bdec0 - 0x3bbba5];
-    int nuke_rate_state; // +0x3bdec0
-    char unknown_3bdec4[0x3be0c0 - 0x3bdec4];
-    float nuke_rate_progress; // +0x3be0c0
-    char unknown_3be0c4[0x3be0e4 - 0x3be0c4];
-    float subgame_kill_plane_z; // +0x3be0e4, shared cull/live-window boundary
-    char unknown_3be0e8[0x3bfa4c - 0x3be0e8];
-    int override_camera_active; // +0x3bfa4c
-    TransformMatrix override_camera_matrix; // +0x3bfa50
-    char unknown_3bfa90[0x3bfa98 - 0x3bfa90];
-    unsigned char override_camera_snap; // +0x3bfa98
-    char unknown_3bfa99[0x3bfb04 - 0x3bfa99];
+    char unknown_3bfac8[0x3bfb04 - 0x3bfac8];
     TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
     char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
     HighScoreBank high_score_bank; // +0x68b4c8

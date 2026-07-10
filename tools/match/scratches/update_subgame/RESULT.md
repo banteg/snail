@@ -32,6 +32,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Used nested tile-`29`/`30` control flow, signed `% 8`, matcher-confirmed RNG comparison ordering, and a shared tile-35 last-Z update.
 - Duplicated the challenge-setup success path instead of sharing the later case-7 zero-level build label; this recovers the native ordering around `result == 1`.
 - Modeled `format_time_trial_string` as a member-style call through a scratch-local receiver at `game + 0xff25e0`. The real callee is still the `ret 4` formatter, but the native callsites seed `ecx` before the call.
+- Recovered `game + 0x3bb764` as one complete embedded `Player` ending exactly
+  at the first runtime cell, and routed movement/control gates plus spawn
+  arguments through that owner without changing codegen or the operand audit.
 
 ## Measured progression
 
@@ -63,6 +66,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Raw pause-fade assignment experiments did not alter the relevant scheduling.
 - Moving the selected-level handoff to a tail `goto` label still emitted the same 67.53% layout, so it was reverted as neutral source churn.
 - Materializing a `record = game + record_offset` local recovered the native add/reuse address sequence in the time-trial record branch, but regressed surrounding tail layout to 66.63%.
+- Keeping a named embedded-`Player*` across the pause/fade bridge scored
+  70.53%, but displaced native register roles and introduced a false
+  speedup-to-health call pairing in the masked audit, so it was rejected.
 - No inline assembly, `volatile` clutter, fake globals, dummy externs, stack padding, or normalizer-specific tricks were retained.
 
 ## Next region to attack

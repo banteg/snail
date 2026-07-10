@@ -94,3 +94,23 @@ member-style call surface on `SubgameRuntime` because this caller wants the
 historical receiver lookup even though the standalone helper body is
 `__stdcall`/receiver-free. `uv run snail match types --paths` still reports no
 generic `Game` owner row.
+
+2026-07-10 embedded-player ownership: `game + 0x3bb764` is the complete
+embedded `Player`/`cRSubGoldy`, not a standalone score block. The measured
+extent is exact: `0x3bb764 + sizeof(Player) (0x4364) == 0x3bfac8`, the first
+runtime track cell. This unifies the previously flattened aliases for
+`position.z +0x70`, `movement_state +0x120`, `cameraman +0x200`, score/timer
+lanes `+0x2e4/+0x2e8`, `player_slot +0x380`, `velocity.z +0x418`,
+`control_source +0x43c`, and `interaction_max_z +0x2980`. The shared runtime
+header now exposes a typed-size `player_storage` union owner while retaining
+the proven contextual aliases, and this scratch routes all player gates and
+spawn arguments through it. Focused codegen remains `67.53%`, `1046/1033`,
+with the same `108 ok / 2 jump-table mismatch` audit; exact
+`calc_subgame_rate` and `update_subgame_camera` remain exact.
+
+A named `Player*` kept across the pause/fade bridge measured `70.53%` and
+reduced the candidate to `1037` instructions, but it displaced the native
+`ebx` zero / `edi` state roles and made the operand audit pair the target
+`spawn_track_speedup` call with candidate `spawn_track_health_pickup`. That
+variant is rejected rather than retaining an attractive score with a new
+semantic masked-operand mismatch.
