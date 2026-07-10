@@ -247,7 +247,7 @@ typedef struct VoiceManager {
 /*
  * Salt hazard runtime slot. Pool lives at `game + 0x3578c0` with 40 slots and
  * stride 0x98. The real updater uses the owner-game pointer plus an in-slot
- * fade alpha; spawn still seeds the y velocity lane and low armed byte.
+ * fade alpha; spawn still seeds the y velocity lane and the collision latch.
  * Native functions: initialize_salt_hazard_pool @ 0x441540, spawn_salt_hazard
  * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
@@ -268,7 +268,8 @@ typedef struct SaltHazardSlot {
     struct Game* owner_game;
     float fade_alpha;
     float spawn_velocity_y;
-    uint32_t armed_substate;
+    uint8_t collision_armed;
+    uint8_t _pad_95[0x03];
 } SaltHazardSlot;
 
 /*

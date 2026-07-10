@@ -25,6 +25,7 @@
 #include "row_event_display.h"
 #include "salt_hazard_types.h"
 #include "score_stats.h"
+#include "slug_hazard_types.h"
 #include "sub_lazer_types.h"
 #include "times_up_controller.h"
 #include "track_health_pickup.h"
@@ -138,7 +139,7 @@ public:
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
-    char unknown_3563a0[0x356b00 - 0x3563a0];
+    SlugHazardPool slug_hazards; // +0x3563a0, fixed eight-slot owner
     SubLazerPool sub_lazers; // +0x356b00, fixed 20-slot owner
     SaltHazardPool salt_hazards; // +0x3578c0, fixed 40-slot owner
     BannerPool banners; // +0x359080, embedded start/completion actors

@@ -13,6 +13,7 @@ public:
     SaltHazardSlot* initialize_salt_hazard_runtime(); // @ 0x408630
     void update_salt_hazard();    // @ 0x441c10
     float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
+    unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
 
     Vector3 bod_position;     // +0x10, BodBase::position
     int render_arg_1c;        // +0x1c, BodBase render argument
@@ -33,7 +34,7 @@ public:
     int state;                 // +0x80
     char unknown_84[0x88 - 0x84];
     SubgameRuntime* owner_game; // +0x88
-    Vector3 velocity;          // +0x8c, spawn-time velocity; updater reuses +0x8c as fade alpha
+    Vector3 velocity;          // +0x8c, spawn motion/fade/collision overlay
 };
 
 typedef char SaltHazardSlot_must_match_pool_stride[

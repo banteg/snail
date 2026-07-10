@@ -436,6 +436,10 @@ The current high-confidence `Game` fields are:
   - `8`-slot `TrackPickupRuntime` array
 - `+0x3563a0`: `slug_hazards`
   - `8`-slot `SlugHazardRuntime` array in Windows
+- `+0x356b00`: `sub_lazers`
+  - fixed `20`-slot `SubLazerPool`; collision borrows slots while the subgame is live
+- `+0x3578c0`: `salt_hazards`
+  - fixed `40`-slot `SaltHazardPool`; each slot owns a one-byte `collision_armed` latch at `+0x94`
 - `+0x359140`: `active_garbage_hazards`
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`

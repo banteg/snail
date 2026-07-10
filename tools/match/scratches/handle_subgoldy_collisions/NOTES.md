@@ -293,3 +293,25 @@ The collision path now consumes inherited `TrackParcelRuntime::position`, and
 the HUD total comes from the embedded
 `SubgameRuntime::level_definition.parcel_count`. The focused result remains
 52.85%, 659/673, prefix 8/673, with all 86 masked operands clean.
+
+## Collision-pool ownership closure (2026-07-10)
+
+`SubgameRuntime` now owns the complete fixed collision band: eight
+`SlugHazardRuntime` slots through `SlugHazardPool`, twenty sub-lazers, forty
+salt hazards, the parcel pool, eight health pickups, and the two ring-effect
+parents. The salt, slug, parcel, health, and ring sweeps now derive their byte
+cursors from those named members while retaining the native byte-strided loop
+shape.
+
+The salt byte at slot `+0x94` is now `collision_armed`: the exact spawner sets
+it, this collision path tests it, and a successful contact clears it. A typed
+sub-lazer cursor was rejected because it regressed the focused score from
+52.85% to 51.54%; that loop remains byte-strided even though ownership is
+already represented by `SubLazerPool`. No register-shaped locals or fake
+control flow were retained. Focused Wibo remains 52.85%, 659/673, prefix
+8/673, with all 86 masked operands clean.
+
+The live Binary Ninja type also now agrees with the shared source view at salt
+slot `+0x88`: this is `owner_game`, not the stale `PathTemplate*` label. The
+neighboring `state`, `fade_alpha`, and spawn-time y-velocity lanes were read
+back with the same offsets.

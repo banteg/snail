@@ -18,7 +18,9 @@ The accepted slug-local rewrite improves the focused score by **4.86 percentage 
 - Made the first-hit path the fallthrough side of `!control_override_active`, leaving the repeat-hit path in the `else`; this matches the native physical block order while preserving behavior.
 - Staged the initial slug-hit velocity through a semantic `Vec3` before assigning `Player::velocity`.
 - Staged the three half-distance firework offsets through a semantic `Vec3` before assembling `burst_position`.
-- Kept the typed `SaltHazardSlot` and `SlugHazardRuntime` access paths unchanged; no shared headers were edited.
+- Kept the typed `SaltHazardSlot` and `SlugHazardRuntime` access paths; the
+  later ownership pass names their fixed pools on `SubgameRuntime` and closes
+  the salt slot's `collision_armed` byte from its spawner and this consumer.
 
 Together, the two semantic vectors recover the native `sub esp, 0x74` frame. Reversing the equivalent inner condition aligns the first-hit, repeat-hit, and kill blocks closely enough to clear the masked operand audit.
 

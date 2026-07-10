@@ -46,8 +46,8 @@ void Player::handle_subgoldy_collisions()
         if ((movement_flags & 0x80) == 0) {
             for (int i = 0; i < 6080; i += 152) {
                 SaltHazardSlot* slot =
-                    (SaltHazardSlot*)((char*)game + i + 0x3578c0);
-                if (slot->state == 1 && *(unsigned char*)&slot->velocity.z == 1) {
+                    (SaltHazardSlot*)((char*)game->salt_hazards.slots + i);
+                if (slot->state == 1 && slot->collision_armed() == 1) {
                     delta.x = slot->position.x - cached_camera_target_world.x;
                     delta.y = slot->position.y - cached_camera_target_world.y;
                     delta.z = slot->position.z - cached_camera_target_world.z;
@@ -55,7 +55,7 @@ void Player::handle_subgoldy_collisions()
                     if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {
                         if (damage_retrigger_timer == 0.0f)
                             damage_retrigger_timer = damage_retrigger_step;
-                        *(unsigned char*)&slot->velocity.z = 0;
+                        slot->collision_armed() = 0;
                         damage_gauge.apply_damage_gauge_delta(0.15000001f, 0);
                     }
                 }
@@ -100,7 +100,7 @@ void Player::handle_subgoldy_collisions()
         }
         for (int m = 0; m < 1888; m += 236) {
             SlugHazardRuntime* slug =
-                (SlugHazardRuntime*)((char*)game + m + 0x3563a0);
+                (SlugHazardRuntime*)((char*)game->slug_hazards.slots + m);
             int state = slug->state;
             if (state == 1 || state == 4) {
                 delta.x = slug->transform.position.x - cached_camera_target_world.x;
@@ -153,7 +153,7 @@ void Player::handle_subgoldy_collisions()
         }
         for (int n = 0; n < 7000; n += 140) {
             TrackParcelRuntime* parcel =
-                (TrackParcelRuntime*)((char*)game + n + 0x125e480);
+                (TrackParcelRuntime*)((char*)game->parcel_pool.slots + n);
             if (parcel->state == 1) {
                 probe_salt.x = parcel->position.x - cached_camera_target_world.x;
                 probe_salt.y = parcel->position.y - cached_camera_target_world.y;
@@ -179,7 +179,7 @@ void Player::handle_subgoldy_collisions()
     }
     for (int ii = 0; ii < 928; ii += 116) {
         TrackHealthPickup* pickup =
-            (TrackHealthPickup*)((char*)game + ii + 0x356000);
+            (TrackHealthPickup*)((char*)game->health_pickups + ii);
         if (pickup->state == 1) {
             probe_b.x = pickup->world_position.x - cached_camera_target_world.x;
             probe_b.y = pickup->world_position.y - cached_camera_target_world.y;
@@ -234,7 +234,7 @@ void Player::handle_subgoldy_collisions()
     }
     for (int jj = 0; jj < 1008; jj += 504) {
         RingOrSpecialEffectParent* effect =
-            (RingOrSpecialEffectParent*)((char*)game + jj + 0x35b78c);
+            (RingOrSpecialEffectParent*)((char*)game->ring_effects.slots + jj);
         if (effect->state == 1) {
             probe_salt.x = effect->transform.position.x - cached_camera_target_world.x;
             probe_salt.y = effect->transform.position.y - cached_camera_target_world.y;

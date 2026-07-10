@@ -52,4 +52,12 @@ public:
 typedef char SlugHazardRuntime_must_be_0xec[
     (sizeof(SlugHazardRuntime) == 0xec) ? 1 : -1];
 
+class SlugHazardPool {
+public:
+    SlugHazardRuntime slots[8];
+};
+
+typedef char SlugHazardPool_must_be_0x760[
+    (sizeof(SlugHazardPool) == 0x760) ? 1 : -1];
+
 #endif

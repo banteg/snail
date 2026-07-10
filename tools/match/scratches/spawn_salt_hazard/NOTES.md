@@ -63,3 +63,10 @@ at `SubgameRuntime`; this spawner reads `subgame_rate` through
 `g_game +0x74618` and keeps the root salt list head as a byte-addressed
 `g_game +0x3ca224` anchor. Focused Wibo remains exact at `100.00%`, `67/67`
 instructions, with `10` clean masked operands.
+
+2026-07-10 collision-latch closure: the spawn-time low byte at slot `+0x94`
+is now named `collision_armed`. `spawn_salt_hazard` sets it to `1`, and
+`handle_subgoldy_collisions` is the confirming consumer: it gates contact on
+that byte and clears it after damage. The accessor preserves the proven
+`velocity.z` storage overlay and this scratch remains exact at `100.00%`,
+`67/67`, with `10` clean masked operands.

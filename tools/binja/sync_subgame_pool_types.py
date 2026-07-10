@@ -32,7 +32,7 @@ GAME_FIELD_UPDATES = (
     ("0x355db0", "speedup_pickup", "TrackSpeedupRuntime"),
     ("0x355e64", "jetpack_pickup", "TrackJetpackPickup"),
     ("0x356000", "health_pickups", "TrackHealthPickup[0x8]"),
-    ("0x3563a0", "slug_slots", "SlugHazardRuntime[0x8]"),
+    ("0x3563a0", "slug_hazards", "SlugHazardRuntime[0x8]"),
     ("0x35b78c", "ring_effects", "RingOrSpecialEffectPool"),
 )
 

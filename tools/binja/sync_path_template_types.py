@@ -119,8 +119,8 @@ GAME_FIELD_UPDATES = (
     ("0xa854", "track_state_latch", "uint8_t"),
     ("0xa858", "tutorial", "TutorialController"),
     ("0xa874", "level_segment_count", "int32_t"),
-    ("0x356b00", "sub_lazer_pool", "SubLazerSlot[0x14]"),
-    ("0x3578c0", "salt_pool", "SaltHazardSlot[0x28]"),
+    ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
+    ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
     ("0x3bba4c", "stopwatch", "Stopwatch"),
     ("0x3bbb58", "warning_actor", "WarningActor"),
     ("0x432700", "presentation", "PlayerPresentationController"),
@@ -189,6 +189,14 @@ PATH_TEMPLATE_FIELD_UPDATES = (
     ("0x9c", "special_runtime_flag_9c", "uint8_t"),
     ("0xa0", "header_a0", "float"),
     ("0xa4", "header_a4", "float"),
+)
+
+SALT_HAZARD_FIELD_UPDATES = (
+    ("0x80", "state", "int32_t"),
+    ("0x88", "owner_game", "Game*"),
+    ("0x8c", "fade_alpha", "float"),
+    ("0x90", "spawn_velocity_y", "float"),
+    ("0x94", "collision_armed", "uint8_t"),
 )
 
 JET_PARTICLE_SLOT_FIELD_UPDATES = (
@@ -446,6 +454,14 @@ def main() -> int:
             target=args.target,
             struct_name="PathTemplate",
             updates=PATH_TEMPLATE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="SaltHazardSlot",
+            updates=SALT_HAZARD_FIELD_UPDATES,
         )
     )
     operations.extend(
