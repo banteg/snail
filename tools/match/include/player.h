@@ -19,6 +19,7 @@
 #include "tip_manager.h"
 #include "transform_matrix.h"
 #include "vector3.h"
+#include "warning_actor.h"
 
 struct AttachmentPathTemplate;
 struct Object;
@@ -172,10 +173,13 @@ public:
     void show_subgoldy_lives();           // @ 0x43af10
     Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
     ClickStartController* click_start_controller(); // embedded view at +0xa0
+    TransformMatrix* live_transform(); // RenderableBod-compatible view at +0x38
 
     // The first 0x10 bytes are an intrusive BOD-list node. Player storage is
     // embedded in SubgameRuntime and merely linked into the global active list.
-    char unknown_00[0x68];                 // +0x00; +0x38..+0x77 is PlayerLiveMatrixRows
+    char unknown_00[0x04];
+    unsigned int list_flags;               // +0x04, intrusive BOD membership/render flags
+    char unknown_08[0x68 - 0x08];          // +0x38..+0x77 is PlayerLiveMatrixRows
     Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
     char unknown_74[0x80 - 0x74];
     int resurrect_final_loss;              // +0x80
@@ -261,7 +265,8 @@ public:
     unsigned char follow_flag_3c;          // +0x3c0
     char unknown_3c1[0x3c4 - 0x3c1];
     DamageGaugeController damage_gauge;     // +0x3c4
-    char unknown_3f0[0x404 - 0x3f0];
+    char unknown_3f0[0x3f4 - 0x3f0];
+    WarningActor warning;                  // +0x3f4, embedded HUD warning controller
     int lives;                            // +0x404
     // Non-owning backlink to the SubgameRuntime that embeds this Player.
     // initialize_subgoldy is its sole setter; teardown never frees through it.
@@ -319,6 +324,11 @@ typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
 inline ClickStartController* Player::click_start_controller()
 {
     return (ClickStartController*)((char*)this + 0xa0);
+}
+
+inline TransformMatrix* Player::live_transform()
+{
+    return (TransformMatrix*)((char*)this + 0x38);
 }
 
 #endif

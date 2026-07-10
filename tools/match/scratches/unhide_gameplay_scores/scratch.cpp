@@ -4,6 +4,6 @@
 
 void SubgameRuntime::unhide_gameplay_scores()
 {
-    score_widget_b->unhide_border_init();
-    score_widget_a->unhide_border_init();
+    bottom_score_widget->unhide_border_init();
+    top_score_widget->unhide_border_init();
 }

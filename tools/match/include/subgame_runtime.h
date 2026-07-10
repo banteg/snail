@@ -9,6 +9,7 @@
 #include "completion_screen.h"
 #include "frontend_widget.h"
 #include "garbage_hazard_slot.h"
+#include "galaxy_route_types.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "cameraman_state.h"
@@ -24,6 +25,7 @@
 
 struct TrackAttachmentRuntimeRow;
 struct TrackRowCell;
+class TimeTrialStringFormatter;
 
 class SubgameRuntime {
 public:
@@ -36,6 +38,8 @@ public:
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
     Player* embedded_player(); // typed view of owned player_storage at +0x3bb764
+    TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
+    TimeTrialStringFormatter* time_trial_formatter(); // embedded service view at +0xff25e0
     void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
@@ -114,7 +118,9 @@ public:
     int parcel_total; // +0x1b01e0
     char unknown_1b01e4[0x355bd4 - 0x1b01e4];
     char sub_lazer_list_head[0x10]; // +0x355bd4, node-shaped live-list anchor
-    char unknown_355be4[0x355db0 - 0x355be4];
+    char unknown_355be4[0x355d94 - 0x355be4];
+    int active_level_score; // +0x355d94, copied from the selected bank record
+    TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
@@ -122,8 +128,10 @@ public:
     GarbageHazardPool garbage_hazards; // +0x359140
     RingOrSpecialEffectPool ring_effects; // +0x35b78c, two embedded parent slots
     char unknown_35bb7c[0x35bb88 - 0x35bb7c];
-    FrontendWidget* score_widget_a; // +0x35bb88
-    FrontendWidget* score_widget_b; // +0x35bb8c
+    // BorderManager pool handles. SubgameRuntime retains them for gameplay,
+    // then destroy_subgame returns each handle through kill_border().
+    FrontendWidget* top_score_widget; // +0x35bb88
+    FrontendWidget* bottom_score_widget; // +0x35bb8c
     FrontendWidget* lives_icon_widget; // +0x35bb90
     FrontendWidget* lives_text_widget; // +0x35bb94
     FrontendWidget* life_stock_widgets[9]; // +0x35bb98
@@ -190,8 +198,8 @@ public:
     int source_timer_b; // +0x125ffdc
     ChallengeSetupScreen challenge_setup; // +0x125ffe0
     char unknown_1260008[0x1260020 - (0x125ffe0 + sizeof(ChallengeSetupScreen))];
-    CompletionGalaxyRoute galaxy; // +0x1260020
-    char unknown_1260021[0x1270fc8 - 0x1260021];
+    GalaxyRoute galaxy; // +0x1260020, embedded route controller
+    char unknown_1270fc4[0x1270fc8 - 0x1270fc4];
     int subgame_rebuild_selector; // +0x1270fc8
     char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
     ContactTargetRegistry contact_targets; // +0x1270fd4, per-frame target append window
@@ -200,6 +208,16 @@ public:
 inline Player* SubgameRuntime::embedded_player()
 {
     return (Player*)player_storage;
+}
+
+inline TrackRowCellFringeLinkView* SubgameRuntime::runtime_cell_fringe_links()
+{
+    return (TrackRowCellFringeLinkView*)((char*)this + 0x3bfb0c);
+}
+
+inline TimeTrialStringFormatter* SubgameRuntime::time_trial_formatter()
+{
+    return (TimeTrialStringFormatter*)((char*)this + 0xff25e0);
 }
 
 #endif

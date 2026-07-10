@@ -4,8 +4,9 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `98.21%`, `336/336` candidate/target instructions, with `37` masked
-  operands ok and no unresolved or mismatched operands.
+- `98.21%`, `336/336` candidate/target instructions, with `36` masked
+  operands ok, no unresolved operands, and one compiler-local switch-table
+  symbol mismatch.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
 - The method is modeled as `void`: native exits do not establish a meaningful
@@ -96,8 +97,9 @@ Residual:
 - 2026-07-10 ownership/source-shape pass: constructing the biased camera target
   as a real `Vector3` value and expressing both radius loops as indexed walks
   raises the focused match from `88.92%` (`332/336`) to `98.21%` (`336/336`).
-  This also recovers the native `this + 0xac` embedded-child cursor and removes
-  the prior jump-table audit mismatch.
+  This also recovers the native `this + 0xac` embedded-child cursor and aligns
+  the dispatch instruction/table shape; the remaining audit residual is only
+  the compiler-local candidate table symbol versus the curated target name.
 - The remaining residual is two local schedules: native keeps target X live on
   the FPU stack while staging biased Z and target Y before deriving the child
   cursor, and one duplicated removal tail materializes the shared list anchor

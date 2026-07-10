@@ -19,8 +19,13 @@ public:
         int route_index,
         unsigned char route_active); // @ 0x4178b0
     char* save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
+    void noop_runtime_ai(); // shared empty lifecycle hook @ 0x407b50
 
-    char unknown_000000[0x08];
+    // Borrowed view of whichever embedded record bank the front end exposes.
+    // initialize_subgame selects one of the three arrays below; it never
+    // allocates or transfers ownership through this pointer.
+    HighScoreRecord* active_record_bank; // +0x00
+    int active_record_count;             // +0x04
     HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x08
     HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x15c648
     HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT]; // +0x2b8c88

@@ -1,20 +1,27 @@
 # initialize_subgame
 
-First scratch for `initialize_subgame @ 0x4374b0`.
+Live source map for `initialize_subgame @ 0x4374b0`.
+
+Current match:
+
+- `100.00%`, `396/396` candidate/target instructions, prefix `396/396`.
+- `84` masked operands resolve cleanly, with no unresolved operands. The only
+  audit residual is the compiler-local candidate symbol for the first mode
+  switch table versus the curated target table name.
 
 The helper clears the runtime track-cell activity lanes, seeds the front-end
 score/time widgets, copies the active level-record timer data, initializes the
 static segment/runtime anchors, and dispatches the first subgame state into the
 galaxy, challenge-setup, or reset path.
 
-This scratch intentionally keeps the broad `Game` layout as raw offsets while
-using shared front-end, color, backdrop, timer, and landscape-script helper
-types where those are already cross-checked by smaller scratches.
+The broad root remains sparse, but every ownership boundary proven by this
+function and its teardown consumers now uses a shared type. Unproven gaps stay
+raw rather than being assigned speculative owners.
 
 Recovered structure:
 
-- clears 3200 groups of eight runtime cells, zeroing the first four dwords of
-  each 0x54-byte lane;
+- clears 3200 groups of eight runtime cells, zeroing the four directional
+  fringe handles at `TrackRowCell +0x44..+0x50` in each `0x54`-byte lane;
 - selector `1`/`2` reloads the main-menu music, menu backdrop, and centered
   border state;
 - level modes `0`, `1`, and `4` copy the active level record pointer, score,
@@ -27,14 +34,22 @@ Recovered structure:
 - final dispatch routes selector-backed startup into galaxy, challenge setup,
   replay speed, or reset paths.
 
-Known partials:
+Ownership recovered:
 
-- The opening clear loop still differs in register allocation from native
-  (`edi` active cell / `edx` outer count in native).
-- Some data-address operands remain symbolic in the scratch (builtins table,
-  config max).
-- The two large switch tables have the right mode semantics but not native
-  table placement/code layout yet.
+- The four cell fringe pointers are non-owning handles to `FringeManager`
+  allocations. Initialization clears the handles; it does not free through
+  the cells.
+- `HighScoreBank` is embedded in `SubgameRuntime`. Its `active_record_bank`
+  pointer borrows one of the bank's embedded postal, survival, or time-trial
+  arrays; `active_level_score` and `active_level_timer` are separate embedded
+  display snapshots copied from that record.
+- Gameplay score/life widgets are `BorderManager` pool handles retained by the
+  subgame. `destroy_subgame` returns them through `kill_border()`; the pointer
+  fields do not own inline widget storage.
+- The player, warning actor, challenge setup controller, and galaxy route are
+  embedded subobjects. `Player::game` is a borrowed backlink to the containing
+  subgame, while `cached_camera_target_world` is player-owned state initialized
+  from the player's live position.
 
 2026-06-20 switch-table audit: `initialize_subgame_level_mode_startup_jump_table`
 (`0x437adc`) and `initialize_subgame_level_mode_bottom_hud_jump_table`
@@ -64,3 +79,21 @@ instructions, prefix 1/396, with the same `71 ok / 3 mismatch` masked audit.
 `update_frontend_state_machine` was rechecked and remains exact. The type
 census now reports `partial-compatible Game: 4`, with this scratch removed from
 the remaining generic owner list.
+
+2026-07-10 ownership and source-shape pass:
+
+- Duplicating the real mode `0`/`1` score cases and spelling the selected bank
+  records through `HighScoreBank` recovered the native control-flow layout.
+- Storing each border allocation directly in the subgame handle field, rather
+  than extending its lifetime through a local pointer, recovered native's
+  manager-handle reload pattern.
+- Modeling the opening as an intrinsic 16-byte `memset` of each cell's four
+  fringe handles recovered the complete nested clear loop. This is the
+  field-level operation evidenced by `TrackRowCell +0x44..+0x50`, not a
+  byte-shaped matching shim.
+- Typing the embedded player reset recovered the native position-to-camera
+  vector copy and warning initialization. Spelling `++level_mode_arg` directly
+  recovered the final missing instruction.
+- Together these changes raise the function from `63.25%` (`385/396`, prefix
+  `1/396`) to `100.00%` (`396/396`, prefix `396/396`). No padding, unreachable
+  branches, inline assembly, or register-forcing constructs were introduced.

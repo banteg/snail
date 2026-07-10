@@ -4,12 +4,12 @@
 
 void SubgameRuntime::hide_gameplay_scores()
 {
-    FrontendWidget* widget_b = score_widget_b;
+    FrontendWidget* widget_b = bottom_score_widget;
     if (widget_b != 0) {
         widget_b->hide_border_init();
     }
 
-    FrontendWidget* widget_a = score_widget_a;
+    FrontendWidget* widget_a = top_score_widget;
     if (widget_a != 0) {
         widget_a->hide_border_init();
     }
