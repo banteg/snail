@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**512/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **71940/325754** bytes (**22.08%**) are proof-grade, and overall fuzzy is **59.22%**.
+**513/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72625/325754** bytes (**22.29%**) are proof-grade, and overall fuzzy is **59.22%**.
 
-## Proof Grade (512)
+## Proof Grade (513)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -125,6 +125,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | uninitialize_input_devices | 0x411d80 | 20 | 4/4 | 100.00% | 4/4 | 4 ok |  |
 | ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
 | ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
+| ✅ | render_camera | 0x411fa0 | 685 | 180/180 | 100.00% | 180/180 | 37 ok |  |
 | ✅ | render_object_toon | 0x4123e0 | 721 | 219/219 | 100.00% | 219/219 | 31 ok |  |
 | ✅ | render_object | 0x4126c0 | 640 | 196/196 | 100.00% | 196/196 | 25 ok |  |
 | ✅ | update_display_mode_view_state | 0x412940 | 120 | 46/46 | 100.00% | 46/46 | 4 ok |  |
@@ -528,7 +529,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 1 mismatch, 62 ok |  |
 | ⚠ | initialize_subgame | 0x4374b0 | 1632 | 396/396 | 100.00% | 396/396 | 1 mismatch, 84 ok |  |
 
-## Near Match (95-99.99%) (22)
+## Near Match (95-99.99%) (21)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -536,7 +537,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
-| 🚧 | render_camera | 0x411fa0 | 685 | 180/180 | 97.78% | 116/180 | 37 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 84/84 | 95.24% | 36/84 | 6 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |

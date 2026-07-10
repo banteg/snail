@@ -21,8 +21,8 @@ Recovered relationships:
   `flags & 1`, insertion-sorted by `sort_key`, and each active slot controls a
   render-camera pass.
 - The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` has a matrix at
-  `+0x38`, an 8-byte gap, a second matrix at `+0x80`, a camera mode lane at
-  `+0xc0`, and a render mask at `+0xc4`.
+  `+0x38`, an 8-byte gap, a second matrix at `+0x80`, a float FOV in degrees
+  at `+0xc0`, and a render mask at `+0xc4`.
 - `Game +0x5e4` is not a standalone renderer flag: it is
   `render_camera_slots[1].flags`, whose high render-mask byte is forced to
   `0x02` before the passes.

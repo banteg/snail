@@ -46,16 +46,6 @@ void end_overlay_render_state();             // @ 0x411de0
 void noop_runtime_ai();                 // @ 0x407b50
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in release
-int render_camera(
-    float viewport_x,
-    float viewport_y,
-    float viewport_width,
-    float viewport_height,
-    int camera_mode,
-    TransformMatrix* camera_matrix,
-    TransformMatrix* view_matrix,
-    char draw_world,
-    char post_sprite_pass); // @ 0x411fa0
 int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
 void draw_font_text_queue(unsigned int render_mask);     // @ 0x44a730
 
@@ -134,7 +124,7 @@ int GameRoot::render_game_frame()
                 slot->viewport_y,
                 slot->viewport_width,
                 slot->viewport_height,
-                source->camera_mode,
+                source->fov_degrees,
                 &source->camera_matrix,
                 &source->view_matrix,
                 slot->draw_world,
@@ -274,7 +264,7 @@ int GameRoot::render_game_frame()
                     slot->viewport_y,
                     slot->viewport_width,
                     slot->viewport_height,
-                    source->camera_mode,
+                    source->fov_degrees,
                     &source->camera_matrix,
                     &source->view_matrix,
                     slot->draw_world,

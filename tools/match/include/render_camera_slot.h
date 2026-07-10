@@ -11,7 +11,7 @@ public:
     TransformMatrix camera_matrix; // +0x38, world camera transform
     char unknown_78[0x80 - 0x78];
     TransformMatrix view_matrix; // +0x80, sprite depth/facing transform
-    int camera_mode; // +0xc0, passed through to render_camera
+    float fov_degrees; // +0xc0, passed through to render_camera
     unsigned int render_mask; // +0xc4, high byte selects compatible slots
 };
 
@@ -38,5 +38,16 @@ public:
 
 typedef char RenderCameraSlot_must_be_0x28[
     (sizeof(RenderCameraSlot) == 0x28) ? 1 : -1];
+
+TransformMatrix* render_camera(
+    float viewport_x,
+    float viewport_y,
+    float viewport_width,
+    float viewport_height,
+    float fov_degrees,
+    TransformMatrix* camera_matrix,
+    TransformMatrix* view_matrix,
+    char draw_world,
+    char post_sprite_pass); // @ 0x411fa0
 
 #endif

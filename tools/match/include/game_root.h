@@ -4,6 +4,7 @@
 
 #include "bod_list.h"
 #include "render_camera_slot.h"
+#include "sprite.h"
 #include "vector3.h"
 
 class GameRootNewGameMenu {
@@ -65,7 +66,14 @@ public:
 
 class GameRoot {
 public:
-    char unknown_000000[0x38];
+    char unknown_000000[0x04];
+    unsigned char fog_enabled; // +0x04
+    char unknown_000005[0x08 - 0x05];
+    float fog_start; // +0x08, D3DRS_FOGSTART
+    float fog_end; // +0x0c, D3DRS_FOGEND
+    float fog_density; // +0x10, D3DRS_FOGDENSITY
+    Color4f fog_color; // +0x14, packed for D3DRS_FOGCOLOR
+    char unknown_000024[0x38 - 0x24];
     int frontend_quit_requested; // +0x38
     int fixed_update_count;      // +0x3c
     char unknown_000040[0x310 - 0x40];

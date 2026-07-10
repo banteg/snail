@@ -1,5 +1,6 @@
 // render_camera @ 0x411fa0 (cdecl)
 
+#include "game_root.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 #include "vector3.h"
@@ -31,7 +32,7 @@ struct RenderCameraDevice {
 };
 
 extern RenderCameraDevice* g_d3d_device; // data_502fec
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern void* g_current_texture_ref; // data_503174
 extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
 extern TransformMatrix* g_render_camera_view_matrix; // data_503218
@@ -113,20 +114,20 @@ TransformMatrix* render_camera(
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 14, 1);
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 23, 4);
 
-    if (draw_world != 0 && *(g_game_base + 4) != 0) {
-        volatile int fog_start = *(int*)(g_game_base + 8);
-        volatile int fog_end = *(int*)(g_game_base + 0x0c);
+    if (draw_world != 0 && g_game->fog_enabled != 0) {
+        float fog_start = g_game->fog_start;
+        float fog_end = g_game->fog_end;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 1);
 
         ColorBGRA8 packed_fog;
         packed_fog.noop_this_constructor();
-        packed_fog.pack_color_rgba_u8((Color4f*)(g_game_base + 0x14));
+        packed_fog.pack_color_rgba_u8(&g_game->fog_color);
         packed_fog.a = 0;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 34, *(int*)&packed_fog);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 140, 3);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 36, fog_start);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 37, fog_end);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 38, *(int*)(g_game_base + 0x10));
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 36, *(int*)&fog_start);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 37, *(int*)&fog_end);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 38, *(int*)&g_game->fog_density);
     } else {
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 0);
     }

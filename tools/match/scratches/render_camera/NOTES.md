@@ -28,49 +28,26 @@ projection transform.
   and `+0x10`, then calls `build_camera_view_matrix` and installs transform
   state `2`.
 - Enables the depth/render-state trio `7=1`, `14=1`, and `23=4`.
-- Enables fog only when the caller's draw-world flag and game fog flag are set.
-  The fog color is packed through `ColorBGRA8::pack_color_rgba_u8`, then alpha
-  is forced to zero before render state `34`.
+- Enables fog only when the caller's draw-world flag and
+  `GameRoot::fog_enabled` are set. The root-owned start/end/density floats feed
+  render states `36/37/38`; its fog color is packed through
+  `ColorBGRA8::pack_color_rgba_u8`, then alpha is forced to zero before render
+  state `34`.
 - Stores the active camera source matrix at `g_render_camera_source_matrix`,
   stores the active view matrix pointer at the newly named
   `g_render_camera_view_matrix`, and clears `g_current_texture_ref`.
 
-## Current match
+## Exact fog ownership and source shape (2026-07-10)
 
-Focused matcher result: 70.17%, 182 candidate instructions versus 180 target
-instructions, 0-instruction prefix, 34 clean masked operands, no unresolved
-operands, and one masked constant mismatch in the viewport scaling prologue.
+The write-side game initializer proves `GameRoot +0x04..+0x23` is an embedded
+fog-settings block: enabled byte, start/end/density floats, and `Color4f`.
+Direct3D render states 36 and 37 consume the raw DWORD encodings of local float
+copies of `fog_start` and `fog_end`. Spelling that standard D3D address-taking
+idiom naturally produces the native stack frame and scheduling.
 
-The first mismatch is the stack frame:
-
-```text
-target:    sub esp, 0xc8
-candidate: sub esp, 0xc4
-```
-
-Most later local offsets are shifted by four bytes. The candidate also preserves
-fog start/end in `edi`/`ebp`, while native spills those values into existing
-stack locals and keeps only `esi` saved for the camera matrix.
-
-## Rejected trial
-
-Declaring fog start as a float and passing its raw bits did move one fog value
-to the stack, but it regressed the result to 66.85% and introduced call/global
-operand mismatches around `pack_color_rgba_u8`. The retained scratch keeps the
-cleaner integer render-state values.
-
-## Fog spill win (2026-06-21)
-
-Declaring both fog range values as `volatile int` locals forces the native stack
-spills for render states 36 and 37, removes the candidate-only `edi`/`ebp`
-saves in the fog branch, and fixes the local frame from `0xc4` to `0xc8`.
-Focused match rises from 70.17% to 97.78%, with 180/180 instructions, a 116/180
-prefix, and 37 clean masked operands.
-
-Both fog values must be stack-forced. Only one volatile local keeps the old
-frame and regresses to the mid-60s, reloading the globals at the render-state
-calls reaches only 75.42%, and moving `fog_end` after state 28 disrupts the
-branch body. A volatile two-element array ties the score but is less faithful
-to the scalar source. The remaining residual is just fog-branch scheduling:
-native delays the second spill until after the state-28 call setup and loads the
-device vtable after pushing state/value for states 36 and 37.
+Focused Wibo is now exact: 100.00%, 180/180 instructions, full 180-instruction
+prefix, and 37 clean masked operands. The earlier 97.78% scratch used
+`volatile int` solely to force those spills; that compiler coercion has been
+retired rather than treated as a legitimate match. The exact source also
+confirms `RenderCamera +0xc0` is the float FOV in degrees, not an integer camera
+mode.
