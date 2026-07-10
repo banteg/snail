@@ -11,6 +11,8 @@ public:
     void start_invincible_shell(); // @ 0x444ae0
     void update_invincible_shell(); // @ 0x444b50
 
+    // BOD-node-compatible prefix linked by build_subgame_level. The shell
+    // remains embedded in PlayerPresentationController.
     char unknown_00[0x28];
     Color4f color; // +0x28
     TransformMatrix transform; // +0x38, copied from the live snail matrix then yaw-spun

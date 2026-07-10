@@ -34,6 +34,7 @@ public:
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
+    Player* embedded_player(); // typed view of owned player_storage at +0x3bb764
     void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
@@ -193,5 +194,10 @@ public:
     char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
     ContactTargetRegistry contact_targets; // +0x1270fd4, per-frame target append window
 };
+
+inline Player* SubgameRuntime::embedded_player()
+{
+    return (Player*)player_storage;
+}
 
 #endif

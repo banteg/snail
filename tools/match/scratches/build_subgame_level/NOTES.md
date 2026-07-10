@@ -151,3 +151,18 @@ plain stack-reload alone improved prefix but dropped the full score to
 `79.64%`; row zeroes without the completion low-byte clear reached only
 `81.19%`; and renewed player-node / membership-flag register probes did not move
 the active-list tail.
+
+## 2026-07-10 embedded-player ownership pass
+
+- `SubgameRuntime::embedded_player()` now exposes the owned `player_storage`
+  at `+0x3bb764` without pretending it is heap allocated. The start row,
+  completion row, Subgoldy initializer, and voice owner all point at that same
+  embedded object.
+- The six pre-Player active-list insertions are now spelled as embedded Player
+  subobjects: the presentation controller, its three weapon channels, jetpack
+  channel, and invincibility shell. These are intrusive list memberships, not
+  transfers of ownership to the global BOD list.
+- All typed expressions fold back to the original absolute member offsets.
+  Focused Wibo is unchanged at `86.10%`, `560/555`, prefix `244/555`, with
+  `105 ok / 0 unresolved / 1` masked mismatch. Moving the `row_alpha`
+  declaration closer to its store was also codegen-neutral and was not kept.

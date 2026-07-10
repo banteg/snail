@@ -103,6 +103,8 @@ public:
     void update_snail_skin();               // @ 0x445cd0
     void build_snail_hotspots();            // @ 0x445d50
 
+    // The first 0x10 bytes are an intrusive BOD-list node. build_subgame_level
+    // links this embedded presentation object; the list does not own it.
     char unknown_00[0x04];
     unsigned int visual_flags;              // +0x04
     char unknown_08[0x24 - 0x08];
@@ -169,6 +171,8 @@ public:
     void show_subgoldy_lives();           // @ 0x43af10
     Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
 
+    // The first 0x10 bytes are an intrusive BOD-list node. Player storage is
+    // embedded in SubgameRuntime and merely linked into the global active list.
     char unknown_00[0x68];                 // +0x00; +0x38..+0x77 is PlayerLiveMatrixRows
     Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
     char unknown_74[0x80 - 0x74];

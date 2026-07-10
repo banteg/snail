@@ -19,6 +19,8 @@ class PresentationAnimationChannel {
 public:
     int set_weapon_animation(int animation_id, unsigned char immediate, int initial_frame);
 
+    // BOD-node-compatible prefix linked by build_subgame_level. The channel
+    // remains embedded in PlayerPresentationController.
     char unknown_000[0x24];
     PresentationAnimationVisualRoot* visual_root; // +0x24
     char unknown_028[0x38 - 0x28];

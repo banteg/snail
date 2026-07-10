@@ -200,7 +200,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     *(volatile int*)(game + 0x359094) = zero;
     *(volatile int*)(game + 0x359090) = zero;
     unsigned int start_flags = *(unsigned int*)(game + 0x359084);
-    *(void**)(game + 0x3590d4) = game + 0x3bb764;
+    *(Player**)(game + 0x3590d4) = embedded_player();
     *(float*)(game + 0x359098) = (float)*(int*)(game + 0x50);
     int row_alpha = 0x3f7fbe77;
     *(unsigned int*)(game + 0x359084) = start_flags & ~0x20;
@@ -224,7 +224,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     *(volatile int*)(game + 0x3590f4) = zero;
     *(volatile int*)(game + 0x3590f0) = zero;
     unsigned int completion_flags = *(unsigned int*)(game + 0x3590e4);
-    *(void**)(game + 0x359134) = game + 0x3bb764;
+    *(Player**)(game + 0x359134) = embedded_player();
     *(float*)(game + 0x3590f8) = (float)*(int*)(game + 0x58);
     ((unsigned char*)&completion_flags)[0] &= 0xdf;
     *(unsigned int*)(game + 0x3590e4) = completion_flags;
@@ -240,9 +240,10 @@ void SubgameRuntime::build_subgame_level(int level_index)
     ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
     *(int*)(game + 0x3bbb70) = one;
     *(int*)(game + 0x3be0d4) = zero;
-    ((Player*)(game + 0x3bb764))->initialize_subgoldy(one);
+    embedded_player()->initialize_subgoldy(one);
 
-    BodNode* node = (BodNode*)(game + 0x3bf2c8);
+    BodNode* node =
+        (BodNode*)&embedded_player()->presentation.jetpack_channel;
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -262,7 +263,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)(game + 0x3be734);
+    node = (BodNode*)&embedded_player()->presentation.weapon_channels[0];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -282,7 +283,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)(game + 0x3beb10);
+    node = (BodNode*)&embedded_player()->presentation.weapon_channels[1];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -302,7 +303,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)(game + 0x3beeec);
+    node = (BodNode*)&embedded_player()->presentation.weapon_channels[2];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -322,7 +323,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)(game + 0x3bf97c);
+    node = (BodNode*)&embedded_player()->presentation.invincible_shell;
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -345,7 +346,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     ((unsigned char*)&visible_flags)[0] |= 0x80;
     node->list_flags = visible_flags;
 
-    node = (BodNode*)(game + 0x3be0e8);
+    node = (BodNode*)&embedded_player()->presentation;
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -365,7 +366,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    BodNode* player_node = (BodNode*)(game + 0x3bb764);
+    BodNode* player_node = (BodNode*)embedded_player();
     if ((player_node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
