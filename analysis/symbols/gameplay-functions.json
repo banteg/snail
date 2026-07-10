@@ -780,7 +780,7 @@
     {
       "address": "0x413d50",
       "name": "build_object_texture_group_buffers",
-      "description": "Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering. iOS RObject.o names the owner family `cRObject::BuildGLVertexArray()`."
+      "description": "Allocates one Object's texture-group tables, expands each Object-owned face run through six advancing index lanes, uploads the grouped scratch's scalar diffuse plus aggregate UV/XYZ render payload, and retains the resulting Direct3D vertex and index buffers. iOS RObject.o names the owner family `cRObject::BuildGLVertexArray()`."
     },
     {
       "address": "0x4141d0",

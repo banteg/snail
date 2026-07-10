@@ -18,9 +18,6 @@ extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 
 void build_object_texture_group_buffers(Object* object)
 {
-    int face_index = 0;
-    int index_count = 0;
-
     if (object->vertex_count == 0) {
         object->group_index_starts = 0;
         object->group_texture_refs = 0;
@@ -45,23 +42,29 @@ void build_object_texture_group_buffers(Object* object)
     g_object_grouped_vertex_cursor = 0;
 
     unsigned char flags_byte = (unsigned char)object->flags;
+    int face_index = 0;
+    int index_count = 0;
 
     if ((flags_byte & 4) != 0) {
         for (int vertex_index = 0; vertex_index < object->vertex_count; ++vertex_index) {
             for (int scan_face_index = 0; scan_face_index < object->facequad_count; ++scan_face_index) {
-                ObjectFaceQuad* quad = &object->facequads[scan_face_index];
-                if (quad->vertex_0 == vertex_index)
+                if (object->facequads[scan_face_index].vertex_0 == vertex_index)
                     get_or_append_object_texture_group_vertex(
-                        object, vertex_index, quad->uv[0].u, quad->uv[0].v);
-                else if (quad->vertex_1 == vertex_index)
+                        object, vertex_index, object->facequads[scan_face_index].uv[0].u,
+                        object->facequads[scan_face_index].uv[0].v);
+                else if (object->facequads[scan_face_index].vertex_1 == vertex_index)
                     get_or_append_object_texture_group_vertex(
-                        object, vertex_index, quad->uv[1].u, quad->uv[1].v);
-                else if (quad->vertex_2 == vertex_index)
+                        object, vertex_index, object->facequads[scan_face_index].uv[1].u,
+                        object->facequads[scan_face_index].uv[1].v);
+                else if (object->facequads[scan_face_index].vertex_2 == vertex_index)
                     get_or_append_object_texture_group_vertex(
-                        object, vertex_index, quad->uv[2].u, quad->uv[2].v);
-                else if ((quad->flags & 0x80) == 0 && quad->vertex_3 == vertex_index)
+                        object, vertex_index, object->facequads[scan_face_index].uv[2].u,
+                        object->facequads[scan_face_index].uv[2].v);
+                else if ((object->facequads[scan_face_index].flags & 0x80) == 0
+                    && object->facequads[scan_face_index].vertex_3 == vertex_index)
                     get_or_append_object_texture_group_vertex(
-                        object, vertex_index, quad->uv[3].u, quad->uv[3].v);
+                        object, vertex_index, object->facequads[scan_face_index].uv[3].u,
+                        object->facequads[scan_face_index].uv[3].v);
             }
         }
     }
@@ -71,30 +74,63 @@ void build_object_texture_group_buffers(Object* object)
         object->group_texture_refs[group] = object->facequads[face_index].texture_ref;
         object->group_index_starts[group] = index_count;
 
-        while (face_index < object->texture_group_ends[group]) {
-            ObjectFaceQuad* quad = &object->facequads[face_index];
-            unsigned short* out = &index_scratch[index_count];
+        if (face_index < object->texture_group_ends[group]) {
+            int face_offset = face_index * sizeof(ObjectFaceQuad);
+            unsigned short* index_5 = index_scratch + index_count + 5;
+            unsigned short* index_0 = index_scratch + index_count;
+            unsigned short* index_4 = index_scratch + index_count + 4;
+            unsigned short* index_2 = index_scratch + index_count + 2;
+            unsigned short* index_3 = index_scratch + index_count + 3;
+            unsigned short* index_1 = index_scratch + index_count + 1;
 
-            out[0] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_0, quad->uv[0].u, quad->uv[0].v);
-            out[1] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_1, quad->uv[1].u, quad->uv[1].v);
-            out[2] = (unsigned short)get_or_append_object_texture_group_vertex(
-                object, quad->vertex_2, quad->uv[2].u, quad->uv[2].v);
+            do {
+                *index_0 = (unsigned short)get_or_append_object_texture_group_vertex(
+                    object,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_0,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[0].u,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[0].v);
+                *index_1 = (unsigned short)get_or_append_object_texture_group_vertex(
+                    object,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_1,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[1].u,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[1].v);
+                *index_2 = (unsigned short)get_or_append_object_texture_group_vertex(
+                    object,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_2,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[2].u,
+                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[2].v);
 
-            if ((quad->flags & 0x80) != 0) {
-                index_count += 3;
-                primitive_count += 1;
-            } else {
-                out[3] = out[0];
-                out[4] = out[2];
-                out[5] = (unsigned short)get_or_append_object_texture_group_vertex(
-                    object, quad->vertex_3, quad->uv[3].u, quad->uv[3].v);
-                index_count += 6;
-                primitive_count += 2;
-            }
+                if ((((ObjectFaceQuad*)((char*)object->facequads + face_offset))->flags
+                        & 0x80) == 0) {
+                    *index_3 = *index_0;
+                    *index_4 = *index_2;
+                    *index_5 = (unsigned short)get_or_append_object_texture_group_vertex(
+                        object,
+                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_3,
+                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[3].u,
+                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[3].v);
+                    index_count += 6;
+                    index_0 += 6;
+                    index_1 += 6;
+                    index_2 += 6;
+                    index_3 += 6;
+                    index_4 += 6;
+                    index_5 += 6;
+                    primitive_count += 2;
+                } else {
+                    index_count += 3;
+                    index_1 += 3;
+                    index_0 += 3;
+                    index_3 += 3;
+                    index_2 += 3;
+                    index_4 += 3;
+                    index_5 += 3;
+                    primitive_count += 1;
+                }
 
-            ++face_index;
+                ++face_index;
+                face_offset += sizeof(ObjectFaceQuad);
+            } while (face_index < object->texture_group_ends[group]);
         }
 
         object->group_primitive_counts[group] = primitive_count;
@@ -112,11 +148,10 @@ void build_object_texture_group_buffers(Object* object)
 
     for (int i = 0; i < g_object_grouped_vertex_cursor; ++i) {
         locked_vertices[i].diffuse = g_object_grouped_vertex_scratch[i].diffuse;
-        locked_vertices[i].u = g_object_grouped_vertex_scratch[i].u;
-        locked_vertices[i].v = g_object_grouped_vertex_scratch[i].v;
-        locked_vertices[i].x = g_object_grouped_vertex_scratch[i].x;
-        locked_vertices[i].y = g_object_grouped_vertex_scratch[i].y;
-        locked_vertices[i].z = g_object_grouped_vertex_scratch[i].z;
+        *(ObjectUv*)&locked_vertices[i].u =
+            *(ObjectUv*)&g_object_grouped_vertex_scratch[i].u;
+        *(Vector3*)&locked_vertices[i].x =
+            *(Vector3*)&g_object_grouped_vertex_scratch[i].x;
     }
 
     object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);

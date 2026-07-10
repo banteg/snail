@@ -3,8 +3,8 @@
 Structure-first scratch for the object texture-group buffer builder at
 `0x413d50`.
 
-Current Wibo result: 43.00%, 320/373 candidate/target instruction shape,
-prefix 0/373, masked operands 25 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 100.00%, 373/373 candidate/target instructions,
+prefix 373/373, masked operands 29 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -42,29 +42,40 @@ Recovered relationships:
   (`rep movsd`/`rep movsb`), not an out-of-line CRT call. Promoting the scratch
   to `#pragma intrinsic(memcpy)` also recovers the native `ebx` ownership for
   the object pointer through most of the function.
+- Each grouped face owns six advancing `unsigned short*` index lanes. They are
+  initialized from the shared index scratch plus the current index count,
+  advanced by three slots for a triangle or six for a quad, and preserve the
+  reused `0/2` lanes explicitly. The face itself remains Object-owned and is
+  reloaded through the running 0x30-byte face offset for every corner.
+- The 0x1c-byte `ObjectGroupedVertex` scratch begins with the same 0x18-byte
+  render payload written to `ObjectRenderVertex`: `diffuse` is copied as a
+  scalar, UV as one `ObjectUv`, and XYZ as one `Vector3`; the trailing dword is
+  the source-object vertex index used only by the append/dedup helper.
 
 Rejected probes:
 
-- Rewriting the texture-group expansion around six long-lived output-pointer
-  locals grew the frame toward native size but regressed to 38.48% and moved
-  object ownership from `ebx` to `ebp`, so the clearer indexed loop is retained
-  for now.
+- An earlier six-pointer probe paired the cursors with a cached face pointer and
+  scalar vertex upload. It regressed to 38.48% and moved object ownership from
+  `ebx` to `ebp`; the cursor hypothesis was only accepted after Binary Ninja
+  proved the owner-relative face reloads and aggregate upload that complete the
+  native source shape.
 - Retesting the non-void return shape after the intrinsic/local-lifetime edits
   dropped slightly to 42.14% and reintroduced an explicit zero-return block.
+- Replacing the aggregate UV/position copies with manually advanced byte
+  offsets slightly regressed the focused result and lost one clean relocation;
+  no synthetic frame or padding local is retained.
 
-Expected residuals:
+Exact closure:
 
-- The main remaining residual is native's larger `0x28` frame and saved-register
-  schedule. The group loop still differs in pointer-local ownership and branch
-  layout; direct pointer-local source spelling currently loses the better object
-  register, so continue only with a stronger source-idiom lead.
+- Direct Object-owned warm-up accesses, the six lane cursors, authored
+  triangle/quad branch order, index-count-first cursor advancement, and the
+  aggregate render upload reproduce the native 0x28-byte frame and full
+  instruction stream without padding, volatile tricks, or dead work.
 
 2026-07-10 retained-resource closure: the builder now has one shared
 `void(Object*)` declaration across its exact `ObjectList::build_all_objects`
 caller, scratch, Binary Ninja, and IDA. This corrects the live Binary Ninja
 prototype from a synthetic `ObjectIndexBuffer*(int32_t)` return and makes the
 five retained products at `+0xc0/+0xc8/+0xcc/+0xd0/+0xd4` visible as fields.
-Keeping both group-loop counters alive from function entry matches one more
-native lifetime without inventing padding. The builder is honestly measured at
-43.00%, 320/373, with all 25 masked operands clean; the residual `0x18` versus
-native `0x28` frame still needs a source-shaped ownership explanation.
+The exact caller/callee contract remains unchanged by the later source-shape
+recovery.

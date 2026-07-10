@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**507/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **68769/325754** bytes (**21.11%**) are proof-grade, and overall fuzzy is **58.35%**.
+**508/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **69918/325754** bytes (**21.46%**) are proof-grade, and overall fuzzy is **58.55%**.
 
-## Proof Grade (507)
+## Proof Grade (508)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -134,6 +134,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | end_sprite_depth_render_state | 0x413650 | 22 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | configure_sprite_render_state | 0x413670 | 370 | 109/109 | 100.00% | 109/109 | 18 ok |  |
 | ✅ | draw_sprite_quad | 0x4137f0 | 951 | 259/259 | 100.00% | 259/259 | 29 ok |  |
+| ✅ | build_object_texture_group_buffers | 0x413d50 | 1149 | 373/373 | 100.00% | 373/373 | 29 ok |  |
 | ✅ | set_object_color | 0x4141d0 | 139 | 47/47 | 100.00% | 47/47 | 3 ok |  |
 | ✅ | set_fullscreen_mode | 0x414260 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | bind_texture_ref | 0x414500 | 178 | 62/62 | 100.00% | 62/62 | 11 ok |  |
@@ -673,7 +674,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 
-## Early Progress (>0-49.99%) (63)
+## Early Progress (>0-49.99%) (62)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -681,7 +682,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |
-| 🚧 | build_object_texture_group_buffers | 0x413d50 | 1149 | 320/373 | 43.00% | 0/373 | 25 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |
