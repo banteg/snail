@@ -4,10 +4,10 @@ Advances one intro/logo renderable by its velocity, fades alpha after it passes
 the front z window, marks the backing object dirty, and toggles the visible
 bit in the shared contact/BOD list flags.
 
-Focused match: 100.00%, 42/42 candidate/target instructions, with seven clean
-masked operands. The semantic shape is pinned; the z lane uses a narrow
-`volatile` view only to preserve the native store/reload boundary between the
-position update and the fade compare.
+Honest focused match: 81.93%, 41/42 candidate/target instructions, prefix
+8/42, with six clean masked operands. The semantic shape is pinned; the
+remaining x87 difference is the native z-lane store/reload boundary between
+the position update and fade compare.
 
 The helper is modeled as void. IDA's `char` return is the leftover low byte of
 `list_flags` after the visible-bit update.
@@ -27,3 +27,11 @@ plain pointer aliases, direct field access, condition reversal, and explicit
 position-only lane improves to 95.24% but reverses the commutative z-add load
 order, while the two volatile lane reads preserve native `velocity.z` then
 `position.z`, followed by the required `fstp` and reloads.
+
+2026-07-10 barrier retirement: the two volatile lane pointers were code-shape
+barriers and have been removed. Inline member/free vector-add helpers, a
+component loop, aggregate construction/assignment, explicit float/double
+rounding, and named z temporaries did not reproduce the store/reload honestly;
+the scratch therefore records the clean scalar source at 81.93% rather than a
+false proof-grade result. The lost masked operand is only a branch-alignment
+consequence, not unresolved ownership.

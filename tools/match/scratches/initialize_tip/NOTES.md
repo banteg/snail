@@ -8,8 +8,8 @@ Recovered relationships:
   `widget_disable`, `dismiss_progress`, `dismiss_step`, and
   `previous_outer_owner` use the shared `tip_manager.h` layout.
 - null definitions fall back to the default tip definition at `data_4ac5c8`.
-- the main widget is always allocated from the frontend border manager at
-  `g_game_base + 0xb4c`.
+- the main widget is always allocated from the owned
+  `GameRoot::border_manager` at root `+0xb4c`.
 - definition flag bit `2` enables auto-dismiss timing; bit `1` enables the
   modal OK/Disable button path and switches the outer frontend owner to `0x16`.
 - the second argument is a `hide_disable_button` gate: zero builds both OK and
@@ -45,3 +45,10 @@ masked operands. Reusing the initial flags value for all later gates regresses
 to 59.74% by overextending the first definition load, and signed-byte alignment
 locals regress slightly; keep the scalar `definition_flags` for alignment and
 the later `live_flags` reload for the gate checks.
+
+2026-07-10 barrier retirement and owner promotion: the two volatile definition
+reloads after `allocate_border` were register-scheduling barriers and are gone.
+Direct member reads retain instruction-count parity and 25 clean masks at an
+honest 83.12%, 154/154, prefix 16/154. The saved/replacement outer state is now
+`GameRoot::players[0].frontend_state`; both that field and the border-manager
+ownership are independently constructor- and exact-caller-backed.

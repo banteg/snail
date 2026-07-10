@@ -45,3 +45,7 @@ instructions, preserving the same button-pointer residual.
 2026-06-21 clicked-button split: duplicating the OK and Disable clicked-teardown
 body exactly matches native. Focused Wibo reports 100.00%, 51/51 instructions,
 51/51 prefix, and nine clean masked operands.
+
+2026-07-10 root-owner promotion: the exact source now restores
+`GamePlayer[0].frontend_state` and calls the owned
+`GameRoot::border_manager`, replacing raw root offsets without changing a byte.

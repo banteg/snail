@@ -18,8 +18,8 @@ Behavior:
 The extra `rank != -1` gate is source-shaped from native even though this local
 rank search only produces non-negative ranks.
 
-Match status: 93.49%, 84/84 target instructions, 36/84 exact prefix, six masked
-operands resolved.
+Honest match status: 64.63%, 80/84 candidate/target instructions, no exact
+prefix, and five clean masked operands.
 
 Residual:
 
@@ -86,3 +86,18 @@ Residual:
   slot locals and raw slot-base views grow the candidate to 87 instructions and
   drop to 86.55%, while volatile record reloads perturb the prologue and fall to
   67.86%. Keep the current direct record copy after the volatile bank reload.
+
+2026-07-10 barrier retirement and root-owner closure:
+
+- The volatile self-reload before the inserted-record copy was solely forcing
+  the native EBP spill/restore and has been removed. Clean index and pointer
+  shift loops, early/late shift-rank lifetimes, direct `this` members, and a
+  named source record do not reproduce that allocator decision; the readable
+  direct-member source is retained at the honest 64.63% baseline.
+- Root `+0x1b8/+0x30d/+0x310/+0x314` are now typed as fields of
+  `GameRoot::players[0]`: frontend state, pending-entry byte, entry rank, and
+  entry bank. The rank/bank words are unions with their selected-score
+  rank/mode names because the front-end state machine reuses the same cRPlayer
+  storage in a different state.
+- The exact arcade insertion and high-score-screen destroy anchors remain
+  70/70 and 11/11 after adopting the same `GamePlayer` fields.

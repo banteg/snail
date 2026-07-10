@@ -1,9 +1,10 @@
 // add_arcade_high_score @ 0x4176a0 (thiscall, ret 0x8)
 
+#include "game_root.h"
 #include "high_score_bank.h"
 #include "high_score_screen.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int HighScoreBank::add_arcade_high_score(HighScoreRecord* record, int level_arg)
 {
@@ -35,10 +36,10 @@ insert_record:
     bank->postal_records[rank] = *record;
     bank->postal_records[rank].route_or_rank_index = rank;
 
-    ((HighScoreGameView*)g_game_base)->frontend_next_state = 20;
-    ((HighScoreGameView*)g_game_base)->high_score_entry_pending = 1;
-    ((HighScoreGameView*)g_game_base)->high_score_entry_rank = rank;
-    HighScoreGameView* result_view = (HighScoreGameView*)g_game_base;
-    result_view->high_score_entry_bank = 0;
+    g_game->players[0].frontend_state = 20;
+    g_game->players[0].high_score_entry_pending = 1;
+    g_game->players[0].high_score_entry_rank = rank;
+    GameRoot* result_view = g_game;
+    result_view->players[0].high_score_entry_bank = 0;
     return (int)result_view;
 }

@@ -3,6 +3,7 @@
 #define GAME_ROOT_H
 
 #include "bod_list.h"
+#include "border_manager.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
 #include "vector3.h"
@@ -86,9 +87,16 @@ public:
     Color4f color_198; // +0x198, constructed owned color
     char unknown_1a8[0x1e8 - 0x1a8];
     unsigned char redispatch_requested; // +0x1e8
-    char unknown_1e9[0x1ec - 0x1e9];
-    int selected_high_score_rank; // +0x1ec
-    int selected_high_score_mode; // +0x1f0
+    unsigned char high_score_entry_pending; // +0x1e9
+    char unknown_1ea[0x1ec - 0x1ea];
+    union {
+        int selected_high_score_rank; // +0x1ec, frontend selection read
+        int high_score_entry_rank; // +0x1ec, pending-entry write
+    };
+    union {
+        int selected_high_score_mode; // +0x1f0, frontend selection read
+        int high_score_entry_bank; // +0x1f0, pending-entry write
+    };
     char unknown_1f4[0x1f8 - 0x1f4];
 };
 
@@ -119,7 +127,9 @@ public:
     Vector3 star_spawn_direction; // +0x6d4
     char unknown_0006e0[0x6e4 - 0x6e0];
     Vector3 star_spawn_origin; // +0x6e4
-    char unknown_0006f0[0x4f2dc - 0x6f0];
+    char unknown_0006f0[0xb4c - 0x6f0];
+    BorderManager border_manager; // +0xb4c, owned frontend border pool
+    char unknown_0440e8[0x4f2dc - 0x440e8];
     GameRootNewGameMenu new_game_menu; // +0x4f2dc
     char unknown_04f2e0[0x4f324 - 0x4f2e0];
     GameRootMainMenu main_menu; // +0x4f324

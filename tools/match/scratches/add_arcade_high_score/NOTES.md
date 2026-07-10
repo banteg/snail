@@ -47,3 +47,7 @@ Rejected/neutral source-shape probes:
   were also neutral at 80.58%.
 - Sharing one `shift_rank` limit variable between the scan and shift loop
   regressed to 63.38% by pushing `ebx` in the prologue.
+
+2026-07-10 cRPlayer state ownership: the four frontend writes now target
+`GameRoot::players[0]` directly (`frontend_state`, pending byte, entry rank,
+and entry bank). The owner promotion is byte-neutral at the exact 70/70 anchor.

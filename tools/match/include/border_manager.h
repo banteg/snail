@@ -52,4 +52,7 @@ public:
     BorderRecord borders[150]; // +0x684
 };
 
+typedef char BorderManager_must_be_0x4359c[
+    (sizeof(BorderManager) == 0x4359c) ? 1 : -1];
+
 #endif

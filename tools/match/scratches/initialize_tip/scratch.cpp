@@ -2,9 +2,10 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "tip_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern TipMessageDefinition g_default_tip_message; // data_4ac5c8
 
 void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable_button)
@@ -15,24 +16,20 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
     else
         definition = &g_default_tip_message;
 
-    widget_main = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    TipMessageDefinition* flags_definition =
-        *(TipMessageDefinition* volatile*)&this->definition;
-    TipMessageDefinition* current_definition =
-        *(TipMessageDefinition* volatile*)&this->definition;
-    int definition_flags = flags_definition->flags;
+    widget_main = g_game->border_manager.allocate_border();
+    int definition_flags = definition->flags;
     unsigned int alignment = (int)(char)~definition_flags;
     alignment &= 4;
     Color4f color;
     widget_main->initialize_frontend_widget(
         2,
-        current_definition->text,
+        definition->text,
         0x14,
-        current_definition->layout_y,
-        current_definition->text_scale,
+        definition->layout_y,
+        definition->text_scale,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         alignment >> 1,
-        current_definition->layout_y);
+        definition->layout_y);
 
     TipMessageDefinition* live_definition = definition;
     int live_flags = live_definition->flags;
@@ -42,7 +39,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
     }
 
     if ((live_flags & 1) != 0) {
-        widget_ok = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        widget_ok = g_game->border_manager.allocate_border();
         if (hide_disable_button == 0) {
             widget_ok->initialize_frontend_widget(
                 0x14,
@@ -54,7 +51,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
                 2,
                 definition->layout_y + 40.0f);
 
-            widget_disable = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+            widget_disable = g_game->border_manager.allocate_border();
             widget_disable->initialize_frontend_widget(
                 0x14,
                 "Disable",
@@ -85,7 +82,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
     }
 
     TipMessageDefinition* final_definition = definition;
-    previous_outer_owner = *(int*)(g_game_base + 0x1b8);
+    previous_outer_owner = g_game->players[0].frontend_state;
     if ((final_definition->flags & 1) != 0)
-        *(int*)(g_game_base + 0x1b8) = 0x16;
+        g_game->players[0].frontend_state = 0x16;
 }

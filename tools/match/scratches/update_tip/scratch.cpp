@@ -2,14 +2,15 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "game_pause_view.h"
 #include "tip_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void __fastcall update_tip(TipSlot* slot)
 {
-    if (((GamePauseView*)g_game_base)->pause_gate != 0) {
+    if (((GamePauseView*)g_game)->pause_gate != 0) {
         slot->widget_main->hide_border_init();
         return;
     }
@@ -22,9 +23,9 @@ void __fastcall update_tip(TipSlot* slot)
         flags = button->widget_flags;
         if (((unsigned char)flags & 0x20) != 0) {
             button->widget_flags = flags & ~0x20;
-            *(int*)(g_game_base + 0x1b8) = slot->previous_outer_owner;
+            g_game->players[0].frontend_state = slot->previous_outer_owner;
             slot->kill_tip_widgets();
-            ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
+            g_game->border_manager.unhide_all_borders();
             slot->active = 0;
             return;
         }
@@ -35,9 +36,9 @@ void __fastcall update_tip(TipSlot* slot)
         flags = button->widget_flags;
         if (((unsigned char)flags & 0x20) != 0) {
             button->widget_flags = flags & ~0x20;
-            *(int*)(g_game_base + 0x1b8) = slot->previous_outer_owner;
+            g_game->players[0].frontend_state = slot->previous_outer_owner;
             slot->kill_tip_widgets();
-            ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
+            g_game->border_manager.unhide_all_borders();
             slot->active = 0;
             return;
         }

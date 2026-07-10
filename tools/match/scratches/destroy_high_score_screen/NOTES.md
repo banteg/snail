@@ -11,3 +11,7 @@ Focused match: 100.00%, 11/11 instructions, with five clean masked operands.
 and uses the shared `HighScoreScreen::selected_bank` layout directly. This is
 codegen neutral at the exact baseline and removes the last local
 `HighScoreScreen` type-consolidation candidate.
+
+2026-07-10 root-owner promotion: border teardown now uses the owned
+`GameRoot::border_manager`, and the pending/rank clears use
+`GamePlayer[0]`. The typed ownership stays exact at 11/11.
