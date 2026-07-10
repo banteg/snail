@@ -29,7 +29,7 @@ class VapourTrail {
 public:
     virtual int update_vapour();
     int initialize_vapour(int unused, int half_width_bits); // @ 0x442500
-    int reset_vapour(int z_floor);                       // @ 0x442540
+    int reset_vapour(float* z_floor);                    // @ 0x442540
     void add_vapour_point(const TransformMatrix* point);  // @ 0x442560
 
     int flags; // +0x04
@@ -42,7 +42,7 @@ public:
         int half_width_bits; // +0x88, initializer/raw callsite view
         float half_width;    // +0x88, update_vapour render width
     };
-    int z_floor; // +0x8c, optional float* clamp pointer stored as raw int
+    float* z_floor; // +0x8c, optional position-z clamp source
     TransformMatrix* points; // +0x90
 };
 

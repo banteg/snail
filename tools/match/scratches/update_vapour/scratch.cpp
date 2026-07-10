@@ -20,7 +20,7 @@ int VapourTrail::update_vapour()
         if (point_count > 0) {
             int point_offset = 0;
             do {
-                float* floor = (float*)z_floor;
+                float* floor = z_floor;
                 TransformMatrix* point =
                     (TransformMatrix*)((char*)points + point_offset);
                 if (point->position.z < *floor)

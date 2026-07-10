@@ -2,7 +2,7 @@
 
 #include "vapour_trail.h"
 
-int VapourTrail::reset_vapour(int new_z_floor)
+int VapourTrail::reset_vapour(float* new_z_floor)
 {
     point_count = 0;
     z_floor = new_z_floor;

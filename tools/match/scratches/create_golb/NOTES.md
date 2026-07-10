@@ -123,7 +123,9 @@ Residuals:
   `0x415565..0x4155b9` and the independent iOS
   `cRSubGolb::Create(cRSubGoldy*, int, int)` implementation in `Golb.o` both
   show that the `flags & 0x18` lane overwrites the incoming selector with an
-  optional `float*`. When the live-matrix forward-z lane at `player+0x60` is
+  optional `float*`; the iOS `cRVapour::ReSet(float*)` symbol
+  (`__ZN8cRVapour5ReSetEPf`) independently pins the callee type. When the
+  live-matrix forward-z lane at `player+0x60` is
   positive it points at `player+0x4184`, the z component of the first
   `player+0x417c` attachment anchor; otherwise it is null. This value is later
   passed to `VapourTrail::reset_vapour` as its z-floor/clamp pointer. The
@@ -135,6 +137,10 @@ Residuals:
   output-position vector and its z latch, matching the native ownership and
   aggregate-copy evidence; that clarification is retained at `36.08%`,
   `460/582`, despite the `0.07` point SequenceMatcher movement.
+- The primary live-body insertion now uses the shared `BodNode` ownership
+  already proven by exact initialization and teardown scratches. This and the
+  promoted `float*` vapour z-floor type are codegen-neutral for `create_golb`;
+  `reset_vapour` remains exact at `7/7` instructions.
 - Rejected 2026-07-10 neighbors: narrowing only the player pointer regressed to
   `30.37%`; staging every velocity assignment through `Vec3` temporaries
   regressed to `34.59%` with a masked-operand mismatch; doing so only in the

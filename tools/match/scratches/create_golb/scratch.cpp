@@ -31,23 +31,26 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
     self[0x1bc] = 0;
     self[0x1bd] = 0;
 
-    if ((words[1] & 0x200) != 0) {
+    BodNode* body = &primary_body;
+    if ((body->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
-        char* anchor = g_game_base + 0x5ac;
-        int head = *(int*)anchor;
-        if (head) {
-            *(DWORD*)(head + 8) = (DWORD)self;
-            *(DWORD*)(*(DWORD*)(*(DWORD*)anchor + 8) + 12) = *(DWORD*)anchor;
-            int next = *(DWORD*)(*(DWORD*)anchor + 8);
-            *(DWORD*)anchor = next;
-            *(DWORD*)(next + 8) = 0;
+        BodNode** first_ref = (BodNode**)(g_game_base + 0x5ac);
+        BodNode* old_first = *first_ref;
+        if (old_first) {
+            old_first->list_prev = body;
+            BodNode* current = *first_ref;
+            BodNode* inserted = current->list_prev;
+            inserted->list_next = current;
+            current = *first_ref;
+            *first_ref = current->list_prev;
+            (*first_ref)->list_prev = 0;
         } else {
-            *(DWORD*)anchor = (DWORD)self;
-            words[2] = 0;
-            *(DWORD*)(*(DWORD*)anchor + 12) = 0;
+            *first_ref = body;
+            body->list_prev = 0;
+            (*first_ref)->list_next = 0;
         }
-        words[1] |= 0x200;
+        body->list_flags |= 0x200;
     }
 
     words[158] = (DWORD)player_;
@@ -258,7 +261,7 @@ after_movement_flag_source:
                 words[33] |= 0x200;
             }
 
-            ((VapourTrail*)(self + 0x80))->reset_vapour(spawn_selector);
+            ((VapourTrail*)(self + 0x80))->reset_vapour((float*)spawn_selector);
             ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             words[157] = emitter_index;
             ((VapourTrail*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));

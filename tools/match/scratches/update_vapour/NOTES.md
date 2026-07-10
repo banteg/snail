@@ -9,7 +9,8 @@ Recovered relationships:
   into a quad strip.
 - `VapourTrail::z_floor +0x8c` is an optional `float*` clamp pointer, not a
   mode enum. When present, every point's `TransformMatrix::position.z` is
-  clamped to `*z_floor`.
+  clamped to `*z_floor`. The independent iOS symbol
+  `cRVapour::ReSet(float*)` (`__ZN8cRVapour5ReSetEPf`) pins the pointer type.
 - `VapourTrail::points +0x90` is a `TransformMatrix*`; each segment reads the
   current point's `basis_right` and current/next `position`.
 - `VapourTrailOwner` owns the output buffers: `vertex_count +0x2c`, quad
