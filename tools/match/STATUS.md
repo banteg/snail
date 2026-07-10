@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.95%**.
+**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.98%**.
 
 ## Proof Grade (508)
 
@@ -541,7 +541,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_subgoldy | 0x43a9c0 | 1360 | 276/279 | 95.86% | 190/279 | 27 ok |  |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 97.54% | 16/122 | 7 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
-| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 1 mismatch, 36 ok |  |
+| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 98.18% | 48/55 | 3 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
@@ -648,7 +648,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 139/134 | 57.14% | 4/134 | 26 ok |  |
 | 🚧 | build_track_render_caches | 0x433220 | 2310 | 475/763 | 75.77% | 90/763 | 15 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 56.41% | 7/58 | 4 ok |  |
-| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 476/495 | 53.76% | 3/495 | 47 ok |  |
+| 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 24 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1033/1033 | 78.22% | 9/1033 | 2 mismatch, 116 ok |  |
