@@ -5,8 +5,8 @@ First-pass scratch for the positional sound-effect wrapper.
 Recovered semantics:
 
 - builds a camera-relative `Vector3` from the supplied world position and the
-  active camera/listener position at `g_game_base + 0x22c`
-  (`GameAudioListenerView::listener_position`);
+  active listener at `GameRoot::players[0].camera.transform.position`
+  (`Game +0x22c`);
 - plays only within a 25.0 unit radius;
 - computes gain as `1.0 - distance * 0.04`;
 - computes pan from the source x position and clamps it to `[-100, 100]`; and
@@ -68,3 +68,23 @@ Rejected source-shape probes:
   inside the min branch regress to the low 70% range; a plain pointer view is
   neutral at 89.23%. The only remaining diff is the known sentinel-store order
   before the first `position` argument load.
+
+2026-07-10 exact listener-loop and ownership pass:
+
+- Removing both volatile casts exposes the honest 83.72%, 63/66 baseline. A
+  one-iteration listener loop is the real source shape that preserves the
+  initialized minimum-distance slot across the magnitude call; VC6 folds the
+  loop control away and emits the native stream exactly. Focused Wibo is now
+  100.00%, 66/66 instructions, full prefix, and 11 clean masked operands.
+- The loop shape explains the otherwise redundant `1.0e10f` sentinel and
+  conditional minimum around a single Windows listener. No volatile, register
+  hint, inline assembly, or other code-shape barrier remains.
+- Root construction initializes two consecutive 0x1f8-byte `cRPlayer` records
+  at `Game +0x124/+0x31c`. Each owns an inherited `RenderableBod`-based
+  `cRCamera` at player `+0xa0`; startup lends those camera subobjects at
+  `Game +0x1c4/+0x3bc` to viewport slots 1 and 4. Therefore the audio read at
+  `Game +0x22c` is precisely player 0 camera `+0x68`, the inherited transform
+  position, rather than a standalone root listener vector.
+- iOS independently names this overload `cRSound::Play(int, tVector&)`, so the
+  Windows surface now takes a typed `Vector3&`. The exact `shoot_subgoldy`
+  caller remains 48/48 after passing its unstaggered origin by reference.

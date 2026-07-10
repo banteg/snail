@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**513/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72625/325754** bytes (**22.29%**) are proof-grade, and overall fuzzy is **59.21%**.
+**514/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **72876/325754** bytes (**22.37%**) are proof-grade, and overall fuzzy is **59.21%**.
 
-## Proof Grade (513)
+## Proof Grade (514)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -497,6 +497,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | random_signed_float_below | 0x44dc70 | 32 | 9/9 | 100.00% | 9/9 | 3 ok |  |
 | ✅ | random_float_below | 0x44dc90 | 26 | 8/8 | 100.00% | 8/8 | 2 ok |  |
 | ✅ | initialize_sound_bank | 0x44dcb0 | 48 | 21/21 | 100.00% | 21/21 | 1 ok |  |
+| ✅ | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 100.00% | 66/66 | 11 ok |  |
 | ✅ | play_sound_effect | 0x44dde0 | 28 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
@@ -529,7 +530,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ⚠ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 1 mismatch, 62 ok |  |
 | ⚠ | initialize_subgame | 0x4374b0 | 1632 | 396/396 | 100.00% | 396/396 | 1 mismatch, 84 ok |  |
 
-## Near Match (95-99.99%) (19)
+## Near Match (95-99.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -550,7 +551,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
-| 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 98.48% | 3/66 | 11 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
 ## High Progress (80-94.99%) (56)

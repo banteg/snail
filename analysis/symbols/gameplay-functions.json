@@ -3242,7 +3242,7 @@
     {
       "address": "0x44dce0",
       "name": "play_sound_effect_at_position",
-      "description": "Plays one effect id through the shared audio backend with distance attenuation and left-right pan derived from the supplied world position."
+      "description": "Windows cRSound positional overload: folds a one-listener minimum-distance loop over GamePlayer[0]'s owned camera transform position, then plays one effect id with 25-unit attenuation and left-right pan derived from the supplied Vector3 reference."
     },
     {
       "address": "0x44dde0",

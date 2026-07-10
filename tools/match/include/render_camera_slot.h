@@ -1,14 +1,12 @@
 #ifndef RENDER_CAMERA_SLOT_H
 #define RENDER_CAMERA_SLOT_H
 
-#include "transform_matrix.h"
+#include "bod_types.h"
 
-// iOS names this render-camera owner cRCamera. Windows embeds camera instances
-// in GameRoot and lends them to RenderCameraSlot; the slot does not own them.
-class RenderCamera {
+// iOS names this render-camera owner cRCamera. Windows embeds one in each
+// GamePlayer and lends it to RenderCameraSlot; the slot does not own it.
+class RenderCamera : public RenderableBod {
 public:
-    char unknown_00[0x38];
-    TransformMatrix camera_matrix; // +0x38, world camera transform
     char unknown_78[0x80 - 0x78];
     TransformMatrix view_matrix; // +0x80, sprite depth/facing transform
     float fov_degrees; // +0xc0, passed through to render_camera

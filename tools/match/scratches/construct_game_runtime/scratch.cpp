@@ -2,6 +2,7 @@
 
 #include "bod_types.h"
 #include "border_manager.h"
+#include "game_root.h"
 #include "render_camera_slot.h"
 #include "runtime_slot.h"
 #include "sprite.h"
@@ -82,13 +83,13 @@ int construct_game_runtime()
             --root_slot_count;
         } while (root_slot_count);
 
-        RuntimeSlot* unknown_slot = SLOT(0x124);
-        int unknown_slot_count = 2;
+        GamePlayer* player = &((GameRoot*)game)->players[0];
+        int player_count = 2;
         do {
-            unknown_slot->initialize_unknown_408000();
-            unknown_slot = (RuntimeSlot*)((char*)unknown_slot + 0x1f8);
-            --unknown_slot_count;
-        } while (unknown_slot_count);
+            player->initialize_game_player();
+            ++player;
+            --player_count;
+        } while (player_count);
 
         SLOT(0x570)->initialize_bod_base();
 

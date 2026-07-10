@@ -28,9 +28,14 @@ and tip manager.
   stream and root-slot callback tables, and `g_loc_mirror_count` without
   changing the source body or instruction-stream score.
 
-The helper constructors at `0x408000` and `0x408040` only appear in this
-constructor in the current exports, so the scratch keeps them as local
-`initialize_unknown_*` methods rather than adding speculative names.
+The no-op renderable helper at `0x408040` remains local because its three uses
+do not expose a narrower owner. The `0x408000` composite is now closed as the
+`GamePlayer`/Windows `cRPlayer` constructor helper: it initializes consecutive
+0x1f8-byte records at root `+0x124/+0x31c`, constructs the owned camera
+subobject at player `+0xa0`, and installs the callback whose first entry is the
+exact `update_frontend_state_machine` (`cRPlayer::AI()`). The constructor loop
+therefore uses a typed `GamePlayer*` increment instead of raw `RuntimeSlot`
+stride arithmetic.
 
 2026-06-20 runtime-slot ABI pass:
 

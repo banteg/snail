@@ -53,7 +53,7 @@ typedef BodList SubLazerListAnchor;
 class SubLazerPool {
 public:
     int* initialize_sub_lazer_pool(); // @ 0x441650
-    void shoot_subgoldy(const float* origin, const Vector3* direction); // @ 0x441ad0
+    void shoot_subgoldy(Vector3* origin, const Vector3* direction); // @ 0x441ad0
 
     SubLazerSlot slots[20];
 };

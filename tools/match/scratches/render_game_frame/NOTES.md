@@ -20,9 +20,10 @@ Recovered relationships:
 - Five `RenderCameraSlot` entries live at `Game +0x5b4`, are filtered by
   `flags & 1`, insertion-sorted by `sort_key`, and each active slot controls a
   render-camera pass.
-- The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` has a matrix at
-  `+0x38`, an 8-byte gap, a second matrix at `+0x80`, a float FOV in degrees
-  at `+0xc0`, and a render mask at `+0xc4`.
+- The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` inherits
+  `RenderableBod`, so its world camera matrix is the inherited transform at
+  `+0x38`; an 8-byte gap is followed by its view matrix at `+0x80`, float FOV
+  in degrees at `+0xc0`, and render mask at `+0xc4`.
 - `Game +0x5e4` is not a standalone renderer flag: it is
   `render_camera_slots[1].flags`, whose high render-mask byte is forced to
   `0x02` before the passes.
@@ -68,4 +69,9 @@ Expected residuals:
 at `Game +0x1c4/+0x3bc` to viewport slots 1 and 4. iOS independently names the
 pair `cRViewport::SetCamera(cRCamera*)` and `cRViewport::cRViewport()`. Promoting
 that borrowed pointer and the owning GameRoot viewport array is codegen-neutral:
-focused Wibo remains the honest 35.31%, 422/439, with 21 clean masks.
+ focused Wibo remains the honest 35.31%, 422/439, with 21 clean masks.
+
+The enclosing owner is now closed as well: those two camera sources are the
+owned `camera +0xa0` subobjects of consecutive `GamePlayer`/`cRPlayer` records
+at root `+0x124/+0x31c`. Viewports borrow the adjusted subobject pointers; the
+players and ultimately `GameRoot` retain lifetime ownership.

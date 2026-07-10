@@ -875,6 +875,27 @@
       "confidence": "high"
     },
     {
+      "address": "0x44dce0",
+      "windows_name": "play_sound_effect_at_position",
+      "ios_symbol": "cRSound::Play(int, tVector&)",
+      "source_object": "RSound.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44dde0",
+      "windows_name": "play_sound_effect",
+      "ios_symbol": "cRSound::Play(int)",
+      "source_object": "RSound.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x44de00",
+      "windows_name": "play_sound_effect_scaled",
+      "ios_symbol": "cRSound::PlayVolume(int, float)",
+      "source_object": "RSound.o",
+      "confidence": "high"
+    },
+    {
       "address": "0x44de90",
       "windows_name": "initialize_sprite",
       "ios_symbol": "cRSprite slot initializer",

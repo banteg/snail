@@ -12,8 +12,10 @@ Recovered relationships:
   counts and sorts active slots by fields inside that array before calling
   `render_camera`.
 - The two startup callsites attach cameras embedded at `Game +0x1c4` and
-  `Game +0x3bc` to slots 1 and 4 respectively. Neither slot allocates or frees
-  its source.
+  `Game +0x3bc` to slots 1 and 4 respectively. These are the owned
+  `camera +0xa0` subobjects of `GamePlayer[0]` and `GamePlayer[1]`, whose
+  0x1f8-byte records begin at root `+0x124/+0x31c`. Neither slot allocates or
+  frees its source.
 
 iOS provenance names this exact ownership edge
 `cRViewport::SetCamera(cRCamera*)`, while the paired slot initializer is

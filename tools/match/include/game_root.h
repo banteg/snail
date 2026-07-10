@@ -64,6 +64,37 @@ public:
     void update_help_screen();
 };
 
+// Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
+// GameRoot constructs two consecutive 0x1f8-byte players at +0x124; viewport
+// slots only borrow their camera subobjects at player +0xa0.
+class GamePlayer : public RenderableBod {
+public:
+    GamePlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
+    int update_frontend_state_machine(); // @ 0x4107d0, cRPlayer::AI()
+
+    char unknown_078[0x94 - 0x78];
+    int frontend_state; // +0x94
+    int saved_frontend_state; // +0x98
+    char unknown_09c[0xa0 - 0x9c];
+    RenderCamera camera; // +0xa0, owned cRCamera subobject
+    void* camera_anchor; // +0x168, borrowed current menu/gameplay anchor
+    char unknown_16c[0x178 - 0x16c];
+    float camera_anchor_x; // +0x178
+    float camera_anchor_y; // +0x17c
+    char unknown_180[0x188 - 0x180];
+    Color4f color_188; // +0x188, constructed owned color
+    Color4f color_198; // +0x198, constructed owned color
+    char unknown_1a8[0x1e8 - 0x1a8];
+    unsigned char redispatch_requested; // +0x1e8
+    char unknown_1e9[0x1ec - 0x1e9];
+    int selected_high_score_rank; // +0x1ec
+    int selected_high_score_mode; // +0x1f0
+    char unknown_1f4[0x1f8 - 0x1f4];
+};
+
+typedef char GamePlayer_must_be_0x1f8[
+    (sizeof(GamePlayer) == 0x1f8) ? 1 : -1];
+
 class GameRoot {
 public:
     char unknown_000000[0x04];
@@ -76,10 +107,9 @@ public:
     char unknown_000024[0x38 - 0x24];
     int frontend_quit_requested; // +0x38
     int fixed_update_count;      // +0x3c
-    char unknown_000040[0x310 - 0x40];
-    int selected_high_score_rank; // +0x310
-    int selected_high_score_mode; // +0x314
-    char unknown_000318[0x56c - 0x318];
+    char unknown_000040[0x124 - 0x40];
+    GamePlayer players[2]; // +0x124, owned cRPlayer array
+    char unknown_000514[0x56c - 0x514];
     int render_skip_count; // +0x56c, decremented before an otherwise skipped frame
     char unknown_000570[0x5ac - 0x570];
     BodNode* active_render_bod_head; // +0x5ac, borrowed intrusive-list head

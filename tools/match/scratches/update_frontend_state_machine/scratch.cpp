@@ -18,25 +18,18 @@ extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 
-class FrontendStateMachine {
-public:
-    int update_frontend_state_machine();
-};
-
-int FrontendStateMachine::update_frontend_state_machine()
+int GamePlayer::update_frontend_state_machine()
 {
-    char* self = (char*)this;
-
-    *(unsigned char*)(self + 0x1e8) = 1;
+    redispatch_requested = 1;
     do {
-        int state = *(int*)(self + 0x94);
-        *(unsigned char*)(self + 0x1e8) = 0;
+        int state = frontend_state;
+        redispatch_requested = 0;
 
         switch (state) {
         case 10:
             g_game->unknown_104712c = 0;
             g_game->subgame.initialize_subgame();
-            *(int*)(self + 0x94) = 11;
+            frontend_state = 11;
         case 11: {
             GameRoot* owner = g_game;
             owner->subgame.update_subgame();
@@ -46,7 +39,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         {
             GameRoot* owner = g_game;
             owner->intro_screen.initialize_intro_screen(aIntroIntroTxt);
-            *(int*)(self + 0x94) = 13;
+            frontend_state = 13;
             break;
         }
         case 13:
@@ -56,7 +49,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         {
             GameRoot* owner = g_game;
             owner->intro_screen.initialize_intro_screen(aIntroCreditsTx);
-            *(int*)(self + 0x94) = 15;
+            frontend_state = 15;
             break;
         }
         case 15: {
@@ -65,8 +58,8 @@ int FrontendStateMachine::update_frontend_state_machine()
             break;
         }
         case 1:
-            *(int*)(self + 0x94) = 0;
-            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
+            frontend_state = 0;
+            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
             g_game->new_game_menu.replay_attract_controller = 0;
         {
             GameRoot* owner = g_game;
@@ -74,8 +67,8 @@ int FrontendStateMachine::update_frontend_state_machine()
             break;
         }
         case 2:
-            *(int*)(self + 0x94) = 0;
-            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
+            frontend_state = 0;
+            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->new_game_menu.initialize_new_game_menu();
@@ -84,16 +77,16 @@ int FrontendStateMachine::update_frontend_state_machine()
             g_game->new_game_menu.update_new_game_menu();
             break;
         case 3:
-            *(int*)(self + 0x94) = 5;
-            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
+            frontend_state = 5;
+            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
             break;
         }
         case 4:
-            *(int*)(self + 0x94) = 5;
-            ((FrontendMouseCaptureView*)(self + 0x16c))->capture_mouse_cursor();
+            frontend_state = 5;
+            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
@@ -102,7 +95,7 @@ int FrontendStateMachine::update_frontend_state_machine()
             g_game->main_menu.update_main_menu();
             break;
         case 6:
-            *(int*)(self + 0x94) = 7;
+            frontend_state = 7;
         {
             GameRoot* owner = g_game;
             owner->options_menu.initialize_options_menu();
@@ -115,7 +108,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         }
         case 8:
             g_game->completion_screen.initialize_exit_prompt();
-            *(int*)(self + 0x94) = 9;
+            frontend_state = 9;
         case 9: {
             GameRoot* owner = g_game;
             owner->completion_screen.update_completion_screen();
@@ -123,7 +116,7 @@ int FrontendStateMachine::update_frontend_state_machine()
         }
         case 18:
             g_game->high_score_screen.initialize_high_score_screen(g_high_score_selected_bank, -1);
-            *(int*)(self + 0x94) = 19;
+            frontend_state = 19;
             break;
         case 19: {
             GameRoot* owner = g_game;
@@ -133,9 +126,9 @@ int FrontendStateMachine::update_frontend_state_machine()
         case 20: {
             GameRoot* game = g_game;
             game->high_score_screen.initialize_high_score_screen(
-                game->selected_high_score_mode,
-                game->selected_high_score_rank);
-            *(int*)(self + 0x94) = 21;
+                game->players[0].selected_high_score_mode,
+                game->players[0].selected_high_score_rank);
+            frontend_state = 21;
             break;
         }
         case 21: {
@@ -167,13 +160,13 @@ int FrontendStateMachine::update_frontend_state_machine()
             g_game->ordinary_rebuild_selector = 0;
             g_game->subgame.initialize_subgame();
         restore_saved_state: {
-            int saved_state = *(int*)(self + 0x98);
+            int saved_state = saved_frontend_state;
             if (saved_state != -1)
-                *(int*)(self + 0x94) = saved_state;
+                frontend_state = saved_state;
             break;
         }
         case 29:
-            *(int*)(self + 0x94) = 30;
+            frontend_state = 30;
         {
             GameRoot* owner = g_game;
             owner->thanks_for_playing_screen.initialize_thanks_for_playing_screen();
@@ -184,7 +177,7 @@ int FrontendStateMachine::update_frontend_state_machine()
             break;
         }
         case 31:
-            *(int*)(self + 0x94) = 32;
+            frontend_state = 32;
             g_game->help_screen.initialize_help_screen();
         case 32: {
             GameRoot* owner = g_game;
@@ -194,15 +187,15 @@ int FrontendStateMachine::update_frontend_state_machine()
         default:
             break;
         }
-    } while (*(unsigned char*)(self + 0x1e8) == 1);
+    } while (redispatch_requested == 1);
 
-    CameraAnchor* camera = *(CameraAnchor**)(self + 0x168);
-    float camera_x = camera->camera_x;
-    *(float*)(self + 0x178) = camera_x;
-    float camera_y = camera->camera_y;
-    TransformMatrix* live_matrix = (TransformMatrix*)(self + 0x38);
-    TransformMatrix* snapshot_matrix = (TransformMatrix*)(self + 0xd8);
+    CameraAnchor* anchor = (CameraAnchor*)camera_anchor;
+    float anchor_x = anchor->camera_x;
+    camera_anchor_x = anchor_x;
+    float anchor_y = anchor->camera_y;
+    TransformMatrix* live_matrix = &transform;
+    TransformMatrix* snapshot_matrix = &camera.transform;
     *snapshot_matrix = *live_matrix;
-    *(float*)(self + 0x17c) = camera_y;
-    return (int)((TransformMatrix*)(self + 0x120))->invert_matrix_from_source(live_matrix);
+    camera_anchor_y = anchor_y;
+    return (int)camera.view_matrix.invert_matrix_from_source(live_matrix);
 }

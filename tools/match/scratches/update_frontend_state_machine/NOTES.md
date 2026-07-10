@@ -1,16 +1,15 @@
 # update_frontend_state_machine @ 0x4107d0
 
-First source-shaped bridge scratch: 58.12% against the default extent
-(`194` target insns, `243` candidate insns), with prefix `12/194`. It covers
-the recovered front-end dispatch states, the subgame handoff/return opcodes at
-states 10/11 and 26/27/28, and the tail camera transform snapshot/invert.
+Exact bridge scratch: 100.00%, 180/180 instructions, full prefix, and 69 clean
+masked operands. It covers the recovered front-end dispatch states, the
+subgame handoff/return opcodes at states 10/11 and 26/27/28, and the tail camera
+transform snapshot/invert.
 
-The scratch now uses a local `GameRoot` layout for the known `data_4df904`
-owners instead of preprocessor offset accessors. `uv run snail match types
---paths` leaves this local, as expected; the global/root layout is still too
-partial to consolidate.
+The scratch now runs as `GamePlayer::update_frontend_state_machine`, the
+Windows `cRPlayer::AI()` owner, and uses the shared `GameRoot`/`GamePlayer`
+layout instead of a scratch-local state-machine shell.
 
-Residuals are intentionally left to the matcher rather than papered over:
+Historical recovery notes:
 
 - Switch lowering and shared fall-through labels are not yet shaped beyond the
   semantic state grouping from IDA/Binary Ninja. Region output shows most of
@@ -48,3 +47,20 @@ Residuals are intentionally left to the matcher rather than papered over:
   Rejected/neutral in this pass: local-owner spelling for the shared
   initialize label, direct/local owner swaps in the thanks/help fallthroughs,
   and warning-actor guard rewrites.
+
+2026-07-10 cRPlayer/cRCamera ownership closure:
+
+- `construct_game_runtime` creates two 0x1f8-byte player records at root
+  `+0x124/+0x31c`. The callback installed on each record points to this exact
+  function, matching the iOS `cRPlayer::AI()` provenance.
+- `frontend_state +0x94`, `saved_frontend_state +0x98`, the redispatch byte at
+  `+0x1e8`, and selected high-score rank/mode at `+0x1ec/+0x1f0` now belong to
+  `GamePlayer`; the old root-level `+0x310/+0x314` names were fields of player
+  zero all along.
+- The player owns `RenderCamera camera +0xa0`. Its inherited transform lands at
+  player `+0xd8`, its view matrix at `+0x120`, and its FOV at `+0x160`. The
+  exact tail now copies `GamePlayer::transform` into `camera.transform`, then
+  inverts it into `camera.view_matrix` using typed subobjects.
+- The explicit live/snapshot pointers remain meaningful aliases of those two
+  owned matrices and preserve the native delayed anchor-y store. The fully
+  typed owner stays byte-exact at 180/180.

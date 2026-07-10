@@ -125,7 +125,7 @@ int GameRoot::render_game_frame()
                 slot->viewport_width,
                 slot->viewport_height,
                 source->fov_degrees,
-                &source->camera_matrix,
+                &source->transform,
                 &source->view_matrix,
                 slot->draw_world,
                 0);
@@ -265,7 +265,7 @@ int GameRoot::render_game_frame()
                     slot->viewport_width,
                     slot->viewport_height,
                     source->fov_degrees,
-                    &source->camera_matrix,
+                    &source->transform,
                     &source->view_matrix,
                     slot->draw_world,
                     1);

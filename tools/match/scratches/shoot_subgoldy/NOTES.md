@@ -58,3 +58,8 @@ helper. Focused Wibo is now exact at 100.00%, 48/48 instructions, and 4 clean
 masked operands. This is call-site evidence that `play_sound_effect_at_position`
 belongs on `SoundEffectManager` even though the helper body itself does not read
 the receiver.
+
+2026-07-10 positional-vector ownership: iOS names the callee overload
+`cRSound::Play(int, tVector&)`. Typing this helper's origin as `Vector3*` and
+passing the unstaggered origin by reference leaves the caller byte-exact at
+48/48 while closing the previous raw-float pointer ABI.
