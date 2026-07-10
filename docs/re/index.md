@@ -10,6 +10,7 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Attachment follow state](attachment-follow.md): how authored `Path=` rows install live follow-state transitions
 - [Background light streaks](background-light-streaks.md): the separate star-field sprite pass layered on top of the Distort backdrop warp
 - [Runtime structures](runtime-structures.md): current high-confidence `Player`, `Game`, and attachment-template layouts
+- [Object runtime](object-runtime.md): global object-list ownership, authored mesh loading, animation frames, render-buffer construction, and frame-time borrowing
 - [Audio callsite map](audio-callsite-map.md): whole-game `play_sound_effect` / `play_voice_manager` inventory grouped by owning gameplay system
 - [HUD pipeline](hud-pipeline.md): authored 640×480 HUD element inventory per mode (widgets + programmatic quads) and Zig port divergences
 - [Symbol workflow](symbols.md): how the curated Binary Ninja function manifest is maintained

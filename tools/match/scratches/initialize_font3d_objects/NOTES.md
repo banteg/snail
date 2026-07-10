@@ -50,3 +50,14 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
   prologue and drops below 30%, while scale-cursor variants around
   `g_font3d_scales` regress to roughly 36%. Keep the indexed scale store until
   a stronger object-field cursor lead appears.
+
+2026-07-10 shared object owner closure:
+
+- The glyph BODs now borrow slots from the typed global `ObjectList`; the
+  loader and all subsequent field writes use the shared `Object` and
+  `ObjectFaceQuad` layouts rather than private lookalikes.
+- This corrects the old local name at `Object +0x14`: the value set to `1` is
+  `blend_mode`, not a font-specific `ready` flag. The x scaling is likewise
+  expressed as four `Vector3::x` lanes on the owned vertex array.
+- The consolidation is codegen-neutral at 44.34%, 95/126, prefix 3/126, with
+  9 clean masked operands and the one documented cursor-alignment mismatch.

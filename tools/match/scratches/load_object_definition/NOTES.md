@@ -54,3 +54,19 @@ Measured probes:
   the `ebp` save until the parser loop. The masked mismatches are still
   alignment fallout between the vertex and facequad regions, not unresolved
   symbols.
+
+2026-07-10 owner-chain consolidation: this loader now sits on the shared
+`ObjectList -> Object` lifecycle. Its `Object*` argument is a borrowed global
+list slot; the loader installs the slot's owned vertex and facequad arrays,
+while each facequad borrows a `TextureRef*` from the texture manager. The
+canonical Binary Ninja/IDA header carries the two-argument declaration. The
+live Binary Ninja function retains a stale `int32_t()` user type that rejects
+both normal and direct type updates, so the sync deliberately reports that
+tool limitation instead of claiming the live prototype was applied. Focused
+Wibo remains 48.23%, 297/325, prefix 2/325, with 36 clean and five
+alignment-dependent masked mismatches.
+
+A whole-`Vector3` parsed-vertex temporary was rejected: it regressed focused
+Wibo to 33.44% and enlarged the frame to `0x248`. The retained three-float
+staging plus borrowed destination pointer is both clearer about the destination
+slot and preserves the native `0x23c` frame.

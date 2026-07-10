@@ -3,9 +3,7 @@
 #include "object_animation_types.h"
 #include "object_render_types.h"
 
-typedef Object ObjectRenderGeometry;
-
-void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
+void refresh_object_vertex_buffer(Object* object)
 {
     unsigned int flags = object->flags;
     if ((flags & 0x200000) != 0) {
@@ -30,8 +28,9 @@ void refresh_object_vertex_buffer(ObjectRenderGeometry* object)
         if (count > 0) {
             int destination_offset = 0;
             int source_offset = 0;
+            Vector3* source_vertices = object->vertices;
             do {
-                int* source = (int*)((char*)object->vertices + source_offset);
+                int* source = (int*)((char*)source_vertices + source_offset);
                 int* destination = (int*)((char*)vertices + destination_offset);
                 ++i;
 

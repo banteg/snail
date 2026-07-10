@@ -47,3 +47,19 @@ Frame FaceQuad Normals"` label; the second buffer is stored into
 those scratch string literals preserves the proven ownership/order and clears
 the final masked mismatch. Focused Wibo remains `41.24%`, `220/231`, with
 `15 ok / 0 unresolved / 0 mismatch` masked operands.
+
+2026-07-10 keyframe ownership closure: the shared `XAnimationKeyframe` is now
+an exact `0x80`-byte record with a borrowed `Object*` at `+0x24` and authored
+frame number at `+0x7c`. The method accepts that typed array directly, and the
+global `ObjectList` type makes the caller's per-keyframe object allocation
+visible in Binary Ninja. `Object +0xbc` remains the retaining owner of the
+generated animation/frame graph.
+
+2026-07-10 interpolation lifetime alignment: spelling the native interpolation
+as distinct `delta`, `scaled`, and `tweened` `Vector3` stages raises focused
+Wibo from 41.24% to 57.88%, with 232/231 instructions and 17 clean masked
+operands. The candidate frame is honestly four bytes larger (`0x3c` versus
+native `0x38`). This alignment also proves the 2026-06-21 swapped-label
+conclusion was comparison fallout: the allocation labels are restored to their
+semantic buffers (`Vertices` first, `FaceQuad Normals` second) and now both
+match cleanly.

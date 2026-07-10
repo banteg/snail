@@ -3,10 +3,25 @@
 
 #include "vector3.h"
 
+struct Object;
+
+struct XAnimationKeyframe {
+    char unknown_00[0x24];
+    Object* object; // +0x24, borrowed ObjectList slot
+    char unknown_28[0x7c - 0x28];
+    int frame_number; // +0x7c
+};
+
+typedef char XAnimationKeyframe_must_be_0x80[
+    (sizeof(XAnimationKeyframe) == 0x80) ? 1 : -1];
+
 struct ObjectAnimationFrame {
     Vector3* vertices; // +0x00
     Vector3* facequad_normals; // +0x04, two normals / 0x18 bytes per facequad
 };
+
+typedef char ObjectAnimationFrame_must_be_0x08[
+    (sizeof(ObjectAnimationFrame) == 0x08) ? 1 : -1];
 
 struct ObjectAnimation {
     unsigned short flags; // +0x00
@@ -16,5 +31,8 @@ struct ObjectAnimation {
     float progress; // +0x0c
     float progress_step; // +0x10
 };
+
+typedef char ObjectAnimation_must_be_0x14[
+    (sizeof(ObjectAnimation) == 0x14) ? 1 : -1];
 
 #endif

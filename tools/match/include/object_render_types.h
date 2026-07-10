@@ -13,6 +13,7 @@ struct RenderObjectDevice;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
 struct ObjectAnimation;
+struct XAnimationKeyframe;
 
 struct ObjectRenderBuffers {
     char unknown_00[0x08];
@@ -150,7 +151,8 @@ struct Object {
     void* request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
     ObjectAnimation* request_object_animation(
-        int keyframe_count, void* keyframes, float progress_step, unsigned short flags); // @ 0x430a70
+        int keyframe_count, XAnimationKeyframe* keyframes,
+        float progress_step, unsigned short flags); // @ 0x430a70
 
     char unknown_00[0x08];
     Vector3* toon_vertices; // +0x08, 12 bytes per source vertex
@@ -161,8 +163,8 @@ struct Object {
     char unknown_1c[0x2c - 0x1c];
     int vertex_count; // +0x2c
     char unknown_30[0x38 - 0x30];
-    Vector3* vertices; // +0x38
-    Vector3* copied_vertices; // +0x3c
+    Vector3* vertices; // +0x38, active base/generated-frame view
+    Vector3* copied_vertices; // +0x3c, retained base-vertex copy
     int field_40; // +0x40
     Vector3* vertex_normals; // +0x44
     Color4f* vertex_colours; // +0x48
@@ -170,7 +172,7 @@ struct Object {
     int facequad_count; // +0x54
     int facequad_capacity; // +0x58
     ObjectFaceQuad* facequads; // +0x5c
-    Vector3* facequad_normals; // +0x60
+    Vector3* facequad_normals; // +0x60, active base/generated-frame view
     int texture_group_count; // +0x64
     int texture_group_capacity; // +0x68
     int* texture_group_ends; // +0x6c, cumulative facequad ends
@@ -183,8 +185,8 @@ struct Object {
     char unknown_98[0xa4 - 0x98];
     Vector3 bounds_min; // +0xa4
     Vector3 bounds_max; // +0xb0
-    ObjectAnimation* animation; // +0xbc, generated animation frames
-    ObjectRenderBuffers* render_buffers; // +0xc0
+    ObjectAnimation* animation; // +0xbc, retained generated-frame graph
+    ObjectRenderBuffers* render_buffers; // +0xc0, retained vertex-buffer wrapper
     int grouped_vertex_count; // +0xc4
     ObjectIndexBuffer* index_buffer; // +0xc8
     int* group_index_starts; // +0xcc
@@ -203,12 +205,16 @@ struct ObjectList {
 
     int count; // +0x00
     int capacity; // +0x04
-    Object* objects; // +0x08
+    Object* objects; // +0x08, owned contiguous capacity * 0xdc allocation
 };
 
 void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     TextureRef* old_texture); // @ 0x4145c0
 int load_object_definition(char* path, Object* object); // @ 0x44c420
+void build_object_texture_group_buffers(Object* object); // @ 0x413d50
+void refresh_object_vertex_buffer(Object* object); // @ 0x412250
+int render_object(Object* object, TransformMatrix* matrix, int texture_scroll_bits,
+    float texture_v, Color4f* color, char after_sprites); // @ 0x4126c0
 
 extern ObjectList g_object_list; // data_4b7648
 extern ObjectToonEdge* g_object_edge_build_edges; // data_503300

@@ -54,7 +54,14 @@ OBJECT_FIELDS = (
     ("0xd8", "toon_index_buffer", "ObjectIndexBuffer*"),
 )
 
+OBJECT_LIST_FIELDS = (
+    ("0x00", "count", "int32_t"),
+    ("0x04", "capacity", "int32_t"),
+    ("0x08", "objects", "Object*"),
+)
+
 SYMBOL_UPDATES = (
+    ("0x4b7648", "g_object_list"),
     ("0x4f7458", "g_direct3d_renderer"),
     ("0x5000fc", "g_object_index_buffer_factory"),
     ("0x5031bc", "g_object_grouped_vertex_cursor"),
@@ -75,12 +82,33 @@ FUNCTION_SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4b7648", "ObjectList"),
     ("0x5031bc", "int32_t"),
     ("0x5031c4", "ObjectGroupedVertex*"),
     ("0x5031d8", "TransformMatrix"),
 )
 
+# `load_object_definition` is declared in the canonical header, but the live
+# database's pre-existing zero-argument user type rejects both `proto set` and
+# direct Function.set_user_type updates. Keep it out of the repeatable sync
+# until that Binary Ninja function-type defect is cleared.
 PROTO_UPDATES = (
+    (
+        "initialize_object",
+        "int32_t __thiscall initialize_object(Object* object)",
+    ),
+    (
+        "initialize_object_list",
+        "void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity)",
+    ),
+    (
+        "build_all_objects",
+        "void __thiscall build_all_objects(ObjectList* object_list)",
+    ),
+    (
+        "add_object_to_list",
+        "Object* __thiscall add_object_to_list(ObjectList* object_list)",
+    ),
     (
         "create_object_vertex_buffer_resource",
         "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf)",
@@ -91,11 +119,19 @@ PROTO_UPDATES = (
     ),
     (
         "request_object_animation",
-        "ObjectAnimation* __thiscall request_object_animation(Object* object, int32_t keyframe_count, void* keyframes, float progress_step, uint16_t flags)",
+        "ObjectAnimation* __thiscall request_object_animation(Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes, float progress_step, uint16_t flags)",
+    ),
+    (
+        "build_object_texture_group_buffers",
+        "void __cdecl build_object_texture_group_buffers(Object* object)",
     ),
     (
         "refresh_object_vertex_buffer",
         "void __cdecl refresh_object_vertex_buffer(Object* object)",
+    ),
+    (
+        "render_object",
+        "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, int32_t texture_scroll_bits, float texture_v, Color4f* color, char after_sprites)",
     ),
 )
 
@@ -118,6 +154,14 @@ def main() -> int:
     operations: list[dict[str, object]] = []
     operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
     operations.extend(apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="Object", updates=OBJECT_FIELDS))
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="ObjectList",
+            updates=OBJECT_LIST_FIELDS,
+        )
+    )
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES, kind="data"))
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=FUNCTION_SYMBOL_UPDATES, kind="function"))
     operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))

@@ -18,6 +18,9 @@ extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 
 void build_object_texture_group_buffers(Object* object)
 {
+    int face_index = 0;
+    int index_count = 0;
+
     if (object->vertex_count == 0) {
         object->group_index_starts = 0;
         object->group_texture_refs = 0;
@@ -42,8 +45,6 @@ void build_object_texture_group_buffers(Object* object)
     g_object_grouped_vertex_cursor = 0;
 
     unsigned char flags_byte = (unsigned char)object->flags;
-    int face_index = 0;
-    int index_count = 0;
 
     if ((flags_byte & 4) != 0) {
         for (int vertex_index = 0; vertex_index < object->vertex_count; ++vertex_index) {

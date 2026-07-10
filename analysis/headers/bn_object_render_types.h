@@ -189,10 +189,33 @@ typedef struct Object {
     ObjectIndexBuffer* toon_index_buffer;
 } Object;
 
+typedef struct XAnimationKeyframe {
+    uint8_t _pad_00[0x24];
+    Object* object;
+    uint8_t _pad_28[0x7c - 0x28];
+    int32_t frame_number;
+} XAnimationKeyframe;
+
+typedef struct ObjectList {
+    int32_t count;
+    int32_t capacity;
+    Object* objects;
+} ObjectList;
+
+int32_t __thiscall initialize_object(Object* object);
+void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
+void __thiscall build_all_objects(ObjectList* object_list);
+Object* __thiscall add_object_to_list(ObjectList* object_list);
+int32_t __cdecl load_object_definition(char* path, Object* object);
+
 ObjectAnimation* __thiscall request_object_animation(
-    Object* object, int32_t keyframe_count, void* keyframes,
+    Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, uint16_t flags);
+void __cdecl build_object_texture_group_buffers(Object* object);
 void __cdecl refresh_object_vertex_buffer(Object* object);
+int32_t __cdecl render_object(
+    Object* object, TransformMatrix* matrix, int32_t texture_scroll_bits,
+    float texture_v, Color4f* color, char after_sprites);
 ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
 ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(

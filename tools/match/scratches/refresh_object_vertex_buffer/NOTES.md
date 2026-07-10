@@ -3,7 +3,7 @@
 Relationship-first scratch for the private object vertex-buffer refresher at
 `0x412250`.
 
-Current Wibo result: 59.85%, 135/139 instructions, prefix 7/139, masked
+Current Wibo result: 60.81%, 134/139 instructions, prefix 41/139, masked
 operands 4 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
@@ -48,3 +48,12 @@ field set is covered by shared `flags`, `vertices`, `facequad_normals`,
 shared `ObjectAnimation*` owner pointer, and generated frame facequad normals
 are typed as `Vector3*` buffers containing two normals per facequad. Focused
 Wibo remains `59.85%`, `135/139`, with `4 ok` masked operands.
+
+2026-07-10 borrower closure: the scratch now accepts `Object*` directly rather
+than a renderer-local typedef. The shared lifecycle records that `vertices`
+and `facequad_normals` are active views which may point into the retained
+animation graph, while this helper only borrows those views and the built
+vertex-buffer wrapper. Hoisting the active `vertices` view once in the animated
+copy path recovers the native 41-instruction prefix without extending that
+alias into the unrelated static UV path. Focused Wibo is 60.81%, 134/139, with
+four clean masked operands.

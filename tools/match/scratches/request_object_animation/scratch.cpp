@@ -7,18 +7,10 @@ void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 int report_errorf(char* format, ...); // @ 0x431cc0
 extern "C" double __cdecl floor(double value);
 
-struct XAnimationKeyframe {
-    char unknown_00[0x24];
-    Object* object; // +0x24
-    char unknown_28[0x7c - 0x28];
-    int frame_number; // +0x7c
-};
-
 ObjectAnimation* Object::request_object_animation(
-    int keyframe_count, void* keyframes_raw, float progress_step, unsigned short flags)
+    int keyframe_count, XAnimationKeyframe* keyframes,
+    float progress_step, unsigned short flags)
 {
-    XAnimationKeyframe* keyframes = (XAnimationKeyframe*)keyframes_raw;
-
     for (int i = 0; i < keyframe_count; ++i) {
         if (keyframes[i].object->vertex_count != vertex_count) {
             report_errorf("Anim tween Vertices don't match Frame %i",
@@ -52,10 +44,10 @@ ObjectAnimation* Object::request_object_animation(
             (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
         animation->frames[frame]->vertices =
             (Vector3*)allocate_tracked_memory(vertex_count * 0xc,
-                "Object Animation Frame FaceQuad Normals");
+                "Object Animation Frame Vertices");
         animation->frames[frame]->facequad_normals =
             (Vector3*)allocate_tracked_memory(facequad_count * 0x18,
-                "Object Animation Frame Vertices");
+                "Object Animation Frame FaceQuad Normals");
 
         float frame_time_float =
             (float)(last_frame * frame) / (float)generated_frame_count;
@@ -77,9 +69,19 @@ ObjectAnimation* Object::request_object_animation(
                 Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
                 Vector3* b = &keyframes[current_keyframe + 1].object->vertices[vertex_index];
                 Vector3* out = &animation->frames[frame]->vertices[vertex_index];
-                out->x = (b->x - a->x) * tween + a->x;
-                out->y = (b->y - a->y) * tween + a->y;
-                out->z = (b->z - a->z) * tween + a->z;
+                Vector3 delta;
+                delta.x = b->x - a->x;
+                delta.y = b->y - a->y;
+                delta.z = b->z - a->z;
+                Vector3 scaled;
+                scaled.x = delta.x * tween;
+                scaled.y = delta.y * tween;
+                scaled.z = delta.z * tween;
+                Vector3 tweened;
+                tweened.x = scaled.x + a->x;
+                tweened.y = scaled.y + a->y;
+                tweened.z = scaled.z + a->z;
+                *out = tweened;
             }
         }
 

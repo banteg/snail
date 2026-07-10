@@ -12,7 +12,6 @@ extern int g_draw_primitive_call_count; // data_503170
 extern unsigned char g_object_render_pass_filter; // data_503260
 extern TransformMatrix g_object_texture_transform_matrix; // data_5031d8
 
-void refresh_object_vertex_buffer(Object* object); // @ 0x412250
 int set_cull_mode(char cull_front); // @ 0x4129f0
 int set_blend_mode(int blend_mode); // @ 0x412d00
 ColorBGRA8* set_object_color(Object* object, Color4f color); // @ 0x4141d0
@@ -27,75 +26,79 @@ int render_object(
     Color4f* color,
     char after_sprites)
 {
-    unsigned int flags = object->flags;
-    if ((flags & 0x80000) == 0 || (flags & 0x40000) != 0 || object->vertex_count == 0) {
-        return flags;
-    }
+    int result = object->flags;
+    if ((result & 0x80000) != 0 && (result & 0x40000) == 0) {
+        result = object->vertex_count;
+        if (result != 0) {
+            refresh_object_vertex_buffer(object);
 
-    refresh_object_vertex_buffer(object);
+            TransformMatrix world = *matrix;
+            g_d3d_device->vtbl->SetTransform(g_d3d_device, 0x100, &world);
 
-    TransformMatrix world = *matrix;
-    g_d3d_device->vtbl->SetTransform(g_d3d_device, 0x100, &world);
+            if ((object->flags & 0x100000) != 0)
+                set_cull_mode(0);
+            else
+                set_cull_mode(1);
 
-    if ((object->flags & 0x100000) != 0)
-        set_cull_mode(0);
-    else
-        set_cull_mode(1);
+            Color4f* tint = color;
+            char pass_side = after_sprites;
+            for (int i = 0; i < object->texture_group_count; ++i) {
+                unsigned char pass = g_object_render_pass_filter;
 
-    for (int i = 0; i < object->texture_group_count; ++i) {
-        unsigned char pass = g_object_render_pass_filter;
-        TextureRef* texture = object->group_texture_refs[i];
-
-        if (pass != 0) {
-            if (pass == 1) {
-                if (after_sprites != 1 && (texture->flags & 0x10000) == 0)
+                if (pass == 0) {
+                    if (pass_side == 1 &&
+                        (object->group_texture_refs[i]->flags & 0x10000) != 0)
+                        continue;
+                } else if (pass == 1 && pass_side == pass &&
+                    (object->group_texture_refs[i]->flags & 0x10000) == 0) {
                     continue;
-                if (after_sprites == pass && (texture->flags & 0x10000) != 0)
+                }
+
+                if (object->group_texture_refs[i] == 0)
                     continue;
-            } else if (pass == after_sprites && (texture->flags & 0x10000) == 0) {
-                continue;
+
+                if ((object->flags & 8) != 0)
+                    bind_texture_ref(object->override_texture_ref);
+                else
+                    bind_texture_ref(object->group_texture_refs[i]);
+
+                if ((object->flags & 0x80) != 0) {
+                    *(int*)&g_object_texture_transform_matrix.basis_forward.x =
+                        texture_scroll_bits;
+                    g_object_texture_transform_matrix.basis_forward.y = 1.0f - texture_v;
+                    g_d3d_device->vtbl->SetTransform(
+                        g_d3d_device, 0x10, &g_object_texture_transform_matrix);
+                    g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 0x18, 2);
+                } else {
+                    g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 0x18, 0);
+                }
+
+                if (tint->a != 1.0f &&
+                    (object->group_texture_refs[i]->flags & 0x10000) != 0) {
+                    set_blend_mode(object->blend_mode);
+                    if ((object->flags & 0x50) != 0) {
+                        object->flags &= ~0x40;
+                        set_object_color(object, *tint);
+                    }
+                } else {
+                    g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 0);
+                }
+
+                g_d3d_device->vtbl->SetStreamSource(
+                    g_d3d_device, 0, object->render_buffers->vertex_buffer, 0x18);
+                g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
+                g_d3d_device->vtbl->SetIndices(
+                    g_d3d_device, object->index_buffer->buffer, 0);
+                g_d3d_device->vtbl->DrawIndexedPrimitive(
+                    g_d3d_device, 4, 0, object->grouped_vertex_count,
+                    object->group_index_starts[i], object->group_primitive_counts[i]);
+
+                g_render_triangle_count += object->group_primitive_counts[i];
+                ++g_draw_primitive_call_count;
             }
+
+            result = render_object_toon(object, matrix);
         }
-
-        if (texture == 0)
-            continue;
-
-        if ((object->flags & 8) != 0)
-            bind_texture_ref(object->override_texture_ref);
-        else
-            bind_texture_ref(texture);
-
-        if ((object->flags & 0x80) != 0) {
-            *(int*)&g_object_texture_transform_matrix.basis_forward.x = texture_scroll_bits;
-            g_object_texture_transform_matrix.basis_forward.y = 1.0f - texture_v;
-            g_d3d_device->vtbl->SetTransform(
-                g_d3d_device, 0x10, &g_object_texture_transform_matrix);
-            g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 0x18, 2);
-        } else {
-            g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 0x18, 0);
-        }
-
-        if (color->a != 1.0f && (texture->flags & 0x10000) != 0) {
-            set_blend_mode(object->blend_mode);
-            if ((object->flags & 0x50) != 0) {
-                object->flags &= ~0x40;
-                set_object_color(object, *color);
-            }
-        } else {
-            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 0);
-        }
-
-        g_d3d_device->vtbl->SetStreamSource(
-            g_d3d_device, 0, object->render_buffers->vertex_buffer, 0x18);
-        g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
-        g_d3d_device->vtbl->SetIndices(g_d3d_device, object->index_buffer->buffer, 0);
-        g_d3d_device->vtbl->DrawIndexedPrimitive(
-            g_d3d_device, 4, 0, object->grouped_vertex_count,
-            object->group_index_starts[i], object->group_primitive_counts[i]);
-
-        g_render_triangle_count += object->group_primitive_counts[i];
-        ++g_draw_primitive_call_count;
     }
-
-    return render_object_toon(object, matrix);
+    return result;
 }

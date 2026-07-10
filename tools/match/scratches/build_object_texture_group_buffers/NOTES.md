@@ -3,8 +3,8 @@
 Structure-first scratch for the object texture-group buffer builder at
 `0x413d50`.
 
-Current Wibo result: 42.20%, 319/373 candidate/target instruction shape,
-prefix 0/373, masked operands 24 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 43.00%, 320/373 candidate/target instruction shape,
+prefix 0/373, masked operands 25 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -58,3 +58,13 @@ Expected residuals:
   schedule. The group loop still differs in pointer-local ownership and branch
   layout; direct pointer-local source spelling currently loses the better object
   register, so continue only with a stronger source-idiom lead.
+
+2026-07-10 retained-resource closure: the builder now has one shared
+`void(Object*)` declaration across its exact `ObjectList::build_all_objects`
+caller, scratch, Binary Ninja, and IDA. This corrects the live Binary Ninja
+prototype from a synthetic `ObjectIndexBuffer*(int32_t)` return and makes the
+five retained products at `+0xc0/+0xc8/+0xcc/+0xd0/+0xd4` visible as fields.
+Keeping both group-loop counters alive from function entry matches one more
+native lifetime without inventing padding. The builder is honestly measured at
+43.00%, 320/373, with all 25 masked operands clean; the residual `0x18` versus
+native `0x28` frame still needs a source-shaped ownership explanation.

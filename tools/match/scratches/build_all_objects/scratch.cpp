@@ -4,7 +4,6 @@
 #include "object_render_types.h"
 
 void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
-void* build_object_texture_group_buffers(Object* object); // @ 0x413d50
 
 void ObjectList::build_all_objects()
 {

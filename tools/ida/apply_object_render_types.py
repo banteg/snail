@@ -11,6 +11,26 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_object",
+        "int __thiscall initialize_object(Object* object);",
+    ),
+    (
+        "initialize_object_list",
+        "void __thiscall initialize_object_list(ObjectList* object_list, int capacity);",
+    ),
+    (
+        "build_all_objects",
+        "void __thiscall build_all_objects(ObjectList* object_list);",
+    ),
+    (
+        "add_object_to_list",
+        "Object* __thiscall add_object_to_list(ObjectList* object_list);",
+    ),
+    (
+        "load_object_definition",
+        "int __cdecl load_object_definition(char* path, Object* object);",
+    ),
+    (
         "create_object_vertex_buffer_resource",
         "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int vertex_count, int fvf);",
     ),
@@ -20,11 +40,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "request_object_animation",
-        "ObjectAnimation* __thiscall request_object_animation(Object* object, int keyframe_count, void* keyframes, float progress_step, unsigned __int16 flags);",
+        "ObjectAnimation* __thiscall request_object_animation(Object* object, int keyframe_count, XAnimationKeyframe* keyframes, float progress_step, unsigned __int16 flags);",
+    ),
+    (
+        "build_object_texture_group_buffers",
+        "void __cdecl build_object_texture_group_buffers(Object* object);",
     ),
     (
         "refresh_object_vertex_buffer",
         "void __cdecl refresh_object_vertex_buffer(Object* object);",
+    ),
+    (
+        "render_object",
+        "int __cdecl render_object(Object* object, TransformMatrix* matrix, int texture_scroll_bits, float texture_v, Color4f* color, char after_sprites);",
     ),
 ]
 

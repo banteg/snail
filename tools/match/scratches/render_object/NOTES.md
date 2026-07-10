@@ -2,8 +2,8 @@
 
 Relationship-first scratch for the object renderer at `0x4126c0`.
 
-Current Wibo result: 69.72%, 197/196 candidate/target instruction shape,
-prefix 8/196, masked operands 21 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 80.31%, 195/196 candidate/target instruction shape,
+prefix 39/196, masked operands 23 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -59,3 +59,23 @@ Focused checks for `render_object`, `render_object_toon`,
 `build_object_texture_group_buffers` keep their previous match ratios. The
 full `Object` views remain scratch-local because allocation, build, and render
 paths still expose different validated windows into the larger object layout.
+
+## Shared owner closure (2026-07-10)
+
+The allocation, load, animation, build, refresh, and render paths now use one
+shared `Object` layout; the earlier scratch-local qualification above is
+superseded. The live Binary Ninja prototype now types the borrowed world
+`TransformMatrix*` and `Color4f*` instead of `void*` / `int32_t*`, while the
+object itself retains every grouped buffer and per-texture-group array consumed
+here.
+
+The native single-result early-exit shape also clarifies behavior: an enabled
+object with zero vertices returns zero, while the disabled gates retain the
+flags value. The render-pass filter now follows the exact two boundary cases,
+and each group texture ref is borrowed at its use sites instead of being given
+a false long-lived local owner. Together these changes raise focused Wibo to
+80.31%, 195/196, prefix 39/196, with all 23 masked operands clean. The first
+residual is honest register ownership: native keeps `after_sprites` in `bl` and
+the color pointer in `edi`, while the candidate starts the loop with color in
+`ebx` and texture-scroll bits in `edi`; later D3D transform scheduling remains
+the other visible difference.
