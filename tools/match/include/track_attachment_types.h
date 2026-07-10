@@ -286,7 +286,7 @@ struct TrackRowCell {
     void destroy_sub_lazer_projectile(); // @ 0x439bc0
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
-    int render_arg_1c;                  // +0x1c, inline BodBase tail
+    float render_arg_1c;                // +0x1c, inline BodBase texture-u argument
     float render_arg_20;                // +0x20
     Object* object;                     // +0x24, swapped by entry-mesh transitions
     Color4f color;                      // +0x28, alpha at +0x34

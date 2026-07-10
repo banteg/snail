@@ -2,8 +2,8 @@
 
 Relationship-first scratch for the object renderer at `0x4126c0`.
 
-Current Wibo result: 80.31%, 195/196 candidate/target instruction shape,
-prefix 39/196, masked operands 23 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: exact, 196/196 instructions and full prefix, with 25
+clean masked operands and no unresolved or mismatched operands.
 
 Recovered relationships:
 
@@ -29,10 +29,10 @@ Recovered relationships:
   `+0xcc` index starts, `+0xd0` texture refs, and `+0xd4` primitive counts.
 - `flags & 8` selects `Object +0x18` as an override texture ref; otherwise the
   group texture ref is bound.
-- `flags & 0x80` enables a texture transform: argument 3 is stored into
-  `g_object_texture_transform_matrix.basis_forward.x`, and `1.0f - argument4`
-  into `.basis_forward.y`, then Direct3D transform state `0x10` and
-  texture-stage state `0x18 = 2` are applied.
+- `flags & 0x80` enables a texture transform: float texture-U argument 3 is
+  stored into `g_object_texture_transform_matrix.basis_forward.x`, and
+  `1.0f - argument4` into `.basis_forward.y`, then Direct3D transform state
+  `0x10` and texture-stage state `0x18 = 2` are applied.
 - Alpha/blend path calls `set_blend_mode(Object +0x14)` and, for
   `flags & 0x50`, clears bit `0x40` before exact `set_object_color`.
 - Draw path binds `Object +0xc0` vertex buffer, shader `0x142`, `Object +0xc8`
@@ -43,12 +43,6 @@ Recovered relationships:
 - Updates `g_render_triangle_count` by primitive count and increments
   `g_draw_primitive_call_count`.
 - Tail-calls/calls private `render_object_toon` after all groups are processed.
-
-Expected residuals:
-
-- The source is intentionally clear rather than native-shaped. Expected
-  residuals are pass-filter branch layout, stack copying of the `Color4f`
-  argument before `set_object_color`, and per-call D3D device reload scheduling.
 
 ## Type consolidation (2026-06-17)
 
@@ -79,3 +73,19 @@ residual is honest register ownership: native keeps `after_sprites` in `bl` and
 the color pointer in `edi`, while the candidate starts the loop with color in
 `ebx` and texture-scroll bits in `edi`; later D3D transform scheduling remains
 the other visible difference.
+
+## Texture coordinate ownership closure (2026-07-10)
+
+Cross-port `G0RenderObject(cRObject*, tMatrix*, float, float, ...)` provenance
+and native dword-copy codegen together show that argument 3 is a float
+texture-U value, not opaque integer bits. Expressing the matrix assignment as
+`basis_forward.x = texture_u` removes the false integer lifetime: VC6 leaves
+texture-U in its stack argument slot, gives `bl` to `after_sprites`, and gives
+`edi` to the borrowed color pointer. The pass-filter branches, float texture
+transform, `Color4f` by-value copy, and D3D call scheduling then all align
+naturally.
+
+The same correction is propagated to `BodBase +0x1c` and every shared BOD view;
+`+0x1c/+0x20` are now the paired texture-U/texture-V float render arguments.
+Focused Wibo is 100.00%, 196/196 instructions and full prefix, with 25 clean
+masked operands.

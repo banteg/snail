@@ -217,7 +217,7 @@ ObjectAnimation* __thiscall request_object_animation(
 void __cdecl build_object_texture_group_buffers(Object* object);
 void __cdecl refresh_object_vertex_buffer(Object* object);
 int32_t __cdecl render_object(
-    Object* object, TransformMatrix* matrix, int32_t texture_scroll_bits,
+    Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, Color4f* color, char after_sprites);
 ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);

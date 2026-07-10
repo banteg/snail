@@ -19,7 +19,7 @@ public:
     ObjectGeometry* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
 
     Vector3 position;   // +0x10, copied into temporary render matrices
-    int render_arg_1c;  // +0x1c, forwarded to render_object texture scroll bits
+    float render_arg_1c; // +0x1c, forwarded to render_object texture-u offset
     float render_arg_20; // +0x20, forwarded to render_object texture-v offset
     Object* object;     // +0x24, borrowed render-object slot
     Color4f color;      // +0x28

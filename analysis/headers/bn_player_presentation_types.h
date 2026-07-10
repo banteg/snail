@@ -50,7 +50,7 @@ struct BodNode {
 typedef struct BodBase {
     BodNode bod;
     Vec3 position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;
@@ -59,7 +59,7 @@ typedef struct BodBase {
 typedef struct FringeObject {
     BodNode bod;
     Vec3 position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;
@@ -226,7 +226,7 @@ typedef struct PathTemplatePair {
 typedef struct TrackRowCell {
     BodNode bod;
     Vec3 anchor_position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;

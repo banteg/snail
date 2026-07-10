@@ -36,7 +36,7 @@ typedef struct TrackSpeedupRuntime {
     struct TrackSpeedupRuntime* list_prev;
     struct TrackSpeedupRuntime* list_next;
     Vec3 bod_position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;
@@ -153,7 +153,7 @@ struct RingOrSpecialEffectParent {
     RingOrSpecialEffectParent* list_prev;
     RingOrSpecialEffectParent* list_next;
     Vec3 bod_position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;

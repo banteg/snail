@@ -705,7 +705,7 @@
     {
       "address": "0x4126c0",
       "name": "render_object",
-      "description": "Renders one built object through the grouped Direct3D path: refreshes animated vertices, sets world transform and cull mode, binds each texture group, applies the blend preset and tint, submits indexed primitives, and optionally dispatches the toon edge pass. Cross-port Android symbols match this helper to `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`."
+      "description": "Renders one built object through the grouped Direct3D path: refreshes animated vertices, sets world transform and cull mode, binds each texture group, applies the blend preset and tint, submits indexed primitives, and optionally dispatches the toon edge pass. Its third and fourth arguments are the float texture-U and texture-V values forwarded from `BodBase +0x1c/+0x20`. Cross-port Android symbols match this helper to `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`."
     },
     {
       "address": "0x412940",

@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**511/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **71300/325754** bytes (**21.89%**) are proof-grade, and overall fuzzy is **59.15%**.
+**512/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **71940/325754** bytes (**22.08%**) are proof-grade, and overall fuzzy is **59.19%**.
 
-## Proof Grade (511)
+## Proof Grade (512)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -126,6 +126,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  |
 | ✅ | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  |
 | ✅ | render_object_toon | 0x4123e0 | 721 | 219/219 | 100.00% | 219/219 | 31 ok |  |
+| ✅ | render_object | 0x4126c0 | 640 | 196/196 | 100.00% | 196/196 | 25 ok |  |
 | ✅ | update_display_mode_view_state | 0x412940 | 120 | 46/46 | 100.00% | 46/46 | 4 ok |  |
 | ✅ | set_cull_mode | 0x4129f0 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | load_registered_texture_refs | 0x412a00 | 108 | 35/35 | 100.00% | 35/35 | 11 ok |  |
@@ -554,7 +555,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 98.48% | 3/66 | 11 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (55)
+## High Progress (80-94.99%) (54)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -566,7 +567,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 266/287 | 87.88% | 6/287 | 1 mismatch, 53 ok |  |
-| 🚧 | render_object | 0x4126c0 | 640 | 195/196 | 80.31% | 39/196 | 23 ok |  |
 | 🚧 | set_blend_mode | 0x412d00 | 325 | 92/92 | 92.39% | 2/92 | 1 mismatch, 15 ok |  |
 | 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 19 ok |  |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  |

@@ -21,7 +21,7 @@ int render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
 int render_object(
     Object* object,
     TransformMatrix* matrix,
-    int texture_scroll_bits,
+    float texture_u,
     float texture_v,
     Color4f* color,
     char after_sprites)
@@ -40,8 +40,8 @@ int render_object(
             else
                 set_cull_mode(1);
 
-            Color4f* tint = color;
             char pass_side = after_sprites;
+            Color4f* tint = color;
             for (int i = 0; i < object->texture_group_count; ++i) {
                 unsigned char pass = g_object_render_pass_filter;
 
@@ -63,8 +63,7 @@ int render_object(
                     bind_texture_ref(object->group_texture_refs[i]);
 
                 if ((object->flags & 0x80) != 0) {
-                    *(int*)&g_object_texture_transform_matrix.basis_forward.x =
-                        texture_scroll_bits;
+                    g_object_texture_transform_matrix.basis_forward.x = texture_u;
                     g_object_texture_transform_matrix.basis_forward.y = 1.0f - texture_v;
                     g_d3d_device->vtbl->SetTransform(
                         g_d3d_device, 0x10, &g_object_texture_transform_matrix);

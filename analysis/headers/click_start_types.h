@@ -41,7 +41,7 @@ typedef struct ClickStartController {
     struct ClickStartController* list_prev;
     struct ClickStartController* list_next;
     Vec3 position;
-    int32_t render_arg_1c;
+    float render_arg_1c;
     float render_arg_20;
     void* object;
     Color4f color;

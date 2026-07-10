@@ -16,7 +16,7 @@ public:
     unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
 
     Vector3 bod_position;     // +0x10, BodBase::position
-    int render_arg_1c;        // +0x1c, BodBase render argument
+    float render_arg_1c;      // +0x1c, BodBase texture-u render argument
     float render_arg_20;      // +0x20, BodBase render argument
     void* object;              // +0x24
     Color4f color;             // +0x28, updater drives alpha

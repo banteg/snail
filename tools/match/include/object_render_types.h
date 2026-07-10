@@ -211,7 +211,7 @@ void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
 int load_object_definition(char* path, Object* object); // @ 0x44c420
 void build_object_texture_group_buffers(Object* object); // @ 0x413d50
 void refresh_object_vertex_buffer(Object* object); // @ 0x412250
-int render_object(Object* object, TransformMatrix* matrix, int texture_scroll_bits,
+int render_object(Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, Color4f* color, char after_sprites); // @ 0x4126c0
 
 extern ObjectList g_object_list; // data_4b7648

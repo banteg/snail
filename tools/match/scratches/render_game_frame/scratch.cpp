@@ -66,7 +66,7 @@ int render_camera(
 int render_object(
     void* object,
     TransformMatrix* matrix,
-    int render_arg_1c,
+    float render_arg_1c,
     float render_arg_20,
     Color4f* color,
     char after_sprites); // @ 0x4126c0
