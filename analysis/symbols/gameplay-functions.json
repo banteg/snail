@@ -1449,7 +1449,7 @@
     {
       "address": "0x4305a0",
       "name": "add_object_edge",
-      "description": "Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline. iOS RObject.o names this `cRObject::AddEdge(int, int, int)`."
+      "description": "Adds or merges one candidate toon edge in the global build scratch array. Its two vertex members are 32-bit indices; new records store a normalized direction plus its original length, while shared records add the second face normal and may be removed when the join should not outline. iOS RObject.o names this `cRObject::AddEdge(int, int, int)`."
     },
     {
       "address": "0x4308b0",

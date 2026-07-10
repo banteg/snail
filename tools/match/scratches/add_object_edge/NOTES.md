@@ -28,3 +28,19 @@ ahead of the merge/removal path in source and raises focused Wibo to 43.93%
 with 201/227 candidate/target instructions and 12 clean masked operands. The
 remaining gap is still broad register/frame ownership in the search and merge
 blocks, plus the existing shifted global-count/global-edge masked comparison.
+
+2026-07-10 ownership recovery: native dword loads and stores show that
+`ObjectToonEdge::vertex_a` and `vertex_b` are full 32-bit indices at `+0x04`
+and `+0x08`, not padded 16-bit fields. The search walks the `vertex_b` dword
+lane of the global scratch array, while add and merge paths repeatedly address
+`g_object_edge_build_edges[index]` rather than retaining a record pointer.
+The add path also normalizes its local direction first, stores the returned
+original length, and only then copies the normalized vector into the edge.
+Those source-shape and ownership corrections raise focused Wibo to 61.95%,
+with 225/227 candidate/target instructions and 28 clean masked operands.
+
+Index-only search results, scalar/vector temporary splits, cached merge-record
+pointers, and a structured `goto` were tested and rejected because they
+regressed the native block, frame, or register shape. The remaining gap is
+primarily local/register allocation and temporary lifetime rather than a known
+ownership ambiguity.

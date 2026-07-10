@@ -77,10 +77,8 @@ typedef struct ObjectToonFaceQuadNormal {
 
 typedef struct ObjectToonEdge {
     uint32_t flags;
-    uint16_t vertex_a;
-    uint8_t _pad_06[0x08 - 0x06];
-    uint16_t vertex_b;
-    uint8_t _pad_0a[0x0c - 0x0a];
+    int32_t vertex_a;
+    int32_t vertex_b;
     int32_t normal_a;
     int32_t normal_b;
     Vec3 direction;

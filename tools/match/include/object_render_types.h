@@ -68,10 +68,8 @@ void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad); // @ 0x43
 
 struct ObjectToonEdge {
     unsigned int flags; // +0x00, bit 0 is boundary-only, bit 1 is shared edge
-    unsigned short vertex_a; // +0x04
-    char unknown_06[0x08 - 0x06];
-    unsigned short vertex_b; // +0x08
-    char unknown_0a[0x0c - 0x0a];
+    int vertex_a; // +0x04
+    int vertex_b; // +0x08
     int normal_a; // +0x0c
     int normal_b; // +0x10
     Vector3 direction; // +0x14
