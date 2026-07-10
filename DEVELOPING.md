@@ -18,6 +18,9 @@ where the evidence is strong.
 - Prefer generated status and primary evidence over old narrative docs. When
   `analysis/runtime/*.md`, decompile exports, or `tools/match/STATUS.md`
   contradict older prose, update the stale prose after the fix lands.
+- Treat `tools/match/STATUS.md` as the sole aggregate matching board. Keep
+  target-specific experiments and residuals in each scratch's `NOTES.md`
+  instead of maintaining a parallel TODO or campaign ledger.
 - Use conventional commits. Preserve unrelated dirty work.
 
 ## Setup

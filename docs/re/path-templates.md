@@ -269,6 +269,38 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - `WARP` still lacks a directly recovered live family mapping and should not be collapsed into the same public slot as `HALFPIPE`
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
 
+## Matching Disposition
+
+The broad path-constructor matching campaign is retired. Its aggregate score
+table duplicated generated [`tools/match/STATUS.md`](../../tools/match/STATUS.md),
+and its source-shape experiment log duplicated the `NOTES.md` files beside the
+individual scratches. Those scratches remain the matching evidence; this page
+and the checked-in path-template type lane remain the durable semantic model.
+
+More path-template work is still useful when it closes a concrete ownership or
+runtime question:
+
+- how public path names select constructor outputs and runtime kinds,
+  especially the `HALFPIPE` / `WARP` nonlinear-family split;
+- how the constructor bank becomes the installed two-record runtime pair bank,
+  including the meaning of its two halves;
+- which consumers can name the remaining conservative header fields at
+  `+0x30`, `+0x34`, `+0xa0`, and `+0xa4`;
+- what `special_runtime_flag_9c` changes in the attachment-follow consumer;
+- where template/sample/strip-mesh lifetime teardown occurs.
+
+Broad score polishing across every large constructor is not currently a good
+ownership investment. The common `PathTemplate`, `PathTemplateSample`, strip
+mesh, facequad, allocator, mirror, finalizer, and follow-state relationships are
+already recovered; most remaining diffs are constructor-local stack, register,
+and floating-point scheduling. Resume a constructor only when new callsite,
+consumer, dynamic-capture, or cross-platform evidence makes one of the open
+questions above answerable.
+
+The concrete constructor xrefs converge on `initialize_game_assets_and_world`.
+If the public-name or pair-bank mapping is reopened, audit those caller islands
+first instead of polishing every constructor body in parallel.
+
 ## Current Zig Port Scaffold
 
 The current Zig port now mirrors the public authored family set directly:
