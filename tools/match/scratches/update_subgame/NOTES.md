@@ -62,7 +62,7 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 70.97%, 1027 candidate instructions versus 1033 target instructions, 9-instruction prefix, 115 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 71.32%, 1028 candidate instructions versus 1033 target instructions, 9-instruction prefix, 116 clean masked operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
@@ -70,7 +70,7 @@ The largest remaining source-shape opportunities are:
 
 1. state-1 galaxy setup case ordering and shared build/destroy exits;
 2. residual authored/ambient ring register scheduling;
-3. the time-trial record-base address schedule;
+3. residual HUD and handoff register scheduling;
 4. residual jump-table target identities driven by the remaining block layout.
 
 Rejected continuation trials:
@@ -138,3 +138,12 @@ lifetime and recovers the native repeated address formation plus shared
 post-call last-Z store. Focused Wibo improves from `69.45%`, `1049/1033`,
 `111 ok` to `70.97%`, `1027/1033`, `115 ok`, with the exact `0x3c` frame and
 the same two jump-table mismatches. No call or data operand mismatch is added.
+
+2026-07-10 time-trial record owner retest: after shortening the projected-cell
+lifetime, the semantic `record = game + level_mode_arg * 0x1fac0` pointer no
+longer perturbs the surrounding frame allocation. It now recovers the native
+`add eax, esi` followed by in-place `+0x944158` reuse, improving focused Wibo
+from `70.97%`, `1027/1033`, `115 ok` to `71.32%`, `1028/1033`, `116 ok` with
+the same two jump-table mismatches and no unresolved or mismatched call/data
+operand. The earlier record-local regressions remain useful allocation-history
+evidence, but no longer describe the retained layout.

@@ -568,10 +568,10 @@ after_authored_ring:
             TimeTrialStringFormatter* formatter = (TimeTrialStringFormatter*)(game + 0xff25e0);
             char* text = formatter->format_time_trial_string(&((Player*)player_storage)->stopwatch);
             rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb88) + 0x2cc, text);
-            int record_offset = level_mode_arg * 0x1fac0;
-            if (*(int*)(game + record_offset + 0x944150) == one) {
+            char* record = game + level_mode_arg * 0x1fac0;
+            if (*(int*)(record + 0x944150) == one) {
                 text = formatter->format_time_trial_string(
-                    (TimerCounters*)(game + record_offset + 0x944158));
+                    (TimerCounters*)(record + 0x944158));
                 rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb8c) + 0x2cc, text);
                 break;
             }

@@ -4,13 +4,13 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.19% | **70.97%** |
+| Match | 0.19% | **71.32%** |
 | Target instructions | 1033 | 1033 |
-| Candidate instructions | 1 | 1027 |
+| Candidate instructions | 1 | 1028 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **115 clean, 0 unresolved, 2 mismatched** |
+| Masked operands | none | **116 clean, 0 unresolved, 2 mismatched** |
 
-The final candidate is six instructions shorter than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
+The final candidate is five instructions shorter than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
 
 The first remaining mismatch is:
 
@@ -41,6 +41,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Inlined the contextual projected-cell address in its three ring arms,
   removing an invented long-lived pointer and recovering the native repeated
   address formation and shared last-Z store without growing the frame.
+- Materialized the time-trial record owner after the projected-cell lifetime
+  correction; it now recovers the native base add and in-place timer-address
+  reuse without disturbing the `0x3c` frame.
 
 ## Measured progression
 
@@ -62,7 +65,8 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Member-style time-trial formatter call | 67.53% | 1046 | Kept |
 | Cold selected-level bridge tail | 68.94% | 1047 | Kept; removed the 23-instruction early-body displacement |
 | Per-arm application-state snapshot | 69.45% | 1049 | Kept; 111 clean operands |
-| Inline projected-cell addresses | **70.97%** | **1027** | Final retained result; 115 clean operands |
+| Inline projected-cell addresses | 70.97% | 1027 | Kept; 115 clean operands |
+| Time-trial record-base owner retest | **71.32%** | **1028** | Final retained result; 116 clean operands |
 
 ## Rejected trials
 
@@ -78,11 +82,12 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Keeping a named embedded-`Player*` across the pause/fade bridge scored
   70.53%, but displaced native register roles and introduced a false
   speedup-to-health call pairing in the masked audit, so it was rejected.
-- Retesting the time-trial record local on the cold-tail layout regressed from
-  68.94% to 67.95%; sharing ambient ring speed through a local regressed to
-  61.11% by growing the frame to `0x40`.
+- Retesting the time-trial record local on the cold-tail layout, before the
+  projected-cell lifetime correction, regressed from 68.94% to 67.95%; sharing
+  ambient ring speed through a local regressed to 61.11% by growing the frame
+  to `0x40`. The record owner was later accepted after the allocation changed.
 - No inline assembly, `volatile` clutter, fake globals, dummy externs, stack padding, or normalizer-specific tricks were retained.
 
 ## Next region to attack
 
-Refine the remaining state-1 galaxy build/destroy scheduling, then revisit only the residual authored/ambient ring register schedule with a source-backed shape that preserves the `0x3c` frame. The time-trial record-base address sequence is localized but its obvious local remains rejected.
+Refine the remaining state-1 galaxy build/destroy scheduling, then revisit only the residual authored/ambient ring and HUD/handoff register schedules with source-backed shapes that preserve the `0x3c` frame.
