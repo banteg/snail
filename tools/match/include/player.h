@@ -230,7 +230,7 @@ public:
     float heading_roll;                     // +0x370
     float nuke_effect_progress;             // +0x374
     float nuke_effect_progress_step;        // +0x378
-    char unknown_37c[0x380 - 0x37c];
+    float last_ring_spawn_z;                // +0x37c, initialized here and maintained by update_subgame
     int player_slot;                       // +0x380
     // +0x384..+0x3c3 is the embedded FollowState prefix (track_attachment.h):
     // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".

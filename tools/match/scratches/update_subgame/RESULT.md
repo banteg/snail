@@ -4,19 +4,19 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.19% | **67.53%** |
+| Match | 0.19% | **69.45%** |
 | Target instructions | 1033 | 1033 |
-| Candidate instructions | 1 | 1046 |
+| Candidate instructions | 1 | 1049 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **108 clean, 0 unresolved, 2 mismatched** |
+| Masked operands | none | **111 clean, 0 unresolved, 2 mismatched** |
 
-The final candidate is thirteen instructions longer than the target. Both switch jump-table operands are now content-audited and classified as real mismatches. There are no unresolved masked operands.
+The final candidate is sixteen instructions longer than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
 
 The first remaining mismatch is:
 
 ```text
 target[9]    ja Ld68
-candidate[9] ja Le80
+candidate[9] ja Lda4
 ```
 
 The branch serves the same out-of-range/common-camera role; the label identity differs because the remaining body layout is not yet exact.
@@ -35,6 +35,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Recovered `game + 0x3bb764` as one complete embedded `Player` ending exactly
   at the first runtime cell, and routed movement/control gates plus spawn
   arguments through that owner without changing codegen or the operand audit.
+- Inverted the selected-level bridge so its handoff is the cold tail after the
+  gameplay/HUD body, then preserved the native per-arm application-state
+  snapshot; the resulting tail instructions and all call/data operands agree.
 
 ## Measured progression
 
@@ -53,7 +56,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Signed `% 8` selector | 65.36% | 1057 | Kept |
 | Shared tile-35 last-Z write | 66.38% | 1043 | Kept |
 | Duplicated challenge success path | 67.34% | 1043 | Kept |
-| Member-style time-trial formatter call | **67.53%** | **1046** | Final retained result |
+| Member-style time-trial formatter call | 67.53% | 1046 | Kept |
+| Cold selected-level bridge tail | 68.94% | 1047 | Kept; removed the 23-instruction early-body displacement |
+| Per-arm application-state snapshot | **69.45%** | **1049** | Final retained result; 111 clean operands |
 
 ## Rejected trials
 
@@ -69,8 +74,11 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Keeping a named embedded-`Player*` across the pause/fade bridge scored
   70.53%, but displaced native register roles and introduced a false
   speedup-to-health call pairing in the masked audit, so it was rejected.
+- Retesting the time-trial record local on the cold-tail layout regressed from
+  68.94% to 67.95%; sharing ambient ring speed through a local regressed to
+  61.11% by growing the frame to `0x40`.
 - No inline assembly, `volatile` clutter, fake globals, dummy externs, stack padding, or normalizer-specific tricks were retained.
 
 ## Next region to attack
 
-First refine the remaining state-1 galaxy build/destroy exits. Then align the early state-2 bridge scheduling and the late HUD/camera return topology. After those front/tail regions are stable, revisit projected and ambient ring exits in smaller, matcher-guided steps rather than globally factoring them.
+Refine the remaining state-1 galaxy build/destroy scheduling, then revisit projected and ambient ring exits only with a smaller source-backed shape that preserves the `0x3c` frame. The time-trial record-base address sequence is localized but its obvious local remains rejected.

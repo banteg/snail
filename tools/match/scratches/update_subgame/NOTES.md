@@ -62,16 +62,16 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 67.53%, 1046 candidate instructions versus 1033 target instructions, 9-instruction prefix, 108 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 69.45%, 1049 candidate instructions versus 1033 target instructions, 9-instruction prefix, 111 clean masked operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
 The largest remaining source-shape opportunities are:
 
 1. state-1 galaxy setup case ordering and shared build/destroy exits;
-2. the early state-2 bridge/handoff scheduling;
-3. projected and ambient ring shared exits;
-4. the time-trial/HUD branches and final camera-return topology.
+2. projected and ambient ring shared exits;
+3. the time-trial record-base address schedule;
+4. residual jump-table target identities driven by the remaining block layout.
 
 Rejected continuation trials:
 
@@ -114,3 +114,19 @@ reduced the candidate to `1037` instructions, but it displaced the native
 `spawn_track_speedup` call with candidate `spawn_track_health_pickup`. That
 variant is rejected rather than retaining an attractive score with a new
 semantic masked-operand mismatch.
+
+2026-07-10 bridge-tail layout: expressing the selected-level handoff as the
+cold side of an inverted state-2 bridge places it after the gameplay/HUD body,
+matching the independent Windows and Android control-flow evidence. Duplicating
+the current-to-previous application-state snapshot inside the persistent and
+non-persistent arms recovers the exact native tail instructions. Together these
+changes improve focused Wibo from `67.53%`, `1046/1033`, `108 ok` to `69.45%`,
+`1049/1033`, `111 ok`, while preserving the same two jump-table mismatches and
+introducing no call/data mismatch. Direct embedded-player owners now cover its
+completion gate, stopwatch, interaction bound, total score, lives, and the
+`last_ring_spawn_z +0x37c` lane initialized by `initialize_subgoldy`.
+
+Retested neighbors on the new bridge layout: materializing the time-trial
+record base regressed `68.94%` to `67.95%`; a shared ambient-ring speed local
+grew the frame from `0x3c` to `0x40` and regressed to `61.11%`; a named control
+source was codegen-neutral. None were retained.

@@ -214,9 +214,9 @@ void SubgameRuntime::update_subgame()
         }
 
         int two = 2;
-        if (*(unsigned char*)(game + 0x3bbba4) == zero
+        if (((Player*)player_storage)->completion_handoff_active == zero
             && ((Player*)player_storage)->movement_state != two)
-            ((TimerCounters*)(game + 0x3bba4c))->advance_timer_counters(1.0f);
+            ((Player*)player_storage)->stopwatch.advance_timer_counters(1.0f);
 
         if (level_mode == 7)
             ((TutorialRuntime*)(game + 0xa858))->update_tutorial();
@@ -230,19 +230,10 @@ void SubgameRuntime::update_subgame()
         }
 
         char* app = g_game_base;
-        if ((selected_level_record_active != zero
+        if (!((selected_level_record_active != zero
                 && *(float*)(game + 0x0c) == 0.0f
                 && (((Player*)player_storage)->control_source->control_flags_a & 0x4000) != 0)
-            || *(unsigned char*)(app + 0x4f2e0) != zero) {
-            *(int*)(app + 0x1bc) = *(int*)(app + 0x1b8);
-            if (selected_level_record_persistent != zero)
-                *(int*)(g_game_base + 0x1b8) = 0x1a;
-            else
-                *(int*)(g_game_base + 0x1b8) = 0x1b;
-            if (*(float*)(g_game_base + 0x4f2e4) <= 1.0f)
-                *(unsigned char*)(g_game_base + 0x4f2e0) = zero;
-            return;
-        }
+            || *(unsigned char*)(app + 0x4f2e0) != zero)) {
 
         if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)
             && *(int*)(g_game_base + 0x24) == zero) {
@@ -268,14 +259,14 @@ void SubgameRuntime::update_subgame()
             if (level_mode == two)
                 *(int*)(game + 0x24) = *(int*)(game + 0x54);
             else
-                *(int*)(game + 0x24) = (int)*(float*)(game + 0x3be0e4) + 46;
+                *(int*)(game + 0x24) = (int)((Player*)player_storage)->interaction_max_z + 46;
         } else {
             int old_end = *(int*)(game + 0x24);
             *(int*)(game + 0x20) = old_end;
             if (level_mode == two) {
                 *(int*)(game + 0x24) = *(int*)(game + 0x54);
             } else {
-                int new_end = (int)*(float*)(game + 0x3be0e4) + 46;
+                int new_end = (int)((Player*)player_storage)->interaction_max_z + 46;
                 if (new_end > old_end)
                     *(int*)(game + 0x24) = new_end;
             }
@@ -495,14 +486,14 @@ void SubgameRuntime::update_subgame()
                                 } else {
                                     goto after_authored_ring;
                                 }
-                                *(float*)(game + 0x3bbae0) =
+                                ((Player*)player_storage)->last_ring_spawn_z =
                                     cell_slot->cell.anchor_position.z;
 after_authored_ring:
                                 ;
                             } else if ((cell_slot->cell.tile_id == 2 || cell_slot->cell.tile_id == 3
                                     || cell_slot->cell.tile_id == 4 || cell_slot->cell.tile_id == 5
                                     || cell_slot->cell.tile_id == 6 || cell_slot->cell.tile_id == 7)
-                                && *(float*)(game + 0x3bbae0) + 10.0f
+                                && ((Player*)player_storage)->last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.anchor_position.z
                                 && cell_index < *(int*)(game + 0x58)) {
                                 TrackRowCell* projected_cell =
@@ -512,21 +503,21 @@ after_authored_ring:
                                         projected_cell, 8, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
-                                    *(float*)(game + 0x3bbae0) =
+                                    ((Player*)player_storage)->last_ring_spawn_z =
                                         projected_cell->anchor_position.z;
                                 } else if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         projected_cell, 6, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
-                                    *(float*)(game + 0x3bbae0) =
+                                    ((Player*)player_storage)->last_ring_spawn_z =
                                         projected_cell->anchor_position.z;
                                 } else if ((ring_flags & 0x1000) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         projected_cell, 7, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
-                                    *(float*)(game + 0x3bbae0) =
+                                    ((Player*)player_storage)->last_ring_spawn_z =
                                         projected_cell->anchor_position.z;
                                 } else if ((*(unsigned int*)(game + 0x4c) & 8) != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
@@ -535,16 +526,16 @@ after_authored_ring:
                                     && cell_slot->cell.tile_id != 7) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 4, (Player*)player_storage, 0.0f);
-                                    if (*(int*)(game + 0x3bbb68) < 10)
-                                        *(float*)(game + 0x3bbae0) =
+                                    if (((Player*)player_storage)->lives < 10)
+                                        ((Player*)player_storage)->last_ring_spawn_z =
                                             cell_slot->cell.anchor_position.z;
                                     else
-                                        *(float*)(game + 0x3bbae0) =
+                                        ((Player*)player_storage)->last_ring_spawn_z =
                                             cell_slot->cell.anchor_position.z + 35.0f;
                                 }
                             } else if ((cell_slot->cell.tile_id == 8 || cell_slot->cell.tile_id == 9
                                     || cell_slot->cell.tile_id == 10)
-                                && *(float*)(game + 0x3bbae0) + 10.0f
+                                && ((Player*)player_storage)->last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.anchor_position.z
                                 && cell_index < *(int*)(game + 0x58)) {
                                 if ((ring_flags & 0x800) != 0) {
@@ -552,13 +543,13 @@ after_authored_ring:
                                         &cell_slot->cell, 2, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
-                                    *(float*)(game + 0x3bbae0) = cell_slot->cell.anchor_position.z;
+                                    ((Player*)player_storage)->last_ring_spawn_z = cell_slot->cell.anchor_position.z;
                                 } else if (random_float_below(1.0f, "R2") > 0.7f
                                     || level_mode == 7
                                     || (((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, (Player*)player_storage, 0.0f);
-                                    *(float*)(game + 0x3bbae0) = cell_slot->cell.anchor_position.z;
+                                    ((Player*)player_storage)->last_ring_spawn_z = cell_slot->cell.anchor_position.z;
                                 }
                             }
                         }
@@ -574,7 +565,7 @@ after_authored_ring:
 
         if (level_mode == 4) {
             TimeTrialStringFormatter* formatter = (TimeTrialStringFormatter*)(game + 0xff25e0);
-            char* text = formatter->format_time_trial_string((TimerCounters*)(game + 0x3bba4c));
+            char* text = formatter->format_time_trial_string(&((Player*)player_storage)->stopwatch);
             rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb88) + 0x2cc, text);
             int record_offset = level_mode_arg * 0x1fac0;
             if (*(int*)(game + record_offset + 0x944150) == one) {
@@ -590,9 +581,9 @@ after_authored_ring:
 
         *(unsigned char*)(*(char**)(game + 0x35bb88) + 0x2cc) = zero;
         ((BorderInit*)*(void**)(game + 0x35bb88))->border_add_text_number(
-            *(int*)(game + 0x3bba48));
-        if (*(int*)(game + 0x3bba48) > *(int*)(game + 0x355d94)) {
-            *(int*)(game + 0x355d94) = *(int*)(game + 0x3bba48);
+            ((Player*)player_storage)->total_score);
+        if (((Player*)player_storage)->total_score > *(int*)(game + 0x355d94)) {
+            *(int*)(game + 0x355d94) = ((Player*)player_storage)->total_score;
             *(unsigned char*)(*(char**)(game + 0x35bb8c) + 0x2cc) = zero;
             ((BorderInit*)*(void**)(game + 0x35bb8c))->border_add_text_number(
                 *(int*)(game + 0x355d94));
@@ -600,6 +591,18 @@ after_authored_ring:
             return;
         }
         break;
+        } else {
+            if (selected_level_record_persistent != zero) {
+                *(int*)(app + 0x1bc) = *(int*)(app + 0x1b8);
+                *(int*)(g_game_base + 0x1b8) = 0x1a;
+            } else {
+                *(int*)(app + 0x1bc) = *(int*)(app + 0x1b8);
+                *(int*)(g_game_base + 0x1b8) = 0x1b;
+            }
+            if (*(float*)(g_game_base + 0x4f2e4) <= 1.0f)
+                *(unsigned char*)(g_game_base + 0x4f2e0) = zero;
+            return;
+        }
     }
     }
 
