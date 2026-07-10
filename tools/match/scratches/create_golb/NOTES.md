@@ -32,6 +32,9 @@ Residuals:
 
 - Current matcher result: 36.08% (`tools/match/match.sh
   tools/match/scratches/create_golb --full`).
+- The function is pinned: all native semantic lanes are represented, and the
+  remaining source-shape leads have either been tested below or require new
+  source/provenance evidence.
 - Remaining diff is dominated by source-shape, especially the branchy
   movement-flag selector. Native keeps a compact fallthrough tree with several
   shared velocity-staging labels; the scratch uses clearer C++ branches.
@@ -141,6 +144,12 @@ Residuals:
   already proven by exact initialization and teardown scratches. This and the
   promoted `float*` vapour z-floor type are codegen-neutral for `create_golb`;
   `reset_vapour` remains exact at `7/7` instructions.
+- The remaining stable `GolbShot` owners are now used directly for kind/state,
+  source matrix, position/direction/previous output, lifetime, game, sprite
+  body, emitter identity, and path factor. `+0x274` is explicitly a union of
+  the sprite-facing `object_ref` and the caller-facing integer emitter index.
+  This promotion is also codegen-neutral at `36.08%`, so no byte-shaping was
+  introduced to obtain it.
 - Rejected 2026-07-10 neighbors: narrowing only the player pointer regressed to
   `30.37%`; staging every velocity assignment through `Vec3` temporaries
   regressed to `34.59%` with a masked-operand mismatch; doing so only in the

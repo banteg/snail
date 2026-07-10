@@ -155,7 +155,10 @@ public:
     float lifetime;              // +0x268
     float lifetime_step;         // +0x26c
     SubgameRuntime* game;        // +0x270
-    void* object_ref;            // +0x274
+    union {
+        void* object_ref;        // +0x274, copied into spawned sprites
+        int emitter_index;       // +0x274, create_golb caller-facing identity
+    };
     union {
         Player* owner_player;  // +0x278
         Player* player;        // +0x278, update_golb_ai bounds/collision view

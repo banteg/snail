@@ -53,20 +53,20 @@ int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index
         body->list_flags |= 0x200;
     }
 
-    words[158] = (DWORD)player_;
+    owner_player = player_;
     DWORD kind_flags = player_->movement_flags;
     if ((kind_flags & 7) != 0) {
-        words[112] = 0;
+        kind = 0;
     } else if ((kind_flags & 0x18) != 0) {
-        words[112] = 1;
+        kind = 1;
     } else if ((kind_flags & 0x60) != 0) {
-        words[112] = 2;
+        kind = 2;
     }
 
-    set_matrix_identity(self + 0x27c);
-    words[145] = 1;
+    set_matrix_identity(&source_matrix);
+    state = 1;
 
-    Vec3* position = (Vec3*)(self + 0x1f4);
+    Vec3* position = &this->position;
     char* player = (char*)owner_player;
     Vec3* player_position = (Vec3*)(player + 0x68);
     position->x = player_position->x;
@@ -179,33 +179,33 @@ after_movement_flag_source:
         }
     }
 
-    if (words[112] == 1) {
+    if (kind == 1) {
         velocity.x += velocity.x;
         velocity.y += velocity.y;
         velocity.z += velocity.z;
     }
-    if (words[112] == 2) {
+    if (kind == 2) {
         velocity.x *= 0.80000001f;
         velocity.y *= 0.80000001f;
         velocity.z *= 0.80000001f;
     }
 
-    Vec3* direction = (Vec3*)(self + 0x258);
+    Vec3* direction = &this->direction;
     Vec3* movement = &velocity;
     direction->x = movement->x;
     direction->y = movement->y;
     direction->z = movement->z;
 
-    if (words[112]) {
-        int adjusted_kind = words[112] - 1;
+    if (kind) {
+        int adjusted_kind = kind - 1;
         if (adjusted_kind) {
             if (adjusted_kind == 1) {
-                words[154] = 0;
-                ((float*)self)[155] = *(float*)(words[156] + 0x38) * 0.027777776f;
+                lifetime = 0.0f;
+                lifetime_step = *(float*)((char*)game + 0x38) * 0.027777776f;
                 words[106] = (DWORD)self;
-                words[109] = 0;
-                words[110] = 1045854032;
-                words[102] = 0;
+                spin = 0.0f;
+                spin_step = 0.20943952f;
+                homing_target_active = 0;
 
                 char* node = self + 0x118;
                 DWORD* node_words = (DWORD*)node;
@@ -228,25 +228,25 @@ after_movement_flag_source:
                     node_words[1] |= 0x200;
                 }
 
-                words[157] = emitter_index;
-                GolbPathSample* found = ((GolbPathBank*)(words[156] + 0x1270fd4))
+                this->emitter_index = emitter_index;
+                GolbPathSample* found = ((GolbPathBank*)((char*)game + 0x1270fd4))
                                           ->search_path_for_golb(position);
                 if (found) {
                     DWORD* found_words = (DWORD*)found;
-                    words[102] = found_words[5];
+                    homing_target_active = found_words[5];
                     if (!found_words[0])
                         *(DWORD*)(found_words[5] + 4) |= 0x1000;
                     Vec3* homing_target = (Vec3*)(self + 0x19c);
                     Vec3* found_position = (Vec3*)(found_words + 1);
                     *homing_target = *found_position;
-                    words[107] = 0;
-                    words[108] = 1023969417;
+                    homing_blend = 0.0f;
+                    homing_blend_step = 0.033333335f;
                 }
             }
         } else {
-            words[154] = 0;
+            lifetime = 0.0f;
             words[69] = (DWORD)self;
-            ((float*)self)[155] = *(float*)(words[156] + 0x38) * 0.041666668f;
+            lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
 
             char* node = self + 0x80;
             char* anchor = g_game_base + 0x3ca33c;
@@ -263,19 +263,19 @@ after_movement_flag_source:
 
             ((VapourTrail*)(self + 0x80))->reset_vapour((float*)spawn_selector);
             ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
-            words[157] = emitter_index;
+            this->emitter_index = emitter_index;
             ((VapourTrail*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));
             ((VapourTrail*)node)->update_vapour();
         }
     } else {
-        words[154] = 0;
-        ((float*)self)[155] = *(float*)(words[156] + 0x38) * 0.041666668f;
+        lifetime = 0.0f;
+        lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
         Sprite* sprite = g_sprite_manager.allocate_sprite(
             owner_player->player_slot,
             130,
             -1,
             -1);
-        words[146] = (DWORD)sprite;
+        render_body_owner = sprite;
         sprite->flags |= 0x800;
         sprite->progress = 0.0f;
         sprite->progress_step = 0.0f;
@@ -288,8 +288,8 @@ after_movement_flag_source:
         Vec3* sprite_position = (Vec3*)&sprite->position;
         *sprite_position = *position;
         sprite->facing_angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
-        sprite->facing_angle_step = *(float*)(words[156] + 0x38) * 0.58177644f;
-        words[157] = emitter_index;
+        sprite->facing_angle_step = *(float*)((char*)game + 0x38) * 0.58177644f;
+        this->emitter_index = emitter_index;
     }
 
     if (owner_player->follow_active == 1 && owner_player->follow_vertical_offset < 0.5f) {
@@ -307,8 +307,8 @@ after_movement_flag_source:
         path_entry_z_latch = -1.0f;
     }
 
-    ((float*)self)[153] = velocity.vector_magnitude();
-    Vec3* previous_output = (Vec3*)(self + 0x234);
+    path_factor = velocity.vector_magnitude();
+    Vec3* previous_output = &this->previous_output;
     *previous_output = *position;
 
     return ((GolbShotPrimaryBodyView*)self)->create_dispatch();
