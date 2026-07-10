@@ -42,15 +42,14 @@ int get_or_append_object_texture_group_vertex(
         } while (i < count);
     }
 
-    ObjectGroupedVertex* appended = &g_object_grouped_vertex_scratch[i];
-    appended->x = position.x;
-    appended->y = position.y;
-    appended->z = position.z;
-    appended->u = u;
-    appended->v = 1.0f - v;
+    g_object_grouped_vertex_scratch[i].x = position.x;
+    g_object_grouped_vertex_scratch[i].y = position.y;
+    g_object_grouped_vertex_scratch[i].z = position.z;
+    g_object_grouped_vertex_scratch[i].u = u;
+    g_object_grouped_vertex_scratch[i].v = 1.0f - v;
 
     if ((object->flags & 0x10000) != 0) {
-        ((ColorBGRA8*)&appended->diffuse)->pack_color_rgba_u8(
+        ((ColorBGRA8*)&g_object_grouped_vertex_scratch[i].diffuse)->pack_color_rgba_u8(
             &object->vertex_colours[vertex_index]);
     } else {
         g_object_grouped_vertex_scratch[i].diffuse = 0xffffffff;

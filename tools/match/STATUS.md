@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**507/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **68769/325754** bytes (**21.11%**) are proof-grade, and overall fuzzy is **58.24%**.
+**507/707** mapped gameplay functions matched, **707/707** mapped gameplay functions have a scratch, **68769/325754** bytes (**21.11%**) are proof-grade, and overall fuzzy is **58.26%**.
 
 ## Proof Grade (507)
 
@@ -550,7 +550,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | play_sound_effect_at_position | 0x44dce0 | 251 | 66/66 | 98.48% | 3/66 | 11 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (52)
+## High Progress (80-94.99%) (53)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -564,6 +564,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_object | 0x4126c0 | 640 | 195/196 | 80.31% | 39/196 | 23 ok |  |
 | 🚧 | set_blend_mode | 0x412d00 | 325 | 92/92 | 92.39% | 2/92 | 1 mismatch, 15 ok |  |
 | 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 19 ok |  |
+| 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  |
 | 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 68/72 | 84.29% | 43/72 | 8 ok |  |
 | 🚧 | update_challenge_setup_screen | 0x416370 | 1166 | 354/355 | 80.68% | 8/355 | 35 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  |
@@ -607,7 +608,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (61)
+## Mid Progress (50-79.99%) (60)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -627,7 +628,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 134/139 | 60.81% | 41/139 | 4 ok |  |
 | 🚧 | render_object_toon | 0x4123e0 | 721 | 200/219 | 57.76% | 0/219 | 28 ok |  |
 | 🚧 | load_registered_texture_ref | 0x412a70 | 647 | 215/216 | 73.78% | 10/216 | 2 mismatch, 34 ok |  |
-| 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 124/127 | 65.34% | 25/127 | 9 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 645/694 | 73.34% | 9/694 | 68 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |

@@ -773,7 +773,7 @@
     {
       "address": "0x413bb0",
       "name": "get_or_append_object_texture_group_vertex",
-      "description": "Returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new grouped vertex into the temporary texture-group build buffer when no match exists."
+      "description": "Returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new record field-by-field through the shared global texture-group build scratch when no match exists."
     },
     {
       "address": "0x413d50",

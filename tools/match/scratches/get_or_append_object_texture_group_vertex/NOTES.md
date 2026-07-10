@@ -3,8 +3,8 @@
 Relationship-first scratch for the private grouped-vertex append helper at
 `0x413bb0`.
 
-Current Wibo result: 65.34%, 124/127 candidate/target instruction shape,
-prefix 25/127, masked operands 9 ok, 0 unresolved, 0 mismatch.
+Current Wibo result: 83.14%, 128/127 candidate/target instruction shape,
+prefix 25/127, masked operands 18 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
 
@@ -67,3 +67,18 @@ recovers native's `inc` / store / `dec` epilogue and raises focused Wibo from
 shared `flipped_v` local both regress, so only the cursor return change is
 retained. Remaining debt is still loop-exit branch layout and append float
 store scheduling.
+
+2026-07-10 shared-scratch ownership: native reloads
+`g_object_grouped_vertex_scratch` for every appended field rather than keeping
+an owned pointer to the new record. Writing x/y/z, u/v, diffuse, and the source
+index directly through `g_object_grouped_vertex_scratch[i]` reproduces those
+global reloads and the native x87 stores, raising focused Wibo from 65.34% to
+83.14% (128/127 insns, 25/127 prefix, 18 clean masks). This confirms the array
+is reusable global build workspace owned by the texture-group build pipeline,
+not a record returned or retained by this helper. An explicit found-label form
+is codegen-neutral, a `break` plus post-loop result check regresses to 82.49%,
+and `for`/`while` loop spellings regress to 79.69% with a four-instruction
+prefix. The source therefore retains the semantic `do`/`while` search and
+direct returns. The honest residual is one loop-exit block-placement choice
+(`jl` in native versus `jge` plus `jmp` here); no goto or volatile nudge is
+justified.
