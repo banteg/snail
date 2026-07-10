@@ -2,6 +2,7 @@
 
 #include "bod_list.h"
 #include "golb.h"
+#include "runtime_slot.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
@@ -153,17 +154,25 @@ void SubgameRuntime::remove_subgame_bods()
         --ring_count;
     } while (ring_count != 0);
 
-    REMOVE_INLINE_BOD_NODE_IF_LINKED((BodNode*)(game + 0x3bb764));
-    REMOVE_INLINE_BOD_NODE((BodNode*)(game + 0x3be0e8));
-    REMOVE_INLINE_BOD_NODE((BodNode*)(game + 0x3bf2c8));
-    REMOVE_INLINE_BOD_NODE((BodNode*)(game + 0x3be734));
+    REMOVE_INLINE_BOD_NODE_IF_LINKED((BodNode*)embedded_player());
+    REMOVE_INLINE_BOD_NODE(
+        (BodNode*)&embedded_player()->presentation);
+    REMOVE_INLINE_BOD_NODE(
+        (BodNode*)&embedded_player()->presentation.jetpack_channel);
+    REMOVE_INLINE_BOD_NODE(
+        (BodNode*)&embedded_player()->presentation.weapon_channels[0]);
 
     BodList* list = (BodList*)(g_game_base + 0x5a8);
-    list->recycle_bod_to_free_list((BodNode*)(game + 0x3beb10));
-    ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list((BodNode*)(game + 0x3beeec));
-    ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list((BodNode*)(game + 0x3bf97c));
+    list->recycle_bod_to_free_list(
+        (BodNode*)&embedded_player()->presentation.weapon_channels[1]);
+    ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list(
+        (BodNode*)&embedded_player()->presentation.weapon_channels[2]);
+    ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list(
+        (BodNode*)&embedded_player()->presentation.invincible_shell);
 
     *(int*)(game + 0x3bbb70) = 0;
+    // The Windows cRSubGoldy teardown hook folds to the shared one-byte stub.
+    ((RuntimeSlot*)embedded_player())->noop_runtime_ai();
 
     GolbShot* shot = (GolbShot*)(game + 0x3bbbb4);
     for (int m = 0; m < 12; ++m) {
@@ -173,7 +182,8 @@ void SubgameRuntime::remove_subgame_bods()
     }
 
     if ((*(DWORD*)(game + 0x3bb808) & 0x200) != 0)
-        ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list((BodNode*)(game + 0x3bb804));
+        ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list(
+            (BodNode*)(game + 0x3bb804));
 
     *(int*)(game + 0x3bb884) = 0;
     g_sprite_manager.kill_game_sprites();

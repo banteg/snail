@@ -139,7 +139,7 @@ int Player::initialize_subgoldy(int player_slot)
     set_matrix_identity((TransformMatrix*)(self + 0x2a44));
     set_matrix_identity((TransformMatrix*)(self + 0x2a04));
     *(int*)(self + 0x4338) = zero;
-    ((ClickStartController*)(self + 0xa0))->initialize_click_start((ClickStartPlayer*)self);
+    click_start_controller()->initialize_click_start((ClickStartPlayer*)this);
     ((CameramanState*)(self + 0x200))->initialize_cameraman();
     initialize_subgoldy_ghost(*(int*)(self + 0x380));
 

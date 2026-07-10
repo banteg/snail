@@ -37,6 +37,8 @@ public:
     RuntimeSlot* initialize_track_parcel_runtime();
     RuntimeSlot* sub_408880();
 
+    // Shared one-byte 0x407b50 stub. Callsite receiver types distinguish the
+    // empty lifecycle hooks that the Windows binary folds to this address.
     void noop_runtime_ai();
 
     void* vtable; // +0x00 for bod-like runtime slots

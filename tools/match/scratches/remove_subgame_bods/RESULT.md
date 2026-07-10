@@ -5,10 +5,10 @@ Focused scratch for `SubgameRuntime::remove_subgame_bods @ 0x440910`.
 Final focused run:
 
 ```text
-match: 59.90%
-target: 501 insns, candidate: 494 insns
+match: 59.98%
+target: 501 insns, candidate: 496 insns
 prefix: 6/501 target insns
-masked operands: 58 ok, 0 unresolved, 2 mismatch
+masked operands: 59 ok, 0 unresolved, 2 mismatch
 ```
 
 The scratch covers the full side-effect sequence:
@@ -16,8 +16,10 @@ The scratch covers the full side-effect sequence:
 - 3200 runtime row BOD nodes plus each row's eight sub-lazer projectile slots;
 - track render cache BOD cleanup;
 - health, speedup, jetpack, garbage, slug, and ring/special-effect runtime slots;
-- the singleton score/player body nodes around `game+0x3bb764`, `game+0x3be0e8`, `game+0x3bf2c8`, and `game+0x3be734`;
+- the embedded Player, presentation controller, animation channels, and
+  invincibility-shell BOD nodes;
 - helper recycling for the three late BOD nodes;
+- the embedded Player's empty Windows teardown hook;
 - Golb shot cleanup and final `SpriteManager::kill_game_sprites()`.
 
 Known residuals:
@@ -33,6 +35,9 @@ Known residuals:
     `"List remove"`;
   - target `0x440af3`: `"List remove"`, candidate aligned against
     `"List remove NEXTBOD"`.
+- The recovered `0x440f0f` lifecycle call targets the exact one-byte
+  `noop_runtime_ai` stub with the embedded Player as receiver. It raises the
+  candidate from 494 to 496 instructions and adds one clean masked operand.
 
 Rejected probes:
 
@@ -43,3 +48,5 @@ Rejected probes:
 - A zero-aware list-removal macro, first-row declaration reordering, a
   `register` hint for the row-cell cursor, and a dedicated `zero` local did not
   improve the register allocation or masked audit.
+- A typed ClickStart teardown branch regressed to 59.18%; the ownership view
+  is retained in `player.h`, while this scratch keeps the native-shape raw tail.

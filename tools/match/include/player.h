@@ -25,6 +25,7 @@ struct Object;
 struct TrackRowCell;
 
 class Player;
+class ClickStartController;
 class Sprite;
 class SubgameRuntime;
 class TrackHealthPickup;
@@ -170,6 +171,7 @@ public:
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
     Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
+    ClickStartController* click_start_controller(); // embedded view at +0xa0
 
     // The first 0x10 bytes are an intrusive BOD-list node. Player storage is
     // embedded in SubgameRuntime and merely linked into the global active list.
@@ -186,8 +188,10 @@ public:
     // sprite slots are updated each tick by set_subgoldy_ghost_z.
     Sprite* ghost_sprite_a;                // +0x98
     Sprite* ghost_sprite_b;                // +0x9c
+    // +0xa0.. is an embedded ClickStartController. Frequently consumed fields
+    // remain flattened because they are also Player state-machine lanes.
     char unknown_a0[0x120 - 0xa0];
-    int movement_state;                    // +0x120
+    int movement_state;                    // +0x120 / ClickStartController.state
     char unknown_124[0x148 - 0x124];
     unsigned char intro_cutscene_latch;     // +0x148; cleared by update_cutscene state-8 handoff
     char unknown_149[0x14c - 0x149];
@@ -311,5 +315,10 @@ public:
 };
 
 typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
+
+inline ClickStartController* Player::click_start_controller()
+{
+    return (ClickStartController*)((char*)this + 0xa0);
+}
 
 #endif

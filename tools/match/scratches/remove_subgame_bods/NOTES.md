@@ -47,3 +47,23 @@ Rejected probes:
 - Reordering the first row cursor declarations, adding `register` to the row
   cell cursor, and keeping an explicit `zero` local did not change the final
   allocator shape.
+
+## 2026-07-10 teardown ownership pass
+
+- Recovered the missing call at `0x440f0f`: after unlinking the embedded Player
+  and its presentation bodies, native invokes the `Player +0x000` teardown
+  hook before killing the twelve embedded Golb shots. Windows folds that hook
+  to the shared one-byte `noop_runtime_ai @ 0x407b50` stub; the receiver and
+  position in the teardown sequence establish its lifecycle role even though
+  the body is empty.
+- Player, presentation, jetpack channel, three weapon channels, and invincible
+  shell removals are now expressed as embedded subobjects. Their intrusive BOD
+  nodes are returned to the shared free list, but their backing storage remains
+  owned by `SubgameRuntime::player_storage`.
+- `Player +0xa0` is an embedded `ClickStartController`, with its `state` lane at
+  `Player +0x120`. The initializer now uses that typed view. A typed spelling of
+  the final teardown branch regressed to `59.18%`, so the scratch retains the
+  native-shape raw loads there and records the ownership in `player.h`.
+- Focused Wibo improves from `59.90%` (`494/501`, `58 ok`) to `59.98%`
+  (`496/501`, `59 ok`). The two pre-existing speedup/jetpack string-order
+  mismatches remain; no new masked-operand issue was introduced.
