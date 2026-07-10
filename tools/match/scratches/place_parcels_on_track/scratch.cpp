@@ -230,8 +230,8 @@ int SubgameRuntime::place_parcels_on_track()
             } else {
                 int row_index = live_cell->get_track_cell_row_index();
                 live_cell->attachment_template_record->get_path_position_at_node(
-                    &row_record->projection_payload, node, row_index,
-                    (float*)&row_record->projection_payload);
+                    row_record->projection_payload, node, row_index,
+                    row_record->projection_payload);
             }
         }
         result = row + 1;

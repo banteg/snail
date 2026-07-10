@@ -112,10 +112,10 @@ int SubgameRuntime::place_challenge_parcels_on_track()
                         row->primary_attachment_cell->get_track_cell_row_index();
                     row->primary_attachment_cell->attachment_template_record
                         ->get_path_position_at_node(
-                            &row->projection_payload,
+                            row->projection_payload,
                             node,
                             row_origin,
-                            (float*)&row->projection_payload);
+                            row->projection_payload);
                 }
             }
             ++scan;

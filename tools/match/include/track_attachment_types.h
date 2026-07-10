@@ -263,7 +263,8 @@ struct AttachmentPathTemplate {
     Object* entry_transition_strip_mesh; // +0xa0, borrowed from an auxiliary pair
     Object* entry_base_strip_mesh;       // +0xa4, the public pair's own strip mesh
 
-    int get_path_position_at_node(Vector3* out, int node, int row_index, float* local); // cRPath::GetPos
+    int get_path_position_at_node(
+        Vector3& out, int node, int row_index, Vector3& local); // @ 0x42b9c0, cRPath::GetPos
 };
 
 typedef char AttachmentPathTemplate_must_be_0xa8[

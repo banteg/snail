@@ -2,31 +2,31 @@
 
 #include "track_attachment.h"
 
-int AttachmentPathTemplate::get_path_position_at_node(
-    Vector3* out, int node, int row_index, float* local)
+inline Vector3 operator*(float scale, const Vector3& vector)
 {
-    float* local_ptr = local;
-    float temp[9];
-    double local_y = local_ptr[1];
+    return Vector3(scale * vector.x, scale * vector.y, scale * vector.z);
+}
+
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
+
+int AttachmentPathTemplate::get_path_position_at_node(
+    Vector3& out, int node, int row_index, Vector3& local)
+{
+    const Vector3* local_ptr = &local;
+    double local_y = local_ptr->y;
     AttachmentSample* sample = &primary_samples[node];
-    temp[6] = (float)(local_y * sample->transform.basis_up.x);
-    temp[7] = (float)(local_y * sample->transform.basis_up.y);
-    double up_z = local_y * sample->transform.basis_up.z;
+    Vector3 scaled_up;
+    scaled_up.x = (float)(local_y * sample->transform.basis_up.x);
+    scaled_up.y = (float)(local_y * sample->transform.basis_up.y);
+    scaled_up.z = (float)(local_y * sample->transform.basis_up.z);
 
-    double local_x = local_ptr[0];
-    temp[0] = (float)(local_x * sample->transform.basis_right.x);
-    temp[1] = (float)(local_x * sample->transform.basis_right.y);
-    double base_z = local_x * sample->transform.basis_right.z + sample->transform.position.z;
-
-    temp[3] = temp[0] + sample->transform.position.x;
-    temp[4] = temp[1] + sample->transform.position.y;
-    temp[0] = temp[3] + temp[6];
-    temp[1] = temp[4] + temp[7];
-    temp[2] = (float)(base_z + up_z);
-
-    out->x = temp[0];
-    out->y = temp[1];
-    float result = (float)((double)row_index + temp[2]);
-    out->z = result;
-    return *(int*)&result;
+    Vector3 projected =
+        (local_ptr->x * sample->transform.basis_right + sample->transform.position)
+        + scaled_up;
+    projected.z += (float)row_index;
+    out = projected;
+    return *(int*)&projected.z;
 }
