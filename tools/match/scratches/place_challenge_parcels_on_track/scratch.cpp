@@ -44,21 +44,25 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int placed = 0;
     if (level_definition.parcel_count > 0) {
         int last_index = candidate_count - 1;
-        while (remaining > 0) {
+        while (placed < level_definition.parcel_count) {
+            if (remaining <= 0) {
+                break;
+            }
             int picked = (int)random_float_below((float)remaining, "P3");
             int selected_row = g_challenge_parcel_rows[picked];
             int* selected_slot = &g_challenge_parcel_rows[picked];
             ++placed;
 
-            TrackAttachmentRuntimeRow* runtime_row = &runtime_rows[selected_row];
-            runtime_row->flags |= 0x11;
-            runtime_row->projection_payload.y += 1.0f;
-            if ((runtime_row->flags & 0x20) != 0) {
-                runtime_row->projection_payload.x *= -1.0f;
+            runtime_rows[selected_row].flags |= 0x11;
+            runtime_rows[selected_row].projection_payload.y += 1.0f;
+            if ((runtime_rows[selected_row].flags & 0x20) != 0) {
+                runtime_rows[selected_row].projection_payload.x *= -1.0f;
             }
-            if ((runtime_row->flags & 0x4000) != 0) {
-                runtime_row->projection_payload.z =
-                    (float)selected_row + runtime_row->projection_payload.z + 0.5f;
+            if ((runtime_rows[selected_row].flags & 0x4000) != 0) {
+                runtime_rows[selected_row].projection_payload.z =
+                    (float)selected_row
+                    + runtime_rows[selected_row].projection_payload.z
+                    + 0.5f;
             }
 
             if (picked < last_index) {
@@ -72,9 +76,6 @@ int SubgameRuntime::place_challenge_parcels_on_track()
 
             --remaining;
             --last_index;
-            if (placed >= level_definition.parcel_count) {
-                break;
-            }
         }
     }
 
@@ -84,42 +85,45 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int result = runtime_row_count;
     int scan = 0;
     if (result > 0) {
-        TrackAttachmentRuntimeRow* row = runtime_rows;
         do {
-            if ((row->flags & 1) != 0 && (row->flags & 0x40) != 0) {
-                TrackRowCell* cell = row->primary_attachment_cell;
+            if ((runtime_rows[scan].flags & 1) != 0
+                && (runtime_rows[scan].flags & 0x40) != 0) {
+                TrackRowCell* cell = runtime_rows[scan].primary_attachment_cell;
+                int source_row = cell->get_track_cell_row_index();
                 int node =
-                    (int)row->projection_payload.z - cell->get_track_cell_row_index();
+                    (int)runtime_rows[scan].projection_payload.z
+                    - source_row;
                 if (node < 0) {
                     node = 0;
                 }
 
                 AttachmentPathTemplate* template_record =
-                    row->primary_attachment_cell->attachment_template_record;
+                    runtime_rows[scan]
+                        .primary_attachment_cell->attachment_template_record;
                 if (template_record->kind == 42) {
                     TransformMatrix transform;
                     float out_angle;
                     template_record->compute_kind42_attachment_transform(
                         template_record->primary_samples[node].special_scalar,
-                        row->projection_payload.x,
-                        row->projection_payload.y,
+                        runtime_rows[scan].projection_payload.x,
+                        runtime_rows[scan].projection_payload.y,
                         &transform,
                         &out_angle);
-                    row->projection_payload.x = transform.position.x;
-                    row->projection_payload.y = transform.position.y;
+                    runtime_rows[scan].projection_payload.x = transform.position.x;
+                    runtime_rows[scan].projection_payload.y = transform.position.y;
                 } else {
-                    int row_origin =
-                        row->primary_attachment_cell->get_track_cell_row_index();
-                    row->primary_attachment_cell->attachment_template_record
+                    runtime_rows[scan]
+                        .primary_attachment_cell->attachment_template_record
                         ->get_path_position_at_node(
-                            row->projection_payload,
+                            runtime_rows[scan].projection_payload,
                             node,
-                            row_origin,
-                            row->projection_payload);
+                            runtime_rows[scan]
+                                .primary_attachment_cell
+                                ->get_track_cell_row_index(),
+                            runtime_rows[scan].projection_payload);
                 }
             }
             ++scan;
-            ++row;
             result = scan;
         } while (scan < runtime_row_count);
     }
