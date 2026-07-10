@@ -1,14 +1,13 @@
 #ifndef OBJECT_ANIMATION_TYPES_H
 #define OBJECT_ANIMATION_TYPES_H
 
+#include "bod_types.h"
 #include "vector3.h"
 
 struct Object;
 
-struct XAnimationKeyframe {
-    char unknown_00[0x24];
-    Object* object; // +0x24, borrowed ObjectList slot
-    char unknown_28[0x7c - 0x28];
+struct XAnimationKeyframe : public BodBase {
+    char unknown_38[0x7c - 0x38];
     int frame_number; // +0x7c
 };
 

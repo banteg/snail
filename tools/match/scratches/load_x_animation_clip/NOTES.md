@@ -15,3 +15,17 @@ Starter semantic scratch for the X animation clip loader.
   at 69.32%. VC6 still loads `mesh_name` into `ebp` before saving `esi`/`edi`,
   while native saves all registers first and uses `edi` for the mesh-name
   argument. The prologue miss is not fixed by simple argument-local ownership.
+- 2026-07-10 keyframe owner closure: `XAnimationKeyframe` now lives in the
+  shared animation header as an exact 0x80-byte `BodBase` subclass. The common
+  `BodBase +0x24` lane is promoted from `void*` to its proven borrowed
+  `Object*` owner, so the loader's object-list allocation, mesh load, and the
+  animation builder all share one record instead of maintaining flattened and
+  inherited duplicates. This is codegen-neutral in the loader, the 57.88%
+  animation builder, and exact `set_bod_object`.
+- 2026-07-10 error-return contract: the missing-`AnimEnd:` path returns
+  `report_errorf`'s incidental value directly, as native does, instead of
+  manufacturing a null result after the call. Focused Wibo rises from 69.32%
+  to 69.47% (224/228 insns, 3/228 prefix, 45 clean masks). The missing-script
+  default remains the defined `mode_flags = 1`; reproducing the decompiler's
+  aligned-keyframe-pointer `| 1` register artifact would introduce undefined
+  source and is deliberately rejected.

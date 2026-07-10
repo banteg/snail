@@ -4,6 +4,7 @@
 
 #include "bod_types.h"
 #include "directx_loader.h"
+#include "object_animation_types.h"
 
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e600
@@ -18,14 +19,6 @@ float parse_next_float32(char** cursor); // @ 0x431f20
 int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern char g_x_animation_clip_enumeration_names[]; // data_4b2f50
-
-struct XAnimationKeyframe : public BodBase {
-    char unknown_38[0x7c - 0x38];
-    int frame_number; // +0x7c
-};
-
-typedef char XAnimationKeyframe_must_be_0x80[
-    (sizeof(XAnimationKeyframe) == 0x80) ? 1 : -1];
 
 ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
 {
@@ -84,8 +77,8 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     if (animation_block != 0) {
         char* animation_end = find_case_insensitive_substring("AnimEnd:", animation_block);
         if (animation_end == 0) {
-            report_errorf("Cannot find AnimEnd: for %s \n", mesh_name);
-            return 0;
+            return (ObjectAnimation*)report_errorf(
+                "Cannot find AnimEnd: for %s \n", mesh_name);
         }
 
         saved_end_char = *animation_end;

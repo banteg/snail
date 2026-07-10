@@ -4,7 +4,7 @@
 
 int BodBase::set_bod_object(void* object_)
 {
-    object = object_;
+    object = (Object*)object_;
     list_flags |= 2;
     return list_flags;
 }
