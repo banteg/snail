@@ -20,5 +20,5 @@ TrackRowCell* SubgameRuntime::get_track_grid_cell_at_world_position(Vector3* pos
         row = 3199;
     }
 
-    return (TrackRowCell*)((char*)this + 0x3bfac8 + (lane + row * 8) * 0x54);
+    return &runtime_cells[row][lane];
 }

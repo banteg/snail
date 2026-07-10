@@ -17,3 +17,7 @@ row-index scratches.
 `SubgameRuntime` owner instead of a scratch-local `Game` shell. Focused Wibo
 remains exact at `100.00%`, `34/34` instructions, with `3` clean masked
 operands.
+
+2026-07-10 owner promotion: the exact return now uses
+`&SubgameRuntime::runtime_cells[row][lane]`. It remains `34/34` with three
+clean masked operands, proving the fixed 3200 x 8 slab without raw offset math.

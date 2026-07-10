@@ -37,3 +37,8 @@ remaining diff is still broad register ownership: VC6 keeps `this` outside
 `rebuild_track_runtime_from_segments` caller and the Android `cRSubGame`
 symbol. Focused Wibo stays at 36.27%; an index-only scan and a do/while
 lateral-offset loop both regressed, so the prior pointer scan remains.
+
+2026-07-10 runtime-grid ownership pass: the tile-byte cursor is now obtained
+through `SubgameRuntime::runtime_cell_tile_views()`, an inline field-first view
+of the owned `TrackRowCell[3200][8]` slab. This preserves the 0x54 cursor
+stride without pretending the tile-byte view owns separate storage.

@@ -81,8 +81,8 @@ void SubgameRuntime::remove_subgame_bods()
 {
     char* game = (char*)this;
 
-    TrackRowCell* cell = (TrackRowCell*)(game + 0x3bfac8);
-    BodNode** row_next = (BodNode**)(game + 0x5ccad8);
+    TrackRowCell* cell = &runtime_cells[0][0];
+    BodNode** row_next = &runtime_rows[0].primary_body.list_next;
     int row_count = 0xc80;
     do {
         if ((BOD_NEXT_LINK_FLAGS(row_next) & 0x200) != 0)

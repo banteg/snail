@@ -67,3 +67,7 @@ Rejected probes:
 - Focused Wibo improves from `59.90%` (`494/501`, `58 ok`) to `59.98%`
   (`496/501`, `59 ok`). The two pre-existing speedup/jetpack string-order
   mismatches remain; no new masked-operand issue was introduced.
+- The runtime-grid promotion now spells the opening teardown cursors as
+  `runtime_cells[0][0]` and `runtime_rows[0].primary_body.list_next`. Focused
+  Wibo remains `59.98%`, cross-confirming that the row body is embedded in the
+  fixed row slab while only its intrusive list membership is recycled.

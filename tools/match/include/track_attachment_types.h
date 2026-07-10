@@ -12,6 +12,7 @@
 #include "vector_types.h"
 
 struct TransformMatrix;
+struct LevelSegmentSlot;
 class Player;
 class FringeObject;
 
@@ -287,7 +288,9 @@ typedef char TrackRowCell_must_be_0x54[
 
 struct TrackAttachmentRuntimeRow {       // stride 0xf4
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
-    char unknown_04[0x90 - 0x04];
+    RenderableBod primary_body;           // +0x04, embedded authored row actor
+    char unknown_7c[0x84 - 0x7c];
+    Vector3 authored_object_velocity;     // +0x84, copied from the authored row
     // place_parcels_on_track uses this as an overloaded parcel projection
     // payload: x is lateral/local x, y is incremented as a claim/count lane,
     // and z accumulates absolute row + 0.5 before the attachment projection
@@ -297,13 +300,11 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     int attachment_template_index;       // +0xa0, P/p template bank index
     TrackRowCell* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
     TrackRowCell* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
-    char unknown_ac[0xb0 - 0xac];
-    BodNode bod;                          // +0xb0, row draw/list node for slide/lazer rows
-    char unknown_c0[0xd4 - 0xc0];
-    void* row_draw_object;                // +0xd4, recolored from active skirt color
-    int skirt_color[4];                   // +0xd8
-    char unknown_e8[0xf0 - 0xe8];
-    int row_event_id;                    // +0xf0
+    float installed_heading_delta;        // +0xac, copied into an entered path template
+    BodBase attachment_body;              // +0xb0, embedded attachment/fringe row actor
+    float ring_speed;                     // +0xe8, authored ring/effect rate source
+    LevelSegmentSlot* source_segment;     // +0xec, borrowed embedded level-segment slot
+    int row_event_id;                     // +0xf0, segment-definition/message index
 };
 
 typedef char TrackAttachmentRuntimeRow_must_be_0xf4[

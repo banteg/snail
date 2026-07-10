@@ -19,6 +19,7 @@ struct SnailVisual;
 struct PathTemplate;
 struct TrackRowCell;
 struct TrackAttachmentRuntimeRow;
+struct LevelSegmentSlot;
 struct PlayerControlSource;
 struct PlayerPresentationController;
 struct Game;
@@ -77,6 +78,11 @@ typedef struct TransformMatrix {
     Vec4 basis_forward;
     Vec4 position;
 } TransformMatrix;
+
+typedef struct RenderableBod {
+    BodBase bod;
+    TransformMatrix transform;
+} RenderableBod;
 
 typedef struct Stopwatch {
     float total_seconds;
@@ -216,15 +222,18 @@ typedef struct TrackRowCell {
 
 typedef struct TrackAttachmentRuntimeRow {
     uint32_t flags;
-    uint8_t _pad_04[0x8c];
+    RenderableBod primary_body;
+    uint8_t _pad_7c[0x8];
+    Vec3 authored_object_velocity;
     Vec3 projection_payload;
     int32_t parcel_set_id;
     int32_t attachment_template_index;
     TrackRowCell* primary_attachment_cell;
     TrackRowCell* secondary_attachment_cell;
-    uint8_t _pad_ac[0x4];
-    BodBase aux_body;
-    uint8_t _pad_e8[0x8];
+    float installed_heading_delta;
+    BodBase attachment_body;
+    float ring_speed;
+    struct LevelSegmentSlot* source_segment;
     int32_t row_event_id;
 } TrackAttachmentRuntimeRow;
 

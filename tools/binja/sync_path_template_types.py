@@ -15,6 +15,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SnailVisual",
     "BodNode",
     "BodBase",
+    "RenderableBod",
     "FringeObject",
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
@@ -156,12 +157,17 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
 
 TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
+    ("0x04", "primary_body", "RenderableBod"),
+    ("0x84", "authored_object_velocity", "Vec3"),
     ("0x90", "projection_payload", "Vec3"),
     ("0x9c", "parcel_set_id", "int32_t"),
     ("0xa0", "attachment_template_index", "int32_t"),
     ("0xa4", "primary_attachment_cell", "TrackRowCell*"),
     ("0xa8", "secondary_attachment_cell", "TrackRowCell*"),
-    ("0xb0", "aux_body", "BodBase"),
+    ("0xac", "installed_heading_delta", "float"),
+    ("0xb0", "attachment_body", "BodBase"),
+    ("0xe8", "ring_speed", "float"),
+    ("0xec", "source_segment", "LevelSegmentSlot*"),
     ("0xf0", "row_event_id", "int32_t"),
 )
 

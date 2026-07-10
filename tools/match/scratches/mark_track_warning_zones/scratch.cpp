@@ -8,7 +8,7 @@ void SubgameRuntime::mark_track_warning_zones()
 {
     int row = 0;
     if (runtime_row_count - 1 > 0) {
-        TrackRowCellTileByteView* cell = runtime_cell_tiles;
+        TrackRowCellTileByteView* cell = runtime_cell_tile_views();
         do {
             for (int col = 0; col < 8; ++col, ++cell) {
                 char t = cell->tile_id;
@@ -21,7 +21,7 @@ void SubgameRuntime::mark_track_warning_zones()
                         for (int dc = -1; dc < 1; ++dc) {
                             if (row >= 0 && row < runtime_row_count - 1
                                 && dc + col >= 0 && dc + col < 8)
-                                runtime_cell_tiles[idx + dc].lane_and_flags |= 0x18;
+                                runtime_cell_tile_views()[idx + dc].lane_and_flags |= 0x18;
                         }
                         --row;
                         idx -= 8;

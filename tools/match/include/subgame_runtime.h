@@ -28,12 +28,11 @@
 #include "times_up_controller.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
+#include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
 
-struct TrackAttachmentRuntimeRow;
-struct TrackRowCell;
 class TimeTrialStringFormatter;
 
 class SubgameRuntime {
@@ -47,6 +46,7 @@ public:
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
     Player* embedded_player(); // typed view of owned player_storage at +0x3bb764
+    TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
     TimeTrialStringFormatter* time_trial_formatter(); // embedded service view at +0xff25e0
     void update_subgame(); // @ 0x438b90
@@ -198,9 +198,12 @@ public:
             char unknown_player_4335[0x4364 - 0x4335];
         };
     };
-    char unknown_3bfac8[0x3bfb04 - 0x3bfac8];
-    TrackRowCellTileByteView runtime_cell_tiles[1]; // +0x3bfb04, row-major tile-byte view
-    char unknown_3bfb58[0x68b4c8 - 0x3bfb58];
+    // Fixed row-major runtime grid owned by SubgameRuntime. Gameplay actors
+    // retain pointers into this slab only for the lifetime of the built track.
+    TrackRowCell runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
+    // Fixed row records owned by SubgameRuntime. Their body objects are
+    // embedded; source_segment and attachment-cell fields are borrowed links.
+    TrackAttachmentRuntimeRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8
     // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
     // into current_high_score_record, then lends that record to high_score_bank
     // for in-place normalization and value-copy persistence.
@@ -235,9 +238,14 @@ inline Player* SubgameRuntime::embedded_player()
     return (Player*)player_storage;
 }
 
+inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()
+{
+    return (TrackRowCellTileByteView*)&runtime_cells[0][0].tile_id;
+}
+
 inline TrackRowCellFringeLinkView* SubgameRuntime::runtime_cell_fringe_links()
 {
-    return (TrackRowCellFringeLinkView*)((char*)this + 0x3bfb0c);
+    return (TrackRowCellFringeLinkView*)&runtime_cells[0][0].fringe_front;
 }
 
 inline TimeTrialStringFormatter* SubgameRuntime::time_trial_formatter()
