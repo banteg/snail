@@ -6,7 +6,7 @@
 - `+0x14` y bob output
 - `+0x18` state-1 reference z
 - `+0x38` visibility mode
-- `+0x54` row source pointer, read at source `+0x70`
+- `+0x54` borrowed `Player*`, read through `Player::position.z` at `+0x70`
 - `+0x58` phase
 - `+0x5c` phase step
 
@@ -21,6 +21,10 @@ The bob output is `sine(phase * 6.2831855) * 0.25999999`.
 Added on 2026-06-18. Focused Wibo verifies a clean 100% match: 44/44
 instructions, prefix 44/44, 7 masked operands OK, no unresolved or mismatched
 operands.
+
+The actor now uses the shared `Banner : BodBase` owner view. Two fixed banner
+objects are embedded in `SubgameRuntime::banners`; active-list linkage does not
+own their storage, and `destroy_subgame` only recycles those links.
 
 Source-shape note: do not stage the sine argument in an `angle` local. Native
 keeps no stack local in the prologue and uses `push ecx; fstp [esp]` directly

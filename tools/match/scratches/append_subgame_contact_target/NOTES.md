@@ -36,3 +36,7 @@ Residuals:
   signed `int`, matching the old `BodBase::flags` source shape. This keeps the
   exact append helper and nearby exact BOD-list users unchanged, while allowing
   `is_bod_after_sprites` to emit the native `test byte [ecx+4], 0x80` sequence.
+- 2026-07-10 owner-boundary pass: the next proven runtime member begins at
+  `game+0x12727d8`. From the registry base at `+0x1270fd4`, the 4-byte count
+  plus 256 0x18-byte entries lands exactly on that boundary. The shared type
+  now records the fixed embedded capacity and remains exact at 34/34.

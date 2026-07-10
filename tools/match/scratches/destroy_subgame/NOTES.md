@@ -11,13 +11,13 @@ Recovered behavior:
   frontend/subgame bridge dirty byte at `app+0x4f26c`;
 - if the level mode is tutorial (`7`), calls
   `TutorialController::uninit_tutorial()` at `game+0xa858`;
-- always uninitializes warning, active landscape entries through
-  `ActiveLandscapeEntry::clear_active_landscape_entries()`, times-up, and the
-  broader subgame BOD pool through `SubgameRuntime::remove_subgame_bods()`;
-- for non-state-1 postal/time-trial teardown, flushes row-event display for
-  level modes `0` and `1`, then removes active BOD nodes from the 20 SubLazer
-  slots, 40 Salt slots, and two ring/special-effect parent slots;
-- removes one selected-record BOD node at `game+0xff7bc4` when it is active;
+- always uninitializes the embedded player warning, fixed active-landscape
+  pool, times-up controller, and the broader subgame BOD set through
+  `SubgameRuntime::remove_subgame_bods()`;
+- for every non-state-1 teardown, removes active BOD nodes from the embedded
+  20-slot SubLazer pool, 40-slot Salt pool, and two-slot start/completion
+  `BannerPool`; row-event display is additionally flushed for modes `0`/`1`;
+- removes the embedded tutorial `BarrierActor` at `game+0xff7bc4` when linked;
 - kills the gameplay HUD widgets at `game+0x35bb88/8c`, clears persistent
   selected-record state, restores frontend state `0x12` for persistent record
   teardown, and sets selected subgame mode `2` when destroying mode `3`;
@@ -28,4 +28,21 @@ The repeated pool loops use a `BodNode::list_next` cursor because native
 iterates from the `+0x0c` link field, loading flags from `-0x08` and prev from
 `-0x04`. The removal body still mirrors
 `BodList::recycle_bod_to_free_list`, but this function inlines it for each
-pool and for the selected-record node.
+pool and for the barrier actor.
+
+## 2026-07-10 ownership audit
+
+The exact initializer and actor update helpers disambiguate two formerly
+misnamed teardown ranges. `game+0x359080` is a fixed pair of 0x60-byte
+`cRBanner` actors whose `+0x54` fields borrow the embedded player as their row
+position source; these are not the ring/effect parents at `game+0x35b78c`.
+Likewise, `game+0xff7bc4` is the 0x3c-byte `cRBarrier` actor with a borrowed
+player pointer at `+0x38`; the adjacent selected-level replay bytes at
+`+0xff25d0/+0xff25d1` do not own that BOD.
+
+`SubgameRuntime` now exposes those actors and the teardown's other fixed pools
+as embedded storage. The global BOD list only links the embedded nodes while
+live, and `destroy_subgame` recycles their links without freeing object
+storage. HUD fields remain borrowed `BorderManager` handles and are returned
+through `kill_border()`. Focused Wibo remains exact at `246/246` with all 41
+masked operands resolved.

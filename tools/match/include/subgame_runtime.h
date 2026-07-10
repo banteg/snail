@@ -5,6 +5,9 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
+#include "active_landscape_entry.h"
+#include "banner.h"
+#include "barrier_actor.h"
 #include "challenge_setup_screen.h"
 #include "completion_screen.h"
 #include "frontend_widget.h"
@@ -14,9 +17,14 @@
 #include "high_score_record.h"
 #include "cameraman_state.h"
 #include "contact_target.h"
+#include "new_game_menu.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
+#include "row_event_display.h"
+#include "salt_hazard_types.h"
 #include "score_stats.h"
+#include "sub_lazer_types.h"
+#include "times_up_controller.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_parcel_runtime.h"
@@ -108,7 +116,9 @@ public:
     int first_block_row_count; // +0x50
     int runtime_row_count; // +0x54
     int completion_row_start; // +0x58
-    char unknown_00005c[0xa874 - 0x5c];
+    char unknown_00005c[0xa858 - 0x5c];
+    TutorialController tutorial; // +0xa858, embedded tutorial-mode controller
+    char unknown_00a868[0xa874 - 0xa868];
     int level_segment_count; // +0xa874
     char unknown_00a878[0x1b0140 - 0xa878];
     float track_skirt_r; // +0x1b0140
@@ -124,7 +134,10 @@ public:
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
-    char unknown_3563a0[0x359140 - 0x3563a0];
+    char unknown_3563a0[0x356b00 - 0x3563a0];
+    SubLazerPool sub_lazers; // +0x356b00, fixed 20-slot owner
+    SaltHazardPool salt_hazards; // +0x3578c0, fixed 40-slot owner
+    BannerPool banners; // +0x359080, embedded start/completion actors
     GarbageHazardPool garbage_hazards; // +0x359140
     RingOrSpecialEffectPool ring_effects; // +0x35b78c, two embedded parent slots
     char unknown_35bb7c[0x35bb88 - 0x35bb7c];
@@ -195,7 +208,10 @@ public:
     HighScoreRecord* selected_level_record; // +0xff25d4
     int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
     int replay_update_cursor; // +0xff25dc
-    char unknown_ff25e0[0x125e480 - 0xff25e0];
+    char unknown_ff25e0[0xff7bc4 - 0xff25e0];
+    BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
+    ActiveLandscapePool active_landscapes; // +0xff7c00, fixed 10-slot owner
+    char unknown_ff81a4[0x125e480 - 0xff81a4];
     TrackParcelPool parcel_pool; // +0x125e480
     int source_timer_a; // +0x125ffd8
     int source_timer_b; // +0x125ffdc
@@ -205,7 +221,9 @@ public:
     char unknown_1270fc4[0x1270fc8 - 0x1270fc4];
     int subgame_rebuild_selector; // +0x1270fc8
     char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
-    ContactTargetRegistry contact_targets; // +0x1270fd4, per-frame target append window
+    ContactTargetRegistry contact_targets; // +0x1270fd4, embedded 256-entry frame registry
+    RowEventDisplayController row_event_display; // +0x12727d8, embedded HUD controller
+    TimesUpController times_up; // +0x1272828, embedded completion controller
 };
 
 inline Player* SubgameRuntime::embedded_player()

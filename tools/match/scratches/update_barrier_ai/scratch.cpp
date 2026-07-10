@@ -1,20 +1,11 @@
 // update_barrier_ai @ 0x440f80 (thiscall, ret)
 
-class BarrierActor {
-public:
-    void* update_barrier_ai();
-
-    char unknown_00[0x14];
-    float y;                  // +0x14
-    float z;                  // +0x18
-    char unknown_1c[0x38 - 0x1c];
-    char* owner;              // +0x38
-};
+#include "barrier_actor.h"
 
 void* BarrierActor::update_barrier_ai()
 {
-    char* owner_object = owner;
-    z = *(float*)(owner_object + 0x70);
-    y = 0.4f;
-    return owner_object;
+    Player* owner = owner_player;
+    position.z = owner->position.z;
+    position.y = 0.4f;
+    return owner;
 }

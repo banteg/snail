@@ -4,6 +4,8 @@
 
 #include "vector3.h"
 
+const int CONTACT_TARGET_CAPACITY = 256;
+
 struct ContactTargetObject {
     void* vtable;            // +0x00, renderable/contact objects share this prefix
     int list_flags;          // +0x04, 0x1000 suppresses contact appends
@@ -27,7 +29,10 @@ public:
         ContactTargetObject* object); // @ 0x415ef0
 
     int count;                    // +0x00
-    ContactTargetEntry entries[1]; // +0x04, variable-capacity owner storage
+    ContactTargetEntry entries[CONTACT_TARGET_CAPACITY]; // +0x04, embedded frame storage
 };
+
+typedef char ContactTargetRegistry_must_be_0x1804[
+    (sizeof(ContactTargetRegistry) == 0x1804) ? 1 : -1];
 
 #endif

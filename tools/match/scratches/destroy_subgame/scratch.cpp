@@ -73,70 +73,67 @@ int report_errorf(char* format, ...);
 
 void SubgameRuntime::destroy_subgame()
 {
-    char* game = (char*)this;
-
     debug_report_stub("-SubGame::UnInit()\n");
     *(DWORD*)(g_game_base + 0x4f26c) = 1;
 
-    if (*(DWORD*)(game + 0x40) == 7)
-        ((TutorialController*)(game + 0xa858))->uninit_tutorial();
+    if (level_mode == 7)
+        tutorial.uninit_tutorial();
 
-    ((WarningActor*)(game + 0x3bbb58))->uninit_warning();
-    ((ActiveLandscapeEntry*)(game + 0xff7c00))->clear_active_landscape_entries();
-    ((TimesUpController*)(game + 0x1272828))->uninit_times_up();
+    embedded_player()->warning.uninit_warning();
+    active_landscapes.entries[0].clear_active_landscape_entries();
+    times_up.uninit_times_up();
     remove_subgame_bods();
 
-    DWORD subgame_state = *(DWORD*)(game + 0x3c);
+    DWORD subgame_state = this->subgame_state;
     DWORD linked_flag = 0x200;
     if (subgame_state != 1) {
-        DWORD level_mode = *(DWORD*)(game + 0x40);
+        DWORD level_mode = this->level_mode;
         if (level_mode == 0 || level_mode == 1)
-            ((RowEventDisplayController*)(game + 0x12727d8))->flush_row_event_display();
+            row_event_display.flush_row_event_display();
 
-        BodNode** sub_lazer_next = &((BodNode*)(game + 0x356b00))->list_next;
+        BodNode** sub_lazer_next = &sub_lazers.slots[0].list_next;
         for (int i = 0; i < 20; ++i) {
             if ((BOD_NEXT_LINK_FLAGS(sub_lazer_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(sub_lazer_next, linked_flag);
             sub_lazer_next = (BodNode**)((char*)sub_lazer_next + 0xb0);
         }
 
-        BodNode** salt_next = &((BodNode*)(game + 0x3578c0))->list_next;
+        BodNode** salt_next = &salt_hazards.slots[0].list_next;
         for (int j = 0; j < 40; ++j) {
             if ((BOD_NEXT_LINK_FLAGS(salt_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(salt_next, linked_flag);
             salt_next = (BodNode**)((char*)salt_next + 0x98);
         }
 
-        BodNode** ring_next = &((BodNode*)(game + 0x359080))->list_next;
+        BodNode** banner_next = &banners.slots[0].list_next;
         for (int k = 0; k < 2; ++k) {
-            if ((BOD_NEXT_LINK_FLAGS(ring_next) & linked_flag) != 0)
-                REMOVE_BOD_NODE_FROM_NEXT_LINK(ring_next, linked_flag);
-            ring_next = (BodNode**)((char*)ring_next + 0x60);
+            if ((BOD_NEXT_LINK_FLAGS(banner_next) & linked_flag) != 0)
+                REMOVE_BOD_NODE_FROM_NEXT_LINK(banner_next, linked_flag);
+            banner_next = (BodNode**)((char*)banner_next + sizeof(Banner));
         }
     }
 
-    if ((*(DWORD*)(game + 0xff7bc8) & linked_flag) != 0) {
-        BodNode* selected_record_node = (BodNode*)(game + 0xff7bc4);
-        REMOVE_INLINE_BOD_NODE(selected_record_node, linked_flag);
+    if ((barrier.list_flags & linked_flag) != 0) {
+        REMOVE_INLINE_BOD_NODE(&barrier, linked_flag);
     }
 
     BorderManager* borders = (BorderManager*)(g_game_base + 0xb4c);
-    borders->kill_border(*(FrontendWidget**)(game + 0x35bb88));
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(*(FrontendWidget**)(game + 0x35bb8c));
+    borders->kill_border(top_score_widget);
+    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(bottom_score_widget);
 
-    if (*(unsigned char*)(game + 0xff25d1) != 0) {
+    if (selected_level_record_persistent != 0) {
         *(DWORD*)(g_game_base + 0x1bc) = 0x12;
-        *(unsigned char*)(game + 0xff25d1) = 0;
+        selected_level_record_persistent = 0;
     }
 
-    if (*(DWORD*)(game + 0x40) == 3)
+    if (level_mode == 3)
         *(DWORD*)(g_game_base + 0x74658) = 2;
 
-    if (*(DWORD*)(game + 0x40) == 0) {
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(*(FrontendWidget**)(game + 0x35bb90));
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(*(FrontendWidget**)(game + 0x35bb94));
+    if (level_mode == 0) {
+        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(lives_icon_widget);
+        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(lives_text_widget);
 
-        FrontendWidget** widget = (FrontendWidget**)(game + 0x35bb98);
+        FrontendWidget** widget = life_stock_widgets;
         for (int n = 0; n < 9; ++n)
             ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget[n]);
     }

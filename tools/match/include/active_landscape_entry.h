@@ -35,4 +35,15 @@ public:
 typedef char ActiveLandscapeEntry_must_be_0x90[
     (sizeof(ActiveLandscapeEntry) == 0x90) ? 1 : -1];
 
+class ActiveLandscapePool {
+public:
+    // Fixed storage owned by SubgameRuntime. clear_active_landscape_entries()
+    // is invoked on entries[0] and walks the remaining embedded slots.
+    ActiveLandscapeEntry entries[10];
+    int active_count; // +0x5a0
+};
+
+typedef char ActiveLandscapePool_must_be_0x5a4[
+    (sizeof(ActiveLandscapePool) == 0x5a4) ? 1 : -1];
+
 #endif
