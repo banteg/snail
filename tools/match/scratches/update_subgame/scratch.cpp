@@ -496,29 +496,30 @@ after_authored_ring:
                                 && ((Player*)player_storage)->last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.anchor_position.z
                                 && cell_index < *(int*)(game + 0x58)) {
-                                TrackRowCell* projected_cell =
-                                    (TrackRowCell*)((char*)&cell_slot->cell + 0xfc0);
                                 if ((ring_flags & 0x2000) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        projected_cell, 8, (Player*)player_storage,
+                                        (TrackRowCell*)((char*)&cell_slot->cell + 0xfc0),
+                                        8, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
                                     ((Player*)player_storage)->last_ring_spawn_z =
-                                        projected_cell->anchor_position.z;
+                                        ((TrackRowCell*)((char*)&cell_slot->cell + 0xfc0))->anchor_position.z;
                                 } else if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        projected_cell, 6, (Player*)player_storage,
+                                        (TrackRowCell*)((char*)&cell_slot->cell + 0xfc0),
+                                        6, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
                                     ((Player*)player_storage)->last_ring_spawn_z =
-                                        projected_cell->anchor_position.z;
+                                        ((TrackRowCell*)((char*)&cell_slot->cell + 0xfc0))->anchor_position.z;
                                 } else if ((ring_flags & 0x1000) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        projected_cell, 7, (Player*)player_storage,
+                                        (TrackRowCell*)((char*)&cell_slot->cell + 0xfc0),
+                                        7, (Player*)player_storage,
                                         ((float*)game)[cell_index
                                             + 20 * (3 * cell_index + 74772) + 24924]);
                                     ((Player*)player_storage)->last_ring_spawn_z =
-                                        projected_cell->anchor_position.z;
+                                        ((TrackRowCell*)((char*)&cell_slot->cell + 0xfc0))->anchor_position.z;
                                 } else if ((*(unsigned int*)(game + 0x4c) & 8) != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)

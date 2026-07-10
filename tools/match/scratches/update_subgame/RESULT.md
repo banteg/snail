@@ -4,19 +4,19 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.19% | **69.45%** |
+| Match | 0.19% | **70.97%** |
 | Target instructions | 1033 | 1033 |
-| Candidate instructions | 1 | 1049 |
+| Candidate instructions | 1 | 1027 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **111 clean, 0 unresolved, 2 mismatched** |
+| Masked operands | none | **115 clean, 0 unresolved, 2 mismatched** |
 
-The final candidate is sixteen instructions longer than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
+The final candidate is six instructions shorter than the target. Both switch jump-table operands are content-audited and classified as real mismatches. There are no unresolved masked operands or mismatched call/data references.
 
 The first remaining mismatch is:
 
 ```text
 target[9]    ja Ld68
-candidate[9] ja Lda4
+candidate[9] ja Ld5f
 ```
 
 The branch serves the same out-of-range/common-camera role; the label identity differs because the remaining body layout is not yet exact.
@@ -38,6 +38,9 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 - Inverted the selected-level bridge so its handoff is the cold tail after the
   gameplay/HUD body, then preserved the native per-arm application-state
   snapshot; the resulting tail instructions and all call/data operands agree.
+- Inlined the contextual projected-cell address in its three ring arms,
+  removing an invented long-lived pointer and recovering the native repeated
+  address formation and shared last-Z store without growing the frame.
 
 ## Measured progression
 
@@ -58,7 +61,8 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Duplicated challenge success path | 67.34% | 1043 | Kept |
 | Member-style time-trial formatter call | 67.53% | 1046 | Kept |
 | Cold selected-level bridge tail | 68.94% | 1047 | Kept; removed the 23-instruction early-body displacement |
-| Per-arm application-state snapshot | **69.45%** | **1049** | Final retained result; 111 clean operands |
+| Per-arm application-state snapshot | 69.45% | 1049 | Kept; 111 clean operands |
+| Inline projected-cell addresses | **70.97%** | **1027** | Final retained result; 115 clean operands |
 
 ## Rejected trials
 
@@ -81,4 +85,4 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 
 ## Next region to attack
 
-Refine the remaining state-1 galaxy build/destroy scheduling, then revisit projected and ambient ring exits only with a smaller source-backed shape that preserves the `0x3c` frame. The time-trial record-base address sequence is localized but its obvious local remains rejected.
+Refine the remaining state-1 galaxy build/destroy scheduling, then revisit only the residual authored/ambient ring register schedule with a source-backed shape that preserves the `0x3c` frame. The time-trial record-base address sequence is localized but its obvious local remains rejected.

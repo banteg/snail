@@ -62,14 +62,14 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 69.45%, 1049 candidate instructions versus 1033 target instructions, 9-instruction prefix, 111 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 70.97%, 1027 candidate instructions versus 1033 target instructions, 9-instruction prefix, 115 clean masked operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
 The largest remaining source-shape opportunities are:
 
 1. state-1 galaxy setup case ordering and shared build/destroy exits;
-2. projected and ambient ring shared exits;
+2. residual authored/ambient ring register scheduling;
 3. the time-trial record-base address schedule;
 4. residual jump-table target identities driven by the remaining block layout.
 
@@ -130,3 +130,11 @@ Retested neighbors on the new bridge layout: materializing the time-trial
 record base regressed `68.94%` to `67.95%`; a shared ambient-ring speed local
 grew the frame from `0x3c` to `0x40` and regressed to `61.11%`; a named control
 source was codegen-neutral. None were retained.
+
+2026-07-10 projected-ring address ownership: the projected cell at
+`cell + 0xfc0` is a contextual address, not a long-lived local owner. Inlining
+that address in the three projected-ring arms removes the invented `ebx`
+lifetime and recovers the native repeated address formation plus shared
+post-call last-Z store. Focused Wibo improves from `69.45%`, `1049/1033`,
+`111 ok` to `70.97%`, `1027/1033`, `115 ok`, with the exact `0x3c` frame and
+the same two jump-table mismatches. No call or data operand mismatch is added.

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.62%**.
+**508/705** mapped gameplay functions matched, **705/705** mapped gameplay functions have a scratch, **70137/325759** bytes (**21.53%**) are proof-grade, and overall fuzzy is **57.64%**.
 
 ## Proof Grade (508)
 
@@ -646,7 +646,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 24 ok |  |
 | 🚧 | initialize_subgame | 0x4374b0 | 1632 | 385/396 | 63.25% | 1/396 | 3 mismatch, 71 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
-| 🚧 | update_subgame | 0x438b90 | 3748 | 1049/1033 | 69.45% | 9/1033 | 2 mismatch, 111 ok |  |
+| 🚧 | update_subgame | 0x438b90 | 3748 | 1027/1033 | 70.97% | 9/1033 | 2 mismatch, 115 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 223/347 | 51.23% | 22/347 | 8 mismatch, 34 ok |  |
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
