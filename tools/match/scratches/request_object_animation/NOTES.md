@@ -63,3 +63,13 @@ native `0x38`). This alignment also proves the 2026-06-21 swapped-label
 conclusion was comparison fallout: the allocation labels are restored to their
 semantic buffers (`Vertices` first, `FaceQuad Normals` second) and now both
 match cleanly.
+
+2026-07-10 keyframe sentinel lifetime: native does not retain a copied final
+frame number. Inside the non-empty generated-frame guard it borrows an `int*`
+to the caller's final `XAnimationKeyframe::frame_number`, converts the generated
+frame count once, and runs a `do` loop over the owned frame table. That source
+shape removes the unexplained four-byte candidate local and recovers the native
+`0x38`-byte frame. The vertex-count failure path also returns
+`report_errorf`'s value, as seen at the native epilogue. Focused Wibo rises from
+57.88% to 78.79%, with an exact 231/231 instruction count, a 46-instruction
+prefix, and 17 clean masked operands.

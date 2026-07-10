@@ -33,17 +33,9 @@ void refresh_object_vertex_buffer(Object* object)
                 int* source = (int*)((char*)source_vertices + source_offset);
                 int* destination = (int*)((char*)vertices + destination_offset);
                 ++i;
-
-                int x = source[0];
                 source_offset += 0xc;
-                destination[0] = x;
-
                 destination_offset += 0x18;
-                int y = source[1];
-                destination[1] = y;
-
-                int z = source[2];
-                destination[2] = z;
+                *(Vector3*)destination = *(Vector3*)source;
             } while (i < object->grouped_vertex_count);
         }
 

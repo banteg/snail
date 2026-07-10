@@ -13,9 +13,8 @@ ObjectAnimation* Object::request_object_animation(
 {
     for (int i = 0; i < keyframe_count; ++i) {
         if (keyframes[i].object->vertex_count != vertex_count) {
-            report_errorf("Anim tween Vertices don't match Frame %i",
-                keyframes[i].frame_number);
-            return 0;
+            return (ObjectAnimation*)report_errorf(
+                "Anim tween Vertices don't match Frame %i", keyframes[i].frame_number);
         }
     }
 
@@ -38,56 +37,61 @@ ObjectAnimation* Object::request_object_animation(
     else
         next_time = keyframes[1].frame_number;
 
-    int last_frame = keyframes[keyframe_count - 1].frame_number;
-    for (int frame = 0; frame < generated_frame_count; ++frame) {
-        animation->frames[frame] =
-            (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
-        animation->frames[frame]->vertices =
-            (Vector3*)allocate_tracked_memory(vertex_count * 0xc,
-                "Object Animation Frame Vertices");
-        animation->frames[frame]->facequad_normals =
-            (Vector3*)allocate_tracked_memory(facequad_count * 0x18,
-                "Object Animation Frame FaceQuad Normals");
+    int frame = 0;
+    if (generated_frame_count > 0) {
+        float generated_frame_count_float = (float)generated_frame_count;
+        int* last_frame_number = &keyframes[keyframe_count - 1].frame_number;
+        do {
+            animation->frames[frame] =
+                (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
+            animation->frames[frame]->vertices =
+                (Vector3*)allocate_tracked_memory(vertex_count * 0xc,
+                    "Object Animation Frame Vertices");
+            animation->frames[frame]->facequad_normals =
+                (Vector3*)allocate_tracked_memory(facequad_count * 0x18,
+                    "Object Animation Frame FaceQuad Normals");
 
-        float frame_time_float =
-            (float)(last_frame * frame) / (float)generated_frame_count;
-        int frame_time = (int)floor(frame_time_float);
-        if (frame_time >= next_time && current_keyframe < keyframe_count - 1) {
-            current_time = keyframes[current_keyframe + 1].frame_number;
-            next_time = keyframes[current_keyframe + 2].frame_number;
-            ++current_keyframe;
-        }
-
-        float tween =
-            (frame_time_float - (float)current_time) / (float)(next_time - current_time);
-
-        for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
-            if (keyframe_count == 1) {
-                animation->frames[frame]->vertices[vertex_index] =
-                    keyframes[current_keyframe].object->vertices[vertex_index];
-            } else {
-                Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
-                Vector3* b = &keyframes[current_keyframe + 1].object->vertices[vertex_index];
-                Vector3* out = &animation->frames[frame]->vertices[vertex_index];
-                Vector3 delta;
-                delta.x = b->x - a->x;
-                delta.y = b->y - a->y;
-                delta.z = b->z - a->z;
-                Vector3 scaled;
-                scaled.x = delta.x * tween;
-                scaled.y = delta.y * tween;
-                scaled.z = delta.z * tween;
-                Vector3 tweened;
-                tweened.x = scaled.x + a->x;
-                tweened.y = scaled.y + a->y;
-                tweened.z = scaled.z + a->z;
-                *out = tweened;
+            float frame_time_float =
+                (float)(*last_frame_number * frame) / generated_frame_count_float;
+            int frame_time = (int)floor(frame_time_float);
+            if (frame_time >= next_time && current_keyframe < keyframe_count - 1) {
+                current_time = keyframes[current_keyframe + 1].frame_number;
+                next_time = keyframes[current_keyframe + 2].frame_number;
+                ++current_keyframe;
             }
-        }
 
-        vertices = animation->frames[frame]->vertices;
-        facequad_normals = animation->frames[frame]->facequad_normals;
-        calc_object_facequad_normals();
+            float tween =
+                (frame_time_float - (float)current_time) / (float)(next_time - current_time);
+
+            for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
+                if (keyframe_count == 1) {
+                    animation->frames[frame]->vertices[vertex_index] =
+                        keyframes[current_keyframe].object->vertices[vertex_index];
+                } else {
+                    Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
+                    Vector3* b = &keyframes[current_keyframe + 1].object->vertices[vertex_index];
+                    Vector3* out = &animation->frames[frame]->vertices[vertex_index];
+                    Vector3 delta;
+                    delta.x = b->x - a->x;
+                    delta.y = b->y - a->y;
+                    delta.z = b->z - a->z;
+                    Vector3 scaled;
+                    scaled.x = delta.x * tween;
+                    scaled.y = delta.y * tween;
+                    scaled.z = delta.z * tween;
+                    Vector3 tweened;
+                    tweened.x = scaled.x + a->x;
+                    tweened.y = scaled.y + a->y;
+                    tweened.z = scaled.z + a->z;
+                    *out = tweened;
+                }
+            }
+
+            vertices = animation->frames[frame]->vertices;
+            facequad_normals = animation->frames[frame]->facequad_normals;
+            calc_object_facequad_normals();
+            ++frame;
+        } while (frame < generated_frame_count);
     }
 
     animation->progress = 0.0f;

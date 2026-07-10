@@ -35,7 +35,10 @@ proves the ownership-neutral assignment is a blend-mode selection instead.
 `ObjectList` slot and `+0x7c` holds the authored frame number. The target object
 retains a `0x14`-byte `ObjectAnimation`, whose `frames` array points to
 `0x08`-byte `ObjectAnimationFrame` records. Each frame retains a vertex buffer
-and a two-normals-per-facequad buffer.
+and a two-normals-per-facequad buffer. Animation construction only borrows the
+caller's keyframe array for the duration of the call; its generated-frame loop
+keeps a pointer to the final record's `frame_number` as a sentinel but does not
+retain that pointer in `ObjectAnimation`.
 
 The active `Object::vertices` and `Object::facequad_normals` pointers are views,
 not always the original allocations: animation generation and frame refresh

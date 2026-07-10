@@ -57,3 +57,10 @@ vertex-buffer wrapper. Hoisting the active `vertices` view once in the animated
 copy path recovers the native 41-instruction prefix without extending that
 alias into the unrelated static UV path. Focused Wibo is 60.81%, 134/139, with
 four clean masked operands.
+
+The animated upload copies each borrowed generated position as a typed
+`Vector3` value into the position prefix of `ObjectRenderVertex`. VC6 emits the
+same three dword moves as the prior scalar spelling, so this clarifies the
+source/destination ownership without changing the honest 60.81% result. The
+static UV path remains scalar because the aggregate spelling materially changes
+its native register allocation.
