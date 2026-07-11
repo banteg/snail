@@ -141,6 +141,64 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
     return removed
 
 
+def _load_existing_index(index_path: Path) -> dict[str, object]:
+    if not index_path.is_file():
+        return {}
+    try:
+        value = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
+def _merge_focused_exports(
+    manifest_functions,
+    refreshed: list[dict[str, object]],
+    *,
+    out_dir: Path,
+    existing_index: dict[str, object],
+) -> list[dict[str, object]]:
+    refreshed_by_address = {
+        entry.get("address"): entry
+        for entry in refreshed
+        if isinstance(entry.get("address"), str)
+    }
+    existing_exports = existing_index.get("exported", [])
+    existing_by_address = {
+        entry.get("address"): entry
+        for entry in existing_exports
+        if isinstance(entry, dict) and isinstance(entry.get("address"), str)
+    }
+
+    merged: list[dict[str, object]] = []
+    for function in manifest_functions:
+        artifact_path = _artifact_path(out_dir, address=function.address, name=function.name)
+        artifact = _display_path(artifact_path)
+        entry = refreshed_by_address.get(function.address_hex)
+        if entry is None:
+            existing = existing_by_address.get(function.address_hex)
+            if (
+                isinstance(existing, dict)
+                and existing.get("selector") == function.name
+                and existing.get("name") == function.name
+                and existing.get("artifact") == artifact
+                and artifact_path.is_file()
+            ):
+                entry = existing
+            elif artifact_path.is_file():
+                entry = {
+                    "selector": function.name,
+                    "address": function.address_hex,
+                    "name": function.name,
+                    "artifact": artifact,
+                    "removed_stale_artifacts": [],
+                }
+            else:
+                continue
+        merged.append(dict(entry))
+    return merged
+
+
 def _build_mismatches(manifest, exported_entries: list[dict[str, object]]) -> list[dict[str, object]]:
     manifest_by_name = {function.name: function for function in manifest.functions}
     mismatches: list[dict[str, object]] = []
@@ -274,6 +332,16 @@ def main() -> int:
     if args.index is not None:
         index_path = args.index.resolve()
         index_path.parent.mkdir(parents=True, exist_ok=True)
+        if args.only:
+            exported_entries = _merge_focused_exports(
+                manifest.functions,
+                exported_entries,
+                out_dir=out_dir,
+                existing_index=_load_existing_index(index_path),
+            )
+            summary["selected_count"] = len(exported_entries)
+            summary["function_count"] = len(exported_entries)
+            summary["exported"] = exported_entries
         index_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
         summary["index"] = _display_path(index_path)
     sys.stdout.write(json.dumps(summary, indent=2))

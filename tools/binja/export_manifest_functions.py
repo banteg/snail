@@ -168,6 +168,60 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
     return removed
 
 
+def _load_existing_index(index_path: Path) -> dict[str, object]:
+    if not index_path.is_file():
+        return {}
+    try:
+        value = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
+def _merge_focused_exports(
+    manifest_functions: tuple[FunctionSymbol, ...],
+    refreshed: list[dict[str, object]],
+    *,
+    out_dir: Path,
+    existing_index: dict[str, object],
+) -> list[dict[str, object]]:
+    refreshed_by_address = {
+        entry.get("address"): entry
+        for entry in refreshed
+        if isinstance(entry.get("address"), str)
+    }
+    existing_exports = existing_index.get("exports", [])
+    existing_by_address = {
+        entry.get("address"): entry
+        for entry in existing_exports
+        if isinstance(entry, dict) and isinstance(entry.get("address"), str)
+    }
+
+    merged: list[dict[str, object]] = []
+    for function in manifest_functions:
+        artifact = _artifact_path(out_dir, function)
+        entry = refreshed_by_address.get(function.address_hex)
+        if entry is None:
+            existing = existing_by_address.get(function.address_hex)
+            if (
+                isinstance(existing, dict)
+                and existing.get("name") == function.name
+                and existing.get("artifact") == _display_path(artifact)
+                and artifact.is_file()
+            ):
+                entry = existing
+            elif artifact.is_file():
+                entry = {
+                    "address": function.address_hex,
+                    "name": function.name,
+                    "artifact": _display_path(artifact),
+                }
+            else:
+                continue
+        merged.append(dict(entry))
+    return merged
+
+
 def _load_live_function_map(target_selector: str) -> dict[int, dict[str, object]]:
     payload = _run_bn_json("function", "list", "--target", target_selector)
     if not isinstance(payload, list):
@@ -264,6 +318,7 @@ def main() -> int:
     live_functions = _load_live_function_map(target_selector)
 
     selected_functions = _select_functions(manifest.functions, list(args.only))
+    existing_index = _load_existing_index(index_path)
 
     exported: list[dict[str, object]] = []
     mismatches: list[dict[str, object]] = []
@@ -309,17 +364,27 @@ def main() -> int:
 
     removed = [] if args.only else _prune_stale_artifacts(out_dir, expected_paths)
 
+    indexed_exports = (
+        _merge_focused_exports(
+            manifest.functions,
+            exported,
+            out_dir=out_dir,
+            existing_index=existing_index,
+        )
+        if args.only
+        else exported
+    )
     index = {
         "tool": "binary_ninja",
         "target": target_metadata,
         "manifest": _display_path(manifest_path),
         "out_dir": _display_path(out_dir),
-        "selected_count": len(selected_functions),
-        "function_count": len(exported),
+        "selected_count": len(indexed_exports),
+        "function_count": len(indexed_exports),
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
         "removed_stale_artifacts": removed,
-        "exports": exported,
+        "exports": indexed_exports,
     }
     index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(index, indent=2))
