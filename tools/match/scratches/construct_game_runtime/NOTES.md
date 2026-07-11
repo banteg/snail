@@ -309,6 +309,14 @@ pointer plus nine mode-dependent widget/state lanes occupy exactly 0x28 bytes
 at `SubgameRuntime +0x125ffe0`, ending at HelpScreen. Android independently
 preserves the same field offsets. Constructor metrics remain unchanged.
 
+## 2026-07-11 recovered-owner ledger closure
+
+The already exact `GameRoot`, `SubgameRuntime`, `SubTracks`, `Player`
+(`cRSubGoldy`), `LandscapeManager`, `SMTracks`, and `BodBase` extents now feed
+their runtime size prints through `sizeof` instead of duplicated hex literals.
+Each type has an independent compile-time size assertion and proven adjacent
+boundaries. The unrecovered `cRPath` line deliberately remains literal.
+
 ## 2026-07-11 cREnemyManager size ledger
 
 The `Size of cREnemyManager` entry now comes from `sizeof(EnemyManager)`. Its

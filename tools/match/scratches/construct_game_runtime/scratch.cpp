@@ -26,11 +26,11 @@ extern void* g_game_input_callback_table;       // data_4972f0
 extern void* g_noop_runtime_callback_table;     // data_4972b0
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
-    debug_report_stub("Size of cRGame %i\n", 0x12e6ff4); \
-    debug_report_stub("Size of cRSubGame %i\n", 0x1272838); \
+    debug_report_stub("Size of cRGame %i\n", sizeof(GameRoot)); \
+    debug_report_stub("Size of cRSubGame %i\n", sizeof(SubgameRuntime)); \
     debug_report_stub("   Size of cRSegmentCache %i\n", sizeof(SegmentCache)); \
     debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(Tutorial)); \
-    debug_report_stub("   Size of cRSubTracks %i\n", 0x1a5978); \
+    debug_report_stub("   Size of cRSubTracks %i\n", sizeof(SubTracks)); \
     debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(SubSpeedUp)); \
     debug_report_stub("   Size of cRJetPack %i\n", sizeof(JetPack)); \
     debug_report_stub("   Size of cRSubHealth %i\n", sizeof(SubHealth) * 8); \
@@ -40,7 +40,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(SubGarbage) * 50); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
-    debug_report_stub("   Size of cRSubGoldy %i\n", 0x4364); \
+    debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(Player)); \
     debug_report_stub("   Size of cRSubLoc %i\n", sizeof(SubLoc) * 3200 * 8); \
     debug_report_stub("   Size of cRSubRow %i\n", sizeof(SubRow) * 3200); \
     debug_report_stub("   Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
@@ -48,8 +48,8 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(TimeTrial)); \
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(PathManager)); \
     debug_report_stub("   Size of cRPath %i\n", 0x52b0); \
-    debug_report_stub("   Size of cRLandscapeManager %i\n", 0x97a4); \
-    debug_report_stub("   Size of cRSMTracks %i\n", 0x25cfb4); \
+    debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(LandscapeManager)); \
+    debug_report_stub("   Size of cRSMTracks %i\n", sizeof(SMTracks)); \
     debug_report_stub("   Size of cRParcelManager %i\n", sizeof(ParcelManager)); \
     debug_report_stub("   Size of cRGUI %i\n", sizeof(GUI)); \
     debug_report_stub("   Size of cRGalaxy %i\n", sizeof(Galaxy)); \
@@ -57,7 +57,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRCompletion %i\n", sizeof(Completion)); \
     debug_report_stub("   Size of cRTimesUp %i\n", sizeof(TimesUp)); \
     debug_report_stub("Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
-    debug_report_stub("Size of cRBod %i\n", 0x38); \
+    debug_report_stub("Size of cRBod %i\n", sizeof(BodBase)); \
     debug_report_stub("Size of cRSubLoc %i\n", sizeof(SubLoc)); \
     debug_report_stub("Solutions %i\n", sizeof(SubHighScore)); \
 } while (0)
