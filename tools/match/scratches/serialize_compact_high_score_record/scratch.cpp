@@ -1,7 +1,7 @@
 // serialize_compact_high_score_record @ 0x440170 (thiscall, ret 0x4)
 
 #include "sub_solution.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 
 int SubSolution::serialize_compact_high_score_record(SubSolutionHeader* compact)
 {

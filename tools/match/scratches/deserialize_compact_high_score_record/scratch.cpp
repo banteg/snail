@@ -1,7 +1,7 @@
 // deserialize_compact_high_score_record @ 0x440020 (thiscall, ret 0x4)
 
 #include "sub_solution.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 
 unsigned char SubSolution::deserialize_compact_high_score_record(
     SubSolutionHeader* compact)

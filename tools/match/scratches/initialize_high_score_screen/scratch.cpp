@@ -4,7 +4,7 @@
 #include "border_manager.h"
 #include "border_runtime.h"
 #include "game_root.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
 #include "star_field.h"
@@ -36,7 +36,7 @@ static void init_score_text_widget(
     (*slot)->initialize_frontend_widget(flags, text, widget_type, 0.0f, y, color, align, anchor);
 }
 
-int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
+int HighScore::initialize_high_score_screen(int mode_, int rank)
 {
     selected_bank = mode_;
     selected_rank = rank;

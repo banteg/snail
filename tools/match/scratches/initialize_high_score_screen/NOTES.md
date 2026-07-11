@@ -26,3 +26,13 @@ Expected residuals:
   ownership are now correct.
 - Footer ownership also confirms `+0x24` as Cancel/Escape and `+0x28` as
   Submit/Enter.
+
+2026-07-11 cRHighScore ownership:
+
+- Android and iOS preserve `cRHighScore::Init(int, int)`, `AI()`, and the
+  surrounding `UnInit()`/`Exit()` lifecycle on this same controller.
+- Windows embeds the owner at `GameRoot +0x12e6e50`; its last replay widget at
+  `+0xcc` closes the exact `0xd0` extent at root `+0x12e6f20`.
+- The shared type is therefore `HighScore`, distinct from the embedded
+  0x947648-byte persistent `SubHighScore` bank. The ownership rename is
+  codegen-neutral and does not hide the initializer's existing residuals.

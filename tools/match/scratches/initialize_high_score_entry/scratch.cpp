@@ -1,7 +1,7 @@
 // initialize_high_score_entry @ 0x417a70 (thiscall, ret 0x18)
 
 #include "game_root.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 
 void SubSolution::initialize_high_score_entry(
     int runtime_build_seed_value,

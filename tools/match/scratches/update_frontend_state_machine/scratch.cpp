@@ -105,18 +105,18 @@ int GamePlayer::update_frontend_state_machine()
             break;
         }
         case 18:
-            g_game->high_score_screen.initialize_high_score_screen(
+            g_game->high_score.initialize_high_score_screen(
                 g_runtime_config.high_score_selected_bank, -1);
             frontend_state = 19;
             break;
         case 19: {
             GameRoot* owner = g_game;
-            owner->high_score_screen.update_high_score_screen();
+            owner->high_score.update_high_score_screen();
             break;
         }
         case 20: {
             GameRoot* game = g_game;
-            game->high_score_screen.initialize_high_score_screen(
+            game->high_score.initialize_high_score_screen(
                 game->players[0].selected_high_score_mode,
                 game->players[0].selected_high_score_rank);
             frontend_state = 21;
@@ -124,7 +124,7 @@ int GamePlayer::update_frontend_state_machine()
         }
         case 21: {
             GameRoot* owner = g_game;
-            owner->high_score_screen.update_high_score_screen();
+            owner->high_score.update_high_score_screen();
             break;
         }
         case 25:

@@ -11,11 +11,11 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "update_high_score_screen",
-        "int __thiscall update_high_score_screen(HighScoreScreen* screen);",
+        "int __thiscall update_high_score_screen(HighScore* high_score);",
     ),
     (
         "exit_high_score_screen",
-        "int __thiscall exit_high_score_screen(HighScoreScreen* screen);",
+        "int __thiscall exit_high_score_screen(HighScore* high_score);",
     ),
     (
         "initialize_new_game_menu",

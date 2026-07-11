@@ -1,9 +1,9 @@
 // exit_high_score_screen @ 0x417b50 (thiscall, ret)
 
 #include "game_root.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 
-int HighScoreScreen::exit_high_score_screen()
+int HighScore::exit_high_score_screen()
 {
     GameRoot* game = (GameRoot*)g_game_base;
     if (game->subgame.level_mode == 0) {

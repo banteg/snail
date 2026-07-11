@@ -91,7 +91,8 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 2026-07-11 root allocation and exception-shape pass:
 
 - The size ledger and `operator new(0x12e6ff4)` call now close the canonical
-  `GameRoot` extent. `HighScoreScreen` ends at root `+0x12e6f20`; the owned
+  `GameRoot` extent. The exact `HighScore`/cRHighScore owner ends at root
+  `+0x12e6f20`; the owned
   `TipManager` begins at `+0x12e6f58`, spans `0x98`, and leaves only the final
   four bytes unresolved.
 - `TipManager` now inherits the constructed `BodBase +0x00..+0x37` instead of

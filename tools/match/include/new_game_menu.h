@@ -4,7 +4,6 @@
 
 #include "frontend_widget.h"
 #include "runtime_config.h"
-#include "high_score_screen.h"
 #include "input_state.h"
 #include "mouse_cursor_state.h"
 

@@ -9,6 +9,7 @@
 #include "directx_loader.h"
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
+#include "high_score.h"
 #include "input_state.h"
 #include "intro_screen_runtime.h"
 #include "main_menu.h"
@@ -113,7 +114,7 @@ public:
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
     IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
-    HighScoreScreen high_score_screen; // +0x12e6e50
+    HighScore high_score; // +0x12e6e50, exact authored cRHighScore owner
     char unknown_12e6f20[0x12e6f58 - 0x12e6f20];
     TipManager tip_manager; // +0x12e6f58, owned root tutorial-message manager
     char unknown_12e6ff0[0x12e6ff4 - 0x12e6ff0];

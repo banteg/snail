@@ -7,7 +7,7 @@ masked operands all resolved. No fakematching.
 
 Recovered relationships:
 
-- `HighScoreScreen` has separate row-widget arrays: editable name rows at
+- `HighScore` has separate row-widget arrays: editable name rows at
   `+0x7c` and replay-launch rows at `+0xcc`;
 - `SubSolution` is the 0x1fac0-stride persistent replay/high-score record
   used by completion, high-score browsing, and replay launch;
@@ -30,3 +30,7 @@ Recovered relationships:
 Residual mismatch: the native name-submit branch reloads the selected row widget
 between string copies and keeps only one stack local, while this scratch still
 saves an extra callee register and materializes the active bank pointer earlier.
+
+2026-07-11 cRHighScore ownership: Android and iOS name this lifecycle method
+`cRHighScore::AI()`. The shared 0xd0-byte `HighScore` owner replaces the
+provisional screen-shell name without changing the honest 67.65% baseline.

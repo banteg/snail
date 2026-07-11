@@ -11,7 +11,7 @@ First scratch for main-menu dispatch. Focused Wibo result:
   setting prompt state `10`, and switching front-end state to `8`.
 - Options raises `OptionsMenu::active`, records the previous state, and switches
   to state `6`.
-- High Scores switches to state `18` and seeds `HighScoreScreen::mode = 0`.
+- High Scores switches to state `18` and seeds `HighScore::mode = 0`.
 - Root `+0x30c` is `GamePlayer::redispatch_requested`, while `+0x30d` is the
   high-score-entry/completion-pending byte checked after `complete_subgame`.
 - 2026-07-11 owner closure promotes the contiguous root block to

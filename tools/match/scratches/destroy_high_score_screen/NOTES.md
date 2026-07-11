@@ -7,11 +7,15 @@ zeroing the entry rank at `game+0x310`.
 
 Focused match: 100.00%, 11/11 instructions, with five clean masked operands.
 
-2026-06-20 header promotion: the scratch now includes `high_score_screen.h`
-and uses the shared `HighScoreScreen::selected_bank` layout directly. This is
+2026-06-20 header promotion: the scratch now includes the shared high-score
+owner header and uses `HighScore::selected_bank` directly. This is
 codegen neutral at the exact baseline and removes the last local
-`HighScoreScreen` type-consolidation candidate.
+high-score owner type-consolidation candidate.
 
 2026-07-10 root-owner promotion: border teardown now uses the owned
 `GameRoot::border_manager`, and the pending/rank clears use
 `GamePlayer[0]`. The typed ownership stays exact at 11/11.
+
+2026-07-11 cRHighScore ownership: Android preserves this exact lifecycle role
+as `cRHighScore::UnInit()`. The 0xd0-byte root-owned controller is now named
+`HighScore`; this exact 11/11 teardown remains distinct from `SubHighScore`.

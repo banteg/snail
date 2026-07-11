@@ -1606,6 +1606,40 @@
       "confidence": "high"
     },
     {
+      "address": "0x416910",
+      "windows_name": "initialize_high_score_screen",
+      "ios_symbol": "cRHighScore::Init(int, int)",
+      "android_symbol": "cRHighScore::Init(int, int)",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "All ports build the high-score UI through the cRHighScore owner. Windows embeds the exact 0xd0-byte controller at GameRoot +0x12e6e50, separate from the persistent cRSubHighScore bank."
+    },
+    {
+      "address": "0x417220",
+      "windows_name": "destroy_high_score_screen",
+      "android_symbol": "cRHighScore::UnInit()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The exact Windows teardown stores cRHighScore +0x08, kills the active border set, and clears the owning root player's pending-entry state."
+    },
+    {
+      "address": "0x417260",
+      "windows_name": "update_high_score_screen",
+      "ios_symbol": "cRHighScore::AI()",
+      "android_symbol": "cRHighScore::AI()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The ports share the cRHighScore name-entry, bank-toggle, replay-launch, and exit state machine. The broad Windows body remains honestly partial."
+    },
+    {
+      "address": "0x417b50",
+      "windows_name": "exit_high_score_screen",
+      "android_symbol": "cRHighScore::Exit()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The exact Windows member restores the postal or challenge front-end state and requests the corresponding rebuild through the root-owned cRHighScore controller."
+    },
+    {
       "address": "0x4176a0",
       "windows_name": "add_arcade_high_score",
       "ios_symbol": "cRSubHighScore::AddArcade(int)",

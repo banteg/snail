@@ -56,6 +56,6 @@ void MainMenu::update_main_menu()
         high_scores->widget_flags = result & ~0x20u;
         destroy_main_menu();
         ((GameRoot*)g_game_base)->players[0].frontend_state = 18;
-        ((GameRoot*)g_game_base)->high_score_screen.mode = 0;
+        ((GameRoot*)g_game_base)->high_score.mode = 0;
     }
 }

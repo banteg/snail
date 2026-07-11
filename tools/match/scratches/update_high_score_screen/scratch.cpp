@@ -1,9 +1,9 @@
 // update_high_score_screen @ 0x417260 (thiscall, ret)
 
 #include "game_root.h"
-#include "high_score_screen.h"
+#include "high_score.h"
 
-int HighScoreScreen::update_high_score_screen()
+int HighScore::update_high_score_screen()
 {
     int result;
 

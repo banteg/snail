@@ -1,6 +1,7 @@
-// High-score front-end views, partial.
-#ifndef HIGH_SCORE_SCREEN_H
-#define HIGH_SCORE_SCREEN_H
+// Authored cRHighScore front-end owner. Windows embeds this exact 0xd0-byte
+// controller in GameRoot; cRSubHighScore is the separate persistent data bank.
+#ifndef HIGH_SCORE_H
+#define HIGH_SCORE_H
 
 #include "frontend_widget.h"
 #include "game_base.h"
@@ -8,12 +9,12 @@
 #include "runtime_config.h"
 #include "sprite.h"
 
-class HighScoreScreen {
+class HighScore {
 public:
-    int destroy_high_score_screen(); // @ 0x417220
-    int update_high_score_screen(); // @ 0x417260
-    int initialize_high_score_screen(int mode, int rank); // @ 0x416910
-    int exit_high_score_screen(); // @ 0x417b50
+    int destroy_high_score_screen(); // @ 0x417220, cRHighScore::UnInit
+    int update_high_score_screen(); // @ 0x417260, cRHighScore::AI
+    int initialize_high_score_screen(int mode, int rank); // @ 0x416910, cRHighScore::Init
+    int exit_high_score_screen(); // @ 0x417b50, cRHighScore::Exit
 
     int field_00;
     int mode; // +0x04, front-end return mode
@@ -31,6 +32,8 @@ public:
     FrontendWidget* name_row_widgets[20]; // +0x7c
     FrontendWidget* replay_row_widgets[1]; // +0xcc, active_record_count entries
 };
+
+typedef char HighScore_must_be_0xd0[(sizeof(HighScore) == 0xd0) ? 1 : -1];
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 

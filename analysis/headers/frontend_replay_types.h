@@ -112,7 +112,8 @@ typedef struct FrontendWidget {
 
 typedef struct SubSolution SubSolution;
 
-typedef struct HighScoreScreen {
+/* Authored cRHighScore. Windows embeds the exact 0xd0-byte owner in GameRoot. */
+typedef struct HighScore {
     int32_t field_00;
     int32_t mode;
     int32_t selected_bank;
@@ -123,12 +124,12 @@ typedef struct HighScoreScreen {
     uint8_t _pad_18[0x1c - 0x18];
     FrontendWidget* back_button;
     FrontendWidget* bank_toggle_button;
-    FrontendWidget* submit_name_button;
     FrontendWidget* cancel_name_button;
+    FrontendWidget* submit_name_button;
     uint8_t _pad_2c[0x7c - 0x2c];
     FrontendWidget* name_row_widgets[20];
     FrontendWidget* replay_row_widgets[1];
-} HighScoreScreen;
+} HighScore;
 
 typedef struct NewGameMenu {
     int32_t replay_attract_bank_cursor;
