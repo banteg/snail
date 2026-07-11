@@ -3,62 +3,62 @@
 /* selector: update_star_field */
 
 // Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update.
-void __thiscall update_star_field(int this)
+void __thiscall update_star_field(StarManager *manager)
 {
   double v2; // st7
   double v3; // st7
 
-  switch ( *(_DWORD *)(this + 56) )
+  switch ( manager->state )
   {
     case 0:
-      if ( (byte_4DF934 & 4) != 0 )
+      if ( (g_render_flags & 4) != 0 )
       {
-        *(_DWORD *)(this + 56) = 2;
-        initialize_star_field((_DWORD *)this);
-        *(_DWORD *)(this + 56) = 2;
-        *(_DWORD *)(this + 68) = 0;
-        *(_DWORD *)(this + 72) = 1017817771;
-        update_star_positions((_DWORD *)this, 0.0);
+        manager->state = 2;
+        initialize_star_field(manager);
+        manager->state = 2;
+        manager->fade = 0.0;
+        manager->fade_step = 0.020833334;
+        update_star_positions(manager, 0.0);
       }
       break;
     case 1:
-      update_star_positions((_DWORD *)this, 1.0);
-      if ( (byte_4DF934 & 4) == 0 )
+      update_star_positions(manager, 1.0);
+      if ( (g_render_flags & 4) == 0 )
       {
-        *(_DWORD *)(this + 68) = 1065353216;
-        *(_DWORD *)(this + 72) = 1017817771;
+        manager->fade = 1.0;
+        manager->fade_step = 0.020833334;
         goto LABEL_13;
       }
       break;
     case 2:
-      update_star_positions((_DWORD *)this, *(float *)(this + 68));
-      if ( (byte_4DF934 & 4) != 0 )
+      update_star_positions(manager, manager->fade);
+      if ( (g_render_flags & 4) != 0 )
       {
-        v2 = *(float *)(this + 72) + *(float *)(this + 68);
-        *(float *)(this + 68) = v2;
+        v2 = manager->fade_step + manager->fade;
+        manager->fade = v2;
         if ( v2 > 1.0 )
-          *(_DWORD *)(this + 56) = 1;
+          manager->state = 1;
       }
       else
       {
 LABEL_13:
-        *(_DWORD *)(this + 56) = 3;
+        manager->state = 3;
       }
       break;
     case 3:
-      update_star_positions((_DWORD *)this, *(float *)(this + 68));
-      if ( (byte_4DF934 & 4) != 0 )
+      update_star_positions(manager, manager->fade);
+      if ( (g_render_flags & 4) != 0 )
       {
-        *(_DWORD *)(this + 56) = 2;
+        manager->state = 2;
       }
       else
       {
-        v3 = *(float *)(this + 68) - *(float *)(this + 72);
-        *(float *)(this + 68) = v3;
+        v3 = manager->fade - manager->fade_step;
+        manager->fade = v3;
         if ( v3 < 0.0 )
         {
-          destroy_star_field((int *)this);
-          *(_DWORD *)(this + 56) = 0;
+          destroy_star_field(manager);
+          manager->state = 0;
         }
       }
       break;

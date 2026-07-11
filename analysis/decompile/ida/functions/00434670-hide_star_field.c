@@ -3,28 +3,27 @@
 /* selector: hide_star_field */
 
 // Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state.
-int __thiscall sub_434670(int *this)
+int32_t __thiscall hide_star_field(StarManager *manager)
 {
-  int result; // eax
-  int v2; // edx
+  int32_t result; // eax
+  int32_t v2; // edx
   int v3; // esi
-  int v4; // eax
+  Sprite *sprite; // eax
 
-  result = *(this + 14);
+  result = manager->state;
   if ( result )
   {
-    result = *(this + 16);
+    result = manager->count;
     v2 = 0;
     if ( result > 0 )
     {
       v3 = 0;
       do
       {
-        v3 += 44;
-        v4 = *(_DWORD *)(*(this + 15) + v3 - 16);
+        sprite = manager->entries[v3++].sprite;
         ++v2;
-        *(_DWORD *)(v4 + 4) &= ~0x40u;
-        result = *(this + 16);
+        sprite->flags &= ~0x40u;
+        result = manager->count;
       }
       while ( v2 < result );
     }

@@ -118,3 +118,12 @@ the remaining generic owner list.
   Their 5-entry and 8-entry relocation sequences match the already curated
   target tables exactly. Registering both aliases restores the bounded content
   audit; it does not accept the operands by label identity.
+
+2026-07-11 star-manager header refresh:
+
+- Adding the recovered vector in-place scale operator renumbered the same two
+  object-local tables to `$L4689`/`$L4690` with no instruction change.
+- COFF again places them at object `+0x62c` and `+0x640`; the first has five
+  relocations and the second eight, with the same destination sequences as the
+  curated bottom-HUD and startup tables. Both aliases are content-bounded by
+  their tracked `0x14`/`0x20` sizes.

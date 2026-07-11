@@ -65,3 +65,9 @@ bounded orientation and edge-selector tables to `$L1047` and `$L1048`.
 Registering those compiler-local aliases restores the content audit without
 changing source or accepting label identity as proof. Focused Wibo is again
 proof-grade at 100.00%, 367/367, prefix 367/367, with 63 clean operands.
+
+2026-07-11 star-manager header refresh: the new inline vector operator shifts
+the two local labels once more to `$L1051`/`$L1052`. COFF places the four-entry
+orientation table at object `+0x52c` and the seven-entry edge-selector table at
+`+0x53c`; their relocation sequences are unchanged. Registering these aliases
+restores bounded content auditing without changing the exact source stream.

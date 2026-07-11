@@ -101,6 +101,40 @@
       ]
     },
     {
+      "name": "bn_star_manager_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/00434310-initialize_star_field.c",
+      "required_substrings": [
+        "manager->entries",
+        "manager->fade",
+        "travel_distance",
+        "alpha_scale",
+        "manager->bod.bod.vtable"
+      ],
+      "forbidden_substrings": [
+        "arg1[0x",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_star_manager_sprite_fields_intact",
+      "artifact": "analysis/decompile/ida/functions/00434310-initialize_star_field.c",
+      "required_substrings": [
+        "manager->entries",
+        "travel_distance",
+        "alpha_scale",
+        "sprite->progress",
+        "sprite->corner_scale",
+        "sprite->facing_refresh_progress"
+      ],
+      "forbidden_substrings": [
+        "_pad_",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_voice_manager_fields_intact",
       "artifact": "analysis/decompile/binja/functions/004492d0-play_voice_manager.c",
       "required_substrings": [

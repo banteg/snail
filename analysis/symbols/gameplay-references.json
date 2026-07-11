@@ -486,7 +486,8 @@
       "kind": "jump_table",
       "aliases": [
         "$L1028",
-        "$L1047"
+        "$L1047",
+        "$L1051"
       ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
@@ -496,7 +497,8 @@
       "name": "initialize_backdrop_tile_quad_edge_selector_jump_table",
       "kind": "jump_table",
       "aliases": [
-        "$L1048"
+        "$L1048",
+        "$L1052"
       ],
       "size": "0x1c",
       "description": "Compiler-emitted edge-selector switch jump table used by initialize_backdrop_tile_quad for normalized cases 0 through 6."
@@ -880,7 +882,8 @@
         "$L1764",
         "$L4668",
         "$L4670",
-        "$L4685"
+        "$L4685",
+        "$L4689"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -893,7 +896,8 @@
         "$L1765",
         "$L4669",
         "$L4671",
-        "$L4686"
+        "$L4686",
+        "$L4690"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."

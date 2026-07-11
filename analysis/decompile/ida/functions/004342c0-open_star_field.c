@@ -3,22 +3,18 @@
 /* selector: open_star_field */
 
 // Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count.
-char __thiscall sub_4342C0(_DWORD *this, int a2)
+void __thiscall open_star_field(StarManager *manager, int32_t star_count)
 {
-  char result; // al
-
-  *(this + 15) = allocate_tracked_memory(44 * a2, (int)aStarfield);
-  *(this + 16) = a2;
-  result = byte_4DF934;
-  if ( (byte_4DF934 & 4) != 0 )
+  manager->entries = (StarManagerEntry *)allocate_tracked_memory(44 * star_count, (int)aStarfield);
+  manager->count = star_count;
+  if ( (g_render_flags & 4) != 0 )
   {
-    *(this + 14) = 1;
-    return initialize_star_field(this);
+    manager->state = 1;
+    initialize_star_field(manager);
   }
   else
   {
-    *(this + 14) = 0;
+    manager->state = 0;
   }
-  return result;
 }
 

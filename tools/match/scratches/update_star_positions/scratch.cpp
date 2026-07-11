@@ -12,10 +12,10 @@ void* StarField::update_star_positions(float fade_alpha)
     if (count > 0) {
         do {
             StarFieldEntry* entry = &entries[i];
-            entry->phase = entry->speed + entry->phase;
-            if (entry->phase > 35.0f) {
-                float* phase = &entry->phase;
-                *phase = 0.0f;
+            entry->travel_distance = entry->speed + entry->travel_distance;
+            if (entry->travel_distance > 35.0f) {
+                float* travel_distance = &entry->travel_distance;
+                *travel_distance = 0.0f;
                 entry->sprite->facing_refresh_progress = 0.0f;
 
                 GameRoot* game = (GameRoot*)g_game_base;
@@ -41,13 +41,15 @@ void* StarField::update_star_positions(float fade_alpha)
                 sprite_position->x = velocity_scaled.x + sprite_position->x;
                 sprite_position->y = velocity_scaled.y + sprite_position->y;
                 sprite_position->z = velocity_scaled.z + sprite_position->z;
-                entry->phase = entry->speed * 10.0f + entry->phase;
+                entry->travel_distance =
+                    entry->speed * 10.0f + entry->travel_distance;
             }
 
             result = entry->sprite;
             ++i;
             entry->sprite->color.a =
-                (entry->phase - 2.0f) * entry->twinkle_scale * 0.0114285713f * fade_alpha;
+                (entry->travel_distance - 2.0f) * entry->alpha_scale *
+                0.0114285713f * fade_alpha;
         } while (i < count);
     }
     return result;

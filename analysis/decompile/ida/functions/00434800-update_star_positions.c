@@ -3,21 +3,21 @@
 /* selector: update_star_positions */
 
 // Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor.
-int __thiscall sub_434800(_DWORD *this, float a2)
+void *__thiscall update_star_positions(StarManager *manager, float fade_alpha)
 {
-  int result; // eax
-  int v3; // edi
+  void *result; // eax
+  int32_t v3; // edi
   int v4; // edx
-  float *v5; // esi
-  float *v6; // eax
-  int v7; // eax
-  _DWORD *v8; // esi
-  _DWORD *v9; // eax
-  int v10; // eax
+  float *p_travel_distance; // esi
+  Vec3 *p_position; // eax
+  StarManagerEntry *v7; // eax
+  Vec3 *p_velocity; // esi
+  Vec3 *v9; // eax
+  StarManagerEntry *v10; // eax
   double v11; // st7
   double v12; // st6
-  float *v13; // eax
-  int v14; // eax
+  float *p_x; // eax
+  StarManagerEntry *v14; // eax
   double v15; // st7
   float v16; // [esp+4h] [ebp-24h]
   float v17; // [esp+8h] [ebp-20h]
@@ -27,54 +27,53 @@ int __thiscall sub_434800(_DWORD *this, float a2)
   float v21; // [esp+20h] [ebp-8h]
   float v22; // [esp+24h] [ebp-4h]
 
-  result = *(this + 16);
+  result = (void *)manager->count;
   v3 = 0;
-  if ( result > 0 )
+  if ( (int)result > 0 )
   {
     v4 = 0;
     do
     {
-      *(float *)(v4 + *(this + 15) + 36) = *(float *)(v4 + *(this + 15) + 32) + *(float *)(v4 + *(this + 15) + 36);
-      v5 = (float *)(v4 + *(this + 15) + 36);
-      if ( *v5 > 35.0 )
+      manager->entries[v4].travel_distance = manager->entries[v4].speed + manager->entries[v4].travel_distance;
+      p_travel_distance = &manager->entries[v4].travel_distance;
+      if ( *p_travel_distance > 35.0 )
       {
-        *v5 = 0.0;
-        *(_DWORD *)(*(_DWORD *)(v4 + *(this + 15) + 28) + 140) = 0;
-        v19 = *((float *)MEMORY[0x4DF904] + 438) * 50.0;
-        v20 = *((float *)MEMORY[0x4DF904] + 439) * 50.0;
-        v16 = *((float *)MEMORY[0x4DF904] + 437) * 50.0 + *((float *)MEMORY[0x4DF904] + 441);
-        v17 = v19 + *((float *)MEMORY[0x4DF904] + 442);
-        v18 = v20 + *((float *)MEMORY[0x4DF904] + 443);
-        v6 = (float *)(*(_DWORD *)(v4 + *(this + 15) + 28) + 72);
-        *v6 = v16;
-        v6[1] = v17;
-        v6[2] = v18;
-        v7 = v4 + *(this + 15);
-        v8 = (_DWORD *)(v7 + 16);
-        v9 = (_DWORD *)(*(_DWORD *)(v7 + 28) + 84);
-        *v9 = *v8;
-        v9[1] = v8[1];
-        v9[2] = v8[2];
-        v10 = v4 + *(this + 15);
-        v11 = *(float *)(v10 + 16) * 10.0;
-        v21 = *(float *)(v10 + 20) * 10.0;
-        v12 = *(float *)(v10 + 24) * 10.0;
-        v13 = (float *)(*(_DWORD *)(v10 + 28) + 72);
+        *p_travel_distance = 0.0;
+        manager->entries[v4].sprite->facing_refresh_progress = 0.0;
+        v19 = *((float *)g_game_base + 438) * 50.0;
+        v20 = *((float *)g_game_base + 439) * 50.0;
+        v16 = *((float *)g_game_base + 437) * 50.0 + *((float *)g_game_base + 441);
+        v17 = v19 + *((float *)g_game_base + 442);
+        v18 = v20 + *((float *)g_game_base + 443);
+        p_position = &manager->entries[v4].sprite->position;
+        p_position->x = v16;
+        p_position->y = v17;
+        p_position->z = v18;
+        v7 = &manager->entries[v4];
+        p_velocity = &v7->velocity;
+        v9 = &v7->sprite->velocity;
+        v9->x = p_velocity->x;
+        v9->y = p_velocity->y;
+        v9->z = p_velocity->z;
+        v10 = &manager->entries[v4];
+        v11 = v10->velocity.x * 10.0;
+        v21 = v10->velocity.y * 10.0;
+        v12 = v10->velocity.z * 10.0;
+        p_x = &v10->sprite->position.x;
         v22 = v12;
-        *v13 = v11 + *v13;
-        v13[1] = v21 + v13[1];
-        v13[2] = v22 + v13[2];
-        *(float *)(v4 + *(this + 15) + 36) = *(float *)(v4 + *(this + 15) + 32) * 10.0
-                                           + *(float *)(v4 + *(this + 15) + 36);
+        *p_x = v11 + *p_x;
+        p_x[1] = v21 + p_x[1];
+        p_x[2] = v22 + p_x[2];
+        manager->entries[v4].travel_distance = manager->entries[v4].speed * 10.0 + manager->entries[v4].travel_distance;
       }
-      v14 = v4 + *(this + 15);
+      v14 = &manager->entries[v4];
       ++v3;
-      v4 += 44;
-      v15 = (*(float *)(v14 + 36) - 2.0) * *(float *)(v14 + 40);
-      result = *(_DWORD *)(v14 + 28);
-      *(float *)(result + 56) = v15 * 0.011428571 * a2;
+      ++v4;
+      v15 = (v14->travel_distance - 2.0) * v14->alpha_scale;
+      result = v14->sprite;
+      *((float *)result + 14) = v15 * 0.011428571 * fade_alpha;
     }
-    while ( v3 < *(this + 16) );
+    while ( v3 < manager->count );
   }
   return result;
 }

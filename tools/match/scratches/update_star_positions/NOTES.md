@@ -1,9 +1,9 @@
 # update_star_positions
 
-`update_star_positions @ 0x434800` advances star entry phases, respawns expired
+`update_star_positions @ 0x434800` advances star-entry travel distances, respawns expired
 sprites from the camera-facing game slice, mirrors entry velocity into the
-sprite, offsets the respawned sprite by ten frames of travel, and writes
-twinkle alpha from `(phase - 2) * twinkle_scale * fade / 87.5`.
+sprite, offsets the respawned sprite by ten frames of travel, and writes alpha
+from `(travel_distance - 2) * alpha_scale * fade / 87.5`.
 
 Layout evidence shared with `initialize_star_field`:
 
@@ -11,8 +11,10 @@ Layout evidence shared with `initialize_star_field`:
 - `active +0x00` is initialized and cleared by lifecycle functions.
 - `position +0x04` and `velocity +0x10` are seeded by
   `initialize_star_field`; update copies velocity to the sprite.
-- `sprite +0x1c`, `speed +0x20`, `phase +0x24`, and
-  `twinkle_scale +0x28` are all read by this updater.
+- `sprite +0x1c`, `speed +0x20`, `travel_distance +0x24`, and
+  `alpha_scale +0x28` are all read by this updater. The last two names follow
+  behavior: travel advances by speed and wraps at 35, while alpha is computed
+  directly from travel times the per-entry scale.
 
 The apparent camera/origin view at `g_game_base +0x6d4/+0x6e4` is not a pair
 of root-owned star fields. Those addresses are

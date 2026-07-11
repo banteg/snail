@@ -65,6 +65,8 @@ Current checked-in example:
 - `uv run python tools/ida/sync_high_score_bank_types.py`
 - `ida_subgame_runtime_types.h`
 - `uv run python tools/ida/sync_subgame_runtime_types.py`
+- `star_manager_types.h`
+- `uv run python tools/ida/sync_star_manager_types.py`
 - `vapour_trail_types.h`
 - `uv run python tools/ida/sync_vapour_trail_types.py`
 - `ida_input_state_types.h`
@@ -86,6 +88,8 @@ Current checked-in Binary Ninja companion:
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
 - `bn_overlay_types.h`
 - `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
+- `star_manager_types.h`
+- `uv run python tools/binja/sync_star_manager_types.py`
 
 The presentation BN sync lane intentionally replays a narrow camera/render slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
@@ -111,6 +115,14 @@ catalog lane now carries the complete constructor-proven `0x25cfb4` owner and
 uses it for both startup enumeration methods. The tiny `SubgameOwnerLink`
 view keeps the folded challenge/thanks startup binding typed without asserting
 a shared concrete screen base class.
+
+The star-manager lane records the cross-port `cRStarManager` owner, its
+constructed `BodBase` prefix, the `0x2c` entry stride, and the lifecycle fields
+shared by the seven Windows helpers from destruction through per-frame update.
+It deliberately carries the already proven complete `Sprite` and `TextureRef`
+prerequisites too: BN treats forward-only redeclarations as destructive, so the
+lane must remain monotonic instead of erasing those layouts while adding the
+manager types.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

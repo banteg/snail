@@ -100,7 +100,7 @@ public:
     // every boundary through the completion prompt without padding.
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
-    StarField star_field; // +0x4f33c
+    StarField star_field; // +0x4f33c, cross-port cRStarManager owner
     OptionsMenu options_menu; // +0x4f388
     CompletionPrompt completion_screen; // +0x4f3ac
     char unknown_04f3c8[0x4f400 - 0x4f3c8];

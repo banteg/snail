@@ -3,31 +3,31 @@
 /* selector: destroy_star_field */
 
 // Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0.
-int __thiscall sub_434270(int *this)
+int32_t __thiscall destroy_star_field(StarManager *manager)
 {
-  int v2; // ebx
-  int result; // eax
+  int32_t v2; // ebx
+  int32_t result; // eax
   int v4; // edi
 
   v2 = 0;
-  result = *(this + 16);
+  result = manager->count;
   if ( result <= 0 )
   {
-    *(this + 14) = 0;
+    manager->state = 0;
   }
   else
   {
     v4 = 0;
     do
     {
-      *(_DWORD *)(*(this + 15) + v4) = 0;
-      kill_sprite(*(_DWORD *)(*(this + 15) + v4 + 28));
-      result = *(this + 16);
+      manager->entries[v4].active = 0;
+      kill_sprite((int)manager->entries[v4].sprite);
+      result = manager->count;
       ++v2;
-      v4 += 44;
+      ++v4;
     }
     while ( v2 < result );
-    *(this + 14) = 0;
+    manager->state = 0;
   }
   return result;
 }
