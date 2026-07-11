@@ -143,19 +143,12 @@ int Player::initialize_subgoldy(int player_slot)
     ((CameramanState*)(self + 0x200))->initialize_cameraman();
     initialize_subgoldy_ghost(*(int*)(self + 0x380));
 
-    int zero_x = zero;
     *(int*)(self + 0x1d8) = 0x3d4ede62;
     *(int*)(self + 0x1e0) = 0x3d4ede62;
-    int* live_position = (int*)(self + 0x68);
-    int* camera_target = (int*)(self + 0x2964);
-    int zero_y = zero;
-    live_position[0] = zero;
-    live_position[1] = zero;
-    camera_target[0] = zero_x;
-    *(float*)(self + 0x70) = 4.0f;
-    int position_z = live_position[2];
+    position.x = 0.0f;
+    position.y = 0.0f;
+    position.z = 4.0f;
     *(int*)(self + 0x37c) = zero;
-    camera_target[1] = zero_y;
     *(int*)(self + 0x328) = zero;
     *(int*)(self + 0x32c) = 0x3c888889;
     *(int*)(self + 0x1d4) = zero;
@@ -165,7 +158,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x3f48) = zero;
     *(int*)(self + 0x3f4c) = 0x3bde0163;
     *(unsigned char*)(self + 0x84) = (unsigned char)zero;
-    camera_target[2] = position_z;
+    cached_camera_target_world = position;
     int* velocity_lanes = (int*)(self + 0x410);
     velocity_lanes[2] = zero;
     velocity_lanes[1] = zero;

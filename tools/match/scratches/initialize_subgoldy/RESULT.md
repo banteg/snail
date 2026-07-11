@@ -1,11 +1,11 @@
 # `initialize_subgoldy` match result
 
-Current focused result after the velocity-lane tail pass:
+Current focused result after the cross-port aggregate closure:
 
 ```text
-match: 95.86%
-target: 279 insns, candidate: 276 insns
-prefix: 190/279 target insns
+match: 100.00%
+target: 279 insns, candidate: 279 insns
+prefix: 279/279 target insns
 masked operands: 27 ok, 0 unresolved, 0 mismatch
 ```
 
@@ -26,6 +26,10 @@ Evidence-backed changes in this pass:
 - Spelling the velocity clear through a raw `int* velocity_lanes` moved the
   tail from 95.50% to 95.86% by preserving the native ordering where
   `player_slot` is loaded after the z/y/x velocity zero stores.
+- The named Android `cRSubGoldy::Init` body established that the camera seed is
+  aggregate actor state. Assigning `cached_camera_target_world = position`
+  after the adjacent timer/wobble resets closes the final VC6 scheduling tail
+  and produces the exact 279-instruction function.
 
 Rejected follow-ups in this pass:
 
@@ -36,3 +40,5 @@ Rejected follow-ups in this pass:
   to 95.14%;
 - naming the transform-loop game pointer regressed to 94.43% by keeping the
   game pointer in `ebp` and spilling the loop count.
+
+Final status: proof-grade. All 27 masked operands resolve and match.

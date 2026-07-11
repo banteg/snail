@@ -19,24 +19,22 @@ Recovered structure:
 - clears the twelve 0x2e8-byte follow/attachment matrix records and points
   them back at the active subgame.
 
-Known partials:
+Source-shape notes:
 
-- The full `Player` layout is still intentionally raw here; do not consolidate
-  from this scratch alone.
+- The receiver is the complete shared `Player`; several old initialization
+  runs remain raw-offset shaped where that is the proven VC6 source form.
 - The tiny `0x41aa30` spring reset is now split out as a proof-grade
   `reset_spring_float` scratch; the empty runtime callback is still represented
   as a local method view only to preserve its call shape.
-- The remaining tail mismatch starts after the ghost/cameraman setup in the
-  camera-target/control-source seed block. The current scratch matches all
-  masked operands but still differs in base-pointer/register scheduling for the
-  cached camera target, the control-source branch, and one transform-loop game
-  pointer load.
+- The camera-target/control-source tail is now exact. The retained aggregate
+  assignment is supported independently by the named Android
+  `cRSubGoldy::Init` implementation, not by register forcing.
 
 Latest focused result:
 
-- match: 95.86%
-- target/candidate instructions: 279 / 276
-- prefix: 190 / 279
+- match: 100.00%
+- target/candidate instructions: 279 / 279
+- prefix: 279 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
 
 2026-06-20 helper-type consolidation:
@@ -113,5 +111,19 @@ Latest focused result:
   that owner view at its initializer is also codegen-neutral.
 - A fully typed `Vector3` spelling of the cached-camera/live-position block was
   rejected: it regressed to `92.97%` and changed the native constant/register
-  schedule. The honest residual remains the three-instruction camera-target
-  pointer materialization plus control-source/attachment-loop register choice.
+  schedule. At that stage, the honest residual was the three-instruction
+  camera-target pointer materialization plus control-source/attachment-loop
+  register choice.
+
+2026-07-11 cross-port aggregate closure:
+
+- The bundled Android binary retains the named `cRSubGoldy::Init(int)` body and
+  independently shows the live-position/cached-camera seed as actor-owned
+  vector state adjacent to the same wobble, damage, and input-owner setup.
+- Expressing the Windows source as `position = {0, 0, 4}` followed, after the
+  neighboring timer/wobble resets, by
+  `cached_camera_target_world = position` recovers native's retained target
+  base register and all downstream control-source/attachment-loop choices.
+- Focused Wibo improves from 95.86% (276/279, prefix 190) to proof-grade
+  100.00% (279/279, full prefix), with all 27 operands clean. No volatile,
+  register annotation, raw offset alias, or other fakematch is used.
