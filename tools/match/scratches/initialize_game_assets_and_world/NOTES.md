@@ -119,3 +119,11 @@ expected mismatches across the still-sparse semantic partial. The native
 `0x12c` frame and its first stack-local `noop_this_constructor` remain absent,
 as do most later world and path-template islands; no score-only scaffolding was
 added to imitate them.
+
+## 2026-07-11 sprite render workspace ownership
+
+The startup clear now uses the shared typed
+`g_sprite_depth_buckets[SPRITE_DEPTH_BUCKET_COUNT]` owner rather than a local
+`char[]` declaration and magic `0x400` size. `render_game_frame` proves all 256
+heads and the adjacent 3000-entry `g_sprite_depth_nodes` workspace; using
+`sizeof(g_sprite_depth_buckets)` preserves the native clear exactly.

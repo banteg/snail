@@ -29,3 +29,9 @@ The owner and layout are corroborated by `allocate_sprite`, `kill_sprite`,
 - `sprites[3000]` at `+0x00004`, stride `0xb4`;
 - `active_heads[5]` at `+0x83d64`; and
 - `free_head` at `+0x83d78`.
+
+`render_game_frame` closes the matching transient owner: its
+`g_sprite_depth_nodes[3000]` pool has one `0x18`-byte sort node per embedded
+sprite, while `g_sprite_depth_buckets[256]` owns the clamped 8-bit depth heads.
+The shared `SPRITE_POOL_CAPACITY` constant now ties both fixed pools to the
+same proven capacity without changing this exact initializer.

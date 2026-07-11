@@ -557,7 +557,8 @@
     },
     {
       "address": "0x40a490",
-      "name": "render_game_frame"
+      "name": "render_game_frame",
+      "description": "Renders every active root viewport in camera sort order, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`."
     },
     {
       "address": "0x40aa50",

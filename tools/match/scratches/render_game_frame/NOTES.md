@@ -2,9 +2,9 @@
 
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
-Current Wibo result after the renderer-helper slice: 35.31%, 422 candidate
-instructions versus 439 target instructions, with 21 masked operands ok, 0
-unresolved, and 0 mismatch. The helper calls at `0x414650`, `0x413540`,
+Current Wibo result after the renderer control-flow and ownership slice: 45.43%,
+415 candidate instructions versus 439 target instructions, with 26 masked
+operands ok, 0 unresolved, and 0 mismatch. The helper calls at `0x414650`, `0x413540`,
 `0x413650`, `0x411e10`, and `0x411de0` now resolve to standalone exact
 scratches.
 
@@ -18,8 +18,10 @@ Recovered relationships:
 - `Game +0x56c` is a render-skip countdown; positive values decrement and
   return before any render state is touched.
 - Five `RenderCameraSlot` entries live at `Game +0x5b4`, are filtered by
-  `flags & 1`, insertion-sorted by `sort_key`, and each active slot controls a
-  render-camera pass.
+  `flags & 1`, and each active slot controls a render-camera pass. The native
+  fixed-five ordering loop is not a conventional insertion sort: the first
+  active slot seeds the list, later slots are inserted only when their
+  `sort_key` exceeds an occupied entry, and the shift always starts at slot 4.
 - The borrowed `RenderCamera*` at `RenderCameraSlot +0x20` inherits
   `RenderableBod`, so its world camera matrix is the inherited transform at
   `+0x38`; an 8-byte gap is followed by its view matrix at `+0x80`, float FOV
@@ -31,12 +33,16 @@ Recovered relationships:
   unless the slot has `flags & 2`.
 - `BOD flags & 0x400` selects the embedded transform at `+0x38`; when clear,
   the renderer builds a temporary transform from the position at `+0x10`.
-- `BOD flags & 0x80` stages the object for the post-sprite pass; immediate BODs
-  do not increment the post-sprite stack count.
+- `BOD flags & 0x80` stages the object for the post-sprite pass without
+  suppressing its first-pass render. Non-staged BODs do not increment the
+  post-sprite stack count.
 - Sprite rendering uses `g_sprite_active_heads[camera_index]`, checks the
   sprite and camera high render-mask bytes, depth-sorts visible sprites into
   the `data_4f7050` bucket heads with nodes from `data_4e5510`, then calls
   `update_sprite_facing_angle` for `flags & 2` sprites before `draw_sprite_quad`.
+- Sprite projection negates camera-space z for storage, then negates it again
+  when building the depth key before multiplying by `4.19672108f` and adding
+  `Sprite +0x98`.
 - Sprite depth sorting caches the selected depth bucket at `Sprite +0x14` and
   the computed float depth key at `Sprite +0x18`; the projected depth also adds
   the sprite-local `depth_bias` at `+0x98`.
@@ -46,6 +52,10 @@ Recovered relationships:
   `draw_font_text_queue(slot->flags)` after the sprite pass.
 - Post-sprite BODs are staged in the `data_4dfb10` pointer stack and rendered
   after a second `render_camera(..., post_sprite_pass=1)` call.
+- The sprite-depth workspace is shared ownership rather than a local view:
+  `g_sprite_depth_nodes` is exactly 3000 contiguous `0x18`-byte nodes from
+  `0x4e5510` through `0x4f6e50`, matching `SpriteManager::sprites[3000]`, and
+  `g_sprite_depth_buckets` is exactly 256 pointer heads through `0x4f744c`.
 - BN decompilation of `render_camera` confirms its ninth argument is stored to
   `g_object_render_pass_filter` (`data_503260`). The first camera call passes
   `0`; the post-sprite replay call passes `1`, so the two render-frame calls
@@ -54,9 +64,12 @@ Recovered relationships:
 
 Expected residuals:
 
-- The native function has a compact 0x80-byte frame with several overlapping
-  locals; this first scratch favors named relationships over stack-slot
-  mimicry.
+- The native function has a compact `0x80`-byte frame with several overlapping
+  locals. In particular, it keeps a rendered-BOD total in the setup-index
+  stack lane, increments it after every accepted first-pass BOD, and adds the
+  replay count before draining the post-sprite stack. A separately named local
+  expands the candidate frame to `0x84`, so this honest partial leaves the
+  unused ledger out instead of introducing explicit stack aliasing.
 - The BOD prefix through `RenderableBod +0x78` is now shared through
   `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
   flags, list links, position, render-object pass-through arguments, object,
@@ -64,6 +77,10 @@ Expected residuals:
   the renderer-specific pointer at `+0x78` and the unknown tail.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.
+- The native method is void. The only caller ignores its result, the positive
+  skip path returns after decrementing the countdown, the no-camera path joins
+  the common tail, and iOS independently names the method `cRGame::Render()`.
+  The void `GameRoot` declaration and BN/IDA prototypes now agree.
 
 2026-07-10 viewport/camera closure: startup attaches the two cameras embedded
 at `Game +0x1c4/+0x3bc` to viewport slots 1 and 4. iOS independently names the
@@ -82,3 +99,11 @@ its `first +0x04` member at root `+0x5ac`; `update_salt_hazard` independently
 proves the same object's active/free-list behavior. The relationship-only
 change is codegen-neutral: focused Wibo remains `35.31%`, `422/439`, with `21`
 clean masked operands.
+
+2026-07-11 renderer closure: correcting staged-BOD first-pass behavior, the
+double-negated sprite depth key, branch order for embedded transforms, the
+out-of-line sprite-mask error path, linked-list insertion invariants, native
+fixed-five camera ordering, and the void common tail raises focused Wibo from
+`35.31%` to `45.43%`. The candidate remains an honest partial at `415/439`
+instructions with `26` clean masked operands and no unresolved or mismatched
+operands.

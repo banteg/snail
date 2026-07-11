@@ -9,6 +9,14 @@
   ],
   "entries": [
     {
+      "address": "0x40a490",
+      "windows_name": "render_game_frame",
+      "ios_symbol": "cRGame::Render()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI."
+    },
+    {
       "address": "0x4354f0",
       "windows_name": "mark_track_warning_zones",
       "ios_symbol": "cRSubGame::WarnTrack()",

@@ -2,492 +2,485 @@
 /* function: render_game_frame @ 0x40a490 */
 /* selector: render_game_frame */
 
-int __thiscall sub_40A490(int *this)
+void __thiscall render_game_frame(GameRoot *game)
 {
-  int *v1; // edi
+  GameRoot *v1; // edi
   int v2; // esi
   int v3; // eax
-  int result; // eax
-  int v5; // ebx
-  _BYTE *v6; // eax
-  int v7; // ecx
-  int *v8; // eax
-  int v9; // edx
-  int v10; // ecx
-  int v11; // edx
-  int v12; // ebp
-  int v13; // eax
-  int *v14; // ebx
-  int *v15; // eax
-  int v16; // ecx
-  float v17; // edx
-  int v18; // ebx
-  int *v19; // ebp
-  int v20; // eax
-  float v21; // edx
-  float *v22; // esi
-  float v23; // ecx
-  float v24; // eax
-  float v25; // ecx
-  float v26; // edx
-  float v27; // eax
-  float v28; // ecx
-  int v29; // esi
-  int *v30; // edi
-  int v31; // eax
-  int *v32; // ecx
-  int v33; // eax
-  float v34; // eax
-  float v35; // edx
-  float v36; // eax
-  _DWORD *v37; // ecx
-  float v38; // eax
-  float v39; // edx
-  float v40; // eax
-  int v41; // ebx
-  int v42; // ecx
-  int v43; // eax
-  const void *v44; // esi
+  int v4; // ebx
+  _BYTE *v5; // eax
+  int v6; // ecx
+  char *v7; // eax
+  int v8; // edx
+  int v9; // ecx
+  int v10; // edx
+  int v11; // ebp
+  int v12; // eax
+  int *v13; // ebx
+  int *v14; // eax
+  int v15; // ecx
+  float v16; // edx
+  int v17; // ebx
+  char *v18; // ebp
+  int v19; // eax
+  float v20; // edx
+  float *v21; // esi
+  float v22; // ecx
+  float v23; // eax
+  float v24; // ecx
+  float v25; // edx
+  float v26; // eax
+  float v27; // ecx
+  int v28; // esi
+  _DWORD *v29; // edi
+  int v30; // eax
+  char *v31; // ecx
+  int v32; // eax
+  float v33; // eax
+  float v34; // edx
+  float v35; // eax
+  TransformMatrix *p_transform; // ecx
+  float v37; // eax
+  float v38; // edx
+  float v39; // eax
+  int v40; // ebx
+  int v41; // ecx
+  int v42; // eax
+  const void *v43; // esi
+  double v44; // st7
   double v45; // st7
-  double v46; // st7
-  int v47; // esi
-  int v48; // ecx
-  int v49; // edx
-  int *v50; // edi
+  int v46; // esi
+  SpriteDepthNode *v47; // ecx
+  SpriteDepthNode *v48; // edx
+  SpriteDepthNode *v49; // edi
+  float v50; // ecx
   float v51; // ecx
-  int v52; // ecx
-  int *v53; // ebx
-  int v54; // esi
+  int *v52; // ebx
+  int v53; // esi
+  int v54; // ecx
   int v55; // ecx
-  int v56; // ecx
-  int *v57; // ebx
-  int v58; // eax
-  int *v59; // edi
-  int v60; // eax
-  int v61; // esi
-  float v62; // eax
-  float v63; // ecx
-  float v64; // edx
-  _DWORD *v65; // eax
-  int *v66; // eax
-  float v67; // eax
-  float v68; // ecx
-  float v69; // edx
-  bool v70; // zf
-  float v71[16]; // [esp-40h] [ebp-D0h] BYREF
-  char v72; // [esp+0h] [ebp-90h]
-  int *v73; // [esp+10h] [ebp-80h]
-  int v74; // [esp+14h] [ebp-7Ch]
-  int *v75; // [esp+18h] [ebp-78h]
-  float v76; // [esp+1Ch] [ebp-74h]
-  int v77; // [esp+20h] [ebp-70h]
-  char *v78; // [esp+24h] [ebp-6Ch]
-  int v79; // [esp+28h] [ebp-68h]
-  float *v80; // [esp+2Ch] [ebp-64h]
-  float v81; // [esp+30h] [ebp-60h] BYREF
-  int v82; // [esp+34h] [ebp-5Ch]
-  float v83; // [esp+38h] [ebp-58h]
-  _DWORD v84[4]; // [esp+3Ch] [ebp-54h] BYREF
-  int v85; // [esp+4Ch] [ebp-44h] BYREF
-  _DWORD v86[12]; // [esp+50h] [ebp-40h] BYREF
-  int v87; // [esp+80h] [ebp-10h]
-  int v88; // [esp+84h] [ebp-Ch]
-  int v89; // [esp+88h] [ebp-8h]
+  char *v56; // ebx
+  int v57; // eax
+  int *v58; // edi
+  int v59; // eax
+  int v60; // esi
+  float v61; // eax
+  float v62; // ecx
+  float v63; // edx
+  TransformMatrix *v64; // eax
+  float *v65; // eax
+  float v66; // eax
+  float v67; // ecx
+  float v68; // edx
+  bool v69; // zf
+  float v70[16]; // [esp-40h] [ebp-D0h] BYREF
+  char v71; // [esp+0h] [ebp-90h]
+  char *v72; // [esp+10h] [ebp-80h]
+  int v73; // [esp+14h] [ebp-7Ch]
+  GameRoot *v74; // [esp+18h] [ebp-78h]
+  float v75; // [esp+1Ch] [ebp-74h]
+  int v76; // [esp+20h] [ebp-70h]
+  SpriteDepthNode *v77; // [esp+24h] [ebp-6Ch]
+  int v78; // [esp+28h] [ebp-68h]
+  float *v79; // [esp+2Ch] [ebp-64h]
+  float v80; // [esp+30h] [ebp-60h] BYREF
+  float v81; // [esp+34h] [ebp-5Ch]
+  float v82; // [esp+38h] [ebp-58h]
+  _DWORD v83[4]; // [esp+3Ch] [ebp-54h] BYREF
+  int v84; // [esp+4Ch] [ebp-44h] BYREF
+  TransformMatrix transform; // [esp+50h] [ebp-40h] BYREF
 
-  v1 = this;
+  v1 = game;
   v2 = 0;
-  v75 = this;
-  v3 = *(this + 347);
+  v74 = game;
+  v3 = *((_DWORD *)game + 347);
   if ( v3 > 0 )
   {
-    result = v3 - 1;
-    *(this + 347) = result;
-    return result;
+    *((_DWORD *)game + 347) = v3 - 1;
+    return;
   }
-  sub_414650();
-  v77 = 0;
-  set_matrix_identity(v86);
-  v5 = 0;
-  memset(v84, 255, sizeof(v84));
-  v76 = 0.0;
-  v6 = v1 + 367;
-  v85 = -1;
-  v7 = 5;
+  reset_render_counters();
+  v76 = 0;
+  set_matrix_identity(&transform);
+  *(float *)&v4 = 0.0;
+  memset(v83, 255, sizeof(v83));
+  v75 = 0.0;
+  v5 = (char *)v1 + 1468;
+  v84 = -1;
+  v6 = 5;
   do
   {
-    if ( (*v6 & 1) != 0 )
-      ++v5;
-    v6 += 40;
-    --v7;
+    if ( (*v5 & 1) != 0 )
+      ++v4;
+    v5 += 40;
+    --v6;
   }
-  while ( v7 );
-  v8 = v1 + 366;
-  v9 = v1[377] & 0xFFFFFF;
-  v76 = *(float *)&v5;
-  v10 = 0;
-  v1[377] = v9 | 0x2000000;
-  v74 = 0;
-  v73 = v1 + 366;
+  while ( v6 );
+  v7 = (char *)v1 + 1464;
+  v8 = *((_DWORD *)v1 + 377) & 0xFFFFFF;
+  v75 = *(float *)&v4;
+  v9 = 0;
+  *((_DWORD *)v1 + 377) = v8 | 0x2000000;
+  v73 = 0;
+  v72 = (char *)v1 + 1464;
   do
   {
-    if ( (v8[1] & 1) != 0 )
+    if ( (v7[4] & 1) != 0 )
     {
       if ( v2 )
       {
-        v11 = 0;
+        v10 = 0;
         if ( v2 > 0 )
         {
-          v12 = *v8;
-          v13 = 0;
+          v11 = *(_DWORD *)v7;
+          v12 = 0;
           do
           {
-            v14 = &v84[v13];
-            if ( v12 > v1[10 * v84[v13] + 366] )
+            v13 = &v83[v12];
+            if ( v11 > *((_DWORD *)v1 + 10 * v83[v12] + 366) )
             {
-              if ( v13 <= 3 )
+              if ( v12 <= 3 )
               {
-                v15 = &v85;
-                v16 = 4 - v11;
+                v14 = &v84;
+                v15 = 4 - v10;
                 do
                 {
-                  *v15 = *(v15 - 1);
+                  *v14 = *(v14 - 1);
+                  --v14;
                   --v15;
-                  --v16;
                 }
-                while ( v16 );
+                while ( v15 );
               }
               ++v2;
-              *v14 = v74;
-              v11 = v2;
-              v13 = v2;
+              *v13 = v73;
+              v10 = v2;
+              v12 = v2;
             }
-            ++v11;
-            ++v13;
+            ++v10;
+            ++v12;
           }
-          while ( v11 < v2 );
-          v8 = v73;
-          v5 = LODWORD(v76);
-          v10 = v74;
+          while ( v10 < v2 );
+          v7 = v72;
+          *(float *)&v4 = v75;
+          v9 = v73;
         }
       }
       else
       {
-        v84[0] = v10;
+        v83[0] = v9;
         v2 = 1;
       }
     }
-    ++v10;
-    v8 += 10;
-    v74 = v10;
-    v73 = v8;
+    ++v9;
+    v7 += 40;
+    v73 = v9;
+    v72 = v7;
   }
-  while ( v10 < 5 );
-  v73 = nullptr;
-  v74 = 0;
-  if ( v5 > 0 )
+  while ( v9 < 5 );
+  v72 = nullptr;
+  v73 = 0;
+  if ( v4 > 0 )
   {
-    v79 = v5;
-    v76 = COERCE_FLOAT(v84);
+    v78 = v4;
+    v75 = COERCE_FLOAT(v83);
     do
     {
-      v17 = v76;
-      v18 = *(_DWORD *)LODWORD(v76);
-      v19 = &v1[10 * *(_DWORD *)LODWORD(v76)];
-      if ( (v19[367] & 1) != 0 )
+      v16 = v75;
+      v17 = *(_DWORD *)LODWORD(v75);
+      v18 = (char *)v1 + 40 * *(_DWORD *)LODWORD(v75);
+      if ( (v18[1468] & 1) != 0 )
       {
-        v20 = v19[373];
-        LOBYTE(v17) = *((_BYTE *)v19 + 1496);
-        v71[15] = 0.0;
-        v71[14] = v17;
-        LODWORD(v21) = v20 + 56;
-        v22 = (float *)&v1[10 * v18 + 370];
-        LODWORD(v23) = v20 + 128;
-        v24 = *(float *)(v20 + 192);
-        v71[13] = v23;
-        v25 = *((float *)v19 + 371);
-        v71[12] = v21;
-        v26 = *v22;
-        v71[11] = v24;
-        v27 = *((float *)v19 + 369);
-        v71[10] = v25;
-        v28 = *((float *)v19 + 368);
-        v80 = v22;
+        v19 = *((_DWORD *)v18 + 373);
+        LOBYTE(v16) = v18[1496];
+        v70[15] = 0.0;
+        v70[14] = v16;
+        LODWORD(v20) = v19 + 56;
+        v21 = (float *)((char *)v1 + 40 * v17 + 1480);
+        LODWORD(v22) = v19 + 128;
+        v23 = *(float *)(v19 + 192);
+        v70[13] = v22;
+        v24 = *((float *)v18 + 371);
+        v70[12] = v20;
+        v25 = *v21;
+        v70[11] = v23;
+        v26 = *((float *)v18 + 369);
+        v70[10] = v24;
+        v27 = *((float *)v18 + 368);
+        v79 = v21;
         render_camera(
-          (int)v22,
-          v28,
+          (int)v21,
           v27,
           v26,
-          v71[10],
-          SLODWORD(v71[11]),
-          v71[12],
-          SLODWORD(v71[13]),
-          SLODWORD(v71[14]),
+          v25,
+          v70[10],
+          SLODWORD(v70[11]),
+          v70[12],
+          SLODWORD(v70[13]),
+          SLODWORD(v70[14]),
           0,
-          v72);
-        if ( (v19[367] & 2) == 0 )
+          v71);
+        if ( (v18[1468] & 2) == 0 )
         {
-          v29 = v1[363];
-          v73 = nullptr;
-          if ( v29 )
+          v28 = *((_DWORD *)v1 + 363);
+          v72 = nullptr;
+          if ( v28 )
           {
-            v30 = (int *)&MEMORY[0x4DFB10];
+            v29 = &unk_4DFB10;
             do
             {
-              if ( (*(_BYTE *)(v29 + 4) & 0x10) != 0 )
+              if ( (*(_BYTE *)(v28 + 4) & 0x10) != 0 )
               {
-                LODWORD(v71[15]) = aDebugRender;
-                sub_449C00();
+                LODWORD(v70[15]) = aDebugRender;
+                debug_report_stub();
               }
-              v31 = *(_DWORD *)(v29 + 4);
-              if ( (v31 & 2) != 0 && (v31 & 0x20) != 0 && (v31 & v19[367] & 0xFF000000) != 0 )
+              v30 = *(_DWORD *)(v28 + 4);
+              if ( (v30 & 2) != 0 && (v30 & 0x20) != 0 && (v30 & *((_DWORD *)v18 + 367) & 0xFF000000) != 0 )
               {
-                if ( (v31 & 0x80u) != 0 )
+                if ( (v30 & 0x80u) != 0 )
                 {
-                  v32 = v73;
-                  *v30++ = v29;
-                  v73 = (int *)((char *)v32 + 1);
+                  v31 = v72;
+                  *v29++ = v28;
+                  v72 = v31 + 1;
                 }
-                v33 = *(_DWORD *)(v29 + 4);
-                ++v74;
-                if ( (v33 & 0x800) != 0 )
-                  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(v29 + 36) + 188) + 12) = *(_DWORD *)(*(_DWORD *)(v29 + 120) + 4);
-                if ( (*(_DWORD *)(v29 + 4) & 0x400) != 0 )
+                v32 = *(_DWORD *)(v28 + 4);
+                ++v73;
+                if ( (v32 & 0x800) != 0 )
+                  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(v28 + 36) + 188) + 12) = *(_DWORD *)(*(_DWORD *)(v28 + 120) + 4);
+                if ( (*(_DWORD *)(v28 + 4) & 0x400) != 0 )
                 {
-                  LOBYTE(v34) = is_bod_after_sprites((char *)v29);
-                  v35 = *(float *)(v29 + 32);
-                  v71[15] = v34;
-                  v36 = *(float *)(v29 + 28);
-                  LODWORD(v71[14]) = v29 + 40;
-                  v71[13] = v35;
-                  v71[12] = v36;
-                  v37 = (_DWORD *)(v29 + 56);
+                  LOBYTE(v33) = is_bod_after_sprites((char *)v28);
+                  v34 = *(float *)(v28 + 32);
+                  v70[15] = v33;
+                  v35 = *(float *)(v28 + 28);
+                  LODWORD(v70[14]) = v28 + 40;
+                  v70[13] = v34;
+                  v70[12] = v35;
+                  p_transform = (TransformMatrix *)(v28 + 56);
                 }
                 else
                 {
-                  v87 = *(_DWORD *)(v29 + 16);
-                  v88 = *(_DWORD *)(v29 + 20);
-                  v89 = *(_DWORD *)(v29 + 24);
-                  LOBYTE(v38) = is_bod_after_sprites((char *)v29);
-                  v39 = *(float *)(v29 + 32);
-                  v71[15] = v38;
-                  v40 = *(float *)(v29 + 28);
-                  LODWORD(v71[14]) = v29 + 40;
-                  v71[13] = v39;
-                  v71[12] = v40;
-                  v37 = v86;
+                  transform.position.x = *(float *)(v28 + 16);
+                  transform.position.y = *(float *)(v28 + 20);
+                  transform.position.z = *(float *)(v28 + 24);
+                  LOBYTE(v37) = is_bod_after_sprites((char *)v28);
+                  v38 = *(float *)(v28 + 32);
+                  v70[15] = v37;
+                  v39 = *(float *)(v28 + 28);
+                  LODWORD(v70[14]) = v28 + 40;
+                  v70[13] = v38;
+                  v70[12] = v39;
+                  p_transform = &transform;
                 }
                 render_object(
-                  *(_DWORD *)(v29 + 36),
-                  v37,
-                  SLODWORD(v71[12]),
-                  v71[13],
-                  (_DWORD *)LODWORD(v71[14]),
-                  SLOBYTE(v71[15]));
+                  *(Object **)(v28 + 36),
+                  p_transform,
+                  SLODWORD(v70[12]),
+                  v70[13],
+                  (Color4f *)LODWORD(v70[14]),
+                  SLOBYTE(v70[15]));
               }
-              v29 = *(_DWORD *)(v29 + 12);
+              v28 = *(_DWORD *)(v28 + 12);
             }
-            while ( v29 );
-            v1 = v75;
+            while ( v28 );
+            v1 = v74;
           }
         }
-        v41 = g_sprite_active_heads[v18];
-        v78 = (char *)&MEMORY[0x4E5510];
-        sub_413540();
-        if ( v41 )
+        v40 = g_sprite_active_heads[v17];
+        v77 = g_sprite_depth_nodes;
+        begin_sprite_depth_render_state();
+        if ( v40 )
         {
           while ( 1 )
           {
-            v42 = v19[367];
-            ++v77;
-            v43 = *(_DWORD *)(v41 + 4);
-            if ( (v43 & v42 & 0xFF000000) != 0 )
+            v41 = *((_DWORD *)v18 + 367);
+            ++v76;
+            v42 = *(_DWORD *)(v40 + 4);
+            if ( (v42 & v41 & 0xFF000000) != 0 )
               break;
             report_errorf(aLooseSpriteSce);
 LABEL_63:
-            v41 = *(_DWORD *)(v41 + 12);
-            if ( !v41 )
+            v40 = *(_DWORD *)(v40 + 12);
+            if ( !v40 )
               goto LABEL_64;
           }
-          if ( (v43 & 1) == 0 || (v43 & 0x40) == 0 || (v43 & 0x200) != 0 )
+          if ( (v42 & 1) == 0 || (v42 & 0x40) == 0 || (v42 & 0x200) != 0 )
             goto LABEL_63;
-          v44 = (const void *)(v19[373] + 128);
-          v81 = *(float *)(v41 + 72);
-          v82 = *(_DWORD *)(v41 + 76);
-          v83 = *(float *)(v41 + 80);
-          qmemcpy(v71, v44, sizeof(v71));
+          v43 = (const void *)(*((_DWORD *)v18 + 373) + 128);
+          v80 = *(float *)(v40 + 72);
+          v81 = *(float *)(v40 + 76);
+          v82 = *(float *)(v40 + 80);
+          qmemcpy(v70, v43, sizeof(v70));
           multiply_vector_by_matrix(
-            &v81,
-            v71[0],
-            v71[1],
-            v71[2],
-            SLODWORD(v71[3]),
-            v71[4],
-            v71[5],
-            v71[6],
-            SLODWORD(v71[7]),
-            v71[8],
-            v71[9],
-            v71[10],
-            SLODWORD(v71[11]),
-            v71[12],
-            v71[13],
-            v71[14],
-            SLODWORD(v71[15]));
-          v81 = -v81;
-          v45 = -v83;
-          v83 = v45;
-          v46 = -v45 * 4.1967211 + *(float *)(v41 + 152);
-          v47 = (__int64)v46;
-          if ( v47 >= 256 )
+            &v80,
+            v70[0],
+            v70[1],
+            v70[2],
+            SLODWORD(v70[3]),
+            v70[4],
+            v70[5],
+            v70[6],
+            SLODWORD(v70[7]),
+            v70[8],
+            v70[9],
+            v70[10],
+            SLODWORD(v70[11]),
+            v70[12],
+            v70[13],
+            v70[14],
+            SLODWORD(v70[15]));
+          v80 = -v80;
+          v44 = -v82;
+          v82 = v44;
+          v45 = -v44 * 4.1967211 + *(float *)(v40 + 152);
+          v46 = (__int64)v45;
+          if ( v46 >= 256 )
           {
-            v47 = 255;
+            v46 = 255;
             goto LABEL_50;
           }
-          if ( (int)(__int64)v46 >= 0 )
+          if ( (int)(__int64)v45 >= 0 )
           {
 LABEL_50:
-            v48 = MEMORY[0x4F7050][v47];
-            v49 = (int)v78;
-            v78 += 24;
-            if ( v48 )
+            v47 = g_sprite_depth_buckets[v46];
+            v48 = v77++;
+            if ( v47 )
             {
-              v50 = nullptr;
-              while ( v46 < *(float *)(v48 + 16) )
+              v49 = nullptr;
+              while ( v45 < v47->depth_key )
               {
-                v50 = (int *)v48;
-                v48 = *(_DWORD *)v48;
-                if ( !v48 )
+                v49 = v47;
+                v47 = v47->next;
+                if ( !v47 )
                 {
-                  *v50 = v49;
+                  v49->next = v48;
                   goto LABEL_59;
                 }
               }
-              if ( v50 )
+              if ( v49 )
               {
-                *v50 = v49;
-                *(_DWORD *)v49 = v48;
+                v49->next = v48;
+                v48->next = v47;
               }
               else
               {
-                *(_DWORD *)v49 = v48;
-                MEMORY[0x4F7050][v47] = v49;
+                v48->next = v47;
+                g_sprite_depth_buckets[v46] = v48;
               }
             }
             else
             {
-              MEMORY[0x4F7050][v47] = v49;
+              g_sprite_depth_buckets[v46] = v48;
 LABEL_59:
-              *(_DWORD *)v49 = 0;
+              v48->next = nullptr;
             }
+            v50 = v80;
+            v48->depth_key = v45;
+            v48->position.x = v50;
             v51 = v81;
-            *(float *)(v49 + 16) = v46;
-            *(float *)(v49 + 4) = v51;
-            v52 = v82;
-            *(_DWORD *)(v49 + 20) = v41;
-            *(_DWORD *)(v49 + 8) = v52;
-            *(float *)(v49 + 12) = v83;
-            *(_DWORD *)(v41 + 20) = v47;
-            *(float *)(v41 + 24) = v46;
+            v48->sprite = (void *)v40;
+            v48->position.y = v51;
+            v48->position.z = v82;
+            *(_DWORD *)(v40 + 20) = v46;
+            *(float *)(v40 + 24) = v45;
           }
-          v1 = v75;
+          v1 = v74;
           goto LABEL_63;
         }
 LABEL_64:
-        v53 = (int *)&MEMORY[0x4F744C];
+        v52 = (int *)&g_sprite_depth_buckets[255];
         do
         {
-          v54 = *v53;
-          if ( *v53 )
+          v53 = *v52;
+          if ( *v52 )
           {
             do
             {
-              v55 = *(_DWORD *)(v54 + 20);
-              if ( (*(_BYTE *)(v55 + 4) & 2) != 0 )
-                update_sprite_facing_angle(v55, (float *)(v19[373] + 128));
-              draw_sprite_quad(v54 + 4, *(float *)(v54 + 20));
-              v54 = *(_DWORD *)v54;
+              v54 = *(_DWORD *)(v53 + 20);
+              if ( (*(_BYTE *)(v54 + 4) & 2) != 0 )
+                update_sprite_facing_angle(v54, (float *)(*((_DWORD *)v18 + 373) + 128));
+              draw_sprite_quad(v53 + 4, *(float *)(v53 + 20));
+              v53 = *(_DWORD *)v53;
             }
-            while ( v54 );
-            *v53 = 0;
+            while ( v53 );
+            *v52 = 0;
           }
-          --v53;
+          --v52;
         }
-        while ( (int)v53 >= (int)MEMORY[0x4F7050] );
-        sub_413650();
-        sub_411E10();
-        draw_font_text_queue(v19[367]);
-        sub_411DE0();
-        if ( (v19[367] & 2) == 0 && v73 )
+        while ( (int)v52 >= (int)g_sprite_depth_buckets );
+        end_sprite_depth_render_state();
+        begin_overlay_render_state();
+        draw_font_text_queue(*((_DWORD *)v18 + 367));
+        end_overlay_render_state();
+        if ( (v18[1468] & 2) == 0 && v72 )
         {
-          LOBYTE(v56) = *((_BYTE *)v19 + 1496);
+          LOBYTE(v55) = v18[1496];
           render_camera(
-            v54,
-            *((float *)v19 + 368),
-            *((float *)v19 + 369),
-            *v80,
-            *((float *)v19 + 371),
-            *(_DWORD *)(v19[373] + 192),
-            COERCE_FLOAT(v19[373] + 56),
-            v19[373] + 128,
-            v56,
+            v53,
+            *((float *)v18 + 368),
+            *((float *)v18 + 369),
+            *v79,
+            *((float *)v18 + 371),
+            *(_DWORD *)(*((_DWORD *)v18 + 373) + 192),
+            COERCE_FLOAT(*((_DWORD *)v18 + 373) + 56),
+            *((_DWORD *)v18 + 373) + 128,
+            v55,
             1,
-            v72);
-          v57 = v73;
-          v58 = (int)v73 + v74;
-          v59 = (int *)(4 * (_DWORD)v73 + 5110544);
-          v73 = nullptr;
-          v74 = v58;
+            v71);
+          v56 = v72;
+          v57 = (int)&v72[v73];
+          v58 = (int *)(4 * (_DWORD)v72 + 5110544);
+          v72 = nullptr;
+          v73 = v57;
           do
           {
-            v60 = *--v59;
-            if ( (*(_DWORD *)(v60 + 4) & 0x400) != 0 )
+            v59 = *--v58;
+            if ( (*(_DWORD *)(v59 + 4) & 0x400) != 0 )
             {
-              v61 = v60;
-              LOBYTE(v62) = is_bod_after_sprites((char *)v60);
-              v63 = *(float *)(v61 + 32);
-              v64 = *(float *)(v61 + 28);
-              v71[15] = v62;
-              LODWORD(v71[14]) = v61 + 40;
-              v71[13] = v63;
-              v71[12] = v64;
-              v65 = (_DWORD *)(v61 + 56);
+              v60 = v59;
+              LOBYTE(v61) = is_bod_after_sprites((char *)v59);
+              v62 = *(float *)(v60 + 32);
+              v63 = *(float *)(v60 + 28);
+              v70[15] = v61;
+              LODWORD(v70[14]) = v60 + 40;
+              v70[13] = v62;
+              v70[12] = v63;
+              v64 = (TransformMatrix *)(v60 + 56);
             }
             else
             {
-              v66 = (int *)(v60 + 16);
-              v61 = *v59;
-              v87 = *v66;
-              v88 = v66[1];
-              v89 = v66[2];
-              LOBYTE(v67) = is_bod_after_sprites((char *)v61);
-              v68 = *(float *)(v61 + 32);
-              v69 = *(float *)(v61 + 28);
-              v71[15] = v67;
-              LODWORD(v71[14]) = v61 + 40;
-              v71[13] = v68;
-              v71[12] = v69;
-              v65 = v86;
+              v65 = (float *)(v59 + 16);
+              v60 = *v58;
+              transform.position.x = *v65;
+              transform.position.y = v65[1];
+              transform.position.z = v65[2];
+              LOBYTE(v66) = is_bod_after_sprites((char *)v60);
+              v67 = *(float *)(v60 + 32);
+              v68 = *(float *)(v60 + 28);
+              v70[15] = v66;
+              LODWORD(v70[14]) = v60 + 40;
+              v70[13] = v67;
+              v70[12] = v68;
+              v64 = &transform;
             }
             render_object(
-              *(_DWORD *)(v61 + 36),
-              v65,
-              SLODWORD(v71[12]),
-              v71[13],
-              (_DWORD *)LODWORD(v71[14]),
-              SLOBYTE(v71[15]));
-            v57 = (int *)((char *)v57 - 1);
+              *(Object **)(v60 + 36),
+              v64,
+              SLODWORD(v70[12]),
+              v70[13],
+              (Color4f *)LODWORD(v70[14]),
+              SLOBYTE(v70[15]));
+            --v56;
           }
-          while ( v57 );
-          v1 = v75;
+          while ( v56 );
+          v1 = v74;
         }
       }
-      v10 = LODWORD(v76) + 4;
-      v70 = v79 == 1;
-      LODWORD(v76) += 4;
-      --v79;
+      v69 = v78 == 1;
+      LODWORD(v75) += 4;
+      --v78;
     }
-    while ( !v70 );
+    while ( !v69 );
   }
-  return noop_runtime_ai(v10);
+  noop_runtime_ai();
 }
 

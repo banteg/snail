@@ -130,3 +130,12 @@ the remaining generic owner list.
 - Promoting the paired vector-add operator advances only the compiler-local
   labels to `$L4693`/`$L4694`; their object offsets and bounded relocation
   contents remain identical, so this generation is registered as well.
+
+2026-07-11 frame-renderer header refresh:
+
+- Promoting the shared sprite depth workspace advances the two local labels to
+  `$L4712`/`$L4713`, while their object offsets remain `+0x62c`/`+0x640`.
+- The five bottom-HUD destinations and eight startup destinations remain
+  byte-for-byte identical to the curated target-relative sequences. Registering
+  these aliases restores bounded content proof without touching the exact
+  function body.

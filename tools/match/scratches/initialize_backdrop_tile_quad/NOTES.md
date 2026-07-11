@@ -73,3 +73,10 @@ orientation table at object `+0x52c` and the seven-entry edge-selector table at
 restores bounded content auditing without changing the exact source stream.
 The paired vector-add operator advances the current labels to
 `$L1055`/`$L1056` at those same offsets, again with unchanged bounded contents.
+
+2026-07-11 frame-renderer header refresh: promoting the shared sprite depth
+workspace advances the same two compiler-local labels to `$L1074`/`$L1075`.
+COFF still places the tables at object `+0x52c`/`+0x53c`; all four orientation
+destinations and all seven edge-selector destinations remain identical to the
+curated target tables. The new aliases therefore preserve content auditing
+without changing either exact source stream.

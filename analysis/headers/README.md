@@ -55,6 +55,8 @@ we keep a narrow handwritten header and a matching IDA import script instead.
 
 Current checked-in example:
 
+- `frame_renderer_types.h`
+- `uv run python tools/ida/sync_frame_renderer_types.py`
 - `path_template_types.h`
 - `uv run python tools/ida/sync_path_template_types.py`
 - `click_start_types.h`
@@ -74,6 +76,8 @@ Current checked-in example:
 
 Current checked-in Binary Ninja companion:
 
+- `bn_frame_renderer_types.h`
+- `uv run python tools/binja/sync_frame_renderer_types.py`
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
 - `bn_player_presentation_types.h`

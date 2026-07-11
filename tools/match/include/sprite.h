@@ -8,6 +8,11 @@
 
 #include "vector3.h"
 
+enum {
+    SPRITE_POOL_CAPACITY = 3000,
+    SPRITE_DEPTH_BUCKET_COUNT = 256,
+};
+
 struct Color4f {
     Color4f* noop_this_constructor();
     Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
@@ -109,6 +114,19 @@ public:
 typedef char Sprite_must_be_0xb4[
     (sizeof(Sprite) == 0xb4) ? 1 : -1];
 
+// Per-frame depth-sort workspace owned by the sprite renderer. The node pool
+// mirrors the manager's fixed sprite capacity; the bucket table covers every
+// clamped 8-bit depth index.
+struct SpriteDepthNode {
+    SpriteDepthNode* next; // +0x00
+    Vector3 position;      // +0x04, projected camera-space position
+    float depth_key;       // +0x10
+    Sprite* sprite;        // +0x14, borrowed live sprite
+};
+
+typedef char SpriteDepthNode_must_be_0x18[
+    (sizeof(SpriteDepthNode) == 0x18) ? 1 : -1];
+
 class SpriteManager {
 public:
     void initialize_sprite_manager(); // @ 0x44e160
@@ -121,7 +139,7 @@ public:
 
     unsigned char paused; // +0x00000
     char unknown_00001[0x04 - 0x01];
-    Sprite sprites[3000]; // +0x00004
+    Sprite sprites[SPRITE_POOL_CAPACITY]; // +0x00004
     Sprite* active_heads[5]; // +0x83d64
     Sprite* free_head; // +0x83d78
 };
@@ -135,5 +153,7 @@ extern SpriteManager g_sprite_manager;       // data_790f30
 extern Sprite* g_sprite_active_heads[5];     // data_814c94
 extern Sprite* g_sprite_free_head;           // data_814ca8
 extern Sprite g_sprite_sentinel;             // data_814cb0
+extern SpriteDepthNode g_sprite_depth_nodes[SPRITE_POOL_CAPACITY]; // data_4e5510
+extern SpriteDepthNode* g_sprite_depth_buckets[SPRITE_DEPTH_BUCKET_COUNT]; // data_4f7050
 
 #endif

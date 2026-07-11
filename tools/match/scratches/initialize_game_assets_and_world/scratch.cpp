@@ -22,7 +22,6 @@ extern char* g_game_base; // data_4df904
 extern int unk_4DF9BC; // data copied into SubgameRuntime::level_mode_arg
 extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
-extern char g_sprite_depth_buckets[]; // 0x4f7050, 0x400-byte sprite depth bucket heads
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
 extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
 
@@ -243,7 +242,7 @@ char GameRoot::initialize_game_assets_and_world()
     active_bod_list.free_top = &inactive_bod_sentinel;
     active_bod_list.first = 0;
     *(int*)(game + 0xb48) = 0;
-    memset(g_sprite_depth_buckets, 0, 0x400);
+    memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
 
     render_camera_slots[0].sort_key = 0;
     render_camera_slots[0].flags = 0x1000003;

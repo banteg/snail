@@ -488,7 +488,8 @@
         "$L1028",
         "$L1047",
         "$L1051",
-        "$L1055"
+        "$L1055",
+        "$L1074"
       ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
@@ -500,7 +501,8 @@
       "aliases": [
         "$L1048",
         "$L1052",
-        "$L1056"
+        "$L1056",
+        "$L1075"
       ],
       "size": "0x1c",
       "description": "Compiler-emitted edge-selector switch jump table used by initialize_backdrop_tile_quad for normalized cases 0 through 6."
@@ -886,7 +888,8 @@
         "$L4670",
         "$L4685",
         "$L4689",
-        "$L4693"
+        "$L4693",
+        "$L4712"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -901,7 +904,8 @@
         "$L4671",
         "$L4686",
         "$L4690",
-        "$L4694"
+        "$L4694",
+        "$L4713"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -3203,6 +3207,16 @@
       "description": "Shared empty text buffer used to initialize the options-menu fullscreen toggle before update_options_menu writes the live label."
     },
     {
+      "address": "0x4e5510",
+      "name": "g_sprite_depth_nodes",
+      "kind": "global",
+      "aliases": [
+        "data_4e5510"
+      ],
+      "size": "0x11940",
+      "description": "Per-frame sprite depth-sort workspace containing 3000 contiguous 0x18-byte SpriteDepthNode records, one for every slot in the fixed sprite-manager pool."
+    },
+    {
       "address": "0x4f7050",
       "name": "g_sprite_depth_buckets",
       "kind": "global",
@@ -3211,7 +3225,7 @@
         "unk_4F7050"
       ],
       "size": "0x400",
-      "description": "Sprite depth-sort bucket-head table cleared during root startup, filled by render_game_frame, and drained after visible sprites are sorted."
+      "description": "Sprite depth-sort table containing 256 SpriteDepthNode heads, cleared during root startup, filled by render_game_frame, and drained from bucket 255 through 0 after visible sprites are sorted."
     },
     {
       "address": "0x4f7450",

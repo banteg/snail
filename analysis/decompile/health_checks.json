@@ -154,6 +154,42 @@
       ]
     },
     {
+      "name": "bn_frame_renderer_workspace_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c",
+      "required_substrings": [
+        "struct GameRoot* game_1",
+        "struct SpriteDepthNode* var_6c_1 = &g_sprite_depth_nodes",
+        "var_6c_1 = &var_6c_1[1]",
+        "g_sprite_depth_buckets[esi_4]",
+        "edx_17->position",
+        "edx_17->sprite"
+      ],
+      "forbidden_substrings": [
+        "return eax - 1",
+        "return result",
+        "var_6c_1 = &var_6c_1[6]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frame_renderer_workspace_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0040a490-render_game_frame.c",
+      "required_substrings": [
+        "void __thiscall render_game_frame(GameRoot *game)",
+        "SpriteDepthNode *v77",
+        "v77 = g_sprite_depth_nodes",
+        "g_sprite_depth_buckets[v46]",
+        "&g_sprite_depth_buckets[255]"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall render_game_frame",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_track_cache_object_face_owner",
       "artifact": "analysis/decompile/binja/functions/00433960-append_track_cache_object.c",
       "required_substrings": [
