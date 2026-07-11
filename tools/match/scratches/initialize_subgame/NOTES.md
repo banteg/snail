@@ -5,9 +5,8 @@ Live source map for `initialize_subgame @ 0x4374b0`.
 Current match:
 
 - `100.00%`, `396/396` candidate/target instructions, prefix `396/396`.
-- `84` masked operands resolve cleanly, with no unresolved operands. The only
-  audit residual is the compiler-local candidate symbol for the first mode
-  switch table versus the curated target table name.
+- All `85` masked operands resolve cleanly, with no unresolved or mismatched
+  operands. The function is proof-grade.
 
 The helper clears the runtime track-cell activity lanes, seeds the front-end
 score/time widgets, copies the active level-record timer data, initializes the
@@ -51,8 +50,8 @@ Ownership recovered:
   subgame, while `cached_camera_target_world` is player-owned state initialized
   from the player's live position.
 
-2026-06-20 switch-table audit: `initialize_subgame_level_mode_startup_jump_table`
-(`0x437adc`) and `initialize_subgame_level_mode_bottom_hud_jump_table`
+2026-06-20 switch-table audit: `initialize_subgame_level_mode_bottom_hud_jump_table`
+(`0x437adc`) and `initialize_subgame_level_mode_startup_jump_table`
 (`0x437af0`) are now content-audited. Focused matcher remains `63.25%`; masked
 audit is now `66 ok / 0 unresolved / 8 mismatch`. The built-in segment
 definition table push now resolves as `g_builtin_segment_definitions`; both
@@ -97,3 +96,14 @@ the remaining generic owner list.
 - Together these changes raise the function from `63.25%` (`385/396`, prefix
   `1/396`) to `100.00%` (`396/396`, prefix `396/396`). No padding, unreachable
   branches, inline assembly, or register-forcing constructs were introduced.
+
+2026-07-11 jump-table provenance closure:
+
+- Raw target callsites prove the five-entry table at `0x437adc` dispatches the
+  bottom HUD, while the eight-entry table at `0x437af0` dispatches startup; the
+  previous semantic names were reversed and are now corrected.
+- The current VC6 object emits those tables as `$L4668` and `$L4669`. Adding
+  those compiler-local labels as aliases lets the matcher compare the bounded
+  table contents rather than trusting names alone.
+- Focused matching is now proof-grade at `100.00%`, `396/396`, prefix
+  `396/396`, with `85 ok / 0 unresolved / 0 mismatch` masked operands.

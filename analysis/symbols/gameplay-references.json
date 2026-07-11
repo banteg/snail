@@ -871,23 +871,25 @@
     },
     {
       "address": "0x437adc",
-      "name": "initialize_subgame_level_mode_startup_jump_table",
-      "kind": "jump_table",
-      "aliases": [
-        "$L1764"
-      ],
-      "size": "0x14",
-      "description": "Compiler-emitted level-mode switch jump table used by initialize_subgame for startup setup."
-    },
-    {
-      "address": "0x437af0",
       "name": "initialize_subgame_level_mode_bottom_hud_jump_table",
       "kind": "jump_table",
       "aliases": [
-        "$L1765"
+        "$L1764",
+        "$L4668"
+      ],
+      "size": "0x14",
+      "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
+    },
+    {
+      "address": "0x437af0",
+      "name": "initialize_subgame_level_mode_startup_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1765",
+        "$L4669"
       ],
       "size": "0x20",
-      "description": "Compiler-emitted level-mode switch jump table used by initialize_subgame for bottom HUD setup."
+      "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
     },
     {
       "address": "0x4386dc",

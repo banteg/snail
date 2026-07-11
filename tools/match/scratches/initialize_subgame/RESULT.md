@@ -1,30 +1,24 @@
 # `initialize_subgame` match result
 
-Current retained broad scratch:
+Current retained source is proof-grade:
 
 ```text
-match: 63.25%
-target: 396 insns, candidate: 385 insns
-prefix: 1/396 target insns
-masked operands: 65 ok, 1 unresolved, 8 mismatch
+match: 100.00%
+target: 396 insns, candidate: 396 insns
+prefix: 396/396 target insns
+masked operands: 85 ok, 0 unresolved, 0 mismatch
 ```
 
-The scratch compiles and recovers the major gameplay initializer blocks: runtime
-cell clearing, level-record copy, replay speed seed, HUD widgets, timer/score
-rendering, static segment/runtime initialization, and the selector dispatch into
+The source recovers the runtime-cell fringe clear, level-record copy, replay
+speed seed, owned HUD handles, timer/score rendering, embedded player setup,
+static segment initialization, and the selector dispatch into
 galaxy/challenge/reset.
 
-Open shape work:
+The two compiler-emitted mode tables are content-audited:
 
-- native keeps the opening clear loop in `edx`/`edi` while this scratch uses a
-  cleaner compiler allocation;
-- string/data globals are still named externs, so the masked audit reports them
-  as symbolic mismatches/unresolved operands;
-- the bottom HUD and startup dispatch switches are semantically recovered, but
-  their table layout still diverges from native.
+- `0x437adc`, five entries, bottom-HUD mode dispatch, candidate `$L4668`;
+- `0x437af0`, eight entries, startup mode dispatch, candidate `$L4669`.
 
-2026-06-20 switch-table audit names the startup mode table at `0x437adc` and
-bottom-HUD mode table at `0x437af0`. The score stays `63.25%`; masked audit is
-now `65 ok, 1 unresolved, 8 mismatch`. The two former switch-table unresolved
-operands are real table-layout mismatches, while the remaining unresolved
-operand is the built-in segment definition table push.
+The earlier curated table names were reversed. The corrected names and current
+VC6 aliases are backed by the target callsites and bounded table contents; no
+operand was accepted on label identity alone.
