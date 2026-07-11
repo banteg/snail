@@ -2,6 +2,7 @@
 #ifndef BACKDROP_H
 #define BACKDROP_H
 
+#include "bod_types.h"
 #include "landscape_script.h"
 
 struct BackdropDistortCell {
@@ -15,7 +16,7 @@ struct BackdropDistortCell {
 typedef char BackdropDistortCell_must_be_0x18[
     (sizeof(BackdropDistortCell) == 0x18) ? 1 : -1];
 
-class Backdrop {
+class Backdrop : public BodBase {
 public:
     void set_backdrop_progress_fraction(float fraction); // @ 0x410c30
     void set_backdrop_distort(float distort); // @ 0x410c40
@@ -33,7 +34,6 @@ public:
 #undef BACKDROP_RENDER_BACKDROP_RESULT
     int update_backdrop(); // @ 0x4112f0
 
-    char unknown_000[0x38];
     unsigned char active_split_backdrop_pair; // +0x38
     unsigned char pending_split_backdrop_pair; // +0x39
     char unknown_03a[0x3c - 0x3a];

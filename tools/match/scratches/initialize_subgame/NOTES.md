@@ -110,6 +110,13 @@ the remaining generic owner list.
 - Focused matching is now proof-grade at `100.00%`, `396/396`, prefix
   `396/396`, with `85 ok / 0 unresolved / 0 mismatch` masked operands.
 
+2026-07-11 shared-root-header alias replay: the manager inheritance headers
+renumber the current object tables to `$L4716`/`$L4717` without changing any
+instruction. COFF symbols and relocations place `$L4716` at object offset
+`0x62c` with five entries through `0x63c`, and `$L4717` at `0x640` with eight
+entries through `0x65c`; those bounded sizes reassign the bottom-HUD/startup
+aliases respectively and restore the 85 clean operands.
+
 2026-07-11 root-bootstrap header refresh:
 
 - Promoting the complete `Overlay`, `SegmentCatalog`, and shared startup-owner

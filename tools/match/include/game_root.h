@@ -2,6 +2,7 @@
 #ifndef GAME_ROOT_H
 #define GAME_ROOT_H
 
+#include "backdrop.h"
 #include "bod_list.h"
 #include "border_manager.h"
 #include "completion_screen.h"
@@ -98,7 +99,8 @@ public:
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
     char unknown_000a60[0xb4c - 0xa60];
     BorderManager border_manager; // +0xb4c, owned frontend border pool
-    char unknown_0440e8[0x4f2dc - 0x440e8];
+    char unknown_0440e8[0x4ec10 - 0x440e8];
+    Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
     // every boundary through the completion prompt without padding.
     NewGameMenu new_game_menu; // +0x4f2dc

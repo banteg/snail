@@ -115,3 +115,20 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   is renamed `g_game_input_callback_table` rather than left generic.
 - The typed loop preserves the native two-record stride and remains an honest
   constructor-shape partial; no local-label or stack-cleanup fakematch is used.
+
+## 2026-07-11 root manager inheritance closure
+
+- Constructor calls and immediate callback-table stores prove that the owned
+  `BorderManager +0xb4c`, `Backdrop +0x4ec10`, and `StarField +0x4f33c` all
+  carry the canonical 0x38-byte `BodBase` prefix.
+- `BorderManager` and `Backdrop` can express that as ordinary inheritance.
+  `StarField` retains its synthetic virtual-prefix declaration because its exact
+  initializer performs virtual callback dispatch; adding derived C++
+  inheritance there would insert a second vptr, so construction uses a narrow
+  `BodBase*` view instead.
+- `GameRoot` now exposes the exact 0x6cc-byte backdrop boundary ending at the
+  front-end block (`+0x4f2dc`), and the constructor uses the already-proven
+  inactive sentinel, viewport array, border pool, backdrop, star field, and tip
+  manager fields directly.
+- The anonymous renderable at `+0xa60` and BodBase at `+0x4f3c8` remain generic;
+  their concrete owners are not established by this pass.

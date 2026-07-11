@@ -64,7 +64,6 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
 
 #define SLOT(offset) ((RuntimeSlot*)(game + (offset)))
 #define COLOR(offset) ((Color4f*)(game + (offset)))
-#define CAMERA(offset) ((RenderCameraSlot*)(game + (offset)))
 
 class GameRootAllocation {
 public:
@@ -81,7 +80,8 @@ __forceinline GameRootAllocation::GameRootAllocation()
     {
         COLOR(0x14)->noop_this_constructor();
 
-        GameInput* game_input = &((GameRoot*)game)->game_inputs[0];
+        GameRoot* root = (GameRoot*)game;
+        GameInput* game_input = &root->game_inputs[0];
         int game_input_count = 2;
         do {
             game_input->initialize_bod_base();
@@ -90,7 +90,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --game_input_count;
         } while (game_input_count);
 
-        GamePlayer* player = &((GameRoot*)game)->players[0];
+        GamePlayer* player = &root->players[0];
         int player_count = 2;
         do {
             player->initialize_game_player();
@@ -98,9 +98,9 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --player_count;
         } while (player_count);
 
-        SLOT(0x570)->initialize_bod_base();
+        root->inactive_bod_sentinel.initialize_bod_base();
 
-        RenderCameraSlot* camera = CAMERA(0x5b4);
+        RenderCameraSlot* camera = &root->render_camera_slots[0];
         int camera_count = 5;
         do {
             camera->initialize_render_camera_slot();
@@ -108,7 +108,6 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --camera_count;
         } while (camera_count);
 
-        GameRoot* root = (GameRoot*)game;
         Overlay* overlay = &root->overlay_0;
         overlay->initialize_renderable_bod();
         overlay->camera.initialize_noop_renderable_bod();
@@ -129,10 +128,10 @@ __forceinline GameRootAllocation::GameRootAllocation()
         ((RuntimeSlot*)((char*)passive_renderable + 0x80))->noop_runtime_slot_constructor();
         passive_renderable->vtable = &g_noop_runtime_callback_table;
 
-        RuntimeSlot* border_manager = SLOT(0xb4c);
+        BorderManager* border_manager = &root->border_manager;
         border_manager->initialize_bod_base();
         initialize_array_with_constructor(
-            (RuntimeSlot*)((char*)border_manager + 0x684),
+            (RuntimeSlot*)&border_manager->borders[0],
             0x724,
             0x96,
             &RuntimeSlot::initialize_border_record);
@@ -152,15 +151,15 @@ __forceinline GameRootAllocation::GameRootAllocation()
             0x80,
             &RuntimeSlot::initialize_cached_x_mesh_slot);
 
-        RuntimeSlot* backdrop = SLOT(0x4ec10);
+        Backdrop* backdrop = &root->backdrop;
         backdrop->initialize_bod_base();
         ((Color4f*)((char*)backdrop + 0x67c))->noop_this_constructor();
         ((Color4f*)((char*)backdrop + 0x69c))->noop_this_constructor();
         backdrop->vtable = &g_backdrop_callback_table;
 
-        RuntimeSlot* star_field = SLOT(0x4f33c);
-        star_field->initialize_bod_base();
-        star_field->vtable = &g_star_field_callback_table;
+        StarField* star_field = &root->star_field;
+        ((BodBase*)star_field)->initialize_bod_base();
+        ((BodBase*)star_field)->vtable = &g_star_field_callback_table;
 
         SLOT(0x4f3c8)->initialize_bod_base();
 
@@ -177,7 +176,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         SLOT(0x74618)->initialize_runtime_pools_and_path_template_bank();
 
-        TipManager* tip_manager = &((GameRoot*)game)->tip_manager;
+        TipManager* tip_manager = &root->tip_manager;
         tip_manager->initialize_bod_base();
         tip_manager->vtable = &g_tip_manager_callback_table;
 
@@ -199,4 +198,3 @@ int construct_game_runtime()
 
 #undef SLOT
 #undef COLOR
-#undef CAMERA

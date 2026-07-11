@@ -35,7 +35,7 @@ public:
 typedef char BorderRecord_must_be_0x724[
     (sizeof(BorderRecord) == 0x724) ? 1 : -1];
 
-class BorderManager {
+class BorderManager : public BodBase {
 public:
     // The backing storage is BorderRecord-sized, but frontend callers use the
     // returned record through the FrontendWidget view.
@@ -46,7 +46,6 @@ public:
     int unhide_all_borders(); // @ 0x403400
     int kill_border(FrontendWidget* border);
 
-    char unknown_000[0x38];
     BorderBatchState batch_state; // +0x38
     char unknown_039[0x684 - 0x039];
     BorderRecord borders[150]; // +0x684
