@@ -878,7 +878,8 @@
       "kind": "jump_table",
       "aliases": [
         "$L1764",
-        "$L4668"
+        "$L4668",
+        "$L4670"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -889,7 +890,8 @@
       "kind": "jump_table",
       "aliases": [
         "$L1765",
-        "$L4669"
+        "$L4669",
+        "$L4671"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."

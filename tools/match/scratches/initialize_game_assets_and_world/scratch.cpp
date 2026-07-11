@@ -18,7 +18,7 @@
 #include "voice_manager.h"
 
 extern char* g_game_base; // data_4df904
-extern int unk_4DF9BC; // data copied into +0x74654 during bootstrap
+extern int unk_4DF9BC; // data copied into SubgameRuntime::level_mode_arg
 extern char byte_4B2F40; // cheat-state storage
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern char g_sprite_depth_buckets[]; // 0x4f7050, 0x400-byte sprite depth bucket heads
@@ -29,8 +29,6 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
 void sub_449C00(); // stripped no-arg debug callsite before path templates
 void initialize_cheat(void* cheat); // @ recovered callsite
-void initialize_blink_random(float* blink); // @ recovered callsite
-void set_subgame_rate(float* blink, float rate); // @ recovered callsite
 void reset_landscape_manager(void* manager); // @ recovered callsite
 void load_segment_definitions(void* definitions); // @ recovered callsite
 void load_level_definitions(); // @ 0x448900
@@ -232,12 +230,12 @@ char GameRoot::initialize_game_assets_and_world()
     *(unsigned char*)(game + 0x04) = 1;
     *(int*)(game + 0x40) = 2;
     *(unsigned char*)(game + 0x568) = 0;
-    *(unsigned char*)(game + 0x74659) = 0;
+    subgame.subgame_pause_gate = 0;
 
     initialize_cheat(&byte_4B2F40);
     *(unsigned char*)(game + 0x4f2e0) = 0;
-    initialize_blink_random((float*)(game + 0x74618));
-    set_subgame_rate((float*)(game + 0x74618), 1.1f);
+    subgame.initialize_blink_random();
+    subgame.set_subgame_rate(1.1f);
     *(int*)(game + 0x56c) = 2;
     *(int*)(game + 0x3c) = 1;
 
@@ -270,7 +268,7 @@ char GameRoot::initialize_game_assets_and_world()
     ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Splash.txt");
     ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Help.txt");
 
-    *(int*)(game + 0x74654) = unk_4DF9BC;
+    subgame.level_mode_arg = unk_4DF9BC;
     ((ThanksScreenOwner*)(game + 0x12d3b78))->open_thanks_screen();
     ((ThanksScreenOwner*)(game + 0x12d3ba4))->open_thanks_screen();
     ((GalaxyRoute*)(game + 0x12d3bb8))->load_galaxy_layout();

@@ -1,13 +1,13 @@
 // initialize_blink_random @ 0x4408c0 (thiscall, ret)
 
-#include "blink_random_table.h"
+#include "subgame_runtime.h"
 
 int next_math_random_value();
 
-int BlinkRandomTable::initialize_blink_random()
+int SubgameRuntime::initialize_blink_random()
 {
-    index = 0;
-    float* sample = samples;
+    blink_random_index = 0;
+    float* sample = blink_random_samples;
     int remaining = 24;
     int result;
 

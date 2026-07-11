@@ -63,3 +63,24 @@ GameRoot + 0x1066f2c
 - Pairs `51..62` duplicate public families `0..7`, `25..27`, and `41`. Their
   strip meshes are installed as the public records' `+0xa0` transition meshes;
   `+0xa4` points back to the public records' own strip meshes.
+
+## 2026-07-11 early subgame ownership
+
+The bootstrap now uses the embedded `SubgameRuntime` directly for its pause
+gate, blink-table initialization, rate setup, and `level_mode_arg` handoff.
+This corrects two stale raw offsets in the semantic partial:
+
+- the pause gate is root `+0x74621` (`SubgameRuntime +0x09`), not `+0x74659`;
+- the mode argument is root `+0x7465c` (`SubgameRuntime +0x44`), not
+  `+0x74654`.
+
+The recovered thiscall shape removes the scratch's cdecl blink/rate shims and
+raises the focused partial from 4.73% to 4.84% while keeping all operands
+resolved (55 clean, 21 expected residual mismatches). This is still a semantic
+partial of the 5,411-instruction bootstrap; the score change is supporting
+evidence, not a completeness claim.
+
+The Binary Ninja runtime sync was also made field-only when
+`SubgameRuntime` already exists. Its sparse import header can seed a fresh
+database, but it no longer flattens later `BodBase`, pool, and `Player`
+ownership when adding these blink fields.

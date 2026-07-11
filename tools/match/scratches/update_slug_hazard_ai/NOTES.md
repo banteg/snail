@@ -65,3 +65,12 @@ Rejected probes:
   `ContactTargetRegistry` at `+0x1270fd4`; focused Wibo remains 66.15%,
   434/464 candidate/target instructions, with 47 clean masked operands and the
   same two masked mismatches.
+
+2026-07-11 blink-source ownership:
+
+- The blink cadence call now targets `SubgameRuntime::advance_blink_random()`
+  directly; the synthetic `BlinkRandomTable` cast and header are gone.
+- The global-root address expression is retained because the native callsite
+  itself passes `g_game_base +0x74618`, rather than the slug's borrowed owner
+  pointer. Focused matching remains 66.15%, 434/464 instructions, with the
+  same 47 clean operands and two documented mismatches.

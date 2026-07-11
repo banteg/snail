@@ -66,6 +66,8 @@ public:
         TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
+    double advance_blink_random(); // @ 0x4408a0
+    int initialize_blink_random(); // @ 0x4408c0
     void remove_subgame_bods(); // @ 0x440910
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
@@ -160,7 +162,10 @@ public:
     // Fixed visual pool owned by SubgameRuntime. TrackRowCell fringe fields
     // only borrow handles into this storage while a built track is live.
     FringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
-    char unknown_3bb700[0x3bb764 - 0x3bb700];
+    // Shared cadence source used by the embedded slug pool. Startup fills the
+    // samples once; each blink advances the single wrapping cursor.
+    int blink_random_index; // +0x3bb700
+    float blink_random_samples[24]; // +0x3bb704, ends at +0x3bb764
     // The complete cRSubGoldy actor is embedded here. Its score/timer block,
     // gauges, cameraman, and presentation controller all share this owner;
     // the former sparse SubgameRuntime aliases merely reached into this field.

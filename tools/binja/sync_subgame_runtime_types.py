@@ -6,11 +6,34 @@ import argparse
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, emit_summary, types_declare
+from _narrow_sync import (
+    apply_proto_updates,
+    apply_struct_field_updates,
+    emit_summary,
+    struct_exists,
+    types_declare_if_missing,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
+
+SUBGAME_FIELD_UPDATES = (
+    ("0x3bb700", "blink_random_index", "int32_t"),
+    ("0x3bb704", "blink_random_samples", "float[24]"),
+)
+
+# These richer nested types are supplied by later ownership slices. Preserve
+# them when present instead of letting the intentionally sparse bootstrap
+# header flatten their ranges back into byte arrays.
+SUBGAME_BOD_FIELD_UPDATES = (
+    ("0x355bd4", "sub_lazer_list_head", "BodBase"),
+    ("0x355c0c", "salt_hazard_list_head", "BodBase"),
+)
+
+SUBGAME_PLAYER_FIELD_UPDATES = (
+    ("0x3bb764", "player", "Player"),
+)
 
 PROTO_UPDATES = (
     ("set_subgame_features", "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime)"),
@@ -21,6 +44,8 @@ PROTO_UPDATES = (
     ),
     ("set_subgame_rate", "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate)"),
     ("calc_subgame_rate", "void __thiscall calc_subgame_rate(SubgameRuntime* runtime)"),
+    ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
+    ("initialize_blink_random", "int32_t __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
     ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
 )
 
@@ -49,7 +74,38 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = [types_declare(REPO_ROOT, target=args.target, header_path=header_path)]
+    operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            required_structs=("SubgameRuntime",),
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="SubgameRuntime",
+            updates=SUBGAME_FIELD_UPDATES,
+        ),
+    ]
+    if struct_exists(REPO_ROOT, target=args.target, struct_name="BodBase"):
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="SubgameRuntime",
+                updates=SUBGAME_BOD_FIELD_UPDATES,
+            )
+        )
+    if struct_exists(REPO_ROOT, target=args.target, struct_name="Player"):
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="SubgameRuntime",
+                updates=SUBGAME_PLAYER_FIELD_UPDATES,
+            )
+        )
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 

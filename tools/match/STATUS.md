@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**519/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77809/325736** bytes (**23.89%**) are proof-grade, and overall fuzzy is **59.30%**.
+**519/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77809/325736** bytes (**23.89%**) are proof-grade, and overall fuzzy is **59.34%**.
 
 ## Proof Grade (519)
 
@@ -528,11 +528,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Audit Needed (0)
-
-| | function | address | bytes | insns | match | prefix | masked | build |
-|---|---|---|---|---|---|---|---|---|
-
 ## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
@@ -689,7 +684,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.84% | 0/5411 | 21 mismatch, 55 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 43.24% | 1/600 | 14 mismatch, 57 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |

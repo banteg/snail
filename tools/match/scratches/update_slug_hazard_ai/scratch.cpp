@@ -1,7 +1,6 @@
 // update_slug_hazard_ai @ 0x43f930 (thiscall, ret)
 
 #include "bod_list.h"
-#include "blink_random_table.h"
 #include "contact_target.h"
 #include "font_system.h"
 #include "player.h"
@@ -100,7 +99,7 @@ void SlugHazardRuntime::update_slug_hazard_ai()
             if (blink_progress < 0.0f) {
                 blink_progress = 0.0f;
                 blink_step =
-                    (float)((BlinkRandomTable*)(g_game_base + 0x74618))
+                    (float)((SubgameRuntime*)(g_game_base + 0x74618))
                         ->advance_blink_random();
             } else if (blink_progress > 1.0f) {
                 blink_progress = 1.0f;

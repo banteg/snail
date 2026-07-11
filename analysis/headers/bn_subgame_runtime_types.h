@@ -112,7 +112,9 @@ typedef struct SubgameRuntime {
     float track_skirt_r;
     float track_skirt_g;
     float track_skirt_b;
-    uint8_t unknown_1b014c[0x3bb764 - 0x1b014c];
+    uint8_t unknown_1b014c[0x3bb700 - 0x1b014c];
+    int32_t blink_random_index;
+    float blink_random_samples[24];
     uint8_t score_stats_anchor;
     uint8_t unknown_3bb765[0x3bb7d4 - 0x3bb765];
     float completion_progress_z;

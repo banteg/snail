@@ -102,8 +102,10 @@ the remaining generic owner list.
 - Raw target callsites prove the five-entry table at `0x437adc` dispatches the
   bottom HUD, while the eight-entry table at `0x437af0` dispatches startup; the
   previous semantic names were reversed and are now corrected.
-- The current VC6 object emits those tables as `$L4668` and `$L4669`. Adding
-  those compiler-local labels as aliases lets the matcher compare the bounded
-  table contents rather than trusting names alone.
+- The VC6 object originally emitted those tables as `$L4668` and `$L4669`.
+  Adding the recovered blink methods to `SubgameRuntime` renumbered the current
+  compiler-local labels to `$L4670` and `$L4671` without changing a single
+  instruction or table entry. Both generations remain aliases so the matcher
+  can compare bounded table contents rather than trusting names alone.
 - Focused matching is now proof-grade at `100.00%`, `396/396`, prefix
   `396/396`, with `85 ok / 0 unresolved / 0 mismatch` masked operands.
