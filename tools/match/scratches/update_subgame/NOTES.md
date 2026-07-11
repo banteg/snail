@@ -171,3 +171,15 @@ register or label shaping needs new independent source evidence.
 embedded `SubgameRuntime::galaxy` at `+0x1260020`, retiring the duplicate
 `CompletionGalaxyRoute` view. Focused output remains 78.22%, 1033/1033, with
 the same two jump-table mismatches and 116 clean operands.
+
+2026-07-11 track group ownership: the row-window linker now uses three embedded
+`BodBase` sentinels directly: `track_body_list_head +0x355b9c` for ordinary
+cells, `special_track_cell_list_head +0x355cb4` for tile 29/30 bodies, and
+`fringe_attachment_list_head +0x355b64` for row attachment bodies and all four
+fringe handles. The typed expressions are codegen-neutral at 78.22%, 1033/1033.
+
+The shared-header generation places `$L5096` at object `+0xe58` and `$L5097`
+at `+0xe78`, but the matcher's bounded-content audit rejects both against the
+target tables. Their destination sequences differ because the surrounding
+state dispatch is still structurally unmatched. They remain two real masked
+mismatches with 116 other operands clean; no aliases are registered.

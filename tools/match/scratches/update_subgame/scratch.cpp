@@ -315,7 +315,7 @@ void SubgameRuntime::update_subgame()
                             if (tile == 29 || tile == 30) {
                                 if (*(void**)((char*)&cell_slot->cell + 0x24) != 0) {
                                 BodNode* node = &cell_slot->cell.bod;
-                                BodNode* active_list = (BodNode*)(game + 0x355cb4);
+                                BodNode* active_list = &special_track_cell_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
@@ -330,7 +330,7 @@ void SubgameRuntime::update_subgame()
                                 *(float*)((char*)&cell_slot->cell + 0x20) =
                                     (float)(cell_index % 8) * 0.125f;
                                 node = &((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->attachment_bod;
-                                active_list = (BodNode*)(game + 0x355b64);
+                                active_list = &fringe_attachment_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
@@ -345,7 +345,7 @@ void SubgameRuntime::update_subgame()
                                 }
                             } else {
                                 BodNode* node = &cell_slot->cell.bod;
-                                BodNode* active_list = (BodNode*)(game + 0x355b9c);
+                                BodNode* active_list = &track_body_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
@@ -366,7 +366,7 @@ void SubgameRuntime::update_subgame()
                             FringeObject* object = *fringe;
                             if (object != 0) {
                                 BodNode* node = (BodNode*)object;
-                                BodNode* active_list = (BodNode*)(game + 0x355b64);
+                                BodNode* active_list = &fringe_attachment_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {

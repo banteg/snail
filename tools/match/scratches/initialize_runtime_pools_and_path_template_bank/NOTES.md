@@ -20,11 +20,16 @@
 
 ## 2026-07-11 live-list sentinels
 
-- The consecutive constructor calls at `SubgameRuntime +0x355bd4` and
-  `+0x355c0c` build complete 0x38-byte `BodBase` objects.
-- Exact spawn paths identify their inherited node prefixes as the sub-lazer and
-  salt live-list heads respectively; these are embedded owners, not borrowed
-  pointers or 0x10-byte synthetic anchor views.
+- Ten consecutive constructor calls from `SubgameRuntime +0x355b64` through
+  `+0x355d5c` build complete `0x38`-byte `BodBase` objects. Their exact
+  `0x230` extent ends at `active_level_score +0x355d94` with no gap.
+- Windows consumers identify five inherited node prefixes: the shared
+  fringe/attachment head, track-body head, barrier/sub-lazer head, salt-hazard
+  head, and tile-29/30 special-cell head. The other five remain explicitly
+  unknown `BodBase` owners; mobile builds have a different group count and
+  ordering, so their names are not transplanted.
+- Replacing all ten raw offsets with these embedded owners leaves this function
+  exact at `227/227` with all 72 operands clean.
 
 ## 2026-07-11 player presentation owner
 

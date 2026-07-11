@@ -178,7 +178,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
             ->activate_landscape_entry(*(int*)(game + 0x1b01dc));
     }
 
-    BodNode* track_bod_list = (BodNode*)(game + 0x355b9c);
+    BodNode* track_bod_list = &track_body_list_head;
     {
         BodNode* start_row = (BodNode*)(game + 0x359080);
         if ((start_row->list_flags & 0x200) != zero) {
@@ -385,19 +385,19 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     ((SlugVoiceManager*)(game + 0x35bb7c))->initialize_slug_voice_manager();
 
-    BodNode* voice_node = (BodNode*)(game + 0xff7bc4);
-    BodNode* voice_list = (BodNode*)(game + 0x355bd4);
-    if ((voice_node->list_flags & 0x200) != zero) {
+    BodNode* barrier_node = &barrier;
+    BodNode* barrier_list = &barrier_sub_lazer_list_head;
+    if ((barrier_node->list_flags & 0x200) != zero) {
         report_errorf("List ADDafter");
     } else {
-        voice_node->list_prev = voice_list;
-        voice_node->list_next = voice_list->list_next;
-        voice_list->list_next = voice_node;
-        if (voice_node->list_next != 0)
-            voice_node->list_next->list_prev = voice_node;
-        voice_node->list_flags |= 0x200;
+        barrier_node->list_prev = barrier_list;
+        barrier_node->list_next = barrier_list->list_next;
+        barrier_list->list_next = barrier_node;
+        if (barrier_node->list_next != 0)
+            barrier_node->list_next->list_prev = barrier_node;
+        barrier_node->list_flags |= 0x200;
     }
-    *(BodNode**)(game + 0xff7bfc) = player_node;
+    barrier.owner_player = embedded_player();
 
     if (*(int*)(game + 0x40) == zero) {
         sprintf((char*)(*(FrontendWidget**)(game + 0x35bb94)) + 0x2cc,

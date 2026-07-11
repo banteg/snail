@@ -138,13 +138,20 @@ public:
     // enumerating every Levels/*.txt file, then reseeds its slot storage from
     // the built-in segment table; it is storage, not a borrowed loader view.
     LevelDefinitionLoader level_definition_scratch; // +0x1b01ec, ends at +0x355b64
-    char unknown_355b64[0x355bd4 - 0x355b64];
-    // Constructed BodBase sentinels own the live intrusive lists used by the
-    // corresponding fixed pools below. Spawn paths only consume the inherited
-    // BodNode links, but startup proves the complete 0x38-byte objects.
-    BodBase sub_lazer_list_head; // +0x355bd4
+    // Ten consecutive constructed BodBase records close this entire 0x230-byte
+    // interval. Five are proven live-list sentinels; the unused group roles
+    // stay unnamed rather than borrowing names from ports with a different
+    // group count and ordering.
+    BodBase fringe_attachment_list_head; // +0x355b64
+    BodBase track_body_list_head; // +0x355b9c, cells plus start/end banners
+    BodBase barrier_sub_lazer_list_head; // +0x355bd4
     BodBase salt_hazard_list_head; // +0x355c0c
-    char unknown_355c44[0x355d94 - 0x355c44];
+    BodBase unknown_bod_355c44; // +0x355c44
+    BodBase unknown_bod_355c7c; // +0x355c7c
+    BodBase special_track_cell_list_head; // +0x355cb4, tile 29/30 bodies
+    BodBase unknown_bod_355cec; // +0x355cec
+    BodBase unknown_bod_355d24; // +0x355d24
+    BodBase unknown_bod_355d5c; // +0x355d5c
     int active_level_score; // +0x355d94, copied from the selected bank record
     TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
     TrackSpeedupRuntime speedup_pickup; // +0x355db0

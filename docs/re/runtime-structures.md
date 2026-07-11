@@ -428,12 +428,19 @@ The current high-confidence `Game` fields are:
   - inline `TutorialController`
 - `+0xa874..+0x1b01ec`: `level_definition`
   - complete `0x1a5978` active `cRSubTracks`/`LevelDefinitionLoader` owner
+  - `+0x1b0138`: `level_length`
+  - `+0x1b013c`: `level_random`
+  - `+0x1b01e0`: `parcel_target_count`
 - `+0x1b01ec..+0x355b64`: `level_definition_scratch`
   - second complete `0x1a5978` owner used for startup level enumeration and
     then reseeded from the built-in segment table
-- `+0x1b0138`: `level_length`
-- `+0x1b013c`: `level_random`
-- `+0x1b01e0`: `parcel_target_count`
+- `+0x355b64..+0x355d94`: ten embedded `BodBase` group heads
+  - `+0x355b64`: fringe objects and row attachment bodies
+  - `+0x355b9c`: ordinary track bodies plus start/completion banners
+  - `+0x355bd4`: tutorial barrier plus live sub-lazers
+  - `+0x355c0c`: live salt hazards
+  - `+0x355cb4`: tile 29/30 special track bodies
+  - the other five constructed group roles remain unknown on Windows
 - `+0x355e64`: `jetpack_pickup`
   - one-slot `TrackPickupRuntime`
 - `+0x356000`: `health_pickups`

@@ -59,7 +59,9 @@ is also real and used by the live/free-list helpers.
 instructions, with `6` clean masked operands.
 
 2026-07-11 sentinel-extent closure: the constructor pass proves that the
-sub-lazer list head is not merely a 0x10-byte node-shaped window but a complete
-embedded `BodBase` at `SubgameRuntime +0x355bd4`. The spawner now borrows its
-inherited `BodNode` prefix directly. Focused Wibo remains exact at `100.00%`,
-`63/63`, with `6` clean masked operands.
+list head is not merely a 0x10-byte node-shaped window but a complete embedded
+`BodBase` at `SubgameRuntime +0x355bd4`. `build_subgame_level` also links the
+tutorial barrier through this same head, so the narrower `sub_lazer_list_head`
+name is corrected to `barrier_sub_lazer_list_head`. The spawner borrows its
+inherited `BodNode` prefix directly and remains exact at `100.00%`, `63/63`,
+with `6` clean masked operands.

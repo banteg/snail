@@ -920,6 +920,7 @@
         "$L4719",
         "$L4782",
         "$L4812",
+        "$L4818",
         "$L4825"
       ],
       "size": "0x14",
@@ -940,7 +941,8 @@
         "$L4717",
         "$L4720",
         "$L4783",
-        "$L4813"
+        "$L4813",
+        "$L4819"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -949,7 +951,9 @@
       "address": "0x4386dc",
       "name": "build_subgame_level_state_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L5037"
+      ],
       "size": "0x14",
       "description": "Compiler-emitted switch jump table for the first build_subgame_level state dispatch."
     },
@@ -957,7 +961,9 @@
       "address": "0x4386f0",
       "name": "build_subgame_level_track_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L5038"
+      ],
       "size": "0x10",
       "description": "Compiler-emitted switch jump table for the later build_subgame_level track dispatch."
     },

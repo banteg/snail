@@ -57,16 +57,16 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         &RuntimeSlot::noop_runtime_slot_constructor);
 
     level_definition_scratch.fringe_color.noop_this_constructor();
-    SLOT(0x355b64)->initialize_bod_base();
-    SLOT(0x355b9c)->initialize_bod_base();
-    SLOT(0x355bd4)->initialize_bod_base();
-    SLOT(0x355c0c)->initialize_bod_base();
-    SLOT(0x355c44)->initialize_bod_base();
-    SLOT(0x355c7c)->initialize_bod_base();
-    SLOT(0x355cb4)->initialize_bod_base();
-    SLOT(0x355cec)->initialize_bod_base();
-    SLOT(0x355d24)->initialize_bod_base();
-    SLOT(0x355d5c)->initialize_bod_base();
+    fringe_attachment_list_head.initialize_bod_base();
+    track_body_list_head.initialize_bod_base();
+    barrier_sub_lazer_list_head.initialize_bod_base();
+    salt_hazard_list_head.initialize_bod_base();
+    unknown_bod_355c44.initialize_bod_base();
+    unknown_bod_355c7c.initialize_bod_base();
+    special_track_cell_list_head.initialize_bod_base();
+    unknown_bod_355cec.initialize_bod_base();
+    unknown_bod_355d24.initialize_bod_base();
+    unknown_bod_355d5c.initialize_bod_base();
     SLOT(0x355db0)->initialize_track_speedup_runtime();
     SLOT(0x355e64)->initialize_track_jetpack_pickup_runtime();
 

@@ -16,7 +16,7 @@ void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vecto
     sprite_bob_phase = 0.0f;
     sprite_bob_phase_step = owner_game->subgame_rate * 0.0055555557f;
 
-    BodNode* head = &owner_game->sub_lazer_list_head;
+    BodNode* head = &owner_game->barrier_sub_lazer_list_head;
     if ((list_flags & 0x200) != 0) {
         report_errorf("List ADDafter");
     } else {

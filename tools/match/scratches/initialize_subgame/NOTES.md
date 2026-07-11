@@ -202,3 +202,10 @@ aliases respectively and restore the 85 clean operands.
   `+0x62c`/`+0x640`; their bounded relocation sequences are unchanged. With
   those aliases registered, the function remains exact at 396/396 with all 85
   operands clean.
+
+2026-07-11 group-head header refresh:
+
+- Expanding the ten exact `BodBase` group-head fields advances the same tables
+  to `$L4818`/`$L4819`. COFF still places them at `+0x62c`/`+0x640`, with the
+  same five and eight bounded relocation destinations. Registering this proven
+  generation restores all 85 clean operands; the 396 instructions are unchanged.

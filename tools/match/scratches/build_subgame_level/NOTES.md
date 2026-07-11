@@ -180,3 +180,17 @@ The two floats immediately before `contact_targets` are now owned fields:
 marks the selected slug's `engagement_voice_gate`. The typed stores are
 codegen-neutral here, retaining `86.10%`, `560/555`, prefix `244/555`, and the
 existing `105 ok / 1 mismatch` audit.
+
+## 2026-07-11 embedded group-head ownership
+
+- The start/completion banners and ordinary runtime cells share the complete
+  `track_body_list_head +0x355b9c`. The tutorial barrier uses the complete
+  `barrier_sub_lazer_list_head +0x355bd4`, which exact sub-lazer spawning also
+  consumes; these are group sentinels rather than single-pool owners.
+- The barrier node and its borrowed player pointer now use the embedded
+  `BarrierActor` directly. Focused output remains `86.10%`, `560/555`, prefix
+  `244/555`, with the same 105 clean non-table operands.
+- COFF places `$L5037` at object `+0x838` with the tracked five entries and
+  `$L5038` immediately after it with four. Their bounded relocations match the
+  two curated target tables, clearing the former compiler-label-only audit gap
+  and bringing the complete masked audit to 106 clean operands.
