@@ -6,7 +6,7 @@
 #include "challenge_setup_screen.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "time_trial_string_formatter.h"
@@ -47,12 +47,12 @@ void SubgameRuntime::initialize_subgame()
     if (selector == 2 || selector == 1) {
         cache_music_file(g_main_menu_music_path, 0, g_blank_text);
         int script_index =
-            ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+            ((LandscapeManager*)(g_game_base + 0x106c218))
                 ->load_landscape_script_by_name(g_menu_background_script_path);
         ((Backdrop*)(g_game_base + 0x4ec10))
             ->change_backdrop(
-                (LandscapeScriptRecord*)(g_game_base + 0x106c7bc
-                    + script_index * sizeof(LandscapeScriptRecord)),
+                &((LandscapeManager*)(g_game_base + 0x106c218))
+                    ->scripts[script_index],
                 0);
         ((BorderRuntime*)(g_game_base + 0xb4c))
             ->set_border_justify_centre(0x41c80000);

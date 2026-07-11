@@ -1,7 +1,7 @@
 // load_level_definition_file @ 0x447480 (thiscall, ret 0x4)
 
 #include "sprite.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "level_definition_loader.h"
 #include "segment_catalog_types.h"
 
@@ -158,7 +158,7 @@ int* LevelDefinitionLoader::load_level_definition_file(char* filename)
     *background_out++ = 't';
     *background_out = 0;
     landscape_script_index =
-        ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+        ((LandscapeManager*)(g_game_base + 0x106c218))
             ->load_landscape_script_by_name(background_name);
 
     cursor = find_case_insensitive_substring("Fringe:", LEVEL_FILE_BUFFER);

@@ -4,7 +4,7 @@
 #include "border_runtime.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "star_field.h"
@@ -28,12 +28,12 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
 
     int landscape_index =
-        ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+        ((LandscapeManager*)(g_game_base + 0x106c218))
             ->load_landscape_script_by_name("StarMap.txt");
     ((Backdrop*)(g_game_base + 0x4ec10))
         ->change_backdrop(
-            (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
-                landscape_index * sizeof(LandscapeScriptRecord)),
+            &((LandscapeManager*)(g_game_base + 0x106c218))
+                ->scripts[landscape_index],
             0);
 
     ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);

@@ -2,7 +2,8 @@
 
 Exact match: 49/49 instructions, clean masks.
 
-This helper clears the ten active landscape slots starting at `this`.
+This `LandscapeManager` helper clears its ten active landscape slots starting
+at receiver `+0x00`.
 
 Recovered layout evidence:
 
@@ -16,3 +17,7 @@ Source-shape note: the native loop uses a cursor at the inherited
 `list_next` field (`this + 0xc`), so the typed `entry` cursor still compiles to
 `lea esi, [ecx+0xc]`. The two `flags` reads are intentionally separate; native
 reloads the flags after clearing state and before the guarded unlink.
+
+Promoting the receiver from the false first-entry view to the complete manager
+is codegen-neutral: focused matching remains exact at 49/49 with five clean
+operands.

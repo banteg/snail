@@ -1,15 +1,15 @@
 // clear_active_landscape_entries @ 0x418a30 (thiscall, ret)
 // Removes all linked active landscape slots from the active BOD list.
 
-#include "active_landscape_entry.h"
+#include "landscape_manager.h"
 
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-void ActiveLandscapeEntry::clear_active_landscape_entries()
+void LandscapeManager::clear_active_landscape_entries()
 {
-    ActiveLandscapeEntry* entry = this;
+    ActiveLandscapeEntry* entry = active_entries;
     int count = 10;
     do {
         unsigned int flags = entry->list_flags;

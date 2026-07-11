@@ -455,6 +455,10 @@ The current high-confidence `Game` fields are:
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`
   - `50`-slot `GarbageHazardRuntime` array
+- `+0xff7c00`: `landscape_manager`
+  - exact `0x97a4`-byte `cRLandscapeManager` owner ending at `+0x10013a4`
+  - ten `0x90`-byte active entries at `+0x00`, script count at `+0x5a0`, and
+    128 `0x124`-byte parsed script records at `+0x5a4`
 - `+0x10014cc`: `segment_catalog`
   - exact `0x25cfb4`-byte owner with a leading count and 150 `0x4088`-byte
     authored-segment records beginning at `+0x10014d0`

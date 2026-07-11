@@ -65,3 +65,14 @@
   ends exactly at the parcel pool at `+0x125e480`.
 - This proves a leading count followed by the entry array, replacing the old
   overlapping entry-0 alias and speculative terminal word.
+
+## 2026-07-11 landscape manager boundary
+
+- Ten `0x90`-byte active entries begin at `SubgameRuntime +0xff7c00`, the
+  script count follows at `+0xff81a0`, and 128 `0x124`-byte script records
+  begin at `+0xff81a4`.
+- `10 * 0x90 + 4 + 128 * 0x124 = 0x97a4`, exactly the reported
+  `cRLandscapeManager` size, ending at `+0x10013a4`.
+- A typed constructor cursor preserves the exact 227/227 native code while
+  retiring the overlapping `ActiveLandscapePool` and `LandscapeScriptBank`
+  views.

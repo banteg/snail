@@ -81,8 +81,8 @@ early after the easier prefix. Its major phases are:
 - 2026-06-20 shared subgame runtime header pass: local one-method or prefix
   views for `StarField`, `GolbPathBank`, `DamageGaugeController`,
   `SubLazerPool`, `SaltHazardPool`, `LevelDefinitionLoader`,
-  `TrackParcelPool`, `FrontendWidget`, `LandscapeScriptBank`,
-  `ActiveLandscapeEntry`, `BodList`, `BodNode`, `MouseCursorState`, and
+  `TrackParcelPool`, `FrontendWidget`, `LandscapeManager`, `BodList`,
+  `BodNode`, `MouseCursorState`, and
   `Player::initialize_subgoldy` were replaced by shared headers. The focused
   matcher remains unchanged at `79.82%`, `555/555`, `177/555` prefix; the later
   config-scalar naming pass leaves this at `101 ok / 0 unresolved / 1` in the
@@ -194,3 +194,13 @@ existing `105 ok / 1 mismatch` audit.
   `$L5038` immediately after it with four. Their bounded relocations match the
   two curated target tables, clearing the former compiler-label-only audit gap
   and bringing the complete masked audit to 106 clean operands.
+
+## 2026-07-11 landscape manager ownership
+
+- Random landscape-script loads and activation now use the complete embedded
+  `LandscapeManager` type at `SubgameRuntime +0xff7c00`; the former script-bank
+  and first-entry receiver views were two windows onto this one object.
+- Header consolidation renumbers the unchanged two local COFF tables to
+  `$L5017`/`$L5018`. Their bounded contents match the already audited
+  `$L5037`/`$L5038` forms, so both aliases are registered without hiding the
+  separate source-shape residuals in the function body.

@@ -3,13 +3,13 @@
 Exact match: 123/123 instructions, clean masks.
 
 Selects one cached landscape script and activates the ten repeated landscape
-slices backed by `ActiveLandscapeEntry`.
+slices owned by the same `LandscapeManager` receiver.
 
 Recovered layout evidence:
 
 - the selected landscape script stride is `0x124`.
-- script record data is reached through a `+0x5a4` window from the entries
-  base.
+- script record data begins at manager `+0x5a4`; the ten active entries occupy
+  the exact preceding `10 * 0x90 = 0x5a0` bytes and the count is at `+0x5a0`.
 - `record +0x10c` is the landscape object index, or `-1` for no object.
 - `record +0x110..+0x11c` is the 16-byte `fog_color` block copied to
   `Game+0x14` after backdrop activation. `load_landscape_script_by_name` writes
@@ -31,3 +31,8 @@ Source-shape note: the state store uses a single volatile typed store so VC6
 keeps the native `state = 1` write before reloading `list_flags` for the
 visibility bit. A plain member store lets the compiler hoist the flag load
 ahead of the state write; no extra fake symbol or dummy call is involved.
+
+2026-07-11 ownership closure: moving this method from the false first-entry
+receiver to `LandscapeManager` remains exact at 123/123. Direct
+`scripts[script_index]` expressions let VC6 retain the native manager-relative
+`+0x5a4` field displacements without an overlapping window type.

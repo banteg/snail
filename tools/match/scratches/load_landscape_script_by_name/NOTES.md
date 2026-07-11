@@ -6,6 +6,9 @@ Structure-first recovery for the landscape script cache loader.
 - Records start at `this+0x5a4` and are 0x124-byte `LandscapeScriptRecord`
   entries: id, name, texture id/path/split flag, object index, fog color, and
   distort.
+- The preceding `0x5a0` bytes are ten constructed `ActiveLandscapeEntry`
+  records. Together with the count and 128 scripts they form the exact
+  `0x97a4`-byte `LandscapeManager`; this is not a standalone script bank.
 - The two calls to `0x449c00` are the release-stripped debug-report stub:
   `"Loading backdrop texture %s"` and `"Landscape: %s imported\n"`.
 - Missing `Picture:` intentionally skips only the texture block, then still

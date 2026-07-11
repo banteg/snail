@@ -80,7 +80,7 @@ void SubgameRuntime::destroy_subgame()
         tutorial.uninit_tutorial();
 
     embedded_player()->warning.uninit_warning();
-    active_landscapes.entries[0].clear_active_landscape_entries();
+    landscape_manager.clear_active_landscape_entries();
     times_up.uninit_times_up();
     remove_subgame_bods();
 

@@ -1,7 +1,7 @@
 // activate_landscape_entry @ 0x418870 (thiscall, ret 0x4)
 // Activates the ten repeated landscape slices for the selected script record.
 
-#include "active_landscape_entry.h"
+#include "landscape_manager.h"
 #include "backdrop.h"
 #include "border_runtime.h"
 #include "runtime_config.h"
@@ -11,7 +11,7 @@ extern char* g_game_base; // data_4df904
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
 
-void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
+void LandscapeManager::activate_landscape_entry(int script_index)
 {
     char flip;
     int mode = *(int*)(g_game_base + 0x74658);
@@ -28,11 +28,9 @@ void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
 
     int index = 0;
     int staged_index = 0;
-    LandscapeScriptWindow* selection =
-        (LandscapeScriptWindow*)((char*)this + script_index * sizeof(LandscapeScriptRecord));
-    ActiveLandscapeEntry* entry = this;
+    ActiveLandscapeEntry* entry = active_entries;
     do {
-        if (selection->record.object_index == -1) {
+        if (scripts[script_index].object_index == -1) {
             entry->list_flags &= ~0x20;
             entry->set_bod_object(0);
         } else {
@@ -56,7 +54,7 @@ void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
 
             LandscapeObjectSlotRef* objects =
                 (LandscapeObjectSlotRef*)(g_game_base + 0x48e2c);
-            entry->set_bod_object(objects[selection->record.object_index].object);
+            entry->set_bod_object(objects[scripts[script_index].object_index].object);
             LandscapeObjectBounds* landscape_object =
                 (LandscapeObjectBounds*)entry->object;
             entry->repeat_z_span =
@@ -73,11 +71,11 @@ void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
     } while (index < 10);
 
     ((Backdrop*)(g_game_base + 0x4ec10))->change_backdrop(
-        &selection->record,
+        &scripts[script_index],
         flip);
     ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
-    Color4f* source = &selection->record.fog_color;
+    Color4f* source = &scripts[script_index].fog_color;
     Color4f* destination = (Color4f*)(g_game_base + 0x14);
     *destination = *source;
 }

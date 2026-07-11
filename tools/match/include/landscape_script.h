@@ -20,9 +20,4 @@ struct LandscapeScriptRecord {
 typedef char LandscapeScriptRecord_must_be_0x124[
     (sizeof(LandscapeScriptRecord) == 0x124) ? 1 : -1];
 
-struct LandscapeScriptWindow {
-    char unknown_000[0x5a4];
-    LandscapeScriptRecord record; // +0x5a4
-};
-
 #endif

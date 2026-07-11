@@ -3,7 +3,7 @@
 #include "backdrop.h"
 #include "border_runtime.h"
 #include "game_root.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
@@ -30,12 +30,12 @@ void NewGameMenu::initialize_new_game_menu()
     ((GameRoot*)g_game_base)->star_field.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index =
-        ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+        ((LandscapeManager*)(g_game_base + 0x106c218))
             ->load_landscape_script_by_name(g_menu_background_script_path);
     ((Backdrop*)(g_game_base + 0x4ec10))
         ->change_backdrop(
-            (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
-                script_index * sizeof(LandscapeScriptRecord)),
+            &((LandscapeManager*)(g_game_base + 0x106c218))
+                ->scripts[script_index],
             0);
     ((BorderRuntime*)(g_game_base + 0xb4c))
         ->set_border_justify_centre(0x41c80000);

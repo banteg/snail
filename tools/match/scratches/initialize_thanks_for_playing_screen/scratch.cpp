@@ -4,7 +4,7 @@
 #include "border_manager.h"
 #include "border_runtime.h"
 #include "frontend_widget.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "sprite.h"
 #include "star_field.h"
 #include "thanks_screen.h"
@@ -26,12 +26,12 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
     ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file("music/introtext.ogg", 0, g_blank_text);
     int script_index =
-        ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+        ((LandscapeManager*)(g_game_base + 0x106c218))
             ->load_landscape_script_by_name("Splash.txt");
     ((Backdrop*)(g_game_base + 0x4ec10))
         ->change_backdrop(
-            (LandscapeScriptRecord*)(g_game_base + 0x106c7bc +
-                script_index * sizeof(LandscapeScriptRecord)),
+            &((LandscapeManager*)(g_game_base + 0x106c218))
+                ->scripts[script_index],
             0);
     ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 

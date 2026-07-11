@@ -5,7 +5,7 @@
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
-#include "active_landscape_entry.h"
+#include "landscape_manager.h"
 #include "banner.h"
 #include "barrier_actor.h"
 #include "challenge_setup_screen.h"
@@ -217,8 +217,10 @@ public:
     // indices occupy 0..50 and transition-only auxiliary pairs occupy 51..62.
     AttachmentPathTemplatePair path_template_pairs[ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
     BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
-    ActiveLandscapePool active_landscapes; // +0xff7c00, fixed 10-slot owner
-    char unknown_ff81a4[0x10014cc - 0xff81a4];
+    // Exact cRLandscapeManager owner: ten active render entries followed by
+    // the script count and 128 parsed 0x124-byte records.
+    LandscapeManager landscape_manager; // +0xff7c00, ends at +0x10013a4
+    char unknown_10013a4[0x10014cc - 0x10013a4];
     // The count precedes 150 constructor-built 0x4088-byte records. Their
     // exact aggregate extent reaches the following parcel pool.
     SegmentCatalog segment_catalog; // +0x10014cc, ends at +0x125e480

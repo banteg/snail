@@ -103,8 +103,8 @@ The early bootstrap now follows the constructor-proven `GameRoot` layout:
 The same target island proves the startup-service receivers and corrects stale
 offsets in the old semantic partial:
 
-- `LandscapeScriptBank` at root `+0x106c218` owns reset plus the Starmap,
-  Splash, Help, and Menubg script loads;
+- the exact `LandscapeManager` at root `+0x106c218` owns ten active entries,
+  reset/count state, and the Starmap, Splash, Help, and Menubg script records;
 - the exact `0x25cfb4`-byte `SegmentCatalog` at `+0x1075ae4` owns both segment
   and level enumeration calls; its leading count is followed by 150 constructed
   entries and the aggregate ends exactly at the parcel pool;

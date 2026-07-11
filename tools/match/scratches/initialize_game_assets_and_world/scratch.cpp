@@ -9,7 +9,7 @@
 #include "directx_loader.h"
 #include "game_root.h"
 #include "galaxy_route_types.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "object_render_types.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -254,7 +254,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     memset(g_directx_loader_scratch, 0, 0x15c);
     directx_loader.initialize_directx_loader();
-    LandscapeScriptBank* landscape = (LandscapeScriptBank*)(game + 0x106c218);
+    LandscapeManager* landscape = (LandscapeManager*)(game + 0x106c218);
     landscape->reset_landscape_manager();
     SegmentCatalog* segment_catalog = &subgame.segment_catalog;
     segment_catalog->load_segment_definitions();
@@ -272,7 +272,7 @@ char GameRoot::initialize_game_assets_and_world()
     g_voice_manager.initialize_voice_manager();
     options_menu.apply_audio_config_volumes();
     segment_catalog->load_level_definitions();
-    ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+    ((LandscapeManager*)(g_game_base + 0x106c218))
         ->load_landscape_script_by_name((char*)"Menubg.txt");
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);

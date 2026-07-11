@@ -485,7 +485,7 @@
     {
       "address": "0x408840",
       "name": "initialize_landscape_script_record",
-      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `Color4f` constructor for its `fog_color` field at `+0x110`; used for the 128-record landscape-script bank at `game+0xff81a4`."
+      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `Color4f` constructor for its `fog_color` field at `+0x110`; used for `LandscapeManager::scripts[128]` at subgame `+0xff81a4` (manager `+0x5a4`)."
     },
     {
       "address": "0x408860",

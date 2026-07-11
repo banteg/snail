@@ -1,11 +1,10 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
 #include "high_score_record.h"
-#include "active_landscape_entry.h"
 #include "bod_list.h"
 #include "damage_gauge.h"
 #include "frontend_widget.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 #include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
@@ -144,22 +143,22 @@ void SubgameRuntime::build_subgame_level(int level_index)
         switch ((unsigned int)random_float_below(4.0f, 0)) {
         case 0:
             landscape_index =
-                ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+                ((LandscapeManager*)(g_game_base + 0x106c218))
                     ->load_landscape_script_by_name("SpaceBluesWhorl.txt");
             break;
         case 1:
             landscape_index =
-                ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+                ((LandscapeManager*)(g_game_base + 0x106c218))
                     ->load_landscape_script_by_name("SpaceGreenWarp.txt");
             break;
         case 2:
             landscape_index =
-                ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+                ((LandscapeManager*)(g_game_base + 0x106c218))
                     ->load_landscape_script_by_name("SpacePurple.txt");
             break;
         case 3:
             landscape_index =
-                ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+                ((LandscapeManager*)(g_game_base + 0x106c218))
                     ->load_landscape_script_by_name("SpaceRed.txt");
             break;
         default:
@@ -167,14 +166,14 @@ void SubgameRuntime::build_subgame_level(int level_index)
             break;
         }
 
-        ((ActiveLandscapeEntry*)(game + 0xff7c00))
+        ((LandscapeManager*)(game + 0xff7c00))
             ->activate_landscape_entry(landscape_index);
         if (random_float_below(1.0f, 0) > 0.5f)
             *(unsigned char*)(g_game_base + 0x4ec64) = 1;
         else
             *(unsigned char*)(g_game_base + 0x4ec64) = (unsigned char)zero;
     } else {
-        ((ActiveLandscapeEntry*)(game + 0xff7c00))
+        ((LandscapeManager*)(game + 0xff7c00))
             ->activate_landscape_entry(*(int*)(game + 0x1b01dc));
     }
 

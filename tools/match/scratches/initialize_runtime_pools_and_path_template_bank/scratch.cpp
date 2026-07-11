@@ -160,12 +160,19 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     barrier->initialize_bod_base();
     barrier->vtable = &g_barrier_actor_callback_table;
 
-    RuntimeSlot* landscape = SLOT(0xff7c00);
+    RuntimeSlot* landscape = (RuntimeSlot*)landscape_manager.active_entries;
     initialize_array_with_constructor(
-        landscape, 0x90, 0xa, &RuntimeSlot::initialize_active_landscape_entry);
-    landscape = (RuntimeSlot*)((char*)landscape + 0x5a4);
+        landscape,
+        sizeof(ActiveLandscapeEntry),
+        0xa,
+        &RuntimeSlot::initialize_active_landscape_entry);
+    landscape = (RuntimeSlot*)((char*)landscape +
+        sizeof(landscape_manager.active_entries) + sizeof(landscape_manager.script_count));
     initialize_array_with_constructor(
-        landscape, 0x124, 0x80, &RuntimeSlot::initialize_landscape_script_record);
+        landscape,
+        sizeof(LandscapeScriptRecord),
+        0x80,
+        &RuntimeSlot::initialize_landscape_script_record);
 
     RuntimeSlot* smtracks = SLOT(0x10013a4);
     smtracks->initialize_bod_base();

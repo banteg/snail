@@ -11,8 +11,8 @@ Recovered behavior:
   frontend/subgame bridge dirty byte at `app+0x4f26c`;
 - if the level mode is tutorial (`7`), calls
   `TutorialController::uninit_tutorial()` at `game+0xa858`;
-- always uninitializes the embedded player warning, fixed active-landscape
-  pool, times-up controller, and the broader subgame BOD set through
+- always uninitializes the embedded player warning, the complete landscape
+  manager's ten active entries, times-up controller, and the broader subgame BOD set through
   `SubgameRuntime::remove_subgame_bods()`;
 - for every non-state-1 teardown, removes active BOD nodes from the embedded
   20-slot SubLazer pool, 40-slot Salt pool, and two-slot start/completion

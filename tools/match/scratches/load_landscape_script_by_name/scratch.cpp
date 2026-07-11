@@ -1,7 +1,7 @@
 // load_landscape_script_by_name @ 0x4182f0 (thiscall, ret 0x4)
 
 #include "game_root.h"
-#include "landscape_script_bank.h"
+#include "landscape_manager.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -16,7 +16,7 @@ float parse_next_float32(char** cursor);
 char archive_or_file_exists(char* path, char force_filesystem);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
-int LandscapeScriptBank::load_landscape_script_by_name(char* script_name)
+int LandscapeManager::load_landscape_script_by_name(char* script_name)
 {
     char* cursor;
     char* loaded_name;

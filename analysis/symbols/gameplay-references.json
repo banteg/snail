@@ -919,6 +919,7 @@
         "$L4718",
         "$L4719",
         "$L4782",
+        "$L4797",
         "$L4812",
         "$L4818",
         "$L4825"
@@ -941,6 +942,7 @@
         "$L4717",
         "$L4720",
         "$L4783",
+        "$L4798",
         "$L4813",
         "$L4819"
       ],
@@ -952,6 +954,7 @@
       "name": "build_subgame_level_state_jump_table",
       "kind": "jump_table",
       "aliases": [
+        "$L5017",
         "$L5037"
       ],
       "size": "0x14",
@@ -962,6 +965,7 @@
       "name": "build_subgame_level_track_jump_table",
       "kind": "jump_table",
       "aliases": [
+        "$L5018",
         "$L5038"
       ],
       "size": "0x10",

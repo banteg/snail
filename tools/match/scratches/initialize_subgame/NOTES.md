@@ -209,3 +209,13 @@ aliases respectively and restore the 85 clean operands.
   to `$L4818`/`$L4819`. COFF still places them at `+0x62c`/`+0x640`, with the
   same five and eight bounded relocation destinations. Registering this proven
   generation restores all 85 clean operands; the 396 instructions are unchanged.
+
+2026-07-11 landscape-manager header refresh:
+
+- The landscape receiver at `SubgameRuntime +0xff7c00` is now the complete
+  exact-size `LandscapeManager`, not overlapping active-entry and script-bank
+  views. The menu-background record is reached through its `scripts[]` member.
+- Consolidating the shared header renumbers the unchanged five- and
+  eight-entry COFF tables to `$L4797`/`$L4798`. They remain at
+  `+0x62c`/`+0x640` with the same bounded relocation sequences, restoring
+  396/396 with all 85 operands clean.
