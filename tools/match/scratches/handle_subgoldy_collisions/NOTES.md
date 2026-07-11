@@ -296,8 +296,8 @@ the HUD total comes from the embedded
 
 ## Collision-pool ownership closure (2026-07-10)
 
-`SubgameRuntime` now owns the complete fixed collision band: eight
-`SlugHazardRuntime` slots through `SlugHazardPool`, twenty sub-lazers, forty
+`SubgameRuntime` now owns the complete fixed collision band: eight `Slug`
+slots through `SlugPool`, twenty sub-lazers, forty
 salt hazards, the parcel pool, eight health pickups, and the two ring-effect
 parents. The salt, slug, parcel, health, and ring sweeps now derive their byte
 cursors from those named members while retaining the native byte-strided loop
@@ -332,3 +332,12 @@ These semantic expressions inline to the existing best collision code. The
 focused result remains `52.85%`, `659/673`, prefix `8/673`, with all `86`
 masked operands clean; the change removes a false free-function ownership
 surface rather than claiming compiler-allocation progress.
+
+## cRSlug primary owner (2026-07-11)
+
+The slug sweep now consumes the primary `Slug` type; `SlugHazardRuntime` and
+`SlugHazardPool` remain compatibility aliases only. Android and iOS retain the
+same class as `cRSlug`, while the Windows constructor table points to its AI
+method. The byte-strided collision loop is preserved because it is the closest
+native allocation shape. Focused Wibo remains 52.85%, 659/673, with all 86
+masked operands clean.

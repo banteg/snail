@@ -97,8 +97,7 @@ void Player::handle_subgoldy_collisions()
             }
         }
         for (int m = 0; m < 1888; m += 236) {
-            SlugHazardRuntime* slug =
-                (SlugHazardRuntime*)((char*)game->slug_hazards.slots + m);
+            Slug* slug = (Slug*)((char*)game->slug_hazards.slots + m);
             int state = slug->state;
             if (state == 1 || state == 4) {
                 delta.x = slug->transform.position.x - cached_camera_target_world.x;

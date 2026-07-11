@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-void SlugHazardRuntime::hit_slug_hazard(int damage)
+void Slug::hit_slug_hazard(int damage)
 {
     hit_points -= damage;
     if (hit_points < 0) {

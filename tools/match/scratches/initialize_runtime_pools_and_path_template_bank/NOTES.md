@@ -171,3 +171,13 @@
 - Each exact constructor installs the table whose entry is
   `cRSubGarbage::AI()`. The typed loop leaves this function exact at 227/227
   with all 72 masked operands clean.
+
+## 2026-07-11 cRSlug constructor array
+
+- The eight-record pass at `SubgameRuntime +0x3563a0` now walks the owned
+  `SlugPool::slots` array directly with `sizeof(Slug) == 0xec`.
+- Its exact 0x760 extent ends at `SubLazerManager +0x356b00` and matches the
+  native `Size of cRSlug` ledger with no gap or wrapper prefix.
+- Each exact constructor installs table `0x497324`, whose entry is
+  `cRSlug::AI()`. The typed loop leaves this function exact at 227/227 with all
+  72 masked operands clean.

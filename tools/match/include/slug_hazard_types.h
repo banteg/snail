@@ -1,6 +1,7 @@
-// Shared slug hazard runtime view, recovered from hit/kill/voice/explosion paths.
-// The owner is the embedded subgame runtime; helpers may still use sparse casts
-// when a focused source-shape proof requires them.
+// Authored cRSlug view, recovered from constructor, voice, hit, explosion,
+// kill, AI, collision, and spawn paths. SubgameRuntime owns eight inline slots;
+// helpers may still use sparse casts when a focused source-shape proof requires
+// them.
 #ifndef SLUG_HAZARD_TYPES_H
 #define SLUG_HAZARD_TYPES_H
 
@@ -11,13 +12,13 @@ class Player;
 class Sprite;
 class SubgameRuntime;
 
-class SlugHazardRuntime : public RenderableBod {
+class Slug : public RenderableBod {
 public:
-    SlugHazardRuntime* initialize_slug_hazard_runtime(); // @ 0x408530
+    Slug* initialize_slug_hazard_runtime();              // @ 0x408530
     void update_slug_voice_ai();                         // @ 0x43f520
     void play_slug_voice(int sample_index);              // @ 0x43f560
     void hit_slug_hazard(int damage);                     // @ 0x43f620
-    int explode_slug_hazard();                            // @ 0x43f680
+    void explode_slug_hazard();                           // @ 0x43f680
     void kill_slug_hazard();                              // @ 0x43f8b0
     void update_slug_hazard_ai();                         // @ 0x43f930
 
@@ -49,15 +50,18 @@ public:
     float blink_step;                  // +0xe8
 };
 
-typedef char SlugHazardRuntime_must_be_0xec[
-    (sizeof(SlugHazardRuntime) == 0xec) ? 1 : -1];
+typedef Slug SlugHazardRuntime;
 
-class SlugHazardPool {
+typedef char Slug_must_be_0xec[(sizeof(Slug) == 0xec) ? 1 : -1];
+
+class SlugPool {
 public:
-    SlugHazardRuntime slots[8];
+    Slug slots[8];
 };
 
-typedef char SlugHazardPool_must_be_0x760[
-    (sizeof(SlugHazardPool) == 0x760) ? 1 : -1];
+typedef SlugPool SlugHazardPool;
+
+typedef char SlugPool_must_be_0x760[
+    (sizeof(SlugPool) == 0x760) ? 1 : -1];
 
 #endif

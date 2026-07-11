@@ -415,7 +415,7 @@
     {
       "address": "0x408530",
       "name": "initialize_slug_hazard_runtime",
-      "description": "Constructs one slug-hazard runtime slot by running the shared renderable-body constructor and installing the slug vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 8-slot slug bank whose total footprint matches the native `cRSlug` size ledger."
+      "description": "Exact Windows constructor for one authored `Slug` (`cRSlug` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger."
     },
     {
       "address": "0x408550",
@@ -2085,7 +2085,7 @@
     {
       "address": "0x43dc80",
       "name": "spawn_slug_hazard",
-      "description": "Exactly matched allocator for one live slug hazard: scans the owned eight-slot pool, scales `(0, 0, -0.2)` by the subgame rate, links the body before the embedded Player tail in the root BOD list, and arms the spaced engagement-voice gate. Cross-port Android and iOS symbols identify `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43df10",
@@ -2139,39 +2139,43 @@
     },
     {
       "address": "0x43f520",
-      "name": "update_slug_voice_ai"
+      "name": "update_slug_voice_ai",
+      "description": "Exact per-slug voice cooldown update. Android retains the authored member as `cRSlug::VoiceAI()`."
     },
     {
       "address": "0x43f560",
-      "name": "play_slug_voice"
+      "name": "play_slug_voice",
+      "description": "Exact per-slug voice trigger, gated by the embedded `SlugVoiceManager` and the slug's own cooldown. Android retains the authored member as `cRSlug::VoicePlay(int)`."
     },
     {
       "address": "0x43f5c0",
-      "name": "initialize_slug_voice_manager"
+      "name": "initialize_slug_voice_manager",
+      "description": "Exact initializer for the 0x0c-byte `SlugVoiceManager` embedded at `SubgameRuntime +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`."
     },
     {
       "address": "0x43f5e0",
-      "name": "update_slug_voice_manager"
+      "name": "update_slug_voice_manager",
+      "description": "Exact update for the embedded 0x0c-byte `SlugVoiceManager`; Android retains the authored member as `cRSlugVoiceManager::AI()`."
     },
     {
       "address": "0x43f620",
       "name": "hit_slug_hazard",
-      "description": "Applies one hit to a live slug hazard. Cross-port iOS symbols match this helper to `cRSlug::Hit(int)` in `SubGame.o`."
+      "description": "Exact hit handler on one live `Slug`: decrements hit points, routes underflow to `Kill`, or arms the hit flash and voice response. Android and iOS retain `cRSlug::Hit(int)`."
     },
     {
       "address": "0x43f680",
       "name": "explode_slug_hazard",
-      "description": "Transitions a live slug hazard into its explosion path. Cross-port iOS symbols match this helper to `cRSlug::Explode()` in v1.5 and `cRSlug::Explode(cRSubGoldy*)` in v1.9."
+      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`. Correcting the artificial integer return to void improves the honest Windows reconstruction to 81.91%."
     },
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Kills and unlinks one slug hazard. Cross-port iOS symbols match this helper to `cRSlug::Kill()` in `SubGame.o`."
+      "description": "Exact `Slug` kill transition: plays the death voice, records the toss side, awards the slug score event, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Runs one live slug hazard's per-frame AI. Cross-port iOS symbols match this helper to `cRSlug::AI()` in `SubGame.o`."
+      "description": "Runs one live `Slug` through active, lateral, death-toss, and teardown states. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
     },
     {
       "address": "0x440020",

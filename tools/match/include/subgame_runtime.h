@@ -26,6 +26,7 @@
 #include "row_event_display.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
+#include "slug_voice_manager.h"
 #include "smtracks.h"
 #include "sub_lazer_types.h"
 #include "times_up_controller.h"
@@ -159,13 +160,13 @@ public:
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
-    SlugHazardPool slug_hazards; // +0x3563a0, fixed eight-slot owner
+    SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
     SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots
     BannerPool banners; // +0x359080, embedded start/completion actors
     SubGarbagePool garbage_hazards; // +0x359140, borrowed head + 50 owned slots
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots
-    char unknown_35bb7c[0x35bb88 - 0x35bb7c];
+    SlugVoiceManager slug_voice_manager; // +0x35bb7c, authored cRSlugVoiceManager
     // BorderManager pool handles. SubgameRuntime retains them for gameplay,
     // then destroy_subgame returns each handle through kill_border().
     FrontendWidget* top_score_widget; // +0x35bb88

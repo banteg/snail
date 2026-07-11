@@ -6,10 +6,9 @@
 
 int next_math_random_value();
 
-int SlugHazardRuntime::explode_slug_hazard()
+void Slug::explode_slug_hazard()
 {
     int count = 70;
-    int result;
     do {
         float spread = (float)next_math_random_value() * 0.0000061035157f + 0.2f;
         float size = (float)next_math_random_value() * 0.000030517578f;
@@ -59,8 +58,5 @@ int SlugHazardRuntime::explode_slug_hazard()
         staged_position.y = position_offset.y + transform.position.y;
         staged_position.z = position_offset.z + transform.position.z;
         sprite->position = staged_position;
-        result = --count;
-    } while (result);
-
-    return result;
+    } while (--count);
 }

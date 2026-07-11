@@ -14,3 +14,8 @@ other slug voice helpers.
 the subgame base and reaches the shared player at `owner_game+0x3bb764`,
 removing the scratch-local `Game` shell. Focused Wibo remains exact at
 `100.00%`, `35/35`, with `7` clean masked operands.
+
+2026-07-11 ownership: the exact body now lives on the primary `Slug` type,
+matching Android and iOS `cRSlug::Kill()`. Its call to the now-void explosion
+member remains byte-identical, confirming that the incidental EAX value was
+never part of the caller contract.

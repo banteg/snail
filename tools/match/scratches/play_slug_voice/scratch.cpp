@@ -5,7 +5,7 @@
 extern char* g_game_base; // data_4df904
 void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
-void SlugHazardRuntime::play_slug_voice(int sample_index)
+void Slug::play_slug_voice(int sample_index)
 {
     if (voice_active == 0) {
         char* game = g_game_base;

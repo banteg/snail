@@ -103,3 +103,12 @@ The same pass records the surrounding owners without changing codegen:
   `slug_voice_trigger_spacing_z` (`100.0f`) whenever a spawned slug receives
   `engagement_voice_gate`. `update_slug_hazard_ai` later consumes that gate at
   the player's 16-unit approach threshold.
+
+## 2026-07-11 cRSlug ownership
+
+The eight inline records are now primarily named `Slug`, matching the retained
+Android/iOS `cRSlug` owner; `SlugHazardRuntime` is a compatibility alias only.
+The exact 160-instruction allocator still keeps its narrow raw slot-base
+spelling because a broad typed receiver changes saved-register ownership. Its
+scan nevertheless starts at `SlugPool::slots`, uses `sizeof(Slug) == 0xec`, and
+closes the complete 0x760 native allocation.

@@ -382,7 +382,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         player_node->list_flags |= 0x200;
     }
 
-    ((SlugVoiceManager*)(game + 0x35bb7c))->initialize_slug_voice_manager();
+    slug_voice_manager.initialize_slug_voice_manager();
 
     BodNode* barrier_node = &barrier;
     BodNode* barrier_list = &barrier_sub_lazer_list_head;

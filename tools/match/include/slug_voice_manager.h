@@ -1,4 +1,4 @@
-// Standalone subgame slug voice gate at Game +0x35bb7c.
+// Authored cRSlugVoiceManager embedded at SubgameRuntime +0x35bb7c.
 #ifndef SLUG_VOICE_MANAGER_H
 #define SLUG_VOICE_MANAGER_H
 

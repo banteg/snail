@@ -74,3 +74,12 @@ Rejected probes:
   itself passes `g_game_base +0x74618`, rather than the slug's borrowed owner
   pointer. Focused matching remains 66.15%, 434/464 instructions, with the
   same 47 clean operands and two documented mismatches.
+
+## 2026-07-11 cRSlug owner and table relation
+
+The receiver is now the primary `Slug` type. Windows independently proves the
+method relation because the exact constructor installs table `0x497324`, whose
+entry is this function at 0x43f930; Android and iOS both retain
+`cRSlug::AI()`. Focused matching remains the honest 66.15%, 434/464
+instructions, with 47 clean operands and the two documented structural table /
+list-string mismatches. No label, padding, or dummy-local fakematch is used.

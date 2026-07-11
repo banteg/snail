@@ -218,7 +218,7 @@ void SubgameRuntime::update_subgame()
         if (level_mode == 7)
             ((TutorialRuntime*)(game + 0xa858))->update_tutorial();
 
-        ((SlugVoiceManager*)(game + 0x35bb7c))->update_slug_voice_manager();
+        slug_voice_manager.update_slug_voice_manager();
 
         if (*(unsigned char*)(game + 8) == one) {
             *(unsigned char*)(game + 9) = zero;

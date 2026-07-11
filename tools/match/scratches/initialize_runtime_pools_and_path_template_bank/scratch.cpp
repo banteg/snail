@@ -78,11 +78,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --health_count;
     } while (health_count);
 
-    RuntimeSlot* slug = SLOT(0x3563a0);
+    Slug* slug = slug_hazards.slots;
     int slug_count = 8;
     do {
         slug->initialize_slug_hazard_runtime();
-        slug = (RuntimeSlot*)((char*)slug + 0xec);
+        ++slug;
         --slug_count;
     } while (slug_count);
 

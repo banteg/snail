@@ -226,3 +226,10 @@ the Windows `SubGarbagePool` wrapper and is deliberately excluded from the
 authored allocation ledger. Constructor metrics remain unchanged at 88.89%,
 299/268 candidate/target instructions, with 119 clean operands and only the
 compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRSlug size ledger
+
+The `Size of cRSlug` entry now comes from `sizeof(Slug) * 8`: eight inline
+0xec-byte authored records close exactly to the native 0x760 total. Constructor
+metrics remain unchanged at 88.89%, with 119 clean operands and only the
+compiler-local EH relocation unresolved.

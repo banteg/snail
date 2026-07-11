@@ -239,13 +239,13 @@ void GolbShot::update_golb_ai()
                             if (kind == 1) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((SlugHazardRuntime*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(2);
+                                ((Slug*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(2);
                                 return;
                             }
                             if (kind == 2) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((SlugHazardRuntime*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(4);
+                                ((Slug*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(4);
                                 return;
                             }
                             if (kind == 0) {

@@ -5,7 +5,7 @@
 
 int next_math_random_value();
 
-void SlugHazardRuntime::kill_slug_hazard()
+void Slug::kill_slug_hazard()
 {
     if (state == 1) {
         int variant = (int)((float)next_math_random_value() * -0.000061035156f);

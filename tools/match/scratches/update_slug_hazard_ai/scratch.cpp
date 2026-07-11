@@ -50,7 +50,7 @@ double random_signed_float_below(float upper_bound, const char* tag);
         return;                                                      \
     } while (0)
 
-void SlugHazardRuntime::update_slug_hazard_ai()
+void Slug::update_slug_hazard_ai()
 {
     if (owner_game->subgame_pause_gate != 0)
         return;

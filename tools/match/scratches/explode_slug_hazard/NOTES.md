@@ -85,3 +85,14 @@ offset macros, or fake aliases.
   the earlier broad-hoist lifetime regression, so the synthetic
   `SlugExplosionGameView` can be retired with no codegen loss. Focused Wibo
   remains the honest `81.63%`, `147/147`, with `32` clean masked operands.
+
+## 2026-07-11 void member contract
+
+Android and iOS v1.5 retain the side-effect-only member as
+`cRSlug::Explode()`; iOS v1.9 only adds the owning `cRSubGoldy*` argument. Every
+Windows caller discards EAX. Changing the primary `Slug` declaration from an
+artificial `int` return to `void` removes the candidate-only final
+`xor eax, eax` and improves focused Wibo from 81.63% to **81.91%**. The result
+is 146/147 instructions with all 32 masked operands clean. The remaining gap is
+the documented 0x40-versus-0x38 frame and local x87/register scheduling; no
+dummy local or padding fakematch is introduced.

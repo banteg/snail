@@ -444,3 +444,12 @@ all update callsites ignore the return. A broader attempt to clear the
 `GolbShot` type row by making `create_dispatch` nonvirtual was rejected:
 `create_golb`'s native tail is a real `(**vtable)(this)` dispatch through
 `*this`.
+
+## 2026-07-11 cRSlug target ownership
+
+The two projectile-impact arms now call `Slug::hit_slug_hazard` through the
+primary authored type, matching Android/iOS `cRSlug::Hit(int)` and the exact
+Windows hit helper. The raw pool address arithmetic remains deliberate because
+it preserves this large function's current register allocation. Focused Wibo
+is byte-stable at 73.34%, 645/694 instructions, with 68 clean masked operands
+and no unresolved or mismatched operands.

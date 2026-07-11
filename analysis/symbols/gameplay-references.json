@@ -1772,13 +1772,13 @@
     },
     {
       "address": "0x497324",
-      "name": "g_slug_hazard_vtable",
+      "name": "g_slug_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497324",
         "data_497324"
       ],
-      "description": "Slug hazard runtime vtable installed by initialize_slug_hazard_runtime."
+      "description": "Authored cRSlug vtable installed by the exact Windows constructor; its entry points directly to update_slug_hazard_ai at 0x43f930."
     },
     {
       "address": "0x497328",

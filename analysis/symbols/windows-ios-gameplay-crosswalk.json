@@ -258,8 +258,10 @@
       "address": "0x43dc80",
       "windows_name": "spawn_slug_hazard",
       "ios_symbol": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
+      "android_symbol": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The Android body independently proves the component-wise `(0, 0, -0.2) * subgame_rate` vector operation that makes the Windows allocator exact."
     },
     {
       "address": "0x43df10",
@@ -515,9 +517,42 @@
       "confidence": "high"
     },
     {
+      "address": "0x43f520",
+      "windows_name": "update_slug_voice_ai",
+      "android_symbol": "cRSlug::VoiceAI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both exact bodies advance and clear the per-slug voice cooldown lanes; field offsets differ across the platform layouts."
+    },
+    {
+      "address": "0x43f560",
+      "windows_name": "play_slug_voice",
+      "android_symbol": "cRSlug::VoicePlay(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both gate on the slug and shared manager cooldowns, latch both active bytes, reset progress, and call the voice backend."
+    },
+    {
+      "address": "0x43f5c0",
+      "windows_name": "initialize_slug_voice_manager",
+      "android_symbol": "cRSlugVoiceManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both initialize the complete 0x0c-byte manager state: inactive, zero progress, and a 1/60 step."
+    },
+    {
+      "address": "0x43f5e0",
+      "windows_name": "update_slug_voice_manager",
+      "android_symbol": "cRSlugVoiceManager::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both advance positive progress and clear the active/progress lanes after the cooldown passes one."
+    },
+    {
       "address": "0x43f620",
       "windows_name": "hit_slug_hazard",
       "ios_symbol": "cRSlug::Hit(int)",
+      "android_symbol": "cRSlug::Hit(int)",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -525,14 +560,16 @@
       "address": "0x43f680",
       "windows_name": "explode_slug_hazard",
       "ios_symbol": "cRSlug::Explode(...)",
+      "android_symbol": "cRSlug::Explode()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has Explode(); v1.9 adds cRSubGoldy*."
+      "notes": "Android and iOS v1.5 retain the side-effect-only no-argument member; iOS v1.9 adds cRSubGoldy*. Every Windows caller discards the result, and the void source form removes an artificial final zeroing instruction."
     },
     {
       "address": "0x43f8b0",
       "windows_name": "kill_slug_hazard",
       "ios_symbol": "cRSlug::Kill()",
+      "android_symbol": "cRSlug::Kill()",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -540,8 +577,10 @@
       "address": "0x43f930",
       "windows_name": "update_slug_hazard_ai",
       "ios_symbol": "cRSlug::AI()",
+      "android_symbol": "cRSlug::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497324 points directly to this callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x441540",

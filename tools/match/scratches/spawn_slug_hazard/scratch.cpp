@@ -110,7 +110,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     *(DWORD*)(slot_base + 0x356480) = 0x3d088889;
 
     if (cell->anchor_position.z > next_slug_voice_trigger_z) {
-        ((SlugHazardRuntime*)(slot_base + 0x3563a0))->engagement_voice_gate = 1;
+        ((Slug*)(slot_base + 0x3563a0))->engagement_voice_gate = 1;
         next_slug_voice_trigger_z =
             slug_voice_trigger_spacing_z + next_slug_voice_trigger_z;
     }

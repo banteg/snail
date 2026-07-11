@@ -231,3 +231,10 @@ existing `105 ok / 1 mismatch` audit.
 - `$L5017` is reassigned from the prior state-table generation to the current
   track table, keeping aliases unambiguous and restoring all 106 clean operands
   without changing the partial function body.
+
+## 2026-07-11 cRSlugVoiceManager owner
+
+The exact call receiver at `SubgameRuntime +0x35bb7c` is now the embedded
+`SlugVoiceManager` rather than an anonymous byte interval. Android independently
+retains `cRSlugVoiceManager::Init()` with the same three fields and values. The
+typed member call is codegen-neutral at the pinned 86.10% frontier.

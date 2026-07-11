@@ -191,3 +191,10 @@ at `+0xe78`, but the matcher's bounded-content audit rejects both against the
 target tables. Their destination sequences differ because the surrounding
 state dispatch is still structurally unmatched. They remain two real masked
 mismatches with 116 other operands clean; no aliases are registered.
+
+2026-07-11 slug voice manager ownership: the state-2 update now calls the
+embedded `SubgameRuntime::slug_voice_manager` directly. Android retains the
+same owner/member as `cRSlugVoiceManager::AI()`, and the preceding exact
+initializer closes the complete 0x0c-byte object. Focused output remains
+78.22%, 1033/1033, with 116 clean operands and the same two honest jump-table
+mismatches.
