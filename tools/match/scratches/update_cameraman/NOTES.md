@@ -18,7 +18,7 @@ needs sequential assignments to stop VC6 folding -8*0.01745*0.17.
   independent confirmation of the unified follow-struct slot order.
 - lift-envelope kind table: {8, 9, 10, 0xe, 0x10, 0x24, 0x2b, 0x2d};
   WORM fov kind = 0x18.
-- CameramanState layout: live 0x00 / desired 0x40 / previous 0x80 /
+- Cameraman layout: live 0x00 / desired 0x40 / previous 0x80 /
   player 0xc0 / game 0xc4 / fov 0xc8 / byte 0xcc / lift 0xd0 /
   smoothed 0xd4.
 
@@ -122,7 +122,7 @@ call mismatch.
 
 ## Cameraman header consolidation (2026-06-16)
 
-`CameramanState` now lives in `include/cameraman_state.h` and is shared with
+`Cameraman` now lives in `include/cameraman.h` and is shared with
 `initialize_cameraman`. The initializer is exact (`100%`, `20/20`) and this
 updater remains at `92.55%`, `322/322`, with the same single masked call
 mismatch. The shared layout is live/desired/previous matrices at
@@ -131,7 +131,17 @@ byte `+0xcc`, and lift envelope fields `+0xd0/+0xd4`.
 
 ## 2026-06-21 subgame owner typing
 
-`CameramanState::game` is now typed as `SubgameRuntime*`, removing this
+`Cameraman::game` is now typed as `SubgameRuntime*`, removing this
 scratch's local `Game` shell. The two consumed owner lanes were already shared
 as `SubgameRuntime::subgame_rate` and `first_block_row_count`; focused Wibo
 remains at `92.55%`, `322/322`, with the same single masked call mismatch.
+
+## 2026-07-11 authored cRCameraman owner
+
+Android and iOS retain `cRCameraman::AI()`. Android consumes the identical
++0xc0/+0xc4 owner pointers, +0xc8/+0xcc FOV and gate, and +0xd0/+0xd4
+envelope pair through the same exact 0xd8-byte layout; `cRSubGame::CameraAI()`
+owns the call edge. The shared Windows type is now `Cameraman`, and both
+analysis prototypes are corrected from incidental `int` to `void`. Focused
+Wibo remains an honest 92.55%, 322/322 instructions, prefix 36/322, with 72
+clean masked operands and the existing single call mismatch.

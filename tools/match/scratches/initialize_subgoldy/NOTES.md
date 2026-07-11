@@ -139,3 +139,9 @@ is now expressed as the embedded `ProgressBar` lifecycle method. Android
 matching +0x3e0 owner. The class is empty and the following three bytes align
 cRWarning, rather than storing an invented progress state. Focused Wibo remains
 exact at 279/279 instructions with all 27 operands clean.
+
+2026-07-11 cRCameraman ownership: Player +0x200 is now the exact 0xd8-byte
+authored `Cameraman`. Android `cRSubGoldy::Init()` calls
+`cRCameraman::Init()` through the matching embedded object, whose full field
+layout agrees with Windows. Focused Wibo remains exact at 279/279 instructions
+with all 27 operands clean.

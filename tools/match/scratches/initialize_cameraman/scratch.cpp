@@ -1,9 +1,9 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
-#include "cameraman_state.h"
+#include "cameraman.h"
 
 extern char* g_game_base; // data_4df904
 
-void CameramanState::initialize_cameraman()
+void Cameraman::initialize_cameraman()
 {
     player = (Player*)(g_game_base + 0x42fd7c);
     game = (SubgameRuntime*)(g_game_base + 0x74618);

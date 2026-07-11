@@ -51,6 +51,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ProgressBar",
     "Warning",
     "Nuke",
+    "Cameraman",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -77,7 +78,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x1e0", "surface_reaction_step", "float"),
     ("0x1e4", "trampoline_bounce_active", "uint8_t"),
     ("0x1e8", "row_event", "PlayerRowEventState"),
-    ("0x200", "cameraman", "CameramanState"),
+    ("0x200", "cameraman", "Cameraman"),
     ("0x2d8", "control_override_active", "uint8_t"),
     ("0x2dc", "cutscene_pitch_cycle", "float"),
     ("0x2e0", "cutscene_pitch_cycle_step", "float"),
@@ -375,6 +376,14 @@ PROTO_UPDATES = (
     (
         "update_progress_bar",
         "void __thiscall update_progress_bar(ProgressBar* progress_bar)",
+    ),
+    (
+        "initialize_cameraman",
+        "void __thiscall initialize_cameraman(Cameraman* cameraman)",
+    ),
+    (
+        "update_cameraman",
+        "void __thiscall update_cameraman(Cameraman* cameraman)",
     ),
     (
         "initialize_warning",

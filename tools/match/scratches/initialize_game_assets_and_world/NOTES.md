@@ -155,3 +155,11 @@ The built-in segment import now addresses
 uses the same owner to parse each `Levels/*.txt` entry before reseeding it from
 the built-in definitions. The broad initializer remains at 5.65%, with its
 existing 74 clean and 17 mismatched operands.
+
+## 2026-07-11 cRCameraman owner
+
+The startup initializer now uses the exact 0xd8-byte `Cameraman` embedded in
+the subgame Player. Android `cRGame::Init2()` independently calls
+`cRCameraman::Init()` and preserves every field offset through +0xd4. The broad
+initializer remains at the honest 5.65% frontier with 74 clean and 17
+mismatched operands.

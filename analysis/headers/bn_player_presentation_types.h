@@ -208,7 +208,8 @@ typedef struct Game {
     TimesUp times_up;
 } Game;
 
-typedef struct CameramanState {
+/* Authored cRCameraman, exact 0xd8-byte follow-camera owner. */
+typedef struct Cameraman {
     TransformMatrix live_matrix;
     TransformMatrix desired_matrix;
     TransformMatrix previous_desired_matrix;
@@ -219,7 +220,7 @@ typedef struct CameramanState {
     uint8_t _pad_cd[0x3];
     float attachment_lift_envelope;
     float smoothed_attachment_lift_envelope;
-} CameramanState;
+} Cameraman;
 
 typedef struct Path {
     uint8_t _pad_00[0x24];
@@ -522,7 +523,7 @@ typedef struct Player {
     uint8_t trampoline_bounce_active;
     uint8_t _pad_1e5[0x3];
     PlayerRowEventState row_event;
-    CameramanState cameraman;
+    Cameraman cameraman;
     uint8_t control_override_active;
     uint8_t _pad_2d9[0x3];
     float cutscene_pitch_cycle;

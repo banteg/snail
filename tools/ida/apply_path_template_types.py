@@ -332,11 +332,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_cameraman",
-        "int32_t __thiscall initialize_cameraman(CameramanState* cameraman);",
+        "void __thiscall initialize_cameraman(Cameraman* cameraman);",
     ),
     (
         "update_cameraman",
-        "int32_t __thiscall update_cameraman(CameramanState* cameraman);",
+        "void __thiscall update_cameraman(Cameraman* cameraman);",
     ),
     (
         "initialize_subgoldy",

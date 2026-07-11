@@ -7,7 +7,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "cameraman_state.h"
+#include "cameraman.h"
 #include "damage_guage.h"
 #include "firework.h"
 #include "invincible_shell.h"
@@ -242,7 +242,7 @@ public:
     unsigned char trampoline_bounce_active; // +0x1e4
     char unknown_1e5[0x1e8 - 0x1e5];
     PlayerRowEventState row_event;          // +0x1e8
-    CameramanState cameraman;               // +0x200
+    Cameraman cameraman;                    // +0x200, authored cRCameraman owner
     unsigned char control_override_active;  // +0x2d8
     char unknown_2d9[0x2dc - 0x2d9];
     float cutscene_pitch_cycle;             // +0x2dc

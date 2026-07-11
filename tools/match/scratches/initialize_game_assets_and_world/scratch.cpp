@@ -4,7 +4,7 @@
 
 #include "backdrop.h"
 #include "bod_types.h"
-#include "cameraman_state.h"
+#include "cameraman.h"
 #include "cheat_state.h"
 #include "directx_loader.h"
 #include "game_root.h"

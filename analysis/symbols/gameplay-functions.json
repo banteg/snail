@@ -2565,12 +2565,12 @@
     {
       "address": "0x446160",
       "name": "initialize_cameraman",
-      "description": "Initializes the follow-camera controller, wiring its shared player and global pointers, clearing the cached matrices, and seeding the default zoom used by `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::Init()`."
+      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and SubgameRuntime backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
     },
     {
       "address": "0x4461d0",
       "name": "update_cameraman",
-      "description": "Builds the live follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom before handing the matrix back to `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::AI()`."
+      "description": "Advances the exact cRCameraman owner: builds the desired follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom, smooths FOV and lift envelopes, and blends the live matrix before `update_subgame_camera` consumes it. Android and iOS retain this method as `cRCameraman::AI()`."
     },
     {
       "address": "0x4466d0",

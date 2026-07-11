@@ -484,7 +484,8 @@ typedef struct TrackRenderCacheBuildLocals {
     int32_t vertex_counts[5];
 } TrackRenderCacheBuildLocals;
 
-typedef struct CameramanState {
+/* Authored cRCameraman, exact 0xd8-byte follow-camera owner. */
+typedef struct Cameraman {
     TransformMatrix live_matrix;
     TransformMatrix desired_matrix;
     TransformMatrix previous_desired_matrix;
@@ -495,7 +496,7 @@ typedef struct CameramanState {
     uint8_t _pad_cd[0x3];
     float attachment_lift_envelope;
     float smoothed_attachment_lift_envelope;
-} CameramanState;
+} Cameraman;
 
 /* Authored cRDamageGuage, exact 0x2c contact-damage owner. */
 typedef struct DamageGuage {
@@ -892,7 +893,7 @@ typedef struct Player {
     uint8_t trampoline_bounce_active;
     uint8_t _pad_1e5[0x3];
     PlayerRowEventState row_event;
-    uint8_t _pad_200[0xd8];
+    Cameraman cameraman;
     uint8_t control_override_active;
     uint8_t _pad_2d9[0x3];
     float cutscene_pitch_cycle;
@@ -1055,8 +1056,8 @@ void __thiscall initialize_completion_screen(
     uint8_t perfect_delivery);
 void __thiscall update_row_event_display(Completion* completion);
 void __thiscall register_parcel_delivery(Completion* completion);
-int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
-int32_t __thiscall update_cameraman(CameramanState* cameraman);
+void __thiscall initialize_cameraman(Cameraman* cameraman);
+void __thiscall update_cameraman(Cameraman* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
 Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);

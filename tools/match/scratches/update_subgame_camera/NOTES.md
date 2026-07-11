@@ -3,7 +3,7 @@
 First scratch for the outer subgame camera handoff helper. It chooses between:
 
 - state-1 identity startup camera with y = 3.0 and fov = 110.0;
-- the live `CameramanState::live_matrix` after `update_cameraman`; and
+- the live `Cameraman::live_matrix` after `update_cameraman`; and
 - the override/cutscene camera block at `game+0x3bfa50` when active.
 
 The transient byte at `game+0x01` controls whether the shared camera matrix at
@@ -18,7 +18,15 @@ the decompiler's apparent `char` return, and the original source shape is a
 `void` camera update helper. Keeping a local snap byte preserves the native
 snap-path `al` test while avoiding the bogus blend-path reload.
 
-2026-06-21 subgame-header consolidation: the camera snap byte, `CameramanState`,
+2026-06-21 subgame-header consolidation: the camera snap byte, `Cameraman`,
 override camera matrix, and override snap byte now live in `SubgameRuntime`.
 Focused Wibo remains exact at `100.00%`, `70/70` instructions, with `9` clean
 masked operands.
+
+2026-07-11 authored-owner recovery: the live matrix comes from the exact
+0xd8-byte `Cameraman` embedded in Player at +0x200. Android and iOS preserve
+the owner as `cRCameraman`, and Android `cRSubGame::CameraAI()` calls its AI
+before consuming the resulting camera state. The scratch now also declares its
+global game base directly instead of relying on a stale transitive include.
+Focused Wibo remains exact at 70/70 instructions with nine clean masked
+operands.

@@ -1082,16 +1082,19 @@
       "address": "0x446160",
       "windows_name": "initialize_cameraman",
       "ios_symbol": "cRCameraman::Init(cRSubGoldy*)",
+      "android_symbol": "cRCameraman::Init()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 symbol is Init(); v1.9 adds cRSubGoldy*."
+      "notes": "v1.5 and Android use Init(); v1.9 adds cRSubGoldy*. Android writes the same three matrices, owner pointers, FOV, byte gate, and lift-envelope pair at identical offsets through +0xd4, proving the exact 0xd8-byte Windows owner."
     },
     {
       "address": "0x4461d0",
       "windows_name": "update_cameraman",
       "ios_symbol": "cRCameraman::AI()",
+      "android_symbol": "cRCameraman::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android cRSubGame::CameraAI() calls this method through the same cRCameraman owner and consumes the identical +0xc0..+0xd4 state window."
     },
     {
       "address": "0x4428d0",

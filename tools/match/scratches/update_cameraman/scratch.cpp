@@ -2,7 +2,7 @@
 // Builds the desired follow-camera matrix from the player pose, attachment
 // envelopes, lane lean, and exit rolls, then blends live toward it at
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
-#include "cameraman_state.h"
+#include "cameraman.h"
 #include "player.h"
 #include "subgame_runtime.h"
 #include "track_attachment.h"
@@ -11,7 +11,7 @@ float cosine(float angle);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 extern char g_worm_fov_report_format[];
 
-void CameramanState::update_cameraman()
+void Cameraman::update_cameraman()
 {
     TransformMatrix transform;
     Player* p = player;

@@ -1,7 +1,7 @@
 // initialize_subgoldy @ 0x43a9c0 (thiscall, ret 0x4)
 
 #include "anim_manager.h"
-#include "cameraman_state.h"
+#include "cameraman.h"
 #include "click_start.h"
 #include "damage_guage.h"
 #include "invincible_shell.h"
@@ -139,7 +139,7 @@ int Player::initialize_subgoldy(int player_slot)
     set_matrix_identity((TransformMatrix*)(self + 0x2a04));
     *(int*)(self + 0x4338) = zero;
     click_start_controller()->initialize_click_start((ClickStartPlayer*)this);
-    ((CameramanState*)(self + 0x200))->initialize_cameraman();
+    cameraman.initialize_cameraman();
     initialize_subgoldy_ghost(*(int*)(self + 0x380));
 
     *(int*)(self + 0x1d8) = 0x3d4ede62;
