@@ -2,7 +2,7 @@
 
 #include "salt_hazard_types.h"
 
-int* SaltHazardPool::initialize_salt_hazard_pool()
+int* SaltManager::initialize_salt_hazard_pool()
 {
     int* state = &slots[0].state;
     int count = 40;

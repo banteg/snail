@@ -210,3 +210,9 @@ constructor's focused metrics remain unchanged.
 The `Size of cRSubLazerManager` entry now comes from
 `sizeof(SubLazerManager)`: 20 inline 0xb0-byte `SubLazer` records close exactly
 to the native 0xdc0 total. Constructor metrics remain unchanged.
+
+## 2026-07-11 cRSaltManager size ledger
+
+The `Size of cRSaltManager` entry now comes from `sizeof(SaltManager)`: 40
+inline 0x98-byte `Salt` records close exactly to the native 0x17c0 total.
+Constructor metrics remain unchanged.

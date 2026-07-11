@@ -92,7 +92,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         20,
         &RuntimeSlot::initialize_sub_lazer_runtime);
     initialize_array_with_constructor(
-        SLOT(0x3578c0), 0x98, 0x28, &RuntimeSlot::initialize_salt_hazard_runtime);
+        (RuntimeSlot*)salt_hazards.slots,
+        sizeof(Salt),
+        40,
+        &RuntimeSlot::initialize_salt_hazard_runtime);
 
     RuntimeSlot* banner = SLOT(0x359080);
     int banner_count = 2;

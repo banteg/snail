@@ -152,3 +152,11 @@
 - Each constructor installs the table whose entry is `cRSubLazer::AI()`; the
   20 * 0xb0 extent is exactly the native 0xdc0 cRSubLazerManager ledger size.
 - The typed array call remains exact at 227/227 with all 72 operands clean.
+
+## 2026-07-11 cRSaltManager constructor array
+
+- The 40-record pass at `SubgameRuntime +0x3578c0` now addresses
+  `SaltManager::slots` directly with `sizeof(Salt)`.
+- Each constructor installs the table whose entry is `cRSalt::AI()`; the
+  40 * 0x98 extent is exactly the native 0x17c0 cRSaltManager ledger size.
+- The typed array call remains exact at 227/227 with all 72 operands clean.

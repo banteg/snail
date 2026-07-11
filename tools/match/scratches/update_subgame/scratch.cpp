@@ -438,7 +438,7 @@ void SubgameRuntime::update_subgame()
                         if (hazard_tile == 34) {
                             if (cell_index >= *(int*)(game + 0x50)
                                 && cell_index < *(int*)(game + 0x58)) {
-                                ((SaltHazardPool*)(game + 0x3578c0))->spawn_salt_hazard(
+                                ((SaltManager*)(game + 0x3578c0))->spawn_salt_hazard(
                                     &cell_slot->cell.anchor_position);
                             }
                         } else if ((cell_slot->cell.lane_and_flags & 8) == 0
@@ -450,7 +450,7 @@ void SubgameRuntime::update_subgame()
                                     + 0.98f
                             && cell_index >= *(int*)(game + 0x50)
                             && cell_index < *(int*)(game + 0x58)) {
-                            ((SaltHazardPool*)(game + 0x3578c0))->spawn_salt_hazard(
+                            ((SaltManager*)(game + 0x3578c0))->spawn_salt_hazard(
                                 &cell_slot->cell.anchor_position);
                         }
 

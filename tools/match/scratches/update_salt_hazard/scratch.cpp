@@ -8,7 +8,7 @@
 extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
-void SaltHazardSlot::update_salt_hazard()
+void Salt::update_salt_hazard()
 {
     if (owner_game->subgame_pause_gate)
         return;

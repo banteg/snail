@@ -67,3 +67,8 @@ are the two sides of the same `GameRoot +0x5a8` `BodList`: `first +0x04` is
 the active head and `free_top +0x08` receives unlinked nodes. The synthetic
 `RootBodListView` is retired in favor of `GameRoot::active_bod_list`. Focused
 Wibo remains exact at `100.00%`, `83/83`, with `12` clean masked operands.
+
+2026-07-11 authored owner: iOS preserves this callback as `cRSalt::AI()`, and
+the Windows constructor table at `0x497340` points directly here. The scratch
+now defines the method on `Salt`; matching remains exact at 83/83 with twelve
+clean operands.

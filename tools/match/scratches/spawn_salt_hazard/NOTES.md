@@ -77,3 +77,8 @@ that byte and clears it after damage. The accessor preserves the proven
 arithmetic is therefore replaced by `GameRoot::subgame.salt_hazard_list_head`;
 the rate read also resolves through the same owned subgame. Focused Wibo
 remains exact at `100.00%`, `67/67`, with `10` clean masked operands.
+
+2026-07-11 authored owner: this exact manager method now belongs to
+`SaltManager`, matching Android `cRSaltManager::Add(tVector&)`; iOS v1.9 adds
+the owning Goldy argument. The allocated slot is an inline `Salt`, not a
+transferred hazard object. Matching remains 67/67 with ten clean operands.

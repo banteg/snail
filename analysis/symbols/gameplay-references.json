@@ -1842,13 +1842,13 @@
     },
     {
       "address": "0x497340",
-      "name": "g_salt_hazard_vtable",
+      "name": "g_salt_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497340",
         "data_497340"
       ],
-      "description": "Salt hazard runtime vtable installed by initialize_salt_hazard_runtime."
+      "description": "Authored cRSalt vtable installed by the exact Windows constructor; its entry points directly to update_salt_hazard at 0x441c10."
     },
     {
       "address": "0x497344",

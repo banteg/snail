@@ -3,11 +3,11 @@
 #include "bod_types.h"
 #include "salt_hazard_types.h"
 
-extern void* g_salt_hazard_vtable; // off_497340 / data_497340
+extern void* g_salt_vtable; // off_497340 / data_497340
 
-SaltHazardSlot* SaltHazardSlot::initialize_salt_hazard_runtime()
+Salt* Salt::initialize_salt_hazard_runtime()
 {
     ((RenderableBod*)this)->initialize_renderable_bod();
-    vtable = &g_salt_hazard_vtable;
+    vtable = &g_salt_vtable;
     return this;
 }

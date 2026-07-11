@@ -519,19 +519,29 @@
       "confidence": "high"
     },
     {
+      "address": "0x441540",
+      "windows_name": "initialize_salt_hazard_pool",
+      "android_symbol": "cRSaltManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both walk 40 inline cRSalt records and clear the state at slot +0x80."
+    },
+    {
       "address": "0x441560",
       "windows_name": "spawn_salt_hazard",
       "ios_symbol": "cRSaltManager::Add(tVector&, cRSubGoldy*)",
+      "android_symbol": "cRSaltManager::Add(tVector&)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.5 has Add(tVector&); v1.9 adds cRSubGoldy*."
+      "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument."
     },
     {
       "address": "0x441c10",
       "windows_name": "update_salt_hazard",
       "ios_symbol": "cRSalt::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The Windows cRSalt constructor table at 0x497340 points directly to this exact helper."
     },
     {
       "address": "0x441650",

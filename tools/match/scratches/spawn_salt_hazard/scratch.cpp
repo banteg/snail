@@ -7,7 +7,7 @@ extern GameRoot* g_game; // data_4df904
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-int SaltHazardPool::spawn_salt_hazard(const Vector3* position)
+int SaltManager::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;
     int* state = &slots[0].state;
@@ -20,7 +20,7 @@ int SaltHazardPool::spawn_salt_hazard(const Vector3* position)
             return index;
     }
 
-    SaltHazardSlot* slot = &slots[index];
+    Salt* slot = &slots[index];
     slot->state = 1;
     slot->velocity.x = 0.0f;
     slot->velocity.y = g_game->subgame.subgame_rate * 0.033333335f;

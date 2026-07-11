@@ -61,7 +61,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     ((DamageGaugeController*)(game + 0x3bbb28))->initialize_damage_gauge();
     ((RuntimeSlot*)(game + 0x3bbb54))->noop_runtime_ai();
     ((SubLazerManager*)(game + 0x356b00))->initialize_sub_lazer_pool();
-    ((SaltHazardPool*)(game + 0x3578c0))->initialize_salt_hazard_pool();
+    ((SaltManager*)(game + 0x3578c0))->initialize_salt_hazard_pool();
     g_voice_manager.reset_voice_manager();
 
     ((SubTracks*)(game + 0xa874))->load_frontend_level_by_mode_and_index(

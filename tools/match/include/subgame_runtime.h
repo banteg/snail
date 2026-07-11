@@ -161,7 +161,7 @@ public:
     TrackHealthPickup health_pickups[8]; // +0x356000
     SlugHazardPool slug_hazards; // +0x3563a0, fixed eight-slot owner
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
-    SaltHazardPool salt_hazards; // +0x3578c0, fixed 40-slot owner
+    SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots
     BannerPool banners; // +0x359080, embedded start/completion actors
     GarbageHazardPool garbage_hazards; // +0x359140
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots

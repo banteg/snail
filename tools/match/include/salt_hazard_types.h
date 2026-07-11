@@ -1,4 +1,4 @@
-// Shared salt hazard list-anchor and pool-slot views. The pool stride is 0x98.
+// Authored cRSalt/cRSaltManager views. Each inline manager slot is 0x98 bytes.
 #ifndef SALT_HAZARD_TYPES_H
 #define SALT_HAZARD_TYPES_H
 
@@ -8,9 +8,9 @@
 
 class SubgameRuntime;
 
-class SaltHazardSlot : public BodNode {
+class Salt : public BodNode {
 public:
-    SaltHazardSlot* initialize_salt_hazard_runtime(); // @ 0x408630
+    Salt* initialize_salt_hazard_runtime(); // @ 0x408630
     void update_salt_hazard();    // @ 0x441c10
     float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
     unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
@@ -37,17 +37,23 @@ public:
     Vector3 velocity;          // +0x8c, spawn motion/fade/collision overlay
 };
 
-typedef char SaltHazardSlot_must_match_pool_stride[
-    (sizeof(SaltHazardSlot) == 0x98) ? 1 : -1];
+typedef Salt SaltHazardSlot;
+
+typedef char Salt_must_be_0x98[(sizeof(Salt) == 0x98) ? 1 : -1];
 
 typedef BodList SaltListAnchor;
 
-class SaltHazardPool {
+class SaltManager {
 public:
     int* initialize_salt_hazard_pool();              // @ 0x441540
     int spawn_salt_hazard(const Vector3* position);  // @ 0x441560
 
-    SaltHazardSlot slots[40];
+    Salt slots[40];
 };
+
+typedef SaltManager SaltHazardPool;
+
+typedef char SaltManager_must_be_0x17c0[
+    (sizeof(SaltManager) == 0x17c0) ? 1 : -1];
 
 #endif

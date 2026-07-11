@@ -44,8 +44,7 @@ void Player::handle_subgoldy_collisions()
     if (!attachment_exit_pending && !boost_one_tick && !control_override_active) {
         if ((movement_flags & 0x80) == 0) {
             for (int i = 0; i < 6080; i += 152) {
-                SaltHazardSlot* slot =
-                    (SaltHazardSlot*)((char*)game->salt_hazards.slots + i);
+                Salt* slot = (Salt*)((char*)game->salt_hazards.slots + i);
                 if (slot->state == 1 && slot->collision_armed() == 1) {
                     delta.x = slot->position.x - cached_camera_target_world.x;
                     delta.y = slot->position.y - cached_camera_target_world.y;

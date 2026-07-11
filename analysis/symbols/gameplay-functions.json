@@ -455,7 +455,7 @@
     {
       "address": "0x408630",
       "name": "initialize_salt_hazard_runtime",
-      "description": "Constructs one salt-hazard runtime slot by running the shared body constructor and installing the salt-hazard vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 40-slot array later reset by `initialize_salt_hazard_pool`."
+      "description": "Exact constructor wrapper for one authored `Salt` (`cRSalt` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_salt_hazard, and returns the receiver. SaltManager owns 40 inline 0x98-byte records whose 0x17c0 total matches the native ledger."
     },
     {
       "address": "0x408650",
@@ -2253,12 +2253,13 @@
     },
     {
       "address": "0x441540",
-      "name": "initialize_salt_hazard_pool"
+      "name": "initialize_salt_hazard_pool",
+      "description": "Exact Windows `cRSaltManager::Init()`: clears the state at +0x80 for each of the manager's 40 inline Salt records. Android preserves the same manager method and loop."
     },
     {
       "address": "0x441560",
       "name": "spawn_salt_hazard",
-      "description": "Allocates one live salt.x hazard slot from the 40-slot pool and seeds its runtime state. Cross-port iOS symbols match this helper to `cRSaltManager::Add(tVector&)`, with v1.9 adding the owning `cRSubGoldy*` argument."
+      "description": "Exact `cRSaltManager::Add(tVector&)`: allocates one manager-owned Salt from the 40 inline slots, seeds its runtime state and inherited BOD link, and returns the slot index. Android preserves the vector-only signature; iOS v1.9 adds the owning Goldy argument."
     },
     {
       "address": "0x441650",
@@ -2297,7 +2298,7 @@
     {
       "address": "0x441c10",
       "name": "update_salt_hazard",
-      "description": "Advances one live salt hazard fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff. Cross-port iOS symbols match the slot owner to `cRSalt::AI()` in `SubGame.o`."
+      "description": "Exact Windows `cRSalt::AI()`: advances one live Salt fade state from the shared track z thresholds, updates its alpha tint, and retires the inherited BOD node at the far cutoff. The constructor table at 0x497340 points directly here; cross-port iOS preserves the owner."
     },
     {
       "address": "0x441d40",
