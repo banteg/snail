@@ -2,12 +2,13 @@
 
 #include "border_manager.h"
 #include "challenge_setup_screen.h"
+#include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 
 void ChallengeSetupScreen::destroy_challenge_setup_screen()
 {
-    int mode = game->selected_subgame_mode;
+    int mode = game->level_mode;
     switch (mode) {
     case 4:
         ((BorderManager*)(g_game_base + 0xb4c))->kill_border(next_level_button);

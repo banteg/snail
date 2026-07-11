@@ -49,3 +49,8 @@ body exactly matches native. Focused Wibo reports 100.00%, 51/51 instructions,
 2026-07-10 root-owner promotion: the exact source now restores
 `GamePlayer[0].frontend_state` and calls the owned
 `GameRoot::border_manager`, replacing raw root offsets without changing a byte.
+
+2026-07-11 pause-owner closure: the pause gate is
+`GameRoot::subgame.subgame_pause_gate`, replacing the synthetic root-wide pause
+view. Focused Wibo remains exact at 51/51 instructions with nine clean masked
+operands.

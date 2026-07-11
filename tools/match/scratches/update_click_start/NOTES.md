@@ -24,3 +24,9 @@ Residual mismatch:
 - the replay-start body is kept in raw `g_game_base` form because that improved
   the local shape, but the app replay-launch globals need a wider owner before
   they should be promoted.
+
+2026-07-11 pause-owner closure: the prompt-hide gate now reads
+`GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
+is codegen-neutral at 27.18%, 149/138 instructions, prefix 1/138, and 13 clean
+masked operands. The separate replay-start block remains raw here pending a
+source-shape pass; this change does not claim new ownership for it.

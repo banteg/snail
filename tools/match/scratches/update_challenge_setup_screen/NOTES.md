@@ -1,8 +1,8 @@
 # update_challenge_setup_screen @ 0x416370
 
 First structured scratch for the challenge/time-trial setup updater. The
-screen controller layout is shared through `challenge_setup_screen.h`; the
-larger game-root offsets stay scratch-local until more callers agree.
+screen controller layout is shared through `challenge_setup_screen.h`, and its
+`game` pointer is now recovered as a borrowed `SubgameRuntime*`.
 
 ## Recovered behavior
 
@@ -16,14 +16,15 @@ larger game-root offsets stay scratch-local until more callers agree.
 - Mode `4` refreshes the Time Trial best-time widget through the same
   member-style `format_time_trial_string` call shape used by `update_subgame`,
   then shows or hides the Replay button from the selected replay record.
-- Replay launch marks `game +0xff25d0` and stores `game +0xff25d4` as either
-  the challenge replay record at `game +0xfb3050` or the selected Time Trial
-  record at `game +0x944150 + selected * 0x1fac0`.
+- Replay launch sets `SubgameRuntime::selected_level_record_active` and stores
+  `selected_level_record` as either the owned
+  `HighScoreBank::survival_pending_record` or the selected
+  `HighScoreBank::time_trial_route_records` entry.
 
 ## Match state
 
 Retained result: 80.68%, 355 target instructions, 354 candidate instructions,
-8-instruction prefix, and 33 clean / 2 unresolved / 0 mismatched masked
+8-instruction prefix, and 35 clean / 0 unresolved / 0 mismatched masked
 operands.
 
 The source is shaped as a sparse `switch` with `case 4` first. VC6 emits the
@@ -40,8 +41,6 @@ Remaining residuals:
 - The candidate is one instruction shorter, so the initial branch-label targets
   are one byte/label off despite the instruction stream lining up through the
   mode `4` body.
-- `data_4df9b8` is the same route-limit global used by the galaxy scratches,
-  but it is still an unresolved masked operand in this scratch.
 - Register choice differs in the Time Trial replay-tail pointer calculation
   and in the challenge slider/replay store block.
 
@@ -60,3 +59,9 @@ source shape while removing the duplicate local type; the focused score stayed
 promotion: focused Wibo is still `80.68%`, `354/355`, prefix `8/355`, and the
 masked audit is now clean at `35 ok / 0 unresolved / 0 mismatch` under the
 current symbol set.
+
+2026-07-11 ownership closure: the former raw challenge replay and Time Trial
+record windows are both owned by `SubgameRuntime::high_score_bank`; the replay
+selection latch and pointer are direct `SubgameRuntime` fields. The ownership
+rewrite is codegen-neutral at 80.68%, 354/355 instructions, prefix 8/355, and
+35 clean masked operands.

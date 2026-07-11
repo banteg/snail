@@ -3,8 +3,8 @@
 Exact match: 41/41 instructions, clean masks.
 
 `update_active_landscape_entry` is the active background/landscape slice
-updater. It skips while the global pause gate at `Game+0x74621` is set, then
-only runs state `1`.
+updater. It skips while `GameRoot::subgame.subgame_pause_gate` is set, then only
+runs state `1`.
 
 Recovered layout:
 
@@ -25,3 +25,7 @@ Native reads the source z at `reference + 0x70`, which is
 The state gate is a label-shaped switch (`case 0/default` to the shared return
 label, `case 1` to the active body). That preserves VC6's native
 `sub eax, 0; je; dec eax; jne` dispatch without adding dummy arithmetic.
+
+2026-07-11 pause-owner closure: removing the synthetic root-wide pause view is
+codegen-neutral. Focused Wibo remains exact at 41/41 instructions with clean
+masks.

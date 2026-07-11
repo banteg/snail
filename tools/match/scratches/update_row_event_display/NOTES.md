@@ -125,3 +125,8 @@ through `(&g_sound_effect_manager)->play_sound_effect(0x31)` are all
 codegen-neutral. The retained nested gate and direct member call remain the
 clearest source; the residual is still local thiscall setup scheduling, not
 evidence for a second audio API.
+
+2026-07-11 pause-owner closure: the widget-hide gate now reads
+`GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
+is codegen-neutral at 99.53%, 213/213 instructions, prefix 102/213, and 37
+clean masked operands.

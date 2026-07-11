@@ -5,6 +5,7 @@
 #include "frontend_widget_virtual_layout.h"
 #include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
+#include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 extern int g_completion_bonus_x_source; // data_4df958
@@ -14,12 +15,11 @@ extern char g_back_text[]; // 0x4a20ec
 int ChallengeSetupScreen::initialize_challenge_setup_screen()
 {
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
-    ((LevelDefinitionLoader*)game->level_definition_loader_storage)
-        ->load_frontend_level_by_mode_and_index(
-            game->selected_subgame_mode,
-            game->selected_level_index);
+    game->level_definition.load_frontend_level_by_mode_and_index(
+        game->level_mode,
+        game->level_mode_arg);
 
-    int mode = game->selected_subgame_mode;
+    int mode = game->level_mode;
     --mode;
     if (mode != 0)
         return mode;
@@ -60,7 +60,7 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
     ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();
 
     float play_anchor_x = 0.0f;
-    if (game->selected_replay_available == 1)
+    if (game->high_score_bank.survival_pending_record.active == 1)
         play_anchor_x = 100.0f;
 
     play_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
@@ -86,7 +86,7 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
         2,
         -100.0f);
     replay_button->stack_widget_below(speed_slider);
-    if (game->selected_replay_available != 1)
+    if (game->high_score_bank.survival_pending_record.active != 1)
         replay_button->hide_border_init();
 
     back_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();

@@ -12,3 +12,9 @@ First structured scratch for the challenge mode setup initializer.
   free helper with a path buffer.
 - Full Wibo result: 2026-06-18, 100.00%, 167/167 instructions, 37 masked
   operands ok.
+
+2026-07-11 ownership closure: `ChallengeSetupScreen::game` is a borrowed
+`SubgameRuntime*`, not a scratch-local setup view. The selected mode/index and
+inline `LevelDefinitionLoader` belong to that runtime, while replay availability
+comes from its owned `HighScoreBank::survival_pending_record`. Focused Wibo
+remains exact at 167/167 instructions with 37 clean masked operands.

@@ -4,15 +4,7 @@
 
 #include "frontend_widget.h"
 
-class ChallengeSetupGameView {
-public:
-    char unknown_000000[0x40];
-    int selected_subgame_mode; // +0x40
-    int selected_level_index; // +0x44
-    char unknown_000048[0xa874 - 0x48];
-    char level_definition_loader_storage[0xfb3050 - 0xa874]; // +0xa874
-    int selected_replay_available; // +0xfb3050
-};
+class SubgameRuntime;
 
 class ChallengeSetupScreen {
 public:
@@ -20,7 +12,7 @@ public:
     void destroy_challenge_setup_screen(); // @ 0x4161f0
     int update_challenge_setup_screen(); // @ 0x416370
 
-    ChallengeSetupGameView* game; // +0x00
+    SubgameRuntime* game; // +0x00, borrowed enclosing cRSubGame owner
     FrontendWidget* next_level_button; // +0x04
     FrontendWidget* previous_level_button; // +0x08
     FrontendWidget* level_name_widget; // +0x0c

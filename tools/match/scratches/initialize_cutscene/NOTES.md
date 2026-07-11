@@ -32,3 +32,8 @@ Remaining known shape issues:
 - A destination-position pointer probe compiled identically at 73.95%, so the
   scratch keeps the simpler direct `live_matrix.position` and
   `snail_hotspot_source_matrix_b.position` assignments.
+
+2026-07-11 pause-owner closure: the early pause gate now reads
+`GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
+is codegen-neutral at 73.95%, 329/339 instructions, prefix 1/339, and 42 clean
+masked operands.

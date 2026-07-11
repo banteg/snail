@@ -15,62 +15,64 @@ void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5
 
 int ChallengeSetupScreen::update_challenge_setup_screen()
 {
-    ((SubgameRuntime*)game)->hide_gameplay_scores();
+    game->hide_gameplay_scores();
 
-    switch (*(int*)((char*)game + 0x40)) {
+    switch (game->level_mode) {
     case 4: {
         unsigned int flags = next_level_button->widget_flags;
         if ((flags & 0x20) != 0) {
             next_level_button->widget_flags = flags & ~0x20;
-            ++*(int*)((char*)game + 0x44);
-            ((LevelDefinitionLoader*)((char*)game + 0xa874))
-                ->load_frontend_level_by_mode_and_index(
-                    *(int*)((char*)game + 0x40),
-                    *(int*)((char*)game + 0x44));
-            rstrcpy_checked_ascii(level_name_widget->text_buffer, (char*)game + 0x1b0150);
+            ++game->level_mode_arg;
+            game->level_definition.load_frontend_level_by_mode_and_index(
+                game->level_mode,
+                game->level_mode_arg);
+            rstrcpy_checked_ascii(
+                level_name_widget->text_buffer,
+                game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
             rstrcpy_checked_ascii(
-                (*(FrontendWidget**)((char*)game + 0x35bb8c))->text_buffer,
-                ((TimeTrialStringFormatter*)((char*)game + 0xff25e0))
-                    ->format_time_trial_string((TimerCounters*)((char*)game
-                        + 0x944158
-                        + *(int*)((char*)game + 0x44) * HIGH_SCORE_RECORD_STRIDE)));
+                game->bottom_score_widget->text_buffer,
+                game->time_trial_formatter()->format_time_trial_string(
+                    &game->high_score_bank
+                         .time_trial_route_records[game->level_mode_arg]
+                         .timer));
         }
 
         flags = previous_level_button->widget_flags;
         if ((flags & 0x20) != 0) {
             previous_level_button->widget_flags = flags & ~0x20;
-            --*(int*)((char*)game + 0x44);
-            ((LevelDefinitionLoader*)((char*)game + 0xa874))
-                ->load_frontend_level_by_mode_and_index(
-                    *(int*)((char*)game + 0x40),
-                    *(int*)((char*)game + 0x44));
-            rstrcpy_checked_ascii(level_name_widget->text_buffer, (char*)game + 0x1b0150);
+            --game->level_mode_arg;
+            game->level_definition.load_frontend_level_by_mode_and_index(
+                game->level_mode,
+                game->level_mode_arg);
+            rstrcpy_checked_ascii(
+                level_name_widget->text_buffer,
+                game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
             rstrcpy_checked_ascii(
-                (*(FrontendWidget**)((char*)game + 0x35bb8c))->text_buffer,
-                ((TimeTrialStringFormatter*)((char*)game + 0xff25e0))
-                    ->format_time_trial_string((TimerCounters*)((char*)game
-                        + 0x944158
-                        + *(int*)((char*)game + 0x44) * HIGH_SCORE_RECORD_STRIDE)));
+                game->bottom_score_widget->text_buffer,
+                game->time_trial_formatter()->format_time_trial_string(
+                    &game->high_score_bank
+                         .time_trial_route_records[game->level_mode_arg]
+                         .timer));
         }
 
-        if (*(int*)((char*)game + 0x44) == 0) {
+        if (game->level_mode_arg == 0) {
             previous_level_button->widget_flags |= 0x8000;
         } else {
             previous_level_button->widget_flags &= 0xffff7fff;
         }
 
-        if (*(int*)((char*)game + 0x44) == data_4df9b8) {
+        if (game->level_mode_arg == data_4df9b8) {
             next_level_button->widget_flags |= 0x8000;
         } else {
             next_level_button->widget_flags &= 0xffff7fff;
         }
 
         FrontendWidget* previous_widget;
-        int replay_active = *(int*)((char*)game
-            + 0x944150
-            + *(int*)((char*)game + 0x44) * HIGH_SCORE_RECORD_STRIDE);
+        int replay_active = game->high_score_bank
+            .time_trial_route_records[game->level_mode_arg]
+            .active;
         if (replay_active != 1) {
             replay_button->hide_border_init();
             previous_widget = play_button;
@@ -98,10 +100,10 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
         if ((flags & 0x20) != 0) {
             replay_button->widget_flags = flags & ~0x20;
             destroy_challenge_setup_screen();
-            *(unsigned char*)((char*)game + 0xff25d0) = 1;
-            *(int*)((char*)game + 0xff25d4) = (int)((char*)game
-                + 0x944150
-                + *(int*)((char*)game + 0x44) * HIGH_SCORE_RECORD_STRIDE);
+            game->selected_level_record_active = 1;
+            game->selected_level_record =
+                &game->high_score_bank
+                     .time_trial_route_records[game->level_mode_arg];
             return 1;
         }
         break;
@@ -130,8 +132,9 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
         if ((flags & 0x20) != 0) {
             replay_button->widget_flags = flags & ~0x20;
             destroy_challenge_setup_screen();
-            *(unsigned char*)((char*)game + 0xff25d0) = 1;
-            *(int*)((char*)game + 0xff25d4) = (int)((char*)game + 0xfb3050);
+            game->selected_level_record_active = 1;
+            game->selected_level_record =
+                &game->high_score_bank.survival_pending_record;
             return 1;
         }
         break;
@@ -141,34 +144,36 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
         unsigned int flags = next_level_button->widget_flags;
         if ((flags & 0x20) != 0) {
             next_level_button->widget_flags = flags & ~0x20;
-            ++*(int*)((char*)game + 0x44);
-            ((LevelDefinitionLoader*)((char*)game + 0xa874))
-                ->load_frontend_level_by_mode_and_index(
-                    *(int*)((char*)game + 0x40),
-                    *(int*)((char*)game + 0x44));
-            rstrcpy_checked_ascii(level_name_widget->text_buffer, (char*)game + 0x1b0150);
+            ++game->level_mode_arg;
+            game->level_definition.load_frontend_level_by_mode_and_index(
+                game->level_mode,
+                game->level_mode_arg);
+            rstrcpy_checked_ascii(
+                level_name_widget->text_buffer,
+                game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
         }
 
         flags = previous_level_button->widget_flags;
         if ((flags & 0x20) != 0) {
             previous_level_button->widget_flags = flags & ~0x20;
-            --*(int*)((char*)game + 0x44);
-            ((LevelDefinitionLoader*)((char*)game + 0xa874))
-                ->load_frontend_level_by_mode_and_index(
-                    *(int*)((char*)game + 0x40),
-                    *(int*)((char*)game + 0x44));
-            rstrcpy_checked_ascii(level_name_widget->text_buffer, (char*)game + 0x1b0150);
+            --game->level_mode_arg;
+            game->level_definition.load_frontend_level_by_mode_and_index(
+                game->level_mode,
+                game->level_mode_arg);
+            rstrcpy_checked_ascii(
+                level_name_widget->text_buffer,
+                game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
         }
 
-        if (*(int*)((char*)game + 0x44) == 0) {
+        if (game->level_mode_arg == 0) {
             previous_level_button->widget_flags |= 0x8000;
         } else {
             previous_level_button->widget_flags &= 0xffff7fff;
         }
 
-        if (*(int*)((char*)game + 0x44) == data_4df9b8) {
+        if (game->level_mode_arg == data_4df9b8) {
             next_level_button->widget_flags |= 0x8000;
         } else {
             next_level_button->widget_flags &= 0xffff7fff;

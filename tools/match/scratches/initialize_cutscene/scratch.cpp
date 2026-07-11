@@ -1,6 +1,6 @@
 // initialize_cutscene @ 0x4428d0 (thiscall, ret)
 
-#include "game_pause_view.h"
+#include "game_root.h"
 #include "player.h"
 
 extern char* g_game_base; // data_4df904
@@ -9,7 +9,7 @@ float sine(float angle);
 
 void PlayerPresentationController::initialize_cutscene()
 {
-    if (((GamePauseView*)g_game_base)->pause_gate != 0)
+    if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
         return;
 
     snail_skin_transition.update_snail_skin_transition();

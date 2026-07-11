@@ -2,7 +2,7 @@
 
 #include "click_start.h"
 #include "audio_system.h"
-#include "game_pause_view.h"
+#include "game_root.h"
 #include "input_state.h"
 
 extern char* g_game_base; // data_4df904
@@ -13,7 +13,7 @@ void* set_input_controller_pointer_authored_xy(int slot, float authored_x, float
 
 void ClickStartController::update_click_start()
 {
-    if (((GamePauseView*)g_game_base)->pause_gate != 0)
+    if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
         return;
 
     FrontendWidget* widget = prompt;

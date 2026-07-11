@@ -2,13 +2,13 @@
 // Advances a repeated landscape slice and toggles its render visibility bit.
 
 #include "active_landscape_entry.h"
-#include "game_pause_view.h"
+#include "game_root.h"
 
 extern char* g_game_base; // data_4df904
 
 void ActiveLandscapeEntry::update_active_landscape_entry()
 {
-    if (((GamePauseView*)g_game_base)->pause_gate == 0) {
+    if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate == 0) {
         // Keep VC6's native switch gate while sharing the early-return label.
         switch (state) {
         case 0:

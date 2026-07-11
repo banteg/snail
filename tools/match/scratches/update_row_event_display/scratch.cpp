@@ -1,7 +1,7 @@
 // update_row_event_display @ 0x404cf0 (fastcall, ret)
 
 #include "audio_system.h"
-#include "game_pause_view.h"
+#include "game_root.h"
 #include "input_state.h"
 #include "player.h"
 #include "row_event_display.h"
@@ -18,7 +18,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
     if (controller->state == 0)
         return;
 
-    char pause_gate = ((GamePauseView*)g_game_base)->pause_gate;
+    char pause_gate = ((GameRoot*)g_game_base)->subgame.subgame_pause_gate;
     if (pause_gate != 0) {
         FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
         delivered_count_widget->hide_border_init();
