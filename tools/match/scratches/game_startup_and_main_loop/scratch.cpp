@@ -1,25 +1,10 @@
 // game_startup_and_main_loop @ 0x406dc0 (stdcall, ret 0x10)
 
-typedef int BOOL;
-typedef int HWND;
-typedef unsigned int UINT;
-
-struct Msg {
-    HWND hwnd;
-    UINT message;
-    UINT wparam;
-    int lparam;
-    unsigned int time;
-    int pt_x;
-    int pt_y;
-};
-
-typedef char Msg_must_be_0x1c[(sizeof(Msg) == 0x1c) ? 1 : -1];
-
 #include "frontend_fade.h"
 #include "game_root.h"
 #include "high_score_bank.h"
 #include "loading_screen.h"
+#include "win32_window_state.h"
 
 class StartupAudioBackendView {
 public:
@@ -30,9 +15,9 @@ public:
 extern "C" __declspec(dllimport) HWND __stdcall FindWindowExA(
     HWND parent, HWND child_after, char* class_name, char* window_name);
 extern "C" __declspec(dllimport) BOOL __stdcall PeekMessageA(
-    Msg* msg, HWND hwnd, UINT min_filter, UINT max_filter, UINT remove);
-extern "C" __declspec(dllimport) BOOL __stdcall TranslateMessage(Msg* msg);
-extern "C" __declspec(dllimport) int __stdcall DispatchMessageA(Msg* msg);
+    WindowMessage* msg, HWND hwnd, UINT min_filter, UINT max_filter, UINT remove);
+extern "C" __declspec(dllimport) BOOL __stdcall TranslateMessage(WindowMessage* msg);
+extern "C" __declspec(dllimport) int __stdcall DispatchMessageA(WindowMessage* msg);
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
@@ -40,8 +25,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 extern char* g_game_base;                    // data_4df904
 extern char g_config_fullscreen_enabled;     // data_4df920
 extern unsigned char g_config_load_valid_flag;
-extern int g_application_instance;           // data_4dfad8
-extern HWND g_main_window;                   // data_4dfaf0
 extern unsigned char g_main_loop_exit_requested;  // g_main_loop_exit_requested
 extern unsigned char g_game_initialization_pending;  // g_game_initialization_pending
 extern unsigned char data_4b7759;
@@ -136,7 +119,7 @@ int __stdcall game_startup_and_main_loop(
     log_startup_timestamp();
 
     do {
-        Msg msg;
+        WindowMessage msg;
         while (PeekMessageA(&msg, 0, 0, 0, 1) != 0) {
             if (msg.message == 0x12) {
                 quit_requested = 1;

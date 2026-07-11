@@ -130,3 +130,10 @@ Known shape gaps:
   `query_directx_runtime_version` and still awaits a dedicated scratch; the
   texture registry loader at `0x412a00` and render-scene call at `0x4134c0`
   are named as `load_registered_texture_refs` and `render_game_frame_scene`.
+
+2026-07-11 Win32 owner consolidation: startup now uses the shared
+`WindowMessage`, `HINSTANCE`, and `HWND` declarations. This proves the entrypoint
+stores its instance at `g_application_instance` (`0x4dfad8`) for the hidden
+BASS window, while main-window creation uses the distinct cached instance at
+`0x50327c`. The type-only rewrite leaves the focused 63.65%, 338/325 stream and
+its six existing structural mismatches unchanged.

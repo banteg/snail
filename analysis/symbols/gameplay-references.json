@@ -118,7 +118,10 @@
       "address": "0x4076ac",
       "name": "game_window_proc_low_message_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L488",
+        "$L568"
+      ],
       "size": "0x18",
       "description": "Compiler-emitted switch jump table used by game_window_proc for messages 2 through 0x100 after the byte lookup."
     },
@@ -126,7 +129,10 @@
       "address": "0x4076c4",
       "name": "game_window_proc_low_message_lookup_table",
       "kind": "lookup_table",
-      "aliases": [],
+      "aliases": [
+        "$L487",
+        "$L567"
+      ],
       "size": "0xff",
       "description": "Compiler-emitted byte lookup table mapping game_window_proc message values 2 through 0x100 to compact switch cases."
     },
@@ -134,7 +140,10 @@
       "address": "0x4077c4",
       "name": "game_window_proc_mouse_message_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L489",
+        "$L569"
+      ],
       "size": "0x28",
       "description": "Compiler-emitted switch jump table used by game_window_proc for mouse messages 0x201 through 0x20a."
     },
@@ -223,7 +232,10 @@
       "address": "0x411d54",
       "name": "initialize_game_window_resolution_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L734",
+        "$L757"
+      ],
       "size": "0x14",
       "description": "Compiler-emitted switch jump table selecting the configured 4:3 window resolution in initialize_game_window_and_input."
     },
@@ -343,9 +355,10 @@
     },
     {
       "address": "0x50327c",
-      "name": "g_module_instance",
+      "name": "g_game_window_instance",
       "kind": "global",
       "aliases": [
+        "g_module_instance",
         "data_50327c"
       ],
       "size": "0x4",
@@ -3112,7 +3125,7 @@
       "aliases": [
         "data_4dfad0"
       ],
-      "size": "0x4",
+      "size": "0x8",
       "description": "Two-slot mouse wheel delta array consumed and cleared by consume_mouse_wheel_delta."
     },
     {

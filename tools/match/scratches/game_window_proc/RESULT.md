@@ -14,9 +14,11 @@ The scratch recovers the full Win32 message behavior for activation/minimize,
 left/right mouse button state, mouse wheel deltas, quit handling, and default
 `DefWindowProcA` forwarding.
 
-The `message - 2` byte lookup table is now content-audited and clean. The two
-remaining masked operand mismatches are compiler-owned jump tables inside the
-function, not imported APIs or gameplay globals.
+The `message - 2` byte lookup table is content-audited and clean. The two
+remaining masked operand mismatches are bounded compiler-owned jump tables
+inside the function, not imported APIs or gameplay globals. Their COFF symbols
+and exact entry counts are recorded, but the destination offsets still differ
+with the four-byte body-layout residual and are intentionally not waived.
 
 The current source also duplicates the `PostQuitMessage(0)` close/ESC arms like
 native. The remaining body residual is the final `WM_RBUTTONUP` zero scheduling:

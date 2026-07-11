@@ -41,3 +41,17 @@ but it adds a non-native stack spill/reload around the two byte stores. Plain
 result locals, comma returns, assignment returns, and a local `unsigned char`
 zero are codegen-neutral at 94.33%, so keep the current source and treat the
 late `xor eax, eax` as scheduler debt.
+
+2026-07-11 Win32 ownership and table-bound pass:
+
+- The procedure now consumes the shared `win32_window_state.h` ABI instead of
+  redeclaring its handle/message types locally.
+- COFF proves the current compiler-owned objects: `$L568` at `.text+0x200` is
+  the six-entry low-message jump table, `$L567` at `+0x218` is the 255-byte
+  lookup table followed by alignment, and `$L569` at `+0x318` is the ten-entry
+  mouse-message jump table. Their prior `$L488`/`$L487`/`$L489` spellings are
+  retained as alternate aliases.
+- The two jump-table operands remain mismatches after bounding because their
+  destination offsets inherit the real four-byte branch-layout residual. They
+  are identified owners, not waived operands; focused matching stays 94.33%,
+  141/141, with 37 clean and 2 mismatched operands.

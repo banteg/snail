@@ -1,10 +1,11 @@
 // enumerate_input_controllers @ 0x44b3c0 (cdecl)
 
 #include "direct_input_view.h"
+#include "win32_window_state.h"
 
-extern "C" __declspec(dllimport) int __stdcall GetModuleHandleA(char* module_name);
+extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module_name);
 extern "C" int __stdcall DirectInput8Create(
-    int module,
+    HINSTANCE module,
     unsigned int version,
     void* iid,
     DirectInput** out_input,
@@ -19,7 +20,7 @@ extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
 extern char g_directinput8_iid; // data_49b0c0
 extern char g_directinput_joystick_data_format; // data_49b2fc
 
-int enumerate_input_controllers(int hwnd, int* out_count)
+int enumerate_input_controllers(HWND hwnd, int* out_count)
 {
     g_joystick_count = 0;
     *out_count = 0;

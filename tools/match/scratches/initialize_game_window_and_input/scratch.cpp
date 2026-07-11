@@ -1,53 +1,9 @@
 // initialize_game_window_and_input @ 0x4119d0 (cdecl)
 
 #include "rect.h"
+#include "win32_window_state.h"
 
 #include <string.h>
-
-typedef unsigned int UINT;
-typedef unsigned short ATOM;
-typedef int HWND;
-typedef int HDC;
-typedef int HINSTANCE;
-typedef int HICON;
-typedef int HCURSOR;
-typedef int HBRUSH;
-typedef int HMENU;
-typedef int HMODULE;
-typedef int BOOL;
-typedef int LONG;
-typedef LONG (__stdcall* WindowProc)(HWND hwnd, UINT message, UINT wparam, int lparam);
-
-struct WndClassA {
-    UINT style;
-    WindowProc wnd_proc;
-    int cls_extra;
-    int wnd_extra;
-    HINSTANCE instance;
-    HICON icon;
-    HCURSOR cursor;
-    HBRUSH background;
-    char* menu_name;
-    char* class_name;
-};
-
-typedef char WndClassA_must_be_0x28[(sizeof(WndClassA) == 0x28) ? 1 : -1];
-
-struct DevModeA {
-    char device_name[32];
-    unsigned short spec_version;
-    unsigned short driver_version;
-    unsigned short size;
-    unsigned short driver_extra;
-    unsigned int fields;
-    char unknown_02c[0x68 - 0x2c];
-    unsigned int bits_per_pel;
-    unsigned int pels_width;
-    unsigned int pels_height;
-    char unknown_074[0x9c - 0x74];
-};
-
-typedef char DevModeA_must_be_0x9c[(sizeof(DevModeA) == 0x9c) ? 1 : -1];
 
 extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module_name);
 extern "C" __declspec(dllimport) HICON __stdcall LoadIconA(HINSTANCE instance, int icon_name);
@@ -77,10 +33,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall EndDialog(HWND dialog, int resul
 
 extern unsigned int g_render_flags; // data_4df934
 extern int g_config_display_mode_index;
-extern HINSTANCE g_module_instance; // data_50327c
-extern HWND g_main_window; // data_4dfaf0
-extern HDC g_main_window_dc; // data_4dfaec
-extern unsigned char g_fullscreen_active; // data_4dfaf4
 extern int g_controller_count_view; // data_4b776c
 
 int __stdcall game_window_proc(HWND hwnd, UINT message, UINT wparam, int lparam);
@@ -134,11 +86,11 @@ use_640x480:
         break;
     }
 
-    HINSTANCE instance = g_module_instance;
+    HINSTANCE instance = g_game_window_instance;
     g_fullscreen_active = 0;
     if (instance == 0) {
         instance = GetModuleHandleA(0);
-        g_module_instance = instance;
+        g_game_window_instance = instance;
     }
 
     WndClassA wnd_class;
@@ -210,7 +162,7 @@ use_640x480:
         rect.bottom - rect.top,
         0,
         0,
-        g_module_instance,
+        g_game_window_instance,
         0);
 
     if (g_main_window == 0) {

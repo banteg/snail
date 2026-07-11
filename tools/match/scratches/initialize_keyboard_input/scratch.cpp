@@ -1,11 +1,12 @@
 // initialize_keyboard_input @ 0x44b7d0 (cdecl)
 
 #include "direct_input_view.h"
+#include "win32_window_state.h"
 
-extern "C" __declspec(dllimport) int __stdcall GetWindowLongA(int hwnd, int index);
-extern "C" __declspec(dllimport) int __stdcall GetModuleHandleA(char* module_name);
+extern "C" __declspec(dllimport) int __stdcall GetWindowLongA(HWND hwnd, int index);
+extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module_name);
 extern "C" int __stdcall DirectInput8Create(
-    int module,
+    HINSTANCE module,
     unsigned int version,
     void* iid,
     DirectInput** out_input,
@@ -22,7 +23,7 @@ extern char g_directinput8_iid; // data_49b0c0
 extern char g_directinput_keyboard_guid; // data_49b010
 extern char g_directinput_keyboard_data_format; // data_49b504
 
-int initialize_keyboard_input(int hwnd)
+int initialize_keyboard_input(HWND hwnd)
 {
     GetWindowLongA(hwnd, -6);
     release_input_controllers();

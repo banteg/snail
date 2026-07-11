@@ -1,6 +1,7 @@
 // convert_mouse_screen_xy @ 0x44c100 (cdecl)
 
 #include "game_root.h"
+#include "win32_window_state.h"
 
 struct Point {
     int x;
@@ -8,14 +9,12 @@ struct Point {
 };
 
 extern "C" __declspec(dllimport) int __stdcall GetCursorPos(Point* point);
-extern "C" __declspec(dllimport) int __stdcall GetActiveWindow();
+extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) int __stdcall SetCursorPos(int x, int y);
 
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern GameRoot* g_game; // data_4df904
-extern int g_main_window; // data_4dfaf0
-extern unsigned char g_fullscreen_active; // data_4dfaf4
 extern float g_authored_view_width; // data_4df85c
 extern float g_authored_view_height; // data_4b7760
 extern float g_steering_sensitivity[]; // flt_4df950

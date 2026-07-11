@@ -21,3 +21,11 @@ The reference manifest now names the real startup/window references used here:
 `bass_audio_window_proc` (`sub_4079e0`), and
 `shutdown_bass_audio_window` (`sub_407b00`). The masked operand audit is clean:
 23 resolved operands, no unresolved operands, and no mismatches.
+
+2026-07-11 window-owner consolidation: the hidden BASS window now shares the
+same `WndClassA`, `HINSTANCE`, and `HWND` ABI declarations as the main window.
+This also makes the ownership split explicit: `g_application_instance` is the
+WinMain value used here, while `g_game_window_instance` at `0x50327c` belongs
+only to main-window registration. The backend's older generic `void*` method
+view still needs a zero-cost cast at the call boundary. Focused matching remains
+instruction-exact at 73/73 with 23 clean operands.

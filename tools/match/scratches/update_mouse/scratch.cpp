@@ -3,6 +3,7 @@
 #include "direct_input_view.h"
 #include "game_root.h"
 #include "rect.h"
+#include "win32_window_state.h"
 
 struct DirectInputMouseState {
     int x;
@@ -11,13 +12,12 @@ struct DirectInputMouseState {
     unsigned char buttons[8];
 };
 
-extern "C" __declspec(dllimport) int __stdcall GetWindowRect(int hwnd, Rect* rect);
-extern "C" __declspec(dllimport) int __stdcall GetClientRect(int hwnd, Rect* rect);
+extern "C" __declspec(dllimport) int __stdcall GetWindowRect(HWND hwnd, Rect* rect);
+extern "C" __declspec(dllimport) int __stdcall GetClientRect(HWND hwnd, Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall ClipCursor(Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
 
 extern GameRoot* g_game; // data_4df904
-extern unsigned char g_fullscreen_active; // data_4dfaf4
 extern float g_mouse_live_x[]; // data_777d58
 extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
@@ -49,7 +49,7 @@ void update_input_controller_pointer_region(
     char capture_when_outside,
     char force_clamp); // @ 0x4321c0
 
-int update_mouse(int hwnd)
+int update_mouse(HWND hwnd)
 {
     DirectInputMouseState state;
     Rect window_rect;

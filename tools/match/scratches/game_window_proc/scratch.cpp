@@ -2,12 +2,7 @@
 
 #include "audio_system.h"
 #include "display_mode_state.h"
-
-typedef int HWND;
-typedef unsigned int UINT;
-typedef unsigned int WPARAM;
-typedef int LPARAM;
-typedef int LRESULT;
+#include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int exit_code);
 extern "C" __declspec(dllimport) LRESULT __stdcall DefWindowProcA(

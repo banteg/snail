@@ -18,13 +18,12 @@ masked mismatch.
 
 2026-06-20 startup/window symbol pass:
 
-- `g_config_display_mode_index`, `g_module_instance`, `g_main_window_dc`, and
+- `g_config_display_mode_index`, `g_game_window_instance`, `g_main_window_dc`, and
   `g_controller_count_view` are now curated references backed by this function's
   direct consumers.
 - The resolution switch table at `0x411d54` is named as
   `initialize_game_window_resolution_jump_table`. The remaining masked mismatch
-  is only the candidate compiler label for that jump table; do not clear it with
-  a scratch-local `$L...` alias.
+  is the table's differing case-target layout, not an unknown data owner.
 
 Remaining gaps are mostly code-layout shape rather than unknown behavior:
 
@@ -52,3 +51,22 @@ store order. Focused Wibo improves to 87.88%, with 266/287 instructions, a
 label mismatch. The remaining pinned residuals are the `0x400` constant hoist
 into `ebp` and the local cleanup thunk/tail bytes still included in the target
 extent.
+
+2026-07-11 Win32 ownership pass:
+
+- `win32_window_state.h` now owns the shared 32-bit handle ABI, `WndClassA`,
+  `DevModeA`, and the main/BASS window globals. It distinguishes the WinMain
+  instance at `0x4dfad8`, which the BASS window consumes, from this compilation
+  unit's independently cached game-window instance at `0x50327c`.
+- The latter is therefore named `g_game_window_instance`; the earlier generic
+  `g_module_instance` spelling remains a manifest alias.
+- COFF places the current resolution table symbol `$L757` at `.text+0x380`
+  with exactly five relocations through `+0x390`, proving the `0x14`-byte table
+  owner. The pre-header `$L734` spelling remains as an alternate compiler
+  alias. Bounded comparison still reports one mismatch because the candidate
+  case destinations differ with the known width-store layout; the alias does
+  not waive that difference.
+- A branch-form depth-selection probe regressed to 85.87% and changed the
+  function entry/layout, so the source-truer branchless ternary remains. The
+  focused baseline stays 87.88%, 266/287, with 53 clean operands and one honest
+  table mismatch.

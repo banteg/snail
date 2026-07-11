@@ -1,10 +1,11 @@
 // initialize_mouse_input @ 0x44c310 (cdecl)
 
 #include "direct_input_view.h"
+#include "win32_window_state.h"
 
-extern "C" __declspec(dllimport) int __stdcall GetModuleHandleA(char* module_name);
+extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module_name);
 extern "C" int __stdcall DirectInput8Create(
-    int module,
+    HINSTANCE module,
     unsigned int version,
     void* iid,
     DirectInput** out_input,
@@ -21,7 +22,7 @@ extern char g_directinput8_iid; // data_49b0c0
 extern char g_directinput_mouse_guid; // data_49b020
 extern char g_directinput_mouse_data_format; // data_49b70c
 
-int initialize_mouse_input(int hwnd)
+int initialize_mouse_input(HWND hwnd)
 {
     float mouse_x = g_authored_view_width * 0.5f;
     float mouse_y = g_authored_view_height * 0.5f;
