@@ -32,7 +32,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_player_presentation_controller",
-        "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation);",
+        "Snail* __thiscall initialize_player_presentation_controller(Snail* snail);",
     ),
     (
         "noop_this_constructor",
@@ -224,7 +224,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_snail_skin",
-        "void __thiscall update_snail_skin(PlayerPresentationController* presentation);",
+        "void __thiscall update_snail_skin(Snail* snail);",
     ),
     (
         "initialize_invincible_shell",
@@ -360,19 +360,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_snail_weapon",
-        "void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);",
+        "void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags);",
     ),
     (
         "set_snail_jetpack",
-        "void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);",
+        "void __thiscall set_snail_jetpack(Snail* snail, int32_t state);",
     ),
     (
         "initialize_cutscene",
-        "void __thiscall initialize_cutscene(PlayerPresentationController* presentation);",
+        "void __thiscall initialize_cutscene(Snail* snail);",
     ),
     (
         "dispatch_cutscene_animation",
-        "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
     ),
     (
         "initialize_cutscene_ai",

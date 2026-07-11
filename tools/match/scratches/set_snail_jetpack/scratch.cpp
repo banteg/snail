@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "player.h"
 
-void PlayerPresentationController::set_snail_jetpack(int state)
+void Snail::set_snail_jetpack(int state)
 {
     int input_state = state;
     register int target_state;

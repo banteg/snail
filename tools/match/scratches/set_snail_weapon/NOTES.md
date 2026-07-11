@@ -1,6 +1,6 @@
 # set_snail_weapon @ 0x445920
 
-First source-shaped scratch for the player presentation weapon dispatcher.
+First source-shaped scratch for authored `cRSnail::SetWeapon(int)`.
 This sits between `update_player_movement_flags` and
 `PresentationAnimationChannel::set_weapon_animation`.
 
@@ -23,6 +23,10 @@ semantic/relationship scratch, not a near-final match. The layout is useful:
 the calls hit channel bases `+0x64c`, `+0xa28`, and `+0xe04`, and selected
 states at channel `+0x104` (`+0x750`, `+0xb2c`, `+0xf08` in the presentation
 owner).
+
+iOS and Android retain the same authored method on cRSnail. Together with the
+three embedded channel bases, this makes the receiver the exact shared `Snail`
+at `Player +0x2984`, not a freestanding weapon controller.
 
 Main residual: native keeps state0 in `edi`, state1 in `ebp`, state2 on the
 stack, and uses `ebx` as a channel pointer in the first transition block. VC6

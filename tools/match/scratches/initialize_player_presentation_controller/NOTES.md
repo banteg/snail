@@ -1,11 +1,11 @@
 # initialize_player_presentation_controller
 
-Exact constructor helper for the `PlayerPresentationController` embedded at
-`Player +0x2984`.
+Exact constructor helper for the 0x19b4-byte authored `Snail` (`cRSnail`)
+embedded at `Player +0x2984`.
 
 Recovered ownership:
 
-- the controller begins with a renderable-compatible body and owns ten
+- the Snail begins with a renderable-compatible body and owns ten
   `0x80`-byte cutscene visual slots beginning at `+0x14c`;
 - the three `PresentationAnimationChannel` weapon owners begin at `+0x64c`
   and the jetpack channel begins at `+0x11e0`, all at the proven `0x3dc`
@@ -14,8 +14,16 @@ Recovered ownership:
   their transforms already exposed at `+0x1604/+0x1684`;
 - authored `cRInvincible` begins at `+0x1894` and receives the callback
   whose sole target is exact `update_invincible_shell`;
-- the controller and animation-channel callback slots both resolve to
+- the Snail and animation-channel callback slots both resolve to
   `noop_runtime_ai`.
+
+Authored-name proof is convergent rather than guessed from this constructor:
+iOS retains cRSnail typeinfo and vtable plus `AIGoldy`, `ReleaseWeapons`,
+`SetAnimation`, `SetJetPack`, `SetWeapon`, and `ExtractHotSpots`; Android
+retains the same family plus `BuildHotSpots`. Their bodies consume the same
+animation-channel, hotspot, cRInvincible, and cRCutScene subowners recovered in
+the Windows object. The Windows extent ends exactly at `Player +0x4338`, where
+the separately proven `parcels_collected` field begins.
 
 The former `initialize_enemy_manager_runtime` name was stale: the sole caller
 passes `Player +0x2984`, while the actual Windows `cREnemyManager` is the

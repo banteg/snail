@@ -9,7 +9,7 @@ void report_errorf(char* format, ...);
 extern char* g_snail_hotspot_texture_names[]; // data_4a4aa0
 extern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table
 
-void PlayerPresentationController::build_snail_hotspots()
+void Snail::build_snail_hotspots()
 {
     Object* model = snail_hotspot_model;
     char** name_cursor = g_snail_hotspot_texture_names;

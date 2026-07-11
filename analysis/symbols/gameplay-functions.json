@@ -475,7 +475,7 @@
     {
       "address": "0x4086d0",
       "name": "initialize_player_presentation_controller",
-      "description": "Constructs the `Player +0x2984` presentation controller: initializes its renderable prefix, ten cutscene visual slots, four animation channels, two hotspot-source renderables, and the invincible-shell child before installing their callback tables."
+      "description": "Constructs the exact 0x19b4-byte authored `cRSnail` embedded at `Player +0x2984`: initializes its renderable prefix, ten visual slots, four animation channels, two hotspot sources, and cRInvincible child before installing their callback tables."
     },
     {
       "address": "0x408820",
@@ -2375,7 +2375,7 @@
     {
       "address": "0x442e40",
       "name": "release_snail_weapons",
-      "description": "Clears Goldy's active snail weapon visuals and presentation channels. Cross-port iOS symbols match this helper to `cRSnail::ReleaseWeapons()` in `SubGame.o`."
+      "description": "Authored `cRSnail::ReleaseWeapons()`: seeds release motion on the embedded Snail's weapon/jetpack channels once and ends the active Player jetpack hover."
     },
     {
       "address": "0x443070",
@@ -2440,7 +2440,7 @@
     {
       "address": "0x444600",
       "name": "dispatch_cutscene_animation",
-      "description": "Either queues one cutscene or presentation animation id onto the player-side channel or begins it immediately, resetting the live slot state when the immediate path wins."
+      "description": "Stable Windows name for `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root animation manager and visual-slot table."
     },
     {
       "address": "0x4446e0",
@@ -2478,7 +2478,7 @@
     {
       "address": "0x444ac0",
       "name": "initialize_invincible_shell",
-      "description": "Authored `cRInvincible::Init()`: resets the exact 0xa4-byte visual owner embedded at `PlayerPresentationController + 0x1894` (`Player + 0x4218`) and restores the normal snail skin."
+      "description": "Authored `cRInvincible::Init()`: resets the exact 0xa4-byte visual owner embedded at `Snail + 0x1894` (`Player + 0x4218`) and restores the normal snail skin."
     },
     {
       "address": "0x444ae0",
@@ -2502,22 +2502,22 @@
     {
       "address": "0x445860",
       "name": "set_snail_jetpack",
-      "description": "Maps the requested jetpack state onto Goldy's snail presentation channel. Cross-port iOS symbols match this helper to `cRSnail::SetJetPack(int)` in `SubGame.o`."
+      "description": "Authored `cRSnail::SetJetPack(int)`: maps the requested jetpack state onto the exact embedded Snail's jetpack animation channel."
     },
     {
       "address": "0x445920",
       "name": "set_snail_weapon",
-      "description": "Maps the requested player weapon state onto the three visual-state channels rooted at +0x2984 and refreshes the active weapon presentation. Cross-port iOS symbols match this helper to `cRSnail::SetWeapon(int)` in `SubGame.o`."
+      "description": "Authored `cRSnail::SetWeapon(int)`: maps Player movement/weapon state onto the three animation channels owned by the exact Snail at `Player +0x2984`."
     },
     {
       "address": "0x445cd0",
       "name": "update_snail_skin",
-      "description": "Transforms the 19-entry local snail hotspot bank at `+0x16cc` into the live world-space hotspot bank at `+0x17b0`, using two cached matrices and feeding the cutscene anchor points later consumed by `update_cutscene`, including the authored `CameraSkidStop` and `CameraIntroTalk` hotspots. Cross-port iOS symbols match the owning runtime to `cRSnail` in `SubGame.o`."
+      "description": "Stable Windows name for Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene."
     },
     {
       "address": "0x445d50",
       "name": "build_snail_hotspots",
-      "description": "Builds the 19-entry local snail hotspot bank from named hotpoint textures on the loaded snail model, including the authored `CameraSkidStop`, `CameraSlugDeath`, and `CameraIntroTalk` entries later transformed by `update_snail_skin` and consumed by the cutscene path. Cross-port iOS symbols match this helper to `cRSnail::ExtractHotSpots()` in `SubGame.o`."
+      "description": "Authored `cRSnail::ExtractHotSpots()`: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk."
     },
     {
       "address": "0x445e20",
@@ -2563,7 +2563,7 @@
     {
       "address": "0x446130",
       "name": "initialize_cutscene_ai",
-      "description": "Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `PlayerPresentationController + 0x1958` (`Player + 0x42dc`), wiring its parent/player backlinks and clearing state."
+      "description": "Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `Snail + 0x1958` (`Player + 0x42dc`), wiring its Snail/Player backlinks and clearing state."
     },
     {
       "address": "0x446160",

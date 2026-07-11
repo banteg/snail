@@ -5,14 +5,14 @@
 #include "transform_matrix.h"
 
 class Player;
-class PlayerPresentationController;
+class Snail;
 
 class CutScene {
 public:
     void initialize_cutscene_ai(); // @ 0x446130, cRCutScene::Init
     void update_cutscene(); // @ 0x4466d0, cRCutScene::AI
 
-    PlayerPresentationController* presentation; // +0x00, non-owning parent
+    Snail* presentation; // +0x00, non-owning parent cRSnail
     Player* player; // +0x04, non-owning Goldy owner
     int camera_mode; // +0x08
     int state; // +0x0c

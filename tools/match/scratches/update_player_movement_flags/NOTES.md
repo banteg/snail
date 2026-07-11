@@ -51,7 +51,7 @@ Residual:
   residual remains VC6 tail-merging the native duplicate equal-mask epilogue.
 - 2026-06-20 unresolved-layout cleanup: the local presentation receiver was
   renamed `PlayerMovementPresentationView`, keeping this scratch out of the
-  shared `PlayerPresentationController` layout group while the table audit was
+  shared `Snail` layout group while the table audit was
   still unresolved.
 - 2026-06-21 shared-header retry: including `player.h` directly is now
   codegen-neutral at the same 93.75% focused match, 46/50 candidate/target

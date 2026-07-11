@@ -7,7 +7,7 @@ extern char* g_game_base; // data_4df904
 
 float sine(float angle);
 
-void PlayerPresentationController::initialize_cutscene()
+void Snail::initialize_cutscene()
 {
     if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
         return;

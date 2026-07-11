@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void PlayerPresentationController::update_snail_skin()
+void Snail::update_snail_skin()
 {
     for (int index = 0; index < 19; ++index) {
         TransformMatrix* source_matrix = &snail_hotspot_source_matrix_b;

@@ -224,7 +224,7 @@ Template:
 
 - invalidated claim: `player + 0x29a8` is a standalone `snail_visual` sibling field and `player + 0x2984` is anonymous padding
 - replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on the inline root at `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the live visual object through that root as `presentation.visual_root`, and the embedded cutscene AI sits at `player + 0x42dc`
-- port consequence: keep the recovered type lane and docs centered on one inline `PlayerPresentationController`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object
+- port consequence: keep the recovered type lane and docs centered on one inline authored `Snail`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object
 
 ## 2026-03-26 - Player presentation animation lanes
 
@@ -252,6 +252,6 @@ Template:
 
 ## 2026-03-27 - Presentation tail boundary
 
-- invalidated claim: `PlayerPresentationController` has a standalone `weapon_release_active` byte at `+0x1938`, with `snail_skin_transition` starting at `+0x193c` and `cutscene` at `+0x195c`
+- invalidated claim: `Snail` has a standalone `weapon_release_active` byte at `+0x1938`, with `snail_skin_transition` starting at `+0x193c` and `cutscene` at `+0x195c`
 - replacement evidence: raw Windows callsites show `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and later passes `presentation + 0x1958` directly to `update_cutscene` (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled boundary, not a real standalone field
 - port consequence: keep `snail_skin_transition` starting at `+0x1938` and the exact 0x5c-byte `cutscene` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field ahead of the transition state in BN/IDA headers or docs

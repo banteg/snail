@@ -4,7 +4,7 @@ Exact `cRCutScene::Init` helper at `0x446130`. The Windows function name stays
 stable for the match harness.
 
 The receiver is the exact 0x5c-byte `CutScene` embedded at
-`PlayerPresentationController +0x1958` (`Player +0x42dc`). The helper writes
+`Snail +0x1958` (`Player +0x42dc`). The helper writes
 the parent presentation and Player backlinks at `+0/+4` and clears state at
 `+0x0c`.
 

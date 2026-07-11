@@ -1,6 +1,7 @@
 # build_snail_hotspots @ 0x445d50
 
-Producer for the local snail hotspot bank consumed by `update_snail_skin`.
+Authored `cRSnail::ExtractHotSpots()` producer for the local hotspot bank
+consumed by `update_snail_skin`.
 `initialize_game_assets_and_world` loads `TurboHOTSPOTS.X` into presentation
 `+0x1670` immediately before calling this helper, so the promoted field is
 `snail_hotspot_model`.
@@ -16,6 +17,10 @@ Recovered behavior:
 The tail lift is deliberately named as Y: presentation `+0x17a8` is
 `snail_hotspots_local[18].y` (`+0x16cc + 18 * 0xc + 4`), despite the decompiler's
 transient `z`-lane cursor making it easy to misread.
+
+iOS and Android retain `cRSnail::ExtractHotSpots`; the Android body repeats the
+19-name scan, texture lookup, model-face vertex extraction, and final
+CameraIntroTalk Y lift on the same relative member family.
 
 Focused Wibo result: 60.27%, 72 candidate / 74 target instructions. The
 source keeps the native `snail_hotspot_model` in `ebp`, the hotpoint name table

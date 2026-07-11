@@ -1,7 +1,7 @@
 # update_cutscene @ 0x4466d0
 
 Structural recovery for authored `cRCutScene::AI` on the exact 0x5c-byte
-`CutScene` embedded at `PlayerPresentationController +0x1958`.
+`CutScene` embedded at `Snail +0x1958`.
 
 Recovered relationships:
 
@@ -9,7 +9,7 @@ Recovered relationships:
   completion path, and `10 -> 11 -> 12` death path.
 - `camera_mode`, `live_matrix`, `progress`, `progress_step`, and
   `force_camera_update` are confirmed members on the `CutScene` inline object.
-- `PlayerPresentationController::snail_hotspots_world[12]` is the completion
+- `Snail::snail_hotspots_world[12]` is the completion
   skid-stop source and `snail_hotspots_world[18]` is the recurring intro-talk
   look-at anchor.
 - Completion initializes the embedded `SubgameRuntime::completion` immediately on the state `5`

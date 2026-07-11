@@ -60,7 +60,7 @@ extern char g_player_live_matrix_basis_right[];   // 0x42fdb4 = g_player_block +
 extern char g_player_live_matrix_basis_up[];      // 0x42fdc4 = g_player_block + 0x48
 extern char g_player_live_matrix_basis_forward[]; // 0x42fdd4 = g_player_block + 0x58
 
-class PlayerPresentationController;
+class Snail;
 
 class PlayerControlSource {
 public:
@@ -106,9 +106,9 @@ enum SnailHotspotIndex {
     SNAIL_HOTSPOT_COUNT = 19,
 };
 
-class PlayerPresentationController {
+class Snail {
 public:
-    PlayerPresentationController* initialize_player_presentation_controller(); // @ 0x4086d0
+    Snail* initialize_player_presentation_controller(); // @ 0x4086d0
     void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
@@ -151,8 +151,7 @@ public:
     SnailSkinTransition snail_skin_transition;  // +0x1938
     CutScene cutscene;                          // +0x1958, authored cRCutScene
 };
-typedef char PlayerPresentationController_must_be_0x19b4[
-    (sizeof(PlayerPresentationController) == 0x19b4) ? 1 : -1];
+typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 
 class Player {
 public:
@@ -314,7 +313,7 @@ public:
     int steering_mode_selector;             // +0x2970
     char unknown_2974[0x2980 - 0x2974];
     float interaction_max_z;                // +0x2980
-    PlayerPresentationController presentation; // +0x2984
+    Snail presentation;                       // +0x2984, authored cRSnail
     int parcels_collected;                 // +0x4338
     char unknown_433c[0x4340 - 0x433c];
     int visible_life_stock;                // +0x4340

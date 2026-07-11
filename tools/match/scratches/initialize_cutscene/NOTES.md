@@ -1,7 +1,7 @@
 # initialize_cutscene @ 0x4428d0
 
 First structural scratch for the per-frame presentation/cutscene setup path.
-This function ties together the fields promoted on `PlayerPresentationController`:
+This function ties together the fields promoted on the exact authored `Snail`:
 
 - `snail_skin_transition` at `+0x1938`
 - `live_matrix` at `+0x38` and `cached_cutscene_matrix` at `+0xc0`

@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "player.h"
 
-void PlayerPresentationController::set_snail_weapon(int movement_flags)
+void Snail::set_snail_weapon(int movement_flags)
 {
     char changed;
     int state0;

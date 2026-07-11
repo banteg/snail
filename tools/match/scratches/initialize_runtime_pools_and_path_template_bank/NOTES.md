@@ -39,7 +39,7 @@
 ## 2026-07-11 player presentation owner
 
 - The sole call to `0x4086d0` receives `Player +0x2984`, exactly the shared
-  `PlayerPresentationController` member.
+  authored `Snail` member.
 - Its four former "enemy groups" begin at presentation `+0x64c`, `+0xa28`,
   `+0xe04`, and `+0x11e0`: the three weapon channels and jetpack channel, each
   with the proven `0x3dc` stride.

@@ -3,7 +3,7 @@
 #include "object_animation_types.h"
 #include "player.h"
 
-int PlayerPresentationController::dispatch_cutscene_animation(
+int Snail::dispatch_cutscene_animation(
     int animation_id,
     unsigned char immediate,
     int initial_frame)

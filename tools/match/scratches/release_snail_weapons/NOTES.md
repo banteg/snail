@@ -1,12 +1,13 @@
 # release_snail_weapons @ 0x442e40
 
-Death-cutscene helper that arms the snail weapon and jetpack channel release
-steps once, then marks `Invincible::channel_release_steps_active`.
+Authored `cRSnail::ReleaseWeapons()` helper that arms the Snail weapon and
+jetpack channel release steps once, then marks
+`Invincible::channel_release_steps_active`.
 
 Recovered relationships:
 
 - The one-shot gate is the existing
-  `PlayerPresentationController::invincible_shell.channel_release_steps_active`
+  `Snail::invincible_shell.channel_release_steps_active`
   byte at `presentation +0x1934`.
 - Release step writes target:
   - `jetpack_channel.release_step` at `+0x15b0`;
@@ -40,6 +41,10 @@ Focused match:
   frame to native's 0x1c layout. Direct scalar stores for the release vectors
   shrink the frame and regress to the low-50% range. Keep the staged `Vector3`
   source.
+
+iOS and Android retain this method on cRSnail, confirming the four animation
+channels, cRInvincible gate, and Player backlink all belong to the one exact
+`Snail` at `Player +0x2984`.
 
 2026-07-09 frame campaign: dead pad floats are optimized away (still 0x10).
 Persistent raw `slot_x/y/z` locals before the 0.3 scale regress to 72.73%. Keep

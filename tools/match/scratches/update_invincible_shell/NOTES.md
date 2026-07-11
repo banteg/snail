@@ -1,7 +1,7 @@
 # update_invincible_shell @ 0x444b50
 
 Exact source-shaped recovery of authored `cRInvincible::AI` on the 0xa4-byte
-`Invincible` visual embedded at `PlayerPresentationController +0x1894`.
+`Invincible` visual embedded at `Snail +0x1894`.
 
 Recovered behavior:
 

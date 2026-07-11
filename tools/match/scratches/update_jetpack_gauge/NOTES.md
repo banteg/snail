@@ -44,7 +44,7 @@ Known residuals:
 scratch-local `UpdateJetpackPresentationView`, paired with
 `ArmJetpackPresentationView` in `arm_jetpack_gauge`. That removes the false
 shared unresolved-layout row without promoting any unproven
-`PlayerPresentationController` fields. Rebuilt matcher stays at 85.82% with
+authored `Snail` fields. Rebuilt matcher stays at 85.82% with
 34 clean masked operands; `arm_jetpack_gauge` remains exact at 18/18.
 
 2026-06-20 state-dispatch retry: spelling the state gate as an explicit

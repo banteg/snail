@@ -24,7 +24,7 @@ PRESENTATION_SYMBOL_UPDATES = (
     ("0x49735c", "g_presentation_animation_channel_noop_vtable"),
 )
 
-PRESENTATION_CONTROLLER_FIELD_UPDATES = (
+SNAIL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
     ("0x1894", "invincible_shell", "Invincible"),
     ("0x1958", "cutscene", "CutScene"),
@@ -49,7 +49,7 @@ INVINCIBLE_FIELD_UPDATES = (
 )
 
 CUT_SCENE_FIELD_UPDATES = (
-    ("0x00", "presentation", "PlayerPresentationController*"),
+    ("0x00", "presentation", "Snail*"),
     ("0x04", "player", "Player*"),
     ("0x08", "camera_mode", "int32_t"),
     ("0x0c", "state", "int32_t"),
@@ -77,6 +77,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Cameraman",
     "Squidge",
     "Invincible",
+    "Snail",
     "CutScene",
     "Player",
     "JetParticleSlot",
@@ -162,7 +163,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2964", "cached_camera_target_world", "Vec3"),
     ("0x2970", "steering_mode_selector", "int32_t"),
     ("0x2980", "interaction_max_z", "float"),
-    ("0x2984", "presentation", "PlayerPresentationController"),
+    ("0x2984", "presentation", "Snail"),
     ("0x4340", "visible_life_stock", "int32_t"),
     ("0x4344", "squidge", "Squidge"),
 )
@@ -186,7 +187,7 @@ GAME_FIELD_UPDATES = (
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
     ("0x3bba4c", "stopwatch", "Stopwatch"),
     ("0x3bbb58", "warning", "Warning"),
-    ("0x432700", "presentation", "PlayerPresentationController"),
+    ("0x432700", "presentation", "Snail"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
@@ -302,7 +303,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_player_presentation_controller",
-        "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation)",
+        "Snail* __thiscall initialize_player_presentation_controller(Snail* snail)",
     ),
     (
         "initialize_matrix_from_values",
@@ -353,11 +354,15 @@ PROTO_UPDATES = (
     ),
     (
         "set_snail_weapon",
-        "void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags)",
+        "void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags)",
+    ),
+    (
+        "set_snail_jetpack",
+        "void __thiscall set_snail_jetpack(Snail* snail, int32_t state)",
     ),
     (
         "initialize_cutscene",
-        "void __thiscall initialize_cutscene(PlayerPresentationController* presentation)",
+        "void __thiscall initialize_cutscene(Snail* snail)",
     ),
     (
         "initialize_cutscene_ai",
@@ -369,7 +374,7 @@ PROTO_UPDATES = (
     ),
     (
         "dispatch_cutscene_animation",
-        "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
     ),
     (
         "initialize_snail_skin",
@@ -381,7 +386,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_snail_skin",
-        "void __thiscall update_snail_skin(PlayerPresentationController* presentation)",
+        "void __thiscall update_snail_skin(Snail* snail)",
     ),
     (
         "initialize_subgoldy",
@@ -651,8 +656,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="PlayerPresentationController",
-            updates=PRESENTATION_CONTROLLER_FIELD_UPDATES,
+            struct_name="Snail",
+            updates=SNAIL_FIELD_UPDATES,
         )
     )
     operations.extend(

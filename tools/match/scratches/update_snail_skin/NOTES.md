@@ -1,7 +1,8 @@
 # update_snail_skin @ 0x445cd0
 
-First tracked scratch for the snail hotspot rebuild loop. This promotes the
-cross-confirmed presentation hotspot fields:
+Exact Windows counterpart of Android `cRSnail::BuildHotSpots()`. The stable
+Windows name predates cross-port ownership recovery; this promotes the
+cross-confirmed Snail hotspot fields:
 
 - `snail_hotspot_source_matrix_a` at `+0x1604`;
 - `snail_hotspot_source_matrix_b` at `+0x1684`;

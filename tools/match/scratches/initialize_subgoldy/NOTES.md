@@ -121,7 +121,7 @@ Latest focused result:
   back to the `SubgameRuntime` that embeds the Player; the latter borrows one
   of two input-controller views from the root game object.
 - The self-links at `Nuke::owner_player` and
-  `PlayerPresentationController::owner_player`, plus the embedded
+  authored `Snail::owner_player`, plus the embedded
   `follow_active` lane, are now expressed through shared `Player` fields in the
   scratch instead of raw offsets. Focused Wibo is byte-shape neutral at the
   retained `95.86%`, `276/279`, `27 ok / 0` result.

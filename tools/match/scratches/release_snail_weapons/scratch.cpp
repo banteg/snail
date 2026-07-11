@@ -5,7 +5,7 @@
 int next_math_random_value();
 float random_float_below(float upper_bound, int tag);
 
-void PlayerPresentationController::release_snail_weapons()
+void Snail::release_snail_weapons()
 {
     if (invincible_shell.channel_release_steps_active == 0) {
         float random_x =

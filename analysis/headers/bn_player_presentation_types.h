@@ -26,7 +26,7 @@ struct TrackRowCell;
 struct TrackAttachmentRuntimeRow;
 struct SubSegment;
 struct PlayerControlSource;
-struct PlayerPresentationController;
+struct Snail;
 struct Game;
 typedef struct Sprite Sprite;
 typedef struct FrontendWidget FrontendWidget;
@@ -468,7 +468,7 @@ typedef struct Squidge {
 
 /* Authored cRCutScene, exact 0x5c-byte camera state-machine owner. */
 typedef struct CutScene {
-    struct PlayerPresentationController* presentation;
+    struct Snail* presentation;
     struct Player* player;
     int32_t camera_mode;
     int32_t state;
@@ -479,7 +479,8 @@ typedef struct CutScene {
     uint8_t _pad_59[0x3];
 } CutScene;
 
-typedef struct PlayerPresentationController {
+/* Authored cRSnail, exact 0x19b4-byte Player presentation owner. */
+typedef struct Snail {
     void* vtable;
     uint32_t visual_flags;
     uint8_t _pad_08[0x1c];
@@ -504,7 +505,7 @@ typedef struct PlayerPresentationController {
     Invincible invincible_shell;
     SnailSkinTransitionState snail_skin_transition;
     CutScene cutscene;
-} PlayerPresentationController;
+} Snail;
 
 typedef struct Player {
     uint8_t _pad_00[0x38];
@@ -602,7 +603,7 @@ typedef struct Player {
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];
     float interaction_max_z;
-    PlayerPresentationController presentation;
+    Snail presentation;
     int32_t visible_life_stock;
     Squidge squidge;
     float slow_commentary_timer;

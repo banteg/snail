@@ -74,7 +74,7 @@ The current high-confidence `Player` fields are:
 - `+0x2980`: `interaction_max_z`
   - per-player collision and pickup ceiling
 - `+0x2984`: `presentation`
-  - inline `PlayerPresentationController`
+  - inline exact 0x19b4-byte `Snail` (`cRSnail`)
 - `+0x29a8`: `presentation.visual_root`
   - current live snail visual root
 - `+0x2964`: `cached_camera_target_world`
@@ -123,7 +123,7 @@ Two `update_subgoldy` corrections from the latest static audit:
 - `player + 0x2970` is now the current safe `steering_mode_selector`
   - `update_subgoldy` uses it to index the uncaptured-cursor sensitivity table
   - when the selector is `1`, the same block copies `control_source->steering_x` directly into the live `track_z_offset` lane instead of preserving the anchored delta
-- `player + 0x2984` is the inline `PlayerPresentationController`
+- `player + 0x2984` is the inline exact 0x19b4-byte `Snail` (`cRSnail`)
   - `+0x04`: `visual_flags`
   - `+0x24`: `visual_root`
   - `+0x38`: `live_matrix`

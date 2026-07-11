@@ -73,7 +73,7 @@ typedef struct Player Player;
 typedef struct Game Game;
 typedef struct Object Object;
 typedef struct SubSegment SubSegment;
-typedef struct PlayerPresentationController PlayerPresentationController;
+typedef struct Snail Snail;
 typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
@@ -548,7 +548,7 @@ typedef struct SnailVisual {
 
 /* Authored cRCutScene, exact 0x5c-byte camera state-machine owner. */
 typedef struct CutScene {
-    PlayerPresentationController* presentation;
+    Snail* presentation;
     Player* player;
     int32_t camera_mode;
     int32_t state;
@@ -624,7 +624,8 @@ typedef struct Invincible {
     uint8_t _pad_a1[0x3];
 } Invincible;
 
-typedef struct PlayerPresentationController {
+/* Authored cRSnail, exact 0x19b4-byte Player presentation owner. */
+typedef struct Snail {
     void* vtable;
     uint32_t visual_flags;
     uint8_t _pad_08[0x1c];
@@ -649,12 +650,7 @@ typedef struct PlayerPresentationController {
     Invincible invincible_shell;
     SnailSkinTransitionState snail_skin_transition;
     CutScene cutscene;
-} PlayerPresentationController;
-
-typedef struct GlobalJetpackPresentationController {
-    uint8_t _pad_00[0x11e0];
-    PresentationAnimationChannel jetpack_channel;
-} GlobalJetpackPresentationController;
+} Snail;
 
 enum {
     PLAYER_CONTROL_FLAG_CONFIRM = 0x4000,
@@ -972,7 +968,7 @@ typedef struct Player {
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];
     float interaction_max_z;
-    PlayerPresentationController presentation;
+    Snail presentation;
     int32_t visible_life_stock;
     Squidge squidge;
     float slow_commentary_timer;
@@ -1046,7 +1042,7 @@ void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
 void __thiscall initialize_snail_skin(SnailSkinTransitionState* state);
-void __thiscall update_snail_skin(PlayerPresentationController* presentation);
+void __thiscall update_snail_skin(Snail* snail);
 void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
 void __thiscall update_anim_manager(AnimationDispatchState* manager);
 int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
@@ -1073,10 +1069,10 @@ int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
 Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
 int32_t __thiscall handle_subgoldy_collisions(Player* player);
-void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
-void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);
-void __thiscall initialize_cutscene(PlayerPresentationController* presentation);
-int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
+void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags);
+void __thiscall set_snail_jetpack(Snail* snail, int32_t state);
+void __thiscall initialize_cutscene(Snail* snail);
+int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);

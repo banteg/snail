@@ -1,10 +1,11 @@
 # dispatch_cutscene_animation @ 0x444600
 
-Main presentation-controller counterpart to `set_weapon_animation`.
+Stable Windows name for authored `cRSnail::SetAnimation(int, bool, int)`, the
+Snail-root counterpart to `set_weapon_animation`.
 
 This scratch uses the same queue/start source shape over the controller root:
 
-- `visual_root` at `PlayerPresentationController +0x24`
+- `visual_root` at `Snail +0x24`
 - `anim_manager` at `+0x104`
 - animation slots begin at `+0x170`, with `0x80`-byte records
 

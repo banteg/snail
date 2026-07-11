@@ -20,7 +20,7 @@ public:
     int set_weapon_animation(int animation_id, unsigned char immediate, int initial_frame);
 
     // BOD-node-compatible prefix linked by build_subgame_level. The channel
-    // remains embedded in PlayerPresentationController.
+    // remains embedded in the authored Snail owner.
     void* vtable; // +0x00, shared no-op animation-channel callback
     char unknown_004[0x24 - 0x04];
     PresentationAnimationVisualRoot* visual_root; // +0x24

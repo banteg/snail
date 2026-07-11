@@ -1083,13 +1083,25 @@
       "address": "0x442e40",
       "windows_name": "release_snail_weapons",
       "ios_symbol": "cRSnail::ReleaseWeapons()",
+      "android_symbol": "cRSnail::ReleaseWeapons()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Both mobile ports retain this method on the same cRSnail owner; Windows uses the exact inline Snail at Player +0x2984."
+    },
+    {
+      "address": "0x444600",
+      "windows_name": "dispatch_cutscene_animation",
+      "ios_symbol": "cRSnail::SetAnimation(int, bool, int)",
+      "android_symbol": "cRSnail::SetAnimation(int, bool, int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The immediate and queued animation paths operate on cRSnail's root animation manager and visual slot table; the Windows harness name remains stable."
     },
     {
       "address": "0x445860",
       "windows_name": "set_snail_jetpack",
       "ios_symbol": "cRSnail::SetJetPack(int)",
+      "android_symbol": "cRSnail::SetJetPack(int)",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -1097,15 +1109,26 @@
       "address": "0x445920",
       "windows_name": "set_snail_weapon",
       "ios_symbol": "cRSnail::SetWeapon(int)",
+      "android_symbol": "cRSnail::SetWeapon(int)",
       "source_object": "SubGame.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x445cd0",
+      "windows_name": "update_snail_skin",
+      "android_symbol": "cRSnail::BuildHotSpots()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Despite the stable Windows name, both bodies transform the 19 local cRSnail hotspots through the two live source matrices into the world-space bank each frame."
     },
     {
       "address": "0x445d50",
       "windows_name": "build_snail_hotspots",
       "ios_symbol": "cRSnail::ExtractHotSpots()",
+      "android_symbol": "cRSnail::ExtractHotSpots()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All ports extract the authored hotpoint texture vertices into cRSnail's 19-entry local hotspot bank; the Android body independently confirms the member offsets and final CameraIntroTalk Y lift."
     },
     {
       "address": "0x445e20",

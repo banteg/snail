@@ -12,7 +12,7 @@ public:
     void update_invincible_shell(); // @ 0x444b50, cRInvincible::AI
 
     // BOD-node-compatible prefix linked by build_subgame_level. The owner
-    // remains embedded in PlayerPresentationController.
+    // remains embedded in the authored Snail owner.
     void* vtable; // +0x00, update_invincible_shell callback
     char unknown_04[0x28 - 0x04];
     Color4f color; // +0x28

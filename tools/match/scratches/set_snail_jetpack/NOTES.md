@@ -1,11 +1,11 @@
 # set_snail_jetpack @ 0x445860
 
 First tracked scratch for the jetpack presentation dispatcher. The important
-struct correction is that this is also a `PlayerPresentationController` method:
+struct correction is that this is authored `cRSnail::SetJetPack(int)`:
 the known callers pass `g_game_base + 0x432700`, which is `Player +0x2984`, not
 a separate global presentation controller.
 
-The scratch now uses the shared `player.h` controller layout directly; the
+The scratch now uses the shared exact `Snail` layout directly; the
 older local `+0x11e0` controller view has been removed.
 
 Recovered behavior:

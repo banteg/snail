@@ -3,7 +3,7 @@
 Exact `cRInvincible::Init` helper at `0x444ac0`.
 
 The receiver is the 0xa4-byte `Invincible` visual embedded at
-`PlayerPresentationController +0x1894` (`Player +0x4218`). It clears the
+`Snail +0x1894` (`Player +0x4218`). It clears the
 owner's state and restores snail skin slot zero through the adjacent
 `SnailSkinTransition` owner.
 

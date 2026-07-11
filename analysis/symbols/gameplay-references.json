@@ -1899,7 +1899,7 @@
         "off_497354",
         "data_497354"
       ],
-      "description": "PlayerPresentationController callback slot installed by initialize_player_presentation_controller; its first and only callback is noop_runtime_ai."
+      "description": "Authored cRSnail callback slot installed by initialize_player_presentation_controller; its first and only callback is noop_runtime_ai."
     },
     {
       "address": "0x497358",
@@ -1910,7 +1910,7 @@
         "off_497358",
         "data_497358"
       ],
-      "description": "Authored cRInvincible callback slot installed at PlayerPresentationController +0x1894; its first and only callback is update_invincible_shell."
+      "description": "Authored cRInvincible callback slot installed at Snail +0x1894; its first and only callback is update_invincible_shell."
     },
     {
       "address": "0x49735c",
@@ -1921,7 +1921,7 @@
         "off_49735c",
         "data_49735c"
       ],
-      "description": "No-op callback slot installed on the three weapon animation channels and the jetpack animation channel embedded in PlayerPresentationController."
+      "description": "No-op callback slot installed on the three weapon animation channels and the jetpack animation channel embedded in authored cRSnail."
     },
     {
       "address": "0x497360",

@@ -21,8 +21,7 @@ public:
     IostreamInit* initialize_iostream();
 };
 
-PlayerPresentationController*
-PlayerPresentationController::initialize_player_presentation_controller()
+Snail* Snail::initialize_player_presentation_controller()
 {
     char* self = (char*)this;
     ((RenderableBod*)self)->initialize_renderable_bod();
