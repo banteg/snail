@@ -184,7 +184,7 @@ Static narrowing before the next Windows session:
   - BN field xrefs now show only one setter outside the main loop: `begin_post_follow_carryover`
   - later retirement is limited to five `update_subgoldy` clear sites: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
   - `0x43bcb3` is now statically tied to the non-follow floor-cache/slide motion branch: it first checks runtime tiles `0x0f/0x10/0x12/0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
-  - `0x43ce75` is now statically tied to `jetpack_gauge.state == 1`, so it is not the generic/common late retirement lane
+  - `0x43ce75` is now statically tied to `sub_hover.state == 1`, so it is not the generic/common late retirement lane
 - `attachment_exit_progress` also no longer supports the old progress-expiry guess
   - BN field xrefs show it is only written by `begin_post_follow_carryover` and the one progress-update store at `0x43ce96`
   - practical consequence: the missing retirement path is one of those later `update_subgoldy` branches, not a helper-side or standalone timer helper

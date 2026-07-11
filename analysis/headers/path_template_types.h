@@ -521,7 +521,8 @@ typedef struct JetParticleSlot {
     float wobble_alpha;
 } JetParticleSlot;
 
-typedef struct JetpackGaugeController {
+/* Authored cRSubHover, exact 0x214-byte hover and jet-VFX owner. */
+typedef struct SubHover {
     float progress;
     float progress_step;
     uint8_t _pad_08[0x4];
@@ -535,7 +536,7 @@ typedef struct JetpackGaugeController {
     uint8_t _pad_204[0x8];
     float warning_intensity_latch;
     float warning_intensity;
-} JetpackGaugeController;
+} SubHover;
 
 typedef struct SnailVisual {
     uint8_t _pad_00[0x10];
@@ -972,7 +973,7 @@ typedef struct Player {
     float completion_handoff_cycle_progress;
     float completion_handoff_cycle_step;
     uint8_t _pad_274c[0x4];
-    JetpackGaugeController jetpack_gauge;
+    SubHover sub_hover;
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];
@@ -1076,7 +1077,14 @@ void __thiscall update_row_event_display(Completion* completion);
 void __thiscall register_parcel_delivery(Completion* completion);
 void __thiscall initialize_cameraman(Cameraman* cameraman);
 void __thiscall update_cameraman(Cameraman* cameraman);
-int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
+void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
+void __thiscall end_jetpack_hover(SubHover* sub_hover);
+void __thiscall update_jetpack_gauge(SubHover* sub_hover);
+void __thiscall uninit_jet_particles(SubHover* sub_hover);
+void __thiscall initialize_jet_particles(SubHover* sub_hover);
+void __thiscall update_jet_particles(SubHover* sub_hover);
+void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot);
+void __thiscall arm_jetpack_gauge(SubHover* sub_hover);
 int32_t __thiscall update_subgoldy(Player* player);
 Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
 int32_t __thiscall handle_subgoldy_collisions(Player* player);

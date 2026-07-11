@@ -1980,40 +1980,42 @@
     {
       "address": "0x43a370",
       "name": "end_jetpack_hover",
-      "description": "Ends Goldy's active jetpack-hover state before normal movement resumes. The surrounding Windows controller is the neutral 0x214-byte jetpack-gauge composite; it is distinct from the 0x2c-byte cRDamageGuage contact-damage owner."
+      "description": "Exact Windows `SubHover::end_jetpack_hover`, authored as `cRSubHover::End`: while the exact 0x214-byte owner is active, clamps progress to the 0.94 teardown threshold."
     },
     {
       "address": "0x43a390",
       "name": "update_jetpack_gauge",
-      "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x8000, and clears the controller once the jetpack gauge drains. This 0x214-byte Windows composite is not cRDamageGuage; mobile `cRDamageGuage::AI()` maps to the contact-damage updater at 0x440fd0."
+      "description": "Windows `SubHover::update_jetpack_gauge`, authored as `cRSubHover::AI`: advances the hover countdown/warning envelope, applies runtime-row auto-shutoff, drives wobble and the authored Hover call, and clears the exact 0x214-byte owner at teardown."
     },
     {
       "address": "0x43a580",
-      "name": "uninit_jet_particles"
+      "name": "uninit_jet_particles",
+      "description": "Exact Windows `SubHover::uninit_jet_particles`, authored as `cRSubHover::JetUnInit`: kills both sprites in each of the owner's fifteen inline jet rows."
     },
     {
       "address": "0x43a5b0",
-      "name": "initialize_jet_particles"
+      "name": "initialize_jet_particles",
+      "description": "Exact Windows `SubHover::initialize_jet_particles`, authored as `cRSubHover::JetInit`: allocates and initializes the 15-by-2 inline jet sprite grid."
     },
     {
       "address": "0x43a690",
       "name": "update_jet_particles",
-      "description": "Updates the 15x2 jet exhaust grid owned by the player jetpack gauge. It projects the authored JetpackLeft and JetpackRight world hotspots backward along the snail presentation's live forward axis, gates emission on jetpack animation slot 0, and occasionally emits a puff owned by the embedded player slot with 85% of Player::velocity."
+      "description": "Windows `SubHover::update_jet_particles`, authored as `cRSubHover::Jets`: projects the owner's 15-by-2 jet exhaust grid backward from the authored snail hotspots and occasionally emits a detached puff with 85% of Player velocity."
     },
     {
       "address": "0x43a930",
       "name": "initialize_jetpack_gauge",
-      "description": "Initializes the player jetpack countdown or warning controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_jetpack_gauge`. The 0x214-byte Windows composite remains neutrally named and is distinct from cRDamageGuage."
+      "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed SubgameRuntime and Player backlinks. The authored contract is void; the Windows integer parameter is unused."
     },
     {
       "address": "0x43a980",
       "name": "arm_jetpack_gauge",
-      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals. This Windows-only composite is kept separate from the contact-damage cRDamageGuage owner."
+      "description": "Exact Windows `SubHover::arm_jetpack_gauge`, authored as `cRSubHover::On`: arms the child at Player +0x2750, clears progress and wobble, selects the snail jetpack visual, and calls JetInit. The authored contract is void."
     },
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
-      "description": "Initializes the SubgameRuntime-owned Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, copies the live position into the cached camera target, initializes the jetpack gauge, cameraman, and click-start prompt, and wires the actor back to its active subgame. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
+      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the SubgameRuntime-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. Android and iOS retain the method."
     },
     {
       "address": "0x43af10",
@@ -2073,7 +2075,10 @@
     {
       "address": "0x43d880",
       "name": "spawn_track_speedup",
-      "description": "Exact one-instruction no-op method on `SubgameRuntime`. Android preserves the same no-op body and iOS v1.9 preserves the authored name `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)`; the preconstructed `SubSpeedUp` singleton remains owned and updated independently."
+      "aliases": [
+        "sub_hover_hover"
+      ],
+      "description": "Exact one-instruction no-op shared by two authored call surfaces: `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)` and `cRSubHover::Hover(tVector&, float)`. Cross-port Android retains both as separate literal no-ops; Windows callsites prove the two receiver/signature families share this folded address."
     },
     {
       "address": "0x43d890",

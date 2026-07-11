@@ -12,7 +12,7 @@
 #include "damage_guage.h"
 #include "firework.h"
 #include "invincible.h"
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "nuke.h"
 #include "presentation_animation_channel.h"
 #include "progress_bar.h"
@@ -163,7 +163,7 @@ public:
     int display_score_stats();             // @ 0x4403c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
     void health_collect_particles(SubHealth* pickup); // @ 0x43a010
-    int initialize_subgoldy(int player_slot); // @ 0x43a9c0
+    void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0
@@ -308,7 +308,7 @@ public:
     float completion_handoff_cycle_progress; // +0x2744
     float completion_handoff_cycle_step;    // +0x2748
     char unknown_274c[0x2750 - 0x274c];
-    JetpackGaugeController jetpack_gauge;   // +0x2750
+    SubHover sub_hover;                     // +0x2750, authored cRSubHover
     Vector3 cached_camera_target_world;     // +0x2964, produced by update_subgoldy camera block
     int steering_mode_selector;             // +0x2970
     char unknown_2974[0x2980 - 0x2974];

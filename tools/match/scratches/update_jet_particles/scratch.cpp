@@ -1,13 +1,13 @@
 // update_jet_particles @ 0x43a690 (fastcall)
 
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "player.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 
 int next_math_random_value();
 
-void JetpackGaugeController::update_jet_particles()
+void SubHover::update_jet_particles()
 {
     if (state != 1) {
         return;

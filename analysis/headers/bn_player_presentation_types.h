@@ -366,7 +366,8 @@ typedef struct JetParticleSlot {
     float wobble_alpha;
 } JetParticleSlot;
 
-typedef struct JetpackGaugeController {
+/* Authored cRSubHover, exact 0x214-byte hover and jet-VFX owner. */
+typedef struct SubHover {
     float progress;
     float progress_step;
     uint8_t _pad_08[0x4];
@@ -380,7 +381,7 @@ typedef struct JetpackGaugeController {
     uint8_t _pad_204[0x8];
     float warning_intensity_latch;
     float warning_intensity;
-} JetpackGaugeController;
+} SubHover;
 
 /* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
 typedef struct Nuke {
@@ -615,7 +616,7 @@ typedef struct Player {
     float completion_handoff_cycle_progress;
     float completion_handoff_cycle_step;
     uint8_t _pad_274c[0x4];
-    JetpackGaugeController jetpack_gauge;
+    SubHover sub_hover;
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];

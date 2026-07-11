@@ -18,6 +18,7 @@
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
 #include "runtime_config.h"
+#include "sub_hover.h"
 #include "tip_manager.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
@@ -116,20 +117,6 @@ struct SubgoldyPlayerControlSourceView {
     unsigned int control_flags_b; // +0x0c
     char unknown_10[0x28 - 0x10];
     float steering_x; // +0x28
-};
-
-struct JetpackGauge {
-    float progress; // +0x00
-    char unknown_04[0x0c - 0x04];
-    int state; // +0x0c
-    char unknown_10[0x14 - 0x10];
-    float wobble_x;     // +0x14
-    float wobble_y;     // +0x18
-    float wobble_alpha; // +0x1c
-    char unknown_20[0x214 - 0x20];
-
-    void update_jetpack_gauge();
-    void end_jetpack_hover();
 };
 
 struct VisualRoot {
@@ -267,7 +254,7 @@ struct SubgoldyPlayerView {
     float completion_handoff_cycle_progress; // +0x2744
     float completion_handoff_cycle_step;     // +0x2748
     int unknown_274c;
-    JetpackGauge jetpack_gauge;         // +0x2750
+    SubHover sub_hover;                 // +0x2750, authored cRSubHover
     Vector3 cached_camera_target_world; // +0x2964
     int steering_mode_selector;         // +0x2970
     char unknown_2974[0x2980 - 0x2974];
@@ -605,7 +592,7 @@ steering_stored:
                 }
             }
         }
-        if (jetpack_gauge.state == 1) {
+        if (sub_hover.state == 1) {
             float rate = game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;
             velocity.z = quantum + quantum + velocity.z;
@@ -626,7 +613,7 @@ steering_stored:
                 if ((*(int*)((char*)drag_game + 244 * landing_cell->get_track_cell_row_index()
                              + 0x5ccac8)
                      & 0x100) == 0
-                    && !jetpack_gauge.state && !control_override_active) {
+                    && !sub_hover.state && !control_override_active) {
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
                 }
                 if (*((unsigned char*)game + 244 * landing_cell->get_track_cell_row_index()
@@ -879,7 +866,7 @@ steering_stored:
             }
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
-            jetpack_gauge.end_jetpack_hover();
+            sub_hover.end_jetpack_hover();
             presentation.cutscene.state = 5;
             g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
@@ -965,7 +952,7 @@ steering_stored:
     Vector3 stashed_position = *p_position;
     if (follow_state.active == 1)
         *p_position = follow_state.output_position;
-    jetpack_gauge.update_jetpack_gauge();
+    sub_hover.update_jetpack_gauge();
     if (completion_handoff_active) {
         g_app->hud_target = g_app->hud_source;
         *(float*)((char*)g_app + 0x300) = *(float*)((char*)g_app + 0x300) - 1.0f;
@@ -974,16 +961,16 @@ steering_stored:
     progress_bar.update_progress_bar();
 
     Vector3* camera_target = &cached_camera_target_world;
-    float wobble_alpha = jetpack_gauge.wobble_alpha;
+    float wobble_alpha = sub_hover.wobble_alpha;
     *camera_target = *p_position;
     float forward_x = wobble_alpha * live_matrix.basis_forward.x;
     float forward_y = wobble_alpha * live_matrix.basis_forward.y;
     float forward_z = wobble_alpha * live_matrix.basis_forward.z;
-    float wobble_y = jetpack_gauge.wobble_y;
+    float wobble_y = sub_hover.wobble_y;
     float up_x = wobble_y * live_matrix.basis_up.x;
     float up_y = wobble_y * live_matrix.basis_up.y;
     float up_z = wobble_y * live_matrix.basis_up.z;
-    float wobble_x = jetpack_gauge.wobble_x;
+    float wobble_x = sub_hover.wobble_x;
     wall_probe.x = wobble_x * live_matrix.basis_right.x;
     wall_probe.y = wobble_x * live_matrix.basis_right.y;
     float right_z = wobble_x * live_matrix.basis_right.z;
@@ -1073,7 +1060,7 @@ steering_stored:
     float interaction_near = live_matrix.position.z - 8.0f;
     if (interaction_limit >= interaction_near)
         interaction_limit = interaction_near;
-    int hover_state = jetpack_gauge.state;
+    int hover_state = sub_hover.state;
     interaction_max_z = interaction_limit;
     if (hover_state == 1) {
         if (live_matrix.position.y < 1.0f) {

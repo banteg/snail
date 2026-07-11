@@ -220,7 +220,7 @@ Still missing or approximate:
     - `0x43bf6f` — **swept re-entry failed → grounded snap**, the common late retirement after swept re-entry: `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0`
     - `0x43c06d` — tile-flags grounded re-snap: `velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`
     - `0x43c3ea` — trampoline (tile `0x16`) bounce: `|y - cell_y| < 0.49` envelope, then squidge + velocity flip + `position.y = cell_y + 0.49` + `play_sound_effect(0x29)`
-    - `0x43ce75` — jetpack altitude cap: `jetpack_gauge.state == 1 && position.y < 1.0`
+    - `0x43ce75` — jetpack altitude cap: native `sub_hover.state == 1 && position.y < 1.0`
   - `attachment_exit_progress` itself only has the one progress-update store at `0x43ce96`, which runs as the `else` of the five clear lanes (no progress-timeout clear exists in native)
 - the follow-milestone lane behind the static `voice 4` callsite is **dead code**: the field at `[esi+0x44]` is `PathTemplate::segment_count` (not `sample_count` — the HLIL `_pad_3c[8].d` is a char-pad byte index). The gate `sample_index+1 == segment_count * 2` at `0x420d1d` is unreachable because the helper terminates at `sample_index == segment_count` first, with `sample_index` starting at 0 and advancing by 1. Do not port.
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family

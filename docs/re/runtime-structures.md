@@ -71,8 +71,7 @@ The current high-confidence `Player` fields are:
 - `+0x2740`: `track_z_anchor`
 - `+0x2744`: `completion_handoff_cycle_progress`
 - `+0x2748`: `completion_handoff_cycle_step`
-- `+0x2750`: `jetpack_gauge`
-  - inline `JetpackGaugeController`
+- `+0x2750`: exact 0x214-byte `sub_hover` child (`cRSubHover`)
 - `+0x2980`: `interaction_max_z`
   - per-player collision and pickup ceiling
 - `+0x2984`: `presentation`
@@ -362,9 +361,11 @@ Current practical read:
   - slug `+1.0`
   - health pickup `-0.5`
 
-## Jetpack Gauge Controller
+## SubHover
 
-The inline controller at `player + 0x2750` is now typed as `JetpackGaugeController`.
+The exact 0x214-byte authored `cRSubHover` child at `Player +0x2750` is now
+typed as `SubHover`, distinct from both the `cRJetPack` pickup singleton and
+the `cRDamageGuage` contact-damage owner.
 
 High-confidence current fields:
 
@@ -387,12 +388,17 @@ Current practical read:
 - `arm_jetpack_gauge` transitions `state` from idle to active and clears the wobble outputs
 - `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
 - `initialize_jet_particles`, `update_jet_particles`, and `uninit_jet_particles` operate on the same controller; the `+0x20` block is a fixed `30`-entry sprite-slot bank used by the hover thrust particles
+  - cross-port authored names are `cRSubHover::JetInit`, `Jets`, and `JetUnInit`
   - the Zig port now mirrors this as a persistent `15 x 2` nozzle bank instead of respawning generic smoke every frame
   - `update_jet_particles` rolls `random_back_seed = next_math_random_value() * 0.0000015258789 + 0.40000001` and `random_width_seed = next_math_random_value() * 0.0000015258789 + 0.12` once per bank update
   - at trail index `14`, each side rolls `next_math_random_value() * 0.000030517578 > 0.89999998`; success allocates one detached smoke sprite at that trail-tip position, size `0.1 x 0.3`, carrying `Player.velocity * 0.85` and the sprite `+0x78` lane `0.001`
   - the Zig port maps that detached smoke sprite into the generic effect pool, so the native sprite-manager lifetime is still approximated rather than owned by a literal sprite slot
 - `update_subgoldy` also reads `state` from `player + 0x275c`; when that lane is `1`, the late `0x43ce23 -> 0x43ce75` branch retires `attachment_exit_pending` before the `attachment_exit_progress` / gate-A block
 - `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
+- the final no-op call from `update_jetpack_gauge` uses the same Windows address
+  as `spawn_track_speedup`, but its receiver/arguments are
+  `SubHover*`, `Vector3*`, and `float`; Android's separate literal no-op
+  `cRSubHover::Hover(tVector&, float)` proves the folded authored alias
 
 ## Movement Visual State Controller
 
@@ -572,7 +578,7 @@ Current practical read:
   - the later retirement of `attachment_exit_pending` is instead limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
     - the special `0x43bcb3` late clear is now statically tied to the non-follow floor-cache/slide motion block: the branch first checks runtime tiles `0x0f`, `0x10`, `0x12`, and `0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
     - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are also statically identifiable
-    - the `0x43ce75` late clear is now narrowed too: it sits behind `jetpack_gauge.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
+    - the `0x43ce75` late clear is now narrowed too: it sits behind `sub_hover.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
     - the common post-swept-re-entry retirement path among those late clears still needs runtime confirmation
   - Zig now follows that narrowing more honestly:
     - the old `attachment_exit_progress >= 1.0` timeout clear is gone

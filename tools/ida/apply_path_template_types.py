@@ -348,7 +348,35 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_subgoldy",
-        "int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
+        "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
+    ),
+    (
+        "end_jetpack_hover",
+        "void __thiscall end_jetpack_hover(SubHover* sub_hover);",
+    ),
+    (
+        "update_jetpack_gauge",
+        "void __thiscall update_jetpack_gauge(SubHover* sub_hover);",
+    ),
+    (
+        "uninit_jet_particles",
+        "void __thiscall uninit_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "initialize_jet_particles",
+        "void __thiscall initialize_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "update_jet_particles",
+        "void __thiscall update_jet_particles(SubHover* sub_hover);",
+    ),
+    (
+        "initialize_jetpack_gauge",
+        "void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot);",
+    ),
+    (
+        "arm_jetpack_gauge",
+        "void __thiscall arm_jetpack_gauge(SubHover* sub_hover);",
     ),
     (
         "update_subgoldy",

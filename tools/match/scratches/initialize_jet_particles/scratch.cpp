@@ -1,11 +1,11 @@
-// initialize_jet_particles @ 0x43a5b0 (fastcall)
+// initialize_jet_particles @ 0x43a5b0 (thiscall)
 
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "sprite.h"
 
-void __fastcall initialize_jet_particles(JetpackGaugeController* gauge)
+void SubHover::initialize_jet_particles()
 {
-    JetParticleSlot* slot = &gauge->particle_slots[0][0];
+    JetParticleSlot* slot = &particle_slots[0][0];
     int rows = 15;
     do {
         int columns = 2;

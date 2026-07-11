@@ -1,11 +1,11 @@
-// initialize_jetpack_gauge @ 0x43a930 (thiscall, returns 0)
+// initialize_jetpack_gauge @ 0x43a930 (thiscall, ret 0x4)
 
 #include "game_root.h"
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 
 extern GameRoot* g_game; // data_4df904
 
-int JetpackGaugeController::initialize_jetpack_gauge(int player_slot)
+void SubHover::initialize_jetpack_gauge(int player_slot)
 {
     progress = 0.0f;
     SubgameRuntime* game_ptr = &g_game->subgame;
@@ -18,5 +18,4 @@ int JetpackGaugeController::initialize_jetpack_gauge(int player_slot)
     wobble_y = 0.0f;
     wobble_x = 0.0f;
     warning_intensity_latch = 0.0f;
-    return 0;
 }

@@ -5,10 +5,10 @@ First typed scratch for the jetpack hover-particle updater.
 Recovered relationships under test:
 
 - `update_jet_particles` is modeled as a no-argument
-  `JetpackGaugeController` member. BN's raw prototype is the ABI-equivalent
-  `__fastcall(JetpackGaugeController*)`, but the only current caller passes
-  `ecx = &owner_player->jetpack_gauge`, which supports the member spelling.
-- It only runs while `JetpackGaugeController::state == 1` and while the game
+  `SubHover` member. BN's raw prototype is the ABI-equivalent
+  `__fastcall(SubHover*)`, but the caller passes
+  `ecx = &owner_player->sub_hover`, which supports the member spelling.
+- It only runs while `SubHover::state == 1` and while the game
   active-player latch at `game+0x3bf3dc` equals `game+0x3bf43c->+0xbc`.
 - The existing `JetParticleSlot[15][2]` grid at controller `+0x20` is consumed
   directly. Each frame, both sprites in each row receive the same size and a
@@ -75,3 +75,8 @@ Focused Wibo status:
   position and trail-velocity probes regressed, so the residual remains the
   loop-index register choice and x87/local scheduling rather than fabricated
   padding or volatile state.
+
+Cross-port Android and iOS identify this member as `cRSubHover::Jets()`.
+Android also retains sibling `JetInit`/`JetUnInit` methods over the same inline
+grid, closing the exact 0x214-byte `SubHover` ownership without changing the
+honest 52.96% Windows partial.

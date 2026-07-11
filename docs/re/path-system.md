@@ -91,7 +91,7 @@ The current high-confidence model is:
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the placed parcel runtime at `game + 0x125e480` is a dedicated 50-slot array that `spawn_track_parcel` allocates from, and it remains separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
-- contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
+- contact damage and hover countdown are separate authored owners in Windows: the live collision deltas feed `cRDamageGuage` at Player `+0x3c4`, while `cRSubHover::{Init,AI}` own the jetpack warning or auto-shutoff logic at Player `+0x2750`
 - the Windows bank is exactly 63 primary/secondary pairs: public slots `0..50`, then 12 auxiliary transition pairs for public slots `0..7`, `25..27`, and `41`
 - public `HALFPIPE` slot `42` is built directly by `initialize_halfpipe_path_template_pair`; public `WARP` slot `30` is only generically initialized and remains unbuilt in this executable
 - the Zig port mirrors the public `Path=` table in `attachment_builders.zig`, but still needs to adopt the exact embedded pair/transition behavior where parity matters

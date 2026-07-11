@@ -66,7 +66,7 @@ void Snail::release_snail_weapons()
         staged_release_step.y = step_y;
         staged_release_step.z = step_z;
         *release_step = staged_release_step;
-        owner->jetpack_gauge.end_jetpack_hover();
+        owner->sub_hover.end_jetpack_hover();
     }
     invincible_shell.channel_release_steps_active = 1;
 }

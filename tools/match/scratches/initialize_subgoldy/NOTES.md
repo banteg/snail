@@ -65,6 +65,15 @@ Latest focused result:
   279/279 instructions. The source return is `void`; direct member assignments
   preserve the native instruction order without inventing a returned value.
 
+2026-07-11 cRSubHover ownership closure:
+
+- The exact 0x214-byte child at `Player +0x2750` is `cRSubHover`, not a generic
+  jetpack gauge. Android maps its sibling methods to `Init`, `On`, `End`, `AI`,
+  `JetInit`, `JetUnInit`, and `Jets` with the same fields.
+- `cRSubGoldy::Init` and `cRSubHover::Init` now use their authored void
+  contracts. Removing the synthetic returned-zero chain is codegen-neutral;
+  focused Windows remains exact at 279/279 instructions.
+
 2026-06-20 larger near-proof tail audit:
 
 - Focused Wibo still reports 95.14%, 276/279 candidate/target instructions,

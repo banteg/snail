@@ -13,8 +13,8 @@ Recovered relationships:
   1/3, `0.4 + 0.2` for mode 4, and `0.2` otherwise.
 - `player.damage_gauge.state` and `player.damage_gauge.display_fill` add the
   sinusoidal bonus-rate envelope, with a smaller base bonus in modes 1/4.
-- `player.jetpack_gauge.state` and
-  `player.jetpack_gauge.warning_intensity_latch` add the final half-rate lane.
+- `player.sub_hover.state` and
+  `player.sub_hover.warning_intensity_latch` add the final half-rate lane.
 - Focused Wibo result after active-state fallthrough shaping was 84.52%,
   84/84 instructions, with 14 masked operands OK.
 - 2026-06-18 bonus-envelope correction: the native source shape does not cache

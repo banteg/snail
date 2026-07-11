@@ -145,7 +145,7 @@ useful cross-confirmations are:
   per-frame registry append path consumes the prefix flags.
 - `Player +0x404` is the lives counter used by the ring/special-effect reward
   ladder; this cross-confirms the shared `Player::lives` promotion.
-- `Player::damage_gauge` at `+0x3c4`, `Player::jetpack_gauge` at `+0x2750`,
+- `Player::damage_gauge` at `+0x3c4`, `Player::sub_hover` at `+0x2750`,
   and `Player::cached_camera_target_world` at `+0x2964` are now promoted in
   `player.h`. This collision scratch still keeps a broad local `Player` window
   because it touches several not-yet-promoted lanes, but these three fields are
@@ -193,7 +193,7 @@ evidence:
 - Switched proven helpers back to method-call shape:
   `Player::add_subgoldy_score`, `Player::health_collect_particles`,
   `DamageGuage::apply_damage_gauge_delta`, and
-  `JetpackGaugeController::arm_jetpack_gauge`.
+  `SubHover::arm_jetpack_gauge` (`cRSubHover::On`).
 
 Matcher impact: score improved from `45.71%` to `48.79%`, and the
 speedup/jetpack/garbage/parcel offsets now agree with the target asm. The

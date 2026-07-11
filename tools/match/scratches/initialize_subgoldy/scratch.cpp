@@ -5,7 +5,7 @@
 #include "click_start.h"
 #include "damage_guage.h"
 #include "invincible.h"
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "player.h"
 #include "snail_skin.h"
 #include "spring_float.h"
@@ -13,7 +13,7 @@
 
 extern char* g_game_base; // data_4df904
 
-int Player::initialize_subgoldy(int player_slot)
+void Player::initialize_subgoldy(int player_slot)
 {
     char* self = (char*)this;
     int zero = 0;
@@ -199,8 +199,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x2744) = zero;
     *(int*)(self + 0x2748) = 0x3e555556;
     *(int*)(self + 0x274c) = zero;
-    int result =
-        ((JetpackGaugeController*)(self + 0x2750))->initialize_jetpack_gauge(gauge_slot);
+    ((SubHover*)(self + 0x2750))->initialize_jetpack_gauge(gauge_slot);
     *(int*)(self + 0x350) = zero;
     *(int*)(self + 0x354) = zero;
     *(int*)(self + 0x358) = zero;
@@ -215,5 +214,4 @@ int Player::initialize_subgoldy(int player_slot)
     *(unsigned char*)(self + 0x41c) = (unsigned char)zero;
     *(int*)(self + 0x404) = zero;
     (*(char**)(self + 0x408))[1] = 1;
-    return result;
 }

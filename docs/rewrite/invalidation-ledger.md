@@ -256,3 +256,9 @@ Template:
 - replacement evidence: raw Windows callsites show `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and later passes `presentation + 0x1958` directly to `update_cutscene` (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled boundary, not a real standalone field
 - replacement ownership: Android exports the exact Windows method family as `cRSnailSkin::Init`, `AI`, and `Change`, while iOS v1.9 exposes `cRSnailSkin::Init(cRSnail*)`; the child is an exact 0x20 bytes with a borrowed `Snail*` backlink at `+0x10`, not a generic render-owner view
 - port consequence: keep native `snail_skin` starting at `+0x1938` and the exact 0x5c-byte `cutscene` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field or generic render-owner struct ahead of the CutScene in BN/IDA headers or docs
+
+## 2026-07-11 - Hover owner and folded no-op
+
+- invalidated claim: the 0x214-byte child at `Player +0x2750` is only a neutral jetpack-gauge composite, and its final call is semantically `SubgameRuntime::spawn_track_speedup`
+- replacement evidence: Android maps the exact Windows field/method family to `cRSubHover::{Init,On,End,AI,JetInit,JetUnInit,Jets}`; iOS independently retains `AI` and `Jets`. The final Windows call passes `SubHover*`, `Vector3*`, and `float`, matching Android's separate literal no-op `cRSubHover::Hover(tVector&, float)` at the same time that Windows uses the shared one-instruction address for `cRSubGame::AddSpeedUp`
+- port consequence: type the native child as exact `SubHover`, keep the stable Windows target name `spawn_track_speedup` with `sub_hover_hover` as a folded alias, and do not model the Hover call through a fake derived caller or confuse this owner with the separate `cRJetPack` pickup singleton

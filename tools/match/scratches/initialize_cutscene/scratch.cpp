@@ -157,5 +157,5 @@ void Snail::initialize_cutscene()
         dispatch_cutscene_animation(1, 0, -1);
     }
 
-    owner_player->jetpack_gauge.update_jet_particles();
+    owner_player->sub_hover.update_jet_particles();
 }

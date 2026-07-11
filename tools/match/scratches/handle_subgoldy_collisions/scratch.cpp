@@ -6,7 +6,7 @@
 
 #include "damage_guage.h"
 #include "garbage_hazard_slot.h"
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "salt_hazard_types.h"
@@ -223,7 +223,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.z = probe_b.z;
         if (position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
             jetpack->state = 2;
-            jetpack_gauge.arm_jetpack_gauge();
+            sub_hover.arm_jetpack_gauge();
         }
     }
     for (int jj = 0; jj < 1008; jj += 504) {

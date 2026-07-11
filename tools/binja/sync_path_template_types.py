@@ -93,7 +93,7 @@ REQUIRED_HEADER_STRUCTS = (
     "CutScene",
     "Player",
     "JetParticleSlot",
-    "JetpackGaugeController",
+    "SubHover",
     "Tutorial",
     "Completion",
     "TimesUp",
@@ -172,7 +172,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2740", "track_z_anchor", "float"),
     ("0x2744", "completion_handoff_cycle_progress", "float"),
     ("0x2748", "completion_handoff_cycle_step", "float"),
-    ("0x2750", "jetpack_gauge", "JetpackGaugeController"),
+    ("0x2750", "sub_hover", "SubHover"),
     ("0x2964", "cached_camera_target_world", "Vec3"),
     ("0x2970", "steering_mode_selector", "int32_t"),
     ("0x2980", "interaction_max_z", "float"),
@@ -292,7 +292,7 @@ JET_PARTICLE_SLOT_FIELD_UPDATES = (
     ("0x0c", "wobble_alpha", "float"),
 )
 
-JETPACK_GAUGE_FIELD_UPDATES = (
+SUB_HOVER_FIELD_UPDATES = (
     ("0x00", "progress", "float"),
     ("0x04", "progress_step", "float"),
     ("0x0c", "state", "int32_t"),
@@ -409,7 +409,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_subgoldy",
-        "int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
+        "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
     ),
     (
         "initialize_score_stats",
@@ -489,31 +489,31 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_jetpack_gauge",
-        "int32_t __thiscall initialize_jetpack_gauge(JetpackGaugeController* gauge)",
+        "void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot)",
     ),
     (
         "update_jetpack_gauge",
-        "int32_t __thiscall update_jetpack_gauge(JetpackGaugeController* gauge)",
+        "void __thiscall update_jetpack_gauge(SubHover* sub_hover)",
     ),
     (
         "arm_jetpack_gauge",
-        "int32_t __thiscall arm_jetpack_gauge(JetpackGaugeController* gauge)",
+        "void __thiscall arm_jetpack_gauge(SubHover* sub_hover)",
     ),
     (
         "end_jetpack_hover",
-        "void __fastcall end_jetpack_hover(JetpackGaugeController* gauge)",
+        "void __thiscall end_jetpack_hover(SubHover* sub_hover)",
     ),
     (
         "uninit_jet_particles",
-        "void __fastcall uninit_jet_particles(JetpackGaugeController* gauge)",
+        "void __thiscall uninit_jet_particles(SubHover* sub_hover)",
     ),
     (
         "initialize_jet_particles",
-        "void __fastcall initialize_jet_particles(JetpackGaugeController* gauge)",
+        "void __thiscall initialize_jet_particles(SubHover* sub_hover)",
     ),
     (
         "update_jet_particles",
-        "void __fastcall update_jet_particles(JetpackGaugeController* gauge)",
+        "void __thiscall update_jet_particles(SubHover* sub_hover)",
     ),
     (
         "firework_shoot",
@@ -655,8 +655,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="JetpackGaugeController",
-            updates=JETPACK_GAUGE_FIELD_UPDATES,
+            struct_name="SubHover",
+            updates=SUB_HOVER_FIELD_UPDATES,
         )
     )
     operations.extend(

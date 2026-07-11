@@ -46,8 +46,8 @@ void SubgameRuntime::calc_subgame_rate()
             }
         }
 
-        if (player.jetpack_gauge.state == 1)
-            subgame_rate += player.jetpack_gauge.warning_intensity_latch * 0.5f;
+        if (player.sub_hover.state == 1)
+            subgame_rate += player.sub_hover.warning_intensity_latch * 0.5f;
     } else {
         subgame_rate = base_rate;
     }

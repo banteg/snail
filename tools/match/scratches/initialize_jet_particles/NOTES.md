@@ -4,7 +4,7 @@ Initial scratch for the jetpack hover-particle initializer.
 
 Recovered relationships:
 
-- `JetpackGaugeController::particle_slots` is a 15x2 grid at `+0x20`; each
+- `SubHover::particle_slots` is a 15x2 grid at `+0x20`; each
   `JetParticleSlot` is 0x10 bytes.
 - each slot owns a sprite pointer at `+0x00` and three local particle lanes at
   `+0x04/+0x08/+0x0c`.
@@ -17,11 +17,10 @@ Recovered relationships:
   `wobble_x` through a local `float*`, and places `draw_mode` between the slot
   `wobble_x` and `wobble_y` stores. This recovers the native saved-register
   and vector-zero schedule while keeping the shared `Sprite` field names.
-- The callee scratch is modeled as `void` because native does not establish a
-  meaningful return value. `arm_jetpack_gauge` still has a local `int`
-  declaration for this helper because that exact caller forwards the incidental
-  `eax` value left by the call.
-- 2026-06-16 layout assertion pass: `jetpack_gauge.h` now asserts
+- The callee is modeled as the authored void `SubHover` member; converting the
+  former fastcall-shaped surface and its caller to direct member calls remains
+  exact in both functions.
+- 2026-06-16 layout assertion pass: `sub_hover.h` now asserts
   `sizeof(JetParticleSlot) == 0x10`. This matches the exact initializer's
   30-slot walk and the exact uninitializer's kill loop.
 
@@ -31,13 +30,15 @@ Rejected/source-shaped probes:
   to native's `add esi, 0x10` schedule, but it made VC6 keep the inner column
   count in `ebp`, displaced the `0.166666672f` alpha constant, and regressed to
   87.07%. Keep the current clearer tail spelling.
-- Modeling the callee as `int` with no source return would represent the
-  caller-observed incidental return, but it triggers an MSVC warning path under
-  wibo that aborts on a missing `lstrcpynA` import. Keep the runnable exact
-  callee as `void` and leave the `int` view local to the exact caller.
+- Modeling the callee as `int` with no source return would only formalize an
+  incidental register value. Cross-port `cRSubHover::JetInit()` and the exact
+  void caller now remove that obsolete local return shim.
 - 2026-06-18 BN/IDA sync: the durable BN prototype is now
-  `void __fastcall initialize_jet_particles(JetpackGaugeController*)`, and the
+  `void __thiscall initialize_jet_particles(SubHover*)`, and the
   BN/IDA exports no longer preserve the synthetic loop-counter return. The
   shared BN headers also promote `JetParticleSlot` to `Sprite* sprite`,
   `wobble_x`, `wobble_y`, and `wobble_alpha`, matching this exact initializer
   and the hover updater.
+
+Android independently exports `cRSubHover::JetInit()` and initializes the same
+30 inline sprite records. Focused Windows remains exact at 73/73 instructions.

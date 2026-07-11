@@ -2,7 +2,7 @@
 // Jetpack countdown/warning controller used by update_subgoldy.
 
 #include "game_root.h"
-#include "jetpack_gauge.h"
+#include "sub_hover.h"
 #include "player.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
@@ -14,12 +14,7 @@ float cosine(float angle);
 float sine(float angle);
 int debug_report_stub(char* format, ...);
 
-class JetpackGaugeSpeedupCaller : public JetpackGaugeController {
-public:
-    void spawn_track_speedup(int position, int progress_bits);
-};
-
-void JetpackGaugeController::update_jetpack_gauge()
+void SubHover::update_jetpack_gauge()
 {
     int zero = 0;
 
@@ -66,13 +61,10 @@ void JetpackGaugeController::update_jetpack_gauge()
         wobble_x = sine(progress * 25.132742f) * warning_intensity * 0.25f;
         float wobble_y_sine = sine(progress * 37.699112f);
         int intensity_bits = *(int*)&warning_intensity;
-        int live_progress_bits = *(int*)&progress;
-        int position = (int)player + 0x68;
         wobble_alpha = 0.0f;
         *(int*)&warning_intensity_latch = intensity_bits;
         wobble_y = (wobble_y_sine * 0.25f + 1.0f) * warning_intensity;
-        ((JetpackGaugeSpeedupCaller*)this)->spawn_track_speedup(
-            position, live_progress_bits);
+        spawn_track_speedup(&player->position, progress);
         return;
     }
 

@@ -15,7 +15,8 @@ Recovered relationships:
   - `weapon_channels[2].release_step` at `+0x11d4`;
   - `weapon_channels[1].release_step` at `+0x0df8`.
 - The Z release component is `owner_player->velocity.z * 0.30000001f`.
-- The helper ends live jetpack hover through `owner_player->jetpack_gauge`.
+- The helper ends live jetpack hover through the authored
+  `owner_player->sub_hover` child.
 
 Focused match:
 
