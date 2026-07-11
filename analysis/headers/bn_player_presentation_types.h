@@ -29,6 +29,7 @@ struct PlayerControlSource;
 struct PlayerPresentationController;
 struct Game;
 typedef struct Sprite Sprite;
+typedef struct FrontendWidget FrontendWidget;
 
 typedef struct Vec3 {
     float x;
@@ -153,6 +154,19 @@ typedef struct Completion {
     int32_t bonus_score;
     int32_t display_token;
 } Completion;
+
+/* Authored cRProgressBar one-word controller at Player +0x3f0. */
+typedef struct ProgressBar {
+    int32_t state;
+} ProgressBar;
+
+/* Authored cRWarning, exact 0x10-byte Windows owner at Player +0x3f4. */
+typedef struct Warning {
+    int32_t state;
+    float phase;
+    float phase_step;
+    FrontendWidget* border;
+} Warning;
 
 typedef struct TimesUp {
     int32_t state;
@@ -538,7 +552,9 @@ typedef struct Player {
     int32_t player_slot;
     FollowState follow_state;
     DamageGuage damage_gauge;
-    uint8_t _pad_3f0[0x18];
+    ProgressBar progress_bar;
+    Warning warning;
+    int32_t lives;
     struct Game* game;
     int32_t movement_mode_selector;
     Vec3 velocity;

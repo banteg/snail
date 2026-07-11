@@ -1,8 +1,8 @@
 // start_warning @ 0x446f30 (thiscall, tailcall)
 
-#include "warning_actor.h"
+#include "warning.h"
 
-void WarningActor::start_warning()
+void Warning::start_warning()
 {
     phase = 1.0f;
     state = 2;

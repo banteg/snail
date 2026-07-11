@@ -1,11 +1,11 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
 #include "border_manager.h"
-#include "warning_actor.h"
+#include "warning.h"
 
 extern char* g_game_base; // data_4df904
 
-void WarningActor::initialize_warning()
+void Warning::initialize_warning()
 {
     Color4f color;
 

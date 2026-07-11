@@ -48,6 +48,8 @@ REQUIRED_HEADER_STRUCTS = (
     "Path",
     "PathPair",
     "DamageGuage",
+    "ProgressBar",
+    "Warning",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -99,6 +101,9 @@ PLAYER_FIELD_UPDATES = (
     ("0x380", "player_slot", "int32_t"),
     ("0x384", "follow_state", "FollowState"),
     ("0x3c4", "damage_gauge", "DamageGuage"),
+    ("0x3f0", "progress_bar", "ProgressBar"),
+    ("0x3f4", "warning", "Warning"),
+    ("0x404", "lives", "int32_t"),
     ("0x408", "game", "Game*"),
     ("0x40c", "movement_mode_selector", "int32_t"),
     ("0x410", "velocity", "Vec3"),
@@ -152,7 +157,7 @@ GAME_FIELD_UPDATES = (
     ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
     ("0x3bba4c", "stopwatch", "Stopwatch"),
-    ("0x3bbb58", "warning_actor", "WarningActor"),
+    ("0x3bbb58", "warning", "Warning"),
     ("0x432700", "presentation", "PlayerPresentationController"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
@@ -365,6 +370,30 @@ PROTO_UPDATES = (
     (
         "apply_damage_gauge_delta",
         "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, uint8_t force)",
+    ),
+    (
+        "initialize_warning",
+        "void __thiscall initialize_warning(Warning* warning)",
+    ),
+    (
+        "uninit_warning",
+        "void __thiscall uninit_warning(Warning* warning)",
+    ),
+    (
+        "start_warning",
+        "void __thiscall start_warning(Warning* warning)",
+    ),
+    (
+        "stop_warning",
+        "void __thiscall stop_warning(Warning* warning)",
+    ),
+    (
+        "stop_warning_sample",
+        "void __thiscall stop_warning_sample(Warning* warning)",
+    ),
+    (
+        "update_warning",
+        "void __thiscall update_warning(Warning* warning)",
     ),
     (
         "initialize_jetpack_gauge",

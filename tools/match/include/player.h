@@ -22,7 +22,7 @@
 #include "tip_manager.h"
 #include "transform_matrix.h"
 #include "vector3.h"
-#include "warning_actor.h"
+#include "warning.h"
 
 struct Path;
 struct Object;
@@ -297,7 +297,7 @@ public:
     char unknown_3c1[0x3c4 - 0x3c1];
     DamageGuage damage_gauge;     // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, embedded HUD progress controller
-    WarningActor warning;                  // +0x3f4, embedded HUD warning controller
+    Warning warning;                       // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
     // Non-owning backlink to the SubgameRuntime that embeds this Player.
     // initialize_subgoldy is its sole setter; teardown never frees through it.

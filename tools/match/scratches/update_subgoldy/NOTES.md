@@ -104,12 +104,12 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
 +0x1066bf4, level count +0x12d4644, tip manager +0x12e6f58.
 
 2026-06-16 controller consolidation audit: row-event, warning, and nuke all
-have shared headers (`completion.h`, `warning_actor.h`,
+have shared headers (`completion.h`, `warning.h`,
 `nuke_controller.h`) validated by their focused scratches. Keep the local
 prefix views in this scratch for now. Those headers pull in
 `frontend_widget.h`/`sprite.h`/`vector3.h`, which conflicts with this file's
 scratch-local POD `Vector3`/`TransformMatrix` transcription before codegen.
-The remaining `WarningActor` type report hit is therefore an include-boundary
+The remaining `Warning` type report hit is therefore an include-boundary
 issue, not evidence for a second warning layout. Promote these only after the
 whole player scratch moves to the shared math/sprite headers.
 
@@ -241,11 +241,11 @@ source-shape issue is solved.
   prove the shared owner; keeping the local prefix avoids the same frontend
   include boundary and leaves this caller byte-stable.
 - 2026-06-20 remaining local view naming: the warning, control-source, and
-  cutscene subviews are now named `SubgoldyWarningActorView`,
+  cutscene subviews are now named `SubgoldyWarningView`,
   `SubgoldyPlayerControlSourceView`, and `SubgoldyCutsceneAIStateView`.
   Including the shared warning/player headers is still rejected for the
   include-boundary reasons above, but the type report no longer advertises
-  these compact local slices as promotable `WarningActor`, `PlayerControlSource`,
+  these compact local slices as promotable `Warning`, `PlayerControlSource`,
   or `CutsceneAI` definitions. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
 - 2026-06-20 Player ABI cleanup: the compact local `Player` method surface now
@@ -298,6 +298,12 @@ player +0x3c4 is replaced by the shared exact 0x2c-byte `DamageGuage`
 owner. Android `cRSubGoldy::AI()` calls `cRDamageGuage::AI()` through that
 embedded object, while the Windows jetpack controller at +0x2750 remains a
 separate neutral composite. Focused Wibo remains 72.51%, 2067/2087
+  instructions, with 290 clean masked operands and one jump-table mismatch.
+
+2026-07-11 warning-owner recovery: the compact local warning prefix is renamed
+`SubgoldyWarningView` to reflect the authored `cRWarning` owner proven by
+Android and iOS. The full shared header remains intentionally outside this
+large scratch's local math boundary. Focused Wibo remains 72.51%, 2067/2087
 instructions, with 290 clean masked operands and one jump-table mismatch.
 
 ## Zig port residuals (carried from the pre-scratch dossier, still open)

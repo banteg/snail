@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "snail_skin.h"
 #include "voice_manager.h"
-#include "warning_actor.h"
+#include "warning.h"
 
 extern GameRoot* g_game; // data_4df904
 

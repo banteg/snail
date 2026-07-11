@@ -4,7 +4,7 @@
 #include "bod_list.h"
 #include "border_manager.h"
 #include "subgame_runtime.h"
-#include "warning_actor.h"
+#include "warning.h"
 
 typedef unsigned int DWORD;
 

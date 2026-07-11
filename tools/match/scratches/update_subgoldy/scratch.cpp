@@ -100,7 +100,7 @@ struct SubgoldyFollowStateView {
                                              Vector3* velocity);
 };
 
-struct SubgoldyWarningActorView {
+struct SubgoldyWarningView {
     int state;
     float phase;
     float phase_step;
@@ -240,7 +240,7 @@ struct SubgoldyPlayerView {
     SubgoldyFollowStateView follow_state; // +0x384
     DamageGuage damage_gauge; // +0x3c4, authored cRDamageGuage owner
     ProgressBar progress_bar; // +0x3f0
-    SubgoldyWarningActorView warning; // +0x3f4
+    SubgoldyWarningView warning; // +0x3f4, compact cRWarning prefix
     int lives;                // +0x404
     SubgoldyGameView* game;               // +0x408
     int movement_mode_selector; // +0x40c

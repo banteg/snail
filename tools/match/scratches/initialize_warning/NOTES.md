@@ -11,6 +11,14 @@ and resets the progress state.
 confirmed +0x178 widget slot. This scratch remains exact.
 
 2026-06-16 warning actor consolidation: the 16-byte controller now uses the
-shared `WarningActor` view from `warning_actor.h`; the phase fields are
+shared `Warning` view from `warning.h`; the phase fields are
 +0x04/+0x08 and the frontend border pointer is +0x0c. This scratch remains
 exact.
+
+2026-07-11 authored-owner recovery: iOS names the wider mobile entry point
+`cRWarning::Init(cRSubGoldy*)`; Android exports `cRWarning::Init()` and calls
+it from `cRSubGame::Init()`. Android initializes the same state/phase/border
+roles but places two extra presentation lanes before its border pointer, so
+the shared `Warning` type preserves the exact 0x10-byte Windows layout without
+claiming cross-port byte identity. Focused Wibo remains exact at 32/32
+instructions with six clean masked operands.

@@ -38,7 +38,7 @@ Promoted to a matcher scratch on 2026-06-13. Current result: 65.92%,
 2026-06-13 follow-up: rewriting the state dispatch as a real `switch`
 matches the native state-2-first fallthrough layout and raises the scratch
 from 65.92% to 77.53%. Staging the skin-transition owner and calling
-`stop_warning_sample` as a `WarningActor` method (the callee ignores `ecx`,
+`stop_warning_sample` as a `Warning` method (the callee ignores `ecx`,
 but the native callsite sets it up from `g_game+0x430170`) raises the result
 to 80.60% with exact instruction count parity, 268/268.
 
@@ -62,7 +62,7 @@ the update-path `hit_flash_progress`/`hit_flash_step` names; apply-delta uses
 the same pair as its retrigger gate. Match remains 80.60%.
 
 2026-06-16 warning actor consolidation: the warning calls now use the shared
-`WarningActor` view. `stop_warning_sample` stays declared as a method view here
+`Warning` view. `stop_warning_sample` stays declared as a method view here
 because the native callsite sets `ecx` to `g_game+0x430170`, while the callee
 ignores it. Match remains 80.60%.
 

@@ -193,17 +193,24 @@ typedef struct TextureRef {
     int32_t unknown_a0;
 } TextureRef;
 
-/*
- * Warning actor controller. Native functions: initialize_warning @ 0x446e80,
- * start_warning @ 0x446f30, stop_warning @ 0x446f50, update_warning @ 0x446f80,
- * uninit_warning @ 0x446f10. State machine: 0 = idle, 1 = solid (phase=1s), 2 = fade.
- */
-typedef struct WarningActor {
+/* Authored cRProgressBar one-word controller at Player +0x3f0. */
+typedef struct ProgressBar {
     int32_t state;
-    float progress;
-    float progress_step;
+} ProgressBar;
+
+/*
+ * Authored cRWarning, exact 0x10-byte Windows owner at Player +0x3f4.
+ * Native functions: initialize_warning @ 0x446e80, uninit_warning @ 0x446f10,
+ * start_warning @ 0x446f30, stop_warning @ 0x446f50,
+ * stop_warning_sample @ 0x446f60, and update_warning @ 0x446f80.
+ * Mobile variants retain the owner and lifecycle but add fields before border.
+ */
+typedef struct Warning {
+    int32_t state;
+    float phase;
+    float phase_step;
     FrontendWidget* border;
-} WarningActor;
+} Warning;
 
 /*
  * Authored cRTimesUp countdown actor at SubgameRuntime +0x1272828. Native
@@ -915,7 +922,9 @@ typedef struct Player {
     int32_t player_slot;
     FollowState follow_state;
     DamageGuage damage_gauge;
-    uint8_t _pad_3f0[0x18];
+    ProgressBar progress_bar;
+    Warning warning;
+    int32_t lives;
     Game* game;
     int32_t movement_mode_selector;
     Vec3 velocity;

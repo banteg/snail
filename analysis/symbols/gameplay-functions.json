@@ -2583,27 +2583,33 @@
     },
     {
       "address": "0x446e80",
-      "name": "initialize_warning"
+      "name": "initialize_warning",
+      "description": "Initializes the exact 0x10-byte Windows cRWarning owner embedded in Player at +0x3f4: allocates and hides its border, then resets the phase state. Android and iOS retain cRWarning::Init, with wider mobile presentation layouts."
     },
     {
       "address": "0x446f10",
-      "name": "uninit_warning"
+      "name": "uninit_warning",
+      "description": "Releases the border owned by Player's embedded cRWarning. Android preserves this lifecycle edge as cRWarning::UnInit()."
     },
     {
       "address": "0x446f30",
-      "name": "start_warning"
+      "name": "start_warning",
+      "description": "Starts the embedded cRWarning fade cycle and unhides its border. Android cRDamageGuage::AI() calls cRWarning::Start() through the same owner relationship."
     },
     {
       "address": "0x446f50",
-      "name": "stop_warning"
+      "name": "stop_warning",
+      "description": "Stops the embedded cRWarning state machine and hides its border. Android and iOS retain this method as cRWarning::Stop()."
     },
     {
       "address": "0x446f60",
-      "name": "stop_warning_sample"
+      "name": "stop_warning_sample",
+      "description": "cRWarning::StopSample ownership recovered from Android and iOS. The Windows method stops the warning sample through the shared sound manager without reading its receiver; Android's port-specific body is a no-op."
     },
     {
       "address": "0x446f80",
-      "name": "update_warning"
+      "name": "update_warning",
+      "description": "Advances Player's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI()."
     },
     {
       "address": "0x447040",

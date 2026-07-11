@@ -710,6 +710,58 @@
       "notes": "v1.9-only signature."
     },
     {
+      "address": "0x446e80",
+      "windows_name": "initialize_warning",
+      "ios_symbol": "cRWarning::Init(cRSubGoldy*)",
+      "android_symbol": "cRWarning::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports initialize the cRWarning phase state and border. Windows uses an exact 0x10-byte embedded owner; mobile variants add presentation fields before the border pointer."
+    },
+    {
+      "address": "0x446f10",
+      "windows_name": "uninit_warning",
+      "android_symbol": "cRWarning::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android cRSubGame::UnInit() calls this method to release the warning border, matching the Windows SubGame teardown edge."
+    },
+    {
+      "address": "0x446f30",
+      "windows_name": "start_warning",
+      "android_symbol": "cRWarning::Start()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android cRDamageGuage::AI() calls Start on the embedded cRWarning, matching the Windows damage-gauge relationship."
+    },
+    {
+      "address": "0x446f50",
+      "windows_name": "stop_warning",
+      "ios_symbol": "cRWarning::Stop()",
+      "android_symbol": "cRWarning::Stop()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports stop the warning state and hide its owned border."
+    },
+    {
+      "address": "0x446f60",
+      "windows_name": "stop_warning_sample",
+      "ios_symbol": "cRWarning::StopSample()",
+      "android_symbol": "cRWarning::StopSample()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows member does not read its receiver and stops the shared warning sample; Android preserves ownership but ships a no-op body."
+    },
+    {
+      "address": "0x446f80",
+      "windows_name": "update_warning",
+      "ios_symbol": "cRWarning::AI()",
+      "android_symbol": "cRWarning::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android cRSubGoldy::AI() calls this method through the embedded warning owner; its state, phase, step, border-alpha, and sound-loop behavior match the Windows role despite the wider mobile layout."
+    },
+    {
       "address": "0x440fa0",
       "windows_name": "initialize_damage_gauge",
       "ios_symbol": "cRDamageGuage::Init(cRSubGoldy*)",

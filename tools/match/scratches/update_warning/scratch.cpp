@@ -5,11 +5,11 @@
 
 #include "audio_system.h"
 #include "game_root.h"
-#include "warning_actor.h"
+#include "warning.h"
 
 extern GameRoot* g_game; // data_4df904
 
-void WarningActor::update_warning()
+void Warning::update_warning()
 {
     if (!g_game->subgame.subgame_pause_gate && state) {
         float advanced;

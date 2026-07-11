@@ -10,7 +10,7 @@ warning actor" question: it is exactly this 16-byte actor.
 2026-06-13 pin audit: focused matcher verified 57.69%, 52/52 insns. The
 semantics, alpha constants, phase wrap, and sound replay were already matched.
 
-2026-06-16 type consolidation: this now uses the shared `WarningActor` and
+2026-06-16 type consolidation: this now uses the shared `Warning` and
 `FrontendWidget` views. The former generic target alpha is
 `FrontendWidget::warning_overlay_alpha` at +0x208 on the warning border.
 Reordering the source to test state 2 before state 1 matches native's dominant
@@ -63,8 +63,16 @@ not durable original-looking source.
 `sub eax, edx` versus `cmp eax, edx` residual.
 
 2026-07-11 ownership closure: the synthetic pause-only root view is removed;
-the gate is `GameRoot::subgame.subgame_pause_gate`. The shared `Player` and live
-Binary Ninja type now also own the adjacent `ProgressBar`, `WarningActor`, and
+the gate is `GameRoot::subgame.subgame_pause_gate`. The shared `Player` and
+checked-in analysis types now also own the adjacent `ProgressBar`, `Warning`, and
 lives fields at `+0x3f0/+0x3f4/+0x404`. Focused Wibo remains 98.08%, 52/52
 instructions, prefix 8/52, and seven clean masked operands; the honest
 `sub`/`cmp` residual is unchanged.
+
+2026-07-11 authored-owner recovery: Android and iOS name this method
+`cRWarning::AI()`, and Android `cRSubGoldy::AI()` calls it through the
+embedded warning owner. Android preserves the state/phase/step, border-alpha,
+and sound-loop roles while using a wider mobile layout. The Windows class is
+now the exact 0x10-byte `Warning` owner rather than a generic actor label.
+Focused Wibo remains an honest 98.08%, 52/52 instructions, with seven clean
+masked operands and the same source-shape `sub`/`cmp` residual.

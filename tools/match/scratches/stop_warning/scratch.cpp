@@ -1,8 +1,8 @@
 // stop_warning @ 0x446f50 (thiscall, tailcall)
 
-#include "warning_actor.h"
+#include "warning.h"
 
-void WarningActor::stop_warning()
+void Warning::stop_warning()
 {
     state = 0;
     border->hide_border_init();
