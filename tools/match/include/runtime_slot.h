@@ -24,7 +24,6 @@ public:
     RuntimeSlot* initialize_fringe_object();
     RuntimeSlot* initialize_click_start_controller_runtime();
     RuntimeSlot* initialize_golb_shot();
-    RuntimeSlot* initialize_enemy_manager_runtime();
     RuntimeSlot* initialize_bod();
     RuntimeSlot* initialize_track_row_runtime();
     RuntimeSlot* initialize_path_template_record_pair();

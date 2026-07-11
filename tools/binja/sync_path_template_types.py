@@ -6,10 +6,35 @@ import argparse
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare_if_missing
+from _narrow_sync import (
+    apply_proto_updates,
+    apply_struct_field_updates,
+    apply_symbol_updates,
+    emit_summary,
+    types_declare_if_missing,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types.h"
+
+PRESENTATION_SYMBOL_UPDATES = (
+    ("0x4086d0", "initialize_player_presentation_controller"),
+    ("0x497354", "g_player_presentation_noop_vtable"),
+    ("0x497358", "g_invincible_shell_update_vtable"),
+    ("0x49735c", "g_presentation_animation_channel_noop_vtable"),
+)
+
+PRESENTATION_CONTROLLER_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+)
+
+PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+)
+
+INVINCIBLE_SHELL_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+)
 REQUIRED_HEADER_STRUCTS = (
     "Game",
     "SnailVisual",
@@ -232,6 +257,10 @@ TIP_MANAGER_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_player_presentation_controller",
+        "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation)",
+    ),
     (
         "initialize_matrix_from_values",
         "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)",
@@ -505,6 +534,37 @@ def main() -> int:
             target=args.target,
             struct_name="Player",
             updates=PLAYER_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="PlayerPresentationController",
+            updates=PRESENTATION_CONTROLLER_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="PresentationAnimationChannel",
+            updates=PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="InvincibleShellController",
+            updates=INVINCIBLE_SHELL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PRESENTATION_SYMBOL_UPDATES,
         )
     )
     operations.extend(

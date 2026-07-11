@@ -89,7 +89,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_click_start_controller_runtime | 0x408670 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_golb_shot | 0x408690 | 58 | 17/17 | 100.00% | 17/17 | 6 ok |  |
-| ✅ | initialize_enemy_manager_runtime | 0x4086d0 | 322 | 79/79 | 100.00% | 79/79 | 27 ok |  |
+| ✅ | initialize_player_presentation_controller | 0x4086d0 | 322 | 79/79 | 100.00% | 79/79 | 27 ok |  |
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_landscape_script_record | 0x408840 | 18 | 7/7 | 100.00% | 7/7 | 1 ok |  |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |

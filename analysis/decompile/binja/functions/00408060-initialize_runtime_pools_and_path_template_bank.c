@@ -74,7 +74,7 @@
 00408290        initialize_click_start_controller_runtime(arg1 + 0x3bb804)
 00408290        int16_t top_2 = top - 2
 004082be        initialize_array_with_constructor(arg1 + 0x3bbbb4, 0x2e8, 0xc, initialize_golb_shot)
-004082c9        initialize_enemy_manager_runtime(arg1 + 0x3be0e8)
+004082c9        initialize_player_presentation_controller(arg1 + 0x3be0e8)
 004082ce        *(arg1 + 0x3bb764) = &g_subgoldy_callback_table
 004082d4        char** edi_6 = arg1 + 0x3bfac8
 004082da        int32_t i_13 = 0x6400

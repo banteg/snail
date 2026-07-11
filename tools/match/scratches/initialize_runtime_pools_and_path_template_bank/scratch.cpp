@@ -1,5 +1,6 @@
 // initialize_runtime_pools_and_path_template_bank @ 0x408060 (thiscall, ret)
 
+#include "player.h"
 #include "runtime_slot.h"
 #include "sprite.h"
 
@@ -114,7 +115,7 @@ RuntimePools* RuntimePools::initialize_runtime_pools_and_path_template_bank()
         0x2e8,
         0xc,
         &RuntimeSlot::initialize_golb_shot);
-    ((RuntimeSlot*)((char*)subgoldy + 0x2984))->initialize_enemy_manager_runtime();
+    ((Player*)((char*)subgoldy))->presentation.initialize_player_presentation_controller();
     subgoldy->vtable = &g_subgoldy_callback_table;
 
     RuntimeSlot* bod = SLOT(0x3bfac8);

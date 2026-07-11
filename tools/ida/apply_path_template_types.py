@@ -6,12 +6,25 @@ import sys
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
+import ida_name
 import ida_pro
 import ida_typeinf
 import idc
 
 
+TRUSTED_NAMES = [
+    (0x4086D0, "initialize_player_presentation_controller"),
+    (0x497354, "g_player_presentation_noop_vtable"),
+    (0x497358, "g_invincible_shell_update_vtable"),
+    (0x49735C, "g_presentation_animation_channel_noop_vtable"),
+]
+
+
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_player_presentation_controller",
+        "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation);",
+    ),
     (
         "noop_this_constructor",
         "void* __thiscall noop_this_constructor(void* self);",
@@ -631,8 +644,19 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     applied = 0
     unchanged = 0
+    renamed = 0
+    names_unchanged = 0
     missing = []
     failed = []
+
+    for address, name in TRUSTED_NAMES:
+        if idc.get_name(address) == name:
+            names_unchanged += 1
+            continue
+        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            failed.append({"address": hex(address), "selector": name, "reason": "rename_failed"})
+            continue
+        renamed += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address, name = _resolve_function(selector)
@@ -691,6 +715,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
                 "lvar_view": lvar_view,
                 "missing": missing,
                 "failed": failed,

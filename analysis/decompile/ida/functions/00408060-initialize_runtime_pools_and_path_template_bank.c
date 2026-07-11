@@ -132,7 +132,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
   noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978521));
   noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978618));
   initialize_array_with_constructor((int)(this + 978669), 744, 12, (int (__thiscall *)(int))initialize_golb_shot);
-  initialize_enemy_manager_runtime(this + 981050);
+  initialize_player_presentation_controller((PlayerPresentationController *)(this + 981050));
   *(this + 978393) = &g_subgoldy_callback_table;
   v13 = this + 982706;
   v14 = 25600;

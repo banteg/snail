@@ -124,6 +124,7 @@ typedef char CutsceneAI_must_be_0x5c[
 
 class PlayerPresentationController {
 public:
+    PlayerPresentationController* initialize_player_presentation_controller(); // @ 0x4086d0
     void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
@@ -134,7 +135,7 @@ public:
 
     // The first 0x10 bytes are an intrusive BOD-list node. build_subgame_level
     // links this embedded presentation object; the list does not own it.
-    char unknown_00[0x04];
+    void* vtable;                          // +0x00, noop presentation callback
     unsigned int visual_flags;              // +0x04
     char unknown_08[0x24 - 0x08];
     PresentationAnimationVisualRoot* visual_root; // +0x24

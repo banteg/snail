@@ -556,7 +556,7 @@ typedef struct AnimationDispatchState {
 } AnimationDispatchState;
 
 typedef struct PresentationAnimationChannel {
-    uint8_t _pad_00[0x4];
+    void* vtable;
     uint32_t visual_flags;
     uint8_t _pad_08[0x1c];
     SnailVisual* visual_root;
@@ -589,7 +589,8 @@ typedef struct PresentationWobbleController {
 } PresentationWobbleController;
 
 typedef struct InvincibleShellController {
-    uint8_t _pad_00[0x80];
+    void* vtable;
+    uint8_t _pad_04[0x7c];
     int32_t state;
     float spin_phase;
     float spin_phase_step;
@@ -599,7 +600,7 @@ typedef struct InvincibleShellController {
 } InvincibleShellController;
 
 typedef struct PlayerPresentationController {
-    uint8_t _pad_00[0x4];
+    void* vtable;
     uint32_t visual_flags;
     uint8_t _pad_08[0x1c];
     SnailVisual* visual_root;

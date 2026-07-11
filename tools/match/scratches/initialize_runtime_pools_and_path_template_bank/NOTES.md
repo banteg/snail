@@ -25,3 +25,14 @@
 - Exact spawn paths identify their inherited node prefixes as the sub-lazer and
   salt live-list heads respectively; these are embedded owners, not borrowed
   pointers or 0x10-byte synthetic anchor views.
+
+## 2026-07-11 player presentation owner
+
+- The sole call to `0x4086d0` receives `Player +0x2984`, exactly the shared
+  `PlayerPresentationController` member.
+- Its four former "enemy groups" begin at presentation `+0x64c`, `+0xa28`,
+  `+0xe04`, and `+0x11e0`: the three weapon channels and jetpack channel, each
+  with the proven `0x3dc` stride.
+- The callback slots prove a no-op presentation root, four no-op animation
+  channels, and the `update_invincible_shell` child at `+0x1894`. The old
+  enemy-manager constructor name and local receiver are retired.

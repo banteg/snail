@@ -364,6 +364,41 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_player_presentation_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/004086d0-initialize_player_presentation_controller.c",
+      "required_substrings": [
+        "initialize_player_presentation_controller",
+        "presentation->weapon_channels[0].vtable",
+        "presentation->jetpack_channel.vtable",
+        "presentation->invincible_shell.vtable",
+        "g_player_presentation_noop_vtable"
+      ],
+      "forbidden_substrings": [
+        "initialize_enemy_manager_runtime",
+        "g_enemy_manager_vtable",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_player_presentation_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/004086d0-initialize_player_presentation_controller.c",
+      "required_substrings": [
+        "initialize_player_presentation_controller",
+        "presentation->weapon_channels[0].vtable",
+        "presentation->jetpack_channel.vtable",
+        "presentation->invincible_shell.vtable",
+        "g_player_presentation_noop_vtable"
+      ],
+      "forbidden_substrings": [
+        "initialize_enemy_manager_runtime",
+        "g_enemy_manager_vtable",
+        "sub_4086D0",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

@@ -21,7 +21,8 @@ public:
 
     // BOD-node-compatible prefix linked by build_subgame_level. The channel
     // remains embedded in PlayerPresentationController.
-    char unknown_000[0x24];
+    void* vtable; // +0x00, shared no-op animation-channel callback
+    char unknown_004[0x24 - 0x04];
     PresentationAnimationVisualRoot* visual_root; // +0x24
     char unknown_028[0x38 - 0x28];
     TransformMatrix live_matrix; // +0x38

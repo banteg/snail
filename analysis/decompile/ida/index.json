@@ -658,10 +658,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_enemy_manager_runtime",
+      "selector": "initialize_player_presentation_controller",
       "address": "0x4086d0",
-      "name": "initialize_enemy_manager_runtime",
-      "artifact": "analysis/decompile/ida/functions/004086d0-initialize_enemy_manager_runtime.c",
+      "name": "initialize_player_presentation_controller",
+      "artifact": "analysis/decompile/ida/functions/004086d0-initialize_player_presentation_controller.c",
       "removed_stale_artifacts": []
     },
     {

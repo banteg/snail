@@ -472,8 +472,8 @@
     },
     {
       "address": "0x4086d0",
-      "name": "initialize_enemy_manager_runtime",
-      "description": "Constructs the embedded enemy-manager runtime object by seeding its visible bods and child renderable entries before the later gameplay reset in `initialize_enemy_manager`. Its `0x1804` footprint matches the native `cREnemyManager` size ledger from `construct_game_runtime`."
+      "name": "initialize_player_presentation_controller",
+      "description": "Constructs the `Player +0x2984` presentation controller: initializes its renderable prefix, ten cutscene visual slots, four animation channels, two hotspot-source renderables, and the invincible-shell child before installing their callback tables."
     },
     {
       "address": "0x408820",

@@ -485,8 +485,8 @@
     },
     {
       "address": "0x4086d0",
-      "name": "initialize_enemy_manager_runtime",
-      "artifact": "analysis/decompile/binja/functions/004086d0-initialize_enemy_manager_runtime.c"
+      "name": "initialize_player_presentation_controller",
+      "artifact": "analysis/decompile/binja/functions/004086d0-initialize_player_presentation_controller.c"
     },
     {
       "address": "0x408820",

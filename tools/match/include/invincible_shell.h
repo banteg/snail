@@ -13,7 +13,8 @@ public:
 
     // BOD-node-compatible prefix linked by build_subgame_level. The shell
     // remains embedded in PlayerPresentationController.
-    char unknown_00[0x28];
+    void* vtable; // +0x00, update_invincible_shell callback
+    char unknown_04[0x28 - 0x04];
     Color4f color; // +0x28
     TransformMatrix transform; // +0x38, copied from the live snail matrix then yaw-spun
     char unknown_78[0x80 - 0x78];

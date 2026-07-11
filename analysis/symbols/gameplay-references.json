@@ -889,7 +889,8 @@
         "$L4685",
         "$L4689",
         "$L4693",
-        "$L4712"
+        "$L4712",
+        "$L4715"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -905,7 +906,8 @@
         "$L4686",
         "$L4690",
         "$L4694",
-        "$L4713"
+        "$L4713",
+        "$L4716"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -1826,33 +1828,36 @@
     },
     {
       "address": "0x497354",
-      "name": "g_enemy_manager_vtable",
+      "name": "g_player_presentation_noop_vtable",
       "kind": "vtable",
       "aliases": [
+        "g_enemy_manager_vtable",
         "off_497354",
         "data_497354"
       ],
-      "description": "Enemy manager root vtable installed by initialize_enemy_manager_runtime."
+      "description": "PlayerPresentationController callback slot installed by initialize_player_presentation_controller; its first and only callback is noop_runtime_ai."
     },
     {
       "address": "0x497358",
-      "name": "g_enemy_manager_child_vtable",
+      "name": "g_invincible_shell_update_vtable",
       "kind": "vtable",
       "aliases": [
+        "g_enemy_manager_child_vtable",
         "off_497358",
         "data_497358"
       ],
-      "description": "Enemy manager child vtable installed by initialize_enemy_manager_runtime."
+      "description": "InvincibleShellController callback slot installed at PlayerPresentationController +0x1894; its first and only callback is update_invincible_shell."
     },
     {
       "address": "0x49735c",
-      "name": "g_enemy_group_vtable",
+      "name": "g_presentation_animation_channel_noop_vtable",
       "kind": "vtable",
       "aliases": [
+        "g_enemy_group_vtable",
         "off_49735c",
         "data_49735c"
       ],
-      "description": "Enemy group vtable installed on the four enemy-manager child groups."
+      "description": "No-op callback slot installed on the three weapon animation channels and the jetpack animation channel embedded in PlayerPresentationController."
     },
     {
       "address": "0x497360",

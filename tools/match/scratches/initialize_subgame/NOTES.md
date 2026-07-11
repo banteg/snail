@@ -139,3 +139,12 @@ the remaining generic owner list.
   byte-for-byte identical to the curated target-relative sequences. Registering
   these aliases restores bounded content proof without touching the exact
   function body.
+
+2026-07-11 presentation-owner header refresh:
+
+- Naming the player presentation constructor and its callback fields advances
+  the same local labels to `$L4715`/`$L4716`; the tables remain at object
+  `+0x62c`/`+0x640`.
+- Their five- and eight-entry relocation targets are unchanged and still equal
+  the curated target-relative sequences, so both aliases remain content-audited
+  rather than trusted by spelling.
