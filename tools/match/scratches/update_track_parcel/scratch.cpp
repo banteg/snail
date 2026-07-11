@@ -7,7 +7,7 @@
 float sine(float radians);
 int next_math_random_value();
 
-void TrackParcelRuntime::update_track_parcel()
+void Parcel::update_track_parcel()
 {
     SubgameRuntime* subgame = owner_subgame;
     Vector3 home_delta;

@@ -130,7 +130,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         }
     }
 
-    ((TrackParcelPool*)(game + 0x125e480))->initialize_track_parcel_slots();
+    parcel_manager.initialize_track_parcel_slots();
     if (*(unsigned char*)(g_game_base + 0x4f2e0) == 1) {
         (*(FrontendWidget**)(game + 0x35bb88))->hide_border_init();
         (*(FrontendWidget**)(game + 0x35bb8c))->hide_border_init();

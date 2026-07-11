@@ -194,8 +194,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         0x96,
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        (RuntimeSlot*)parcel_pool.slots,
-        sizeof(TrackParcelRuntime),
+        (RuntimeSlot*)parcel_manager.slots,
+        sizeof(Parcel),
         0x32,
         &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(

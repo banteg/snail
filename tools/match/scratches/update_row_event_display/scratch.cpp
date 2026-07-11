@@ -49,7 +49,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
                 ++staged_parcel_count;
                 controller->staged_parcel_count = staged_parcel_count;
                 char* game = g_game_base;
-                TrackParcelRuntime* parcel =
+                Parcel* parcel =
                     ((SubgameRuntime*)(game + 0x74618))->spawn_track_parcel(
                         (Vector3*)(game + 0x433f34),
                         (Player*)(game + 0x42fd7c));

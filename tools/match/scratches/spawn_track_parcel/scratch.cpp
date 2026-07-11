@@ -2,9 +2,9 @@
 
 #include "subgame_runtime.h"
 
-TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
+Parcel* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
 {
-    TrackParcelRuntime* parcel = parcel_pool.allocate_track_parcel_slot();
+    Parcel* parcel = parcel_manager.allocate_track_parcel_slot();
     if (parcel != 0) {
         parcel->state = 1;
         parcel->position = *world_position;

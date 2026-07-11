@@ -130,3 +130,9 @@ evidence for a second audio API.
 `GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
 is codegen-neutral at 99.53%, 213/213 instructions, prefix 102/213, and 37
 clean masked operands.
+
+2026-07-11 parcel return ownership: the state-2 spawn now receives a `Parcel*`
+from `SubgameRuntime::spawn_track_parcel`, backed by the embedded
+`ParcelManager`. Android `cRSubGame::AddParcel(...)` independently proves that
+the pointer-or-null result is real. The focused Windows result remains 99.53%,
+213/213 instructions, prefix 102/213, with all 37 operands clean.

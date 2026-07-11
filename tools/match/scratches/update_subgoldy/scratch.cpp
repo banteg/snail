@@ -18,6 +18,7 @@
 #include "presentation_animation_channel.h"
 #include "runtime_config.h"
 #include "tip_manager.h"
+#include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
 class Sprite;
@@ -42,11 +43,6 @@ struct TimesUp {
     int state;
     void show_times_up_message();
     void update_times_up();
-};
-
-struct TrackParcels {
-    int state;
-    void update_track_parcels();
 };
 
 struct Nuke {
@@ -83,7 +79,6 @@ struct SubgoldyTrackRowCellView {
 };
 
 struct SubgoldyPlayerView;
-typedef SubgoldyPlayerView Player;
 
 struct SubgoldyFollowStateView {
     unsigned char active; // +0x00
@@ -93,12 +88,13 @@ struct SubgoldyFollowStateView {
     int sample_index;                        // +0x0c
     char unknown_10[0x2c - 0x10];
     Vector3 output_position; // +0x2c
-    Player* player;          // +0x38
+    SubgoldyPlayerView* player; // +0x38
     unsigned char flag_3c;   // +0x3c
     char unknown_3d[3];
 
     SubgoldyAttachmentPathTemplateView* begin_track_attachment_follow_state(
-        SubgoldyTrackRowCellView* cell, const Vector3* position, Player* player);
+        SubgoldyTrackRowCellView* cell, const Vector3* position,
+        SubgoldyPlayerView* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,
                                              Vector3* velocity);
 };
@@ -295,7 +291,7 @@ struct SubgoldyPlayerView {
     void update_subgoldy_resurrect();
     int initialize_subgoldy_death();
     void play_movement_state_sound();
-    void update_movement_flag_emitters(Player* player);
+    void update_movement_flag_emitters(SubgoldyPlayerView* player);
     int update_player_movement_flags();
     Sprite* set_subgoldy_ghost_z(float ghost_z);
     void show_subgoldy_lives();
@@ -309,7 +305,7 @@ struct SubgoldyPlayerView {
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
 // level_segment_count.
 
-void Player::update_subgoldy()
+void SubgoldyPlayerView::update_subgoldy()
 {
     SubgoldyGameView* current_game = game;
     if (current_game->subgame_pause_gate) {
@@ -1142,7 +1138,7 @@ steering_stored:
     presentation.weapon_channels[0].anim_manager.update_anim_manager();
     presentation.weapon_channels[1].anim_manager.update_anim_manager();
     presentation.weapon_channels[2].anim_manager.update_anim_manager();
-    ((TrackParcels*)((char*)game + 0x125e480))->update_track_parcels();
+    ((ParcelManager*)((char*)game + 0x125e480))->update_track_parcels();
     presentation.initialize_cutscene();
     update_player_movement_flags();
     if (*(int*)((char*)g_app + 0x1066bf4) < 10)

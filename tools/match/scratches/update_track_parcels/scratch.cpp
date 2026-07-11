@@ -7,9 +7,9 @@ public:
     virtual void update_track_parcel();
 };
 
-void TrackParcelPool::update_track_parcels()
+void ParcelManager::update_track_parcels()
 {
-    TrackParcelRuntime* slot = slots;
+    Parcel* slot = slots;
     int count = 50;
     do {
         if (slot->state != 0) {

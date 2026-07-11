@@ -490,7 +490,7 @@
     {
       "address": "0x408860",
       "name": "initialize_track_parcel_runtime",
-      "description": "Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`."
+      "description": "Exact Windows constructor for one authored `Parcel` (`cRParcel` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_parcel`. `ParcelManager` owns 50 inline 0x8c-byte records whose 0x1b58 extent exactly matches the native manager ledger."
     },
     {
       "address": "0x408880",
@@ -2383,22 +2383,22 @@
     {
       "address": "0x443130",
       "name": "update_track_parcels",
-      "description": "Walks the 50-slot `game->track_parcels` runtime array and dispatches `update_track_parcel` on each active parcel slot. Cross-port iOS symbols name the slot owner `cRParcel` in `SubGame.o`."
+      "description": "Exact `ParcelManager` update: walks the 50 owned records and dispatches each active Parcel through its installed table. Android and iOS v1.9 retain `cRParcelManager::AI()`."
     },
     {
       "address": "0x443160",
       "name": "initialize_track_parcel_slots",
-      "description": "Clears the live state on the 50-slot gameplay parcel array and reseeds each slot's `game` pointer before any authored parcel placements are spawned for the current level."
+      "description": "Exact `ParcelManager` initializer: clears all 50 Parcel states and seeds each borrowed SubgameRuntime backlink. Android retains the authored member as `cRParcelManager::Init()`."
     },
     {
       "address": "0x443190",
       "name": "allocate_track_parcel_slot",
-      "description": "Scans the gameplay parcel array for the first inactive slot and returns it, logging `Too Many Parcels increase RPARCEL_MAXIMUM` if the 50-slot pool is exhausted."
+      "description": "Exact `ParcelManager` allocator: returns the first inactive Parcel or logs `Too Many Parcels increase RPARCEL_MAXIMUM` and returns null. Android retains `cRParcelManager::New()`."
     },
     {
       "address": "0x4431d0",
       "name": "update_track_parcel",
-      "description": "Runs one live gameplay parcel slot through its bobbing, homing, and final delivery-arc states, then registers the delivered parcel on `game->row_event_display` before tearing down the sprite. Cross-port iOS symbols match this helper to `cRParcel::AI()` in `SubGame.o`."
+      "description": "Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, then registers delivery before tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`."
     },
     {
       "address": "0x443650",
@@ -2408,7 +2408,7 @@
     {
       "address": "0x443730",
       "name": "spawn_track_parcel",
-      "description": "Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot. Cross-port iOS symbols match this helper to `cRSubGame::AddParcel(...)`, with v1.9 adding the source `cRSubRow*` argument."
+      "description": "Exact `SubgameRuntime` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
     },
     {
       "address": "0x443870",

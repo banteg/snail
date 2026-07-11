@@ -1935,13 +1935,13 @@
     },
     {
       "address": "0x497364",
-      "name": "g_track_parcel_vtable",
+      "name": "g_parcel_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497364",
         "data_497364"
       ],
-      "description": "Runtime parcel slot vtable installed by initialize_track_parcel_runtime."
+      "description": "Authored cRParcel vtable installed by the exact Windows constructor; its entry points directly to update_track_parcel at 0x4431d0."
     },
     {
       "address": "0x497368",

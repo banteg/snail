@@ -90,7 +90,7 @@ mismatch).
 - 2026-06-20 shared subgame runtime header pass: local one-method or prefix
   views for `StarField`, `GolbPathBank`, `DamageGaugeController`,
   `SubLazerPool`, `SaltHazardPool`, `SubTracks`,
-  `TrackParcelPool`, `FrontendWidget`, `LandscapeManager`, `BodList`,
+  `ParcelManager`, `FrontendWidget`, `LandscapeManager`, `BodList`,
   `BodNode`, `MouseCursorState`, and
   `Player::initialize_subgoldy` were replaced by shared headers. The focused
   matcher remains unchanged at `79.82%`, `555/555`, `177/555` prefix; the later
@@ -238,3 +238,12 @@ The exact call receiver at `SubgameRuntime +0x35bb7c` is now the embedded
 `SlugVoiceManager` rather than an anonymous byte interval. Android independently
 retains `cRSlugVoiceManager::Init()` with the same three fields and values. The
 typed member call is codegen-neutral at the pinned 86.10% frontier.
+
+## 2026-07-11 cRParcelManager initializer owner
+
+The level reset now calls the embedded
+`SubgameRuntime::parcel_manager.initialize_track_parcel_slots()` directly at
+`+0x125e480`. The exact callee and Android `cRParcelManager::Init()` prove that
+this is the manager owner, not a one-method pool window. The focused result
+remains `86.10%`, `560/555`, prefix `244/555`, with 105 clean non-table
+operands and the one real table-shape mismatch.

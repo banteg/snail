@@ -16,6 +16,12 @@ Exact match.
 - The exact source shape keeps the non-null body explicit, returns from both
   bob-phase branches, and leaves the null return as the final tail block.
 - The shared `SubgameRuntime` now carries the fixed parcel pool at +0x125e480;
-  `TrackParcelRuntime` inherits its position from `BodBase` and borrows the
+  `ParcelManager` owns 50 inline `Parcel` records, while each `Parcel` inherits
+  its position from `BodBase` and borrows the
   embedded Player and SpriteManager handle. Keeping this scratch exact proves
   those ownership links for the update and collision paths.
+- Android `cRSubGame::AddParcel(tVector*, cRSubGoldy*)` explicitly returns the
+  allocated `cRParcel*` in `r0`, or null on exhaustion. This confirms that the
+  exact Windows `Parcel*` return is authored API semantics rather than a
+  caller-ignored register artifact. iOS v1.9 adds the source `cRSubRow*`
+  argument, but preserves the same SubGame/Parcel ownership relationship.

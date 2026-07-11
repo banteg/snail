@@ -4,9 +4,9 @@
 
 extern char* g_game_base; // data_4df904
 
-void TrackParcelPool::initialize_track_parcel_slots()
+void ParcelManager::initialize_track_parcel_slots()
 {
-    TrackParcelRuntime* slot = slots;
+    Parcel* slot = slots;
     int count = 50;
     do {
         slot->state = 0;

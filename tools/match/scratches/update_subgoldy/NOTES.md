@@ -218,6 +218,13 @@ source-shape issue is solved.
   views as ready-to-promote `AttachmentPathTemplate`, `TrackRowCell`, or
   `FollowState` copies. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
+- 2026-07-11 parcel manager owner: the tail now dispatches through the shared
+  `ParcelManager` at game `+0x125e480`, removing the local one-method
+  `TrackParcels` shell. The scratch's broad player transcription is named
+  `SubgoldyPlayerView` instead of aliasing the authored shared `Player`, which
+  lets both types coexist without pretending the sparse view is complete.
+  This is codegen-neutral at `72.51%`, `2067/2087`, with the same `290 ok / 1`
+  real follow-jump-table mismatch.
 - 2026-06-20 remaining local view naming: the warning, control-source, and
   cutscene subviews are now named `SubgoldyWarningActorView`,
   `SubgoldyPlayerControlSourceView`, and `SubgoldyCutsceneAIStateView`.

@@ -135,7 +135,7 @@ useful cross-confirmations are:
 - `TrackSpeedupRuntime` has a full `world_position` vector at `+0x68..+0x70`
   and `state` at `+0x80`; `update_track_speedup` only needed the z lane, but
   collision consumes x/y/z.
-- `TrackHealthPickup`, `TrackJetpackPickup`, `TrackParcelRuntime`,
+- `TrackHealthPickup`, `TrackJetpackPickup`, `Parcel`,
   `GarbageHazardSlot`, and `RingOrSpecialEffectParent` all line up with their
   shared headers at the collision callsites. Ring/special-effect centers now
   come through inherited `RenderableBod::transform.position`.
@@ -289,7 +289,7 @@ and golb matches.
 
 ## Parcel ownership follow-up (2026-07-10)
 
-The collision path now consumes inherited `TrackParcelRuntime::position`, and
+The collision path now consumes inherited `Parcel::position`, and
 the HUD total comes from the embedded
 `SubgameRuntime::level_definition.parcel_count`. The focused result remains
 52.85%, 659/673, prefix 8/673, with all 86 masked operands clean.
@@ -298,10 +298,14 @@ the HUD total comes from the embedded
 
 `SubgameRuntime` now owns the complete fixed collision band: eight `Slug`
 slots through `SlugPool`, twenty sub-lazers, forty
-salt hazards, the parcel pool, eight health pickups, and the two ring-effect
+salt hazards, the `ParcelManager`, eight health pickups, and the two ring-effect
 parents. The salt, slug, parcel, health, and ring sweeps now derive their byte
 cursors from those named members while retaining the native byte-strided loop
 shape.
+
+The parcel sweep now names the primary `Parcel` records and derives its base
+from `SubgameRuntime::parcel_manager.slots`. This is codegen-neutral at 52.85%,
+659/673, prefix 8/673, with all 86 masked operands clean.
 
 The salt byte at slot `+0x94` is now `collision_armed`: the exact spawner sets
 it, this collision path tests it, and a successful contact clears it. A typed

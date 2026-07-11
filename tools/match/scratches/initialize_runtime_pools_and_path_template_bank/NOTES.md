@@ -210,3 +210,13 @@
 - Parent table `0x497318` links to `cRJetPack::AI()`; both child tables at
   `0x49731c` link to `cRVapour::AI()`. This function remains exact at 227/227
   with all 72 operands clean.
+
+## 2026-07-11 cRParcelManager constructor array
+
+- The 50-record pass at `SubgameRuntime +0x125e480` now walks
+  `ParcelManager::slots` directly with `sizeof(Parcel) == 0x8c`.
+- Its exact `0x1b58` extent matches the native `Size of cRParcelManager`
+  ledger. Each record's exact constructor installs the table whose entry is
+  `cRParcel::AI()`/`update_track_parcel`.
+- The typed constructor loop remains exact at 227/227 instructions with all 72
+  masked operands clean.

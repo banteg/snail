@@ -4,7 +4,7 @@ Structured scratch for `update_track_parcel` @ `0x4431d0`.
 
 Recovered relationships:
 
-- `TrackParcelRuntime::owner_subgame` is a borrowed subgame-base pointer
+- `Parcel::owner_subgame` is a borrowed subgame-base pointer
   (`g_game_base + 0x74618`), not the root game base. Its `+0x09` byte is the
   `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
@@ -22,12 +22,12 @@ Recovered relationships:
   `RowEventDisplayController::widget_world_*` at `subgame+0x12727d8`, then
   calls `register_parcel_delivery()`.
 
-The shared parcel header now models `TrackParcelRuntime : BodBase`; the exact
-initializer proves the inherited body prefix and the fixed `TrackParcelPool`
-proves 50 owned slots. The parcel itself only borrows its `SubgameRuntime`,
-embedded `Player`, and SpriteManager sprite handles. The tail remains named as
-`progress`, `progress_step`, `target_distance`, `travel_dir`, and
-`delivery_offset`.
+The shared parcel header now models the primary authored `Parcel : BodBase`;
+the exact initializer and table entry join it to Android/iOS `cRParcel::AI()`.
+The fixed `ParcelManager` proves 50 owned inline records. A parcel itself only
+borrows its `SubgameRuntime`, embedded `Player`, and SpriteManager sprite
+handles. The tail remains named as `progress`, `progress_step`,
+`target_distance`, `travel_dir`, and `delivery_offset`.
 
 Current result: 63.79%, 290/312 instructions, prefix 8/312, with 34 clean
 masked operands. Function-scope delta temporaries, staged vector results, and

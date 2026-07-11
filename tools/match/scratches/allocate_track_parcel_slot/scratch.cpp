@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-TrackParcelRuntime* TrackParcelPool::allocate_track_parcel_slot()
+Parcel* ParcelManager::allocate_track_parcel_slot()
 {
     int index = 0;
     int* state = &slots[0].state;

@@ -358,6 +358,31 @@
       "notes": "The Windows callback table at 0x497330 points directly to this exact helper. Its receiver is the 0x8c-byte RowModel embedded at SubRow +0x04, with velocity at model +0x80."
     },
     {
+      "address": "0x443130",
+      "windows_name": "update_track_parcels",
+      "ios_symbol": "cRParcelManager::AI()",
+      "android_symbol": "cRParcelManager::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both manager bodies walk the fixed parcel array and virtually dispatch each active cRParcel; the platform slot strides differ."
+    },
+    {
+      "address": "0x443160",
+      "windows_name": "initialize_track_parcel_slots",
+      "android_symbol": "cRParcelManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both clear 50 inline parcel states and seed each borrowed containing-subgame backlink."
+    },
+    {
+      "address": "0x443190",
+      "windows_name": "allocate_track_parcel_slot",
+      "android_symbol": "cRParcelManager::New()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both scan 50 inline records for the first inactive parcel and return null after the same exhaustion error."
+    },
+    {
       "address": "0x443650",
       "windows_name": "load_frontend_level_by_mode_and_index",
       "ios_symbol": "cRSubTracks::Load(int, int)",
@@ -369,14 +394,16 @@
       "address": "0x443730",
       "windows_name": "spawn_track_parcel",
       "ios_symbol": "cRSubGame::AddParcel(...)",
+      "android_symbol": "cRSubGame::AddParcel(tVector*, cRSubGoldy*)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has AddParcel(tVector*, cRSubGoldy*); v1.9 adds cRSubRow*."
+      "notes": "Android and iOS v1.5 have AddParcel(tVector*, cRSubGoldy*); iOS v1.9 adds cRSubRow*. Android explicitly returns the allocated cRParcel pointer or null, matching Windows."
     },
     {
       "address": "0x4438e0",
       "windows_name": "place_parcels_on_track",
       "ios_symbol": "cRSubGame::PlaceParcels()",
+      "android_symbol": "cRSubGame::PlaceParcels()",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -384,6 +411,7 @@
       "address": "0x444240",
       "windows_name": "place_challenge_parcels_on_track",
       "ios_symbol": "cRSubGame::PlaceParcelsSurvival()",
+      "android_symbol": "cRSubGame::PlaceParcelsSurvival()",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -723,8 +751,10 @@
       "address": "0x4431d0",
       "windows_name": "update_track_parcel",
       "ios_symbol": "cRParcel::AI()",
+      "android_symbol": "cRParcel::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497364 points directly to this callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x442500",

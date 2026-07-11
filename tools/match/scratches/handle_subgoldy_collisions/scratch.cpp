@@ -147,8 +147,8 @@ void Player::handle_subgoldy_collisions()
             }
         }
         for (int n = 0; n < 7000; n += 140) {
-            TrackParcelRuntime* parcel =
-                (TrackParcelRuntime*)((char*)game->parcel_pool.slots + n);
+            Parcel* parcel =
+                (Parcel*)((char*)game->parcel_manager.slots + n);
             if (parcel->state == 1) {
                 probe_salt.x = parcel->position.x - cached_camera_target_world.x;
                 probe_salt.y = parcel->position.y - cached_camera_target_world.y;

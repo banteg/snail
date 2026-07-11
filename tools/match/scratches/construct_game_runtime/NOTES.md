@@ -252,3 +252,11 @@ boundary and the adjacent `JetPack`. Constructor metrics remain unchanged.
 The `Size of cRJetPack` entry now comes from `sizeof(JetPack)`. Its prefix plus
 two complete 0x94-byte cRVapour children close exactly to 0x19c, ending at the
 `SubHealth` array. Constructor metrics remain unchanged at 88.89%.
+
+## 2026-07-11 cRParcelManager size ledger
+
+The `Size of cRParcelManager` entry now comes from `sizeof(ParcelManager)`.
+Fifty inline 0x8c-byte `Parcel` records close exactly to the native 0x1b58
+total and the next `SubgameRuntime` field at `+0x125ffd8`. Constructor metrics
+remain unchanged at 88.89%, with 119 clean operands and only the existing
+compiler-local EH relocation unresolved.

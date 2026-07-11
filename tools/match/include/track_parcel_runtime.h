@@ -1,4 +1,4 @@
-// Shared parcel runtime view, cross-checked by parcel pool management,
+// Authored cRParcel/cRParcelManager views, cross-checked by pool management,
 // spawn_track_parcel, update_track_parcels, update_row_event_display, and
 // handle_subgoldy_collisions.
 #ifndef TRACK_PARCEL_RUNTIME_H
@@ -9,9 +9,9 @@
 class Player;
 class SubgameRuntime;
 
-class TrackParcelRuntime : public BodBase {
+class Parcel : public BodBase {
 public:
-    TrackParcelRuntime* initialize_track_parcel_runtime(); // @ 0x408860
+    Parcel* initialize_track_parcel_runtime(); // @ 0x408860
     void update_track_parcel();
 
     int state; // +0x38
@@ -29,18 +29,17 @@ public:
     Vector3 delivery_offset; // +0x80
 };
 
-typedef char TrackParcelRuntime_must_be_0x8c[
-    (sizeof(TrackParcelRuntime) == 0x8c) ? 1 : -1];
+typedef char Parcel_must_be_0x8c[(sizeof(Parcel) == 0x8c) ? 1 : -1];
 
-struct TrackParcelPool {
-    TrackParcelRuntime* allocate_track_parcel_slot();
+struct ParcelManager {
+    Parcel* allocate_track_parcel_slot();
     void initialize_track_parcel_slots();
     void update_track_parcels();
 
-    TrackParcelRuntime slots[50]; // fixed storage owned by SubgameRuntime
+    Parcel slots[50]; // fixed storage owned by SubgameRuntime
 };
 
-typedef char TrackParcelPool_must_be_0x1b58[
-    (sizeof(TrackParcelPool) == 0x1b58) ? 1 : -1];
+typedef char ParcelManager_must_be_0x1b58[
+    (sizeof(ParcelManager) == 0x1b58) ? 1 : -1];
 
 #endif

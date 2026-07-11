@@ -77,7 +77,7 @@ public:
     void unhide_gameplay_scores(); // @ 0x445f40
     void update_subgame_camera(); // @ 0x446020
     Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120
-    TrackParcelRuntime* spawn_track_parcel(
+    Parcel* spawn_track_parcel(
         Vector3* world_position,
         Player* ignored_player); // @ 0x443730, native binds embedded_player()
     SubLoc* get_track_grid_cell_at_world_position(Vector3* position);
@@ -229,7 +229,7 @@ public:
     // The count precedes 150 constructor-built 0x4088-byte records. Their
     // exact aggregate extent reaches the following parcel pool.
     SMTracks sm_tracks; // +0x10014cc, ends at +0x125e480
-    TrackParcelPool parcel_pool; // +0x125e480
+    ParcelManager parcel_manager; // +0x125e480, 50 owned cRParcel slots
     union {
         float garbage_frequency; // +0x125ffd8, normalized Garbage: spawn control
         int garbage_frequency_bits;
