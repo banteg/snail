@@ -1,6 +1,7 @@
 // initialize_audio_subsystem @ 0x407a10 (cdecl)
 
 #include "audio_system.h"
+#include "runtime_config.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) ATOM __stdcall RegisterClassA(WndClassA* window_class);
@@ -15,8 +16,6 @@ void abort_startup_with_3d_error(); // @ 0x4088a0
 void sub_407b00(); // cleanup after CreateWindowEx failure
 
 extern char g_blank_text[];              // data_4dfb08
-extern float g_config_sample_volume;     // data_4df918
-extern float g_config_stream_volume;     // data_4df91c
 
 char initialize_audio_subsystem()
 {
@@ -53,7 +52,7 @@ char initialize_audio_subsystem()
         return 0;
     }
 
-    g_audio_backend.set_global_sample_volume_config(g_config_sample_volume);
-    g_audio_backend.set_global_stream_volume_config(g_config_stream_volume);
+    g_audio_backend.set_global_sample_volume_config(g_runtime_config.sample_volume);
+    g_audio_backend.set_global_stream_volume_config(g_runtime_config.stream_volume);
     return 1;
 }

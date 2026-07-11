@@ -3,13 +3,11 @@
 #include "challenge_setup_screen.h"
 #include "high_score_record.h"
 #include "level_definition_loader.h"
+#include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"
 #include "time_trial_string_formatter.h"
 
-extern int data_4df9b8;
-extern int g_completion_bonus_x_source; // data_4df958
-extern int g_completion_bonus_y_source; // data_4df960
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
@@ -63,7 +61,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             previous_level_button->widget_flags &= 0xffff7fff;
         }
 
-        if (game->level_mode_arg == data_4df9b8) {
+        if (game->level_mode_arg == g_runtime_config.highest_galaxy_route_index) {
             next_level_button->widget_flags |= 0x8000;
         } else {
             next_level_button->widget_flags &= 0xffff7fff;
@@ -124,8 +122,9 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             return 1;
         }
 
-        g_completion_bonus_x_source = (int)(speed_slider->slider_value * 100.0f + 0.100000001f);
-        g_completion_bonus_y_source =
+        g_runtime_config.completion_bonus_x_source =
+            (int)(speed_slider->slider_value * 100.0f + 0.100000001f);
+        g_runtime_config.completion_bonus_y_source =
             (int)(difficulty_slider->slider_value * 100.0f + 0.100000001f);
 
         flags = replay_button->widget_flags;
@@ -173,7 +172,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             previous_level_button->widget_flags &= 0xffff7fff;
         }
 
-        if (game->level_mode_arg == data_4df9b8) {
+        if (game->level_mode_arg == g_runtime_config.highest_galaxy_route_index) {
             next_level_button->widget_flags |= 0x8000;
         } else {
             next_level_button->widget_flags &= 0xffff7fff;

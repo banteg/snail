@@ -4,8 +4,8 @@
 #include "loading_screen.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
+#include "runtime_config.h"
 
-extern int g_last_loading_budget; // data_4df9c4
 extern Direct3DTexture8* g_loading_background_texture; // data_503288
 extern ObjectRenderBuffers* g_loading_background_vertex_buffer; // data_503284
 extern Direct3DTexture8* g_loading_bar_on_texture; // data_503280
@@ -19,10 +19,10 @@ int LoadingScreen::update_loading_screen()
     if (active != 0) {
         ++last_loading_budget;
 
-        int budget = g_last_loading_budget;
+        int budget = g_runtime_config.last_loading_budget;
         if (budget == 0) {
             budget = 1;
-            g_last_loading_budget = 1;
+            g_runtime_config.last_loading_budget = 1;
         }
 
         int percent = (last_loading_budget * 100) / budget;

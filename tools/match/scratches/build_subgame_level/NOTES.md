@@ -51,9 +51,8 @@ early after the easier prefix. Its major phases are:
 - The two challenge hazard scalars use separate normalized locals. Combining
   the expressions lets MSVC fold the constants to approximately `0.008f`,
   which loses the target's two-stage multiply sequence.
-- `g_completion_bonus_x_source` and the neighboring
-  `g_config_default_challenge_speed_slider` are declared separately now that the
-  saved-config scalar split is curated in the global reference manifest.
+- The completion X/Y sources and default challenge speed are distinct fields in
+  the shared `RuntimeConfig`, preserving the saved-config scalar split.
 - `rebuild_track_runtime_from_segments(level_index)` stays as a member call and
   is not reimplemented inline.
 - The landscape default branch reloads the incoming `level_index` through a
@@ -123,7 +122,7 @@ code generation.
 The two compiler-generated jump tables are now content-audited. The later
 track dispatch table matches, while the first state dispatch table is a real
 masked-operand mismatch. The former completion-bonus `+0x4` operands are now
-resolved to `g_config_default_challenge_speed_slider`.
+resolved to `RuntimeConfig::default_challenge_speed_slider`.
 
 ## Rejected trials
 

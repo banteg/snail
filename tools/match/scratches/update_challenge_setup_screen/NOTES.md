@@ -9,9 +9,10 @@ screen controller layout is shared through `challenge_setup_screen.h`, and its
 - Always hides gameplay score widgets before processing the setup screen.
 - Mode `0` and mode `4` consume next/previous level button clicks, reload the
   frontend level definition, refresh the level-name widget, and update the
-  previous/next disabled flags against level `0` and `data_4df9b8`.
+  previous/next disabled flags against level `0` and
+  `RuntimeConfig::highest_galaxy_route_index`.
 - Mode `1` consumes Back, Play, and Replay for the challenge sliders. The live
-  slider values are persisted into `data_4df958` and `data_4df960` as
+  slider values are persisted into the RuntimeConfig completion-source fields as
   `(int)(value * 100.0f + 0.1f)`.
 - Mode `4` refreshes the Time Trial best-time widget through the same
   member-style `format_time_trial_string` call shape used by `update_subgame`,
@@ -65,3 +66,7 @@ record windows are both owned by `SubgameRuntime::high_score_bank`; the replay
 selection latch and pointer are direct `SubgameRuntime` fields. The ownership
 rewrite is codegen-neutral at 80.68%, 354/355 instructions, prefix 8/355, and
 35 clean masked operands.
+
+2026-07-11 config-owner pass: the route limit and both completion slider
+sources now come from the shared `RuntimeConfig` aggregate. Focused Wibo stays
+at 80.68%, 354/355 instructions, prefix 8/355, with all 35 operands clean.

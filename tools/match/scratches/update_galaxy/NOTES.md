@@ -30,9 +30,8 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 ## Layout notes
 
-- `data_4df9b8` is the inclusive highest galaxy route index. Neighboring
-  scratches (`initialize_subgame`, `initialize_default_runtime_config`) use the
-  same name for the global at `0x4df9b8`.
+- `RuntimeConfig::highest_galaxy_route_index` at `+0xa0` is the inclusive
+  highest galaxy route index shared with subgame setup and challenge setup.
 - `GalaxyRouteRecord` starts at `this + 0x14`, but the native icon loop keeps an
   index-scaled slot base at `this + route_index * 0x2a0` and reads fields at
   `+0x1c/+0x20/+0x24/+0x28/+0x2c`. `GalaxyRouteRecordSlot` preserves that
@@ -47,7 +46,7 @@ selected-level/replay launch handoff back to the subgame state machine.
 ## Match state
 
 Retained result: 61.11%, 566 target instructions, 550 candidate instructions,
-6-instruction prefix, and 34 clean / 9 unresolved / 0 mismatched masked
+6-instruction prefix, and 43 clean / 0 unresolved / 0 mismatched masked
 operands.
 
 The first residual is stack-color slot assignment:

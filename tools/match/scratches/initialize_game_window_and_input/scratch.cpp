@@ -32,7 +32,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND hwnd);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND hwnd);
 extern "C" __declspec(dllimport) BOOL __stdcall EndDialog(HWND dialog, int result);
 
-extern int g_config_display_mode_index;
 extern int g_controller_count_view; // data_4b776c
 
 int __stdcall game_window_proc(HWND hwnd, UINT message, UINT wparam, int lparam);
@@ -54,7 +53,7 @@ int initialize_game_window_and_input(char* window_name)
     int height;
     int authored_width;
 
-    switch (g_config_display_mode_index) {
+    switch (g_runtime_config.display_mode_index) {
     case 0:
         authored_width = 320;
         width = 320;
@@ -78,7 +77,7 @@ int initialize_game_window_and_input(char* window_name)
         height = 1200;
         break;
     default:
-        g_config_display_mode_index = 1;
+        g_runtime_config.display_mode_index = 1;
 use_640x480:
         authored_width = 640;
         width = 640;

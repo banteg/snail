@@ -32,7 +32,7 @@ The compiler-generated jump tables at target instructions 23 and 185 are now
 content-audited. The later track dispatch table matches; the first state
 dispatch table is a real masked-operand mismatch. The former unresolved
 completion-bonus `+0x4` operands are now resolved to the neighboring
-`g_config_default_challenge_speed_slider` scalar.
+`RuntimeConfig::default_challenge_speed_slider` field.
 
 ## Accepted source-shape changes
 

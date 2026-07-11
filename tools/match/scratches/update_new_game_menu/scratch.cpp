@@ -57,7 +57,7 @@ void NewGameMenu::update_new_game_menu()
         game->players[0].redispatch_requested = 1;
         game->subgame.level_mode = 7;
         game->subgame.tutorial.initialize_tutorial();
-        g_new_game_tutorial_started = 1;
+        g_runtime_config.new_game_tutorial_started = 1;
         return;
     }
 

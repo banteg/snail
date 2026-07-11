@@ -3,7 +3,7 @@
 First scratch for options-menu dispatch.
 
 - Copies the two slider values into the saved sample and stream config globals.
-- Rewrites the fullscreen label from `g_config_fullscreen_enabled` each frame.
+- Rewrites the fullscreen label from `RuntimeConfig::fullscreen_enabled` each frame.
 - Fullscreen clicks clear the widget click bit and toggle the saved fullscreen
   config through `set_fullscreen_mode`.
 - Back clicks tear down the options menu, clear the frontend link latch, and

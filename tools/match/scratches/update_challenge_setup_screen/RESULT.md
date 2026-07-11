@@ -8,10 +8,11 @@
 | Target instructions | 355 | 355 |
 | Candidate instructions | 1 | 354 |
 | Common prefix | 0 / 355 | **8 / 355** |
-| Masked operands | none | **33 clean, 2 unresolved, 0 mismatched** |
+| Masked operands | none | **35 clean, 0 unresolved, 0 mismatched** |
 
-The two unresolved operands are `data_4df9b8`, the inclusive highest route index
-already used by the galaxy scratches. There are no masked mismatches.
+The inclusive highest route index and both challenge slider sources now resolve
+through the shared `RuntimeConfig`; there are no unresolved or mismatched
+operands.
 
 ## Accepted source-shape changes
 
@@ -30,5 +31,3 @@ already used by the galaxy scratches. There are no masked mismatches.
   one target label even though the main mode-4 body lines up closely.
 - Mode-4 replay-tail pointer math and challenge-slider register ownership still
   schedule differently from native.
-- `data_4df9b8` should be resolved through the curated reference manifest when
-  the galaxy route-limit symbol is promoted.

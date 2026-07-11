@@ -8,7 +8,7 @@ Recovered behavior:
   into authored x/y and return the `y` output pointer on success;
 - otherwise read the OS cursor as a delta from the authored viewport center;
 - uncaptured mode multiplies both axes by
-  `resolve_uncaptured_cursor_sensitivity_scale(g_steering_sensitivity[slot])`;
+  `resolve_uncaptured_cursor_sensitivity_scale(RuntimeConfig::steering_sensitivity[slot])`;
 - captured/fullscreen delta mode applies only the screen-to-authored scales;
 - failed `GetCursorPos` calls zero both outputs;
 - after delta modes, recenter the OS cursor when the active window is the main

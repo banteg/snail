@@ -16,6 +16,7 @@
 #include "high_score_record.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
+#include "runtime_config.h"
 #include "tip_manager.h"
 #include "voice_manager.h"
 
@@ -27,7 +28,6 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
-extern float g_steering_sensitivity[];    // flt_4DF950
 
 struct RowEventDisplay {
     char unknown_00[0x14];
@@ -403,7 +403,7 @@ void Player::update_subgoldy()
                     resolved = track_z_offset;
             } else {
                 resolve_uncaptured_cursor_sensitivity_scale(
-                    g_steering_sensitivity[steering_mode_selector]);
+                    g_runtime_config.steering_sensitivity[steering_mode_selector]);
                 float advanced = control_source->steering_x - track_z_anchor + track_z_offset;
                 track_z_offset = advanced;
                 if (advanced < 0.0f)

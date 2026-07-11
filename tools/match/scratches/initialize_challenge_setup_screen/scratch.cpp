@@ -5,11 +5,10 @@
 #include "frontend_widget_virtual_layout.h"
 #include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
+#include "runtime_config.h"
 #include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
-extern int g_completion_bonus_x_source; // data_4df958
-extern int g_completion_bonus_y_source; // data_4df960
 extern char g_back_text[]; // 0x4a20ec
 
 int ChallengeSetupScreen::initialize_challenge_setup_screen()
@@ -40,7 +39,8 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
         difficulty_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    difficulty_slider->slider_value = (float)g_completion_bonus_y_source * 0.0099999998f;
+    difficulty_slider->slider_value =
+        (float)g_runtime_config.completion_bonus_y_source * 0.0099999998f;
     difficulty_slider->slider_target_value = difficulty_slider->slider_value;
     ((FrontendWidgetVirtualLayout*)difficulty_slider)->layout_frontend_widget();
 
@@ -54,7 +54,8 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
         speed_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    speed_slider->slider_value = (float)g_completion_bonus_x_source * 0.0099999998f;
+    speed_slider->slider_value =
+        (float)g_runtime_config.completion_bonus_x_source * 0.0099999998f;
     speed_slider->slider_target_value = speed_slider->slider_value;
     speed_slider->stack_widget_below(difficulty_slider);
     ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();

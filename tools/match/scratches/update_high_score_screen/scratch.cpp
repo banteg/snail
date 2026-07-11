@@ -66,7 +66,7 @@ int HighScoreScreen::update_high_score_screen()
             else if (bank == 1)
                 selected_bank = 0;
 
-            g_high_score_selected_bank = selected_bank;
+            g_runtime_config.high_score_selected_bank = selected_bank;
             return initialize_high_score_screen(selected_bank, -1);
         }
 

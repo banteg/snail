@@ -8,6 +8,7 @@
 #include "landscape_script_bank.h"
 #include "level_definition_loader.h"
 #include "mouse_cursor_state.h"
+#include "runtime_config.h"
 #include "runtime_slot.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
@@ -20,9 +21,6 @@
 extern char* g_game_base;
 extern VoiceManager g_voice_manager;
 extern char g_blank_text[];
-extern int g_completion_bonus_x_source;
-extern float g_config_default_challenge_speed_slider;
-extern int g_completion_bonus_y_source;
 
 int next_math_random_value();
 float random_float_below(float upper_bound, const char* tag);
@@ -86,7 +84,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     } else {
         int level_mode = *(int*)(game + 0x40);
         if (level_mode == 3) {
-            *(float*)(game + 0x30) = g_config_default_challenge_speed_slider;
+            *(float*)(game + 0x30) = g_runtime_config.default_challenge_speed_slider;
         } else if (level_mode == 0 || level_mode == 4 || level_mode == 7) {
             if (*(int*)(game + 0x1b01d0) == (int)0xbf800000) {
                 *(float*)(game + 0x30) = calc_slider_to_rate(0.0f);
@@ -98,12 +96,12 @@ void SubgameRuntime::build_subgame_level(int level_index)
             }
         } else if (level_mode == 1) {
             *(float*)(game + 0x30) = calc_slider_to_rate(
-                (float)g_completion_bonus_x_source * 0.00999999978f);
+                (float)g_runtime_config.completion_bonus_x_source * 0.00999999978f);
             *(float*)(game + 0x34) =
-                (float)g_completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
         } else if (level_mode == 2) {
             *(float*)(game + 0x30) = calc_slider_to_rate(
-                g_config_default_challenge_speed_slider);
+                g_runtime_config.default_challenge_speed_slider);
         }
     }
 
@@ -123,11 +121,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
                 *(float*)(game + 0x1b01d8) * 0.00999999978f;
         } else if (level_mode == 1) {
             float normalized_garbage_difficulty =
-                (float)g_completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
             *(float*)(game + 0x125ffd8) =
                 normalized_garbage_difficulty * 0.800000012f;
             float normalized_salt_difficulty =
-                (float)g_completion_bonus_y_source * 0.00999999978f;
+                (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
             *(float*)(game + 0x125ffdc) =
                 normalized_salt_difficulty * 0.800000012f;
         }

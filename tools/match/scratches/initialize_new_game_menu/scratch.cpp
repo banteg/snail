@@ -111,7 +111,7 @@ void NewGameMenu::initialize_new_game_menu()
         0.0f);
     back_button->stack_widget_below(challenge_button);
 
-    if (g_new_game_tutorial_started == 0) {
+    if (g_runtime_config.new_game_tutorial_started == 0) {
         postal_button->widget_flags |= 0x8000;
         time_trial_button->widget_flags |= 0x8000;
         challenge_button->widget_flags |= 0x8000;

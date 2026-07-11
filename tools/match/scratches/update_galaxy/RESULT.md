@@ -8,11 +8,11 @@
 | Target instructions | 566 | 566 |
 | Candidate instructions | 1 | 550 |
 | Common prefix | 0 / 566 | **6 / 566** |
-| Masked operands | none | **34 clean, 9 unresolved, 0 mismatched** |
+| Masked operands | none | **43 clean, 0 unresolved, 0 mismatched** |
 
 The retained candidate is sixteen instructions shorter than the target. The
-unresolved operands are the global route limit `data_4df9b8` and the route
-record tick helper at `0x409bd0`; there are no masked mismatches.
+route limit and route-record tick helper are both curated; there are no
+unresolved operands or masked mismatches.
 
 The first remaining mismatch is the no-op `Color4f` constructor receiver:
 
@@ -36,8 +36,8 @@ are assigned in the opposite order.
   `this + route_index * 0x2a0 + field`.
 - Seeded the hover route sentinel as `-1` and reused the probe index from `1`,
   matching the native hover/highlight setup more closely.
-- Renamed the route-limit global to the neighboring scratch convention
-  `data_4df9b8`.
+- Recovered the route limit as
+  `RuntimeConfig::highest_galaxy_route_index` at config offset `+0xa0`.
 
 ## Remaining work
 
@@ -48,5 +48,3 @@ are assigned in the opposite order.
 - The tail click handling prefers the current saved mouse-state pointer; a
   direct reload from `g_game_base + 0x28c` regressed the frame to `0x38`, so it
   was rejected.
-- The `data_4df9b8` and `update_galaxy_route_record` operands need curated
-  reference symbols before the mask audit can become fully clean.

@@ -55,8 +55,6 @@ struct RuntimeCellSlotBase {
 };
 
 extern char* g_game_base;
-extern int g_completion_bonus_x_source;
-extern int g_completion_bonus_y_source;
 extern unsigned char g_window_deactivated;
 extern char g_time_trial_string[];
 
@@ -135,8 +133,8 @@ void SubgameRuntime::update_subgame()
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {
         random_float_below(1.0f, 0);
-        *(int*)(game + 0x28) = g_completion_bonus_y_source;
-        *(int*)(game + 0x2c) = g_completion_bonus_x_source;
+        *(int*)(game + 0x28) = g_runtime_config.completion_bonus_y_source;
+        *(int*)(game + 0x2c) = g_runtime_config.completion_bonus_x_source;
 
         int result;
         switch (level_mode) {

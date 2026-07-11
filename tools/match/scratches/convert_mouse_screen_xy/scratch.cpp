@@ -1,6 +1,7 @@
 // convert_mouse_screen_xy @ 0x44c100 (cdecl)
 
 #include "game_root.h"
+#include "runtime_config.h"
 #include "win32_window_state.h"
 
 struct Point {
@@ -17,7 +18,6 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 extern GameRoot* g_game; // data_4df904
 extern float g_authored_view_width; // data_4df85c
 extern float g_authored_view_height; // data_4b7760
-extern float g_steering_sensitivity[]; // flt_4df950
 extern float g_mouse_screen_to_authored_y_scale; // data_777d68
 extern float g_mouse_screen_to_authored_x_scale; // data_777d6c
 
@@ -43,12 +43,12 @@ int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
         if (GetCursorPos(&point)) {
             *x += ((float)point.x - g_authored_view_width * 0.5f)
                 * resolve_uncaptured_cursor_sensitivity_scale(
-                    g_steering_sensitivity[sensitivity_slot])
+                    g_runtime_config.steering_sensitivity[sensitivity_slot])
                 * g_mouse_screen_to_authored_x_scale;
 
             *y += ((float)point.y - g_authored_view_height * 0.5f)
                 * resolve_uncaptured_cursor_sensitivity_scale(
-                    g_steering_sensitivity[sensitivity_slot])
+                    g_runtime_config.steering_sensitivity[sensitivity_slot])
                 * g_mouse_screen_to_authored_y_scale;
         } else {
             *y = 0.0f;

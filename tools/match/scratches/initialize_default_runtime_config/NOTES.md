@@ -40,3 +40,11 @@ feature tests had produced misleading byte declarations, but the default
 the initializer, blob save sites, and all three conflicted field families onto
 the aggregate preserves every focused instruction stream and leaves this
 scratch at the same 85.71% structural result.
+
+2026-07-11 consumer closure: all remaining volume, fullscreen, display-mode,
+steering, completion-slider, route-limit, high-score-bank, loading-budget, and
+tutorial users now address fields through `g_runtime_config`. The focused
+metrics of all 25 affected scratches are unchanged, including every exact
+consumer. Naming the landscape selector in the still-sparse world initializer
+also converts one raw-symbol mismatch into a resolved operand: 74 clean and 17
+expected mismatches, versus 73/18 before the ownership pass.

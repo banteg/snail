@@ -24,8 +24,6 @@ extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
 extern char* g_game_base;                    // data_4df904
-extern char g_config_fullscreen_enabled;     // data_4df920
-extern unsigned char g_config_load_valid_flag;
 extern unsigned char g_main_loop_exit_requested;  // g_main_loop_exit_requested
 extern unsigned char g_game_initialization_pending;  // g_game_initialization_pending
 extern unsigned char data_4b7759;
@@ -41,7 +39,6 @@ extern float g_current_frame_update_steps;  // g_current_frame_update_steps
 extern float g_mean_update_steps_per_frame;  // g_mean_update_steps_per_frame
 extern float g_main_loop_frame_count;  // g_main_loop_frame_count
 
-extern unsigned char g_config_validation_tail_start;
 extern int data_4df858;
 extern int data_4b775c;
 extern unsigned char data_753c70;
@@ -101,7 +98,8 @@ int __stdcall game_startup_and_main_loop(
 
     rebuild_game_archive_if_needed();
     load_config_file("SnailMail.cfg", &g_runtime_config);
-    g_config_load_valid_flag = validate_config_tail_stub(&g_config_validation_tail_start);
+    g_runtime_config.load_valid_flag =
+        validate_config_tail_stub(g_runtime_config.validation_tail);
     g_application_instance = hInstance;
     initialize_trigonometry_tables();
 
@@ -133,7 +131,7 @@ int __stdcall game_startup_and_main_loop(
             initialize_audio_subsystem();
             initialize_game_window_and_input_wrapper("SnailMail");
             noop_runtime_ai();
-            set_fullscreen_mode(g_config_fullscreen_enabled);
+            set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
             initialize_main_loop_display_state();
             g_loading_screen.initialize_loading_screen();
 
@@ -231,7 +229,7 @@ update_game:
                 ClipCursor(0);
                 g_render_queue_active = 1;
                 data_4b7759 = 1;
-                if (g_config_fullscreen_enabled != 0)
+                if (g_runtime_config.fullscreen_enabled != 0)
                     sub_407490();
             }
         }

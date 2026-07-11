@@ -3,7 +3,7 @@
 Initial recovery for the Win32 window/input startup helper.
 
 - Picks one of the recovered 4:3 resolution presets from
-  `g_config_display_mode_index`,
+  `RuntimeConfig::display_mode_index`,
   defaulting back to 640x480 when the setting is out of range.
 - Registers `"SnailMailWindowClass"` with `game_window_proc`, then creates the
   main window, initializes the renderer, keyboard, controllers, and mouse, and
@@ -18,7 +18,7 @@ masked mismatch.
 
 2026-06-20 startup/window symbol pass:
 
-- `g_config_display_mode_index`, `g_game_window_instance`, `g_main_window_dc`, and
+- `RuntimeConfig::display_mode_index`, `g_game_window_instance`, `g_main_window_dc`, and
   `g_controller_count_view` are now curated references backed by this function's
   direct consumers.
 - The resolution switch table at `0x411d54` is named as

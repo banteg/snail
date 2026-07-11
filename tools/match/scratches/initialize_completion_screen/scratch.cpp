@@ -25,8 +25,8 @@ void CompletionResultScreen::initialize_completion_screen(
             x_source = record->challenge_speed_value;
             y_source = record->challenge_difficulty_value;
         } else {
-            x_source = g_completion_bonus_x_source;
-            y_source = g_completion_bonus_y_source;
+            x_source = g_runtime_config.completion_bonus_x_source;
+            y_source = g_runtime_config.completion_bonus_y_source;
         }
 
         int y_index = y_source / 20;

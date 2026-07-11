@@ -136,3 +136,11 @@ per-frame increment/consume behavior, `allocate_border` independently reads
 the frame counter as a creation timestamp, and `update_game_input` proves the
 adjacent `input_sampling_gate +0x520`. This naming is codegen-neutral within
 the still-semantic startup partial, which remains at 5.65%.
+
+## 2026-07-11 config selector ownership
+
+The early handoff into `SubgameRuntime::level_mode_arg` now reads
+`RuntimeConfig::landscape_backdrop_variant_selector` at config offset `+0xa4`
+instead of the raw `unk_4DF9BC` spelling. The instruction stream and 5.65%
+semantic score are unchanged, while the masked audit improves from 73 clean / 18
+mismatched operands to 74 clean / 17 mismatched operands.

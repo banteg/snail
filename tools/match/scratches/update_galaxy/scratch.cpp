@@ -3,13 +3,13 @@
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
+#include "runtime_config.h"
 #include "level_definition_loader.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "vector3.h"
 
 extern char* g_game_base; // data_4df904
-extern int data_4df9b8;
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -44,13 +44,13 @@ int GalaxyRoute::update_galaxy()
     ((SubgameRuntime*)level_progress_base)->hide_gameplay_scores();
 
     int tick_index = 0;
-    if (data_4df9b8 >= 0) {
+    if (g_runtime_config.highest_galaxy_route_index >= 0) {
         GalaxyRouteRecordTick* tick_record = (GalaxyRouteRecordTick*)((char*)this + 0x10);
         do {
             tick_record->update_galaxy_route_record();
             ++tick_index;
             tick_record = (GalaxyRouteRecordTick*)((char*)tick_record + 0x2a0);
-        } while (tick_index <= data_4df9b8);
+        } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
     }
 
     if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
@@ -78,7 +78,7 @@ int GalaxyRoute::update_galaxy()
     }
 
     int route_index = 1;
-    if (data_4df9b8 >= 1) {
+    if (g_runtime_config.highest_galaxy_route_index >= 1) {
         do {
             int record_offset = route_index * 0x2a0;
             GalaxyRouteRecordSlot* record = (GalaxyRouteRecordSlot*)((char*)this + record_offset);
@@ -139,13 +139,13 @@ int GalaxyRoute::update_galaxy()
             }
 
             ++route_index;
-        } while (route_index <= data_4df9b8);
+        } while (route_index <= g_runtime_config.highest_galaxy_route_index);
     }
 
     color.set_color_white();
     color.a = 0.200000003f;
     int line_index = 1;
-    if (data_4df9b8 > 1) {
+    if (g_runtime_config.highest_galaxy_route_index > 1) {
         GalaxyRouteRecord* next_record = &records[2];
         do {
             if (line_index < selected_index) {
@@ -173,7 +173,7 @@ int GalaxyRoute::update_galaxy()
             }
             ++line_index;
             ++next_record;
-        } while (line_index < data_4df9b8);
+        } while (line_index < g_runtime_config.highest_galaxy_route_index);
     }
 
     color.set_color_white();
@@ -213,7 +213,7 @@ int GalaxyRoute::update_galaxy()
             && card->frame_y - edge < mouse_y
             && card->frame_height + card->frame_y + edge > mouse_y) {
             hover_state = 1;
-            if (data_4df9b8 >= 1) {
+            if (g_runtime_config.highest_galaxy_route_index >= 1) {
                 do {
                     if (probe_index == selected_index) {
                         records[probe_index].highlight_target = 1.0f;
@@ -221,7 +221,7 @@ int GalaxyRoute::update_galaxy()
                         records[probe_index].highlight_target = 0.0f;
                     }
                     ++probe_index;
-                } while (probe_index <= data_4df9b8);
+                } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
             }
         }
     }
@@ -242,7 +242,7 @@ int GalaxyRoute::update_galaxy()
             }
         }
 
-        if (data_4df9b8 >= 1) {
+        if (g_runtime_config.highest_galaxy_route_index >= 1) {
             GalaxyRouteRecord* probe_record = &records[1];
             do {
                 Vector3 probe;
@@ -262,7 +262,7 @@ int GalaxyRoute::update_galaxy()
                 }
                 ++probe_index;
                 ++probe_record;
-            } while (probe_index <= data_4df9b8);
+            } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
         }
     }
 
@@ -338,7 +338,7 @@ int GalaxyRoute::update_galaxy()
             if (current_hover_state == 0
                 && (mouse_flags & 0x4000) != 0
                 && state == 1
-                && data_4df9b8 > 1) {
+                && g_runtime_config.highest_galaxy_route_index > 1) {
                 close_galaxy_route();
                 play_sound_effect(8);
                 return 0;

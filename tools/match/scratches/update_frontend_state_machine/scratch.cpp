@@ -1,10 +1,10 @@
 // update_frontend_state_machine @ 0x4107d0 (thiscall)
 // Root front-end dispatch loop and subgame bridge owner.
 #include "game_root.h"
+#include "runtime_config.h"
 #include "transform_matrix.h"
 
 extern GameRoot* g_game; // data_4df904
-extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 
@@ -105,7 +105,8 @@ int GamePlayer::update_frontend_state_machine()
             break;
         }
         case 18:
-            g_game->high_score_screen.initialize_high_score_screen(g_high_score_selected_bank, -1);
+            g_game->high_score_screen.initialize_high_score_screen(
+                g_runtime_config.high_score_selected_bank, -1);
             frontend_state = 19;
             break;
         case 19: {

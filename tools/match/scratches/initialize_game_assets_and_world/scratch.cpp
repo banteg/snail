@@ -12,6 +12,7 @@
 #include "landscape_script_bank.h"
 #include "logo_runtime.h"
 #include "object_render_types.h"
+#include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "sprite.h"
 #include "thanks_screen.h"
@@ -19,7 +20,6 @@
 #include "voice_manager.h"
 
 extern char* g_game_base; // data_4df904
-extern int unk_4DF9BC; // data copied into SubgameRuntime::level_mode_arg
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
 extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
@@ -263,7 +263,7 @@ char GameRoot::initialize_game_assets_and_world()
     landscape->load_landscape_script_by_name((char*)"Splash.txt");
     landscape->load_landscape_script_by_name((char*)"Help.txt");
 
-    subgame.level_mode_arg = unk_4DF9BC;
+    subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
     ((SubgameOwnerLink*)&subgame.challenge_setup)->bind_subgame_owner();
     ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
     subgame.galaxy.load_galaxy_layout();

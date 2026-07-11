@@ -2,7 +2,7 @@
 
 Initializes the loading-screen renderer state:
 
-- sets `g_last_loading_budget` to `1276`;
+- sets `RuntimeConfig::last_loading_budget` to `1276`;
 - loads `Sprites/Loading.tga` into `data_503288`, the background texture;
 - loads `Sprites/LoadingBarOn.tga` into `data_503280`, the progress-fill
   texture;

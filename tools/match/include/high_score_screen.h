@@ -32,8 +32,6 @@ public:
     FrontendWidget* replay_row_widgets[1]; // +0xcc, active_record_count entries
 };
 
-extern int g_high_score_selected_bank; // data_4df9c0
-
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
 #endif

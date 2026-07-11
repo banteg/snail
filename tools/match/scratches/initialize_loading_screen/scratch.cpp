@@ -3,10 +3,10 @@
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
 #include "loading_screen.h"
+#include "runtime_config.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
 
-extern int g_last_loading_budget; // data_4df9c4
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 extern Direct3DTexture8* g_loading_background_texture; // data_503288
 extern ObjectRenderBuffers* g_loading_background_vertex_buffer; // data_503284
@@ -33,7 +33,7 @@ int begin_overlay_render_state();
 
 int LoadingScreen::initialize_loading_screen()
 {
-    g_last_loading_budget = 1276;
+    g_runtime_config.last_loading_budget = 1276;
 
     int texture_result;
     int byte_count;

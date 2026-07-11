@@ -1,6 +1,7 @@
 // handle_game_window_activate @ 0x4072f0 (cdecl)
 
 #include "audio_system.h"
+#include "runtime_config.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
@@ -11,7 +12,6 @@ extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
 int debug_report_stub(char* format); // @ 0x449c00, stripped in release
 void set_fullscreen_mode(int enabled);
 
-extern char g_config_fullscreen_enabled; // data_4df920
 extern unsigned char g_window_deactivated; // data_4b7654
 extern float g_previous_frame_timestamp_seconds; // data_4dfb00
 extern unsigned char g_left_mouse_button_latch[2]; // data_4b7764
@@ -26,7 +26,7 @@ int handle_game_window_activate()
     g_audio_backend.resume_audio_backend_if_paused();
 
     int zero = 0;
-    char fullscreen_enabled = g_config_fullscreen_enabled;
+    char fullscreen_enabled = g_runtime_config.fullscreen_enabled;
     g_window_deactivated = (unsigned char)zero;
     if (fullscreen_enabled != 0) {
         set_fullscreen_mode(1);

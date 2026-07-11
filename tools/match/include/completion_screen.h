@@ -4,6 +4,7 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "runtime_config.h"
 #include "sprite.h"
 
 class PauseMenu {
@@ -60,8 +61,6 @@ public:
     int total_score; // +0x4c
 };
 
-extern int g_completion_bonus_x_source; // data_4df958
-extern int g_completion_bonus_y_source; // data_4df960
 extern int g_completion_bonus_y_table[]; // data_4a1194
 extern int g_completion_bonus_x_table[]; // data_4a11ac
 extern char g_click_to_continue_text[]; // aClickToContinu
