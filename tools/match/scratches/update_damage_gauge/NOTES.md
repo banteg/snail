@@ -56,8 +56,8 @@ though the addressed dump shows those two stack slots are swapped versus
 native. Treat the render-slot mismatch as allocation/scheduling until a
 source-shaped owner changes codegen.
 
-2026-06-16 type consolidation: `DamageGaugeController` is now shared through
-`damage_gauge.h` with initialize and apply-delta. The +0x24/+0x28 fields keep
+2026-06-16 type consolidation: `DamageGuage` is now shared through
+`damage_guage.h` with initialize and apply-delta. The +0x24/+0x28 fields keep
 the update-path `hit_flash_progress`/`hit_flash_step` names; apply-delta uses
 the same pair as its retrigger gate. Match remains 80.60%.
 
@@ -102,3 +102,11 @@ last exit word is the already-owned `CutsceneAI::state`. The live Binary Ninja
 `Player` type now also exposes its progress bar, warning, lives, and borrowed
 `SubgameRuntime*` backlink. Focused Wibo remains 94.03%, 268/268 instructions,
 prefix 122/268, with 65 clean masked operands.
+
+2026-07-11 authored-owner recovery: Android `cRDamageGuage::AI()` reads the
+same +0x00..+0x28 field range and calls `cRDamageGuage::Take(float, bool)` on
+the same receiver; `cRSubGoldy::AI()` calls it through the embedded +0x3c4
+object. This maps mobile `AI()` here, correcting the former false association
+with the separate Windows jetpack controller at player +0x2750. The shared
+owner now keeps the shipped `Guage` spelling. Focused Wibo remains an honest
+94.03%, 268/268 instructions, with 65 clean masked operands.

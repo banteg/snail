@@ -47,6 +47,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackAttachmentRuntimeRow",
     "Path",
     "PathPair",
+    "DamageGuage",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -97,7 +98,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x378", "nuke_effect_progress_step", "float"),
     ("0x380", "player_slot", "int32_t"),
     ("0x384", "follow_state", "FollowState"),
-    ("0x3c4", "damage_gauge", "DamageGaugeController"),
+    ("0x3c4", "damage_gauge", "DamageGuage"),
     ("0x408", "game", "Game*"),
     ("0x40c", "movement_mode_selector", "int32_t"),
     ("0x410", "velocity", "Vec3"),
@@ -355,15 +356,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_damage_gauge",
-        "void __fastcall initialize_damage_gauge(DamageGaugeController* controller)",
+        "void __thiscall initialize_damage_gauge(DamageGuage* damage_guage)",
     ),
     (
         "update_damage_gauge",
-        "int32_t __thiscall update_damage_gauge(DamageGaugeController* controller)",
+        "void __thiscall update_damage_gauge(DamageGuage* damage_guage)",
     ),
     (
         "apply_damage_gauge_delta",
-        "int32_t __thiscall apply_damage_gauge_delta(DamageGaugeController* controller, float delta)",
+        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, uint8_t force)",
     ),
     (
         "initialize_jetpack_gauge",

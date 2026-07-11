@@ -26,7 +26,7 @@ Keep pinned; the remaining diff is register/materialization golf, while the
 damage gates, fill clamp, voice fallback, and animation nesting are recovered.
 
 2026-06-16 type consolidation: this now uses the shared
-`DamageGaugeController` view from `damage_gauge.h`. The former local
+`DamageGuage` view from `damage_guage.h`. The former local
 `retrigger_timer`/`retrigger_step` names are the same +0x24/+0x28
 `hit_flash_progress`/`hit_flash_step` fields initialized and advanced by the
 gauge update path. Focused Wibo now verifies 60.32%, 94 target / 95 candidate
@@ -60,3 +60,10 @@ through `updated`). Rejected followups on top of this shape: explicit
 `game_base` locals still regress badly, `state` snapshots regress, and
 goto/common-flag spellings for the voice-success progress store are neutral or
 worse.
+
+2026-07-11 authored-owner recovery: Android and iOS identify this exact method
+as `cRDamageGuage::Take(float, bool)`. Android calls it on the same 0x2c-byte
+receiver from `cRDamageGuage::AI()` and `cRSubGoldy::Collision()`, confirming
+both ownership and the force argument omitted by the old decompiler prototype.
+The shared owner now keeps the shipped `Guage` spelling. Focused Wibo remains
+an honest 72.43%, 91/94 instructions, with 18 clean masked operands.

@@ -710,27 +710,31 @@
       "notes": "v1.9-only signature."
     },
     {
-      "address": "0x43a390",
-      "windows_name": "update_jetpack_gauge",
-      "ios_symbol": "cRDamageGuage::AI()",
-      "source_object": "SubGame.o",
-      "confidence": "high",
-      "notes": "The original symbol intentionally spells Guage."
-    },
-    {
       "address": "0x440fa0",
       "windows_name": "initialize_damage_gauge",
       "ios_symbol": "cRDamageGuage::Init(cRSubGoldy*)",
-      "source_object": null,
+      "android_symbol": "cRDamageGuage::Init()",
+      "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.9-only signature."
+      "notes": "The mobile signatures differ on whether the containing Goldy is explicit, but both initialize the exact 0x00..0x28 contact-gauge layout recovered on Windows. The shipped owner spelling is intentionally Guage."
+    },
+    {
+      "address": "0x440fd0",
+      "windows_name": "update_damage_gauge",
+      "ios_symbol": "cRDamageGuage::AI()",
+      "android_symbol": "cRDamageGuage::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android AI reads the same 0x00..0x28 fields, calls Take on the same receiver, and is called from cRSubGoldy::AI. This corrects the former false mapping to the unrelated Windows jetpack-gauge composite."
     },
     {
       "address": "0x4413f0",
       "windows_name": "apply_damage_gauge_delta",
       "ios_symbol": "cRDamageGuage::Take(float, bool)",
+      "android_symbol": "cRDamageGuage::Take(float, bool)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All ports apply and clamp contact damage through the same 0x2c-byte cRDamageGuage owner."
     },
     {
       "address": "0x43f520",

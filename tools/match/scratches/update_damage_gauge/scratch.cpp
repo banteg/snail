@@ -1,7 +1,7 @@
 // update_damage_gauge @ 0x440fd0 (thiscall, ret)
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "game_root.h"
 #include "sprite.h"
 #include "snail_skin.h"
@@ -26,7 +26,7 @@ int queue_axis_aligned_textured_quad_uv(
     int layer,
     int blend);
 
-void DamageGaugeController::update_damage_gauge()
+void DamageGuage::update_damage_gauge()
 {
     GameRoot* game = g_game;
     if (!game->subgame.subgame_pause_gate) {

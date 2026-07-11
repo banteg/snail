@@ -4,7 +4,7 @@
 // pickups, the speedup and jetpack singles, and the ring-effect ladder.
 // Shared idiom: delta z pre-gate < threshold, then normalize_vector distance.
 
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "garbage_hazard_slot.h"
 #include "jetpack_gauge.h"
 #include "player.h"

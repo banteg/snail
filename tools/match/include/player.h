@@ -8,7 +8,7 @@
 #define PLAYER_H
 
 #include "cameraman_state.h"
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "firework.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
@@ -295,7 +295,7 @@ public:
     Player* follow_player;                 // +0x3bc
     unsigned char follow_flag_3c;          // +0x3c0
     char unknown_3c1[0x3c4 - 0x3c1];
-    DamageGaugeController damage_gauge;     // +0x3c4
+    DamageGuage damage_gauge;     // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, embedded HUD progress controller
     WarningActor warning;                  // +0x3f4, embedded HUD warning controller
     int lives;                            // +0x404

@@ -1,8 +1,8 @@
 // initialize_damage_gauge @ 0x440fa0 (thiscall, ret)
 
-#include "damage_gauge.h"
+#include "damage_guage.h"
 
-void DamageGaugeController::initialize_damage_gauge()
+void DamageGuage::initialize_damage_gauge()
 {
     pulse_step = 0.020833334f;
     fill = 0.0f;

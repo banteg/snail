@@ -192,7 +192,7 @@ evidence:
   head `+0x359140`, and track parcel/ring slots `+0x125e480`.
 - Switched proven helpers back to method-call shape:
   `Player::add_subgoldy_score`, `Player::health_collect_particles`,
-  `DamageGaugeController::apply_damage_gauge_delta`, and
+  `DamageGuage::apply_damage_gauge_delta`, and
   `JetpackGaugeController::arm_jetpack_gauge`.
 
 Matcher impact: score improved from `45.71%` to `48.79%`, and the

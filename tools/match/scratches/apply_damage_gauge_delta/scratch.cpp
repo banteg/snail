@@ -3,7 +3,7 @@
 // game+0x4300b4 (unforced only); state 2 blocks unforced positive deltas
 // and blocks unforced negative ones while game+0x42ff60 == 1.
 
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "voice_manager.h"
 
 struct SnailSkinTransition;
@@ -24,7 +24,7 @@ struct AnimDispatcherApi {
     void dispatch_cutscene_animation(int animation, int immediate, int initial_frame);
 };
 
-void DamageGaugeController::apply_damage_gauge_delta(float delta, char force)
+void DamageGuage::apply_damage_gauge_delta(float delta, char force)
 {
     if (((*(unsigned char*)(g_damage_gate_byte + (int)g_game_base) & 0x80) == 0 || force)
         && (state != 2

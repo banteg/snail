@@ -88,7 +88,7 @@ mismatch).
   `99 ok / 2 unresolved / 1` masked audit, so this is accepted as a
   call-surface consolidation rather than a source-shape win.
 - 2026-06-20 shared subgame runtime header pass: local one-method or prefix
-  views for `StarManager`, `GolbPathBank`, `DamageGaugeController`,
+  views for `StarManager`, `GolbPathBank`, `DamageGuage`,
   `SubLazerPool`, `SaltHazardPool`, `SubTracks`,
   `ParcelManager`, `FrontendWidget`, `LandscapeManager`, `BodList`,
   `BodNode`, `MouseCursorState`, and

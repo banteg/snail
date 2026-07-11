@@ -293,6 +293,13 @@ source-shape issue is solved.
    vs position-first) — VC6 commutes one site each way regardless of
    source order so far.
 
+2026-07-11 damage-owner recovery: the compact scratch-local gauge view at
+player +0x3c4 is replaced by the shared exact 0x2c-byte `DamageGuage`
+owner. Android `cRSubGoldy::AI()` calls `cRDamageGuage::AI()` through that
+embedded object, while the Windows jetpack controller at +0x2750 remains a
+separate neutral composite. Focused Wibo remains 72.51%, 2067/2087
+instructions, with 290 clean masked operands and one jump-table mismatch.
+
 ## Zig port residuals (carried from the pre-scratch dossier, still open)
 
 1. native resets the live-matrix rotation to identity in the grounded

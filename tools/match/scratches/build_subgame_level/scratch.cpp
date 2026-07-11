@@ -2,7 +2,7 @@
 
 #include "sub_solution.h"
 #include "bod_list.h"
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "frontend_widget.h"
 #include "landscape_manager.h"
 #include "sub_tracks.h"
@@ -58,7 +58,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     next_slug_voice_trigger_z = 50.0f;
     slug_voice_trigger_spacing_z = 100.0f;
     enemy_manager.initialize_enemy_manager();
-    ((DamageGaugeController*)(game + 0x3bbb28))->initialize_damage_gauge();
+    ((DamageGuage*)(game + 0x3bbb28))->initialize_damage_gauge();
     ((RuntimeSlot*)(game + 0x3bbb54))->noop_runtime_ai();
     ((SubLazerManager*)(game + 0x356b00))->initialize_sub_lazer_pool();
     ((SaltManager*)(game + 0x3578c0))->initialize_salt_hazard_pool();

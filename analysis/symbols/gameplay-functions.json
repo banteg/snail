@@ -1979,12 +1979,12 @@
     {
       "address": "0x43a370",
       "name": "end_jetpack_hover",
-      "description": "Ends Goldy's active jetpack-hover state before normal movement resumes. The surrounding pickup and countdown owner still matches the leaked `cRJetPack` and `cRDamageGuage` SubGame.o ownership."
+      "description": "Ends Goldy's active jetpack-hover state before normal movement resumes. The surrounding Windows controller is the neutral 0x214-byte jetpack-gauge composite; it is distinct from the 0x2c-byte cRDamageGuage contact-damage owner."
     },
     {
       "address": "0x43a390",
       "name": "update_jetpack_gauge",
-      "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x8000, and clears the controller once the jetpack gauge drains. Cross-port Android and iOS symbols still name the owning class `cRDamageGuage::AI()`."
+      "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x8000, and clears the controller once the jetpack gauge drains. This 0x214-byte Windows composite is not cRDamageGuage; mobile `cRDamageGuage::AI()` maps to the contact-damage updater at 0x440fd0."
     },
     {
       "address": "0x43a580",
@@ -2002,12 +2002,12 @@
     {
       "address": "0x43a930",
       "name": "initialize_jetpack_gauge",
-      "description": "Initializes the player jetpack countdown or warning controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_jetpack_gauge`. Cross-port Android symbols still name the owning class `cRDamageGuage::Init()`."
+      "description": "Initializes the player jetpack countdown or warning controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_jetpack_gauge`. The 0x214-byte Windows composite remains neutrally named and is distinct from cRDamageGuage."
     },
     {
       "address": "0x43a980",
       "name": "arm_jetpack_gauge",
-      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals. The controller's leaked iOS owner name is `cRDamageGuage` in `SubGame.o`."
+      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals. This Windows-only composite is kept separate from the contact-damage cRDamageGuage owner."
     },
     {
       "address": "0x43a9c0",
@@ -2251,7 +2251,7 @@
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved."
+      "description": "Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
     },
     {
       "address": "0x4413f0",

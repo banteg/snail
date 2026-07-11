@@ -13,6 +13,7 @@
 #include "audio_system.h"
 #include "backdrop.h"
 #include "cheat_state.h"
+#include "damage_guage.h"
 #include "sub_solution.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
@@ -97,15 +98,6 @@ struct SubgoldyFollowStateView {
         SubgoldyPlayerView* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,
                                              Vector3* velocity);
-};
-
-struct DamageGauge {
-    int state; // +0x00: 2 = damaged slide
-    char unknown_04[0x18 - 0x04];
-    int skin_hold_ticks; // +0x18
-    char unknown_1c[0x2c - 0x1c];
-
-    void update_damage_gauge();
 };
 
 struct SubgoldyWarningActorView {
@@ -246,7 +238,7 @@ struct SubgoldyPlayerView {
     float nuke_effect_progress_step; // +0x378
     char unknown_37c[0x384 - 0x37c];
     SubgoldyFollowStateView follow_state; // +0x384
-    DamageGauge damage_gauge; // +0x3c4
+    DamageGuage damage_gauge; // +0x3c4, authored cRDamageGuage owner
     ProgressBar progress_bar; // +0x3f0
     SubgoldyWarningActorView warning; // +0x3f4
     int lives;                // +0x404

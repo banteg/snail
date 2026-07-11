@@ -317,7 +317,8 @@ typedef struct SnailSkinTransitionState {
     float progress_step;
 } SnailSkinTransitionState;
 
-typedef struct DamageGaugeController {
+/* Authored cRDamageGuage, exact 0x2c contact-damage owner. */
+typedef struct DamageGuage {
     int32_t state;
     float pulse_progress;
     float pulse_step;
@@ -330,7 +331,7 @@ typedef struct DamageGaugeController {
     float display_fill;
     float hit_flash_progress;
     float hit_flash_step;
-} DamageGaugeController;
+} DamageGuage;
 
 typedef struct JetParticleSlot {
     Sprite* sprite;
@@ -536,7 +537,7 @@ typedef struct Player {
     uint8_t _pad_37c[0x4];
     int32_t player_slot;
     FollowState follow_state;
-    DamageGaugeController damage_gauge;
+    DamageGuage damage_gauge;
     uint8_t _pad_3f0[0x18];
     struct Game* game;
     int32_t movement_mode_selector;

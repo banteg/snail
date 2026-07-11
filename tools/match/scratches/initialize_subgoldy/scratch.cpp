@@ -3,7 +3,7 @@
 #include "anim_manager.h"
 #include "cameraman_state.h"
 #include "click_start.h"
-#include "damage_gauge.h"
+#include "damage_guage.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
 #include "player.h"
@@ -185,7 +185,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x2730) = zero;
     *(unsigned char*)(self + 0x440) = (unsigned char)zero;
     *(int*)(self + 0x2738) = zero;
-    ((DamageGaugeController*)(self + 0x3c4))->initialize_damage_gauge();
+    ((DamageGuage*)(self + 0x3c4))->initialize_damage_gauge();
     ((RuntimeSlot*)(self + 0x3f0))->noop_runtime_ai();
     this->follow_active = (unsigned char)zero;
 
