@@ -137,11 +137,11 @@ __forceinline GameRootAllocation::GameRootAllocation()
             &RuntimeSlot::initialize_border_record);
         border_manager->vtable = &g_border_manager_callback_table;
 
-        RuntimeSlot* bod = SLOT(0x44100);
-        int bod_count = 0x160;
+        BodBase* bod = &root->root_bods[0];
+        int bod_count = GAME_ROOT_BOD_COUNT;
         do {
             bod->initialize_bod_base();
-            bod = (RuntimeSlot*)((char*)bod + 0x38);
+            ++bod;
             --bod_count;
         } while (bod_count);
 

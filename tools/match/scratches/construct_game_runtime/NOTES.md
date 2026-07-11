@@ -147,3 +147,13 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   `load_or_reuse_cached_x_mesh`, and `load_landscape_script_by_name` remain
   exact. This constructor remains `88.89%`, `299/268`, with 119 clean operands
   and only the compiler-local EH handler unresolved.
+
+## 2026-07-11 root cRBod array ownership
+
+- The immediately preceding constructor loop initializes 352 consecutive
+  `0x38`-byte `BodBase` records from root `+0x44100`. The product is exactly
+  `0x4d00`, so the array ends at the now-proven `DirectXLoader +0x48e00`
+  boundary with no padding or overlap.
+- `GameRoot::root_bods[0x160]` now owns that interval. Individual indices stay
+  deliberately unnamed because the large startup function has not yet mapped
+  every authored world object back to an array slot.
