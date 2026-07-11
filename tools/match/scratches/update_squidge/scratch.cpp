@@ -1,8 +1,8 @@
 // update_squidge @ 0x4449c0 (thiscall, ret)
 
-#include "player.h"
+#include "squidge.h"
 
-void SquidgeState::update_squidge()
+void Squidge::update_squidge()
 {
     if (y_velocity != 0.0f) {
         y_phase = y_phase + y_velocity;

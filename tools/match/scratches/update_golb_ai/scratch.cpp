@@ -4,7 +4,7 @@
 
 #include "golb.h"
 #include "player.h"
-#include "score_stats.h"
+#include "score_buckets.h"
 #include "subgame_runtime.h"
 #include "transform_matrix.h"
 #include "vapour_trail.h"

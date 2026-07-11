@@ -15,8 +15,9 @@
 #include "nuke.h"
 #include "presentation_animation_channel.h"
 #include "progress_bar.h"
-#include "score_stats.h"
+#include "score_buckets.h"
 #include "snail_skin.h"
+#include "squidge.h"
 #include "sub_loc_fwd.h"
 #include "timer_counters.h"
 #include "tip_manager.h"
@@ -169,20 +170,6 @@ public:
 };
 typedef char PlayerPresentationController_must_be_0x19b4[
     (sizeof(PlayerPresentationController) == 0x19b4) ? 1 : -1];
-
-class SquidgeState {
-public:
-    void start_squidge_y(float amount);   // @ 0x444980
-    void start_squidge_z(float amount);   // @ 0x4449a0
-    void update_squidge();                // @ 0x4449c0
-
-    float y_output;   // +0x00
-    float y_velocity; // +0x04
-    float y_phase;    // +0x08
-    float z_output;   // +0x0c
-    float z_velocity; // +0x10
-    float z_phase;    // +0x14
-};
 
 class Player {
 public:
@@ -348,7 +335,7 @@ public:
     int parcels_collected;                 // +0x4338
     char unknown_433c[0x4340 - 0x433c];
     int visible_life_stock;                // +0x4340
-    SquidgeState squidge;                  // +0x4344
+    Squidge squidge;                       // +0x4344, authored cRSquidge
     float slow_commentary_timer;            // +0x435c
     float slow_commentary_step;             // +0x4360
 };

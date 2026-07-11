@@ -203,16 +203,20 @@ TRUSTED_DECLARATIONS = [
         "float __thiscall set_color_grayscale(Color4f* color, float intensity);",
     ),
     (
+        "initialize_score_stats",
+        "void __thiscall initialize_score_stats(Squidge* squidge);",
+    ),
+    (
         "start_squidge_y",
-        "void __thiscall start_squidge_y(SquidgeState* squidge, float value);",
+        "void __thiscall start_squidge_y(Squidge* squidge, float value);",
     ),
     (
         "start_squidge_z",
-        "void __thiscall start_squidge_z(SquidgeState* squidge, float value);",
+        "void __thiscall start_squidge_z(Squidge* squidge, float value);",
     ),
     (
         "update_squidge",
-        "void __thiscall update_squidge(SquidgeState* squidge);",
+        "void __thiscall update_squidge(Squidge* squidge);",
     ),
     (
         "initialize_snail_skin",

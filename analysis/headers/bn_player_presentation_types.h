@@ -448,14 +448,15 @@ typedef struct FollowState {
     uint8_t _pad_3c[0x4];
 } FollowState;
 
-typedef struct SquidgeState {
+/* Authored cRSquidge, exact 0x18-byte two-axis spring oscillator. */
+typedef struct Squidge {
     float y_output;
     float y_velocity;
     float y_phase;
     float z_output;
     float z_velocity;
     float z_phase;
-} SquidgeState;
+} Squidge;
 
 typedef struct CutsceneAI {
     struct PlayerPresentationController* presentation;
@@ -594,7 +595,7 @@ typedef struct Player {
     float interaction_max_z;
     PlayerPresentationController presentation;
     int32_t visible_life_stock;
-    SquidgeState squidge;
+    Squidge squidge;
     float slow_commentary_timer;
     float slow_commentary_step;
 } Player;

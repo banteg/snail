@@ -2458,19 +2458,22 @@
     {
       "address": "0x444960",
       "name": "initialize_score_stats",
-      "description": "Initializes Goldy's per-event score-stat buckets before gameplay starts. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsInit()` in `SubGame.o`."
+      "description": "Stable historical Windows harness name for `cRSquidge::Init()`. The sole caller passes the inline `Player + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats; Goldy's score buckets are separate at `Player + 0x310`."
     },
     {
       "address": "0x444980",
-      "name": "start_squidge_y"
+      "name": "start_squidge_y",
+      "description": "Authored `cRSquidge::StartY(float)`: resets the Y spring phase and seeds its velocity on the inline `Player + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449a0",
-      "name": "start_squidge_z"
+      "name": "start_squidge_z",
+      "description": "Authored `cRSquidge::StartZ(float)`: seeds the Z spring phase and velocity on the inline `Player + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449c0",
-      "name": "update_squidge"
+      "name": "update_squidge",
+      "description": "Authored `cRSquidge::AI()`: advances and damps the inline owner's independent Y/Z spring oscillators and publishes their output lanes."
     },
     {
       "address": "0x444ac0",

@@ -5,7 +5,7 @@
 snapshots the final result. These are the same `Player::total_score` and
 `Player::score_buckets` fields produced by `add_subgoldy_score`.
 
-The six bucket indexes are shared through `score_stats.h`:
+The six bucket indexes are shared through `score_buckets.h`:
 garbage, slug, ring/special-effect, parcel collect, parcel deliver, and bonus.
 
 The function is source-shaped:

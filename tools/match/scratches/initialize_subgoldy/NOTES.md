@@ -11,7 +11,7 @@ Recovered structure:
 
 - resets player, movement, row-event, nuke, resurrect, completion, and score
   producer lanes;
-- initializes the visual-root spring, score stats, invincible shell, animation
+- initializes the visual-root spring, Squidge oscillator, invincible shell, animation
   managers, snail skin, cutscene AI, click-start prompt, cameraman, ghost, and
   damage gauge;
 - seeds the live position, cached camera target, wobble timers, control source,
@@ -37,15 +37,16 @@ Latest focused result:
 - prefix: 279 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
 
-2026-06-20 helper-type consolidation:
+2026-07-11 Squidge ownership closure:
 
-- `ScoreStats` and `SpringFloat` now come from shared headers instead of
-  scratch-local duplicate declarations.
-- Focused Wibo remains unchanged at 95.14%, 276/279 instructions, prefix
-  190/279, with 27 clean masked operands.
-- The normal type-consolidation report no longer lists either helper as
-  `partial-compatible`; remaining initializer debt is still the cached camera
-  target/control-source tail described above.
+- The call on `Player +0x4344` is the authored `cRSquidge::Init`, not
+  `cRSubGoldy::ScoreStatsInit`. Android and iOS expose the full matching
+  `cRSquidge::{Init,StartY,StartZ,AI}` family, and the six-float layout agrees
+  exactly with the Windows helpers.
+- The scratch now calls the real inline `Player::squidge` owner directly.
+  Goldy's score buckets remain independently owned at `Player +0x310`.
+- Focused Wibo remains exact at 100.00%, 279/279 instructions, with all 27
+  masked operands clean.
 
 2026-06-20 larger near-proof tail audit:
 

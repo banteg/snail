@@ -660,14 +660,15 @@ typedef struct PlayerControlSource {
     float steering_x;
 } PlayerControlSource;
 
-typedef struct SquidgeState {
+/* Authored cRSquidge, exact 0x18-byte two-axis spring oscillator. */
+typedef struct Squidge {
     float y_output;
     float y_velocity;
     float y_phase;
     float z_output;
     float z_velocity;
     float z_phase;
-} SquidgeState;
+} Squidge;
 
 /* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
 typedef struct Nuke {
@@ -964,7 +965,7 @@ typedef struct Player {
     float interaction_max_z;
     PlayerPresentationController presentation;
     int32_t visible_life_stock;
-    SquidgeState squidge;
+    Squidge squidge;
     float slow_commentary_timer;
     float slow_commentary_step;
 } Player;
@@ -1028,9 +1029,10 @@ void __thiscall request_object_facequads(Object* object, int32_t facequad_count)
 Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);
 float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
-void __thiscall start_squidge_y(SquidgeState* squidge, float value);
-void __thiscall start_squidge_z(SquidgeState* squidge, float value);
-void __thiscall update_squidge(SquidgeState* squidge);
+void __thiscall initialize_score_stats(Squidge* squidge);
+void __thiscall start_squidge_y(Squidge* squidge, float value);
+void __thiscall start_squidge_z(Squidge* squidge, float value);
+void __thiscall update_squidge(Squidge* squidge);
 void __thiscall initialize_invincible_shell(InvincibleShellController* shell);
 void __thiscall start_invincible_shell(InvincibleShellController* shell);
 void __thiscall update_invincible_shell(InvincibleShellController* shell);

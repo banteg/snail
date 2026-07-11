@@ -1,14 +1,13 @@
 // initialize_score_stats @ 0x444960 (thiscall, ret)
 
-#include "score_stats.h"
+#include "squidge.h"
 
-int ScoreStats::initialize_score_stats()
+void Squidge::initialize_score_stats()
 {
-    field_04 = 0;
-    field_08 = 0;
-    field_00 = 0;
-    field_10 = 0;
-    field_14 = 0;
-    field_0c = 0;
-    return 0;
+    y_velocity = 0.0f;
+    y_phase = 0.0f;
+    y_output = 0.0f;
+    z_velocity = 0.0f;
+    z_phase = 0.0f;
+    z_output = 0.0f;
 }

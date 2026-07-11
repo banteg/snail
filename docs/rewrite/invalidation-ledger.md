@@ -211,7 +211,7 @@ Template:
 ## 2026-03-26 - Squidge helper prototype
 
 - invalidated claim: `start_squidge_z` returns `float`
-- replacement evidence: the raw Windows helper only seeds `SquidgeState.z_phase` and `z_velocity`; on a fresh and current `.i64`, typing it as `void __thiscall start_squidge_z(SquidgeState*, float)` restores a clean high-level `update_subgoldy` decompile, while the float-return prototype alone forces Hex-Rays back into inline x87 asm
+- replacement evidence: the raw Windows helper only seeds `Squidge.z_phase` and `z_velocity`; on a fresh and current `.i64`, typing it as `void __thiscall start_squidge_z(Squidge*, float)` restores a clean high-level `update_subgoldy` decompile, while the float-return prototype alone forces Hex-Rays back into inline x87 asm. Cross-port exports now additionally prove the native owner is authored `cRSquidge`.
 - port consequence: keep the checked-in BN/IDA type lane and any future helper signatures on `void`; do not infer helper return types from transient x87 stack residue when the call sites ignore the result
 
 ## 2026-03-26 - Player row-event tail

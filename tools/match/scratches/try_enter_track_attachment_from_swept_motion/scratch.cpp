@@ -88,7 +88,7 @@ seed:
     // The follow child is embedded at player+0x384; velocity and exit state
     // are adjacent Player fields, not FollowState tail fields.
     *(unsigned char*)(g_player_attachment_exit_pending_offset + (int)g_game_base) = 0;
-    ((SquidgeState*)(g_player_squidge_offset + (int)g_game_base))->start_squidge_y(
+    ((Squidge*)(g_player_squidge_offset + (int)g_game_base))->start_squidge_y(
         ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y);
     FOLLOW->active = 1;
     FOLLOW->template_record = this;

@@ -163,7 +163,7 @@ struct Presentation {
     void initialize_cutscene();
 };
 
-struct Squidge {
+struct SubgoldySquidgeView {
     float y_output; // +0x00
     char unknown_04[0x0c - 0x04];
     float z_output; // +0x0c
@@ -273,7 +273,7 @@ struct SubgoldyPlayerView {
     char unknown_2974[0x2980 - 0x2974];
     float interaction_max_z;   // +0x2980
     Presentation presentation; // +0x2984
-    Squidge squidge;           // +0x4344
+    SubgoldySquidgeView squidge; // +0x4344, authored cRSquidge
     float slow_commentary_timer; // +0x435c
     float slow_commentary_step;  // +0x4360
 

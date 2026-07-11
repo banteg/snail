@@ -52,6 +52,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Warning",
     "Nuke",
     "Cameraman",
+    "Squidge",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -138,7 +139,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2980", "interaction_max_z", "float"),
     ("0x2984", "presentation", "PlayerPresentationController"),
     ("0x4340", "visible_life_stock", "int32_t"),
-    ("0x4344", "squidge", "SquidgeState"),
+    ("0x4344", "squidge", "Squidge"),
 )
 
 GAME_FIELD_UPDATES = (
@@ -360,6 +361,22 @@ PROTO_UPDATES = (
     (
         "initialize_subgoldy",
         "int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
+    ),
+    (
+        "initialize_score_stats",
+        "void __thiscall initialize_score_stats(Squidge* squidge)",
+    ),
+    (
+        "start_squidge_y",
+        "void __thiscall start_squidge_y(Squidge* squidge, float value)",
+    ),
+    (
+        "start_squidge_z",
+        "void __thiscall start_squidge_z(Squidge* squidge, float value)",
+    ),
+    (
+        "update_squidge",
+        "void __thiscall update_squidge(Squidge* squidge)",
     ),
     (
         "initialize_damage_gauge",

@@ -7,7 +7,6 @@
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
 #include "player.h"
-#include "score_stats.h"
 #include "snail_skin.h"
 #include "spring_float.h"
 #include "transform_matrix.h"
@@ -53,7 +52,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x42b4) = 0x3c888889;
     *(int*)(self + 0x435c) = zero;
     *(int*)(self + 0x4360) = 0x3c888889;
-    ((ScoreStats*)(self + 0x4344))->initialize_score_stats();
+    this->squidge.initialize_score_stats();
     ((InvincibleShellController*)(self + 0x4218))->initialize_invincible_shell();
     *(int*)(self + 0x334) = 0x3d638e38;
     *(int*)(self + 0x330) = 0x3d638e38;

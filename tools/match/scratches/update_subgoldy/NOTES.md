@@ -79,8 +79,9 @@ scratch additionally pins:
 damage_gauge at +0x3c4 (state is the FIRST field; skin_hold_ticks +0x18),
 empty progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
 (visual_root* +0x24 with lateral/squidge floats at +0x80/84/88, live
-basis_up.x +0x48, cutscene state +0x1964), squidge +0x4344 (y_out +0x00,
-z_out +0x0c), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
+basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
+(y output/velocity/phase +0x00/+0x04/+0x08, z output/velocity/phase
++0x0c/+0x10/+0x14), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
 slide threshold +0x2738, track_z offset/anchor +0x273c/+0x2740, handoff
 cycle +0x2744/8, jetpack gauge +0x2750 (state +0xc, wobble x/y/alpha
 +0x14/18/1c), camera target +0x2964, steering selector +0x2970,
@@ -89,6 +90,12 @@ out), movement_state +0x120, resurrect_active +0x84, row event id +0x1e8
 + tip def +0x1ec, ghost anchor +0x304, wall stall +0x328/c, exit voice
 timer +0x330/4, lane lean +0x350..+0x35c, timer pair +0x360/+0x368/+0x36c,
 nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
+
+The scratch-local `SubgoldySquidgeView` is intentionally a narrow consumer
+view of the shared exact `Squidge` owner. Cross-port symbols and Android bodies
+identify the four helpers as `cRSquidge::{Init,StartY,StartZ,AI}`; the old
+Windows `initialize_score_stats` name is only a stable harness identifier.
+
 Game side: level_mode at +0x40 (NOT +0x150), level_mode_arg +0x44,
 runtime_flags +0x4c, first_block_row_count +0x50, runtime_row_count
 +0x54, completion_row_start +0x58, row event defs +0xa670 stride 16928

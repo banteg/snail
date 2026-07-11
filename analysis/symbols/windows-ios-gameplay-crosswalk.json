@@ -726,9 +726,38 @@
     {
       "address": "0x444960",
       "windows_name": "initialize_score_stats",
-      "ios_symbol": "cRSubGoldy::ScoreStatsInit()",
-      "source_object": "SubGame.o",
-      "confidence": "high"
+      "ios_symbol": "cRSquidge::Init()",
+      "android_symbol": "cRSquidge::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows name is a stable historical harness identifier, not ownership evidence. Its sole caller passes Player +0x4344, and the Windows and Android bodies clear the same six-float Squidge layout; iOS exports the matching authored family. The real score buckets are at Player +0x310. cRSubGoldy::ScoreStatsInit() remains a distinct mobile symbol without a proven Windows mapping."
+    },
+    {
+      "address": "0x444980",
+      "windows_name": "start_squidge_y",
+      "ios_symbol": "cRSquidge::StartY(float)",
+      "android_symbol": "cRSquidge::StartY(float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows and Android bodies reset the Y phase and seed Y velocity on the same six-float owner; iOS exports the matching method, and Windows callsites pass Player +0x4344."
+    },
+    {
+      "address": "0x4449a0",
+      "windows_name": "start_squidge_z",
+      "ios_symbol": "cRSquidge::StartZ(float)",
+      "android_symbol": "cRSquidge::StartZ(float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows and Android bodies seed the Z phase and velocity lanes on the same six-float Squidge owner; iOS exports the matching method."
+    },
+    {
+      "address": "0x4449c0",
+      "windows_name": "update_squidge",
+      "ios_symbol": "cRSquidge::AI()",
+      "android_symbol": "cRSquidge::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows and Android bodies advance and damp the same independent Y/Z spring lanes; iOS exports the matching AI method, and Windows publishes the outputs through the Player presentation visual root."
     },
     {
       "address": "0x444cf0",

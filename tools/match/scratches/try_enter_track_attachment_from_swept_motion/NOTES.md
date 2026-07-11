@@ -72,3 +72,11 @@ layout mismatch. The score loss is concentrated in repeated seed stores that
 VC6 now coalesces through one live Game/Player base; the recovered embedded
 Player, FollowState, runtime-row heading field, squidge, velocity, and exit-lane
 ownership is unchanged.
+
+## 2026-07-11 Squidge ownership closure
+
+The seed call now uses the shared exact `Squidge` owner. iOS and Android name
+the method `cRSquidge::StartY(float)`, while the surrounding method family and
+six-float layout prove `Player +0x4344` is the inline authored cRSquidge rather
+than a generic animation-state block. The focused match remains at the honest
+no-fakematch baseline.

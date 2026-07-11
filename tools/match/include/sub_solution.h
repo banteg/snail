@@ -4,7 +4,7 @@
 #ifndef SUB_SOLUTION_H
 #define SUB_SOLUTION_H
 
-#include "score_stats.h"
+#include "score_buckets.h"
 #include "timer_counters.h"
 
 const int SUB_SOLUTION_STRIDE = 0x1fac0;

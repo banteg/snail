@@ -6,7 +6,7 @@ operands.
 - `score_kind` selects fixed point awards for regular hazards/parcels and uses
   `bonus_score` only for score kind `5`.
 - 2026-06-18 bucket enum pass: display strings and producer callsites now back
-  the shared names in `score_stats.h`:
+  the shared names in `score_buckets.h`:
   `SUBGOLDY_SCORE_GARBAGE`, `SUBGOLDY_SCORE_SLUG`, `SUBGOLDY_SCORE_RING`,
   `SUBGOLDY_SCORE_PARCEL_COLLECT`, `SUBGOLDY_SCORE_PARCEL_DELIVER`, and
   `SUBGOLDY_SCORE_BONUS`.
