@@ -12,6 +12,13 @@ Recovered behavior:
 - the hit mask clamps sampled x/y to the texture dimensions and treats a zero
   mask byte as hittable.
 
+2026-07-11 owner closure: iOS `Border.o` names this exact behavior
+`cRBorder::MouseTest()`. The scratch now runs as the real `FrontendWidget`
+method rather than a fastcall-shaped free helper, uses direct widget members,
+and reaches the cursor through `GameRoot::players[0].mouse_cursor`. Those
+ownership substitutions preserve the prior 98.29%, 117/117 result exactly.
+The remaining multiply-destination residual is unchanged and stays honest.
+
 This pass promotes the missing `FrontendWidget` texture-hit fields around
 `+0x5c`, `+0x64`, `+0x240`, `+0x244`, `+0x250`, and `+0x254`.
 

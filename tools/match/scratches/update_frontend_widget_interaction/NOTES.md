@@ -56,3 +56,9 @@ fields `+0x6ec/+0x6f0`. Rejected probes: expanding all teardown paths raised
 masked operands to `70 ok / 2 mismatch` but regressed to `50.19%` by forcing
 an extra saved `ebx`; a macro-based teardown expansion similarly regressed to
 `48.79%` through register-pressure artifacts.
+
+2026-07-11 border owner pass: the hover test now calls the shared
+`FrontendWidget::border_mouse_test()` method directly, matching the exact iOS
+`cRBorder::MouseTest()` owner recovered by the adjacent scratch. This is an ABI
+clarification only: the focused result remains `52.85%`, `579/647`
+candidate/target instructions, prefix `42/647`, and `65 ok / 4 mismatch`.

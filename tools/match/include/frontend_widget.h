@@ -1,4 +1,4 @@
-// Frontend widget view, partial. Cross-checked by the border hide/unhide,
+// Windows cRBorder/front-end widget view, partial. Cross-checked by hide/unhide,
 // highlight, stack-layout, shortcut, warning, score, tip, and row-event paths.
 #ifndef FRONTEND_WIDGET_H
 #define FRONTEND_WIDGET_H
@@ -20,6 +20,7 @@ public:
     void border_input_text(); // @ 0x4035b0
     void border_add_text_number(int value); // @ 0x401030
     int border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag); // @ 0x404540
+    unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820
     int initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, Color4f* color, int alignment, float anchor_x);

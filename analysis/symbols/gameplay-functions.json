@@ -142,7 +142,8 @@
     },
     {
       "address": "0x404580",
-      "name": "border_mouse_test"
+      "name": "border_mouse_test",
+      "description": "Runs cRBorder::MouseTest() on one FrontendWidget: tests the player-zero saved cursor position against either the padded layout rectangle or a normalized per-pixel RGB hit mask selected by the widget's texture-hit sprite."
     },
     {
       "address": "0x404730",

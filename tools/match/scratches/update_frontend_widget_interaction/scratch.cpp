@@ -12,7 +12,6 @@ extern unsigned int g_render_flags; // data_4df934
 
 int report_errorf(char* format, ...);
 char read_pressed_text_input_key_code();
-unsigned char __fastcall border_mouse_test(void* widget);
 void play_sound_effect(int sound_id);
 int sprintf(char* buffer, const char* format, ...);
 float* layout_and_queue_wrapped_font_text(
@@ -163,7 +162,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
     if (((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured() == 0
-        || border_mouse_test(this) == 0) {
+        || border_mouse_test() == 0) {
         *(unsigned int*)(self + 0x1a0) &= 0xffdfffff;
         if (((*(unsigned int*)(self + 0x1a0) & 0x2000) == 0)
             && ((*(unsigned int*)(self + 0x1a0) & 4) != 0)) {

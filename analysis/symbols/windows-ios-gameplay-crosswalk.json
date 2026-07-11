@@ -9,6 +9,14 @@
   ],
   "entries": [
     {
+      "address": "0x404580",
+      "windows_name": "border_mouse_test",
+      "ios_symbol": "cRBorder::MouseTest()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper is a FrontendWidget method over the cRBorder layout; it tests either the padded layout bounds or the widget's authored texture-hit mask against player zero's saved cursor position."
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",
