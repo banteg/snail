@@ -1,9 +1,9 @@
 // update_completion_screen @ 0x4067e0 (thiscall, ret)
 
-#include "completion_screen.h"
+#include "exit_prompt.h"
 #include "game_root.h"
 
-int CompletionPrompt::update_completion_screen()
+int ExitPrompt::update_completion_screen()
 {
     FrontendWidget* button;
     unsigned int flags;

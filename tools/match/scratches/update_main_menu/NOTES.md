@@ -7,7 +7,7 @@ First scratch for main-menu dispatch. Focused Wibo result:
   the shared front-end dirty byte at `+0x30c`.
 - Credits does the same with state `14`.
 - Exit opens the completion/exit prompt path by saving the previous front-end
-  state, copying the exit widget layout y into `CompletionPrompt::prompt_y`,
+  state, copying the exit widget layout y into `ExitPrompt::prompt_y`,
   setting prompt state `10`, and switching front-end state to `8`.
 - Options raises `OptionsMenu::active`, records the previous state, and switches
   to state `6`.
@@ -16,4 +16,4 @@ First scratch for main-menu dispatch. Focused Wibo result:
   high-score-entry/completion-pending byte checked after `complete_subgame`.
 - 2026-07-11 owner closure promotes the contiguous root block to
   `NewGameMenu`, `MainMenu`, `StarField`, `OptionsMenu`, and
-  `CompletionPrompt`; this remains exact 68/68.
+  `ExitPrompt`; this remains exact 68/68.

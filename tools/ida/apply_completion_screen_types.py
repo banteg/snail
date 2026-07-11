@@ -11,19 +11,31 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "initialize_completion_screen",
-        "void __thiscall initialize_completion_screen(CompletionResultScreen* screen, int delivered_count, unsigned __int8 perfect_delivery);",
+        "void __thiscall initialize_completion_screen(Completion* completion, int delivered_count, unsigned __int8 perfect_delivery);",
+    ),
+    (
+        "flush_row_event_display",
+        "void __thiscall flush_row_event_display(Completion* completion);",
+    ),
+    (
+        "update_row_event_display",
+        "void __thiscall update_row_event_display(Completion* completion);",
+    ),
+    (
+        "register_parcel_delivery",
+        "void __thiscall register_parcel_delivery(Completion* completion);",
     ),
     (
         "destroy_completion_screen",
-        "int __thiscall destroy_completion_screen(CompletionPrompt* prompt);",
+        "int __thiscall destroy_completion_screen(ExitPrompt* prompt);",
     ),
     (
         "initialize_exit_prompt",
-        "int __thiscall initialize_exit_prompt(CompletionPrompt* prompt);",
+        "int __thiscall initialize_exit_prompt(ExitPrompt* prompt);",
     ),
     (
         "update_completion_screen",
-        "int __thiscall update_completion_screen(CompletionPrompt* prompt);",
+        "int __thiscall update_completion_screen(ExitPrompt* prompt);",
     ),
 ]
 

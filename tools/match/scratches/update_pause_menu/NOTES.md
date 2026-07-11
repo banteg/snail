@@ -22,7 +22,7 @@ First scratch for the pause-menu button dispatcher.
   decompiler cosmetics.
 
 2026-07-11 owner closure: those lanes now use their actual owners:
-`GameRoot::options_menu`, `GameRoot::completion_screen`, and
+`GameRoot::options_menu`, `GameRoot::exit_prompt`, and
 `GameRoot::subgame.{resume_requested,subgame_state,replay_launch_from_frontend,
 subgame_rebuild_selector}`. The duplicate `CompletionGameView` is gone and the
 function remains exact 55/55.

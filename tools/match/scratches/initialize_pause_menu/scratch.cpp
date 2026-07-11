@@ -1,6 +1,7 @@
 // initialize_pause_menu @ 0x440660 (thiscall, ret)
 
-#include "completion_screen.h"
+#include "border_manager.h"
+#include "pause_menu.h"
 #include "mouse_cursor_state.h"
 
 extern char* g_game_base; // data_4df904

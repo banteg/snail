@@ -1,10 +1,11 @@
 // initialize_exit_prompt @ 0x4060d0 (thiscall)
 
-#include "completion_screen.h"
+#include "border_manager.h"
+#include "exit_prompt.h"
 
 extern char* g_game_base; // data_4df904
 
-int CompletionPrompt::initialize_exit_prompt()
+int ExitPrompt::initialize_exit_prompt()
 {
     Color4f color_2;
     Color4f color_3;

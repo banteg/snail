@@ -54,6 +54,32 @@
       "notes": "The exact Windows helper increments the delivered count, awards the parcel score, and advances the same Completion state machine."
     },
     {
+      "address": "0x406060",
+      "windows_name": "destroy_completion_screen",
+      "android_symbol": "cRExit::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows member kills the three cRExit widgets, unhides the border batch, and restores the saved frontend state."
+    },
+    {
+      "address": "0x4060d0",
+      "windows_name": "initialize_exit_prompt",
+      "ios_symbol": "cRExit::Init()",
+      "android_symbol": "cRExit::Init()",
+      "source_object": "Exit.o",
+      "confidence": "high",
+      "notes": "The exact Windows member initializes the same state-driven Yes/No prompt layouts on the root-owned 0x1c-byte ExitPrompt."
+    },
+    {
+      "address": "0x4067e0",
+      "windows_name": "update_completion_screen",
+      "ios_symbol": "cRExit::AI()",
+      "android_symbol": "cRExit::AI()",
+      "source_object": "Exit.o",
+      "confidence": "high",
+      "notes": "The exact Windows state machine consumes the root ExitPrompt and is distinct from cRCompletion::AI at 0x404cf0."
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",

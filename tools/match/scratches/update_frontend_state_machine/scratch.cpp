@@ -97,11 +97,11 @@ int GamePlayer::update_frontend_state_machine()
             break;
         }
         case 8:
-            g_game->completion_screen.initialize_exit_prompt();
+            g_game->exit_prompt.initialize_exit_prompt();
             frontend_state = 9;
         case 9: {
             GameRoot* owner = g_game;
-            owner->completion_screen.update_completion_screen();
+            owner->exit_prompt.update_completion_screen();
             break;
         }
         case 18:

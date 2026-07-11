@@ -109,7 +109,7 @@ typedef struct FrontendWidget {
     FrontendWidget* slider_value_widget;
 } FrontendWidget;
 
-typedef struct CompletionPrompt {
+typedef struct ExitPrompt {
     int32_t state;
     uint8_t _pad_04[0x08 - 0x04];
     int32_t previous_frontend_state;
@@ -117,9 +117,9 @@ typedef struct CompletionPrompt {
     FrontendWidget* prompt_title;
     FrontendWidget* yes_button;
     FrontendWidget* no_button;
-} CompletionPrompt;
+} ExitPrompt;
 
-typedef struct CompletionResultScreen {
+typedef struct Completion {
     FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
     FrontendWidget* bonus_summary_widget;
@@ -139,6 +139,6 @@ typedef struct CompletionResultScreen {
     float bonus_progress_step;
     int32_t bonus_score;
     int32_t total_score;
-} CompletionResultScreen;
+} Completion;
 
 #endif

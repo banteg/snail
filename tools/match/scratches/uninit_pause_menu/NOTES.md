@@ -11,7 +11,7 @@ mouse-cursor operands resolved.
 `options_widget +0x00`, `end_game_widget +0x04`, and `resume_widget +0x08`.
 The earlier local names `title/resume/quit` were misleading but codegen-neutral.
 
-2026-06-20 local view naming: direct inclusion of `completion_screen.h` is
+2026-06-20 local view naming: direct inclusion of the shared pause-menu header is
 rejected here because this exact tail-return shape needs a release call view
 whose `release_mouse_cursor()` returns `int`; `mouse_cursor_state.h` models the
 shared helper as `void`. The teardown now names that call surface

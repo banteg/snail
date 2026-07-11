@@ -2,7 +2,7 @@
 
 #include "active_landscape_entry.h"
 #include "bod_list.h"
-#include "completion_screen.h"
+#include "border_manager.h"
 #include "subgame_runtime.h"
 #include "times_up_controller.h"
 #include "warning_actor.h"

@@ -5,7 +5,7 @@
 #include "backdrop.h"
 #include "bod_list.h"
 #include "border_manager.h"
-#include "completion_screen.h"
+#include "exit_prompt.h"
 #include "directx_loader.h"
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
@@ -74,7 +74,7 @@ public:
     FrontendFade fade; // +0x24, root-owned transition controller
     union {
         int frontend_quit_requested; // +0x38, nonzero run-loop exit request
-        int frontend_quit_mode; // completion prompt writes modes 1 and 3
+        int frontend_quit_mode; // exit prompt writes modes 1 and 3
     };
     int fixed_update_count;      // +0x3c
     int player_count; // +0x40, controls the two-player initialization loop
@@ -104,12 +104,12 @@ public:
     DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
-    // every boundary through the completion prompt without padding.
+    // every boundary through the exit prompt without padding.
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
     StarField star_field; // +0x4f33c, cross-port cRStarManager owner
     OptionsMenu options_menu; // +0x4f388
-    CompletionPrompt completion_screen; // +0x4f3ac
+    ExitPrompt exit_prompt; // +0x4f3ac, authored cRExit owner
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
     IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
