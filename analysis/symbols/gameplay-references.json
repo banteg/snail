@@ -1782,13 +1782,13 @@
     },
     {
       "address": "0x497328",
-      "name": "g_garbage_hazard_vtable",
+      "name": "g_sub_garbage_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497328",
         "data_497328"
       ],
-      "description": "Garbage hazard runtime vtable installed by initialize_garbage_hazard."
+      "description": "Authored cRSubGarbage vtable installed by the exact Windows constructor; its entry points directly to update_garbage_hazard at 0x43f200."
     },
     {
       "address": "0x49732c",

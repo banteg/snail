@@ -163,7 +163,7 @@ public:
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
     SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots
     BannerPool banners; // +0x359080, embedded start/completion actors
-    GarbageHazardPool garbage_hazards; // +0x359140
+    SubGarbagePool garbage_hazards; // +0x359140, borrowed head + 50 owned slots
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots
     char unknown_35bb7c[0x35bb88 - 0x35bb7c];
     // BorderManager pool handles. SubgameRuntime retains them for gameplay,

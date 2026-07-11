@@ -72,7 +72,7 @@ void Player::handle_subgoldy_collisions()
                 }
             }
         }
-        for (GarbageHazardSlot* garbage = game->garbage_hazards.active_head;
+        for (SubGarbage* garbage = game->garbage_hazards.active_head;
              garbage;
              garbage = garbage->next_active) {
             if (garbage->state == 1) {

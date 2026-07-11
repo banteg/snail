@@ -217,6 +217,14 @@
       "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner."
     },
     {
+      "address": "0x43d5a0",
+      "windows_name": "spawn_garbage_smoke_particle",
+      "android_symbol": "cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android retains the authored member and the same garbage-owned smoke-emitter role; the source-shaped Windows body allocates sprite 33 and seeds its color, size, velocity, position, and subgame-rate cadence from the SubGarbage receiver."
+    },
+    {
       "address": "0x43d6c0",
       "windows_name": "spawn_track_health_pickup",
       "ios_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
@@ -260,6 +268,23 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "v1.5 has AddRing(cRSubLoc*, int, cRSubGoldy*, float); v1.9 adds cRSubRow*."
+    },
+    {
+      "address": "0x43f130",
+      "windows_name": "destroy_garbage_hazard",
+      "android_symbol": "cRSubGarbage::Kill()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Android name and body preserve the SubGarbage owner; the exact Windows helper clears state, removes the inherited BOD, kills the sprite, and unlinks the active chain."
+    },
+    {
+      "address": "0x43f200",
+      "windows_name": "update_garbage_hazard",
+      "ios_symbol": "cRSubGarbage::AI()",
+      "android_symbol": "cRSubGarbage::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497328 points directly to this callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x4404c0",

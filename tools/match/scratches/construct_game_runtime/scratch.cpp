@@ -37,7 +37,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSlug %i\n", 0x760); \
     debug_report_stub("   Size of cRSubLazerManager %i\n", sizeof(SubLazerManager)); \
     debug_report_stub("   Size of cRSaltManager %i\n", sizeof(SaltManager)); \
-    debug_report_stub("   Size of cRSubGarbage %i\n", 0x2648); \
+    debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(SubGarbage) * 50); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
     debug_report_stub("   Size of cRSubGoldy %i\n", 0x4364); \

@@ -420,7 +420,7 @@
     {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
-      "description": "Constructs one garbage-hazard runtime object by running the shared body constructor and installing the cRSubGarbage vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot garbage pool that later feeds `spawn_track_garbage_hazard`."
+      "description": "Exact Windows constructor for one authored `SubGarbage` (`cRSubGarbage` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger."
     },
     {
       "address": "0x408570",
@@ -2059,7 +2059,8 @@
     },
     {
       "address": "0x43d5a0",
-      "name": "spawn_garbage_smoke_particle"
+      "name": "spawn_garbage_smoke_particle",
+      "description": "Emits the garbage impact smoke owned by `SubGarbage`; Android retains the corresponding authored member as `cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)`. The source-shaped Windows reconstruction is 85.14% with nine clean masked operands."
     },
     {
       "address": "0x43d6c0",
@@ -2079,7 +2080,7 @@
     {
       "address": "0x43da80",
       "name": "spawn_track_garbage_hazard",
-      "description": "Allocates and seeds one live garbage hazard from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records after the pool's borrowed active-chain head; cross-port Android and iOS symbols identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43dc80",
@@ -2129,12 +2130,12 @@
     {
       "address": "0x43f130",
       "name": "destroy_garbage_hazard",
-      "description": "Removes one live garbage hazard from the active body lists, kills its sprite, and unlinks it from the active garbage chain after collision or expiry. Cross-port Android symbols match this helper to `cRSubGarbage::Kill()`."
+      "description": "Exact `SubGarbage` teardown: removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`."
     },
     {
       "address": "0x43f200",
       "name": "update_garbage_hazard",
-      "description": "Advances one live garbage hazard through its hover, impact-burst, bounce, smoke, and teardown states. Cross-port Android and iOS symbols match this helper to `cRSubGarbage::AI()`."
+      "description": "Advances one live `SubGarbage` through its hover, impact-burst, bounce, smoke, and teardown states. The exact Windows constructor table at 0x497328 points directly here, while Android and iOS retain the authored member as `cRSubGarbage::AI()`."
     },
     {
       "address": "0x43f520",

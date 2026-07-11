@@ -233,3 +233,12 @@ Focused Wibo remains at 93.55%, 217/217 instructions, 13/217 prefix, and
 2026-07-11 analysis sync: the checked-in BN import header, narrow sync script,
 and live database now carry the same `SubgameRuntime*` backlink proven by
 `reset_subgame`; the last stale `Game*` analysis spelling is retired.
+
+## 2026-07-11 cRSubGarbage ownership
+
+The receiver is now the primary `SubGarbage` type. Windows independently proves
+the method relation because the constructor-installed table at `0x497328`
+points directly to this helper; Android and iOS retain the authored spelling
+`cRSubGarbage::AI()`. Focused Wibo remains 93.55%, 217/217 instructions,
+13/217 prefix, and 22 clean masked operands. No source-shape fakematch was
+introduced for the four documented local scheduling residuals.

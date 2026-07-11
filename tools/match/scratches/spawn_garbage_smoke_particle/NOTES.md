@@ -125,3 +125,13 @@ Rejected source-shape probes:
   `SubgameRuntime*`, removing this scratch's generic owner `Game` shell without
   changing codegen. Focused Wibo remains at 85.14%, 72/76 candidate
   instructions, 5/76 prefix, and 9 clean masked operands.
+
+## 2026-07-11 cRSubGarbage::Smoke ownership
+
+Android retains this emitter as
+`cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)`. The Windows receiver is
+therefore typed through the primary `SubGarbage` owner; the old
+`GarbageHazardSlot` spelling remains a compatibility alias only. Focused Wibo
+is byte-stable at 85.14%, 72/76 candidate instructions, and nine clean masked
+operands. The remaining gap is the already documented VC6 velocity-tail
+scheduling residual, not an ownership or field-layout ambiguity.

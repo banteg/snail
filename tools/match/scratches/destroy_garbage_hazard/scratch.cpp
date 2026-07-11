@@ -9,7 +9,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
+SubGarbage* SubGarbage::destroy_garbage_hazard()
 {
     state = 0;
 
@@ -21,11 +21,11 @@ GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
         if ((flags & 0x40) != 0) {
             report_errorf("List remove NEXTBOD");
         } else {
-            GarbageHazardSlot* next = (GarbageHazardSlot*)list_next;
+            SubGarbage* next = (SubGarbage*)list_next;
             if (next)
                 next->list_prev = (BodNode*)list_prev;
 
-            GarbageHazardSlot* prev = (GarbageHazardSlot*)list_prev;
+            SubGarbage* prev = (SubGarbage*)list_prev;
             if (prev)
                 prev->list_next = (BodNode*)list_next;
             else
@@ -42,10 +42,10 @@ GarbageHazardSlot* GarbageHazardSlot::destroy_garbage_hazard()
 
     sprite->kill_sprite();
 
-    GarbageHazardSlot* result = *(GarbageHazardSlot**)((char*)game + 0x359140);
+    SubGarbage* result = *(SubGarbage**)((char*)game + 0x359140);
     if (result == this) {
         result = next_active;
-        *(GarbageHazardSlot**)((char*)game + 0x359140) = result;
+        *(SubGarbage**)((char*)game + 0x359140) = result;
         return result;
     } else if (result) {
         while (1) {

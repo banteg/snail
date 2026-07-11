@@ -106,11 +106,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --banner_count;
     } while (banner_count);
 
-    RuntimeSlot* garbage = SLOT(0x359144);
+    SubGarbage* garbage = garbage_hazards.slots;
     int garbage_count = 0x32;
     do {
         garbage->initialize_garbage_hazard();
-        garbage = (RuntimeSlot*)((char*)garbage + 0xc4);
+        ++garbage;
         --garbage_count;
     } while (garbage_count);
 

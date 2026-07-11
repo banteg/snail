@@ -3,11 +3,11 @@
 #include "garbage_hazard_slot.h"
 #include "bod_types.h"
 
-extern void* g_garbage_hazard_vtable; // off_497328 / data_497328
+extern void* g_sub_garbage_vtable; // off_497328 / data_497328
 
-GarbageHazardSlot* GarbageHazardSlot::initialize_garbage_hazard()
+SubGarbage* SubGarbage::initialize_garbage_hazard()
 {
     ((RenderableBod*)this)->initialize_renderable_bod();
-    vtable = &g_garbage_hazard_vtable;
+    vtable = &g_sub_garbage_vtable;
     return this;
 }

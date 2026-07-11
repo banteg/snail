@@ -6,7 +6,7 @@
 #include "subgame_runtime.h"
 
 
-void GarbageHazardSlot::spawn_garbage_smoke_particle(
+void SubGarbage::spawn_garbage_smoke_particle(
     Vector3* position,
     Vector3* velocity,
     Player* player)

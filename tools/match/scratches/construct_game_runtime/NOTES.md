@@ -216,3 +216,13 @@ to the native 0xdc0 total. Constructor metrics remain unchanged.
 The `Size of cRSaltManager` entry now comes from `sizeof(SaltManager)`: 40
 inline 0x98-byte `Salt` records close exactly to the native 0x17c0 total.
 Constructor metrics remain unchanged.
+
+## 2026-07-11 cRSubGarbage size ledger
+
+The `Size of cRSubGarbage` entry now comes from
+`sizeof(SubGarbage) * 50`: the 50 inline 0xc4-byte records close exactly to the
+native 0x2648 total. The adjacent four-byte active-chain head remains part of
+the Windows `SubGarbagePool` wrapper and is deliberately excluded from the
+authored allocation ledger. Constructor metrics remain unchanged at 88.89%,
+299/268 candidate/target instructions, with 119 clean operands and only the
+compiler-local EH relocation unresolved.

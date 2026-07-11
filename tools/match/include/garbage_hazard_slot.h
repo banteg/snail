@@ -1,5 +1,5 @@
-// Shared garbage hazard slot view, cross-checked by spawn smoke, update,
-// contact-target append, collision, BOD-list, and destroy paths.
+// Authored cRSubGarbage view, cross-checked by spawn, Smoke, AI, collision,
+// BOD-list, and Kill paths.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
@@ -10,11 +10,11 @@
 class Player;
 class SubgameRuntime;
 
-class GarbageHazardSlot : public BodNode {
+class SubGarbage : public BodNode {
 public:
-    GarbageHazardSlot* initialize_garbage_hazard();
-    GarbageHazardSlot* update_garbage_hazard();
-    GarbageHazardSlot* destroy_garbage_hazard();
+    SubGarbage* initialize_garbage_hazard();
+    SubGarbage* update_garbage_hazard();
+    SubGarbage* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
     Vector3 bod_position;           // +0x10, BodBase::position
@@ -33,7 +33,7 @@ public:
     Vector3 world_position;         // +0x68, RenderableBod::transform.position
     float world_position_w;         // +0x74
     char unknown_78[0x80 - 0x78];
-    GarbageHazardSlot* next_active; // +0x80
+    SubGarbage* next_active;        // +0x80
     int state;                      // +0x84
     int collision_side;             // +0x88, 1 right / 2 left
     SubgameRuntime* game;           // +0x8c
@@ -50,18 +50,22 @@ public:
     char unknown_bd[0xc0 - 0xbd];
     Player* player;                 // +0xc0
 };
-typedef char GarbageHazardSlot_must_be_0xc4[
-    (sizeof(GarbageHazardSlot) == 0xc4) ? 1 : -1];
+typedef SubGarbage GarbageHazardSlot;
+
+typedef char SubGarbage_must_be_0xc4[
+    (sizeof(SubGarbage) == 0xc4) ? 1 : -1];
 
 typedef BodList GarbageHazardListAnchor;
 
-class GarbageHazardPool {
+class SubGarbagePool {
 public:
-    GarbageHazardSlot* active_head; // +0x00, game +0x359140
-    GarbageHazardSlot slots[50];    // +0x04, game +0x359144
+    SubGarbage* active_head; // +0x00, game +0x359140, borrowed chain head
+    SubGarbage slots[50];    // +0x04, game +0x359144
 };
 
-typedef char GarbageHazardPool_must_be_0x264c[
-    (sizeof(GarbageHazardPool) == 0x264c) ? 1 : -1];
+typedef SubGarbagePool GarbageHazardPool;
+
+typedef char SubGarbagePool_must_be_0x264c[
+    (sizeof(SubGarbagePool) == 0x264c) ? 1 : -1];
 
 #endif

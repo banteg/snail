@@ -9,12 +9,12 @@
 double random_signed_float_below(float upper_bound, const char* tag);
 double random_float_below(float upper_bound, const char* tag);
 
-GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
+SubGarbage* SubGarbage::update_garbage_hazard()
 {
     SubgameRuntime* pause_game = game;
-    GarbageHazardSlot* result = (GarbageHazardSlot*)pause_game;
+    SubGarbage* result = (SubGarbage*)pause_game;
     if (!pause_game->subgame_pause_gate) {
-        result = (GarbageHazardSlot*)state;
+        result = (SubGarbage*)state;
         switch ((unsigned int)result) {
         case 0:
             goto function_return;
@@ -131,7 +131,7 @@ GarbageHazardSlot* GarbageHazardSlot::update_garbage_hazard()
         Player* roll_result = player;
         if (roll_result->follow_active == 1)
             sprite->facing_angle = roll_result->follow_orientation_b + sprite->facing_angle;
-        return (GarbageHazardSlot*)roll_result;
+        return (SubGarbage*)roll_result;
     }
 function_return:
     return result;

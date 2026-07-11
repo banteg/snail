@@ -179,3 +179,14 @@ Residuals:
   `project_position_onto_track_attachment` call surface without changing the
   raw slot-walk shape. Focused Wibo remains exact at `100.00%`, `143/143`
   instructions, with `16` clean masked operands.
+
+## 2026-07-11 cRSubGarbage pool ownership
+
+- The exact allocator scans 50 inline `SubGarbage` records, each 0xc4 bytes;
+  their `0x2648` extent is the complete native `Size of cRSubGarbage` total.
+- The four-byte word at `SubgameRuntime +0x359140` is the borrowed active-chain
+  head immediately before those records. `SubGarbagePool` names the Windows
+  wrapper boundary without folding that head into the authored allocation.
+- Cross-port `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)` provenance and the
+  primary `SubGarbage` slot view leave the helper exact at 143/143 with all 16
+  masked operands clean.

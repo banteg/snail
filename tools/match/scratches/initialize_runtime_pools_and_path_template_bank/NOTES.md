@@ -160,3 +160,14 @@
 - Each constructor installs the table whose entry is `cRSalt::AI()`; the
   40 * 0x98 extent is exactly the native 0x17c0 cRSaltManager ledger size.
 - The typed array call remains exact at 227/227 with all 72 operands clean.
+
+## 2026-07-11 cRSubGarbage constructor array
+
+- The 50-record pass at `SubgameRuntime +0x359144` now walks
+  `SubGarbagePool::slots` directly with `sizeof(SubGarbage) == 0xc4`.
+- The resulting `0x2648` extent is exactly the Windows
+  `Size of cRSubGarbage` ledger value. The active-chain head at the preceding
+  four bytes is wrapper state, not part of that authored allocation.
+- Each exact constructor installs the table whose entry is
+  `cRSubGarbage::AI()`. The typed loop leaves this function exact at 227/227
+  with all 72 masked operands clean.

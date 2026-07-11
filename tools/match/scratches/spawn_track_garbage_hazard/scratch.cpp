@@ -30,7 +30,7 @@ enum {
 
 struct GarbageHazardPoolSlotView {
     char pool_offset[0x359144];
-    GarbageHazardSlot slot;
+    SubGarbage slot;
 };
 
 extern char* g_game_base; // data_4df904

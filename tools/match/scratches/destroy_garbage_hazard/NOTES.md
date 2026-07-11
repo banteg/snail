@@ -31,3 +31,11 @@ Residuals:
   to `89.60%` by compiling to `add ecx, 0x359140; mov eax, [ecx]`; the raw
   offset spelling preserves the native `[ecx+0x359140]` address generation and
   remains exact at `100.00%`, `62/62`.
+
+## 2026-07-11 cRSubGarbage ownership
+
+The exact 62-instruction body now uses the primary `SubGarbage` receiver,
+matching Android's retained `cRSubGarbage::Kill()` symbol. The active-chain
+head at `SubgameRuntime +0x359140` is borrowed wrapper state immediately before
+the 50 owned records; it is not part of the authored `cRSubGarbage` allocation
+whose native ledger is exactly `50 * 0xc4 == 0x2648`.
