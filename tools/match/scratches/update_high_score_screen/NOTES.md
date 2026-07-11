@@ -2,7 +2,7 @@
 
 First structured scratch for `update_high_score_screen` @ `0x417260`.
 
-Match status: 64.88%, 205 target instructions, 205 candidate instructions, 28
+Match status: 67.65%, 205 target instructions, 203 candidate instructions, 29
 masked operands all resolved. No fakematching.
 
 Recovered relationships:
@@ -16,10 +16,16 @@ Recovered relationships:
 - the selected record's `+0x2c` value feeds `game+0x74658`, matching the
   subgame launch mode handoff seen in menu and completion paths.
 
-Naming caveat: this keeps the game view and high-score record local for now.
-The replay-launch scratch names are shared conceptually with click-start and
-new-game menu, but should only move to a common `Game` view once another caller
-confirms the same field semantics.
+2026-07-10 owner closure:
+
+- The former `HighScoreGameView` crossed two real owners. Root
+  `+0x1a4/+0x1b8/+0x30c` are `GamePlayer[0]`'s 20-byte player name, front-end
+  state, and redispatch byte. Root `+0x74658/+0x6ffae0/+0x1066be8...` are all
+  fields of the embedded `SubgameRuntime` and its owned `HighScoreBank`.
+- The footer fields are now named from their actual labels and shortcuts:
+  `+0x24` is Cancel/Escape and `+0x28` is Submit/Enter. Submit finalizes the
+  editable row; Cancel calls `cRSubHighScore::MiniDelete(int)` and exits.
+- The ownership rewrite is codegen-neutral at the current 67.65% baseline.
 
 Residual mismatch: the native name-submit branch reloads the selected row widget
 between string copies and keeps only one stack local, while this scratch still

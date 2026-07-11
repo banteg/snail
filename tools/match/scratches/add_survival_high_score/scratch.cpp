@@ -2,7 +2,6 @@
 
 #include "game_root.h"
 #include "high_score_bank.h"
-#include "high_score_screen.h"
 
 extern GameRoot* g_game; // data_4df904
 
@@ -48,7 +47,7 @@ insert_record:
     if (rank != -1) {
         record->high_score_mode_tag = 1;
         survival_records[rank].high_score_mode_tag = 1;
-        ((HighScoreGameView*)g_game)->high_score_records.active_record_bank =
+        ((GameRoot*)g_game)->subgame.high_score_bank.active_record_bank =
             survival_records;
         g_game->players[0].high_score_entry_rank = rank;
         GameRoot* game = g_game;

@@ -34,12 +34,13 @@ PROTO_UPDATES = (
         "void __thiscall add_time_trial_high_score(HighScoreBank* bank, HighScoreRecord* record, int32_t route_index, uint8_t route_active)",
     ),
     (
-        "commit_high_score_entry_into_top_ten",
-        "void __thiscall commit_high_score_entry_into_top_ten(HighScoreRecordView* view, int32_t rank)",
+        "mini_delete_high_score_entry",
+        "void __thiscall mini_delete_high_score_entry(HighScoreBank* bank, int32_t rank)",
     ),
 )
 
 SYMBOL_UPDATES = (
+    ("0x417af0", "mini_delete_high_score_entry"),
     ("0x4df904", "g_game_base"),
     ("0x4df9c0", "g_high_score_selected_bank"),
 )
@@ -70,8 +71,8 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = [types_declare(REPO_ROOT, target=args.target, header_path=header_path)]
-    operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))
+    operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 

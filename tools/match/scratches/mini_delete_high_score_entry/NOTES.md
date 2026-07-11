@@ -1,16 +1,29 @@
-# commit_high_score_entry_into_top_ten
+# mini_delete_high_score_entry
 
-Commits the edited high-score display rows into the active persistent top-ten
-bank after name entry.
+Deletes a canceled pending top-ten entry by shifting later records over its
+row. The iOS symbol corpus independently names this owner method
+`cRSubHighScore::MiniDelete(int)`.
 
-This helper is a member of the front-end record view at `game+0x6ffae0`, not a
-free function taking a raw `HighScoreRecord*`. The first two fields are the
-active persistent bank pointer and row count; the native copy source begins at
-view offset `+0x17c108`.
+This is a `HighScoreBank` member. The bank is owned by `SubgameRuntime` at
+`game+0x74618+0x68b4c8 = game+0x6ffae0`; its first two fields are the borrowed
+active-bank pointer and row count. Native uses the overlapping source window at
+bank `+0x17c108`, exactly `survival_records[1]`. The
+`mini_delete_source_records` member documents that alias without inventing a
+second owner.
 
 Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
 
-2026-06-20 high-score commit pass:
+2026-07-11 ownership verification:
+
+- The narrow Binary Ninja sync renamed `0x417af0`, applied
+  `void __thiscall(HighScoreBank*, int)`, and re-decompiled the fixed source as
+  `&bank->survival_records[1]`; the only code xref is the Cancel path at
+  `update_high_score_screen+0x11d`.
+- The checked-in BN export and cross-port `HighScore.o` symbol now agree on the
+  `cRSubHighScore` receiver. The old commit-style name and duplicate
+  `HighScoreRecordView` have been retired.
+
+2026-06-20 high-score delete pass:
 
 - Rewriting the source row cursor as a byte post-increment improves focused Wibo
   from 81.82% to 84.85%. MSVC now schedules the source cursor increment before

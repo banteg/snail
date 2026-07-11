@@ -940,8 +940,8 @@
     },
     {
       "address": "0x417af0",
-      "name": "commit_high_score_entry_into_top_ten",
-      "description": "Copies the edited scratch high-score entry into the selected insertion row and shifts the remaining top-10 rows down."
+      "name": "mini_delete_high_score_entry",
+      "description": "Deletes a canceled pending top-ten row by shifting later records upward through the active bank. Cross-port iOS symbols match this owner method to `cRSubHighScore::MiniDelete(int)`."
     },
     {
       "address": "0x417b50",

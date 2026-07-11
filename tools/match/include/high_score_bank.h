@@ -18,6 +18,7 @@ public:
         HighScoreRecord* record,
         int route_index,
         unsigned char route_active); // @ 0x4178b0
+    void mini_delete_high_score_entry(int rank); // @ 0x417af0, cRSubHighScore::MiniDelete
     char* save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
     void noop_runtime_ai(); // shared empty lifecycle hook @ 0x407b50
 
@@ -30,9 +31,20 @@ public:
     // allocates or transfers ownership through this pointer.
     HighScoreRecord* active_record_bank; // +0x00
     int active_record_count;             // +0x04
-    HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x08
-    HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x15c648
-    HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT]; // +0x2b8c88
+    union {
+        struct {
+            HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x08
+            HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x15c648
+            HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT]; // +0x2b8c88
+        };
+        struct {
+            char unknown_before_mini_delete_source[0x17c100];
+            // cRSubHighScore::MiniDelete shifts from the row after the
+            // canceled rank. This aliases survival_records[1] at +0x17c108;
+            // it is a view into the same owned arrays, not separate storage.
+            HighScoreRecord mini_delete_source_records[HIGH_SCORE_TOP_TEN_COUNT];
+        };
+    };
     HighScoreRecord current_result_record; // +0x9080c8
     HighScoreRecord survival_pending_record; // +0x927b88
 };

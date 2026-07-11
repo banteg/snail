@@ -2,7 +2,7 @@
 
 First structured scratch for `update_new_game_menu` @ `0x417eb0`.
 
-Match status: 63.94%, 273 target instructions, 265 candidate instructions, 32
+Match status: 63.06%, 273 target instructions, 263 candidate instructions, 31
 masked operands all resolved. Prefix is 41/273. No byte-shaped source.
 
 Recovered relationships:
@@ -29,3 +29,10 @@ Residual mismatch: the native replay-attract loop is jump-threaded around the
 `0/1/3` bank cases, while this scratch is a straightforward `if/else` loop.
 The button dispatch is structurally close; remaining differences are mostly
 `g_game_base` reload scheduling.
+
+2026-07-10 owner closure: the three replay bases are now typed as
+`HighScoreBank::postal_records`, `survival_records`, and
+`time_trial_route_records`; replay handoff fields and `level_mode` are owned by
+the same embedded `SubgameRuntime`. Removing the synthetic cross-root game view
+changes VC6 reload scheduling slightly, so the honest focused score moves from
+63.94% to 63.06%.

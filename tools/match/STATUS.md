@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**515/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **72807/325736** bytes (**22.35%**) are proof-grade, and overall fuzzy is **59.20%**.
+**515/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **72807/325736** bytes (**22.35%**) are proof-grade, and overall fuzzy is **59.18%**.
 
 ## Proof Grade (515)
 
@@ -571,7 +571,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_golb_smoke | 0x415c60 | 278 | 68/72 | 84.29% | 43/72 | 8 ok |  |
 | 🚧 | update_challenge_setup_screen | 0x416370 | 1166 | 354/355 | 80.68% | 8/355 | 35 ok |  |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  |
-| 🚧 | commit_high_score_entry_into_top_ten | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
+| 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
 | 🚧 | update_intro_logo_renderable | 0x419a90 | 148 | 41/42 | 81.93% | 8/42 | 6 ok |  |
@@ -637,7 +637,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 80/84 | 64.63% | 0/84 | 5 ok |  |
-| 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 265/273 | 63.94% | 41/273 | 32 ok |  |
+| 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 263/273 | 63.06% | 41/273 | 31 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 111/109 | 59.09% | 0/109 | 12 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
@@ -689,7 +689,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.73% | 0/5411 | 21 mismatch, 54 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
-| 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 45.95% | 1/600 | 16 mismatch, 58 ok |  |
+| 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 43.24% | 1/600 | 14 mismatch, 57 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.74% | 0/721 | 40 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 662/745 | 30.56% | 0/745 | 2 mismatch, 40 ok |  |

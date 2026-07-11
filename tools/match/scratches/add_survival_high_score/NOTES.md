@@ -101,3 +101,6 @@ Residual:
   storage in a different state.
 - The exact arcade insertion and high-score-screen destroy anchors remain
   70/70 and 11/11 after adopting the same `GamePlayer` fields.
+- `active_record_bank` is now proven as the first field of this same
+  `HighScoreBank`, owned by `GameRoot::subgame`; the retained global-owner
+  spelling preserves the honest 64.63% codegen baseline.

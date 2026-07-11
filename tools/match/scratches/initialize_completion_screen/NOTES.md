@@ -21,3 +21,7 @@ Current match: 64.10%, 278 target instructions / 268 candidate instructions,
 native loads `g_game_base` before allocating the `Color4f` stack local and keeps
 the y/x bonus indices in `esi/edx`, while the scratch's straightforward C++
 keeps the game pointer in `edi` and swaps some index registers. No fakematching.
+
+2026-07-10 owner closure: replay-active and replay-record reads now use the
+embedded `GameRoot::subgame` aliases at relative `+0xff25d0/+0xff25d4`. The
+focused result stays codegen-neutral at 64.10%.

@@ -1,13 +1,13 @@
-// commit_high_score_entry_into_top_ten @ 0x417af0 (thiscall, ret 0x4)
+// mini_delete_high_score_entry @ 0x417af0 (thiscall, ret 0x4)
 
-#include "high_score_screen.h"
+#include "high_score_bank.h"
 
-void HighScoreRecordView::commit_high_score_entry_into_top_ten(int rank)
+void HighScoreBank::mini_delete_high_score_entry(int rank)
 {
     if (rank < HIGH_SCORE_TOP_TEN_COUNT) {
         int row = rank;
         int offset = row * HIGH_SCORE_RECORD_STRIDE;
-        char* source_cursor = (char*)name_submit_records + offset;
+        char* source_cursor = (char*)mini_delete_source_records + offset;
         do {
             HighScoreRecord* destination =
                 (HighScoreRecord*)((char*)active_record_bank + offset);

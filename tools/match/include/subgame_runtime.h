@@ -16,6 +16,7 @@
 #include "galaxy_route_types.h"
 #include "high_score_bank.h"
 #include "high_score_record.h"
+#include "help_screen.h"
 #include "level_definition_loader.h"
 #include "cameraman_state.h"
 #include "contact_target.h"
@@ -28,6 +29,7 @@
 #include "slug_hazard_types.h"
 #include "sub_lazer_types.h"
 #include "times_up_controller.h"
+#include "thanks_screen.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
 #include "track_attachment_types.h"
@@ -213,11 +215,23 @@ public:
     // for in-place normalization and value-copy persistence.
     HighScoreBank high_score_bank; // +0x68b4c8, owns persistent record arrays
     HighScoreRecord current_high_score_record; // +0xfd2b10, working run snapshot
-    unsigned char selected_level_record_active; // +0xff25d0
-    unsigned char selected_level_record_persistent; // +0xff25d1
+    union {
+        unsigned char selected_level_record_active; // +0xff25d0
+        unsigned char replay_launch_active; // front-end replay handoff alias
+    };
+    union {
+        unsigned char selected_level_record_persistent; // +0xff25d1
+        unsigned char replay_launch_from_frontend; // front-end replay handoff alias
+    };
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
-    HighScoreRecord* selected_level_record; // +0xff25d4
-    int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
+    union {
+        HighScoreRecord* selected_level_record; // +0xff25d4
+        HighScoreRecord* replay_launch_record; // front-end replay handoff alias
+    };
+    union {
+        int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
+        int replay_launch_return_state; // front-end state restored after replay
+    };
     int replay_update_cursor; // +0xff25dc
     char unknown_ff25e0[0xff2914 - 0xff25e0];
     // Startup constructs 126 records here. initialize_game_assets_and_world
@@ -231,7 +245,8 @@ public:
     int source_timer_a; // +0x125ffd8
     int source_timer_b; // +0x125ffdc
     ChallengeSetupScreen challenge_setup; // +0x125ffe0
-    char unknown_1260008[0x1260020 - (0x125ffe0 + sizeof(ChallengeSetupScreen))];
+    HelpScreen help_screen; // +0x1260008, embedded front-end controller
+    ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
     GalaxyRoute galaxy; // +0x1260020, embedded route controller
     char unknown_1270fc4[0x1270fc8 - 0x1270fc4];
     int subgame_rebuild_selector; // +0x1270fc8
@@ -240,6 +255,12 @@ public:
     RowEventDisplayController row_event_display; // +0x12727d8, embedded HUD controller
     TimesUpController times_up; // +0x1272828, embedded completion controller
 };
+
+// GameRoot embeds cRSubGame at +0x74618. Its exact extent reaches the root
+// high-score screen at +0x12e6e50, proving that the replay, help, thanks, and
+// high-score-bank fields above all share this single owner.
+typedef char SubgameRuntime_must_be_0x1272838[
+    (sizeof(SubgameRuntime) == 0x1272838) ? 1 : -1];
 
 inline Player* SubgameRuntime::embedded_player()
 {

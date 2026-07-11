@@ -1,6 +1,7 @@
 // initialize_completion_screen @ 0x404920 (thiscall, ret 0x8)
 
 #include "completion_screen.h"
+#include "game_root.h"
 #include <string.h>
 
 void CompletionResultScreen::initialize_completion_screen(
@@ -18,9 +19,9 @@ void CompletionResultScreen::initialize_completion_screen(
     } else if (mode == 1) {
         int x_source;
         int y_source;
-        if (((HighScoreGameView*)g_game_base)->replay_launch_active != 0) {
+        if (((GameRoot*)g_game_base)->subgame.replay_launch_active != 0) {
             HighScoreRecord* record =
-                ((HighScoreGameView*)g_game_base)->replay_launch_record;
+                ((GameRoot*)g_game_base)->subgame.replay_launch_record;
             x_source = record->challenge_speed_value;
             y_source = record->challenge_difficulty_value;
         } else {

@@ -27,7 +27,7 @@ int GamePlayer::update_frontend_state_machine()
 
         switch (state) {
         case 10:
-            g_game->unknown_104712c = 0;
+            g_game->subgame.current_high_score_record.score = 0;
             g_game->subgame.initialize_subgame();
             frontend_state = 11;
         case 11: {
@@ -157,7 +157,7 @@ int GamePlayer::update_frontend_state_machine()
             GameRoot* owner = g_game;
             owner->subgame.destroy_subgame();
         }
-            g_game->ordinary_rebuild_selector = 0;
+            g_game->subgame.subgame_rebuild_selector = 0;
             g_game->subgame.initialize_subgame();
         restore_saved_state: {
             int saved_state = saved_frontend_state;
@@ -169,19 +169,19 @@ int GamePlayer::update_frontend_state_machine()
             frontend_state = 30;
         {
             GameRoot* owner = g_game;
-            owner->thanks_for_playing_screen.initialize_thanks_for_playing_screen();
+            owner->subgame.thanks_screen.initialize_thanks_for_playing_screen();
         }
         case 30: {
             GameRoot* owner = g_game;
-            owner->thanks_for_playing_screen.update_thanks_for_playing_screen();
+            owner->subgame.thanks_screen.update_thanks_for_playing_screen();
             break;
         }
         case 31:
             frontend_state = 32;
-            g_game->help_screen.initialize_help_screen();
+            g_game->subgame.help_screen.initialize_help_screen();
         case 32: {
             GameRoot* owner = g_game;
-            owner->help_screen.update_help_screen();
+            owner->subgame.help_screen.update_help_screen();
             break;
         }
         default:

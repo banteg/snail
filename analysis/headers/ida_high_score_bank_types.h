@@ -65,15 +65,9 @@ typedef struct HighScoreRecord {
     int32_t unknown_1fabc;
 } HighScoreRecord;
 
-typedef struct HighScoreRecordView {
+typedef struct HighScoreBank {
     HighScoreRecord* active_record_bank;
     int32_t active_record_count;
-    uint8_t unknown_000008[0x17c108 - 0x08];
-    HighScoreRecord name_submit_records[10];
-} HighScoreRecordView;
-
-typedef struct HighScoreBank {
-    uint8_t unknown_000000[0x08];
     HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
     HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
     HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT];

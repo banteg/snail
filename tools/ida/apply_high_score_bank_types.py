@@ -31,12 +31,13 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall add_time_trial_high_score(HighScoreBank* bank, HighScoreRecord* record, int route_index, unsigned char route_active);",
     ),
     (
-        "commit_high_score_entry_into_top_ten",
-        "void __thiscall commit_high_score_entry_into_top_ten(HighScoreRecordView* view, int rank);",
+        "mini_delete_high_score_entry",
+        "void __thiscall mini_delete_high_score_entry(HighScoreBank* bank, int rank);",
     ),
 ]
 
 TRUSTED_NAMES = [
+    (0x417AF0, "mini_delete_high_score_entry"),
     (0x4DF904, "g_game_base"),
     (0x4DF9C0, "g_high_score_selected_bank"),
 ]

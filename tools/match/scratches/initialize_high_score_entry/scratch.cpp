@@ -1,5 +1,6 @@
 // initialize_high_score_entry @ 0x417a70 (thiscall, ret 0x18)
 
+#include "game_root.h"
 #include "high_score_screen.h"
 
 void HighScoreRecord::initialize_high_score_entry(
@@ -16,7 +17,7 @@ void HighScoreRecord::initialize_high_score_entry(
     timer.zero_timer_counters();
     replay_level_index = replay_level_index_value;
     replay_speed_scalar_bits = replay_speed_scalar_bits_value;
-    rstrcpy_checked_ascii(player_name, ((HighScoreGameView*)g_game_base)->pending_player_name);
+    rstrcpy_checked_ascii(player_name, ((GameRoot*)g_game_base)->players[0].player_name);
     active = 0;
     runtime_build_flags = runtime_build_flags_value;
     high_score_mode_tag = high_score_mode_value;

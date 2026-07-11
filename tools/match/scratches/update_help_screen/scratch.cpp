@@ -1,7 +1,7 @@
 // update_help_screen @ 0x4168d0 (thiscall)
 
+#include "game_root.h"
 #include "help_screen.h"
-#include "high_score_screen.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -12,7 +12,7 @@ void HelpScreen::update_help_screen()
     if ((flags & 0x20) != 0) {
         button->widget_flags = flags & ~0x20u;
         destroy_help_screen();
-        ((HighScoreGameView*)g_game_base)->frontend_next_state = 2;
-        ((HighScoreGameView*)g_game_base)->frontend_state_dirty = 1;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 2;
+        ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
     }
 }

@@ -3,6 +3,7 @@
 #include "backdrop.h"
 #include "border_manager.h"
 #include "border_runtime.h"
+#include "game_root.h"
 #include "high_score_screen.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
@@ -63,16 +64,16 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
         back_button->initialize_frontend_widget(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((HighScoreGameView*)g_game_base)->high_score_records.active_record_bank =
-            ((HighScoreGameView*)g_game_base)->high_score_records.name_submit_records;
-        ((HighScoreGameView*)g_game_base)->high_score_records.active_record_count = 10;
+        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_bank =
+            ((GameRoot*)g_game_base)->subgame.high_score_bank.postal_records;
+        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_count = 10;
     } else if (selected_bank == 1) {
         back_button->initialize_frontend_widget(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((HighScoreGameView*)g_game_base)->high_score_records.active_record_bank =
-            (HighScoreRecord*)(g_game_base + 0x85c128);
-        ((HighScoreGameView*)g_game_base)->high_score_records.active_record_count = 10;
+        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_bank =
+            ((GameRoot*)g_game_base)->subgame.high_score_bank.survival_records;
+        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_count = 10;
     }
 
     float row_step = 27.0f;
@@ -86,8 +87,8 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
         replay_row_widgets[i] = 0;
         int highlight = (i == selected_rank) ? 2 : 0;
         HighScoreRecord* record =
-            (HighScoreRecord*)((char*)((HighScoreGameView*)g_game_base)
-                    ->high_score_records.active_record_bank
+            (HighScoreRecord*)((char*)((GameRoot*)g_game_base)
+                    ->subgame.high_score_bank.active_record_bank
                 + record_offset);
         if (record->active == 1) {
             float y = (float)i * row_step + 111.0f;
@@ -172,17 +173,17 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
 
     float footer_y = row_step * 10.0f + 111.0f;
     if (entering_name != 0) {
-        submit_name_button = ((HighScoreBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        submit_name_button->initialize_frontend_widget(
-            0x20000014, (char*)"Cancel", 23, 0.0f, footer_y,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
-        submit_name_button->set_frontend_widget_shortcut_key(11);
-
         cancel_name_button = ((HighScoreBorderManager*)(g_game_base + 0xb4c))->allocate_border();
         cancel_name_button->initialize_frontend_widget(
+            0x20000014, (char*)"Cancel", 23, 0.0f, footer_y,
+            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
+        cancel_name_button->set_frontend_widget_shortcut_key(11);
+
+        submit_name_button = ((HighScoreBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        submit_name_button->initialize_frontend_widget(
             0x20000014, (char*)"Submit", 23, 0.0f, footer_y,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
-        return cancel_name_button->set_frontend_widget_shortcut_key(5);
+        return submit_name_button->set_frontend_widget_shortcut_key(5);
     }
 
     back_button = ((HighScoreBorderManager*)(g_game_base + 0xb4c))->allocate_border();

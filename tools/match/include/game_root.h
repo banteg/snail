@@ -6,6 +6,7 @@
 #include "border_manager.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "vector3.h"
 
 class GameRootNewGameMenu {
@@ -34,35 +35,10 @@ public:
     void update_completion_screen();
 };
 
-class GameRootSubgame {
-public:
-    void initialize_subgame();
-    void update_subgame();
-    void destroy_subgame();
-};
-
 class GameRootIntroScreen {
 public:
     void initialize_intro_screen(char* script_path);
     void update_intro_screen();
-};
-
-class GameRootHighScoreScreen {
-public:
-    void initialize_high_score_screen(int mode, int rank);
-    void update_high_score_screen();
-};
-
-class GameRootThanksForPlayingScreen {
-public:
-    void initialize_thanks_for_playing_screen();
-    void update_thanks_for_playing_screen();
-};
-
-class GameRootHelpScreen {
-public:
-    void initialize_help_screen();
-    void update_help_screen();
 };
 
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
@@ -73,7 +49,8 @@ public:
     GamePlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
     int update_frontend_state_machine(); // @ 0x4107d0, cRPlayer::AI()
 
-    char unknown_078[0x94 - 0x78];
+    char unknown_078[0x80 - 0x78];
+    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x80
     int frontend_state; // +0x94
     int saved_frontend_state; // +0x98
     char unknown_09c[0xa0 - 0x9c];
@@ -140,17 +117,8 @@ public:
     char unknown_04f3ad[0x4f400 - 0x4f3ad];
     GameRootIntroScreen intro_screen; // +0x4f400
     char unknown_04f401[0x74618 - 0x4f401];
-    GameRootSubgame subgame; // +0x74618
-    char unknown_074619[0x104712c - 0x74619];
-    int unknown_104712c; // +0x104712c
-    char unknown_1047130[0x12d4620 - 0x1047130];
-    GameRootHelpScreen help_screen; // +0x12d4620
-    char unknown_12d4621[0x12d4624 - 0x12d4621];
-    GameRootThanksForPlayingScreen thanks_for_playing_screen; // +0x12d4624
-    char unknown_12d4625[0x12e55e0 - 0x12d4625];
-    int ordinary_rebuild_selector; // +0x12e55e0
-    char unknown_12e55e4[0x12e6e50 - 0x12e55e4];
-    GameRootHighScoreScreen high_score_screen; // +0x12e6e50
+    SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
+    HighScoreScreen high_score_screen; // +0x12e6e50
 
     int run_frame_update();          // @ 0x40a2a0
     char initialize_game_assets_and_world(); // @ 0x40acf0

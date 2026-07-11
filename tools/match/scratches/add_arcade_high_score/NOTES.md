@@ -34,7 +34,7 @@ Accepted source-shape notes:
   exits through `goto insert_record`; the no-place path falls through to
   `return rank`. This preserves the native scan branch and keeps the later
   shift guard because the insertion label is reached from the comparison.
-- Returning a `HighScoreGameView*` local from the final `high_score_entry_bank`
+- Returning a `GameRoot*` local from the final `high_score_entry_bank`
   store removes the otherwise extra trailing `g_game_base` reload and matches
   the native frontend state write epilogue.
 

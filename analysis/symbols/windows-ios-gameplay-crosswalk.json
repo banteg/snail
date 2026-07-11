@@ -995,6 +995,14 @@
       "ios_symbol": "cRViewport::cRViewport()",
       "source_object": "Viewport.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x417af0",
+      "windows_name": "mini_delete_high_score_entry",
+      "ios_symbol": "cRSubHighScore::MiniDelete(int)",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The Windows thiscall receiver is the embedded HighScoreBank/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI()."
     }
   ]
 }

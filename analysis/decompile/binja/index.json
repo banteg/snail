@@ -900,8 +900,8 @@
     },
     {
       "address": "0x417af0",
-      "name": "commit_high_score_entry_into_top_ten",
-      "artifact": "analysis/decompile/binja/functions/00417af0-commit_high_score_entry_into_top_ten.c"
+      "name": "mini_delete_high_score_entry",
+      "artifact": "analysis/decompile/binja/functions/00417af0-mini_delete_high_score_entry.c"
     },
     {
       "address": "0x417b50",

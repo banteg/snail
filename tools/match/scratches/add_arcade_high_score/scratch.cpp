@@ -2,7 +2,6 @@
 
 #include "game_root.h"
 #include "high_score_bank.h"
-#include "high_score_screen.h"
 
 extern GameRoot* g_game; // data_4df904
 
