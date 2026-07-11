@@ -1,22 +1,22 @@
-// Invincibility shell controller view, partial.
-#ifndef INVINCIBLE_SHELL_H
-#define INVINCIBLE_SHELL_H
+// Authored cRInvincible, exact 0xa4-byte spinning shell visual owner.
+#ifndef INVINCIBLE_H
+#define INVINCIBLE_H
 
 #include "sprite.h"
 #include "transform_matrix.h"
 
-class InvincibleShellController {
+class Invincible {
 public:
-    void initialize_invincible_shell(); // @ 0x444ac0
-    void start_invincible_shell(); // @ 0x444ae0
-    void update_invincible_shell(); // @ 0x444b50
+    void initialize_invincible_shell(); // @ 0x444ac0, cRInvincible::Init
+    void start_invincible_shell(); // @ 0x444ae0, cRInvincible::Start
+    void update_invincible_shell(); // @ 0x444b50, cRInvincible::AI
 
-    // BOD-node-compatible prefix linked by build_subgame_level. The shell
+    // BOD-node-compatible prefix linked by build_subgame_level. The owner
     // remains embedded in PlayerPresentationController.
     void* vtable; // +0x00, update_invincible_shell callback
     char unknown_04[0x28 - 0x04];
     Color4f color; // +0x28
-    TransformMatrix transform; // +0x38, copied from the live snail matrix then yaw-spun
+    TransformMatrix transform; // +0x38, live snail matrix followed by yaw spin
     char unknown_78[0x80 - 0x78];
     int state; // +0x80
     float spin_phase; // +0x84
@@ -30,7 +30,6 @@ public:
     char unknown_a1[0xa4 - 0xa1];
 };
 
-typedef char InvincibleShellController_must_be_0xa4[
-    (sizeof(InvincibleShellController) == 0xa4) ? 1 : -1];
+typedef char Invincible_must_be_0xa4[(sizeof(Invincible) == 0xa4) ? 1 : -1];
 
 #endif

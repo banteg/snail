@@ -1,7 +1,7 @@
 # release_snail_weapons @ 0x442e40
 
 Death-cutscene helper that arms the snail weapon and jetpack channel release
-steps once, then marks `InvincibleShellController::channel_release_steps_active`.
+steps once, then marks `Invincible::channel_release_steps_active`.
 
 Recovered relationships:
 

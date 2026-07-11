@@ -760,6 +760,32 @@
       "notes": "The Windows and Android bodies advance and damp the same independent Y/Z spring lanes; iOS exports the matching AI method, and Windows publishes the outputs through the Player presentation visual root."
     },
     {
+      "address": "0x444ac0",
+      "windows_name": "initialize_invincible_shell",
+      "ios_symbol": "cRInvincible::Init()",
+      "android_symbol": "cRInvincible::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows and Android bodies reset the same embedded state machine and restore snail skin slot zero; iOS v1.9 exports the matching authored method."
+    },
+    {
+      "address": "0x444ae0",
+      "windows_name": "start_invincible_shell",
+      "android_symbol": "cRInvincible::Start()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android confirms the authored Start owner and the same state, spin, fade, and render-bit transitions. Windows additionally emits its registered invincibility sound from this helper."
+    },
+    {
+      "address": "0x444b50",
+      "windows_name": "update_invincible_shell",
+      "ios_symbol": "cRInvincible::AI()",
+      "android_symbol": "cRInvincible::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The Windows and Android bodies implement the same four-state fade/spin owner and skin transitions; the iOS v1.5 symbol supplies SubGame.o provenance."
+    },
+    {
       "address": "0x444cf0",
       "windows_name": "handle_subgoldy_collisions",
       "ios_symbol": "cRSubGoldy::Collision()",

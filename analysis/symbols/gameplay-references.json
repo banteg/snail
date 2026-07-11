@@ -1910,7 +1910,7 @@
         "off_497358",
         "data_497358"
       ],
-      "description": "InvincibleShellController callback slot installed at PlayerPresentationController +0x1894; its first and only callback is update_invincible_shell."
+      "description": "Authored cRInvincible callback slot installed at PlayerPresentationController +0x1894; its first and only callback is update_invincible_shell."
     },
     {
       "address": "0x49735c",

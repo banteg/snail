@@ -12,7 +12,7 @@ Recovered structure:
 - resets player, movement, row-event, nuke, resurrect, completion, and score
   producer lanes;
 - initializes the visual-root spring, Squidge oscillator, invincible shell, animation
-  managers, snail skin, cutscene AI, click-start prompt, cameraman, ghost, and
+  managers, snail skin, authored cRInvincible, cutscene AI, click-start prompt, cameraman, ghost, and
   damage gauge;
 - seeds the live position, cached camera target, wobble timers, control source,
   follow state, completion handoff cycle, and jetpack gauge;
@@ -47,6 +47,14 @@ Latest focused result:
   Goldy's score buckets remain independently owned at `Player +0x310`.
 - Focused Wibo remains exact at 100.00%, 279/279 instructions, with all 27
   masked operands clean.
+
+2026-07-11 cRInvincible ownership closure:
+
+- The owner at `Player::presentation +0x1894` (`Player +0x4218`) is the exact
+  0xa4-byte Windows `Invincible`, backed by iOS/Android
+  `cRInvincible::{Init,AI}` and Android `cRInvincible::Start`.
+- The initializer now reaches that embedded member through the recovered owner
+  chain and remains exact at 279/279 instructions.
 
 2026-06-20 larger near-proof tail audit:
 

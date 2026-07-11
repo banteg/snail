@@ -228,15 +228,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_invincible_shell",
-        "void __thiscall initialize_invincible_shell(InvincibleShellController* shell);",
+        "void __thiscall initialize_invincible_shell(Invincible* invincible);",
     ),
     (
         "start_invincible_shell",
-        "void __thiscall start_invincible_shell(InvincibleShellController* shell);",
+        "void __thiscall start_invincible_shell(Invincible* invincible);",
     ),
     (
         "update_invincible_shell",
-        "void __thiscall update_invincible_shell(InvincibleShellController* shell);",
+        "void __thiscall update_invincible_shell(Invincible* invincible);",
     ),
     (
         "initialize_anim_manager",

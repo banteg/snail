@@ -1,11 +1,11 @@
 // start_invincible_shell @ 0x444ae0 (thiscall, ret)
 
 #include "audio_system.h"
-#include "invincible_shell.h"
+#include "invincible.h"
 
 extern char* g_game_base; // data_4df904
 
-void InvincibleShellController::start_invincible_shell()
+void Invincible::start_invincible_shell()
 {
     int current_state = state;
     if (current_state != 0) {

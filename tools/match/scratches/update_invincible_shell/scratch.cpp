@@ -1,12 +1,12 @@
 // update_invincible_shell @ 0x444b50 (thiscall, ret)
 // Fade/spin controller for the invincible snail-shell presentation.
 
-#include "invincible_shell.h"
+#include "invincible.h"
 #include "snail_skin.h"
 
 extern char* g_game_base; // data_4df904
 
-void InvincibleShellController::update_invincible_shell()
+void Invincible::update_invincible_shell()
 {
     switch (state) {
     case 0:

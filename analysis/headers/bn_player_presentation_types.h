@@ -419,16 +419,24 @@ typedef struct PresentationWobbleController {
     uint8_t _pad_10[0x38];
 } PresentationWobbleController;
 
-typedef struct InvincibleShellController {
+/* Authored cRInvincible, exact 0xa4-byte spinning shell visual owner. */
+typedef struct Invincible {
     void* vtable;
-    uint8_t _pad_04[0x7c];
+    uint8_t _pad_04[0x24];
+    Color4f color;
+    TransformMatrix transform;
+    uint8_t _pad_78[0x8];
     int32_t state;
     float spin_phase;
     float spin_phase_step;
     float fade_progress;
     float fade_step;
-    uint8_t _pad_90[0x10];
-} InvincibleShellController;
+    uint8_t _pad_94[0x4];
+    float cutscene_roll_progress;
+    float cutscene_roll_step;
+    uint8_t channel_release_steps_active;
+    uint8_t _pad_a1[0x3];
+} Invincible;
 
 typedef struct FollowState {
     uint8_t active;
@@ -492,7 +500,7 @@ typedef struct PlayerPresentationController {
     uint8_t _pad_16c4[0x8];
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
-    InvincibleShellController invincible_shell;
+    Invincible invincible_shell;
     SnailSkinTransitionState snail_skin_transition;
     CutsceneAI cutscene_ai;
 } PlayerPresentationController;

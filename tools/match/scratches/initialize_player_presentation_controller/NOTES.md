@@ -12,7 +12,7 @@ Recovered ownership:
   stride;
 - two renderable-compatible hotspot sources begin at `+0x15cc/+0x164c`, with
   their transforms already exposed at `+0x1604/+0x1684`;
-- `InvincibleShellController` begins at `+0x1894` and receives the callback
+- authored `cRInvincible` begins at `+0x1894` and receives the callback
   whose sole target is exact `update_invincible_shell`;
 - the controller and animation-channel callback slots both resolve to
   `noop_runtime_ai`.

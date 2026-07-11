@@ -26,14 +26,25 @@ PRESENTATION_SYMBOL_UPDATES = (
 
 PRESENTATION_CONTROLLER_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x1894", "invincible_shell", "Invincible"),
 )
 
 PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
 )
 
-INVINCIBLE_SHELL_FIELD_UPDATES = (
+INVINCIBLE_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x28", "color", "Color4f"),
+    ("0x38", "transform", "TransformMatrix"),
+    ("0x80", "state", "int32_t"),
+    ("0x84", "spin_phase", "float"),
+    ("0x88", "spin_phase_step", "float"),
+    ("0x8c", "fade_progress", "float"),
+    ("0x90", "fade_step", "float"),
+    ("0x98", "cutscene_roll_progress", "float"),
+    ("0x9c", "cutscene_roll_step", "float"),
+    ("0xa0", "channel_release_steps_active", "uint8_t"),
 )
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
@@ -53,6 +64,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Nuke",
     "Cameraman",
     "Squidge",
+    "Invincible",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -498,13 +510,13 @@ PROTO_UPDATES = (
     ("update_tip_manager", "void __fastcall update_tip_manager(TipManager* manager)"),
     (
         "initialize_invincible_shell",
-        "void __thiscall initialize_invincible_shell(InvincibleShellController* shell)",
+        "void __thiscall initialize_invincible_shell(Invincible* invincible)",
     ),
     (
         "start_invincible_shell",
-        "void __thiscall start_invincible_shell(InvincibleShellController* shell)",
+        "void __thiscall start_invincible_shell(Invincible* invincible)",
     ),
-    ("update_invincible_shell", "void __thiscall update_invincible_shell(InvincibleShellController* shell)"),
+    ("update_invincible_shell", "void __thiscall update_invincible_shell(Invincible* invincible)"),
 )
 
 
@@ -642,8 +654,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="InvincibleShellController",
-            updates=INVINCIBLE_SHELL_FIELD_UPDATES,
+            struct_name="Invincible",
+            updates=INVINCIBLE_FIELD_UPDATES,
         )
     )
     operations.extend(

@@ -10,7 +10,7 @@
 #include "cameraman.h"
 #include "damage_guage.h"
 #include "firework.h"
-#include "invincible_shell.h"
+#include "invincible.h"
 #include "jetpack_gauge.h"
 #include "nuke.h"
 #include "presentation_animation_channel.h"
@@ -164,7 +164,7 @@ public:
     char unknown_16c4[0x16cc - 0x16c4];
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
-    InvincibleShellController invincible_shell; // +0x1894
+    Invincible invincible_shell;                // +0x1894, authored cRInvincible
     SnailSkinTransition snail_skin_transition;  // +0x1938
     CutsceneAI cutscene_ai;                     // +0x1958
 };

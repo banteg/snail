@@ -4,7 +4,7 @@
 #include "cameraman.h"
 #include "click_start.h"
 #include "damage_guage.h"
-#include "invincible_shell.h"
+#include "invincible.h"
 #include "jetpack_gauge.h"
 #include "player.h"
 #include "snail_skin.h"
@@ -53,7 +53,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x435c) = zero;
     *(int*)(self + 0x4360) = 0x3c888889;
     this->squidge.initialize_score_stats();
-    ((InvincibleShellController*)(self + 0x4218))->initialize_invincible_shell();
+    this->presentation.invincible_shell.initialize_invincible_shell();
     *(int*)(self + 0x334) = 0x3d638e38;
     *(int*)(self + 0x330) = 0x3d638e38;
     *(int*)(self + 0x434) = zero;

@@ -1,6 +1,7 @@
 # update_invincible_shell @ 0x444b50
 
-First source-shaped scratch for the runner-owned invincible-shell controller.
+Exact source-shaped recovery of authored `cRInvincible::AI` on the 0xa4-byte
+`Invincible` visual embedded at `PlayerPresentationController +0x1894`.
 
 Recovered behavior:
 
@@ -21,3 +22,8 @@ Focused Wibo result: exact 100%, 98/98 insns, 98/98 prefix, and 28 clean masked
 operands. The exact match required inlining the `g_game_base+0x4300b4` bit tests;
 a helper function was source-clean but introduced calls and an extra saved
 register, regressing to 68.39%.
+
+Cross-port ownership is high confidence: Android exports `cRInvincible::AI`
+and implements the same four-state fade/spin machine, skin transitions, color
+alpha, and live-matrix rotation. iOS v1.5 exports the same method from
+`SubGame.o`; iOS v1.9 retains the authored class, typeinfo, and vtable.
