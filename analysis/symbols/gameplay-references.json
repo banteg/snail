@@ -1802,13 +1802,13 @@
     },
     {
       "address": "0x497330",
-      "name": "g_track_row_vtable",
+      "name": "g_subrow_body_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497330",
         "data_497330"
       ],
-      "description": "Runtime track-row body vtable installed by initialize_track_row_runtime."
+      "description": "Authored SubRow body vtable installed on the embedded RenderableBod at row +0x04 by the exact initializer."
     },
     {
       "address": "0x497334",

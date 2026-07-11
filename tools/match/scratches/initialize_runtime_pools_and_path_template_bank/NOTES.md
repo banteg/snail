@@ -102,3 +102,13 @@
   so the unsupported `initialize_solution_record` name is retired. The parcel,
   route-slot, route-name, and contact-entry constructor arrays now all use
   their shared owners while the function remains exact at 227/227.
+
+## 2026-07-11 cRSubRow constructor loop
+
+- The 3200-record pass at `SubgameRuntime +0x5ccac8` now walks the owned
+  `SubRow runtime_rows[3200]` array directly rather than a generic runtime-slot
+  cursor with a literal `0xf4` increment.
+- Each call reaches the exact `SubRow` initializer that owns the embedded
+  renderable body at `+0x04` and attachment body at `+0xb0`.
+- The typed loop remains exact at 227/227 instructions with all 72 masked
+  operands clean.

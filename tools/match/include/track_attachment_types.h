@@ -312,6 +312,8 @@ typedef char SubLoc_must_be_0x54[(sizeof(SubLoc) == 0x54) ? 1 : -1];
 // the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
 // SubRow at 0xf4 bytes. The historical matcher name remains an alias below.
 struct SubRow {                          // stride 0xf4
+    SubRow* initialize_track_row_runtime(); // @ 0x408590
+
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
     RenderableBod primary_body;           // +0x04, embedded authored row actor
     char unknown_7c[0x84 - 0x7c];

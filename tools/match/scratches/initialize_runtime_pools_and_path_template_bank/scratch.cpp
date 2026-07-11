@@ -140,11 +140,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --bod_count;
     } while (bod_count);
 
-    RuntimeSlot* row = SLOT(0x5ccac8);
+    SubRow* row = runtime_rows;
     int row_count = 0xc80;
     do {
         row->initialize_track_row_runtime();
-        row = (RuntimeSlot*)((char*)row + 0xf4);
+        ++row;
         --row_count;
     } while (row_count);
 
