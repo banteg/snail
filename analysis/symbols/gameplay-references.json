@@ -1838,7 +1838,7 @@
         "off_49733c",
         "data_49733c"
       ],
-      "description": "Sub-lazer projectile runtime vtable installed by initialize_sub_lazer_runtime."
+      "description": "Authored cRSubLazer vtable installed by the exact Windows constructor; its entry points directly to update_sub_lazer_projectile at 0x4417d0."
     },
     {
       "address": "0x497340",

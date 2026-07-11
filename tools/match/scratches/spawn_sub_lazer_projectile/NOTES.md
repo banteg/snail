@@ -65,3 +65,8 @@ tutorial barrier through this same head, so the narrower `sub_lazer_list_head`
 name is corrected to `barrier_sub_lazer_list_head`. The spawner borrows its
 inherited `BodNode` prefix directly and remains exact at `100.00%`, `63/63`,
 with `6` clean masked operands.
+
+2026-07-11 authored owner: the scratch now defines this exact slot-level Shoot
+method on `SubLazer`. Android preserves the same two-vector signature; iOS
+v1.9 adds the owning Goldy argument. `SubLazerSlot` remains a compatibility
+alias only. Matching stays exact at 63/63 with six clean operands.

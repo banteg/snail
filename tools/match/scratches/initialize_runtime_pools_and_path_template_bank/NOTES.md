@@ -144,3 +144,11 @@
   cRSubRing size ledger.
 - The typed loop remains exact at 227/227 instructions with all 72 operands
   clean.
+
+## 2026-07-11 cRSubLazerManager constructor array
+
+- The 20-record pass at `SubgameRuntime +0x356b00` now addresses
+  `SubLazerManager::slots` directly with `sizeof(SubLazer)`.
+- Each constructor installs the table whose entry is `cRSubLazer::AI()`; the
+  20 * 0xb0 extent is exactly the native 0xdc0 cRSubLazerManager ledger size.
+- The typed array call remains exact at 227/227 with all 72 operands clean.

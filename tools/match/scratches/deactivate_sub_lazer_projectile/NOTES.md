@@ -50,3 +50,7 @@ recovers the native anchor lifetime and operand shape. The accepted ordering
 emits the native `mov eax, [data_4df904]`, saves `esi`, materializes
 `game+0x5a8` into `ecx`, then reads `this->list_flags` into `eax`; the unlink
 tail now uses `[ecx+0x4]`/`[ecx+0x8]` and the scratch is exact.
+
+2026-07-11 authored owner: Android preserves this lifecycle method as
+`cRSubLazer::Kill()`. The exact Windows scratch now defines it on `SubLazer`;
+it remains 43/43 instructions with five clean operands.

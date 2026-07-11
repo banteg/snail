@@ -160,7 +160,7 @@ public:
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     TrackHealthPickup health_pickups[8]; // +0x356000
     SlugHazardPool slug_hazards; // +0x3563a0, fixed eight-slot owner
-    SubLazerPool sub_lazers; // +0x356b00, fixed 20-slot owner
+    SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
     SaltHazardPool salt_hazards; // +0x3578c0, fixed 40-slot owner
     BannerPool banners; // +0x359080, embedded start/completion actors
     GarbageHazardPool garbage_hazards; // +0x359140

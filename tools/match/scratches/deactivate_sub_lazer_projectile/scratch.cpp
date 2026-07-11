@@ -7,7 +7,7 @@
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
-int SubLazerSlot::deactivate_sub_lazer_projectile()
+int SubLazer::deactivate_sub_lazer_projectile()
 {
     SubLazerListAnchor* anchor = (SubLazerListAnchor*)(g_game_base + 0x5a8);
     int flags = list_flags;

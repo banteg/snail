@@ -450,7 +450,7 @@
     {
       "address": "0x408610",
       "name": "initialize_sub_lazer_runtime",
-      "description": "Constructs one laser-projectile runtime slot by running the shared renderable-body constructor and installing the laser vtable. The 20-slot pool built by `initialize_runtime_pools_and_path_template_bank` totals `0xdc0`, matching the native `cRSubLazerManager` size ledger."
+      "description": "Exact constructor wrapper for one authored `SubLazer` (`cRSubLazer` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_sub_lazer_projectile, and returns the receiver. The 20 inline 0xb0-byte records owned by SubLazerManager total the native 0xdc0 size ledger."
     },
     {
       "address": "0x408630",
@@ -2263,27 +2263,27 @@
     {
       "address": "0x441650",
       "name": "initialize_sub_lazer_pool",
-      "description": "Clears the 20-slot SubLazer projectile pool (`cRSubLazerManager`) at `game + 0x356b00` by zeroing each slot state at +0x80 before a level build. Historically labelled `initialize_wall2_ambient_hazard_pool`; the Wall2 tile is the emitter, the slots themselves are projectiles."
+      "description": "Exact Windows `cRSubLazerManager::Init()`: clears the 20 inline SubLazer records at `game + 0x356b00` by zeroing each slot state at +0x80 before a level build. Android preserves the same manager method and loop."
     },
     {
       "address": "0x441670",
       "name": "spawn_sub_lazer_projectile",
-      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`; cross-port iOS v1.9 symbols name the slot method `cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)`."
+      "description": "Exact Windows `cRSubLazer::Shoot` implementation: activates one manager-owned SubLazer, stores body position at +0x68, velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument."
     },
     {
       "address": "0x441740",
       "name": "deactivate_sub_lazer_projectile",
-      "description": "Marks a SubLazer projectile slot inactive after collision or after it leaves the supported path."
+      "description": "Exact Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node after collision or path exit. Android preserves the authored method name."
     },
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Integrates one active SubLazer projectile, tests track attachment intersection, and deactivates it after collision or exit. Cross-port iOS symbols match this helper to `cRSubLazer::AI()` in `SubGame.o`."
+      "description": "Windows `cRSubLazer::AI()`: integrates one active SubLazer, tests track attachment intersection, and dispatches Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and cross-port iOS preserves the authored owner."
     },
     {
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
-      "description": "Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position. Cross-port iOS v1.5 symbols match this manager-level helper to `cRSubLazerManager::Shoot(tVector, tVector)`."
+      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: finds a free SubLazer in the manager's 20 inline slots, dispatches its Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature."
     },
     {
       "address": "0x441b70",

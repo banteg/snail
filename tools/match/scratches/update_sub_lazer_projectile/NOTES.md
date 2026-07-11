@@ -108,3 +108,8 @@ at `SubgameRuntime`, and the track-cell probes call the shared subgame accessors
 through `g_game_base +0x74618` instead of a local `Game::track_runtime` shell.
 Focused Wibo remains at `81.11%`, `216/218` candidate/target instructions,
 with `23` clean masked operands.
+
+2026-07-11 authored owner: iOS preserves this callback as `cRSubLazer::AI()`,
+and the Windows constructor table at `0x49733c` points directly here. The
+scratch now defines the method on `SubLazer`; matching remains 81.11%, 216/218,
+with 23 clean operands and no call-target debt.

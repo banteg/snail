@@ -87,7 +87,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (slug_count);
 
     initialize_array_with_constructor(
-        SLOT(0x356b00), 0xb0, 0x14, &RuntimeSlot::initialize_sub_lazer_runtime);
+        (RuntimeSlot*)sub_lazers.slots,
+        sizeof(SubLazer),
+        20,
+        &RuntimeSlot::initialize_sub_lazer_runtime);
     initialize_array_with_constructor(
         SLOT(0x3578c0), 0x98, 0x28, &RuntimeSlot::initialize_salt_hazard_runtime);
 

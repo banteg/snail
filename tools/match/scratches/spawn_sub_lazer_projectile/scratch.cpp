@@ -5,7 +5,7 @@
 
 int report_errorf(char* format, ...);
 
-void SubLazerSlot::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
+void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
 {
     state = 1;
     TransformMatrix* live_matrix = (TransformMatrix*)((char*)this + 0x38);

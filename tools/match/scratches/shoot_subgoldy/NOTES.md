@@ -63,3 +63,8 @@ the receiver.
 `cRSound::Play(int, tVector&)`. Typing this helper's origin as `Vector3*` and
 passing the unstaggered origin by reference leaves the caller byte-exact at
 48/48 while closing the previous raw-float pointer ABI.
+
+2026-07-11 authored owner: the method now belongs to `SubLazerManager`, matching
+cross-port `cRSubLazerManager::Shoot(tVector, tVector)`. Its 20 `SubLazer`
+records remain inline manager-owned storage. Matching stays exact at 48/48
+with four clean operands.

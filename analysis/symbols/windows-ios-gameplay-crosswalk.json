@@ -534,19 +534,37 @@
       "confidence": "high"
     },
     {
+      "address": "0x441650",
+      "windows_name": "initialize_sub_lazer_pool",
+      "android_symbol": "cRSubLazerManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both walk the manager's 20 inline slots and clear each SubLazer state at +0x80."
+    },
+    {
       "address": "0x441670",
       "windows_name": "spawn_sub_lazer_projectile",
       "ios_symbol": "cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)",
+      "android_symbol": "cRSubLazer::Shoot(tVector, tVector)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only slot-level signature."
+      "notes": "Windows and Android share the two-vector slot-level body; iOS v1.9 adds the owning Goldy argument."
+    },
+    {
+      "address": "0x441740",
+      "windows_name": "deactivate_sub_lazer_projectile",
+      "android_symbol": "cRSubLazer::Kill()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both clear the live state and unlink the inherited BOD node; the Windows helper is exact at 43 instructions."
     },
     {
       "address": "0x4417d0",
       "windows_name": "update_sub_lazer_projectile",
       "ios_symbol": "cRSubLazer::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The Windows cRSubLazer constructor table at 0x49733c points directly to this helper."
     },
     {
       "address": "0x441ad0",

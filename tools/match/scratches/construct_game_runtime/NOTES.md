@@ -204,3 +204,9 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 The `Size of cRSubRing` entry now comes from `sizeof(SubRingPool)`: two inline
 0x1f8-byte `SubRing` records close exactly to the native 0x3f0 total. The
 constructor's focused metrics remain unchanged.
+
+## 2026-07-11 cRSubLazerManager size ledger
+
+The `Size of cRSubLazerManager` entry now comes from
+`sizeof(SubLazerManager)`: 20 inline 0xb0-byte `SubLazer` records close exactly
+to the native 0xdc0 total. Constructor metrics remain unchanged.

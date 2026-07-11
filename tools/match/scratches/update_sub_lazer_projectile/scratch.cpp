@@ -12,7 +12,7 @@ extern char g_debug_report_arg[];
 int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
-void SubLazerSlot::update_sub_lazer_projectile()
+void SubLazer::update_sub_lazer_projectile()
 {
     if (owner_game->subgame_pause_gate)
         return;

@@ -5,7 +5,7 @@
 #include "sub_lazer_types.h"
 #include "sound_effect_manager.h"
 
-void SubLazerPool::shoot_subgoldy(Vector3* origin, const Vector3* direction)
+void SubLazerManager::shoot_subgoldy(Vector3* origin, const Vector3* direction)
 {
     int index = 0;
     int* state = &slots[0].state;

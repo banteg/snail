@@ -1,6 +1,6 @@
-// Shared sub-lazer slot view. iOS symbols name slots cRSubLazer and the pool
-// cRSubLazerManager. The spawn, update, and deactivate paths all use this 0xb0
-// slot; an earlier split update object was a shifted jetpack name.
+// Authored cRSubLazer and cRSubLazerManager views. The spawn, update, and kill
+// paths all use one 0xb0 slot; an earlier split update object was a shifted
+// jetpack name.
 // The first 0x10 bytes are the common intrusive BOD list prefix.
 #ifndef SUB_LAZER_TYPES_H
 #define SUB_LAZER_TYPES_H
@@ -12,9 +12,9 @@
 
 class SubgameRuntime;
 
-class SubLazerSlot : public BodNode {
+class SubLazer : public BodNode {
 public:
-    SubLazerSlot* initialize_sub_lazer_runtime(); // @ 0x408610
+    SubLazer* initialize_sub_lazer_runtime(); // @ 0x408610
     void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // @ 0x441670
     int deactivate_sub_lazer_projectile(); // @ 0x441740
     void update_sub_lazer_projectile(); // @ 0x4417d0
@@ -44,18 +44,24 @@ public:
     char unknown_a0[0xb0 - 0xa0];
 };
 
-typedef char SubLazerSlot_must_match_pool_stride[
-    (sizeof(SubLazerSlot) == 0xb0) ? 1 : -1];
+typedef SubLazer SubLazerSlot;
+
+typedef char SubLazer_must_be_0xb0[(sizeof(SubLazer) == 0xb0) ? 1 : -1];
 
 // The sub-lazer live/free anchor is the same list shape used by other BOD pools.
 typedef BodList SubLazerListAnchor;
 
-class SubLazerPool {
+class SubLazerManager {
 public:
     int* initialize_sub_lazer_pool(); // @ 0x441650
     void shoot_subgoldy(Vector3* origin, const Vector3* direction); // @ 0x441ad0
 
-    SubLazerSlot slots[20];
+    SubLazer slots[20];
 };
+
+typedef SubLazerManager SubLazerPool;
+
+typedef char SubLazerManager_must_be_0xdc0[
+    (sizeof(SubLazerManager) == 0xdc0) ? 1 : -1];
 
 #endif
