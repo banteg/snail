@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**518/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **76441/325736** bytes (**23.47%**) are proof-grade, and overall fuzzy is **59.30%**.
+**519/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77809/325736** bytes (**23.89%**) are proof-grade, and overall fuzzy is **59.30%**.
 
-## Proof Grade (518)
+## Proof Grade (519)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -182,6 +182,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | raise_backdrop_quad_edge_pair | 0x41a170 | 66 | 19/19 | 100.00% | 19/19 | 4 ok |  |
 | ✅ | initialize_backdrop_slice_quad | 0x41a1c0 | 196 | 61/61 | 100.00% | 61/61 | 7 ok |  |
 | ✅ | initialize_backdrop_corner_quad | 0x41a290 | 207 | 55/55 | 100.00% | 55/55 | 10 ok |  |
+| ✅ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 63 ok |  |
 | ✅ | reset_spring_float | 0x41aa30 | 17 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | initialize_options_menu | 0x41ace0 | 506 | 127/127 | 100.00% | 127/127 | 32 ok |  |
 | ✅ | destroy_options_menu | 0x41aee0 | 127 | 32/32 | 100.00% | 32/32 | 13 ok |  |
@@ -527,11 +528,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Audit Needed (1)
+## Audit Needed (0)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| ⚠ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 1 mismatch, 62 ok |  |
 
 ## Near Match (95-99.99%) (16)
 

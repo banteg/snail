@@ -485,7 +485,8 @@
       "name": "initialize_backdrop_tile_quad_orientation_jump_table",
       "kind": "jump_table",
       "aliases": [
-        "$L1028"
+        "$L1028",
+        "$L1047"
       ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
@@ -494,7 +495,9 @@
       "address": "0x41aa0c",
       "name": "initialize_backdrop_tile_quad_edge_selector_jump_table",
       "kind": "jump_table",
-      "aliases": [],
+      "aliases": [
+        "$L1048"
+      ],
       "size": "0x1c",
       "description": "Compiler-emitted edge-selector switch jump table used by initialize_backdrop_tile_quad for normalized cases 0 through 6."
     },

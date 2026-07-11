@@ -19,10 +19,10 @@ Important type notes:
 
 Current focused result:
 
-- match: 83.00%
-- target/candidate instructions: 367 / 339
-- prefix: 122 / 367
-- masked operands: 57 clean, 0 unresolved, 1 mismatched
+- match: 100.00%
+- target/candidate instructions: 367 / 367
+- prefix: 367 / 367
+- masked operands: 63 clean, 0 unresolved, 0 mismatched
 
 Remaining gap:
 
@@ -59,3 +59,9 @@ Adding `$L1028` as the candidate alias and teaching the matcher to honor curated
 jump-table sizes for local labels clears the masked audit. Focused Wibo is now
 proof-grade: 100.00%, 367/367 instructions, a 367/367 prefix, and 63 clean
 masked operands.
+
+2026-07-11 local-label refresh: subsequent source cleanup renumbered the same
+bounded orientation and edge-selector tables to `$L1047` and `$L1048`.
+Registering those compiler-local aliases restores the content audit without
+changing source or accepting label identity as proof. Focused Wibo is again
+proof-grade at 100.00%, 367/367, prefix 367/367, with 63 clean operands.
