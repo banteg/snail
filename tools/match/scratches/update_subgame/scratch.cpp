@@ -9,7 +9,7 @@
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
 #include "sprite.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "subgame_runtime.h"
 #include "time_trial.h"
 #include "timer_counters.h"
@@ -123,7 +123,7 @@ void SubgameRuntime::update_subgame()
         }
 
         selected_level_record_active = 0;
-        ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
+        ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
     }
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {

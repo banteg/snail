@@ -34,3 +34,11 @@ store/color arguments and the corner-scale sprite dereference; the candidate
 otherwise has the exact instruction count and semantics. A retained tail-entry
 pointer probe regressed to 66.80% by changing register ownership, so it was
 rejected rather than forcing the final scheduling differences.
+
+## 2026-07-11 cRStarManager ownership
+
+Android and iOS preserve the complete `cRStarManager` lifecycle and the
+`Star.o` source object. The shared match type now uses `StarManager` and the
+already-proven `StarManagerEntry` vocabulary consistently with the BN/IDA
+header. Its exact 0x4c extent closes between `MainMenu` and `OptionsMenu` in
+`GameRoot`; the rename is codegen-neutral at the same 98.38% near match.

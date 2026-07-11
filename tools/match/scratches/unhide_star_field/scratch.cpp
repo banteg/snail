@@ -1,8 +1,8 @@
 // unhide_star_field @ 0x4346b0 (thiscall, ret int)
 
-#include "star_field.h"
+#include "star_manager.h"
 
-int StarField::unhide_star_field()
+int StarManager::unhide_star_field()
 {
     int result = state;
     if (result != 0) {

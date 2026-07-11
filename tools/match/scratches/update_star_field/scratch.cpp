@@ -1,10 +1,10 @@
 // update_star_field @ 0x4346f0 (thiscall)
 
-#include "star_field.h"
+#include "star_manager.h"
 #include "runtime_config.h"
 
 
-void StarField::update_star_field()
+void StarManager::update_star_field()
 {
     switch (state) {
     case 0:

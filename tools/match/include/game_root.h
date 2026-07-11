@@ -19,7 +19,7 @@
 #include "options_menu.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "subgame_runtime.h"
 #include "tip_manager.h"
 #include "vector3.h"
@@ -108,7 +108,7 @@ public:
     // every boundary through the exit prompt without padding.
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
-    StarField star_field; // +0x4f33c, cross-port cRStarManager owner
+    StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
     OptionsMenu options_menu; // +0x4f388
     ExitPrompt exit_prompt; // +0x4f3ac, authored cRExit owner
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established

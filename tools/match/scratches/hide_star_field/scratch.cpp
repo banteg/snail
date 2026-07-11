@@ -1,8 +1,8 @@
 // hide_star_field @ 0x434670 (thiscall, ret int)
 
-#include "star_field.h"
+#include "star_manager.h"
 
-int StarField::hide_star_field()
+int StarManager::hide_star_field()
 {
     int result = state;
     if (result != 0) {

@@ -3,7 +3,7 @@
 Main-menu initializer, spelling the `MainMenu` slots as the six observed widget
 fields at `+0x00..+0x14`.
 
-- Hides the shared `StarField` immediately after `MainMenu` (`+0x4f33c`), proving
+- Hides the shared `StarManager` immediately after `MainMenu` (`+0x4f33c`), proving
   the `MainMenu` size as `0x18` in the front-end root.
 - Loads `music/mainmenu.ogg`, activates `Menubg.txt`, and sets the backdrop
   center-justify runtime to `25.0f` through the raw-bit `BorderRuntime` view.

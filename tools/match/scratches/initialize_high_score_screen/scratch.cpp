@@ -7,7 +7,7 @@
 #include "high_score.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
@@ -42,7 +42,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
     selected_rank = rank;
     entering_name = (rank != -1);
 
-    ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
+    ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
     ((SubgameRuntime*)(g_game_base + 0x74618))->hide_gameplay_scores();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index =

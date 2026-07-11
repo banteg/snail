@@ -27,7 +27,7 @@ void NewGameMenu::initialize_new_game_menu()
 {
     Color4f color;
 
-    ((GameRoot*)g_game_base)->star_field.hide_star_field();
+    ((GameRoot*)g_game_base)->star_manager.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index =
         ((LandscapeManager*)(g_game_base + 0x106c218))

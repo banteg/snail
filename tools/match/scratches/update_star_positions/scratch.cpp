@@ -1,7 +1,7 @@
 // update_star_positions @ 0x434800 (thiscall, ret 0x4)
 
 #include "game_root.h"
-#include "star_field.h"
+#include "star_manager.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -10,7 +10,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
-void StarField::update_star_positions(float fade_alpha)
+void StarManager::update_star_positions(float fade_alpha)
 {
     int i = 0;
     if (count > 0) {

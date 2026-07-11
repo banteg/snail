@@ -1795,37 +1795,37 @@
     {
       "address": "0x434270",
       "name": "destroy_star_field",
-      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0."
+      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`."
     },
     {
       "address": "0x4342c0",
       "name": "open_star_field",
-      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count."
+      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count. Cross-port Android and iOS symbols match this exact member to `cRStarManager::Open(int)`."
     },
     {
       "address": "0x434310",
       "name": "initialize_star_field",
-      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields."
+      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`."
     },
     {
       "address": "0x434670",
       "name": "hide_star_field",
-      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state."
+      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state. Cross-port Android and iOS symbols match this exact member to `cRStarManager::Hide()`."
     },
     {
       "address": "0x4346b0",
       "name": "unhide_star_field",
-      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller."
+      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Cross-port Android and iOS symbols match this exact member to `cRStarManager::UnHide()`."
     },
     {
       "address": "0x4346f0",
       "name": "update_star_field",
-      "description": "Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update."
+      "description": "Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update. Cross-port Android and iOS symbols match this exact member to `cRStarManager::AI()`."
     },
     {
       "address": "0x434800",
       "name": "update_star_positions",
-      "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor."
+      "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`."
     },
     {
       "address": "0x434b60",

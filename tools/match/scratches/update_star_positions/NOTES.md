@@ -7,7 +7,7 @@ from `(travel_distance - 2) * alpha_scale * fade / 87.5`.
 
 Layout evidence shared with `initialize_star_field`:
 
-- `StarFieldEntry` size is `0x2c`, proved by `open_star_field`.
+- `StarManagerEntry` size is `0x2c`, proved by `open_star_field`.
 - `active +0x00` is initialized and cleared by lifecycle functions.
 - `position +0x04` and `velocity +0x10` are seeded by
   `initialize_star_field`; update copies velocity to the sprite.

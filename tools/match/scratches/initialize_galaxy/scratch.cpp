@@ -7,7 +7,7 @@
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
-#include "star_field.h"
+#include "star_manager.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_blank_text[]; // data_4dfb08
@@ -24,7 +24,7 @@ public:
 
 FrontendWidget* Galaxy::initialize_galaxy()
 {
-    ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
+    ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
 
     int landscape_index =

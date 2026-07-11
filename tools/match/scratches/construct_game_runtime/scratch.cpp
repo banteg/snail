@@ -157,9 +157,9 @@ __forceinline GameRootAllocation::GameRootAllocation()
         ((Color4f*)((char*)backdrop + 0x69c))->noop_this_constructor();
         backdrop->vtable = &g_backdrop_callback_table;
 
-        StarField* star_field = &root->star_field;
-        ((BodBase*)star_field)->initialize_bod_base();
-        ((BodBase*)star_field)->vtable = &g_star_field_callback_table;
+        StarManager* star_manager = &root->star_manager;
+        ((BodBase*)star_manager)->initialize_bod_base();
+        ((BodBase*)star_manager)->vtable = &g_star_field_callback_table;
 
         root->root_bod_4f3c8.initialize_bod_base();
 

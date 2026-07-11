@@ -5,7 +5,7 @@ the main and help menu initializers.
 
 - Full Wibo result: 2026-06-18, 100.00%, 182/182 instructions, 48 masked
   operands ok.
-- Hides `GameRoot::star_field`, loads `Menubg.txt`, centers the backdrop, and
+- Hides `GameRoot::star_manager`, loads `Menubg.txt`, centers the backdrop, and
   seeds `GameRoot::render_skip_countdown = 2`.
 - Allocates Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back
   widgets into the promoted `NewGameMenu` slots.

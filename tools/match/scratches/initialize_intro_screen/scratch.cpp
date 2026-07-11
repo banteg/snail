@@ -9,7 +9,7 @@
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "sprite.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "transform_matrix.h"
 
 extern char* g_game_base; // data_4df904
@@ -93,7 +93,7 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
                 ->scripts[script_index],
             0);
     ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
-    ((StarField*)(g_game_base + 0x4f33c))->unhide_star_field();
+    ((StarManager*)(g_game_base + 0x4f33c))->unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);
     saved_render_flags = g_runtime_config.render_flags;

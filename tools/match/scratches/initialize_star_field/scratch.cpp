@@ -16,7 +16,7 @@ inline Vector3 operator/(const Vector3& vector, float scale)
     return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);
 }
 
-int StarField::initialize_star_field()
+int StarManager::initialize_star_field()
 {
     int i = 0;
     if (count > 0) {
@@ -25,7 +25,7 @@ int StarField::initialize_star_field()
             *(Sprite**)((char*)entries + offset + 0x1c) =
                 g_sprite_manager.allocate_sprite(2, 0x20, -1, -1);
             ++i;
-            offset += sizeof(StarFieldEntry);
+            offset += sizeof(StarManagerEntry);
         } while (i < count);
     }
 

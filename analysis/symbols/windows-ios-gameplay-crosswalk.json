@@ -1606,6 +1606,66 @@
       "confidence": "high"
     },
     {
+      "address": "0x434270",
+      "windows_name": "destroy_star_field",
+      "android_symbol": "cRStarManager::UnInit()",
+      "source_object": "Star.o",
+      "confidence": "high",
+      "notes": "The exact Windows lifecycle edge kills every owned sprite, clears the fixed 0x2c-byte entry records, and resets the root-owned cRStarManager state."
+    },
+    {
+      "address": "0x4342c0",
+      "windows_name": "open_star_field",
+      "ios_symbol": "cRStarManager::Open(int)",
+      "android_symbol": "cRStarManager::Open(int)",
+      "source_object": "Star.o",
+      "confidence": "high",
+      "notes": "The exact Windows member allocates the cRStarManager entry array and seeds its requested count before conditionally initializing the visual effect."
+    },
+    {
+      "address": "0x434310",
+      "windows_name": "initialize_star_field",
+      "ios_symbol": "cRStarManager::Init()",
+      "android_symbol": "cRStarManager::Init()",
+      "source_object": "Star.o",
+      "confidence": "high",
+      "notes": "All ports initialize the same root-owned cRStarManager and its 0x2c-byte streak entries. The near-exact Windows source retains four honest scheduling residuals."
+    },
+    {
+      "address": "0x434670",
+      "windows_name": "hide_star_field",
+      "ios_symbol": "cRStarManager::Hide()",
+      "android_symbol": "cRStarManager::Hide()",
+      "source_object": "Star.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4346b0",
+      "windows_name": "unhide_star_field",
+      "ios_symbol": "cRStarManager::UnHide()",
+      "android_symbol": "cRStarManager::UnHide()",
+      "source_object": "Star.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x4346f0",
+      "windows_name": "update_star_field",
+      "ios_symbol": "cRStarManager::AI()",
+      "android_symbol": "cRStarManager::AI()",
+      "source_object": "Star.o",
+      "confidence": "high",
+      "notes": "The exact Windows four-state lifecycle callback is the cRStarManager AI method installed through the inherited BodBase callback slot."
+    },
+    {
+      "address": "0x434800",
+      "windows_name": "update_star_positions",
+      "ios_symbol": "cRStarManager::UpdateStars(float)",
+      "android_symbol": "cRStarManager::UpdateStars(float)",
+      "source_object": "Star.o",
+      "confidence": "high",
+      "notes": "All ports advance and respawn the same cRStarManager streak entries; the Windows member is near-exact with two honest scheduling swaps."
+    },
+    {
       "address": "0x416800",
       "windows_name": "initialize_help_screen",
       "ios_symbol": "cRHelp::Init()",

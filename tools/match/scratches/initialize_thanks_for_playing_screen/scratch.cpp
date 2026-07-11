@@ -6,7 +6,7 @@
 #include "frontend_widget.h"
 #include "landscape_manager.h"
 #include "sprite.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "thanks_screen.h"
 
 extern char* g_game_base; // data_4df904
@@ -23,7 +23,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
 {
     Color4f color;
 
-    ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
+    ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file("music/introtext.ogg", 0, g_blank_text);
     int script_index =
         ((LandscapeManager*)(g_game_base + 0x106c218))

@@ -11,7 +11,7 @@
 #include "runtime_slot.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
-#include "star_field.h"
+#include "star_manager.h"
 #include "subgame_runtime.h"
 #include "sub_lazer_types.h"
 #include "track_parcel_runtime.h"
@@ -32,7 +32,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 {
     char* game = (char*)this;
 
-    ((StarField*)(g_game_base + 0x4f33c))->unhide_star_field();
+    ((StarManager*)(g_game_base + 0x4f33c))->unhide_star_field();
     if (*(int*)(game + 0x40) == 7)
         hide_gameplay_scores();
     else

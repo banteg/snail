@@ -1,8 +1,8 @@
 // destroy_star_field @ 0x434270 (thiscall)
 
-#include "star_field.h"
+#include "star_manager.h"
 
-int StarField::destroy_star_field()
+int StarManager::destroy_star_field()
 {
     int i = 0;
     int result = count;
