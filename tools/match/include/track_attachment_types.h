@@ -12,7 +12,7 @@
 #include "vector_types.h"
 
 struct TransformMatrix;
-struct LevelSegmentSlot;
+struct SubSegment;
 class Player;
 class FringeObject;
 
@@ -324,7 +324,7 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     float installed_heading_delta;        // +0xac, copied into an entered path template
     BodBase attachment_body;              // +0xb0, embedded attachment/fringe row actor
     float ring_speed;                     // +0xe8, authored ring/effect rate source
-    LevelSegmentSlot* source_segment;     // +0xec, borrowed embedded level-segment slot
+    SubSegment* source_segment;           // +0xec, borrowed embedded subsegment
     int row_event_id;                     // +0xf0, segment-definition/message index
 };
 

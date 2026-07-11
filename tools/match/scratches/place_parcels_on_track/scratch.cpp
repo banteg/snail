@@ -37,7 +37,7 @@ int SubgameRuntime::place_parcels_on_track()
     int max_set_size = 0;
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
-        LevelSegmentSlot* record = &level_definition.segment_slots[segment];
+        SubSegment* record = &level_definition.segment_slots[segment];
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
             ParcelBucket* set_entry = &g_parcel_set_buckets[set_entry_count];

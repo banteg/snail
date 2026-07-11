@@ -49,3 +49,9 @@ backed by all four iOS member symbols (`Load`, both `Init` overloads, and
 `ImportSegment`). Renaming the owner and header preserves the focused 81.36%
 result; the remaining Windows gap is still only VC6 tail sharing and the
 resulting local jump-table label.
+
+2026-07-11 return-contract correction: `cRSubTracks::Load(int, int)` is a void
+member, and every Windows callsite discards the value incidentally forwarded
+from `Init(char*)`. Removing the synthetic pointer result preserves 81.36%,
+61/57 instructions, prefix 5/57, and the existing single local jump-table
+masked mismatch.

@@ -198,7 +198,7 @@ TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
     ("0xac", "installed_heading_delta", "float"),
     ("0xb0", "attachment_body", "BodBase"),
     ("0xe8", "ring_speed", "float"),
-    ("0xec", "source_segment", "LevelSegmentSlot*"),
+    ("0xec", "source_segment", "SubSegment*"),
     ("0xf0", "row_event_id", "int32_t"),
 )
 

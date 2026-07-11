@@ -16,7 +16,7 @@ Status:
 - 2026-06-18: 45.01%, 531/571 candidate/target instructions, prefix 5/571,
   masked operands 65 ok, 8 mismatches.
 - 2026-06-18: Promoted `AuthoredFloatBits`, `AuthoredSegmentRow`,
-  `SegmentCatalogEntry`, and `LevelSegmentSlot` to
+  `SegmentCatalogEntry`, and `SubSegment` to
   `include/segment_catalog_types.h`; focused Wibo score stayed 45.01%.
 - 2026-07-11: Corrected the complete `SegmentCatalog`/native `cRSMTracks`
   receiver after reconciling the constructor with both readers. The constructor

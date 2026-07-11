@@ -5,7 +5,7 @@
 void SubTracks::load_builtin_segment_definitions(
     SubSegmentRaw** raw_segments)
 {
-    LevelSegmentSlot* slots = segment_slots;
+    SubSegment* slots = segment_slots;
 
     segment_count = 0;
     slots[102].row_base = 1000;

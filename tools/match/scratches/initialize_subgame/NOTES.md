@@ -253,3 +253,14 @@ aliases respectively and restore the 85 clean operands.
 - Its bounded relocation sequence remains identical to the target table.
   Registering the content alias restores 396/396 with all 85 operands clean;
   the caller instructions are unchanged.
+
+2026-07-11 SubSegment owner refresh:
+
+- Promoting the Windows destination to `SubSegment` and correcting all three
+  SubTracks methods to their cross-port-proven void contracts renumbers the
+  unchanged five-entry bottom-HUD table to `$L4809` at object `+0x62c`.
+- Its relocation targets are object offsets `+0x419`, `+0x42d`, `+0x46b`,
+  `+0x46b`, and `+0x441`, exactly matching target addresses `0x4378c9`,
+  `0x4378dd`, `0x43791b`, `0x43791b`, and `0x4378f1` relative to
+  `initialize_subgame`. Registering the bounded alias restores all 85 clean
+  operands without changing the exact 396-instruction body.

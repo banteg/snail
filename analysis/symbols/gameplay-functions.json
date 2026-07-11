@@ -2390,7 +2390,7 @@
     {
       "address": "0x443650",
       "name": "load_frontend_level_by_mode_and_index",
-      "description": "Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and loads it through the owning SubTracks object. Symbol-preserving iOS builds name the corresponding member `cRSubTracks::Load(int, int)`."
+      "description": "Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and loads it through the owning SubTracks object. Symbol-preserving iOS builds name the corresponding void member `cRSubTracks::Load(int, int)`; every Windows caller also discards the incidental value left in EAX."
     },
     {
       "address": "0x443730",
@@ -2626,12 +2626,12 @@
     {
       "address": "0x447300",
       "name": "copy_segment_definition_to_level_slot",
-      "description": "Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a level segment slot, and copies the authored row metadata including velocity, path template, and ring-speed fields. The symbol-preserving iOS counterpart is `cRSubTracks::ImportSegment(char*, cRSubSegment*)`; Windows staticizes the catalog lookup through the root owner."
+      "description": "Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a Windows SubSegment, and copies the authored row metadata including position and velocity vectors, path template, and ring-speed fields. The symbol-preserving iOS counterpart is the void member `cRSubTracks::ImportSegment(char*, cRSubSegment*)`; Windows staticizes the catalog lookup through the root owner and stores the 0x4220-byte SubSegment payload inline."
     },
     {
       "address": "0x447480",
       "name": "load_level_definition_file",
-      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its segment slots, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(char*)`."
+      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
     },
     {
       "address": "0x448060",

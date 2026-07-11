@@ -8,15 +8,15 @@
 
 class SubTracks {
 public:
-    int* load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
-    int* load_level_definition_file(char* path); // @ 0x447480
-    int* copy_segment_definition_to_level_slot(char* segment_name, LevelSegmentSlot* slot);
+    void load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
+    void load_level_definition_file(char* path); // @ 0x447480
+    void copy_segment_definition_to_level_slot(char* segment_name, SubSegment* segment);
     void load_builtin_segment_definitions(SubSegmentRaw** raw_segments); // @ 0x448060
 
     int segment_count;                   // +0x000000
-    LevelSegmentSlot segment_slots[100]; // +0x000004
-    LevelSegmentSlot first_segment;      // +0x19d484
-    LevelSegmentSlot last_segment;       // +0x1a16a4
+    SubSegment segment_slots[100];       // +0x000004
+    SubSegment first_segment;            // +0x19d484
+    SubSegment last_segment;             // +0x1a16a4
     int random_length;                   // +0x1a58c4
     unsigned char random_enabled;        // +0x1a58c8
     char unknown_1a58c9[0x1a58cc - 0x1a58c9];

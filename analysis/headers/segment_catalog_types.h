@@ -4,6 +4,12 @@
 typedef unsigned char uint8_t;
 typedef int int32_t;
 
+typedef struct Vec3 {
+    float x;
+    float y;
+    float z;
+} Vec3;
+
 typedef struct Color4f {
     float r;
     float g;
@@ -19,16 +25,10 @@ typedef union AuthoredFloatBits {
 typedef struct AuthoredSegmentRow {
     int32_t flags;
     int32_t parcel_set_id;
-    AuthoredFloatBits local_x;
-    AuthoredFloatBits local_y;
-    AuthoredFloatBits local_z;
+    Vec3 local_position;
     int32_t object_id;
-    AuthoredFloatBits object_position_x;
-    AuthoredFloatBits object_position_y;
-    AuthoredFloatBits object_position_z;
-    AuthoredFloatBits object_velocity_x;
-    AuthoredFloatBits object_velocity_y;
-    AuthoredFloatBits object_velocity_z;
+    Vec3 object_position;
+    Vec3 object_velocity;
     int32_t path_template_index;
     AuthoredFloatBits ring_speed;
 } AuthoredSegmentRow;
@@ -48,7 +48,8 @@ typedef struct SegmentCatalog {
     SegmentCatalogEntry entries[150];
 } SegmentCatalog;
 
-typedef struct LevelSegmentSlot {
+/* Windows cRSubSegment with inline glyph and authored-row storage. */
+typedef struct SubSegment {
     int32_t row_base;
     int32_t row_count;
     int32_t visited;
@@ -60,13 +61,13 @@ typedef struct LevelSegmentSlot {
     char message_text[0x4218 - 0x4018];
     AuthoredFloatBits message_duration;
     int32_t message_sample_id;
-} LevelSegmentSlot;
+} SubSegment;
 
 typedef struct SubTracks {
     int32_t segment_count;
-    LevelSegmentSlot segment_slots[100];
-    LevelSegmentSlot first_segment;
-    LevelSegmentSlot last_segment;
+    SubSegment segment_slots[100];
+    SubSegment first_segment;
+    SubSegment last_segment;
     int32_t random_length;
     uint8_t random_enabled;
     uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];

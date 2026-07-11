@@ -13,22 +13,16 @@ union AuthoredFloatBits {
 struct AuthoredSegmentRow {
     int flags;                     // +0x00
     int parcel_set_id;             // +0x04
-    AuthoredFloatBits local_x;     // +0x08
-    AuthoredFloatBits local_y;     // +0x0c
-    AuthoredFloatBits local_z;     // +0x10
+    Vector3 local_position;        // +0x08
     int object_id;                 // +0x14
-    AuthoredFloatBits object_position_x; // +0x18
-    AuthoredFloatBits object_position_y; // +0x1c
-    AuthoredFloatBits object_position_z; // +0x20
-    AuthoredFloatBits object_velocity_x; // +0x24
-    AuthoredFloatBits object_velocity_y; // +0x28
-    AuthoredFloatBits object_velocity_z; // +0x2c
+    Vector3 object_position;       // +0x18
+    Vector3 object_velocity;       // +0x24
     int path_template_index;       // +0x30
     AuthoredFloatBits ring_speed;  // +0x34
 
     Vector3* parcel_position()
     {
-        return (Vector3*)&local_x;
+        return &local_position;
     }
 };
 
@@ -63,7 +57,9 @@ public:
 typedef char SegmentCatalog_must_be_0x25cfb4[
     (sizeof(SegmentCatalog) == 0x25cfb4) ? 1 : -1];
 
-struct LevelSegmentSlot {
+// Windows cRSubSegment layout. Unlike later iOS ports, Windows owns its glyph
+// and authored-row storage inline.
+struct SubSegment {
     int row_base;                  // +0x00
     int row_count;                 // +0x04
     int visited;                   // +0x08
@@ -77,8 +73,8 @@ struct LevelSegmentSlot {
     int message_sample_id;         // +0x421c, optional Sample=
 };
 
-typedef char LevelSegmentSlot_must_be_0x4220[
-    (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
+typedef char SubSegment_must_be_0x4220[
+    (sizeof(SubSegment) == 0x4220) ? 1 : -1];
 
 // Windows layout of the authored cRSubSegmentRaw records named by the iOS
 // cRSubTracks::Init(cRSubSegmentRaw**) symbol.

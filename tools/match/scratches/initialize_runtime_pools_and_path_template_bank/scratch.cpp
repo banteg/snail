@@ -25,7 +25,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
 
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition.segment_slots,
-        sizeof(LevelSegmentSlot),
+        sizeof(SubSegment),
         0x64,
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
@@ -42,7 +42,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     level_definition.fringe_color.noop_this_constructor();
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition_scratch.segment_slots,
-        sizeof(LevelSegmentSlot),
+        sizeof(SubSegment),
         0x64,
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(

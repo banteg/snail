@@ -223,7 +223,7 @@
       "ios_symbol": "cRSubTracks::Load(int, int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Both dispatch the gameplay mode and level index into a local level path and then invoke the same owner's text-level parser."
+      "notes": "Both dispatch the gameplay mode and level index into a local level path and then invoke the same owner's text-level parser. The authored member is void; every Windows caller discards the value incidentally forwarded from the parser in EAX."
     },
     {
       "address": "0x443730",
@@ -261,14 +261,15 @@
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The row-grid transpose and authored metadata copy agree; Windows exposes this operation as a stdcall helper using the root SegmentCatalog rather than retaining a SubTracks receiver."
+      "notes": "The row-grid transpose and authored metadata copy agree. Windows exposes this void operation as a stdcall helper using the root SegmentCatalog rather than retaining a SubTracks receiver, and its cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
     },
     {
       "address": "0x447480",
       "windows_name": "load_level_definition_file",
       "ios_symbol": "cRSubTracks::Init(char*)",
       "source_object": "Subtrack.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The parser, field order, and ImportSegment calls agree. The authored member is void; its Windows success and error paths leave unrelated cursor or diagnostic values in EAX, and all callers discard them."
     },
     {
       "address": "0x448060",

@@ -67,7 +67,7 @@ typedef struct FringeObject {
 typedef struct Player Player;
 typedef struct Game Game;
 typedef struct Object Object;
-typedef struct LevelSegmentSlot LevelSegmentSlot;
+typedef struct SubSegment SubSegment;
 typedef struct PlayerPresentationController PlayerPresentationController;
 typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
@@ -341,7 +341,7 @@ typedef struct TrackAttachmentRuntimeRow {
     float installed_heading_delta;
     BodBase attachment_body;
     float ring_speed;
-    LevelSegmentSlot* source_segment;
+    SubSegment* source_segment;
     int32_t row_event_id;
 } TrackAttachmentRuntimeRow;
 

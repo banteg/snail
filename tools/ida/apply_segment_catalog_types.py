@@ -14,15 +14,15 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "load_frontend_level_by_mode_and_index",
-        "int32_t *__thiscall load_frontend_level_by_mode_and_index(SubTracks *tracks, int mode, int level_index);",
+        "void __thiscall load_frontend_level_by_mode_and_index(SubTracks *tracks, int mode, int level_index);",
     ),
     (
         "copy_segment_definition_to_level_slot",
-        "int32_t *__stdcall copy_segment_definition_to_level_slot(char *segment_name, LevelSegmentSlot *slot);",
+        "void __stdcall copy_segment_definition_to_level_slot(char *segment_name, SubSegment *segment);",
     ),
     (
         "load_level_definition_file",
-        "int32_t *__thiscall load_level_definition_file(SubTracks *tracks, char *filename);",
+        "void __thiscall load_level_definition_file(SubTracks *tracks, char *filename);",
     ),
     (
         "load_builtin_segment_definitions",

@@ -30,7 +30,7 @@ struct LevelDefinitionParseBuffers {
     char background_name[512];
 };
 
-int* SubTracks::load_level_definition_file(char* filename)
+void SubTracks::load_level_definition_file(char* filename)
 {
     char* cursor;
     char* line_cursor;
@@ -122,8 +122,10 @@ int* SubTracks::load_level_definition_file(char* filename)
     if (cursor != 0) {
         random_enabled = 1;
         cursor = find_case_insensitive_substring("Length:", LEVEL_FILE_BUFFER);
-        if (cursor == 0)
-            return (int*)report_errorf("Cannot Length: in %s", level_path);
+        if (cursor == 0) {
+            report_errorf("Cannot Length: in %s", level_path);
+            return;
+        }
         cursor = find_case_insensitive_substring(":", cursor) + 1;
         random_length = 0;
         ch = *cursor;
@@ -142,8 +144,10 @@ int* SubTracks::load_level_definition_file(char* filename)
     }
 
     cursor = find_case_insensitive_substring("Background:", LEVEL_FILE_BUFFER);
-    if (cursor == 0)
-        return (int*)report_errorf("No Background: in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("No Background: in %s", level_path);
+        return;
+    }
     cursor = find_case_insensitive_substring(":", cursor) + 1;
     char* background_out = background_name;
     ch = *cursor;
@@ -199,7 +203,8 @@ int* SubTracks::load_level_definition_file(char* filename)
     cursor = find_case_insensitive_substring("Parcels:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         parcel_count = 0;
-        return (int*)report_errorf("No Parcel: in %s", level_path);
+        report_errorf("No Parcel: in %s", level_path);
+        return;
     }
     cursor = find_case_insensitive_substring(":", cursor);
     parcel_count = parse_next_signed_int(&cursor);
@@ -207,7 +212,8 @@ int* SubTracks::load_level_definition_file(char* filename)
     cursor = find_case_insensitive_substring("Quota:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         parcel_quota = 0;
-        return (int*)report_errorf("No Quota: in %s", level_path);
+        report_errorf("No Quota: in %s", level_path);
+        return;
     }
     cursor = find_case_insensitive_substring(":", cursor);
     parcel_quota = parse_next_signed_int(&cursor);
@@ -240,15 +246,21 @@ int* SubTracks::load_level_definition_file(char* filename)
 
     segment_count = 0;
     cursor = find_case_insensitive_substring("Segments Begin:", LEVEL_FILE_BUFFER);
-    if (cursor == 0)
-        return (int*)report_errorf("Cannot find Segments Begin: in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Cannot find Segments Begin: in %s", level_path);
+        return;
+    }
     segments_end = find_case_insensitive_substring("Segments End:", LEVEL_FILE_BUFFER);
-    if (segments_end == 0)
-        return (int*)report_errorf("Cannot find Segments End: in %s", level_path);
+    if (segments_end == 0) {
+        report_errorf("Cannot find Segments End: in %s", level_path);
+        return;
+    }
 
     cursor = advance_to_next_crlf_line(cursor);
-    if (cursor == 0)
-        return (int*)report_errorf("Unexpected end of file in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Unexpected end of file in %s", level_path);
+        return;
+    }
 
     if (cursor < segments_end) {
         do {
@@ -291,8 +303,10 @@ int* SubTracks::load_level_definition_file(char* filename)
             option_cursor = find_case_insensitive_substring("Message=", line_options);
             if (option_cursor != 0) {
                 option_cursor = find_case_insensitive_substring("=", option_cursor) + 1;
-                if (*option_cursor != '"')
-                    return (int*)report_errorf("Need \" after Message=");
+                if (*option_cursor != '"') {
+                    report_errorf("Need \" after Message=");
+                    return;
+                }
                 char* message_start = option_cursor + 1;
                 option_cursor = message_start;
                 char* message_end = option_cursor;
@@ -339,17 +353,23 @@ int* SubTracks::load_level_definition_file(char* filename)
 
             cursor = advance_to_next_crlf_line(cursor);
             segment_count++;
-            if (cursor == 0)
-                return (int*)report_errorf("Unexpected end of file in %s", filename);
+            if (cursor == 0) {
+                report_errorf("Unexpected end of file in %s", filename);
+                return;
+            }
         } while (cursor < segments_end);
     }
 
     cursor = find_case_insensitive_substring("First:", LEVEL_FILE_BUFFER);
-    if (cursor == 0)
-        return (int*)report_errorf("Cannot find 'First:' in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Cannot find 'First:' in %s", level_path);
+        return;
+    }
     cursor = advance_to_next_crlf_line(cursor);
-    if (cursor == 0)
-        return (int*)report_errorf("Unexpected end of file in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Unexpected end of file in %s", level_path);
+        return;
+    }
 
     char* special_out = segment_name;
     ch = *cursor;
@@ -366,11 +386,15 @@ int* SubTracks::load_level_definition_file(char* filename)
     copy_segment_definition_to_level_slot(segment_name, &first_segment);
 
     cursor = find_case_insensitive_substring("Last:", LEVEL_FILE_BUFFER);
-    if (cursor == 0)
-        return (int*)report_errorf("Cannot find 'Last:' in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Cannot find 'Last:' in %s", level_path);
+        return;
+    }
     cursor = advance_to_next_crlf_line(cursor);
-    if (cursor == 0)
-        return (int*)report_errorf("Unexpected end of file in %s", level_path);
+    if (cursor == 0) {
+        report_errorf("Unexpected end of file in %s", level_path);
+        return;
+    }
 
     special_out = segment_name;
     ch = *cursor;
@@ -384,7 +408,7 @@ int* SubTracks::load_level_definition_file(char* filename)
     *special_out++ = 'x';
     *special_out++ = 't';
     *special_out = 0;
-    return copy_segment_definition_to_level_slot(segment_name, &last_segment);
+    copy_segment_definition_to_level_slot(segment_name, &last_segment);
 
 #undef background_name
 #undef segment_name

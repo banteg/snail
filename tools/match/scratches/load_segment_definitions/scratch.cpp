@@ -148,9 +148,9 @@ int SegmentCatalog::load_segment_definitions()
                         .load_or_reuse_cached_x_mesh(mesh_name);
 
                 model_cursor = find_case_insensitive_substring("(", model_cursor);
-                row->object_position_x.value = parse_next_float32(&model_cursor);
-                row->object_position_y.value = parse_next_float32(&model_cursor);
-                row->object_position_z.value = parse_next_float32(&model_cursor);
+                row->object_position.x = parse_next_float32(&model_cursor);
+                row->object_position.y = parse_next_float32(&model_cursor);
+                row->object_position.z = parse_next_float32(&model_cursor);
 
                 char* velocity_cursor =
                     find_case_insensitive_substring("Velocity=", option_text);
@@ -158,9 +158,9 @@ int SegmentCatalog::load_segment_definitions()
                     velocity_cursor = find_case_insensitive_substring("=", velocity_cursor) + 1;
                     row->flags |= 8;
                     velocity_cursor = find_case_insensitive_substring("(", velocity_cursor);
-                    row->object_velocity_x.value = parse_next_float32(&velocity_cursor);
-                    row->object_velocity_y.value = parse_next_float32(&velocity_cursor);
-                    row->object_velocity_z.value = parse_next_float32(&velocity_cursor);
+                    row->object_velocity.x = parse_next_float32(&velocity_cursor);
+                    row->object_velocity.y = parse_next_float32(&velocity_cursor);
+                    row->object_velocity.z = parse_next_float32(&velocity_cursor);
                 }
             }
 
@@ -170,9 +170,9 @@ int SegmentCatalog::load_segment_definitions()
                 parcel_cursor = find_case_insensitive_substring("=", parcel_cursor) + 1;
                 row->parcel_set_id = parse_next_signed_int(&parcel_cursor);
                 parcel_cursor = find_case_insensitive_substring("(", parcel_cursor) + 1;
-                row->local_x.value = parse_next_float32(&parcel_cursor);
-                row->local_y.value = parse_next_float32(&parcel_cursor);
-                row->local_z.value = parse_next_float32(&parcel_cursor);
+                row->local_position.x = parse_next_float32(&parcel_cursor);
+                row->local_position.y = parse_next_float32(&parcel_cursor);
+                row->local_position.z = parse_next_float32(&parcel_cursor);
             }
 
             char* path_cursor = find_case_insensitive_substring("Path=", option_text);

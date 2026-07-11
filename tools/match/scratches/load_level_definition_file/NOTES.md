@@ -5,7 +5,7 @@ Initial relationship scratch.
 - Parses one `Levels/*.txt` file into the level-definition loader at
   `game+0x224804`.
 - Confirms the object starts with the regular segment count, then 100 regular
-  `LevelSegmentSlot` records, then special `First` and `Last` slots.
+  `SubSegment` records, then special `First` and `Last` slots.
 - Confirms `Name:'...'` writes the display name at loader `+0x1a58dc`.
 - Confirms `Fringe:` writes RGB floats at `+0x1a58cc..+0x1a58d4`.
 - Confirms `Speed:`, `Garbage:`, `Salt:`, `Background:`, `Parcels:`,
@@ -20,6 +20,12 @@ Initial relationship scratch.
   name, fringe color, speed, hazard-frequency, texture, and quota offsets.
   Focused matcher stayed 75.17% with the same 939/926 candidate/target
   instruction count and 147 ok / 18 unresolved masked operands.
+- 2026-07-11: Cross-port ownership now proves this is the void member
+  `cRSubTracks::Init(char*)`, and that each inline 0x4220-byte record is a
+  Windows `SubSegment`. Replacing the synthetic pointer return and stale slot
+  name preserves 75.17%, 939/926 instructions, prefix 20/926, and all 165
+  masked operands clean. Its success and error paths merely leave unrelated
+  cursor or diagnostic values in EAX; every caller discards them.
 
 Slot corrections from this loader:
 

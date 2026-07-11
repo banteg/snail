@@ -17,7 +17,7 @@ Status:
 
 - 2026-06-18: 52.97%, 92 target instructions vs 93 candidate instructions,
   no masked operands.
-- 2026-06-18: Reshaped the scratch around the shared `LevelSegmentSlot` layout
+- 2026-06-18: Reshaped the scratch around the shared `SubSegment` layout
   and the raw built-in record; score stayed at 52.97%, but the slot
   offsets now line up with `copy_segment_definition_to_level_slot`.
 - 2026-06-18: Replaced the local authored row and slot copies with
@@ -68,4 +68,4 @@ Status:
   The clear source form is retained rather than swapping operands for bytes.
 - iOS dynamically allocates its compact destination `cRSubSegment` glyph
   storage. That later-port destination layout is not transplanted onto the
-  Windows inline `0x4220` `LevelSegmentSlot` array.
+  Windows inline `0x4220` `SubSegment` array.

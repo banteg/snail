@@ -2,7 +2,7 @@
 /* function: load_level_definition_file @ 0x447480 */
 /* selector: load_level_definition_file */
 
-// Parses one Levels/*.txt definition into the owning SubTracks instance, including its segment slots, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(char*)`.
+// Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; Windows paths merely leave incidental cursor/diagnostic values in EAX.
 _DWORD *__thiscall sub_447480(char *this, char *a2)
 {
   char *v3; // eax

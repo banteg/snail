@@ -139,7 +139,7 @@ regressed, so neither should be kept as an assumed fix:
 
 `SubgameRuntime +0xa874` is now the exact embedded `SubTracks`,
 not a loose segment-count field followed by anonymous storage. Its `0x1a5978`
-extent accounts for the 100 authored `LevelSegmentSlot` records, first/last
+extent accounts for the 100 authored `SubSegment` records, first/last
 segments, level display name, parcel count, texture set, and quota through
 `subgame+0x1b01e8`. Placement now walks those shared slots and authored rows
 directly and writes the owned `runtime_rows[absolute_row]` slab.

@@ -19,7 +19,7 @@ struct SnailVisual;
 struct PathTemplate;
 struct TrackRowCell;
 struct TrackAttachmentRuntimeRow;
-struct LevelSegmentSlot;
+struct SubSegment;
 struct PlayerControlSource;
 struct PlayerPresentationController;
 struct Game;
@@ -254,7 +254,7 @@ typedef struct TrackAttachmentRuntimeRow {
     float installed_heading_delta;
     BodBase attachment_body;
     float ring_speed;
-    struct LevelSegmentSlot* source_segment;
+    struct SubSegment* source_segment;
     int32_t row_event_id;
 } TrackAttachmentRuntimeRow;
 

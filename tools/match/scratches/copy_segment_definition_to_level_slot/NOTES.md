@@ -15,13 +15,20 @@ Status:
 - 2026-06-18: 54.10%, 119/125 candidate/target instructions, prefix 42/125,
   5 masked operands ok.
 - 2026-06-18: Promoted the shared authored segment catalog and
-  `LevelSegmentSlot` layouts to `include/segment_catalog_types.h`; focused
+  `SubSegment` layouts to `include/segment_catalog_types.h`; focused
   Wibo score stayed 54.10%.
 - 2026-07-11: Recovered the constructor-proven leading count and moved the
   record fields to their true entry-relative offsets. Direct indexing through
   `catalog->entries[index]` lets VC6 fold the four-byte array offset into the
   native field displacements, preserving 54.10%, the 42-instruction prefix,
   and all five clean masked operands.
+- 2026-07-11: The symbol-preserving iOS signature
+  `void cRSubTracks::ImportSegment(char*, cRSubSegment*)` proves both the
+  destination boundary and the return contract. Promoting the Windows inline
+  0x4220-byte destination to `SubSegment`, removing a synthetic result
+  lifetime, and expressing each parsed position/velocity triple as a real
+  `Vector3` raises the match from 54.10% to 85.60%: 125/125 instructions,
+  prefix 74/125, and all five masked operands clean.
 
 Corrections from the first pass:
 
@@ -41,14 +48,14 @@ Corrections from the first pass:
   `load_level_definition_file` writes its input there before segment-copy
   diagnostics consume it.
 
-Residuals:
+Residuals after the ownership recovery:
 
-- Native keeps the selected source entry in `edx` for the glyph and row-copy
-  blocks; this source shape keeps it in `esi`.
-- The explicit row-record copy is grouped by how
-  `populate_runtime_track_cells_from_segments` consumes the fields, but native
-  scheduling remains different. A plain struct assignment regressed into
-  `rep movsd`.
+- The remaining normalized differences are register and pointer-anchor
+  scheduling within the metadata copy. The layout, instruction count, vector
+  grouping, and masked addresses now agree, so contorting the source around
+  those commutative scheduling differences would be fakematching.
+- A plain whole-row struct assignment still regresses into `rep movsd`; the
+  field-and-vector assignments preserve the native scalar copy family.
 
 Rejected probes:
 

@@ -437,7 +437,7 @@ The current high-confidence `Game` fields are:
     then reseeded from the built-in segment table
   - the built-in handoff is the void `cRSubTracks::Init(cRSubSegmentRaw**)`
     family: Windows consumes a pointer table of static `0x48` `SubSegmentRaw`
-    records and copies their eight glyph rows into inline `LevelSegmentSlot`s
+    records and copies their eight glyph rows into inline `SubSegment`s
 - `+0x355b64..+0x355d94`: ten embedded `BodBase` group heads
   - `+0x355b64`: fringe objects and row attachment bodies
   - `+0x355b9c`: ordinary track bodies plus start/completion banners
