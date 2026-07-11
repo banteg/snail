@@ -32,14 +32,11 @@ int SegmentCatalog::load_segment_definitions()
     char file_buffer[4096];
     char segment_files[0x10000];
 
-    int* catalog_count = (int*)this;
-    SegmentCatalogEntry* entries = (SegmentCatalogEntry*)this;
+    count = 0;
+    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count, segment_files);
 
-    *catalog_count = 0;
-    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", catalog_count, segment_files);
-
-    int result = *catalog_count;
-    if (*catalog_count >= 150)
+    int result = count;
+    if (count >= 150)
         return report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");
 
     int segment_index = 0;
@@ -234,7 +231,7 @@ int SegmentCatalog::load_segment_definitions()
         }
 
         ++segment_index;
-        result = *catalog_count;
+        result = count;
         segment_file_name += 0x80;
     } while (segment_index < result);
 

@@ -173,7 +173,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     smtracks->vtable = &g_smtracks_callback_table;
 
     initialize_array_with_constructor(
-        SLOT(0x10014d0), 0x4088, 0x96, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)segment_catalog.entries,
+        sizeof(SegmentCatalogEntry),
+        0x96,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         SLOT(0x125e480), 0x8c, 0x32, &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(

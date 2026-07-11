@@ -455,6 +455,11 @@ The current high-confidence `Game` fields are:
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`
   - `50`-slot `GarbageHazardRuntime` array
+- `+0x10014cc`: `segment_catalog`
+  - exact `0x25cfb4`-byte owner with a leading count and 150 `0x4088`-byte
+    authored-segment records beginning at `+0x10014d0`
+  - the aggregate ends exactly at the parcel pool, so the count does not alias
+    entry 0 and there is no terminal padding word
 - `+0x125e480`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
 - `+0x12727d8`: `row_event_display`

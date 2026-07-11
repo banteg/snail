@@ -256,7 +256,7 @@ char GameRoot::initialize_game_assets_and_world()
     directx_loader.initialize_directx_loader();
     LandscapeScriptBank* landscape = (LandscapeScriptBank*)(game + 0x106c218);
     landscape->reset_landscape_manager();
-    SegmentCatalog* segment_catalog = (SegmentCatalog*)(game + 0x1075ae4);
+    SegmentCatalog* segment_catalog = &subgame.segment_catalog;
     segment_catalog->load_segment_definitions();
     landscape->load_landscape_script_by_name((char*)"Starmap.txt");
     landscape->load_landscape_script_by_name((char*)"Splash.txt");

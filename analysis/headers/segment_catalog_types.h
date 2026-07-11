@@ -34,19 +34,18 @@ typedef struct AuthoredSegmentRow {
 } AuthoredSegmentRow;
 
 typedef struct SegmentCatalogEntry {
-    int32_t count_alias;
     char display_name[0x40];
     char filename[0x40];
     int32_t id;
     int32_t row_count;
     char glyph_columns[0x100][8];
     AuthoredSegmentRow rows[255];
-    uint8_t unknown_4054[0x4088 - 0x4054];
+    uint8_t unknown_4050[0x4088 - 0x4050];
 } SegmentCatalogEntry;
 
 typedef struct SegmentCatalog {
+    int32_t count;
     SegmentCatalogEntry entries[150];
-    int32_t unknown_25cfb0;
 } SegmentCatalog;
 
 typedef struct LevelSegmentSlot {

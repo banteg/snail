@@ -36,31 +36,28 @@ typedef char AuthoredSegmentRow_must_be_0x38[
     (sizeof(AuthoredSegmentRow) == 0x38) ? 1 : -1];
 
 struct SegmentCatalogEntry {
-    int count_alias;               // +0x00 on entry 0; overlaps catalog count
-    char display_name[0x40];       // +0x04, copied from Name:'...'
-    char filename[0x40];           // +0x44, copied from Segments/*.txt enumeration
-    int id;                        // +0x84
-    int row_count;                 // +0x88
-    char glyph_columns[0x100][8];  // +0x8c, column-major source grid
-    AuthoredSegmentRow rows[255];  // +0x88c
-    char unknown_4054[0x4088 - 0x4054];
+    char display_name[0x40];       // +0x00, copied from Name:'...'
+    char filename[0x40];           // +0x40, copied from Segments/*.txt enumeration
+    int id;                        // +0x80
+    int row_count;                 // +0x84
+    char glyph_columns[0x100][8];  // +0x88, column-major source grid
+    AuthoredSegmentRow rows[255];  // +0x888
+    char unknown_4050[0x4088 - 0x4050];
 };
 
 typedef char SegmentCatalogEntry_must_be_0x4088[
     (sizeof(SegmentCatalogEntry) == 0x4088) ? 1 : -1];
 
-// Root-owned authored-definition catalog. The first entry's count_alias is
-// also the catalog count; the level enumerator shares this receiver even
-// though its current body only writes the separate LevelDefinitionLoader.
+// Root-owned authored-definition catalog. The constructor starts its 150
+// records four bytes after the receiver and their exact extent reaches the
+// following parcel pool, proving the leading count plus embedded entry array.
 class SegmentCatalog {
 public:
     int load_segment_definitions(); // @ 0x448160
     int load_level_definitions(); // @ 0x448900, receiver unused by body
 
-    SegmentCatalogEntry entries[150];
-    // construct_game_runtime reports sizeof(cRSMTracks) as 0x25cfb4. The
-    // entry array accounts for 0x25cfb0 bytes, leaving this final word.
-    int unknown_25cfb0;
+    int count; // +0x00
+    SegmentCatalogEntry entries[150]; // +0x04
 };
 
 typedef char SegmentCatalog_must_be_0x25cfb4[

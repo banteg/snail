@@ -56,3 +56,12 @@
   speculative persistent gameplay role.
 - Replacing all six raw constructor offsets with the two shared owners leaves
   this function exact at `100.00%`, `227/227`, with all 72 operands clean.
+
+## 2026-07-11 segment catalog boundary
+
+- The catalog receiver is `SubgameRuntime +0x10014cc`; the constructor starts
+  150 records at `+0x10014d0`, exactly four bytes into that object.
+- `150 * 0x4088 + 4 = 0x25cfb4`, the reported `cRSMTracks` size, and the result
+  ends exactly at the parcel pool at `+0x125e480`.
+- This proves a leading count followed by the entry array, replacing the old
+  overlapping entry-0 alias and speculative terminal word.

@@ -4,12 +4,12 @@ Initial target:
 
 - Parses `Segments/*.txt` into the runtime segment catalog at
   `game+0x1075ae4`.
-- Confirms the catalog count aliases entry 0 at `+0x00`; entries still stride
-  `0x4088`.
-- Writes the authored display name from `Name:'...'` at entry `+0x04`, while
-  the filename from enumeration is written at entry `+0x44`.
-- Confirms row count at `+0x88`, glyph columns at `+0x8c`, and authored row
-  records at `+0x88c` with 0x38-byte stride.
+- Confirms the catalog count at receiver `+0x00`; its entries begin at `+0x04`
+  and stride `0x4088`.
+- Within each entry, writes the authored display name from `Name:'...'` at
+  `+0x00`, while the filename from enumeration is written at `+0x40`.
+- Confirms row count at entry `+0x84`, glyph columns at `+0x88`, and authored
+  row records at `+0x888` with 0x38-byte stride.
 
 Status:
 
@@ -18,11 +18,11 @@ Status:
 - 2026-06-18: Promoted `AuthoredFloatBits`, `AuthoredSegmentRow`,
   `SegmentCatalogEntry`, and `LevelSegmentSlot` to
   `include/segment_catalog_types.h`; focused Wibo score stayed 45.01%.
-- 2026-07-11: Promoted the complete `SegmentCatalog`/native `cRSMTracks`
-  receiver. Its 150 `0x4088`-byte entries account for `0x25cfb0` bytes; the
-  constructor size ledger proves one terminal word and an exact total extent
-  of `0x25cfb4`. The shared BN and IDA prototypes now use this owner rather
-  than treating the receiver as a naked `SegmentCatalogEntry*`.
+- 2026-07-11: Corrected the complete `SegmentCatalog`/native `cRSMTracks`
+  receiver after reconciling the constructor with both readers. The constructor
+  starts 150 `0x4088`-byte entries at receiver `+0x04`; the leading count plus
+  their `0x25cfb0` extent gives the exact reported size `0x25cfb4` and ends at
+  the following parcel pool. There is no entry-0 count alias or terminal word.
 
 Corrections propagated to the reader:
 

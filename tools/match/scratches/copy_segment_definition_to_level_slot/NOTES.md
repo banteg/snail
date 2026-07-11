@@ -17,14 +17,20 @@ Status:
 - 2026-06-18: Promoted the shared authored segment catalog and
   `LevelSegmentSlot` layouts to `include/segment_catalog_types.h`; focused
   Wibo score stayed 54.10%.
+- 2026-07-11: Recovered the constructor-proven leading count and moved the
+  record fields to their true entry-relative offsets. Direct indexing through
+  `catalog->entries[index]` lets VC6 fold the four-byte array offset into the
+  native field displacements, preserving 54.10%, the 42-instruction prefix,
+  and all five clean masked operands.
 
 Corrections from the first pass:
 
-- The catalog entry base is the count word at `game+0x1075ae4`; the segment
-  filename lives at entry `+0x44`. Modeling an extra catalog header kept the
-  same rough score but was structurally wrong.
+- The catalog count is at `game+0x1075ae4`; the first entry begins four bytes
+  later and its segment filename lives at entry `+0x40` (absolute catalog
+  `+0x44`). Constructor iteration proves this header rather than an overlapping
+  entry-0 alias.
 - `load_segment_definitions` proves the internal `Name:'...'` display string is
-  separate and starts at entry `+0x04`.
+  separate and starts at entry `+0x00` (absolute catalog `+0x04`).
 - `load_segment_definitions` also corrects authored row names:
   `+0x24..+0x2c` are `Velocity=`, `+0x30` is `Path=`, and `+0x34` is
   `RingSpeed=` float bits.
