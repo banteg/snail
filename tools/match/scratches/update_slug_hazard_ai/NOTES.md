@@ -62,7 +62,7 @@ Rejected probes:
 - `SlugHazardRuntime::owner_game` is now a shared `SubgameRuntime*`, removing
   this scratch's local generic `Game` shell.
 - The consumed lanes are `subgame_pause_gate`, `subgame_rate`, and the shared
-  `ContactTargetRegistry` at `+0x1270fd4`; focused Wibo remains 66.15%,
+  `EnemyManager` at `+0x1270fd4`; focused Wibo remains 66.15%,
   434/464 candidate/target instructions, with 47 clean masked operands and the
   same two masked mismatches.
 

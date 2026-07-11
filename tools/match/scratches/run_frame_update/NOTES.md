@@ -80,9 +80,9 @@ Keep the pointer local; the residual remains statement scheduling around the
 mouse receiver and cursor-quad tint/layer evaluation.
 
 2026-07-11 contact-registry owner pass: the fixed-step tail now resets
-`subgame.contact_targets` directly. Exact init/search/register helpers and the
+`subgame.enemy_manager` directly. Exact init/search/register helpers and the
 iOS `cREnemyManager` symbols prove this is the root-owned subgame registry, not
-the former scratch-local `EnemyManager` placeholder. The focused result stays
+an anonymous count-only placeholder. The focused result stays
 at 97.78%, 135/135, with the same two scheduling-only differences and 23 clean
 masked operands.
 

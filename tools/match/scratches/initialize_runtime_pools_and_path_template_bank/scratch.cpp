@@ -209,7 +209,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         0xa,
         &RuntimeSlot::initialize_galaxy_route_name_record);
     initialize_array_with_constructor(
-        (RuntimeSlot*)contact_targets.entries,
+        (RuntimeSlot*)enemy_manager.entries,
         sizeof(ContactTargetEntry),
         CONTACT_TARGET_CAPACITY,
         &RuntimeSlot::noop_runtime_slot_constructor);

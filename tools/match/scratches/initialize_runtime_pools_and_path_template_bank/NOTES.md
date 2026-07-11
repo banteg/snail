@@ -220,3 +220,11 @@
   `cRParcel::AI()`/`update_track_parcel`.
 - The typed constructor loop remains exact at 227/227 instructions with all 72
   masked operands clean.
+
+## 2026-07-11 cREnemyManager entry array
+
+- The 256-record constructor pass now addresses `EnemyManager::entries`
+  directly rather than a semantic registry field name.
+- The four-byte count plus 256 0x18-byte `ContactTargetEntry` records closes
+  the native 0x1804 owner exactly at `Completion +0x12727d8`.
+- The typed pass remains exact at 227/227 with all 72 operands clean.

@@ -24,7 +24,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x3bb704", "blink_random_samples", "float[24]"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
-    ("0x1270fd4", "contact_targets", "ContactTargetRegistry"),
+    ("0x1270fd4", "enemy_manager", "EnemyManager"),
 )
 
 # These richer nested types are supplied by later ownership slices. Preserve
@@ -42,15 +42,15 @@ SUBGAME_PLAYER_FIELD_UPDATES = (
 PROTO_UPDATES = (
     (
         "initialize_enemy_manager",
-        "void __thiscall initialize_enemy_manager(ContactTargetRegistry* registry)",
+        "void __thiscall initialize_enemy_manager(EnemyManager* manager)",
     ),
     (
         "search_path_for_golb",
-        "ContactTargetEntry* __thiscall search_path_for_golb(ContactTargetRegistry* registry, const Vec3* position)",
+        "ContactTargetEntry* __thiscall search_path_for_golb(EnemyManager* manager, const Vec3* position)",
     ),
     (
         "append_subgame_contact_target",
-        "void __thiscall append_subgame_contact_target(ContactTargetRegistry* registry, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
+        "void __thiscall append_subgame_contact_target(EnemyManager* manager, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
     ),
     ("set_subgame_features", "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime)"),
     ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
@@ -107,7 +107,7 @@ def main() -> int:
             required_structs=(
                 "ContactTargetObject",
                 "ContactTargetEntry",
-                "ContactTargetRegistry",
+                "EnemyManager",
             ),
         ),
         types_declare_if_missing(

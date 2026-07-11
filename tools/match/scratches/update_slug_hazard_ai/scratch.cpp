@@ -134,7 +134,7 @@ active_state_tail:
         }
         if (player->nuke_effect_progress > 0.0f)
             kill_slug_hazard();
-        owner_game->contact_targets.append_subgame_contact_target(
+        owner_game->enemy_manager.append_subgame_contact_target(
             &transform.position,
             2.0f,
             1,
@@ -154,7 +154,7 @@ active_state_tail:
         }
         if (player->nuke_effect_progress > 0.0f)
             kill_slug_hazard();
-        owner_game->contact_targets.append_subgame_contact_target(
+        owner_game->enemy_manager.append_subgame_contact_target(
             &transform.position,
             2.0f,
             1,

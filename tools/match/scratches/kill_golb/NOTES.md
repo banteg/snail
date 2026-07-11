@@ -21,7 +21,7 @@ Type consolidation:
   teardown and the small trail/smoke/impact sprite emitters. This exact match
   anchors the primary/secondary/tertiary `BodNode` offsets, `kind +0x1c0`,
   `state +0x244`, and the variant-specific owners at `+0x198`/`+0x248`.
-- The exact `ContactTargetRegistry` search/register pair proves that `+0x198`
+- The exact `EnemyManager` search/register pair proves that `+0x198`
   is a borrowed `ContactTargetObject*`: `create_golb` sets its reservation bit
   and this teardown clears the same bit. Promoting that owner leaves the exact
   132/132 instruction body unchanged.

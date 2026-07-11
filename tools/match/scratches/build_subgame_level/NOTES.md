@@ -109,7 +109,7 @@ mismatch).
   `partial-compatible Game: 2`, removing this scratch from the generic owner
   list.
 - 2026-07-11 contact-registry correction: the former `GolbPathBank` view at
-  `+0x1270fd4` is now the shared fixed-capacity `ContactTargetRegistry`, matching
+  `+0x1270fd4` is now the shared fixed-capacity `EnemyManager`, matching
   exact init/search/register helpers and iOS `cREnemyManager`. The focused
   result remains the honest `86.10%`, `560/555`, prefix `244/555`; no surrounding
   scheduling was reshaped to capitalize on the owner rename.
@@ -182,7 +182,7 @@ the active-list tail.
 
 ## 2026-07-11 slug voice threshold ownership
 
-The two floats immediately before `contact_targets` are now owned fields:
+The two floats immediately before `enemy_manager` are now owned fields:
 `next_slug_voice_trigger_z` at `+0x1270fcc` and
 `slug_voice_trigger_spacing_z` at `+0x1270fd0`. This initializer seeds them to
 `50.0f` and `100.0f`; exact-matched `spawn_slug_hazard` advances the former and

@@ -157,7 +157,7 @@ Residuals:
   declaration earlier was score-neutral but hoisted its address before the
   native lifetime begins.
 - 2026-07-11 contact-target correction: exact search and register helpers prove
-  that the kind-2 lookup reads the subgame's `ContactTargetRegistry`, not a
+  that the kind-2 lookup reads the subgame's `EnemyManager`, not a
   Golb-specific sample bank. The hit is now a `ContactTargetEntry*`; its object
   pointer is retained at `GolbShot +0x198`, kind zero reserves that object with
   flag `0x1000`, and its position is copied into the homing target. This keeps

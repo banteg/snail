@@ -109,7 +109,7 @@ int GameRoot::run_frame_update()
                 ++bucket;
             } while ((int)bucket < (int)&g_sprite_free_head);
 
-            subgame.contact_targets.initialize_enemy_manager();
+            subgame.enemy_manager.initialize_enemy_manager();
             input_sampling_gate = 0;
         } while (fixed_update_accumulator > 1.0f);
     }

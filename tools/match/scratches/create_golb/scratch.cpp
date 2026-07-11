@@ -231,7 +231,7 @@ after_movement_flag_source:
 
                 this->emitter_index = emitter_index;
                 ContactTargetEntry* found =
-                    game->contact_targets.search_path_for_golb(position);
+                    game->enemy_manager.search_path_for_golb(position);
                 if (found) {
                     homing_target_object = found->object;
                     if (!found->kind)

@@ -1,7 +1,7 @@
 // search_path_for_golb @ 0x415e30 (thiscall, ret 0x4)
 #include "contact_target.h"
 
-ContactTargetEntry* ContactTargetRegistry::search_path_for_golb(
+ContactTargetEntry* EnemyManager::search_path_for_golb(
     const Vector3* position)
 {
     ContactTargetEntry* found = 0;

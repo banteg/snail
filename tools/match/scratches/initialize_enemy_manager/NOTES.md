@@ -2,10 +2,15 @@
 
 Exact match: 100.00%, 2/2 instructions.
 
-The receiver is the 0x1804-byte `ContactTargetRegistry` embedded at
+The receiver is the 0x1804-byte `EnemyManager` embedded at
 `SubgameRuntime +0x1270fd4`. The helper clears only its leading count, matching
 the iOS `cREnemyManager::Init()` symbol in `Golb.o`; the fixed 256-entry storage
 remains embedded and is reused on the next frame.
+
+2026-07-11 authored owner: the primary shared class now follows the retained
+`cREnemyManager::Init()` name rather than its contact-registry implementation.
+The exact 2/2 body and native size ledger prove the owner; entries remain
+`ContactTargetEntry` payloads.
 
 Windows identical-code folding also directs the unrelated archive-startup call
 on the tracked-allocation stack at `0x5108c0` to this address. The reference

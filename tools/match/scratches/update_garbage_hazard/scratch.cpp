@@ -38,7 +38,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
                 owner->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
             }
 
-            game->contact_targets.append_subgame_contact_target(
+            game->enemy_manager.append_subgame_contact_target(
                 &world_position,
                 radius,
                 0,

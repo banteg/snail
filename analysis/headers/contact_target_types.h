@@ -22,9 +22,9 @@ typedef struct ContactTargetEntry {
     ContactTargetObject* object;
 } ContactTargetEntry;
 
-typedef struct ContactTargetRegistry {
+typedef struct EnemyManager {
     int32_t count;
     ContactTargetEntry entries[256];
-} ContactTargetRegistry;
+} EnemyManager;
 
 #endif

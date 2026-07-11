@@ -16,7 +16,7 @@ first-best-wins tie break, returns the entry base pointer or null.
 - The scanned 0x18-byte records are the same `{kind, position, radius, object}`
   entries written by exact `append_subgame_contact_target`, not a separate Golb
   path-sample bank.
-- The method now belongs to `ContactTargetRegistry` and returns a
+- The method now belongs to `EnemyManager` and returns a
   `ContactTargetEntry*`. `create_golb` consumes the returned kind, object, and
   position fields directly.
 - The fixed registry extent from `+0x1270fd4` through `+0x12727d8` and the iOS

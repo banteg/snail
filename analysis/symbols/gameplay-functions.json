@@ -864,17 +864,17 @@
     {
       "address": "0x415e20",
       "name": "initialize_enemy_manager",
-      "description": "Clears the count of the per-frame ContactTargetRegistry at SubgameRuntime +0x1270fd4. The same one-store body is linker-folded with the tracked-allocation stack initializer called on the unrelated global owner at 0x5108c0."
+      "description": "Exact Windows `EnemyManager::initialize_enemy_manager`/`cREnemyManager::Init()`: clears the count of the embedded 0x1804-byte manager. The one-store body is linker-folded with an unrelated tracked-allocation stack initializer."
     },
     {
       "address": "0x415e30",
       "name": "search_path_for_golb",
-      "description": "Scans the per-frame ContactTargetRegistry for the nearest entry whose position is strictly ahead of the supplied point by less than 30 units, returning the full ContactTargetEntry or null."
+      "description": "Exact Windows `EnemyManager::search_path_for_golb`: scans the manager's per-frame entries for the nearest target strictly ahead by less than 30 units, returning the owned ContactTargetEntry or null."
     },
     {
       "address": "0x415ef0",
       "name": "append_subgame_contact_target",
-      "description": "Appends one garbage or slug contact target to the fixed 256-entry per-frame ContactTargetRegistry unless the target object's flags include 0x1000; this is the Windows counterpart of cREnemyManager::Register."
+      "description": "Exact Windows `EnemyManager::append_subgame_contact_target`: appends one garbage or slug target to the fixed 256-entry manager unless object flags include 0x1000. Android and iOS retain `cREnemyManager::Register(...)`."
     },
     {
       "address": "0x415f50",

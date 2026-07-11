@@ -293,3 +293,11 @@ ledger proves the following unresolved dword belongs to the same owner, which
 now closes exactly at `SubgameRuntime +0x1270fc8`. Constructor metrics remain
 unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
 relocation unresolved.
+
+## 2026-07-11 cREnemyManager size ledger
+
+The `Size of cREnemyManager` entry now comes from `sizeof(EnemyManager)`. Its
+four-byte count and 256 inline 0x18-byte `ContactTargetEntry` records occupy
+exactly 0x1804 bytes at `SubgameRuntime +0x1270fd4`, ending at `Completion`.
+Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
+only the compiler-local EH relocation unresolved.

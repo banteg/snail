@@ -18,11 +18,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "search_path_for_golb",
-        "ContactTargetEntry* __thiscall search_path_for_golb(ContactTargetRegistry* registry, const Vec3* position);",
+        "ContactTargetEntry* __thiscall search_path_for_golb(EnemyManager* manager, const Vec3* position);",
     ),
     (
         "append_subgame_contact_target",
-        "void __thiscall append_subgame_contact_target(ContactTargetRegistry* registry, const Vec3* position, float radius, int kind, ContactTargetObject* object);",
+        "void __thiscall append_subgame_contact_target(EnemyManager* manager, const Vec3* position, float radius, int kind, ContactTargetObject* object);",
     ),
     (
         "set_subgame_features",
@@ -151,7 +151,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "contact_header": str(contact_header_path),
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
-                    "ContactTargetRegistry": _named_struct_size("ContactTargetRegistry"),
+                    "EnemyManager": _named_struct_size("EnemyManager"),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,

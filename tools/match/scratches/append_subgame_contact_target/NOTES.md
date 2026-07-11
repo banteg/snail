@@ -19,7 +19,7 @@ Residuals:
   the native reloads of the registry count before the kind, position, radius,
   object, and final increment stores.
 - 2026-06-16 contact-target consolidation: `ContactTargetObject`,
-  `ContactTargetEntry`, and `ContactTargetRegistry` now live in
+  `ContactTargetEntry`, and their `EnemyManager` owner now live in
   `include/contact_target.h`. The skip bit is named as
   `ContactTargetObject::list_flags & 0x1000`, and the focused match remains
   exact at 100.00%, 34/34 instructions.
@@ -44,4 +44,4 @@ Residuals:
   `cREnemyManager::Register(tVector&, float, int, cRBodPos*)`, while its sibling
   `Init()` is the exact one-store registry reset at `0x415e20`. The Windows
   harness name remains descriptive, and both decompiler lanes now carry the
-  shared `ContactTargetRegistry`/`ContactTargetEntry` fields.
+  shared `EnemyManager`/`ContactTargetEntry` fields.

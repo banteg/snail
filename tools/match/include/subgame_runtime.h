@@ -245,7 +245,7 @@ public:
     int subgame_rebuild_selector; // +0x1270fc8
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
     float slug_voice_trigger_spacing_z; // +0x1270fd0
-    ContactTargetRegistry contact_targets; // +0x1270fd4, embedded 256-entry frame registry
+    EnemyManager enemy_manager; // +0x1270fd4, authored cREnemyManager owner
     Completion completion; // +0x12727d8, embedded cRCompletion owner
     TimesUp times_up; // +0x1272828, authored cRTimesUp owner
 };
