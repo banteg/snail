@@ -276,23 +276,27 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_tutorial",
-        "void __fastcall initialize_tutorial(TutorialController* controller);",
+        "void __thiscall initialize_tutorial(Tutorial* tutorial);",
+    ),
+    (
+        "uninit_tutorial",
+        "void __thiscall uninit_tutorial(Tutorial* tutorial);",
     ),
     (
         "update_tutorial",
-        "TrackRowCell* __fastcall update_tutorial(TutorialController* controller);",
+        "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);",
     ),
     (
         "flush_row_event_display",
-        "int32_t __fastcall flush_row_event_display(RowEventDisplayController* controller);",
+        "void __thiscall flush_row_event_display(Completion* completion);",
     ),
     (
         "register_parcel_delivery",
-        "int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controller);",
+        "void __thiscall register_parcel_delivery(Completion* completion);",
     ),
     (
         "update_row_event_display",
-        "void __fastcall update_row_event_display(RowEventDisplayController* controller);",
+        "void __thiscall update_row_event_display(Completion* completion);",
     ),
     (
         "initialize_frontend_widget",

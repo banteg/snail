@@ -18,11 +18,6 @@
 #include "track_render_cache.h"
 #include "vector3.h"
 
-class TutorialRuntime {
-public:
-    void* update_tutorial();
-};
-
 class BorderInit {
 public:
     void hide_border_init();
@@ -216,7 +211,7 @@ void SubgameRuntime::update_subgame()
             player.stopwatch.advance_timer_counters(1.0f);
 
         if (level_mode == 7)
-            ((TutorialRuntime*)(game + 0xa858))->update_tutorial();
+            tutorial.update_tutorial();
 
         slug_voice_manager.update_slug_voice_manager();
 

@@ -241,6 +241,14 @@ inline 0x74-byte authored records close exactly to the native 0x3a0 total.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
 
+## 2026-07-11 cRTutorial size ledger
+
+The `Size of cRTutorial` entry now comes from `sizeof(Tutorial)`. Its known
+state/backlink prefix plus a 0xc-byte unresolved tail occupies exactly
+`SubgameRuntime +0xa858..+0xa874`, where the first `SubTracks` begins.
+Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
+only the compiler-local EH relocation unresolved.
+
 ## 2026-07-11 cRSubSpeedUp size ledger
 
 The `Size of cRSubSpeedUp` entry now comes from `sizeof(SubSpeedUp)`. The

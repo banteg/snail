@@ -699,12 +699,13 @@ typedef struct PlayerRowEventState {
     TipMessageDefinition tip_definition;
 } PlayerRowEventState;
 
-typedef struct TutorialController {
+typedef struct Tutorial {
     int32_t state;
     int32_t _pad_04;
     int32_t _pad_08;
     void* game;
-} TutorialController;
+    uint8_t _pad_10[0xc];
+} Tutorial;
 
 typedef struct Completion {
     void* widget_a;
@@ -815,8 +816,7 @@ typedef struct Game {
     uint8_t _pad_5c[0xa7f8];
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
-    TutorialController tutorial;
-    uint8_t _pad_a868[0xc];
+    Tutorial tutorial;
     int32_t level_segment_count;
     uint8_t _pad_a878[0x69da9];
     uint8_t pause_gate;
@@ -1031,8 +1031,9 @@ TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinitio
 void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button);
 void* __fastcall update_tip(TipSlot* slot);
 void __fastcall update_tip_manager(TipManager* manager);
-void __fastcall initialize_tutorial(TutorialController* controller);
-TrackRowCell* __fastcall update_tutorial(TutorialController* controller);
+void __thiscall initialize_tutorial(Tutorial* tutorial);
+void __thiscall uninit_tutorial(Tutorial* tutorial);
+TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);
 void __thiscall flush_row_event_display(Completion* completion);
 void __thiscall initialize_completion_screen(
     Completion* completion,

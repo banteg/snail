@@ -50,7 +50,9 @@ REQUIRED_HEADER_STRUCTS = (
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
-    "TutorialController",
+    "Tutorial",
+    "Completion",
+    "TimesUp",
 )
 
 PLAYER_FIELD_UPDATES = (
@@ -144,7 +146,7 @@ GAME_FIELD_UPDATES = (
     ("0x58", "completion_row_start", "int32_t"),
     ("0x74621", "pause_gate", "uint8_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
-    ("0xa858", "tutorial", "TutorialController"),
+    ("0xa858", "tutorial", "Tutorial"),
     ("0xa874", "level_segment_count", "int32_t"),
     ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
@@ -160,8 +162,8 @@ GAME_FIELD_UPDATES = (
     ("0xff2914", "path_template_pairs", "PathTemplatePair[63]"),
     ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
-    ("0x12727d8", "row_event_display", "RowEventDisplayController"),
-    ("0x1272828", "times_up", "TimesUpController"),
+    ("0x12727d8", "completion", "Completion"),
+    ("0x1272828", "times_up", "TimesUp"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -399,11 +401,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_tutorial",
-        "void __fastcall initialize_tutorial(TutorialController* controller)",
+        "void __thiscall initialize_tutorial(Tutorial* tutorial)",
+    ),
+    (
+        "uninit_tutorial",
+        "void __thiscall uninit_tutorial(Tutorial* tutorial)",
     ),
     (
         "update_tutorial",
-        "TrackRowCell* __fastcall update_tutorial(TutorialController* controller)",
+        "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial)",
     ),
     (
         "enqueue_tip_message",

@@ -2702,15 +2702,18 @@
     },
     {
       "address": "0x448da0",
-      "name": "initialize_tutorial"
+      "name": "initialize_tutorial",
+      "description": "Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing SubgameRuntime, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`."
     },
     {
       "address": "0x448dd0",
-      "name": "uninit_tutorial"
+      "name": "uninit_tutorial",
+      "description": "Exact Windows `Tutorial::uninit_tutorial` thunk that tears down the root tip manager for tutorial-mode exit. Android and iOS retain `cRTutorial::UnInit()`."
     },
     {
       "address": "0x448de0",
-      "name": "update_tutorial"
+      "name": "update_tutorial",
+      "description": "Exact Windows `Tutorial::update_tutorial` thunk: samples the live Goldy position through the borrowed containing SubgameRuntime. Android and iOS retain `cRTutorial::AI()`."
     },
     {
       "address": "0x448df0",

@@ -550,6 +550,33 @@
       "notes": "Both enumerate authored level filenames through the same SMTracks owner and hand each name to the SubTracks text parser; neither returns a semantic value."
     },
     {
+      "address": "0x448da0",
+      "windows_name": "initialize_tutorial",
+      "ios_symbol": "cRTutorial::Init()",
+      "android_symbol": "cRTutorial::Init()",
+      "source_object": "Tutorial.o",
+      "confidence": "high",
+      "notes": "The exact Windows member seeds state and the borrowed containing-subgame pointer, then applies the same tutorial runtime flags."
+    },
+    {
+      "address": "0x448dd0",
+      "windows_name": "uninit_tutorial",
+      "ios_symbol": "cRTutorial::UnInit()",
+      "android_symbol": "cRTutorial::UnInit()",
+      "source_object": "Tutorial.o",
+      "confidence": "high",
+      "notes": "The exact Windows thunk tears down tips through the root TipManager; both mobile ports retain the authored owner."
+    },
+    {
+      "address": "0x448de0",
+      "windows_name": "update_tutorial",
+      "ios_symbol": "cRTutorial::AI()",
+      "android_symbol": "cRTutorial::AI()",
+      "source_object": "Tutorial.o",
+      "confidence": "high",
+      "notes": "The exact Windows member samples the live Goldy position through its borrowed SubgameRuntime pointer."
+    },
+    {
       "address": "0x43a9c0",
       "windows_name": "initialize_subgoldy",
       "ios_symbol": "cRSubGoldy::Init(int)",

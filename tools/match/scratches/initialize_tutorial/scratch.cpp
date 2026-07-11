@@ -1,11 +1,11 @@
-// initialize_tutorial @ 0x448da0 (fastcall, ret)
+// initialize_tutorial @ 0x448da0 (thiscall, ret) — cRTutorial::Init()
 
-#include "new_game_menu.h"
 #include "subgame_runtime.h"
+#include "tutorial.h"
 
 extern char* g_game_base; // data_4df904
 
-void TutorialController::initialize_tutorial()
+void Tutorial::initialize_tutorial()
 {
     state = 0;
     game = (SubgameRuntime*)(g_game_base + 0x74618);

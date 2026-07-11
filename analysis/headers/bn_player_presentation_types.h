@@ -29,7 +29,6 @@ struct PlayerControlSource;
 struct PlayerPresentationController;
 struct Game;
 typedef struct Sprite Sprite;
-typedef struct RowEventDisplayController RowEventDisplayController;
 
 typedef struct Vec3 {
     float x;
@@ -123,14 +122,15 @@ typedef struct SelectedLevelRecord {
     SelectedLevelReplaySample replay_samples[1];
 } SelectedLevelRecord;
 
-typedef struct TutorialController {
+typedef struct Tutorial {
     int32_t state;
     int32_t _pad_04;
     int32_t _pad_08;
     void* game;
-} TutorialController;
+    uint8_t _pad_10[0xc];
+} Tutorial;
 
-typedef struct RowEventDisplayController {
+typedef struct Completion {
     void* widget_a;
     void* delivered_count_widget;
     void* bonus_widget;
@@ -152,7 +152,14 @@ typedef struct RowEventDisplayController {
     float bonus_blink_step;
     int32_t bonus_score;
     int32_t display_token;
-} RowEventDisplayController;
+} Completion;
+
+typedef struct TimesUp {
+    int32_t state;
+    FrontendWidget* border;
+    float progress;
+    float progress_step;
+} TimesUp;
 
 typedef struct Game {
     uint8_t _pad_00[0x34];
@@ -169,8 +176,7 @@ typedef struct Game {
     uint8_t _pad_5c[0xa7f8];
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
-    TutorialController tutorial;
-    uint8_t _pad_a868[0xc];
+    Tutorial tutorial;
     int32_t level_segment_count;
     uint8_t _pad_a878[0x69da9];
     uint8_t pause_gate;
@@ -184,7 +190,8 @@ typedef struct Game {
     uint8_t _pad_ff25e0[0x4];
     int32_t runtime_track_index;
     uint8_t _pad_ff25e8[0x2801f0];
-    RowEventDisplayController row_event_display;
+    Completion completion;
+    TimesUp times_up;
 } Game;
 
 typedef struct CameramanState {

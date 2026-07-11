@@ -38,6 +38,7 @@
 #include "track_render_cache.h"
 #include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
+#include "tutorial.h"
 
 class TimeTrialStringFormatter;
 
@@ -132,8 +133,7 @@ public:
     // buffers. Its owner_subgame field is a borrowed backlink to this object.
     TrackRenderCacheManager track_render_cache; // +0x5c, ends at +0xa854
     char unknown_00a854[0xa858 - 0xa854];
-    TutorialController tutorial; // +0xa858, embedded tutorial-mode controller
-    char unknown_00a868[0xa874 - 0xa868];
+    Tutorial tutorial; // +0xa858, authored cRTutorial owner through +0xa874
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.
     SubTracks level_definition; // +0xa874, ends at +0x1b01ec
