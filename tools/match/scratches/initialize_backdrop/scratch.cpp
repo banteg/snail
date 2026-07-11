@@ -1,8 +1,8 @@
 // initialize_backdrop @ 0x410e20 (thiscall, ret 0x4)
 
 #include "backdrop.h"
+#include "runtime_config.h"
 
-extern unsigned char g_render_flags; // byte_4df934
 
 void Backdrop::initialize_backdrop(int last_mode)
 {
@@ -17,7 +17,7 @@ void Backdrop::initialize_backdrop(int last_mode)
 
     set_backdrop_texture_target(5);
 
-    unsigned char render_flags = g_render_flags;
+    unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
     if ((render_flags & 1) != 0) {
         backdrop_refresh_pending = 1;
         unknown_664 = 1.0f;

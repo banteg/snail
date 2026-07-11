@@ -180,3 +180,13 @@ aliases respectively and restore the 85 clean operands.
 - Their five bottom-HUD and eight startup relocations remain identical to the
   bounded target tables. Registering these contents restores 396/396 exact
   proof with all 85 operands clean; no source instruction changed.
+
+2026-07-11 runtime-config header refresh:
+
+- Replacing three independent config globals with the recovered aggregate moves
+  the bottom-HUD table's compiler-local label to `$L4825`; its instruction site
+  and bounded five-entry target table are unchanged.
+- The aggregate also makes the `+0xa0` highest-route update, the `+0xa4`
+  landscape selector, and the exact `0xc4` save extent explicit. Registering
+  the table's new local spelling restores 396/396 proof with all 85 operands
+  clean and no generated instruction change.

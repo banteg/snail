@@ -14,7 +14,6 @@ extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // data_4dfb08
-extern char g_last_entered_player_name[]; // data_4df978
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
@@ -130,7 +129,8 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
                 1,
                 -180.0f);
             if (i == selected_rank) {
-                name_row_widgets[i]->border_input_text_init(16, g_last_entered_player_name, 16);
+                name_row_widgets[i]->border_input_text_init(
+                    16, g_runtime_config.last_entered_player_name, 16);
                 name_row_widgets[i]->widget_flags |= 0x2000;
             }
             name_row_widgets[i]->layout_frontend_widget();

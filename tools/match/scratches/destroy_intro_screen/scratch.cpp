@@ -1,15 +1,15 @@
 // destroy_intro_screen @ 0x419920 (thiscall, ret)
 
 #include "intro_screen_runtime.h"
+#include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
-extern int g_render_flags; // data_4df934
 
 int report_errorf(char* format, ...);
 
 int IntroScreenRuntime::destroy_intro_screen()
 {
-    g_render_flags = saved_render_flags;
+    g_runtime_config.render_flags = saved_render_flags;
 
     char* game = g_game_base;
     if (*(unsigned char*)(game + 0x30d) == 1)

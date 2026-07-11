@@ -1,12 +1,11 @@
 // spawn_golb_impact_sprite @ 0x415d80 (thiscall, ret 0x4)
 
 #include "golb.h"
-
-extern unsigned char g_render_effect_flags; // data_4df934
+#include "runtime_config.h"
 
 void GolbShot::spawn_golb_impact_sprite(Vector3* position)
 {
-    unsigned char render_flags = g_render_effect_flags;
+    unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
 
     if ((render_flags & 0x10) != 0) {
         int owner = owner_player->player_slot;

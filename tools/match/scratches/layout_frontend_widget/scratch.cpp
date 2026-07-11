@@ -1,8 +1,8 @@
 // layout_frontend_widget @ 0x4024a0 (thiscall, ret)
 
 #include "frontend_widget.h"
+#include "runtime_config.h"
 
-extern unsigned int g_render_flags; // data_4df934
 
 float* layout_and_queue_wrapped_font_text(
     char* text,
@@ -31,7 +31,7 @@ int FrontendWidget::layout_frontend_widget()
     int result;
 
     while (true) {
-        char text_wave_enabled = (char)((g_render_flags >> 8) & 1);
+        char text_wave_enabled = (char)((g_runtime_config.render_flags >> 8) & 1);
         result = widget->widget_flags;
 
         float* layout_left_ptr;

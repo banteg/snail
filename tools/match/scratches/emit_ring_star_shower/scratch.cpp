@@ -2,16 +2,16 @@
 
 #include "player.h"
 #include "ring_special_effect_types.h"
+#include "runtime_config.h"
 #include "sprite.h"
 
 float sine(float radians);
 float cosine(float radians);
 
-extern unsigned char g_render_flags; // byte_4df934
 
 void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
 {
-    if ((g_render_flags & 0x10) != 0) {
+    if ((g_runtime_config.render_flags & 0x10) != 0) {
         Vector3 velocity;
         Vector3 orbit_velocity;
         velocity.z = 0.0f;

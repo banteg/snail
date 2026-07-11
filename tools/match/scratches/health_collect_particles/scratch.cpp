@@ -1,17 +1,17 @@
 // health_collect_particles @ 0x43a010 (thiscall, ret 0x4)
 
 #include "player.h"
+#include "runtime_config.h"
 #include "sprite.h"
 #include "track_health_pickup.h"
 
-extern unsigned char g_render_flags; // byte_4df934
 
 float sine(float radians);
 float cosine(float radians);
 
 void Player::health_collect_particles(TrackHealthPickup* pickup)
 {
-    char render_flags = g_render_flags;
+    char render_flags = (char)g_runtime_config.render_flags;
     if ((render_flags & 0x10) != 0) {
         int index = 0;
         do {

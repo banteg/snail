@@ -2,16 +2,16 @@
 
 #include "garbage_hazard_slot.h"
 #include "player.h"
+#include "runtime_config.h"
 #include "subgame_runtime.h"
 
-extern unsigned char g_render_flags; // byte_4df934
 
 void GarbageHazardSlot::spawn_garbage_smoke_particle(
     Vector3* position,
     Vector3* velocity,
     Player* player)
 {
-    char result = g_render_flags;
+    char result = (char)g_runtime_config.render_flags;
     if ((result & 0x10) != 0) {
         Sprite* sprite = g_sprite_manager.allocate_sprite(
             player->player_slot,

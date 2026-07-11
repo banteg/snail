@@ -29,3 +29,14 @@ instructions. The missing 12 instructions are the leading `jmp` plus padding.
 Focused matcher now reports 32 clean masked operands, 0 unresolved, and 0
 mismatched. The config-tail validation helper at `0x42f5b0` is recovered as
 `validate_config_tail_stub`; it ignores its argument and returns true.
+
+2026-07-11 ownership recovery: the persisted bytes are now represented by one
+`RuntimeConfig` object whose asserted size is the `0xc4` passed to every load
+and save call. Address spacing fixes the 64-byte name field at `+0x60`, followed
+by the route limit, landscape selector, high-score bank, and loading budget at
+`+0xa0` through `+0xac`. The render flags are a dword at `+0x1c`: low-byte
+feature tests had produced misleading byte declarations, but the default
+`0x5fe` store and the window code's `0x400` test require the full word. Moving
+the initializer, blob save sites, and all three conflicted field families onto
+the aggregate preserves every focused instruction stream and leaves this
+scratch at the same 85.71% structural result.

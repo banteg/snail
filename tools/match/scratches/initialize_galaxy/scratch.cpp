@@ -6,6 +6,7 @@
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
+#include "runtime_config.h"
 #include "star_field.h"
 
 extern char* g_game_base; // data_4df904
@@ -13,7 +14,6 @@ extern char g_blank_text[]; // data_4dfb08
 extern char g_main_menu_music_path[]; // data_4a2128
 extern char g_exit_text[]; // data_4a20f4
 extern char g_back_text[]; // data_4a20ec
-extern int g_landscape_backdrop_variant_selector; // data_4df9bc
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
@@ -46,7 +46,7 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
         if (selected_mode == 3 || selected_mode == 2) {
             route_state = 0;
             route_mode = 0;
-            selected_index = g_landscape_backdrop_variant_selector;
+            selected_index = g_runtime_config.landscape_backdrop_variant_selector;
         }
         if (*(int*)(progress + 0x1270fc8) == 1) {
             route_state = 1;
@@ -57,7 +57,7 @@ FrontendWidget* GalaxyRoute::initialize_galaxy()
     if (*(int*)(progress + 0x40) == 4) {
         route_state = 0;
         route_mode = 2;
-        selected_index = g_landscape_backdrop_variant_selector;
+        selected_index = g_runtime_config.landscape_backdrop_variant_selector;
     }
 
     {

@@ -4,9 +4,9 @@
 #include "active_landscape_entry.h"
 #include "backdrop.h"
 #include "border_runtime.h"
+#include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
-extern char g_landscape_backdrop_variant_selector; // data_4df9bc, from level_mode_arg
 
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
@@ -23,7 +23,7 @@ void ActiveLandscapeEntry::activate_landscape_entry(int script_index)
         else
             flip = 1;
     } else {
-        flip = g_landscape_backdrop_variant_selector & 1;
+        flip = g_runtime_config.landscape_backdrop_variant_selector & 1;
     }
 
     int index = 0;

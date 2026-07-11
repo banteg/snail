@@ -5,6 +5,7 @@
 #include "frontend_widget.h"
 #include "game_base.h"
 #include "high_score_record.h"
+#include "runtime_config.h"
 #include "sprite.h"
 
 class HighScoreScreen {
@@ -32,7 +33,6 @@ public:
 };
 
 extern int g_high_score_selected_bank; // data_4df9c0
-extern char g_last_entered_player_name[]; // data_4df978
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 

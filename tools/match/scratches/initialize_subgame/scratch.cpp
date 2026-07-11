@@ -7,6 +7,7 @@
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
+#include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "time_trial_string_formatter.h"
 #include "timer_counters.h"
@@ -22,9 +23,6 @@ extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
-extern char g_config_blob; // 0x4df918
-extern int data_4df9b8; // 0x4df9b8
-extern int g_landscape_backdrop_variant_selector; // 0x4df9bc
 extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
@@ -247,11 +245,12 @@ void SubgameRuntime::initialize_subgame()
             case 0:
                 if (selector == 1) {
                     ++level_mode_arg;
-                    if (level_mode_arg > data_4df9b8) {
-                        data_4df9b8 = level_mode_arg;
-                        save_config_file("SnailMail.cfg", &g_config_blob, 0xc4);
+                    if (level_mode_arg > g_runtime_config.highest_galaxy_route_index) {
+                        g_runtime_config.highest_galaxy_route_index = level_mode_arg;
+                        save_config_file(
+                            "SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
                     }
-                    g_landscape_backdrop_variant_selector = level_mode_arg;
+                    g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 }
                 // Native mode 0 continues into the galaxy setup path.
             case 4:

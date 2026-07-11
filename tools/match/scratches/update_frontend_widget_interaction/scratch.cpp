@@ -4,11 +4,11 @@
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "mouse_cursor_state.h"
+#include "runtime_config.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
 extern char* g_game_base; // data_4df904
-extern unsigned int g_render_flags; // data_4df934
 
 int report_errorf(char* format, ...);
 char read_pressed_text_input_key_code();
@@ -286,7 +286,7 @@ update_after_input:
                     (float*)(self + 0x248),
                     (float*)(self + 0x24c),
                     *(float*)(self + 0x228),
-                    g_render_flags & 1,
+                    g_runtime_config.render_flags & 1,
                     *(int*)(self + 0x25c),
                     *(float*)(self + 0x260),
                     0x1000000,

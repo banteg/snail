@@ -2,9 +2,9 @@
 
 #include "font_system.h"
 #include "frontend_widget.h"
+#include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
-extern unsigned int g_render_flags; // data_4df934
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -43,7 +43,7 @@ void FrontendWidget::draw_frontend_widget()
 
     int layer = 0;
     int glow_layer = 0;
-    if ((g_render_flags & 0x80) != 0) {
+    if ((g_runtime_config.render_flags & 0x80) != 0) {
         layer = 3;
         glow_layer = 3;
     }

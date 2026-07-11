@@ -1,10 +1,9 @@
 // save_high_scores_and_config @ 0x417940 (thiscall, ret 0x4)
 
 #include "high_score_bank.h"
+#include "runtime_config.h"
 
 const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
-
-extern char g_config_blob; // 0x4df918
 
 extern char* allocate_tracked_memory(int size, char* name);
 extern void free_tracked_memory(void* memory);
@@ -73,5 +72,5 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
     }
 
     free_tracked_memory(bytes);
-    return save_config_file("SnailMail.cfg", &g_config_blob, 0xc4);
+    return save_config_file("SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
 }

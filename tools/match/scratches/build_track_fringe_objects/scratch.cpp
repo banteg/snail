@@ -3,10 +3,10 @@
 
 #include "track_attachment_types.h"
 #include "fringe_object.h"
+#include "runtime_config.h"
 #include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
-extern unsigned char g_track_render_flags; // byte_4df934
 
 #define FRINGE_BOD(base, family, edge_a, edge_b) \
     (*(void**)(g_game_base + (base) + (((((family) * 12) + (edge_a)) * 3 + (edge_b)) * 0x38)))
@@ -58,7 +58,7 @@ int SubgameRuntime::build_track_fringe_objects()
                     family = 7;
 
                 if ((row_record->flags & 4) != 0 || edge_id == 0 || tile_id == 0x20
-                    || (g_track_render_flags & 0x20) == 0) {
+                    || (g_runtime_config.render_flags & 0x20) == 0) {
                     cell->fringe_front = 0;
                     cell->fringe_right = 0;
                     cell->fringe_left = 0;

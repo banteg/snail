@@ -5,6 +5,7 @@
 #include "high_score_record.h"
 #include "new_game_menu.h"
 #include "player.h"
+#include "runtime_config.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
 #include "sprite.h"
@@ -56,7 +57,6 @@ struct RuntimeCellSlotBase {
 extern char* g_game_base;
 extern int g_completion_bonus_x_source;
 extern int g_completion_bonus_y_source;
-extern int g_landscape_backdrop_variant_selector;
 extern unsigned char g_window_deactivated;
 extern char g_time_trial_string[];
 
@@ -144,13 +144,13 @@ void SubgameRuntime::update_subgame()
             result = galaxy.update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 3;
-                g_landscape_backdrop_variant_selector = level_mode_arg;
+                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 build_subgame_level(level_mode_arg);
                 return;
             }
             if (result == 2) {
                 subgame_rebuild_selector = one;
-                g_landscape_backdrop_variant_selector = level_mode_arg;
+                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 build_subgame_level(level_mode_arg);
                 return;
             }
@@ -164,7 +164,7 @@ void SubgameRuntime::update_subgame()
             result = galaxy.update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 2;
-                g_landscape_backdrop_variant_selector = level_mode_arg;
+                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 goto build_selected_level;
             }
             if (result != 3)

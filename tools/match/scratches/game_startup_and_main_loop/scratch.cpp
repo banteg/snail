@@ -4,6 +4,7 @@
 #include "game_root.h"
 #include "high_score_bank.h"
 #include "loading_screen.h"
+#include "runtime_config.h"
 #include "win32_window_state.h"
 
 class StartupAudioBackendView {
@@ -40,7 +41,6 @@ extern float g_current_frame_update_steps;  // g_current_frame_update_steps
 extern float g_mean_update_steps_per_frame;  // g_mean_update_steps_per_frame
 extern float g_main_loop_frame_count;  // g_main_loop_frame_count
 
-extern unsigned char data_4df918;
 extern unsigned char g_config_validation_tail_start;
 extern int data_4df858;
 extern int data_4b775c;
@@ -100,7 +100,7 @@ int __stdcall game_startup_and_main_loop(
     }
 
     rebuild_game_archive_if_needed();
-    load_config_file("SnailMail.cfg", &data_4df918);
+    load_config_file("SnailMail.cfg", &g_runtime_config);
     g_config_load_valid_flag = validate_config_tail_stub(&g_config_validation_tail_start);
     g_application_instance = hInstance;
     initialize_trigonometry_tables();
@@ -254,7 +254,7 @@ update_game:
     free_tracked_allocations_to_mark();
     scalar_delete(g_game_base);
     uninitialize_game_data_archive();
-    save_config_file("SnailMail.cfg", &data_4df918, 0xc4);
+    save_config_file("SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
     uninitialize_input_devices();
     g_game_initialization_pending = 1;
     g_main_loop_exit_requested = 0;

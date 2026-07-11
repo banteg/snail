@@ -25,7 +25,8 @@ int HighScoreScreen::update_high_score_screen()
                     + rank * HIGH_SCORE_RECORD_STRIDE);
             rstrcpy_checked_ascii(record->player_name, name_widget->text_buffer);
             rstrcpy_checked_ascii(game->players[0].player_name, name_widget->text_buffer);
-            rstrcpy_checked_ascii(g_last_entered_player_name, name_widget->text_buffer);
+            rstrcpy_checked_ascii(
+                g_runtime_config.last_entered_player_name, name_widget->text_buffer);
             return exit_high_score_screen();
         }
 

@@ -2,6 +2,7 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 #include "sprite.h"
+#include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
@@ -27,7 +28,6 @@ struct HighScoreEntry {
 };
 
 extern char* g_game_base; // data_4df904
-extern unsigned char g_track_render_flags; // byte_4df934
 
 double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
@@ -603,7 +603,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 row_anchor_z = (float)build_row + 0.5f;
                 *(int*)(cell + 0x3bfad8) = 0;
                 *(float*)(cell + 0x3bfae0) = row_anchor_z - 0.5f;
-                if ((g_track_render_flags & 0x20) != 0) {
+                if ((g_runtime_config.render_flags & 0x20) != 0) {
                     *(int*)(row_record + 0xc0) = 0;
                     *(float*)(row_record + 0xc8) = row_anchor_z - 0.5f;
 

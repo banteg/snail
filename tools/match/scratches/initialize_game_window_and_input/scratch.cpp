@@ -1,6 +1,7 @@
 // initialize_game_window_and_input @ 0x4119d0 (cdecl)
 
 #include "rect.h"
+#include "runtime_config.h"
 #include "win32_window_state.h"
 
 #include <string.h>
@@ -31,7 +32,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND hwnd);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND hwnd);
 extern "C" __declspec(dllimport) BOOL __stdcall EndDialog(HWND dialog, int result);
 
-extern unsigned int g_render_flags; // data_4df934
 extern int g_config_display_mode_index;
 extern int g_controller_count_view; // data_4b776c
 
@@ -48,7 +48,7 @@ int set_cull_mode(int cull_front); // @ 0x4129f0
 
 int initialize_game_window_and_input(char* window_name)
 {
-    int bits_per_pixel = ((g_render_flags & 0x400) != 0) ? 32 : 16;
+    int bits_per_pixel = ((g_runtime_config.render_flags & 0x400) != 0) ? 32 : 16;
 
     int width;
     int height;
