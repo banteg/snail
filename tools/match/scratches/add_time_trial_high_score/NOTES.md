@@ -41,10 +41,10 @@ Rejected source-shape probes:
 - Local `route_seconds` value: changed x87 compare ordering and regressed to
   78.79%.
 - 2026-06-18 shared-layout pass: the scratch now consumes
-  `tools/match/include/high_score_bank.h` and `high_score_record.h`. The score
+  `tools/match/include/high_score_bank.h` and `sub_solution.h`. The score
   remains 83.67%, so the shared layout did not change the known route-record
   base materialization residual.
-- 2026-06-18 name-sync pass: `HighScoreRecord` exposes the `+0x08` lane as
+- 2026-06-18 name-sync pass: `SubSolution` exposes the `+0x08` lane as
   `total_seconds` first, with the score-bucket block as an alternate view. This
   keeps the time-trial helper and BN decompile aligned on the ordering key
   without changing layout or codegen.
@@ -59,7 +59,7 @@ Rejected source-shape probes:
   owner base" compare shape enough to beat the typed array source, although MSVC
   still emits `add ecx, ebp` plus one extra `lea` instead of native `add ebp,
   ecx`. Splitting the byte-base increment and an IDA-style integer base are
-  codegen-neutral at 84.85%; a typed `HighScoreRecord* route_record` before the
+  codegen-neutral at 84.85%; a typed `SubSolution* route_record` before the
   compare collapses back to 83.67%, and direct raw stores through the shifted base
   regress to 55.10% by changing prologue/register ownership.
 - 2026-06-21 delayed route-offset pass: keeping only the scaled route offset as
@@ -73,7 +73,7 @@ Rejected source-shape probes:
   spellings; each either collapses to the older 84.85% schedule or regresses by
   disturbing the prologue/register ownership.
 - 2026-06-21 shifted-base retry: forcing a persistent shifted route base as
-  `char*`, `void*`, `HighScoreBank*`, `HighScoreRecord*`, `float*` stored-seconds
+  `char*`, `void*`, `HighScoreBank*`, `SubSolution*`, `float*` stored-seconds
   view, unsigned integer address, and delayed base reassignment did not beat the
   retained inline-offset shape. The pointer-base variants fall back to 84.85% or
   83.67%, while the typed shifted-bank form drops to 55.10%. Keep the named

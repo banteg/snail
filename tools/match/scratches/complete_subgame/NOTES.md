@@ -110,7 +110,7 @@ Rejected experiments:
   The later complete-extent proof below supersedes it: the apparent overlap is
   the single embedded `Player`, not a separate `RunScoreStats` object plus
   runtime aliases.
-- 2026-06-18 shared-record pass: `tools/match/include/high_score_record.h`
+- 2026-06-18 shared-record pass: `tools/match/include/sub_solution.h`
   now models the full 0x1fac0 high-score/replay record starting at
   `game+0xfd2b10`, including the 6-byte replay run table and aligned replay
   scalar fields. `complete_subgame` now writes `current_high_score_record`
@@ -155,7 +155,7 @@ at the first runtime track cell. `complete_subgame` therefore snapshots
 `player.total_score`, the six-dword `player.stopwatch`, `player.score_tail`,
 `player.startup_track_index`, and `player.completion_handoff_active`; none are
 independent SubgameRuntime fields. BN has only one reference to
-`Player +0x300`, the dword copy into `HighScoreRecord::score_tail`, so that
+`Player +0x300`, the dword copy into `SubSolution::score_tail`, so that
 name remains deliberately narrow.
 
 Removing `RunScoreStats` and the sparse runtime overlay preserves the honest
@@ -188,7 +188,7 @@ The two former `source_timer_*` dwords at `SubgameRuntime +0x125ffd8` and
 - `build_subgame_level` divides them by 100, or restores the same floats from
   a selected replay record;
 - `update_subgame` uses them in the garbage and salt random-spawn thresholds;
-- `complete_subgame` bit-copies them into the working `HighScoreRecord`, and
+- `complete_subgame` bit-copies them into the working `SubSolution`, and
   compact replay serialization preserves the same two lanes.
 
 The shared runtime and replay headers now use `garbage_frequency` and

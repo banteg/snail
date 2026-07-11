@@ -2,7 +2,7 @@
 
 #include "bod_list.h"
 #include "fringe_object.h"
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "new_game_menu.h"
 #include "player.h"
 #include "runtime_config.h"

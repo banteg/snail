@@ -1,7 +1,9 @@
 # initialize_high_score_entry
 
 Seeds one 0x1fac0 replay/high-score record before a run or blank table entry is
-used.
+used. iOS and Android both preserve the authored owner/signature as
+`cRSubSolution::ReSet(int, int, float, int, int, int)` in `HighScore.o`; the
+Windows float argument is passed and stored through its raw 32-bit lane.
 
 Recovered layout corrections:
 
@@ -16,3 +18,10 @@ Recovered layout corrections:
   (`active = 0` before `runtime_build_flags = runtime_build_flags_value`) keeps
   the existing argument reload shape and removes the last one-instruction store
   swap without barriers, raw offset writes, or dummy temporaries.
+
+2026-07-11 ownership pass:
+
+- Promoted the complete 0x1fac0 layout from the provisional
+  `HighScoreRecord` name to the authored `SubSolution` owner. The scratch stays
+  exact at 40/40 instructions; the change is provenance and ownership, not a
+  code-shape adjustment.

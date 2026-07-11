@@ -4,6 +4,11 @@ This scratch is the forward direction for the compact ScoreA/B/C on-disk record.
 It confirms the same `0x88 + replay_sample_count * 5` byte count and the same
 three packed replay lanes as the deserializer.
 
+Android exports the paired owner method as `cRSubSolution::Save(unsigned char*)`.
+Together with `Load(cRSubSolutionHeader*)`, this identifies the Windows
+receiver as the authored 0x1fac0-byte `SubSolution`, not the enclosing score
+bank.
+
 Current result: exact. The replay lane loops use indexed source/destination
 access for the two packed word lanes and a pointer walk for the byte flags lane,
 matching native register ownership while keeping the `int16[]`, `int16[]`,
@@ -25,7 +30,7 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
   the accepted pre-branch source cursor initialization plus direct
   `replay_sample_count` loop bounds.
 - Current chunk: promoted compact replay payload accessors onto
-  `CompactHighScoreRecord` and rewrote the three output-lane bases through
+  `SubSolutionHeader` and rewrote the three output-lane bases through
   `lateral_samples()`, `delta_z_samples(count)`, and `flag_samples(count)`.
   This is codegen-neutral at 93.58%, but removes raw header-byte arithmetic
   from the paired serializer/deserializer without hiding the remaining register

@@ -4,7 +4,7 @@
 
 #include "frontend_widget.h"
 #include "game_base.h"
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "runtime_config.h"
 #include "sprite.h"
 

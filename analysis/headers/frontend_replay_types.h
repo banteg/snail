@@ -110,7 +110,7 @@ typedef struct FrontendWidget {
     FrontendWidget* slider_value_widget;
 } FrontendWidget;
 
-typedef struct HighScoreRecord HighScoreRecord;
+typedef struct SubSolution SubSolution;
 
 typedef struct HighScoreScreen {
     int32_t field_00;
@@ -147,9 +147,9 @@ typedef struct NewGameMenu {
     FrontendWidget* back_button;
 } NewGameMenu;
 
-#define HIGH_SCORE_RECORD_STRIDE 0x1fac0
-#define HIGH_SCORE_RECORD_PLAYER_NAME_SIZE 0x14
-#define HIGH_SCORE_RUN_RECORD_COUNT 21600
+#define SUB_SOLUTION_STRIDE 0x1fac0
+#define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
+#define SUB_SOLUTION_RUN_RECORD_COUNT 21600
 
 typedef struct ScoreBucketBlock {
     int32_t values[6];
@@ -177,7 +177,7 @@ typedef struct ReplayRunRecord {
     uint8_t reserved_05;
 } ReplayRunRecord;
 
-typedef struct HighScoreRecord {
+typedef struct SubSolution {
     int32_t active;
     int32_t score;
     ScoreOrTime score_or_time;
@@ -194,14 +194,14 @@ typedef struct HighScoreRecord {
     int32_t replay_speed_scalar_bits;
     int32_t challenge_speed_value;
     int32_t challenge_difficulty_value;
-    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE];
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE];
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
-    ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT];
+    ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT];
     float garbage_frequency;
     float salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
-} HighScoreRecord;
+} SubSolution;
 
 #endif

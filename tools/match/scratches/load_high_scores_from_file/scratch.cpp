@@ -15,7 +15,7 @@ void HighScoreBank::load_high_scores_from_file(char* file_name)
         xor_decode_buffer_with_index(cursor, byte_count);
 
         while (cursor < end) {
-            CompactHighScoreRecord* compact = (CompactHighScoreRecord*)cursor;
+            SubSolutionHeader* compact = (SubSolutionHeader*)cursor;
             switch (compact->bank_selector) {
             case 0:
                 postal_records[compact->entry_index]

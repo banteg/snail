@@ -16,19 +16,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_high_score_entry",
-        "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int runtime_build_seed, int replay_level_index, int replay_speed_scalar_bits, unsigned int runtime_build_flags, int high_score_mode_tag, int route_or_rank_index);",
+        "void __thiscall initialize_high_score_entry(SubSolution* record, int runtime_build_seed, int replay_level_index, int replay_speed_scalar_bits, unsigned int runtime_build_flags, int high_score_mode_tag, int route_or_rank_index);",
     ),
     (
         "add_arcade_high_score",
-        "int __thiscall add_arcade_high_score(HighScoreBank* bank, HighScoreRecord* record, int level_arg);",
+        "int __thiscall add_arcade_high_score(HighScoreBank* bank, SubSolution* record, int level_arg);",
     ),
     (
         "add_survival_high_score",
-        "int __thiscall add_survival_high_score(HighScoreBank* bank, HighScoreRecord* record);",
+        "int __thiscall add_survival_high_score(HighScoreBank* bank, SubSolution* record);",
     ),
     (
         "add_time_trial_high_score",
-        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, HighScoreRecord* record, int route_index, unsigned char route_active);",
+        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, SubSolution* record, int route_index, unsigned char route_active);",
     ),
     (
         "mini_delete_high_score_entry",

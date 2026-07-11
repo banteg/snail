@@ -1606,12 +1606,37 @@
       "confidence": "high"
     },
     {
+      "address": "0x417a70",
+      "windows_name": "initialize_high_score_entry",
+      "ios_symbol": "cRSubSolution::ReSet(int, int, float, int, int, int)",
+      "android_symbol": "cRSubSolution::ReSet(int, int, float, int, int, int)",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The exact Windows thiscall body resets the complete 0x1fac0-byte replay/high-score entry and its 21,600 six-byte run records. The third Windows argument is carried as the raw float bits expected by the cross-port signature."
+    },
+    {
       "address": "0x417af0",
       "windows_name": "mini_delete_high_score_entry",
       "ios_symbol": "cRSubHighScore::MiniDelete(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
       "notes": "The Windows thiscall receiver is the embedded HighScoreBank/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI()."
+    },
+    {
+      "address": "0x440020",
+      "windows_name": "deserialize_compact_high_score_record",
+      "android_symbol": "cRSubSolution::Load(cRSubSolutionHeader*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows method validates and expands the compact header plus its three replay lanes into the same 0x1fac0-byte cRSubSolution owner."
+    },
+    {
+      "address": "0x440170",
+      "windows_name": "serialize_compact_high_score_record",
+      "android_symbol": "cRSubSolution::Save(unsigned char*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows method is the inverse persistence bridge, writing the compact header and variable replay lanes from one cRSubSolution."
     }
   ]
 }

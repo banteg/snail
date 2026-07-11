@@ -1,14 +1,16 @@
-// Shared high-score/replay record prefix and stride.
-#ifndef HIGH_SCORE_RECORD_H
-#define HIGH_SCORE_RECORD_H
+// Authored cRSubSolution replay/high-score entry and its compact persistence
+// header. The 0x1fac0-byte object is owned by cRSubHighScore banks and by the
+// active SubgameRuntime run snapshot.
+#ifndef SUB_SOLUTION_H
+#define SUB_SOLUTION_H
 
 #include "score_stats.h"
 #include "timer_counters.h"
 
-const int HIGH_SCORE_RECORD_STRIDE = 0x1fac0;
-const int HIGH_SCORE_RECORD_PLAYER_NAME_SIZE = 0x14;
-const int COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES = 0x88;
-const int HIGH_SCORE_CHECKSUM_MASK = 0xdeadbabe;
+const int SUB_SOLUTION_STRIDE = 0x1fac0;
+const int SUB_SOLUTION_PLAYER_NAME_SIZE = 0x14;
+const int SUB_SOLUTION_HEADER_BYTES = 0x88;
+const int SUB_SOLUTION_CHECKSUM_MASK = 0xdeadbabe;
 
 struct ScoreBucketBlock {
     int values[SUBGOLDY_SCORE_BUCKET_COUNT];
@@ -24,11 +26,11 @@ struct ReplayRunRecord {
 typedef char ReplayRunRecord_must_be_0x06[
     (sizeof(ReplayRunRecord) == 0x06) ? 1 : -1];
 
-const int HIGH_SCORE_RUN_RECORD_COUNT = 21600;
-const int HIGH_SCORE_RUN_RECORD_BYTES =
-    HIGH_SCORE_RUN_RECORD_COUNT * sizeof(ReplayRunRecord);
+const int SUB_SOLUTION_RUN_RECORD_COUNT = 21600;
+const int SUB_SOLUTION_RUN_RECORD_BYTES =
+    SUB_SOLUTION_RUN_RECORD_COUNT * sizeof(ReplayRunRecord);
 
-struct CompactHighScoreRecord {
+struct SubSolutionHeader {
     int byte_count; // +0x00
     int score; // +0x04
     union {
@@ -57,7 +59,7 @@ struct CompactHighScoreRecord {
         float challenge_difficulty_scalar; // +0x54
     };
     char reserved_58[0x5c - 0x58];
-    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x5c
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE]; // +0x5c
     int runtime_build_seed; // +0x70
     int replay_sample_count; // +0x74
     union {
@@ -88,7 +90,7 @@ struct CompactHighScoreRecord {
     }
 };
 
-class HighScoreRecord {
+class SubSolution {
 public:
     void initialize_high_score_entry(
         int runtime_build_seed,
@@ -96,9 +98,11 @@ public:
         int replay_speed_scalar_bits,
         unsigned int runtime_build_flags,
         int high_score_mode_tag,
-        int route_or_rank_index); // @ 0x417a70
-    unsigned char deserialize_compact_high_score_record(CompactHighScoreRecord* compact);
-    int serialize_compact_high_score_record(CompactHighScoreRecord* compact);
+        int route_or_rank_index); // @ 0x417a70, cRSubSolution::ReSet
+    unsigned char deserialize_compact_high_score_record(
+        SubSolutionHeader* compact); // @ 0x440020, cRSubSolution::Load
+    int serialize_compact_high_score_record(
+        SubSolutionHeader* compact); // @ 0x440170, cRSubSolution::Save
 
     int active; // +0x00
     int score; // +0x04
@@ -126,10 +130,10 @@ public:
     };
     int challenge_speed_value; // +0x4c
     int challenge_difficulty_value; // +0x50
-    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x54
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE]; // +0x54
     int runtime_build_seed; // +0x68
     int replay_sample_count; // +0x6c
-    ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT]; // +0x70
+    ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT]; // +0x70
     union {
         int garbage_frequency_bits; // +0x1fab0
         float garbage_frequency; // +0x1fab0
@@ -142,7 +146,7 @@ public:
     int unknown_1fabc; // +0x1fabc
 };
 
-typedef char HighScoreRecord_must_be_0x1fac0[
-    (sizeof(HighScoreRecord) == HIGH_SCORE_RECORD_STRIDE) ? 1 : -1];
+typedef char SubSolution_must_be_0x1fac0[
+    (sizeof(SubSolution) == SUB_SOLUTION_STRIDE) ? 1 : -1];
 
 #endif

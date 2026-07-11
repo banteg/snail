@@ -15,7 +15,7 @@
 #include "garbage_hazard_slot.h"
 #include "galaxy_route_types.h"
 #include "high_score_bank.h"
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "help_screen.h"
 #include "sub_tracks.h"
 #include "contact_target.h"
@@ -195,7 +195,7 @@ public:
     // into current_high_score_record, then lends that record to high_score_bank
     // for in-place normalization and value-copy persistence.
     HighScoreBank high_score_bank; // +0x68b4c8, owns persistent record arrays
-    HighScoreRecord current_high_score_record; // +0xfd2b10, working run snapshot
+    SubSolution current_high_score_record; // +0xfd2b10, working run snapshot
     union {
         unsigned char selected_level_record_active; // +0xff25d0
         unsigned char replay_launch_active; // front-end replay handoff alias
@@ -206,8 +206,8 @@ public:
     };
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
     union {
-        HighScoreRecord* selected_level_record; // +0xff25d4
-        HighScoreRecord* replay_launch_record; // front-end replay handoff alias
+        SubSolution* selected_level_record; // +0xff25d4
+        SubSolution* replay_launch_record; // front-end replay handoff alias
     };
     union {
         int selected_level_record_cursor; // +0xff25d8, replay/update cursor window

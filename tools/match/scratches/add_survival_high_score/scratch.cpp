@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int HighScoreBank::add_survival_high_score(HighScoreRecord* record)
+int HighScoreBank::add_survival_high_score(SubSolution* record)
 {
     int rank = 0;
 
@@ -21,7 +21,7 @@ int HighScoreBank::add_survival_high_score(HighScoreRecord* record)
         if (score > *score_cursor)
             goto insert_record;
         ++rank;
-        score_cursor += HIGH_SCORE_RECORD_STRIDE / sizeof(int);
+        score_cursor += SUB_SOLUTION_STRIDE / sizeof(int);
     }
     return rank;
 

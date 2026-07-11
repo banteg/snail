@@ -9,7 +9,7 @@ Recovered relationships:
 
 - `HighScoreScreen` has separate row-widget arrays: editable name rows at
   `+0x7c` and replay-launch rows at `+0xcc`;
-- `HighScoreRecord` is the 0x1fac0-stride persistent replay/high-score record
+- `SubSolution` is the 0x1fac0-stride persistent replay/high-score record
   used by completion, high-score browsing, and replay launch;
 - high-score replay launch sets `game+0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0`
   to active, frontend-origin, selected record, and return state `18`;

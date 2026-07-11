@@ -2,7 +2,7 @@
 #ifndef HIGH_SCORE_BANK_H
 #define HIGH_SCORE_BANK_H
 
-#include "high_score_record.h"
+#include "sub_solution.h"
 
 const int HIGH_SCORE_TOP_TEN_COUNT = 10;
 const int HIGH_SCORE_TOP_TEN_STORAGE_COUNT = HIGH_SCORE_TOP_TEN_COUNT + 1;
@@ -12,10 +12,10 @@ class HighScoreBank {
 public:
     void initialize_high_score_tables(); // @ 0x417540
     void load_high_scores_from_file(char* file_name); // @ 0x4175e0
-    int add_arcade_high_score(HighScoreRecord* record, int level_arg); // @ 0x4176a0
-    int add_survival_high_score(HighScoreRecord* record); // @ 0x417780
+    int add_arcade_high_score(SubSolution* record, int level_arg); // @ 0x4176a0
+    int add_survival_high_score(SubSolution* record); // @ 0x417780
     void add_time_trial_high_score(
-        HighScoreRecord* record,
+        SubSolution* record,
         int route_index,
         unsigned char route_active); // @ 0x4178b0
     void mini_delete_high_score_entry(int rank); // @ 0x417af0, cRSubHighScore::MiniDelete
@@ -29,24 +29,24 @@ public:
     // Borrowed view of whichever embedded record bank the front end exposes.
     // initialize_subgame selects one of the three arrays below; it never
     // allocates or transfers ownership through this pointer.
-    HighScoreRecord* active_record_bank; // +0x00
+    SubSolution* active_record_bank; // +0x00
     int active_record_count;             // +0x04
     union {
         struct {
-            HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x08
-            HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x15c648
-            HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT]; // +0x2b8c88
+            SubSolution postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x08
+            SubSolution survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT]; // +0x15c648
+            SubSolution time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT]; // +0x2b8c88
         };
         struct {
             char unknown_before_mini_delete_source[0x17c100];
             // cRSubHighScore::MiniDelete shifts from the row after the
             // canceled rank. This aliases survival_records[1] at +0x17c108;
             // it is a view into the same owned arrays, not separate storage.
-            HighScoreRecord mini_delete_source_records[HIGH_SCORE_TOP_TEN_COUNT];
+            SubSolution mini_delete_source_records[HIGH_SCORE_TOP_TEN_COUNT];
         };
     };
-    HighScoreRecord current_result_record; // +0x9080c8
-    HighScoreRecord survival_pending_record; // +0x927b88
+    SubSolution current_result_record; // +0x9080c8
+    SubSolution survival_pending_record; // +0x927b88
 };
 
 typedef char HighScoreBank_must_be_0x947648[

@@ -1,9 +1,9 @@
 // serialize_compact_high_score_record @ 0x440170 (thiscall, ret 0x4)
 
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "high_score_screen.h"
 
-int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord* compact)
+int SubSolution::serialize_compact_high_score_record(SubSolutionHeader* compact)
 {
     int sample_count = replay_sample_count;
     active = 1;
@@ -22,7 +22,7 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     compact->salt_frequency_bits = salt_frequency_bits;
     compact->source_tail = source_tail;
     compact->score = score;
-    compact->checksum = (score * score) ^ HIGH_SCORE_CHECKSUM_MASK;
+    compact->checksum = (score * score) ^ SUB_SOLUTION_CHECKSUM_MASK;
     compact->runtime_build_seed = runtime_build_seed;
     compact->unknown_80 = unknown_1fab8;
     compact->unknown_84 = unknown_1fabc;
@@ -60,7 +60,7 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
         } while (flag_index < replay_sample_count);
     }
 
-    int byte_count = replay_sample_count * 5 + COMPACT_HIGH_SCORE_RECORD_HEADER_BYTES;
+    int byte_count = replay_sample_count * 5 + SUB_SOLUTION_HEADER_BYTES;
     compact->byte_count = byte_count;
     return byte_count;
 }

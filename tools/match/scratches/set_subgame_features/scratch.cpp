@@ -5,7 +5,7 @@
 int SubgameRuntime::set_subgame_features()
 {
     if (selected_level_record_active != 0) {
-        HighScoreRecord* record = selected_level_record;
+        SubSolution* record = selected_level_record;
         runtime_flags = record->runtime_build_flags;
         return (int)record;
     }

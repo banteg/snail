@@ -1,6 +1,6 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "bod_list.h"
 #include "damage_gauge.h"
 #include "frontend_widget.h"
@@ -70,15 +70,15 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if (*(unsigned char*)(game + 0xff25d0) != zero
         || *(unsigned char*)(game + 0xff25d1) != zero) {
         *(float*)(game + 0x30) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->replay_speed_scalar;
+            (*(SubSolution**)(game + 0xff25d4))->replay_speed_scalar;
         *(int*)(game + 0x40) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->replay_mode_id;
+            (*(SubSolution**)(game + 0xff25d4))->replay_mode_id;
         *(int*)(game + 0x2c) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->challenge_difficulty_value;
+            (*(SubSolution**)(game + 0xff25d4))->challenge_difficulty_value;
         *(int*)(game + 0x28) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->challenge_speed_value;
+            (*(SubSolution**)(game + 0xff25d4))->challenge_speed_value;
         *(float*)(game + 0x34) =
-            (float)(*(HighScoreRecord**)(game + 0xff25d4))->challenge_difficulty_value
+            (float)(*(SubSolution**)(game + 0xff25d4))->challenge_difficulty_value
             * 0.00999999978f;
     } else {
         int level_mode = *(int*)(game + 0x40);
@@ -107,9 +107,9 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if (*(unsigned char*)(game + 0xff25d0) != zero
         || *(unsigned char*)(game + 0xff25d1) != zero) {
         garbage_frequency =
-            (*(HighScoreRecord**)(game + 0xff25d4))->garbage_frequency;
+            (*(SubSolution**)(game + 0xff25d4))->garbage_frequency;
         salt_frequency =
-            (*(HighScoreRecord**)(game + 0xff25d4))->salt_frequency;
+            (*(SubSolution**)(game + 0xff25d4))->salt_frequency;
     } else {
         int level_mode = *(int*)(game + 0x40);
         if (level_mode == 2 || level_mode == 3 || level_mode == 0

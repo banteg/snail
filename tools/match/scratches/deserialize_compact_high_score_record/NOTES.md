@@ -1,8 +1,12 @@
 # deserialize_compact_high_score_record
 
 This scratch recovers the compact ScoreA/B/C record bridge into the expanded
-`HighScoreRecord` layout. The scalar block, checksum, player name, and replay
+`SubSolution` layout. The scalar block, checksum, player name, and replay
 payload offsets are exact.
+
+Android exports this operation as
+`cRSubSolution::Load(cRSubSolutionHeader*)`, confirming both the expanded
+receiver and compact header owners independently of the Windows match.
 
 Evidence from the paired serializer:
 - compact header size is `0x88`
@@ -26,7 +30,7 @@ Evidence from the paired serializer:
   Keep the current raw `short*` destination and pre-branch packed source cursor
   shape.
 - Current chunk: the compact payload bases now use shared
-  `CompactHighScoreRecord` accessors for lateral, delta-z, and flag lanes. The
+  `SubSolutionHeader` accessors for lateral, delta-z, and flag lanes. The
   rewrite is codegen-neutral at 92.98% and keeps the masked audit clean while
   making the packed `int16[]`, `int16[]`, `uint8[]` layout explicit for both
   persistence directions.

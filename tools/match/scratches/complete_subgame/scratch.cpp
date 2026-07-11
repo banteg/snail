@@ -13,7 +13,7 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
     ++replay_update_cursor;
 
     if ((g_cheat_state.flags & 1) == 0) {
-        HighScoreRecord* record = &current_high_score_record;
+        SubSolution* record = &current_high_score_record;
 
         current_high_score_record.score = player.total_score;
         current_high_score_record.timer = player.stopwatch;

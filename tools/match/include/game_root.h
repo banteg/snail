@@ -36,7 +36,7 @@ public:
     int update_frontend_state_machine(); // @ 0x4107d0, cRPlayer::AI()
 
     char unknown_078[0x80 - 0x78];
-    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE]; // +0x80
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE]; // +0x80
     int frontend_state; // +0x94
     int saved_frontend_state; // +0x98
     char unknown_09c[0xa0 - 0x9c];

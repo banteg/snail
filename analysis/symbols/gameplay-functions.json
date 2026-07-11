@@ -924,7 +924,7 @@
     {
       "address": "0x417540",
       "name": "initialize_high_score_tables",
-      "description": "Seeds the postal, challenge, and completion high-score banks with blank cRSubHighScore records before ScoreA/B/C overlays are loaded."
+      "description": "Seeds the cRSubHighScore owner’s postal, challenge, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded."
     },
     {
       "address": "0x4175e0",
@@ -954,7 +954,7 @@
     {
       "address": "0x417a70",
       "name": "initialize_high_score_entry",
-      "description": "Clears one cRSubHighScore record, seeds its score-mode metadata, and copies the current player-name buffer into the entry name field."
+      "description": "Resets one embedded cRSubSolution replay/high-score entry, seeds its score-mode metadata, copies the current player name, and clears all 21,600 run samples. Cross-port symbols identify this exact owner method as `cRSubSolution::ReSet(int,int,float,int,int,int)`."
     },
     {
       "address": "0x417af0",
@@ -2182,12 +2182,12 @@
     {
       "address": "0x440020",
       "name": "deserialize_compact_high_score_record",
-      "description": "Validates one compact ScoreA/B/C record checksum, copies its scalar fields, name, and replay samples into the expanded cRSubHighScore entry, and marks the entry active."
+      "description": "Validates one compact ScoreA/B/C cRSubSolutionHeader checksum, copies its scalar fields, name, and replay samples into the expanded cRSubSolution entry, and marks the entry active. Android preserves this owner method as `cRSubSolution::Load(cRSubSolutionHeader*)`."
     },
     {
       "address": "0x440170",
       "name": "serialize_compact_high_score_record",
-      "description": "Compacts one active cRSubHighScore entry into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays."
+      "description": "Compacts one active cRSubSolution into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays. Android preserves this owner method as `cRSubSolution::Save(unsigned char*)`."
     },
     {
       "address": "0x4402c0",

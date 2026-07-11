@@ -19,19 +19,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_high_score_entry",
-        "void __thiscall initialize_high_score_entry(HighScoreRecord* record, int32_t runtime_build_seed, int32_t replay_level_index, int32_t replay_speed_scalar_bits, uint32_t runtime_build_flags, int32_t high_score_mode_tag, int32_t route_or_rank_index)",
+        "void __thiscall initialize_high_score_entry(SubSolution* record, int32_t runtime_build_seed, int32_t replay_level_index, int32_t replay_speed_scalar_bits, uint32_t runtime_build_flags, int32_t high_score_mode_tag, int32_t route_or_rank_index)",
     ),
     (
         "add_arcade_high_score",
-        "int32_t __thiscall add_arcade_high_score(HighScoreBank* bank, HighScoreRecord* record, int32_t level_arg)",
+        "int32_t __thiscall add_arcade_high_score(HighScoreBank* bank, SubSolution* record, int32_t level_arg)",
     ),
     (
         "add_survival_high_score",
-        "int32_t __thiscall add_survival_high_score(HighScoreBank* bank, HighScoreRecord* record)",
+        "int32_t __thiscall add_survival_high_score(HighScoreBank* bank, SubSolution* record)",
     ),
     (
         "add_time_trial_high_score",
-        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, HighScoreRecord* record, int32_t route_index, uint8_t route_active)",
+        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, SubSolution* record, int32_t route_index, uint8_t route_active)",
     ),
     (
         "mini_delete_high_score_entry",

@@ -250,7 +250,7 @@ public:
     // Player-owned run score producer and completion snapshot window.
     int total_score;                        // +0x2e4
     TimerCounters stopwatch;                // +0x2e8
-    // Only confirmed consumer copies this value into HighScoreRecord::score_tail.
+    // Only confirmed consumer copies this value into SubSolution::score_tail.
     int score_tail;                         // +0x300
     // Click-start seeds this slot; update_subgoldy later reuses it as the
     // replay/ghost anchor cursor.

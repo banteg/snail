@@ -1,13 +1,13 @@
 // deserialize_compact_high_score_record @ 0x440020 (thiscall, ret 0x4)
 
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "high_score_screen.h"
 
-unsigned char HighScoreRecord::deserialize_compact_high_score_record(
-    CompactHighScoreRecord* compact)
+unsigned char SubSolution::deserialize_compact_high_score_record(
+    SubSolutionHeader* compact)
 {
     int score_value = compact->score;
-    if (compact->checksum != ((score_value * score_value) ^ HIGH_SCORE_CHECKSUM_MASK)) {
+    if (compact->checksum != ((score_value * score_value) ^ SUB_SOLUTION_CHECKSUM_MASK)) {
         active = 0;
         return 0;
     }

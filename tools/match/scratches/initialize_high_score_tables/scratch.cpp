@@ -5,7 +5,7 @@
 void HighScoreBank::initialize_high_score_tables()
 {
     int route_or_rank_index = 0;
-    HighScoreRecord* record = postal_records;
+    SubSolution* record = postal_records;
     do {
         record->initialize_high_score_entry(0, 0, 0x3f800000, 0, 0, route_or_rank_index);
         ++route_or_rank_index;

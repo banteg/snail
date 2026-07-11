@@ -43,7 +43,7 @@ early after the easier prefix. Its major phases are:
 The hazard-frequency tail is now typed end to end. `garbage_frequency` and
 `salt_frequency` at `SubgameRuntime +0x125ffd8/+0x125ffdc` are normalized from
 the embedded level definition's authored `Garbage:`/`Salt:` percentages, or
-restored from the selected `HighScoreRecord` for replay. `update_subgame`
+restored from the selected `SubSolution` for replay. `update_subgame`
 consumes the same floats as spawn controls and `complete_subgame` persists
 them back into the working record. The typed rewrite preserves the focused
 86.10% result (`560/555`, `105` clean operands and the existing table-label

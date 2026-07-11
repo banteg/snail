@@ -20,12 +20,12 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
     if ((save_mask & 1) != 0) {
         char* out = bytes;
         int bytes_used = 0;
-        HighScoreRecord* record = postal_records;
+        SubSolution* record = postal_records;
         int count = HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(
-                    (CompactHighScoreRecord*)out);
+                    (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }
             ++record;
@@ -38,12 +38,12 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
     if ((save_mask & 2) != 0) {
         char* out = bytes;
         int bytes_used = 0;
-        HighScoreRecord* record = survival_records;
+        SubSolution* record = survival_records;
         int count = HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(
-                    (CompactHighScoreRecord*)out);
+                    (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }
             ++record;
@@ -56,12 +56,12 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
     if ((save_mask & 8) != 0) {
         char* out = bytes;
         int bytes_used = 0;
-        HighScoreRecord* record = time_trial_route_records;
+        SubSolution* record = time_trial_route_records;
         int count = HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(
-                    (CompactHighScoreRecord*)out);
+                    (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }
             ++record;

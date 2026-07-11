@@ -3,7 +3,7 @@
 #include "game_root.h"
 #include "high_score_screen.h"
 
-void HighScoreRecord::initialize_high_score_entry(
+void SubSolution::initialize_high_score_entry(
     int runtime_build_seed_value,
     int replay_level_index_value,
     int replay_speed_scalar_bits_value,
@@ -25,7 +25,7 @@ void HighScoreRecord::initialize_high_score_entry(
     replay_cursor = 0;
 
     short* run_words = (short*)run_records + 1;
-    int count = HIGH_SCORE_RUN_RECORD_COUNT;
+    int count = SUB_SOLUTION_RUN_RECORD_COUNT;
     do {
         run_words[-1] = 0;
         run_words[0] = 0;

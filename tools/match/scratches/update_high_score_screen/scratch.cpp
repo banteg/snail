@@ -20,9 +20,9 @@ int HighScoreScreen::update_high_score_screen()
             GameRoot* game = (GameRoot*)g_game_base;
             int rank = selected_rank;
             FrontendWidget* name_widget = name_row_widgets[rank];
-            HighScoreRecord* record =
-                (HighScoreRecord*)((char*)game->subgame.high_score_bank.active_record_bank
-                    + rank * HIGH_SCORE_RECORD_STRIDE);
+            SubSolution* record =
+                (SubSolution*)((char*)game->subgame.high_score_bank.active_record_bank
+                    + rank * SUB_SOLUTION_STRIDE);
             rstrcpy_checked_ascii(record->player_name, name_widget->text_buffer);
             rstrcpy_checked_ascii(game->players[0].player_name, name_widget->text_buffer);
             rstrcpy_checked_ascii(
@@ -98,8 +98,8 @@ int HighScoreScreen::update_high_score_screen()
             int record_offset = 0;
             FrontendWidget** replay_widget = replay_row_widgets;
             do {
-                HighScoreRecord* record =
-                    (HighScoreRecord*)((char*)game->subgame.high_score_bank.active_record_bank
+                SubSolution* record =
+                    (SubSolution*)((char*)game->subgame.high_score_bank.active_record_bank
                         + record_offset);
                 if (record->active == 1) {
                     FrontendWidget* widget = *replay_widget;
@@ -116,7 +116,7 @@ int HighScoreScreen::update_high_score_screen()
 
                             launch_game = (GameRoot*)g_game_base;
                             launch_game->subgame.replay_launch_record =
-                                (HighScoreRecord*)
+                                (SubSolution*)
                                     ((char*)launch_game->subgame.high_score_bank.active_record_bank
                                         + record_offset);
                             ((GameRoot*)g_game_base)->subgame.replay_launch_active = 1;
@@ -131,7 +131,7 @@ int HighScoreScreen::update_high_score_screen()
                 }
 
                 ++i;
-                record_offset += HIGH_SCORE_RECORD_STRIDE;
+                record_offset += SUB_SOLUTION_STRIDE;
                 ++replay_widget;
                 result = game->subgame.high_score_bank.active_record_count;
             } while (i < result);

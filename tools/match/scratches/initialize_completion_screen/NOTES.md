@@ -13,7 +13,7 @@ Recovered relationships:
 - Postal perfect delivery awards `50,000`; challenge mode indexes the two
   `0x4a1194/0x4a11ac` six-entry bonus tables from either live challenge slider
   globals `data_4df960/4df958` or replay record fields `+0x50/+0x4c`.
-- The `HighScoreRecord` tail fields at `+0x48/+0x4c/+0x50` now line up with the
+- The `SubSolution` tail fields at `+0x48/+0x4c/+0x50` now line up with the
   `complete_subgame` result-record copy and the completion replay bonus read.
 
 Current match: 64.10%, 278 target instructions / 268 candidate instructions,

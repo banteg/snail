@@ -41,7 +41,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int runtime_build_seed;
 
     if (*(unsigned char*)(base + 0xff25d0) != 0) {
-        HighScoreRecord* record = *(HighScoreRecord**)(base + 0xff25d4);
+        SubSolution* record = *(SubSolution**)(base + 0xff25d4);
         runtime_build_seed = record->runtime_build_seed;
     } else {
         int mode = level_mode;

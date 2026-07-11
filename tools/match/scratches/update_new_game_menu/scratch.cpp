@@ -104,7 +104,7 @@ void NewGameMenu::update_new_game_menu()
         int cursor = replay_attract_bank_cursor;
         if (cursor == 0) {
             int index = (int)((float)next_math_random_value() * 0.000122070312f);
-            HighScoreRecord* record =
+            SubSolution* record =
                 &((GameRoot*)g_game_base)->subgame.high_score_bank.postal_records[index];
             if (record->active == 1) {
                 ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;
@@ -112,7 +112,7 @@ void NewGameMenu::update_new_game_menu()
             }
         } else if (cursor == 1) {
             int index = (int)((float)next_math_random_value() * 0.000122070312f);
-            HighScoreRecord* record =
+            SubSolution* record =
                 &((GameRoot*)g_game_base)->subgame.high_score_bank.survival_records[index];
             if (record->active == 1) {
                 ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;
@@ -120,7 +120,7 @@ void NewGameMenu::update_new_game_menu()
             }
         } else if (cursor == 3) {
             int index = (int)((float)next_math_random_value() * 0.00155639648f);
-            HighScoreRecord* record =
+            SubSolution* record =
                 &((GameRoot*)g_game_base)->subgame.high_score_bank.time_trial_route_records[index];
             if (record->active == 1) {
                 ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;

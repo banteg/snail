@@ -1,7 +1,7 @@
 // update_challenge_setup_screen @ 0x416370 (thiscall)
 
 #include "challenge_setup_screen.h"
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "sub_tracks.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"

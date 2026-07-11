@@ -85,8 +85,8 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
     for (int i = 0; i < 10; ++i) {
         replay_row_widgets[i] = 0;
         int highlight = (i == selected_rank) ? 2 : 0;
-        HighScoreRecord* record =
-            (HighScoreRecord*)((char*)((GameRoot*)g_game_base)
+        SubSolution* record =
+            (SubSolution*)((char*)((GameRoot*)g_game_base)
                     ->subgame.high_score_bank.active_record_bank
                 + record_offset);
         if (record->active == 1) {
@@ -168,7 +168,7 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
                     *alt_row_color.set_color_rgba(0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
             }
         }
-        record_offset += HIGH_SCORE_RECORD_STRIDE;
+        record_offset += SUB_SOLUTION_STRIDE;
     }
 
     float footer_y = row_step * 10.0f + 111.0f;

@@ -59,7 +59,7 @@ void SubgameRuntime::initialize_subgame()
     }
 
     int level_mode = this->level_mode;
-    HighScoreRecord* level_record;
+    SubSolution* level_record;
     switch (level_mode) {
     case 0:
         level_record = &high_score_bank.postal_records[0];

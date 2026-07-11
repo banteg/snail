@@ -3,7 +3,7 @@
 #include "high_score_bank.h"
 
 void HighScoreBank::add_time_trial_high_score(
-    HighScoreRecord* record,
+    SubSolution* record,
     int route_index,
     unsigned char route_active)
 {
@@ -17,12 +17,12 @@ void HighScoreBank::add_time_trial_high_score(
     current_result_record = *record;
 
     if (route_active) {
-        int route_offset = route_index * HIGH_SCORE_RECORD_STRIDE;
+        int route_offset = route_index * SUB_SOLUTION_STRIDE;
         if (record->total_seconds
                 < *(float*)((char*)this + route_offset + 0x2b8c90)
             || *(float*)((char*)this + route_offset + 0x2b8c90) == 0.0f) {
-            HighScoreRecord* route_record =
-                (HighScoreRecord*)((char*)this + route_offset + 0x2b8c88);
+            SubSolution* route_record =
+                (SubSolution*)((char*)this + route_offset + 0x2b8c88);
             *route_record = *record;
             route_record->route_or_rank_index = route_index;
         }

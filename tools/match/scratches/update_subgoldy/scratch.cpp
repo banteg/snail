@@ -13,7 +13,7 @@
 #include "audio_system.h"
 #include "backdrop.h"
 #include "cheat_state.h"
-#include "high_score_record.h"
+#include "sub_solution.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
 #include "runtime_config.h"
@@ -354,23 +354,23 @@ void SubgoldyPlayerView::update_subgoldy()
     SubgoldyGameView* replay_game = game;
     if (*((unsigned char*)replay_game + 0xff25d0)
         && *(int*)((char*)replay_game + 0xff25dc)
-               < (*(HighScoreRecord**)((char*)replay_game + 0xff25d4))->replay_sample_count
+               < (*(SubSolution**)((char*)replay_game + 0xff25d4))->replay_sample_count
         && movement_state != 2) {
         p_position = &live_matrix.position;
         live_matrix.position.x = convert_math_type16_to_32(
-            (*(HighScoreRecord**)((char*)replay_game + 0xff25d4))
+            (*(SubSolution**)((char*)replay_game + 0xff25d4))
                 ->run_records[*(int*)((char*)replay_game + 0xff25dc)]
                 .lateral_x,
             16.0f);
         SubgoldyGameView* flag_game = game;
-        if ((*(HighScoreRecord**)((char*)flag_game + 0xff25d4))
+        if ((*(SubSolution**)((char*)flag_game + 0xff25d4))
                 ->run_records[*(int*)((char*)flag_game + 0xff25dc)]
                 .flags
             & 4)
             *((unsigned char*)flag_game + 0xa854) = 1;
         else
             *((unsigned char*)flag_game + 0xa854) = 0;
-        if ((*(HighScoreRecord**)((char*)game + 0xff25d4))
+        if ((*(SubSolution**)((char*)game + 0xff25d4))
                 ->run_records[*(int*)((char*)game + 0xff25dc)]
                 .flags
             & 8) {
@@ -1155,14 +1155,14 @@ steering_stored:
                 movement_fire_progress = 0.0f;
         } else if (*((unsigned char*)emitter_game + 0xa854)) {
             if (*((unsigned char*)emitter_game + 0xff25d0)) {
-                if ((*(HighScoreRecord**)((char*)emitter_game + 0xff25d4))
+                if ((*(SubSolution**)((char*)emitter_game + 0xff25d4))
                         ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
                         .flags
                     & 1) {
                     play_movement_state_sound();
                     update_movement_flag_emitters(this);
                     movement_fire_progress = movement_fire_progress_step + 0.30000001f;
-                } else if ((*(HighScoreRecord**)((char*)emitter_game + 0xff25d4))
+                } else if ((*(SubSolution**)((char*)emitter_game + 0xff25d4))
                                ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
                                .flags
                            & 2) {

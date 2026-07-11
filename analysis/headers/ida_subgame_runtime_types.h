@@ -6,9 +6,9 @@ typedef short int16_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
-#define HIGH_SCORE_RECORD_STRIDE 0x1fac0
-#define HIGH_SCORE_RECORD_PLAYER_NAME_SIZE 0x14
-#define HIGH_SCORE_RUN_RECORD_COUNT 21600
+#define SUB_SOLUTION_STRIDE 0x1fac0
+#define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
+#define SUB_SOLUTION_RUN_RECORD_COUNT 21600
 #define HIGH_SCORE_TOP_TEN_STORAGE_COUNT 11
 #define HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT 51
 
@@ -38,7 +38,7 @@ typedef struct ReplayRunRecord {
     uint8_t reserved_05;
 } ReplayRunRecord;
 
-typedef struct HighScoreRecord {
+typedef struct SubSolution {
     int32_t active;
     int32_t score;
     ScoreOrTime score_or_time;
@@ -55,24 +55,24 @@ typedef struct HighScoreRecord {
     int32_t replay_speed_scalar_bits;
     int32_t challenge_speed_value;
     int32_t challenge_difficulty_value;
-    char player_name[HIGH_SCORE_RECORD_PLAYER_NAME_SIZE];
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE];
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
-    ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT];
+    ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT];
     float garbage_frequency;
     float salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
-} HighScoreRecord;
+} SubSolution;
 
 typedef struct HighScoreBank {
-    HighScoreRecord* active_record_bank;
+    SubSolution* active_record_bank;
     int32_t active_record_count;
-    HighScoreRecord postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
-    HighScoreRecord survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
-    HighScoreRecord time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT];
-    HighScoreRecord current_result_record;
-    HighScoreRecord survival_pending_record;
+    SubSolution postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
+    SubSolution survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
+    SubSolution time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT];
+    SubSolution current_result_record;
+    SubSolution survival_pending_record;
 } HighScoreBank;
 
 typedef union RuntimeRateOrLevelArg {
@@ -137,7 +137,7 @@ typedef struct SubgameRuntime {
     float nuke_rate_progress;
     uint8_t unknown_3be0c4[0x68b4c8 - 0x3be0c4];
     HighScoreBank high_score_bank;
-    HighScoreRecord current_high_score_record;
+    SubSolution current_high_score_record;
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t unknown_ff25d2[0xff25d4 - 0xff25d2];

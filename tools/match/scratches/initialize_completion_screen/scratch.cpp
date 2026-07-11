@@ -20,7 +20,7 @@ void Completion::initialize_completion_screen(
         int x_source;
         int y_source;
         if (((GameRoot*)g_game_base)->subgame.replay_launch_active != 0) {
-            HighScoreRecord* record =
+            SubSolution* record =
                 ((GameRoot*)g_game_base)->subgame.replay_launch_record;
             x_source = record->challenge_speed_value;
             y_source = record->challenge_difficulty_value;

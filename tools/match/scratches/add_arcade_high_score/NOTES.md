@@ -14,7 +14,7 @@ Behavior:
   slot, updates each shifted record's `route_or_rank_index`, copies the new
   record into the selected rank, and arms the high-score entry frontend state.
 
-The scratch uses the shared `HighScoreBank` and `HighScoreRecord` layouts so
+The scratch uses the shared `HighScoreBank` and `SubSolution` layouts so
 this helper, `add_survival_high_score`, `add_time_trial_high_score`, replay
 launch, and `complete_subgame` all describe the same 0x1fac0 record.
 
@@ -43,7 +43,7 @@ Rejected/neutral source-shape probes:
 - Rewriting the scan as `while (score <= *score_cursor)` was codegen-neutral at
   80.58%; VC6 still cached the first postal score in `edi` and bottom-tested the
   loop.
-- Walking a `HighScoreRecord*` cursor and comparing `record->score` directly
+- Walking a `SubSolution*` cursor and comparing `record->score` directly
   were also neutral at 80.58%.
 - Sharing one `shift_rank` limit variable between the scan and shift loop
   regressed to 63.38% by pushing `ebx` in the prologue.
