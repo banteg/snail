@@ -9,6 +9,7 @@ import sys
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
+    apply_struct_field_updates,
     apply_symbol_updates,
     emit_summary,
     types_declare_if_missing,
@@ -17,7 +18,21 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frame_renderer_types.h"
-REQUIRED_STRUCTS = ("SpriteDepthNode",)
+REQUIRED_STRUCTS = (
+    "SpriteDepthNode",
+    "FrontendFade",
+    "MouseCursorState",
+    "FrontendOverlayColorLerp",
+    "GamePlayer",
+    "FrameBodNode",
+    "FrameBodList",
+    "FrameBodBase",
+    "FrameRenderCamera",
+    "FrameRenderCameraSlot",
+    "FrameContactTargetRegistry",
+    "FrameSubgameRuntime",
+    "GameRoot",
+)
 
 SYMBOL_UPDATES = (
     ("0x4e5510", "g_sprite_depth_nodes"),
@@ -31,9 +46,50 @@ DATA_VAR_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "run_frame_update",
+        "int32_t __thiscall run_frame_update(GameRoot* game)",
+    ),
+    (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot* game)",
     ),
+)
+
+MOUSE_CURSOR_FIELD_UPDATES = (
+    ("0x00", "captured", "uint8_t"),
+    ("0x04", "live_x", "float"),
+    ("0x08", "live_y", "float"),
+    ("0x0c", "saved_x", "float"),
+    ("0x10", "saved_y", "float"),
+    ("0x14", "suppress_next_draw", "uint8_t"),
+)
+
+FRONTEND_OVERLAY_FIELD_UPDATES = (
+    ("0x00", "state", "int32_t"),
+    ("0x04", "target", "FrameColor4f"),
+    ("0x14", "current", "FrameColor4f"),
+)
+
+GAME_PLAYER_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+    ("0x16c", "mouse_cursor", "MouseCursorState"),
+    ("0x184", "frontend_overlay", "FrontendOverlayColorLerp"),
+)
+
+GAME_ROOT_FIELD_UPDATES = (
+    ("0x24", "fade", "FrontendFade"),
+    ("0x38", "frontend_quit_requested", "int32_t"),
+    ("0x3c", "fixed_update_count", "int32_t"),
+    ("0x40", "player_count", "int32_t"),
+    ("0x124", "players", "GamePlayer[2]"),
+    ("0x518", "fixed_update_accumulator", "float"),
+    ("0x51c", "frame_counter", "int32_t"),
+    ("0x520", "input_sampling_gate", "uint8_t"),
+    ("0x56c", "render_skip_count", "int32_t"),
+    ("0x570", "inactive_bod_sentinel", "FrameBodBase"),
+    ("0x5a8", "active_bod_list", "FrameBodList"),
+    ("0x5b4", "render_camera_slots", "FrameRenderCameraSlot[5]"),
+    ("0x74618", "subgame", "FrameSubgameRuntime"),
 )
 
 
@@ -65,6 +121,38 @@ def main() -> int:
             required_structs=REQUIRED_STRUCTS,
         )
     ]
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="MouseCursorState",
+            updates=MOUSE_CURSOR_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="FrontendOverlayColorLerp",
+            updates=FRONTEND_OVERLAY_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="GamePlayer",
+            updates=GAME_PLAYER_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="GameRoot",
+            updates=GAME_ROOT_FIELD_UPDATES,
+        )
+    )
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,

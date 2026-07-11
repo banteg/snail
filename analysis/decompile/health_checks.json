@@ -154,6 +154,47 @@
       ]
     },
     {
+      "name": "bn_root_frame_update_ownership",
+      "artifact": "analysis/decompile/binja/functions/0040a2a0-run_frame_update.c",
+      "required_substrings": [
+        "game->fixed_update_accumulator",
+        "game->players[0].mouse_cursor.saved_x",
+        "game->players[0].frontend_overlay",
+        "game->active_bod_list.first",
+        "game->subgame.level_mode",
+        "game->subgame.contact_targets",
+        "game->input_sampling_gate"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x518",
+        "__offset(GameRoot",
+        "_pad_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_root_frame_update_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040a2a0-run_frame_update.c",
+      "required_substrings": [
+        "int __thiscall run_frame_update(GameRoot *game)",
+        "game->fixed_update_accumulator",
+        "game->players[0].mouse_cursor.saved_x",
+        "game->players[0].frontend_overlay",
+        "game->active_bod_list.first",
+        "game->subgame.level_mode",
+        "game->subgame.contact_targets.count",
+        "game->input_sampling_gate"
+      ],
+      "forbidden_substrings": [
+        "this + 1304",
+        "this + 19813868",
+        "_pad_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frame_renderer_workspace_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c",
       "required_substrings": [

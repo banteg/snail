@@ -6,15 +6,15 @@ void __thiscall render_game_frame(GameRoot *game)
 {
   GameRoot *v1; // edi
   int v2; // esi
-  int v3; // eax
+  int32_t render_skip_count; // eax
   int v4; // ebx
-  _BYTE *v5; // eax
+  uint32_t *p_flags; // eax
   int v6; // ecx
-  char *v7; // eax
+  int32_t *p_sort_key; // eax
   int v8; // edx
   int v9; // ecx
   int v10; // edx
-  int v11; // ebp
+  int32_t v11; // ebp
   int v12; // eax
   int *v13; // ebx
   int *v14; // eax
@@ -24,21 +24,21 @@ void __thiscall render_game_frame(GameRoot *game)
   char *v18; // ebp
   int v19; // eax
   float v20; // edx
-  float *v21; // esi
+  float *p_viewport_width; // esi
   float v22; // ecx
   float v23; // eax
   float v24; // ecx
   float v25; // edx
   float v26; // eax
   float v27; // ecx
-  int v28; // esi
-  _DWORD *v29; // edi
-  int v30; // eax
-  char *v31; // ecx
-  int v32; // eax
+  FrameBodBase *first; // esi
+  FrameBodBase **v29; // edi
+  uint32_t list_flags; // eax
+  int32_t *v31; // ecx
+  uint32_t v32; // eax
   float v33; // eax
-  float v34; // edx
-  float v35; // eax
+  float render_arg_20; // edx
+  float render_arg_1c; // eax
   TransformMatrix *p_transform; // ecx
   float v37; // eax
   float v38; // edx
@@ -59,8 +59,8 @@ void __thiscall render_game_frame(GameRoot *game)
   int v53; // esi
   int v54; // ecx
   int v55; // ecx
-  char *v56; // ebx
-  int v57; // eax
+  int32_t *v56; // ebx
+  char *v57; // eax
   int *v58; // edi
   int v59; // eax
   int v60; // esi
@@ -75,7 +75,7 @@ void __thiscall render_game_frame(GameRoot *game)
   bool v69; // zf
   float v70[16]; // [esp-40h] [ebp-D0h] BYREF
   char v71; // [esp+0h] [ebp-90h]
-  char *v72; // [esp+10h] [ebp-80h]
+  int32_t *v72; // [esp+10h] [ebp-80h]
   int v73; // [esp+14h] [ebp-7Ch]
   GameRoot *v74; // [esp+18h] [ebp-78h]
   float v75; // [esp+1Ch] [ebp-74h]
@@ -93,10 +93,10 @@ void __thiscall render_game_frame(GameRoot *game)
   v1 = game;
   v2 = 0;
   v74 = game;
-  v3 = *((_DWORD *)game + 347);
-  if ( v3 > 0 )
+  render_skip_count = game->render_skip_count;
+  if ( render_skip_count > 0 )
   {
-    *((_DWORD *)game + 347) = v3 - 1;
+    game->render_skip_count = render_skip_count - 1;
     return;
   }
   reset_render_counters();
@@ -105,39 +105,39 @@ void __thiscall render_game_frame(GameRoot *game)
   *(float *)&v4 = 0.0;
   memset(v83, 255, sizeof(v83));
   v75 = 0.0;
-  v5 = (char *)v1 + 1468;
+  p_flags = &v1->render_camera_slots[0].flags;
   v84 = -1;
   v6 = 5;
   do
   {
-    if ( (*v5 & 1) != 0 )
+    if ( (*(_BYTE *)p_flags & 1) != 0 )
       ++v4;
-    v5 += 40;
+    p_flags += 10;
     --v6;
   }
   while ( v6 );
-  v7 = (char *)v1 + 1464;
-  v8 = *((_DWORD *)v1 + 377) & 0xFFFFFF;
+  p_sort_key = &v1->render_camera_slots[0].sort_key;
+  v8 = v1->render_camera_slots[1].flags & 0xFFFFFF;
   v75 = *(float *)&v4;
   v9 = 0;
-  *((_DWORD *)v1 + 377) = v8 | 0x2000000;
+  v1->render_camera_slots[1].flags = v8 | 0x2000000;
   v73 = 0;
-  v72 = (char *)v1 + 1464;
+  v72 = &v1->render_camera_slots[0].sort_key;
   do
   {
-    if ( (v7[4] & 1) != 0 )
+    if ( (p_sort_key[1] & 1) != 0 )
     {
       if ( v2 )
       {
         v10 = 0;
         if ( v2 > 0 )
         {
-          v11 = *(_DWORD *)v7;
+          v11 = *p_sort_key;
           v12 = 0;
           do
           {
             v13 = &v83[v12];
-            if ( v11 > *((_DWORD *)v1 + 10 * v83[v12] + 366) )
+            if ( v11 > v1->render_camera_slots[v83[v12]].sort_key )
             {
               if ( v12 <= 3 )
               {
@@ -160,7 +160,7 @@ void __thiscall render_game_frame(GameRoot *game)
             ++v12;
           }
           while ( v10 < v2 );
-          v7 = v72;
+          p_sort_key = v72;
           *(float *)&v4 = v75;
           v9 = v73;
         }
@@ -172,9 +172,9 @@ void __thiscall render_game_frame(GameRoot *game)
       }
     }
     ++v9;
-    v7 += 40;
+    p_sort_key += 10;
     v73 = v9;
-    v72 = v7;
+    v72 = p_sort_key;
   }
   while ( v9 < 5 );
   v72 = nullptr;
@@ -195,20 +195,20 @@ void __thiscall render_game_frame(GameRoot *game)
         v70[15] = 0.0;
         v70[14] = v16;
         LODWORD(v20) = v19 + 56;
-        v21 = (float *)((char *)v1 + 40 * v17 + 1480);
+        p_viewport_width = &v1->render_camera_slots[v17].viewport_width;
         LODWORD(v22) = v19 + 128;
         v23 = *(float *)(v19 + 192);
         v70[13] = v22;
         v24 = *((float *)v18 + 371);
         v70[12] = v20;
-        v25 = *v21;
+        v25 = *p_viewport_width;
         v70[11] = v23;
         v26 = *((float *)v18 + 369);
         v70[10] = v24;
         v27 = *((float *)v18 + 368);
-        v79 = v21;
+        v79 = p_viewport_width;
         render_camera(
-          (int)v21,
+          (int)p_viewport_width,
           v27,
           v26,
           v25,
@@ -221,67 +221,69 @@ void __thiscall render_game_frame(GameRoot *game)
           v71);
         if ( (v18[1468] & 2) == 0 )
         {
-          v28 = *((_DWORD *)v1 + 363);
+          first = v1->active_bod_list.first;
           v72 = nullptr;
-          if ( v28 )
+          if ( first )
           {
-            v29 = &unk_4DFB10;
+            v29 = (FrameBodBase **)&unk_4DFB10;
             do
             {
-              if ( (*(_BYTE *)(v28 + 4) & 0x10) != 0 )
+              if ( (first->bod.list_flags & 0x10) != 0 )
               {
                 LODWORD(v70[15]) = aDebugRender;
                 debug_report_stub();
               }
-              v30 = *(_DWORD *)(v28 + 4);
-              if ( (v30 & 2) != 0 && (v30 & 0x20) != 0 && (v30 & *((_DWORD *)v18 + 367) & 0xFF000000) != 0 )
+              list_flags = first->bod.list_flags;
+              if ( (list_flags & 2) != 0
+                && (list_flags & 0x20) != 0
+                && (list_flags & *((_DWORD *)v18 + 367) & 0xFF000000) != 0 )
               {
-                if ( (v30 & 0x80u) != 0 )
+                if ( (list_flags & 0x80u) != 0 )
                 {
                   v31 = v72;
-                  *v29++ = v28;
-                  v72 = v31 + 1;
+                  *v29++ = first;
+                  v72 = (int32_t *)((char *)v31 + 1);
                 }
-                v32 = *(_DWORD *)(v28 + 4);
+                v32 = first->bod.list_flags;
                 ++v73;
                 if ( (v32 & 0x800) != 0 )
-                  *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(v28 + 36) + 188) + 12) = *(_DWORD *)(*(_DWORD *)(v28 + 120) + 4);
-                if ( (*(_DWORD *)(v28 + 4) & 0x400) != 0 )
+                  *(_DWORD *)(*((_DWORD *)first->object + 47) + 12) = first[2].bod.list_prev->bod.list_flags;
+                if ( (first->bod.list_flags & 0x400) != 0 )
                 {
-                  LOBYTE(v33) = is_bod_after_sprites((char *)v28);
-                  v34 = *(float *)(v28 + 32);
+                  LOBYTE(v33) = is_bod_after_sprites((char *)first);
+                  render_arg_20 = first->render_arg_20;
                   v70[15] = v33;
-                  v35 = *(float *)(v28 + 28);
-                  LODWORD(v70[14]) = v28 + 40;
-                  v70[13] = v34;
-                  v70[12] = v35;
-                  p_transform = (TransformMatrix *)(v28 + 56);
+                  render_arg_1c = first->render_arg_1c;
+                  LODWORD(v70[14]) = &first->color;
+                  v70[13] = render_arg_20;
+                  v70[12] = render_arg_1c;
+                  p_transform = (TransformMatrix *)&first[1];
                 }
                 else
                 {
-                  transform.position.x = *(float *)(v28 + 16);
-                  transform.position.y = *(float *)(v28 + 20);
-                  transform.position.z = *(float *)(v28 + 24);
-                  LOBYTE(v37) = is_bod_after_sprites((char *)v28);
-                  v38 = *(float *)(v28 + 32);
+                  transform.position.x = first->position.x;
+                  transform.position.y = first->position.y;
+                  transform.position.z = first->position.z;
+                  LOBYTE(v37) = is_bod_after_sprites((char *)first);
+                  v38 = first->render_arg_20;
                   v70[15] = v37;
-                  v39 = *(float *)(v28 + 28);
-                  LODWORD(v70[14]) = v28 + 40;
+                  v39 = first->render_arg_1c;
+                  LODWORD(v70[14]) = &first->color;
                   v70[13] = v38;
                   v70[12] = v39;
                   p_transform = &transform;
                 }
                 render_object(
-                  *(Object **)(v28 + 36),
+                  (Object *)first->object,
                   p_transform,
                   SLODWORD(v70[12]),
                   v70[13],
                   (Color4f *)LODWORD(v70[14]),
                   SLOBYTE(v70[15]));
               }
-              v28 = *(_DWORD *)(v28 + 12);
+              first = first->bod.list_next;
             }
-            while ( v28 );
+            while ( first );
             v1 = v74;
           }
         }
@@ -427,10 +429,10 @@ LABEL_64:
             1,
             v71);
           v56 = v72;
-          v57 = (int)&v72[v73];
+          v57 = (char *)v72 + v73;
           v58 = (int *)(4 * (_DWORD)v72 + 5110544);
           v72 = nullptr;
-          v73 = v57;
+          v73 = (int)v57;
           do
           {
             v59 = *--v58;
@@ -469,7 +471,7 @@ LABEL_64:
               v70[13],
               (Color4f *)LODWORD(v70[14]),
               SLOBYTE(v70[15]));
-            --v56;
+            v56 = (int32_t *)((char *)v56 - 1);
           }
           while ( v56 );
           v1 = v74;

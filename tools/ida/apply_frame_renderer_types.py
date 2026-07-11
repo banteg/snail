@@ -19,6 +19,10 @@ TRUSTED_NAMES = [
 
 TRUSTED_FUNCTION_DECLARATIONS = [
     (
+        "run_frame_update",
+        "int __thiscall run_frame_update(GameRoot *game);",
+    ),
+    (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot *game);",
     ),

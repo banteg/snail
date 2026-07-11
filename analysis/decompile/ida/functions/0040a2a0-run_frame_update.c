@@ -2,85 +2,85 @@
 /* function: run_frame_update @ 0x40a2a0 */
 /* selector: run_frame_update */
 
-int __thiscall run_frame_update(int this)
+int __thiscall run_frame_update(GameRoot *game)
 {
   double v2; // st7
   int v3; // ebx
-  int v4; // edx
+  int32_t v4; // edx
   int *v5; // eax
-  int v6; // edi
-  int v7; // esi
-  int v8; // eax
-  int v9; // eax
+  FrameBodBase *first; // edi
+  FrameBodBase *list_next; // esi
+  uint32_t list_flags; // eax
+  uint32_t v9; // eax
   int *v10; // edi
   int v11; // ecx
   int v12; // esi
-  double v13; // st7
+  double fixed_update_accumulator; // st7
   int v15; // [esp+0h] [ebp-38h]
   int v16; // [esp+4h] [ebp-34h]
   int v17; // [esp+24h] [ebp-14h]
   Color4f color; // [esp+28h] [ebp-10h] BYREF
 
-  update_frontend_transition_overlay((float *)(this + 36));
+  update_frontend_transition_overlay((float *)&game->fade.state);
   noop_runtime_ai();
   update_cheat(&g_completion_snapshot_flags);
   update_voice_manager(g_voice_manager);
-  v2 = *(float *)(this + 1304) + 1.0;
+  v2 = game->fixed_update_accumulator + 1.0;
   v3 = 0;
-  v4 = *(_DWORD *)(this + 1308) + 1;
-  *(_DWORD *)(this + 56) = 0;
-  *(float *)(this + 1304) = v2;
-  *(_DWORD *)(this + 60) = 1;
-  *(_DWORD *)(this + 1308) = v4;
-  *(_BYTE *)(this + 1312) = 1;
+  v4 = game->frame_counter + 1;
+  game->frontend_quit_requested = 0;
+  game->fixed_update_accumulator = v2;
+  game->fixed_update_count = 1;
+  game->frame_counter = v4;
+  game->input_sampling_gate = 1;
   v17 = 0;
-  if ( is_mouse_captured((void *)(this + 656)) )
+  if ( is_mouse_captured(&game->players[0].mouse_cursor) )
   {
-    if ( *(_BYTE *)(this + 676) )
+    if ( game->players[0].mouse_cursor.suppress_next_draw )
     {
-      *(_BYTE *)(this + 676) = 0;
+      game->players[0].mouse_cursor.suppress_next_draw = 0;
     }
     else
     {
       v5 = (int *)set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-      *(float *)&v16 = *(float *)(this + 672) - 7.0;
-      *(float *)&v15 = *(float *)(this + 668) - 8.0;
+      *(float *)&v16 = game->players[0].mouse_cursor.saved_y - 7.0;
+      *(float *)&v15 = game->players[0].mouse_cursor.saved_x - 8.0;
       queue_axis_aligned_textured_quad(22, v15, v16, 1115684864, 1115684864, 0x1000000, v5, 7);
     }
   }
-  if ( *(float *)(this + 1304) <= 1.0 )
-    return *(_DWORD *)(this + 56);
+  if ( game->fixed_update_accumulator <= 1.0 )
+    return game->frontend_quit_requested;
   do
   {
-    *(float *)(this + 1304) = *(float *)(this + 1304) - 1.0;
-    draw_frontend_overlay_color_lerp((void *)(this + 680));
-    v6 = *(_DWORD *)(this + 1452);
-    if ( v6 )
+    game->fixed_update_accumulator = game->fixed_update_accumulator - 1.0;
+    draw_frontend_overlay_color_lerp(&game->players[0].frontend_overlay);
+    first = game->active_bod_list.first;
+    if ( first )
     {
       while ( 1 )
       {
-        if ( (*(_BYTE *)(v6 + 4) & 0x10) != 0 )
+        if ( (first->bod.list_flags & 0x10) != 0 )
           report_errorf(aDebugBodAi);
-        v7 = *(_DWORD *)(v6 + 12);
-        if ( v7 )
+        list_next = first->bod.list_next;
+        if ( list_next )
         {
-          v8 = *(_DWORD *)(v7 + 4);
-          LOBYTE(v8) = v8 | 0x40;
-          *(_DWORD *)(v7 + 4) = v8;
+          list_flags = list_next->bod.list_flags;
+          LOBYTE(list_flags) = list_flags | 0x40;
+          list_next->bod.list_flags = list_flags;
         }
-        (**(void (__thiscall ***)(int))v6)(v6);
-        v6 = v7;
+        (*(void (__thiscall **)(FrameBodBase *))first->bod.vtable)(first);
+        first = list_next;
         ++v17;
-        if ( !v7 )
+        if ( !list_next )
           break;
-        v9 = *(_DWORD *)(v7 + 4);
+        v9 = list_next->bod.list_flags;
         LOBYTE(v9) = v9 & 0xBF;
-        *(_DWORD *)(v7 + 4) = v9;
+        list_next->bod.list_flags = v9;
       }
     }
-    (**(void (__thiscall ***)(int))(this + 292))(this + 292);
-    if ( *(_DWORD *)(this + 476760) == 6 )
-      (**(void (__thiscall ***)(int))(this + 796))(this + 796);
+    (*(void (__thiscall **)(GamePlayer *))game->players[0].vtable)(game->players);
+    if ( game->subgame.level_mode == 6 )
+      (*(void (__thiscall **)(GamePlayer *))game->players[1].vtable)(&game->players[1]);
     v10 = g_sprite_active_heads;
     do
     {
@@ -99,11 +99,11 @@ int __thiscall run_frame_update(int this)
       ++v10;
     }
     while ( (int)v10 < (int)&g_sprite_free_head );
-    initialize_enemy_manager((int *)(this + 19813868));
-    v13 = *(float *)(this + 1304);
-    *(_BYTE *)(this + 1312) = 0;
+    initialize_enemy_manager(&game->subgame.contact_targets.count);
+    fixed_update_accumulator = game->fixed_update_accumulator;
+    game->input_sampling_gate = 0;
   }
-  while ( v13 > 1.0 );
-  return *(_DWORD *)(this + 56);
+  while ( fixed_update_accumulator > 1.0 );
+  return game->frontend_quit_requested;
 }
 
