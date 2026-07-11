@@ -132,3 +132,18 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   manager fields directly.
 - The anonymous renderable at `+0xa60` and BodBase at `+0x4f3c8` remain generic;
   their concrete owners are not established by this pass.
+
+## 2026-07-11 DirectX loader and cached-mesh ownership
+
+- The root interval `+0x48e00..+0x4ec10` is one complete `DirectXLoader`, not
+  overlapping `DirectXLoader` and `CachedXMeshBank` views. Its fields close
+  the interval exactly: animation-script bytes at `+0x00`, cached-mesh count
+  at `+0x04`, 128 `0xbc`-byte cached mesh slots at `+0x08`, and the
+  `0x8`-byte duplicate-vertex buffer at `+0x5e08`.
+- The constructor now initializes the owned slot array through
+  `root->directx_loader.cached_x_mesh_slots`; the neutral `RuntimeSlot`
+  callback type remains only at the generic array-constructor ABI boundary.
+- `initialize_directx_loader`, `initialize_cached_x_mesh_slot`,
+  `load_or_reuse_cached_x_mesh`, and `load_landscape_script_by_name` remain
+  exact. This constructor remains `88.89%`, `299/268`, with 119 clean operands
+  and only the compiler-local EH handler unresolved.

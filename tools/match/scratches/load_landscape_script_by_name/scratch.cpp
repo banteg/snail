@@ -1,6 +1,6 @@
 // load_landscape_script_by_name @ 0x4182f0 (thiscall, ret 0x4)
 
-#include "cached_x_mesh_bank.h"
+#include "game_root.h"
 #include "landscape_script_bank.h"
 
 extern char* g_game_base; // data_4df904
@@ -167,8 +167,8 @@ load_script:
             out[1] = 0;
 
             scripts[script_count].object_index =
-                ((CachedXMeshBank*)(g_game_base + 0x48e00))
-                    ->load_or_reuse_cached_x_mesh(object_mesh_name);
+                ((GameRoot*)g_game_base)->directx_loader
+                    .load_or_reuse_cached_x_mesh(object_mesh_name);
         }
     }
 

@@ -6,6 +6,7 @@
 #include "bod_list.h"
 #include "border_manager.h"
 #include "completion_screen.h"
+#include "directx_loader.h"
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
 #include "input_state.h"
@@ -99,7 +100,8 @@ public:
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
     char unknown_000a60[0xb4c - 0xa60];
     BorderManager border_manager; // +0xb4c, owned frontend border pool
-    char unknown_0440e8[0x4ec10 - 0x440e8];
+    char unknown_0440e8[0x48e00 - 0x440e8];
+    DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
     // every boundary through the completion prompt without padding.

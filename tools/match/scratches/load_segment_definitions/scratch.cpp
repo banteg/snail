@@ -1,6 +1,6 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
-#include "cached_x_mesh_bank.h"
+#include "game_root.h"
 #include "segment_catalog_types.h"
 
 extern char* g_game_base; // data_4df904
@@ -147,8 +147,8 @@ int SegmentCatalog::load_segment_definitions()
                 *mesh_out++ = 'x';
                 *mesh_out = 0;
                 row->object_id =
-                    ((CachedXMeshBank*)(g_game_base + 0x48e00))
-                        ->load_or_reuse_cached_x_mesh(mesh_name);
+                    ((GameRoot*)g_game_base)->directx_loader
+                        .load_or_reuse_cached_x_mesh(mesh_name);
 
                 model_cursor = find_case_insensitive_substring("(", model_cursor);
                 row->object_position_x.value = parse_next_float32(&model_cursor);

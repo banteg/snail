@@ -176,8 +176,8 @@ static void initialize_pillar_island(char* game)
     do {
         int offset = 0x445d0 + i * 0x38;
         ((BodBase*)(game + offset))->set_bod_object(g_object_list.add_object_to_list());
-        ((DirectXLoader*)(game + 0x48e00))
-            ->load_x_mesh(meshes[i], ((BodBase*)(game + offset))->object, 1);
+        ((GameRoot*)game)->directx_loader
+            .load_x_mesh(meshes[i], ((BodBase*)(game + offset))->object, 1);
         ((BodBase*)(game + offset))->apply_bod_position(&matrix);
         ++i;
     } while (i < 8);
@@ -254,7 +254,7 @@ char GameRoot::initialize_game_assets_and_world()
     initialize_overlay_slot(&overlay_0);
 
     memset(g_directx_loader_scratch, 0, 0x15c);
-    ((DirectXLoader*)(game + 0x48e00))->initialize_directx_loader();
+    directx_loader.initialize_directx_loader();
     LandscapeScriptBank* landscape = (LandscapeScriptBank*)(game + 0x106c218);
     landscape->reset_landscape_manager();
     SegmentCatalog* segment_catalog = (SegmentCatalog*)(game + 0x1075ae4);
@@ -336,8 +336,8 @@ char GameRoot::initialize_game_assets_and_world()
         1, *(Object**)(game + 0x44274), (char*)"Objects/World00/Track0.tga");
 
     ((BodBase*)(game + 0x44100))->set_bod_object(g_object_list.add_object_to_list());
-    ((DirectXLoader*)(game + 0x48e00))
-        ->load_x_mesh((char*)"Tramp.x", ((BodBase*)(game + 0x44100))->object, 1);
+    directx_loader
+        .load_x_mesh((char*)"Tramp.x", ((BodBase*)(game + 0x44100))->object, 1);
     *(int*)(*(int*)(game + 0x44124) + 0x14) = 6;
 
     ((BodBase*)(game + 0x441d0))->set_bod_object(g_object_list.add_object_to_list());

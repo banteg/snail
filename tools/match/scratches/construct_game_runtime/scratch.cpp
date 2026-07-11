@@ -146,9 +146,9 @@ __forceinline GameRootAllocation::GameRootAllocation()
         } while (bod_count);
 
         initialize_array_with_constructor(
-            SLOT(0x48e08),
-            0xbc,
-            0x80,
+            (RuntimeSlot*)&root->directx_loader.cached_x_mesh_slots[0],
+            sizeof(CachedXMeshSlot),
+            DIRECTX_LOADER_CACHED_X_MESH_SLOT_COUNT,
             &RuntimeSlot::initialize_cached_x_mesh_slot);
 
         Backdrop* backdrop = &root->backdrop;

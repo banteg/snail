@@ -34,8 +34,8 @@ Corrections propagated to the reader:
 
 Call-shape notes:
 
-- `load_or_reuse_cached_x_mesh` is called as a mesh-bank thiscall with
-  `ecx = game+0x48e00`.
+- `load_or_reuse_cached_x_mesh` is called on the root-owned `DirectXLoader`
+  with `ecx = game+0x48e00`; the loader owns the complete fixed cache bank.
 - `find_segment_path_index_by_name` is also called through a path-table owner
   at `game+0x1066f28` in this caller, even though the standalone callee scratch
   can match as a free stdcall helper.

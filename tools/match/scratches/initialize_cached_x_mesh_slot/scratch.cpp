@@ -1,6 +1,6 @@
 // initialize_cached_x_mesh_slot @ 0x408470 (thiscall, ret)
 
-#include "cached_x_mesh_bank.h"
+#include "directx_loader.h"
 
 extern void* g_cached_x_mesh_slot_vtable; // off_49730c / data_49730c
 

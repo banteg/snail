@@ -7,7 +7,7 @@ extern char g_x_animation_script_path[]; // "XAnimation.txt"
 
 void* DirectXLoader::initialize_directx_loader()
 {
-    field_04 = 0;
+    cached_x_mesh_count = 0;
     animation_bytes = load_file_bytes(g_x_animation_script_path, 0);
     return duplicate_vertices.initialize_duplicate_vertices(2000);
 }

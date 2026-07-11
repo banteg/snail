@@ -237,12 +237,13 @@
     },
     {
       "address": "0x405c90",
-      "name": "initialize_directx_loader"
+      "name": "initialize_directx_loader",
+      "description": "Initializes the root-owned 0x5e10-byte DirectX/X-file loader: clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache."
     },
     {
       "address": "0x405cc0",
       "name": "load_or_reuse_cached_x_mesh",
-      "description": "Searches the shared runtime X-mesh bank by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index."
+      "description": "Searches the root DirectX loader's fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index."
     },
     {
       "address": "0x405d60",
@@ -389,7 +390,7 @@
     {
       "address": "0x408470",
       "name": "initialize_cached_x_mesh_slot",
-      "description": "Constructs one 0xbc-byte cached X-mesh object slot by seeding the shared BOD header and installing the cache-slot callback table. The slot bank starts at `game + 0x48e08`; `load_or_reuse_cached_x_mesh(game + 0x48e00, ...)` stores names at slot `+0x3c` and object BOD refs at slot `+0x24`."
+      "description": "Constructs one 0xbc-byte cached X-mesh object slot by seeding the shared BOD header and installing the cache-slot callback table. The root DirectX loader owns 128 slots starting at `game + 0x48e08`; names live at slot `+0x3c` and object BOD refs at slot `+0x24`."
     },
     {
       "address": "0x408490",
