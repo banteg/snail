@@ -274,8 +274,8 @@ char GameRoot::initialize_game_assets_and_world()
     segment_catalog->load_level_definitions();
     ((LandscapeScriptBank*)(g_game_base + 0x106c218))
         ->load_landscape_script_by_name((char*)"Menubg.txt");
-    ((LevelSegmentSlotStore*)(game + 0x224804))
-        ->load_builtin_segment_definitions(g_builtin_segment_definitions);
+    subgame.level_definition_scratch.load_builtin_segment_definitions(
+        g_builtin_segment_definitions);
 
     render_camera_slots[1].sort_key = 1;
     render_camera_slots[1].flags = 0x2000001;

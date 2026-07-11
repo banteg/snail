@@ -3,21 +3,17 @@
 #include "player.h"
 #include "runtime_slot.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 
 extern void* g_banner_callback_table;        // data_497304
 extern void* g_subgoldy_callback_table;      // data_497300
 extern void* g_barrier_actor_callback_table; // data_4972fc
 extern void* g_smtracks_callback_table;      // data_4972f8
 
-class RuntimePools {
-public:
-    RuntimePools* initialize_runtime_pools_and_path_template_bank();
-};
-
 #define SLOT(offset) ((RuntimeSlot*)(self + (offset)))
 #define COLOR(offset) ((Color4f*)(self + (offset)))
 
-RuntimePools* RuntimePools::initialize_runtime_pools_and_path_template_bank()
+SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank()
 {
     char* self = (char*)this;
 
@@ -28,21 +24,39 @@ RuntimePools* RuntimePools::initialize_runtime_pools_and_path_template_bank()
         active_bods, 0x3c, 0x2cb, &RuntimeSlot::initialize_active_bod);
 
     initialize_array_with_constructor(
-        SLOT(0xa878), 0x4220, 0x64, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition.segment_slots,
+        sizeof(LevelSegmentSlot),
+        0x64,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x1a850c), 0x38, 0x100, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition.first_segment.rows,
+        sizeof(AuthoredSegmentRow),
+        0x100,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x1ac72c), 0x38, 0x100, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition.last_segment.rows,
+        sizeof(AuthoredSegmentRow),
+        0x100,
+        &RuntimeSlot::noop_runtime_slot_constructor);
 
-    COLOR(0x1b0140)->noop_this_constructor();
+    level_definition.fringe_color.noop_this_constructor();
     initialize_array_with_constructor(
-        SLOT(0x1b01f0), 0x4220, 0x64, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition_scratch.segment_slots,
+        sizeof(LevelSegmentSlot),
+        0x64,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x34de84), 0x38, 0x100, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition_scratch.first_segment.rows,
+        sizeof(AuthoredSegmentRow),
+        0x100,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x3520a4), 0x38, 0x100, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)level_definition_scratch.last_segment.rows,
+        sizeof(AuthoredSegmentRow),
+        0x100,
+        &RuntimeSlot::noop_runtime_slot_constructor);
 
-    COLOR(0x355ab8)->noop_this_constructor();
+    level_definition_scratch.fringe_color.noop_this_constructor();
     SLOT(0x355b64)->initialize_bod_base();
     SLOT(0x355b9c)->initialize_bod_base();
     SLOT(0x355bd4)->initialize_bod_base();

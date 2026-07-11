@@ -38,3 +38,16 @@ Status:
   for the per-glyph destination offset. Pointer/integer/`register` spellings
   all compiled to the same non-native allocation, so this is left unresolved
   rather than forced.
+
+## 2026-07-11 receiver ownership correction
+
+- Construction and the adjacent level-file parser prove the receiver is a
+  complete `LevelDefinitionLoader`, not a standalone 103-slot store. The old
+  `LevelSegmentSlotStore` declaration was too large and crossed the exact
+  `0x1a5978` owner boundary into the following BodBase sentinels.
+- `slots[102].row_base` is a deliberate overlapping access to the existing
+  loader tail at `+0x1a58c4`; the function never owns or touches a complete
+  103rd `0x4220`-byte slot.
+- Moving the method onto the real owner leaves the honest focused result
+  unchanged at `52.97%`, 93/92 candidate/target instructions. The remaining
+  difference is still native register allocation, not a layout gap.

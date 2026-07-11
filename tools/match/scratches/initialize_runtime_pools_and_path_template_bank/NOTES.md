@@ -36,3 +36,18 @@
 - The callback slots prove a no-op presentation root, four no-op animation
   channels, and the `update_invincible_shell` child at `+0x1894`. The old
   enemy-manager constructor name and local receiver are retired.
+
+## 2026-07-11 paired cRSubTracks owners
+
+- The constructor builds two consecutive, identically shaped regions at
+  `SubgameRuntime +0xa874` and `+0x1b01ec`. Each is exactly `0x1a5978`, the
+  independently reported size of `cRSubTracks`/`LevelDefinitionLoader`.
+- Both regions construct 100 `0x4220` segment slots, the 256 authored-row
+  arrays inside their `First:` and `Last:` slots, and their tail `Color4f`.
+  The second extent ends exactly at the BodBase sentinel at `+0x355b64`.
+- The first object is the selected gameplay level. The second is reused as a
+  startup level-enumeration receiver and then seeded from the built-in segment
+  table, so it is named `level_definition_scratch` rather than assigned a
+  speculative persistent gameplay role.
+- Replacing all six raw constructor offsets with the two shared owners leaves
+  this function exact at `100.00%`, `227/227`, with all 72 operands clean.

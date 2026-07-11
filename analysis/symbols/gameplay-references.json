@@ -919,6 +919,7 @@
         "$L4718",
         "$L4719",
         "$L4782",
+        "$L4812",
         "$L4825"
       ],
       "size": "0x14",
@@ -938,7 +939,8 @@
         "$L4713",
         "$L4717",
         "$L4720",
-        "$L4783"
+        "$L4783",
+        "$L4813"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."

@@ -40,6 +40,7 @@ class TimeTrialStringFormatter;
 
 class SubgameRuntime {
 public:
+    SubgameRuntime* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
     int set_subgame_features(); // @ 0x435df0
     bool switch_track_mirror(); // @ 0x435e60
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
@@ -133,7 +134,11 @@ public:
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.
     LevelDefinitionLoader level_definition; // +0xa874, ends at +0x1b01ec
-    char unknown_1b01ec[0x355bd4 - 0x1b01ec];
+    // A second complete cRSubTracks-shaped owner. Startup reuses it while
+    // enumerating every Levels/*.txt file, then reseeds its slot storage from
+    // the built-in segment table; it is storage, not a borrowed loader view.
+    LevelDefinitionLoader level_definition_scratch; // +0x1b01ec, ends at +0x355b64
+    char unknown_355b64[0x355bd4 - 0x355b64];
     // Constructed BodBase sentinels own the live intrusive lists used by the
     // corresponding fixed pools below. Spawn paths only consume the inherited
     // BodNode links, but startup proves the complete 0x38-byte objects.

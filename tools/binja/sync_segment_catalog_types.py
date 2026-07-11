@@ -20,7 +20,6 @@ REQUIRED_HEADER_STRUCTS = (
     "LevelSegmentSlot",
     "LevelDefinitionLoader",
     "BuiltinSegmentDefinition",
-    "LevelSegmentSlotStore",
 )
 
 PROTO_UPDATES = (
@@ -34,7 +33,7 @@ PROTO_UPDATES = (
     ),
     (
         "load_builtin_segment_definitions",
-        "char* __thiscall load_builtin_segment_definitions(LevelSegmentSlotStore* store, BuiltinSegmentDefinition** builtins)",
+        "char* __thiscall load_builtin_segment_definitions(LevelDefinitionLoader* loader, BuiltinSegmentDefinition** builtins)",
     ),
     (
         "load_segment_definitions",

@@ -174,7 +174,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             INTRO_SCREEN_LOGO_RENDERABLE_COUNT,
             &RuntimeSlot::initialize_intro_logo_renderable);
 
-        SLOT(0x74618)->initialize_runtime_pools_and_path_template_bank();
+        root->subgame.initialize_runtime_pools_and_path_template_bank();
 
         TipManager* tip_manager = &root->tip_manager;
         tip_manager->initialize_bod_base();

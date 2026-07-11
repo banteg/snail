@@ -92,12 +92,4 @@ struct BuiltinSegmentDefinition {
     char* glyph_rows[8];           // +0x28
 };
 
-class LevelSegmentSlotStore {
-public:
-    int count;                     // +0x00
-    LevelSegmentSlot slots[103];   // +0x04
-
-    char* load_builtin_segment_definitions(BuiltinSegmentDefinition** builtins);
-};
-
 #endif

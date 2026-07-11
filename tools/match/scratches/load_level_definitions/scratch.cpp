@@ -2,6 +2,7 @@
 
 #include "level_definition_loader.h"
 #include "segment_catalog_types.h"
+#include "game_root.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -23,7 +24,8 @@ int SegmentCatalog::load_level_definitions()
     if (count > 0) {
         char* name = names;
         do {
-            ((LevelDefinitionLoader*)(g_game_base + 0x224804))->load_level_definition_file(name);
+            ((GameRoot*)g_game_base)
+                ->subgame.level_definition_scratch.load_level_definition_file(name);
             result = count;
             ++index;
             name += 0x80;

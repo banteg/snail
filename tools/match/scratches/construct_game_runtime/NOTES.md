@@ -169,3 +169,12 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 - The constructor now addresses both arrays through the shared owner. Its
   focused metrics remain `88.89%`, `299/268`, with 119 clean operands and the
   single compiler-local EH-handler relocation unresolved.
+
+## 2026-07-11 subgame constructor ownership
+
+- The constructor call at root `+0x74618` now targets the owned
+  `GameRoot::subgame` directly. Its constructor pass proves the two consecutive
+  `LevelDefinitionLoader` extents inside that owner, including the exact second
+  boundary at subgame `+0x355b64`.
+- This is codegen-neutral: the constructor remains `88.89%`, `299/268`, with
+  119 clean operands and only the existing compiler-local EH handler unresolved.

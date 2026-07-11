@@ -190,3 +190,15 @@ aliases respectively and restore the 85 clean operands.
   landscape selector, and the exact `0xc4` save extent explicit. Registering
   the table's new local spelling restores 396/396 proof with all 85 operands
   clean and no generated instruction change.
+
+2026-07-11 level-definition scratch ownership:
+
+- The built-in reset now targets the embedded
+  `level_definition_scratch +0x1b01ec` rather than an oversized standalone
+  slot-store cast. The exact constructor and startup enumeration prove this is
+  the second complete `0x1a5978` `LevelDefinitionLoader` in `SubgameRuntime`.
+- The shared header change renumbers the unchanged five- and eight-entry switch
+  tables to `$L4812`/`$L4813`. COFF places them at the same object offsets
+  `+0x62c`/`+0x640`; their bounded relocation sequences are unchanged. With
+  those aliases registered, the function remains exact at 396/396 with all 85
+  operands clean.

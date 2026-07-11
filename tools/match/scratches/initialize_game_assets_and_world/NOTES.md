@@ -110,8 +110,9 @@ offsets in the old semantic partial:
 - challenge setup at subgame `+0x125ffe0` and thanks at `+0x126000c` use the
   same folded `bind_subgame_owner`, while galaxy and the embedded player's
   cameraman keep their distinct methods;
-- audio configuration is owned by `OptionsMenu +0x4f388`, and the built-in
-  level slot store is root `+0x224804` rather than the stale `+0x224a04`.
+- audio configuration is owned by `OptionsMenu +0x4f388`, and the second
+  complete level-definition owner is root `+0x224804` rather than the stale
+  `+0x224a04`.
 
 Focused Wibo is now 5.65%, with 358/5,411 candidate/target instructions,
 prefix 0/5,411, 73 clean masked operands, no unresolved operands, and 18
@@ -144,3 +145,12 @@ The early handoff into `SubgameRuntime::level_mode_arg` now reads
 instead of the raw `unk_4DF9BC` spelling. The instruction stream and 5.65%
 semantic score are unchanged, while the masked audit improves from 73 clean / 18
 mismatched operands to 74 clean / 17 mismatched operands.
+
+## 2026-07-11 level-definition scratch ownership
+
+The built-in segment import now addresses
+`subgame.level_definition_scratch` directly. Construction proves that root
+`+0x224804` is a complete `0x1a5978` `LevelDefinitionLoader`, and startup first
+uses the same owner to parse each `Levels/*.txt` entry before reseeding it from
+the built-in definitions. The broad initializer remains at 5.65%, with its
+existing 74 clean and 17 mismatched operands.

@@ -8,7 +8,6 @@ public:
     RuntimeSlot* initialize_bod_base();
     RuntimeSlot* initialize_renderable_bod();
     RuntimeSlot* noop_runtime_slot_constructor();
-    RuntimeSlot* initialize_runtime_pools_and_path_template_bank();
     RuntimeSlot* initialize_border_record();
     RuntimeSlot* initialize_cached_x_mesh_slot();
     RuntimeSlot* initialize_intro_logo_renderable();

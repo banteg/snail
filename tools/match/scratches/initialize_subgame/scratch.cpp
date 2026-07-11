@@ -225,8 +225,8 @@ void SubgameRuntime::initialize_subgame()
 
     *(unsigned char*)(g_game_base + 0x30d) = 0;
     *(int*)(g_game_base + 0x310) = 0;
-    ((LevelSegmentSlotStore*)(game + 0x1b01ec))
-        ->load_builtin_segment_definitions(g_builtin_segment_definitions);
+    level_definition_scratch.load_builtin_segment_definitions(
+        g_builtin_segment_definitions);
     Player* player = embedded_player();
     set_matrix_identity(player->live_transform());
     player->movement_mode_selector = 0;

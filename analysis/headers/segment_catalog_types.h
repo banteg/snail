@@ -91,9 +91,4 @@ typedef struct BuiltinSegmentDefinition {
     char* glyph_rows[8];
 } BuiltinSegmentDefinition;
 
-typedef struct LevelSegmentSlotStore {
-    int32_t count;
-    LevelSegmentSlot slots[103];
-} LevelSegmentSlotStore;
-
 #endif
