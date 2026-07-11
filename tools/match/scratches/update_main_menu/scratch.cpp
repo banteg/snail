@@ -30,10 +30,10 @@ void MainMenu::update_main_menu()
     if ((flags & 0x20) != 0) {
         exit->widget_flags = flags & ~0x20u;
         GameRoot* game = (GameRoot*)g_game_base;
-        game->exit_prompt.previous_frontend_state =
+        game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;
-        ((GameRoot*)g_game_base)->exit_prompt.prompt_y = exit_widget->layout_y;
-        ((GameRoot*)g_game_base)->exit_prompt.state = 10;
+        ((GameRoot*)g_game_base)->exit_controller.prompt_y = exit_widget->layout_y;
+        ((GameRoot*)g_game_base)->exit_controller.state = 10;
         ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
         return;
     }

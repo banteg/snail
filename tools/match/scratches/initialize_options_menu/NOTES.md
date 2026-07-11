@@ -17,4 +17,4 @@ First scratch for the options screen constructor.
 2026-07-11 cROptions ownership: Android and iOS preserve this exact lifecycle
 method as `cROptions::Init()`. The shared root owner is now `Options`; its
 fields close the exact 0x24-byte interval from `GameRoot +0x4f388` to the
-adjacent `ExitPrompt`, and the initializer remains exact at 127/127.
+adjacent `Exit`, and the initializer remains exact at 127/127.

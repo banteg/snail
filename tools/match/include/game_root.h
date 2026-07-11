@@ -5,7 +5,7 @@
 #include "backdrop.h"
 #include "bod_list.h"
 #include "border_manager.h"
-#include "exit_prompt.h"
+#include "exit.h"
 #include "directx_loader.h"
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
@@ -110,7 +110,7 @@ public:
     MainMenu main_menu; // +0x4f324
     StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
     Options options; // +0x4f388, exact authored cROptions owner
-    ExitPrompt exit_prompt; // +0x4f3ac, authored cRExit owner
+    Exit exit_controller; // +0x4f3ac, exact authored cRExit owner
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
     IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime

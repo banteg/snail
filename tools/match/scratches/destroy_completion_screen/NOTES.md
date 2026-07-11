@@ -8,11 +8,11 @@ and returning the unhide result.
 Exact match: 100.00%, 25/25 instructions, with all border-manager and
 frontend-state operands resolved.
 
-2026-06-17 correction: this helper belongs with the `ExitPrompt` /
+2026-06-17 correction: this helper belongs with the `Exit` /
 `initialize_exit_prompt` / `update_completion_screen` object at `game+0x4f3ac`.
 It is not the same field layout as the delivery-complete result object
 initialized by `initialize_completion_screen` at `game+0x12e6df0`.
 
 2026-07-11 authored owner: Android retains this sibling as
-`cRExit::UnInit()`. The root-owned `ExitPrompt` rename remains exact at 25/25
+`cRExit::UnInit()`. The root-owned `Exit` rename remains exact at 25/25
 with all nine operands clean.

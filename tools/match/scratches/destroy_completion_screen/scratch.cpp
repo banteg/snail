@@ -1,9 +1,9 @@
 // destroy_completion_screen @ 0x406060 (thiscall, ret)
 
-#include "exit_prompt.h"
+#include "exit.h"
 #include "game_root.h"
 
-int ExitPrompt::destroy_completion_screen()
+int Exit::destroy_completion_screen()
 {
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(prompt_title);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(yes_button);

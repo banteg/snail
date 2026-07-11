@@ -253,17 +253,17 @@
     {
       "address": "0x406060",
       "name": "destroy_completion_screen",
-      "description": "Exact Windows `ExitPrompt::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
+      "description": "Exact Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
     },
     {
       "address": "0x4060d0",
       "name": "initialize_exit_prompt",
-      "description": "Exact Windows `ExitPrompt::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain `cRExit::Init()`."
+      "description": "Exact Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain `cRExit::Init()`."
     },
     {
       "address": "0x4067e0",
       "name": "update_completion_screen",
-      "description": "Exact Windows `ExitPrompt::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
+      "description": "Exact Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
     },
     {
       "address": "0x406c10",

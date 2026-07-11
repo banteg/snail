@@ -33,15 +33,15 @@ void* PauseMenu::update_pause_menu()
     if (((unsigned int)result & 0x20) != 0) {
         end_game->widget_flags = (unsigned int)result & ~0x20u;
         GameRoot* game = (GameRoot*)g_game_base;
-        game->exit_prompt.previous_frontend_state =
+        game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;
         game = (GameRoot*)g_game_base;
         if (game->subgame.level_mode == 7) {
-            game->exit_prompt.state = 7;
+            game->exit_controller.state = 7;
         } else if (game->subgame.replay_launch_from_frontend == 1) {
-            game->exit_prompt.state = 3;
+            game->exit_controller.state = 3;
         } else {
-            game->exit_prompt.state = 2;
+            game->exit_controller.state = 2;
         }
         GameRoot* result_game = (GameRoot*)g_game_base;
         result_game->subgame.subgame_rebuild_selector = 2;

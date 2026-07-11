@@ -1,10 +1,10 @@
 // Authored cRExit owner embedded in GameRoot.
-#ifndef EXIT_PROMPT_H
-#define EXIT_PROMPT_H
+#ifndef EXIT_H
+#define EXIT_H
 
 #include "frontend_widget.h"
 
-class ExitPrompt {
+class Exit {
 public:
     int destroy_completion_screen(); // @ 0x406060, cRExit::UnInit
     int initialize_exit_prompt(); // @ 0x4060d0, cRExit::Init
@@ -19,8 +19,8 @@ public:
     FrontendWidget* no_button; // +0x18
 };
 
-typedef char ExitPrompt_must_be_0x1c[
-    (sizeof(ExitPrompt) == 0x1c) ? 1 : -1];
+typedef char Exit_must_be_0x1c[
+    (sizeof(Exit) == 0x1c) ? 1 : -1];
 
 int __cdecl launch_alpha72_url(char* url); // @ 0x433050
 

@@ -27,15 +27,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "destroy_completion_screen",
-        "int __thiscall destroy_completion_screen(ExitPrompt* prompt);",
+        "int __thiscall destroy_completion_screen(Exit* exit_controller);",
     ),
     (
         "initialize_exit_prompt",
-        "int __thiscall initialize_exit_prompt(ExitPrompt* prompt);",
+        "int __thiscall initialize_exit_prompt(Exit* exit_controller);",
     ),
     (
         "update_completion_screen",
-        "int __thiscall update_completion_screen(ExitPrompt* prompt);",
+        "int __thiscall update_completion_screen(Exit* exit_controller);",
     ),
 ]
 

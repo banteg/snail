@@ -1,6 +1,6 @@
 # initialize_exit_prompt
 
-- Target: `ExitPrompt::initialize_exit_prompt` at `0x4060d0`, the Windows
+- Target: `Exit::initialize_exit_prompt` at `0x4060d0`, the Windows
   `cRExit::Init()` owner recovered independently in Android and iOS.
 - First-pass recovery from BN decompile/disassembly. The function hides the
   active border batch, switches on `state - 2`, then allocates/layouts the
@@ -36,6 +36,6 @@
   sequences, so the ten prompt destinations are proved by content without
   assigning a globally false label alias. The exact 441/441 body remains at
   109 clean masked operands.
-- 2026-07-11 owner closure: `ExitPrompt` is the primary 0x1c-byte owner at
+- 2026-07-11 owner closure: `Exit` is the primary 0x1c-byte owner at
   `GameRoot +0x4f3ac`. It is distinct from the 0x50-byte subgame `Completion`
   at root `+0x12e6df0`. The rename is codegen-neutral at the exact baseline.

@@ -33,9 +33,9 @@ Recovered relationships:
   `game+0x568`.
 
 2026-07-11 owner closure: the synthetic cross-root completion view was removed.
-The prompt is `GameRoot::exit_prompt`; pause state, galaxy, replay, and
+The prompt is `GameRoot::exit_controller`; pause state, galaxy, replay, and
 subgame methods belong to `GameRoot::subgame`; menu objects and the link latch
 belong directly to `GameRoot`. The complete rewrite remains exact at 207/207.
 
 Android and iOS retain the authored owner as `cRExit::AI()`. The primary
-`ExitPrompt` rename is codegen-neutral and keeps all 69 operands clean.
+`Exit` rename is codegen-neutral and keeps all 69 operands clean.
