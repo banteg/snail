@@ -33,6 +33,14 @@
       "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI."
     },
     {
+      "address": "0x40aab0",
+      "windows_name": "update_game_input",
+      "ios_symbol": "cRGameInput::AI()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44."
+    },
+    {
       "address": "0x4107d0",
       "windows_name": "update_frontend_state_machine",
       "ios_symbol": "cRPlayer::AI()",
@@ -922,6 +930,30 @@
       "ios_symbol": "cRObject::RequestAnim(int, cRBodPos*, float, int)",
       "source_object": "RObject.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x44c3b0",
+      "windows_name": "is_mouse_captured",
+      "ios_symbol": "cRMouse::IsActive()",
+      "source_object": "Mouse.o",
+      "confidence": "high",
+      "notes": "Both methods return byte zero of the player-owned mouse subobject. Windows stores that cRMouse-compatible prefix at GamePlayer +0x16c."
+    },
+    {
+      "address": "0x44c3c0",
+      "windows_name": "capture_mouse_cursor",
+      "ios_symbol": "cRMouse::SetActive()",
+      "source_object": "Mouse.o",
+      "confidence": "high",
+      "notes": "Both methods snapshot live x/y into +0x0c/+0x10 before enabling byte zero; the platform-specific cursor bridge differs after the shared prefix."
+    },
+    {
+      "address": "0x44c400",
+      "windows_name": "release_mouse_cursor",
+      "ios_symbol": "cRMouse::SetInActive()",
+      "source_object": "Mouse.o",
+      "confidence": "high",
+      "notes": "The iPhone ARM and Windows x86 bodies share the same active guard, saved-to-live x/y restore at +0x0c/+0x10 to +0x04/+0x08, and byte-zero clear."
     },
     {
       "address": "0x44c420",

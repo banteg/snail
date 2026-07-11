@@ -3,13 +3,15 @@
 #include "game_root.h"
 #include "new_game_menu.h"
 
+extern GameRoot* g_game; // data_4df904
+
 void NewGameMenu::update_new_game_menu()
 {
     GameRoot* game;
     unsigned int flags;
 
     if (read_pressed_text_input_key_code() != 0
-        || ((*(GameInputOwner**)(g_game_base + 0x28c))->input.pressed_buttons & 0x4000) != 0) {
+        || (g_game->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
         replay_probe_progress = 0.0f;
         if (hide_for_replay_latch == 1) {
             postal_button->unhide_border_init();
@@ -18,7 +20,7 @@ void NewGameMenu::update_new_game_menu()
             challenge_button->unhide_border_init();
             help_button->unhide_border_init();
             back_button->unhide_border_init();
-            ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
+            g_game->players[0].mouse_cursor.capture_mouse_cursor();
             hide_for_replay_latch = 0;
         }
     }

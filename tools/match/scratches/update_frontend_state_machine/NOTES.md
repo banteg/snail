@@ -75,3 +75,12 @@ Historical recovery notes:
   Its target/current colors are the constructor-proven values at
   `+0x188/+0x198`.
 - The fully owned spelling remains exact at 180/180 with 69 clean operands.
+
+2026-07-11 cRGameInput backlink closure:
+
+- Root initialization builds `GameInput game_inputs[2]` at `+0x44` and stores
+  the corresponding borrowed pointer in each player at `+0x168`.
+- The former `camera_anchor` tail is therefore the player's `game_input` link.
+  Its `input.authored_x/y` fields at owner `+0x60/+0x64` feed the cRMouse saved
+  coordinates before the camera transform snapshot.
+- The corrected ownership remains exact at 180/180 with 69 clean operands.

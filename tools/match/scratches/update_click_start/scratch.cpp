@@ -43,7 +43,7 @@ void ClickStartController::update_click_start()
             if ((replay_record[(replay_offset << 1) + 0x74] & 0x20) == 0)
                 return;
         } else {
-            GameInputOwner* input = *(GameInputOwner**)(g_game_base + 0x28c);
+            GameInput* input = ((GameRoot*)g_game_base)->players[0].game_input;
             if (hide_prompt != 0 || (input->input.pressed_buttons & 0x4000) == 0)
                 return;
         }

@@ -24,7 +24,8 @@ public:
 
 typedef char InputState_must_be_0x38[(sizeof(InputState) == 0x38) ? 1 : -1];
 
-class GameInputOwner {
+// Windows owner corresponding to the portable cRGameInput class.
+class GameInput {
 public:
     void update_game_input();
 
@@ -32,6 +33,6 @@ public:
     InputState input; // +0x38
 };
 
-typedef char GameInputOwner_must_be_0x70[(sizeof(GameInputOwner) == 0x70) ? 1 : -1];
+typedef char GameInput_must_be_0x70[(sizeof(GameInput) == 0x70) ? 1 : -1];
 
 #endif

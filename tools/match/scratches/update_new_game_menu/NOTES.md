@@ -10,7 +10,7 @@ Recovered relationships:
 - menu buttons at `+0x30/+0x34/+0x38/+0x3c/+0x40/+0x44` dispatch postal,
   time trial, challenge, tutorial, help, and back respectively;
 - the text-input wakeup also accepts the shared live input confirm edge
-  `GameInputOwner.input.pressed_buttons & 0x4000`;
+  `GameInput.input.pressed_buttons & 0x4000`;
 - `replay_attract_bank_cursor` at `+0x00` rotates through `0..4`, but only
   banks `0`, `1`, and `3` probe replay/high-score records;
 - record bases `game+0x6ffae8`, `game+0x85c128`, and `game+0x9b8768` are

@@ -25,7 +25,7 @@ the equivalent `eax`/`edx` LEA scheduling for the copy helper arguments.
 
 2026-06-21 void bridge pass: `InputState::update_input()` is side-effect-only at
 this callsite; native does not consume a declared return after the call. Changing
-both the shared updater and `GameInputOwner::update_game_input()` signatures to
+both the shared updater and `GameInput::update_game_input()` signatures to
 `void`, and dropping the scratch return-value carrier, recovers the native
 right-to-left argument LEA schedule and exact-matches the bridge at 100.00%,
 30/30 instructions, with 3 clean masked operands.
@@ -33,3 +33,9 @@ right-to-left argument LEA schedule and exact-matches the bridge at 100.00%,
 2026-07-11 root-owner pass: the gate is now reached through the typed
 `GameRoot` field toggled by `run_frame_update`. Focused Wibo remains exact at
 30/30 with 3 clean operands.
+
+2026-07-11 cRGameInput owner pass: the v1.5 and v1.9 iPhone binaries retain
+`cRGameInput::AI()` in `Game.o`. Windows root initialization proves two owned
+0x70-byte input records at `GameRoot +0x44` and lends each record to the
+matching player through `GamePlayer +0x168`. Promoting the owner name and root
+fields keeps this bridge exact at 30/30 with 3 clean operands.

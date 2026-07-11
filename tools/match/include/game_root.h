@@ -7,6 +7,7 @@
 #include "completion_screen.h"
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
+#include "input_state.h"
 #include "main_menu.h"
 #include "mouse_cursor_state.h"
 #include "new_game_menu.h"
@@ -39,7 +40,7 @@ public:
     int saved_frontend_state; // +0x98
     char unknown_09c[0xa0 - 0x9c];
     RenderCamera camera; // +0xa0, owned cRCamera subobject
-    void* camera_anchor; // +0x168, borrowed current menu/gameplay anchor
+    GameInput* game_input; // +0x168, borrows the matching root input owner
     MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
     FrontendOverlayColorLerp frontend_overlay; // +0x184, root player 0 overlay
     char unknown_1a8[0x1e8 - 0x1a8];
@@ -76,7 +77,7 @@ public:
     };
     int fixed_update_count;      // +0x3c
     int player_count; // +0x40, controls the two-player initialization loop
-    char unknown_000044[0x124 - 0x44];
+    GameInput game_inputs[2]; // +0x44, owned cRGameInput array
     GamePlayer players[2]; // +0x124, owned cRPlayer array
     char unknown_000514[0x518 - 0x514];
     float fixed_update_accumulator; // +0x518, consumed in unit fixed steps

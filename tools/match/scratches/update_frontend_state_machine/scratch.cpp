@@ -3,12 +3,6 @@
 #include "game_root.h"
 #include "transform_matrix.h"
 
-struct CameraAnchor {
-    char unknown_00[0x60];
-    float camera_x; // +0x60
-    float camera_y; // +0x64
-};
-
 extern GameRoot* g_game; // data_4df904
 extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
@@ -185,10 +179,10 @@ int GamePlayer::update_frontend_state_machine()
         }
     } while (redispatch_requested == 1);
 
-    CameraAnchor* anchor = (CameraAnchor*)camera_anchor;
-    float anchor_x = anchor->camera_x;
+    GameInput* input_owner = game_input;
+    float anchor_x = input_owner->input.authored_x;
     mouse_cursor.saved_x = anchor_x;
-    float anchor_y = anchor->camera_y;
+    float anchor_y = input_owner->input.authored_y;
     TransformMatrix* live_matrix = &transform;
     TransformMatrix* snapshot_matrix = &camera.transform;
     *snapshot_matrix = *live_matrix;

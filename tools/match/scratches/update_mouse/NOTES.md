@@ -39,3 +39,9 @@ relocations.
 Focused rerun preserves the prior result at 73.68%, 294 candidate
 instructions versus 295 target instructions, with 70 masked operands OK and
 the same Win32 import alignment mismatch.
+
+2026-07-11 root mouse-owner pass: every capture query now reaches the player-
+owned cRMouse-compatible prefix through `GameRoot::players[0].mouse_cursor`.
+The DirectInput/Win32 helper remains a free platform function, and the focused
+result stays 73.68%, 294/295 instructions, prefix 5/295, with the same 70 clean
+operands and one import-alignment mismatch.

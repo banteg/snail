@@ -1,7 +1,7 @@
 // update_mouse @ 0x44bc50 (cdecl)
 
 #include "direct_input_view.h"
-#include "mouse_cursor_state.h"
+#include "game_root.h"
 #include "rect.h"
 
 struct DirectInputMouseState {
@@ -16,7 +16,7 @@ extern "C" __declspec(dllimport) int __stdcall GetClientRect(int hwnd, Rect* rec
 extern "C" __declspec(dllimport) int __stdcall ClipCursor(Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern unsigned char g_fullscreen_active; // data_4dfaf4
 extern float g_mouse_live_x[]; // data_777d58
 extern float g_mouse_live_y[]; // data_777d60
@@ -82,7 +82,7 @@ int update_mouse(int hwnd)
     }
 
     if (g_fullscreen_active
-        || !((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()) {
+        || !g_game->players[0].mouse_cursor.is_mouse_captured()) {
         g_mouse_live_x[0] = (float)state.x + g_mouse_live_x[0];
         g_mouse_live_y[0] = (float)state.y + g_mouse_live_y[0];
 
@@ -102,9 +102,9 @@ int update_mouse(int hwnd)
     }
 
     if (g_fullscreen_active
-        || !((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()) {
+        || !g_game->players[0].mouse_cursor.is_mouse_captured()) {
         ClipCursor(0);
-        if (!((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()) {
+        if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
             clip_rect.left =
                 window_rect.left + client_rect.left - g_mouse_uncaptured_clip_left;
             clip_rect.right =
@@ -127,7 +127,7 @@ int update_mouse(int hwnd)
                 read_left_mouse_button_state(0),
                 read_right_mouse_button_state(0),
                 0,
-                ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured(),
+                g_game->players[0].mouse_cursor.is_mouse_captured(),
                 g_fullscreen_active);
             goto maybe_hide_cursor;
         }
@@ -144,10 +144,10 @@ int update_mouse(int hwnd)
             read_left_mouse_button_state(0),
             read_right_mouse_button_state(0),
             0,
-            ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured(),
+            g_game->players[0].mouse_cursor.is_mouse_captured(),
             g_fullscreen_active);
     } else {
-        if (((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()) {
+        if (g_game->players[0].mouse_cursor.is_mouse_captured()) {
             ClipCursor(0);
         } else {
             clip_rect.left =
@@ -173,7 +173,7 @@ int update_mouse(int hwnd)
             read_left_mouse_button_state(0),
             read_right_mouse_button_state(0),
             0,
-            ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured(),
+            g_game->players[0].mouse_cursor.is_mouse_captured(),
             g_fullscreen_active);
     }
 

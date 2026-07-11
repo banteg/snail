@@ -1,11 +1,11 @@
 // click_mouse_screen @ 0x44c060 (cdecl)
 
-#include "mouse_cursor_state.h"
+#include "game_root.h"
 
 extern "C" __declspec(dllimport) int __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) int __stdcall SetCursorPos(int x, int y);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern int g_main_window; // data_4dfaf0
 extern unsigned char g_fullscreen_active; // data_4dfaf4
 extern unsigned char g_window_deactivated; // data_4b7654
@@ -14,16 +14,10 @@ extern int g_mouse_screen_y[]; // data_777d74
 extern float g_mouse_live_x[]; // data_777d58
 extern float g_mouse_live_y[]; // data_777d60
 
-struct MouseOwner {
-    char pad_00[0x60];
-    float mouse_x;
-    float mouse_y;
-};
-
 void* click_mouse_screen(int slot, int x, int y)
 {
     if (!g_fullscreen_active
-        && ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured() == 1
+        && g_game->players[0].mouse_cursor.is_mouse_captured() == 1
         && slot == 0
         && !g_window_deactivated
         && GetActiveWindow() == g_main_window) {
@@ -35,9 +29,9 @@ void* click_mouse_screen(int slot, int x, int y)
     g_mouse_live_x[slot] = (float)x;
     float y_float = (float)y;
     g_mouse_live_y[slot] = y_float;
-    MouseOwner* owner = *(MouseOwner**)(g_game_base + 0x28c);
-    owner->mouse_x = (float)x;
-    char* result = g_game_base;
-    (*(MouseOwner**)(result + 0x28c))->mouse_y = y_float;
+    GameInput* owner = g_game->players[0].game_input;
+    owner->input.authored_x = (float)x;
+    GameRoot* result = g_game;
+    result->players[0].game_input->input.authored_y = y_float;
     return result;
 }

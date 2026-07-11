@@ -35,3 +35,13 @@ branch all failed to beat the retained `y` then `x` source. The `x` then `y`
 forms preserve `eax == 0` locally but drop back to 74.46% overall; putting the
 captured branch first reshapes the body to 53.28%. Keep the current
 counterintuitive zero order until a broader branch-owner lead appears.
+
+2026-07-11 root mouse-owner pass: the cRMouse-compatible receiver now comes
+through `GameRoot::players[0].mouse_cursor` instead of a raw `Game +0x290`
+cast. The focused result remains 77.06%, 116/115 instructions, prefix 3/115,
+and 32 clean masked operands.
+
+The decompiler lane retains the Windows `BOOL` return type: every concrete
+return is a Win32 boolean/window result (or the historical nonzero `y` pointer
+cast). The scratch's `int` is ABI-equivalent on 32-bit Windows and does not
+claim a closer source match.

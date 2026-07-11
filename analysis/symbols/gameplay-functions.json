@@ -572,7 +572,8 @@
     },
     {
       "address": "0x40aab0",
-      "name": "update_game_input"
+      "name": "update_game_input",
+      "description": "Runs cRGameInput::AI() for one root-owned input record: when the root sampling gate is live, copies the selected controller's buttons, axes, pointer values, and authored x/y into the trailing cRInput-compatible state and derives the current-frame button edges."
     },
     {
       "address": "0x40ab00",
@@ -2974,7 +2975,7 @@
     {
       "address": "0x44c060",
       "name": "click_mouse_screen",
-      "description": "Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw and authored mouse coordinates for the selected mouse slot."
+      "description": "Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw/live mouse coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner."
     },
     {
       "address": "0x44c100",
@@ -2992,17 +2993,17 @@
     {
       "address": "0x44c3b0",
       "name": "is_mouse_captured",
-      "description": "Returns the capture-active byte at the head of the shared mouse-pointer state block stored at Game + 0x290."
+      "description": "Returns the active byte at the head of the player-owned cRMouse-compatible subobject stored at GameRoot +0x290; iOS names the same method cRMouse::IsActive()."
     },
     {
       "address": "0x44c3c0",
       "name": "capture_mouse_cursor",
-      "description": "Enters captured-mouse mode for the shared Game + 0x290 pointer state: snapshots the current authored cursor coordinates, warps controller 0 there through click_mouse_screen, and marks the capture byte active."
+      "description": "Implements the Windows cRMouse::SetActive() lane at GameRoot +0x290: snapshots live x/y, warps controller zero through click_mouse_screen, marks the one-frame draw suppression latch, and enables the active byte."
     },
     {
       "address": "0x44c400",
       "name": "release_mouse_cursor",
-      "description": "Leaves captured-mouse mode for the shared Game + 0x290 pointer state by restoring the saved authored cursor coordinates into the live lanes and clearing the capture byte."
+      "description": "Implements cRMouse::SetInActive() for the player-owned mouse subobject by restoring saved x/y into the live lanes when active and clearing byte zero."
     },
     {
       "address": "0x44c420",

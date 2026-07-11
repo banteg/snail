@@ -114,7 +114,7 @@ void __fastcall update_row_event_display(RowEventDisplayController* controller)
             game = g_game_base;
         }
 
-        if ((((GameInputOwner**)(game + 0x28c))[0]->input.pressed_buttons & 0x4000) != 0) {
+        if ((((GameRoot*)game)->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
             controller->state = 5;
             g_sound_effect_manager.play_sound_effect(8);
         }

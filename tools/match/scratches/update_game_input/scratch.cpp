@@ -16,7 +16,7 @@ float* copy_active_input_controller_state(
     float* pointer_x,
     float* pointer_y);
 
-void GameInputOwner::update_game_input()
+void GameInput::update_game_input()
 {
     if (g_game->input_sampling_gate != 0) {
         copy_active_input_controller_state(
