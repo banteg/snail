@@ -180,7 +180,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     smtracks_owner->vtable = &g_smtracks_callback_table;
 
     initialize_array_with_constructor(
-        (RuntimeSlot*)segment_catalog.entries,
+        (RuntimeSlot*)sm_tracks.entries,
         sizeof(SegmentCatalogEntry),
         0x96,
         &RuntimeSlot::noop_runtime_slot_constructor);

@@ -1,5 +1,5 @@
 // Animated SMTrack height-field owner embedded between LandscapeManager and
-// SegmentCatalog. The inherited BodBase borrows the active mesh object; its
+// SMTracks. The inherited BodBase borrows the active mesh object; its
 // FrameSequence selects replacement textures for that mesh.
 #ifndef SMTRACKS_H
 #define SMTRACKS_H

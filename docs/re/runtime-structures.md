@@ -468,9 +468,11 @@ The current high-confidence `Game` fields are:
   - `BodBase` at `+0x00` borrows the live mesh; an Object-derived
     `FrameSequence` at `+0x38` selects `TextureRef` frames and drives heightmap
     resampling
-- `+0x10014cc`: `segment_catalog`
+- `+0x10014cc`: `sm_tracks`
   - exact `0x25cfb4`-byte owner with a leading count and 150 `0x4088`-byte
     authored-segment records beginning at `+0x10014d0`
+  - symbol-preserving iOS builds name this owner `cRSMTracks`, with
+    `Import()` and `OpenLevels()` members matching the two Windows loaders
   - the aggregate ends exactly at the parcel pool, so the count does not alias
     entry 0 and there is no terminal padding word
 - `+0x125e480`: `track_parcels`

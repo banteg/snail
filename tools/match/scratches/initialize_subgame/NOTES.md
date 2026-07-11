@@ -119,7 +119,7 @@ aliases respectively and restore the 85 clean operands.
 
 2026-07-11 root-bootstrap header refresh:
 
-- Promoting the complete `Overlay`, `SegmentCatalog`, and shared startup-owner
+- Promoting the complete `Overlay`, `SMTracks`, and shared startup-owner
   views renumbered the same VC6 tables again to `$L4685`/`$L4686`.
 - COFF symbols place `$L4685` at object `+0x62c` and `$L4686` at `+0x640`.
   Their 5-entry and 8-entry relocation sequences match the already curated

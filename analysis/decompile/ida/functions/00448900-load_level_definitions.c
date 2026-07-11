@@ -2,8 +2,8 @@
 /* function: load_level_definitions @ 0x448900 */
 /* selector: load_level_definitions */
 
-// Composes level descriptors and segment sequences from LEVELS/*.TXT.
-int32_t __thiscall load_level_definitions(SegmentCatalog *catalog)
+// Implements `cRSMTracks::OpenLevels()` by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition. Cross-port evidence proves the authored member is void; this pre-sync decompile still presents incidental EAX residue as an int32_t result.
+int32_t __thiscall load_level_definitions(SMTracks *catalog)
 {
   int32_t result; // eax
   int v2; // esi

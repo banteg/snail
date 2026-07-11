@@ -105,7 +105,7 @@ offsets in the old semantic partial:
 
 - the exact `LandscapeManager` at root `+0x106c218` owns ten active entries,
   reset/count state, and the Starmap, Splash, Help, and Menubg script records;
-- the exact `0x25cfb4`-byte `SegmentCatalog` at `+0x1075ae4` owns both segment
+- the exact `0x25cfb4`-byte `SMTracks` at `+0x1075ae4` owns both segment
   and level enumeration calls; its leading count is followed by 150 constructed
   entries and the aggregate ends exactly at the parcel pool;
 - challenge setup at subgame `+0x125ffe0` and thanks at `+0x126000c` use the

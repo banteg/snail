@@ -730,7 +730,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 34 ok |  |
-| 🚧 | load_segment_definitions | 0x448160 | 1937 | 531/571 | 45.01% | 5/571 | 8 mismatch, 65 ok |  |
+| 🚧 | load_segment_definitions | 0x448160 | 1937 | 553/571 | 49.29% | 5/571 | 11 mismatch, 64 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 95/126 | 44.34% | 3/126 | 1 mismatch, 9 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1109 | 297/325 | 48.23% | 2/325 | 5 mismatch, 36 ok |  |

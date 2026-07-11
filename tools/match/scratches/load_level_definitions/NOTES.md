@@ -14,7 +14,7 @@ Status:
   `0x48bf30`; the shared reference manifest now names it so the masked audit
   remains proof-grade.
 - Startup sets `ecx = GameRoot +0x1075ae4` before this call, the same complete
-  `SegmentCatalog` receiver used by `load_segment_definitions`. This method's
+  `SMTracks` receiver used by `load_segment_definitions`. This method's
   current body does not read `this`; it writes the separate level-definition
   store at `GameRoot +0x224804`. Keeping the thiscall receiver records the
   native ownership without inventing a cdecl shim.
@@ -24,3 +24,8 @@ Status:
 is the second complete `0x1a5978` `SubTracks` constructed beside
 the active gameplay definition. Typing the nested receiver preserves the exact
 `100.00%`, 30/30 result with all six operands clean.
+
+2026-07-11 cross-port owner closure: symbol-preserving iOS builds name this
+void member `cRSMTracks::OpenLevels()`. Renaming the exact 0x25cfb4-byte owner
+to `SMTracks` and removing the synthetic count result preserves proof grade at
+100.00%, 30/30 instructions, with all six operands clean.

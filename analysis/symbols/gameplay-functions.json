@@ -2641,12 +2641,12 @@
     {
       "address": "0x448160",
       "name": "load_segment_definitions",
-      "description": "Parses SEGMENTS/*.TXT into the segment catalog, storing the internal `Name:'...'` display label separately from the enumerated filename and recovering per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata."
+      "description": "Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte SMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and recovers per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata."
     },
     {
       "address": "0x448900",
       "name": "load_level_definitions",
-      "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
+      "description": "Implements the void `cRSMTracks::OpenLevels()` member by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition."
     },
     {
       "address": "0x448960",

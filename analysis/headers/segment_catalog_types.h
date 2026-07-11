@@ -43,10 +43,10 @@ typedef struct SegmentCatalogEntry {
     uint8_t unknown_4050[0x4088 - 0x4050];
 } SegmentCatalogEntry;
 
-typedef struct SegmentCatalog {
+typedef struct SMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];
-} SegmentCatalog;
+} SMTracks;
 
 /* Windows cRSubSegment with inline glyph and authored-row storage. */
 typedef struct SubSegment {

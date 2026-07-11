@@ -10,7 +10,7 @@ int report_errorf(char* format, ...);
 
 void __stdcall copy_segment_definition_to_level_slot(char* segment_name, SubSegment* slot)
 {
-    SegmentCatalog* catalog = &((GameRoot*)g_game_base)->subgame.segment_catalog;
+    SMTracks* catalog = &((GameRoot*)g_game_base)->subgame.sm_tracks;
     int index = 0;
     SegmentCatalogEntry* scan = catalog->entries;
     while (index < catalog->count) {

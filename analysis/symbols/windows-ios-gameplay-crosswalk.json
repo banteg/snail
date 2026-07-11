@@ -261,7 +261,7 @@
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The row-grid transpose and authored metadata copy agree. Windows exposes this void operation as a stdcall helper using the root SegmentCatalog rather than retaining a SubTracks receiver, and its cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
+      "notes": "The row-grid transpose and authored metadata copy agree. Windows exposes this void operation as a stdcall helper using the root SMTracks owner rather than retaining a SubTracks receiver, and its cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
     },
     {
       "address": "0x447480",
@@ -278,6 +278,22 @@
       "source_object": "Subtrack.o",
       "confidence": "high",
       "notes": "The Windows raw input record is 0x48 bytes and feeds inline 0x4220-byte slots. Its inconsistent incidental return register plus discarded callsites prove a void Init contract; iOS later uses compact destination segments with separately allocated glyph storage."
+    },
+    {
+      "address": "0x448160",
+      "windows_name": "load_segment_definitions",
+      "ios_symbol": "cRSMTracks::Import()",
+      "source_object": "Subtrack.o",
+      "confidence": "high",
+      "notes": "Both parse segment text into the SMTracks owner with the same Name, Data, 3DModel, Velocity, Parcel, Path, ring, RingSpeed, NoFall, and JetPack metadata. Their common epilogues are value-agnostic and callers discard the result, proving the void contract."
+    },
+    {
+      "address": "0x448900",
+      "windows_name": "load_level_definitions",
+      "ios_symbol": "cRSMTracks::OpenLevels()",
+      "source_object": "Subtrack.o",
+      "confidence": "high",
+      "notes": "Both enumerate authored level filenames through the same SMTracks owner and hand each name to the SubTracks text parser; neither returns a semantic value."
     },
     {
       "address": "0x43a9c0",

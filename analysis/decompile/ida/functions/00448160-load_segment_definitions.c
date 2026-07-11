@@ -2,8 +2,8 @@
 /* function: load_segment_definitions @ 0x448160 */
 /* selector: load_segment_definitions */
 
-// Parses SEGMENTS/*.TXT into the segment catalog, storing the internal `Name:'...'` display label separately from the enumerated filename and recovering per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata.
-int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog)
+// Implements `cRSMTracks::Import()`: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte SMTracks owner and recovers its per-row metadata. Cross-port evidence proves the authored member is void; this pre-sync decompile still presents path-dependent EAX residue as an int32_t result.
+int32_t __thiscall load_segment_definitions(SMTracks *catalog)
 {
   int32_t result; // eax
   int32_t v3; // ebp
@@ -23,7 +23,7 @@ int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog)
   _BYTE *v17; // eax
   _BYTE *v18; // edi
   int v19; // ebp
-  SegmentCatalog *v20; // ecx
+  SMTracks *v20; // ecx
   char *v21; // edi
   char *v22; // esi
   int v23; // eax
@@ -66,7 +66,7 @@ int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog)
   char *v60; // [esp+10h] [ebp-114E0h] BYREF
   int32_t *p_row_count; // [esp+14h] [ebp-114DCh]
   const char *v62; // [esp+18h] [ebp-114D8h]
-  SegmentCatalog *v63; // [esp+1Ch] [ebp-114D4h]
+  SMTracks *v63; // [esp+1Ch] [ebp-114D4h]
   int32_t v64; // [esp+20h] [ebp-114D0h]
   int v65; // [esp+24h] [ebp-114CCh]
   int v66; // [esp+28h] [ebp-114C8h]

@@ -256,8 +256,8 @@ char GameRoot::initialize_game_assets_and_world()
     directx_loader.initialize_directx_loader();
     LandscapeManager* landscape = (LandscapeManager*)(game + 0x106c218);
     landscape->reset_landscape_manager();
-    SegmentCatalog* segment_catalog = &subgame.segment_catalog;
-    segment_catalog->load_segment_definitions();
+    SMTracks* sm_tracks = &subgame.sm_tracks;
+    sm_tracks->load_segment_definitions();
     landscape->load_landscape_script_by_name((char*)"Starmap.txt");
     landscape->load_landscape_script_by_name((char*)"Splash.txt");
     landscape->load_landscape_script_by_name((char*)"Help.txt");
@@ -271,7 +271,7 @@ char GameRoot::initialize_game_assets_and_world()
     initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options_menu.apply_audio_config_volumes();
-    segment_catalog->load_level_definitions();
+    sm_tracks->load_level_definitions();
     ((LandscapeManager*)(g_game_base + 0x106c218))
         ->load_landscape_script_by_name((char*)"Menubg.txt");
     subgame.level_definition_scratch.load_builtin_segment_definitions(

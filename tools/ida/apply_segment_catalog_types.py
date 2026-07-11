@@ -30,11 +30,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_segment_definitions",
-        "int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog);",
+        "void __thiscall load_segment_definitions(SMTracks *tracks);",
     ),
     (
         "load_level_definitions",
-        "int32_t __thiscall load_level_definitions(SegmentCatalog *catalog);",
+        "void __thiscall load_level_definitions(SMTracks *tracks);",
     ),
 ]
 

@@ -12,24 +12,21 @@ void enumerate_matching_archive_or_fs_entries(
     int* out_count,
     char* out_names); // @ 0x431740
 
-int SegmentCatalog::load_level_definitions()
+void SMTracks::load_level_definitions()
 {
     int count;
     char names[0x4000];
 
     enumerate_matching_archive_or_fs_entries("Levels", "*.txt", &count, names);
 
-    int result = count;
     int index = 0;
     if (count > 0) {
         char* name = names;
         do {
             ((GameRoot*)g_game_base)
                 ->subgame.level_definition_scratch.load_level_definition_file(name);
-            result = count;
             ++index;
             name += 0x80;
         } while (index < count);
     }
-    return result;
 }

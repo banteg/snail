@@ -23,55 +23,60 @@ public:
     int find_segment_path_index_by_name(char* name); // @ 0x429ae0
 };
 
-int SegmentCatalog::load_segment_definitions()
+void SMTracks::load_segment_definitions()
 {
     char path_name[60];
     char option_text[512];
     char mesh_name[128];
     char file_path[512];
     char file_buffer[4096];
-    char segment_files[0x10000];
+    char segment_files[512][0x80];
 
     count = 0;
-    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count, segment_files);
+    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count, segment_files[0]);
 
-    int result = count;
-    if (count >= 150)
-        return report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");
+    if (count >= 150) {
+        report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");
+        return;
+    }
 
     int segment_index = 0;
-    if (result <= 0)
-        return result;
+    if (count <= 0)
+        return;
 
-    char* segment_file_name = segment_files;
+    char* segment_file_name = segment_files[0];
     do {
         SegmentCatalogEntry* entry = &entries[segment_index];
-        sprintf(file_path, "Segments/%s", segment_file_name);
+        // The authored call passes the text buffer as an unused fourth vararg;
+        // the same source bug survives in the symbol-rich iOS build.
+        sprintf(file_path, "Segments/%s", segment_file_name, file_buffer);
         load_file_bytes_from_archive_or_fs(file_path, file_buffer, (void*)0);
 
         char* id_cursor = find_case_insensitive_substring("ID:", file_buffer);
-        if (id_cursor == 0)
-            return report_errorf("Cannot find ID: in Segment %s\n", segment_file_name);
+        if (id_cursor == 0) {
+            report_errorf("Cannot find ID: in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
         id_cursor += 3;
         int id = 0;
         char value = *id_cursor;
-        if (value >= '0') {
-            do {
-                if (value > '9')
-                    break;
-                ++id_cursor;
-                id = value + 10 * id - '0';
-                value = *id_cursor;
-            } while (*id_cursor >= '0');
+        while (value >= '0') {
+            if (value > '9')
+                break;
+            ++id_cursor;
+            id = value + 10 * id - '0';
+            value = *id_cursor;
         }
 
         entry->id = id;
         sprintf(entry->filename, "%s", segment_file_name);
 
         char* name_cursor = find_case_insensitive_substring("Name:'", file_buffer);
-        if (name_cursor == 0)
-            return report_errorf("Cannot find Name: in Segment %s\n", segment_file_name);
+        if (name_cursor == 0) {
+            report_errorf("Cannot find Name: in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
         name_cursor = find_case_insensitive_substring("'", name_cursor) + 1;
         char* display_out = entry->display_name;
@@ -83,19 +88,27 @@ int SegmentCatalog::load_segment_definitions()
         }
 
         char* data_cursor = find_case_insensitive_substring("Data:", file_buffer);
-        if (data_cursor == 0)
-            return report_errorf("Cannot find Data: in Segment %s\n", segment_file_name);
+        if (data_cursor == 0) {
+            report_errorf("Cannot find Data: in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
         data_cursor = advance_to_next_crlf_line(data_cursor);
-        if (data_cursor == 0)
-            return report_errorf("Unexpected end of file in Segment %s\n", segment_file_name);
+        if (data_cursor == 0) {
+            report_errorf("Unexpected end of file in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
         data_cursor = advance_to_next_crlf_line(data_cursor);
-        if (data_cursor == 0)
-            return report_errorf("Unexpected end of file in Segment %s\n", segment_file_name);
+        if (data_cursor == 0) {
+            report_errorf("Unexpected end of file in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
-        if (*data_cursor != '@')
-            return report_errorf("Data line must start with '@' in Segment %s\n", segment_file_name);
+        if (*data_cursor != '@') {
+            report_errorf("Data line must start with '@' in Segment %s\n", segment_files[segment_index]);
+            return;
+        }
 
         short row_index = 0;
         entry->row_count = 0;
@@ -111,8 +124,12 @@ int SegmentCatalog::load_segment_definitions()
                 ++lane;
             } while (lane < 8);
 
-            if (*glyph_cursor != '@')
-                return report_errorf("Data line must end with '@' in Segment %s\n", segment_file_name);
+            if (*glyph_cursor != '@') {
+                report_errorf(
+                    "Data line must end with '@' in Segment %s\n",
+                    segment_files[segment_index]);
+                return;
+            }
 
             char* option_cursor = glyph_cursor + 1;
             ++entry->row_count;
@@ -222,18 +239,17 @@ int SegmentCatalog::load_segment_definitions()
                 row->flags |= 0x8000;
 
             data_cursor = advance_to_next_crlf_line(option_cursor);
-            if (data_cursor == 0)
-                return report_errorf(
+            if (data_cursor == 0) {
+                report_errorf(
                     "Unexpected end of file in Segment %s\n",
-                    segment_file_name);
+                    segment_files[segment_index]);
+                return;
+            }
 
             ++row_index;
         }
 
         ++segment_index;
-        result = count;
         segment_file_name += 0x80;
-    } while (segment_index < result);
-
-    return result;
+    } while (segment_index < count);
 }

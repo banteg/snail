@@ -82,7 +82,7 @@
 
 - The constructed object at `SubgameRuntime +0x10013a4` is one `0x38`-byte
   `BodBase` followed by a `0xf0`-byte `FrameSequence` at `+0x38`.
-- Its exact `0x128` extent ends at `SegmentCatalog +0x10014cc`, closing the
+- Its exact `0x128` extent ends at `SMTracks +0x10014cc`, closing the
   entire post-landscape gap without padding.
 - The typed local receiver retains the native `edi` owner and leaves this
   constructor exact at 227/227 with all 72 operands clean.

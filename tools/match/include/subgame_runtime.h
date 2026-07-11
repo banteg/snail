@@ -224,7 +224,7 @@ public:
     SmtrackHeightfieldAnimator smtrack_heightfield; // +0x10013a4, ends at +0x10014cc
     // The count precedes 150 constructor-built 0x4088-byte records. Their
     // exact aggregate extent reaches the following parcel pool.
-    SegmentCatalog segment_catalog; // +0x10014cc, ends at +0x125e480
+    SMTracks sm_tracks; // +0x10014cc, ends at +0x125e480
     TrackParcelPool parcel_pool; // +0x125e480
     union {
         float garbage_frequency; // +0x125ffd8, normalized Garbage: spawn control
