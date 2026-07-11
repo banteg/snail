@@ -4,6 +4,7 @@
 #include "bod_types.h"
 #include "border_runtime.h"
 #include "font_system.h"
+#include "intro_screen_runtime.h"
 #include "landscape_script_bank.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
@@ -15,6 +16,7 @@ extern char* g_game_base; // data_4df904
 extern TextureRefList g_texture_refs; // data_4b7790
 extern float g_font_glyph_widths[]; // data_7770e8
 extern void* g_font3d_glyph_objects[]; // data_77550c
+extern char g_blank_text[]; // data_4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 char* load_file_bytes(char* file_name, int* out_size);
@@ -24,21 +26,12 @@ int sprintf(char* buffer, const char* format, ...);
 int free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-class IntroRenderable {
+class IntroLogoRenderableVirtualView {
 public:
-    int set_bod_object(void* object);
-
-    char unknown_000[0x38];
-    TransformMatrix transform; // +0x38
-    char unknown_078[0x90 - 0x78];
+    virtual void update_intro_logo_renderable() = 0;
 };
 
-class IntroScreen {
-public:
-    int initialize_intro_screen(char* file_name);
-};
-
-static void add_intro_renderable_to_active_list(IntroRenderable* bod)
+static __forceinline void add_intro_renderable_to_active_list(IntroLogoRenderable* bod)
 {
     char* node = (char*)bod;
     if ((*(unsigned int*)(node + 4) & 0x200) != 0) {
@@ -49,40 +42,48 @@ static void add_intro_renderable_to_active_list(IntroRenderable* bod)
     char* head = g_game_base + 0x5ac;
     char* first = *(char**)head;
     if (first != 0) {
-        *(IntroRenderable**)(first + 8) = bod;
+        *(IntroLogoRenderable**)(first + 8) = bod;
         *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
         first = *(char**)(*(char**)head + 8);
         *(char**)head = first;
         *(int*)(first + 8) = 0;
     } else {
-        *(IntroRenderable**)head = bod;
+        *(IntroLogoRenderable**)head = bod;
         *(int*)(node + 8) = 0;
         *(int*)(*(int*)head + 12) = 0;
     }
     *(unsigned int*)(node + 4) |= 0x200;
 }
 
-static void initialize_intro_slot(IntroScreen* owner, int slot, void* object, float x, float z, char glyph)
+static __forceinline void initialize_intro_slot(
+    IntroScreenRuntime* owner,
+    int slot,
+    void* object,
+    float x,
+    float z,
+    char glyph)
 {
-    char* self = (char*)owner;
-    IntroRenderable* renderable = (IntroRenderable*)(self + 0x18 + slot * 0x90);
+    IntroLogoRenderable* renderable = &owner->renderables[slot];
     add_intro_renderable_to_active_list(renderable);
     renderable->set_bod_object(object);
     set_matrix_identity(&renderable->transform);
-    *(float*)((char*)renderable + 0x80) = x;
-    *(float*)((char*)renderable + 0x84) = -4.0f;
-    *(float*)((char*)renderable + 0x88) = z;
-    ((Color4f*)((char*)renderable + 0x40))->set_color_white();
-    *(float*)((char*)renderable + 0x4c) = 0.99900001f;
-    *(char*)((char*)renderable + 0x8c) = glyph;
+    renderable->transform.position.x = 0.0f;
+    renderable->transform.position.y = -4.0f;
+    renderable->transform.position.z = 0.0f;
+    renderable->transform.position.x += x;
+    renderable->transform.position.z += z;
+    renderable->color.set_color_white();
+    renderable->color.a = 0.99900001f;
+    renderable->velocity.x = 0.0f;
+    renderable->velocity.y = 0.0f;
+    renderable->velocity.z = 0.0f;
+    renderable->glyph = glyph;
+    ((IntroLogoRenderableVirtualView*)renderable)->update_intro_logo_renderable();
 }
 
-int IntroScreen::initialize_intro_screen(char* file_name)
+int IntroScreenRuntime::initialize_intro_screen(char* file_name)
 {
-    char* self = (char*)this;
-    int renderable_count = 0;
-
-    cache_music_file((char*)"music/introtext.ogg", 0, (char*)"");
+    cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
     int script_index =
         ((LandscapeScriptBank*)(g_game_base + 0x106c218))
             ->load_landscape_script_by_name((char*)"SpaceRed.txt");
@@ -95,7 +96,7 @@ int IntroScreen::initialize_intro_screen(char* file_name)
     ((StarField*)(g_game_base + 0x4f33c))->unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);
-    *(unsigned int*)(self + 0x0c) = g_runtime_config.render_flags;
+    saved_render_flags = g_runtime_config.render_flags;
 
     TransformMatrix matrix;
     *(TransformMatrix*)(g_game_base + 0x15c) =
@@ -105,11 +106,11 @@ int IntroScreen::initialize_intro_screen(char* file_name)
             0.0f, -0.77301002f, 0.63439298f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f);
     *(float*)(g_game_base + 0x284) = 100.0f;
-    *(int*)(self + 0x00) = 0;
-    *(float*)(self + 0x04) = 0.0016638901f;
+    progress = 0.0f;
+    progress_step = 1.0f / 600.0f;
     ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
-    *(int*)(self + 0x08) = 0;
-    *(int*)(self + 0x14) = 0;
+    state = 0;
+    this->renderable_count = 0;
 
     float crawl_y = 0.2f;
     char* text_start = find_case_insensitive_substring((char*)"Text Start:", file_bytes);
@@ -123,15 +124,14 @@ int IntroScreen::initialize_intro_screen(char* file_name)
             char path[128];
             char* out = image_name;
             ++cursor;
-            while (*cursor != '.' && *cursor != 0)
+            while (*cursor != '.')
                 *out++ = *cursor++;
             *out++ = '.';
             *out++ = 't';
             *out++ = 'g';
             *out++ = 'a';
             *out = 0;
-            if (*cursor == '.')
-                ++cursor;
+            ++cursor;
 
             float image_width = parse_next_float32(&cursor);
             float image_height = parse_next_float32(&cursor);
@@ -140,16 +140,16 @@ int IntroScreen::initialize_intro_screen(char* file_name)
             initialize_intro_slot(
                 this,
                 renderable_count,
-                *(void**)(self + 0x2403c + renderable_count * 4),
+                logo_renderables[renderable_count].object,
                 0.0f,
                 crawl_y - image_height * 0.5f,
                 (char)0xff);
 
-            IntroRenderable* renderable =
-                (IntroRenderable*)(self + 0x18 + renderable_count * 0x90);
+            IntroLogoRenderable* renderable = &renderables[renderable_count];
             TextureRef* texture = g_texture_refs.get_or_create_texture_ref(path, 0, 0);
-            *(TextureRef**)(*(int*)(*(int*)((char*)renderable + 0x3c) + 0x5c) + 0x0c) = texture;
-            float* verts = *(float**)(*(int*)((char*)renderable + 0x3c) + 0x38);
+            char* render_object = (char*)renderable->object;
+            *(TextureRef**)(*(int*)(render_object + 0x5c) + 0x0c) = texture;
+            float* verts = *(float**)(render_object + 0x38);
             if (verts != 0) {
                 float half_w = image_width * 0.5f;
                 float half_h = image_height * 0.5f;
@@ -176,7 +176,8 @@ int IntroScreen::initialize_intro_screen(char* file_name)
             }
 
             if (0 < count) {
-                float x = width * 0.5f * 0.80000001f;
+                float x = width * 0.5f;
+                x *= 0.80000001f;
                 char* glyph = line;
                 while (count != 0) {
                     int slot = font_slot_index_for_char(*glyph);
@@ -204,15 +205,14 @@ int IntroScreen::initialize_intro_screen(char* file_name)
     cursor = find_case_insensitive_substring((char*)"Duration:", file_bytes);
     cursor = find_case_insensitive_substring((char*)":", cursor);
     float duration = parse_next_float32(&cursor);
-    *(float*)(self + 0x10) = duration;
-    *(int*)(self + 0x14) = renderable_count;
+    duration_seconds = duration;
 
     float step = (1.0f / (duration * 60.0f)) * (3.0f - crawl_y);
     for (int i = 0; i < renderable_count; ++i) {
-        IntroRenderable* renderable = (IntroRenderable*)(self + 0x18 + i * 0x90);
-        *(float*)((char*)renderable + 0x98) = 0.0f;
-        *(float*)((char*)renderable + 0x9c) = 0.0f;
-        *(float*)((char*)renderable + 0xa0) = step;
+        IntroLogoRenderable* renderable = &renderables[i];
+        renderable->velocity.x = 0.0f;
+        renderable->velocity.y = 0.0f;
+        renderable->velocity.z = step;
     }
 
     return free_tracked_memory(file_bytes);

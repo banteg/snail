@@ -161,17 +161,17 @@ __forceinline GameRootAllocation::GameRootAllocation()
         ((BodBase*)star_field)->initialize_bod_base();
         ((BodBase*)star_field)->vtable = &g_star_field_callback_table;
 
-        SLOT(0x4f3c8)->initialize_bod_base();
+        root->root_bod_4f3c8.initialize_bod_base();
 
         initialize_array_with_constructor(
-            SLOT(0x4f418),
-            0x90,
-            0x400,
+            (RuntimeSlot*)&root->intro_screen.renderables[0],
+            sizeof(IntroLogoRenderable),
+            INTRO_SCREEN_RENDERABLE_COUNT,
             &RuntimeSlot::initialize_intro_logo_renderable);
         initialize_array_with_constructor(
-            SLOT(0x73418),
-            0x90,
-            0x20,
+            (RuntimeSlot*)&root->intro_screen.logo_renderables[0],
+            sizeof(IntroLogoRenderable),
+            INTRO_SCREEN_LOGO_RENDERABLE_COUNT,
             &RuntimeSlot::initialize_intro_logo_renderable);
 
         SLOT(0x74618)->initialize_runtime_pools_and_path_template_bank();

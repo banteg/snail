@@ -10,6 +10,7 @@
 #include "frontend_fade.h"
 #include "frontend_overlay_color_lerp.h"
 #include "input_state.h"
+#include "intro_screen_runtime.h"
 #include "main_menu.h"
 #include "mouse_cursor_state.h"
 #include "new_game_menu.h"
@@ -24,12 +25,6 @@
 
 enum {
     GAME_ROOT_BOD_COUNT = 0x160,
-};
-
-class GameRootIntroScreen {
-public:
-    void initialize_intro_screen(char* script_path);
-    void update_intro_screen();
 };
 
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
@@ -115,9 +110,8 @@ public:
     StarField star_field; // +0x4f33c, cross-port cRStarManager owner
     OptionsMenu options_menu; // +0x4f388
     CompletionPrompt completion_screen; // +0x4f3ac
-    char unknown_04f3c8[0x4f400 - 0x4f3c8];
-    GameRootIntroScreen intro_screen; // +0x4f400
-    char unknown_04f401[0x74618 - 0x4f401];
+    BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
+    IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
     HighScoreScreen high_score_screen; // +0x12e6e50
     char unknown_12e6f20[0x12e6f58 - 0x12e6f20];

@@ -1,19 +1,10 @@
 // update_intro_logo_renderable @ 0x419a90 (thiscall)
 
-#include "bod_types.h"
+#include "intro_screen_runtime.h"
 
 struct IntroRenderableObjectView {
     char unknown_00[0x10];
     unsigned int flags; // +0x10
-};
-
-class IntroLogoRenderable : public RenderableBod {
-public:
-    void update_intro_logo_renderable();
-
-    char unknown_078[0x80 - 0x78];
-    Vector3 velocity; // +0x80
-    char unknown_08c[0x90 - 0x8c];
 };
 
 void IntroLogoRenderable::update_intro_logo_renderable()

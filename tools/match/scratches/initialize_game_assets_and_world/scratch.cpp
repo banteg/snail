@@ -10,7 +10,6 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_script_bank.h"
-#include "logo_runtime.h"
 #include "object_render_types.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -268,7 +267,7 @@ char GameRoot::initialize_game_assets_and_world()
     ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
     subgame.galaxy.load_galaxy_layout();
     subgame.player.cameraman.initialize_cameraman();
-    ((LogoRuntime*)(game + 0x4f400))->open_logo();
+    intro_screen.open_logo();
     initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options_menu.apply_audio_config_volumes();

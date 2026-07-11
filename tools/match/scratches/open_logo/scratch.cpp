@@ -1,7 +1,7 @@
 // open_logo @ 0x419110 (thiscall)
 
 #include "bod_types.h"
-#include "logo_runtime.h"
+#include "intro_screen_runtime.h"
 #include "object_render_types.h"
 #include "sprite.h"
 
@@ -13,10 +13,10 @@ void enumerate_matching_archive_or_fs_entries(
     char* out_names); // @ 0x431740
 int sprintf(char* buffer, char* format, ...);
 
-int LogoRuntime::open_logo()
+int IntroScreenRuntime::open_logo()
 {
-    BodBase* slot = (BodBase*)((char*)this + 0x24018);
-    int logo_count = 0x20;
+    BodBase* slot = &logo_renderables[0];
+    int logo_count = INTRO_SCREEN_LOGO_RENDERABLE_COUNT;
     do {
         slot->set_bod_object(g_object_list.add_object_to_list());
         Object* object = *(Object**)((char*)slot + 0x24);

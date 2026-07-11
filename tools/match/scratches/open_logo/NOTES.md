@@ -23,11 +23,9 @@ keeps the object-field cursor at `this + 0x2403c` and forms the BOD receiver as
 `cursor - 0x24`, while this source keeps the BOD receiver directly and reads the
 object through `+0x24`.
 
-2026-06-20 type cleanup: `LogoRuntime` moved to a method-only shared header.
-Binary Ninja shows the caller uses the receiver at `game + 0x4f400`, but this
-function only proves the logo slot cursor, not a reusable full object layout.
-`open_logo` stayed at 69.35%, and the broad `initialize_game_assets_and_world`
-caller stayed at its previous semantic-partial score after including the header.
+2026-06-20 type cleanup: the first pass used a method-only `LogoRuntime` view.
+Binary Ninja showed the caller receiver at `game + 0x4f400`, while this helper
+proved the second slot-bank cursor at receiver `+0x24018`.
 
 2026-06-21 cursor-owner retry: focused Wibo improves from 69.35% to 90.00%,
 with 60/60 candidate/target instructions, 4/60 prefix, and 13 clean masked
@@ -49,3 +47,14 @@ two-register source shape.
 `void**` / `char*` / dual BOD+object-slot / named allocated-object temps.
 Every object-field primary cursor still falls to 69.35% with the three-register
 frame. Keep the BOD-slot source at 90.00%.
+
+## 2026-07-11 intro owner closure
+
+The constructor, exact intro update/teardown helpers, and corrected initializer
+now close the reusable owner that the earlier method-only view could not:
+`IntroScreenRuntime` begins at root `+0x4f400`, owns 1024 crawl renderables at
+`+0x18`, then the 32 logo renderables used here at `+0x24018`, and ends exactly
+at root `+0x74618`. `open_logo` is therefore a method on that shared owner and
+the standalone `logo_runtime.h` view is retired. Focused Wibo remains 90.00%,
+`60/60`, with all 13 masked operands clean; only the object-field cursor versus
+BOD-base cursor register shape remains.

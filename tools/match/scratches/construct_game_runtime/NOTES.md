@@ -157,3 +157,15 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 - `GameRoot::root_bods[0x160]` now owns that interval. Individual indices stay
   deliberately unnamed because the large startup function has not yet mapped
   every authored world object back to an array slot.
+
+## 2026-07-11 intro screen and renderable-bank ownership
+
+- Root `+0x4f400..+0x74618` is the complete `IntroScreenRuntime`. Its `0x18`
+  state header is followed by 1024 `IntroLogoRenderable` records and the 32
+  logo records consumed by `open_logo`; both banks use the constructor's
+  exact `0x90` stride.
+- The preceding `BodBase +0x4f3c8` remains a separate root-owned record with an
+  unknown concrete role. It is typed without folding it into the intro owner.
+- The constructor now addresses both arrays through the shared owner. Its
+  focused metrics remain `88.89%`, `299/268`, with 119 clean operands and the
+  single compiler-local EH-handler relocation unresolved.
