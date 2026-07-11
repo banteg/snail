@@ -22,4 +22,4 @@ remains exact at 167/167 instructions with 37 clean masked operands.
 2026-07-11 cRGUI ownership: Android and iOS name this exact owner method
 `cRGUI::Init()`. Android independently preserves the borrowed game pointer at
 +0x00 and the same widget fields through +0x24. The Windows 0x28-byte layout
-also closes exactly between the salt-frequency dword and HelpScreen.
+also closes exactly between the salt-frequency dword and the `Help` owner.

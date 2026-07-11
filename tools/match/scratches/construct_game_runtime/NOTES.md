@@ -307,7 +307,7 @@ compiler-local EH relocation unresolved.
 
 The `Size of cRGUI` entry now comes from `sizeof(GUI)`. Its borrowed Subgame
 pointer plus nine mode-dependent widget/state lanes occupy exactly 0x28 bytes
-at `SubgameRuntime +0x125ffe0`, ending at HelpScreen. Android independently
+at `SubgameRuntime +0x125ffe0`, ending at the `Help` owner. Android independently
 preserves the same field offsets. Constructor metrics remain unchanged.
 
 ## 2026-07-11 recovered-owner ledger closure

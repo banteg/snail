@@ -4,9 +4,13 @@ Small Help-screen teardown helper at 0x4168c0. Both BN and IDA decompiles show
 it forwarding to kill_all_borders on the global border manager at
 data_4df904+0xb4c.
 
-The helper is source-shaped as a `HelpScreen` member. The body ignores `this`
+The helper is source-shaped as a `Help` member. The body ignores `this`
 and still compiles to the same tailcall, while the member spelling is required
 by `update_help_screen` so VC6 keeps the owner in `ecx` across the call.
 
 Exact match: 100.00%, 3/3 instructions, with g_game_base and kill_all_borders
 operands resolved.
+
+2026-07-11 cRHelp ownership: Android names this lifecycle edge
+`cRHelp::UnInit()`. The exact 3/3 Windows body now lives on the shared
+four-byte `Help` owner.

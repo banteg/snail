@@ -2,7 +2,7 @@
 
 #include "backdrop.h"
 #include "border_runtime.h"
-#include "help_screen.h"
+#include "help.h"
 #include "landscape_manager.h"
 
 extern char* g_game_base; // data_4df904
@@ -18,7 +18,7 @@ public:
     FrontendWidget* allocate_border();
 };
 
-void HelpScreen::initialize_help_screen()
+void Help::initialize_help_screen()
 {
     Color4f color;
 

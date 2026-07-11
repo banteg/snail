@@ -1,11 +1,11 @@
 // update_help_screen @ 0x4168d0 (thiscall)
 
 #include "game_root.h"
-#include "help_screen.h"
+#include "help.h"
 
 extern char* g_game_base; // data_4df904
 
-void HelpScreen::update_help_screen()
+void Help::update_help_screen()
 {
     FrontendWidget* button = back_button;
     unsigned int flags = button->widget_flags;

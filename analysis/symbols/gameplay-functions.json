@@ -899,7 +899,7 @@
     {
       "address": "0x4168c0",
       "name": "destroy_help_screen",
-      "description": "Clears the Help-screen shell-font scene before control returns to the owning front-end state."
+      "description": "Clears the Help-screen shell-font scene before control returns to the owning front-end state. Cross-port Android symbols match this helper to `cRHelp::UnInit()`."
     },
     {
       "address": "0x4168d0",

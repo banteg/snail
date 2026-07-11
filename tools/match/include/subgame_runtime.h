@@ -16,7 +16,7 @@
 #include "galaxy_route_types.h"
 #include "sub_high_score.h"
 #include "sub_solution.h"
-#include "help_screen.h"
+#include "help.h"
 #include "sub_tracks.h"
 #include "contact_target.h"
 #include "new_game_menu.h"
@@ -237,7 +237,7 @@ public:
         int salt_frequency_bits;
     };
     GUI gui; // +0x125ffe0
-    HelpScreen help_screen; // +0x1260008, embedded front-end controller
+    Help help; // +0x1260008, exact authored cRHelp owner
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
     Galaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
     int subgame_rebuild_selector; // +0x1270fc8

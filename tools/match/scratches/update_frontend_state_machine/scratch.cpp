@@ -169,10 +169,10 @@ int GamePlayer::update_frontend_state_machine()
         }
         case 31:
             frontend_state = 32;
-            g_game->subgame.help_screen.initialize_help_screen();
+            g_game->subgame.help.initialize_help_screen();
         case 32: {
             GameRoot* owner = g_game;
-            owner->subgame.help_screen.update_help_screen();
+            owner->subgame.help.update_help_screen();
             break;
         }
         default:

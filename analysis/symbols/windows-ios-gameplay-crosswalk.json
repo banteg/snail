@@ -1606,6 +1606,32 @@
       "confidence": "high"
     },
     {
+      "address": "0x416800",
+      "windows_name": "initialize_help_screen",
+      "ios_symbol": "cRHelp::Init()",
+      "android_symbol": "cRHelp::Init()",
+      "source_object": "Help.o",
+      "confidence": "high",
+      "notes": "The exact Windows member initializes the single-widget cRHelp owner embedded at SubgameRuntime +0x1260008."
+    },
+    {
+      "address": "0x4168c0",
+      "windows_name": "destroy_help_screen",
+      "android_symbol": "cRHelp::UnInit()",
+      "source_object": "Help.o",
+      "confidence": "high",
+      "notes": "The exact Windows lifecycle edge tears down the shared border set through the four-byte cRHelp owner."
+    },
+    {
+      "address": "0x4168d0",
+      "windows_name": "update_help_screen",
+      "ios_symbol": "cRHelp::AI()",
+      "android_symbol": "cRHelp::AI()",
+      "source_object": "Help.o",
+      "confidence": "high",
+      "notes": "The exact Windows member handles the Back widget and returns the root front-end flow to the New Game screen."
+    },
+    {
       "address": "0x416910",
       "windows_name": "initialize_high_score_screen",
       "ios_symbol": "cRHighScore::Init(int, int)",
