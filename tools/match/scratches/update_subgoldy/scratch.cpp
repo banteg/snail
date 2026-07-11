@@ -46,7 +46,7 @@ struct SubgoldyTimesUpView {
     void update_times_up();
 };
 
-struct Nuke {
+struct SubgoldyNukeView {
     int state;
     void update_nuke();
     void uninit_nuke();
@@ -203,7 +203,7 @@ struct SubgoldyPlayerView {
     char unknown_124[0x14c - 0x124];
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[3];
-    Nuke nuke; // +0x150
+    SubgoldyNukeView nuke; // +0x150, compact cRNuke prefix
     char unknown_154[0x1d4 - 0x154];
     float damage_retrigger_timer; // +0x1d4
     float damage_retrigger_step;  // +0x1d8

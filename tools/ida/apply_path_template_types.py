@@ -380,15 +380,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_nuke",
-        "int32_t __thiscall initialize_nuke(NukeController* nuke);",
+        "void __thiscall initialize_nuke(Nuke* nuke);",
     ),
     (
         "update_nuke",
-        "int32_t __thiscall update_nuke(NukeController* nuke);",
+        "void __thiscall update_nuke(Nuke* nuke);",
     ),
     (
         "uninit_nuke",
-        "void __thiscall uninit_nuke(NukeController* nuke);",
+        "void __thiscall uninit_nuke(Nuke* nuke);",
     ),
     (
         "get_track_grid_cell_at_world_position",

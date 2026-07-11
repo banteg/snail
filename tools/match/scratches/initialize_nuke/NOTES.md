@@ -1,7 +1,7 @@
 # initialize_nuke
 
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
-- Uses typed `NukeController`, `Player`, `SubgameRuntime`, `SpriteManager`, and
+- Uses typed `Nuke`, `Player`, `SubgameRuntime`, `SpriteManager`, and
   `Sprite` layouts. This pins the owner player pointer, `subgame_rate` read
   through the embedded subgame at `root+0x74618+0x38`, orbit center-z/phase
   fields, and the 25 sprite slots at controller `+0x18`.
@@ -58,3 +58,13 @@
   codegen-neutral, as is spelling the flag assignment as
   `sprite->flags = sprite->flags | 0x800`. Keep the typed progress/size stores
   and direct `|=` flag expression.
+
+## Authored cRNuke owner (2026-07-11)
+
+Android `cRNuke::Init()` uses the same exact Windows layout: state +0x00,
+non-owning cRSubGoldy backlink +0x04, orbit z step/center +0x08/+0x0c,
+phase/step +0x10/+0x14, and 25 sprite pointers from +0x18 through +0x78.
+`cRSubGoldy::Collision()` calls it through that embedded 0x7c-byte owner. The
+shared type is now `Nuke`, and the analysis prototypes correctly preserve the
+side-effect-only `void` contract. Focused Wibo remains an honest 93.75%, 64/64
+instructions, prefix 30/64, with five clean masked operands.

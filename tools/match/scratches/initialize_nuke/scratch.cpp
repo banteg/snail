@@ -1,12 +1,12 @@
 // initialize_nuke @ 0x447110 (thiscall)
 
-#include "nuke_controller.h"
+#include "nuke.h"
 #include "player.h"
 #include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 
-void NukeController::initialize_nuke()
+void Nuke::initialize_nuke()
 {
     int zero = 0;
     if (state == zero) {

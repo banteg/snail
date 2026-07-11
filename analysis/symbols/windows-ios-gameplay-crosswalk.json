@@ -569,6 +569,32 @@
       "notes": "Both return the next inline cRFringe record and advance the manager cursor; Windows proves a fixed 7000-entry, 0x38-stride pool."
     },
     {
+      "address": "0x4470e0",
+      "windows_name": "uninit_nuke",
+      "ios_symbol": "cRNuke::UnInit()",
+      "android_symbol": "cRNuke::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android uses the same state at +0x00 and 25 sprite slots at +0x18, then clears the owner after killing every slot. cRSubGoldy::AI() owns the teardown edge."
+    },
+    {
+      "address": "0x447110",
+      "windows_name": "initialize_nuke",
+      "android_symbol": "cRNuke::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the exact state, owner backlink, z-step/center, phase/step, and 25-slot offsets through the 0x7c-byte cRNuke layout; cRSubGoldy::Collision() calls Init."
+    },
+    {
+      "address": "0x4471e0",
+      "windows_name": "update_nuke",
+      "ios_symbol": "cRNuke::AI()",
+      "android_symbol": "cRNuke::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android and Windows advance the same z and angular fields and orbit all 25 sprite slots; Android cRSubGoldy::AI() calls the method through its embedded cRNuke."
+    },
+    {
       "address": "0x447300",
       "windows_name": "copy_segment_definition_to_level_slot",
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",

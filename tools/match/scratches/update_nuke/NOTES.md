@@ -7,7 +7,7 @@ advances the z-axis orbit center by `orbit_center_z_step`, advances and wraps th
 phase, then updates all 25 sprite slots around a radius-7 circle using the
 existing `sine`/`cosine` helpers.
 
-This uses the typed `NukeController` and `Sprite` layout pinned by
+This uses the typed `Nuke` and `Sprite` layout pinned by
 `initialize_nuke` and exact `uninit_nuke`. The updater is modeled as a
 side-effect-only method; its return value in decompiler output is incidental
 leftover register state.
@@ -37,3 +37,10 @@ Rejected source-shape probes:
 - a separate `angle_index` local matched the stack-temp idea but changed the
   saved-register allocation for `this` and the loop counter, dropping the match
   to 57.63%.
+
+2026-07-11 authored-owner recovery: Android and iOS name this exact role
+`cRNuke::AI()`. Android advances the same +0x08/+0x0c z pair and +0x10/+0x14
+phase pair, then orbits the same 25 slots at +0x18; `cRSubGoldy::AI()` calls it
+through the embedded owner. The shared Windows type is now `Nuke`, and the
+decompiler prototypes are corrected from incidental `int` to `void`. Focused
+Wibo remains exact at 59/59 instructions with eight clean masked operands.

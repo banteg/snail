@@ -668,15 +668,16 @@ typedef struct SquidgeState {
     float z_phase;
 } SquidgeState;
 
-typedef struct NukeController {
+/* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
+typedef struct Nuke {
     int32_t state;
     Player* owner_player;
-    float orbit_axis_step;
-    float orbit_axis;
-    float phase;
-    float phase_step;
-    void* sprite_slots[25];
-} NukeController;
+    float orbit_center_z_step;
+    float orbit_center_z;
+    float orbit_phase;
+    float orbit_phase_step;
+    Sprite* sprite_slots[25];
+} Nuke;
 
 typedef struct TipMessageDefinition {
     uint32_t flags;
@@ -881,7 +882,7 @@ typedef struct Player {
     uint8_t unresolved_pre_row_event[0x28];
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
-    NukeController nuke;
+    Nuke nuke;
     int32_t movement_sound_variant_sample;
     uint8_t _pad_1d0[0x4];
     float damage_retrigger_timer;
@@ -1065,9 +1066,9 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentatio
 int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);
 int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);
-int32_t __thiscall initialize_nuke(NukeController* nuke);
-int32_t __thiscall update_nuke(NukeController* nuke);
-void __thiscall uninit_nuke(NukeController* nuke);
+void __thiscall initialize_nuke(Nuke* nuke);
+void __thiscall update_nuke(Nuke* nuke);
+void __thiscall uninit_nuke(Nuke* nuke);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);
 TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);
 double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);

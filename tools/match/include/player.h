@@ -12,7 +12,7 @@
 #include "firework.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
-#include "nuke_controller.h"
+#include "nuke.h"
 #include "presentation_animation_channel.h"
 #include "progress_bar.h"
 #include "score_stats.h"
@@ -231,7 +231,7 @@ public:
     char unknown_149[0x14c - 0x149];
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];
-    NukeController nuke;                  // +0x150
+    Nuke nuke;                            // +0x150, authored cRNuke owner
     int movement_sound_variant_sample;      // +0x1cc
     FireworkController firework;            // +0x1d0, embedded receiver with no instance state
     char unknown_1d1[0x1d4 - 0x1d1];

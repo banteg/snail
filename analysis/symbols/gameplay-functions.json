@@ -2629,17 +2629,17 @@
     {
       "address": "0x4470e0",
       "name": "uninit_nuke",
-      "description": "Kills the 25 sprite slots owned by the collision ring-effect controller and clears its active state. Cross-port Android symbols match this helper to `cRNuke::UnInit()`."
+      "description": "Kills the 25 sprite slots owned by the exact 0x7c-byte cRNuke collision-ring effect at Player +0x150 and clears its active state. Android and iOS retain this method as `cRNuke::UnInit()`."
     },
     {
       "address": "0x447110",
       "name": "initialize_nuke",
-      "description": "Spawns the 25-sprite ring effect used by ring/special-effect collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches the first update. Cross-port Android symbols match this helper to `cRNuke::Init()`."
+      "description": "Initializes the exact 0x7c-byte cRNuke owner at Player +0x150: spawns the 25-sprite ring effect used by collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches `cRNuke::AI()`. Android retains this method as `cRNuke::Init()`."
     },
     {
       "address": "0x4471e0",
       "name": "update_nuke",
-      "description": "Advances the 25-sprite collision ring effect by orbiting its sprite slots around the owner at radius `7.0` while the owning timer remains active. Cross-port Android symbols match this helper to `cRNuke::AI()`."
+      "description": "Advances the exact cRNuke owner by moving its 25 sprite slots around the containing player at radius `7.0`, using the +0x08/+0x0c z-step pair and +0x10/+0x14 phase pair. Android and iOS retain this method as `cRNuke::AI()`."
     },
     {
       "address": "0x447290",

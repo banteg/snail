@@ -105,7 +105,7 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
 
 2026-06-16 controller consolidation audit: row-event, warning, and nuke all
 have shared headers (`completion.h`, `warning.h`,
-`nuke_controller.h`) validated by their focused scratches. Keep the local
+`nuke.h`) validated by their focused scratches. Keep the local
 prefix views in this scratch for now. Those headers pull in
 `frontend_widget.h`/`sprite.h`/`vector3.h`, which conflicts with this file's
 scratch-local POD `Vector3`/`TransformMatrix` transcription before codegen.
@@ -305,6 +305,13 @@ separate neutral composite. Focused Wibo remains 72.51%, 2067/2087
 Android and iOS. The full shared header remains intentionally outside this
 large scratch's local math boundary. Focused Wibo remains 72.51%, 2067/2087
 instructions, with 290 clean masked operands and one jump-table mismatch.
+
+2026-07-11 nuke-owner recovery: the compact local prefix at Player +0x150 is
+now named `SubgoldyNukeView`, reflecting Android and iOS `cRNuke` without
+advertising a second full definition. Android
+`cRSubGoldy::AI()` owns both the AI and UnInit call edges through this embedded
+object. Focused Wibo remains 72.51%, 2067/2087 instructions, with 290 clean
+masked operands and one jump-table mismatch.
 
 ## Zig port residuals (carried from the pre-scratch dossier, still open)
 

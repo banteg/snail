@@ -68,7 +68,7 @@ This promoted `Player::handle_subgoldy_collisions`, direct
 `PlayerPresentationController::wobble_lift_phase_step` at presentation
 `+0x15c8` (`Player +0x3f4c`). The slug first-hit cutscene write now goes
 through `presentation.cutscene_ai.state`, the ring nuke pickup uses the shared
-`NukeController::initialize_nuke()` method at `Player +0x150`, and the local
+`Nuke::initialize_nuke()` method at `Player +0x150`, and the local
 three-float collision probes alias the shared `Vector3` view. Focused match
 moves from `45.36%` / 641 candidate insns to `45.43%` / 639 with the masked
 audit unchanged (`70 ok`, one known slug-block alignment mismatch).
@@ -155,7 +155,7 @@ useful cross-confirmations are:
   salt spawner, but the surrounding semantic field is still not named.
 
 2026-06-16 player subobject consolidation: shared `player.h` now records the
-`NukeController nuke` object at `Player +0x150` and embedded
+`Nuke nuke` object at `Player +0x150` and embedded
 `PlayerPresentationController::cutscene_ai.state` at presentation `+0x1964`
 (`Player +0x42e8`). This collision scratch consumes both through the ring
 nuke pickup (`initialize_nuke(player+0x150)`) and slug first-hit cutscene state
@@ -368,3 +368,10 @@ The adjacent singleton collision check now uses the primary `JetPack` at
 constructor table points to its AI, and its two embedded cRVapour children
 close the full 0x19c allocation. Focused Wibo remains 52.85%, 659/673, with
 all 86 operands clean.
+
+## cRNuke embedded owner (2026-07-11)
+
+The collision kinds that arm the ring effect now call the exact 0x7c-byte
+`Nuke` embedded at Player +0x150. Android `cRSubGoldy::Collision()` calls
+`cRNuke::Init()` through the same relationship and preserves every owner field
+offset. Focused Wibo remains 52.85%, 659/673, with all 86 operands clean.

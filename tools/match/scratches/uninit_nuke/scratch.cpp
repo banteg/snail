@@ -1,8 +1,8 @@
 // uninit_nuke @ 0x4470e0 (thiscall, ret)
 
-#include "nuke_controller.h"
+#include "nuke.h"
 
-void NukeController::uninit_nuke()
+void Nuke::uninit_nuke()
 {
     if (state == 1) {
         for (int i = 0; i < 25; i++) {

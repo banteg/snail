@@ -102,7 +102,7 @@ Latest focused result:
   `Player::game +0x408` and `Player::control_source +0x43c`. The former points
   back to the `SubgameRuntime` that embeds the Player; the latter borrows one
   of two input-controller views from the root game object.
-- The self-links at `NukeController::owner_player` and
+- The self-links at `Nuke::owner_player` and
   `PlayerPresentationController::owner_player`, plus the embedded
   `follow_active` lane, are now expressed through shared `Player` fields in the
   scratch instead of raw offsets. Focused Wibo is byte-shape neutral at the
@@ -127,3 +127,8 @@ Latest focused result:
 - Focused Wibo improves from 95.86% (276/279, prefix 190) to proof-grade
   100.00% (279/279, full prefix), with all 27 operands clean. No volatile,
   register annotation, raw offset alias, or other fakematch is used.
+
+2026-07-11 cRNuke ownership: the self-link at Player +0x154 now belongs to the
+exact 0x7c-byte authored `Nuke` embedded at +0x150. Android independently uses
+the same `cRNuke` offsets and containing-Goldy backlink. Focused Wibo remains
+exact at 279/279 instructions with all 27 operands clean.

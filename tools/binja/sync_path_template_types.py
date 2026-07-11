@@ -50,6 +50,7 @@ REQUIRED_HEADER_STRUCTS = (
     "DamageGuage",
     "ProgressBar",
     "Warning",
+    "Nuke",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -68,7 +69,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x9c", "ghost_sprite_b", "Sprite*"),
     ("0x120", "movement_state", "int32_t"),
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
-    ("0x150", "nuke", "NukeController"),
+    ("0x150", "nuke", "Nuke"),
     ("0x1cc", "movement_sound_variant_sample", "int32_t"),
     ("0x1d4", "damage_retrigger_timer", "float"),
     ("0x1d8", "damage_retrigger_step", "float"),
@@ -394,6 +395,18 @@ PROTO_UPDATES = (
     (
         "update_warning",
         "void __thiscall update_warning(Warning* warning)",
+    ),
+    (
+        "initialize_nuke",
+        "void __thiscall initialize_nuke(Nuke* nuke)",
+    ),
+    (
+        "update_nuke",
+        "void __thiscall update_nuke(Nuke* nuke)",
+    ),
+    (
+        "uninit_nuke",
+        "void __thiscall uninit_nuke(Nuke* nuke)",
     ),
     (
         "initialize_jetpack_gauge",

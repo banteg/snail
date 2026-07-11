@@ -370,15 +370,16 @@ typedef struct JetpackGaugeController {
     float warning_intensity;
 } JetpackGaugeController;
 
-typedef struct NukeController {
+/* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
+typedef struct Nuke {
     int32_t state;
     struct Player* owner_player;
-    float orbit_axis_step;
-    float orbit_axis;
-    float phase;
-    float phase_step;
-    void* sprite_slots[25];
-} NukeController;
+    float orbit_center_z_step;
+    float orbit_center_z;
+    float orbit_phase;
+    float orbit_phase_step;
+    Sprite* sprite_slots[25];
+} Nuke;
 
 typedef struct TipMessageDefinition {
     uint32_t flags;
@@ -511,7 +512,7 @@ typedef struct Player {
     uint8_t unresolved_pre_row_event[0x28];
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
-    NukeController nuke;
+    Nuke nuke;
     int32_t movement_sound_variant_sample;
     uint8_t _pad_1d0[0x4];
     float damage_retrigger_timer;

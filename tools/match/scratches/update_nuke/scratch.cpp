@@ -1,13 +1,13 @@
 // update_nuke @ 0x4471e0 (thiscall)
 
-#include "nuke_controller.h"
+#include "nuke.h"
 
 float sine(float radians);
 float cosine(float radians);
 
-void NukeController::update_nuke()
+void Nuke::update_nuke()
 {
-    NukeController* self = this;
+    Nuke* self = this;
     int result = self->state;
     switch (result) {
     case 0:
