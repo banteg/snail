@@ -18,14 +18,15 @@ typedef struct Color4f {
 
 typedef struct TextureRef {
     uint32_t flags;
-    uint8_t _pad_04[0x0c - 0x04];
+    int32_t loaded_width;
+    int32_t loaded_height;
     char name[0x8c - 0x0c];
     int32_t slot_index;
     int32_t frame_count;
     float frame_progress_step;
     void* texture_ref;
-    uint8_t _pad_9c[0xa0 - 0x9c];
-    int32_t unknown_a0;
+    uint8_t unknown_9c[0xa0 - 0x9c];
+    int32_t mip_levels;
 } TextureRef;
 
 typedef struct ObjectUv {
@@ -205,6 +206,7 @@ typedef struct ObjectList {
     Object* objects;
 } ObjectList;
 
+void* __thiscall noop_this_constructor(void* self);
 int32_t __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
 void __thiscall build_all_objects(ObjectList* object_list);

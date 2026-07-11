@@ -2,6 +2,7 @@
 /* function: initialize_runtime_pools_and_path_template_bank @ 0x408060 */
 /* selector: initialize_runtime_pools_and_path_template_bank */
 
+// Initializes the embedded subgame pools, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914. Those records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias; their 0x52b0 extent ends at the barrier actor at +0xff7bc4.
 _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
 {
   _DWORD *v2; // edi
@@ -23,7 +24,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
   int v18; // ebx
 
   v2 = this + 23;
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 23));
+  noop_this_constructor(this + 23);
   initialize_array_with_constructor((int)(v2 + 22), 60, 715, (int (__thiscall *)(int))initialize_active_bod);
   initialize_array_with_constructor(
     (int)(this + 10782),
@@ -40,7 +41,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     56,
     256,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 442448));
+  noop_this_constructor(this + 442448);
   initialize_array_with_constructor(
     (int)(this + 442492),
     16928,
@@ -56,7 +57,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     56,
     256,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 874158));
+  noop_this_constructor(this + 874158);
   initialize_bod_base(this + 874201);
   initialize_bod_base(this + 874215);
   initialize_bod_base(this + 874229);
@@ -169,7 +170,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     (int (__thiscall *)(int))initialize_active_landscape_entry);
   initialize_array_with_constructor((int)(this + 4186217), 292, 128, initialize_landscape_script_record);
   initialize_bod_base(this + 4195561);
-  sub_42F6E0(this + 4195575);
+  initialize_object_constructor_thunk(this + 4195575);
   *(this + 4195561) = g_smtracks_callback_table;
   initialize_array_with_constructor(
     (int)(this + 4195636),
@@ -186,7 +187,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     672,
     101,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  initialize_array_with_constructor((int)(this + 4833876), 160, 10, sub_408880);
+  initialize_array_with_constructor((int)(this + 4833876), 160, 10, initialize_solution_record);
   initialize_array_with_constructor(
     (int)(this + 4834294),
     24,

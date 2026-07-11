@@ -4,12 +4,18 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_pro
+import ida_typeinf
 import idc
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "noop_this_constructor",
+        "void* __thiscall noop_this_constructor(void* self);",
+    ),
     (
         "get_or_create_texture_ref",
         "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);",
@@ -100,19 +106,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_x_mesh",
-        "int32_t __stdcall load_x_mesh(char* mesh_path, PathTemplateStripMesh* mesh, uint8_t options_flags);",
+        "int32_t __stdcall load_x_mesh(char* mesh_path, Object* object, uint8_t options_flags);",
     ),
     (
         "request_object_vertices",
-        "void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);",
+        "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
     ),
     (
         "request_object_vertex_colours",
-        "void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);",
+        "void __fastcall request_object_vertex_colours(Object* object);",
     ),
     (
         "request_object_facequads",
-        "void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);",
+        "void __thiscall request_object_facequads(Object* object, int32_t facequad_count);",
     ),
     (
         "set_color_rgba",
@@ -132,15 +138,27 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_track_render_cache_manager",
-        "void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);",
+        "void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);",
     ),
     (
         "build_track_render_caches",
-        "int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);",
+        "int32_t __thiscall build_track_render_caches(TrackRenderCacheManager* manager, Color4f skirt_color);",
+    ),
+    (
+        "add_track_cache_vertex",
+        "int32_t __thiscall add_track_cache_vertex(TrackRenderCacheManager* manager, Object* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv);",
+    ),
+    (
+        "append_track_cache_object",
+        "int32_t __thiscall append_track_cache_object(TrackRenderCacheManager* manager, int32_t row_index, Object* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv);",
+    ),
+    (
+        "update_track_render_cache_rows",
+        "void __thiscall update_track_render_cache_rows(TrackRenderCacheManager* manager);",
     ),
     (
         "remove_track_render_cache_bods",
-        "void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);",
+        "void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager* manager);",
     ),
     (
         "is_slide_cache_tile_family",
@@ -533,6 +551,50 @@ TRUSTED_DECLARATIONS = [
 ]
 
 
+def _sync_build_track_render_cache_lvar() -> dict[str, object]:
+    address = idc.get_name_ea_simple("build_track_render_caches")
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function"}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_stk_var() and lvar.get_stkoff() == 64 and lvar.width == 52
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_local_candidates",
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    if lvar.name == "locals" and "TrackRenderCacheBuildLocals" in str(lvar.type()):
+        return {"status": "unchanged", "name": lvar.name, "type": str(lvar.type())}
+
+    local_type = ida_typeinf.tinfo_t()
+    if not local_type.get_named_type(
+        None,
+        "TrackRenderCacheBuildLocals",
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {"status": "failed", "reason": "missing_local_view_type"}
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "locals"
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {"status": "failed", "reason": "modify_user_lvar_info_failed"}
+
+    return {"status": "applied", "name": "locals", "type": "TrackRenderCacheBuildLocals"}
+
+
 def _resolve_function(selector: str) -> tuple[int | None, str]:
     if selector.startswith("0x"):
         address = int(selector, 16)
@@ -617,6 +679,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    lvar_view = _sync_build_track_render_cache_lvar()
+    if lvar_view.get("status") == "failed":
+        failed.append({"selector": "build_track_render_caches", "lvar_view": lvar_view})
+
     print(
         json.dumps(
             {
@@ -625,6 +691,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "lvar_view": lvar_view,
                 "missing": missing,
                 "failed": failed,
             },

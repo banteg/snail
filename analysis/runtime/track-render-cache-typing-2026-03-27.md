@@ -35,8 +35,8 @@ The canonical checked-in header now carries the owner model for:
 
 - [`initialize_track_render_cache_manager`](../decompile/ida/functions/00433060-initialize_track_render_cache_manager.c)
 - [`build_track_render_caches`](../decompile/ida/functions/00433220-build_track_render_caches.c)
-- `add_track_cache_vertex @ 0x433830`
-- `append_track_cache_object @ 0x433960`
+- [`add_track_cache_vertex`](../decompile/ida/functions/00433830-add_track_cache_vertex.c)
+- [`append_track_cache_object`](../decompile/ida/functions/00433960-append_track_cache_object.c)
 - [`remove_track_render_cache_bods`](../decompile/ida/functions/00433f20-remove_track_render_cache_bods.c)
 
 The BN lane now also replays the stable subset through
@@ -45,8 +45,8 @@ so the tracked BN exports also improved for:
 
 - [`initialize_track_render_cache_manager`](../decompile/binja/functions/00433060-initialize_track_render_cache_manager.c)
 - [`build_track_render_caches`](../decompile/binja/functions/00433220-build_track_render_caches.c)
-- `add_track_cache_vertex @ 0x433830`
-- `append_track_cache_object @ 0x433960`
+- [`add_track_cache_vertex`](../decompile/binja/functions/00433830-add_track_cache_vertex.c)
+- [`append_track_cache_object`](../decompile/binja/functions/00433960-append_track_cache_object.c)
 - [`remove_track_render_cache_bods`](../decompile/binja/functions/00433f20-remove_track_render_cache_bods.c)
 - [`is_slide_cache_tile_family`](../decompile/binja/functions/00439a40-is_slide_cache_tile_family.c)
 - [`is_floor_cache_tile_family`](../decompile/binja/functions/00439ad0-is_floor_cache_tile_family.c)
@@ -57,6 +57,14 @@ The BN view now reads the teardown path through the embedded
 `owner_subgame->runtime_row_count`, `runtime_cells`, typed staging buffers, and
 the two real helper prototypes. This corrects the old false `vertex_count`
 field at slot `+0x2c`, which is actually inside `BodBase::color`.
+
+The two helpers now take `Object*`, matching all seven public-builder call
+sites and the canonical `cRObject` allocation model. `PathTemplateStripMesh`
+was a stale partial prefix that obscured this shared borrowed geometry owner.
+The IDA path also pins the builder's overlapping 0x34-byte local range to a
+clearly labeled analysis-only view, preventing an unrelated
+`ObjectVertexBufferVtbl` from propagating into the stack frame solely because
+the two ranges have the same size.
 
 ## Deliberate non-claims
 

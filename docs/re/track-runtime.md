@@ -367,3 +367,6 @@ The cache mesh code is three functions, not one oversized extent:
 `build_track_render_caches @ 0x433220`, `add_track_cache_vertex @ 0x433830`,
 and `append_track_cache_object @ 0x433960`. Curating those boundaries raises
 the public builder to 99.79% while keeping both helpers independently auditable.
+Both helpers borrow the canonical `Object` geometry owner; the previous
+`PathTemplateStripMesh` input was only a stale partial view and could not
+describe the fringe and runtime-cell objects passed by the builder.

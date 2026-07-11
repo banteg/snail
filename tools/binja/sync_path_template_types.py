@@ -178,7 +178,7 @@ TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
 )
 
 PATH_TEMPLATE_FIELD_UPDATES = (
-    ("0x24", "strip_mesh", "PathTemplateStripMesh*"),
+    ("0x24", "strip_mesh", "Object*"),
     ("0x30", "header_30", "float"),
     ("0x34", "header_34", "float"),
     ("0x38", "kind", "PathTemplateKind"),
@@ -193,8 +193,8 @@ PATH_TEMPLATE_FIELD_UPDATES = (
     ("0x5c", "secondary_samples", "PathTemplateSample*"),
     ("0x98", "installed_heading_delta", "float"),
     ("0x9c", "has_entry_mesh_transition", "uint8_t"),
-    ("0xa0", "entry_transition_strip_mesh", "PathTemplateStripMesh*"),
-    ("0xa4", "entry_base_strip_mesh", "PathTemplateStripMesh*"),
+    ("0xa0", "entry_transition_strip_mesh", "Object*"),
+    ("0xa4", "entry_base_strip_mesh", "Object*"),
 )
 
 SALT_HAZARD_FIELD_UPDATES = (

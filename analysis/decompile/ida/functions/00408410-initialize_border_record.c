@@ -6,13 +6,13 @@
 _DWORD *__thiscall initialize_border_record(_DWORD *this)
 {
   initialize_bod_base(this);
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 27));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 107));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 111));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 115));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 119));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 123));
-  noop_this_constructor((ObjectVertexBufferVtbl *)(this + 127));
+  noop_this_constructor(this + 27);
+  noop_this_constructor(this + 107);
+  noop_this_constructor(this + 111);
+  noop_this_constructor(this + 115);
+  noop_this_constructor(this + 119);
+  noop_this_constructor(this + 123);
+  noop_this_constructor(this + 127);
   *this = &g_frontend_widget_vtable;
   return this;
 }

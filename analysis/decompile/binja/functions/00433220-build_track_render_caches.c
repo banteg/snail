@@ -3,135 +3,133 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_track_render_caches @ 0x433220 */
 
-00433239        struct Color4f color
-00433239        pack_color_rgba_u8(manager, &color)
-00433240        int32_t var_48 = 0xffffffff
-00433250        char* ecx_3 = nullptr
-00433252        char* var_4c = nullptr
-0043325b        if (manager->track_render_grid->cell_count s> 0)
+00433239        pack_color_rgba_u8(manager, &skirt_color)
+00433240        uint32_t color_1 = 0xffffffff
+00433250        int32_t row_index_2 = 0
+00433252        int32_t row_index = 0
+0043325b        if (manager->owner_subgame->runtime_row_count s> 0)
 00433261        void* edi_1 = nullptr
 00433270        while (true)
-00433271        int32_t temp1_1 = mods.dp.d(sx.q(ecx_3), 0x18)
-00433279        int32_t var_28
+00433271        int32_t temp1_1 = mods.dp.d(sx.q(row_index_2), 0x18)
+00433279        int32_t vertex_count
+00433279        int32_t vertex_count_1
+00433279        int32_t vertex_count_2
+00433279        int32_t vertex_count_3
+00433279        int32_t vertex_count_4
+00433279        int32_t index_count
+00433279        int32_t index_count_1
+00433279        int32_t index_count_2
+00433279        int32_t index_count_3
+00433279        int32_t index_count_4
 00433279        int32_t esi_1
 00433279        int32_t var_40
 00433279        if (temp1_1 != 0)
 004332f3        esi_1 = var_40
-0043328c        esi_1 = ecx_3 s/ 0x18
+0043328c        esi_1 = row_index_2 s/ 0x18
 00433290        var_40 = esi_1
-004332bb        int32_t* eax_9 = &manager->slots[0]._pad_2c[0xc + esi_1 * 0x12c]
-004332c4        __builtin_memset(&var_28, 0, 0x28)
-004332cc        manager->_pad_a7bc[0].d = fconvert.s(float.t(var_40) * fconvert.t(24f))
+00433294        index_count = 0
+0043329b        index_count_1 = 0
+004332a6        index_count_2 = 0
+004332aa        index_count_3 = 0
+004332b1        index_count_4 = 0
+004332bb        int32_t* eax_9 = &(&manager->slots[0][0].cache_row_base)[esi_1 * 0x4b]
+004332c4        vertex_count = 0
+004332c8        vertex_count_1 = 0
+004332cc        manager->build_cache_row_base = fconvert.s(float.t(var_40) * fconvert.t(24f))
+004332d2        vertex_count_2 = 0
+004332d6        vertex_count_3 = 0
+004332da        vertex_count_4 = 0
 004332de        int32_t i_3 = 5
 004332ef        int32_t i
-004332e3        int32_t edx_6
-004332e3        edx_6.b = manager->_pad_a7bc[0]
-004332e3        edx_6:1.b = manager->_pad_a7bc[1]
-004332e3        edx_6:2.b = manager->_pad_a7bc[2]
-004332e3        edx_6:3.b = manager->_pad_a7bc[3]
-004332e9        *eax_9 = edx_6
+004332e9        *eax_9 = manager->build_cache_row_base
 004332eb        eax_9 = &eax_9[0xf]
 004332ee        i = i_3
 004332ee        i_3 -= 1
 004332ef        do while (i != 1)
 004332f7        int32_t var_3c_1 = 8
-004335f4        int32_t var_14
 004335f4        bool cond:4_1
 004332ff        void* ebp_1 = edi_1 + 0x3bfb0c
 00433305        int32_t var_44_1 = 4
 0043338b        bool cond:2_1
-0043330d        struct TrackRenderGrid* track_render_grid = manager->track_render_grid
-00433310        void* edx_7 = *(track_render_grid + ebp_1)
+0043330d        struct TrackRenderGrid* owner_subgame = manager->owner_subgame
+00433310        void* edx_7 = *(owner_subgame + ebp_1)
 00433315        if (edx_7 != 0)
-00433317        struct ColorBGRA8 ecx_5
-00433317        ecx_5.b = manager->clear_color.b
-00433317        ecx_5.g = manager->clear_color.g
-00433317        ecx_5.r = manager->clear_color.r
-00433317        ecx_5.a = manager->clear_color.a
-00433346        char* var_88_1 = var_4c
-00433349        int32_t var_18
-00433349        int32_t var_4
-00433349        sub_433960(manager, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], manager->max_index_counts[4], ecx_5, 0)
-00433373        *(&manager->slots[4].render_object)[esi_1 * 0x4b]->texture_group_texture_refs = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
-00433378        *(manager->track_render_grid + ebp_1) = 0
+00433317        struct ColorBGRA8 color_2
+00433317        color_2.b = manager->skirt_color_bgra.b
+00433317        color_2.g = manager->skirt_color_bgra.g
+00433317        color_2.r = manager->skirt_color_bgra.r
+00433317        color_2.a = manager->skirt_color_bgra.a
+00433349        append_track_cache_object(manager, row_index, *(edx_7 + 0x24), &owner_subgame->runtime_cells[0][0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &vertex_count_4, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], color_2, 0)
+00433373        **((&manager->slots[0][4].bod.object)[esi_1 * 0x4b] + 0xd0) = *(*(*(*(manager->owner_subgame + ebp_1) + 0x24) + 0x5c) + 0xc)
+00433378        *(manager->owner_subgame + ebp_1) = 0
 00433383        ebp_1 += 4
 00433386        cond:2_1 = var_44_1 != 1
 00433387        var_44_1 -= 1
 0043338b        do while (cond:2_1)
-0043338d        struct TrackRenderGrid* track_render_grid_2 = manager->track_render_grid
-00433390        int32_t ecx_15 = *(&track_render_grid_2->cells[1] + edi_1)
-00433397        void* eax_18 = edi_1 + track_render_grid_2
+0043338d        struct TrackRenderGrid* owner_subgame_2 = manager->owner_subgame
+00433390        int32_t ecx_13 = *(&owner_subgame_2->runtime_cells[0][0].lane_and_flags + edi_1)
+00433397        void* eax_18 = edi_1 + owner_subgame_2
 004333ab        void* eax_23
-004333ab        void* ecx_23
-004333ab        if ((ecx_15.b & 0x20) == 0 || (ecx_15 & 0x4000) != 0x4000)
+004333ab        void* ecx_21
+004333ab        if ((ecx_13.b & 0x20) == 0 || (ecx_13 & 0x4000) != 0x4000)
 00433410        char eax_24 = is_slide_cache_tile_family(eax_18 + 0x3bfac8)
 00433417        void* eax_25
 00433417        int32_t ebp_2
 00433417        if (eax_24 != 0)
-0043341d        struct TrackRenderGrid* track_render_grid_3 = manager->track_render_grid
-00433420        ebp_2 = *(&track_render_grid_3->cells[1] + edi_1)
-00433427        eax_25 = edi_1 + track_render_grid_3
-00433438        int32_t var_64_3
+0043341d        struct TrackRenderGrid* owner_subgame_3 = manager->owner_subgame
+00433420        ebp_2 = *(&owner_subgame_3->runtime_cells[0][0].lane_and_flags + edi_1)
+00433427        eax_25 = edi_1 + owner_subgame_3
+00433438        uint32_t color
 00433438        if (eax_24 != 0 && (ebp_2 & 0x4000) == 0x4000)
 00433443        int32_t var_60_1 = 1
-00433448        var_64_3 = var_48
+00433448        color = color_1
 00433449        if ((ebp_2.b & 0x40) != 0x40)
-00433518        label_433518:
-00433518        char* var_88_4 = var_4c
-0043351b        sub_433960(manager, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[0], &var_28, manager->shared_index_buffers[0], &var_14, manager->max_vertex_counts[0], manager->max_index_counts[0], var_64_3, 1)
-0043352a        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
-00433536        eax_23 = (&manager->slots[0].render_object)[esi_1 * 0x4b]
+0043351b        label_43351b:
+0043351b        append_track_cache_object(manager, row_index, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[0], &vertex_count, manager->shared_index_buffers[0], &index_count, manager->max_vertex_counts[0], manager->max_index_counts[0], color, 1)
+0043352a        ecx_21 = *(*(&manager->owner_subgame->runtime_cells[0][0].object + edi_1) + 0x5c)
+00433536        eax_23 = (&manager->slots[0][0].bod.object)[esi_1 * 0x4b]
 0043353a        goto label_4335d0
-0043347b        label_43347b:
-0043347b        char* var_88_3 = var_4c
-0043347e        int32_t var_24
-0043347e        int32_t var_10
-0043347e        sub_433960(manager, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[1], &var_24, manager->shared_index_buffers[1], &var_10, manager->max_vertex_counts[1], manager->max_index_counts[1], var_64_3, 1)
-0043348d        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
-00433499        eax_23 = (&manager->slots[1].render_object)[esi_1 * 0x4b]
+0043347e        label_43347e:
+0043347e        append_track_cache_object(manager, row_index, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[1], &vertex_count_1, manager->shared_index_buffers[1], &index_count_1, manager->max_vertex_counts[1], manager->max_index_counts[1], color, 1)
+0043348d        ecx_21 = *(*(&manager->owner_subgame->runtime_cells[0][0].object + edi_1) + 0x5c)
+00433499        eax_23 = (&manager->slots[0][1].bod.object)[esi_1 * 0x4b]
 004334a0        goto label_4335d0
-004334af        char eax_30 = is_floor_cache_tile_family(&manager->track_render_grid->cells + edi_1)
+004334af        char eax_30 = is_floor_cache_tile_family(&manager->owner_subgame->runtime_cells + edi_1)
 004334b6        int32_t ebp_3
 004334b6        if (eax_30 != 0)
-004334bf        eax_25 = manager->track_render_grid + edi_1
+004334bf        eax_25 = manager->owner_subgame + edi_1
 004334c1        ebp_3 = *(eax_25 + 0x3bfb08)
 004334d5        if (eax_30 != 0 && (ebp_3 & 0x4000) == 0x4000)
 004334e0        int32_t var_60_2 = 1
-004334e5        var_64_3 = var_48
+004334e5        color = color_1
 004334e6        if ((ebp_3.b & 0x40) != 0x40)
-004334e6        goto label_43347b
-004334e6        goto label_433518
-00433550        if (is_ramp_cache_tile_family(&manager->track_render_grid->cells + edi_1) != 0)
-00433559        void* eax_38 = manager->track_render_grid + edi_1
+004334e6        goto label_43347e
+004334e6        goto label_43351b
+00433550        if (is_ramp_cache_tile_family(&manager->owner_subgame->runtime_cells + edi_1) != 0)
+00433559        void* eax_38 = manager->owner_subgame + edi_1
 0043356d        if ((*(eax_38 + 0x3bfb08) & 0x4000) == 0x4000)
-004335a2        char* var_88_5 = var_4c
-004335a5        int32_t var_1c
-004335a5        int32_t var_8
-004335a5        sub_433960(manager, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &var_1c, manager->shared_index_buffers[3], &var_8, manager->max_vertex_counts[3], manager->max_index_counts[3], var_48, 0)
-004335ba        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
-004335c0        eax_23 = (&manager->slots[3].render_object)[esi_1 * 0x4b]
+004335a5        append_track_cache_object(manager, row_index, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &vertex_count_3, manager->shared_index_buffers[3], &index_count_3, manager->max_vertex_counts[3], manager->max_index_counts[3], color_1, 0)
+004335ba        ecx_21 = *(*(&manager->owner_subgame->runtime_cells[0][0].object + edi_1) + 0x5c)
+004335c0        eax_23 = (&manager->slots[0][3].bod.object)[esi_1 * 0x4b]
 004335c0        goto label_4335d0
-004333e0        char* var_88_2 = var_4c
-004333e3        int32_t var_20
-004333e3        int32_t var_c
-004333e3        sub_433960(manager, *(eax_18 + 0x3bfaec), eax_18 + 0x3bfad8, manager->shared_vertex_buffers[2], &var_20, manager->shared_index_buffers[2], &var_c, manager->max_vertex_counts[2], manager->max_index_counts[2], var_48, 1)
-004333f2        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
-004333fe        eax_23 = (&manager->slots[2].render_object)[esi_1 * 0x4b]
+004333e3        append_track_cache_object(manager, row_index, *(eax_18 + 0x3bfaec), eax_18 + 0x3bfad8, manager->shared_vertex_buffers[2], &vertex_count_2, manager->shared_index_buffers[2], &index_count_2, manager->max_vertex_counts[2], manager->max_index_counts[2], color_1, 1)
+004333f2        ecx_21 = *(*(&manager->owner_subgame->runtime_cells[0][0].object + edi_1) + 0x5c)
+004333fe        eax_23 = (&manager->slots[0][2].bod.object)[esi_1 * 0x4b]
 004335d0        label_4335d0:
-004335d0        **(eax_23 + 0xd0) = *(ecx_23 + 0xc)
-004335d2        struct TrackRenderGrid* track_render_grid_1 = manager->track_render_grid
-004335e3        int32_t ecx_49
-004335e3        ecx_49:1.b = (*(&track_render_grid_1->cells[1] + edi_1)):1.b & 0xbf
-004335e6        *(&track_render_grid_1->cells[1] + edi_1) = ecx_49
+004335d0        **(eax_23 + 0xd0) = *(ecx_21 + 0xc)
+004335d2        struct TrackRenderGrid* owner_subgame_1 = manager->owner_subgame
+004335dc        int32_t ecx_47 = *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + edi_1)
+004335e3        ecx_47:1.b &= 0xbf
+004335e6        *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + edi_1) = ecx_47
 004335ec        edi_1 += 0x54
 004335ef        cond:4_1 = var_3c_1 != 1
 004335f0        var_3c_1 -= 1
 004335f4        do while (cond:4_1)
-00433614        if (temp1_1 == 0x17 || var_4c == manager->track_render_grid->cell_count - 1)
+00433614        if (temp1_1 == 0x17 || row_index == manager->owner_subgame->runtime_row_count - 1)
 0043361d        int32_t (* edi_2)[0x5] = &manager->max_vertex_counts
 00433620        int32_t (* var_44_2)[0x5] = edi_2
 00433624        int32_t var_3c_2 = 0
-00433632        int32_t* ebp_4 = &(&manager->slots[0].render_object)[esi_1 * 0x4b]
+00433632        int32_t* ebp_4 = &(&manager->slots[0][0].bod.object)[esi_1 * 0x4b]
 00433646        while (true)
 0043364e        int32_t* eax_51 = *(*(*ebp_4 + 0xc0) + 8)
 0043365d        int32_t var_34
@@ -139,71 +137,65 @@
 00433673        int32_t* eax_53 = **(*ebp_4 + 0xc8)
 0043367d        int32_t var_30
 0043367d        (*(*eax_53 + 0x2c))(eax_53, 0, (edi_2 - 4)->max_index_counts[0] << 1, &var_30, 0)
-0043368c        int32_t ecx_57 = (edi_2 - 4)->max_vertex_counts[0] * 0x18
+0043368c        int32_t ecx_55 = (edi_2 - 4)->max_vertex_counts[0] * 0x18
 00433694        int32_t esi_4
 00433694        int32_t edi_4
-00433694        edi_4, esi_4 = __builtin_memcpy(var_34, (edi_2 - 4)->shared_vertex_buffers[0], ecx_57 & 0xfffffffc)
-0043369f        __builtin_memcpy(edi_4, esi_4, ecx_57 & 3)
-004336ab        int32_t ecx_62 = (var_44_2 - 4)->max_index_counts[0] << 1
+00433694        edi_4, esi_4 = __builtin_memcpy(var_34, (edi_2 - 4)->shared_vertex_buffers[0], ecx_55 & 0xfffffffc)
+0043369f        __builtin_memcpy(edi_4, esi_4, ecx_55 & 3)
+004336ab        int32_t ecx_60 = (var_44_2 - 4)->max_index_counts[0] << 1
 004336b2        int32_t esi_6
 004336b2        int32_t edi_6
-004336b2        edi_6, esi_6 = __builtin_memcpy(var_30, (var_44_2 - 4)->shared_index_buffers[0], ecx_62 & 0xfffffffc)
-004336b9        __builtin_memcpy(edi_6, esi_6, ecx_62 & 3)
+004336b2        edi_6, esi_6 = __builtin_memcpy(var_30, (var_44_2 - 4)->shared_index_buffers[0], ecx_60 & 0xfffffffc)
+004336b9        __builtin_memcpy(edi_6, esi_6, ecx_60 & 3)
 004336c4        int32_t* eax_58 = *(*(*ebp_4 + 0xc0) + 8)
 004336ca        (*(*eax_58 + 0x30))(eax_58)
-004336d0        char* ecx_67 = *(*ebp_4 + 0xc8)
+004336d0        char* ecx_65 = *(*ebp_4 + 0xc8)
 004336d6        int32_t* eax_60
-004336d6        eax_60.b = *ecx_67
-004336d6        eax_60:1.b = ecx_67[1]
-004336d6        eax_60:2.b = ecx_67[2]
-004336d6        eax_60:3.b = ecx_67[3]
+004336d6        eax_60.b = *ecx_65
+004336d6        eax_60:1.b = ecx_65[1]
+004336d6        eax_60:2.b = ecx_65[2]
+004336d6        eax_60:3.b = ecx_65[3]
 004336db        (*(*eax_60 + 0x30))(eax_60)
 004336e2        void* eax_61 = *ebp_4
 004336e9        ebp_4 = &ebp_4[0xf]
-004336f0        *(eax_61 + 0xc4) = *(&var_28 + var_3c_2)
+004336f0        *(eax_61 + 0xc4) = *(&vertex_count + var_3c_2)
 004336ff        int32_t eax_62
 004336ff        int32_t edx_49
-004336ff        edx_49:eax_62 = muls.dp.d(0x55555556, *(&var_14 + var_3c_2))
+004336ff        edx_49:eax_62 = muls.dp.d(0x55555556, *(&index_count + var_3c_2))
 00433714        var_44_2 = &(*var_44_2)[1]
 00433718        **(ebp_4[-0xf] + 0xd4) = edx_49 + (edx_49 u>> 0x1f)
-00433721        *(ebp_4[-0xf] + 0x2c) = *(&var_28 + var_3c_2)
+00433721        *(ebp_4[-0xf] + 0x2c) = *(&vertex_count + var_3c_2)
 00433727        bool cond:6_1 = var_3c_2 + 4 s< 0x14
 0043372a        var_3c_2 += 4
 0043372e        if (not(cond:6_1))
 0043372e        break
 00433638        edi_2 = var_44_2
-0043373f        char* eax_69 = &var_4c[1]
-00433743        var_4c = eax_69
-00433749        if (eax_69 s>= manager->track_render_grid->cell_count)
+0043373f        int32_t row_index_1 = row_index + 1
+00433743        row_index = row_index_1
+00433749        if (row_index_1 s>= manager->owner_subgame->runtime_row_count)
 00433749        break
-00433265        ecx_3 = var_4c
+00433265        row_index_2 = row_index
 0043374f        int32_t i_1 = 0
-00433751        manager->_pad_a7bc[4] = 0
-00433751        manager->_pad_a7bc[5] = 0
-00433751        manager->_pad_a7bc[6] = 0
-00433751        manager->_pad_a7bc[7] = 0
-00433757        manager->_pad_a7bc[8] = 0
-00433757        manager->_pad_a7bc[9] = 0
-00433757        manager->_pad_a7bc[0xa] = 0
-00433757        manager->_pad_a7bc[0xb] = 0
+00433751        manager->next_cache_row_z = 0f
+00433757        manager->next_cache_row_index = 0
 0043375d        int32_t i_2 = 0
 00433769        int32_t edi_7 = 0
 0043376b        int32_t ebp_5 = 0
-00433770        int32_t eax_70
+00433770        int32_t eax_69
 00433770        int32_t edx_54
-00433770        edx_54:eax_70 = muls.dp.d(0x2aaaaaab, manager->track_render_grid->cell_count)
+00433770        edx_54:eax_69 = muls.dp.d(0x2aaaaaab, manager->owner_subgame->runtime_row_count)
 00433772        int32_t edx_55 = edx_54 s>> 2
 0043377a        int32_t j_1 = edx_55 + (edx_55 u>> 0x1f)
 0043377e        if (j_1 s> 0)
-00433786        int32_t* esi_9 = &(&manager->slots[0].render_object)[i_1 * 0xf]
+00433786        int32_t* esi_9 = &(&manager->slots[0][0].bod.object)[i_1 * 0xf]
 004337ad        int32_t j
-0043378a        void* eax_74 = *esi_9
-0043378c        int32_t ecx_73 = *(eax_74 + 0x2c)
-00433791        if (ecx_73 s> edi_7)
-00433793        edi_7 = ecx_73
-0043379d        int32_t eax_77 = **(eax_74 + 0xd4) << 2
-004337a2        if (eax_77 s> ebp_5)
-004337a4        ebp_5 = eax_77
+0043378a        void* eax_73 = *esi_9
+0043378c        int32_t ecx_71 = *(eax_73 + 0x2c)
+00433791        if (ecx_71 s> edi_7)
+00433793        edi_7 = ecx_71
+0043379d        int32_t eax_76 = **(eax_73 + 0xd4) << 2
+004337a2        if (eax_76 s> ebp_5)
+004337a4        ebp_5 = eax_76
 004337a6        esi_9 = &esi_9[0x4b]
 004337ac        j = j_1
 004337ac        j_1 -= 1
@@ -211,19 +203,15 @@
 004337af        i_1 = i_2
 004337b8        switch (i_1)
 004337bf        case 0
-004337bf        var_4c = "Floor"
+004337bf        row_index = "Floor"
 004337c9        case 1
-004337c9        var_4c = "Slide"
+004337c9        row_index = "Slide"
 004337d3        case 2
-004337d3        var_4c = "Warn"
+004337d3        row_index = "Warn"
 004337dd        case 3
-004337dd        var_4c = "Ramp"
+004337dd        row_index = "Ramp"
 004337e7        case 4
-004337e7        var_4c = "Fringe"
-004337f3        int32_t var_60_5 = ebp_5
-004337f4        int32_t var_64_7 = edi_7
-004337f5        char* var_68_8 = var_4c
-004337f6        char* var_6c_6 = "Max Cache Type=%s Vertices=%i   Indices=%i\n"
+004337e7        row_index = "Fringe"
 00433803        i_1 += 1
 00433807        i_2 = i_1
 0043380b        do while (i_1 s< 5)

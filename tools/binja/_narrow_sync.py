@@ -109,6 +109,11 @@ def normalize_type_name(type_name: str) -> str:
 
 def normalize_prototype(prototype: str, *, identifier: str) -> str:
     normalized = re.sub(r"\s+", " ", prototype).strip()
+    # Binary Ninja preserves its independently proven purity qualifier when a
+    # user prototype is applied. Treat that additive analysis fact as
+    # orthogonal to the ABI/type comparison so repeatable syncs do not try to
+    # overwrite an already-correct pure function.
+    normalized = re.sub(r"\s+__pure\b", "", normalized)
     normalized = normalized.replace(f" {identifier}(", "(")
     return normalize_type_name(normalized)
 
@@ -163,6 +168,71 @@ def current_prototype(repo_root: Path, *, target: str, identifier: str) -> str |
         if isinstance(prototype, str):
             return prototype
     return None
+
+
+def apply_direct_proto_update(
+    repo_root: Path,
+    *,
+    target: str,
+    identifier: str,
+    prototype: str,
+) -> dict[str, object]:
+    existing = current_prototype(repo_root, target=target, identifier=identifier)
+    requested_normalized = normalize_prototype(prototype, identifier=identifier)
+    if existing is not None and normalize_prototype(
+        existing, identifier=identifier
+    ) == requested_normalized:
+        return {
+            "op": "proto_set_direct",
+            "status": "skipped",
+            "reason": "already current",
+            "identifier": identifier,
+            "prototype": prototype,
+        }
+
+    code = f"""
+identifier = {json.dumps(identifier)}
+functions = list(bv.get_functions_by_name(identifier))
+if len(functions) != 1:
+    raise RuntimeError(f"expected one function named {{identifier}}, found {{len(functions)}}")
+fn = functions[0]
+before = str(fn.type)
+parsed_type, _ = bv.parse_type_string({json.dumps(prototype)})
+fn.set_user_type(parsed_type)
+bv.update_analysis_and_wait()
+result = {{
+    "function": identifier,
+    "before": before,
+    "requested": str(parsed_type),
+    "after": str(fn.type),
+}}
+"""
+    result = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    observed = current_prototype(repo_root, target=target, identifier=identifier)
+    if observed is None or normalize_prototype(
+        observed, identifier=identifier
+    ) != requested_normalized:
+        raise RuntimeError(
+            f"direct prototype verification failed for {identifier}: observed {observed!r}"
+        )
+    return {
+        "op": "proto_set_direct",
+        "status": "verified",
+        "identifier": identifier,
+        "prototype": prototype,
+        "observed_prototype": observed,
+        "result": result,
+    }
 
 
 def apply_struct_field_updates(

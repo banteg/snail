@@ -1127,7 +1127,7 @@
         "??0Quaternion@@QAE@XZ",
         "sub_44db50"
       ],
-      "description": "No-op this-returning constructor thunk reused by trivial default constructors before later real initialization."
+      "description": "Three-byte generic identity thunk (`eax = ecx; ret`) shared by folded trivial default constructors; its cross-tool ABI is `void* __thiscall(void* self)` rather than any one aliased owner type."
     },
     {
       "address": "0x44dbd0",

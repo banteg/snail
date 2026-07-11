@@ -11,6 +11,10 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "noop_this_constructor",
+        "void* __thiscall noop_this_constructor(void* self);",
+    ),
+    (
         "initialize_object",
         "int __thiscall initialize_object(Object* object);",
     ),

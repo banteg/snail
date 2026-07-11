@@ -85,6 +85,7 @@ scratches instead of counting adjacent functions as unmatched builder bytes.
 - `add_track_cache_vertex`: 99.03%, 103/103 instructions, prefix 74/103,
   seven clean operands. The only residual is one equivalent scheduling window
   around the final z/u/v/diffuse stores.
-- `append_track_cache_object`: 35.65%, 164/167 instructions, prefix 1/167,
-  five clean operands. Its semantics and ABI are recovered, but VC6 still
-  assigns the source/face-offset registers and local position copy differently.
+- `append_track_cache_object`: 95.81%, 167/167 instructions, prefix 16/167,
+  six clean operands. Direct `Object::facequads[face_index]` access recovers
+  native `esi` source ownership and `ebp += 0x30` strength reduction. The two
+  remaining regions are position-copy and final-compare scheduling only.

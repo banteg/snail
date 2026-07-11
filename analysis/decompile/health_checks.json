@@ -154,6 +154,70 @@
       ]
     },
     {
+      "name": "bn_track_cache_object_face_owner",
+      "artifact": "analysis/decompile/binja/functions/00433960-append_track_cache_object.c",
+      "required_substrings": [
+        "source->facequad_count",
+        "source->facequads",
+        "add_track_cache_vertex(manager, source",
+        "indices[*index_count]"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "source->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_cache_object_face_owner",
+      "artifact": "analysis/decompile/ida/functions/00433960-append_track_cache_object.c",
+      "required_substrings": [
+        "int32_t __thiscall append_track_cache_object",
+        "Object *source",
+        "source->facequad_count",
+        "source->facequads",
+        "vertex_3"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_cache_builder_local_view",
+      "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
+      "required_substrings": [
+        "Color4f skirt_color",
+        "TrackRenderCacheBuildLocals locals",
+        "manager->owner_subgame",
+        "locals.vertex_counts",
+        "append_track_cache_object"
+      ],
+      "forbidden_substrings": [
+        "ObjectVertexBufferVtbl",
+        "PathTemplateStripMesh",
+        "sub_433960",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_noop_constructor_generic_identity",
+      "artifact": "analysis/decompile/ida/functions/00408410-initialize_border_record.c",
+      "required_substrings": [
+        "noop_this_constructor(this + 27)",
+        "noop_this_constructor(this + 127)"
+      ],
+      "forbidden_substrings": [
+        "ObjectVertexBufferVtbl",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_voice_manager_fields_intact",
       "artifact": "analysis/decompile/binja/functions/004492d0-play_voice_manager.c",
       "required_substrings": [

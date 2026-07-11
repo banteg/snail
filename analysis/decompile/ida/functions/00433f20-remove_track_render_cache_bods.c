@@ -3,26 +3,26 @@
 /* selector: remove_track_render_cache_bods */
 
 // Unlinks the fixed 143x5 track-render cache bod grid from the shared active-bod list during subgame teardown.
-void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
+void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
 {
-  uint8_t *v1; // esi
+  struct BodNode **p_list_next; // esi
   int v2; // edi
   char *v3; // ecx
   int v4; // eax
   int v5; // eax
-  int v7; // [esp+10h] [ebp-4h]
+  int v6; // [esp+10h] [ebp-4h]
 
-  v1 = &manager->slots[0]._pad_00[12];
-  v7 = 143;
+  p_list_next = &manager->slots[0][0].bod.bod.list_next;
+  v6 = 143;
   do
   {
     v2 = 5;
     do
     {
-      if ( (*((_DWORD *)v1 - 2) & 0x200) != 0 )
+      if ( ((unsigned int)*(p_list_next - 2) & 0x200) != 0 )
       {
-        v3 = (char *)MEMORY[0x4DF904] + 1448;
-        v4 = *((_DWORD *)v1 - 2);
+        v3 = (char *)g_game_base + 1448;
+        v4 = (int)*(p_list_next - 2);
         if ( (v4 & 0x200) != 0 )
         {
           if ( (v4 & 0x40) != 0 )
@@ -31,16 +31,16 @@ void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
           }
           else
           {
-            if ( *(_DWORD *)v1 )
-              *(_DWORD *)(*(_DWORD *)v1 + 8) = *((_DWORD *)v1 - 1);
-            v5 = *((_DWORD *)v1 - 1);
+            if ( *p_list_next )
+              (*p_list_next)->list_prev = *(p_list_next - 1);
+            v5 = (int)*(p_list_next - 1);
             if ( v5 )
-              *(_DWORD *)(v5 + 12) = *(_DWORD *)v1;
+              *(_DWORD *)(v5 + 12) = *p_list_next;
             else
-              *((_DWORD *)v3 + 1) = *(_DWORD *)v1;
-            *(_DWORD *)v1 = *((_DWORD *)v3 + 2);
-            *((_DWORD *)v3 + 2) = v1 - 12;
-            *((_DWORD *)v1 - 2) &= ~0x200u;
+              *((_DWORD *)v3 + 1) = *p_list_next;
+            *p_list_next = *((struct BodNode **)v3 + 2);
+            *((_DWORD *)v3 + 2) = p_list_next - 3;
+            *(p_list_next - 2) = (struct BodNode *)((unsigned int)*(p_list_next - 2) & 0xFFFFFDFF);
           }
         }
         else
@@ -48,11 +48,11 @@ void __fastcall remove_track_render_cache_bods(TrackRenderCacheManager *manager)
           report_errorf(aListRemove);
         }
       }
-      v1 += 60;
+      p_list_next += 15;
       --v2;
     }
     while ( v2 );
-    --v7;
+    --v6;
   }
-  while ( v7 );
+  while ( v6 );
 }

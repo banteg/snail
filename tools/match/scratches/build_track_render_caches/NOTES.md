@@ -52,7 +52,8 @@ is two adjacent native thiscall functions, not part of the public builder:
 They now have manifest entries and independent scratches. With the public
 extent ending at `0x433830`, `build_track_render_caches` is 99.79% at 475/475
 instructions with 20 clean operands. `add_track_cache_vertex` is 99.03% at
-103/103; `append_track_cache_object` remains an honest 35.65% at 164/167.
+103/103; direct `Object::facequads[face_index]` indexing and the native local
+position lifetime raise `append_track_cache_object` to 95.81% at 167/167.
 
 ## Matcher-sensitive source shape retained
 
@@ -115,3 +116,9 @@ and the unused scratch-local cell layout duplicate has been removed. This
 keeps the real owner and inherited `TrackRowCell +0x10` anchor visible while
 preserving 99.79%, 475/475 instructions, and 20 clean operands. The lone
 equivalent SIB base/index encoding remains honest scheduler debt.
+
+2026-07-11 helper-owner cleanup: both mesh helpers now use the canonical
+`Object*` input in source, Binary Ninja, and IDA. The old
+`PathTemplateStripMesh*` prototype was a stale partial-object view; the cache
+builder accepts track-cell and fringe `Object` instances from several owners,
+so the generic object is the real borrowed geometry contract.

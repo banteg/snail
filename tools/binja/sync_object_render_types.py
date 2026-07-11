@@ -8,6 +8,7 @@ import sys
 
 from _narrow_sync import (
     apply_data_var_updates,
+    apply_direct_proto_update,
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
@@ -153,6 +154,14 @@ def main() -> int:
 
     operations: list[dict[str, object]] = []
     operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations.append(
+        apply_direct_proto_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="noop_this_constructor",
+            prototype="void* __thiscall noop_this_constructor(void* self)",
+        )
+    )
     operations.extend(apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="Object", updates=OBJECT_FIELDS))
     operations.extend(
         apply_struct_field_updates(

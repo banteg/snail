@@ -11,12 +11,19 @@ from _narrow_sync import (
     apply_struct_field_updates,
     apply_symbol_updates,
     emit_summary,
-    types_declare,
+    types_declare_if_missing,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_render_cache_types.h"
+OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+OBJECT_REQUIRED_STRUCTS = ("Vec3", "Color4f", "ObjectRenderVertex", "Object")
+TRACK_RENDER_CACHE_REQUIRED_STRUCTS = (
+    "TrackRenderGrid",
+    "TrackRenderCacheSlot",
+    "TrackRenderCacheManager",
+)
 
 TRACK_RENDER_GRID_FIELDS = (
     ("0x54", "runtime_row_count", "int32_t"),
@@ -49,8 +56,8 @@ SYMBOL_UPDATES = (
 PROTO_UPDATES = (
     ("initialize_track_render_cache_manager", "void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager)"),
     ("build_track_render_caches", "int32_t __thiscall build_track_render_caches(TrackRenderCacheManager* manager, Color4f skirt_color)"),
-    ("add_track_cache_vertex", "int32_t __thiscall add_track_cache_vertex(TrackRenderCacheManager* manager, PathTemplateStripMesh* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
-    ("append_track_cache_object", "int32_t __thiscall append_track_cache_object(TrackRenderCacheManager* manager, int32_t row_index, PathTemplateStripMesh* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
+    ("add_track_cache_vertex", "int32_t __thiscall add_track_cache_vertex(TrackRenderCacheManager* manager, Object* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
+    ("append_track_cache_object", "int32_t __thiscall append_track_cache_object(TrackRenderCacheManager* manager, int32_t row_index, Object* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
     ("update_track_render_cache_rows", "void __thiscall update_track_render_cache_rows(TrackRenderCacheManager* manager)"),
     ("remove_track_render_cache_bods", "void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager* manager)"),
     ("is_slide_cache_tile_family", "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell)"),
@@ -74,8 +81,20 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = []
-    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=OBJECT_HEADER_PATH,
+            required_structs=OBJECT_REQUIRED_STRUCTS,
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            required_structs=TRACK_RENDER_CACHE_REQUIRED_STRUCTS,
+        ),
+    ]
     operations.extend(
         apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="TrackRenderGrid", updates=TRACK_RENDER_GRID_FIELDS)
     )

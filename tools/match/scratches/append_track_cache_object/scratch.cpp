@@ -18,34 +18,36 @@ int TrackRenderCacheManager::append_track_cache_object(
     unsigned int color,
     unsigned char project_uv)
 {
-    Vector3 local_position = *position;
+    Vector3 local_position;
     int face_index = 0;
-    int face_offset = 0;
 
     if (source->facequad_count > 0) {
         do {
-            ObjectFaceQuad* face =
-                (ObjectFaceQuad*)((char*)source->facequads + face_offset);
+            local_position = *position;
 
             indices[*index_count] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_0,
-                face->uv[0].u, face->uv[0].v,
+                source, &local_position, source->facequads[face_index].vertex_0,
+                source->facequads[face_index].uv[0].u,
+                source->facequads[face_index].uv[0].v,
                 vertices, vertex_count, max_vertices, max_indices, color, project_uv);
             indices[*index_count + 1] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_1,
-                face->uv[1].u, face->uv[1].v,
+                source, &local_position, source->facequads[face_index].vertex_1,
+                source->facequads[face_index].uv[1].u,
+                source->facequads[face_index].uv[1].v,
                 vertices, vertex_count, max_vertices, max_indices, color, project_uv);
             indices[*index_count + 2] = (unsigned short)add_track_cache_vertex(
-                source, &local_position, face->vertex_2,
-                face->uv[2].u, face->uv[2].v,
+                source, &local_position, source->facequads[face_index].vertex_2,
+                source->facequads[face_index].uv[2].u,
+                source->facequads[face_index].uv[2].v,
                 vertices, vertex_count, max_vertices, max_indices, color, project_uv);
 
-            if ((face->flags & 0x80) == 0) {
+            if ((source->facequads[face_index].flags & 0x80) == 0) {
                 indices[*index_count + 3] = indices[*index_count];
                 indices[*index_count + 4] = indices[*index_count + 2];
                 indices[*index_count + 5] = (unsigned short)add_track_cache_vertex(
-                    source, &local_position, face->vertex_3,
-                    face->uv[3].u, face->uv[3].v,
+                    source, &local_position, source->facequads[face_index].vertex_3,
+                    source->facequads[face_index].uv[3].u,
+                    source->facequads[face_index].uv[3].v,
                     vertices, vertex_count, max_vertices, max_indices, color, project_uv);
                 *index_count += 6;
             } else {
@@ -53,11 +55,11 @@ int TrackRenderCacheManager::append_track_cache_object(
             }
 
             ++face_index;
-            face_offset += sizeof(ObjectFaceQuad);
         } while (face_index < source->facequad_count);
     }
 
-    if (*index_count > max_indices)
+    int result = *index_count;
+    if (result > max_indices)
         return report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX");
-    return *index_count;
+    return result;
 }

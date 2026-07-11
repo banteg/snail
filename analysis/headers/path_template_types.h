@@ -66,6 +66,7 @@ typedef struct FringeObject {
 
 typedef struct Player Player;
 typedef struct Game Game;
+typedef struct Object Object;
 typedef struct LevelSegmentSlot LevelSegmentSlot;
 typedef struct PlayerPresentationController PlayerPresentationController;
 typedef struct FrontendWidget FrontendWidget;
@@ -400,21 +401,6 @@ typedef struct ObjectFaceQuad {
     ObjectUv uv[4];
 } ObjectFaceQuad;
 
-typedef struct PathTemplateStripMesh {
-    uint8_t _pad_00[0x10];
-    PathTemplateStripMeshFlags flags;
-    uint8_t _pad_14[0x18];
-    uint32_t vertex_count;
-    uint8_t _pad_30[0x8];
-    Vec3* vertices;
-    uint8_t _pad_3c[0xc];
-    Color4f* vertex_colours;
-    uint8_t _pad_4c[0x8];
-    uint32_t facequad_count;
-    uint32_t facequad_capacity;
-    ObjectFaceQuad* facequads;
-} PathTemplateStripMesh;
-
 typedef struct TransformMatrix {
     Vec4 basis_right;
     Vec4 basis_up;
@@ -465,6 +451,24 @@ typedef struct TrackRenderCacheManager {
     float next_cache_row_z;
     int32_t next_cache_row_index;
 } TrackRenderCacheManager;
+
+/*
+ * IDA-only aggregate view of build_track_render_caches' 0x34-byte overlapping
+ * local range. The native source used individual locals and arrays; this view
+ * prevents Hex-Rays from falsely propagating ObjectVertexBufferVtbl into the
+ * coincidentally same-sized stack range.
+ */
+typedef struct TrackRenderCacheBuildLocals {
+    ColorBGRA8 white_color;
+    int32_t work_value;
+    int32_t cache_row;
+    int32_t cells_remaining_or_family_index;
+    int32_t row_mod;
+    void* locked_vertices;
+    void* locked_indices;
+    int32_t saved_cell_offset;
+    int32_t vertex_counts[5];
+} TrackRenderCacheBuildLocals;
 
 typedef struct CameramanState {
     TransformMatrix live_matrix;
@@ -760,7 +764,7 @@ typedef struct PathTemplateSample {
 
 typedef struct PathTemplate {
     uint8_t _pad_00[0x24];
-    PathTemplateStripMesh* strip_mesh;
+    Object* strip_mesh;
     uint8_t _pad_28[0x8];
     float header_30;
     float header_34;
@@ -779,8 +783,8 @@ typedef struct PathTemplate {
     float installed_heading_delta;
     uint8_t has_entry_mesh_transition;
     uint8_t _pad_9d[0x3];
-    PathTemplateStripMesh* entry_transition_strip_mesh;
-    PathTemplateStripMesh* entry_base_strip_mesh;
+    Object* entry_transition_strip_mesh;
+    Object* entry_base_strip_mesh;
 } PathTemplate;
 
 typedef struct PathTemplatePair {
@@ -993,10 +997,10 @@ void __thiscall compute_kind42_attachment_transform(
     TransformMatrix* transform,
     float* out_angle
 );
-int32_t __stdcall load_x_mesh(char* mesh_path, PathTemplateStripMesh* mesh, uint8_t options_flags);
-void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
-void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
-void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);
+int32_t __stdcall load_x_mesh(char* mesh_path, Object* object, uint8_t options_flags);
+void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
+void __fastcall request_object_vertex_colours(Object* object);
+void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
 Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);
 float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
@@ -1282,6 +1286,8 @@ char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
 
 double __cdecl parse_next_float32(char** cursor);
 
+void* __thiscall noop_this_constructor(void* self);
+
 void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
 
 int32_t __thiscall build_track_render_caches(
@@ -1291,7 +1297,7 @@ int32_t __thiscall build_track_render_caches(
 
 int32_t __thiscall add_track_cache_vertex(
     TrackRenderCacheManager* manager,
-    PathTemplateStripMesh* source,
+    Object* source,
     Vec3* position,
     int32_t source_index,
     float u,
@@ -1307,7 +1313,7 @@ int32_t __thiscall add_track_cache_vertex(
 int32_t __thiscall append_track_cache_object(
     TrackRenderCacheManager* manager,
     int32_t row_index,
-    PathTemplateStripMesh* source,
+    Object* source,
     Vec3* position,
     ObjectRenderVertex* vertices,
     int32_t* vertex_count,
