@@ -5,6 +5,10 @@ The stable Windows harness name is historical. This exact helper is the
 installs the cell-specific vtable at `0x497368`, increments the counter later
 reported as `LocCount`, and returns the receiver.
 
+The table entry at `0x497368` points directly to
+`wall2_emitter_maybe_fire_sub_lazer @ 0x439d50`, independently confirming the
+`cRSubLoc::AI()` receiver mapping.
+
 Ownership is fixed by three independent Windows facts:
 
 - `initialize_runtime_pools_and_path_template_bank` calls it exactly `0x6400`

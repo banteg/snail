@@ -6,6 +6,10 @@ This is the per-cell `SubLoc` update, matching the iOS
 and lane flags are the same fields used by the exact runtime-grid builders and
 the near-matched cell teardown. Semantics complete:
 
+The Windows `SubLoc` constructor installs the table at `0x497368`, whose entry
+is this exact address. That direct callback edge closes the owner independently
+of the cross-port symbol match.
+
 - gate: `lane_and_flags & 0x2000` plus
   `SubgameRuntime::subgame_pause_gate`
 - tile 14 (wall2): fires only once `first_block_row_count` is behind the

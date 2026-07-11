@@ -1,18 +1,10 @@
 // update_row_model @ 0x443070 (thiscall, ret)
 
-#include "bod_types.h"
 #include "object_render_types.h"
+#include "track_attachment_types.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
-
-class RowModel : public RenderableBod {
-public:
-    void update_row_model();
-
-    char unknown_078[0x80 - 0x78];
-    Vector3 velocity; // +0x80
-};
 
 void RowModel::update_row_model()
 {

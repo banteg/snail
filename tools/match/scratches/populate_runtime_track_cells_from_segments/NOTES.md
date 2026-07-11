@@ -153,17 +153,18 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 
 ## 2026-07-10 runtime slab ownership pass
 
-- `SubgameRuntime` owns a fixed `TrackRowCell[3200][8]` slab at `+0x3bfac8`.
+- `SubgameRuntime` owns a fixed `SubLoc[3200][8]` slab at `+0x3bfac8`.
   Its exact `0x20d000` extent lands at `+0x5ccac8`, where a fixed
-  `TrackAttachmentRuntimeRow[3200]` slab begins; the row slab's exact
+  `SubRow[3200]` slab begins; the row slab's exact
   `0xbea00` extent lands at the embedded `HighScoreBank` at `+0x68b4c8`.
-- Each runtime row embeds a `RenderableBod` at `+0x04` and a `BodBase` at
-  `+0xb0`. The first is the authored row actor removed by
+- Each runtime row embeds a `RowModel` at `+0x04` and a `BodBase` at `+0xb0`.
+  The first is the authored row actor removed by
   `remove_subgame_bods`; the second is the attachment/fringe row actor built
   by the `P`/`p` path. Intrusive list membership does not transfer ownership
   of either body away from the row slab.
-- The row also owns copied values at `authored_object_velocity +0x84`,
-  `installed_heading_delta +0xac`, and `ring_speed +0xe8`. Its
+- The row's embedded `RowModel` owns the copied velocity at outer `+0x84`.
+  The outer `SubRow` owns `installed_heading_delta +0xac` and
+  `ring_speed +0xe8`. Its
   `primary_attachment_cell`, `secondary_attachment_cell`, and
   `source_segment +0xec` fields are borrowed pointers into the sibling runtime
   cell slab and the embedded level-segment bank.

@@ -310,6 +310,18 @@ struct SubLoc {
 
 typedef char SubLoc_must_be_0x54[(sizeof(SubLoc) == 0x54) ? 1 : -1];
 
+// Owned moving model embedded in each SubRow. iOS preserves the authored
+// class and callback as cRRowModel::AI().
+class RowModel : public RenderableBod {
+public:
+    void update_row_model(); // @ 0x443070, cRRowModel::AI
+
+    char unknown_78[0x80 - 0x78];
+    Vector3 velocity; // +0x80, outer SubRow +0x84
+};
+
+typedef char RowModel_must_be_0x8c[(sizeof(RowModel) == 0x8c) ? 1 : -1];
+
 // Authored per-track-row runtime owner. The Windows constructor ledger names
 // the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
 // SubRow at 0xf4 bytes. The historical matcher name remains an alias below.
@@ -317,9 +329,7 @@ struct SubRow {                          // stride 0xf4
     SubRow* initialize_track_row_runtime(); // @ 0x408590
 
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
-    RenderableBod primary_body;           // +0x04, embedded authored row actor
-    char unknown_7c[0x84 - 0x7c];
-    Vector3 authored_object_velocity;     // +0x84, copied from the authored row
+    RowModel row_model;                   // +0x04, ends at +0x90
     // place_parcels_on_track uses this as an overloaded parcel projection
     // payload: x is lateral/local x, y is incremented as a claim/count lane,
     // and z accumulates absolute row + 0.5 before the attachment projection

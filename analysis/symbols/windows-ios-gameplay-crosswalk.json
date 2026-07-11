@@ -218,6 +218,14 @@
       "confidence": "high"
     },
     {
+      "address": "0x443070",
+      "windows_name": "update_row_model",
+      "ios_symbol": "cRRowModel::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The Windows callback table at 0x497330 points directly to this exact helper. Its receiver is the 0x8c-byte RowModel embedded at SubRow +0x04, with velocity at model +0x80."
+    },
+    {
       "address": "0x443650",
       "windows_name": "load_frontend_level_by_mode_and_index",
       "ios_symbol": "cRSubTracks::Load(int, int)",

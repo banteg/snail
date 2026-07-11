@@ -1802,13 +1802,13 @@
     },
     {
       "address": "0x497330",
-      "name": "g_subrow_body_vtable",
+      "name": "g_row_model_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497330",
         "data_497330"
       ],
-      "description": "Authored SubRow body vtable installed on the embedded RenderableBod at row +0x04 by the exact initializer."
+      "description": "Authored cRRowModel vtable installed on the model embedded at SubRow +0x04; its entry points to exact update_row_model at 0x443070."
     },
     {
       "address": "0x497334",
@@ -1951,7 +1951,7 @@
         "off_497368",
         "data_497368"
       ],
-      "description": "SubLoc-specific vtable installed after the shared cRBod base constructor by the exact cell initializer at 0x4088c0."
+      "description": "SubLoc-specific vtable installed after the shared cRBod base constructor by the exact cell initializer at 0x4088c0; its entry points directly to cRSubLoc::AI at 0x439d50."
     },
     {
       "address": "0x4974fc",

@@ -430,7 +430,7 @@
     {
       "address": "0x408590",
       "name": "initialize_track_row_runtime",
-      "description": "Exact initializer for one authored `SubRow`: constructs its embedded `RenderableBod` at +0x04, installs the row-specific body vtable, constructs its embedded attachment `BodBase` at +0xb0, and returns the receiver. It leaves the scalar/copied row payload untouched. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab."
+      "description": "Exact initializer for one authored `SubRow`: constructs its embedded `RowModel` base at +0x04, installs the cRRowModel vtable whose entry is exact update_row_model, constructs its embedded attachment `BodBase` at +0xb0, and returns the receiver. It leaves the scalar/copied row payload untouched. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab."
     },
     {
       "address": "0x4085c0",
@@ -2365,7 +2365,8 @@
     },
     {
       "address": "0x443070",
-      "name": "update_row_model"
+      "name": "update_row_model",
+      "description": "Exact per-frame update for the `RowModel` embedded at `SubRow +0x04`: adds its velocity at model +0x80 to the inherited transform position, then recycles the model's intrusive body node once it crosses the live row threshold. iOS preserves the authored callback as `cRRowModel::AI()`."
     },
     {
       "address": "0x443130",
