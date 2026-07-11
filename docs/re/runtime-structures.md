@@ -25,6 +25,8 @@ The current high-confidence `Player` fields are:
 - `+0x150`: `nuke`
   - inline `NukeController`
 - `+0x1cc`: `movement_sound_variant_sample`
+- `+0x1d0`: exact empty one-byte `firework` child (`cRFireWork`)
+  - `firework_shoot` does not read instance state, but Windows callers still pass this embedded receiver through `ecx`
 - `+0x1d4`: `damage_retrigger_timer`
 - `+0x1d8`: `damage_retrigger_step`
 - `+0x1dc`: `surface_reaction_timer`

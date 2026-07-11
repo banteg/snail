@@ -359,6 +359,10 @@ TRUSTED_DECLARATIONS = [
         "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);",
     ),
     (
+        "firework_shoot",
+        "void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);",
+    ),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
     ),

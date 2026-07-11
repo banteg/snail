@@ -84,6 +84,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ProgressBar",
     "Warning",
     "Nuke",
+    "FireWork",
     "Cameraman",
     "Squidge",
     "Invincible",
@@ -110,6 +111,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
     ("0x150", "nuke", "Nuke"),
     ("0x1cc", "movement_sound_variant_sample", "int32_t"),
+    ("0x1d0", "firework", "FireWork"),
     ("0x1d4", "damage_retrigger_timer", "float"),
     ("0x1d8", "damage_retrigger_step", "float"),
     ("0x1dc", "surface_reaction_timer", "float"),
@@ -512,6 +514,10 @@ PROTO_UPDATES = (
     (
         "update_jet_particles",
         "void __fastcall update_jet_particles(JetpackGaugeController* gauge)",
+    ),
+    (
+        "firework_shoot",
+        "void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count)",
     ),
     (
         "handle_subgoldy_collisions",

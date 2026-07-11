@@ -80,7 +80,7 @@ The Android symbol and its only caller identify this as
 `cRFireWork::Shoot`, not a free `__stdcall` helper. Windows likewise loads
 `ecx = Player + 0x1d0` before passing the four explicit arguments and returns
 with `ret 0x10`; the body simply does not consume its receiver. Shared source
-now models the one-byte empty `FireworkController` embedded at
+now models the one-byte empty `FireWork` embedded at
 `Player::firework +0x1d0`, and this scratch uses the corresponding thiscall
 method definition.
 
@@ -88,3 +88,9 @@ The signature correction is codegen-neutral inside the callee: focused Wibo
 remains `94.17%`, `103/103`, prefix `78/103`, with all `21` masked operands
 clean. It recovers real ownership and fixes the caller's calling convention
 without inventing controller state.
+
+The normalized owner keeps the authored `FireWork` capitalization. Android and
+iOS both expose `cRFireWork::Shoot(tVector, int, int, int)` from `SubGame.o`;
+Windows instead passes the position by pointer, as proven by its four explicit
+stack words and `ret 0x10`. The shared Windows prototype preserves that ABI
+rather than forcing the mobile by-value signature onto this binary.

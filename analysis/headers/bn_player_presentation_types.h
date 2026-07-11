@@ -393,6 +393,11 @@ typedef struct Nuke {
     Sprite* sprite_slots[25];
 } Nuke;
 
+/* Authored empty cRFireWork; an empty C++ child occupies one byte. */
+typedef struct FireWork {
+    uint8_t _empty;
+} FireWork;
+
 typedef struct TipMessageDefinition {
     uint32_t flags;
     float layout_y;
@@ -537,7 +542,8 @@ typedef struct Player {
     uint8_t _pad_14d[0x3];
     Nuke nuke;
     int32_t movement_sound_variant_sample;
-    uint8_t _pad_1d0[0x4];
+    FireWork firework;
+    uint8_t _pad_1d1[0x3];
     float damage_retrigger_timer;
     float damage_retrigger_step;
     float surface_reaction_timer;

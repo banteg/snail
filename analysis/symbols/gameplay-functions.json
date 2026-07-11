@@ -2315,7 +2315,7 @@
     {
       "address": "0x441dd0",
       "name": "firework_shoot",
-      "description": "Spawns a randomized firework sprite burst through the empty `cRFireWork` service embedded at `Player +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android symbols name the method `cRFireWork::Shoot`."
+      "description": "Windows `FireWork::firework_shoot`, authored as `cRFireWork::Shoot`: spawns a randomized sprite burst through the exact empty one-byte child at `Player +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android and iOS retain the owner with a by-value vector signature."
     },
     {
       "address": "0x441f60",

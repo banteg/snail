@@ -202,7 +202,7 @@ public:
     char unknown_14d[0x150 - 0x14d];
     Nuke nuke;                            // +0x150, authored cRNuke owner
     int movement_sound_variant_sample;      // +0x1cc
-    FireworkController firework;            // +0x1d0, embedded receiver with no instance state
+    FireWork firework;                      // +0x1d0, empty authored cRFireWork child
     char unknown_1d1[0x1d4 - 0x1d1];
     float damage_retrigger_timer;           // +0x1d4
     float damage_retrigger_step;            // +0x1d8

@@ -971,6 +971,15 @@
       "notes": "The Windows cRSalt constructor table at 0x497340 points directly to this exact helper."
     },
     {
+      "address": "0x441dd0",
+      "windows_name": "firework_shoot",
+      "ios_symbol": "cRFireWork::Shoot(tVector, int, int, int)",
+      "android_symbol": "cRFireWork::Shoot(tVector, int, int, int)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All ports use the empty cRFireWork child embedded in cRSubGoldy/Player and emit the same randomized sprite burst. Windows passes its position by pointer and returns with ret 0x10; the mobile builds expose a by-value tVector signature."
+    },
+    {
       "address": "0x441650",
       "windows_name": "initialize_sub_lazer_pool",
       "android_symbol": "cRSubLazerManager::Init()",

@@ -1,4 +1,4 @@
-// firework_shoot @ 0x441dd0 (stdcall, ret 0x10)
+// firework_shoot @ 0x441dd0 (thiscall, ret 0x10)
 
 #include "firework.h"
 #include "runtime_config.h"
@@ -8,7 +8,7 @@
 double random_float_below(float upper_bound, int tag);
 int next_math_random_value();
 
-void FireworkController::firework_shoot(
+void FireWork::firework_shoot(
     Vector3* position, int owner, int texture_id, int count)
 {
     if ((g_runtime_config.render_flags & 0x10) == 0 || count <= 0)
