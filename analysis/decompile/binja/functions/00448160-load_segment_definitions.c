@@ -26,7 +26,7 @@
 004481f3        char (* var_14_1)[0x1000] = &arg_4e0
 004481f4        void* var_18_1 = edi_1
 004481fb        void arg_2e0
-004481fb        sub_48b32c(&arg_2e0, "Segments/%s")
+004481fb        sprintf(&arg_2e0, "Segments/%s")
 00448211        load_file_bytes_from_archive_or_fs(&arg_2e0, &arg_4e0, nullptr)
 00448223        char* eax_1 = find_case_insensitive_substring("ID:", &arg_4e0)
 0044822d        if (eax_1 == 0)
@@ -44,7 +44,7 @@
 00448255        break
 0044825b        void* var_14_2 = edi_1
 00448265        arg_4[-1] = edx_1
-00448268        sub_48b32c(&arg_4[-0x11], "%s")
+00448268        sprintf(&arg_4[-0x11], "%s")
 0044827a        char* eax_4 = find_case_insensitive_substring("Name:'", &arg_4e0)
 00448284        if (eax_4 == 0)
 00448831        report_errorf("Cannot find Name: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])

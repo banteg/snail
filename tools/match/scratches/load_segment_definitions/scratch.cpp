@@ -23,11 +23,6 @@ public:
     int find_segment_path_index_by_name(char* name); // @ 0x429ae0
 };
 
-class SegmentCatalog {
-public:
-    int load_segment_definitions();
-};
-
 int SegmentCatalog::load_segment_definitions()
 {
     char path_name[60];

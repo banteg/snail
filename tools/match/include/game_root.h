@@ -5,8 +5,10 @@
 #include "bod_list.h"
 #include "border_manager.h"
 #include "completion_screen.h"
+#include "frontend_fade.h"
 #include "main_menu.h"
 #include "new_game_menu.h"
+#include "overlay.h"
 #include "options_menu.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
@@ -69,13 +71,14 @@ public:
     float fog_end; // +0x0c, D3DRS_FOGEND
     float fog_density; // +0x10, D3DRS_FOGDENSITY
     Color4f fog_color; // +0x14, packed for D3DRS_FOGCOLOR
-    char unknown_000024[0x38 - 0x24];
+    FrontendFade fade; // +0x24, root-owned transition controller
     union {
         int frontend_quit_requested; // +0x38, nonzero run-loop exit request
         int frontend_quit_mode; // completion prompt writes modes 1 and 3
     };
     int fixed_update_count;      // +0x3c
-    char unknown_000040[0x124 - 0x40];
+    int player_count; // +0x40, controls the two-player initialization loop
+    char unknown_000044[0x124 - 0x44];
     GamePlayer players[2]; // +0x124, owned cRPlayer array
     char unknown_000514[0x568 - 0x514];
     unsigned char frontend_link_latch; // +0x568, cleared when a linked screen exits
@@ -84,14 +87,13 @@ public:
         int render_skip_count; // +0x56c, decremented before an otherwise skipped frame
         int render_skip_countdown; // front-end initialization spelling
     };
-    char unknown_000570[0x5a8 - 0x570];
+    BodBase inactive_bod_sentinel; // +0x570, constructed root free-list sentinel
     BodList active_bod_list; // +0x5a8, root-owned active/free intrusive BOD anchor
     RenderCameraSlot render_camera_slots[5]; // +0x5b4, owned fixed viewport array
-    char unknown_00067c[0x6d4 - 0x67c];
-    Vector3 star_spawn_direction; // +0x6d4
-    char unknown_0006e0[0x6e4 - 0x6e0];
-    Vector3 star_spawn_origin; // +0x6e4
-    char unknown_0006f0[0xb4c - 0x6f0];
+    Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport slot 0
+    Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport slot 2
+    Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
+    char unknown_000a60[0xb4c - 0xa60];
     BorderManager border_manager; // +0xb4c, owned frontend border pool
     char unknown_0440e8[0x4f2dc - 0x440e8];
     // Contiguous front-end owner block. The exact component extents prove

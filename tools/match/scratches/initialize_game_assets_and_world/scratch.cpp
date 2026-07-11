@@ -5,6 +5,7 @@
 #include "backdrop.h"
 #include "bod_types.h"
 #include "cameraman_state.h"
+#include "cheat_state.h"
 #include "directx_loader.h"
 #include "game_root.h"
 #include "galaxy_route_types.h"
@@ -19,7 +20,7 @@
 
 extern char* g_game_base; // data_4df904
 extern int unk_4DF9BC; // data copied into SubgameRuntime::level_mode_arg
-extern char byte_4B2F40; // cheat-state storage
+extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern char g_sprite_depth_buckets[]; // 0x4f7050, 0x400-byte sprite depth bucket heads
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
@@ -28,15 +29,9 @@ extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
 void sub_449C00(); // stripped no-arg debug callsite before path templates
-void initialize_cheat(void* cheat); // @ recovered callsite
-void reset_landscape_manager(void* manager); // @ recovered callsite
-void load_segment_definitions(void* definitions); // @ recovered callsite
-void load_level_definitions(); // @ 0x448900
-void apply_audio_config_volumes(); // @ 0x41b070
 void initialize_font_wave_state(); // @ 0x449c70
 int initialize_font3d_objects(short font_id); // @ 0x44ae10
 void register_font_texture_sheet_wrapper(char* font_path, int font_id, float width_scale, float height_scale); // @ 0x432d20
-void initialize_overlay(void* overlay); // @ 0x407d40-family overlay init
 void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
 void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a2f0
 void raise_backdrop_quad_edge_pair(int edge_pair, Object* object); // @ 0x41a440
@@ -49,35 +44,35 @@ void build_track_fringe_mesh(void* path, char* texture_path, float z_offset); //
 char* __stdcall initialize_sound_bank(void* entries); // @ 0x44dcb0
 TextureRef* __stdcall register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
 
-static void link_root_bod(char* game, int offset)
+static __forceinline void link_root_bod(BodBase* bod)
 {
-    char* bod = game + offset;
-    unsigned int* flags = (unsigned int*)(bod + 4);
+    char* node = (char*)bod;
+    unsigned int* flags = (unsigned int*)(node + 4);
     if ((*flags & 0x200) != 0) {
         report_errorf((char*)"List ADD");
         return;
     }
 
-    char* head = game + 0x5ac;
+    char* head = g_game_base + 0x5ac;
     char* first = *(char**)head;
     if (first != 0) {
-        *(char**)(first + 8) = bod;
+        *(char**)(first + 8) = node;
         *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
         first = *(char**)(*(char**)head + 8);
         *(char**)head = first;
         *(int*)(first + 8) = 0;
     } else {
-        *(char**)head = bod;
-        *(int*)(bod + 8) = 0;
+        *(char**)head = node;
+        *(int*)(node + 8) = 0;
         *(int*)(*(char**)head + 12) = 0;
     }
     *flags |= 0x200;
 }
 
-static void initialize_overlay_slot(char* game, int slot_offset)
+static __forceinline void initialize_overlay_slot(Overlay* overlay)
 {
-    link_root_bod(game, slot_offset);
-    initialize_overlay(game + slot_offset);
+    link_root_bod(overlay);
+    overlay->initialize_overlay();
 }
 
 static void register_core_sprite_textures()
@@ -228,11 +223,11 @@ char GameRoot::initialize_game_assets_and_world()
     *(float*)(game + 0x08) = 30.0f;
     *(float*)(game + 0x0c) = 50.0f;
     *(unsigned char*)(game + 0x04) = 1;
-    *(int*)(game + 0x40) = 2;
-    *(unsigned char*)(game + 0x568) = 0;
+    player_count = 2;
+    frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
 
-    initialize_cheat(&byte_4B2F40);
+    g_completion_snapshot_flags.initialize_cheat();
     *(unsigned char*)(game + 0x4f2e0) = 0;
     subgame.initialize_blink_random();
     subgame.set_subgame_rate(1.1f);
@@ -244,51 +239,74 @@ char GameRoot::initialize_game_assets_and_world()
     *(int*)(game + 0x514) = 0;
     *(int*)(game + 0x518) = 0;
     *(int*)(game + 0x51c) = 0;
-    *(int*)(game + 0x57c) = 0;
-    *(int*)(game + 0x5b0) = (int)(game + 0x570);
-    *(int*)(game + 0x5ac) = 0;
+    inactive_bod_sentinel.list_next = 0;
+    active_bod_list.free_top = &inactive_bod_sentinel;
+    active_bod_list.first = 0;
     *(int*)(game + 0xb48) = 0;
     memset(g_sprite_depth_buckets, 0, 0x400);
 
-    *(int*)(game + 0x5b8) = 0;
-    *(int*)(game + 0x5bc) = 0x1000003;
-    *(int*)(game + 0x5d4) = (int)(game + 0x6fc);
-    *(int*)(game + 0x5c0) = 0;
-    *(int*)(game + 0x5c4) = 0;
-    *(float*)(game + 0x5c8) = 1.0f;
-    *(float*)(game + 0x5cc) = 1.0f;
-    *(unsigned char*)(game + 0x628) = 0;
-    initialize_overlay_slot(game, 0x67c);
+    render_camera_slots[0].sort_key = 0;
+    render_camera_slots[0].flags = 0x1000003;
+    render_camera_slots[0].source = &overlay_0.camera;
+    render_camera_slots[0].viewport_x = 0.0f;
+    render_camera_slots[0].viewport_y = 0.0f;
+    render_camera_slots[0].viewport_width = 1.0f;
+    render_camera_slots[0].viewport_height = 1.0f;
+    render_camera_slots[2].draw_world = 0;
+    initialize_overlay_slot(&overlay_0);
 
     memset(g_directx_loader_scratch, 0, 0x15c);
     ((DirectXLoader*)(game + 0x48e00))->initialize_directx_loader();
-    reset_landscape_manager(game + 0x106c218);
-    load_segment_definitions(game + 0x1075fac);
-    ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Starmap.txt");
-    ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Splash.txt");
-    ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Help.txt");
+    LandscapeScriptBank* landscape = (LandscapeScriptBank*)(game + 0x106c218);
+    landscape->reset_landscape_manager();
+    SegmentCatalog* segment_catalog = (SegmentCatalog*)(game + 0x1075ae4);
+    segment_catalog->load_segment_definitions();
+    landscape->load_landscape_script_by_name((char*)"Starmap.txt");
+    landscape->load_landscape_script_by_name((char*)"Splash.txt");
+    landscape->load_landscape_script_by_name((char*)"Help.txt");
 
     subgame.level_mode_arg = unk_4DF9BC;
-    ((ThanksScreenOwner*)(game + 0x12d3b78))->open_thanks_screen();
-    ((ThanksScreenOwner*)(game + 0x12d3ba4))->open_thanks_screen();
-    ((GalaxyRoute*)(game + 0x12d3bb8))->load_galaxy_layout();
-    ((CameramanState*)(game + 0x54e8c))->initialize_cameraman();
+    ((SubgameOwnerLink*)&subgame.challenge_setup)->bind_subgame_owner();
+    ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
+    subgame.galaxy.load_galaxy_layout();
+    subgame.player.cameraman.initialize_cameraman();
     ((LogoRuntime*)(game + 0x4f400))->open_logo();
     initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
-    apply_audio_config_volumes();
-    load_level_definitions();
-    ((LandscapeScriptBank*)(game + 0x106c218))->load_landscape_script_by_name((char*)"Menubg.txt");
-    ((LevelSegmentSlotStore*)(game + 0x224a04))->load_builtin_segment_definitions(g_builtin_segment_definitions);
+    options_menu.apply_audio_config_volumes();
+    segment_catalog->load_level_definitions();
+    ((LandscapeScriptBank*)(g_game_base + 0x106c218))
+        ->load_landscape_script_by_name((char*)"Menubg.txt");
+    ((LevelSegmentSlotStore*)(game + 0x224804))
+        ->load_builtin_segment_definitions(g_builtin_segment_definitions);
 
-    *(int*)(game + 0x5e0) = 1;
-    *(int*)(game + 0x5e4) = 0x2000001;
-    *(int*)(game + 0x288) = 0x2000000;
-    *(int*)(game + 0x658) = 1;
-    *(int*)(game + 0x65c) = 0x10000003;
-    *(int*)(game + 0x480) = 0x10000000;
-    initialize_overlay_slot(game, 0x914);
-    initialize_overlay_slot(game, 0x7c8);
+    render_camera_slots[1].sort_key = 1;
+    render_camera_slots[1].flags = 0x2000001;
+    render_camera_slots[1].attach_render_camera_source(&players[0].camera);
+    players[0].camera.render_mask = 0x2000000;
+
+    render_camera_slots[4].sort_key = 1;
+    render_camera_slots[4].flags = 0x10000003;
+    render_camera_slots[4].attach_render_camera_source(&players[1].camera);
+    players[1].camera.render_mask = 0x10000000;
+
+    render_camera_slots[3].sort_key = 3;
+    render_camera_slots[3].flags = 0x8000003;
+    render_camera_slots[3].source = &overlay_2.camera;
+    render_camera_slots[3].viewport_x = 0.0f;
+    render_camera_slots[3].viewport_y = 0.0f;
+    render_camera_slots[3].viewport_width = 1.0f;
+    render_camera_slots[3].viewport_height = 1.0f;
+    initialize_overlay_slot(&overlay_2);
+
+    render_camera_slots[2].sort_key = 2;
+    render_camera_slots[2].flags = 0x4000003;
+    render_camera_slots[2].source = &overlay_1.camera;
+    render_camera_slots[2].viewport_x = 0.0f;
+    render_camera_slots[2].viewport_y = 0.0f;
+    render_camera_slots[2].viewport_width = 1.0f;
+    render_camera_slots[2].viewport_height = 1.0f;
+    initialize_overlay_slot(&overlay_1);
 
     register_font_texture_sheet_wrapper((char*)"Objects/Font/Font-menu-hover.tga", 2, 0.75f, 1.0f);
     initialize_font3d_objects(0);

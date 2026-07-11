@@ -16,6 +16,7 @@ REQUIRED_HEADER_STRUCTS = (
     "AuthoredFloatBits",
     "AuthoredSegmentRow",
     "SegmentCatalogEntry",
+    "SegmentCatalog",
     "LevelSegmentSlot",
     "LevelDefinitionLoader",
     "BuiltinSegmentDefinition",
@@ -37,7 +38,11 @@ PROTO_UPDATES = (
     ),
     (
         "load_segment_definitions",
-        "int32_t __thiscall load_segment_definitions(SegmentCatalogEntry* entries)",
+        "int32_t __thiscall load_segment_definitions(SegmentCatalog* catalog)",
+    ),
+    (
+        "load_level_definitions",
+        "int32_t __thiscall load_level_definitions(SegmentCatalog* catalog)",
     ),
 )
 

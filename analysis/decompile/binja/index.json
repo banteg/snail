@@ -1685,8 +1685,8 @@
     },
     {
       "address": "0x433fc0",
-      "name": "open_thanks_screen",
-      "artifact": "analysis/decompile/binja/functions/00433fc0-open_thanks_screen.c"
+      "name": "bind_subgame_owner",
+      "artifact": "analysis/decompile/binja/functions/00433fc0-bind_subgame_owner.c"
     },
     {
       "address": "0x433fd0",

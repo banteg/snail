@@ -3,28 +3,28 @@
 /* selector: load_level_definitions */
 
 // Composes level descriptors and segment sequences from LEVELS/*.TXT.
-int load_level_definitions()
+int32_t __thiscall load_level_definitions(SegmentCatalog *catalog)
 {
-  int result; // eax
-  int v1; // esi
-  int *v2; // edi
-  int v3; // [esp+4h] [ebp-4004h] BYREF
-  int v4[4096]; // [esp+8h] [ebp-4000h] BYREF
+  int32_t result; // eax
+  int v2; // esi
+  char *v3; // edi
+  int v4; // [esp+4h] [ebp-4004h] BYREF
+  _BYTE v5[16384]; // [esp+8h] [ebp-4000h] BYREF
 
-  enumerate_matching_archive_or_fs_entries(aLevels, aTxt, &v3, v4);
-  result = v3;
-  v1 = 0;
-  if ( v3 > 0 )
+  enumerate_matching_archive_or_fs_entries(aLevels, (int)aTxt, (float *)&v4, (int)v5);
+  result = v4;
+  v2 = 0;
+  if ( v4 > 0 )
   {
-    v2 = v4;
+    v3 = v5;
     do
     {
-      load_level_definition_file((char *)MEMORY[0x4DF904] + 2246660, (char *)v2);
-      result = v3;
-      ++v1;
-      v2 += 32;
+      load_level_definition_file((LevelDefinitionLoader *)((char *)g_game_base + 2246660), v3);
+      result = v4;
+      ++v2;
+      v3 += 128;
     }
-    while ( v1 < v3 );
+    while ( v2 < v4 );
   }
   return result;
 }

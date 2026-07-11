@@ -21,12 +21,12 @@ void* StarField::update_star_positions(float fade_alpha)
                 GameRoot* game = (GameRoot*)g_game_base;
                 Vector3 direction_scaled;
                 Vector3 staged_position;
-                direction_scaled.x = game->star_spawn_direction.x * 50.0f;
-                direction_scaled.y = game->star_spawn_direction.y * 50.0f;
-                direction_scaled.z = game->star_spawn_direction.z * 50.0f;
-                staged_position.x = direction_scaled.x + game->star_spawn_origin.x;
-                staged_position.y = direction_scaled.y + game->star_spawn_origin.y;
-                staged_position.z = direction_scaled.z + game->star_spawn_origin.z;
+                direction_scaled.x = game->overlay_0.transform.basis_forward.x * 50.0f;
+                direction_scaled.y = game->overlay_0.transform.basis_forward.y * 50.0f;
+                direction_scaled.z = game->overlay_0.transform.basis_forward.z * 50.0f;
+                staged_position.x = direction_scaled.x + game->overlay_0.transform.position.x;
+                staged_position.y = direction_scaled.y + game->overlay_0.transform.position.y;
+                staged_position.z = direction_scaled.z + game->overlay_0.transform.position.z;
                 Vector3* sprite_position = &entry->sprite->position;
                 *sprite_position = staged_position;
 

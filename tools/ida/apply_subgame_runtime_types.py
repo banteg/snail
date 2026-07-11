@@ -33,6 +33,10 @@ TRUSTED_DECLARATIONS = [
         "complete_subgame",
         "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
     ),
+    (
+        "bind_subgame_owner",
+        "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner);",
+    ),
 ]
 
 

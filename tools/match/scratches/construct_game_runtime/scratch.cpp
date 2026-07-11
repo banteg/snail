@@ -108,25 +108,26 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --camera_count;
         } while (camera_count);
 
-        RuntimeSlot* overlay = SLOT(0x67c);
+        GameRoot* root = (GameRoot*)game;
+        Overlay* overlay = &root->overlay_0;
         overlay->initialize_renderable_bod();
-        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
+        overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
-        overlay = SLOT(0x7c8);
+        overlay = &root->overlay_1;
         overlay->initialize_renderable_bod();
-        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
+        overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
-        overlay = SLOT(0x914);
+        overlay = &root->overlay_2;
         overlay->initialize_renderable_bod();
-        ((RenderableBod*)((char*)overlay + 0x80))->initialize_noop_renderable_bod();
+        overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
-        overlay = SLOT(0xa60);
-        overlay->initialize_renderable_bod();
-        ((RuntimeSlot*)((char*)overlay + 0x80))->noop_runtime_slot_constructor();
-        overlay->vtable = &g_noop_runtime_callback_table;
+        RuntimeSlot* passive_renderable = SLOT(0xa60);
+        passive_renderable->initialize_renderable_bod();
+        ((RuntimeSlot*)((char*)passive_renderable + 0x80))->noop_runtime_slot_constructor();
+        passive_renderable->vtable = &g_noop_runtime_callback_table;
 
         RuntimeSlot* border_manager = SLOT(0xb4c);
         border_manager->initialize_bod_base();

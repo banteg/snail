@@ -1,6 +1,7 @@
-// load_level_definitions @ 0x448900 (cdecl)
+// load_level_definitions @ 0x448900 (thiscall, receiver unused)
 
 #include "level_definition_loader.h"
+#include "segment_catalog_types.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -10,7 +11,7 @@ void enumerate_matching_archive_or_fs_entries(
     int* out_count,
     char* out_names); // @ 0x431740
 
-int load_level_definitions()
+int SegmentCatalog::load_level_definitions()
 {
     int count;
     char names[0x4000];

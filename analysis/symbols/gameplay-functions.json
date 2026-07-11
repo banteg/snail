@@ -1756,7 +1756,8 @@
     },
     {
       "address": "0x433fc0",
-      "name": "open_thanks_screen"
+      "name": "bind_subgame_owner",
+      "description": "Binds a front-end controller's first field to the embedded cRSubGame owner. Startup calls the same folded helper for both ChallengeSetupScreen and ThanksScreen, so this is not a Thanks-only open action."
     },
     {
       "address": "0x433fd0",

@@ -44,6 +44,11 @@ typedef struct SegmentCatalogEntry {
     uint8_t unknown_4054[0x4088 - 0x4054];
 } SegmentCatalogEntry;
 
+typedef struct SegmentCatalog {
+    SegmentCatalogEntry entries[150];
+    int32_t unknown_25cfb0;
+} SegmentCatalog;
+
 typedef struct LevelSegmentSlot {
     int32_t row_base;
     int32_t row_count;

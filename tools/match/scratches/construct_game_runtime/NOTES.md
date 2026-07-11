@@ -38,10 +38,10 @@ therefore uses a typed `GamePlayer*` increment instead of raw `RuntimeSlot`
 stride arithmetic.
 
 The 0x408040 helper is independently mapped as
-`initialize_noop_renderable_bod`: its three root uses are passive overlay child
-bodies, and its installed callback slot at 0x4972b0 points to
-`noop_runtime_ai`. Splitting both helpers out of this manifest extent keeps
-`construct_game_runtime` focused on the actual cRGame constructor body.
+`initialize_noop_renderable_bod`: its three root uses construct the embedded
+`RenderCamera` at `Overlay +0x80`, and its installed callback slot at 0x4972b0
+points to `noop_runtime_ai`. Splitting both helpers out of this manifest extent
+keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 
 2026-06-20 runtime-slot ABI pass:
 
@@ -93,3 +93,14 @@ bodies, and its installed callback slot at 0x4972b0 points to
   isolated `/GX` scratch restores each opaque call immediately. C linkage,
   `throw()`, `__declspec(nothrow)`, and one comma expression were neutral or
   regressive and were rejected. No manual stack adjustment was introduced.
+
+## 2026-07-11 root overlay ownership
+
+- The three repeated constructor islands at root `+0x67c`, `+0x7c8`, and
+  `+0x914` are now typed as consecutive `0x14c`-byte `Overlay` objects.
+- Each island constructs its inherited `RenderableBod`, constructs the owned
+  `RenderCamera` at `+0x80`, and installs the overlay callback table. Startup
+  later lends those camera subobjects to viewport slots 0, 2, and 3.
+- The typed constructor spelling is byte-neutral: focused Wibo remains
+  88.89%, 299/268 candidate/target instructions, prefix 2/268, with 119 clean
+  operands and only the compiler-local EH-handler relocation unresolved.

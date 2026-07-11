@@ -14,9 +14,12 @@ Layout evidence shared with `initialize_star_field`:
 - `sprite +0x1c`, `speed +0x20`, `phase +0x24`, and
   `twinkle_scale +0x28` are all read by this updater.
 
-The game camera/origin view at `g_game_base +0x6d4/+0x6e4` is now promoted as
-`GameRoot::star_spawn_direction` and `GameRoot::star_spawn_origin`; using the shared
-fields preserves the focused Wibo result.
+The apparent camera/origin view at `g_game_base +0x6d4/+0x6e4` is not a pair
+of root-owned star fields. Those addresses are
+`GameRoot::overlay_0.transform.basis_forward` and
+`GameRoot::overlay_0.transform.position`: overlay 0 starts at root `+0x67c`
+and its inherited transform starts at `+0x38`. Using the corrected shared
+owner preserves the focused Wibo result.
 
 Current Wibo result: 32.85%, 101/106 candidate/target instructions, prefix
 1/106, masked operands 11 ok.

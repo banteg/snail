@@ -5,9 +5,9 @@ Starter scratch for the large root-world bootstrap.
 This is intentionally a semantic partial, not a line-for-line transcription. It
 captures the recovered early root defaults, texture/object-list startup, overlay
 registration, landscape/menu/audio/font/sprite setup, the first backdrop/pillar
-world-object islands, and a small track-template setup island. The body remains
-raw-offset based because the cRGame/cRSubGame root layout is far larger than the
-currently shared headers expose.
+world-object islands, and a small track-template setup island. Recovered root,
+subgame, viewport, overlay, player-camera, landscape, catalog, and menu owners
+are typed; unrecovered later islands remain raw-offset based.
 
 Expected residuals:
 - most later path-template, pickup, replay, score, and frontend pools are not
@@ -84,3 +84,38 @@ The Binary Ninja runtime sync was also made field-only when
 `SubgameRuntime` already exists. Its sparse import header can seed a fresh
 database, but it no longer flattens later `BodBase`, pool, and `Player`
 ownership when adding these blink fields.
+
+## 2026-07-11 root viewport and startup-service ownership
+
+The early bootstrap now follows the constructor-proven `GameRoot` layout:
+
+- `player_count +0x40`, `frontend_link_latch +0x568`, the constructed inactive
+  BOD sentinel at `+0x570`, and the active/free list anchor at `+0x5a8` replace
+  duplicate raw words;
+- three complete `Overlay` objects live at `+0x67c/+0x7c8/+0x914`, with their
+  embedded cameras at `+0x6fc/+0x848/+0x994`;
+- viewport 0 borrows overlay 0, viewport 2 borrows overlay 1, viewport 3
+  borrows overlay 2, and viewports 1/4 borrow player 0/1 cameras. The recovered
+  sort keys, scene flags, viewport rectangles, and player camera masks are now
+  source-spelled through those owners;
+- the inline BOD linker correctly reaches the global root list at `+0x5ac`.
+
+The same target island proves the startup-service receivers and corrects stale
+offsets in the old semantic partial:
+
+- `LandscapeScriptBank` at root `+0x106c218` owns reset plus the Starmap,
+  Splash, Help, and Menubg script loads;
+- the exact `0x25cfb4`-byte `SegmentCatalog` at `+0x1075ae4` owns both segment
+  and level enumeration calls;
+- challenge setup at subgame `+0x125ffe0` and thanks at `+0x126000c` use the
+  same folded `bind_subgame_owner`, while galaxy and the embedded player's
+  cameraman keep their distinct methods;
+- audio configuration is owned by `OptionsMenu +0x4f388`, and the built-in
+  level slot store is root `+0x224804` rather than the stale `+0x224a04`.
+
+Focused Wibo is now 5.65%, with 358/5,411 candidate/target instructions,
+prefix 0/5,411, 73 clean masked operands, no unresolved operands, and 18
+expected mismatches across the still-sparse semantic partial. The native
+`0x12c` frame and its first stack-local `noop_this_constructor` remain absent,
+as do most later world and path-template islands; no score-only scaffolding was
+added to imitate them.

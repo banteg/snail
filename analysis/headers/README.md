@@ -84,6 +84,8 @@ Current checked-in Binary Ninja companion:
 - `uv run python tools/binja/sync_high_score_bank_types.py`
 - `bn_subgame_runtime_types.h`
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
+- `bn_overlay_types.h`
+- `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
 
 The presentation BN sync lane intentionally replays a narrow camera/render slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
@@ -102,6 +104,13 @@ make `complete_subgame` and the three `add_*_high_score` helpers readable.
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInputOwner.input` field proven by `update_game_input`.
+
+The overlay lane depends on the presentation types and adds the complete
+`0x14c`-byte `Overlay` plus its owned `0xc8`-byte `RenderCamera`; the segment
+catalog lane now carries the complete constructor-proven `0x25cfb4` owner and
+uses it for both startup enumeration methods. The tiny `SubgameOwnerLink`
+view keeps the folded challenge/thanks startup binding typed without asserting
+a shared concrete screen base class.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

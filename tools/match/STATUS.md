@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**519/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77809/325736** bytes (**23.89%**) are proof-grade, and overall fuzzy is **59.34%**.
+**519/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77809/325736** bytes (**23.89%**) are proof-grade, and overall fuzzy is **59.40%**.
 
 ## Proof Grade (519)
 
@@ -258,7 +258,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | get_authored_view_height | 0x433040 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
-| ✅ | open_thanks_screen | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
+| ✅ | bind_subgame_owner | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | initialize_thanks_for_playing_screen | 0x433fd0 | 234 | 55/55 | 100.00% | 55/55 | 17 ok |  |
 | ✅ | uninit_thanks_screen | 0x4340c0 | 38 | 8/8 | 100.00% | 8/8 | 3 ok |  |
 | ✅ | update_thanks_for_playing_screen | 0x4340f0 | 376 | 88/88 | 100.00% | 88/88 | 19 ok |  |
@@ -684,7 +684,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 422/439 | 35.31% | 3/439 | 21 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 252/5411 | 4.84% | 0/5411 | 21 mismatch, 55 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 358/5411 | 5.65% | 0/5411 | 18 mismatch, 73 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 43.24% | 1/600 | 14 mismatch, 57 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |

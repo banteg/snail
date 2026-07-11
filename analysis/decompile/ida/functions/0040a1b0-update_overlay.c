@@ -2,12 +2,13 @@
 /* function: update_overlay @ 0x40a1b0 */
 /* selector: update_overlay */
 
-int __thiscall sub_40A1B0(float *this)
+TransformMatrix *__thiscall update_overlay(float *this)
 {
   double v2; // st7
   unsigned __int8 v4; // c0
   unsigned __int8 v5; // c3
-  const void *v6; // ebp
+  float *v6; // ebp
+  TransformMatrix *v7; // edx
 
   v2 = *(this + 82) + *(this + 81);
   *(this + 81) = v2;
@@ -21,9 +22,9 @@ int __thiscall sub_40A1B0(float *this)
     *(this + 81) = v2 - 6.2831855;
   }
   v6 = this + 14;
-  set_matrix_identity((_DWORD *)this + 14);
-  rotate_matrix_world_z(this + 14, *(this + 81));
+  set_matrix_identity((TransformMatrix *)(this + 14));
+  rotate_matrix_world_z((TransformMatrix *)(this + 14), *(this + 81));
   qmemcpy(this + 46, v6, 0x40u);
-  return invert_matrix_from_source(this + 64, this + 14);
+  return invert_matrix_from_source((TransformMatrix *)this + 4, v7);
 }
 

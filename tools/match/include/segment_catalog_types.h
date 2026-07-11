@@ -49,6 +49,23 @@ struct SegmentCatalogEntry {
 typedef char SegmentCatalogEntry_must_be_0x4088[
     (sizeof(SegmentCatalogEntry) == 0x4088) ? 1 : -1];
 
+// Root-owned authored-definition catalog. The first entry's count_alias is
+// also the catalog count; the level enumerator shares this receiver even
+// though its current body only writes the separate LevelDefinitionLoader.
+class SegmentCatalog {
+public:
+    int load_segment_definitions(); // @ 0x448160
+    int load_level_definitions(); // @ 0x448900, receiver unused by body
+
+    SegmentCatalogEntry entries[150];
+    // construct_game_runtime reports sizeof(cRSMTracks) as 0x25cfb4. The
+    // entry array accounts for 0x25cfb0 bytes, leaving this final word.
+    int unknown_25cfb0;
+};
+
+typedef char SegmentCatalog_must_be_0x25cfb4[
+    (sizeof(SegmentCatalog) == 0x25cfb4) ? 1 : -1];
+
 struct LevelSegmentSlot {
     int row_base;                  // +0x00
     int row_count;                 // +0x04

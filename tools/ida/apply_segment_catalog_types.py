@@ -26,7 +26,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_segment_definitions",
-        "int32_t __thiscall load_segment_definitions(SegmentCatalogEntry *entries);",
+        "int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog);",
+    ),
+    (
+        "load_level_definitions",
+        "int32_t __thiscall load_level_definitions(SegmentCatalog *catalog);",
     ),
 ]
 

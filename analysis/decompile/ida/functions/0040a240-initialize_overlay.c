@@ -2,16 +2,15 @@
 /* function: initialize_overlay @ 0x40a240 */
 /* selector: initialize_overlay */
 
-int __thiscall sub_40A240(int this)
+TransformMatrix *__thiscall initialize_overlay(int this)
 {
-  float *v2; // edi
+  TransformMatrix *v2; // edx
 
-  v2 = (float *)(this + 56);
   *(_DWORD *)(this + 324) = 0;
   *(_DWORD *)(this + 328) = 968858832;
-  set_matrix_identity((_DWORD *)(this + 56));
+  set_matrix_identity((TransformMatrix *)(this + 56));
   *(_DWORD *)(this + 320) = 1108869120;
-  set_matrix_identity((_DWORD *)(this + 184));
-  return invert_matrix_from_source((float *)(this + 256), v2);
+  set_matrix_identity((TransformMatrix *)(this + 184));
+  return invert_matrix_from_source((TransformMatrix *)(this + 256), v2);
 }
 

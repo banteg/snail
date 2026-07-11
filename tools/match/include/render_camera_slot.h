@@ -10,7 +10,10 @@ public:
     char unknown_78[0x80 - 0x78];
     TransformMatrix view_matrix; // +0x80, sprite depth/facing transform
     float fov_degrees; // +0xc0, passed through to render_camera
-    unsigned int render_mask; // +0xc4, high byte selects compatible slots
+    union {
+        unsigned int render_mask; // +0xc4, authored camera scene mask
+        float overlay_rotation_angle; // embedded Overlay camera reuses this lane
+    };
 };
 
 typedef char RenderCamera_must_cover_0xc8[

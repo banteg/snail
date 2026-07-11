@@ -18,6 +18,11 @@ Status:
 - 2026-06-18: Promoted `AuthoredFloatBits`, `AuthoredSegmentRow`,
   `SegmentCatalogEntry`, and `LevelSegmentSlot` to
   `include/segment_catalog_types.h`; focused Wibo score stayed 45.01%.
+- 2026-07-11: Promoted the complete `SegmentCatalog`/native `cRSMTracks`
+  receiver. Its 150 `0x4088`-byte entries account for `0x25cfb0` bytes; the
+  constructor size ledger proves one terminal word and an exact total extent
+  of `0x25cfb4`. The shared BN and IDA prototypes now use this owner rather
+  than treating the receiver as a naked `SegmentCatalogEntry*`.
 
 Corrections propagated to the reader:
 

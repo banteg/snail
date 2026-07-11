@@ -9,10 +9,10 @@
 00448924        void* const result = __return_addr
 0044892b        int32_t esi = 0
 0044892f        if (result s> 0)
-00448932        char* edi_1 = &arg_4
-00448943        load_level_definition_file(g_game_base + 0x224804, edi_1)
+00448932        char* filename = &arg_4
+00448943        load_level_definition_file(g_game_base + 0x224804, filename)
 00448948        result = __return_addr
 0044894c        esi += 1
-0044894d        edi_1 = &edi_1[0x80]
+0044894d        filename = &filename[0x80]
 00448955        do while (esi s< result)
 0044895f        return result

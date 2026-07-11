@@ -13,3 +13,8 @@ Status:
 - The large stack frame emits the VC runtime `chkstk` stack-probe helper at
   `0x48bf30`; the shared reference manifest now names it so the masked audit
   remains proof-grade.
+- Startup sets `ecx = GameRoot +0x1075ae4` before this call, the same complete
+  `SegmentCatalog` receiver used by `load_segment_definitions`. This method's
+  current body does not read `this`; it writes the separate level-definition
+  store at `GameRoot +0x224804`. Keeping the thiscall receiver records the
+  native ownership without inventing a cdecl shim.

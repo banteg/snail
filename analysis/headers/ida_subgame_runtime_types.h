@@ -149,4 +149,8 @@ typedef struct SubgameRuntime {
     int32_t source_timer_b;
 } SubgameRuntime;
 
+typedef struct SubgameOwnerLink {
+    SubgameRuntime* game;
+} SubgameOwnerLink;
+
 #endif

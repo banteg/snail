@@ -7,6 +7,7 @@
 
 class LandscapeScriptBank {
 public:
+    void reset_landscape_manager(); // @ 0x4182e0
     int load_landscape_script_by_name(char* script_name);
 
     char unknown_000[0x5a0];

@@ -3,29 +3,29 @@
 /* selector: load_segment_definitions */
 
 // Parses SEGMENTS/*.TXT into the segment catalog, storing the internal `Name:'...'` display label separately from the enumerated filename and recovering per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata.
-int __thiscall load_segment_definitions(int *this)
+int32_t __thiscall load_segment_definitions(SegmentCatalog *catalog)
 {
-  int result; // eax
-  int v3; // ebp
-  char *v4; // edi
+  int32_t result; // eax
+  int32_t v3; // ebp
+  const char *v4; // edi
   char *case_insensitive_substring; // eax
   char v6; // cl
   char *v7; // eax
   int v8; // edx
-  int *v9; // esi
+  int32_t *v9; // esi
   char *v10; // eax
   char *v11; // eax
   char v12; // cl
   char *v13; // eax
   int v14; // esi
   char *v15; // eax
-  _BYTE *v16; // eax
+  _BYTE *crlf_line; // eax
   _BYTE *v17; // eax
   _BYTE *v18; // edi
   int v19; // ebp
-  int *v20; // ecx
+  SegmentCatalog *v20; // ecx
   char *v21; // edi
-  int *v22; // esi
+  char *v22; // esi
   int v23; // eax
   char v24; // bl
   int v25; // edx
@@ -64,25 +64,25 @@ int __thiscall load_segment_definitions(int *this)
   bool v58; // cc
   const char *v59; // eax
   char *v60; // [esp+10h] [ebp-114E0h] BYREF
-  int *v61; // [esp+14h] [ebp-114DCh]
-  char *v62; // [esp+18h] [ebp-114D8h]
-  int *v63; // [esp+1Ch] [ebp-114D4h]
-  int v64; // [esp+20h] [ebp-114D0h]
+  int32_t *p_row_count; // [esp+14h] [ebp-114DCh]
+  const char *v62; // [esp+18h] [ebp-114D8h]
+  SegmentCatalog *v63; // [esp+1Ch] [ebp-114D4h]
+  int32_t v64; // [esp+20h] [ebp-114D0h]
   int v65; // [esp+24h] [ebp-114CCh]
   int v66; // [esp+28h] [ebp-114C8h]
   int v67; // [esp+2Ch] [ebp-114C4h]
-  char ArgList[64]; // [esp+30h] [ebp-114C0h] BYREF
+  char v68[64]; // [esp+30h] [ebp-114C0h] BYREF
   char v69[512]; // [esp+70h] [ebp-11480h] BYREF
   char v70[128]; // [esp+270h] [ebp-11280h] BYREF
-  char Buffer[512]; // [esp+2F0h] [ebp-11200h] BYREF
+  char v71[512]; // [esp+2F0h] [ebp-11200h] BYREF
   char v72[4096]; // [esp+4F0h] [ebp-11000h] BYREF
-  char v73[65536]; // [esp+14F0h] [ebp-10000h] BYREF
+  _BYTE v73[65536]; // [esp+14F0h] [ebp-10000h] BYREF
 
-  v63 = this;
-  *this = 0;
-  enumerate_matching_archive_or_fs_entries(aSegments, aTxt, this, v73);
-  result = *this;
-  if ( *this >= 150 )
+  v63 = catalog;
+  catalog->entries[0].count_alias = 0;
+  enumerate_matching_archive_or_fs_entries(aSegments, (int)aTxt, (float *)catalog, (int)v73);
+  result = catalog->entries[0].count_alias;
+  if ( catalog->entries[0].count_alias >= 150 )
     return report_errorf(aTooManySegment);
   v3 = 0;
   v64 = 0;
@@ -92,11 +92,11 @@ int __thiscall load_segment_definitions(int *this)
     v66 = 0;
     v65 = 0;
     v62 = v73;
-    v61 = this + 34;
+    p_row_count = &catalog->entries[0].row_count;
     while ( 2 )
     {
-      sprintf(Buffer, "Segments/%s", v4);
-      load_file_bytes_from_archive_or_fs(Buffer, v72, nullptr);
+      sprintf(v71, "Segments/%s", v4);
+      load_file_bytes_from_archive_or_fs(v71, v72, nullptr);
       case_insensitive_substring = find_case_insensitive_substring(aId, v72);
       if ( case_insensitive_substring )
       {
@@ -115,7 +115,7 @@ int __thiscall load_segment_definitions(int *this)
           }
           while ( *v7 >= 48 );
         }
-        v9 = v61 - 17;
+        v9 = p_row_count - 17;
         v9[16] = v8;
         sprintf((char *const)v9, "%s", v4);
         v10 = find_case_insensitive_substring(aName, v72);
@@ -137,42 +137,42 @@ int __thiscall load_segment_definitions(int *this)
           v15 = find_case_insensitive_substring(aData, v72);
           if ( v15 )
           {
-            v16 = (_BYTE *)advance_to_next_crlf_line(v15);
-            if ( v16 )
+            crlf_line = (_BYTE *)advance_to_next_crlf_line(v15);
+            if ( crlf_line )
             {
-              v17 = (_BYTE *)advance_to_next_crlf_line(v16);
+              v17 = (_BYTE *)advance_to_next_crlf_line(crlf_line);
               v18 = v17;
               if ( v17 )
               {
                 if ( *v17 == 64 )
                 {
                   v67 = 0;
-                  *v61 = 0;
+                  *p_row_count = 0;
                   while ( *v18 != 64 || v18[1] != 64 || v18[2] != 64 )
                   {
                     v19 = (__int16)v67 + v66;
                     v20 = v63;
                     v21 = v18 + 1;
-                    v22 = &v63[14 * v19];
+                    v22 = (char *)v63 + 56 * v19;
                     v23 = 0;
-                    v22[547] = 0;
+                    *((_DWORD *)v22 + 547) = 0;
                     do
                     {
                       v24 = *v21++;
-                      v25 = v23 + 8 * (v65 + *v61);
+                      v25 = v23 + 8 * (v65 + *p_row_count);
                       ++v23;
-                      *((_BYTE *)v20 + v25 + 140) = v24;
+                      v20->entries[0].glyph_columns[0][v25] = v24;
                     }
                     while ( v23 < 8 );
                     if ( *v21 != 64 )
                       return report_errorf("Data line must end with '@' in Segment %s\n", &v73[128 * v64]);
                     v26 = v21 + 1;
-                    ++*v61;
+                    ++*p_row_count;
                     if ( *v26 == 42 )
                     {
-                      v27 = v22[547];
+                      v27 = *((_DWORD *)v22 + 547);
                       LOBYTE(v27) = v27 | 4;
-                      v22[547] = v27;
+                      *((_DWORD *)v22 + 547) = v27;
                     }
                     v28 = *v26;
                     for ( i = v69; v28 != 13; ++v26 )
@@ -194,15 +194,15 @@ int __thiscall load_segment_definitions(int *this)
                         *v32++ = j;
                         v60 = ++v31;
                       }
-                      v34 = v22[547];
+                      v34 = *((_DWORD *)v22 + 547);
                       *v32 = 46;
                       v35 = v32 + 1;
                       LOBYTE(v34) = v34 | 2;
-                      v22[547] = v34;
-                      v36 = (char *)MEMORY[0x4DF904];
+                      *((_DWORD *)v22 + 547) = v34;
+                      v36 = (char *)g_game_base;
                       *v35 = 120;
                       v35[1] = 0;
-                      v22[552] = load_or_reuse_cached_x_mesh(v36 + 298496, v70);
+                      *((_DWORD *)v22 + 552) = load_or_reuse_cached_x_mesh(v36 + 298496, v70);
                       v60 = find_case_insensitive_substring(asc_4AC438, v60);
                       *((float *)v22 + 553) = parse_next_float32(&v60);
                       *((float *)v22 + 554) = parse_next_float32(&v60);
@@ -212,9 +212,9 @@ int __thiscall load_segment_definitions(int *this)
                       if ( v37 )
                       {
                         v38 = find_case_insensitive_substring(asc_4A2094, v37);
-                        v39 = v22[547] | 8;
+                        v39 = *((_DWORD *)v22 + 547) | 8;
                         v60 = v38 + 1;
-                        v22[547] = v39;
+                        *((_DWORD *)v22 + 547) = v39;
                         v60 = find_case_insensitive_substring(asc_4AC438, v38 + 1);
                         *((float *)v22 + 556) = parse_next_float32(&v60);
                         *((float *)v22 + 557) = parse_next_float32(&v60);
@@ -225,11 +225,11 @@ int __thiscall load_segment_definitions(int *this)
                     v60 = v40;
                     if ( v40 )
                     {
-                      v22[547] |= 1u;
+                      *((_DWORD *)v22 + 547) |= 1u;
                       v60 = find_case_insensitive_substring(asc_4A2094, v40) + 1;
                       v41 = parse_next_signed_int(&v60);
                       v42 = v60;
-                      v22[548] = v41;
+                      *((_DWORD *)v22 + 548) = v41;
                       v60 = find_case_insensitive_substring(asc_4AC438, v42) + 1;
                       *((float *)v22 + 549) = parse_next_float32(&v60);
                       *((float *)v22 + 550) = parse_next_float32(&v60);
@@ -241,67 +241,67 @@ int __thiscall load_segment_definitions(int *this)
                     {
                       v44 = find_case_insensitive_substring(asc_4A2094, v43) + 1;
                       v60 = v44;
-                      v45 = ArgList;
+                      v45 = v68;
                       for ( k = *v44; *v44 >= 32; k = *v44 )
                       {
                         *v45++ = k;
                         v60 = ++v44;
                       }
                       *v45 = 0;
-                      segment_path_index_by_name = find_segment_path_index_by_name(ArgList);
-                      v22[559] = segment_path_index_by_name;
+                      segment_path_index_by_name = find_segment_path_index_by_name(v68);
+                      *((_DWORD *)v22 + 559) = segment_path_index_by_name;
                       if ( segment_path_index_by_name == -1 )
                       {
-                        report_errorf("Unknown path %s in %s", ArgList, v62);
+                        report_errorf("Unknown path %s in %s", v68, v62);
                       }
                       else
                       {
-                        v48 = v22[547];
+                        v48 = *((_DWORD *)v22 + 547);
                         LOBYTE(v48) = v48 | 8;
-                        v22[547] = v48;
+                        *((_DWORD *)v22 + 547) = v48;
                       }
                     }
                     v60 = find_case_insensitive_substring(aNofall, v69);
                     if ( v60 )
                     {
-                      v49 = v22[547];
+                      v49 = *((_DWORD *)v22 + 547);
                       BYTE1(v49) |= 1u;
-                      v22[547] = v49;
+                      *((_DWORD *)v22 + 547) = v49;
                     }
                     v60 = find_case_insensitive_substring(aRingNone, v69);
                     if ( v60 )
                     {
-                      v50 = v22[547];
+                      v50 = *((_DWORD *)v22 + 547);
                       BYTE1(v50) |= 2u;
-                      v22[547] = v50;
+                      *((_DWORD *)v22 + 547) = v50;
                     }
                     v60 = find_case_insensitive_substring(aRingNormal, v69);
                     if ( v60 )
                     {
-                      v51 = v22[547];
+                      v51 = *((_DWORD *)v22 + 547);
                       BYTE1(v51) |= 4u;
-                      v22[547] = v51;
+                      *((_DWORD *)v22 + 547) = v51;
                     }
                     v60 = find_case_insensitive_substring(aRingPowerup, v69);
                     if ( v60 )
                     {
-                      v52 = v22[547];
+                      v52 = *((_DWORD *)v22 + 547);
                       BYTE1(v52) |= 0x20u;
-                      v22[547] = v52;
+                      *((_DWORD *)v22 + 547) = v52;
                     }
                     v60 = find_case_insensitive_substring(aRingExplode, v69);
                     if ( v60 )
                     {
-                      v53 = v22[547];
+                      v53 = *((_DWORD *)v22 + 547);
                       BYTE1(v53) |= 8u;
-                      v22[547] = v53;
+                      *((_DWORD *)v22 + 547) = v53;
                     }
                     v60 = find_case_insensitive_substring(aRingSlow, v69);
                     if ( v60 )
                     {
-                      v54 = v22[547];
+                      v54 = *((_DWORD *)v22 + 547);
                       BYTE1(v54) |= 0x10u;
-                      v22[547] = v54;
+                      *((_DWORD *)v22 + 547) = v54;
                     }
                     v55 = find_case_insensitive_substring(aRingspeed, v69);
                     v60 = v55;
@@ -309,18 +309,18 @@ int __thiscall load_segment_definitions(int *this)
                     {
                       v60 = find_case_insensitive_substring(asc_4A2094, v55) + 1;
                       v56 = parse_next_float32(&v60);
-                      *(float *)&v63[14 * v19 + 560] = v56;
+                      v63->entries[0].rows[v19].ring_speed.value = v56;
                     }
                     else
                     {
-                      v63[14 * v19 + 560] = 0;
+                      v63->entries[0].rows[v19].ring_speed.bits = 0;
                     }
                     v60 = find_case_insensitive_substring(aJetpackOff, v69);
                     if ( v60 )
                     {
-                      v57 = v22[547];
+                      v57 = *((_DWORD *)v22 + 547);
                       BYTE1(v57) |= 0x80u;
-                      v22[547] = v57;
+                      *((_DWORD *)v22 + 547) = v57;
                     }
                     v18 = (_BYTE *)advance_to_next_crlf_line(v26);
                     if ( !v18 )
@@ -333,11 +333,11 @@ int __thiscall load_segment_definitions(int *this)
                   }
                   ++v3;
                   v66 += 295;
-                  result = *v63;
-                  v58 = v3 < *v63;
+                  result = v63->entries[0].count_alias;
+                  v58 = v3 < v63->entries[0].count_alias;
                   v64 = v3;
                   v65 += 2065;
-                  v61 += 4130;
+                  p_row_count += 4130;
                   v62 += 128;
                   if ( v58 )
                   {

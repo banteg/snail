@@ -109,3 +109,12 @@ the remaining generic owner list.
   can compare bounded table contents rather than trusting names alone.
 - Focused matching is now proof-grade at `100.00%`, `396/396`, prefix
   `396/396`, with `85 ok / 0 unresolved / 0 mismatch` masked operands.
+
+2026-07-11 root-bootstrap header refresh:
+
+- Promoting the complete `Overlay`, `SegmentCatalog`, and shared startup-owner
+  views renumbered the same VC6 tables again to `$L4685`/`$L4686`.
+- COFF symbols place `$L4685` at object `+0x62c` and `$L4686` at `+0x640`.
+  Their 5-entry and 8-entry relocation sequences match the already curated
+  target tables exactly. Registering both aliases restores the bounded content
+  audit; it does not accept the operands by label identity.
