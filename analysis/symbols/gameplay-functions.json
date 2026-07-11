@@ -2636,7 +2636,7 @@
     {
       "address": "0x448060",
       "name": "load_builtin_segment_definitions",
-      "description": "Copies the shipped built-in segment definitions from the static table at `0x4a63d0` into the secondary SubTracks owner, including names like `Start`, `Finish`, and `Filler` plus their eight authored row strings and metadata lanes. Symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`."
+      "description": "Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. The inconsistent incidental return register proves the Windows member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`."
     },
     {
       "address": "0x448160",

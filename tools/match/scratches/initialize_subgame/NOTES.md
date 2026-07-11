@@ -244,3 +244,12 @@ aliases respectively and restore the 85 clean operands.
 - Registering that alias against the bounded `0x14` target table re-audits
   identical entry content and keeps the method exact at 396/396 with all 85
   operands clean; no target or candidate instruction changes.
+
+2026-07-11 SubSegmentRaw header refresh:
+
+- Correcting the built-in initializer to the symbol-proven `void
+  cRSubTracks::Init(cRSubSegmentRaw**)` signature advances the same five-entry
+  bottom-HUD table to `$L4816` at object `+0x62c`.
+- Its bounded relocation sequence remains identical to the target table.
+  Registering the content alias restores 396/396 with all 85 operands clean;
+  the caller instructions are unchanged.

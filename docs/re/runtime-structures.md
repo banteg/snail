@@ -435,6 +435,9 @@ The current high-confidence `Game` fields are:
   - second complete `SubTracks` owner used for startup enumeration and built-ins
   - second complete `0x1a5978` owner used for startup level enumeration and
     then reseeded from the built-in segment table
+  - the built-in handoff is the void `cRSubTracks::Init(cRSubSegmentRaw**)`
+    family: Windows consumes a pointer table of static `0x48` `SubSegmentRaw`
+    records and copies their eight glyph rows into inline `LevelSegmentSlot`s
 - `+0x355b64..+0x355d94`: ten embedded `BodBase` group heads
   - `+0x355b64`: fringe objects and row attachment bodies
   - `+0x355b9c`: ordinary track bodies plus start/completion banners

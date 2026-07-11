@@ -19,7 +19,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SegmentCatalog",
     "LevelSegmentSlot",
     "SubTracks",
-    "BuiltinSegmentDefinition",
+    "SubSegmentRaw",
 )
 
 PROTO_UPDATES = (
@@ -37,7 +37,7 @@ PROTO_UPDATES = (
     ),
     (
         "load_builtin_segment_definitions",
-        "char* __thiscall load_builtin_segment_definitions(SubTracks* tracks, BuiltinSegmentDefinition** builtins)",
+        "void __thiscall load_builtin_segment_definitions(SubTracks* tracks, SubSegmentRaw** raw_segments)",
     ),
     (
         "load_segment_definitions",

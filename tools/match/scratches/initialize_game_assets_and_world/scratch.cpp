@@ -21,7 +21,7 @@
 extern char* g_game_base; // data_4df904
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
-extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
+extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00

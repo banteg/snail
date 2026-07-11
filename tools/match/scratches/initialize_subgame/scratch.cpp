@@ -23,7 +23,7 @@ extern char* g_game_base; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
-extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
+extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 void rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0

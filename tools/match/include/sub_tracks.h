@@ -11,7 +11,7 @@ public:
     int* load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
     int* load_level_definition_file(char* path); // @ 0x447480
     int* copy_segment_definition_to_level_slot(char* segment_name, LevelSegmentSlot* slot);
-    char* load_builtin_segment_definitions(BuiltinSegmentDefinition** builtins); // @ 0x448060
+    void load_builtin_segment_definitions(SubSegmentRaw** raw_segments); // @ 0x448060
 
     int segment_count;                   // +0x000000
     LevelSegmentSlot segment_slots[100]; // +0x000004

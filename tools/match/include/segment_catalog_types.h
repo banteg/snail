@@ -80,7 +80,9 @@ struct LevelSegmentSlot {
 typedef char LevelSegmentSlot_must_be_0x4220[
     (sizeof(LevelSegmentSlot) == 0x4220) ? 1 : -1];
 
-struct BuiltinSegmentDefinition {
+// Windows layout of the authored cRSubSegmentRaw records named by the iOS
+// cRSubTracks::Init(cRSubSegmentRaw**) symbol.
+struct SubSegmentRaw {
     int row_count;                 // +0x00, filled after measuring row 0
     char unknown_04[0x18];
     int path_index;                // +0x1c
@@ -88,5 +90,8 @@ struct BuiltinSegmentDefinition {
     int unknown_24;                // +0x24
     char* glyph_rows[8];           // +0x28
 };
+
+typedef char SubSegmentRaw_must_be_0x48[
+    (sizeof(SubSegmentRaw) == 0x48) ? 1 : -1];
 
 #endif

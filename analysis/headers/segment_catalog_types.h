@@ -81,13 +81,14 @@ typedef struct SubTracks {
     int32_t parcel_quota;
 } SubTracks;
 
-typedef struct BuiltinSegmentDefinition {
+/* Windows layout of the cRSubSegmentRaw parameter records. */
+typedef struct SubSegmentRaw {
     int32_t row_count;
     uint8_t unknown_04[0x18];
     int32_t path_index;
     char* source_name;
     int32_t unknown_24;
     char* glyph_rows[8];
-} BuiltinSegmentDefinition;
+} SubSegmentRaw;
 
 #endif

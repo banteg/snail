@@ -275,7 +275,8 @@
       "windows_name": "load_builtin_segment_definitions",
       "ios_symbol": "cRSubTracks::Init(cRSubSegmentRaw**)",
       "source_object": "Subtrack.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The Windows raw input record is 0x48 bytes and feeds inline 0x4220-byte slots. Its inconsistent incidental return register plus discarded callsites prove a void Init contract; iOS later uses compact destination segments with separately allocated glyph storage."
     },
     {
       "address": "0x43a9c0",

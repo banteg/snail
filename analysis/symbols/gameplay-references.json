@@ -933,6 +933,7 @@
         "$L4796",
         "$L4812",
         "$L4814",
+        "$L4816",
         "$L4818",
         "$L4825",
         "$L4834"
@@ -2476,7 +2477,7 @@
         "off_4A63D0",
         "data_4a63d0"
       ],
-      "description": "Pointer table of shipped built-in segment definitions copied by load_builtin_segment_definitions for the default level segment catalog."
+      "description": "Pointer table of shipped SubSegmentRaw records consumed by load_builtin_segment_definitions for the default SubTracks owner."
     },
     {
       "address": "0x4ac5c8",

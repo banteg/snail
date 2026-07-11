@@ -18,7 +18,7 @@ Status:
 - 2026-06-18: 52.97%, 92 target instructions vs 93 candidate instructions,
   no masked operands.
 - 2026-06-18: Reshaped the scratch around the shared `LevelSegmentSlot` layout
-  and a typed `BuiltinSegmentDefinition`; score stayed at 52.97%, but the slot
+  and the raw built-in record; score stayed at 52.97%, but the slot
   offsets now line up with `copy_segment_definition_to_level_slot`.
 - 2026-06-18: Replaced the local authored row and slot copies with
   `include/segment_catalog_types.h`; focused Wibo score still stayed 52.97%.
@@ -33,11 +33,9 @@ Status:
 - `load_level_definition_file` corrects the slot tail names: `+0x4014`
   is the per-level segment angle, `+0x4018` starts optional message text,
   `+0x4218` is message duration, and `+0x421c` is the message sample id.
-- Main residual: VC6 allocates the built-in table in `ebp` for this scratch,
-  while native keeps it in `ebx` before the sentinel check and then uses `ebp`
-  for the per-glyph destination offset. Pointer/integer/`register` spellings
-  all compiled to the same non-native allocation, so this is left unresolved
-  rather than forced.
+- The old cached-glyph spelling made VC6 reserve `bl`, which in turn kept the
+  raw table in `ebp` and displaced the native destination calculation. Direct
+  indexed glyph access is both simpler source and the native register shape.
 
 ## 2026-07-11 receiver ownership correction
 
@@ -48,6 +46,26 @@ Status:
 - `slots[102].row_base` is a deliberate overlapping access to the existing
   loader tail at `+0x1a58c4`; the function never owns or touches a complete
   103rd `0x4220`-byte slot.
-- Moving the method onto the real owner leaves the honest focused result
-  unchanged at `52.97%`, 93/92 candidate/target instructions. The remaining
-  difference is still native register allocation, not a layout gap.
+- Moving the method onto the real owner initially left the honest focused
+  result unchanged at `52.97%`, 93/92 candidate/target instructions.
+
+## 2026-07-11 raw input and void contract
+
+- The symbol-preserving iOS overload names the input type
+  `cRSubSegmentRaw**`. Windows' shipped globals prove the corresponding static
+  `SubSegmentRaw` record is `0x48` bytes: row count at `+0x00`, path index at
+  `+0x1c`, source name at `+0x20`, and eight glyph-row pointers at `+0x28`.
+- The empty Windows path leaves `eax = raw_segments[0]`, while the populated
+  path leaves `eax = next->glyph_rows[0]`; all callers discard it. That
+  inconsistent incidental register value proves this `Init` member is `void`,
+  not the earlier decompiler-inferred `char*` function.
+- Removing the forced return lifetime and cached glyph byte recovers native
+  `ebx` ownership for the raw table, `ebp` for the destination offset, and the
+  direct `dl` copy loop. The focused result rises from `52.97%` (93/92) to
+  `97.83%` with the exact 92/92 instruction count.
+- The remaining two differences are commutative encodings only:
+  `[esi+eax]` versus `[eax+esi]`, and addition of the row base versus column.
+  The clear source form is retained rather than swapping operands for bytes.
+- iOS dynamically allocates its compact destination `cRSubSegment` glyph
+  storage. That later-port destination layout is not transplanted onto the
+  Windows inline `0x4220` `LevelSegmentSlot` array.
