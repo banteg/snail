@@ -56,6 +56,15 @@ Latest focused result:
 - The initializer now reaches that embedded member through the recovered owner
   chain and remains exact at 279/279 instructions.
 
+2026-07-11 cRCutScene ownership closure:
+
+- The owner at `Player::presentation +0x1958` (`Player +0x42dc`) is the exact
+  0x5c-byte `CutScene`. Android's `cRCutScene::Init` performs the same backlink
+  and state stores, while iOS v1.9 exposes the Player-parameter variant.
+- The initializer now calls that embedded owner directly and remains exact at
+  279/279 instructions. The source return is `void`; direct member assignments
+  preserve the native instruction order without inventing a returned value.
+
 2026-06-20 larger near-proof tail audit:
 
 - Focused Wibo still reports 95.14%, 276/279 candidate/target instructions,

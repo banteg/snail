@@ -546,17 +546,18 @@ typedef struct SnailVisual {
     float squidge_secondary;
 } SnailVisual;
 
-typedef struct CutsceneAI {
+/* Authored cRCutScene, exact 0x5c-byte camera state-machine owner. */
+typedef struct CutScene {
     PlayerPresentationController* presentation;
     Player* player;
-    int32_t unresolved_08;
+    int32_t camera_mode;
     int32_t state;
     TransformMatrix live_matrix;
     float progress;
     float progress_step;
-    uint8_t unresolved_58;
-    uint8_t _pad_59[0xb];
-} CutsceneAI;
+    uint8_t force_camera_update;
+    uint8_t _pad_59[0x3];
+} CutScene;
 
 typedef struct AnimationDispatchState {
     int32_t active;
@@ -647,7 +648,7 @@ typedef struct PlayerPresentationController {
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
     SnailSkinTransitionState snail_skin_transition;
-    CutsceneAI cutscene_ai;
+    CutScene cutscene;
 } PlayerPresentationController;
 
 typedef struct GlobalJetpackPresentationController {
@@ -1074,10 +1075,10 @@ Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
 int32_t __thiscall handle_subgoldy_collisions(Player* player);
 void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
 void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);
-int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);
+void __thiscall initialize_cutscene(PlayerPresentationController* presentation);
 int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
-int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);
-int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);
+void __thiscall initialize_cutscene_ai(CutScene* cutscene);
+void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);
 void __thiscall initialize_nuke(Nuke* nuke);
 void __thiscall update_nuke(Nuke* nuke);

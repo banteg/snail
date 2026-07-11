@@ -13,7 +13,7 @@ owned by `GameRoot::subgame` and its embedded `Player`:
   the Zig controller's state-2 skin refresh)
 - The three non-fill exits are `Player::completion_handoff_timer` at `+0x444`,
   `Player::resurrect_progress` at `+0x8c`, and
-  `Player::presentation.cutscene_ai.state` at presentation `+0x1964`.
+  `Player::presentation.cutscene.state` at presentation `+0x1964`.
 
 Zig verify: gameplay/damage.zig models these as opaque UpdateContext
 bools (warning_start_blocked, accelerated_drain_gate, suspended) — the
@@ -98,7 +98,7 @@ only the `flash_pulse` source split.
 2026-07-11 ownership closure: the synthetic root view is removed. Every field
 lands inside `GameRoot::subgame.embedded_player()` or the subgame pause gate;
 the completion-handoff timer pair is promoted into the shared `Player`, and the
-last exit word is the already-owned `CutsceneAI::state`. The live Binary Ninja
+last exit word is the already-owned `CutScene::state`. The live Binary Ninja
 `Player` type now also exposes its progress bar, warning, lives, and borrowed
 `SubgameRuntime*` backlink. Focused Wibo remains 94.03%, 268/268 instructions,
 prefix 122/268, with 65 clean masked operands.

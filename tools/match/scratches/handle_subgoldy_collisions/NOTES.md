@@ -67,7 +67,7 @@ This promoted `Player::handle_subgoldy_collisions`, direct
 `Player::parcels_collected` at `+0x4338`, and
 `PlayerPresentationController::wobble_lift_phase_step` at presentation
 `+0x15c8` (`Player +0x3f4c`). The slug first-hit cutscene write now goes
-through `presentation.cutscene_ai.state`, the ring nuke pickup uses the shared
+through `presentation.cutscene.state`, the ring nuke pickup uses the shared
 `Nuke::initialize_nuke()` method at `Player +0x150`, and the local
 three-float collision probes alias the shared `Vector3` view. Focused match
 moves from `45.36%` / 641 candidate insns to `45.43%` / 639 with the masked
@@ -156,7 +156,7 @@ useful cross-confirmations are:
 
 2026-06-16 player subobject consolidation: shared `player.h` now records the
 `Nuke nuke` object at `Player +0x150` and embedded
-`PlayerPresentationController::cutscene_ai.state` at presentation `+0x1964`
+`PlayerPresentationController::cutscene.state` at presentation `+0x1964`
 (`Player +0x42e8`). This collision scratch consumes both through the ring
 nuke pickup (`initialize_nuke(player+0x150)`) and slug first-hit cutscene state
 `10`; `update_subgoldy` independently drives the nuke update/uninit path and

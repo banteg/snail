@@ -1134,6 +1134,15 @@
       "notes": "The exact Windows member allocates and initializes the Time's Up widget, then seeds state, progress, and progress step on the same owner."
     },
     {
+      "address": "0x446130",
+      "windows_name": "initialize_cutscene_ai",
+      "ios_symbol": "cRCutScene::Init(cRSubGoldy*)",
+      "android_symbol": "cRCutScene::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows and Android helpers clear state and write the same presentation/player backlinks at +0/+4. Windows and Android leave different incidental values in the return register, confirming the ignored source return is void; v1.9 iOS adds the cRSubGoldy* parameter."
+    },
+    {
       "address": "0x446160",
       "windows_name": "initialize_cameraman",
       "ios_symbol": "cRCameraman::Init(cRSubGoldy*)",
@@ -1154,17 +1163,20 @@
     {
       "address": "0x4428d0",
       "windows_name": "initialize_cutscene",
-      "ios_symbol": "cRCutScene::Init(cRSubGoldy*)",
-      "source_object": null,
-      "confidence": "medium",
-      "notes": "v1.9-only signature; Windows split also has initialize_cutscene_ai."
+      "ios_symbol": "cRSnail::AIGoldy()",
+      "android_symbol": "cRSnail::AIGoldy()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The Windows name is a stable historical harness identifier. Like Android cRSnail::AIGoldy, this per-frame presentation method runs snail-skin AI, matrix interpolation, hotspot construction, hover jets, animation dispatch, and the embedded cRCutScene::AI; it is not cRCutScene::Init."
     },
     {
       "address": "0x4466d0",
       "windows_name": "update_cutscene",
       "ios_symbol": "cRCutScene::AI()",
+      "android_symbol": "cRCutScene::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android confirms the same embedded owner, state at +0x0c, camera matrix at +0x10, progress pair at +0x50/+0x54, and intro/completion/death state families."
     },
     {
       "address": "0x41b0f0",

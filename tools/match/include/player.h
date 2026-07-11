@@ -8,6 +8,7 @@
 #define PLAYER_H
 
 #include "cameraman.h"
+#include "cut_scene.h"
 #include "damage_guage.h"
 #include "firework.h"
 #include "invincible.h"
@@ -105,24 +106,6 @@ enum SnailHotspotIndex {
     SNAIL_HOTSPOT_COUNT = 19,
 };
 
-class CutsceneAI {
-public:
-    int initialize_cutscene_ai(); // @ 0x446130
-    void update_cutscene();       // @ 0x4466d0
-
-    PlayerPresentationController* presentation; // +0x00
-    Player* player;                             // +0x04
-    int camera_mode;                            // +0x08
-    int state;                                  // +0x0c
-    TransformMatrix live_matrix;                // +0x10
-    float progress;                             // +0x50
-    float progress_step;                        // +0x54
-    unsigned char force_camera_update;          // +0x58
-    char unknown_59[0x5c - 0x59];
-};
-typedef char CutsceneAI_must_be_0x5c[
-    (sizeof(CutsceneAI) == 0x5c) ? 1 : -1];
-
 class PlayerPresentationController {
 public:
     PlayerPresentationController* initialize_player_presentation_controller(); // @ 0x4086d0
@@ -166,7 +149,7 @@ public:
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
     Invincible invincible_shell;                // +0x1894, authored cRInvincible
     SnailSkinTransition snail_skin_transition;  // +0x1938
-    CutsceneAI cutscene_ai;                     // +0x1958
+    CutScene cutscene;                          // +0x1958, authored cRCutScene
 };
 typedef char PlayerPresentationController_must_be_0x19b4[
     (sizeof(PlayerPresentationController) == 0x19b4) ? 1 : -1];

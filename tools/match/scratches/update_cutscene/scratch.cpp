@@ -9,7 +9,7 @@
 
 extern char g_player_intro_cutscene_latch_offset[]; // 0x42fec4 = g_player_block + 0x148
 
-void CutsceneAI::update_cutscene()
+void CutScene::update_cutscene()
 {
     int current_state = state;
     force_camera_update = 0;

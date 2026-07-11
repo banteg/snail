@@ -249,11 +249,11 @@ source-shape issue is solved.
   include boundary and leaves this caller byte-stable.
 - 2026-06-20 remaining local view naming: the warning, control-source, and
   cutscene subviews are now named `SubgoldyWarningView`,
-  `SubgoldyPlayerControlSourceView`, and `SubgoldyCutsceneAIStateView`.
+  `SubgoldyPlayerControlSourceView`, and `SubgoldyCutSceneStateView`.
   Including the shared warning/player headers is still rejected for the
   include-boundary reasons above, but the type report no longer advertises
   these compact local slices as promotable `Warning`, `PlayerControlSource`,
-  or `CutsceneAI` definitions. Focused evidence stayed unchanged at `72.51%`,
+  or `CutScene` definitions. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
 - 2026-06-20 Player ABI cleanup: the compact local `Player` method surface now
   matches `player.h` for `initialize_subgoldy_death()` and

@@ -27,6 +27,7 @@ PRESENTATION_SYMBOL_UPDATES = (
 PRESENTATION_CONTROLLER_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
     ("0x1894", "invincible_shell", "Invincible"),
+    ("0x1958", "cutscene", "CutScene"),
 )
 
 PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
@@ -45,6 +46,17 @@ INVINCIBLE_FIELD_UPDATES = (
     ("0x98", "cutscene_roll_progress", "float"),
     ("0x9c", "cutscene_roll_step", "float"),
     ("0xa0", "channel_release_steps_active", "uint8_t"),
+)
+
+CUT_SCENE_FIELD_UPDATES = (
+    ("0x00", "presentation", "PlayerPresentationController*"),
+    ("0x04", "player", "Player*"),
+    ("0x08", "camera_mode", "int32_t"),
+    ("0x0c", "state", "int32_t"),
+    ("0x10", "live_matrix", "TransformMatrix"),
+    ("0x50", "progress", "float"),
+    ("0x54", "progress_step", "float"),
+    ("0x58", "force_camera_update", "uint8_t"),
 )
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
@@ -65,6 +77,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Cameraman",
     "Squidge",
     "Invincible",
+    "CutScene",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -344,15 +357,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_cutscene",
-        "int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation)",
+        "void __thiscall initialize_cutscene(PlayerPresentationController* presentation)",
     ),
     (
         "initialize_cutscene_ai",
-        "int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai)",
+        "void __thiscall initialize_cutscene_ai(CutScene* cutscene)",
     ),
     (
         "update_cutscene",
-        "int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai)",
+        "void __thiscall update_cutscene(CutScene* cutscene)",
     ),
     (
         "dispatch_cutscene_animation",
@@ -656,6 +669,14 @@ def main() -> int:
             target=args.target,
             struct_name="Invincible",
             updates=INVINCIBLE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="CutScene",
+            updates=CUT_SCENE_FIELD_UPDATES,
         )
     )
     operations.extend(

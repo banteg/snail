@@ -139,7 +139,7 @@ struct VisualRoot {
     float squidge_secondary;       // +0x88
 };
 
-struct SubgoldyCutsceneAIStateView {
+struct SubgoldyCutSceneStateView {
     char unknown_00[0x0c];
     int state; // +0x0c (presentation +0x1964)
     char unknown_10[0x5c - 0x10];
@@ -156,7 +156,7 @@ struct Presentation {
     PresentationAnimationChannel weapon_channels[3]; // +0x64c, stride 0x3dc
     PresentationAnimationChannel jetpack_channel; // +0x11e0
     char unknown_15bc[0x1958 - 0x15bc];
-    SubgoldyCutsceneAIStateView cutscene_ai; // +0x1958, state at +0x1964
+    SubgoldyCutSceneStateView cutscene; // +0x1958, authored cRCutScene state at +0x1964
     char unknown_19b4[0x19c0 - 0x19b4];
 
     void dispatch_cutscene_animation(int animation, unsigned char flag, int arg);
@@ -880,7 +880,7 @@ steering_stored:
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
             jetpack_gauge.end_jetpack_hover();
-            presentation.cutscene_ai.state = 5;
+            presentation.cutscene.state = 5;
             g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
         }

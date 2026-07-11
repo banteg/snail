@@ -151,8 +151,8 @@ void PlayerPresentationController::initialize_cutscene()
 
     update_snail_skin();
 
-    if (cutscene_ai.state != 0) {
-        cutscene_ai.update_cutscene();
+    if (cutscene.state != 0) {
+        cutscene.update_cutscene();
     } else if (anim_manager.queue_count == 0 && owner_player->control_override_active == 0) {
         dispatch_cutscene_animation(1, 0, -1);
     }

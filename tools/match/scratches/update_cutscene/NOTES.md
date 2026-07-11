@@ -1,13 +1,14 @@
 # update_cutscene @ 0x4466d0
 
-First structural recovery for `CutsceneAI::update_cutscene`.
+Structural recovery for authored `cRCutScene::AI` on the exact 0x5c-byte
+`CutScene` embedded at `PlayerPresentationController +0x1958`.
 
 Recovered relationships:
 
-- `CutsceneAI::state` drives the `1 -> 2 -> 8 -> 9` intro path, `5 -> 6 -> 7`
+- `CutScene::state` drives the `1 -> 2 -> 8 -> 9` intro path, `5 -> 6 -> 7`
   completion path, and `10 -> 11 -> 12` death path.
 - `camera_mode`, `live_matrix`, `progress`, `progress_step`, and
-  `force_camera_update` are confirmed members on the `CutsceneAI` inline object.
+  `force_camera_update` are confirmed members on the `CutScene` inline object.
 - `PlayerPresentationController::snail_hotspots_world[12]` is the completion
   skid-stop source and `snail_hotspots_world[18]` is the recurring intro-talk
   look-at anchor.
@@ -69,3 +70,11 @@ RegisterParcel, rather than a standalone root-level result screen. This source
 shape raises the focused match from 46.29% (480/505, 34 clean operands and two
 mismatches) to 68.97% (481/505, 55 clean operands and one real jump-table
 mismatch). The gain is retained as ownership evidence, not tuned padding.
+
+2026-07-11 authored-owner closure: Android `cRCutScene::AI` uses the same
+owner offsets (`state +0x0c`, matrix `+0x10`, progress `+0x50/+0x54`, update
+gate `+0x58`) and the same intro/completion/death state families. iOS v1.5
+places `cRCutScene::AI` in `SubGame.o`. The shared type is now the exact 0x5c
+`CutScene`; the old analysis headers incorrectly padded it to 0x64 and thereby
+misattributed the following `Player::parcels_collected` word at `Player+0x4338`
+to a nonexistent CutScene tail.

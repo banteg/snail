@@ -84,7 +84,7 @@ void DamageGuage::update_damage_gauge()
                     && *(int*)&game->subgame.embedded_player()->position.y == 0x3efae148)
                 || game->subgame.embedded_player()->completion_handoff_timer > 0.0f
                 || game->subgame.embedded_player()->resurrect_progress > 0.0f
-                || game->subgame.embedded_player()->presentation.cutscene_ai.state) {
+                || game->subgame.embedded_player()->presentation.cutscene.state) {
                 state = 0;
                 g_game->subgame.embedded_player()->warning.stop_warning();
                 g_game->subgame.embedded_player()->warning.stop_warning_sample();

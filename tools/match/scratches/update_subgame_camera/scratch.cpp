@@ -19,9 +19,9 @@ void SubgameRuntime::update_subgame_camera()
         *(float*)(g_game_base + 0x284) = 110.0f;
     } else {
         player.cameraman.update_cameraman();
-        if (player.presentation.cutscene_ai.state != 0) {
-            camera_snap_requested = player.presentation.cutscene_ai.force_camera_update;
-            target = player.presentation.cutscene_ai.live_matrix;
+        if (player.presentation.cutscene.state != 0) {
+            camera_snap_requested = player.presentation.cutscene.force_camera_update;
+            target = player.presentation.cutscene.live_matrix;
             *(float*)(g_game_base + 0x284) = 110.0f;
         } else {
             target = player.cameraman.live_matrix;

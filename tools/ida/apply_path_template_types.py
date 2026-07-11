@@ -368,7 +368,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_cutscene",
-        "int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);",
+        "void __thiscall initialize_cutscene(PlayerPresentationController* presentation);",
     ),
     (
         "dispatch_cutscene_animation",
@@ -376,11 +376,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_cutscene_ai",
-        "int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);",
+        "void __thiscall initialize_cutscene_ai(CutScene* cutscene);",
     ),
     (
         "update_cutscene",
-        "int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);",
+        "void __thiscall update_cutscene(CutScene* cutscene);",
     ),
     (
         "update_progress_bar",

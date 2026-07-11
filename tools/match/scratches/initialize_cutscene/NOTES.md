@@ -7,7 +7,7 @@ This function ties together the fields promoted on `PlayerPresentationController
 - `live_matrix` at `+0x38` and `cached_cutscene_matrix` at `+0xc0`
 - channel `live_matrix` at `+0x38` and `release_step` at `+0x3d0`
 - `snail_hotspot_source_matrix_a`/`b`, then `update_snail_skin`
-- embedded `cutscene_ai` at `+0x1958`
+- embedded authored `cRCutScene` at `+0x1958`
 
 The first version is meant to be an honest source-shaped baseline for matching
 and layout validation, not a final register-perfect reconstruction.
@@ -37,3 +37,12 @@ Remaining known shape issues:
 `GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
 is codegen-neutral at 73.95%, 329/339 instructions, prefix 1/339, and 42 clean
 masked operands.
+
+2026-07-11 cross-port owner correction: this function is the Windows
+counterpart of `cRSnail::AIGoldy()`, not `cRCutScene::Init`. Android's authored
+method has the same per-frame call family: snail-skin AI, matrix interpolation,
+hotspot construction, hover jets, animation dispatch, and the embedded
+`cRCutScene::AI`. The tiny exact `initialize_cutscene_ai @0x446130` is the real
+CutScene initializer. The corrected `cRSnail::AIGoldy` prototype is `void`,
+matching the scratch and the fact that every per-frame caller ignores the
+incidental exit register.

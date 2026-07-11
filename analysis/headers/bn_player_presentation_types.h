@@ -466,17 +466,18 @@ typedef struct Squidge {
     float z_phase;
 } Squidge;
 
-typedef struct CutsceneAI {
+/* Authored cRCutScene, exact 0x5c-byte camera state-machine owner. */
+typedef struct CutScene {
     struct PlayerPresentationController* presentation;
     struct Player* player;
-    int32_t unresolved_08;
+    int32_t camera_mode;
     int32_t state;
     TransformMatrix live_matrix;
     float progress;
     float progress_step;
-    uint8_t unresolved_58;
-    uint8_t _pad_59[0xb];
-} CutsceneAI;
+    uint8_t force_camera_update;
+    uint8_t _pad_59[0x3];
+} CutScene;
 
 typedef struct PlayerPresentationController {
     void* vtable;
@@ -502,7 +503,7 @@ typedef struct PlayerPresentationController {
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
     SnailSkinTransitionState snail_skin_transition;
-    CutsceneAI cutscene_ai;
+    CutScene cutscene;
 } PlayerPresentationController;
 
 typedef struct Player {

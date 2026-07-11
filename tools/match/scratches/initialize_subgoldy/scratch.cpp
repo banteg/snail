@@ -11,11 +11,6 @@
 #include "spring_float.h"
 #include "transform_matrix.h"
 
-class CutsceneAIState {
-public:
-    int initialize_cutscene_ai();
-};
-
 extern char* g_game_base; // data_4df904
 
 int Player::initialize_subgoldy(int player_slot)
@@ -129,7 +124,7 @@ int Player::initialize_subgoldy(int player_slot)
     }
 
     ((SnailSkinTransition*)(self + 0x42bc))->initialize_snail_skin();
-    ((CutsceneAIState*)(self + 0x42dc))->initialize_cutscene_ai();
+    this->presentation.cutscene.initialize_cutscene_ai();
     if (*(unsigned char*)(*(char**)(self + 0x408) + 0xff25d0) == 0)
         *(int*)(self + 0x42e8) = 1;
     this->presentation.owner_player = this;
