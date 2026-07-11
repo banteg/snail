@@ -3,13 +3,12 @@
 /* selector: update_golb_ai */
 
 // Advances one live Golb shot actor, including straight-flight or path-follow motion, collision transitions, burst or smoke aftermath, and the final cleanup path once it passes the player or leaves the valid band.
-// shot owner game +0x09 is subgame_pause_gate; owner game +0x38 is subgame_rate.
-void __thiscall sub_414820(int this)
+void __thiscall update_golb_ai(int this)
 {
   char *v2; // ecx
   int v3; // edx
   int v4; // ecx
-  float *v5; // edi
+  Vec3 *v5; // edi
   float *v6; // esi
   int v7; // eax
   double v8; // st7
@@ -22,8 +21,8 @@ void __thiscall sub_414820(int this)
   double v15; // st5
   double v16; // st7
   int v17; // eax
-  char *v18; // eax
-  char *v19; // edi
+  TrackRowCell *track_grid_cell_at_world_position; // eax
+  TrackRowCell *v19; // edi
   int v20; // eax
   int v21; // eax
   double v22; // st7
@@ -56,32 +55,25 @@ void __thiscall sub_414820(int this)
   double v51; // st7
   char v53; // c0
   double v54; // st7
-  float v55; // ecx
+  float z; // ecx
   int v56; // eax
   int i; // esi
   double v58; // st7
-  double v59; // st7
-  float v60; // edx
+  float v59; // edx
+  float v60; // [esp+10h] [ebp-70h]
   float v61; // [esp+10h] [ebp-70h]
-  float v62; // [esp+10h] [ebp-70h]
-  float v63; // [esp+14h] [ebp-6Ch] BYREF
-  float v64; // [esp+18h] [ebp-68h]
-  float v65; // [esp+1Ch] [ebp-64h]
-  float v66; // [esp+20h] [ebp-60h] BYREF
-  float v67; // [esp+24h] [ebp-5Ch]
-  float v68; // [esp+28h] [ebp-58h]
-  float v69; // [esp+2Ch] [ebp-54h]
-  float v70; // [esp+30h] [ebp-50h]
-  float v71; // [esp+34h] [ebp-4Ch]
-  float v72; // [esp+38h] [ebp-48h]
-  float v73; // [esp+3Ch] [ebp-44h]
-  float v74; // [esp+44h] [ebp-3Ch]
-  float v75; // [esp+48h] [ebp-38h]
-  float v76; // [esp+4Ch] [ebp-34h]
-  float v77[3]; // [esp+50h] [ebp-30h] BYREF
-  _DWORD v78[3]; // [esp+5Ch] [ebp-24h] BYREF
-  _DWORD v79[3]; // [esp+68h] [ebp-18h] BYREF
-  _DWORD v80[3]; // [esp+74h] [ebp-Ch] BYREF
+  Vec3 v62; // [esp+14h] [ebp-6Ch] BYREF
+  Vec3 vector; // [esp+20h] [ebp-60h] BYREF
+  Vec3 v64; // [esp+2Ch] [ebp-54h]
+  float v65; // [esp+38h] [ebp-48h]
+  float v66; // [esp+3Ch] [ebp-44h]
+  float v67; // [esp+44h] [ebp-3Ch]
+  float v68; // [esp+48h] [ebp-38h]
+  float v69; // [esp+4Ch] [ebp-34h]
+  float v70[3]; // [esp+50h] [ebp-30h] BYREF
+  _DWORD v71[3]; // [esp+5Ch] [ebp-24h] BYREF
+  _DWORD v72[3]; // [esp+68h] [ebp-18h] BYREF
+  _DWORD v73[3]; // [esp+74h] [ebp-Ch] BYREF
 
   if ( !*(_BYTE *)(*(_DWORD *)(this + 624) + 9) )
   {
@@ -117,7 +109,7 @@ void __thiscall sub_414820(int this)
       }
       else
       {
-        v5 = (float *)(this + 588);
+        v5 = (Vec3 *)(this + 588);
         v6 = (float *)(this + 500);
         *(float *)(this + 500) = *(float *)(this + 588) + *(float *)(this + 500);
         *(float *)(this + 504) = *(float *)(this + 592) + *(float *)(this + 504);
@@ -131,40 +123,40 @@ void __thiscall sub_414820(int this)
             *(float *)(this + 428) = v8;
             if ( v8 > 1.0 )
               *(_DWORD *)(this + 428) = 1065353216;
-            v61 = normalize_vector(v5);
-            v69 = *(float *)(this + 412) - *v6;
+            v60 = normalize_vector(v5);
+            v64.x = *(float *)(this + 412) - *v6;
             v9 = *(float *)(this + 416) - *(float *)(this + 504);
-            v66 = v69;
-            v70 = v9;
+            vector.x = v64.x;
+            v64.y = v9;
             v10 = *(float *)(this + 420) - *(float *)(this + 508);
-            v67 = v70;
-            v71 = v10;
-            v68 = v71;
-            if ( normalize_vector(&v66) < 0.40000001 )
+            vector.y = v64.y;
+            v64.z = v10;
+            vector.z = v64.z;
+            if ( normalize_vector(&vector) < 0.40000001 )
             {
               spawn_golb_impact_sprite((_DWORD *)this, (_DWORD *)(this + 500));
               goto LABEL_82;
             }
             v11 = *(float *)(this + 428);
-            v74 = v66 * v11;
-            v75 = v67 * v11;
-            v12 = v11 * v68;
+            v67 = vector.x * v11;
+            v68 = vector.y * v11;
+            v12 = v11 * vector.z;
             v13 = 1.0 - *(float *)(this + 428) * 1.5;
-            v72 = v13 * *v5;
-            v73 = v13 * *(float *)(this + 592);
+            v65 = v13 * v5->x;
+            v66 = v13 * *(float *)(this + 592);
             v14 = v13 * *(float *)(this + 596);
-            v69 = v72 + v74;
-            v15 = v73 + v75;
-            *v5 = v69;
-            v70 = v15;
-            *(float *)(this + 592) = v70;
-            v71 = v14 + v12;
-            *(float *)(this + 596) = v71;
+            v64.x = v65 + v67;
+            v15 = v66 + v68;
+            v5->x = v64.x;
+            v64.y = v15;
+            *(float *)(this + 592) = v64.y;
+            v64.z = v14 + v12;
+            *(float *)(this + 596) = v64.z;
             normalize_vector(v5);
-            *v5 = v61 * *v5;
-            *(float *)(this + 592) = v61 * *(float *)(this + 592);
-            *(float *)(this + 596) = v61 * *(float *)(this + 596);
-            if ( v61 < 0.1 )
+            v5->x = v60 * v5->x;
+            *(float *)(this + 592) = v60 * *(float *)(this + 592);
+            *(float *)(this + 596) = v60 * *(float *)(this + 596);
+            if ( v60 < 0.1 )
               goto LABEL_82;
           }
         }
@@ -183,17 +175,19 @@ void __thiscall sub_414820(int this)
         *(_DWORD *)(this + 692) = v17;
         if ( v16 < *(float *)(this + 692) && *(float *)(this + 504) < 1.0 && *(float *)(this + 504) > 0.0 )
         {
-          v18 = get_track_grid_cell_at_world_position(*(char **)(this + 624), (float *)(this + 684));
-          v19 = v18;
-          if ( v18[60] == 30 )
+          track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
+                                                *(Game **)(this + 624),
+                                                (Vec3 *)(this + 684));
+          v19 = track_grid_cell_at_world_position;
+          if ( track_grid_cell_at_world_position->tile_id == 30 )
           {
             *(_DWORD *)(this + 740) = *(_DWORD *)(this + 692);
-            initialize_path_follow_golb((float *)(this + 700), (int)v18, this + 500, this);
+            initialize_path_follow_golb((float *)(this + 700), (int)track_grid_cell_at_world_position, this + 500, this);
           }
-          if ( *(float *)(this + 596) > 1.0 && *(v19 - 612) == 30 )
+          if ( *(float *)(this + 596) > 1.0 && v19[-8].tile_id == 30 )
           {
             *(float *)(this + 740) = *(float *)(this + 692) + 1.0;
-            initialize_path_follow_golb((float *)(this + 700), (int)(v19 - 672), this + 500, this);
+            initialize_path_follow_golb((float *)(this + 700), (int)&v19[-8], this + 500, this);
           }
         }
       }
@@ -212,22 +206,22 @@ void __thiscall sub_414820(int this)
               *(float *)(this + 436) = v22 - 6.2831855;
             spawn_golb_smoke(this, (float *)(this + 684));
             v26 = *(float *)(this + 600) * 0.5;
-            v75 = *(float *)(this + 604) * 0.5;
-            v76 = *(float *)(this + 608) * 0.5;
-            v69 = *(float *)(this + 684) - v26;
-            v27 = *(float *)(this + 688) - v75;
-            v77[0] = v69;
-            v70 = v27;
-            v28 = *(float *)(this + 692) - v76;
-            v77[1] = v70;
-            v71 = v28;
-            v77[2] = v71;
-            spawn_golb_smoke(this, v77);
+            v68 = *(float *)(this + 604) * 0.5;
+            v69 = *(float *)(this + 608) * 0.5;
+            v64.x = *(float *)(this + 684) - v26;
+            v27 = *(float *)(this + 688) - v68;
+            v70[0] = v64.x;
+            v64.y = v27;
+            v28 = *(float *)(this + 692) - v69;
+            v70[1] = v64.y;
+            v64.z = v28;
+            v70[2] = v64.z;
+            spawn_golb_smoke(this, v70);
           }
         }
         else
         {
-          add_vapour_point((_DWORD *)(this + 128), (const void *)(this + 636));
+          add_vapour_point((VapourTrail *)(this + 128), (const TransformMatrix *)(this + 636));
         }
       }
       else
@@ -238,42 +232,42 @@ void __thiscall sub_414820(int this)
         v29[2] = *(_DWORD *)(this + 692);
         spawn_golb_trail_sprite((_DWORD *)this, (_DWORD *)(this + 684));
         v30 = *(float *)(this + 600) * 0.30000001;
-        v75 = *(float *)(this + 604) * 0.30000001;
-        v76 = *(float *)(this + 608) * 0.30000001;
-        v69 = *(float *)(this + 684) - v30;
-        v31 = *(float *)(this + 688) - v75;
-        *(float *)v78 = v69;
-        v70 = v31;
-        v32 = *(float *)(this + 692) - v76;
-        *(float *)&v78[1] = v70;
-        v71 = v32;
-        *(float *)&v78[2] = v71;
-        spawn_golb_trail_sprite((_DWORD *)this, v78);
+        v68 = *(float *)(this + 604) * 0.30000001;
+        v69 = *(float *)(this + 608) * 0.30000001;
+        v64.x = *(float *)(this + 684) - v30;
+        v31 = *(float *)(this + 688) - v68;
+        v71[0] = LODWORD(v64.x);
+        v64.y = v31;
+        v32 = *(float *)(this + 692) - v69;
+        v71[1] = LODWORD(v64.y);
+        v64.z = v32;
+        v71[2] = LODWORD(v64.z);
+        spawn_golb_trail_sprite((_DWORD *)this, v71);
         v33 = *(float *)(this + 600) * 0.60000002;
-        v75 = *(float *)(this + 604) * 0.60000002;
-        v76 = *(float *)(this + 608) * 0.60000002;
-        v69 = *(float *)(this + 684) - v33;
-        v34 = *(float *)(this + 688) - v75;
-        *(float *)v79 = v69;
-        v70 = v34;
-        v35 = *(float *)(this + 692) - v76;
-        *(float *)&v79[1] = v70;
-        v71 = v35;
-        *(float *)&v79[2] = v71;
-        spawn_golb_trail_sprite((_DWORD *)this, v79);
+        v68 = *(float *)(this + 604) * 0.60000002;
+        v69 = *(float *)(this + 608) * 0.60000002;
+        v64.x = *(float *)(this + 684) - v33;
+        v34 = *(float *)(this + 688) - v68;
+        v72[0] = LODWORD(v64.x);
+        v64.y = v34;
+        v35 = *(float *)(this + 692) - v69;
+        v72[1] = LODWORD(v64.y);
+        v64.z = v35;
+        v72[2] = LODWORD(v64.z);
+        spawn_golb_trail_sprite((_DWORD *)this, v72);
       }
       v36 = (float *)(this + 684);
-      v69 = *(float *)(this + 684) - *(float *)(this + 564);
-      v70 = *(float *)(this + 688) - *(float *)(this + 568);
+      v64.x = *(float *)(this + 684) - *(float *)(this + 564);
+      v64.y = *(float *)(this + 688) - *(float *)(this + 568);
       v37 = *(float *)(this + 692) - *(float *)(this + 572);
-      *(float *)(this + 600) = v69;
-      *(float *)(this + 604) = v70;
-      v71 = v37;
-      *(float *)(this + 608) = v71;
+      *(float *)(this + 600) = v64.x;
+      *(float *)(this + 604) = v64.y;
+      v64.z = v37;
+      *(float *)(this + 608) = v64.z;
       if ( *(_DWORD *)(this + 448) == 2 )
       {
-        set_matrix_z_direction(this + 336, v37, (_DWORD *)(this + 600));
-        rotate_matrix_world_z((float *)(this + 336), *(float *)(this + 436));
+        set_matrix_z_direction((TransformMatrix *)(this + 336), (const Vec3 *)(this + 600));
+        rotate_matrix_world_z((TransformMatrix *)(this + 336), *(float *)(this + 436));
       }
       v38 = *(float *)(this + 620) + *(float *)(this + 616);
       v39 = *v36;
@@ -296,20 +290,18 @@ void __thiscall sub_414820(int this)
             {
               if ( *(_DWORD *)(v43 + 132) == 1 )
               {
-                v69 = *(float *)(v43 + 104) - *v36;
-                v70 = *(float *)(v43 + 108) - *(float *)(this + 688);
+                v64.x = *(float *)(v43 + 104) - *v36;
+                v64.y = *(float *)(v43 + 108) - *(float *)(this + 688);
                 v44 = *(float *)(v43 + 112) - *(float *)(this + 692);
-                v63 = v69;
-                v64 = v70;
-                v71 = v44;
-                v65 = v71;
+                v64.z = v44;
+                v62 = v64;
                 if ( v46 )
                   v44 = -v44;
-                if ( v44 < 3.0 && normalize_vector(&v63) < *(float *)(v43 + 156) + 0.49000001 )
+                if ( v44 < 3.0 && normalize_vector(&v62) < *(float *)(v43 + 156) + 0.49000001 )
                 {
                   *(_DWORD *)(v43 + 132) = 2;
-                  *(_DWORD *)(v43 + 136) = v63 >= 0.0 ? 1 : 2;
-                  add_subgoldy_score(*(int **)(this + 632), SUBGOLDY_SCORE_GARBAGE, 0);
+                  *(_DWORD *)(v43 + 136) = v62.x >= 0.0 ? 1 : 2;
+                  add_subgoldy_score(*(int **)(this + 632), 0, 0);
                   if ( *(_DWORD *)(this + 448) != 1 )
                     break;
                 }
@@ -326,21 +318,18 @@ void __thiscall sub_414820(int this)
               {
                 if ( *(_DWORD *)(i + 132) == 1 )
                 {
-                  v69 = *(float *)(i + 104) - *v36;
-                  v70 = *(float *)(i + 108) - *(float *)(this + 688);
-                  v58 = *(float *)(i + 112) - *(float *)(this + 692);
-                  v63 = v69;
-                  v64 = v70;
-                  v71 = v58;
-                  v65 = v71;
-                  if ( normalize_vector(&v63) < 3.0 )
+                  v64.x = *(float *)(i + 104) - *v36;
+                  v64.y = *(float *)(i + 108) - *(float *)(this + 688);
+                  v64.z = *(float *)(i + 112) - *(float *)(this + 692);
+                  v62 = v64;
+                  if ( normalize_vector(&v62) < 3.0 )
                   {
                     *(_DWORD *)(i + 132) = 2;
-                    if ( v63 >= 0.0 )
+                    if ( v62.x >= 0.0 )
                       *(_DWORD *)(i + 136) = 1;
                     else
                       *(_DWORD *)(i + 136) = 2;
-                    add_subgoldy_score(*(int **)(this + 632), SUBGOLDY_SCORE_GARBAGE, 0);
+                    add_subgoldy_score(*(int **)(this + 632), 0, 0);
                   }
                 }
               }
@@ -355,29 +344,27 @@ LABEL_53:
             v50 = *(_DWORD *)(v49 + 3499040);
             if ( v50 == 1 || v50 == 4 )
             {
-              v69 = *(float *)(v49 + 3499016) - *v36;
-              v70 = *(float *)(v49 + 3499020) - *(float *)(this + 688);
+              v64.x = *(float *)(v49 + 3499016) - *v36;
+              v64.y = *(float *)(v49 + 3499020) - *(float *)(this + 688);
               v51 = *(float *)(v49 + 3499024) - *(float *)(this + 692);
-              v63 = v69;
-              v64 = v70;
-              v71 = v51;
-              v65 = v71;
+              v64.z = v51;
+              v62 = v64;
               if ( v53 )
                 v51 = -v51;
-              if ( v51 < 2.5 && normalize_vector(&v63) < 2.5 )
+              if ( v51 < 2.5 && normalize_vector(&v62) < 2.5 )
               {
                 *(_BYTE *)(this + 700) = 0;
-                v62 = normalize_vector((float *)(this + 588));
-                v64 = 0.0;
-                normalize_vector(&v63);
-                v67 = 0.0;
-                v66 = -(v62 * v63);
-                v54 = v62 * v65;
-                *(float *)(this + 588) = v66;
-                v68 = -v54;
-                v55 = v68;
+                v61 = normalize_vector((Vec3 *)(this + 588));
+                v62.y = 0.0;
+                normalize_vector(&v62);
+                vector.y = 0.0;
+                vector.x = -(v61 * v62.x);
+                v54 = v61 * v62.z;
+                *(float *)(this + 588) = vector.x;
+                vector.z = -v54;
+                z = vector.z;
                 *(_DWORD *)(this + 592) = 0;
-                *(float *)(this + 596) = v55;
+                *(float *)(this + 596) = z;
                 v56 = *(_DWORD *)(this + 448);
                 switch ( v56 )
                 {
@@ -407,17 +394,17 @@ LABEL_53:
             }
             ++v47;
           }
-          if ( get_track_grid_cell_at_world_position(*(char **)(this + 624), (float *)(this + 684))[60] != 14 )
+          if ( get_track_grid_cell_at_world_position(*(Game **)(this + 624), (Vec3 *)(this + 684))->tile_id != 14 )
             return;
-          v59 = *(float *)(this + 692) - 1.0;
-          v60 = *(float *)(this + 688);
-          v69 = *v36;
-          v70 = v60;
-          *(float *)v80 = v69;
-          v71 = v59;
-          *(float *)&v80[1] = v60;
-          *(float *)&v80[2] = v71;
-          spawn_golb_impact_sprite((_DWORD *)this, v80);
+          v58 = *(float *)(this + 692) - 1.0;
+          v59 = *(float *)(this + 688);
+          v64.x = *v36;
+          v64.y = v59;
+          v73[0] = LODWORD(v64.x);
+          v64.z = v58;
+          *(float *)&v73[1] = v59;
+          v73[2] = LODWORD(v64.z);
+          spawn_golb_impact_sprite((_DWORD *)this, v73);
         }
       }
 LABEL_82:

@@ -5,15 +5,15 @@
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "1014945229951838301",
-    "target_id": "62242:1:1014945229951838301",
+    "session_id": "16290292767711005250",
+    "target_id": "89651:1:16290292767711005250",
     "view_id": "1",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 674,
-  "function_count": 674,
+  "selected_count": 678,
+  "function_count": 678,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -817,6 +817,11 @@
       "address": "0x415e30",
       "name": "search_path_for_golb",
       "artifact": "analysis/decompile/binja/functions/00415e30-search_path_for_golb.c"
+    },
+    {
+      "address": "0x415ef0",
+      "name": "append_subgame_contact_target",
+      "artifact": "analysis/decompile/binja/functions/00415ef0-append_subgame_contact_target.c"
     },
     {
       "address": "0x415f50",
@@ -1672,6 +1677,21 @@
       "address": "0x433220",
       "name": "build_track_render_caches",
       "artifact": "analysis/decompile/binja/functions/00433220-build_track_render_caches.c"
+    },
+    {
+      "address": "0x433830",
+      "name": "add_track_cache_vertex",
+      "artifact": "analysis/decompile/binja/functions/00433830-add_track_cache_vertex.c"
+    },
+    {
+      "address": "0x433960",
+      "name": "append_track_cache_object",
+      "artifact": "analysis/decompile/binja/functions/00433960-append_track_cache_object.c"
+    },
+    {
+      "address": "0x433b30",
+      "name": "update_track_render_cache_rows",
+      "artifact": "analysis/decompile/binja/functions/00433b30-update_track_render_cache_rows.c"
     },
     {
       "address": "0x433e80",

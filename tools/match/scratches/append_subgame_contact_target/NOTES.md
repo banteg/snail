@@ -40,3 +40,8 @@ Residuals:
   `game+0x12727d8`. From the registry base at `+0x1270fd4`, the 4-byte count
   plus 256 0x18-byte entries lands exactly on that boundary. The shared type
   now records the fixed embedded capacity and remains exact at 34/34.
+- 2026-07-11 cross-port owner pass: iOS `Golb.o` names the same method
+  `cREnemyManager::Register(tVector&, float, int, cRBodPos*)`, while its sibling
+  `Init()` is the exact one-store registry reset at `0x415e20`. The Windows
+  harness name remains descriptive, and both decompiler lanes now carry the
+  shared `ContactTargetRegistry`/`ContactTargetEntry` fields.

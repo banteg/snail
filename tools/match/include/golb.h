@@ -1,6 +1,6 @@
 // Golb (player shot) path-follow structures, partial.
 // iOS Path.o keeps this live projectile traversal family as cRPathFollowGolb.
-// Offsets per analysis/decompile/*/00421770-*.c and 00415e30-*.c
+// Offsets per analysis/decompile/*/00421770-*.c.
 #ifndef GOLB_H
 #define GOLB_H
 
@@ -11,25 +11,6 @@
 
 class SubgameRuntime;
 class GolbShot;
-
-// stride 0x18 sample bank entry; only the position triple is typed so far
-struct GolbPathSample {
-    float unknown_00;
-    float x; // +0x04
-    float y; // +0x08
-    float z; // +0x0c
-    float unknown_10;
-    float unknown_14;
-};
-
-class GolbPathBank {
-public:
-    void initialize_enemy_manager(); // @ 0x415e20
-    GolbPathSample* search_path_for_golb(const Vector3* position); // @ 0x415e30
-
-    int count;                  // +0x00
-    GolbPathSample samples[1];  // +0x04
-};
 
 struct AttachmentSampleMatrixView;
 
@@ -56,9 +37,9 @@ struct GolbPathSourceCell {
 };
 
 // Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
-// Kind 2 teardown instead reads GolbShot+0x198 as an attached Sprite*.
+// Kind 2 retains a borrowed contact target here until teardown releases it.
 struct GolbShotHomingStateOverlay {
-    int homing_target_active; // +0x00
+    ContactTargetObject* homing_target_object; // +0x00
     Vector3 homing_target; // +0x04
     char unknown_10[0x14 - 0x10];
     float homing_blend; // +0x14
@@ -123,7 +104,7 @@ public:
         };
     };
     char unknown_190[0x198 - 0x190];
-    int homing_target_active;        // +0x198, also kind-2 Sprite* raw view
+    ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
     char unknown_1a8[4];
     float homing_blend;              // +0x1ac

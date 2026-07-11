@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 674,
-  "function_count": 674,
+  "selected_count": 677,
+  "function_count": 677,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -1127,6 +1127,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "append_subgame_contact_target",
+      "address": "0x415ef0",
+      "name": "append_subgame_contact_target",
+      "artifact": "analysis/decompile/ida/functions/00415ef0-append_subgame_contact_target.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_challenge_setup_screen",
       "address": "0x415f50",
       "name": "initialize_challenge_setup_screen",
@@ -1236,13 +1243,6 @@
       "address": "0x417a70",
       "name": "initialize_high_score_entry",
       "artifact": "analysis/decompile/ida/functions/00417a70-initialize_high_score_entry.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "commit_high_score_entry_into_top_ten",
-      "address": "0x417af0",
-      "name": "commit_high_score_entry_into_top_ten",
-      "artifact": "analysis/decompile/ida/functions/00417af0-commit_high_score_entry_into_top_ten.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2321,6 +2321,27 @@
       "address": "0x433220",
       "name": "build_track_render_caches",
       "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "add_track_cache_vertex",
+      "address": "0x433830",
+      "name": "add_track_cache_vertex",
+      "artifact": "analysis/decompile/ida/functions/00433830-add_track_cache_vertex.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "append_track_cache_object",
+      "address": "0x433960",
+      "name": "append_track_cache_object",
+      "artifact": "analysis/decompile/ida/functions/00433960-append_track_cache_object.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "update_track_render_cache_rows",
+      "address": "0x433b30",
+      "name": "update_track_render_cache_rows",
+      "artifact": "analysis/decompile/ida/functions/00433b30-update_track_render_cache_rows.c",
       "removed_stale_artifacts": []
     },
     {

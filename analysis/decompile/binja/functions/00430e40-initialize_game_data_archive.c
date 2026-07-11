@@ -14,8 +14,8 @@
 00430e83        return eax
 00430e84        sub_432d40()
 00430ea2        data_53c7ec = allocate_tracked_memory(&__dos_header, "Scratch Pad")
-00430eac        data_53c7e8 = allocate_tracked_memory(0x64000, "Music Memory Buffer")
-00430eb4        int32_t* i = &data_503340
+00430eac        g_music_memory_buffer = allocate_tracked_memory(0x64000, "Music Memory Buffer")
+00430eb4        int32_t* i = &g_input_slot0_axis_y
 00430edc        while (i s< 0x5033b0)
 00430ec3        i[-1] = 0
 00430ec6        *i = 0
@@ -25,7 +25,6 @@
 00430ed1        i[6] = 0
 00430ed4        i = &i[0xe]
 00430ee3        RECT rect
-00430ee3        GetClipCursor(&rect)
-00430ee9        BOOL eax_3
+00430ee3        BOOL eax_3 = GetClipCursor(&rect)
 00430ee9        eax_3.b = 1
 00430eef        return eax_3

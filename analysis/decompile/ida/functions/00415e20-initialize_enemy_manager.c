@@ -2,8 +2,8 @@
 /* function: initialize_enemy_manager @ 0x415e20 */
 /* selector: initialize_enemy_manager */
 
-void __thiscall initialize_enemy_manager(#94 *this)
+void __thiscall initialize_enemy_manager(int *count_owner)
 {
-  *(_DWORD *)this = 0;
+  *count_owner = 0;
 }
 

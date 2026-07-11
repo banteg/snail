@@ -5,6 +5,7 @@
 
 #include "golb.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "vapour_trail.h"
 #include "vector3.h"
 
@@ -205,7 +206,7 @@ after_movement_flag_source:
                 words[106] = (DWORD)self;
                 spin = 0.0f;
                 spin_step = 0.20943952f;
-                homing_target_active = 0;
+                homing_target_object = 0;
 
                 char* node = self + 0x118;
                 DWORD* node_words = (DWORD*)node;
@@ -229,16 +230,14 @@ after_movement_flag_source:
                 }
 
                 this->emitter_index = emitter_index;
-                GolbPathSample* found = ((GolbPathBank*)((char*)game + 0x1270fd4))
-                                          ->search_path_for_golb(position);
+                ContactTargetEntry* found =
+                    game->contact_targets.search_path_for_golb(position);
                 if (found) {
-                    DWORD* found_words = (DWORD*)found;
-                    homing_target_active = found_words[5];
-                    if (!found_words[0])
-                        *(DWORD*)(found_words[5] + 4) |= 0x1000;
+                    homing_target_object = found->object;
+                    if (!found->kind)
+                        found->object->list_flags |= 0x1000;
                     Vec3* homing_target = (Vec3*)(self + 0x19c);
-                    Vec3* found_position = (Vec3*)(found_words + 1);
-                    *homing_target = *found_position;
+                    *homing_target = found->position;
                     homing_blend = 0.0f;
                     homing_blend_step = 0.033333335f;
                 }

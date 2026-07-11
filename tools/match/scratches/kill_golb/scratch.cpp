@@ -96,11 +96,11 @@ void GolbShot::kill_golb()
                 body->list_flags = updated;
             }
 
-            Sprite* sprite = *(Sprite**)((char*)this + 0x198);
-            if (sprite != 0) {
-                unsigned int sprite_flags = sprite->flags;
-                sprite_flags &= ~0x1000;
-                sprite->flags = sprite_flags;
+            ContactTargetObject* target = homing_target_object;
+            if (target != 0) {
+                unsigned int target_flags = target->list_flags;
+                target_flags &= ~0x1000;
+                target->list_flags = target_flags;
             }
             break;
         }

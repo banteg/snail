@@ -3,7 +3,7 @@
 /* selector: create_golb */
 
 // Initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before the actor enters `update_golb_ai`.
-int __thiscall sub_415280(char *this, int a2, int a3, int a4)
+int __thiscall create_golb(char *this, int a2, int32_t a3, int a4)
 {
   char *v5; // eax
   int v6; // ecx
@@ -20,12 +20,12 @@ int __thiscall sub_415280(char *this, int a2, int a3, int a4)
   double v17; // st7
   float v18; // edx
   double v19; // st7
-  float v20; // eax
+  float g; // eax
   float v21; // edx
   float v22; // ecx
   float *v23; // edx
   double v24; // st7
-  float v25; // ecx
+  float b; // ecx
   double v26; // st7
   float v27; // eax
   float v28; // edx
@@ -38,30 +38,27 @@ int __thiscall sub_415280(char *this, int a2, int a3, int a4)
   int v35; // edx
   int v36; // edx
   int v37; // eax
-  _DWORD *v38; // ecx
-  float *v39; // eax
-  int v40; // ecx
-  int v41; // edx
-  _DWORD *v42; // eax
-  int v43; // eax
+  ContactTargetRegistry *v38; // ecx
+  ContactTargetEntry *v39; // eax
+  ContactTargetObject *object; // ecx
+  int32_t list_flags; // edx
+  Vec3 *p_position; // eax
+  float z; // eax
   int v44; // ecx
-  void (__thiscall ***v45)(int); // ebp
-  char *v46; // eax
-  int v47; // eax
-  int v48; // ecx
-  int v49; // edx
-  _DWORD *v50; // eax
-  _DWORD *v51; // eax
-  _DWORD *v52; // ecx
-  _DWORD *v53; // eax
-  int v54; // ecx
-  int v55; // eax
-  float v56; // eax
-  int v57; // ecx
-  int v58; // eax
-  int v60; // [esp+Ch] [ebp-10h] BYREF
-  float v61; // [esp+10h] [ebp-Ch]
-  float v62; // [esp+14h] [ebp-8h]
+  char *v45; // ebp
+  double v46; // st7
+  char *v47; // eax
+  int v48; // eax
+  int v49; // ecx
+  int v50; // edx
+  _DWORD *sprite; // eax
+  _DWORD *v52; // eax
+  int v53; // ecx
+  int v54; // eax
+  float v55; // eax
+  int v56; // ecx
+  int v57; // eax
+  Color4f color; // [esp+Ch] [ebp-10h] BYREF
 
   *(this + 444) = 0;
   *(this + 445) = 0;
@@ -71,8 +68,8 @@ int __thiscall sub_415280(char *this, int a2, int a3, int a4)
   }
   else
   {
-    v5 = (char *)MEMORY[0x4DF904] + 1452;
-    v6 = *((_DWORD *)MEMORY[0x4DF904] + 363);
+    v5 = (char *)g_game_base + 1452;
+    v6 = *((_DWORD *)g_game_base + 363);
     if ( v6 )
     {
       *(_DWORD *)(v6 + 8) = this;
@@ -103,7 +100,7 @@ int __thiscall sub_415280(char *this, int a2, int a3, int a4)
   {
     *((_DWORD *)this + 112) = 2;
   }
-  set_matrix_identity((_DWORD *)this + 159);
+  set_matrix_identity((TransformMatrix *)(this + 636));
   v9 = *((_DWORD *)this + 158);
   v10 = (float *)(this + 500);
   *((_DWORD *)this + 145) = 1;
@@ -111,11 +108,11 @@ int __thiscall sub_415280(char *this, int a2, int a3, int a4)
   *((_DWORD *)this + 126) = *(_DWORD *)(v9 + 108);
   *((_DWORD *)this + 127) = *(_DWORD *)(v9 + 112);
   v11 = *(float *)(v9 + 88) * 0.5;
-  v61 = *(float *)(v9 + 92) * 0.5;
-  v62 = *(float *)(v9 + 96) * 0.5;
+  color.g = *(float *)(v9 + 92) * 0.5;
+  color.b = *(float *)(v9 + 96) * 0.5;
   *((float *)this + 125) = v11 + *((float *)this + 125);
-  *((float *)this + 126) = v61 + *((float *)this + 126);
-  v12 = v62 + *((float *)this + 127);
+  *((float *)this + 126) = color.g + *((float *)this + 126);
+  v12 = color.b + *((float *)this + 127);
   *((float *)this + 127) = v12;
   v13 = *((_DWORD *)this + 158);
   v14 = *(_DWORD *)(v13 + 824);
@@ -139,35 +136,35 @@ LABEL_43:
         if ( a3 == 3 )
         {
           v24 = *(float *)(v13 + 1048) + 1.0;
-          v60 = 1036831949;
-          v61 = 0.0;
-          v62 = v24;
+          color.r = 0.1;
+          color.g = 0.0;
+          color.b = v24;
           v12 = *v10 + 0.5;
           *((_DWORD *)this + 147) = 1036831949;
-          v25 = v62;
+          b = color.b;
           *((_DWORD *)this + 148) = 0;
           *v10 = v12;
-          *((float *)this + 149) = v25;
+          *((float *)this + 149) = b;
           goto LABEL_51;
         }
         if ( a3 != 2 )
         {
           v12 = *(float *)(v13 + 1048) + 1.0;
-          v60 = 0;
-          v61 = 0.0;
+          color.r = 0.0;
+          color.g = 0.0;
           *((_DWORD *)this + 147) = 0;
-          v62 = v12;
-          v28 = v62;
+          color.b = v12;
+          v28 = color.b;
           *((_DWORD *)this + 148) = 0;
           *((float *)this + 149) = v28;
           goto LABEL_51;
         }
         v26 = *(float *)(v13 + 1048) + 1.0;
-        v60 = -1110651699;
-        v61 = 0.0;
+        color.r = -0.1;
+        color.g = 0.0;
         *((_DWORD *)this + 147) = -1110651699;
-        v62 = v26;
-        v27 = v62;
+        color.b = v26;
+        v27 = color.b;
         *((_DWORD *)this + 148) = 0;
         v19 = *v10;
         *((float *)this + 149) = v27;
@@ -203,11 +200,11 @@ LABEL_19:
     }
 LABEL_50:
     v12 = *(float *)(v13 + 1048) + 1.0;
-    v60 = 0;
-    v61 = 0.0;
+    color.r = 0.0;
+    color.g = 0.0;
     *((_DWORD *)this + 147) = 0;
-    v62 = v12;
-    v29 = v62;
+    color.b = v12;
+    v29 = color.b;
     *((_DWORD *)this + 148) = 0;
     *((float *)this + 149) = v29;
     goto LABEL_51;
@@ -224,12 +221,12 @@ LABEL_50:
         a3 = v13 + 16772;
 LABEL_35:
         v12 = *(float *)(v13 + 1048) + 1.0;
-        v60 = 0;
-        v61 = 0.0;
+        color.r = 0.0;
+        color.g = 0.0;
         *(this + 444) = 1;
         *((_DWORD *)this + 147) = 0;
-        v62 = v12;
-        v22 = v62;
+        color.b = v12;
+        v22 = color.b;
         *((_DWORD *)this + 148) = 0;
         *((float *)this + 149) = v22;
         goto LABEL_51;
@@ -251,28 +248,28 @@ LABEL_35:
   }
   if ( (v14 & 0x60) != 0 )
   {
-    v60 = 0;
-    v61 = 0.0;
+    color.r = 0.0;
+    color.g = 0.0;
     *v10 = *(float *)(v13 + 16812);
     *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16816);
     *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16820);
     v12 = *(float *)(v13 + 1048) + 0.60000002;
-    v20 = v61;
-    *((_DWORD *)this + 147) = v60;
-    v62 = v12;
-    v21 = v62;
-    *((float *)this + 148) = v20;
+    g = color.g;
+    *((_DWORD *)this + 147) = LODWORD(color.r);
+    color.b = v12;
+    v21 = color.b;
+    *((float *)this + 148) = g;
     *((float *)this + 149) = v21;
     goto LABEL_51;
   }
   if ( (v14 & 0x29) != 0 )
   {
     v12 = *(float *)(v13 + 1048) + 1.0;
-    v60 = 0;
-    v61 = 0.0;
+    color.r = 0.0;
+    color.g = 0.0;
     *((_DWORD *)this + 147) = 0;
-    v62 = v12;
-    v16 = v62;
+    color.b = v12;
+    v16 = color.b;
     *((_DWORD *)this + 148) = 0;
     *((float *)this + 149) = v16;
     goto LABEL_51;
@@ -280,11 +277,11 @@ LABEL_35:
   if ( (v14 & 0x52) != 0 )
   {
     v17 = *(float *)(v13 + 1048) + 1.0;
-    v60 = 0;
-    v61 = 0.0;
+    color.r = 0.0;
+    color.g = 0.0;
     *((_DWORD *)this + 147) = 0;
-    v62 = v17;
-    v18 = v62;
+    color.b = v17;
+    v18 = color.b;
     *((_DWORD *)this + 148) = 0;
     v19 = *v10;
     *((float *)this + 149) = v18;
@@ -337,8 +334,8 @@ LABEL_51:
         }
         else
         {
-          v34 = (char *)MEMORY[0x4DF904] + 1452;
-          v35 = *((_DWORD *)MEMORY[0x4DF904] + 363);
+          v34 = (char *)g_game_base + 1452;
+          v35 = *((_DWORD *)g_game_base + 363);
           if ( v35 )
           {
             *(_DWORD *)(v35 + 8) = v33;
@@ -357,25 +354,25 @@ LABEL_51:
           BYTE1(v37) |= 2u;
           *((_DWORD *)this + 71) = v37;
         }
-        v38 = (_DWORD *)(*((_DWORD *)this + 156) + 19337172);
+        v38 = (ContactTargetRegistry *)(*((_DWORD *)this + 156) + 19337172);
         *((_DWORD *)this + 157) = a4;
-        v39 = search_path_for_golb(v38, (float *)this + 125);
+        v39 = search_path_for_golb(v38, (const Vec3 *)(this + 500));
         if ( v39 )
         {
-          v40 = *((_DWORD *)v39 + 5);
-          *((_DWORD *)this + 102) = v40;
-          if ( !*(_DWORD *)v39 )
+          object = v39->object;
+          *((_DWORD *)this + 102) = object;
+          if ( !v39->kind )
           {
-            v41 = *(_DWORD *)(v40 + 4);
-            BYTE1(v41) |= 0x10u;
-            *(_DWORD *)(v40 + 4) = v41;
+            list_flags = object->list_flags;
+            BYTE1(list_flags) |= 0x10u;
+            object->list_flags = list_flags;
           }
-          v42 = v39 + 1;
-          *((_DWORD *)this + 103) = *v42;
-          *((_DWORD *)this + 104) = v42[1];
-          v43 = v42[2];
+          p_position = &v39->position;
+          *((_DWORD *)this + 103) = LODWORD(p_position->x);
+          *((_DWORD *)this + 104) = LODWORD(p_position->y);
+          z = p_position->z;
           *((_DWORD *)this + 107) = 0;
-          *((_DWORD *)this + 105) = v43;
+          *((float *)this + 105) = z;
           *((_DWORD *)this + 108) = 1023969417;
         }
       }
@@ -384,76 +381,71 @@ LABEL_51:
     {
       v44 = *((_DWORD *)this + 156);
       *((_DWORD *)this + 154) = 0;
-      v45 = (void (__thiscall ***)(int))(this + 128);
-      v12 = *(float *)(v44 + 56) * 0.041666668;
+      v45 = this + 128;
+      v46 = *(float *)(v44 + 56) * 0.041666668;
       *((_DWORD *)this + 69) = this;
-      *((float *)this + 155) = v12;
-      v46 = (char *)MEMORY[0x4DF904] + 3973948;
+      *((float *)this + 155) = v46;
+      v47 = (char *)g_game_base + 3973948;
       if ( (*((_DWORD *)this + 33) & 0x200) != 0 )
       {
         report_errorf(aListAddafter);
       }
       else
       {
-        *((_DWORD *)this + 34) = v46;
-        *((_DWORD *)this + 35) = *((_DWORD *)v46 + 3);
-        *((_DWORD *)v46 + 3) = v45;
-        v47 = *((_DWORD *)this + 35);
-        if ( v47 )
-          *(_DWORD *)(v47 + 8) = v45;
+        *((_DWORD *)this + 34) = v47;
+        *((_DWORD *)this + 35) = *((_DWORD *)v47 + 3);
+        *((_DWORD *)v47 + 3) = v45;
+        v48 = *((_DWORD *)this + 35);
+        if ( v48 )
+          *(_DWORD *)(v48 + 8) = v45;
         *((_DWORD *)this + 33) |= 0x200u;
       }
-      reset_vapour((_DWORD *)this + 32, a3);
-      store_color4f((_DWORD *)this + 42, 1065353216, 1065353216, 1065353216, 1065185444);
+      reset_vapour((VapourTrail *)(this + 128), a3);
+      v12 = store_color4f((Color4f *)(this + 168), 1.0, 1.0, 1.0, 0.99000001);
       *((_DWORD *)this + 157) = a4;
-      add_vapour_point((_DWORD *)this + 32, this + 452);
-      (**v45)((int)(this + 128));
+      add_vapour_point((VapourTrail *)(this + 128), (const TransformMatrix *)(this + 452));
+      (**(void (__usercall ***)(char *@<ecx>, double@<st0>))v45)(this + 128, v12);
     }
   }
   else
   {
-    v48 = *((_DWORD *)this + 156);
-    v49 = *((_DWORD *)this + 158);
+    v49 = *((_DWORD *)this + 156);
+    v50 = *((_DWORD *)this + 158);
     *((_DWORD *)this + 154) = 0;
-    *((float *)this + 155) = *(float *)(v48 + 56) * 0.041666668;
-    v50 = allocate_sprite(g_sprite_manager, *(_DWORD *)(v49 + 896), 130, -1, -1);
-    *((_DWORD *)this + 146) = v50;
-    v50[1] |= 0x800u;
+    *((float *)this + 155) = *(float *)(v49 + 56) * 0.041666668;
+    sprite = allocate_sprite(g_sprite_manager, *(_DWORD *)(v50 + 896), 130, -1, -1);
+    *((_DWORD *)this + 146) = sprite;
+    sprite[1] |= 0x800u;
     *(_DWORD *)(*((_DWORD *)this + 146) + 104) = 0;
     *(_DWORD *)(*((_DWORD *)this + 146) + 108) = 0;
     *(_DWORD *)(*((_DWORD *)this + 146) + 120) = 0;
-    v51 = set_color_rgba(&v60, 1065353216, 1065353216, 1065353216, 1065353216);
-    v52 = (_DWORD *)(*((_DWORD *)this + 146) + 44);
-    *v52 = *v51;
-    v52[1] = v51[1];
-    v52[2] = v51[2];
-    v52[3] = v51[3];
+    *(Color4f *)(*((_DWORD *)this + 146) + 44) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
     *(_DWORD *)(*((_DWORD *)this + 146) + 96) = 1056629064;
     *(_DWORD *)(*((_DWORD *)this + 146) + 100) = 1056629064;
-    v53 = (_DWORD *)(*((_DWORD *)this + 146) + 72);
-    *v53 = *(_DWORD *)v10;
-    v53[1] = *((_DWORD *)this + 126);
-    v53[2] = *((_DWORD *)this + 127);
+    v52 = (_DWORD *)(*((_DWORD *)this + 146) + 72);
+    *v52 = *(_DWORD *)v10;
+    v52[1] = *((_DWORD *)this + 126);
+    v52[2] = *((_DWORD *)this + 127);
     *(float *)(*((_DWORD *)this + 146) + 124) = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
     v12 = *(float *)(*((_DWORD *)this + 156) + 56) * 0.58177644;
     *(float *)(*((_DWORD *)this + 146) + 128) = v12;
     *((_DWORD *)this + 157) = a4;
   }
-  v54 = *((_DWORD *)this + 158);
-  if ( *(_BYTE *)(v54 + 900) == 1 && (v12 = *(float *)(v54 + 920), v12 < 0.5) )
+  v53 = *((_DWORD *)this + 158);
+  if ( *(_BYTE *)(v53 + 900) == 1 && (v12 = *(float *)(v53 + 920), v12 < 0.5) )
   {
     *(this + 700) = 1;
-    *((_DWORD *)this + 176) = *(_DWORD *)(v54 + 904);
-    *((_DWORD *)this + 177) = *(_DWORD *)(v54 + 908);
-    *((_DWORD *)this + 178) = *(_DWORD *)(v54 + 912);
-    *((_DWORD *)this + 179) = *(_DWORD *)(v54 + 916);
+    *((_DWORD *)this + 176) = *(_DWORD *)(v53 + 904);
+    *((_DWORD *)this + 177) = *(_DWORD *)(v53 + 908);
+    *((_DWORD *)this + 178) = *(_DWORD *)(v53 + 912);
+    *((_DWORD *)this + 179) = *(_DWORD *)(v53 + 916);
     *((_DWORD *)this + 180) = 0;
-    *((_DWORD *)this + 181) = *(_DWORD *)(v54 + 944);
-    *((_DWORD *)this + 182) = *(_DWORD *)(v54 + 948);
-    v55 = *(_DWORD *)(v54 + 952);
+    *((_DWORD *)this + 181) = *(_DWORD *)(v53 + 944);
+    *((_DWORD *)this + 182) = *(_DWORD *)(v53 + 948);
+    v54 = *(_DWORD *)(v53 + 952);
     *((_DWORD *)this + 184) = this;
-    *((_DWORD *)this + 183) = v55;
-    *((_DWORD *)this + 185) = *(_DWORD *)(v54 + 952);
+    *((_DWORD *)this + 183) = v54;
+    *((_DWORD *)this + 185) = *(_DWORD *)(v53 + 952);
   }
   else
   {
@@ -461,13 +453,13 @@ LABEL_51:
     *((_DWORD *)this + 185) = -1082130432;
   }
   vector_magnitude((float *)this + 147);
-  v56 = *v10;
-  v57 = *((_DWORD *)this + 126);
+  v55 = *v10;
+  v56 = *((_DWORD *)this + 126);
   *((float *)this + 153) = v12;
-  *((float *)this + 141) = v56;
-  v58 = *((_DWORD *)this + 127);
-  *((_DWORD *)this + 142) = v57;
-  *((_DWORD *)this + 143) = v58;
-  return (**(int (__thiscall ***)(void *))this)(this);
+  *((float *)this + 141) = v55;
+  v57 = *((_DWORD *)this + 127);
+  *((_DWORD *)this + 142) = v56;
+  *((_DWORD *)this + 143) = v57;
+  return (**(int (__thiscall ***)(char *))this)(this);
 }
 

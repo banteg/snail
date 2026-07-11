@@ -82,7 +82,7 @@ void GolbShot::update_golb_ai()
             } else {
                 velocity.y = 0.0f;
             }
-        } else if (kind == 2 && homing_target_active) {
+        } else if (kind == 2 && homing_target_object) {
             float blend = homing_blend_step + homing_blend;
             homing_blend = blend;
             if (blend > 1.0f)

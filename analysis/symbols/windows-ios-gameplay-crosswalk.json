@@ -17,6 +17,22 @@
       "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI."
     },
     {
+      "address": "0x415e20",
+      "windows_name": "initialize_enemy_manager",
+      "ios_symbol": "cREnemyManager::Init()",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "The Windows receiver is the 0x1804-byte ContactTargetRegistry embedded at SubgameRuntime +0x1270fd4. Its one-store body is also identical-code-folded with an unrelated tracked-allocation stack initializer."
+    },
+    {
+      "address": "0x415ef0",
+      "windows_name": "append_subgame_contact_target",
+      "ios_symbol": "cREnemyManager::Register(tVector&, float, int, cRBodPos*)",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "Both ports register a position, radius, kind, and cRBodPos-compatible owner in the per-frame enemy/contact registry."
+    },
+    {
       "address": "0x4354f0",
       "windows_name": "mark_track_warning_zones",
       "ios_symbol": "cRSubGame::WarnTrack()",

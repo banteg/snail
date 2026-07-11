@@ -2,7 +2,7 @@
 /* function: kill_golb @ 0x414670 */
 /* selector: kill_golb */
 
-void __thiscall sub_414670(int *this)
+void __thiscall kill_golb(int *this)
 {
   char *v2; // ecx
   int v3; // eax
@@ -24,7 +24,7 @@ void __thiscall sub_414670(int *this)
   int v19; // ecx
   int v20; // ecx
 
-  v2 = (char *)MEMORY[0x4DF904] + 1448;
+  v2 = (char *)g_game_base + 1448;
   v3 = *(this + 1);
   if ( (v3 & 0x200) != 0 )
   {
@@ -62,7 +62,7 @@ void __thiscall sub_414670(int *this)
     {
       if ( v8 == 1 )
       {
-        v9 = (char *)MEMORY[0x4DF904] + 1448;
+        v9 = (char *)g_game_base + 1448;
         v10 = *(this + 71);
         if ( (v10 & 0x200) != 0 )
         {
@@ -103,7 +103,7 @@ void __thiscall sub_414670(int *this)
     else
     {
       v16 = *(this + 33);
-      v17 = (char *)MEMORY[0x4DF904] + 1448;
+      v17 = (char *)g_game_base + 1448;
       if ( (v16 & 0x200) != 0 )
       {
         if ( (v16 & 0x40) != 0 )

@@ -2,7 +2,7 @@
 /* function: run_frame_update @ 0x40a2a0 */
 /* selector: run_frame_update */
 
-int __thiscall sub_40A2A0(int this)
+int __thiscall run_frame_update(int this)
 {
   double v2; // st7
   int v3; // ebx
@@ -19,12 +19,12 @@ int __thiscall sub_40A2A0(int this)
   int v15; // [esp+0h] [ebp-38h]
   int v16; // [esp+4h] [ebp-34h]
   int v17; // [esp+24h] [ebp-14h]
-  _DWORD v18[4]; // [esp+28h] [ebp-10h] BYREF
+  Color4f color; // [esp+28h] [ebp-10h] BYREF
 
   update_frontend_transition_overlay((float *)(this + 36));
-  noop_runtime_ai(unk_753C58);
-  update_cheat(&byte_4B2F40);
-  update_voice_manager(unk_751498);
+  noop_runtime_ai();
+  update_cheat(&g_completion_snapshot_flags);
+  update_voice_manager(g_voice_manager);
   v2 = *(float *)(this + 1304) + 1.0;
   v3 = 0;
   v4 = *(_DWORD *)(this + 1308) + 1;
@@ -42,7 +42,7 @@ int __thiscall sub_40A2A0(int this)
     }
     else
     {
-      v5 = set_color_rgba(v18, 1065353216, 1065353216, 1065353216, 1065353216);
+      v5 = (int *)set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
       *(float *)&v16 = *(float *)(this + 672) - 7.0;
       *(float *)&v15 = *(float *)(this + 668) - 8.0;
       queue_axis_aligned_textured_quad(22, v15, v16, 1115684864, 1115684864, 0x1000000, v5, 7);
@@ -99,7 +99,7 @@ int __thiscall sub_40A2A0(int this)
       ++v10;
     }
     while ( (int)v10 < (int)&g_sprite_free_head );
-    initialize_enemy_manager((#94 *)(this + 19813868));
+    initialize_enemy_manager((int *)(this + 19813868));
     v13 = *(float *)(this + 1304);
     *(_BYTE *)(this + 1312) = 0;
   }

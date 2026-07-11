@@ -12,6 +12,8 @@ typedef char TrackedAllocationRecord_must_be_0x0c[
 
 class TrackedAllocationStack {
 public:
+    // The one-store body is linker-folded with cREnemyManager::Init at 0x415e20.
+    void initialize_tracked_allocation_stack();
     int get_tracked_allocation_size(void* pointer);
     void push_tracked_allocation(int unused, void* pointer, int size);
     int pop_tracked_allocation(void* pointer);

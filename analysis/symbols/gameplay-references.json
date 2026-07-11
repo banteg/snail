@@ -481,6 +481,15 @@
       "description": "Compiler-emitted switch jump table used by update_golb_ai."
     },
     {
+      "address": "0x415e20",
+      "name": "initialize_enemy_manager",
+      "kind": "function_alias",
+      "aliases": [
+        "initialize_tracked_allocation_stack"
+      ],
+      "description": "Audited identical-code-folding alias: the native cREnemyManager count reset and the unrelated tracked-allocation stack depth reset share this one-store body."
+    },
+    {
       "address": "0x41a9fc",
       "name": "initialize_backdrop_tile_quad_orientation_jump_table",
       "kind": "jump_table",
@@ -890,7 +899,8 @@
         "$L4689",
         "$L4693",
         "$L4712",
-        "$L4715"
+        "$L4715",
+        "$L4718"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -907,7 +917,8 @@
         "$L4690",
         "$L4694",
         "$L4713",
-        "$L4716"
+        "$L4716",
+        "$L4719"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."

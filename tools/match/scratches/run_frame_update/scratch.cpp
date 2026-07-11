@@ -19,11 +19,6 @@ public:
     virtual void update();
 };
 
-class EnemyManager {
-public:
-    void initialize_enemy_manager();
-};
-
 int report_errorf(const char* format, ...);
 int queue_axis_aligned_textured_quad(
     int texture_id,
@@ -125,7 +120,7 @@ int GameRoot::run_frame_update()
                 ++bucket;
             } while ((int)bucket < (int)&g_sprite_free_head);
 
-            ((EnemyManager*)(base + 0x12e55ec))->initialize_enemy_manager();
+            subgame.contact_targets.initialize_enemy_manager();
             *(unsigned char*)(base + 0x520) = 0;
         } while (*(float*)(base + 0x518) > 1.0f);
     }

@@ -148,3 +148,11 @@ the remaining generic owner list.
 - Their five- and eight-entry relocation targets are unchanged and still equal
   the curated target-relative sequences, so both aliases remain content-audited
   rather than trusted by spelling.
+
+2026-07-11 contact-target header refresh:
+
+- Promoting the real contact registry advances the two table labels again to
+  `$L4718`/`$L4719`; their object offsets stay `+0x62c`/`+0x640`.
+- The matcher content audit confirms the same five bottom-HUD and eight startup
+  destination sequences. Both aliases are recorded, restoring 396/396 exact
+  proof with 85 clean masked operands and no source-body change.

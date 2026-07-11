@@ -100,6 +100,11 @@ early after the easier prefix. Its major phases are:
   consume it. `uv run snail match types --paths` now reports
   `partial-compatible Game: 2`, removing this scratch from the generic owner
   list.
+- 2026-07-11 contact-registry correction: the former `GolbPathBank` view at
+  `+0x1270fd4` is now the shared fixed-capacity `ContactTargetRegistry`, matching
+  exact init/search/register helpers and iOS `cREnemyManager`. The focused
+  result remains the honest `86.10%`, `560/555`, prefix `244/555`; no surrounding
+  scheduling was reshaped to capitalize on the owner rename.
 
 ## Remaining differences
 

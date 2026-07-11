@@ -399,6 +399,71 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_contact_target_search_owner",
+      "artifact": "analysis/decompile/binja/functions/00415e30-search_path_for_golb.c",
+      "required_substrings": [
+        "ContactTargetEntry",
+        "registry->entries[0].position.z",
+        "position->x",
+        "registry->count"
+      ],
+      "forbidden_substrings": [
+        "GolbPathBank",
+        "GolbPathSample",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_contact_target_search_owner",
+      "artifact": "analysis/decompile/ida/functions/00415e30-search_path_for_golb.c",
+      "required_substrings": [
+        "ContactTargetEntry *__thiscall search_path_for_golb",
+        "registry->entries[0].position.z",
+        "position->x",
+        "registry->count"
+      ],
+      "forbidden_substrings": [
+        "GolbPathBank",
+        "GolbPathSample",
+        "sub_415E30",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_contact_target_register_owner",
+      "artifact": "analysis/decompile/binja/functions/00415ef0-append_subgame_contact_target.c",
+      "required_substrings": [
+        "object->list_flags",
+        "registry->entries[registry->count].kind",
+        "registry->entries[count].position.x",
+        "registry->count += 1"
+      ],
+      "forbidden_substrings": [
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_contact_target_register_owner",
+      "artifact": "analysis/decompile/ida/functions/00415ef0-append_subgame_contact_target.c",
+      "required_substrings": [
+        "ContactTargetRegistry *registry",
+        "ContactTargetObject *object",
+        "object->list_flags & 0x1000",
+        "registry->entries[registry->count].radius"
+      ],
+      "forbidden_substrings": [
+        "sub_415EF0",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

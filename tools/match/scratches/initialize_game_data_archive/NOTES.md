@@ -38,3 +38,10 @@
   eax, 4` versus native `add esp; mov eax, axis_y`). No archive-index assignment
   owner explained this scheduler choice, so keep the current byte cursor until
   a stronger original-source or layout lead appears.
+- 2026-07-11 identical-code-folding correction: the call at `0x430e57` passes
+  the base of the tracked-allocation stack at `0x5108c0`, not the subgame
+  contact registry. Its one-store initializer is folded with
+  `cREnemyManager::Init` at `0x415e20`; the scratch now expresses the call on
+  `TrackedAllocationStack` and the reference manifest audits the alternate
+  symbol. The focused result remains `94.74%`, `48/47`, with all 19 masked
+  operands clean.

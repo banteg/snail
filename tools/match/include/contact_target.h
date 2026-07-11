@@ -22,6 +22,9 @@ typedef char ContactTargetEntry_must_be_0x18[
 
 class ContactTargetRegistry {
 public:
+    void initialize_enemy_manager(); // @ 0x415e20, iOS cREnemyManager::Init()
+    ContactTargetEntry* search_path_for_golb(
+        const Vector3* position); // @ 0x415e30
     void append_subgame_contact_target(
         const Vector3* position,
         float radius,

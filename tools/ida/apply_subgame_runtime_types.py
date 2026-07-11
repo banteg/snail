@@ -5,10 +5,25 @@ import sys
 
 import ida_funcs
 import ida_pro
+import ida_typeinf
 import idc
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_enemy_manager",
+        # Keep this ICF-shared one-store ABI coarse in IDA so the unrelated
+        # tracked-allocation callsite is not assigned the registry owner.
+        "void __thiscall initialize_enemy_manager(int* count_owner);",
+    ),
+    (
+        "search_path_for_golb",
+        "ContactTargetEntry* __thiscall search_path_for_golb(ContactTargetRegistry* registry, const Vec3* position);",
+    ),
+    (
+        "append_subgame_contact_target",
+        "void __thiscall append_subgame_contact_target(ContactTargetRegistry* registry, const Vec3* position, float radius, int kind, ContactTargetObject* object);",
+    ),
     (
         "set_subgame_features",
         "int __thiscall set_subgame_features(SubgameRuntime* runtime);",
@@ -67,8 +82,17 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
-    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    contact_header_path = header_path.with_name("contact_target_types.h")
+    contact_parse_errors = idc.parse_decls(str(contact_header_path), idc.PT_FILE)
+    parse_errors = contact_parse_errors + idc.parse_decls(str(header_path), idc.PT_FILE)
 
     applied = 0
     unchanged = 0
@@ -124,6 +148,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
+                "contact_header": str(contact_header_path),
+                "type_sizes": {
+                    "SubgameRuntime": _named_struct_size("SubgameRuntime"),
+                    "ContactTargetRegistry": _named_struct_size("ContactTargetRegistry"),
+                },
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,

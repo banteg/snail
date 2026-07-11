@@ -8,19 +8,19 @@ char initialize_game_data_archive()
   float *v1; // eax
   __int128 Rect; // [esp+4h] [ebp-10h] BYREF
 
-  LOBYTE(flt_4DFAFC[95038]) = 0;
-  flt_4DFAFC[50030] = 0.0;
-  initialize_enemy_manager((#94 *)&flt_4DFAFC[50033]);
-  flt_4DFAFC[50031] = 0.0;
-  flt_4DFAFC[36392] = 0.0;
-  BYTE1(flt_4DFAFC[95038]) = 0;
+  g_archive_startup_flag = 0;
+  g_registered_sound_sample_count[1] = 0;
+  initialize_enemy_manager(g_tracked_allocation_depth);
+  g_registered_sound_sample_count[2] = 0;
+  g_text_input_repeat_step[0] = 0.0;
+  g_text_input_last_repeat_code[0] = 0;
   result = load_archive_index(FileName);
   if ( result )
   {
-    sub_432D40();
-    LODWORD(flt_4DFAFC[95036]) = allocate_tracked_memory(0x400000, (int)aScratchPad);
-    LODWORD(flt_4DFAFC[95035]) = allocate_tracked_memory(409600, (int)aMusicMemoryBuf);
-    v1 = &flt_4DFAFC[36369];
+    reset_registered_sound_sample_count();
+    g_archive_data_base = allocate_tracked_memory(0x400000, (int)aScratchPad);
+    g_music_memory_buffer = allocate_tracked_memory(409600, (int)aMusicMemoryBuf);
+    v1 = g_input_slot0_axis_y;
     do
     {
       *(v1 - 1) = 0.0;
@@ -31,7 +31,7 @@ char initialize_game_data_archive()
       v1[6] = 0.0;
       v1 += 14;
     }
-    while ( (int)v1 < (int)&flt_4DFAFC[36397] );
+    while ( (int)v1 < (int)g_input_controller_slots_end );
     ((void (__stdcall *)(__int128 *))GetClipCursor)(&Rect);
     return 1;
   }

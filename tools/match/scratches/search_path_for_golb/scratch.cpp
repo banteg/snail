@@ -1,14 +1,15 @@
 // search_path_for_golb @ 0x415e30 (thiscall, ret 0x4)
-#include "golb.h"
+#include "contact_target.h"
 
-GolbPathSample* GolbPathBank::search_path_for_golb(const Vector3* position)
+ContactTargetEntry* ContactTargetRegistry::search_path_for_golb(
+    const Vector3* position)
 {
-    GolbPathSample* found = 0;
+    ContactTargetEntry* found = 0;
     float best = 1000000000.0f;
 
     int i = 0;
     if (count > 0) {
-        const float* cursor = &samples[0].z;
+        const float* cursor = &entries[0].position.z;
         do {
             Vector3 delta;
             delta.x = cursor[-2] - position->x;
@@ -19,7 +20,7 @@ GolbPathSample* GolbPathBank::search_path_for_golb(const Vector3* position)
                 float m = probe.vector_magnitude();
                 if (m < best) {
                     best = m;
-                    found = (GolbPathSample*)(cursor - 3);
+                    found = (ContactTargetEntry*)(cursor - 3);
                 }
             }
             ++i;

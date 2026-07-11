@@ -17,10 +17,12 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
+DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types.h"
 
 SUBGAME_FIELD_UPDATES = (
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
+    ("0x1270fd4", "contact_targets", "ContactTargetRegistry"),
 )
 
 # These richer nested types are supplied by later ownership slices. Preserve
@@ -36,6 +38,18 @@ SUBGAME_PLAYER_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_enemy_manager",
+        "void __thiscall initialize_enemy_manager(ContactTargetRegistry* registry)",
+    ),
+    (
+        "search_path_for_golb",
+        "ContactTargetEntry* __thiscall search_path_for_golb(ContactTargetRegistry* registry, const Vec3* position)",
+    ),
+    (
+        "append_subgame_contact_target",
+        "void __thiscall append_subgame_contact_target(ContactTargetRegistry* registry, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
+    ),
     ("set_subgame_features", "int32_t __thiscall set_subgame_features(SubgameRuntime* runtime)"),
     ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
     (
@@ -65,16 +79,35 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Path to the narrow Binary Ninja type-import header.",
     )
+    parser.add_argument(
+        "--contact-header",
+        type=Path,
+        default=DEFAULT_CONTACT_HEADER_PATH,
+        help="Path to the shared contact-target type-import header.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
+    contact_header_path = args.contact_header.resolve()
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
+    if not contact_header_path.is_file():
+        raise FileNotFoundError(f"contact-target type header not found: {contact_header_path}")
 
     operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=contact_header_path,
+            required_structs=(
+                "ContactTargetObject",
+                "ContactTargetEntry",
+                "ContactTargetRegistry",
+            ),
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,

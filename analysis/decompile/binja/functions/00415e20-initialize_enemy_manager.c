@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_enemy_manager @ 0x415e20 */
 
-00415e20        *arg1 = 0
+00415e20        registry->count = 0
 00415e26        return

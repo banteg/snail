@@ -2,15 +2,15 @@
 /* function: search_path_for_golb @ 0x415e30 */
 /* selector: search_path_for_golb */
 
-float *__thiscall sub_415E30(_DWORD *this, float *a2)
+ContactTargetEntry *__thiscall search_path_for_golb(ContactTargetRegistry *registry, const Vec3 *position)
 {
-  float *result; // eax
-  int v4; // ebx
-  float *v5; // esi
+  ContactTargetEntry *result; // eax
+  int32_t v4; // ebx
+  float *p_z; // esi
   double v6; // st7
   double v7; // st7
   float v8; // [esp+8h] [ebp-20h]
-  float *v9; // [esp+Ch] [ebp-1Ch]
+  ContactTargetEntry *v9; // [esp+Ch] [ebp-1Ch]
   float v10; // [esp+10h] [ebp-18h]
   float v11; // [esp+14h] [ebp-14h]
   float v12; // [esp+18h] [ebp-10h]
@@ -20,16 +20,16 @@ float *__thiscall sub_415E30(_DWORD *this, float *a2)
   v4 = 0;
   v9 = nullptr;
   v8 = 1000000000.0;
-  if ( (int)*this > 0 )
+  if ( registry->count > 0 )
   {
-    v5 = (float *)(this + 4);
+    p_z = &registry->entries[0].position.z;
     do
     {
-      v10 = *(v5 - 2) - *a2;
-      v6 = *(v5 - 1) - a2[1];
+      v10 = *(p_z - 2) - position->x;
+      v6 = *(p_z - 1) - position->y;
       v13[0] = v10;
       v11 = v6;
-      v7 = *v5 - a2[2];
+      v7 = *p_z - position->z;
       v13[1] = v11;
       v12 = v7;
       v13[2] = v12;
@@ -39,13 +39,13 @@ float *__thiscall sub_415E30(_DWORD *this, float *a2)
         if ( v12 < (double)v8 )
         {
           v8 = v7;
-          v9 = v5 - 3;
+          v9 = (ContactTargetEntry *)(p_z - 3);
         }
       }
       ++v4;
-      v5 += 6;
+      p_z += 6;
     }
-    while ( v4 < *this );
+    while ( v4 < registry->count );
     return v9;
   }
   return result;

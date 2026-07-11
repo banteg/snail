@@ -1,19 +1,53 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 664,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 664,
-  "ida_exported": 664,
+  "bn_exported": 678,
+  "ida_exported": 677,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "health_check_ran": true,
-  "strict": false,
-  "health_check_count": 14,
+  "strict": true,
+  "selected_functions": [
+    {
+      "name": "run_frame_update",
+      "address": "0x40a2a0"
+    },
+    {
+      "name": "kill_golb",
+      "address": "0x414670"
+    },
+    {
+      "name": "update_golb_ai",
+      "address": "0x414820"
+    },
+    {
+      "name": "create_golb",
+      "address": "0x415280"
+    },
+    {
+      "name": "initialize_enemy_manager",
+      "address": "0x415e20"
+    },
+    {
+      "name": "search_path_for_golb",
+      "address": "0x415e30"
+    },
+    {
+      "name": "append_subgame_contact_target",
+      "address": "0x415ef0"
+    },
+    {
+      "name": "initialize_game_data_archive",
+      "address": "0x430e40"
+    }
+  ],
+  "health_check_count": 29,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
