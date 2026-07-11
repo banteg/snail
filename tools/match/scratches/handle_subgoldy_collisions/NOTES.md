@@ -349,3 +349,10 @@ borrowed object to the exact `Player::health_collect_particles` method.
 Android/iOS preserve the pair as `cRSubHealth` and
 `cRSubGoldy::HealthCollect(cRSubHealth*)`. The native byte-strided loop shape
 is unchanged; focused Wibo remains 52.85%, 659/673, with 86 clean operands.
+
+## cRSubSpeedUp primary owner (2026-07-11)
+
+The singleton collision check now uses the primary `SubSpeedUp` object at
+`SubgameRuntime +0x355db0`. Its full position vector, state, owner backlink,
+and sprite are independently established by the exact constructor and exact
+AI. Focused Wibo remains 52.85%, 659/673, with all 86 operands clean.

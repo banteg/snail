@@ -194,7 +194,7 @@ void Player::handle_subgoldy_collisions()
             }
         }
     }
-    TrackSpeedupRuntime* speedup = &game->speedup_pickup;
+    SubSpeedUp* speedup = &game->speedup_pickup;
     if (speedup->state == 1) {
         probe_b.x = speedup->world_position.x - cached_camera_target_world.x;
         probe_b.y = speedup->world_position.y - cached_camera_target_world.y;

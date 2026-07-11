@@ -1,5 +1,7 @@
-// spawn_track_speedup @ 0x43d880 (stdcall, ret 0x8)
+// spawn_track_speedup @ 0x43d880 (thiscall, ret 0x8)
 
-void __stdcall spawn_track_speedup(int game, int cell)
+#include "subgame_runtime.h"
+
+void SubgameRuntime::spawn_track_speedup(SubLoc* cell, Player* player)
 {
 }

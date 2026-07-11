@@ -400,7 +400,7 @@
     {
       "address": "0x4084b0",
       "name": "initialize_track_speedup_runtime",
-      "description": "Constructs the shared speed-up runtime record by running the shared renderable-body constructor and installing the speed-up vtable. Even though `spawn_track_speedup` is an empty stub in this build, the same `0x355db0` runtime lane is still consumed by `update_jetpack_gauge`, `handle_subgoldy_collisions`, and `remove_subgame_bods`, and its `0xb4` footprint matches the native `cRSubSpeedUp` size ledger."
+      "description": "Exact Windows constructor for the authored `SubSpeedUp` (`cRSubSpeedUp` cross-port) singleton: constructs the inherited renderable BOD and installs the table whose entry is the exact `update_track_speedup`. Its 0xb4 extent exactly matches the native `Size of cRSubSpeedUp` ledger."
     },
     {
       "address": "0x4084d0",
@@ -2071,7 +2071,7 @@
     {
       "address": "0x43d880",
       "name": "spawn_track_speedup",
-      "description": "Allocates and seeds one live speed-up pickup from the active runtime row state. Cross-port iOS v1.9 symbols match this helper to `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact one-instruction no-op method on `SubgameRuntime`. Android preserves the same no-op body and iOS v1.9 preserves the authored name `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)`; the preconstructed `SubSpeedUp` singleton remains owned and updated independently."
     },
     {
       "address": "0x43d890",
@@ -2121,7 +2121,7 @@
     {
       "address": "0x43ee50",
       "name": "update_track_speedup",
-      "description": "Updates the single speedup runtime: skips while the owner game is paused, retires state 2 immediately, and retires state 1 once the speedup falls behind the owner's interaction plane. Cross-port iOS symbols name the runtime class `cRSubSpeedUp` in `SubGame.o`."
+      "description": "Exact `SubSpeedUp` AI: skips while the owner subgame is paused and tears down states 1/2 through the inherited BOD list. The exact Windows constructor table at 0x497314 points directly here, while Android and iOS retain `cRSubSpeedUp::AI()`."
     },
     {
       "address": "0x43efb0",

@@ -240,3 +240,9 @@ The `Size of cRSubHealth` entry now comes from `sizeof(SubHealth) * 8`: eight
 inline 0x74-byte authored records close exactly to the native 0x3a0 total.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRSubSpeedUp size ledger
+
+The `Size of cRSubSpeedUp` entry now comes from `sizeof(SubSpeedUp)`. The
+authored singleton's 0xb4-byte extent closes exactly between the timer/speedup
+boundary and the adjacent `JetPack`. Constructor metrics remain unchanged.

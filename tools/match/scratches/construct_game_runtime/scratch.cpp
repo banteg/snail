@@ -31,7 +31,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSegmentCache %i\n", 0xa7f8); \
     debug_report_stub("   Size of cRTutorial\t%i\n", 0x1c); \
     debug_report_stub("   Size of cRSubTracks %i\n", 0x1a5978); \
-    debug_report_stub("   Size of cRSubSpeedUp %i\n", 0xb4); \
+    debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(SubSpeedUp)); \
     debug_report_stub("   Size of cRJetPack %i\n", 0x19c); \
     debug_report_stub("   Size of cRSubHealth %i\n", sizeof(SubHealth) * 8); \
     debug_report_stub("   Size of cRSlug %i\n", sizeof(Slug) * 8); \

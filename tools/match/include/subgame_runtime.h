@@ -62,7 +62,7 @@ public:
     void destroy_subgame(); // @ 0x438850
     void spawn_track_health_pickup(
         SubLoc* cell, Player* player); // @ 0x43d6c0
-    int spawn_track_speedup(SubLoc* cell, Player* player); // @ 0x43d880, receiver unused by body
+    void spawn_track_speedup(SubLoc* cell, Player* player); // @ 0x43d880, no-op in Windows/Android
     int spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
     unsigned int* spawn_track_garbage_hazard(SubLoc* cell, Player* player); // @ 0x43da80
     int spawn_slug_hazard(SubLoc* cell, Player* player); // @ 0x43dc80
@@ -157,7 +157,7 @@ public:
     BodBase unknown_bod_355d5c; // +0x355d5c
     int active_level_score; // +0x355d94, copied from the selected bank record
     TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
-    TrackSpeedupRuntime speedup_pickup; // +0x355db0
+    SubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
     TrackJetpackPickup jetpack_pickup; // +0x355e64
     SubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots

@@ -191,3 +191,12 @@
 - Each exact constructor installs table `0x497320`, whose entry is
   `cRSubHealth::AI()`. The typed loop remains exact at 227/227 with all 72
   masked operands clean.
+
+## 2026-07-11 cRSubSpeedUp singleton
+
+- The constructor now targets the owned `SubSpeedUp speedup_pickup` at
+  `SubgameRuntime +0x355db0` directly rather than a generic runtime-slot cast.
+- Its exact 0xb4 extent ends at the `JetPack` singleton at `+0x355e64` and
+  matches the native `Size of cRSubSpeedUp` ledger.
+- Table `0x497314` links the exact constructor to exact `cRSubSpeedUp::AI()`.
+  This function remains exact at 227/227 with all 72 operands clean.

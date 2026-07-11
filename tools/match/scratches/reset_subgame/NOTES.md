@@ -65,3 +65,8 @@ Important source-shape correction:
 lands on the primary `SubHealth` array at `+0x356000`. It writes the containing
 runtime to each borrowed `owner_game +0x44` lane while leaving the spawned
 `source_cell +0x68` distinct. The function remains exact at 75/75.
+
+2026-07-11 cRSubSpeedUp ownership: the singleton backlink store now lands on
+the primary `SubSpeedUp::owner_game +0x8c` lane at runtime `+0x355e3c`.
+Together with the exact constructor and AI table, this closes the complete
+0xb4-byte owner without changing the exact 75/75 reset body.

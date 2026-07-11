@@ -67,7 +67,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     unknown_bod_355cec.initialize_bod_base();
     unknown_bod_355d24.initialize_bod_base();
     unknown_bod_355d5c.initialize_bod_base();
-    SLOT(0x355db0)->initialize_track_speedup_runtime();
+    speedup_pickup.initialize_track_speedup_runtime();
     SLOT(0x355e64)->initialize_track_jetpack_pickup_runtime();
 
     SubHealth* health_pickup = health_pickups;

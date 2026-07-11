@@ -71,3 +71,8 @@ Rejected probes:
   `runtime_cells[0][0]` and `runtime_rows[0].row_model.list_next`. Focused
   Wibo remains `59.98%`, cross-confirming that the row body is embedded in the
   fixed row slab while only its intrusive list membership is recycled.
+
+2026-07-11 speedup ownership: the first singleton teardown arm is now backed by
+the primary `SubSpeedUp` owner at `+0x355db0`; its storage remains embedded
+while only inherited BOD-list membership is recycled. The existing 59.98%
+frontier and two speedup/jetpack string-order mismatches remain unchanged.

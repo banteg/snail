@@ -1731,13 +1731,13 @@
     },
     {
       "address": "0x497314",
-      "name": "g_track_speedup_vtable",
+      "name": "g_sub_speed_up_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497314",
         "data_497314"
       ],
-      "description": "Runtime speed-up object vtable installed by initialize_track_speedup_runtime."
+      "description": "Authored cRSubSpeedUp vtable installed by the exact Windows constructor; its entry points directly to update_track_speedup at 0x43ee50."
     },
     {
       "address": "0x497318",

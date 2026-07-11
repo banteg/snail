@@ -1,5 +1,4 @@
-// Track speedup singleton runtime, partial. iOS symbols name this runtime
-// class cRSubSpeedUp and the spawning helper cRSubGame::AddSpeedUp.
+// Authored cRSubSpeedUp singleton runtime, partial.
 // Proven by initialize_track_speedup_runtime, update_track_speedup,
 // remove_subgame_bods, and the speedup branch in handle_subgoldy_collisions.
 #ifndef TRACK_SPEEDUP_H
@@ -13,9 +12,9 @@ class Player;
 class Sprite;
 class SubgameRuntime;
 
-class TrackSpeedupRuntime : public BodNode {
+class SubSpeedUp : public BodNode {
 public:
-    TrackSpeedupRuntime* initialize_track_speedup_runtime(); // @ 0x4084b0
+    SubSpeedUp* initialize_track_speedup_runtime(); // @ 0x4084b0
     void update_track_speedup(); // @ 0x43ee50
 
     Vector3 bod_position; // +0x10, BodBase::position
@@ -43,7 +42,9 @@ public:
     char unknown_b0[0xb4 - 0xb0];
 };
 
-typedef char TrackSpeedupRuntime_must_be_0xb4[
-    (sizeof(TrackSpeedupRuntime) == 0xb4) ? 1 : -1];
+typedef SubSpeedUp TrackSpeedupRuntime;
+
+typedef char SubSpeedUp_must_be_0xb4[
+    (sizeof(SubSpeedUp) == 0xb4) ? 1 : -1];
 
 #endif

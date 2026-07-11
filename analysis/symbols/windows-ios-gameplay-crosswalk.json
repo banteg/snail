@@ -255,9 +255,19 @@
       "address": "0x43d880",
       "windows_name": "spawn_track_speedup",
       "ios_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
+      "android_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only signature."
+      "notes": "The iOS signature is v1.9-only. Windows and Android both retain a literal no-op body, so the stable Windows helper is correctly modeled as the authored void SubgameRuntime method."
+    },
+    {
+      "address": "0x43ee50",
+      "windows_name": "update_track_speedup",
+      "ios_symbol": "cRSubSpeedUp::AI()",
+      "android_symbol": "cRSubSpeedUp::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497314 points directly to this exact callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x43d890",

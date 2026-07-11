@@ -9,13 +9,13 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-void TrackSpeedupRuntime::update_track_speedup()
+void SubSpeedUp::update_track_speedup()
 {
     int zero = 0;
     unsigned int flags;
     BodList* head;
-    TrackSpeedupRuntime* next;
-    TrackSpeedupRuntime* prev;
+    SubSpeedUp* next;
+    SubSpeedUp* prev;
 
     if (owner_game->subgame_pause_gate != zero) {
         return;
@@ -49,13 +49,13 @@ state_two:
         return;
     }
 
-    next = (TrackSpeedupRuntime*)list_next;
-    if (next != (TrackSpeedupRuntime*)zero) {
+    next = (SubSpeedUp*)list_next;
+    if (next != (SubSpeedUp*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = (TrackSpeedupRuntime*)list_prev;
-    if (prev != (TrackSpeedupRuntime*)zero) {
+    prev = (SubSpeedUp*)list_prev;
+    if (prev != (SubSpeedUp*)zero) {
         prev->list_next = list_next;
     } else {
         head->first = (BodNode*)list_next;
@@ -86,13 +86,13 @@ state_one:
         return;
     }
 
-    next = (TrackSpeedupRuntime*)list_next;
-    if (next != (TrackSpeedupRuntime*)zero) {
+    next = (SubSpeedUp*)list_next;
+    if (next != (SubSpeedUp*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = (TrackSpeedupRuntime*)list_prev;
-    if (prev != (TrackSpeedupRuntime*)zero) {
+    prev = (SubSpeedUp*)list_prev;
+    if (prev != (SubSpeedUp*)zero) {
         prev->list_next = list_next;
     } else {
         head->first = (BodNode*)list_next;

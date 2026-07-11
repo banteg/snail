@@ -2,11 +2,11 @@
 
 #include "track_speedup.h"
 
-extern void* g_track_speedup_vtable; // off_497314 / data_497314
+extern void* g_sub_speed_up_vtable; // off_497314 / data_497314
 
-TrackSpeedupRuntime* TrackSpeedupRuntime::initialize_track_speedup_runtime()
+SubSpeedUp* SubSpeedUp::initialize_track_speedup_runtime()
 {
     ((RenderableBod*)this)->initialize_renderable_bod();
-    vtable = &g_track_speedup_vtable;
+    vtable = &g_sub_speed_up_vtable;
     return this;
 }

@@ -42,3 +42,9 @@ used by both teardown paths.
 2026-07-11 owner-view retirement: the duplicate pickup-only owner view was
 removed in favor of the canonical `SubgameRuntime` owner. Focused matching
 remains exact.
+
+2026-07-11 authored owner: the receiver and intrusive-list neighbors now use
+the primary `SubSpeedUp` type; `TrackSpeedupRuntime` is a compatibility alias.
+The constructor-installed table at `0x497314` points directly here, while
+Android and iOS retain `cRSubSpeedUp::AI()`. The body remains exact at 103/103
+instructions with all 15 masked operands clean.
