@@ -1,23 +1,14 @@
 // update_jetpack_gauge @ 0x43a390 (thiscall, ret)
 // Jetpack countdown/warning controller used by update_subgoldy.
 
+#include "game_root.h"
 #include "jetpack_gauge.h"
+#include "player.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "vector3.h"
 
-extern char* g_game_base; // data_4df904
-
-class PlayerForJetpackGauge {
-public:
-    char unknown_00[0x70];
-    float position_z; // +0x70
-};
-
-class UpdateJetpackPresentationView {
-public:
-    void set_snail_jetpack(int state);
-};
+extern GameRoot* g_game; // data_4df904
 
 float cosine(float angle);
 float sine(float angle);
@@ -45,9 +36,9 @@ void JetpackGaugeController::update_jetpack_gauge()
         progress = next_progress;
 
         SubgameRuntime* live_game = game;
-        PlayerForJetpackGauge* live_player = (PlayerForJetpackGauge*)player;
+        Player* live_player = player;
         if (next_progress > 1.0f
-            || (float)(live_game->completion_row_start - 5) < live_player->position_z) {
+            || (float)(live_game->completion_row_start - 5) < live_player->position.z) {
             goto finish_hover;
         }
 
@@ -56,15 +47,14 @@ void JetpackGaugeController::update_jetpack_gauge()
         } else if (next_progress > 0.94f) {
             warning_intensity = (1.0f - next_progress) * 16.6666679f;
             if (next_progress - progress_step <= 0.94f) {
-                ((UpdateJetpackPresentationView*)(g_game_base + 0x432700))
-                    ->set_snail_jetpack(0);
+                g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
                 uninit_jet_particles();
             }
         } else {
             warning_intensity = 1.0f;
             TrackAttachmentRuntimeRow* runtime_cell =
-                ((SubgameRuntime*)(g_game_base + 0x74618))
-                    ->get_track_runtime_cell_at_world_z((Vector3*)(g_game_base + 0x42fde4));
+                g_game->subgame.get_track_runtime_cell_at_world_z(
+                    &g_game->subgame.embedded_player()->position);
             if ((runtime_cell->flags & 0x8000) != 0) {
                 progress = 0.94f;
                 debug_report_stub("Auto Shutoff Jetpack\n");
@@ -89,8 +79,7 @@ void JetpackGaugeController::update_jetpack_gauge()
 finish_hover:
     end_jetpack_hover();
     if (progress <= 0.94f)
-        ((UpdateJetpackPresentationView*)(g_game_base + 0x432700))
-            ->set_snail_jetpack(0);
+        g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
     state = zero;
     wobble_alpha = (float)zero;
     wobble_y = (float)zero;

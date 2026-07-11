@@ -2,7 +2,7 @@
 
 Source-shaped partial scratch for the jetpack countdown/warning controller.
 
-Current match: 85.82% (`130` candidate instructions vs `131` target,
+Current match: 85.93% (`132` candidate instructions vs `131` target,
 `34` clean masked operands).
 
 Recovered behavior:
@@ -60,3 +60,10 @@ as `SubgameRuntime*`, and the global row-sampler cast uses the same shared
 runtime view at `g_game_base + 0x74618`. This removes the scratch-local
 generic `Game` shell without moving the codegen; focused Wibo remains at
 `85.93%`, `132/131`, prefix `6/131`, with 34 clean masked operands.
+
+2026-07-11 player/root ownership closure: `JetpackGaugeController::player` is
+the borrowed containing `Player*`; the completion check reads its real
+`position.z`. Global presentation and row-sampler paths now resolve through
+`GameRoot::subgame` and its embedded player, retiring
+`PlayerForJetpackGauge` and `UpdateJetpackPresentationView`. Focused Wibo is
+unchanged at `85.93%`, `132/131`, prefix `6/131`, with 34 clean masks.

@@ -1958,7 +1958,7 @@
     {
       "address": "0x43a390",
       "name": "update_jetpack_gauge",
-      "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x80, and clears the controller once the jetpack gauge drains. Cross-port Android and iOS symbols still name the owning class `cRDamageGuage::AI()`."
+      "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x8000, and clears the controller once the jetpack gauge drains. Cross-port Android and iOS symbols still name the owning class `cRDamageGuage::AI()`."
     },
     {
       "address": "0x43a580",
@@ -1970,7 +1970,8 @@
     },
     {
       "address": "0x43a690",
-      "name": "update_jet_particles"
+      "name": "update_jet_particles",
+      "description": "Updates the 15x2 jet exhaust grid owned by the player jetpack gauge. It projects the authored JetpackLeft and JetpackRight world hotspots backward along the snail presentation's live forward axis, gates emission on jetpack animation slot 0, and occasionally emits a puff owned by the embedded player slot with 85% of Player::velocity."
     },
     {
       "address": "0x43a930",

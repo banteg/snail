@@ -281,7 +281,8 @@ inline Vector3* SubgameRuntime::parcel_delivery_arc_basis()
 
 inline Vector3* SubgameRuntime::parcel_home_anchor()
 {
-    return &embedded_player()->presentation.snail_hotspots_world[11];
+    return &embedded_player()->presentation.snail_hotspots_world[
+        SNAIL_HOTSPOT_PARCEL_POINT];
 }
 
 inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()

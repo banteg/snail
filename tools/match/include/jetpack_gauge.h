@@ -4,6 +4,7 @@
 #define JETPACK_GAUGE_H
 
 class Sprite;
+class Player;
 class SubgameRuntime;
 
 struct JetParticleSlot {
@@ -29,7 +30,7 @@ public:
     float progress_step; // +0x04
     int unknown_08; // +0x08
     int state; // +0x0c
-    void* player; // +0x10
+    Player* player; // +0x10, borrowed containing player
     float wobble_x; // +0x14
     float wobble_y; // +0x18
     float wobble_alpha; // +0x1c

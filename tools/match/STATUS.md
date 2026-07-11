@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**515/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **72807/325736** bytes (**22.35%**) are proof-grade, and overall fuzzy is **59.26%**.
+**515/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **72807/325736** bytes (**22.35%**) are proof-grade, and overall fuzzy is **59.27%**.
 
 ## Proof Grade (515)
 
@@ -616,7 +616,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (60)
+## Mid Progress (50-79.99%) (61)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -663,6 +663,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 24 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1033/1033 | 78.22% | 9/1033 | 2 mismatch, 116 ok |  |
+| 🚧 | update_jet_particles | 0x43a690 | 670 | 174/181 | 52.96% | 0/181 | 16 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2067/2087 | 72.51% | 0/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 218/347 | 53.45% | 28/347 | 9 mismatch, 34 ok |  |
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
@@ -681,7 +682,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | initialize_sprite_manager | 0x44e160 | 148 | 46/45 | 50.55% | 6/45 | 1 ok |  |
 
-## Early Progress (>0-49.99%) (57)
+## Early Progress (>0-49.99%) (56)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -728,7 +729,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 275/276 | 21.78% | 0/276 | 8 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 mismatch, 57 ok |  |
-| 🚧 | update_jet_particles | 0x43a690 | 670 | 173/181 | 46.89% | 0/181 | 13 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 29.83% | 0/639 | 3 mismatch, 40 ok |  |

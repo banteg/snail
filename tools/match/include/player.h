@@ -78,6 +78,31 @@ struct PlayerRowEventState {
 typedef char PlayerRowEventState_must_be_0x18[
     (sizeof(PlayerRowEventState) == 0x18) ? 1 : -1];
 
+// Authored hotpoint order from g_snail_hotspot_texture_names. These indices
+// address both the local model-space bank and its world-space projection.
+enum SnailHotspotIndex {
+    SNAIL_HOTSPOT_BLASTER_LEFT_FIRE = 0,
+    SNAIL_HOTSPOT_BLASTER_LEFT_BOLT = 1,
+    SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE = 2,
+    SNAIL_HOTSPOT_BLASTER_RIGHT_BOLT = 3,
+    SNAIL_HOTSPOT_BLASTER_TOP_FIRE = 4,
+    SNAIL_HOTSPOT_BLASTER_TOP_BOLT = 5,
+    SNAIL_HOTSPOT_LASER_LEFT = 6,
+    SNAIL_HOTSPOT_LASER_RIGHT = 7,
+    SNAIL_HOTSPOT_ROCKET_RIGHT = 8,
+    SNAIL_HOTSPOT_ROCKET_LEFT = 9,
+    SNAIL_HOTSPOT_ROCKET_BASE = 10,
+    SNAIL_HOTSPOT_PARCEL_POINT = 11,
+    SNAIL_HOTSPOT_CAMERA_SKID_STOP = 12,
+    SNAIL_HOTSPOT_JETPACK_LEFT = 13,
+    SNAIL_HOTSPOT_JETPACK_RIGHT = 14,
+    SNAIL_HOTSPOT_LASER_RIGHT_BASE = 15,
+    SNAIL_HOTSPOT_LASER_LEFT_BASE = 16,
+    SNAIL_HOTSPOT_CAMERA_SLUG_DEATH = 17,
+    SNAIL_HOTSPOT_CAMERA_INTRO_TALK = 18,
+    SNAIL_HOTSPOT_COUNT = 19,
+};
+
 class CutsceneAI {
 public:
     int initialize_cutscene_ai(); // @ 0x446130
@@ -134,8 +159,8 @@ public:
     char unknown_1674[0x1684 - 0x1674];
     TransformMatrix snail_hotspot_source_matrix_b; // +0x1684
     char unknown_16c4[0x16cc - 0x16c4];
-    Vector3 snail_hotspots_local[19];   // +0x16cc
-    Vector3 snail_hotspots_world[19];   // +0x17b0
+    Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
+    Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
     InvincibleShellController invincible_shell; // +0x1894
     SnailSkinTransition snail_skin_transition;  // +0x1938
     CutsceneAI cutscene_ai;                     // +0x1958
