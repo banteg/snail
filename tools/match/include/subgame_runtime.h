@@ -25,6 +25,7 @@
 #include "row_event_display.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
+#include "smtracks.h"
 #include "sub_lazer_types.h"
 #include "times_up_controller.h"
 #include "thanks_screen.h"
@@ -220,7 +221,7 @@ public:
     // Exact cRLandscapeManager owner: ten active render entries followed by
     // the script count and 128 parsed 0x124-byte records.
     LandscapeManager landscape_manager; // +0xff7c00, ends at +0x10013a4
-    char unknown_10013a4[0x10014cc - 0x10013a4];
+    SmtrackHeightfieldAnimator smtrack_heightfield; // +0x10013a4, ends at +0x10014cc
     // The count precedes 150 constructor-built 0x4088-byte records. Their
     // exact aggregate extent reaches the following parcel pool.
     SegmentCatalog segment_catalog; // +0x10014cc, ends at +0x125e480

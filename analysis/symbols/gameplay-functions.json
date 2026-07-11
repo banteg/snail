@@ -1083,7 +1083,7 @@
     {
       "address": "0x41a360",
       "name": "sample_smtrack_heightmap",
-      "description": "Samples one source texture into the active SMTrack float-height grid by averaging the source RGB channels, applying the optional cubic curve, and scaling the result into the destination height lane."
+      "description": "Samples retained TGA bytes from a replacement `TextureRef` into the active SMTrack object's vertex-y grid by averaging RGB channels, applying the optional cubic curve, and scaling the result."
     },
     {
       "address": "0x41a4d0",
@@ -1457,7 +1457,7 @@
     {
       "address": "0x430470",
       "name": "advance_frame_sequence",
-      "description": "Advances one frame-sequence block by its fractional step, handling wrap, restart, reverse, and ping-pong flags before publishing the current frame payload pointer."
+      "description": "Advances one Object-derived frame sequence by its fractional step, handling wrap, restart, reverse, and ping-pong flags before publishing the current face quad's `TextureRef*`."
     },
     {
       "address": "0x430570",
@@ -2296,7 +2296,7 @@
     {
       "address": "0x441f60",
       "name": "update_smtracks",
-      "description": "Advances the `cRSMTracks` manager's active frame sequence, copies the live replacement scalar into the selected SMTrack texture slot, and resamples the active source texture into the runtime height grid."
+      "description": "Advances the embedded 0x128-byte SMTrack height-field animator, installs the current sequence `TextureRef*` on its borrowed mesh, and resamples that texture's retained TGA bytes into the mesh vertex-y grid."
     },
     {
       "address": "0x441fa0",

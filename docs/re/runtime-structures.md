@@ -459,6 +459,11 @@ The current high-confidence `Game` fields are:
   - exact `0x97a4`-byte `cRLandscapeManager` owner ending at `+0x10013a4`
   - ten `0x90`-byte active entries at `+0x00`, script count at `+0x5a0`, and
     128 `0x124`-byte parsed script records at `+0x5a4`
+- `+0x10013a4`: `smtrack_heightfield`
+  - exact `0x128`-byte animated BOD ending at `+0x10014cc`
+  - `BodBase` at `+0x00` borrows the live mesh; an Object-derived
+    `FrameSequence` at `+0x38` selects `TextureRef` frames and drives heightmap
+    resampling
 - `+0x10014cc`: `segment_catalog`
   - exact `0x25cfb4`-byte owner with a leading count and 150 `0x4088`-byte
     authored-segment records beginning at `+0x10014d0`

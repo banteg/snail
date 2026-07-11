@@ -4,7 +4,8 @@
   The function is a constructor pass over many unrelated pools; promoting a
   monolithic shared type would obscure more than it clarifies.
 - The call at +0x10013dc targets the small object-constructor thunk at
-  0x42f6e0, not `initialize_object` directly.
+  0x42f6e0 on the embedded height-field animator's `FrameSequence`, not
+  `initialize_object` directly.
 
 ## 2026-07-10 path-bank ownership
 
@@ -76,3 +77,12 @@
 - A typed constructor cursor preserves the exact 227/227 native code while
   retiring the overlapping `ActiveLandscapePool` and `LandscapeScriptBank`
   views.
+
+## 2026-07-11 SMTrack height-field animator boundary
+
+- The constructed object at `SubgameRuntime +0x10013a4` is one `0x38`-byte
+  `BodBase` followed by a `0xf0`-byte `FrameSequence` at `+0x38`.
+- Its exact `0x128` extent ends at `SegmentCatalog +0x10014cc`, closing the
+  entire post-landscape gap without padding.
+- The typed local receiver retains the native `edi` owner and leaves this
+  constructor exact at 227/227 with all 72 operands clean.

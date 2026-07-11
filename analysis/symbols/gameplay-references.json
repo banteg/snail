@@ -922,7 +922,8 @@
         "$L4797",
         "$L4812",
         "$L4818",
-        "$L4825"
+        "$L4825",
+        "$L4834"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -944,7 +945,8 @@
         "$L4783",
         "$L4798",
         "$L4813",
-        "$L4819"
+        "$L4819",
+        "$L4835"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -955,7 +957,8 @@
       "kind": "jump_table",
       "aliases": [
         "$L5017",
-        "$L5037"
+        "$L5037",
+        "$L5054"
       ],
       "size": "0x14",
       "description": "Compiler-emitted switch jump table for the first build_subgame_level state dispatch."
@@ -966,7 +969,8 @@
       "kind": "jump_table",
       "aliases": [
         "$L5018",
-        "$L5038"
+        "$L5038",
+        "$L5055"
       ],
       "size": "0x10",
       "description": "Compiler-emitted switch jump table for the later build_subgame_level track dispatch."
@@ -1643,7 +1647,7 @@
         "data_4972f8",
         "g_smtracks_vtable"
       ],
-      "description": "SMTracks BOD callback table installed at subgame offset `0x10013a4`; first entry is `update_smtracks`."
+      "description": "SMTrack height-field animator BOD callback table installed at subgame offset `0x10013a4`; first entry is `update_smtracks`."
     },
     {
       "address": "0x4972fc",

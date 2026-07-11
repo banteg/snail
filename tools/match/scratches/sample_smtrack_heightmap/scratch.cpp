@@ -1,52 +1,26 @@
 // sample_smtrack_heightmap @ 0x41a360 (cdecl)
 
-struct HeightmapImage {
-    char unknown_00[0x0c];
-    unsigned short width;          // +0x0c
-    unsigned short height;         // +0x0e
-    unsigned char bits_per_pixel;  // +0x10
-    char unknown_11[0x12 - 0x11];
-    unsigned char pixels[1];       // +0x12
-};
-
-struct HeightmapReplacement {
-    char unknown_00[0x98];
-    HeightmapImage* image; // +0x98
-};
-
-struct SampleOutput {
-    float x;
-    float y;
-    float z;
-};
-
-struct SmtrackHeightmapSource {
-    char unknown_00[0x1c];
-    int sample_count;        // +0x1c
-    char unknown_20[0x24 - 0x20];
-    float sample_divisor;    // +0x24
-    float sample_scale;      // +0x28
-    char unknown_2c[0x38 - 0x2c];
-    SampleOutput* samples;   // +0x38
-};
+#include "smtracks.h"
+#include "tga_image_view.h"
 
 void __cdecl sample_smtrack_heightmap(
-    SmtrackHeightmapSource* source,
+    Object* source,
     float base,
     float scale,
-    HeightmapReplacement* replacement,
+    TextureRef* replacement,
     char cubic)
 {
-    HeightmapImage* image = replacement->image;
-    float sample_count_float = (float)source->sample_count;
+    TgaImageView* image = (TgaImageView*)replacement->texture_ref;
+    float sample_count_float = (float)*(int*)((char*)source + 0x1c);
     int row_count =
-        (int)(sample_count_float * source->sample_scale / source->sample_divisor);
+        (int)(sample_count_float * *(float*)((char*)source + 0x28) /
+            *(float*)((char*)source + 0x24));
     float row_count_float = (float)row_count;
     int image_width = image->width;
     int image_height = image->height;
     float x_step = (float)image_width / (sample_count_float + 1.0f);
     float y_step = (float)image_height / (row_count_float + 1.0f);
-    SampleOutput* sample = source->samples;
+    Vector3* sample = source->vertices;
 
     for (float row = 0.0f; row <= row_count_float; row += 1.0f) {
         for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {

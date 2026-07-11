@@ -204,3 +204,12 @@ existing `105 ok / 1 mismatch` audit.
   `$L5017`/`$L5018`. Their bounded contents match the already audited
   `$L5037`/`$L5038` forms, so both aliases are registered without hiding the
   separate source-shape residuals in the function body.
+
+## 2026-07-11 SMTrack height-field header refresh
+
+- Recovering the adjacent `0x128`-byte animator and Object-derived
+  `FrameSequence` renumbers the two unchanged COFF tables to
+  `$L5054`/`$L5055`.
+- They remain at object `+0x838`/`+0x84c` with the same bounded five- and
+  four-entry relocation contents. Registering these compiler-local spellings
+  restores 106 clean operands without changing the 86.10% function body.

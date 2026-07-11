@@ -219,3 +219,11 @@ aliases respectively and restore the 85 clean operands.
   eight-entry COFF tables to `$L4797`/`$L4798`. They remain at
   `+0x62c`/`+0x640` with the same bounded relocation sequences, restoring
   396/396 with all 85 operands clean.
+
+2026-07-11 SMTrack height-field header refresh:
+
+- Adding the exact embedded height-field animator and Object-derived
+  `FrameSequence` advances the unchanged tables to `$L4834`/`$L4835`.
+- COFF still places them at `+0x62c`/`+0x640`; the five- and eight-entry
+  relocation sequences remain identical to the bounded curated tables. Both
+  content aliases restore 396/396 with all 85 operands clean.

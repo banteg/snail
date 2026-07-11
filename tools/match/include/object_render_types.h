@@ -109,6 +109,7 @@ struct ObjectIndexBuffer {
 };
 
 struct Object {
+    Object* initialize_object_constructor_thunk(); // @ 0x42f6e0
     int initialize_object(); // @ 0x42f6f0
     void request_object_vertices(int vertex_count); // @ 0x42f710
     void request_object_vertices_copy(); // @ 0x42f7d0

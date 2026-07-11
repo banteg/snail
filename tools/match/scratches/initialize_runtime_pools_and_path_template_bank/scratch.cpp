@@ -174,10 +174,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         0x80,
         &RuntimeSlot::initialize_landscape_script_record);
 
-    RuntimeSlot* smtracks = SLOT(0x10013a4);
-    smtracks->initialize_bod_base();
-    ((RuntimeSlot*)((char*)smtracks + 0x38))->sub_42F6E0();
-    smtracks->vtable = &g_smtracks_callback_table;
+    SmtrackHeightfieldAnimator* smtracks_owner = &smtrack_heightfield;
+    smtracks_owner->initialize_bod_base();
+    smtracks_owner->frame_sequence.initialize_object_constructor_thunk();
+    smtracks_owner->vtable = &g_smtracks_callback_table;
 
     initialize_array_with_constructor(
         (RuntimeSlot*)segment_catalog.entries,
