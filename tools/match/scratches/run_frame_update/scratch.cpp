@@ -3,16 +3,9 @@
 #include "active_bod.h"
 #include "audio_system.h"
 #include "cheat_state.h"
-#include "frontend_overlay_color_lerp.h"
 #include "game_root.h"
-#include "mouse_cursor_state.h"
 #include "sprite.h"
 #include "voice_manager.h"
-
-class FrontendTransitionOverlay {
-public:
-    void update_frontend_transition_overlay();
-};
 
 class RuntimeCallback {
 public:
@@ -34,32 +27,30 @@ extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 
 int GameRoot::run_frame_update()
 {
-    char* base = (char*)this;
-
-    ((FrontendTransitionOverlay*)(base + 0x24))->update_frontend_transition_overlay();
+    fade.update_frontend_transition_overlay();
     g_audio_backend.noop_runtime_ai();
     g_completion_snapshot_flags.update_cheat();
     g_voice_manager.update_voice_manager();
 
-    float next_frame_accum = *(float*)(base + 0x518) + 1.0f;
+    float next_frame_accum = fixed_update_accumulator + 1.0f;
     int sprite_update_count = 0;
-    int next_frame_counter = *(int*)(base + 0x51c) + 1;
-    MouseCursorState* mouse = (MouseCursorState*)(base + 0x290);
-    *(int*)(base + 0x38) = 0;
-    *(float*)(base + 0x518) = next_frame_accum;
-    *(int*)(base + 0x3c) = 1;
-    *(int*)(base + 0x51c) = next_frame_counter;
-    *(unsigned char*)(base + 0x520) = 1;
+    int next_frame_counter = frame_counter + 1;
+    MouseCursorState* mouse = &players[0].mouse_cursor;
+    frontend_quit_requested = 0;
+    fixed_update_accumulator = next_frame_accum;
+    fixed_update_count = 1;
+    frame_counter = next_frame_counter;
+    input_sampling_gate = 1;
 
     int bod_update_count = 0;
     if (mouse->is_mouse_captured()) {
-        if (*(unsigned char*)(base + 0x2a4) != 0) {
-            *(unsigned char*)(base + 0x2a4) = 0;
+        if (players[0].mouse_cursor.suppress_next_draw != 0) {
+            players[0].mouse_cursor.suppress_next_draw = 0;
         } else {
             Color4f color;
             Color4f* tint = color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-            float mouse_y = *(float*)(base + 0x2a0) - 7.0f;
-            float mouse_x = *(float*)(base + 0x29c) - 8.0f;
+            float mouse_y = players[0].mouse_cursor.saved_y - 7.0f;
+            float mouse_x = players[0].mouse_cursor.saved_x - 8.0f;
             queue_axis_aligned_textured_quad(
                 22,
                 mouse_x,
@@ -72,12 +63,12 @@ int GameRoot::run_frame_update()
         }
     }
 
-    if (*(float*)(base + 0x518) > 1.0f) {
+    if (fixed_update_accumulator > 1.0f) {
         do {
-            *(float*)(base + 0x518) = *(float*)(base + 0x518) - 1.0f;
-            ((FrontendOverlayColorLerp*)(base + 0x2a8))->draw_frontend_overlay_color_lerp();
+            fixed_update_accumulator = fixed_update_accumulator - 1.0f;
+            players[0].frontend_overlay.draw_frontend_overlay_color_lerp();
 
-            ActiveBod* bod = *(ActiveBod**)(base + 0x5ac);
+            ActiveBod* bod = (ActiveBod*)active_bod_list.first;
             if (bod != 0) {
                 do {
                     if ((bod->list_flags & 0x10) != 0) {
@@ -100,9 +91,9 @@ int GameRoot::run_frame_update()
                 } while (true);
             }
 
-            ((RuntimeCallback*)(base + 0x124))->update();
-            if (*(int*)(base + 0x74658) == 6) {
-                ((RuntimeCallback*)(base + 0x31c))->update();
+            ((RuntimeCallback*)&players[0])->update();
+            if (subgame.level_mode == 6) {
+                ((RuntimeCallback*)&players[1])->update();
             }
 
             Sprite** bucket = g_sprite_active_heads;
@@ -121,9 +112,9 @@ int GameRoot::run_frame_update()
             } while ((int)bucket < (int)&g_sprite_free_head);
 
             subgame.contact_targets.initialize_enemy_manager();
-            *(unsigned char*)(base + 0x520) = 0;
-        } while (*(float*)(base + 0x518) > 1.0f);
+            input_sampling_gate = 0;
+        } while (fixed_update_accumulator > 1.0f);
     }
 
-    return *(int*)(base + 0x38);
+    return frontend_quit_requested;
 }

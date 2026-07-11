@@ -2,7 +2,7 @@
 
 Partial owner-side bridge at `0x40aab0`.
 
-When `g_game_base + 0x520` is nonzero, the function samples the active
+When `GameRoot::input_sampling_gate +0x520` is nonzero, the function samples the active
 controller slot into `InputState` axes, authored pointer coordinates, pointer
 value, and button mask, then calls `InputState::update_input`.
 
@@ -29,3 +29,7 @@ both the shared updater and `GameInputOwner::update_game_input()` signatures to
 `void`, and dropping the scratch return-value carrier, recovers the native
 right-to-left argument LEA schedule and exact-matches the bridge at 100.00%,
 30/30 instructions, with 3 clean masked operands.
+
+2026-07-11 root-owner pass: the gate is now reached through the typed
+`GameRoot` field toggled by `run_frame_update`. Focused Wibo remains exact at
+30/30 with 3 clean operands.

@@ -1,8 +1,9 @@
 // update_game_input @ 0x40aab0 (thiscall)
 
+#include "game_root.h"
 #include "input_state.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 float* copy_active_input_controller_state(
     int controller_slot,
@@ -17,7 +18,7 @@ float* copy_active_input_controller_state(
 
 void GameInputOwner::update_game_input()
 {
-    if (*(g_game_base + 0x520) != 0) {
+    if (g_game->input_sampling_gate != 0) {
         copy_active_input_controller_state(
             input.controller_slot,
             &input.current_buttons,

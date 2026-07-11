@@ -31,11 +31,10 @@ Historical recovery notes:
 - 2026-06-18: Replaced the local 0x40 matrix view with shared
   `transform_matrix.h`; focused Wibo stays `71.35%`, `176/180`, with
   `53 ok, 1 mismatch`.
-- 2026-06-20: The local capture-only mouse call surface is now named
-  `FrontendMouseCaptureView` instead of `MouseCursorState`. This keeps the
-  scratch byte-stable at `71.35%`, `176/180`, while leaving the shared
-  `mouse_cursor_state.h` layout for helpers and frame/update callsites that
-  agree on the full ABI.
+- 2026-06-20: A temporary capture-only view kept the then-partial mouse ABI
+  isolated while the switch tail was still being recovered. The 2026-07-11
+  owner pass supersedes that view with the now-proven embedded
+  `MouseCursorState`.
 - 2026-06-20 proof pass: removing the stale `volatile` from direct `g_game`
   lifts the focused match from 71.35% to 93.33%, restores exact instruction
   count parity, and extends the prefix to 131/180. The remaining residual is
@@ -64,3 +63,15 @@ Historical recovery notes:
 - The explicit live/snapshot pointers remain meaningful aliases of those two
   owned matrices and preserve the native delayed anchor-y store. The fully
   typed owner stays byte-exact at 180/180.
+
+2026-07-11 cursor/overlay ownership closure:
+
+- `MouseCursorState` occupies player `+0x16c..+0x183`; the four exact capture
+  callsites now use `mouse_cursor.capture_mouse_cursor()` directly.
+- The delayed tail stores at player `+0x178/+0x17c` are the cursor's
+  `saved_x/saved_y`, refreshed from the active camera anchor. `run_frame_update`
+  consumes those same fields to draw the captured cursor.
+- The adjacent 0x24-byte `FrontendOverlayColorLerp` begins at player `+0x184`.
+  Its target/current colors are the constructor-proven values at
+  `+0x188/+0x198`.
+- The fully owned spelling remains exact at 180/180 with 69 clean operands.

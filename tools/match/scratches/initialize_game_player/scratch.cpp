@@ -10,8 +10,8 @@ GamePlayer* GamePlayer::initialize_game_player()
     initialize_renderable_bod();
     camera.initialize_renderable_bod();
     camera.vtable = &g_noop_runtime_callback_table;
-    color_188.noop_this_constructor();
-    color_198.noop_this_constructor();
+    frontend_overlay.target.noop_this_constructor();
+    frontend_overlay.current.noop_this_constructor();
     vtable = &g_game_player_callback_table;
     return this;
 }

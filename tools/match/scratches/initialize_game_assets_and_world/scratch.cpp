@@ -236,8 +236,8 @@ char GameRoot::initialize_game_assets_and_world()
     g_texture_refs.initialize_texture_list(500);
     g_object_list.initialize_object_list(3000);
     *(int*)(game + 0x514) = 0;
-    *(int*)(game + 0x518) = 0;
-    *(int*)(game + 0x51c) = 0;
+    ((GameRoot*)game)->fixed_update_accumulator = 0.0f;
+    ((GameRoot*)game)->frame_counter = 0;
     inactive_bod_sentinel.list_next = 0;
     active_bod_list.free_top = &inactive_bod_sentinel;
     active_bod_list.first = 0;

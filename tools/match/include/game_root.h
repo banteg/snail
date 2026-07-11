@@ -6,7 +6,9 @@
 #include "border_manager.h"
 #include "completion_screen.h"
 #include "frontend_fade.h"
+#include "frontend_overlay_color_lerp.h"
 #include "main_menu.h"
+#include "mouse_cursor_state.h"
 #include "new_game_menu.h"
 #include "overlay.h"
 #include "options_menu.h"
@@ -38,12 +40,8 @@ public:
     char unknown_09c[0xa0 - 0x9c];
     RenderCamera camera; // +0xa0, owned cRCamera subobject
     void* camera_anchor; // +0x168, borrowed current menu/gameplay anchor
-    char unknown_16c[0x178 - 0x16c];
-    float camera_anchor_x; // +0x178
-    float camera_anchor_y; // +0x17c
-    char unknown_180[0x188 - 0x180];
-    Color4f color_188; // +0x188, constructed owned color
-    Color4f color_198; // +0x198, constructed owned color
+    MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
+    FrontendOverlayColorLerp frontend_overlay; // +0x184, root player 0 overlay
     char unknown_1a8[0x1e8 - 0x1a8];
     unsigned char redispatch_requested; // +0x1e8
     unsigned char high_score_entry_pending; // +0x1e9
@@ -80,7 +78,11 @@ public:
     int player_count; // +0x40, controls the two-player initialization loop
     char unknown_000044[0x124 - 0x44];
     GamePlayer players[2]; // +0x124, owned cRPlayer array
-    char unknown_000514[0x568 - 0x514];
+    char unknown_000514[0x518 - 0x514];
+    float fixed_update_accumulator; // +0x518, consumed in unit fixed steps
+    int frame_counter; // +0x51c, creation timestamp for front-end borders
+    unsigned char input_sampling_gate; // +0x520, live input sampled on first step
+    char unknown_000521[0x568 - 0x521];
     unsigned char frontend_link_latch; // +0x568, cleared when a linked screen exits
     char unknown_000569[0x56c - 0x569];
     union {

@@ -127,3 +127,12 @@ The startup clear now uses the shared typed
 `char[]` declaration and magic `0x400` size. `render_game_frame` proves all 256
 heads and the adjacent 3000-entry `g_sprite_depth_nodes` workspace; using
 `sizeof(g_sprite_depth_buckets)` preserves the native clear exactly.
+
+## 2026-07-11 root frame counters
+
+The early zero stores at root `+0x518/+0x51c` now use
+`fixed_update_accumulator` and `frame_counter`. `run_frame_update` proves their
+per-frame increment/consume behavior, `allocate_border` independently reads
+the frame counter as a creation timestamp, and `update_game_input` proves the
+adjacent `input_sampling_gate +0x520`. This naming is codegen-neutral within
+the still-semantic startup partial, which remains at 5.65%.

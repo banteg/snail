@@ -85,3 +85,22 @@ iOS `cREnemyManager` symbols prove this is the root-owned subgame registry, not
 the former scratch-local `EnemyManager` placeholder. The focused result stays
 at 97.78%, 135/135, with the same two scheduling-only differences and 23 clean
 masked operands.
+
+2026-07-11 cRGame frame-owner pass:
+
+- iOS `Game.o` independently names this method `cRGame::AI()`.
+- Root fields are now named as `fade`, `frontend_quit_requested`,
+  `fixed_update_count`, `fixed_update_accumulator`, `frame_counter`, and
+  `input_sampling_gate`; the border allocator and game-input bridge prove the
+  latter two outside this function.
+- Player zero owns `MouseCursorState +0x16c` and
+  `FrontendOverlayColorLerp +0x184`. The cursor quad deliberately consumes
+  `saved_x/saved_y`: capture copies live coordinates there, release restores
+  them, and exact `cRPlayer::AI()` refreshes them from the current camera
+  anchor.
+- The active BOD traversal now begins at `active_bod_list.first`, both virtual
+  callbacks are the two owned `players`, and the level-mode/contact-registry
+  tail is reached through `subgame`.
+- All ownership substitutions are codegen-neutral. Focused Wibo remains the
+  honest 97.78%, 135/135 result with the same two scheduling differences and
+  23 clean masked operands.

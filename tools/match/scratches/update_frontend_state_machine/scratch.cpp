@@ -9,10 +9,6 @@ struct CameraAnchor {
     float camera_y; // +0x64
 };
 
-struct FrontendMouseCaptureView {
-    void capture_mouse_cursor();
-};
-
 extern GameRoot* g_game; // data_4df904
 extern int g_high_score_selected_bank; // data_4df9c0
 extern char aIntroIntroTxt[];
@@ -59,7 +55,7 @@ int GamePlayer::update_frontend_state_machine()
         }
         case 1:
             frontend_state = 0;
-            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
+            mouse_cursor.capture_mouse_cursor();
             g_game->new_game_menu.replay_attract_bank_cursor = 0;
         {
             GameRoot* owner = g_game;
@@ -68,7 +64,7 @@ int GamePlayer::update_frontend_state_machine()
         }
         case 2:
             frontend_state = 0;
-            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
+            mouse_cursor.capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->new_game_menu.initialize_new_game_menu();
@@ -78,7 +74,7 @@ int GamePlayer::update_frontend_state_machine()
             break;
         case 3:
             frontend_state = 5;
-            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
+            mouse_cursor.capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
@@ -86,7 +82,7 @@ int GamePlayer::update_frontend_state_machine()
         }
         case 4:
             frontend_state = 5;
-            ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
+            mouse_cursor.capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
@@ -191,11 +187,11 @@ int GamePlayer::update_frontend_state_machine()
 
     CameraAnchor* anchor = (CameraAnchor*)camera_anchor;
     float anchor_x = anchor->camera_x;
-    camera_anchor_x = anchor_x;
+    mouse_cursor.saved_x = anchor_x;
     float anchor_y = anchor->camera_y;
     TransformMatrix* live_matrix = &transform;
     TransformMatrix* snapshot_matrix = &camera.transform;
     *snapshot_matrix = *live_matrix;
-    camera_anchor_y = anchor_y;
+    mouse_cursor.saved_y = anchor_y;
     return (int)camera.view_matrix.invert_matrix_from_source(live_matrix);
 }

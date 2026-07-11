@@ -368,7 +368,7 @@
     {
       "address": "0x408000",
       "name": "initialize_game_player",
-      "description": "Constructs one 0x1f8-byte Windows cRPlayer record: initializes its inherited renderable body, constructs the owned cRCamera subobject at +0xa0, constructs two owned colors at +0x188/+0x198, and installs the cRPlayer::AI callback."
+      "description": "Constructs one 0x1f8-byte Windows cRPlayer record: initializes its inherited renderable body, constructs the owned cRCamera subobject at +0xa0, constructs the target/current colors of the owned FrontendOverlayColorLerp at +0x184, and installs the cRPlayer::AI callback."
     },
     {
       "address": "0x408040",
@@ -553,7 +553,8 @@
     },
     {
       "address": "0x40a2a0",
-      "name": "run_frame_update"
+      "name": "run_frame_update",
+      "description": "Runs one cRGame::AI frame: advances root fade/audio/cheat/voice state, seeds the fixed-step accumulator and input-sampling gate, draws the captured cursor from player zero's saved cursor position, updates the root BOD list and both cRPlayer callbacks, advances every sprite bucket, resets the subgame contact registry, and returns the root quit request."
     },
     {
       "address": "0x40a490",
@@ -617,7 +618,7 @@
     {
       "address": "0x4107d0",
       "name": "update_frontend_state_machine",
-      "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and the post-run Thanks For Playing owner at states 29/30."
+      "description": "Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded MouseCursorState saved position from the active camera anchor."
     },
     {
       "address": "0x410c30",

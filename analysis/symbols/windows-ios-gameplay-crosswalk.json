@@ -9,12 +9,28 @@
   ],
   "entries": [
     {
+      "address": "0x40a2a0",
+      "windows_name": "run_frame_update",
+      "ios_symbol": "cRGame::AI()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The Windows cRGame root method advances fade, audio, cheats, voices, cursor presentation, active BODs, both cRPlayer callbacks, sprites, and the per-frame contact registry before returning the root quit request."
+    },
+    {
       "address": "0x40a490",
       "windows_name": "render_game_frame",
       "ios_symbol": "cRGame::Render()",
       "source_object": "Game.o",
       "confidence": "high",
       "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI."
+    },
+    {
+      "address": "0x4107d0",
+      "windows_name": "update_frontend_state_machine",
+      "ios_symbol": "cRPlayer::AI()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The Windows root constructs two 0x1f8-byte cRPlayer records and installs this exact function as their first callback; the method owns front-end dispatch plus the player camera, cursor, and overlay lanes."
     },
     {
       "address": "0x415e20",
