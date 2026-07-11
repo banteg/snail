@@ -1,11 +1,11 @@
 // show_times_up_message @ 0x445e90 (thiscall, ret)
 
 #include "border_manager.h"
-#include "times_up_controller.h"
+#include "times_up.h"
 
 extern char* g_game_base; // data_4df904
 
-void TimesUpController::show_times_up_message()
+void TimesUp::show_times_up_message()
 {
     if (state == 0) {
         Color4f color;

@@ -1,11 +1,11 @@
 // update_times_up @ 0x445e20 (thiscall, ret)
 
 #include "player.h"
-#include "times_up_controller.h"
+#include "times_up.h"
 
 extern char* g_game_base; // data_4df904
 
-void TimesUpController::update_times_up()
+void TimesUp::update_times_up()
 {
     switch (state) {
         case 0:

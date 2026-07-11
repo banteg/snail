@@ -875,6 +875,32 @@
       "confidence": "high"
     },
     {
+      "address": "0x445e20",
+      "windows_name": "update_times_up",
+      "ios_symbol": "cRTimesUp::AI()",
+      "android_symbol": "cRTimesUp::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows method advances the same state/progress pair and dispatches UnInit before killing the embedded cRSubGoldy."
+    },
+    {
+      "address": "0x445e70",
+      "windows_name": "uninit_times_up",
+      "android_symbol": "cRTimesUp::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows member kills the borrowed border whenever the 0x10-byte cRTimesUp owner is active."
+    },
+    {
+      "address": "0x445e90",
+      "windows_name": "show_times_up_message",
+      "ios_symbol": "cRTimesUp::Init()",
+      "android_symbol": "cRTimesUp::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows member allocates and initializes the Time's Up widget, then seeds state, progress, and progress step on the same owner."
+    },
+    {
       "address": "0x446160",
       "windows_name": "initialize_cameraman",
       "ios_symbol": "cRCameraman::Init(cRSubGoldy*)",

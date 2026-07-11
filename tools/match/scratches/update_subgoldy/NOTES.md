@@ -231,6 +231,11 @@ source-shape issue is solved.
   pulls the frontend sprite/math surface that this scratch deliberately keeps
   local; renaming the prefix removes the fake independent controller without
   perturbing the 72.51% baseline or its 290-clean/one-table audit.
+- 2026-07-11 cRTimesUp view naming: the terminal timer calls now use
+  `SubgoldyTimesUpView`, a compact prefix of the authored `TimesUp` at
+  `+0x1272828`. Exact update/uninit/init siblings and the native size ledger
+  prove the shared owner; keeping the local prefix avoids the same frontend
+  include boundary and leaves this caller byte-stable.
 - 2026-06-20 remaining local view naming: the warning, control-source, and
   cutscene subviews are now named `SubgoldyWarningActorView`,
   `SubgoldyPlayerControlSourceView`, and `SubgoldyCutsceneAIStateView`.

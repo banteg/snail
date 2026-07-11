@@ -29,7 +29,7 @@
 #include "slug_voice_manager.h"
 #include "smtracks.h"
 #include "sub_lazer_types.h"
-#include "times_up_controller.h"
+#include "times_up.h"
 #include "thanks_screen.h"
 #include "track_health_pickup.h"
 #include "track_jetpack_pickup.h"
@@ -248,7 +248,7 @@ public:
     float slug_voice_trigger_spacing_z; // +0x1270fd0
     ContactTargetRegistry contact_targets; // +0x1270fd4, embedded 256-entry frame registry
     Completion completion; // +0x12727d8, embedded cRCompletion owner
-    TimesUpController times_up; // +0x1272828, embedded completion controller
+    TimesUp times_up; // +0x1272828, authored cRTimesUp owner
 };
 
 // GameRoot embeds cRSubGame at +0x74618. Its exact extent reaches the root

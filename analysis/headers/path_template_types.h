@@ -206,15 +206,15 @@ typedef struct WarningActor {
 } WarningActor;
 
 /*
- * TimesUp countdown actor, lives on the Game struct at +0x1272828. Native
+ * Authored cRTimesUp countdown actor at SubgameRuntime +0x1272828. Native
  * functions: update_times_up @ 0x445e20, uninit_times_up @ 0x445e70.
  */
-typedef struct TimesUpController {
+typedef struct TimesUp {
     int32_t state;
     FrontendWidget* border;
     float progress;
     float progress_step;
-} TimesUpController;
+} TimesUp;
 
 /*
  * Stopwatch tick counter. Native advance_timer_counters @ 0x441b90 increments
@@ -833,6 +833,7 @@ typedef struct Game {
     PathTemplatePair path_template_pairs[63];
     uint8_t _pad_ff7bc4[0x12727d8 - 0xff7bc4];
     Completion completion;
+    TimesUp times_up;
 } Game;
 
 typedef struct FollowState {

@@ -39,7 +39,7 @@ struct SubgoldyCompletionView {
     void flush_row_event_display();
 };
 
-struct TimesUp {
+struct SubgoldyTimesUpView {
     int state;
     void show_times_up_message();
     void update_times_up();
@@ -1189,6 +1189,7 @@ steering_stored:
     *(int*)((char*)cursor_game + 0xff25dc) = *(int*)((char*)cursor_game + 0xff25dc) + 1;
     SubgoldyGameView* times_game = game;
     if (*(int*)((char*)times_game + 0xff25dc) == 21000)
-        ((TimesUp*)((char*)times_game + 0x1272828))->show_times_up_message();
-    ((TimesUp*)((char*)game + 0x1272828))->update_times_up();
+        ((SubgoldyTimesUpView*)((char*)times_game + 0x1272828))
+            ->show_times_up_message();
+    ((SubgoldyTimesUpView*)((char*)game + 0x1272828))->update_times_up();
 }

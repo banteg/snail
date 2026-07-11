@@ -2516,16 +2516,18 @@
     },
     {
       "address": "0x445e20",
-      "name": "update_times_up"
+      "name": "update_times_up",
+      "description": "Exact Windows `TimesUp::update_times_up` state machine: advances the message timer, tears the message down, and kills Goldy when the terminal phase completes. Android and iOS retain this member as `cRTimesUp::AI()`."
     },
     {
       "address": "0x445e70",
-      "name": "uninit_times_up"
+      "name": "uninit_times_up",
+      "description": "Exact Windows `TimesUp::uninit_times_up`: returns the borrowed message widget to BorderManager whenever the embedded owner is active. Android retains `cRTimesUp::UnInit()`."
     },
     {
       "address": "0x445e90",
       "name": "show_times_up_message",
-      "description": "Spawns the floating `Time's Up` gameplay message once the subgame timer hits its terminal threshold."
+      "description": "Exact Windows `TimesUp::show_times_up_message`: spawns the floating `Time's Up` widget and seeds its progress lanes once the subgame timer reaches its terminal threshold. Android and iOS retain this member as `cRTimesUp::Init()`."
     },
     {
       "address": "0x445f10",

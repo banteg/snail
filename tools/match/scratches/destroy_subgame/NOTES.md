@@ -12,7 +12,7 @@ Recovered behavior:
 - if the level mode is tutorial (`7`), calls
   `TutorialController::uninit_tutorial()` at `game+0xa858`;
 - always uninitializes the embedded player warning, the complete landscape
-  manager's ten active entries, times-up controller, and the broader subgame BOD set through
+  manager's ten active entries, authored `TimesUp`, and the broader subgame BOD set through
   `SubgameRuntime::remove_subgame_bods()`;
 - for every non-state-1 teardown, removes active BOD nodes from the embedded
   20-slot SubLazer pool, 40-slot Salt pool, and two-slot start/completion
@@ -60,3 +60,7 @@ The mode-0/1 teardown now calls
 name the exact callee `cRCompletion::UnInit()`, and its 0x50-byte owner ends
 exactly at `times_up`. The old independent row-event controller view is
 retired; the teardown remains exact at 246/246 with all 41 operands clean.
+
+The adjacent tail call now resolves to the primary
+`SubgameRuntime::times_up.uninit_times_up()` owner. Android retains the exact
+callee as `cRTimesUp::UnInit()`; the code remains exact.

@@ -268,3 +268,11 @@ The `Size of cRCompletion` entry now comes from `sizeof(Completion)`. The one
 and final-result phases and ends exactly at the embedded `TimesUp` controller.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRTimesUp size ledger
+
+The `Size of cRTimesUp` entry now comes from `sizeof(TimesUp)`. Its state,
+borrowed border, progress, and step occupy the final 0x10 bytes of
+`SubgameRuntime`, closing the owner exactly at the root high-score screen.
+Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
+only the compiler-local EH relocation unresolved.
