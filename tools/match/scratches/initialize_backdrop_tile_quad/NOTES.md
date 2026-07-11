@@ -24,17 +24,13 @@ Current focused result:
 - prefix: 367 / 367
 - masked operands: 63 clean, 0 unresolved, 0 mismatched
 
-Remaining gap:
+Proof status:
 
-The scratch matches the setup prefix and preserves the orientation/edge-selector
-structure, but it is still a high mid-progress reconstruction. The recovered
-UV-rotation helper clears the six former unresolved call operands, and the
-orientation jump table at `0x41a581` / `0x41a9fc` is now curated as
-`initialize_backdrop_tile_quad_orientation_jump_table`. Its target/candidate
-entries remain a real audited mismatch. The main code-shape differences are
-register choice for the negative X/Z constants in the orientation cases and
-shorter edge-selector blocks where MSVC still simplifies some repeated sign
-tests.
+The setup, orientation, edge-selector, UV rotation, and all repeated sign tests
+now reproduce the native 367-instruction stream. The adjacent compiler tables
+are accepted only through their bounded four- and seven-entry relocation
+contents. Historical recovery steps below explain how the earlier mismatch was
+closed.
 
 2026-06-20 orientation lane correction: case 2 now writes vertex 2's z lane as
 `-0.5f`, matching both the target stores and the IDA/BN decompilers. The prior
@@ -80,3 +76,9 @@ COFF still places the tables at object `+0x52c`/`+0x53c`; all four orientation
 destinations and all seven edge-selector destinations remain identical to the
 curated target tables. The new aliases therefore preserve content auditing
 without changing either exact source stream.
+
+2026-07-11 shared-device header refresh: expanding the common IDirect3DDevice8
+vtable advances the same bounded tables to `$L1140`/`$L1141`. COFF still places
+the four-entry orientation table at object `+0x52c` and the seven-entry
+edge-selector table at `+0x53c`. Their contents match the tracked `0x10`/`0x1c`
+target ranges exactly, restoring 367/367 proof with 63 clean operands.

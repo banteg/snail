@@ -13,7 +13,6 @@ struct ToonVector3 {
     float dot_vector(ToonVector3* rhs); // @ 0x44cb70
 };
 
-extern RenderObjectDevice* g_d3d_device; // data_502fec
 extern int g_render_triangle_count; // data_4f7450
 extern int g_draw_primitive_call_count; // data_503170
 extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
@@ -101,7 +100,7 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
 
             if (emitted > 0) {
                 bind_texture_ref(g_sprite_manager.get_sprite_texture(0x5d));
-                RenderObjectDevice* device = g_d3d_device;
+                Direct3DDevice8* device = g_d3d_device;
                 int primitive_count = emitted / 2;
                 device->vtbl->DrawIndexedPrimitive(
                     device, 2, 0, object->grouped_vertex_count, 0, primitive_count);

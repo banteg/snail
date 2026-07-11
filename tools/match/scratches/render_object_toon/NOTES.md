@@ -43,3 +43,8 @@ Exact source-shape recovery:
   supplies the lock offset and flags;
 - the dot-product result is a float local, and the member-style call returns a
   float at this callsite, matching the native dword spill and comparison.
+
+2026-07-11 device-owner closure: toon rendering now uses the same
+IDirect3DDevice8 type as the camera, object, sprite, loading, and texture paths.
+The indexed draw and index/stream binding slots remain exact; focused matching
+stays 219/219 with all 31 operands clean.

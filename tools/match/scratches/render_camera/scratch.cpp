@@ -1,39 +1,13 @@
 // render_camera @ 0x411fa0 (cdecl)
 
+#include "direct3d_device8_view.h"
 #include "game_root.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 
-struct D3DViewport8 {
-    unsigned int x;
-    unsigned int y;
-    unsigned int width;
-    unsigned int height;
-    float min_z;
-    float max_z;
-};
-
-struct RenderCameraDevice;
-
-struct RenderCameraDeviceVtbl {
-    char unknown_000[0x94];
-    int (__stdcall* SetTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
-    int (__stdcall* GetTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
-    int (__stdcall* MultiplyTransform)(RenderCameraDevice* self, int state, TransformMatrix* matrix);
-    int (__stdcall* SetViewport)(RenderCameraDevice* self, D3DViewport8* viewport);
-    int (__stdcall* GetViewport)(RenderCameraDevice* self, D3DViewport8* viewport);
-    char unknown_0a8[0xc8 - 0xa8];
-    int (__stdcall* SetRenderState)(RenderCameraDevice* self, int state, int value);
-};
-
-struct RenderCameraDevice {
-    RenderCameraDeviceVtbl* vtbl;
-};
-
-extern RenderCameraDevice* g_d3d_device; // data_502fec
 extern GameRoot* g_game; // data_4df904
-extern void* g_current_texture_ref; // data_503174
+extern TextureRef* g_current_texture_ref; // data_503174
 extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
 extern TransformMatrix* g_render_camera_view_matrix; // data_503218
 extern float g_render_projection_param_b; // data_50316c

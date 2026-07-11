@@ -6,7 +6,6 @@
 
 struct ColorBGRA8;
 
-extern RenderObjectDevice* g_d3d_device; // data_502fec
 extern int g_render_triangle_count; // data_4f7450
 extern int g_draw_primitive_call_count; // data_503170
 extern unsigned char g_object_render_pass_filter; // data_503260

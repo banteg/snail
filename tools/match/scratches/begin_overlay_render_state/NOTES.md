@@ -21,3 +21,9 @@ overlay-style rendering.
 2026-06-16 type consolidation: this now uses the shared
 `render_state_device.h` Direct3D device/vtable view, extracted from the
 overlay and sprite-depth render-state helpers. Focused Wibo remains exact.
+
+2026-07-11 device closure: `render_state_device.h` is now only a compatibility
+alias for the complete shared IDirect3DDevice8 view. The overlay and
+sprite-depth helpers agree on `GetTransform +0x98`, `SetTransform +0x94`,
+`SetRenderState +0xc8`, and `SetTextureStageState +0xfc`; this helper remains
+97/97 with 14 clean operands.

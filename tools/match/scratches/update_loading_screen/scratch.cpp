@@ -3,19 +3,13 @@
 #include "direct3d_device8_view.h"
 #include "loading_screen.h"
 #include "loading_vertex.h"
-#include "vertex_buffer_view.h"
-
-struct RendererVertexBufferResource {
-    char unknown_00[0x08];
-    VertexBuffer* vertex_buffer; // +0x08
-};
+#include "object_render_types.h"
 
 extern int g_last_loading_budget; // data_4df9c4
-extern Direct3DDevice8* g_d3d_device; // data_502fec
 extern Direct3DTexture8* g_loading_background_texture; // data_503288
-extern RendererVertexBufferResource* g_loading_background_vertex_buffer; // data_503284
+extern ObjectRenderBuffers* g_loading_background_vertex_buffer; // data_503284
 extern Direct3DTexture8* g_loading_bar_on_texture; // data_503280
-extern RendererVertexBufferResource* g_loading_bar_vertex_buffer; // data_5032a4
+extern ObjectRenderBuffers* g_loading_bar_vertex_buffer; // data_5032a4
 
 int present_backbuffer(); // @ 0x413520
 

@@ -51,3 +51,10 @@ prefix, and 37 clean masked operands. The earlier 97.78% scratch used
 retired rather than treated as a legitimate match. The exact source also
 confirms `RenderCamera +0xc0` is the float FOV in degrees, not an integer camera
 mode.
+
+## Shared Direct3D device closure (2026-07-11)
+
+The camera-local device type is retired. Its `Set/Get/MultiplyTransform`,
+`Set/GetViewport`, and `SetRenderState` slots align exactly with the shared
+IDirect3DDevice8 table at `+0x94..+0xc8`. `D3DViewport8` also moves into that
+ABI header. The source remains exact at 180/180 with all 37 operands clean.

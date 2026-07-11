@@ -7,6 +7,15 @@ struct Direct3DDevice8;
 struct Direct3DVertexBuffer8;
 struct TransformMatrix;
 
+struct D3DViewport8 {
+    unsigned int x;
+    unsigned int y;
+    unsigned int width;
+    unsigned int height;
+    float min_z;
+    float max_z;
+};
+
 typedef Direct3DVertexBuffer8 VertexBuffer;
 
 struct Direct3DDevice8Vtbl {
@@ -19,7 +28,12 @@ struct Direct3DDevice8Vtbl {
     int (__stdcall* Clear)(Direct3DDevice8* self, unsigned int count, void* rects,
         unsigned int flags, unsigned int color, float z, unsigned int stencil);
     int (__stdcall* SetTransform)(Direct3DDevice8* self, int state, TransformMatrix* matrix);
-    char unknown_098[0xc8 - 0x98];
+    int (__stdcall* GetTransform)(Direct3DDevice8* self, int state, TransformMatrix* matrix);
+    int (__stdcall* MultiplyTransform)(
+        Direct3DDevice8* self, int state, TransformMatrix* matrix);
+    int (__stdcall* SetViewport)(Direct3DDevice8* self, D3DViewport8* viewport);
+    int (__stdcall* GetViewport)(Direct3DDevice8* self, D3DViewport8* viewport);
+    char unknown_0a8[0xc8 - 0xa8];
     int (__stdcall* SetRenderState)(Direct3DDevice8* self, int state, int value);
     char unknown_0cc[0xf4 - 0xcc];
     int (__stdcall* SetTexture)(Direct3DDevice8* self, unsigned int stage,
@@ -30,11 +44,18 @@ struct Direct3DDevice8Vtbl {
     char unknown_100[0x118 - 0x100];
     int (__stdcall* DrawPrimitive)(Direct3DDevice8* self, unsigned int primitive_type,
         unsigned int start_vertex, unsigned int primitive_count);
-    char unknown_11c[0x130 - 0x11c];
+    int (__stdcall* DrawIndexedPrimitive)(Direct3DDevice8* self,
+        unsigned int primitive_type, unsigned int min_vertex_index,
+        unsigned int vertex_count, unsigned int start_index,
+        unsigned int primitive_count);
+    char unknown_120[0x130 - 0x120];
     int (__stdcall* SetVertexShader)(Direct3DDevice8* self, unsigned int shader);
     char unknown_134[0x14c - 0x134];
     int (__stdcall* SetStreamSource)(Direct3DDevice8* self, unsigned int stream,
         VertexBuffer* buffer, unsigned int stride);
+    char unknown_150[0x154 - 0x150];
+    int (__stdcall* SetIndices)(
+        Direct3DDevice8* self, void* index_buffer, unsigned int base_vertex_index);
 };
 
 struct Direct3DDevice8 {
@@ -43,7 +64,11 @@ struct Direct3DDevice8 {
 
 typedef char Direct3DDevice8_must_be_0x04[
     (sizeof(Direct3DDevice8) == 0x04) ? 1 : -1];
-typedef char Direct3DDevice8Vtbl_must_cover_0x150[
-    (sizeof(Direct3DDevice8Vtbl) == 0x150) ? 1 : -1];
+typedef char D3DViewport8_must_be_0x18[
+    (sizeof(D3DViewport8) == 0x18) ? 1 : -1];
+typedef char Direct3DDevice8Vtbl_must_cover_0x158[
+    (sizeof(Direct3DDevice8Vtbl) == 0x158) ? 1 : -1];
+
+extern Direct3DDevice8* g_d3d_device; // data_502fec
 
 #endif

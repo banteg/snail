@@ -6,6 +6,7 @@
 #include "sprite.h"
 
 extern int g_estimated_texture_vram_bytes; // data_4b7644
+extern TextureRef* g_current_texture_ref; // data_503174
 extern Direct3DTexture8** g_d3d_texture_slots; // data_5031c8
 
 #endif

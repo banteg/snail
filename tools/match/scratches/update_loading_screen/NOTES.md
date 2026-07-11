@@ -20,6 +20,9 @@ struct LoadingScreen {
 - `data_503284`: full-background quad vertex-buffer resource.
 - `data_5032a4`: dynamic progress-fill quad vertex-buffer resource.
 
+Both resources use the renderer's shared 0xc-byte `ObjectRenderBuffers`
+wrapper shape; the loading path differs only in its 20-byte vertex payload.
+
 The progress bar geometry is a 20-byte `{x, y, z, u, v}` vertex, not the
 24-byte object/sprite vertex with diffuse color. The fill quad is clipped from
 `x=192` to `x=192 + percent * 0.92 * 2.56`, with `percent > 98` forcing the
@@ -50,3 +53,9 @@ helper at `100.00%`, `204/204` instructions, with 26 clean masked operands.
 Explicit receiver locals, `register` hints, and declaration-only shuffles were
 codegen-neutral at 91.67%; the key source-shape change is shortening the
 pre-render lifetime of the clamped value.
+
+2026-07-11 renderer type closure: loading draw calls now share the complete
+IDirect3DDevice8 view, and both global vertex resources use the same 0xc-byte
+`ObjectRenderBuffers` owner created by the initializer. Focused matching stays
+exact at 204/204 with all 26 operands clean; the repository no longer needs
+separate loading-only wrapper or device types.

@@ -1,24 +1,10 @@
 // bind_texture_ref @ 0x414500 (cdecl)
 
+#include "direct3d_device8_view.h"
 #include "sprite.h"
+#include "texture_registry.h"
 
-struct TextureBindDevice;
-
-struct TextureBindDeviceVtbl {
-    char unknown_000[0xf4];
-    int (__stdcall* SetTexture)(TextureBindDevice* self, int stage, void* texture);
-    void* unknown_0f8;
-    int (__stdcall* SetTextureStageState)(TextureBindDevice* self, int stage, int type, int value);
-};
-
-struct TextureBindDevice {
-    TextureBindDeviceVtbl* vtbl;
-};
-
-extern TextureBindDevice* g_d3d_device;       // data_502fec
-extern TextureRef* g_current_texture_ref;     // data_503174
 extern int g_texture_bind_call_count;         // data_5031c0
-extern void** g_d3d_texture_slots;            // data_5031c8
 
 int report_errorf(char* format, ...);
 
@@ -28,7 +14,7 @@ void bind_texture_ref(TextureRef* texture)
         return;
     }
 
-    TextureBindDevice* device = g_d3d_device;
+    Direct3DDevice8* device = g_d3d_device;
     g_current_texture_ref = texture;
     int result = device->vtbl->SetTexture(device, 0, g_d3d_texture_slots[texture->slot_index]);
     ++g_texture_bind_call_count;

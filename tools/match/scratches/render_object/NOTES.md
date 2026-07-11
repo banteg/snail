@@ -46,8 +46,9 @@ Recovered relationships:
 
 ## Type consolidation (2026-06-17)
 
-`ObjectFaceQuad`, `ObjectIndexBuffer`, `ObjectIndexBufferResource`, and the
-`RenderObjectDeviceVtbl` slot window now live in `object_render_types.h`.
+`ObjectFaceQuad`, `ObjectIndexBuffer`, and `ObjectIndexBufferResource` now live
+in `object_render_types.h`. The once-local render-device window has since been
+superseded by the shared IDirect3DDevice8 ABI view.
 Focused checks for `render_object`, `render_object_toon`,
 `refresh_object_vertex_buffer`, `calc_object_texture_groups`, and
 `build_object_texture_group_buffers` keep their previous match ratios. The
@@ -89,3 +90,11 @@ The same correction is propagated to `BodBase +0x1c` and every shared BOD view;
 `+0x1c/+0x20` are now the paired texture-U/texture-V float render arguments.
 Focused Wibo is 100.00%, 196/196 instructions and full prefix, with 25 clean
 masked operands.
+
+## Shared Direct3D device closure (2026-07-11)
+
+`SetTransform`, `SetRenderState`, `SetTextureStageState`,
+`DrawIndexedPrimitive`, `SetVertexShader`, `SetStreamSource`, and `SetIndices`
+all occupy their canonical shared vtable slots through `+0x154`. Retiring the
+`RenderObjectDevice` projection leaves this helper exact at 196/196 with 25
+clean operands.

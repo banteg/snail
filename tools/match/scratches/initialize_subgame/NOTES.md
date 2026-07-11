@@ -172,3 +172,11 @@ aliases respectively and restore the 85 clean operands.
   bottom-HUD table, avoiding an ambiguous local-label alias. The bounded five-
   and eight-entry contents remain identical and restore 85 clean masked
   operands without changing the exact 396-instruction method body.
+
+2026-07-11 shared-device header refresh:
+
+- Expanding the common IDirect3DDevice8 vtable advances the two compiler-local
+  labels to `$L4782`/`$L4783`, still at object `+0x62c`/`+0x640`.
+- Their five bottom-HUD and eight startup relocations remain identical to the
+  bounded target tables. Registering these contents restores 396/396 exact
+  proof with all 85 operands clean; no source instruction changed.

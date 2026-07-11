@@ -17,9 +17,9 @@ galaxy/challenge/reset.
 The two compiler-emitted mode tables are content-audited:
 
 - `0x437adc`, five entries, bottom-HUD mode dispatch, current candidate
-  `$L4716`;
+  `$L4782`;
 - `0x437af0`, eight entries, startup mode dispatch, current candidate
-  `$L4717`.
+  `$L4783`.
 
 The earlier curated table names were reversed. The corrected names and current
 VC6 aliases (plus the prior `$L4668`/`$L4669` and `$L4670`/`$L4671`

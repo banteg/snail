@@ -7,3 +7,8 @@
   `g_texture_bind_call_count`.
 - `TextureRef::flags & 0x1000` selects texture-stage-state value `1`; otherwise
   both stage states are reset to `3`.
+
+2026-07-11 device/type closure: the scratch-local texture device is the shared
+IDirect3DDevice8 view (`SetTexture +0xf4`, `SetTextureStageState +0xfc`). The
+current texture is consistently `TextureRef*`, and the slot bank is consistently
+`Direct3DTexture8**`. The 62/62 instruction stream and 11 operands remain exact.

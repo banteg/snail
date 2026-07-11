@@ -24,10 +24,9 @@ Current recovered relationships:
 
 Open matching issues:
 
-- The scratch still keeps renderer vtable, vector, and matrix windows local.
-  `Direct3DDevice8` is shared only as the one-field `vtbl` wrapper; the vtable
-  shape remains scratch-local because renderer callsites recover different
-  method windows.
+- Vector and matrix call surfaces still retain the narrow views needed by this
+  helper. The Direct3D device no longer does: its recovered vtable slots are
+  shared through `direct3d_device8_view.h`.
 - The no-op color constructor at `0x44db50` is modeled locally as
   `ColorBGRA8::noop_this_constructor`; it is a real identity helper
   (`mov eax, ecx; ret`) already curated as a shared reference symbol.

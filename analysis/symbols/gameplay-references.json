@@ -511,7 +511,8 @@
         "$L1047",
         "$L1051",
         "$L1055",
-        "$L1074"
+        "$L1074",
+        "$L1140"
       ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
@@ -524,7 +525,8 @@
         "$L1048",
         "$L1052",
         "$L1056",
-        "$L1075"
+        "$L1075",
+        "$L1141"
       ],
       "size": "0x1c",
       "description": "Compiler-emitted edge-selector switch jump table used by initialize_backdrop_tile_quad for normalized cases 0 through 6."
@@ -915,7 +917,8 @@
         "$L4715",
         "$L4716",
         "$L4718",
-        "$L4719"
+        "$L4719",
+        "$L4782"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -933,7 +936,8 @@
         "$L4694",
         "$L4713",
         "$L4717",
-        "$L4720"
+        "$L4720",
+        "$L4783"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
