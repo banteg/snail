@@ -2045,7 +2045,7 @@
     {
       "address": "0x43d480",
       "name": "get_track_runtime_cell_at_world_z",
-      "description": "Clamps world z into the generated row array and returns the current runtime cell."
+      "description": "Clamps world z into the generated row array and returns the authored `SubRow` runtime record. The exact 0xf4 stride and 3200-row slab agree with the Windows constructor ledger's `Size of cRSubRow` total of 0xbea00 bytes."
     },
     {
       "address": "0x43d4d0",

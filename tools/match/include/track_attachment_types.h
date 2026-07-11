@@ -308,7 +308,10 @@ struct SubLoc {
 
 typedef char SubLoc_must_be_0x54[(sizeof(SubLoc) == 0x54) ? 1 : -1];
 
-struct TrackAttachmentRuntimeRow {       // stride 0xf4
+// Authored per-track-row runtime owner. The Windows constructor ledger names
+// the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
+// SubRow at 0xf4 bytes. The historical matcher name remains an alias below.
+struct SubRow {                          // stride 0xf4
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
     RenderableBod primary_body;           // +0x04, embedded authored row actor
     char unknown_7c[0x84 - 0x7c];
@@ -329,8 +332,9 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     int row_event_id;                     // +0xf0, segment-definition/message index
 };
 
-typedef char TrackAttachmentRuntimeRow_must_be_0xf4[
-    (sizeof(TrackAttachmentRuntimeRow) == 0xf4) ? 1 : -1];
+typedef SubRow TrackAttachmentRuntimeRow;
+
+typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
 class FollowState {
 public:

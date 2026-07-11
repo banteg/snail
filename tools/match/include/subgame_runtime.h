@@ -80,7 +80,7 @@ public:
         Vector3* world_position,
         Player* ignored_player); // @ 0x443730, native binds embedded_player()
     SubLoc* get_track_grid_cell_at_world_position(Vector3* position);
-    TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
+    SubRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
     void project_position_onto_track_attachment(Vector3* position, float* out_angle);
     void complete_subgame(unsigned char completed);
@@ -189,7 +189,7 @@ public:
     SubLoc runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
     // Fixed row records owned by SubgameRuntime. Their body objects are
     // embedded; source_segment and attachment-cell fields are borrowed links.
-    TrackAttachmentRuntimeRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8
+    SubRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8
     // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
     // into current_high_score_record, then lends that record to high_score_bank
     // for in-place normalization and value-copy persistence.

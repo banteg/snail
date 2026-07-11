@@ -9,6 +9,11 @@ one-byte `PathManager` type rather than a literal. Symbol-rich iOS builds name
 its sole known member `NameCode(char*)`; the size and generated constructor
 report remain unchanged.
 
+The same ledger now sources its `cRSubLoc` and `cRSubRow` totals from the
+recovered owner types. It reports `0x20d000` for 3200 rows of eight 0x54-byte
+`SubLoc` cells and `0xbea00` for 3200 0xf4-byte `SubRow` records; the later
+single-object `cRSubLoc` report remains 0x54.
+
 Current focused result after splitting the two adjacent helpers into their own
 manifest functions:
 
