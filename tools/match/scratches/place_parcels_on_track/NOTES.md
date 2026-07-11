@@ -159,7 +159,7 @@ Both the parcel-set and digit-0 claim passes now preserve the source's direct
 pointer. That independently agrees with the survival placement routine and
 confirms that the claimed row remains owned by the `SubgameRuntime` slab while
 the selected `ParcelBucket` is temporary global pool state. The kind-42 tail
-also dispatches through `AttachmentPathTemplate`, matching the same member
+also dispatches through `Path`, matching the same member
 owner recovered in the survival path rather than treating the transform helper
 as a free function.
 

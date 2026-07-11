@@ -97,7 +97,7 @@ only the side-exit copy still regressed the accepted basis-copy shape from
 Rejected source-shape trial: native loads `ecx = template_record` immediately
 before the kind-42 transform helper call, matching the member-call evidence
 seen in `project_position_onto_track_attachment`, but changing this scratch's
-helper declaration to a `PathTemplate` member regressed global alignment from
+helper declaration to a `Path` member regressed global alignment from
 40.58% to 35.21%. The callsite convention evidence is real, but this large
 scratch needs a more isolated consolidation than a direct local rewrite.
 
@@ -158,7 +158,7 @@ Accepted changes preserve all previously mapped behavior:
 - use `sample_index` directly in the normal path and repeat the natural
   `primary_samples[sample_index]` expressions instead of hoisting a primary
   sample pointer;
-- call kind 42 through the recovered `AttachmentPathTemplate` member shape;
+- call kind 42 through the recovered `Path` member shape;
 - materialize the ordinary-path rotated offset as a real `Vec3` before adding
   the three base components.
 

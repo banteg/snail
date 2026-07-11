@@ -36,9 +36,9 @@ struct LoopbowFaceQuad {
 typedef char LoopbowFaceQuad_must_be_0x30[
     (sizeof(LoopbowFaceQuad) == 0x30) ? 1 : -1];
 
-int __fastcall finalize_path_template(AttachmentPathTemplate* path);
+int __fastcall finalize_path_template(Path* path);
 
-int AttachmentPathTemplate::initialize_loopbow_path_template_pair(
+int Path::initialize_loopbow_path_template_pair(
     float curve_scale,
     unsigned int width_cells_arg,
     char unused_mode,

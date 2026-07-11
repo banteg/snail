@@ -16,10 +16,10 @@ Current focused result:
 
 Important type notes:
 
-- `AttachmentPathTemplate +0x60` is a second `BodBase`, corroborating the
+- `Path +0x60` is a second `BodBase`, corroborating the
   `initialize_path_template_record_pair` constructor and this mesh builder.
 - The source mesh for sampled track vertices remains the first BOD/object slot
-  at `AttachmentPathTemplate +0x24`; the generated mesh lives in the second
+  at `Path +0x24`; the generated mesh lives in the second
   BOD's `object` field at `+0x84`.
 - Non-mirrored templates use source columns `1/0` for the first edge and
   `width_cells - 1 / width_cells` for the opposite edge; mirrored templates swap

@@ -32,7 +32,7 @@ resolves to the correct native reference.
 
 ## Accepted source-shape changes
 
-- Added native-offset overlays for `AttachmentPathTemplate`, the `0xa8` sample,
+- Added native-offset overlays for `Path`, the `0xa8` sample,
   and the `0x30` facequad.
 - Reconstructed all constructor fields, both sample banks, basis generation,
   delta normalization, terminal delta state, mesh allocation, tube vertices,

@@ -98,7 +98,7 @@ the iteration notes above.
 Native loads `ecx = template_record` immediately before the kind-42 transform
 helper call, matching the member-call evidence seen in
 `project_position_onto_track_attachment` and `calc_path_length_z`. Rewriting
-this scratch's helper declaration as a `PathTemplate` member still regressed
+this scratch's helper declaration as a `Path` member still regressed
 the focused match from 46.44% to 44.87%, mostly by perturbing the already
 fragile stack/layout alignment. Treat the convention evidence as a future
 shared-type consolidation lead, not a bulk scratch rewrite.
@@ -198,12 +198,12 @@ prefix `122/726`, masks `53/0/0`.
 
 2026-06-20 matrix-view naming cleanup: the source now names the local owner
 `AttachmentFollowStateMatrixView` and the kind-42 member-call cast
-`AttachmentPathTemplateKind42CallView`. Including `track_attachment_types.h`
+`PathKind42CallView`. Including `track_attachment_types.h`
 directly is rejected here because it defines the full shared `FollowState`,
 while this scratch still needs a matrix-backed template/sample view for its
 current 0x180-frame codegen. The rename is codegen neutral at `69.38%`,
 `672/726`, `122/726` prefix, and `53/0/0` masks, and
-`uv run snail match types AttachmentPathTemplate --paths` /
+`uv run snail match types Path --paths` /
 `uv run snail match types FollowState --paths` now report no consolidation
 candidates.
 

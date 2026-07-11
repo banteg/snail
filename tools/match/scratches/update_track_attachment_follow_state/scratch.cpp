@@ -15,7 +15,7 @@ struct AttachmentFollowRuntimeRowSlot {
     char unknown_04[0xf4 - 0x04];
 };
 
-struct AttachmentPathTemplateKind42CallView {
+struct PathKind42CallView {
     int compute_kind42_attachment_transform(
         float radius,
         float x,
@@ -30,7 +30,7 @@ public:
 
     unsigned char active;
     char unknown_01[0x04 - 0x01];
-    AttachmentPathTemplateMatrixView* template_record;
+    PathMatrixView* template_record;
     TrackRowCellAnchorView* source_cell;
     int sample_index;
     float progress;
@@ -56,7 +56,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
     Vec3* motion)
 {
     int index = sample_index;
-    AttachmentPathTemplateMatrixView* initial_template = this->template_record;
+    PathMatrixView* initial_template = this->template_record;
     AttachmentSampleMatrixView* secondary_samples = initial_template->secondary_samples;
     float* p_delta_length = &secondary_samples[index].delta_length;
     float delta = path_factor * *p_delta_length;
@@ -82,7 +82,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
     TransformMatrix to;
 
     unsigned int current_index;
-    AttachmentPathTemplateMatrixView* current_template;
+    PathMatrixView* current_template;
     int terminal_index;
     while (delta + progress > *p_delta_length) {
         delta -= *p_delta_length - progress;
@@ -94,25 +94,25 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             g_voice_manager.play_voice_manager(4, 1, -1);
         }
 
-        AttachmentPathTemplateMatrixView* runtime_template = this->template_record;
+        PathMatrixView* runtime_template = this->template_record;
         if (runtime_template->has_entry_mesh_transition) {
             int count = (int)runtime_template->segment_count;
             int current_index = (int)this->sample_index;
             if (current_index == count - 1) {
-                AttachmentPathTemplate* attached =
+                Path* attached =
                     ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
                 ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
                 ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
                 ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->bod.list_flags |= 0x80;
-                AttachmentPathTemplate* attached =
+                Path* attached =
                     ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
                 ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
                 ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
             }
         }
 
-        AttachmentPathTemplateMatrixView* loop_template = this->template_record;
+        PathMatrixView* loop_template = this->template_record;
         index = this->sample_index;
         if (index == loop_template->segment_count)
             goto terminal_path;
@@ -153,7 +153,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
 
         if (current_template->kind == 42) {
             arg2 = out_position->x - v85;
-            ((AttachmentPathTemplateKind42CallView*)current_template)->compute_kind42_attachment_transform(
+            ((PathKind42CallView*)current_template)->compute_kind42_attachment_transform(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {
@@ -258,7 +258,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
         orientation_d = transform.basis_up.y;
         orientation_e = transform.basis_up.z;
 
-        AttachmentPathTemplateMatrixView* orient_template = this->template_record;
+        PathMatrixView* orient_template = this->template_record;
         unsigned int orient_index = sample_index;
         int offset = 0xa8 * orient_index;
         if (orient_index == (unsigned int)(orient_template->segment_count - 1)) {
@@ -335,17 +335,17 @@ terminal_path:
         if (delta >= 1.0f)
             delta = 0.99900001f;
 
-        AttachmentPathTemplateMatrixView* exhaust_template = this->template_record;
+        PathMatrixView* exhaust_template = this->template_record;
         float launch_speed =
             path_factor * exhaust_template->secondary_samples[exhaust_template->segment_count - 1].delta_length;
         motion->z = launch_speed;
         if (launch_speed > 1.0f)
             motion->z = 1.0f;
 
-        AttachmentPathTemplateMatrixView* final_template = this->template_record;
+        PathMatrixView* final_template = this->template_record;
         if (final_template->kind == 31) {
             motion->y = motion->z * 0.69999999f;
-            AttachmentPathTemplateMatrixView* supertramp_template = this->template_record;
+            PathMatrixView* supertramp_template = this->template_record;
             float old_x = out_position->x;
             unsigned int count = supertramp_template->segment_count;
             float carry = delta + supertramp_template->width_or_scale;

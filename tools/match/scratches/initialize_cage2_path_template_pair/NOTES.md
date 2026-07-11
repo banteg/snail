@@ -144,7 +144,7 @@ branch keeps additional scalar spills at post-save stack offsets `+0x5c` and
 
 ## 2026-06-20 shared type pass
 
-The scratch now uses the shared `AttachmentPathTemplate`, `AttachmentSample`,
+The scratch now uses the shared `Path`, `AttachmentSample`,
 and `ObjectFaceQuad` declarations. The local facequad overlay mapped directly to
 `ObjectFaceQuad`; the zero store is spelled through `header_word` to preserve
 the former 16-bit `flags` store.
@@ -158,5 +158,5 @@ masked operands: 39 ok, 0 unresolved, 1 mismatch
 ```
 
 The shared type report now removes this initializer from the
-`AttachmentPathTemplate` scratch-local list. The target-range anomaly above
+`Path` scratch-local list. The target-range anomaly above
 still applies.

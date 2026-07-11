@@ -53,7 +53,7 @@ struct Nuke {
 
 struct SubgoldyTrackRowCellView;
 
-struct SubgoldyAttachmentPathTemplateView {
+struct SubgoldyPathView {
     char unknown_00[0x38];
     int kind; // +0x38: 15 DETOUR, 24 WORM
     char unknown_3c[0x44 - 0x3c];
@@ -69,7 +69,7 @@ struct SubgoldyTrackRowCellView {
     char unknown_00[0x10];
     Vector3 anchor_position; // +0x10
     char unknown_1c[0x38 - 0x1c];
-    SubgoldyAttachmentPathTemplateView* attachment_template_record; // +0x38
+    SubgoldyPathView* attachment_template_record; // +0x38
     unsigned char tile_id;       // +0x3c
     unsigned char tile_flags_3d; // +0x3d
 
@@ -83,7 +83,7 @@ struct SubgoldyPlayerView;
 struct SubgoldyFollowStateView {
     unsigned char active; // +0x00
     char unknown_01[3];
-    SubgoldyAttachmentPathTemplateView* template_record; // +0x04
+    SubgoldyPathView* template_record; // +0x04
     SubgoldyTrackRowCellView* source_cell;               // +0x08
     int sample_index;                        // +0x0c
     char unknown_10[0x2c - 0x10];
@@ -92,7 +92,7 @@ struct SubgoldyFollowStateView {
     unsigned char flag_3c;   // +0x3c
     char unknown_3d[3];
 
-    SubgoldyAttachmentPathTemplateView* begin_track_attachment_follow_state(
+    SubgoldyPathView* begin_track_attachment_follow_state(
         SubgoldyTrackRowCellView* cell, const Vector3* position,
         SubgoldyPlayerView* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,
@@ -319,7 +319,7 @@ void SubgoldyPlayerView::update_subgoldy()
     }
 
     if (follow_state.active == 1) {
-        SubgoldyAttachmentPathTemplateView* template_record = follow_state.template_record;
+        SubgoldyPathView* template_record = follow_state.template_record;
         int sample = follow_state.sample_index + 3;
         int segment_count = template_record->segment_count;
         if (sample >= segment_count)

@@ -11,7 +11,7 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void orient_previous_with_right(
     PathTemplateSample* samples, int current_index, int first_index)
@@ -35,7 +35,7 @@ static __forceinline void orient_previous_with_right(
         &previous->transform.basis_right);
 }
 
-static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_direct_deltas(Path* path)
 {
     int i;
     for (i = 0; i < path->segment_count; ++i) {
@@ -57,7 +57,7 @@ static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
     }
 }
 
-static __forceinline void build_direct_strip_mesh(AttachmentPathTemplate* path, char* texture)
+static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
 {
     path->strip_mesh->request_object_facequads(
         2 * path->width_cells * path->segment_count);
@@ -127,7 +127,7 @@ static __forceinline void build_direct_strip_mesh(AttachmentPathTemplate* path, 
     }
 }
 
-void AttachmentPathTemplate::initialize_start_path_template_pair(
+void Path::initialize_start_path_template_pair(
     float length,
     int width_cells_,
     int side_exit,

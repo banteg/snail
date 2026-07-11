@@ -315,7 +315,16 @@ The already exact `GameRoot`, `SubgameRuntime`, `SubTracks`, `Player`
 (`cRSubGoldy`), `LandscapeManager`, `SMTracks`, and `BodBase` extents now feed
 their runtime size prints through `sizeof` instead of duplicated hex literals.
 Each type has an independent compile-time size assertion and proven adjacent
-boundaries. The unrecovered `cRPath` line deliberately remains literal.
+boundaries. The cRPath array is closed separately below.
+
+## 2026-07-11 cRPath size ledger
+
+The `Size of cRPath` entry now comes from `sizeof(Path) * PATH_COUNT`.
+Symbol-preserving ports identify every 0xa8-byte receiver as `cRPath`; Windows
+constructs 126 of them as 63 primary/secondary `PathPair` records between
+PathManager and the barrier. Their aggregate is exactly 0x52b0, so the ledger
+does not justify a synthetic giant Path owner. Constructor metrics remain
+unchanged.
 
 ## 2026-07-11 cREnemyManager size ledger
 

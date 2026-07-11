@@ -123,7 +123,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
 
     if (current_template->kind == 42) {
         float local_x = input_position->x - center_x;
-        ((AttachmentPathTemplate*)current_template)->compute_kind42_attachment_transform(
+        ((Path*)current_template)->compute_kind42_attachment_transform(
             special_scalar,
             local_x,
             0.49000001f,

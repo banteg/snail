@@ -9,7 +9,7 @@ void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, f
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->primary_attachment_cell;
-        AttachmentPathTemplate* template_record = cell->attachment_template_record;
+        Path* template_record = cell->attachment_template_record;
         int sample_index = (int)position->z - cell->get_track_cell_row_index();
         AttachmentSample* sample = &template_record->primary_samples[sample_index];
         if (template_record->kind == 42) {

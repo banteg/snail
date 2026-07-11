@@ -7,9 +7,9 @@
 
 float sine(float angle);
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
-void AttachmentPathTemplate::initialize_halfpipe_path_template_pair(
+void Path::initialize_halfpipe_path_template_pair(
     int unused_scale_bits,
     int width_cells_,
     int unused_kind_arg,

@@ -19,7 +19,7 @@ typedef AttachmentSample PathAttachmentSample;
 
 typedef ObjectFaceQuad PathTemplateFaceQuad;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
@@ -99,7 +99,7 @@ static inline void orient_previous_with_fixed_up(
         previous->transform.rotate_matrix_world_z(roll);
 }
 
-void AttachmentPathTemplate::PATH_FUNCTION(PATH_SIGNATURE)
+void Path::PATH_FUNCTION(PATH_SIGNATURE)
 {
 #if PATH_VARIANT == 5
     float curve_count_source = curve_source * 5.0f;

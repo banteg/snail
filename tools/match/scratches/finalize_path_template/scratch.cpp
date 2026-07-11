@@ -6,7 +6,7 @@
 const int PATH_TEMPLATE_STRIP_MESH_FLAG_RUNTIME_READY = 0x80;
 const int PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH = 0x100000;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path)
+void __fastcall finalize_path_template(Path* path)
 {
     int segment_count = path->segment_count;
     path->row_span_count = 0;

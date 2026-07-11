@@ -97,7 +97,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
                     node = 0;
                 }
 
-                AttachmentPathTemplate* template_record =
+                Path* template_record =
                     runtime_rows[scan]
                         .primary_attachment_cell->attachment_template_record;
                 if (template_record->kind == 42) {

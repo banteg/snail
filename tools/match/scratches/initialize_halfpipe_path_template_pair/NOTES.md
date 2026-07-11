@@ -65,7 +65,7 @@ No fake matching tricks were used.
 
 ## 2026-06-20 shared type pass
 
-The scratch now uses the shared `AttachmentPathTemplate`, `AttachmentSample`,
+The scratch now uses the shared `Path`, `AttachmentSample`,
 and `ObjectFaceQuad` declarations. The local facequad overlay mapped directly to
 `ObjectFaceQuad`; the zero store is spelled through `header_word` to preserve
 the former 16-bit `flags` store.
@@ -78,7 +78,7 @@ target: 707 insns, candidate: 667 insns
 masked operands: 45 ok, 0 unresolved, 1 mismatch
 ```
 
-This removes the initializer from the `AttachmentPathTemplate` scratch-local
+This removes the initializer from the `Path` scratch-local
 type row while keeping the documented six-argument call shape.
 
 ## 2026-07-03 vertex-grid source-shape pass

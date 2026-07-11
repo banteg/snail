@@ -1,7 +1,7 @@
-// Matrix-backed attachment path-template view, partial.
-// iOS Path.o keeps this template owner as cRPath.
+// Matrix-backed cRPath view, partial.
+// iOS Path.o preserves the authored owner name.
 //
-// This is a sibling view of AttachmentPathTemplate for path-follow scratches
+// This is a sibling view of Path for path-follow scratches
 // that need samples as AttachmentSampleMatrixView. It intentionally depends on
 // the including scratch's local Vec3 and TransformMatrix views through
 // track_attachment_sample_matrix_view.h.
@@ -10,7 +10,7 @@
 
 #include "track_attachment_sample_matrix_view.h"
 
-struct AttachmentPathTemplateMatrixView {
+struct PathMatrixView {
     char unknown_00[0x38];
     int kind;                              // +0x38
     unsigned char is_mirrored_x;           // +0x3c

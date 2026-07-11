@@ -1,6 +1,6 @@
-// Attachment-follow runtime type views, partial.
-// iOS Path.o keeps the template owner as cRPath and the live player traversal
-// state as cRPathFollowGoldy.
+// Authored cRPath records and attachment-follow runtime views. Windows stores
+// 126 exact 0xa8-byte Path owners as 63 primary/secondary pairs; iOS Path.o
+// preserves the cRPath methods and cRPathFollowGoldy traversal vocabulary.
 #ifndef TRACK_ATTACHMENT_TYPES_H
 #define TRACK_ATTACHMENT_TYPES_H
 
@@ -22,7 +22,7 @@ struct PathTemplateStripMesh {
     int flags;                       // +0x10
 };
 
-struct AttachmentPathTemplate {
+struct Path {
     void allocate_path_template_samples(); // @ 0x41b0a0
     void initialize_worm_path_template_pair(char* texture_path);
     void initialize_cage2_path_template_pair(
@@ -221,7 +221,7 @@ struct AttachmentPathTemplate {
         char* vertical_texture);
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
-    void mirror_path_template_pair_x(AttachmentPathTemplate* source); // @ 0x421dc0, cRPath::Mirror
+    void mirror_path_template_pair_x(Path* source); // @ 0x421dc0, cRPath::Mirror
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,
@@ -266,18 +266,21 @@ struct AttachmentPathTemplate {
         Vector3& out, int node, int row_index, Vector3& local); // @ 0x42b9c0, cRPath::GetPos
 };
 
-typedef char AttachmentPathTemplate_must_be_0xa8[
-    (sizeof(AttachmentPathTemplate) == 0xa8) ? 1 : -1];
+typedef char Path_must_be_0xa8[
+    (sizeof(Path) == 0xa8) ? 1 : -1];
 
-struct AttachmentPathTemplatePair {
-    AttachmentPathTemplate primary;   // +0x00
-    AttachmentPathTemplate secondary; // +0xa8, X-mirrored or explicitly built peer
+struct PathPair {
+    Path primary;   // +0x00
+    Path secondary; // +0xa8, X-mirrored or explicitly built peer
 };
 
-typedef char AttachmentPathTemplatePair_must_be_0x150[
-    (sizeof(AttachmentPathTemplatePair) == 0x150) ? 1 : -1];
+typedef char PathPair_must_be_0x150[
+    (sizeof(PathPair) == 0x150) ? 1 : -1];
 
-enum { ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT = 63 };
+enum {
+    PATH_PAIR_COUNT = 63,
+    PATH_COUNT = PATH_PAIR_COUNT * 2,
+};
 
 // Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
 // its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
@@ -299,7 +302,7 @@ struct SubLoc {
     float render_arg_20;                // +0x20
     Object* object;                     // +0x24, swapped by entry-mesh transitions
     Color4f color;                      // +0x28, alpha at +0x34
-    AttachmentPathTemplate* attachment_template_record; // +0x38, installed by P/p entry tiles
+    Path* attachment_template_record; // +0x38, installed by P/p entry tiles
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
@@ -356,14 +359,14 @@ typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
 class FollowState {
 public:
-    AttachmentPathTemplate* begin_track_attachment_follow_state(
+    Path* begin_track_attachment_follow_state(
         SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
-    AttachmentPathTemplate* template_record; // +0x04
+    Path* template_record; // +0x04
     SubLoc* source_cell;         // +0x08
     int sample_index;            // +0x0c
     float progress;              // +0x10

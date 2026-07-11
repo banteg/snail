@@ -34,7 +34,7 @@ Residuals:
   avoids carrying fake-looking locals.
 - 2026-06-13 follow-up: the addressed diff showed native loading
   `ecx = template_record` immediately before the kind-42 transform helper
-  call, so the scratch now spells the helper as a `PathTemplate` member call
+  call, so the scratch now spells the helper as a `Path` member call
   at this callsite. That raises the scratch to 81.16%, 101/106 instructions,
   and improves prefix from 1/106 to 15/106. The shared recovered header still
   declares this helper as `__stdcall`; consolidate that only after more

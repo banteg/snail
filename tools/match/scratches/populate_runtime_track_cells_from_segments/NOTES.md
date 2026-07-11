@@ -67,8 +67,8 @@ the cell visible-bod flag, and uses a separate per-row install latch so only
 the first entry cell arms the row. That first entry cell installs template
 bod pointers from template +0x24 and +0x84, writes row +0xac from
 `active_segment + 0x4014`, and stamps row flags 0x40/0x80 plus
-primary/secondary cell pointers over `AttachmentPathTemplate::row_span_count`
-rows. `AttachmentPathTemplate +0x48` is therefore a runtime row-span count,
+primary/secondary cell pointers over `Path::row_span_count`
+rows. `Path +0x48` is therefore a runtime row-span count,
 not an unknown field. A standalone source block for this path compiled to
 17.21% because it shifted switch-region alignment before the shared post-switch
 anchor was present, so keep the source unchanged until the entry path and
@@ -104,7 +104,7 @@ write did not improve the match.
 
 2026-06-16 entry shared-field pass: the `P`/`p` path now writes the shared
 `TrackRowCell::attachment_template_record`, uses
-`AttachmentPathTemplate::row_span_count`, and stamps
+`Path::row_span_count`, and stamps
 `TrackAttachmentRuntimeRow::primary_attachment_cell` /
 `secondary_attachment_cell` over the template span. Focused Wibo remains
 `28.25%`, `1190/1245`, with `57 ok / 1 unresolved / 0 mismatch`. This is
@@ -114,10 +114,15 @@ fields consumed by `begin_track_attachment_follow_state`,
 player attachment-entry path.
 
 2026-06-16 layout assertion pass originally padded
-`AttachmentPathTemplate` to `0x150` to preserve the observed index stride.
+`Path` to `0x150` to preserve the observed index stride.
 The 2026-07-10 constructor callsite audit supersedes that temporary model: one
-record is exactly `0xa8`, `AttachmentPathTemplatePair` is `0x150`, and the two
+record is exactly `0xa8`, `PathPair` is `0x150`, and the two
 former bank roots are the primary/secondary fields of one 63-pair array.
+
+2026-07-11 cRPath ownership: symbol-preserving ports name each `0xa8` receiver
+`cRPath`; the Windows root therefore owns 126 individual paths as 63 adjacent
+`PathPair` records. The focused builder remains at 28.25%, so this is a
+codegen-neutral ownership recovery, not a score-driven relabeling.
 
 2026-06-17 runtime/root consolidation: the scratch now uses the shared sparse
 `SubgameRuntime` root and the named `TrackAttachmentRuntimeRow` fields
@@ -148,7 +153,7 @@ generic owner list.
 The raw `+0xff2914/+0xff29bc + index*0x150` spelling remains in this large
 scratch because the natural typed pair expression changes VC6 branch/address
 formation and globally reshuffles locals. The shared `SubgameRuntime` header
-now owns the exact `AttachmentPathTemplatePair[63]` field; retaining the native
+now owns the exact `PathPair[63]` field; retaining the native
 arithmetic here is source-shape preservation, not an unresolved owner.
 
 ## 2026-07-10 runtime slab ownership pass

@@ -219,7 +219,7 @@ int SubgameRuntime::place_parcels_on_track()
             if (node < 0)
                 node = 0;
             TrackRowCell* live_cell = row_record->primary_attachment_cell;
-            AttachmentPathTemplate* template_record = live_cell->attachment_template_record;
+            Path* template_record = live_cell->attachment_template_record;
             if (template_record->kind == 42) {
                 template_record->compute_kind42_attachment_transform(
                     template_record->primary_samples[node].special_scalar,

@@ -3,7 +3,7 @@
 // For path-follow scratches that only need the row anchor and row-index helper.
 // It intentionally depends on the including scratch's local Vec3 view and avoids
 // naming the +0x38 attachment-template pointer because some users need
-// matrix-backed template/sample views instead of the full AttachmentPathTemplate
+// matrix-backed template/sample views instead of the full Path
 // layout.
 #ifndef TRACK_ROW_CELL_ANCHOR_VIEW_H
 #define TRACK_ROW_CELL_ANCHOR_VIEW_H

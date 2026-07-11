@@ -10,7 +10,7 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_sample(
     PathTemplateSample* sample, float center_x, float x, float y, float z)
@@ -26,7 +26,7 @@ static __forceinline void initialize_sample(
     sample->transform.position.z = z;
 }
 
-static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* path, int index)
+static __forceinline void copy_secondary_from_primary(Path* path, int index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -42,7 +42,7 @@ static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* pa
     secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
 }
 
-static __forceinline void orient_current_sbend(AttachmentPathTemplate* path, int index)
+static __forceinline void orient_current_sbend(Path* path, int index)
 {
     PathTemplateSample* sample = &path->primary_samples[index];
     PathTemplateSample* previous = &path->primary_samples[index - 1];
@@ -57,7 +57,7 @@ static __forceinline void orient_current_sbend(AttachmentPathTemplate* path, int
         &sample->transform.basis_up, &sample->transform.basis_forward);
 }
 
-static __forceinline void compute_path_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
         PathTemplateSample* primary = &path->primary_samples[i];
@@ -87,7 +87,7 @@ static __forceinline void compute_path_deltas(AttachmentPathTemplate* path)
 }
 
 static __forceinline void build_strip_mesh(
-    AttachmentPathTemplate* path, char* texture_a, char* texture_b)
+    Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_facequads(
         2 * path->width_cells * path->segment_count);
@@ -159,7 +159,7 @@ static __forceinline void build_strip_mesh(
     }
 }
 
-void AttachmentPathTemplate::initialize_sbend_path_template_pair(
+void Path::initialize_sbend_path_template_pair(
     int width_cells_, float height, float z_amplitude, int centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {

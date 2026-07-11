@@ -316,7 +316,7 @@ control flow were retained. Focused Wibo remains 52.85%, 659/673, prefix
 8/673, with all 86 masked operands clean.
 
 The live Binary Ninja type also now agrees with the shared source view at salt
-slot `+0x88`: this is `owner_game`, not the stale `PathTemplate*` label. The
+slot `+0x88`: this is `owner_game`, not the stale `Path*` label. The
 neighboring `state`, `fade_alpha`, and spawn-time y-velocity lanes were read
 back with the same offsets.
 

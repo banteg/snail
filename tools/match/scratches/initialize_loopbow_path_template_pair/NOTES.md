@@ -34,7 +34,7 @@ Scratch-local overlays were kept intentionally narrow:
   `+0x8c`, center value at `+0x90`, and loop-bow scalar fields through `+0xa4`.
 - `LoopbowFaceQuad` has stride `0x30`, five 16-bit vertex/header fields,
   a texture pointer at `+0x0c`, and eight UV floats through `+0x2c`.
-- Only the `AttachmentPathTemplate` fields used by this function are overlaid.
+- Only the `Path` fields used by this function are overlaid.
 
 Compile-time size checks guard both reconstructed element strides.
 
@@ -105,10 +105,10 @@ was used.
 2026-06-20:
 
 - The sample-backed path-template initializers now include the shared
-  `track_attachment_types.h` `AttachmentPathTemplate` instead of duplicating
+  `track_attachment_types.h` `Path` instead of duplicating
   local class overlays. The pass covers the 26 initializer scratches that
   already used shared `AttachmentSample`.
-- `AttachmentPathTemplate::strip_mesh` is now shared as an `Object*`, matching
+- `Path::strip_mesh` is now shared as an `Object*`, matching
   the constructor family evidence: these functions request object vertices and
   facequads, then write `ObjectFaceQuad` grids. The narrow
   `PathTemplateStripMesh` prefix view remains for mirror/finalizer code that

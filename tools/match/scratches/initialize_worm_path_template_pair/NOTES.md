@@ -113,7 +113,7 @@ regressive.
 ## 2026-06-20 shared type pass
 
 The sample and owner overlays now use the shared `AttachmentSample` and
-`AttachmentPathTemplate` declarations from `track_attachment_types.h`. The
+`Path` declarations from `track_attachment_types.h`. The
 matcher stayed at the accepted baseline:
 
 ```text

@@ -9,7 +9,7 @@ extern char* g_game_base;
 #define FOLLOW ((FollowState*)(g_follow_state_block + (int)g_game_base))
 #define PLAYER ((Player*)(g_player_block + (int)g_game_base))
 
-void AttachmentPathTemplate::try_enter_track_attachment_from_swept_motion(
+void Path::try_enter_track_attachment_from_swept_motion(
     float px, float py, float pz,
     float sweep_x, float sweep_y, float sweep_z,
     TrackRowCell* cell)

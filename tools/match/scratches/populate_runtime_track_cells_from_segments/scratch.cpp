@@ -495,11 +495,11 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
                 int template_index =
                     ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index;
-                AttachmentPathTemplate* template_record;
+                Path* template_record;
                 if (base[2] == 0) // track_mirror_enabled
-                    template_record = (AttachmentPathTemplate*)(base + 0xff2914 + template_index * 0x150);
+                    template_record = (Path*)(base + 0xff2914 + template_index * 0x150);
                 else
-                    template_record = (AttachmentPathTemplate*)(base + 0xff29bc + template_index * 0x150);
+                    template_record = (Path*)(base + 0xff29bc + template_index * 0x150);
 
                 runtime_cell->attachment_template_record = template_record;
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;

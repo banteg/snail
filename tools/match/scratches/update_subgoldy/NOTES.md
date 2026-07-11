@@ -158,7 +158,7 @@ source-shape issue is solved.
   with shared `vector3.h` preserved the headline score but introduced a
   masked operand mismatch, so this scratch keeps its local view for now.
 - 2026-06-15 attachment-layout probe: expanding the local
-  `AttachmentSample`/`AttachmentPathTemplate`/`TrackRowCell` views to the
+  `AttachmentSample`/`Path`/`TrackRowCell` views to the
   shared-header field names also preserved the headline score but shrank the
   stack frame and introduced the same jump-table masked mismatch. Keep the
   compact local attachment view until a source-shape fix explains the frame.
@@ -211,13 +211,17 @@ source-shape issue is solved.
   `SoundEffectManager` rows, and `Backdrop` no longer lists this scratch, though
   the type tool still reports a header-only `Backdrop` residual.
 - 2026-06-20 attachment view naming: the compact local attachment/follow
-  declarations are now named `SubgoldyAttachmentPathTemplateView`,
+  declarations are now named `SubgoldyPathView`,
   `SubgoldyTrackRowCellView`, and `SubgoldyFollowStateView`. This preserves the
   by-value swept-entry caller shape that beat the scalar shared-header call
   spelling above, while making the type report stop advertising these local
-  views as ready-to-promote `AttachmentPathTemplate`, `TrackRowCell`, or
+  views as ready-to-promote `Path`, `TrackRowCell`, or
   `FollowState` copies. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
+- 2026-07-11 cRPath ownership: symbol-preserving ports identify the shared
+  `0xa8` owner as `cRPath`, so the compact local view now follows that authored
+  vocabulary without pretending to be the complete shared `Path` declaration.
+  The rename is codegen neutral at the same focused baseline.
 - 2026-07-11 parcel manager owner: the tail now dispatches through the shared
   `ParcelManager` at game `+0x125e480`, removing the local one-method
   `TrackParcels` shell. The scratch's broad player transcription is named

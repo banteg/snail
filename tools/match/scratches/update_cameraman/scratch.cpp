@@ -43,7 +43,7 @@ void CameramanState::update_cameraman()
     }
 
     Player* lift_player = player;
-    AttachmentPathTemplate* template_record;
+    Path* template_record;
     int kind;
     if (lift_player->follow_active == 1
         && ((template_record = lift_player->follow_template,
@@ -114,7 +114,7 @@ void CameramanState::update_cameraman()
     desired_matrix.rotate_matrix_world_z(player->heading_roll);
 
     Player* worm_player = player;
-    AttachmentPathTemplate* worm_template;
+    Path* worm_template;
     float desired_fov;
     if (worm_player->follow_active == 1 && (worm_template = worm_player->follow_template, worm_template->kind == 0x18)) {
         float phase = (worm_player->position.z - worm_player->follow_source_cell->anchor_position.z)

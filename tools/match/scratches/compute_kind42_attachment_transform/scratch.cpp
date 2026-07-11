@@ -7,13 +7,13 @@ float atan2_positive(float y, float x);
 float sine(float angle);
 float cosine(float angle);
 
-class AttachmentPathTemplateKind42View {
+class PathKind42View {
 public:
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
 };
 
-void AttachmentPathTemplateKind42View::compute_kind42_attachment_transform(
+void PathKind42View::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
     float root = (float)square_root(radius * radius - 16.0f);

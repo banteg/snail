@@ -24,7 +24,7 @@
 #include "vector3.h"
 #include "warning_actor.h"
 
-struct AttachmentPathTemplate;
+struct Path;
 struct Object;
 
 class Player;
@@ -281,7 +281,7 @@ public:
     // Player owner instead of a child view reaching past its 0x40-byte extent.
     unsigned char follow_active;           // +0x384
     char unknown_385[3];
-    AttachmentPathTemplate* follow_template; // +0x388
+    Path* follow_template; // +0x388
     TrackRowCell* follow_source_cell;      // +0x38c
     int follow_sample_index;               // +0x390
     float follow_progress;                 // +0x394

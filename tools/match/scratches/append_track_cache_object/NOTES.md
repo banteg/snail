@@ -15,7 +15,7 @@ result on overflow).
 Every caller passes the real `cRObject`/`Object` geometry owner. The older
 cross-decompiler `PathTemplateStripMesh*` prototype was only a partial object
 prefix and is now retired from this helper, the object allocation APIs, and
-the three `AttachmentPathTemplate` mesh-owner fields. The narrow prefix view
+the three `Path` mesh-owner fields. The narrow prefix view
 remains only in mirror/finalizer scratch source where it is an explicit
 code-generation view rather than a claimed allocation type.
 

@@ -7,9 +7,9 @@
 
 float cosine(float angle);
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
-void AttachmentPathTemplate::initialize_cage2_path_template_pair(
+void Path::initialize_cage2_path_template_pair(
     int width_cells_, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int mesh_cursor = 0;

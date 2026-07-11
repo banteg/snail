@@ -5,7 +5,7 @@
 #include "track_attachment_types.h"
 
 void __fastcall request_object_vertex_colours(Object* object);
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 struct MirroredPathTemplateStripMesh : public PathTemplateStripMesh {
     char unknown_14[0x38 - 0x14];
@@ -19,7 +19,7 @@ struct MirroredPathTemplateStripMesh : public PathTemplateStripMesh {
 typedef char MirroredPathTemplateStripMesh_must_be_0x60[
     (sizeof(MirroredPathTemplateStripMesh) == 0x60) ? 1 : -1];
 
-void AttachmentPathTemplate::mirror_path_template_pair_x(AttachmentPathTemplate* source)
+void Path::mirror_path_template_pair_x(Path* source)
 {
     is_mirrored_x = 1;
     segment_count = source->segment_count;

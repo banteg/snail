@@ -7,7 +7,7 @@
 
 extern char* g_game_base; // data_4df904
 
-void AttachmentPathTemplate::build_track_fringe_mesh(char* texture_path, float clamp_side)
+void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
 {
     fringe_mesh_bod.set_bod_object(g_object_list.add_object_to_list());
 

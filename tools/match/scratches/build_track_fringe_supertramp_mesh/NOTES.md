@@ -8,9 +8,9 @@ facequads per segment plus one terminal cap face.
 
 Important type notes:
 
-- `AttachmentPathTemplate +0x60` is the same second `BodBase` used by
+- `Path +0x60` is the same second `BodBase` used by
   `build_track_fringe_mesh`; the generated object pointer is at `+0x84`.
-- The source strip mesh lives at `AttachmentPathTemplate +0x24`.
+- The source strip mesh lives at `Path +0x24`.
 - Each generated row copies source columns `1/0` for the left edge and
   `width_cells - 1 / width_cells` for the right edge, then extrudes the outer
   generated vertices by 0.4 units along the normalized edge direction.

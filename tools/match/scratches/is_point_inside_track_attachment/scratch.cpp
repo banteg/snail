@@ -2,7 +2,7 @@
 
 #include "track_attachment.h"
 
-bool AttachmentPathTemplate::is_point_inside_track_attachment(
+bool Path::is_point_inside_track_attachment(
     Vector3 probe, Vector3 swept_motion, TrackRowCell* cell)
 {
     Vector3 local;

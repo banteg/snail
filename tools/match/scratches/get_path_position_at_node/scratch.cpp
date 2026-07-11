@@ -12,7 +12,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
-int AttachmentPathTemplate::get_path_position_at_node(
+int Path::get_path_position_at_node(
     Vector3& out, int node, int row_index, Vector3& local)
 {
     const Vector3* local_ptr = &local;

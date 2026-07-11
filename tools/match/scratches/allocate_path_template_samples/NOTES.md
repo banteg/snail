@@ -3,8 +3,8 @@
 Exact match: 100.00%, 23/23 instructions.
 
 This helper allocates the primary and secondary `PathTemplateSample` arrays for
-one path template using the native `0xa8` sample stride. It pins
-`segment_count` at `PathTemplate +0x44`, `primary_samples` at `+0x58`, and
+one authored `cRPath` using the native `0xa8` sample stride. It pins
+`segment_count` at `Path +0x44`, `primary_samples` at `+0x58`, and
 `secondary_samples` at `+0x5c`, with the native allocation labels
 `Path Tile Nodes` and `Path Ball nodes`.
 
@@ -19,3 +19,8 @@ allocation mark. `destroy_subgame` does not free them between levels; shutdown
 unwinds all post-mark allocations with `free_tracked_allocations_to_mark`
 before deleting the root game object. The sample pointers are therefore
 borrowed game-runtime-lifetime storage from the tracked allocator.
+
+2026-07-11 cRPath ownership: symbol-preserving ports identify this exact
+`0xa8` receiver as `cRPath`. Windows owns 126 such receivers in 63 adjacent
+`PathPair` records; this exact 23/23 helper proves the per-owner allocation
+fields rather than a synthetic aggregate owner.

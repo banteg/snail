@@ -14,7 +14,7 @@ incoming x parameter. Inlining the full assignment is semantically identical but
 leaves one x87 scheduling mismatch.
 
 2026-06-15 type consolidation: the scratch-local member view is named
-`AttachmentPathTemplateKind42View` instead of generic `PathTemplate`. Defining
-the helper directly as the shared `AttachmentPathTemplate` member would require
+`PathKind42View` instead of generic `Path`. Defining
+the helper directly as the shared `Path` member would require
 the header's non-void declaration; suppressing that mismatch is not worth a
 pragma here, and adding an explicit return emits an extra `mov eax` instruction.

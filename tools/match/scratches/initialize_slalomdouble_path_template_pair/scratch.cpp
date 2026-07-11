@@ -11,10 +11,10 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
+    Path* path, int index, float center_x, float y, int z_index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -59,7 +59,7 @@ static __forceinline void orient_previous_with_up(
     previous->transform.rotate_matrix_world_z(roll_angle);
 }
 
-static __forceinline void compute_terminal_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_terminal_deltas(Path* path)
 {
     int i;
     for (i = 0; i < path->segment_count - 1; ++i) {
@@ -89,7 +89,7 @@ static __forceinline void compute_terminal_deltas(AttachmentPathTemplate* path)
     last_secondary->delta_length = 1.0f;
 }
 
-static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* texture_a, char* texture_b)
+static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));
@@ -164,7 +164,7 @@ static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* t
     }
 }
 
-void AttachmentPathTemplate::initialize_slalomdouble_path_template_pair(
+void Path::initialize_slalomdouble_path_template_pair(
     int curve_segments,
     int width_cells_,
     int side_exit,

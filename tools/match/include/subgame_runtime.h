@@ -215,10 +215,10 @@ public:
     TimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
     PathManager path_manager; // +0xff2910, empty authored cRPathManager owner
     char unknown_ff2911[0xff2914 - 0xff2911];
-    // Startup constructs 126 records here. initialize_game_assets_and_world
-    // consumes them as 63 adjacent primary/secondary pairs; public Path=
-    // indices occupy 0..50 and transition-only auxiliary pairs occupy 51..62.
-    AttachmentPathTemplatePair path_template_pairs[ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
+    // Startup constructs 126 authored cRPath records here as 63 adjacent
+    // primary/secondary pairs; public `Path=` indices occupy 0..50 and
+    // transition-only auxiliary pairs occupy 51..62.
+    PathPair path_pairs[PATH_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
     BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
     // Exact cRLandscapeManager owner: ten active render entries followed by
     // the script count and 128 parsed 0x124-byte records.

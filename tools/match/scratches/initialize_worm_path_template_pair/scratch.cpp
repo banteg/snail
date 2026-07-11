@@ -27,7 +27,7 @@ typedef char WormFaceQuad_must_be_0x30[
     (sizeof(WormFaceQuad) == 0x30) ? 1 : -1];
 
 void __fastcall request_object_vertex_colours(Object* object);
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 const int PATH_TEMPLATE_KIND_WORM = 24;
 const float WORM_TAU = 6.2831855f;
@@ -45,7 +45,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
-void AttachmentPathTemplate::initialize_worm_path_template_pair(char* texture_path)
+void Path::initialize_worm_path_template_pair(char* texture_path)
 {
     kind = PATH_TEMPLATE_KIND_WORM;
     is_mirrored_x = 0;

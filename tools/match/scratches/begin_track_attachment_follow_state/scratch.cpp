@@ -3,7 +3,7 @@
 
 extern char* g_game_base;
 
-AttachmentPathTemplate* FollowState::begin_track_attachment_follow_state(
+Path* FollowState::begin_track_attachment_follow_state(
     TrackRowCell* cell, const Vector3* world_position, Player* owning_player)
 {
     active = 1;
@@ -17,7 +17,7 @@ AttachmentPathTemplate* FollowState::begin_track_attachment_follow_state(
     int table_index = 61 * cell->get_track_cell_row_index();
     float* runtime_row_installed_heading_fields =
         (float*)(g_runtime_row_installed_heading_fields + (int)g_game_base);
-    AttachmentPathTemplate* record = template_record;
+    Path* record = template_record;
     record->installed_heading_delta = runtime_row_installed_heading_fields[table_index];
     return record;
 }

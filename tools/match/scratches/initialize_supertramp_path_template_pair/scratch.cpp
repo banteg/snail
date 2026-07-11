@@ -11,10 +11,10 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_pair_sample(
-    AttachmentPathTemplate* path, int index, float center_x, float y, int z_index)
+    Path* path, int index, float center_x, float y, int z_index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -51,7 +51,7 @@ static __forceinline void orient_arc_sample(PathTemplateSample* sample, float ra
         &sample->transform.basis_up);
 }
 
-static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_direct_deltas(Path* path)
 {
     int i;
     for (i = 0; i < path->segment_count; ++i) {
@@ -74,7 +74,7 @@ static __forceinline void compute_direct_deltas(AttachmentPathTemplate* path)
 }
 
 static __forceinline void build_direct_strip_mesh(
-    AttachmentPathTemplate* path,
+    Path* path,
     char* top_texture,
     char* bottom_texture,
     char* cap_texture)
@@ -145,7 +145,7 @@ static __forceinline void build_direct_strip_mesh(
     }
 }
 
-void AttachmentPathTemplate::initialize_supertramp_path_template_pair(
+void Path::initialize_supertramp_path_template_pair(
     float length,
     int width_cells_,
     int side_exit,

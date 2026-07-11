@@ -5,7 +5,7 @@ First tracked scratch for `finalize_path_template @ 0x42c600`.
 Recovered behavior:
 
 - scans secondary sample positions and stores the maximum `(int)(z + 1.0f)` in
-  `AttachmentPathTemplate::row_span_count`;
+  `Path::row_span_count`;
 - builds inverse transforms for both primary and secondary sample arrays at
   sample `+0x40`;
 - computes each segment's lateral source from the cross product of adjacent
@@ -14,7 +14,7 @@ Recovered behavior:
 - clears the terminal sample's lateral source;
 - marks the strip mesh runtime-ready and clears the imported-X-mesh flag.
 
-This promotes `AttachmentPathTemplate +0x24` as `strip_mesh`, widens
+This promotes `Path +0x24` as `strip_mesh`, widens
 `AttachmentSample::inverse_matrix` to the full 16-float transform window, and
 names the strip mesh flag lane at `+0x10`.
 

@@ -10,7 +10,7 @@ This is the producer for the post-follow camera exit lanes:
   anchor z is captured from `position.z`, and the exit gates/progress reset
 
 2026-06-16 consolidation: the scratch now uses shared `player.h` follow-prefix
-fields and `AttachmentPathTemplate::installed_heading_bits`. The same template
+fields and `Path::installed_heading_bits`. The same template
 slot remains `installed_heading_delta` for float arithmetic in
 `update_track_attachment_follow_state`; this helper proves the raw-bit view.
 
@@ -18,6 +18,6 @@ slot remains `installed_heading_delta` for float arithmetic in
 the only confirmed consumer in `update_cameraman`. `player+0x430` is
 `post_follow_heading_carryover`: this helper copies the raw dword from the
 template's installed-heading lane, but no direct consumer is currently closed.
-The live Binary Ninja `PathTemplate+0x98` field intentionally remains the float
+The live Binary Ninja `Path+0x98` field intentionally remains the float
 `installed_heading_delta` view because the arithmetic attachment helpers use it
 that way.

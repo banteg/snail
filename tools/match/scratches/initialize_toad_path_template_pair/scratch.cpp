@@ -11,7 +11,7 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(AttachmentPathTemplate* path);
+void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_sample(
     PathTemplateSample* sample, float center_x, float x, float y, float z)
@@ -27,7 +27,7 @@ static __forceinline void initialize_sample(
     sample->transform.position.z = z;
 }
 
-static __forceinline void initialize_secondary_flat(AttachmentPathTemplate* path, int index)
+static __forceinline void initialize_secondary_flat(Path* path, int index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -44,7 +44,7 @@ static __forceinline void initialize_secondary_flat(AttachmentPathTemplate* path
     secondary->transform.position.z = primary->transform.position.z;
 }
 
-static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* path, int index)
+static __forceinline void copy_secondary_from_primary(Path* path, int index)
 {
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
@@ -60,7 +60,7 @@ static __forceinline void copy_secondary_from_primary(AttachmentPathTemplate* pa
     secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
 }
 
-static __forceinline void orient_current_with_previous(AttachmentPathTemplate* path, int index, float angle)
+static __forceinline void orient_current_with_previous(Path* path, int index, float angle)
 {
     PathTemplateSample* sample = &path->primary_samples[index];
     PathTemplateSample* previous = &path->primary_samples[index - 1];
@@ -76,7 +76,7 @@ static __forceinline void orient_current_with_previous(AttachmentPathTemplate* p
     sample->transform.rotate_matrix_world_z(angle);
 }
 
-static __forceinline void compute_path_deltas(AttachmentPathTemplate* path)
+static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
         PathTemplateSample* primary = &path->primary_samples[i];
@@ -105,7 +105,7 @@ static __forceinline void compute_path_deltas(AttachmentPathTemplate* path)
     secondary_last->delta_length = 1.0f;
 }
 
-static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* texture_a, char* texture_b)
+static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));
@@ -180,7 +180,7 @@ static __forceinline void build_strip_mesh(AttachmentPathTemplate* path, char* t
     }
 }
 
-void AttachmentPathTemplate::initialize_toad_path_template_pair(
+void Path::initialize_toad_path_template_pair(
     char turn_left, char* texture_a, char* texture_b, char* vertical_texture)
 {
     int lead_count;

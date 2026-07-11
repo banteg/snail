@@ -3,7 +3,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void AttachmentPathTemplate::allocate_path_template_samples()
+void Path::allocate_path_template_samples()
 {
     AttachmentSample* primary = (AttachmentSample*)allocate_tracked_memory(
         segment_count * sizeof(AttachmentSample), "Path Tile Nodes");

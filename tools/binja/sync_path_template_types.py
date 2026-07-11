@@ -45,8 +45,8 @@ REQUIRED_HEADER_STRUCTS = (
     "FringeObject",
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
-    "PathTemplate",
-    "PathTemplatePair",
+    "Path",
+    "PathPair",
     "Player",
     "JetParticleSlot",
     "JetpackGaugeController",
@@ -159,7 +159,7 @@ GAME_FIELD_UPDATES = (
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e4", "runtime_track_index", "int32_t"),
-    ("0xff2914", "path_template_pairs", "PathTemplatePair[63]"),
+    ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "completion", "Completion"),
@@ -179,7 +179,7 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
     ("0x28", "color", "Color4f"),
-    ("0x38", "attachment_template_record", "PathTemplate*"),
+    ("0x38", "attachment_template_record", "Path*"),
     ("0x3c", "tile_id", "uint8_t"),
     ("0x3d", "tile_flags_3d", "uint8_t"),
     ("0x40", "lane_and_flags", "uint32_t"),
@@ -205,7 +205,9 @@ TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
     ("0xf0", "row_event_id", "int32_t"),
 )
 
-PATH_TEMPLATE_FIELD_UPDATES = (
+# Authored cRPath field overlay. The Windows runtime owns 126 exact 0xa8-byte
+# instances as 63 adjacent PathPair records.
+PATH_FIELD_UPDATES = (
     ("0x24", "strip_mesh", "Object*"),
     ("0x30", "header_30", "float"),
     ("0x34", "header_34", "float"),
@@ -305,7 +307,7 @@ PROTO_UPDATES = (
     ),
     (
         "compute_kind42_attachment_transform",
-        "void __thiscall compute_kind42_attachment_transform(PathTemplate* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)",
+        "void __thiscall compute_kind42_attachment_transform(Path* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)",
     ),
     (
         "get_track_runtime_cell_at_world_z",
@@ -503,8 +505,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="PathTemplate",
-            updates=PATH_TEMPLATE_FIELD_UPDATES,
+            struct_name="Path",
+            updates=PATH_FIELD_UPDATES,
         )
     )
     operations.extend(

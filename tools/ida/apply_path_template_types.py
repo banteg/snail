@@ -44,15 +44,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "allocate_path_template_samples",
-        "void __fastcall allocate_path_template_samples(PathTemplate* self);",
+        "void __fastcall allocate_path_template_samples(Path* self);",
     ),
     (
         "finalize_path_template",
-        "int32_t __fastcall finalize_path_template(PathTemplate* self);",
+        "int32_t __fastcall finalize_path_template(Path* self);",
     ),
     (
         "mirror_path_template_pair_x",
-        "int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);",
+        "int32_t __thiscall mirror_path_template_pair_x(Path* self, Path* source);",
     ),
     (
         "set_matrix_identity",
@@ -124,7 +124,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "compute_kind42_attachment_transform",
-        "void __thiscall compute_kind42_attachment_transform(PathTemplate* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
+        "void __thiscall compute_kind42_attachment_transform(Path* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
     ),
     (
         "load_x_mesh",
@@ -404,7 +404,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "begin_track_attachment_follow_state",
-        "PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
+        "Path* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
     ),
     (
         "update_track_attachment_follow_state",
@@ -412,119 +412,119 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_loopout_path_template_pair",
-        "int32_t __thiscall initialize_loopout_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_loopout_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_cage2_path_template_pair",
-        "int32_t __thiscall initialize_cage2_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_cage2_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_supertramp_path_template_pair",
-        "int32_t __thiscall initialize_supertramp_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b, char* texture_c);",
+        "int32_t __thiscall initialize_supertramp_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b, char* texture_c);",
     ),
     (
         "initialize_halfpipe_path_template_pair",
-        "int32_t __thiscall initialize_halfpipe_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_halfpipe_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_hump_path_template_pair",
-        "int32_t __thiscall initialize_hump_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_hump_path_template_pair(Path* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_looptheloop_path_template_pair",
-        "int32_t __thiscall initialize_looptheloop_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_looptheloop_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_looptheloopw_path_template_pair",
-        "int32_t __thiscall initialize_looptheloopw_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_looptheloopw_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_dump_path_template_pair",
-        "int32_t __thiscall initialize_dump_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_dump_path_template_pair(Path* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_dip_path_template_pair",
-        "int32_t __thiscall initialize_dip_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_dip_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_screw_path_template_pair",
-        "int32_t __thiscall initialize_screw_path_template_pair(PathTemplate* self, int32_t arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_screw_path_template_pair(Path* self, int32_t arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_slalom_path_template_pair",
-        "int32_t __thiscall initialize_slalom_path_template_pair(PathTemplate* self, int32_t arg2, uint32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_slalom_path_template_pair(Path* self, int32_t arg2, uint32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_worm_path_template_pair",
-        "int32_t __thiscall initialize_worm_path_template_pair(PathTemplate* self, char* texture_path);",
+        "int32_t __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path);",
     ),
     (
         "initialize_slalombig_path_template_pair",
-        "int32_t __thiscall initialize_slalombig_path_template_pair(PathTemplate* self, int32_t arg2, uint32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t arg2, uint32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_sweep_path_template_pair",
-        "int32_t __thiscall initialize_sweep_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_sweep_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_snake_path_template_pair",
-        "int32_t __thiscall initialize_snake_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_snake_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_slalomdouble_path_template_pair",
-        "int32_t __thiscall initialize_slalomdouble_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_p_path_template_pair",
-        "int32_t __thiscall initialize_p_path_template_pair(PathTemplate* self, int32_t arg2, uint32_t arg3, float arg4, float arg5, int32_t arg6, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_p_path_template_pair(Path* self, int32_t arg2, uint32_t arg3, float arg4, float arg5, int32_t arg6, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_start_path_template_pair",
-        "int32_t __thiscall initialize_start_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_path);",
+        "int32_t __thiscall initialize_start_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_path);",
     ),
     (
         "initialize_turnover_path_template_pair",
-        "int32_t __thiscall initialize_turnover_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_turnover_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_turnoverdouble_path_template_pair",
-        "int32_t __thiscall initialize_turnoverdouble_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_turnunder_path_template_pair",
-        "int32_t __thiscall initialize_turnunder_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_turnunder_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_wibble_path_template_pair",
-        "int32_t __thiscall initialize_wibble_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_wibble_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_invert_path_template_pair",
-        "int32_t __thiscall initialize_invert_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_invert_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_twister_path_template_pair",
-        "int32_t __thiscall initialize_twister_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_twister_path_template_pair(Path* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_twister2_path_template_pair",
-        "int32_t __thiscall initialize_twister2_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_twister2_path_template_pair(Path* self, float arg2, int32_t arg3, char arg4, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_loopbow_path_template_pair",
-        "int32_t __thiscall initialize_loopbow_path_template_pair(PathTemplate* self, float arg2, uint32_t arg3, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_loopbow_path_template_pair(Path* self, float arg2, uint32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_toad_path_template_pair",
-        "int32_t __thiscall initialize_toad_path_template_pair(PathTemplate* self, char arg2, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_toad_path_template_pair(Path* self, char arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_hill_valley_path_template_pair",
-        "int32_t __thiscall initialize_hill_valley_path_template_pair(PathTemplate* self, int32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_sbend_path_template_pair",
-        "int32_t __thiscall initialize_sbend_path_template_pair(PathTemplate* self, uint32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
+        "int32_t __thiscall initialize_sbend_path_template_pair(Path* self, uint32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
     ),
     (
         "build_subgame_level",

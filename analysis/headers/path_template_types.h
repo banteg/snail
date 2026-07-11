@@ -322,7 +322,7 @@ typedef struct TrackRowCell {
     float render_arg_20;
     void* object;
     Color4f color;
-    struct PathTemplate* attachment_template_record;
+    struct Path* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
     uint8_t _pad_3e[0x2];
@@ -771,7 +771,9 @@ typedef struct PathTemplateSample {
     uint8_t _pad_a4[0x4];
 } PathTemplateSample;
 
-typedef struct PathTemplate {
+/* Authored cRPath, exact 0xa8 bytes. Windows stores 126 instances as 63
+ * adjacent primary/secondary PathPair records in SubgameRuntime. */
+typedef struct Path {
     uint8_t _pad_00[0x24];
     Object* strip_mesh;
     uint8_t _pad_28[0x8];
@@ -794,12 +796,12 @@ typedef struct PathTemplate {
     uint8_t _pad_9d[0x3];
     Object* entry_transition_strip_mesh;
     Object* entry_base_strip_mesh;
-} PathTemplate;
+} Path;
 
-typedef struct PathTemplatePair {
-    PathTemplate primary;
-    PathTemplate secondary;
-} PathTemplatePair;
+typedef struct PathPair {
+    Path primary;
+    Path secondary;
+} PathPair;
 
 typedef struct Game {
     uint8_t _pad_00[0x34];
@@ -830,7 +832,7 @@ typedef struct Game {
     uint8_t _pad_ff25e0[0x4];
     int32_t runtime_track_index;
     uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
-    PathTemplatePair path_template_pairs[63];
+    PathPair path_pairs[63];
     uint8_t _pad_ff7bc4[0x12727d8 - 0xff7bc4];
     Completion completion;
     TimesUp times_up;
@@ -839,7 +841,7 @@ typedef struct Game {
 typedef struct FollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
-    PathTemplate* template_record;
+    Path* template_record;
     TrackRowCell* source_cell;
     uint32_t sample_index;
     float progress;
@@ -955,9 +957,9 @@ typedef struct Player {
 } Player;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
-void __fastcall allocate_path_template_samples(PathTemplate* self);
-int32_t __fastcall finalize_path_template(PathTemplate* self);
-int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
+void __fastcall allocate_path_template_samples(Path* self);
+int32_t __fastcall finalize_path_template(Path* self);
+int32_t __thiscall mirror_path_template_pair_x(Path* self, Path* source);
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 void __fastcall set_matrix_rotation_identity(TransformMatrix* transform);
 TransformMatrix* __thiscall initialize_matrix_from_values(
@@ -999,7 +1001,7 @@ void __thiscall linear_interpolate_matrix(
     float alpha
 );
 void __thiscall compute_kind42_attachment_transform(
-    PathTemplate* self,
+    Path* self,
     float radius,
     float x,
     float y,
@@ -1059,11 +1061,11 @@ void __thiscall uninit_nuke(NukeController* nuke);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);
 TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);
 double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);
-PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
+Path* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1071,7 +1073,7 @@ int32_t __thiscall initialize_looptheloop_path_template_pair(
 );
 
 int32_t __thiscall initialize_loopout_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1079,14 +1081,14 @@ int32_t __thiscall initialize_loopout_path_template_pair(
 );
 
 int32_t __thiscall initialize_cage2_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_supertramp_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1095,14 +1097,14 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
 );
 
 int32_t __thiscall initialize_halfpipe_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_hump_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     float arg3,
     int32_t arg4,
@@ -1111,7 +1113,7 @@ int32_t __thiscall initialize_hump_path_template_pair(
 );
 
 int32_t __thiscall initialize_looptheloopw_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1119,7 +1121,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
 );
 
 int32_t __thiscall initialize_dump_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     float arg3,
     int32_t arg4,
@@ -1128,7 +1130,7 @@ int32_t __thiscall initialize_dump_path_template_pair(
 );
 
 int32_t __thiscall initialize_dip_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1136,7 +1138,7 @@ int32_t __thiscall initialize_dip_path_template_pair(
 );
 
 int32_t __thiscall initialize_screw_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     int32_t arg3,
     char* texture_a,
@@ -1144,7 +1146,7 @@ int32_t __thiscall initialize_screw_path_template_pair(
 );
 
 int32_t __thiscall initialize_slalom_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     uint32_t arg3,
     char* texture_a,
@@ -1152,12 +1154,12 @@ int32_t __thiscall initialize_slalom_path_template_pair(
 );
 
 int32_t __thiscall initialize_worm_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     char* texture_path
 );
 
 int32_t __thiscall initialize_slalombig_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     uint32_t arg3,
     char* texture_a,
@@ -1165,28 +1167,28 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
 );
 
 int32_t __thiscall initialize_sweep_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_snake_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_slalomdouble_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_p_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     uint32_t arg3,
     float arg4,
@@ -1197,14 +1199,14 @@ int32_t __thiscall initialize_p_path_template_pair(
 );
 
 int32_t __thiscall initialize_start_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_path
 );
 
 int32_t __thiscall initialize_turnover_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1212,7 +1214,7 @@ int32_t __thiscall initialize_turnover_path_template_pair(
 );
 
 int32_t __thiscall initialize_turnoverdouble_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1220,7 +1222,7 @@ int32_t __thiscall initialize_turnoverdouble_path_template_pair(
 );
 
 int32_t __thiscall initialize_turnunder_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char* texture_a,
@@ -1228,21 +1230,21 @@ int32_t __thiscall initialize_turnunder_path_template_pair(
 );
 
 int32_t __thiscall initialize_wibble_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_invert_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_twister_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char arg4,
@@ -1251,7 +1253,7 @@ int32_t __thiscall initialize_twister_path_template_pair(
 );
 
 int32_t __thiscall initialize_twister2_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     int32_t arg3,
     char arg4,
@@ -1260,7 +1262,7 @@ int32_t __thiscall initialize_twister2_path_template_pair(
 );
 
 int32_t __thiscall initialize_loopbow_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     float arg2,
     uint32_t arg3,
     char* texture_a,
@@ -1268,14 +1270,14 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
 );
 
 int32_t __thiscall initialize_toad_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     char arg2,
     char* texture_a,
     char* texture_b
 );
 
 int32_t __thiscall initialize_hill_valley_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     int32_t arg2,
     float arg3,
     float arg4,
@@ -1285,7 +1287,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
 );
 
 int32_t __thiscall initialize_sbend_path_template_pair(
-    PathTemplate* self,
+    Path* self,
     uint32_t arg2,
     float arg3,
     float arg4,

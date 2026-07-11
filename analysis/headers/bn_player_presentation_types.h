@@ -21,7 +21,7 @@ typedef struct PathManager {
 
 struct Player;
 struct SnailVisual;
-struct PathTemplate;
+struct Path;
 struct TrackRowCell;
 struct TrackAttachmentRuntimeRow;
 struct SubSegment;
@@ -207,7 +207,7 @@ typedef struct CameramanState {
     float smoothed_attachment_lift_envelope;
 } CameramanState;
 
-typedef struct PathTemplate {
+typedef struct Path {
     uint8_t _pad_00[0x24];
     void* strip_mesh;
     uint8_t _pad_28[0x10];
@@ -228,12 +228,12 @@ typedef struct PathTemplate {
     uint8_t _pad_9d[0x3];
     void* entry_transition_strip_mesh;
     void* entry_base_strip_mesh;
-} PathTemplate;
+} Path;
 
-typedef struct PathTemplatePair {
-    PathTemplate primary;
-    PathTemplate secondary;
-} PathTemplatePair;
+typedef struct PathPair {
+    Path primary;
+    Path secondary;
+} PathPair;
 
 typedef struct TrackRowCell {
     BodNode bod;
@@ -242,7 +242,7 @@ typedef struct TrackRowCell {
     float render_arg_20;
     void* object;
     Color4f color;
-    struct PathTemplate* attachment_template_record;
+    struct Path* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
     uint8_t _pad_3e[0x2];
@@ -416,7 +416,7 @@ typedef struct InvincibleShellController {
 typedef struct FollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
-    struct PathTemplate* template_record;
+    struct Path* template_record;
     struct TrackRowCell* source_cell;
     uint32_t sample_index;
     float progress;
