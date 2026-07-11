@@ -45,7 +45,7 @@ Rejected experiment: introducing a real `SoundEffectManager*` local for the
 bonus award sound also emitted the same `mov ecx, ADDR; push 0x31` order at
 96.38%, so it does not explain native's `push 0x31; mov ecx, ADDR` setup.
 
-Remaining residual: the bonus award sound call still schedules `mov ecx,
+Historical residual, resolved by the authored member recovery below: the bonus award sound call scheduled `mov ecx,
 ADDR` and `push 0x31` in the opposite order from native. Do not force this
 with fake helpers or dummy symbols.
 
@@ -65,12 +65,11 @@ parcel spawn call, bonus score award, skip/confirm sound, widget-world vector
 staging, and delivered-count tens/ones stores all match the recovered native
 behavior.
 
-Pinned at 99.53%. Do not churn this scratch for percentage unless new source
-evidence explains the call setup order without introducing a fake helper or
-dummy temporary.
+This 99.53% pin is historical and is superseded by the exact authored-member
+result below; no dummy temporary or fake helper was introduced.
 
-2026-06-16 type consolidation: `FrontendWidget` moved out of
-`row_event_display.h` into `frontend_widget.h`. The row-event widgets still use
+2026-06-16 type consolidation: `FrontendWidget` moved out of the former
+row-event header into `frontend_widget.h`. The row-event widgets still use
 the shared +0x1a0 `widget_flags` and +0x2cc `text_buffer` fields; focused match
 remains pinned.
 
@@ -136,3 +135,10 @@ from `SubgameRuntime::spawn_track_parcel`, backed by the embedded
 `ParcelManager`. Android `cRSubGame::AddParcel(...)` independently proves that
 the pointer-or-null result is real. The focused Windows result remains 99.53%,
 213/213 instructions, prefix 102/213, with all 37 operands clean.
+
+2026-07-11 authored-member recovery: mobile symbols identify this function as
+`cRCompletion::AI()`, on the same 0x50-byte object as Init, UnInit, and
+RegisterParcel. Defining it as `Completion::update_row_event_display()` rather
+than a free `__fastcall` function is the missing Windows source shape: the
+scratch is now exact at 100.00%, 213/213, full prefix, with all 38 operands
+clean. The old separate `RowEventDisplayController` header is retired.

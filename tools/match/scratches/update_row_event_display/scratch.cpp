@@ -1,10 +1,10 @@
-// update_row_event_display @ 0x404cf0 (fastcall, ret)
+// update_row_event_display @ 0x404cf0 (thiscall, ret) — cRCompletion::AI()
 
 #include "audio_system.h"
+#include "completion.h"
 #include "game_root.h"
 #include "input_state.h"
 #include "player.h"
-#include "row_event_display.h"
 #include "subgame_runtime.h"
 #include "track_parcel_runtime.h"
 #include "vector3.h"
@@ -13,8 +13,9 @@ extern char* g_game_base; // data_4df904
 
 typedef Vector3 Vec3;
 
-void __fastcall update_row_event_display(RowEventDisplayController* controller)
+void Completion::update_row_event_display()
 {
+    Completion* controller = this;
     if (controller->state == 0)
         return;
 

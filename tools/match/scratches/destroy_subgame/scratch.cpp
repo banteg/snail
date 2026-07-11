@@ -3,7 +3,6 @@
 #include "active_landscape_entry.h"
 #include "bod_list.h"
 #include "completion_screen.h"
-#include "row_event_display.h"
 #include "subgame_runtime.h"
 #include "times_up_controller.h"
 #include "warning_actor.h"
@@ -89,7 +88,7 @@ void SubgameRuntime::destroy_subgame()
     if (subgame_state != 1) {
         DWORD level_mode = this->level_mode;
         if (level_mode == 0 || level_mode == 1)
-            row_event_display.flush_row_event_display();
+            completion.flush_row_event_display();
 
         BodNode** sub_lazer_next = &sub_lazers.slots[0].list_next;
         for (int i = 0; i < 20; ++i) {

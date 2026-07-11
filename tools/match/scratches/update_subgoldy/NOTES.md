@@ -104,7 +104,7 @@ game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
 +0x1066bf4, level count +0x12d4644, tip manager +0x12e6f58.
 
 2026-06-16 controller consolidation audit: row-event, warning, and nuke all
-have shared headers (`row_event_display.h`, `warning_actor.h`,
+have shared headers (`completion.h`, `warning_actor.h`,
 `nuke_controller.h`) validated by their focused scratches. Keep the local
 prefix views in this scratch for now. Those headers pull in
 `frontend_widget.h`/`sprite.h`/`vector3.h`, which conflicts with this file's
@@ -225,6 +225,12 @@ source-shape issue is solved.
   lets both types coexist without pretending the sparse view is complete.
   This is codegen-neutral at `72.51%`, `2067/2087`, with the same `290 ok / 1`
   real follow-jump-table mismatch.
+- 2026-07-11 cRCompletion view naming: the compact local display prefix is now
+  `SubgoldyCompletionView`, reflecting that all `+0x12727d8` calls and gates
+  belong to the authored embedded `Completion`. The full shared header still
+  pulls the frontend sprite/math surface that this scratch deliberately keeps
+  local; renaming the prefix removes the fake independent controller without
+  perturbing the 72.51% baseline or its 290-clean/one-table audit.
 - 2026-06-20 remaining local view naming: the warning, control-source, and
   cutscene subviews are now named `SubgoldyWarningActorView`,
   `SubgoldyPlayerControlSourceView`, and `SubgoldyCutsceneAIStateView`.

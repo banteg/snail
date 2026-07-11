@@ -1,7 +1,7 @@
 // update_cutscene @ 0x4466d0 (thiscall, ret)
 
 #include "audio_system.h"
-#include "completion_screen.h"
+#include "completion.h"
 #include "font_system.h"
 #include "game_root.h"
 #include "player.h"
@@ -153,14 +153,12 @@ void CutsceneAI::update_cutscene()
         force_camera_update = 1;
 
         int delivered_count = player->parcels_collected;
-        CompletionResultScreen* completion_screen =
-            (CompletionResultScreen*)(g_game_base + 0x12e6df0);
         GameRoot* game = (GameRoot*)g_game_base;
         if (game->subgame.level_mode != 0) {
             if (game->subgame.level_mode == 1)
-                completion_screen->initialize_completion_screen(delivered_count, 1);
+                game->subgame.completion.initialize_completion_screen(delivered_count, 1);
         } else {
-            completion_screen->initialize_completion_screen(
+            game->subgame.completion.initialize_completion_screen(
                 delivered_count,
                 delivered_count == *(int*)(g_game_base + 0x2247f8));
         }

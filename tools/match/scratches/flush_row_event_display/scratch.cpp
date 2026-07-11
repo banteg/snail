@@ -1,12 +1,12 @@
 // flush_row_event_display @ 0x404830 (thiscall, ret)
 
 #include "border_manager.h"
+#include "completion.h"
 #include "player.h"
-#include "row_event_display.h"
 
 extern char* g_game_base; // data_4df904
 
-void RowEventDisplayController::flush_row_event_display()
+void Completion::flush_row_event_display()
 {
     if (state != 0) {
         if (delivered_parcel_count != parcel_target_count) {

@@ -1,10 +1,10 @@
 // initialize_completion_screen @ 0x404920 (thiscall, ret 0x8)
 
-#include "completion_screen.h"
+#include "completion.h"
 #include "game_root.h"
 #include <string.h>
 
-void CompletionResultScreen::initialize_completion_screen(
+void Completion::initialize_completion_screen(
     int new_delivered_count,
     unsigned char new_perfect_delivery)
 {

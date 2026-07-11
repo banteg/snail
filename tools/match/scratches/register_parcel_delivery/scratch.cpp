@@ -1,12 +1,12 @@
 // register_parcel_delivery @ 0x405040 (thiscall, ret)
 
 #include "audio_system.h"
+#include "completion.h"
 #include "player.h"
-#include "row_event_display.h"
 
 extern char* g_game_base; // data_4df904
 
-void RowEventDisplayController::register_parcel_delivery()
+void Completion::register_parcel_delivery()
 {
     if (delivered_parcel_count != parcel_target_count) {
         ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);

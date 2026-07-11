@@ -18,6 +18,42 @@
       "notes": "The exact Windows helper is a FrontendWidget method over the cRBorder layout; it tests either the padded layout bounds or the widget's authored texture-hit mask against player zero's saved cursor position."
     },
     {
+      "address": "0x404830",
+      "windows_name": "flush_row_event_display",
+      "ios_symbol": "cRCompletion::UnInit()",
+      "android_symbol": "cRCompletion::UnInit()",
+      "source_object": "Completion.o",
+      "confidence": "high",
+      "notes": "The exact Windows member tears down the five widgets and clears the same 0x50-byte embedded owner used by Init, AI, and RegisterParcel."
+    },
+    {
+      "address": "0x404920",
+      "windows_name": "initialize_completion_screen",
+      "ios_symbol": "cRCompletion::Init(int, bool)",
+      "android_symbol": "cRCompletion::Init(int, bool)",
+      "source_object": "Completion.o",
+      "confidence": "high",
+      "notes": "All ports initialize the delivery-count, perfect-delivery, bonus, and five-widget phases on the same cRCompletion owner."
+    },
+    {
+      "address": "0x404cf0",
+      "windows_name": "update_row_event_display",
+      "ios_symbol": "cRCompletion::AI()",
+      "android_symbol": "cRCompletion::AI()",
+      "source_object": "Completion.o",
+      "confidence": "high",
+      "notes": "Promoting the Windows free fastcall transcription to the authored Completion member makes the 213-instruction function exact."
+    },
+    {
+      "address": "0x405040",
+      "windows_name": "register_parcel_delivery",
+      "ios_symbol": "cRCompletion::RegisterParcel()",
+      "android_symbol": "cRCompletion::RegisterParcel()",
+      "source_object": "Completion.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper increments the delivered count, awards the parcel score, and advances the same Completion state machine."
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",

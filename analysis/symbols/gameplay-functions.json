@@ -164,22 +164,22 @@
     {
       "address": "0x404830",
       "name": "flush_row_event_display",
-      "description": "Fast-forwards the active gameplay row-event display by paying out any remaining row score awards, destroying its widget actors, and clearing the owning controller state."
+      "description": "Exact Windows `Completion::flush_row_event_display` teardown for the embedded 0x50-byte `cRCompletion`: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain this member as `cRCompletion::UnInit()`."
     },
     {
       "address": "0x404920",
       "name": "initialize_completion_screen",
-      "description": "Builds the Delivery Complete screen, seeds its package-count and bonus summary widgets, and lays out the continue prompt. Cross-port Android and iOS symbols match this helper to `cRCompletion::Init(int, bool)`."
+      "description": "Builds the Delivery Complete phase of the embedded 0x50-byte `Completion`, reusing the same storage that drives the parcel display. It seeds package-count and bonus widgets and lays out the continue prompt. Android and iOS retain `cRCompletion::Init(int, bool)`."
     },
     {
       "address": "0x404cf0",
       "name": "update_row_event_display",
-      "description": "Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`."
+      "description": "Exact Windows `Completion::update_row_event_display`/`cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner."
     },
     {
       "address": "0x405040",
       "name": "register_parcel_delivery",
-      "description": "Records one delivered parcel on the gameplay row-event display controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives."
+      "description": "Exact Windows `Completion::register_parcel_delivery`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain this member as `cRCompletion::RegisterParcel()`."
     },
     {
       "address": "0x4050c0",
@@ -253,7 +253,7 @@
     {
       "address": "0x406060",
       "name": "destroy_completion_screen",
-      "description": "Tears down the active completion-screen widgets and restores the owning front-end state once the current exit choice resolves. Cross-port Android and iOS symbols match this helper to `cRCompletion::UnInit()`."
+      "description": "Tears down the three widgets owned by the root exit prompt and restores its saved front-end state. This is the `cRExit::UnInit()` sibling of `initialize_exit_prompt`, not the embedded subgame `cRCompletion::UnInit()`."
     },
     {
       "address": "0x4060d0",
@@ -263,7 +263,7 @@
     {
       "address": "0x4067e0",
       "name": "update_completion_screen",
-      "description": "Runs the completion-screen state machine, including continue, replay, route-map return, and outbound-link actions. Cross-port Android and iOS symbols match this helper to `cRCompletion::AI()`."
+      "description": "Runs the root exit-prompt state machine, including continue, replay, route-map return, and outbound-link actions. Android preserves the sibling body as `cRExit::AI()`; it is distinct from the embedded subgame `cRCompletion::AI()` at 0x404cf0."
     },
     {
       "address": "0x406c10",

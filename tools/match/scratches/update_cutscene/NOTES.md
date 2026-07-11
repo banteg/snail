@@ -11,7 +11,7 @@ Recovered relationships:
 - `PlayerPresentationController::snail_hotspots_world[12]` is the completion
   skid-stop source and `snail_hotspots_world[18]` is the recurring intro-talk
   look-at anchor.
-- Completion initializes `CompletionResultScreen` immediately on the state `5`
+- Completion initializes the embedded `SubgameRuntime::completion` immediately on the state `5`
   entry handoff while entering state `6`, then plays SFX `46`.
 - Death entry plays voice set `3`, releases snail weapons, and later falls back
   to voice set `11` if `initialize_subgoldy_death` does not consume the gate.
@@ -61,3 +61,11 @@ is now `34 ok / 0 unresolved / 2 mismatch`.
 2026-07-11 owner closure: the mode read now comes from
 `GameRoot::subgame.level_mode`; removing `CompletionGameView` is codegen-neutral
 at 46.29%.
+
+2026-07-11 cRCompletion owner recovery: state 5 now calls
+`game->subgame.completion.initialize_completion_screen(...)` directly. The
+receiver is the same 0x50-byte owner proven by cRCompletion AI/UnInit/
+RegisterParcel, rather than a standalone root-level result screen. This source
+shape raises the focused match from 46.29% (480/505, 34 clean operands and two
+mismatches) to 68.97% (481/505, 55 clean operands and one real jump-table
+mismatch). The gain is retained as ownership evidence, not tuned padding.

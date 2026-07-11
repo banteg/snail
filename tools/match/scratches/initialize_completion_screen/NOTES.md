@@ -7,7 +7,7 @@ screen object used by the cutscene completion handoff. It is called only from
 
 Recovered relationships:
 
-- `CompletionResultScreen` uses widgets at `+0x00/+0x04/+0x08/+0x0c/+0x10`.
+- The authored `Completion` uses widgets at `+0x00/+0x04/+0x08/+0x0c/+0x10`.
 - `+0x48` is the computed bonus score and `+0x4c` is the total score built from
   `game+0x430060 + delivered_count * 100 + bonus`.
 - Postal perfect delivery awards `50,000`; challenge mode indexes the two
@@ -25,3 +25,11 @@ keeps the game pointer in `edi` and swaps some index registers. No fakematching.
 2026-07-10 owner closure: replay-active and replay-record reads now use the
 embedded `GameRoot::subgame` aliases at relative `+0xff25d0/+0xff25d4`. The
 focused result stays codegen-neutral at 64.10%.
+
+2026-07-11 cRCompletion closure: this method, exact `flush_row_event_display`,
+exact `register_parcel_delivery`, and exact `update_row_event_display` all act
+on `SubgameRuntime::completion +0x12727d8`. The `Completion` union names both
+the parcel-display and final-result phases without duplicating storage;
+`sizeof(Completion) == 0x50` matches the native ledger and ends exactly at
+`TimesUp`. The focused initializer remains honestly at 64.10%, 268/278, with
+all 34 operands clean.

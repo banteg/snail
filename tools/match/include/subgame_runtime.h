@@ -9,6 +9,7 @@
 #include "banner.h"
 #include "barrier_actor.h"
 #include "challenge_setup_screen.h"
+#include "completion.h"
 #include "completion_screen.h"
 #include "frontend_widget.h"
 #include "fringe_object.h"
@@ -23,7 +24,6 @@
 #include "path_manager.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
-#include "row_event_display.h"
 #include "salt_hazard_types.h"
 #include "slug_hazard_types.h"
 #include "slug_voice_manager.h"
@@ -247,7 +247,7 @@ public:
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
     float slug_voice_trigger_spacing_z; // +0x1270fd0
     ContactTargetRegistry contact_targets; // +0x1270fd4, embedded 256-entry frame registry
-    RowEventDisplayController row_event_display; // +0x12727d8, embedded HUD controller
+    Completion completion; // +0x12727d8, embedded cRCompletion owner
     TimesUpController times_up; // +0x1272828, embedded completion controller
 };
 

@@ -52,3 +52,11 @@ The same lifetime rule applies to the adjacent path-template bank at
 pairs or free their sample/mesh allocations. Those are game-runtime assets
 created after the tracked allocation mark and released together by
 `free_tracked_allocations_to_mark` during main-loop shutdown.
+
+## 2026-07-11 cRCompletion owner
+
+The mode-0/1 teardown now calls
+`SubgameRuntime::completion.flush_row_event_display()` directly. Mobile symbols
+name the exact callee `cRCompletion::UnInit()`, and its 0x50-byte owner ends
+exactly at `times_up`. The old independent row-event controller view is
+retired; the teardown remains exact at 246/246 with all 41 operands clean.

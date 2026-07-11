@@ -260,3 +260,11 @@ Fifty inline 0x8c-byte `Parcel` records close exactly to the native 0x1b58
 total and the next `SubgameRuntime` field at `+0x125ffd8`. Constructor metrics
 remain unchanged at 88.89%, with 119 clean operands and only the existing
 compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRCompletion size ledger
+
+The `Size of cRCompletion` entry now comes from `sizeof(Completion)`. The one
+0x50-byte object at `SubgameRuntime +0x12727d8` owns both the parcel-display
+and final-result phases and ends exactly at the embedded `TimesUp` controller.
+Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
+only the compiler-local EH relocation unresolved.

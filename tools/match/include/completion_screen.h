@@ -1,4 +1,4 @@
-// Completion and exit-prompt front-end controllers, partial.
+// Pause and exit-prompt front-end controllers, partial.
 #ifndef COMPLETION_SCREEN_H
 #define COMPLETION_SCREEN_H
 
@@ -35,31 +35,6 @@ public:
 
 typedef char CompletionPrompt_must_be_0x1c[
     (sizeof(CompletionPrompt) == 0x1c) ? 1 : -1];
-
-class CompletionResultScreen {
-public:
-    void initialize_completion_screen(int delivered_count, unsigned char perfect_delivery);
-
-    FrontendWidget* title_widget; // +0x00
-    FrontendWidget* delivered_count_widget; // +0x04
-    FrontendWidget* bonus_summary_widget; // +0x08
-    FrontendWidget* bonus_icon_widget; // +0x0c
-    FrontendWidget* continue_widget; // +0x10
-    int continue_state; // +0x14
-    unsigned char continue_visible; // +0x18
-    char unknown_19[0x1c - 0x19];
-    int delivered_count; // +0x1c
-    int perfect_delivery; // +0x20
-    int delivered_count_progress; // +0x24
-    int delivered_count_display; // +0x28
-    float delivered_count_progress_limit; // +0x2c
-    float delivered_count_progress_step; // +0x30
-    char unknown_34[0x40 - 0x34];
-    float bonus_progress; // +0x40
-    float bonus_progress_step; // +0x44
-    int bonus_score; // +0x48
-    int total_score; // +0x4c
-};
 
 extern int g_completion_bonus_y_table[]; // data_4a1194
 extern int g_completion_bonus_x_table[]; // data_4a11ac

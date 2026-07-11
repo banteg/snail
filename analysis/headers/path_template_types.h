@@ -706,7 +706,7 @@ typedef struct TutorialController {
     void* game;
 } TutorialController;
 
-typedef struct RowEventDisplayController {
+typedef struct Completion {
     void* widget_a;
     void* delivered_count_widget;
     void* bonus_widget;
@@ -728,7 +728,7 @@ typedef struct RowEventDisplayController {
     float bonus_blink_step;
     int32_t bonus_score;
     int32_t display_token;
-} RowEventDisplayController;
+} Completion;
 
 typedef struct SelectedLevelReplaySample {
     int16_t lateral_x;
@@ -832,7 +832,7 @@ typedef struct Game {
     uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
     PathTemplatePair path_template_pairs[63];
     uint8_t _pad_ff7bc4[0x12727d8 - 0xff7bc4];
-    RowEventDisplayController row_event_display;
+    Completion completion;
 } Game;
 
 typedef struct FollowState {
@@ -1032,9 +1032,13 @@ void* __fastcall update_tip(TipSlot* slot);
 void __fastcall update_tip_manager(TipManager* manager);
 void __fastcall initialize_tutorial(TutorialController* controller);
 TrackRowCell* __fastcall update_tutorial(TutorialController* controller);
-int32_t __fastcall flush_row_event_display(RowEventDisplayController* controller);
-int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controller);
-void __fastcall update_row_event_display(RowEventDisplayController* controller);
+void __thiscall flush_row_event_display(Completion* completion);
+void __thiscall initialize_completion_screen(
+    Completion* completion,
+    int32_t delivered_count,
+    uint8_t perfect_delivery);
+void __thiscall update_row_event_display(Completion* completion);
+void __thiscall register_parcel_delivery(Completion* completion);
 int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);

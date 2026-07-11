@@ -1,6 +1,5 @@
 // update_track_parcel @ 0x4431d0 (thiscall, ret)
 
-#include "row_event_display.h"
 #include "subgame_runtime.h"
 #include "track_parcel_runtime.h"
 
@@ -122,13 +121,13 @@ void Parcel::update_track_parcel()
         SubgameRuntime* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         display_delta.x =
-            current_subgame->row_event_display.widget_world_x -
+            current_subgame->completion.widget_world_x -
             home_anchor->x;
         display_delta.y =
-            current_subgame->row_event_display.widget_world_y -
+            current_subgame->completion.widget_world_y -
             home_anchor->y;
         display_delta.z =
-            current_subgame->row_event_display.widget_world_z -
+            current_subgame->completion.widget_world_z -
             home_anchor->z;
 
         sprite->size_end = progress * 0.60000002f + 0.40000001f;
@@ -151,7 +150,7 @@ void Parcel::update_track_parcel()
         float advanced_progress = progress_step + progress;
         progress = advanced_progress;
         if (advanced_progress > 1.0f) {
-            owner_subgame->row_event_display.register_parcel_delivery();
+            owner_subgame->completion.register_parcel_delivery();
             Sprite* dying_sprite = sprite;
             state = 0;
             dying_sprite->kill_sprite();

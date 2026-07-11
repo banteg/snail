@@ -30,7 +30,7 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 
-struct RowEventDisplay {
+struct SubgoldyCompletionView {
     char unknown_00[0x14];
     int state;             // +0x14
     unsigned char gate_18; // +0x18
@@ -313,7 +313,7 @@ void SubgoldyPlayerView::update_subgoldy()
             damage_gauge.update_damage_gauge();
             progress_bar.update_progress_bar();
             warning.update_warning();
-            ((RowEventDisplay*)((char*)game + 0x12727d8))->update_row_event_display();
+            ((SubgoldyCompletionView*)((char*)game + 0x12727d8))->update_row_event_display();
         }
         return;
     }
@@ -916,17 +916,17 @@ steering_stored:
         if (completion_handoff_timer > 2.0f) {
             SubgoldyGameView* skip_game = game;
             if (skip_game->level_mode == 0 || skip_game->level_mode == 1) {
-                if (((RowEventDisplay*)((char*)skip_game + 0x12727d8))->gate_18 == 1
+                if (((SubgoldyCompletionView*)((char*)skip_game + 0x12727d8))->gate_18 == 1
                     && (control_source->control_flags_a & 0x4000) != 0)
                     completion_handoff_timer = 5.0999999f;
-                if (((RowEventDisplay*)((char*)skip_game + 0x12727d8))->state == 5)
+                if (((SubgoldyCompletionView*)((char*)skip_game + 0x12727d8))->state == 5)
                     completion_handoff_timer = 5.0999999f;
             }
         }
         if (completion_handoff_timer > 5.0f) {
             SubgoldyGameView* hold_game = game;
             if ((hold_game->level_mode == 0 || hold_game->level_mode == 1)
-                && ((RowEventDisplay*)((char*)hold_game + 0x12727d8))->state != 5)
+                && ((SubgoldyCompletionView*)((char*)hold_game + 0x12727d8))->state != 5)
                 completion_handoff_timer =
                     completion_handoff_timer - completion_handoff_timer_step;
         }
@@ -936,8 +936,8 @@ steering_stored:
                 g_app->fade.begin_frontend_fade_out(0);
             } else if (fade_state == 4) {
                 SubgoldyGameView* finish_game = game;
-                if (((RowEventDisplay*)((char*)finish_game + 0x12727d8))->state)
-                    ((RowEventDisplay*)((char*)finish_game + 0x12727d8))
+                if (((SubgoldyCompletionView*)((char*)finish_game + 0x12727d8))->state)
+                    ((SubgoldyCompletionView*)((char*)finish_game + 0x12727d8))
                         ->flush_row_event_display();
                 SubgoldyGameView* dispatch_game = game;
                 if (!dispatch_game->level_mode) {
@@ -1182,7 +1182,7 @@ steering_stored:
         }
     }
 
-    ((RowEventDisplay*)((char*)game + 0x12727d8))->update_row_event_display();
+    ((SubgoldyCompletionView*)((char*)game + 0x12727d8))->update_row_event_display();
     SubgoldyGameView* tick_game = game;
     *(int*)((char*)tick_game + 0xfd2b7c) = *(int*)((char*)tick_game + 0xfd2b7c) + 1;
     SubgoldyGameView* cursor_game = game;

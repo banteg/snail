@@ -19,7 +19,7 @@ Recovered relationships:
   from `1.0` to `0.4`, and adds a sine arc along `subgame+0x3be130`.
 - State `6` starts the row-display delivery arc and randomizes
   `delivery_offset`; state `7` flies from `subgame+0x3bf91c` to
-  `RowEventDisplayController::widget_world_*` at `subgame+0x12727d8`, then
+  `Completion::widget_world_*` at `subgame+0x12727d8`, then
   calls `register_parcel_delivery()`.
 
 The shared parcel header now models the primary authored `Parcel : BodBase`;

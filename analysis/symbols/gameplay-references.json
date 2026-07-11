@@ -608,12 +608,12 @@
     },
     {
       "address": "0x430060",
-      "name": "g_row_event_display_token_offset",
+      "name": "g_completion_display_token_offset",
       "kind": "offset",
       "aliases": [
         "data_430060"
       ],
-      "description": "Relocatable row-event display token restored by flush_row_event_display and read by completion-screen setup."
+      "description": "Relocatable Player score/display token restored by cRCompletion::UnInit and snapshotted by the same embedded Completion owner."
     },
     {
       "address": "0x430100",
