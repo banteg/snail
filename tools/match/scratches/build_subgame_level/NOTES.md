@@ -213,3 +213,12 @@ existing `105 ok / 1 mismatch` audit.
 - They remain at object `+0x838`/`+0x84c` with the same bounded five- and
   four-entry relocation contents. Registering these compiler-local spellings
   restores 106 clean operands without changing the 86.10% function body.
+
+## 2026-07-11 GalaxyRoute slot header refresh
+
+- The exact 101-slot route layout renumbers the unchanged tables to
+  `$L5016`/`$L5017`, still at object `+0x838`/`+0x84c` with identical bounded
+  contents.
+- `$L5017` is reassigned from the prior state-table generation to the current
+  track table, keeping aliases unambiguous and restoring all 106 clean operands
+  without changing the partial function body.

@@ -45,17 +45,18 @@ int GalaxyRoute::update_galaxy()
 
     int tick_index = 0;
     if (g_runtime_config.highest_galaxy_route_index >= 0) {
-        GalaxyRouteRecordTick* tick_record = (GalaxyRouteRecordTick*)((char*)this + 0x10);
+        GalaxyRouteSlot* tick_record = route_slots;
         do {
             tick_record->update_galaxy_route_record();
             ++tick_index;
-            tick_record = (GalaxyRouteRecordTick*)((char*)tick_record + 0x2a0);
+            ++tick_record;
         } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
     }
 
     if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
         color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
-        GalaxyRouteRecord* selected_record = &records[selected_index];
+        GalaxyRouteRecord* selected_record =
+            &route_slots[selected_index].record;
         FrontendWidget* card = bounds_frame_widget;
 
         float card_x;
@@ -80,8 +81,9 @@ int GalaxyRoute::update_galaxy()
     int route_index = 1;
     if (g_runtime_config.highest_galaxy_route_index >= 1) {
         do {
-            int record_offset = route_index * 0x2a0;
-            GalaxyRouteRecordSlot* record = (GalaxyRouteRecordSlot*)((char*)this + record_offset);
+            int record_offset = route_index * sizeof(GalaxyRouteSlot);
+            GalaxyRouteIndexedSlotView* record =
+                (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
             color.r = 1.0f;
             color.g = 1.0f;
             color.b = 1.0f;
@@ -146,16 +148,16 @@ int GalaxyRoute::update_galaxy()
     color.a = 0.200000003f;
     int line_index = 1;
     if (g_runtime_config.highest_galaxy_route_index > 1) {
-        GalaxyRouteRecord* next_record = &records[2];
+        GalaxyRouteSlot* next_record = &route_slots[2];
         do {
             if (line_index < selected_index) {
                 color.a = 0.800000012f;
                 draw_galaxy_line(
                     154,
-                    next_record[-1].map_x,
-                    next_record[-1].map_y,
-                    next_record->map_x,
-                    next_record->map_y,
+                    next_record[-1].record.map_x,
+                    next_record[-1].record.map_y,
+                    next_record->record.map_x,
+                    next_record->record.map_y,
                     4.0f,
                     &color);
             } else {
@@ -163,10 +165,10 @@ int GalaxyRoute::update_galaxy()
                     color.a = 0.200000003f;
                     draw_galaxy_line(
                         154,
-                        next_record[-1].map_x,
-                        next_record[-1].map_y,
-                        next_record->map_x,
-                        next_record->map_y,
+                        next_record[-1].record.map_x,
+                        next_record[-1].record.map_y,
+                        next_record->record.map_x,
+                        next_record->record.map_y,
                         4.0f,
                         &color);
                 }
@@ -216,9 +218,9 @@ int GalaxyRoute::update_galaxy()
             if (g_runtime_config.highest_galaxy_route_index >= 1) {
                 do {
                     if (probe_index == selected_index) {
-                        records[probe_index].highlight_target = 1.0f;
+                        route_slots[probe_index].record.highlight_target = 1.0f;
                     } else {
-                        records[probe_index].highlight_target = 0.0f;
+                        route_slots[probe_index].record.highlight_target = 0.0f;
                     }
                     ++probe_index;
                 } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
@@ -227,10 +229,11 @@ int GalaxyRoute::update_galaxy()
     }
 
     if (route_mode == 1) {
-        records[selected_index].highlight_target = 1.0f;
+        route_slots[selected_index].record.highlight_target = 1.0f;
     } else if (hover_state == 0) {
         if (route_state == 1) {
-            GalaxyRouteRecord* selected_record = &records[selected_index];
+            GalaxyRouteRecord* selected_record =
+                &route_slots[selected_index].record;
             Vector3 selected_probe;
             selected_probe.x = selected_record->map_x - mouse_x;
             selected_probe.y = selected_record->map_y - mouse_y;
@@ -238,30 +241,30 @@ int GalaxyRoute::update_galaxy()
             if (selected_probe.normalize_vector() < 17.0f && hover_state == 0) {
                 hovered_route_index = selected_index;
                 hover_state = 2;
-                records[hovered_route_index].highlight_target = 1.0f;
+                route_slots[hovered_route_index].record.highlight_target = 1.0f;
             }
         }
 
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
-            GalaxyRouteRecord* probe_record = &records[1];
+            GalaxyRouteSlot* probe_slot = &route_slots[1];
             do {
                 Vector3 probe;
-                probe.x = probe_record->map_x - mouse_x;
-                probe.y = probe_record->map_y - mouse_y;
-                probe.z = probe_record->map_z;
+                probe.x = probe_slot->record.map_x - mouse_x;
+                probe.y = probe_slot->record.map_y - mouse_y;
+                probe.z = probe_slot->record.map_z;
                 if (probe.normalize_vector() < 17.0f && hover_state == 0) {
                     hover_state = 2;
                     hovered_route_index = probe_index;
-                    probe_record->highlight_target = 1.0f;
+                    probe_slot->record.highlight_target = 1.0f;
                 } else {
                     if (route_state == 1 && probe_index == selected_index) {
-                        probe_record->highlight_target = 1.0f;
+                        probe_slot->record.highlight_target = 1.0f;
                     } else {
-                        probe_record->highlight_target = 0.0f;
+                        probe_slot->record.highlight_target = 0.0f;
                     }
                 }
                 ++probe_index;
-                ++probe_record;
+                ++probe_slot;
             } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
         }
     }

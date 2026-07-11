@@ -30,7 +30,7 @@ public:
     RuntimeSlot* initialize_landscape_script_record();
     RuntimeSlot* sub_42F6E0();
     RuntimeSlot* initialize_track_parcel_runtime();
-    RuntimeSlot* sub_408880();
+    RuntimeSlot* initialize_galaxy_route_name_record();
 
     // Shared one-byte 0x407b50 stub. Callsite receiver types distinguish the
     // empty lifecycle hooks that the Windows binary folds to this address.

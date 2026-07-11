@@ -12,7 +12,8 @@ selected-level/replay launch handoff back to the subgame state machine.
 ## Recovered behavior
 
 - Hides gameplay scores through `level_progress_base` before any route work.
-- Ticks every route record from the view at `this + 0x10`, stepping by `0x2a0`.
+- Ticks every route slot from the owned array at `this +0x10`, stepping by
+  `0x2a0`.
   The callee at `0x409bd0` is a `thiscall` helper, not a cdecl helper that takes
   a record pointer.
 - Renders the selected-card connector line through exact `draw_galaxy_line`
@@ -32,10 +33,12 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 - `RuntimeConfig::highest_galaxy_route_index` at `+0xa0` is the inclusive
   highest galaxy route index shared with subgame setup and challenge setup.
-- `GalaxyRouteRecord` starts at `this + 0x14`, but the native icon loop keeps an
-  index-scaled slot base at `this + route_index * 0x2a0` and reads fields at
-  `+0x1c/+0x20/+0x24/+0x28/+0x2c`. `GalaxyRouteRecordSlot` preserves that
-  addressing shape for the icon pass.
+- `GalaxyRouteSlot` starts at `this +0x10` and owns a `GalaxyRouteRecord` at
+  slot `+0x04`. The native icon loop instead keeps the controller-relative
+  base `this + route_index * 0x2a0` and reads fields at
+  `+0x1c/+0x20/+0x24/+0x28/+0x2c`; the explicitly non-owning
+  `GalaxyRouteIndexedSlotView` preserves that access shape without competing
+  with slot ownership.
 - The native route icon loop starts at `route_index = 1` but still retains an
   apparently unreachable `route_index == 0` branch that draws a red-ish route
   zero icon with a second stack `Color4f`.
@@ -67,3 +70,12 @@ Rejected probes:
   dropped the score to 57.94%.
 - A free `update_galaxy_route_record(void*)` helper produced a cdecl call and
   missed the native `mov ecx, ebx; call` route-record tick shape.
+
+## 2026-07-11 route-slot ownership closure
+
+- The constructor proves 101 complete slots rather than 100 oversized records
+  plus padding. The new exact `update_galaxy_route_record` scratch independently
+  proves the slot's tint/target fields at `+0x18/+0x1c`.
+- Using owned slots for iteration and a documented controller-relative view
+  only where native retains that base preserves the 61.11% baseline, 550/566
+  instruction shape, and all 43 clean operands.

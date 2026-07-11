@@ -13,19 +13,23 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
     title_widget->unhide_border_init();
     rstrcpy_checked_ascii(
         title_widget->text_buffer,
-        route_names[records[selected_index].route_name_index].name);
-    title_widget->layout_anchor_x = records[selected_index].map_x + 60.0f;
-    title_widget->layout_anchor_y = records[selected_index].map_y - 130.0f;
+        route_names[route_slots[selected_index].record.route_name_index].name);
+    title_widget->layout_anchor_x = route_slots[selected_index].record.map_x + 60.0f;
+    title_widget->layout_anchor_y = route_slots[selected_index].record.map_y - 130.0f;
 
     while (1) {
         title_widget->layout_frontend_widget();
 
         detail_widget->unhide_border_init();
-        rstrcpy_checked_ascii(detail_widget->text_buffer, records[selected_index].detail_text);
+        rstrcpy_checked_ascii(
+            detail_widget->text_buffer,
+            route_slots[selected_index].record.detail_text);
         detail_widget->stack_widget_below(title_widget);
 
         description_widget->unhide_border_init();
-        rstrcpy_checked_ascii(description_widget->text_buffer, records[selected_index].description_text);
+        rstrcpy_checked_ascii(
+            description_widget->text_buffer,
+            route_slots[selected_index].record.description_text);
         description_widget->stack_widget_below(detail_widget);
 
         back_widget->unhide_border_init();
@@ -61,7 +65,7 @@ FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
 
         if (max_x > 630.0f) {
             title_widget->layout_anchor_x =
-                records[selected_index].map_x - (max_x - min_x) - 40.0f;
+                route_slots[selected_index].record.map_x - (max_x - min_x) - 40.0f;
         }
         if (min_y < 50.0f) {
             title_widget->layout_anchor_y = 50.0f;

@@ -493,6 +493,11 @@
       "description": "Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`."
     },
     {
+      "address": "0x408880",
+      "name": "initialize_galaxy_route_name_record",
+      "description": "Constructs one 0xa0-byte GalaxyRouteNameRecord by running the no-op Color4f constructor on its color field at +0x84."
+    },
+    {
       "address": "0x4088a0",
       "name": "abort_startup_with_3d_error",
       "description": "Shows the native 3D-accelerator startup error dialog, terminates the shell process, and returns through the shared `cRBod` constructor on the static sentinel object."
@@ -525,6 +530,11 @@
     {
       "address": "0x409b00",
       "name": "draw_galaxy_line"
+    },
+    {
+      "address": "0x409bd0",
+      "name": "update_galaxy_route_record",
+      "description": "Interpolates one GalaxyRouteSlot's tint alpha at +0x18 toward its highlight target at +0x1c by 0.1 while the Star Map is active."
     },
     {
       "address": "0x409bf0",

@@ -227,3 +227,12 @@ aliases respectively and restore the 85 clean operands.
 - COFF still places them at `+0x62c`/`+0x640`; the five- and eight-entry
   relocation sequences remain identical to the bounded curated tables. Both
   content aliases restore 396/396 with all 85 operands clean.
+
+2026-07-11 GalaxyRoute slot header refresh:
+
+- Replacing the overlapping route-record views with 101 exact slots renumbers
+  the same tables to `$L4796`/`$L4797`, still at `+0x62c`/`+0x640` with the
+  same five and eight bounded relocations.
+- `$L4797` is reassigned from the earlier bottom-HUD generation to the current
+  startup table to keep aliases unambiguous. The exact method remains 396/396
+  with all 85 operands clean.

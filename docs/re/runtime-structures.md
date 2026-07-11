@@ -471,6 +471,12 @@ The current high-confidence `Game` fields are:
     entry 0 and there is no terminal padding word
 - `+0x125e480`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
+- `+0x1260020`: `galaxy`
+  - exact `0x10fa4`-byte `GalaxyRoute` controller ending at `+0x1270fc4`
+  - 101 `0x2a0` slots at controller `+0x10`; each slot owns a four-byte tick
+    prefix and a `0x29c` route record
+  - ten `0xa0` route-name records at controller `+0x10930`, ending exactly at
+    the progress-base field at `+0x10f70`
 - `+0x12727d8`: `row_event_display`
   - inline `RowEventDisplayController`
 - `+0xff25d0`: `selected_level_record_active`

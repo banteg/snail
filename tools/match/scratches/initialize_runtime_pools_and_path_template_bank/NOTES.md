@@ -86,3 +86,15 @@
   entire post-landscape gap without padding.
 - The typed local receiver retains the native `edi` owner and leaves this
   constructor exact at 227/227 with all 72 operands clean.
+
+## 2026-07-11 GalaxyRoute arrays
+
+- `GalaxyRoute +0x10` owns 101 constructor-visited `0x2a0` slots, ending
+  exactly at `route_names +0x10930`; this replaces 100 overlapping record
+  bodies plus a hidden `0x29c` tail.
+- Each slot has a four-byte prefix and a `0x29c` record body. Ten `0xa0` route
+  names then fill `+0x10930..+0x10f70` exactly.
+- The callback at `0x408880` constructs `GalaxyRouteNameRecord::color +0x84`,
+  so the unsupported `initialize_solution_record` name is retired. The parcel,
+  route-slot, route-name, and contact-entry constructor arrays now all use
+  their shared owners while the function remains exact at 227/227.

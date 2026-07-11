@@ -51,12 +51,13 @@
     },
     {
       "address": "0x408880",
-      "name": "initialize_solution_record",
+      "name": "initialize_galaxy_route_name_record",
       "kind": "function",
       "aliases": [
-        "sub_408880"
+        "sub_408880",
+        "initialize_solution_record"
       ],
-      "description": "Small thiscall solution-record initializer used by initialize_runtime_pools_and_path_template_bank; constructs the Color4f field at +0x84 and returns this."
+      "description": "Constructs one GalaxyRouteNameRecord by running the no-op Color4f constructor on its color field at +0x84 and returning the record."
     },
     {
       "address": "0x409bd0",
@@ -65,7 +66,7 @@
       "aliases": [
         "sub_409bd0"
       ],
-      "description": "Thiscall helper that advances one galaxy route record tick from the route view while update_galaxy walks the active star-map records."
+      "description": "Thiscall helper on a 0x2a0-byte GalaxyRouteSlot that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
     },
     {
       "address": "0x42f6e0",
@@ -919,7 +920,7 @@
         "$L4718",
         "$L4719",
         "$L4782",
-        "$L4797",
+        "$L4796",
         "$L4812",
         "$L4818",
         "$L4825",
@@ -943,6 +944,7 @@
         "$L4717",
         "$L4720",
         "$L4783",
+        "$L4797",
         "$L4798",
         "$L4813",
         "$L4819",
@@ -956,7 +958,7 @@
       "name": "build_subgame_level_state_jump_table",
       "kind": "jump_table",
       "aliases": [
-        "$L5017",
+        "$L5016",
         "$L5037",
         "$L5054"
       ],
@@ -968,6 +970,7 @@
       "name": "build_subgame_level_track_jump_table",
       "kind": "jump_table",
       "aliases": [
+        "$L5017",
         "$L5018",
         "$L5038",
         "$L5055"

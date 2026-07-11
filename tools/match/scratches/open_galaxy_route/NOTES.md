@@ -7,9 +7,10 @@ Current local field evidence:
   widget.
 - `+0x08` is the route panel state; opening writes `1`, while
   `close_galaxy_route` clears it.
-- Selected route records are accessed with stride `0x2a0` from `this + 0x14`.
-  Known fields are `route_name_index` at record `+0x00`, `map_x/map_y` at
-  `+0x08/+0x0c`, detail text at `+0x1c`, and description text at `+0x9c`.
+- Selected route slots stride `0x2a0` from `this +0x10`; each owns a four-byte
+  prefix followed by its record at slot `+0x04` (`this +0x14` for slot zero).
+  Known record fields are `route_name_index +0x00`, `map_x/map_y +0x08/+0x0c`,
+  detail text `+0x1c`, and description text `+0x9c`.
 - `+0x10930` is a `0xa0`-stride route-name string table.
 - `+0x10f70` is a progress/state table base used with selected-route stride
   `0x1fac0` and native offset `0x944150`.
@@ -24,3 +25,6 @@ The `GalaxyRoute` layout is now promoted after agreement with
 `load_galaxy_layout`, `initialize_galaxy`, `update_galaxy`, and
 `close_galaxy_route`; this opener keeps the alternate widget names used by the
 route-card source through shared header aliases.
+
+The corrected 101-slot ownership and `0x29c` record body remain codegen-neutral:
+focused matching stays exact at 266/266 with all 41 operands clean.

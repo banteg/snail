@@ -185,13 +185,25 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         0x96,
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x125e480), 0x8c, 0x32, &RuntimeSlot::initialize_track_parcel_runtime);
+        (RuntimeSlot*)parcel_pool.slots,
+        sizeof(TrackParcelRuntime),
+        0x32,
+        &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(
-        SLOT(0x1260030), 0x2a0, 0x65, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)galaxy.route_slots,
+        sizeof(GalaxyRouteSlot),
+        0x65,
+        &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
-        SLOT(0x1270950), 0xa0, 0xa, &RuntimeSlot::sub_408880);
+        (RuntimeSlot*)galaxy.route_names,
+        sizeof(GalaxyRouteNameRecord),
+        0xa,
+        &RuntimeSlot::initialize_galaxy_route_name_record);
     initialize_array_with_constructor(
-        SLOT(0x1270fd8), 0x18, 0x100, &RuntimeSlot::noop_runtime_slot_constructor);
+        (RuntimeSlot*)contact_targets.entries,
+        sizeof(ContactTargetEntry),
+        CONTACT_TARGET_CAPACITY,
+        &RuntimeSlot::noop_runtime_slot_constructor);
 
     return this;
 }

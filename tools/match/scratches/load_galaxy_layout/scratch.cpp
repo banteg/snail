@@ -94,17 +94,20 @@ int GalaxyRoute::load_galaxy_layout()
             int step = 0;
             int* saved_galaxy_point = current_galaxy_point;
             do {
-                *(int*)((char*)this + record_count * 0x2a0 + 0x14) = galaxy_index;
-                *(int*)((char*)this + record_count * 0x2a0 + 0x1c) =
+                route_slots[record_count].record.route_name_index = galaxy_index;
+                route_slots[record_count].record.map_x_bits =
                     dword_4a1d1c[(star_group_offset + step / route_name_cursor[-1]) * 2];
-                *(int*)((char*)this + record_count * 0x2a0 + 0x20) =
+                route_slots[record_count].record.map_y_bits =
                     dword_4a1d20[(star_group_offset + step / route_name_cursor[-1]) * 2];
-                *(int*)((char*)this + record_count * 0x2a0 + 0x24) = 0;
+                route_slots[record_count].record.map_z_bits = 0;
 
                 char missing_label[128];
                 sprintf(missing_label, "LEVEL %i MISSING", record_count);
-                rstrcpy_checked_ascii((char*)this + record_count * 0x2a0 + 0x30, missing_label);
-                rstrcpy_checked_ascii((char*)this + record_count * 0x2a0 + 0xb0, missing_label);
+                rstrcpy_checked_ascii(
+                    route_slots[record_count].record.detail_text, missing_label);
+                rstrcpy_checked_ascii(
+                    route_slots[record_count].record.description_text,
+                    missing_label);
                 ++star_index;
                 ++record_count;
                 step += 10;
@@ -123,12 +126,12 @@ int GalaxyRoute::load_galaxy_layout()
         }
 
         {
-            records[0].route_name_index = 0;
-            records[0].map_x_bits = dword_4a1d14;
-            records[0].map_y_bits = dword_4a1d18[0];
-            records[0].map_z_bits = 0;
-            records[0].detail_text[0] = 0;
-            records[0].description_text[0] = 0;
+            route_slots[0].record.route_name_index = 0;
+            route_slots[0].record.map_x_bits = dword_4a1d14;
+            route_slots[0].record.map_y_bits = dword_4a1d18[0];
+            route_slots[0].record.map_z_bits = 0;
+            route_slots[0].record.detail_text[0] = 0;
+            route_slots[0].record.description_text[0] = 0;
             return dword_4a1d18[0];
         }
     }

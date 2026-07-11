@@ -5,9 +5,9 @@ the two authored point tables, loads `Galaxy/_Galaxy.txt`, copies galaxy names
 and star counts into the route-name table, seeds placeholder level labels, and
 initializes the first route record.
 
-The loader now uses the shared `GalaxyRoute`, `GalaxyRouteRecord`, and
-`GalaxyRouteNameRecord` views established with the route initializer, opener,
-updater, and closer.
+The loader now uses the shared `GalaxyRoute`, `GalaxyRouteSlot`,
+`GalaxyRouteRecord`, and `GalaxyRouteNameRecord` views established with the
+constructor, route initializer, opener, updater, and closer.
 
 The authored route-point table at `0x4a1c50` is named as
 `g_galaxy_route_point_table` with the one-past sentinel
@@ -35,3 +35,14 @@ of literal null, and adding a `star_count` temporary did not recover native's
 `ebx` star-index lifetime. The declaration/compare forms are neutral at 78.37%,
 while the `star_count` temporary grows the frame and regresses to 55.36% with
 masked call mismatches. Keep the current local order.
+
+2026-07-11 slot ownership correction:
+
+- Constructor iteration starts at `GalaxyRoute +0x10`, uses stride `0x2a0`,
+  and covers 101 slots exactly through `+0x10930`.
+- Each slot owns a four-byte prefix followed by a `0x29c` route record at
+  `+0x04`; loader fields therefore remain at controller
+  `+0x14/+0x1c/+0x20/+0x24/+0x30/+0xb0` for slot zero.
+- Replacing 100 overlapping `0x2a0` records plus hidden padding with the real
+  101-slot array preserves 78.37%, the 62-instruction prefix, and all 40 clean
+  operands.
