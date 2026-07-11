@@ -1,6 +1,6 @@
 // destroy_loading_screen @ 0x418e50 (thiscall)
 
-#include "loading_screen.h"
+#include "loading_bar.h"
 #include "runtime_config.h"
 
 class Direct3DTexture8;
@@ -20,7 +20,7 @@ public:
 extern Direct3DTexture8* g_loading_background_texture; // data_503288
 extern Direct3DTexture8* g_loading_bar_on_texture;     // data_503280
 
-int LoadingScreen::destroy_loading_screen()
+int LoadingBar::destroy_loading_screen()
 {
     g_runtime_config.last_loading_budget = last_loading_budget;
     g_loading_background_texture->vtbl->release(g_loading_background_texture);

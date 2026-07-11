@@ -1,7 +1,7 @@
 // load_file_bytes_fixed_size_from_archive_or_fs @ 0x431030 (cdecl)
 
 #include "archive_index.h"
-#include "loading_screen.h"
+#include "loading_bar.h"
 
 extern "C" {
 File* __cdecl fopen(char* path, char* mode);
@@ -28,7 +28,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     File* file;
     char* result;
 
-    g_loading_screen.update_loading_screen();
+    g_loading_bar.update_loading_screen();
 
     archive_index = g_archive_index_records;
     if (archive_index != 0) {

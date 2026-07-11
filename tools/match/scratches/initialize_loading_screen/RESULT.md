@@ -19,7 +19,7 @@ Recovered behavior:
 - background and progress-fill vertex-buffer creation through
   the prefix-owned 3000-entry pool in `g_direct3d_renderer`;
 - background quad vertex seed for the 640x480 overlay;
-- final `begin_overlay_render_state()` call and `LoadingScreen` reset.
+- final `begin_overlay_render_state()` call and `LoadingBar` reset.
 
 The main remaining mismatch is register allocation: native keeps `this` in
 `ebx` and archive base in `edi`, while this source builds the opposite. A

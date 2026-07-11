@@ -2,7 +2,7 @@
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
-#include "loading_screen.h"
+#include "loading_bar.h"
 #include "runtime_config.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
@@ -31,7 +31,7 @@ char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 
-int LoadingScreen::initialize_loading_screen()
+int LoadingBar::initialize_loading_screen()
 {
     g_runtime_config.last_loading_budget = 1276;
 

@@ -1,7 +1,7 @@
 // update_loading_screen @ 0x418e80 (thiscall, ret)
 
 #include "direct3d_device8_view.h"
-#include "loading_screen.h"
+#include "loading_bar.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
 #include "runtime_config.h"
@@ -13,7 +13,7 @@ extern ObjectRenderBuffers* g_loading_bar_vertex_buffer; // data_5032a4
 
 int present_backbuffer(); // @ 0x413520
 
-int LoadingScreen::update_loading_screen()
+int LoadingBar::update_loading_screen()
 {
     int result = active;
     if (active != 0) {

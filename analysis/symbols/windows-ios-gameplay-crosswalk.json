@@ -1606,6 +1606,32 @@
       "confidence": "high"
     },
     {
+      "address": "0x418b50",
+      "windows_name": "initialize_loading_screen",
+      "ios_symbol": "cRLoadingBar::Init()",
+      "android_symbol": "cRLoadingBar::Init()",
+      "source_object": "LoadingBar.o",
+      "confidence": "high",
+      "notes": "All ports initialize the global cRLoadingBar lifecycle owner. Windows preserves an exact 0x0c-byte state object at data_503290 and the broader renderer setup remains honestly partial."
+    },
+    {
+      "address": "0x418e50",
+      "windows_name": "destroy_loading_screen",
+      "android_symbol": "cRLoadingBar::UnInit()",
+      "source_object": "LoadingBar.o",
+      "confidence": "high",
+      "notes": "The exact Windows member releases both loading textures and preserves the measured budget through the cRLoadingBar owner."
+    },
+    {
+      "address": "0x418e80",
+      "windows_name": "update_loading_screen",
+      "ios_symbol": "cRLoadingBar::AI()",
+      "android_symbol": "cRLoadingBar::AI()",
+      "source_object": "LoadingBar.o",
+      "confidence": "high",
+      "notes": "The exact Windows AI member advances and renders the global loading bar through the same owner exported as gLoadingBar on mobile."
+    },
+    {
       "address": "0x41ace0",
       "windows_name": "initialize_options_menu",
       "ios_symbol": "cROptions::Init()",

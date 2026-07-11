@@ -1,6 +1,6 @@
 // build_all_objects @ 0x42f9e0 (thiscall)
 
-#include "loading_screen.h"
+#include "loading_bar.h"
 #include "object_render_types.h"
 
 void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
@@ -12,7 +12,7 @@ void ObjectList::build_all_objects()
         int object_offset = 0;
         do {
             if ((index % 4) == 0) {
-                g_loading_screen.update_loading_screen();
+                g_loading_bar.update_loading_screen();
             }
 
             if (((Object*)((char*)objects + object_offset))->vertex_count != 0) {

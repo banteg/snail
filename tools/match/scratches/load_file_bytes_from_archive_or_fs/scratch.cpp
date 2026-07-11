@@ -1,7 +1,7 @@
 // load_file_bytes_from_archive_or_fs @ 0x4312d0 (cdecl)
 
 #include "archive_index.h"
-#include "loading_screen.h"
+#include "loading_bar.h"
 
 extern "C" {
 File* __cdecl fopen(char* path, char* mode);
@@ -33,7 +33,7 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
     int count_offset;
     char* allocated;
 
-    g_loading_screen.update_loading_screen();
+    g_loading_bar.update_loading_screen();
 
     requested_path = file_name;
     archive_index = g_archive_index_records;

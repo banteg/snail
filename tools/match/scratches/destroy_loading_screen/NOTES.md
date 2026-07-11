@@ -12,3 +12,7 @@ after curating `RuntimeConfig::last_loading_budget`, `g_loading_background_textu
 `g_loading_bar_on_texture`. `initialize_loading_screen` proves that
 `data_503288` is the `Sprites/Loading.tga` background texture and `data_503280`
 is the `LoadingBarOn` progress-fill texture.
+
+2026-07-11 cRLoadingBar ownership: Android preserves the resource teardown as
+`cRLoadingBar::UnInit()`. The exact 15/15 Windows member now lives on the
+shared `LoadingBar g_loading_bar` owner.

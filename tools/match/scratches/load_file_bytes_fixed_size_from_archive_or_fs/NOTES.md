@@ -3,7 +3,7 @@
 Initial source-shaped scratch for the fixed-size archive/filesystem loader at
 `0x431030`.
 
-The helper first ticks `g_loading_screen`, scans the loaded archive index with
+The helper first ticks `g_loading_bar`, scans the loaded archive index with
 the same case folding as `find_archive_entry`, and either returns the archived
 data offset for the `buffer == (char*)-1` sentinel or reads exactly the caller's
 requested byte count into the supplied/allocated buffer. The filesystem fallback

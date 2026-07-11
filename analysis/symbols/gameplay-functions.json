@@ -1003,17 +1003,17 @@
     {
       "address": "0x418b50",
       "name": "initialize_loading_screen",
-      "description": "Loads the loading-screen textures, seeds the full-screen quad and progress-bar quad, and resets the loader progress counters."
+      "description": "Loads the loading-screen textures, seeds the full-screen quad and progress-bar quad, and resets the loader progress counters. Cross-port Android and iOS symbols match the global owner lifecycle to `cRLoadingBar::Init()`."
     },
     {
       "address": "0x418e50",
       "name": "destroy_loading_screen",
-      "description": "Tears down the loading-screen textures and preserves the last measured loading budget for the next loader pass."
+      "description": "Tears down the loading-screen textures and preserves the last measured loading budget for the next loader pass. Cross-port Android symbols match this exact member to `cRLoadingBar::UnInit()`."
     },
     {
       "address": "0x418e80",
       "name": "update_loading_screen",
-      "description": "Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window."
+      "description": "Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window. Cross-port Android and iOS symbols match this exact member to `cRLoadingBar::AI()`."
     },
     {
       "address": "0x419110",

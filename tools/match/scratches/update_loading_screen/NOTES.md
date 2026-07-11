@@ -3,10 +3,10 @@
 Draws the loading-screen background and the clipped `LoadingBarOn` fill quad
 when the integer loader percentage advances by at least one point.
 
-Shared owner layout, now declared in `tools/match/include/loading_screen.h`:
+Shared owner layout, now declared in `tools/match/include/loading_bar.h`:
 
 ```cpp
-struct LoadingScreen {
+struct LoadingBar {
     int active;           // +0x00
     int previous_percent; // +0x04
     int last_loading_budget; // +0x08
@@ -57,5 +57,10 @@ pre-render lifetime of the clamped value.
 2026-07-11 renderer type closure: loading draw calls now share the complete
 IDirect3DDevice8 view, and both global vertex resources use the same 0xc-byte
 `ObjectRenderBuffers` owner created by the initializer. Focused matching stays
-exact at 204/204 with all 26 operands clean; the repository no longer needs
+ exact at 204/204 with all 26 operands clean; the repository no longer needs
 separate loading-only wrapper or device types.
+
+2026-07-11 cRLoadingBar ownership: Android and iOS preserve this exact
+lifecycle role as `cRLoadingBar::AI()` and export the global as `gLoadingBar`.
+The Windows owner is now `LoadingBar g_loading_bar`; the 0x0c layout and exact
+204/204 updater remain unchanged.

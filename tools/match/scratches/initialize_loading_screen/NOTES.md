@@ -10,7 +10,7 @@ Initializes the loading-screen renderer state:
   `0x102`;
 - seeds the background quad as 20-byte `{x, y, z, u, v}` vertices spanning
   `0,0` to `640,480`;
-- enters overlay render state and resets the three-field `LoadingScreen`.
+- enters overlay render state and resets the three-field `LoadingBar`.
 
 The native code locks `data_503284` for the background quad writes but calls the
 `Unlock` vtable slot through `data_5032a4` after those writes. The scratch keeps
@@ -21,7 +21,7 @@ resource.
 the in-memory archive path, file-path `...ExA` path, and simple debug fallback,
 respectively.
 
-2026-06-21 owner-register retry: naming `LoadingScreen* screen = this` for the
+2026-06-21 owner-register retry: naming `LoadingBar* screen = this` for the
 tail state stores, with and without `register`, is codegen-neutral at 83.00%.
 VC6 still keeps `this` in `edi` and archive data in `ebx`, opposite native's
 `ebx`/`edi` split. The mismatch is not fixed by a simple owner local.
@@ -38,4 +38,9 @@ use the recovered `Direct3DRenderer::create_vertex_buffer` owner directly. The
 renderer prefix contains the 3000-entry vertex-wrapper pool, while the
 renderer-state and device globals used by adjacent draw paths are proven
 interior fields at `+0xbb88/+0xbb94`. Focused output remains 83.00%, 253/253,
-with 47 clean operands and the same register-allocation residual.
+ with 47 clean operands and the same register-allocation residual.
+
+2026-07-11 cRLoadingBar ownership: Android and iOS name this initializer
+`cRLoadingBar::Init()` and preserve the `gLoadingBar` global. Promoting the
+Windows 0x0c owner to `LoadingBar g_loading_bar` is codegen-neutral at the same
+83.00% near-complete source shape.

@@ -356,13 +356,13 @@
     },
     {
       "address": "0x503290",
-      "name": "g_loading_screen",
+      "name": "g_loading_bar",
       "kind": "global",
       "aliases": [
         "data_503290"
       ],
       "size": "0xc",
-      "description": "Loading-screen progress state initialized by initialize_loading_screen and ticked during archive/object build loading passes."
+      "description": "Exact 0x0c-byte Windows cRLoadingBar owner, corresponding to cross-port gLoadingBar; initialized by initialize_loading_screen and ticked during archive/object build loading passes."
     },
     {
       "address": "0x50327c",

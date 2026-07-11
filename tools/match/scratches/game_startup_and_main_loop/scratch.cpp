@@ -3,7 +3,7 @@
 #include "frontend_fade.h"
 #include "game_root.h"
 #include "sub_high_score.h"
-#include "loading_screen.h"
+#include "loading_bar.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
 
@@ -133,7 +133,7 @@ int __stdcall game_startup_and_main_loop(
             noop_runtime_ai();
             set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
             initialize_main_loop_display_state();
-            g_loading_screen.initialize_loading_screen();
+            g_loading_bar.initialize_loading_screen();
 
             int warmup_count = timeGetTime() % 1000;
             if (warmup_count > 0) {
@@ -155,7 +155,7 @@ int __stdcall game_startup_and_main_loop(
             ((GameRoot*)g_game_base)->initialize_game_last();
             g_game_initialization_pending = 0;
             data_4b7759 = 0;
-            g_loading_screen.destroy_loading_screen();
+            g_loading_bar.destroy_loading_screen();
             ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_in();
             show_and_focus_game_window();
         }
