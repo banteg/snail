@@ -2,33 +2,28 @@
 
 #include "sprite.h"
 
-extern "C" void* memset(void* destination, int value, unsigned int count);
-
 void SpriteManager::initialize_sprite_manager()
 {
-    char* base = (char*)this;
+    paused = 0;
+    for (int bucket = 0; bucket < 5; ++bucket) {
+        active_heads[bucket] = 0;
+    }
+    free_head = &sprites[0];
 
-    int zero = 0;
-    *base = (char)zero;
-    memset(base + 0x83d64, zero, 0x14);
-    char* first_sprite = base + 4;
-    *(int*)(base + 0x83d78) = (int)first_sprite;
-
-    int index = zero;
+    int index = 0;
     do {
-        char* slot = base + index * 0xb4;
-        ((Sprite*)(slot + 4))->initialize_sprite();
+        sprites[index].initialize_sprite();
 
         if (index == 0) {
-            *(int*)(base + 0x14) = 0;
-            *(int*)(base + 0x10) = (int)(base + 0xb8);
-        } else if (index == 0xbb7) {
-            *(int*)(base + 0x83cc0) = (int)(base + 0x83bfc);
-            *(int*)(base + 0x83cbc) = 0;
+            sprites[index].prev = 0;
+            sprites[index].next = &sprites[index + 1];
+        } else if (index == 2999) {
+            sprites[index].prev = &sprites[index - 1];
+            sprites[index].next = 0;
         } else {
-            *(int*)(slot + 0x14) = (int)(slot - 0xb0);
-            *(int*)(slot + 0x10) = (int)(slot + 0xb8);
+            sprites[index].prev = &sprites[index - 1];
+            sprites[index].next = &sprites[index + 1];
         }
         ++index;
-    } while (index < 0xbb8);
+    } while (index < 3000);
 }

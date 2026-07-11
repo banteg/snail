@@ -20,8 +20,10 @@ sprite/ring runtime views without making unsupported field claims.
 - `SpriteManager` has a one-byte pause flag at `+0x00000`, a 3000-entry sprite
   pool at `+0x00004`, active owner heads at `+0x83d64`, and a free head at
   `+0x83d78`.
-- `initialize_sprite_manager` remains source-shaped around byte offsets because
-  a cleaner field-access rewrite was already tested and regressed the match.
+- `initialize_sprite_manager` now matches exactly with typed field access. A
+  five-iteration `active_heads` loop is the native source idiom: VC6 unrolls it
+  into the observed direct stores while preserving typed `sprites[index]`
+  initialization and free-list links.
 - `run_frame_update`, `kill_game_sprites`, `allocate_sprite`, and `kill_sprite`
   corroborate the active-head/free-list topology.
 
