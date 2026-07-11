@@ -379,6 +379,10 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);",
     ),
     (
+        "update_progress_bar",
+        "void __thiscall update_progress_bar(ProgressBar* progress_bar);",
+    ),
+    (
         "initialize_nuke",
         "void __thiscall initialize_nuke(Nuke* nuke);",
     ),

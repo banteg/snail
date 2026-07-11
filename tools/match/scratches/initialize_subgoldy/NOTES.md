@@ -132,3 +132,10 @@ Latest focused result:
 exact 0x7c-byte authored `Nuke` embedded at +0x150. Android independently uses
 the same `cRNuke` offsets and containing-Goldy backlink. Focused Wibo remains
 exact at 279/279 instructions with all 27 operands clean.
+
+2026-07-11 cRProgressBar ownership: the folded one-byte call on Player +0x3f0
+is now expressed as the embedded `ProgressBar` lifecycle method. Android
+`cRSubGoldy::Init()` calls the one-instruction `cRProgressBar::Init()` on its
+matching +0x3e0 owner. The class is empty and the following three bytes align
+cRWarning, rather than storing an invented progress state. Focused Wibo remains
+exact at 279/279 instructions with all 27 operands clean.

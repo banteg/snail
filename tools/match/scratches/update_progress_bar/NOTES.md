@@ -43,8 +43,17 @@ the shared header and keeps its existing 72.51% residual profile.
 remains exact at `100.00%`, `110/110` instructions, with `19` clean masked
 operands.
 
-2026-07-11 ownership closure: `Player` now owns the one-word `ProgressBar` at
+2026-07-11 ownership closure: `Player` now owns the embedded `ProgressBar` at
 `+0x3f0`, while this updater reads `Player::position.z` and the enclosing
 `SubgameRuntime::first_block_row_count/completion_row_start` directly through
 `GameRoot`. The synthetic root view and active-row window are removed. Focused
 Wibo remains exact at 110/110 instructions with 19 clean masked operands.
+
+2026-07-11 authored empty-class recovery: Android and iOS name this method
+`cRProgressBar::AI()`. Windows and Android AI ignore the receiver, while
+Android `Init()` and `UnInit()` are one-instruction no-ops. Android places the
+owner at cRSubGoldy +0x3e0 and cRWarning at +0x3e4; Windows places them at
+Player +0x3f0/+0x3f4. The three-byte gap is alignment after an empty one-byte
+C++ class, not an invented ProgressBar state word. The shared type now records
+that ownership explicitly. Focused Wibo remains exact at 110/110 instructions
+with 19 clean masked operands.

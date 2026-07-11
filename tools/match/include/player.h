@@ -296,7 +296,8 @@ public:
     unsigned char follow_flag_3c;          // +0x3c0
     char unknown_3c1[0x3c4 - 0x3c1];
     DamageGuage damage_gauge;     // +0x3c4
-    ProgressBar progress_bar;               // +0x3f0, embedded HUD progress controller
+    ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
+    char unknown_3f1[0x3f4 - 0x3f1];
     Warning warning;                       // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
     // Non-owning backlink to the SubgameRuntime that embeds this Player.

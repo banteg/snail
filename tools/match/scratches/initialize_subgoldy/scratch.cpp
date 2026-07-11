@@ -7,7 +7,6 @@
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
 #include "player.h"
-#include "runtime_slot.h"
 #include "score_stats.h"
 #include "snail_skin.h"
 #include "spring_float.h"
@@ -186,7 +185,7 @@ int Player::initialize_subgoldy(int player_slot)
     *(unsigned char*)(self + 0x440) = (unsigned char)zero;
     *(int*)(self + 0x2738) = zero;
     ((DamageGuage*)(self + 0x3c4))->initialize_damage_gauge();
-    ((RuntimeSlot*)(self + 0x3f0))->noop_runtime_ai();
+    progress_bar.noop_runtime_ai();
     this->follow_active = (unsigned char)zero;
 
     char* transform = self + 0x614;

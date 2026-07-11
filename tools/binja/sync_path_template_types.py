@@ -373,6 +373,10 @@ PROTO_UPDATES = (
         "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, uint8_t force)",
     ),
     (
+        "update_progress_bar",
+        "void __thiscall update_progress_bar(ProgressBar* progress_bar)",
+    ),
+    (
         "initialize_warning",
         "void __thiscall initialize_warning(Warning* warning)",
     ),

@@ -254,11 +254,21 @@
       "confidence": "high"
     },
     {
+      "address": "0x437c40",
+      "windows_name": "update_progress_bar",
+      "ios_symbol": "cRProgressBar::AI()",
+      "android_symbol": "cRProgressBar::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "All ports ignore the receiver and render progress from containing-game state. Windows embeds the authored empty class at Player +0x3f0; cRWarning alignment accounts for the following three bytes."
+    },
+    {
       "address": "0x437eb0",
       "windows_name": "build_subgame_level",
       "ios_symbol": "cRSubGame::BuildLevel()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The Windows call to the shared one-byte stub with receiver SubgameRuntime +0x3bbb54 is the empty cRProgressBar::Init lifecycle edge; Android cRSubGame::StartLevel() independently calls that Init."
     },
     {
       "address": "0x438700",

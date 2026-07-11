@@ -155,9 +155,9 @@ typedef struct Completion {
     int32_t display_token;
 } Completion;
 
-/* Authored cRProgressBar one-word controller at Player +0x3f0. */
+/* Authored empty cRProgressBar at Player +0x3f0. */
 typedef struct ProgressBar {
-    int32_t state;
+    uint8_t _empty;
 } ProgressBar;
 
 /* Authored cRWarning, exact 0x10-byte Windows owner at Player +0x3f4. */
@@ -554,6 +554,7 @@ typedef struct Player {
     FollowState follow_state;
     DamageGuage damage_gauge;
     ProgressBar progress_bar;
+    uint8_t _pad_3f1[0x3];
     Warning warning;
     int32_t lives;
     struct Game* game;

@@ -247,3 +247,13 @@ The level reset now calls the embedded
 this is the manager owner, not a one-method pool window. The focused result
 remains `86.10%`, `560/555`, prefix `244/555`, with 105 clean non-table
 operands and the one real table-shape mismatch.
+
+## 2026-07-11 empty cRProgressBar owner
+
+The shared no-op call at SubgameRuntime +0x3bbb54 is now receiver-typed as the
+embedded `ProgressBar` at Player +0x3f0. Android `cRSubGame::StartLevel()`
+independently calls the one-instruction `cRProgressBar::Init()` at the matching
+lifecycle point. Windows and Android AI ignore the receiver, so the owner is an
+empty one-byte C++ class followed by alignment, not a fabricated state word.
+Focused Wibo remains 86.10%, 560/555 instructions, with 105 clean operands and
+the existing table-shape mismatch.

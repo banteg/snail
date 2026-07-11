@@ -7,8 +7,8 @@
 #include "landscape_manager.h"
 #include "sub_tracks.h"
 #include "mouse_cursor_state.h"
+#include "progress_bar.h"
 #include "runtime_config.h"
-#include "runtime_slot.h"
 #include "salt_hazard_types.h"
 #include "slug_voice_manager.h"
 #include "star_manager.h"
@@ -59,7 +59,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     slug_voice_trigger_spacing_z = 100.0f;
     enemy_manager.initialize_enemy_manager();
     ((DamageGuage*)(game + 0x3bbb28))->initialize_damage_gauge();
-    ((RuntimeSlot*)(game + 0x3bbb54))->noop_runtime_ai();
+    ((ProgressBar*)(game + 0x3bbb54))->noop_runtime_ai();
     ((SubLazerManager*)(game + 0x356b00))->initialize_sub_lazer_pool();
     ((SaltManager*)(game + 0x3578c0))->initialize_salt_hazard_pool();
     g_voice_manager.reset_voice_manager();

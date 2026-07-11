@@ -77,7 +77,7 @@ scratch additionally pins:
 ## Struct facts (player block)
 
 damage_gauge at +0x3c4 (state is the FIRST field; skin_hold_ticks +0x18),
-progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
+empty progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
 (visual_root* +0x24 with lateral/squidge floats at +0x80/84/88, live
 basis_up.x +0x48, cutscene state +0x1964), squidge +0x4344 (y_out +0x00,
 z_out +0x0c), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
@@ -312,6 +312,12 @@ advertising a second full definition. Android
 `cRSubGoldy::AI()` owns both the AI and UnInit call edges through this embedded
 object. Focused Wibo remains 72.51%, 2067/2087 instructions, with 290 clean
 masked operands and one jump-table mismatch.
+
+2026-07-11 progress-owner recovery: Android and iOS identify the two HUD calls
+as `cRProgressBar::AI()`. The shared owner at Player +0x3f0 is now an empty
+one-byte class with alignment before cRWarning, matching both the unused
+receiver and mobile no-op lifecycle. Focused Wibo remains 72.51%, 2067/2087
+instructions, with 290 clean masked operands and one jump-table mismatch.
 
 ## Zig port residuals (carried from the pre-scratch dossier, still open)
 

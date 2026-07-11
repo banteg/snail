@@ -360,7 +360,7 @@
     {
       "address": "0x407b50",
       "name": "noop_runtime_ai",
-      "description": "Shared empty per-frame update stub reused by runtime object types that do not need standalone AI work. Cross-port Android symbol matches tie this address to multiple `::AI()` slots including camera, weapon, and ball-style objects."
+      "description": "Shared one-byte empty method body folded across runtime owners. Receiver-typed calls at Player +0x3f0 and SubgameRuntime +0x3bbb54 recover `cRProgressBar::Init()` specifically; other callsites remain distinct no-op AI or lifecycle methods."
     },
     {
       "address": "0x407b60",
@@ -1895,7 +1895,8 @@
     },
     {
       "address": "0x437c40",
-      "name": "update_progress_bar"
+      "name": "update_progress_bar",
+      "description": "Exact `cRProgressBar::AI()` method for the empty authored class at Player +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and SubgameRuntime row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
     },
     {
       "address": "0x437de0",
