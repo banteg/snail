@@ -20,6 +20,7 @@
 #include "sub_tracks.h"
 #include "contact_target.h"
 #include "new_game_menu.h"
+#include "path_manager.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "row_event_display.h"
@@ -212,7 +213,9 @@ public:
         int replay_launch_return_state; // front-end state restored after replay
     };
     int replay_update_cursor; // +0xff25dc
-    char unknown_ff25e0[0xff2914 - 0xff25e0];
+    char unknown_ff25e0[0xff2910 - 0xff25e0];
+    PathManager path_manager; // +0xff2910, empty authored cRPathManager owner
+    char unknown_ff2911[0xff2914 - 0xff2911];
     // Startup constructs 126 records here. initialize_game_assets_and_world
     // consumes them as 63 adjacent primary/secondary pairs; public Path=
     // indices occupy 0..50 and transition-only auxiliary pairs occupy 51..62.

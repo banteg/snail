@@ -2,6 +2,14 @@
 
 Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
+Symbol-preserving iOS builds name the authored member
+`cRPathManager::NameCode(char*)`. Windows places the otherwise-empty,
+one-byte `PathManager` at `SubgameRuntime +0xff2910`, immediately before the
+path-template bank. Recasting this scratch from a standalone stdcall helper to
+the unused-receiver thiscall method preserves exact 27/27 proof with all three
+masked operands clean; both forms emit `ret 4` because the receiver lives in
+ECX and is never read.
+
 This helper linearly searches the hardcoded segment `Path=` name table at
 `data_4a3d6c` and returns the matching attachment/path-template index, or `-1`
 after the cursor reaches `data_4a3e68` (`"TOADPAIR1"`).

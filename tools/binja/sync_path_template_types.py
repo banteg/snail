@@ -36,6 +36,7 @@ INVINCIBLE_SHELL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
 )
 REQUIRED_HEADER_STRUCTS = (
+    "PathManager",
     "Game",
     "SnailVisual",
     "BodNode",
@@ -257,6 +258,10 @@ TIP_MANAGER_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "find_segment_path_index_by_name",
+        "int32_t __thiscall find_segment_path_index_by_name(PathManager* manager, char* name)",
+    ),
     (
         "initialize_player_presentation_controller",
         "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation)",

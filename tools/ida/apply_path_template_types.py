@@ -23,6 +23,10 @@ TRUSTED_NAMES = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "find_segment_path_index_by_name",
+        "int32_t __thiscall find_segment_path_index_by_name(PathManager *manager, char *name);",
+    ),
+    (
         "border_mouse_test",
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget);",
     ),

@@ -14,6 +14,11 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 typedef short int16_t;
 
+/* Empty C++ cRPathManager occupies one byte in the Windows root layout. */
+typedef struct PathManager {
+    uint8_t _empty;
+} PathManager;
+
 struct Player;
 struct SnailVisual;
 struct PathTemplate;

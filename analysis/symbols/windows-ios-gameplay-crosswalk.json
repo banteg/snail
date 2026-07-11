@@ -758,6 +758,14 @@
       "notes": "iOS also exposes `cRPath::BuildInvert1(...)`; this row preserves the known Windows family without asserting which original split survived the port."
     },
     {
+      "address": "0x429ae0",
+      "windows_name": "find_segment_path_index_by_name",
+      "ios_symbol": "cRPathManager::NameCode(char*)",
+      "source_object": "Path.o",
+      "confidence": "high",
+      "notes": "Both linearly search the authored Path name table and return its index or -1. Windows stores the otherwise-empty PathManager at SubgameRuntime +0xff2910; the unused receiver makes its machine ABI indistinguishable from the prior stdcall presentation."
+    },
+    {
       "address": "0x429b20",
       "windows_name": "initialize_halfpipe_path_template_pair",
       "ios_symbol": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)",

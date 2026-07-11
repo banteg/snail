@@ -1277,7 +1277,7 @@
     {
       "address": "0x429ae0",
       "name": "find_segment_path_index_by_name",
-      "description": "Linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1."
+      "description": "Implements `cRPathManager::NameCode(char*)`: the stateless one-byte PathManager linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1."
     },
     {
       "address": "0x429b20",

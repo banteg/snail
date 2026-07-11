@@ -14,6 +14,10 @@
 - `SubgameRuntime` itself is `GameRoot +0x74618`, so this is the same address as
   the world initializer's constructor base `GameRoot +0x1066f2c`; no install
   copy or transfer exists.
+- The four bytes immediately before the bank now split into the authored empty
+  `cRPathManager` at `+0xff2910` and three alignment bytes. Its one-byte size is
+  independently printed by `construct_game_runtime`; naming the boundary keeps
+  this constructor exact at 227/227 with all 72 operands clean.
 - The `63 * 0x150 = 0x52b0` extent ends exactly at the embedded barrier at
   `SubgameRuntime +0xff7bc4`.
 - Despite its retained historical name, `initialize_path_template_record_pair`

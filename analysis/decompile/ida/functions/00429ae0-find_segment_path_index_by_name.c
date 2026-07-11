@@ -2,7 +2,7 @@
 /* function: find_segment_path_index_by_name @ 0x429ae0 */
 /* selector: find_segment_path_index_by_name */
 
-// Linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1.
+// Implements cRPathManager::NameCode(char*): linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1. This pre-sync decompile presents the call as stdcall because the one-byte PathManager receiver is unused; the thiscall method has the same emitted body and ret 4 ABI.
 int __stdcall find_segment_path_index_by_name(char *a1)
 {
   int v1; // edi
@@ -19,4 +19,3 @@ int __stdcall find_segment_path_index_by_name(char *a1)
   }
   return v1;
 }
-

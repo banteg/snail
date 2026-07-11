@@ -264,3 +264,12 @@ aliases respectively and restore the 85 clean operands.
   `0x4378dd`, `0x43791b`, `0x43791b`, and `0x4378f1` relative to
   `initialize_subgame`. Registering the bounded alias restores all 85 clean
   operands without changing the exact 396-instruction body.
+
+2026-07-11 PathManager owner refresh:
+
+- Promoting the one-byte `cRPathManager` owner at `SubgameRuntime +0xff2910`
+  renumbers the unchanged bottom-HUD table to `$L4824` at object `+0x62c`.
+- Its five relocations still target object offsets `+0x419`, `+0x42d`,
+  `+0x46b`, `+0x46b`, and `+0x441`, exactly matching the bounded target table.
+  Registering that content-proven alias restores all 85 operands without any
+  source-body change.

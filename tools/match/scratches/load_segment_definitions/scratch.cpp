@@ -18,11 +18,6 @@ char* advance_to_next_crlf_line(char* cursor); // @ 0x44e690
 int parse_next_signed_int(char** cursor);
 float parse_next_float32(char** cursor);
 
-class SegmentPathTable {
-public:
-    int find_segment_path_index_by_name(char* name); // @ 0x429ae0
-};
-
 void SMTracks::load_segment_definitions()
 {
     char path_name[60];
@@ -204,8 +199,8 @@ void SMTracks::load_segment_definitions()
                 }
                 *path_out = 0;
                 row->path_template_index =
-                    ((SegmentPathTable*)(g_game_base + 0x1066f28))
-                        ->find_segment_path_index_by_name(path_name);
+                    ((GameRoot*)g_game_base)->subgame.path_manager
+                        .find_segment_path_index_by_name(path_name);
                 if (row->path_template_index == -1)
                     report_errorf("Unknown path %s in %s", path_name, segment_file_name);
                 else

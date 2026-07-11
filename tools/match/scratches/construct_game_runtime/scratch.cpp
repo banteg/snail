@@ -46,7 +46,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubHighScore %i\n", 0x947648); \
     debug_report_stub("   Size of cRSubSolution %i\n", 0x1fac0); \
     debug_report_stub("   Size of cRTimeTrial %i\n", 0x330); \
-    debug_report_stub("   Size of cRPathManager %i\n", 1); \
+    debug_report_stub("   Size of cRPathManager %i\n", sizeof(PathManager)); \
     debug_report_stub("   Size of cRPath %i\n", 0x52b0); \
     debug_report_stub("   Size of cRLandscapeManager %i\n", 0x97a4); \
     debug_report_stub("   Size of cRSMTracks %i\n", 0x25cfb4); \

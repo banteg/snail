@@ -38,6 +38,14 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `select_level_track_texture_set` at `0x410730`
 - `update_subgame` at `0x438b90`
 - `initialize_jetpack_gauge` at `0x43a930`
+
+Ownership note:
+
+- `find_segment_path_index_by_name` is the authored
+  `cRPathManager::NameCode(char*)` member
+- Windows stores the empty one-byte `PathManager` at
+  `SubgameRuntime +0xff2910` (`GameRoot +0x1066f28`), followed by three bytes
+  of alignment and the path-template pair bank at `+0xff2914`
 - `update_jetpack_gauge` at `0x43a390`
 - `advance_timer_counters` at `0x441b90`
 - `update_damage_gauge` at `0x440fd0`

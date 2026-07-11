@@ -4,6 +4,11 @@
 manager constructors, installs the known callback tables, publishes
 `g_game_base`, and reports constructor counters.
 
+The printed `Size of cRPathManager` value is now sourced from the recovered
+one-byte `PathManager` type rather than a literal. Symbol-rich iOS builds name
+its sole known member `NameCode(char*)`; the size and generated constructor
+report remain unchanged.
+
 Current focused result after splitting the two adjacent helpers into their own
 manifest functions:
 
