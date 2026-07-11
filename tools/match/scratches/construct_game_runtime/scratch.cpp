@@ -66,12 +66,19 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
 #define COLOR(offset) ((Color4f*)(game + (offset)))
 #define CAMERA(offset) ((RenderCameraSlot*)(game + (offset)))
 
-int construct_game_runtime()
-{
-    REPORT_RUNTIME_SIZE_LEDGER();
+class GameRootAllocation {
+public:
+    // The promoted GameRoot view contains reverse-engineered helper types with
+    // synthetic no-op C++ constructors. Raw storage prevents those helpers
+    // from running implicitly before the single recovered root constructor.
+    char storage[sizeof(GameRoot)];
+    __forceinline GameRootAllocation();
+};
 
-    char* game = (char*)operator new(0x12e6ff4);
-    if (game) {
+__forceinline GameRootAllocation::GameRootAllocation()
+{
+    char* game = (char*)this;
+    {
         COLOR(0x14)->noop_this_constructor();
 
         RuntimeSlot* root_slot = SLOT(0x44);
@@ -169,16 +176,21 @@ int construct_game_runtime()
 
         SLOT(0x74618)->initialize_runtime_pools_and_path_template_bank();
 
-        RuntimeSlot* tip_manager = SLOT(0x12e6f58);
+        TipManager* tip_manager = &((GameRoot*)game)->tip_manager;
         tip_manager->initialize_bod_base();
         tip_manager->vtable = &g_tip_manager_callback_table;
 
         SLOT(0)->vtable = &g_root_runtime_callback_table;
-    } else {
-        game = 0;
     }
+}
 
-    g_game_base = game;
+int construct_game_runtime()
+{
+    REPORT_RUNTIME_SIZE_LEDGER();
+
+    GameRoot* game = (GameRoot*)new GameRootAllocation;
+
+    g_game_base = (char*)game;
     debug_report_stub("BodCount=%i  Memory=%i\n", g_bod_base_init_count, g_bod_base_init_count * 0x38);
     debug_report_stub("LocCount=%i Memory=%i\n", g_bod_count, g_bod_count * 0x54);
     return debug_report_stub("LocMirrorCount=%i Memory=%i\n", g_loc_mirror_count, g_loc_mirror_count * 0x15c);

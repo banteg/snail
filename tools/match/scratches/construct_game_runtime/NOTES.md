@@ -7,10 +7,10 @@ manager constructors, installs the known callback tables, publishes
 Current focused result after splitting the two adjacent helpers into their own
 manifest functions:
 
-- match: 87.93%
-- target/candidate instructions: 268 / 287
-- prefix: 0 / 268
-- masked operands: 119 clean, 0 unresolved, 0 mismatched
+- match: 88.89%
+- target/candidate instructions: 268 / 299
+- prefix: 2 / 268
+- masked operands: 119 clean, 1 unresolved, 0 mismatched
 
 The remaining broad shape gap is the compiler-generated setup around the root
 allocation. The native function has MSVC EH registration and batches the
@@ -67,3 +67,29 @@ bodies, and its installed callback slot at 0x4972b0 points to
 - `RuntimeCallback` is no longer a cross-scratch ABI-conflict name; the
   remaining local use in `run_frame_update` is the frame-loop virtual `update()`
   row, not this empty runtime-slot callback.
+
+2026-07-11 root allocation and exception-shape pass:
+
+- The size ledger and `operator new(0x12e6ff4)` call now close the canonical
+  `GameRoot` extent. `HighScoreScreen` ends at root `+0x12e6f20`; the owned
+  `TipManager` begins at `+0x12e6f58`, spans `0x98`, and leaves only the final
+  four bytes unresolved.
+- `TipManager` now inherits the constructed `BodBase +0x00..+0x37` instead of
+  treating it as padding. Its six lifecycle scratches remain byte-stable,
+  including five proof-grade helpers and the pinned `initialize_tip` body.
+- The root allocation is source-spelled as a real `new` expression under the
+  target-specific `/GX` profile. This recovers the native C++ EH prologue,
+  allocation state slot, null branch, and operator-delete cleanup path. A raw
+  allocation class is deliberate: directly constructing the promoted
+  `GameRoot` view caused synthetic no-op constructors from reverse-engineered
+  helper types to run before the single native constructor body.
+- Focused Wibo improves from `87.93%`, `287/268`, prefix `0/268`, to `88.89%`,
+  `299/268`, prefix `2/268`. The one unresolved masked operand is the
+  compiler-local `$L4917` EH-handler thunk corresponding structurally to target
+  `0x496a7b`; it is left unresolved because the matcher does not content-audit
+  cross-COMDAT local handlers.
+- The remaining leading delta is the debug reporter's cdecl cleanup cadence:
+  native batches eight two-argument calls into each `add esp, 0x40`, while the
+  isolated `/GX` scratch restores each opaque call immediately. C linkage,
+  `throw()`, `__declspec(nothrow)`, and one comma expression were neutral or
+  regressive and were rejected. No manual stack adjustment was introduced.

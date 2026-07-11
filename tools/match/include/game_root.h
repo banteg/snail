@@ -12,6 +12,7 @@
 #include "sprite.h"
 #include "star_field.h"
 #include "subgame_runtime.h"
+#include "tip_manager.h"
 #include "vector3.h"
 
 class GameRootIntroScreen {
@@ -105,11 +106,17 @@ public:
     char unknown_04f401[0x74618 - 0x4f401];
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
     HighScoreScreen high_score_screen; // +0x12e6e50
+    char unknown_12e6f20[0x12e6f58 - 0x12e6f20];
+    TipManager tip_manager; // +0x12e6f58, owned root tutorial-message manager
+    char unknown_12e6ff0[0x12e6ff4 - 0x12e6ff0];
 
     int run_frame_update();          // @ 0x40a2a0
     char initialize_game_assets_and_world(); // @ 0x40acf0
     void initialize_game_last();     // @ 0x410720
     int render_game_frame();         // @ 0x40a490
 };
+
+typedef char GameRoot_must_be_0x12e6ff4[
+    (sizeof(GameRoot) == 0x12e6ff4) ? 1 : -1];
 
 #endif

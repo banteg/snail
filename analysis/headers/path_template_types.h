@@ -678,7 +678,7 @@ typedef struct TipSlot {
 } TipSlot;
 
 typedef struct TipManager {
-    uint8_t _pad_00[0x38];
+    BodBase bod;
     TipSlot slots[3];
 } TipManager;
 

@@ -2,6 +2,8 @@
 #ifndef TIP_MANAGER_H
 #define TIP_MANAGER_H
 
+#include "bod_types.h"
+
 class FrontendWidget;
 
 struct TipMessageDefinition {
@@ -28,14 +30,13 @@ public:
     float dismiss_step;                 // +0x1c
 };
 
-class TipManager {
+class TipManager : public BodBase {
 public:
     void initialize_tip_manager(); // @ 0x448cf0
     void uninit_tips(); // @ 0x448d10
     TipSlot* enqueue_tip_message(TipMessageDefinition* definition, int hide_disable_button); // @ 0x448d30
     void update_tip_manager(); // @ 0x448d80
 
-    char unknown_00[0x38];
     TipSlot slots[3]; // +0x38
 };
 

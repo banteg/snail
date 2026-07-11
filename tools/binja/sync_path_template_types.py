@@ -226,6 +226,11 @@ JETPACK_GAUGE_FIELD_UPDATES = (
     ("0x210", "warning_intensity", "float"),
 )
 
+TIP_MANAGER_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
+    ("0x38", "slots", "TipSlot[0x3]"),
+)
+
 PROTO_UPDATES = (
     (
         "initialize_matrix_from_values",
@@ -484,6 +489,14 @@ def main() -> int:
             target=args.target,
             struct_name="JetpackGaugeController",
             updates=JETPACK_GAUGE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TipManager",
+            updates=TIP_MANAGER_FIELD_UPDATES,
         )
     )
     operations.extend(
