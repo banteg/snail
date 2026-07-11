@@ -111,12 +111,12 @@ offsets in the old semantic partial:
 - challenge setup at subgame `+0x125ffe0` and thanks at `+0x126000c` use the
   same folded `bind_subgame_owner`, while galaxy and the embedded player's
   cameraman keep their distinct methods;
-- audio configuration is owned by `OptionsMenu +0x4f388`, and the second
+- audio configuration is owned by `Options +0x4f388`, and the second
   complete level-definition owner is root `+0x224804` rather than the stale
   `+0x224a04`.
 
 Focused Wibo is now 5.65%, with 358/5,411 candidate/target instructions,
-prefix 0/5,411, 73 clean masked operands, no unresolved operands, and 18
+prefix 0/5,411, 74 clean masked operands, no unresolved operands, and 17
 expected mismatches across the still-sparse semantic partial. The native
 `0x12c` frame and its first stack-local `noop_this_constructor` remain absent,
 as do most later world and path-template islands; no score-only scaffolding was

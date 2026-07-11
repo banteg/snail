@@ -3,7 +3,7 @@
 First scratch for the options screen constructor.
 
 - Builds the fullscreen, sounds-volume, music-volume, and Back widgets.
-- Confirms `OptionsMenu` slots: previous frontend state at `+0x00`, active byte
+- Confirms `Options` slots: previous frontend state at `+0x00`, active byte
   at `+0x04`, widget pointers at `+0x10..+0x1c`, and the sample-volume
   snapshot at `+0x20`.
 - The fullscreen widget is initialized with shared blank text `g_blank_text`;
@@ -13,3 +13,8 @@ First scratch for the options screen constructor.
   helper emits the wrong direct call.
 - Focused Wibo result: 2026-06-18, 100.00%, 127/127 instructions, masked
   operands 32 ok.
+
+2026-07-11 cROptions ownership: Android and iOS preserve this exact lifecycle
+method as `cROptions::Init()`. The shared root owner is now `Options`; its
+fields close the exact 0x24-byte interval from `GameRoot +0x4f388` to the
+adjacent `ExitPrompt`, and the initializer remains exact at 127/127.

@@ -1,13 +1,13 @@
 // destroy_options_menu @ 0x41aee0 (thiscall)
 
 #include "border_manager.h"
-#include "options_menu.h"
+#include "options.h"
 #include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-char* OptionsMenu::destroy_options_menu()
+char* Options::destroy_options_menu()
 {
     ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(back_widget);

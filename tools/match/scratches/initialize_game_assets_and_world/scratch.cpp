@@ -270,7 +270,7 @@ char GameRoot::initialize_game_assets_and_world()
     intro_screen.open_logo();
     initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
-    options_menu.apply_audio_config_volumes();
+    options.apply_audio_config_volumes();
     sm_tracks->load_level_definitions();
     ((LandscapeManager*)(g_game_base + 0x106c218))
         ->load_landscape_script_by_name((char*)"Menubg.txt");

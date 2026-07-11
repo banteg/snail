@@ -40,5 +40,5 @@ rejected rather than forcing the final scheduling differences.
 Android and iOS preserve the complete `cRStarManager` lifecycle and the
 `Star.o` source object. The shared match type now uses `StarManager` and the
 already-proven `StarManagerEntry` vocabulary consistently with the BN/IDA
-header. Its exact 0x4c extent closes between `MainMenu` and `OptionsMenu` in
+header. Its exact 0x4c extent closes between `MainMenu` and `Options` in
 `GameRoot`; the rename is codegen-neutral at the same 98.38% near match.

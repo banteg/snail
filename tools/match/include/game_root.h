@@ -16,7 +16,7 @@
 #include "mouse_cursor_state.h"
 #include "new_game_menu.h"
 #include "overlay.h"
-#include "options_menu.h"
+#include "options.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
 #include "star_manager.h"
@@ -109,7 +109,7 @@ public:
     NewGameMenu new_game_menu; // +0x4f2dc
     MainMenu main_menu; // +0x4f324
     StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
-    OptionsMenu options_menu; // +0x4f388
+    Options options; // +0x4f388, exact authored cROptions owner
     ExitPrompt exit_prompt; // +0x4f3ac, authored cRExit owner
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
     IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks

@@ -8,7 +8,7 @@ First scratch for options-menu dispatch.
   config through `set_fullscreen_mode`.
 - Back clicks tear down the options menu, clear the frontend link latch, and
   restore `previous_frontend_state`.
-- The audio apply helper is source-shaped as an `OptionsMenu` member call even
+- The audio apply helper is source-shaped as an `Options` member call even
   though the callee ignores `this`; this preserves the native `mov ecx, esi`
   setup.
 - Native only updates `previous_sample_volume` when the sample volume changed
@@ -18,3 +18,7 @@ First scratch for options-menu dispatch.
   also drives Wibo into VC6's diagnostic path.
 - Focused Wibo result: 2026-06-18, 100.00%, 73/73 instructions, masked operands
   19 ok.
+
+2026-07-11 cROptions ownership: Android and iOS preserve this state machine as
+`cROptions::AI()`. Promoting the root field and receiver to `Options` is
+codegen-neutral at the exact 73/73 baseline.

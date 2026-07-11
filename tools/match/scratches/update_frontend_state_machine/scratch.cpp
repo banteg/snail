@@ -88,12 +88,12 @@ int GamePlayer::update_frontend_state_machine()
             frontend_state = 7;
         {
             GameRoot* owner = g_game;
-            owner->options_menu.initialize_options_menu();
+            owner->options.initialize_options_menu();
         }
         case 7:
         {
             GameRoot* owner = g_game;
-            owner->options_menu.update_options_menu();
+            owner->options.update_options_menu();
             break;
         }
         case 8:

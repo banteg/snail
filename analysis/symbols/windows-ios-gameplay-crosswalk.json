@@ -1606,6 +1606,42 @@
       "confidence": "high"
     },
     {
+      "address": "0x41ace0",
+      "windows_name": "initialize_options_menu",
+      "ios_symbol": "cROptions::Init()",
+      "android_symbol": "cROptions::Init()",
+      "source_object": "Options.o",
+      "confidence": "high",
+      "notes": "The exact Windows member constructs the same cROptions lifecycle owner, whose complete 0x24-byte extent is embedded at GameRoot +0x4f388."
+    },
+    {
+      "address": "0x41aee0",
+      "windows_name": "destroy_options_menu",
+      "ios_symbol": "cROptions::UnInit()",
+      "android_symbol": "cROptions::UnInit()",
+      "source_object": "Options.o",
+      "confidence": "high",
+      "notes": "All ports tear down the cROptions widget set and persist the active configuration through the same lifecycle edge."
+    },
+    {
+      "address": "0x41af60",
+      "windows_name": "update_options_menu",
+      "ios_symbol": "cROptions::AI()",
+      "android_symbol": "cROptions::AI()",
+      "source_object": "Options.o",
+      "confidence": "high",
+      "notes": "The exact Windows state machine operates on the root-owned cROptions fields and matches the cross-port lifecycle role."
+    },
+    {
+      "address": "0x41b070",
+      "windows_name": "apply_audio_config_volumes",
+      "ios_symbol": "cROptions::Apply(bool)",
+      "android_symbol": "cROptions::Apply(bool)",
+      "source_object": "Options.o",
+      "confidence": "medium",
+      "notes": "Windows callers pass the cROptions receiver but no bool and the exact body only applies the two audio scalars. This is the no-argument audio subset of the broader mobile Apply lifecycle, not a signature-identical mapping."
+    },
+    {
       "address": "0x434270",
       "windows_name": "destroy_star_field",
       "android_symbol": "cRStarManager::UnInit()",

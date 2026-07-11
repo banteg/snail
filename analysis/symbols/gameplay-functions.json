@@ -1128,7 +1128,7 @@
     {
       "address": "0x41b070",
       "name": "apply_audio_config_volumes",
-      "description": "Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine."
+      "description": "Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine through the root-owned cROptions receiver. Cross-port `cROptions::Apply(bool)` is a broader lifecycle member; Windows retains this exact no-argument audio subset."
     },
     {
       "address": "0x41b0a0",

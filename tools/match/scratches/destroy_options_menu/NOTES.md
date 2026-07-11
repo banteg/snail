@@ -7,3 +7,7 @@ First scratch for options teardown.
 - Confirms the widget slot order recovered by `initialize_options_menu`.
 - Focused Wibo result: 2026-06-18, 100.00%, 32/32 instructions, masked operands
   13 ok.
+
+2026-07-11 cROptions ownership: Android and iOS name this lifecycle edge
+`cROptions::UnInit()`. The exact Windows body now lives on the shared
+0x24-byte `Options` owner.

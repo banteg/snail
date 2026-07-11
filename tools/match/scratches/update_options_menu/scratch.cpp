@@ -2,7 +2,7 @@
 
 #include "audio_system.h"
 #include "game_root.h"
-#include "options_menu.h"
+#include "options.h"
 #include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
@@ -12,7 +12,7 @@ extern char g_fullscreen_off_text[]; // 0x4a3d4c
 void rstrcpy_checked_ascii(char* destination, char* source);
 void set_fullscreen_mode(int enabled);
 
-void OptionsMenu::update_options_menu()
+void Options::update_options_menu()
 {
     g_runtime_config.stream_volume = music_volume_widget->slider_value;
     g_runtime_config.sample_volume = sound_volume_widget->slider_value;

@@ -9,9 +9,9 @@ void* PauseMenu::update_pause_menu()
     unsigned int flags = options_widget->widget_flags;
     if ((flags & 0x20) != 0) {
         options_widget->widget_flags = flags & ~0x20u;
-        ((GameRoot*)g_game_base)->options_menu.active = 0;
+        ((GameRoot*)g_game_base)->options.active = 0;
         GameRoot* game = (GameRoot*)g_game_base;
-        game->options_menu.previous_frontend_state =
+        game->options.previous_frontend_state =
             game->players[0].frontend_state;
         ((GameRoot*)g_game_base)->players[0].frontend_state = 6;
         return game;

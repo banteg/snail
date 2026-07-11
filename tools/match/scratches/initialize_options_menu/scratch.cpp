@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 #include "frontend_widget_virtual_layout.h"
-#include "options_menu.h"
+#include "options.h"
 #include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
@@ -10,7 +10,7 @@ extern char g_blank_text[]; // 0x4dfb08
 extern char g_sounds_volume_text[]; // 0x4a3d30
 extern char g_music_volume_text[]; // 0x4a3d14
 extern char g_back_text[]; // 0x4a20ec
-void OptionsMenu::initialize_options_menu()
+void Options::initialize_options_menu()
 {
     Color4f color;
 
