@@ -107,3 +107,11 @@ that offset is inside `BodBase::color`. Exact activation and removal prove the
 full embedded `BodBase` at `+0x00` and `cache_row_base +0x38`. The checked-in
 headers and Binary Ninja sync now agree on that layout and on the owned
 `runtime_cells[3200][8]` slab reached through the backlink.
+
+2026-07-11 runtime-cell anchor cleanup: all seven mesh-builder position
+arguments now name
+`owner_subgame->runtime_cells[0][0].anchor_position + cell_offset` directly,
+and the unused scratch-local cell layout duplicate has been removed. This
+keeps the real owner and inherited `TrackRowCell +0x10` anchor visible while
+preserving 99.79%, 475/475 instructions, and 20 clean operands. The lone
+equivalent SIB base/index encoding remains honest scheduler debt.

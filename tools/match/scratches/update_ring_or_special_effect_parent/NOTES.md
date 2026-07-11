@@ -4,9 +4,8 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `98.21%`, `336/336` candidate/target instructions, with `36` masked
-  operands ok, no unresolved operands, and one compiler-local switch-table
-  symbol mismatch.
+- `98.21%`, `336/336` candidate/target instructions, with `37` masked
+  operands clean and no unresolved or mismatched operands.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
 - The method is modeled as `void`: native exits do not establish a meaningful
@@ -98,8 +97,8 @@ Residual:
   as a real `Vector3` value and expressing both radius loops as indexed walks
   raises the focused match from `88.92%` (`332/336`) to `98.21%` (`336/336`).
   This also recovers the native `this + 0xac` embedded-child cursor and aligns
-  the dispatch instruction/table shape; the remaining audit residual is only
-  the compiler-local candidate table symbol versus the curated target name.
+  the dispatch instruction/table shape. The reference manifest now pairs that
+  compiler table cleanly.
 - The remaining residual is two local schedules: native keeps target X live on
   the FPU stack while staging biased Z and target Y before deriving the child
   cursor, and one duplicated removal tail materializes the shared list anchor
@@ -151,3 +150,10 @@ Rejected/source-shape probes:
   and regressed to `85.17%`; copying the target value into `delta` before
   subtracting grew the candidate to `342/336` and regressed to `89.97%`.
   Neither reflects the native temporary lifetime, so both were rejected.
+
+2026-07-11 root-list ownership cleanup: all three duplicated removal tails now
+take their intrusive-list anchor from `GameRoot::active_bod_list` instead of
+recasting `g_game_base +0x5a8`. This matches the exact salt-removal owner and
+preserves 98.21%, 336/336 instructions, and 37 clean operands. The remaining
+list-tail register choice is therefore compiler scheduling, not evidence for a
+ring-local list owner.

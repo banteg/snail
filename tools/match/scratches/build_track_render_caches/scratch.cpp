@@ -5,6 +5,7 @@
 #include "audio_system.h"
 #include "fringe_object.h"
 #include "object_render_types.h"
+#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "track_render_cache.h"
 
@@ -13,22 +14,6 @@ unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
 unsigned char __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
-
-struct TrackRowCellCacheView {
-    char unknown_00[0x10];
-    Vector3 anchor_position;
-    char unknown_1c[0x24 - 0x1c];
-    Object* render_object;
-    char unknown_28[0x3c - 0x28];
-    unsigned char tile_id;
-    unsigned char tile_flags_3d;
-    char unknown_3e[0x40 - 0x3e];
-    int lane_and_flags;
-    FringeObject* fringe_front;
-    FringeObject* fringe_right;
-    FringeObject* fringe_left;
-    FringeObject* fringe_back;
-};
 
 struct TrackRenderGrid {
     char unknown_00[0x54];
@@ -90,7 +75,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             (Object*)fringe_object->object,
-                            (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                                + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[4],
                             &vertex_counts[4],
                             (unsigned short*)shared_index_buffers[4],
@@ -114,7 +100,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                     append_track_cache_object(
                         row_index,
                         *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                        (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[2],
                         &vertex_counts[2],
                         (unsigned short*)shared_index_buffers[2],
@@ -137,7 +124,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                                + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
                             &vertex_counts[1],
                             (unsigned short*)shared_index_buffers[1],
@@ -154,7 +142,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                                + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
                             &vertex_counts[0],
                             (unsigned short*)shared_index_buffers[0],
@@ -178,7 +167,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                                + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
                             &vertex_counts[0],
                             (unsigned short*)shared_index_buffers[0],
@@ -195,7 +185,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                                + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
                             &vertex_counts[1],
                             (unsigned short*)shared_index_buffers[1],
@@ -217,7 +208,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                     append_track_cache_object(
                         row_index,
                         *(Object**)((char*)track_render_grid + cell_offset + 0x3bfaec),
-                        (Vector3*)((char*)track_render_grid + cell_offset + 0x3bfad8),
+                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[3],
                         &vertex_counts[3],
                         (unsigned short*)shared_index_buffers[3],

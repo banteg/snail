@@ -1,10 +1,11 @@
 // update_ring_or_special_effect_parent @ 0x43e830 (thiscall, void)
 
+#include "game_root.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(const char* format, ...);
 float sine(float radians);
@@ -51,8 +52,8 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
 
         if (transform.position.z < owner_player->interaction_max_z) {
             state = 0;
-            RingOrSpecialEffectListAnchor* list =
-                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
+            GameRoot* game = g_game;
+            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -106,8 +107,8 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            RingOrSpecialEffectListAnchor* list =
-                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
+            GameRoot* game = g_game;
+            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -183,8 +184,8 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            RingOrSpecialEffectListAnchor* list =
-                (RingOrSpecialEffectListAnchor*)(g_game_base + 0x5a8);
+            GameRoot* game = g_game;
+            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");

@@ -25,11 +25,11 @@ bool AttachmentPathTemplate::is_point_inside_track_attachment(
         sample_origin.z = anchor_z + secondary_samples[idx].transform.position.z;
         origin_y = sample_origin.y;
         origin_z = sample_origin.z;
-        delta_x = probe.x - sample_origin.x;
-        delta_y = probe.y;
-        delta_y -= origin_y;
         delta_z = probe.z;
         delta_z -= origin_z;
+        delta_y = probe.y;
+        delta_y -= origin_y;
+        delta_x = probe.x - sample_origin.x;
         local = Vector3(delta_x, delta_y, delta_z);
         local.rotate_vector_by_matrix(inverse_matrix);
 

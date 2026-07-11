@@ -93,3 +93,10 @@ Rejected probes:
   `fsub [origin_z]` swap. Keep the aggregate anchor copy and long-lived
   local-vector assignment; the last gap remains scheduler debt rather than
   layout or ABI evidence.
+
+2026-07-11 cross-port source-order check: the bundled Android binary retains
+the named `cRPath::SearchPos` body and constructs the local probe deltas in
+Z/Y/X order before rotating the vector. The Windows scratch now mirrors that
+independently evidenced order. VC6 emits the same 99.10%, 111/111 body with
+six clean operands, proving the remaining `fsub`/reload swap is scheduling
+only rather than a reason to distort the attachment or vector layout.

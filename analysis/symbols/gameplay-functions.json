@@ -1304,7 +1304,7 @@
     {
       "address": "0x42ca90",
       "name": "is_point_inside_track_attachment",
-      "description": "Tests whether one probe/swept-motion pair lies inside the selected attachment template cell. iOS Path.o names the closest split helper `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`."
+      "description": "Tests whether one probe/swept-motion pair lies inside the selected attachment template cell by constructing a local Z/Y/X delta and rotating it through each inverse sample matrix. Android retains `cRPath::SearchPos` by name, and iOS Path.o names the corresponding helper `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`."
     },
     {
       "address": "0x42cbf0",
@@ -1727,7 +1727,7 @@
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
+      "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe caches from the owning SubgameRuntime's fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position."
     },
     {
       "address": "0x433830",
@@ -2085,7 +2085,7 @@
     {
       "address": "0x43e830",
       "name": "update_ring_or_special_effect_parent",
-      "description": "Virtual updater for an active ring/special-effect parent slot: advances the child halo, handles collect/miss transitions, removes inactive parents from the active list, and tears down child sprites."
+      "description": "Virtual updater for a SubgameRuntime-owned ring/special-effect parent slot: advances its fixed child halo, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager."
     },
     {
       "address": "0x43ecc0",
