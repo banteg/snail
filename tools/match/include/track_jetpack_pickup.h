@@ -8,11 +8,11 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
-#include "track_pickup_owner_subgame_view.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
+class SubgameRuntime;
 struct TrackRowCell;
 
 class TrackJetpackPickup : public BodNode {
@@ -25,7 +25,7 @@ public:
     int state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
-    TrackPickupOwnerSubgameView* owner_game; // +0x44
+    SubgameRuntime* owner_game; // +0x44, borrowed containing subgame
     char unknown_48[0x64 - 0x48];
     Sprite* sprite; // +0x64
     TrackRowCell* source_cell; // +0x68

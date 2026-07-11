@@ -2,6 +2,9 @@
 
 Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
+The `owner_game +0x8c` backlink is directly typed as the containing
+`SubgameRuntime*`; its `subgame_pause_gate +0x09` is the update guard below.
+
 Recovered behavior:
 
 - skip when the singleton's `owner_game +0x09` `subgame_pause_gate` byte is set;
@@ -35,3 +38,7 @@ manifest and this exact scratch.
 and `handle_subgoldy_collisions` consumes the full x/y/z vector. The type stays
 `BodNode`-based because the zero-offset intrusive list overlay is real and is
 used by both teardown paths.
+
+2026-07-11 owner-view retirement: the duplicate pickup-only owner view was
+removed in favor of the canonical `SubgameRuntime` owner. Focused matching
+remains exact.

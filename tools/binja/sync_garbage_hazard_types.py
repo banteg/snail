@@ -101,7 +101,7 @@ GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
     ("0x80", "next_active", "GarbageHazardSlot*"),
     ("0x84", "state", "int32_t"),
     ("0x88", "collision_side", "int32_t"),
-    ("0x8c", "game", "Game*"),
+    ("0x8c", "game", "SubgameRuntime*"),
     ("0x90", "velocity", "Vec3"),
     ("0x9c", "radius", "float"),
     ("0xa0", "sprite_y_offset", "float"),
@@ -175,7 +175,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_garbage_hazard",
-        "Vec3* __thiscall spawn_track_garbage_hazard(Game* game, TrackRowCell* cell, Player* player)",
+        "Vec3* __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
     ),
 )
 
@@ -224,7 +224,7 @@ def main() -> int:
                     ("0x80", "next_active", "GarbageHazardSlot*"),
                     ("0x84", "state", "int32_t"),
                     ("0x88", "collision_side", "int32_t"),
-                    ("0x8c", "game", "Game*"),
+                    ("0x8c", "game", "SubgameRuntime*"),
                     ("0x90", "velocity", "Vec3"),
                     ("0x9c", "radius", "float"),
                     ("0xa0", "sprite_y_offset", "float"),

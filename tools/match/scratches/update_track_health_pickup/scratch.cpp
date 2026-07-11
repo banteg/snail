@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 #include "track_health_pickup.h"
 
 extern char* g_game_base; // data_4df904

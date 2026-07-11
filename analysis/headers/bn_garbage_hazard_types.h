@@ -11,6 +11,7 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct TransformMatrix TransformMatrix;
+typedef struct SubgameRuntime SubgameRuntime;
 
 typedef struct Vec3 {
     float x;
@@ -110,7 +111,7 @@ struct GarbageHazardSlot {
     GarbageHazardSlot* next_active;
     int32_t state;
     int32_t collision_side;
-    struct Game* game;
+    SubgameRuntime* game;
     Vec3 velocity;
     float radius;
     float sprite_y_offset;
@@ -154,7 +155,7 @@ void __thiscall spawn_garbage_smoke_particle(
     Vec3* velocity,
     struct Player* player);
 Vec3* __thiscall spawn_track_garbage_hazard(
-    struct Game* game,
+    SubgameRuntime* game,
     struct TrackRowCell* cell,
     struct Player* player);
 

@@ -5,6 +5,7 @@
 // manages the parent state and sprite bob.
 
 #include "player.h"
+#include "subgame_runtime.h"
 #include "track_jetpack_pickup.h"
 
 extern char* g_game_base; // data_4df904

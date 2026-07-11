@@ -2,13 +2,13 @@
 /* function: reset_subgame @ 0x437b10 */
 /* selector: reset_subgame */
 
-void __thiscall reset_subgame(Game *game)
+void __thiscall reset_subgame(SubgameRuntime *game)
 {
   int v2; // ecx
-  TrackPickupOwnerGameView **health_owner; // eax
-  Game **garbage_game; // eax
+  SubgameRuntime **health_owner; // eax
+  SubgameRuntime **garbage_game; // eax
   int v5; // ecx
-  Game **slug_owner; // eax
+  SubgameRuntime **slug_owner; // eax
   int v7; // ecx
   RingEffectRateSource **ring_rate; // eax
   int v9; // ecx
@@ -23,7 +23,7 @@ void __thiscall reset_subgame(Game *game)
   do
   {
     *(health_owner - 3) = 0; // health_pickups[i].state
-    *health_owner = (TrackPickupOwnerGameView *)game; // health_pickups[i].owner_game
+    *health_owner = game; // health_pickups[i].owner_game
     health_owner += 29;
     --v2;
   }

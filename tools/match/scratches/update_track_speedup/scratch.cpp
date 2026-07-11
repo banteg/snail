@@ -2,6 +2,7 @@
 
 #include "bod_list.h"
 #include "player.h"
+#include "subgame_runtime.h"
 #include "track_speedup.h"
 
 extern char* g_game_base; // data_4df904

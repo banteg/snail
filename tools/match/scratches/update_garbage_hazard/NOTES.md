@@ -229,3 +229,7 @@ runtime exposes the contact target registry at `+0x1270fd4`. This removes the
 scratch-local generic `Game` shell without changing the pinned source shape.
 Focused Wibo remains at 93.55%, 217/217 instructions, 13/217 prefix, and
 22 clean masked operands.
+
+2026-07-11 analysis sync: the checked-in BN import header, narrow sync script,
+and live database now carry the same `SubgameRuntime*` backlink proven by
+`reset_subgame`; the last stale `Game*` analysis spelling is retired.

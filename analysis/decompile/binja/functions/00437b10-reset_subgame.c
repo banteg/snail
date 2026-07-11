@@ -4,7 +4,7 @@
 /* function: reset_subgame @ 0x437b10 */
 
 00437b16        int32_t i_4 = 8
-00437b1b        struct TrackPickupOwnerGameView** eax = &game->health_pickups[0].owner_game
+00437b1b        struct SubgameRuntime** eax = &game->health_pickups[0].owner_game
 00437b2a        int32_t i
 00437b21        (eax - 0x356044)->health_pickups[0].state = 0
 00437b24        (eax - 0x356044)->health_pickups[0].owner_game = game
@@ -16,7 +16,7 @@
 00437b32        game->speedup_pickup.owner_game = game
 00437b38        game->jetpack_pickup.state = 0
 00437b3e        game->jetpack_pickup.owner_game = game
-00437b44        struct Game** eax_1 = &game->garbage_hazards.slots[0].game
+00437b44        struct SubgameRuntime** eax_1 = &game->garbage_hazards.slots[0].game
 00437b4a        int32_t i_5 = 0x32
 00437b5d        int32_t i_1
 00437b4f        (eax_1 - 0x3591d0)->garbage_hazards.slots[0].state = 0
@@ -26,7 +26,7 @@
 00437b5c        i_1 = i_5
 00437b5c        i_5 -= 1
 00437b5d        do while (i_1 != 1)
-00437b5f        struct Game** eax_2 = &game->slug_slots[0].owner_game
+00437b5f        struct SubgameRuntime** eax_2 = &game->slug_slots[0].owner_game
 00437b65        int32_t i_6 = 8
 00437b75        int32_t i_2
 00437b6a        (eax_2 - 0x356428)->slug_slots[0].state = 0

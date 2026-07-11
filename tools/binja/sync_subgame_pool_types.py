@@ -15,7 +15,6 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
-PICKUP_OWNER_GAME_VIEW_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_pickup_owner_game_view.h"
 TARGET = "active"
 
 REQUIRED_HEADER_STRUCTS = (
@@ -28,7 +27,7 @@ REQUIRED_HEADER_STRUCTS = (
     "RingOrSpecialEffectPool",
 )
 
-GAME_FIELD_UPDATES = (
+SUBGAME_FIELD_UPDATES = (
     ("0x355db0", "speedup_pickup", "TrackSpeedupRuntime"),
     ("0x355e64", "jetpack_pickup", "TrackJetpackPickup"),
     ("0x356000", "health_pickups", "TrackHealthPickup[0x8]"),
@@ -42,19 +41,19 @@ TRACK_SPEEDUP_FIELD_UPDATES = (
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
     ("0x28", "color", "Color4f"),
-    ("0x8c", "owner_game", "TrackPickupOwnerGameView*"),
+    ("0x8c", "owner_game", "SubgameRuntime*"),
 )
 
 TRACK_JETPACK_PICKUP_FIELD_UPDATES = (
-    ("0x44", "owner_game", "TrackPickupOwnerGameView*"),
+    ("0x44", "owner_game", "SubgameRuntime*"),
 )
 
 TRACK_HEALTH_PICKUP_FIELD_UPDATES = (
-    ("0x44", "owner_game", "TrackPickupOwnerGameView*"),
+    ("0x44", "owner_game", "SubgameRuntime*"),
 )
 
 SLUG_HAZARD_FIELD_UPDATES = (
-    ("0x88", "owner_game", "Game*"),
+    ("0x88", "owner_game", "SubgameRuntime*"),
 )
 
 RING_RATE_SOURCE_FIELD_UPDATES = (
@@ -70,7 +69,7 @@ RING_PARENT_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
-    ("reset_subgame", "void __thiscall reset_subgame(Game* game)"),
+    ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
     (
         "initialize_track_health_pickup_runtime",
         "TrackHealthPickup* __thiscall initialize_track_health_pickup_runtime(TrackHealthPickup* pickup)",
@@ -92,16 +91,15 @@ def main() -> int:
         types_declare_if_missing(
             REPO_ROOT,
             target=TARGET,
-            header_path=PICKUP_OWNER_GAME_VIEW_HEADER_PATH,
-            required_structs=("TrackPickupOwnerGameView",),
-        ),
-        types_declare_if_missing(
-            REPO_ROOT,
-            target=TARGET,
             header_path=HEADER_PATH,
             required_structs=REQUIRED_HEADER_STRUCTS,
         ),
-        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="Game", updates=GAME_FIELD_UPDATES),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
+            struct_name="SubgameRuntime",
+            updates=SUBGAME_FIELD_UPDATES,
+        ),
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,

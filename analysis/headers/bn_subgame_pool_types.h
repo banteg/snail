@@ -11,6 +11,7 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct Player Player;
+typedef struct SubgameRuntime SubgameRuntime;
 
 typedef struct Vec3 {
     float x;
@@ -24,11 +25,6 @@ typedef struct Color4f {
     float b;
     float a;
 } Color4f;
-
-typedef struct TrackPickupOwnerGameView {
-    uint8_t unknown_00[0x09];
-    uint8_t pause_gate;
-} TrackPickupOwnerGameView;
 
 typedef struct TrackSpeedupRuntime {
     void* vtable;
@@ -52,7 +48,7 @@ typedef struct TrackSpeedupRuntime {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
-    TrackPickupOwnerGameView* owner_game;
+    SubgameRuntime* owner_game;
     uint8_t unknown_90[0x1c];
     struct Sprite* sprite;
     uint8_t unknown_b0[0x04];
@@ -68,7 +64,7 @@ typedef struct TrackJetpackPickup {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    TrackPickupOwnerGameView* owner_game;
+    SubgameRuntime* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
@@ -90,7 +86,7 @@ typedef struct TrackHealthPickup {
     int32_t state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    TrackPickupOwnerGameView* owner_game;
+    SubgameRuntime* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
@@ -104,7 +100,7 @@ typedef struct SlugHazardRuntime {
     uint8_t unknown_74[0x0c];
     int32_t state;
     int32_t death_toss_direction;
-    struct Game* owner_game;
+    SubgameRuntime* owner_game;
     Vec3 velocity;
     uint8_t unknown_98[0x14];
     struct Sprite* sprite;

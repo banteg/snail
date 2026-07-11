@@ -1,11 +1,12 @@
 # update_track_health_pickup @ 0x43ecc0
 
-Current match: 71.88%, with instruction-count parity at 128 target instructions
-and 128 candidate instructions.
+Current match: `87.94%`, `129/128` candidate/target instructions, prefix
+`6/128`, with `21` clean masked operands and no unresolved or mismatched
+operands.
 
 Recovered behavior:
 
-- skip when the reset-initialized owner-game `subgame_pause_gate` byte at
+- skip when the reset-initialized owner-subgame `subgame_pause_gate` byte at
   `+0x09` is set;
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
@@ -74,22 +75,25 @@ therefore both the BOD base prefix at initialization time and the pickup
 world/state payload used by spawn/update/collision paths.
 
 Important naming correction: reset_subgame initializes health pickup `+0x44`
-with the `Game*`, so this lane is now `owner_game`, not a visibility-cell
+with the containing `SubgameRuntime*`, so this lane is now `owner_game`, not a visibility-cell
 pointer. `spawn_track_health_pickup` stores the row/source cell at
 `source_cell +0x68`. Do not collapse those into one `source_cell` field.
 Do not merge health and jetpack into one full pickup struct either: both use
-the owner-game pause view at `+0x44`, while jetpack has embedded renderable
+the containing subgame backlink at `+0x44`, while jetpack has embedded renderable
 bodies below `+0x74`.
 
 2026-06-18 owner-game rename: the earlier `TrackVisibilityCell` interpretation
-was invalidated by reset_subgame, which writes the containing `Game*` into
+was invalidated by reset_subgame, which writes the containing
+`SubgameRuntime*` into
 `+0x44` for every health pickup slot. The update check is the same pause-byte
 view used by speedup and jetpack pickups.
 
-2026-06-18 pickup pause-view consolidation: speedup, health, and jetpack
-pickups now share `TrackPickupOwnerSubgameView`. The `+0x09` byte is named
-`subgame_pause_gate`, distinguishing this embedded subgame update gate from the
-global/UI `Game::pause_gate` view at root `+0x74621`.
+2026-07-11 owner-view retirement: speedup, health, and jetpack now borrow the
+full containing `SubgameRuntime` directly. The duplicate
+`TrackPickupOwnerSubgameView`/`TrackPickupOwnerGameView` types were retired;
+their only known field, `subgame_pause_gate +0x09`, is already part of the
+canonical owner. This also makes the pickup ownership agree with slug, salt,
+sub-lazer, garbage, and reset paths without changing generated code.
 
 2026-06-20 updater CFG improvement: the Pro Extended pass moved the state-one
 guard to the positive `world_position.z < owner->interaction_max_z` removal

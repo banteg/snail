@@ -7,11 +7,11 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
-#include "track_pickup_owner_subgame_view.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
+class SubgameRuntime;
 
 class TrackSpeedupRuntime : public BodNode {
 public:
@@ -37,7 +37,7 @@ public:
     int state; // +0x80
     Player* owner; // +0x84
     char unknown_88[0x8c - 0x88];
-    TrackPickupOwnerSubgameView* owner_game; // +0x8c
+    SubgameRuntime* owner_game; // +0x8c, borrowed containing subgame
     char unknown_90[0xac - 0x90];
     Sprite* sprite; // +0xac
     char unknown_b0[0xb4 - 0xb0];
