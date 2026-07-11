@@ -284,6 +284,7 @@ struct TrackRowCell {
     BodNode bod;                       // +0x00, active/free BOD prefix
 
     void destroy_sub_lazer_projectile(); // @ 0x439bc0
+    void wall2_emitter_maybe_fire_sub_lazer(); // @ 0x439d50, cRSubLoc::AI family
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     float render_arg_1c;                // +0x1c, inline BodBase texture-u argument

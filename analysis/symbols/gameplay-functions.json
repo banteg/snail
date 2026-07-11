@@ -1929,12 +1929,12 @@
     {
       "address": "0x439bc0",
       "name": "destroy_sub_lazer_projectile",
-      "description": "Unlinks one live SubLazer projectile (`cRSubLazerManager` slot) and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool. Historically labelled a `Wall2 ambient hazard`; the Wall2 tile is the emitter, the slot itself is a projectile."
+      "description": "Tears down one live runtime `TrackRowCell`/`cRSubLoc`: removes its own BOD, clears the attachment-row body for skirt tiles when required, and unlinks its four borrowed fringe BODs. The stable Windows harness name is historical; the receiver is not a `SubLazerSlot`."
     },
     {
       "address": "0x439d50",
       "name": "wall2_emitter_maybe_fire_sub_lazer",
-      "description": "Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, requires the active runtime row start at `game+0x74668` to be behind Goldy's live row position at `game+0x42fdec`, rolls the random gate (`< 4/100`), derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`."
+      "description": "Updates one runtime `TrackRowCell`/`cRSubLoc`. Wall2 tile 14 fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z; tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. Cross-port iOS names the owner family `cRSubLoc::AI()`."
     },
     {
       "address": "0x43a010",

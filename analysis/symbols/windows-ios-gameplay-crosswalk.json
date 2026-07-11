@@ -80,6 +80,14 @@
       "confidence": "high"
     },
     {
+      "address": "0x439d50",
+      "windows_name": "wall2_emitter_maybe_fire_sub_lazer",
+      "ios_symbol": "cRSubLoc::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The Windows receiver is the shared TrackRowCell runtime-grid object; its tile dispatch, attachment-template backlink, and row-index teardown sibling match the cRSubLoc owner."
+    },
+    {
       "address": "0x43d6c0",
       "windows_name": "spawn_track_health_pickup",
       "ios_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
