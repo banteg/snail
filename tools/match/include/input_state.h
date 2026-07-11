@@ -1,6 +1,8 @@
 #ifndef INPUT_STATE_H
 #define INPUT_STATE_H
 
+#include "bod_types.h"
+
 class InputState {
 public:
     int initialize_input();
@@ -25,11 +27,10 @@ public:
 typedef char InputState_must_be_0x38[(sizeof(InputState) == 0x38) ? 1 : -1];
 
 // Windows owner corresponding to the portable cRGameInput class.
-class GameInput {
+class GameInput : public BodBase {
 public:
     void update_game_input();
 
-    char unknown_00[0x38];
     InputState input; // +0x38
 };
 

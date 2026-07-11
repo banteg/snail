@@ -1584,13 +1584,13 @@
     },
     {
       "address": "0x4972f0",
-      "name": "g_unknown_runtime_callback_table",
+      "name": "g_game_input_callback_table",
       "kind": "vtable",
       "aliases": [
         "off_4972f0",
         "data_4972f0"
       ],
-      "description": "Runtime callback table installed on the two root slots at offset `0x44` during construct_game_runtime."
+      "description": "One-entry cRGameInput callback table installed on the two root-owned GameInput records at +0x44 during construct_game_runtime; its entry is update_game_input (cRGameInput::AI())."
     },
     {
       "address": "0x4972f4",

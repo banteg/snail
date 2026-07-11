@@ -22,7 +22,7 @@ extern void* g_star_field_callback_table;       // data_4972e0
 extern void* g_backdrop_callback_table;         // data_4972e4
 extern void* g_border_manager_callback_table;   // data_4972e8
 extern void* g_overlay_callback_table;          // data_4972ec
-extern void* g_unknown_runtime_callback_table;  // data_4972f0
+extern void* g_game_input_callback_table;       // data_4972f0
 extern void* g_noop_runtime_callback_table;     // data_4972b0
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
@@ -81,14 +81,14 @@ __forceinline GameRootAllocation::GameRootAllocation()
     {
         COLOR(0x14)->noop_this_constructor();
 
-        RuntimeSlot* root_slot = SLOT(0x44);
-        int root_slot_count = 2;
+        GameInput* game_input = &((GameRoot*)game)->game_inputs[0];
+        int game_input_count = 2;
         do {
-            root_slot->initialize_bod_base();
-            root_slot->vtable = &g_unknown_runtime_callback_table;
-            root_slot = (RuntimeSlot*)((char*)root_slot + 0x70);
-            --root_slot_count;
-        } while (root_slot_count);
+            game_input->initialize_bod_base();
+            game_input->vtable = &g_game_input_callback_table;
+            ++game_input;
+            --game_input_count;
+        } while (game_input_count);
 
         GamePlayer* player = &((GameRoot*)game)->players[0];
         int player_count = 2;

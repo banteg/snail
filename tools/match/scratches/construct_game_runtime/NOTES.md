@@ -104,3 +104,14 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
 - The typed constructor spelling is byte-neutral: focused Wibo remains
   88.89%, 299/268 candidate/target instructions, prefix 2/268, with 119 clean
   operands and only the compiler-local EH-handler relocation unresolved.
+
+## 2026-07-11 game-input inheritance closure
+
+- The two 0x70-byte records at root `+0x44` are now typed as `GameInput`
+  objects inheriting the 0x38-byte `BodBase` and owning the trailing 0x38-byte
+  `InputState` at `+0x38`.
+- The one-entry table installed by their constructor at `0x4972f0` contains
+  `update_game_input` (`cRGameInput::AI()`) and has no other code owner, so it
+  is renamed `g_game_input_callback_table` rather than left generic.
+- The typed loop preserves the native two-record stride and remains an honest
+  constructor-shape partial; no local-label or stack-cleanup fakematch is used.

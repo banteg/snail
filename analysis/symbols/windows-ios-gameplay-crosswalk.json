@@ -38,7 +38,7 @@
       "ios_symbol": "cRGameInput::AI()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44."
+      "notes": "Both methods sample one controller slot into the same button-edge, axis, pointer, and authored-coordinate lanes before clearing the current button word. Windows owns two consecutive 0x70-byte cRGameInput records at GameRoot +0x44; each inherits the 0x38-byte cRBod-compatible base and installs the one-entry update_game_input table at 0x4972f0."
     },
     {
       "address": "0x4107d0",

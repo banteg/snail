@@ -573,7 +573,7 @@
     {
       "address": "0x40aab0",
       "name": "update_game_input",
-      "description": "Runs cRGameInput::AI() for one root-owned input record: when the root sampling gate is live, copies the selected controller's buttons, axes, pointer values, and authored x/y into the trailing cRInput-compatible state and derives the current-frame button edges."
+      "description": "Runs cRGameInput::AI() for one root-owned BodBase-derived input record: when the root sampling gate is live, copies the selected controller's buttons, axes, pointer values, and authored x/y into the trailing cRInput-compatible state and derives the current-frame button edges."
     },
     {
       "address": "0x40ab00",
