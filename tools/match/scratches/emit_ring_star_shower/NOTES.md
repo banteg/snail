@@ -119,3 +119,10 @@ Type consolidation:
   splitting source sprite reloads, and explicit sine/cosine phase locals
   regress to 59.09% by materializing extra argument stores and disturbing the
   scratch push. Keep the dword position-copy baseline.
+
+## 2026-07-11 authored owner promotion
+
+The scratch now defines the exact method on `SubRingStar`, matching the iOS
+`cRSubRingStar::Shower(cRSubGoldy*)` symbol. Its `parent` pointer is a borrowed
+`SubRing*`, while its sprite remains a SpriteManager allocation. Matching stays
+exact at 65/65 instructions with nine clean operands.

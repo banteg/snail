@@ -12,6 +12,11 @@ Current match:
   return value, and the earlier `void*` surface forced extra return-value
   cleanup in the candidate.
 
+Cross-port owner: iOS preserves this callback as `cRSubRing::AI()`, and the
+Windows constructor table at `0x49732c` points directly here. The shared source
+now defines it on `SubRing` and its children as `SubRingStar`; focused matching
+remains 98.21%, 336/336 instructions, with 37 clean operands.
+
 Evidence:
 
 - Parent `+0x80` is a state word, not a boolean. Observed states are `0`

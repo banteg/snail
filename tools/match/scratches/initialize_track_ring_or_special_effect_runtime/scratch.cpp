@@ -3,12 +3,11 @@
 #include "bod_types.h"
 #include "ring_special_effect_types.h"
 
-extern void* g_track_ring_or_special_effect_vtable; // off_49732c / data_49732c
+extern void* g_sub_ring_vtable; // off_49732c / data_49732c
 
-RingOrSpecialEffectParent*
-RingOrSpecialEffectParent::initialize_track_ring_or_special_effect_runtime()
+SubRing* SubRing::initialize_track_ring_or_special_effect_runtime()
 {
     initialize_renderable_bod();
-    vtable = &g_track_ring_or_special_effect_vtable;
+    vtable = &g_sub_ring_vtable;
     return this;
 }

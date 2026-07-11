@@ -108,11 +108,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --garbage_count;
     } while (garbage_count);
 
-    RuntimeSlot* ring = SLOT(0x35b78c);
+    SubRing* ring = ring_effects.slots;
     int ring_count = 2;
     do {
         ring->initialize_track_ring_or_special_effect_runtime();
-        ring = (RuntimeSlot*)((char*)ring + 0x1f8);
+        ++ring;
         --ring_count;
     } while (ring_count);
 

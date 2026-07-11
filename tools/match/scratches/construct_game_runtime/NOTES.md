@@ -198,3 +198,9 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   boundary at subgame `+0x355b64`.
 - This is codegen-neutral: the constructor remains `88.89%`, `299/268`, with
   119 clean operands and only the existing compiler-local EH handler unresolved.
+
+## 2026-07-11 cRSubRing size ledger
+
+The `Size of cRSubRing` entry now comes from `sizeof(SubRingPool)`: two inline
+0x1f8-byte `SubRing` records close exactly to the native 0x3f0 total. The
+constructor's focused metrics remain unchanged.

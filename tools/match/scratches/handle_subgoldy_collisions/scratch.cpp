@@ -230,8 +230,7 @@ void Player::handle_subgoldy_collisions()
         }
     }
     for (int jj = 0; jj < 1008; jj += 504) {
-        RingOrSpecialEffectParent* effect =
-            (RingOrSpecialEffectParent*)((char*)game->ring_effects.slots + jj);
+        SubRing* effect = (SubRing*)((char*)game->ring_effects.slots + jj);
         if (effect->state == 1) {
             probe_salt.x = effect->transform.position.x - cached_camera_target_world.x;
             probe_salt.y = effect->transform.position.y - cached_camera_target_world.y;

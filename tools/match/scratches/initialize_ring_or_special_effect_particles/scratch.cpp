@@ -4,7 +4,7 @@
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 
-int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
+int SubRing::initialize_ring_or_special_effect_particles(int)
 {
     int i = 0;
     state = 1;
@@ -12,7 +12,7 @@ int RingOrSpecialEffectParent::initialize_ring_or_special_effect_particles(int)
 
     Vector3* parent_position = &transform.position;
     do {
-        RingOrSpecialEffectParticle* particle = &particles[i];
+        SubRingStar* particle = &particles[i];
         particle->phase = (float)i * 0.628318548f;
         float* phase_step = &particle->phase_step;
         *phase_step = rate_source->subgame_rate * 0.104719758f;

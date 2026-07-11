@@ -1792,13 +1792,13 @@
     },
     {
       "address": "0x49732c",
-      "name": "g_track_ring_or_special_effect_vtable",
+      "name": "g_sub_ring_vtable",
       "kind": "vtable",
       "aliases": [
         "off_49732c",
         "data_49732c"
       ],
-      "description": "Authored ring or special-effect runtime vtable installed by its constructor."
+      "description": "Authored cRSubRing vtable installed by the exact Windows constructor; its entry points directly to update_ring_or_special_effect_parent at 0x43e830."
     },
     {
       "address": "0x497330",

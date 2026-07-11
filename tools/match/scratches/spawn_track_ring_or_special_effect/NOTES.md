@@ -118,3 +118,12 @@ Type consolidation:
 - Retesting a separate authored kind-1 `RR2`/`RR3` arm still makes VC6 exit
   without producing `scratch.obj`. The grouped switch remains an honest
   partial; no duplicate arm or fake relocation was kept.
+
+2026-07-11 authored class names:
+
+- The two embedded parent slots are now `SubRing`, and their ten inline
+  children are `SubRingStar`, following the preserved iOS/Android
+  `cRSubRing` and `cRSubRingStar` symbols.
+- `SubRingPool` owns the fixed storage; Player, SubgameRuntime rate source,
+  child parent links, and Sprite pointers retain their borrowed/manager-owned
+  lifetimes. Focused matching remains 53.45%, 218/347.

@@ -134,3 +134,13 @@
   callback.
 - The typed array call remains exact at 227/227 instructions with all 72
   operands clean.
+
+## 2026-07-11 cRSubRing constructor array
+
+- The two-record pass at `SubgameRuntime +0x35b78c` now walks the owned
+  `SubRingPool::slots` array directly rather than a generic 0x1f8-byte cursor.
+- Each exact constructor installs the table whose entry is
+  `cRSubRing::AI()`; the two records total `0x3f0`, matching the native
+  cRSubRing size ledger.
+- The typed loop remains exact at 227/227 instructions with all 72 operands
+  clean.

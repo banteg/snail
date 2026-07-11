@@ -9,7 +9,7 @@ float sine(float radians);
 float cosine(float radians);
 
 
-void RingOrSpecialEffectParticle::emit_ring_star_shower(Player* owner)
+void SubRingStar::emit_ring_star_shower(Player* owner)
 {
     if ((g_runtime_config.render_flags & 0x10) != 0) {
         Vector3 velocity;

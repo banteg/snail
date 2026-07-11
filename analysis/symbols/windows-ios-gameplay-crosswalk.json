@@ -556,12 +556,36 @@
       "confidence": "high"
     },
     {
+      "address": "0x43e470",
+      "windows_name": "initialize_ring_or_special_effect_particles",
+      "ios_symbol": "cRSubRing::Init(int)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Both arm one ring effect and initialize ten inline cRSubRingStar children from the authored effect kind."
+    },
+    {
       "address": "0x43e690",
       "windows_name": "emit_ring_star_shower",
       "ios_symbol": "cRSubRingStar::Shower(cRSubGoldy*)",
       "source_object": null,
       "confidence": "high",
       "notes": "v1.9-only signature."
+    },
+    {
+      "address": "0x43e780",
+      "windows_name": "update_ring_or_special_effect_particle",
+      "ios_symbol": "cRSubRingStar::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Both update one inline 0x20-byte child orbit around its borrowed cRSubRing parent before optional Shower dispatch."
+    },
+    {
+      "address": "0x43e830",
+      "windows_name": "update_ring_or_special_effect_parent",
+      "ios_symbol": "cRSubRing::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The Windows constructor table at 0x49732c points directly here; both ports own the parent state machine and fixed child-star array."
     },
     {
       "address": "0x4431d0",

@@ -425,7 +425,7 @@
     {
       "address": "0x408570",
       "name": "initialize_track_ring_or_special_effect_runtime",
-      "description": "Constructs one authored-ring runtime slot by seeding the shared bod header and installing the ring-or-special-effect vtable. `spawn_track_ring_or_special_effect` allocates from the 2-slot pool at `0x35b78c` before initializing the child particle sprites."
+      "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. SubgameRuntime owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger."
     },
     {
       "address": "0x408590",
@@ -2094,22 +2094,22 @@
     {
       "address": "0x43e470",
       "name": "initialize_ring_or_special_effect_particles",
-      "description": "Maps ring or special-effect modes onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families."
+      "description": "Windows `cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. The function is exact at 153 instructions."
     },
     {
       "address": "0x43e690",
       "name": "emit_ring_star_shower",
-      "description": "Emits the ring-star shower around Goldy when a ring/special-effect collection resolves. Cross-port iOS v1.9 symbols match this helper to `cRSubRingStar::Shower(cRSubGoldy*)`."
+      "description": "Exact `cRSubRingStar::Shower(cRSubGoldy*)`: emits a managed star sprite from one inline SubRingStar child when a SubRing collection resolves. Cross-port iOS v1.9 preserves the authored signature."
     },
     {
       "address": "0x43e780",
       "name": "update_ring_or_special_effect_particle",
-      "description": "Advances one child sprite in the bullet-owned ring or special-effect halo, updating its circular phase around the parent projectile and refreshing the live effect position before optional star-shower emission."
+      "description": "Windows `cRSubRingStar::AI()`: advances one inline SubRingStar child around its borrowed SubRing parent, updates the child sprite position, and optionally dispatches Shower. Cross-port iOS preserves the authored owner and method."
     },
     {
       "address": "0x43e830",
       "name": "update_ring_or_special_effect_parent",
-      "description": "Virtual updater for a SubgameRuntime-owned ring/special-effect parent slot: advances its fixed child halo, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager."
+      "description": "Windows `cRSubRing::AI()`: advances a SubgameRuntime-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here."
     },
     {
       "address": "0x43ecc0",

@@ -13,6 +13,11 @@ Semantics:
 
 Match status: 96.36%, pinned.
 
+Cross-port owner: iOS preserves this helper as `cRSubRingStar::AI()`. The
+shared source now defines it on `SubRingStar` with a borrowed `SubRing*` parent;
+the historical combined-effect type names remain compatibility aliases.
+Focused matching remains 96.36%, 55/55 instructions, with five clean operands.
+
 Residual:
 
 - Native adds the sine-derived X offset from `[parent + 0x68]` before

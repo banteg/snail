@@ -10,7 +10,7 @@ extern GameRoot* g_game; // data_4df904
 int report_errorf(const char* format, ...);
 float sine(float radians);
 
-void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
+void SubRing::update_ring_or_special_effect_parent()
 {
     RingEffectRateSource* rate = rate_source;
     if (rate->subgame_pause_gate != 0)
@@ -41,7 +41,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         }
 
         {
-        RingOrSpecialEffectParticle* particle = particles;
+        SubRingStar* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -53,7 +53,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         if (transform.position.z < owner_player->interaction_max_z) {
             state = 0;
             GameRoot* game = g_game;
-            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
+            SubRingListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -61,9 +61,9 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 report_errorf("List remove NEXTBOD");
             } else {
                 if (list_next != 0)
-                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                    ((SubRing*)list_next)->list_prev = list_prev;
                 if (list_prev != 0)
-                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
+                    ((SubRing*)list_prev)->list_next = list_next;
                 else
                     list->first = list_next;
                 list_next = list->free_top;
@@ -71,7 +71,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 list_flags &= ~0x200u;
             }
 
-            RingOrSpecialEffectParticle* particle =
+            SubRingStar* particle =
                 particles;
             int count = 10;
             do {
@@ -95,7 +95,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
 
     case 3:
         {
-        RingOrSpecialEffectParticle* particle = particles;
+        SubRingStar* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -108,7 +108,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         if (transition_progress > 1.0f) {
             state = 0;
             GameRoot* game = g_game;
-            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
+            SubRingListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -116,9 +116,9 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 report_errorf("List remove NEXTBOD");
             } else {
                 if (list_next != 0)
-                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                    ((SubRing*)list_next)->list_prev = list_prev;
                 if (list_prev != 0)
-                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
+                    ((SubRing*)list_prev)->list_next = list_next;
                 else
                     list->first = list_next;
                 list_next = list->free_top;
@@ -126,7 +126,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 list_flags &= ~0x200u;
             }
 
-            RingOrSpecialEffectParticle* particle =
+            SubRingStar* particle =
                 particles;
             int count = 10;
             do {
@@ -172,7 +172,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
 
     case 5:
         {
-        RingOrSpecialEffectParticle* particle = particles;
+        SubRingStar* particle = particles;
         int count = 10;
         do {
             particle->update_ring_or_special_effect_particle();
@@ -185,7 +185,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
         if (transition_progress > 1.0f) {
             state = 0;
             GameRoot* game = g_game;
-            RingOrSpecialEffectListAnchor* list = &game->active_bod_list;
+            SubRingListAnchor* list = &game->active_bod_list;
 
             if ((list_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -193,9 +193,9 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 report_errorf("List remove NEXTBOD");
             } else {
                 if (list_next != 0)
-                    ((RingOrSpecialEffectParent*)list_next)->list_prev = list_prev;
+                    ((SubRing*)list_next)->list_prev = list_prev;
                 if (list_prev != 0)
-                    ((RingOrSpecialEffectParent*)list_prev)->list_next = list_next;
+                    ((SubRing*)list_prev)->list_next = list_next;
                 else
                     list->first = list_next;
                 list_next = list->free_top;
@@ -203,7 +203,7 @@ void RingOrSpecialEffectParent::update_ring_or_special_effect_parent()
                 list_flags &= ~0x200u;
             }
 
-            RingOrSpecialEffectParticle* particle =
+            SubRingStar* particle =
                 particles;
             int count = 10;
             do {

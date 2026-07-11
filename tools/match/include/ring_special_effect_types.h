@@ -1,4 +1,4 @@
-// Ring/special-effect runtime views, partial.
+// Authored cRSubRing/cRSubRingStar runtime views, partial.
 #ifndef RING_SPECIAL_EFFECT_TYPES_H
 #define RING_SPECIAL_EFFECT_TYPES_H
 
@@ -6,24 +6,26 @@
 
 class Player;
 class Sprite;
-class RingOrSpecialEffectParent;
+class SubRing;
+typedef SubRing RingOrSpecialEffectParent;
 
-class RingOrSpecialEffectParticle {
+class SubRingStar {
 public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
     void emit_ring_star_shower(Player* owner); // @ 0x43e690
 
     // SpriteManager allocation handle; removal returns it through kill_sprite().
     Sprite* sprite; // +0x00, not inline storage owned by the particle
-    RingOrSpecialEffectParent* parent; // +0x04, non-owning backlink to embedded parent
+    SubRing* parent; // +0x04, non-owning backlink to embedded parent
     Vector3 base_position; // +0x08
     float phase; // +0x14
     float phase_step; // +0x18
     float radius; // +0x1c
 };
 
-typedef char RingOrSpecialEffectParticle_must_be_0x20[
-    (sizeof(RingOrSpecialEffectParticle) == 0x20) ? 1 : -1];
+typedef SubRingStar RingOrSpecialEffectParticle;
+
+typedef char SubRingStar_must_be_0x20[(sizeof(SubRingStar) == 0x20) ? 1 : -1];
 
 class RingEffectRateSource {
 public:
@@ -33,9 +35,9 @@ public:
     float subgame_rate; // +0x38
 };
 
-class RingOrSpecialEffectParent : public RenderableBod {
+class SubRing : public RenderableBod {
 public:
-    RingOrSpecialEffectParent* initialize_track_ring_or_special_effect_runtime(); // @ 0x408570
+    SubRing* initialize_track_ring_or_special_effect_runtime(); // @ 0x408570
     int initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
     void update_ring_or_special_effect_parent(); // @ 0x43e830
 
@@ -46,7 +48,7 @@ public:
     int owner_lives_snapshot; // +0x8c
     // Fixed child storage owned by this parent. Each child's sprite is a
     // separate SpriteManager allocation released on every parent-removal path.
-    RingOrSpecialEffectParticle particles[10]; // +0x90, embedded child records
+    SubRingStar particles[10]; // +0x90, embedded child records
     RingEffectRateSource* rate_source; // +0x1d0, borrowed SubgameRuntime view
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8
@@ -59,18 +61,20 @@ public:
     char unknown_1f0[0x1f8 - 0x1f0];
 };
 
-typedef char RingOrSpecialEffectParent_must_match_pool_stride[
-    (sizeof(RingOrSpecialEffectParent) == 0x1f8) ? 1 : -1];
+typedef char SubRing_must_be_0x1f8[(sizeof(SubRing) == 0x1f8) ? 1 : -1];
 
-typedef BodList RingOrSpecialEffectListAnchor;
+typedef BodList SubRingListAnchor;
+typedef SubRingListAnchor RingOrSpecialEffectListAnchor;
 
-class RingOrSpecialEffectPool {
+class SubRingPool {
 public:
     // Fixed storage owned by SubgameRuntime; active-list linkage never owns it.
-    RingOrSpecialEffectParent slots[2]; // game +0x35b78c, stride 0x1f8
+    SubRing slots[2]; // game +0x35b78c, stride 0x1f8
 };
 
-typedef char RingOrSpecialEffectPool_must_be_0x3f0[
-    (sizeof(RingOrSpecialEffectPool) == 0x3f0) ? 1 : -1];
+typedef SubRingPool RingOrSpecialEffectPool;
+
+typedef char SubRingPool_must_be_0x3f0[
+    (sizeof(SubRingPool) == 0x3f0) ? 1 : -1];
 
 #endif

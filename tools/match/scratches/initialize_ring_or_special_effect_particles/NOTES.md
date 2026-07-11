@@ -71,3 +71,12 @@ Type consolidation:
   same `Player::lives` snapshot passed by the ring spawner. The initializer
   still does not consume it, but the signature is now an ignored integer rather
   than a fake pointer.
+
+## 2026-07-11 authored owner promotion
+
+- iOS and Android preserve this owner family as `cRSubRing::Init(int)`; the
+  shared Windows type is now `SubRing`.
+- The ten inline children are authored `SubRingStar` records, matching the
+  cross-port `cRSubRingStar::AI()` and `Shower()` symbols. The historical
+  combined-effect names remain compatibility aliases only.
+- The method stays exact at 153/153 instructions with ten clean operands.

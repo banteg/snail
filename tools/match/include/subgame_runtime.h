@@ -164,7 +164,7 @@ public:
     SaltHazardPool salt_hazards; // +0x3578c0, fixed 40-slot owner
     BannerPool banners; // +0x359080, embedded start/completion actors
     GarbageHazardPool garbage_hazards; // +0x359140
-    RingOrSpecialEffectPool ring_effects; // +0x35b78c, two embedded parent slots
+    SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots
     char unknown_35bb7c[0x35bb88 - 0x35bb7c];
     // BorderManager pool handles. SubgameRuntime retains them for gameplay,
     // then destroy_subgame returns each handle through kill_border().
