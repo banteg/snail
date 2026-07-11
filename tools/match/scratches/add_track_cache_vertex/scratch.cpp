@@ -1,11 +1,11 @@
 // add_track_cache_vertex @ 0x433830 (thiscall, ret 0x2c)
 
 #include "object_render_types.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 int report_errorf(const char* format, ...);
 
-int TrackRenderCacheManager::add_track_cache_vertex(
+int SegmentCache::add_track_cache_vertex(
     Object* source,
     Vector3* position,
     int source_index,

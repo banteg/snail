@@ -8,6 +8,6 @@ typedef struct TrackRenderCacheSlot {
     uint8_t _pad_00[0x3c];
 } TrackRenderCacheSlot;
 
-typedef struct TrackRenderCacheManager {
+typedef struct SegmentCache {
     uint8_t _pad_00[0xa7f8];
-} TrackRenderCacheManager;
+} SegmentCache;

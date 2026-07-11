@@ -1,6 +1,8 @@
-// Track render cache manager, partial.
-#ifndef TRACK_RENDER_CACHE_H
-#define TRACK_RENDER_CACHE_H
+// Authored cRSegmentCache owner embedded in SubgameRuntime. The runtime size
+// ledger fixes its 0xa7f8-byte extent; the complete field layout is recovered
+// from its constructor, cache builder, row updater, and teardown methods.
+#ifndef SEGMENT_CACHE_H
+#define SEGMENT_CACHE_H
 
 #include "bod_types.h"
 #include "sprite.h"
@@ -20,7 +22,7 @@ struct TrackRenderCacheSlot {
 typedef char TrackRenderCacheSlot_must_be_0x3c[
     (sizeof(TrackRenderCacheSlot) == 0x3c) ? 1 : -1];
 
-class TrackRenderCacheManager {
+class SegmentCache {
 public:
     void* initialize_track_render_cache_manager();       // @ 0x433060
     int build_track_render_caches(Color4f skirt_color); // @ 0x433220
@@ -66,7 +68,7 @@ public:
     int next_cache_row_index; // +0xa7f4
 };
 
-typedef char TrackRenderCacheManager_must_be_0xa7f8[
-    (sizeof(TrackRenderCacheManager) == 0xa7f8) ? 1 : -1];
+typedef char SegmentCache_must_be_0xa7f8[
+    (sizeof(SegmentCache) == 0xa7f8) ? 1 : -1];
 
 #endif

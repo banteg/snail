@@ -6,7 +6,7 @@ only by `update_subgame` after the forward runtime-row scan.
 Evidence:
 
 - Native `update_subgame` calls this helper with `game + 0x5c`, the same
-  `TrackRenderCacheManager` base used by `rebuild_track_runtime_from_segments`
+  `SegmentCache` base used by `rebuild_track_runtime_from_segments`
   and `remove_track_render_cache_bods`.
 - The function compares `g_game_base + 0x42fdec + 46.0f` against manager
   `+0xa7f0`, then advances `+0xa7f0` by `24.0f` and increments `+0xa7f4`.
@@ -25,3 +25,6 @@ Evidence:
 Match status:
 
 - 2026-06-18: 100.00%, 227/227 instructions, 27 masked operands all resolved.
+- 2026-07-11: promoted the exact 0xa7f8-byte receiver to the authored
+  `SegmentCache` / cRSegmentCache owner. The method remains exact at 227/227
+  with all 27 operands clean.

@@ -5,7 +5,7 @@ five render-cache families: Floor, Slide, Warn, Ramp, and Fringe. The retained
 scratch keeps the committed by-value member signature:
 
 ```cpp
-int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color);
+int SegmentCache::build_track_render_caches(Color4f skirt_color);
 ```
 
 That signature agrees with the exact caller in
@@ -97,7 +97,7 @@ candidate encoding, so no unnatural pointer trick was retained.
 
 ## Ownership closure (2026-07-10)
 
-The exact callers prove `TrackRenderCacheManager` is embedded at
+The exact callers prove `SegmentCache` is embedded at
 `SubgameRuntime +0x5c`; its exact `0xa7f8` extent ends at `+0xa854`, four bytes
 before the tutorial controller. It owns `143 x 5` `BodBase` slots and the five
 typed vertex/index staging allocations. Each slot retains an ObjectList handle,
@@ -122,3 +122,8 @@ equivalent SIB base/index encoding remains honest scheduler debt.
 `PathTemplateStripMesh*` prototype was a stale partial-object view; the cache
 builder accepts track-cell and fringe `Object` instances from several owners,
 so the generic object is the real borrowed geometry contract.
+
+2026-07-11 cRSegmentCache ownership: the enclosing 0xa7f8-byte
+`SegmentCache` name is fixed by the Windows runtime size ledger and its exact
+SubgameRuntime boundaries. The 475/475 stream remains at the honest 99.79%
+baseline with 20 clean operands.

@@ -79,7 +79,7 @@ Volatile forms regressed by disturbing the prologue; non-volatile forms
 compile back to the same SIB base/index choice.
 
 2026-07-10 owner closure: three independent callers establish this manager as
-the embedded `SubgameRuntime::track_render_cache` at `+0x5c`. The exact
+the embedded `SubgameRuntime::segment_cache` at `+0x5c`. The exact
 `0xa7f8` manager size ends at subgame `+0xa854`; `owner_subgame +0x54` is a
 borrowed backlink, the `143 x 5` BOD grid is manager-owned, and the five shared
 vertex/index buffers are tracked allocations owned for the manager lifetime.
@@ -90,3 +90,11 @@ wrappers through the one `Direct3DRenderer` owner. Vertex wrappers come from
 the renderer prefix; index wrappers come from its `+0x8ca4` embedded factory.
 The interior relocation is manifest-resolved through the renderer's proven
 `0xbcc0` extent. The 99.18%, 122/122 stream and 18 clean operands are unchanged.
+
+2026-07-11 cRSegmentCache ownership:
+
+- The complete 0xa7f8-byte object at `SubgameRuntime +0x5c` is now named
+  `SegmentCache`, matching the constructor's `Size of cRSegmentCache` ledger.
+  Its owned 143x5 BOD grid, five vertex/index staging pairs, and borrowed
+  enclosing-runtime backlink already account for the full extent. The rename
+  is codegen-neutral at 99.18%, 122/122, with 18 clean operands.

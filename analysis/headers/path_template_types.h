@@ -446,7 +446,7 @@ typedef struct TrackRenderCacheSlot {
     float cache_row_base;
 } TrackRenderCacheSlot;
 
-typedef struct TrackRenderCacheManager {
+typedef struct SegmentCache {
     ColorBGRA8 skirt_color_bgra;
     int32_t max_vertex_counts[5];
     int32_t max_index_counts[5];
@@ -457,7 +457,7 @@ typedef struct TrackRenderCacheManager {
     float build_cache_row_base;
     float next_cache_row_z;
     int32_t next_cache_row_index;
-} TrackRenderCacheManager;
+} SegmentCache;
 
 /*
  * IDA-only aggregate view of build_track_render_caches' 0x34-byte overlapping
@@ -1302,15 +1302,15 @@ double __cdecl parse_next_float32(char** cursor);
 
 void* __thiscall noop_this_constructor(void* self);
 
-void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
+void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 
 int32_t __thiscall build_track_render_caches(
-    TrackRenderCacheManager* manager,
+    SegmentCache* manager,
     Color4f skirt_color
 );
 
 int32_t __thiscall add_track_cache_vertex(
-    TrackRenderCacheManager* manager,
+    SegmentCache* manager,
     Object* source,
     Vec3* position,
     int32_t source_index,
@@ -1325,7 +1325,7 @@ int32_t __thiscall add_track_cache_vertex(
 );
 
 int32_t __thiscall append_track_cache_object(
-    TrackRenderCacheManager* manager,
+    SegmentCache* manager,
     int32_t row_index,
     Object* source,
     Vec3* position,
@@ -1339,9 +1339,9 @@ int32_t __thiscall append_track_cache_object(
     uint8_t project_uv
 );
 
-void __thiscall update_track_render_cache_rows(TrackRenderCacheManager* manager);
+void __thiscall update_track_render_cache_rows(SegmentCache* manager);
 
-void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
+void __thiscall remove_track_render_cache_bods(SegmentCache* manager);
 
 int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
 

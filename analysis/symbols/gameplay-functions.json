@@ -1741,27 +1741,27 @@
     {
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
-      "description": "Initializes the fixed 143x5 track-render cache bod grid plus its shared GDX cache vertex/index buffers and per-cache texture-group scratch arrays."
+      "description": "Initializes the embedded cRSegmentCache owner: a fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its complete 0xa7f8-byte extent matches the Windows runtime size ledger."
     },
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe caches from the owning SubgameRuntime's fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position."
+      "description": "Builds the cRSegmentCache Floor, Slide, Warn, Ramp, and Fringe families from the owning SubgameRuntime’s fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position."
     },
     {
       "address": "0x433830",
       "name": "add_track_cache_vertex",
-      "description": "Transforms and deduplicates one source object vertex into a render-cache family staging buffer, optionally projecting track UVs."
+      "description": "Transforms and deduplicates one source object vertex into a cRSegmentCache family staging buffer, optionally projecting track UVs."
     },
     {
       "address": "0x433960",
       "name": "append_track_cache_object",
-      "description": "Appends one source object's triangle or quad faces to a render-cache family by emitting deduplicated vertices and indices."
+      "description": "Appends one source object’s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices."
     },
     {
       "address": "0x433b30",
       "name": "update_track_render_cache_rows",
-      "description": "Activates forward track-render cache row BODs while Goldy's current row position stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe slots into their active lists and seeding each slot color."
+      "description": "Advances cRSegmentCache while Goldy’s current row stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe BOD slots into their active lists and seeding each slot color."
     },
     {
       "address": "0x433e80",
@@ -1771,7 +1771,7 @@
     {
       "address": "0x433f20",
       "name": "remove_track_render_cache_bods",
-      "description": "Unlinks the fixed 143x5 track-render cache bod grid from the shared active-bod list during subgame teardown."
+      "description": "Unlinks the cRSegmentCache owner’s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown."
     },
     {
       "address": "0x433fc0",

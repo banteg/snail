@@ -3,7 +3,7 @@
 First typed scratch for clearing the track-render-cache BOD slots.
 
 The helper walks `0x8f` cache rows with five `TrackRenderCacheSlot` entries per
-row. The shared `track_render_cache.h` layout keeps each slot as a
+row. The shared `segment_cache.h` layout keeps each slot as a
 `BodBase`/`BodNode` overlay with stride `0x3c`, matching the
 initializer/build-cache users that address the render object at the
 `BodBase::object` lane (`slot + 0x24`).
@@ -67,3 +67,8 @@ node plus `cache_row_base`. Binary Ninja now decompiles this loop through
 slot-local render/vertex fields. The focused score remains 56.41%, 59/58,
 prefix 7/58, with all four operands clean; the retained residual is still
 register lifetime around the two full-dword masks.
+
+2026-07-11 cRSegmentCache ownership: the exact 0xa7f8 receiver is now the
+authored `SegmentCache` rather than a provisional manager wrapper. Focused
+matching stays honestly partial at 56.41%, 59/58 instructions, prefix 7/58,
+with four clean operands.

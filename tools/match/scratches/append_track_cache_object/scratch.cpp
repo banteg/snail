@@ -1,11 +1,11 @@
 // append_track_cache_object @ 0x433960 (thiscall, ret 0x2c)
 
 #include "object_render_types.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 int report_errorf(const char* format, ...);
 
-int TrackRenderCacheManager::append_track_cache_object(
+int SegmentCache::append_track_cache_object(
     int row_index,
     Object* source,
     Vector3* position,

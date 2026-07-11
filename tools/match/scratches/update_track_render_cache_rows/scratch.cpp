@@ -1,7 +1,7 @@
 // update_track_render_cache_rows @ 0x433b30 (thiscall, ret)
 
 #include "subgame_runtime.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
@@ -18,7 +18,7 @@ int report_errorf(char* format, ...);
         (slot)->bod.list_flags |= live_mask;                                       \
     }
 
-void TrackRenderCacheManager::update_track_render_cache_rows()
+void SegmentCache::update_track_render_cache_rows()
 {
     int live_mask = 0x200;
     if (*(float*)(g_game_base + 0x42fdec) + 46.0f <= next_cache_row_z)

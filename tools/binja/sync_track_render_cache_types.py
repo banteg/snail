@@ -19,10 +19,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_render_cache_types.h"
 OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 OBJECT_REQUIRED_STRUCTS = ("Vec3", "Color4f", "ObjectRenderVertex", "Object")
-TRACK_RENDER_CACHE_REQUIRED_STRUCTS = (
+SEGMENT_CACHE_REQUIRED_STRUCTS = (
     "TrackRenderGrid",
     "TrackRenderCacheSlot",
-    "TrackRenderCacheManager",
+    "SegmentCache",
 )
 
 TRACK_RENDER_GRID_FIELDS = (
@@ -35,7 +35,7 @@ TRACK_RENDER_CACHE_SLOT_FIELDS = (
     ("0x38", "cache_row_base", "float"),
 )
 
-TRACK_RENDER_CACHE_MANAGER_FIELDS = (
+SEGMENT_CACHE_FIELDS = (
     ("0x00", "skirt_color_bgra", "ColorBGRA8"),
     ("0x04", "max_vertex_counts", "int32_t[5]"),
     ("0x18", "max_index_counts", "int32_t[5]"),
@@ -54,12 +54,12 @@ SYMBOL_UPDATES = (
 )
 
 PROTO_UPDATES = (
-    ("initialize_track_render_cache_manager", "void* __thiscall initialize_track_render_cache_manager(TrackRenderCacheManager* manager)"),
-    ("build_track_render_caches", "int32_t __thiscall build_track_render_caches(TrackRenderCacheManager* manager, Color4f skirt_color)"),
-    ("add_track_cache_vertex", "int32_t __thiscall add_track_cache_vertex(TrackRenderCacheManager* manager, Object* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
-    ("append_track_cache_object", "int32_t __thiscall append_track_cache_object(TrackRenderCacheManager* manager, int32_t row_index, Object* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
-    ("update_track_render_cache_rows", "void __thiscall update_track_render_cache_rows(TrackRenderCacheManager* manager)"),
-    ("remove_track_render_cache_bods", "void __thiscall remove_track_render_cache_bods(TrackRenderCacheManager* manager)"),
+    ("initialize_track_render_cache_manager", "void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager)"),
+    ("build_track_render_caches", "int32_t __thiscall build_track_render_caches(SegmentCache* manager, Color4f skirt_color)"),
+    ("add_track_cache_vertex", "int32_t __thiscall add_track_cache_vertex(SegmentCache* manager, Object* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
+    ("append_track_cache_object", "int32_t __thiscall append_track_cache_object(SegmentCache* manager, int32_t row_index, Object* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
+    ("update_track_render_cache_rows", "void __thiscall update_track_render_cache_rows(SegmentCache* manager)"),
+    ("remove_track_render_cache_bods", "void __thiscall remove_track_render_cache_bods(SegmentCache* manager)"),
     ("is_slide_cache_tile_family", "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell)"),
     ("is_floor_cache_tile_family", "int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell)"),
     ("is_ramp_cache_tile_family", "int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell)"),
@@ -68,7 +68,7 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow track render cache type slice to the active Binary Ninja target."
+        description="Apply the narrow cRSegmentCache type slice to the active Binary Ninja target."
     )
     parser.add_argument("--target", default="active", help="Binary Ninja target selector.")
     parser.add_argument("--header", type=Path, default=DEFAULT_HEADER_PATH, help="Narrow Binary Ninja type header.")
@@ -92,7 +92,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            required_structs=TRACK_RENDER_CACHE_REQUIRED_STRUCTS,
+            required_structs=SEGMENT_CACHE_REQUIRED_STRUCTS,
         ),
     ]
     operations.extend(
@@ -107,8 +107,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="TrackRenderCacheManager",
-            updates=TRACK_RENDER_CACHE_MANAGER_FIELDS,
+            struct_name="SegmentCache",
+            updates=SEGMENT_CACHE_FIELDS,
         )
     )
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))

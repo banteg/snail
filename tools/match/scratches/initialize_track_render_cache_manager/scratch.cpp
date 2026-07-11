@@ -2,7 +2,7 @@
 
 #include "direct3d_renderer.h"
 #include "object_render_types.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
@@ -13,7 +13,7 @@ struct TrackRenderCacheSlotCursor {
     BodBase bod; // +0x58
 };
 
-void* TrackRenderCacheManager::initialize_track_render_cache_manager()
+void* SegmentCache::initialize_track_render_cache_manager()
 {
     max_vertex_counts[0] = 560;
     max_index_counts[0] = 1280;

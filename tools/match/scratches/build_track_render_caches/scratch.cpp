@@ -7,7 +7,7 @@
 #include "object_render_types.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 unsigned char __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
 unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
@@ -22,7 +22,7 @@ struct TrackRenderGrid {
     TrackRowCell cells[8];
 };
 
-int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
+int SegmentCache::build_track_render_caches(Color4f skirt_color)
 {
     int row_index;
     ColorBGRA8 white_color;

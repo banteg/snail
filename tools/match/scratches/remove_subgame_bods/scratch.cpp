@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 typedef unsigned int DWORD;
 
@@ -99,7 +99,7 @@ void SubgameRuntime::remove_subgame_bods()
         --row_count;
     } while (row_count != 0);
 
-    track_render_cache.remove_track_render_cache_bods();
+    segment_cache.remove_track_render_cache_bods();
 
     BodNode** health_next = (BodNode**)(game + 0x35600c);
     int health_count = 8;

@@ -1,7 +1,7 @@
 // rebuild_track_runtime_from_segments @ 0x437de0 (thiscall, ret 0x4)
 
 #include "subgame_runtime.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -22,5 +22,5 @@ int SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
     Color4f skirt_color;
     Color4f* resolved_color =
         ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
-    return track_render_cache.build_track_render_caches(*resolved_color);
+    return segment_cache.build_track_render_caches(*resolved_color);
 }

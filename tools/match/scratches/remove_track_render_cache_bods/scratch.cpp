@@ -1,11 +1,11 @@
 // remove_track_render_cache_bods @ 0x433f20 (thiscall)
 
-#include "track_render_cache.h"
+#include "segment_cache.h"
 
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
-void TrackRenderCacheManager::remove_track_render_cache_bods()
+void SegmentCache::remove_track_render_cache_bods()
 {
     BodNode** next_ref = &slots[0][0].bod.list_next;
     int rows = 0x8f;

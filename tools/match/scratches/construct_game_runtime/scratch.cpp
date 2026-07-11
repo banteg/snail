@@ -28,7 +28,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
     debug_report_stub("Size of cRGame %i\n", 0x12e6ff4); \
     debug_report_stub("Size of cRSubGame %i\n", 0x1272838); \
-    debug_report_stub("   Size of cRSegmentCache %i\n", 0xa7f8); \
+    debug_report_stub("   Size of cRSegmentCache %i\n", sizeof(SegmentCache)); \
     debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(Tutorial)); \
     debug_report_stub("   Size of cRSubTracks %i\n", 0x1a5978); \
     debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(SubSpeedUp)); \

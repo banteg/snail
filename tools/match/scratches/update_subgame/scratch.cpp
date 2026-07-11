@@ -15,7 +15,7 @@
 #include "timer_counters.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
-#include "track_render_cache.h"
+#include "segment_cache.h"
 #include "vector3.h"
 
 class BorderInit {
@@ -558,7 +558,7 @@ after_authored_ring:
             *(unsigned char*)game = zero;
         }
 
-        track_render_cache.update_track_render_cache_rows();
+        segment_cache.update_track_render_cache_rows();
 
         if (level_mode == 4) {
             TimeTrial* time_trial = (TimeTrial*)(game + 0xff25e0);
