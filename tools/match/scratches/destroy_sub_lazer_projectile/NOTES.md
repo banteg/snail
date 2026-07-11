@@ -1,14 +1,15 @@
 # destroy_sub_lazer_projectile
 
-First relationship scratch for `TrackRowCell::destroy_sub_lazer_projectile()`
+First relationship scratch for `SubLoc::destroy_sub_lazer_projectile()`
 at `0x439bc0`.
 
 Current match: 91.19% (`130/131` candidate/target instructions), 87-instruction
-exact prefix, `17` masked operands ok, no unresolved or mismatched operands.
+exact prefix, `14` masked operands ok, no unresolved and `3` known global-base
+mismatches.
 
 Recovered behavior:
 
-- the receiver is the full `TrackRowCell`/fringe runtime object, not a
+- the receiver is the full `SubLoc` runtime-grid object, not a
   `SubLazerSlot`; the first `0x10` bytes are the shared `BodNode` prefix;
 - tile ids `0x1d` and `0x1e` may clear the row-color BOD record at
   `game+0x6410e0 + row*0xf4`, gated by the row record's dirty bit `0x08`;
@@ -16,7 +17,7 @@ Recovered behavior:
   game base, so the scratch keeps the native outer cursor and typed offset
   accesses instead of folding `0x6410e0` into the row pointer;
 - the cell's own BOD node is removed when active;
-- the four `TrackRowCell::fringe_*` pointers are scanned and any active fringe
+- the four `SubLoc::fringe_*` pointers are scanned and any active fringe
   BOD is unlinked back into the shared free list.
 
 This helper is called by the wall-2 emitter update path and by

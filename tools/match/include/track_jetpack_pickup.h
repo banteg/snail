@@ -8,12 +8,12 @@
 
 #include "bod_list.h"
 #include "bod_types.h"
+#include "sub_loc_fwd.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
-struct TrackRowCell;
 
 class TrackJetpackPickup : public BodNode {
 public:

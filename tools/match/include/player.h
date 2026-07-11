@@ -17,6 +17,7 @@
 #include "progress_bar.h"
 #include "score_stats.h"
 #include "snail_skin.h"
+#include "sub_loc_fwd.h"
 #include "timer_counters.h"
 #include "tip_manager.h"
 #include "transform_matrix.h"
@@ -25,7 +26,6 @@
 
 struct AttachmentPathTemplate;
 struct Object;
-struct TrackRowCell;
 
 class Player;
 class ClickStartController;

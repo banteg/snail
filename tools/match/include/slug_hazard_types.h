@@ -5,11 +5,11 @@
 #define SLUG_HAZARD_TYPES_H
 
 #include "bod_types.h"
+#include "sub_loc_fwd.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
-struct TrackRowCell;
 
 class SlugHazardRuntime : public RenderableBod {
 public:

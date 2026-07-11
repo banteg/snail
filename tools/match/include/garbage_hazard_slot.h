@@ -5,10 +5,10 @@
 
 #include "bod_list.h"
 #include "sprite.h"
+#include "sub_loc_fwd.h"
 
 class Player;
 class SubgameRuntime;
-struct TrackRowCell;
 
 class GarbageHazardSlot : public BodNode {
 public:

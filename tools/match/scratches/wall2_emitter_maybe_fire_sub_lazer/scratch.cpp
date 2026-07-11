@@ -17,7 +17,7 @@ inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-void TrackRowCell::wall2_emitter_maybe_fire_sub_lazer()
+void SubLoc::wall2_emitter_maybe_fire_sub_lazer()
 {
     if ((lane_and_flags & 0x2000) == 0)
         return;

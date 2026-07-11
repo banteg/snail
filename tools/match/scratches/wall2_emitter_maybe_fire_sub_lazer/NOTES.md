@@ -1,7 +1,7 @@
 # High progress — 82.67%, 188/187 insns
 
-This is the per-cell `TrackRowCell` update, matching the iOS
-`cRSubLoc::AI()` owner family, not a pooled `FringeObject` method. The receiver's
+This is the per-cell `SubLoc` update, matching the iOS
+`cRSubLoc::AI()` owner, not a pooled `FringeObject` method. The receiver's
 `BodNode`, position/render/color lanes, attachment-template backlink, tile id,
 and lane flags are the same fields used by the exact runtime-grid builders and
 the near-matched cell teardown. Semantics complete:
@@ -65,7 +65,7 @@ operands.
 2026-07-11 ownership and vector-source pass: the synthetic root and receiver
 views are removed. Every global offset now resolves through `GameRoot` into the
 owned `SubgameRuntime`, embedded `Player`, `SubLazerPool`, or 0xf4-byte runtime
-row. The receiver is the shared `TrackRowCell`/`cRSubLoc`, and the skirt-color
+row. The receiver is the shared `SubLoc`, and the skirt-color
 destination is specifically `TrackAttachmentRuntimeRow::attachment_body.color`.
 
 The native 0x34-byte frame is recovered by the ordinary C++ shape: copy the

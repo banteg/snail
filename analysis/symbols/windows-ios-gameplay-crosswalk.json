@@ -256,6 +256,14 @@
       "notes": "The specific CameraAI spelling comes from cross-port evidence; iOS confirms cRCameraman and cRSubGame ownership in the same object group."
     },
     {
+      "address": "0x447040",
+      "windows_name": "get_track_cell_row_index",
+      "ios_symbol": "cRSubLoc::Yi()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Both mask the receiver's low three lane bits, recover lane zero, subtract the runtime-cell slab base, divide by the platform cell stride, and divide by eight lanes. iOS uses a 0x44-byte cell; the exact Windows helper uses 0x54."
+    },
+    {
       "address": "0x447300",
       "windows_name": "copy_segment_definition_to_level_slot",
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",

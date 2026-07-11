@@ -5,7 +5,7 @@
 extern char* g_game_base; // data_4df904
 extern char g_track_row_cells_offset[]; // 0x4340e0
 
-int TrackRowCell::get_track_cell_row_index()
+int SubLoc::get_track_cell_row_index()
 {
     int lane = lane_and_flags & 7;
     char* row_cell = (char*)this - lane * 0x54;

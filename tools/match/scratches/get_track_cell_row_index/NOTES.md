@@ -1,9 +1,13 @@
-# Exact - TrackRowCell row index
+# Exact - cRSubLoc::Yi row index
 
-This accessor pins `TrackRowCell +0x40` as the lane/flags dword. The low
+This accessor pins Windows `SubLoc +0x40` as the lane/flags dword. The low
 three bits are the lane, and `mark_track_warning_zones` now cross-checks that
 the same dword carries the `0x18` warning footprint bits.
 
-Keep the scratch-local class for now. Including `track_attachment.h` makes
-`g_game_base` volatile and changes register allocation in this exact function,
-even though the recovered field layout is shared.
+The iOS `cRSubLoc::Yi()` implementation independently proves the owner and
+algorithm: it masks the low three bits of its lane byte at `+0x32`, subtracts
+the first cell in the runtime slab, divides by the iOS `0x44` cell stride, then
+divides by eight lanes. Windows performs the same operation with its `+0x40`
+lane word and `0x54` cell stride. The exact matcher scratch now defines the
+method on `SubLoc`; `TrackRowCell` remains only a compatibility alias for older
+scratch names.

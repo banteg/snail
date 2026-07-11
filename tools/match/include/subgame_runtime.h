@@ -60,13 +60,13 @@ public:
     void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
     unsigned int* spawn_track_health_pickup(
-        TrackRowCell* cell, Player* player); // @ 0x43d6c0
-    int spawn_track_speedup(TrackRowCell* cell, Player* player); // @ 0x43d880, receiver unused by body
-    int spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player); // @ 0x43d890
-    unsigned int* spawn_track_garbage_hazard(TrackRowCell* cell, Player* player); // @ 0x43da80
-    int spawn_slug_hazard(TrackRowCell* cell, Player* player); // @ 0x43dc80
-    TrackRowCell* spawn_track_ring_or_special_effect(
-        TrackRowCell* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
+        SubLoc* cell, Player* player); // @ 0x43d6c0
+    int spawn_track_speedup(SubLoc* cell, Player* player); // @ 0x43d880, receiver unused by body
+    int spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
+    unsigned int* spawn_track_garbage_hazard(SubLoc* cell, Player* player); // @ 0x43da80
+    int spawn_slug_hazard(SubLoc* cell, Player* player); // @ 0x43dc80
+    SubLoc* spawn_track_ring_or_special_effect(
+        SubLoc* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
     double advance_blink_random(); // @ 0x4408a0
@@ -79,7 +79,7 @@ public:
     TrackParcelRuntime* spawn_track_parcel(
         Vector3* world_position,
         Player* ignored_player); // @ 0x443730, native binds embedded_player()
-    TrackRowCell* get_track_grid_cell_at_world_position(Vector3* position);
+    SubLoc* get_track_grid_cell_at_world_position(Vector3* position);
     TrackAttachmentRuntimeRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
     void project_position_onto_track_attachment(Vector3* position, float* out_angle);
@@ -93,7 +93,7 @@ public:
     void merge_track_tile_runs();
     void mark_track_warning_zones();
     int build_track_fringe_objects();
-    bool is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz);
+    bool is_neighbor_cell_solid(SubLoc* cell, int dx, int dz);
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
     unsigned char scan_reset; // +0x00, row scanner start-window reset
@@ -186,7 +186,7 @@ public:
     Player player; // +0x3bb764, ends at +0x3bfac8
     // Fixed row-major runtime grid owned by SubgameRuntime. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
-    TrackRowCell runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
+    SubLoc runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
     // Fixed row records owned by SubgameRuntime. Their body objects are
     // embedded; source_segment and attachment-cell fields are borrowed links.
     TrackAttachmentRuntimeRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8

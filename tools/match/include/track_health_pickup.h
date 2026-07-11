@@ -6,12 +6,12 @@
 #define TRACK_HEALTH_PICKUP_H
 
 #include "bod_list.h"
+#include "sub_loc_fwd.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
-struct TrackRowCell;
 
 class TrackHealthPickup : public BodNode {
 public:

@@ -8,6 +8,7 @@
 #include "bod_list.h"
 #include "bod_types.h"
 #include "object_render_types.h"
+#include "sub_loc_fwd.h"
 #include "vector3.h"
 #include "vector_types.h"
 
@@ -20,8 +21,6 @@ struct PathTemplateStripMesh {
     char unknown_00[0x10];
     int flags;                       // +0x10
 };
-
-struct TrackRowCell;
 
 struct AttachmentPathTemplate {
     void allocate_path_template_samples(); // @ 0x41b0a0
@@ -280,11 +279,14 @@ typedef char AttachmentPathTemplatePair_must_be_0x150[
 
 enum { ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT = 63 };
 
-struct TrackRowCell {
+// Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
+// its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
+// as the exact Windows helper below. The Windows layout is 0x54 bytes.
+struct SubLoc {
     BodNode bod;                       // +0x00, active/free BOD prefix
 
-    void destroy_sub_lazer_projectile(); // @ 0x439bc0
-    void wall2_emitter_maybe_fire_sub_lazer(); // @ 0x439d50, cRSubLoc::AI family
+    void destroy_sub_lazer_projectile(); // @ 0x439bc0, historical harness name
+    void wall2_emitter_maybe_fire_sub_lazer(); // @ 0x439d50, cRSubLoc::AI
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     float render_arg_1c;                // +0x1c, inline BodBase texture-u argument
@@ -301,11 +303,10 @@ struct TrackRowCell {
     FringeObject* fringe_left;          // +0x4c
     FringeObject* fringe_back;          // +0x50
 
-    int get_track_cell_row_index();
+    int get_track_cell_row_index(); // @ 0x447040, cRSubLoc::Yi
 };
 
-typedef char TrackRowCell_must_be_0x54[
-    (sizeof(TrackRowCell) == 0x54) ? 1 : -1];
+typedef char SubLoc_must_be_0x54[(sizeof(SubLoc) == 0x54) ? 1 : -1];
 
 struct TrackAttachmentRuntimeRow {       // stride 0xf4
     unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
@@ -319,8 +320,8 @@ struct TrackAttachmentRuntimeRow {       // stride 0xf4
     Vector3 projection_payload;          // +0x90, x/y/z = local/count/row-center during parcel placement
     int parcel_set_id;                   // +0x9c, authored parcel set/payload id
     int attachment_template_index;       // +0xa0, P/p template bank index
-    TrackRowCell* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
-    TrackRowCell* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
+    SubLoc* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
+    SubLoc* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
     float installed_heading_delta;        // +0xac, copied into an entered path template
     BodBase attachment_body;              // +0xb0, embedded attachment/fringe row actor
     float ring_speed;                     // +0xe8, authored ring/effect rate source
@@ -334,14 +335,14 @@ typedef char TrackAttachmentRuntimeRow_must_be_0xf4[
 class FollowState {
 public:
     AttachmentPathTemplate* begin_track_attachment_follow_state(
-        TrackRowCell* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
+        SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
     AttachmentPathTemplate* template_record; // +0x04
-    TrackRowCell* source_cell;   // +0x08
+    SubLoc* source_cell;         // +0x08
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14

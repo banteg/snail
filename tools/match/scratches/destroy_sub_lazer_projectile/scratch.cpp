@@ -57,7 +57,7 @@ int report_errorf(char* format, ...);
         }                                                         \
     } while (0)
 
-void TrackRowCell::destroy_sub_lazer_projectile()
+void SubLoc::destroy_sub_lazer_projectile()
 {
     int row_index = get_track_cell_row_index();
     unsigned char tile = tile_id;
