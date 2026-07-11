@@ -1,9 +1,9 @@
 // cache_music_file @ 0x432d50 (cdecl)
 
 #include "audio_system.h"
+#include "archive_index.h"
 
 extern char* g_music_memory_buffer; // data_53c7e8
-extern int g_archive_index_records; // data_53c7f8
 
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 int report_errorf(char* format, ...);

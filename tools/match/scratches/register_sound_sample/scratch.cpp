@@ -1,9 +1,9 @@
 // register_sound_sample @ 0x432f10 (cdecl)
 
 #include "audio_system.h"
+#include "archive_index.h"
 
 extern char* g_music_memory_buffer; // data_53c7e8
-extern int g_archive_index_records; // data_53c7f8
 extern char g_registered_sound_sample_names[256][0x80]; // data_5088b0
 extern int g_registered_sound_sample_count; // data_5108b0
 
@@ -13,7 +13,7 @@ int report_errorf(char* format, ...);
 
 int register_sound_sample(char* path, int normalization_class)
 {
-    int archive_index_records = g_archive_index_records;
+    ArchiveIndex* archive_index_records = g_archive_index_records;
     char* source_path;
     int sample_size;
     if (archive_index_records != 0) {

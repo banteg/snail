@@ -33,3 +33,11 @@ g_archive_index_records; if (records->count > 0)`), using a chained assignment
 inside the count test all compile identically at 92.54%. None recover native's
 `mov eax, esi; add esp, 0x38; mov [global], eax` schedule. Keep the current
 clear `records = index; g_archive_index_records = records` source shape.
+
+2026-07-11 ownership sweep: the five remaining boolean-only consumers now use
+the shared `ArchiveIndex*` declaration instead of redeclaring the address as an
+integer. `archive_or_file_exists` also uses the recovered `ArchiveEntry*` return
+type for `find_archive_entry`, while `register_sound_sample` keeps its saved
+global as an `ArchiveIndex*`. All five focused objects remain exact; this clears
+the archive-index address from the shared-extern conflict report without
+changing code generation.

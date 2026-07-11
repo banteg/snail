@@ -1,13 +1,11 @@
 // archive_or_file_exists @ 0x430fd0 (cdecl)
 
-struct File;
-
-extern int g_archive_index_records; // data_53c7f8
+#include "archive_index.h"
 
 extern "C" File* __cdecl fopen(char* path, char* mode);
 extern "C" int __cdecl fclose(File* file);
 
-int find_archive_entry(char* path);
+ArchiveEntry* find_archive_entry(char* path);
 int report_warningf(char* format, ...);
 
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
