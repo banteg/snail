@@ -1,12 +1,12 @@
 // destroy_challenge_setup_screen @ 0x4161f0 (thiscall)
 
 #include "border_manager.h"
-#include "challenge_setup_screen.h"
+#include "gui.h"
 #include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 
-void ChallengeSetupScreen::destroy_challenge_setup_screen()
+void GUI::destroy_challenge_setup_screen()
 {
     int mode = game->level_mode;
     switch (mode) {

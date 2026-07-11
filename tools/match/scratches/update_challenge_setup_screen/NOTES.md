@@ -1,7 +1,7 @@
 # update_challenge_setup_screen @ 0x416370
 
 First structured scratch for the challenge/time-trial setup updater. The
-screen controller layout is shared through `challenge_setup_screen.h`, and its
+screen controller layout is shared through `gui.h`, and its
 `game` pointer is now recovered as a borrowed `SubgameRuntime*`.
 
 ## Recovered behavior
@@ -73,3 +73,7 @@ rewrite is codegen-neutral at 80.68%, 354/355 instructions, prefix 8/355, and
 2026-07-11 config-owner pass: the route limit and both completion slider
 sources now come from the shared `RuntimeConfig` aggregate. Focused Wibo stays
 at 80.68%, 354/355 instructions, prefix 8/355, with all 35 operands clean.
+
+2026-07-11 cRGUI ownership: cross-port symbols name this 0x28-byte receiver
+`cRGUI::AI()`. The class promotion is codegen-neutral at the honest 80.68%
+baseline; no register or control-flow residual was hidden for the rename.

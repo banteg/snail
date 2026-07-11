@@ -1,6 +1,6 @@
 // update_challenge_setup_screen @ 0x416370 (thiscall)
 
-#include "challenge_setup_screen.h"
+#include "gui.h"
 #include "sub_solution.h"
 #include "sub_tracks.h"
 #include "runtime_config.h"
@@ -11,7 +11,7 @@
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 
-int ChallengeSetupScreen::update_challenge_setup_screen()
+int GUI::update_challenge_setup_screen()
 {
     game->hide_gameplay_scores();
 

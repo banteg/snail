@@ -8,7 +8,7 @@
 #include "landscape_manager.h"
 #include "banner.h"
 #include "barrier_actor.h"
-#include "challenge_setup_screen.h"
+#include "gui.h"
 #include "completion.h"
 #include "frontend_widget.h"
 #include "fringe_object.h"
@@ -236,7 +236,7 @@ public:
         float salt_frequency; // +0x125ffdc, normalized Salt: spawn control
         int salt_frequency_bits;
     };
-    ChallengeSetupScreen challenge_setup; // +0x125ffe0
+    GUI gui; // +0x125ffe0
     HelpScreen help_screen; // +0x1260008, embedded front-end controller
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
     Galaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8

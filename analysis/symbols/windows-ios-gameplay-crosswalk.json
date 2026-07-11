@@ -1673,6 +1673,42 @@
       "source_object": "TimeTrial.o",
       "confidence": "high",
       "notes": "Windows callsites seed `this` with SubgameRuntime +0xff25e0, whose 0x330-byte extent is fixed by the following PathManager and the runtime size ledger. The exact body writes the shared gTimeTrialString buffer and does not read receiver fields."
+    },
+    {
+      "address": "0x415f50",
+      "windows_name": "initialize_challenge_setup_screen",
+      "ios_symbol": "cRGUI::Init()",
+      "android_symbol": "cRGUI::Init()",
+      "source_object": "GUI.o",
+      "confidence": "high",
+      "notes": "The exact Windows member initializes the same 0x28-byte GUI owner and mode-dependent widget slots. Android independently preserves the identical borrowed game pointer and +0x04 through +0x24 widget layout."
+    },
+    {
+      "address": "0x4161f0",
+      "windows_name": "destroy_challenge_setup_screen",
+      "ios_symbol": "cRGUI::UnInit()",
+      "android_symbol": "cRGUI::UnInit()",
+      "source_object": "GUI.o",
+      "confidence": "high",
+      "notes": "Both implementations branch on modes 0, 1, and 4 and destroy the corresponding widgets from the same GUI fields. The Windows member is exact at 96/96 instructions."
+    },
+    {
+      "address": "0x416370",
+      "windows_name": "update_challenge_setup_screen",
+      "ios_symbol": "cRGUI::AI()",
+      "android_symbol": "cRGUI::AI()",
+      "source_object": "GUI.o",
+      "confidence": "high",
+      "notes": "The ports share the cRGUI owner and postal, challenge, and time-trial level-selection state machine; the broad Windows body remains honestly partial."
+    },
+    {
+      "address": "0x433fc0",
+      "windows_name": "bind_subgame_owner",
+      "ios_symbol": "cRGUI::Open()",
+      "android_symbol": "cRGUI::Open()",
+      "source_object": "GUI.o",
+      "confidence": "high",
+      "notes": "For the GUI callsite, the exact four-instruction Windows helper is cRGUI::Open: it stores the root-owned cRSubGame pointer at GUI +0x00. The linker folded the identical ThanksScreen owner-binding body into the same address, so the stable Windows harness name remains generic."
     }
   ]
 }

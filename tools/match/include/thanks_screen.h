@@ -20,7 +20,7 @@ public:
     float message_progress_step; // +0x10
 };
 
-// Field-first owner-link view shared by ChallengeSetupScreen and ThanksScreen.
+// Field-first owner-link view shared by GUI and ThanksScreen.
 // Both concrete controllers keep their own layouts; this does not assert a
 // common C++ base class merely because their identical setup was folded.
 class SubgameOwnerLink {

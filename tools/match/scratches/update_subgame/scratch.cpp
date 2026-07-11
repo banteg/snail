@@ -167,7 +167,7 @@ void SubgameRuntime::update_subgame()
             return;
 
         case 1:
-            result = ((ChallengeSetupScreen*)(game + 0x125ffe0))->update_challenge_setup_screen();
+            result = ((GUI*)(game + 0x125ffe0))->update_challenge_setup_screen();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 build_subgame_level(0);

@@ -16,7 +16,7 @@ operands.
 
 ## Accepted source-shape changes
 
-- Added the real `ChallengeSetupScreen::update_challenge_setup_screen` member
+- Added the real `GUI::update_challenge_setup_screen` member
   declaration to the shared challenge setup header.
 - Modeled the dispatch as a sparse `switch` with `case 4` first; this recovers
   the native `sub/dec/sub` mode comparison chain and physical mode-4 fallthrough.

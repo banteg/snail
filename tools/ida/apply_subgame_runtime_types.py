@@ -49,6 +49,18 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
     ),
     (
+        "initialize_challenge_setup_screen",
+        "int __thiscall initialize_challenge_setup_screen(GUI* gui);",
+    ),
+    (
+        "destroy_challenge_setup_screen",
+        "void __thiscall destroy_challenge_setup_screen(GUI* gui);",
+    ),
+    (
+        "update_challenge_setup_screen",
+        "int __thiscall update_challenge_setup_screen(GUI* gui);",
+    ),
+    (
         "format_time_trial_string",
         "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer);",
     ),

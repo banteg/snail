@@ -879,17 +879,17 @@
     {
       "address": "0x415f50",
       "name": "initialize_challenge_setup_screen",
-      "description": "Builds the mode-1 front-end setup screen with Select Difficulty, Select Speed, Play, Watch Replay, and Back controls before challenge gameplay starts."
+      "description": "Implements `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets."
     },
     {
       "address": "0x4161f0",
       "name": "destroy_challenge_setup_screen",
-      "description": "Tears down the mode-1 front-end setup screen widgets, including the optional replay control and the difficulty or speed selectors."
+      "description": "Implements `cRGUI::UnInit()`: tears down the cRGUI widget set selected by gameplay mode 0, 1, or 4, including optional replay and challenge slider controls."
     },
     {
       "address": "0x416370",
       "name": "update_challenge_setup_screen",
-      "description": "Runs the mode-1 front-end setup screen, including difficulty and speed changes, replay launch, Play, and Back handoff into `update_subgame` state 1."
+      "description": "Implements `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs."
     },
     {
       "address": "0x416800",
@@ -1776,7 +1776,7 @@
     {
       "address": "0x433fc0",
       "name": "bind_subgame_owner",
-      "description": "Binds a front-end controller's first field to the embedded cRSubGame owner. Startup calls the same folded helper for both ChallengeSetupScreen and ThanksScreen, so this is not a Thanks-only open action."
+      "description": "Binds a front-end controller’s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the identical one-store body with the ThanksScreen owner-binding callsite."
     },
     {
       "address": "0x433fd0",

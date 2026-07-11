@@ -79,6 +79,19 @@ typedef struct TimeTrial {
     uint8_t unknown_000[0x330];
 } TimeTrial;
 
+typedef struct GUI {
+    void* game;
+    void* next_level_button;
+    void* previous_level_button;
+    void* level_name_widget;
+    void* play_button;
+    uint8_t unknown_14[0x18 - 0x14];
+    void* back_button;
+    void* speed_slider;
+    void* difficulty_slider;
+    void* replay_button;
+} GUI;
+
 typedef union RuntimeRateOrLevelArg {
     float base_rate;
     int32_t level_arg_tail;
@@ -152,6 +165,7 @@ typedef struct SubgameRuntime {
     uint8_t unknown_ff2910[0x125ffd8 - 0xff2910];
     float garbage_frequency;
     float salt_frequency;
+    GUI gui;
 } SubgameRuntime;
 
 typedef struct SubgameOwnerLink {

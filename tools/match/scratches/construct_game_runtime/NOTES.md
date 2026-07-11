@@ -302,6 +302,13 @@ cache-slot grid, and ends four alignment bytes before Tutorial. Constructor
 metrics remain unchanged at 88.89%, with 119 clean operands and only the
 compiler-local EH relocation unresolved.
 
+## 2026-07-11 cRGUI size ledger
+
+The `Size of cRGUI` entry now comes from `sizeof(GUI)`. Its borrowed Subgame
+pointer plus nine mode-dependent widget/state lanes occupy exactly 0x28 bytes
+at `SubgameRuntime +0x125ffe0`, ending at HelpScreen. Android independently
+preserves the same field offsets. Constructor metrics remain unchanged.
+
 ## 2026-07-11 cREnemyManager size ledger
 
 The `Size of cREnemyManager` entry now comes from `sizeof(EnemyManager)`. Its

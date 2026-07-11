@@ -3,7 +3,7 @@
 #include "backdrop.h"
 #include "border_manager.h"
 #include "border_runtime.h"
-#include "challenge_setup_screen.h"
+#include "gui.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
@@ -258,7 +258,7 @@ void SubgameRuntime::initialize_subgame()
                 reset_subgame();
                 return;
             case 1:
-                challenge_setup.initialize_challenge_setup_screen();
+                gui.initialize_challenge_setup_screen();
                 reset_subgame();
                 return;
             case 7:

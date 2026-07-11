@@ -263,7 +263,7 @@ char GameRoot::initialize_game_assets_and_world()
     landscape->load_landscape_script_by_name((char*)"Help.txt");
 
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
-    ((SubgameOwnerLink*)&subgame.challenge_setup)->bind_subgame_owner();
+    ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
     ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
     subgame.galaxy.load_galaxy_layout();
     subgame.player.cameraman.initialize_cameraman();

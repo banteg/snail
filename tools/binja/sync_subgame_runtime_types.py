@@ -25,6 +25,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0xff25e0", "time_trial", "TimeTrial"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
+    ("0x125ffe0", "gui", "GUI"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
 )
 
@@ -64,6 +65,18 @@ PROTO_UPDATES = (
     ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
     ("initialize_blink_random", "int32_t __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
     ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
+    (
+        "initialize_challenge_setup_screen",
+        "int32_t __thiscall initialize_challenge_setup_screen(GUI* gui)",
+    ),
+    (
+        "destroy_challenge_setup_screen",
+        "void __thiscall destroy_challenge_setup_screen(GUI* gui)",
+    ),
+    (
+        "update_challenge_setup_screen",
+        "int32_t __thiscall update_challenge_setup_screen(GUI* gui)",
+    ),
     (
         "format_time_trial_string",
         "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer)",
@@ -119,7 +132,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            required_structs=("SubgameRuntime", "TimeTrial"),
+            required_structs=("SubgameRuntime", "TimeTrial", "GUI"),
         ),
         *apply_struct_field_updates(
             REPO_ROOT,

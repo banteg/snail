@@ -1,7 +1,7 @@
 // initialize_challenge_setup_screen @ 0x415f50 (thiscall)
 
 #include "border_manager.h"
-#include "challenge_setup_screen.h"
+#include "gui.h"
 #include "frontend_widget_virtual_layout.h"
 #include "sub_tracks.h"
 #include "mouse_cursor_state.h"
@@ -11,7 +11,7 @@
 extern char* g_game_base; // data_4df904
 extern char g_back_text[]; // 0x4a20ec
 
-int ChallengeSetupScreen::initialize_challenge_setup_screen()
+int GUI::initialize_challenge_setup_screen()
 {
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
     game->level_definition.load_frontend_level_by_mode_and_index(

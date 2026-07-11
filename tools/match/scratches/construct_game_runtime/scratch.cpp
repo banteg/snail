@@ -51,7 +51,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRLandscapeManager %i\n", 0x97a4); \
     debug_report_stub("   Size of cRSMTracks %i\n", 0x25cfb4); \
     debug_report_stub("   Size of cRParcelManager %i\n", sizeof(ParcelManager)); \
-    debug_report_stub("   Size of cRGUI %i\n", 0x28); \
+    debug_report_stub("   Size of cRGUI %i\n", sizeof(GUI)); \
     debug_report_stub("   Size of cRGalaxy %i\n", sizeof(Galaxy)); \
     debug_report_stub("   Size of cREnemyManager %i\n", sizeof(EnemyManager)); \
     debug_report_stub("   Size of cRCompletion %i\n", sizeof(Completion)); \
