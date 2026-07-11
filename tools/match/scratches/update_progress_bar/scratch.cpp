@@ -2,21 +2,11 @@
 // Queues the left-column gameplay progress-bar HUD quads.
 
 #include "font_system.h"
+#include "game_root.h"
 #include "progress_bar.h"
 #include "sprite.h"
 
-struct ProgressBarGameView {
-    char unknown_000000[0x42fdec];
-    float player_row_position; // +0x42fdec
-};
-
-struct GameActiveRowWindow {
-    int active_row_start; // +0x74668
-    int unknown_04;
-    int active_row_end; // +0x74670
-};
-
-extern ProgressBarGameView* g_game; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -35,12 +25,12 @@ int queue_axis_aligned_textured_quad_uv(
 
 void ProgressBar::update_progress_bar()
 {
-    ProgressBarGameView* game = g_game;
-    GameActiveRowWindow* active_rows =
-        (GameActiveRowWindow*)((char*)game + 0x74668);
+    GameRoot* game = g_game;
     float progress =
-        (game->player_row_position - (float)active_rows->active_row_start)
-        / ((float)active_rows->active_row_end - (float)active_rows->active_row_start);
+        (game->subgame.embedded_player()->position.z
+            - (float)game->subgame.first_block_row_count)
+        / ((float)game->subgame.completion_row_start
+            - (float)game->subgame.first_block_row_count);
     if (progress < 0.0f) {
         progress = 0.0f;
     } else if (progress > 1.0f) {

@@ -13,6 +13,7 @@
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
 #include "presentation_animation_channel.h"
+#include "progress_bar.h"
 #include "score_stats.h"
 #include "snail_skin.h"
 #include "timer_counters.h"
@@ -265,7 +266,7 @@ public:
     unsigned char follow_flag_3c;          // +0x3c0
     char unknown_3c1[0x3c4 - 0x3c1];
     DamageGaugeController damage_gauge;     // +0x3c4
-    char unknown_3f0[0x3f4 - 0x3f0];
+    ProgressBar progress_bar;               // +0x3f0, embedded HUD progress controller
     WarningActor warning;                  // +0x3f4, embedded HUD warning controller
     int lives;                            // +0x404
     // Non-owning backlink to the SubgameRuntime that embeds this Player.
@@ -292,7 +293,9 @@ public:
     // Borrowed input view inside the root game object, selected by player_slot.
     PlayerControlSource* control_source;    // +0x43c
     unsigned char completion_handoff_active; // +0x440
-    char unknown_441[0x44c - 0x441];
+    char unknown_441[0x444 - 0x441];
+    float completion_handoff_timer;         // +0x444
+    float completion_handoff_timer_step;    // +0x448
     unsigned char attachment_exit_gate_a;  // +0x44c
     unsigned char attachment_exit_gate_b;  // +0x44d
     unsigned char completion_handoff_voice_gate; // +0x44e

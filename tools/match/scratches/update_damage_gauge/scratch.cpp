@@ -2,33 +2,13 @@
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
 #include "damage_gauge.h"
+#include "game_root.h"
 #include "sprite.h"
 #include "snail_skin.h"
 #include "voice_manager.h"
 #include "warning_actor.h"
 
-struct DamageGaugeGameView {
-    char unknown_000000[0x74621];
-    unsigned char pause_gate; // +0x74621
-    char unknown_074622[0x42fde8 - 0x74622];
-    int player_ground_height_bits; // +0x42fde8, 0.49f gate
-    char unknown_42fdec[0x42fe08 - 0x42fdec];
-    float player_exit_gate; // +0x42fe08
-    char unknown_42fe0c[0x430170 - 0x42fe0c];
-    WarningActor warning; // +0x430170
-    char unknown_430180[0x430199 - 0x430180];
-    unsigned char follow_live_flag; // +0x430199
-    char unknown_43019a[0x4301bc - 0x43019a];
-    unsigned char follow_force_drain; // +0x4301bc
-    char unknown_4301bd[0x4301c0 - 0x4301bd];
-    float follow_exit_gate; // +0x4301c0
-    char unknown_4301c4[0x434038 - 0x4301c4];
-    SnailSkinTransition snail_skin_transition; // +0x434038
-    char unknown_434058[0x434064 - 0x434058];
-    int drain_exit_word; // +0x434064
-};
-
-extern DamageGaugeGameView* g_game; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(
@@ -48,8 +28,8 @@ int queue_axis_aligned_textured_quad_uv(
 
 void DamageGaugeController::update_damage_gauge()
 {
-    DamageGaugeGameView* game = g_game;
-    if (!game->pause_gate) {
+    GameRoot* game = g_game;
+    if (!game->subgame.subgame_pause_gate) {
         display_fill = (fill - display_fill) * 0.2f + display_fill;
 
         if (hit_flash_progress > 0.0f) {
@@ -63,24 +43,25 @@ void DamageGaugeController::update_damage_gauge()
         case 0: {
             if (*(int*)&fill == 0x3f800000) {
                 game = g_game;
-                if (game->follow_live_flag || game->follow_force_drain)
+                if (game->subgame.embedded_player()->attachment_exit_pending
+                    || game->subgame.embedded_player()->completion_handoff_active)
                     goto render;
                 state = 1;
                 warning_transition_progress = 0.0f;
                 warning_transition_step = 0.16666667f;
-                g_game->warning.start_warning();
+                g_game->subgame.embedded_player()->warning.start_warning();
             }
             goto render_after_refresh;
         }
 
         case 1: {
-            if (g_game->follow_force_drain)
+            if (g_game->subgame.embedded_player()->completion_handoff_active)
                 warning_transition_progress = 1.0f;
             float next_warning = warning_transition_step + warning_transition_progress;
             warning_transition_progress = next_warning;
             if (next_warning >= 1.0f) {
                 game = g_game;
-                if (game->player_ground_height_bits != 0x3efae148)
+                if (*(int*)&game->subgame.embedded_player()->position.y != 0x3efae148)
                     goto render;
                 state = 2;
                 g_voice_manager.play_voice_manager(14, 0, -1);
@@ -89,22 +70,24 @@ void DamageGaugeController::update_damage_gauge()
         }
 
         case 2: {
-            DamageGaugeGameView* skin_game = g_game;
-            skin_game->snail_skin_transition.change_snail_skin(1, 0.2f);
+            GameRoot* skin_game = g_game;
+            skin_game->subgame.embedded_player()
+                ->presentation.snail_skin_transition.change_snail_skin(1, 0.2f);
             apply_damage_gauge_delta(-0.0016666667f, 1);
             skin_hold_ticks = 5;
             game = g_game;
-            if (game->follow_force_drain) {
+            if (game->subgame.embedded_player()->completion_handoff_active) {
                 apply_damage_gauge_delta(-0.0066666668f, 0);
                 game = g_game;
             }
-            if ((fill == 0.0f && game->player_ground_height_bits == 0x3efae148)
-                || game->follow_exit_gate > 0.0f
-                || game->player_exit_gate > 0.0f
-                || game->drain_exit_word) {
+            if ((fill == 0.0f
+                    && *(int*)&game->subgame.embedded_player()->position.y == 0x3efae148)
+                || game->subgame.embedded_player()->completion_handoff_timer > 0.0f
+                || game->subgame.embedded_player()->resurrect_progress > 0.0f
+                || game->subgame.embedded_player()->presentation.cutscene_ai.state) {
                 state = 0;
-                g_game->warning.stop_warning();
-                g_game->warning.stop_warning_sample();
+                g_game->subgame.embedded_player()->warning.stop_warning();
+                g_game->subgame.embedded_player()->warning.stop_warning_sample();
                 goto render_after_refresh;
             }
             break;
@@ -127,7 +110,7 @@ render:
         mask_height = 351.0f - display_fill * 308.0f;
     }
 
-    if (!game->pause_gate)
+    if (!game->subgame.subgame_pause_gate)
         pulse_progress = pulse_step + pulse_progress;
     if (pulse_progress > 1.0f)
         pulse_progress = pulse_progress - 1.0f;

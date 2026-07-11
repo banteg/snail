@@ -4,18 +4,14 @@
 // first half then holds zero, replaying sound 50 on wrap back to 1.
 
 #include "audio_system.h"
+#include "game_root.h"
 #include "warning_actor.h"
 
-struct WarningGameView {
-    char unknown_00[0x74621];
-    unsigned char pause_gate; // +0x74621
-};
-
-extern WarningGameView* g_game; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void WarningActor::update_warning()
 {
-    if (!g_game->pause_gate && state) {
+    if (!g_game->subgame.subgame_pause_gate && state) {
         float advanced;
         switch (state) {
         case 2:
