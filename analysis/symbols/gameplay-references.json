@@ -3968,10 +3968,10 @@
     },
     {
       "address": "0x68b4c8",
-      "name": "g_high_score_bank",
+      "name": "g_sub_high_score_offset",
       "kind": "offset",
       "aliases": [],
-      "description": "Relocatable high-score bank offset used by completion dispatch."
+      "description": "Relocatable SubgameRuntime::sub_high_score offset used by completion dispatch. The embedded cRSubHighScore owner is 0x947648 bytes."
     },
     {
       "address": "0x74e7e8",

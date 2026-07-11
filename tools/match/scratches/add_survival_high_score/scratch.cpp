@@ -1,11 +1,11 @@
 // add_survival_high_score @ 0x417780 (thiscall, ret 0x4)
 
 #include "game_root.h"
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 
 extern GameRoot* g_game; // data_4df904
 
-int HighScoreBank::add_survival_high_score(SubSolution* record)
+int SubHighScore::add_survival_high_score(SubSolution* record)
 {
     int rank = 0;
 
@@ -17,7 +17,7 @@ int HighScoreBank::add_survival_high_score(SubSolution* record)
 
     int score = record->score;
     int* score_cursor = &survival_records[0].score;
-    while (rank < HIGH_SCORE_TOP_TEN_COUNT) {
+    while (rank < SUB_HIGH_SCORE_TOP_TEN_COUNT) {
         if (score > *score_cursor)
             goto insert_record;
         ++rank;
@@ -26,7 +26,7 @@ int HighScoreBank::add_survival_high_score(SubSolution* record)
     return rank;
 
 insert_record:
-    int shift_rank = HIGH_SCORE_TOP_TEN_COUNT;
+    int shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
     if (rank >= shift_rank)
         return rank;
 
@@ -47,7 +47,7 @@ insert_record:
     if (rank != -1) {
         record->high_score_mode_tag = 1;
         survival_records[rank].high_score_mode_tag = 1;
-        ((GameRoot*)g_game)->subgame.high_score_bank.active_record_bank =
+        ((GameRoot*)g_game)->subgame.sub_high_score.active_record_bank =
             survival_records;
         g_game->players[0].high_score_entry_rank = rank;
         GameRoot* game = g_game;

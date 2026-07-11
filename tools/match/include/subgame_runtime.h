@@ -14,7 +14,7 @@
 #include "fringe_object.h"
 #include "garbage_hazard_slot.h"
 #include "galaxy_route_types.h"
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 #include "sub_solution.h"
 #include "help_screen.h"
 #include "sub_tracks.h"
@@ -192,9 +192,9 @@ public:
     // embedded; source_segment and attachment-cell fields are borrowed links.
     SubRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8
     // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
-    // into current_high_score_record, then lends that record to high_score_bank
+    // into current_high_score_record, then lends that record to sub_high_score
     // for in-place normalization and value-copy persistence.
-    HighScoreBank high_score_bank; // +0x68b4c8, owns persistent record arrays
+    SubHighScore sub_high_score; // +0x68b4c8, owns persistent record arrays
     SubSolution current_high_score_record; // +0xfd2b10, working run snapshot
     union {
         unsigned char selected_level_record_active; // +0xff25d0

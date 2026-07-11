@@ -17,7 +17,7 @@ Expected residuals:
 2026-07-10 owner closure:
 
 - The active pointer/count live at the start of
-  `GameRoot::subgame.high_score_bank`; mode 0 selects `postal_records` at bank
+  `GameRoot::subgame.sub_high_score`; mode 0 selects `postal_records` at bank
   `+0x08`, and mode 1 selects `survival_records` at bank `+0x15c648`.
 - This corrects the prior synthetic-view spelling that accidentally selected
   the MiniDelete source window for mode 0. Focused matching is honestly 43.24%

@@ -63,16 +63,16 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
         back_button->initialize_frontend_widget(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_bank =
-            ((GameRoot*)g_game_base)->subgame.high_score_bank.postal_records;
-        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_count = 10;
+        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_bank =
+            ((GameRoot*)g_game_base)->subgame.sub_high_score.postal_records;
+        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_count = 10;
     } else if (selected_bank == 1) {
         back_button->initialize_frontend_widget(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_bank =
-            ((GameRoot*)g_game_base)->subgame.high_score_bank.survival_records;
-        ((GameRoot*)g_game_base)->subgame.high_score_bank.active_record_count = 10;
+        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_bank =
+            ((GameRoot*)g_game_base)->subgame.sub_high_score.survival_records;
+        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_count = 10;
     }
 
     float row_step = 27.0f;
@@ -87,7 +87,7 @@ int HighScoreScreen::initialize_high_score_screen(int mode_, int rank)
         int highlight = (i == selected_rank) ? 2 : 0;
         SubSolution* record =
             (SubSolution*)((char*)((GameRoot*)g_game_base)
-                    ->subgame.high_score_bank.active_record_bank
+                    ->subgame.sub_high_score.active_record_bank
                 + record_offset);
         if (record->active == 1) {
             float y = (float)i * row_step + 111.0f;

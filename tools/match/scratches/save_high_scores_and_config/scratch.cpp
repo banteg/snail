@@ -1,6 +1,6 @@
 // save_high_scores_and_config @ 0x417940 (thiscall, ret 0x4)
 
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 #include "runtime_config.h"
 
 const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
@@ -11,7 +11,7 @@ extern char* xor_decode_buffer_with_index(char* bytes, int byte_count);
 extern int write_file_bytes(char* file_name, void* bytes, int byte_count);
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
+char* SubHighScore::save_high_scores_and_config(unsigned char save_mask)
 {
     char* bytes = allocate_tracked_memory(
         HIGH_SCORE_SAVE_BUFFER_SIZE,
@@ -21,7 +21,7 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
         char* out = bytes;
         int bytes_used = 0;
         SubSolution* record = postal_records;
-        int count = HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
+        int count = SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(
@@ -39,7 +39,7 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
         char* out = bytes;
         int bytes_used = 0;
         SubSolution* record = survival_records;
-        int count = HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
+        int count = SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(
@@ -57,7 +57,7 @@ char* HighScoreBank::save_high_scores_and_config(unsigned char save_mask)
         char* out = bytes;
         int bytes_used = 0;
         SubSolution* record = time_trial_route_records;
-        int count = HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT;
+        int count = SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT;
         do {
             if (record->active == 1) {
                 bytes_used += record->serialize_compact_high_score_record(

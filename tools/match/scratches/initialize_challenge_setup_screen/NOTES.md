@@ -16,5 +16,5 @@ First structured scratch for the challenge mode setup initializer.
 2026-07-11 ownership closure: `ChallengeSetupScreen::game` is a borrowed
 `SubgameRuntime*`, not a scratch-local setup view. The selected mode/index and
 inline `SubTracks` owner belongs to that runtime, while replay availability
-comes from its owned `HighScoreBank::survival_pending_record`. Focused Wibo
+comes from its owned `SubHighScore::survival_pending_record`. Focused Wibo
 remains exact at 167/167 instructions with 37 clean masked operands.

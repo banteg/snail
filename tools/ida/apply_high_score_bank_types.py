@@ -12,7 +12,11 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "initialize_high_score_tables",
-        "void __thiscall initialize_high_score_tables(HighScoreBank* bank);",
+        "void __thiscall initialize_high_score_tables(SubHighScore* bank);",
+    ),
+    (
+        "load_high_scores_from_file",
+        "void __thiscall load_high_scores_from_file(SubHighScore* bank, char* file_name);",
     ),
     (
         "initialize_high_score_entry",
@@ -20,19 +24,23 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "add_arcade_high_score",
-        "int __thiscall add_arcade_high_score(HighScoreBank* bank, SubSolution* record, int level_arg);",
+        "int __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int level_arg);",
     ),
     (
         "add_survival_high_score",
-        "int __thiscall add_survival_high_score(HighScoreBank* bank, SubSolution* record);",
+        "int __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record);",
     ),
     (
         "add_time_trial_high_score",
-        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, SubSolution* record, int route_index, unsigned char route_active);",
+        "void __thiscall add_time_trial_high_score(SubHighScore* bank, SubSolution* record, int route_index, unsigned char route_active);",
     ),
     (
         "mini_delete_high_score_entry",
-        "void __thiscall mini_delete_high_score_entry(HighScoreBank* bank, int rank);",
+        "void __thiscall mini_delete_high_score_entry(SubHighScore* bank, int rank);",
+    ),
+    (
+        "save_high_scores_and_config",
+        "char* __thiscall save_high_scores_and_config(SubHighScore* bank, unsigned char save_mask);",
     ),
 ]
 

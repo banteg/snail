@@ -61,7 +61,7 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
     ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();
 
     float play_anchor_x = 0.0f;
-    if (game->high_score_bank.survival_pending_record.active == 1)
+    if (game->sub_high_score.survival_pending_record.active == 1)
         play_anchor_x = 100.0f;
 
     play_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
@@ -87,7 +87,7 @@ int ChallengeSetupScreen::initialize_challenge_setup_screen()
         2,
         -100.0f);
     replay_button->stack_widget_below(speed_slider);
-    if (game->high_score_bank.survival_pending_record.active != 1)
+    if (game->sub_high_score.survival_pending_record.active != 1)
         replay_button->hide_border_init();
 
     back_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();

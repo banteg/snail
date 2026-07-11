@@ -1,8 +1,8 @@
 // add_time_trial_high_score @ 0x4178b0 (thiscall, ret 0xc)
 
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 
-void HighScoreBank::add_time_trial_high_score(
+void SubHighScore::add_time_trial_high_score(
     SubSolution* record,
     int route_index,
     unsigned char route_active)

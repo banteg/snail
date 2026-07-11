@@ -36,7 +36,7 @@ masked mismatches.
 
 2026-06-20 startup shared-service type pass:
 
-- Replaced the scratch-local `FrontendFade` and `HighScoreBank` method-only
+- Replaced the scratch-local `FrontendFade` and `SubHighScore` method-only
   stubs with the shared headers. The focused startup matcher stays at 63.14%
   (`337` candidate instructions, `96` resolved masked operands, `30`
   unresolved, `4` mismatches), while those two type rows disappear from

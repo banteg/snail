@@ -156,7 +156,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 - `SubgameRuntime` owns a fixed `SubLoc[3200][8]` slab at `+0x3bfac8`.
   Its exact `0x20d000` extent lands at `+0x5ccac8`, where a fixed
   `SubRow[3200]` slab begins; the row slab's exact
-  `0xbea00` extent lands at the embedded `HighScoreBank` at `+0x68b4c8`.
+  `0xbea00` extent lands at the embedded `SubHighScore` at `+0x68b4c8`.
 - Each runtime row embeds a `RowModel` at `+0x04` and a `BodBase` at `+0xb0`.
   The first is the authored row actor removed by
   `remove_subgame_bods`; the second is the attachment/fringe row actor built

@@ -31,7 +31,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             rstrcpy_checked_ascii(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial_formatter()->format_time_trial_string(
-                    &game->high_score_bank
+                    &game->sub_high_score
                          .time_trial_route_records[game->level_mode_arg]
                          .timer));
         }
@@ -50,7 +50,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             rstrcpy_checked_ascii(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial_formatter()->format_time_trial_string(
-                    &game->high_score_bank
+                    &game->sub_high_score
                          .time_trial_route_records[game->level_mode_arg]
                          .timer));
         }
@@ -68,7 +68,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
         }
 
         FrontendWidget* previous_widget;
-        int replay_active = game->high_score_bank
+        int replay_active = game->sub_high_score
             .time_trial_route_records[game->level_mode_arg]
             .active;
         if (replay_active != 1) {
@@ -100,7 +100,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             destroy_challenge_setup_screen();
             game->selected_level_record_active = 1;
             game->selected_level_record =
-                &game->high_score_bank
+                &game->sub_high_score
                      .time_trial_route_records[game->level_mode_arg];
             return 1;
         }
@@ -133,7 +133,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             destroy_challenge_setup_screen();
             game->selected_level_record_active = 1;
             game->selected_level_record =
-                &game->high_score_bank.survival_pending_record;
+                &game->sub_high_score.survival_pending_record;
             return 1;
         }
         break;

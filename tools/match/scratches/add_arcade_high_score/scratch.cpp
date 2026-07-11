@@ -1,13 +1,13 @@
 // add_arcade_high_score @ 0x4176a0 (thiscall, ret 0x8)
 
 #include "game_root.h"
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 
 extern GameRoot* g_game; // data_4df904
 
-int HighScoreBank::add_arcade_high_score(SubSolution* record, int level_arg)
+int SubHighScore::add_arcade_high_score(SubSolution* record, int level_arg)
 {
-    HighScoreBank* bank = this;
+    SubHighScore* bank = this;
     int rank = 0;
 
     record->route_or_rank_index = level_arg;
@@ -16,7 +16,7 @@ int HighScoreBank::add_arcade_high_score(SubSolution* record, int level_arg)
 
     int score = record->score;
     int* score_cursor = &bank->postal_records[0].score;
-    while (rank < HIGH_SCORE_TOP_TEN_COUNT) {
+    while (rank < SUB_HIGH_SCORE_TOP_TEN_COUNT) {
         if (score > *score_cursor)
             goto insert_record;
         ++rank;
@@ -25,7 +25,7 @@ int HighScoreBank::add_arcade_high_score(SubSolution* record, int level_arg)
     return rank;
 
 insert_record:
-    int shift_rank = HIGH_SCORE_TOP_TEN_COUNT;
+    int shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
     while (shift_rank > rank) {
         bank->postal_records[shift_rank] = bank->postal_records[shift_rank - 1];
         bank->postal_records[shift_rank].route_or_rank_index = shift_rank;

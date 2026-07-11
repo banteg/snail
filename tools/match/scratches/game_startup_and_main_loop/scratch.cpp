@@ -2,7 +2,7 @@
 
 #include "frontend_fade.h"
 #include "game_root.h"
-#include "high_score_bank.h"
+#include "sub_high_score.h"
 #include "loading_screen.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
@@ -243,11 +243,11 @@ update_game:
 
     g_audio_backend.stop_audio_backend();
     sub_407b00();
-    ((HighScoreBank*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(1);
-    ((HighScoreBank*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(2);
-    ((HighScoreBank*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(4);
-    ((HighScoreBank*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(8);
-    ((HighScoreBank*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(16);
+    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(1);
+    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(2);
+    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(4);
+    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(8);
+    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(16);
     noop_runtime_ai();
     free_tracked_allocations_to_mark();
     scalar_delete(g_game_base);

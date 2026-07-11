@@ -31,7 +31,7 @@ The button dispatch is structurally close; remaining differences are mostly
 `g_game_base` reload scheduling.
 
 2026-07-10 owner closure: the three replay bases are now typed as
-`HighScoreBank::postal_records`, `survival_records`, and
+`SubHighScore::postal_records`, `survival_records`, and
 `time_trial_route_records`; replay handoff fields and `level_mode` are owned by
 the same embedded `SubgameRuntime`. Removing the synthetic cross-root game view
 changes VC6 reload scheduling slightly, so the honest focused score moves from

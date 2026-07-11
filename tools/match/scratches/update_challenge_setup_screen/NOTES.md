@@ -19,8 +19,8 @@ screen controller layout is shared through `challenge_setup_screen.h`, and its
   then shows or hides the Replay button from the selected replay record.
 - Replay launch sets `SubgameRuntime::selected_level_record_active` and stores
   `selected_level_record` as either the owned
-  `HighScoreBank::survival_pending_record` or the selected
-  `HighScoreBank::time_trial_route_records` entry.
+  `SubHighScore::survival_pending_record` or the selected
+  `SubHighScore::time_trial_route_records` entry.
 
 ## Match state
 
@@ -62,7 +62,7 @@ masked audit is now clean at `35 ok / 0 unresolved / 0 mismatch` under the
 current symbol set.
 
 2026-07-11 ownership closure: the former raw challenge replay and Time Trial
-record windows are both owned by `SubgameRuntime::high_score_bank`; the replay
+record windows are both owned by `SubgameRuntime::sub_high_score`; the replay
 selection latch and pointer are direct `SubgameRuntime` fields. The ownership
 rewrite is codegen-neutral at 80.68%, 354/355 instructions, prefix 8/355, and
 35 clean masked operands.

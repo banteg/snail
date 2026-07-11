@@ -33,13 +33,13 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
             && completed == 1) {
             switch (level_mode) {
             case 0:
-                high_score_bank.add_arcade_high_score(record, level_mode_arg);
+                sub_high_score.add_arcade_high_score(record, level_mode_arg);
                 break;
             case 1:
-                high_score_bank.add_survival_high_score(record);
+                sub_high_score.add_survival_high_score(record);
                 break;
             case 4:
-                high_score_bank.add_time_trial_high_score(
+                sub_high_score.add_time_trial_high_score(
                     record,
                     level_mode_arg,
                     player.completion_handoff_active);

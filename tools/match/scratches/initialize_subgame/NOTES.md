@@ -38,7 +38,7 @@ Ownership recovered:
 - The four cell fringe pointers are non-owning handles to `FringeManager`
   allocations. Initialization clears the handles; it does not free through
   the cells.
-- `HighScoreBank` is embedded in `SubgameRuntime`. Its `active_record_bank`
+- `SubHighScore` is embedded in `SubgameRuntime`. Its `active_record_bank`
   pointer borrows one of the bank's embedded postal, survival, or time-trial
   arrays; `active_level_score` and `active_level_timer` are separate embedded
   display snapshots copied from that record.
@@ -82,7 +82,7 @@ the remaining generic owner list.
 2026-07-10 ownership and source-shape pass:
 
 - Duplicating the real mode `0`/`1` score cases and spelling the selected bank
-  records through `HighScoreBank` recovered the native control-flow layout.
+  records through `SubHighScore` recovered the native control-flow layout.
 - Storing each border allocation directly in the subgame handle field, rather
   than extending its lifetime through a local pointer, recovered native's
   manager-handle reload pattern.

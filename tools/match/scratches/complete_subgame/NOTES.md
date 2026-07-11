@@ -119,10 +119,10 @@ Rejected experiments:
   `challenge_difficulty_value`.
   Focused Wibo remains at the pinned 75.28%.
 - 2026-06-18 decompiler-sync pass: the narrow BN/IDA `SubgameRuntime` headers
-  now carry the sparse proven runtime layout through `high_score_bank`,
+  now carry the sparse proven runtime layout through `sub_high_score`,
   `current_high_score_record`, replay cursor, selected-level gates, timers, and
   route-active state. BN now renders the high-score dispatch as calls through
-  `runtime->high_score_bank` and `runtime->current_high_score_record` instead
+  `runtime->sub_high_score` and `runtime->current_high_score_record` instead
   of raw `runtime + 0x68b4c8` / `runtime + 0xfd2b10` offsets.
 
 Residuals: VC6 still emits a load/or/store for the run-record byte where native
@@ -136,7 +136,7 @@ scratch as pinned unless new source evidence explains the contextual byte-OR.
 
 The native call tail makes the lifetime boundary explicit: `ebp` is the
 address of `SubgameRuntime::current_high_score_record`, while `ecx` is the
-address of the same runtime's embedded `high_score_bank`. The three `add_*`
+address of the same runtime's embedded `sub_high_score`. The three `add_*`
 helpers borrow that working record, normalize some metadata in place, and copy
 its value into bank-owned result/ranking arrays; no helper stores the input
 pointer. The replay run table is therefore owned by the working record, and

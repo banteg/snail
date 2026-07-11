@@ -15,7 +15,11 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
 PROTO_UPDATES = (
     (
         "initialize_high_score_tables",
-        "void __thiscall initialize_high_score_tables(HighScoreBank* bank)",
+        "void __thiscall initialize_high_score_tables(SubHighScore* bank)",
+    ),
+    (
+        "load_high_scores_from_file",
+        "void __thiscall load_high_scores_from_file(SubHighScore* bank, char* file_name)",
     ),
     (
         "initialize_high_score_entry",
@@ -23,19 +27,23 @@ PROTO_UPDATES = (
     ),
     (
         "add_arcade_high_score",
-        "int32_t __thiscall add_arcade_high_score(HighScoreBank* bank, SubSolution* record, int32_t level_arg)",
+        "int32_t __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int32_t level_arg)",
     ),
     (
         "add_survival_high_score",
-        "int32_t __thiscall add_survival_high_score(HighScoreBank* bank, SubSolution* record)",
+        "int32_t __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record)",
     ),
     (
         "add_time_trial_high_score",
-        "void __thiscall add_time_trial_high_score(HighScoreBank* bank, SubSolution* record, int32_t route_index, uint8_t route_active)",
+        "void __thiscall add_time_trial_high_score(SubHighScore* bank, SubSolution* record, int32_t route_index, uint8_t route_active)",
     ),
     (
         "mini_delete_high_score_entry",
-        "void __thiscall mini_delete_high_score_entry(HighScoreBank* bank, int32_t rank)",
+        "void __thiscall mini_delete_high_score_entry(SubHighScore* bank, int32_t rank)",
+    ),
+    (
+        "save_high_scores_and_config",
+        "char* __thiscall save_high_scores_and_config(SubHighScore* bank, uint8_t save_mask)",
     ),
 )
 

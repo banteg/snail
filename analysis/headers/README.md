@@ -106,7 +106,7 @@ The selected-record BN lane is even narrower:
 - the minimal `Player.game` / `Player.movement_state` overlays needed for replay consumers like `update_subgoldy`
 
 The high-score bank and subgame-runtime BN lanes carry the recovered
-`HighScoreRecord`, `HighScoreBank`, and sparse `SubgameRuntime` layouts that
+`SubSolution`, `SubHighScore`, and sparse `SubgameRuntime` layouts that
 make `complete_subgame` and the three `add_*_high_score` helpers readable.
 
 The input-state BN/IDA lane carries the recovered `InputState` button edge

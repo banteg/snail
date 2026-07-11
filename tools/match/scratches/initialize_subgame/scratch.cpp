@@ -62,20 +62,20 @@ void SubgameRuntime::initialize_subgame()
     SubSolution* level_record;
     switch (level_mode) {
     case 0:
-        level_record = &high_score_bank.postal_records[0];
-        high_score_bank.active_record_bank = level_record;
+        level_record = &sub_high_score.postal_records[0];
+        sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
         memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
         break;
     case 1:
-        level_record = &high_score_bank.survival_records[0];
-        high_score_bank.active_record_bank = level_record;
+        level_record = &sub_high_score.survival_records[0];
+        sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
         memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
         break;
     case 4:
-        level_record = &high_score_bank.time_trial_route_records[0];
-        high_score_bank.active_record_bank = level_record;
+        level_record = &sub_high_score.time_trial_route_records[0];
+        sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
         memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
         break;
@@ -88,7 +88,7 @@ void SubgameRuntime::initialize_subgame()
     resume_requested = 0;
     pause_fade = 0.0f;
     *(int*)(game + 0x10) = 0x3d088889;
-    high_score_bank.noop_runtime_ai();
+    sub_high_score.noop_runtime_ai();
     subgame_state = 0;
     *(int*)(game + 0x1272828) = 0;
 
@@ -156,15 +156,15 @@ void SubgameRuntime::initialize_subgame()
     }
 
     level_mode = this->level_mode;
-    if (high_score_bank.current_result_record.replay_mode_id == level_mode) {
+    if (sub_high_score.current_result_record.replay_mode_id == level_mode) {
         if (level_mode == 4) {
             char* text =
                 time_trial_formatter()->format_time_trial_string(
-                    &high_score_bank.current_result_record.timer);
+                    &sub_high_score.current_result_record.timer);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
             top_score_widget->border_add_text_number(
-                high_score_bank.current_result_record.score);
+                sub_high_score.current_result_record.score);
         }
     } else {
         if (level_mode == 4) {

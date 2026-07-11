@@ -7,16 +7,19 @@ Behavior:
 
 - Writes the incoming level argument to the record's `route_or_rank_index`, tags
   the scratch/current result as arcade (`high_score_mode_tag = 0`), and copies
-  the full 0x1fac0 record into `HighScoreBank::current_result_record`.
+  the full 0x1fac0 record into `SubHighScore::current_result_record`.
 - Scans `postal_records[0..9]` by descending `score`. If the new score does not
   place, returns the rank cursor (`10`).
 - If it places, shifts lower records down through the spare eleventh storage
   slot, updates each shifted record's `route_or_rank_index`, copies the new
   record into the selected rank, and arms the high-score entry frontend state.
 
-The scratch uses the shared `HighScoreBank` and `SubSolution` layouts so
+The scratch uses the shared `SubHighScore` and `SubSolution` layouts so
 this helper, `add_survival_high_score`, `add_time_trial_high_score`, replay
 launch, and `complete_subgame` all describe the same 0x1fac0 record.
+Android and iOS retain this owner method as
+`cRSubHighScore::AddArcade(int)`; Windows passes the working solution pointer
+explicitly before value-copying it into the owned postal array.
 
 Match status: 100.00%, 70/70 instructions, full exact prefix, four masked
 operands resolved.

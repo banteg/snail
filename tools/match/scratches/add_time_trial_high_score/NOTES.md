@@ -4,6 +4,10 @@
 result into the high-score bank. Cross-port symbols identify this as
 `cRSubHighScore::AddTimeTrial(int, bool)`.
 
+The Windows port receives the working `SubSolution*` explicitly; Android and
+iOS retain the route/bool signature while preserving the same cRSubHighScore
+owner and per-route solution semantics.
+
 Behavior:
 
 - Tags the result record as mode 2, stores the route index in
@@ -34,21 +38,21 @@ Rejected source-shape probes:
 
 - Explicit route-window pointer: recovered neither native register ownership nor
   the prefix, regressing to 55.10%.
-- Function-scope `HighScoreBank* bank` and selected-bank reassignment: compiled
+- Function-scope `SubHighScore* bank` and selected-bank reassignment: compiled
   identically to the baseline.
 - Pointer/reference to `route_record->total_seconds`, local `record_seconds`,
   and split `goto` replacement gate: all compiled identically to the baseline.
 - Local `route_seconds` value: changed x87 compare ordering and regressed to
   78.79%.
 - 2026-06-18 shared-layout pass: the scratch now consumes
-  `tools/match/include/high_score_bank.h` and `sub_solution.h`. The score
+  `tools/match/include/sub_high_score.h` and `sub_solution.h`. The score
   remains 83.67%, so the shared layout did not change the known route-record
   base materialization residual.
 - 2026-06-18 name-sync pass: `SubSolution` exposes the `+0x08` lane as
   `total_seconds` first, with the score-bucket block as an alternate view. This
   keeps the time-trial helper and BN decompile aligned on the ordering key
   without changing layout or codegen.
-- 2026-06-20 route-base retry: materializing a `HighScoreBank*` for the selected
+- 2026-06-20 route-base retry: materializing a `SubHighScore*` for the selected
   route and then taking `route_bank->time_trial_route_records`, or spelling the
   same address through an incremented `char* route_base`, were both codegen-neutral
   at 83.67%. Native still adds the route stride into the `this` register before
@@ -69,11 +73,11 @@ Rejected source-shape probes:
   matches the native route-stride arithmetic through the shift chain, but MSVC
   still folds the owner base into the compare as `[ecx+ebp+0x2b8c90]` instead of
   mutating `ebp` with native `add ebp, ecx`. Retried mutable `char*`,
-  `HighScoreBank*`, signed/unsigned integer-base, and `volatile route_offset`
+  `SubHighScore*`, signed/unsigned integer-base, and `volatile route_offset`
   spellings; each either collapses to the older 84.85% schedule or regresses by
   disturbing the prologue/register ownership.
 - 2026-06-21 shifted-base retry: forcing a persistent shifted route base as
-  `char*`, `void*`, `HighScoreBank*`, `SubSolution*`, `float*` stored-seconds
+  `char*`, `void*`, `SubHighScore*`, `SubSolution*`, `float*` stored-seconds
   view, unsigned integer address, and delayed base reassignment did not beat the
   retained inline-offset shape. The pointer-base variants fall back to 84.85% or
   83.67%, while the typed shifted-bank form drops to 55.10%. Keep the named

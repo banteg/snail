@@ -1606,6 +1606,33 @@
       "confidence": "high"
     },
     {
+      "address": "0x4176a0",
+      "windows_name": "add_arcade_high_score",
+      "ios_symbol": "cRSubHighScore::AddArcade(int)",
+      "android_symbol": "cRSubHighScore::AddArcade(int)",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "All ports insert a postal or arcade result through the cRSubHighScore owner. Windows receives the working cRSubSolution explicitly before value-copying it into the owned top-ten array."
+    },
+    {
+      "address": "0x417780",
+      "windows_name": "add_survival_high_score",
+      "ios_symbol": "cRSubHighScore::AddSurvival()",
+      "android_symbol": "cRSubHighScore::AddSurvival()",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "The Windows member copies the working cRSubSolution into the cRSubHighScore survival result and pending-entry storage before ordered insertion; mobile versions source the current solution internally."
+    },
+    {
+      "address": "0x4178b0",
+      "windows_name": "add_time_trial_high_score",
+      "ios_symbol": "cRSubHighScore::AddTimeTrial(int, bool)",
+      "android_symbol": "cRSubHighScore::AddTimeTrial(int, bool)",
+      "source_object": "HighScore.o",
+      "confidence": "high",
+      "notes": "All ports update the per-route time-trial solution through cRSubHighScore. Windows additionally receives the working cRSubSolution pointer explicitly."
+    },
+    {
       "address": "0x417a70",
       "windows_name": "initialize_high_score_entry",
       "ios_symbol": "cRSubSolution::ReSet(int, int, float, int, int, int)",
@@ -1620,7 +1647,7 @@
       "ios_symbol": "cRSubHighScore::MiniDelete(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The Windows thiscall receiver is the embedded HighScoreBank/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI()."
+      "notes": "The Windows thiscall receiver is the embedded SubHighScore/cRSubHighScore owner; the only caller is the Cancel branch of cRHighScore::AI()."
     },
     {
       "address": "0x440020",

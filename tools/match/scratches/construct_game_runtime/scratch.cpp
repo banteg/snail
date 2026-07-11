@@ -43,7 +43,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubGoldy %i\n", 0x4364); \
     debug_report_stub("   Size of cRSubLoc %i\n", sizeof(SubLoc) * 3200 * 8); \
     debug_report_stub("   Size of cRSubRow %i\n", sizeof(SubRow) * 3200); \
-    debug_report_stub("   Size of cRSubHighScore %i\n", 0x947648); \
+    debug_report_stub("   Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("   Size of cRSubSolution %i\n", sizeof(SubSolution)); \
     debug_report_stub("   Size of cRTimeTrial %i\n", 0x330); \
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(PathManager)); \
@@ -56,10 +56,10 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cREnemyManager %i\n", sizeof(EnemyManager)); \
     debug_report_stub("   Size of cRCompletion %i\n", sizeof(Completion)); \
     debug_report_stub("   Size of cRTimesUp %i\n", sizeof(TimesUp)); \
-    debug_report_stub("Size of cRSubHighScore %i\n", 0x947648); \
+    debug_report_stub("Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("Size of cRBod %i\n", 0x38); \
     debug_report_stub("Size of cRSubLoc %i\n", sizeof(SubLoc)); \
-    debug_report_stub("Solutions %i\n", 0x947648); \
+    debug_report_stub("Solutions %i\n", sizeof(SubHighScore)); \
 } while (0)
 
 #define SLOT(offset) ((RuntimeSlot*)(game + (offset)))

@@ -4,7 +4,7 @@ Deletes a canceled pending top-ten entry by shifting later records over its
 row. The iOS symbol corpus independently names this owner method
 `cRSubHighScore::MiniDelete(int)`.
 
-This is a `HighScoreBank` member. The bank is owned by `SubgameRuntime` at
+This is a `SubHighScore` member. The bank is owned by `SubgameRuntime` at
 `game+0x74618+0x68b4c8 = game+0x6ffae0`; its first two fields are the borrowed
 active-bank pointer and row count. Native uses the overlapping source window at
 bank `+0x17c108`, exactly `survival_records[1]`. The
@@ -16,7 +16,7 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
 2026-07-11 ownership verification:
 
 - The narrow Binary Ninja sync renamed `0x417af0`, applied
-  `void __thiscall(HighScoreBank*, int)`, and re-decompiled the fixed source as
+  `void __thiscall(SubHighScore*, int)`, and re-decompiled the fixed source as
   `&bank->survival_records[1]`; the only code xref is the Cancel path at
   `update_high_score_screen+0x11d`.
 - The checked-in BN export and cross-port `HighScore.o` symbol now agree on the

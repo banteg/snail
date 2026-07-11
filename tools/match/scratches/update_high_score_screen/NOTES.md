@@ -21,7 +21,7 @@ Recovered relationships:
 - The former `HighScoreGameView` crossed two real owners. Root
   `+0x1a4/+0x1b8/+0x30c` are `GamePlayer[0]`'s 20-byte player name, front-end
   state, and redispatch byte. Root `+0x74658/+0x6ffae0/+0x1066be8...` are all
-  fields of the embedded `SubgameRuntime` and its owned `HighScoreBank`.
+  fields of the embedded `SubgameRuntime` and its owned `SubHighScore`.
 - The footer fields are now named from their actual labels and shortcuts:
   `+0x24` is Cancel/Escape and `+0x28` is Submit/Enter. Submit finalizes the
   editable row; Cancel calls `cRSubHighScore::MiniDelete(int)` and exits.

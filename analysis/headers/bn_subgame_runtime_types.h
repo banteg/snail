@@ -9,8 +9,8 @@ typedef unsigned char uint8_t;
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600
-#define HIGH_SCORE_TOP_TEN_STORAGE_COUNT 11
-#define HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT 51
+#define SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT 11
+#define SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT 51
 
 typedef struct ScoreBucketBlock {
     int32_t values[6];
@@ -65,15 +65,15 @@ typedef struct SubSolution {
     int32_t unknown_1fabc;
 } SubSolution;
 
-typedef struct HighScoreBank {
+typedef struct SubHighScore {
     SubSolution* active_record_bank;
     int32_t active_record_count;
-    SubSolution postal_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
-    SubSolution survival_records[HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
-    SubSolution time_trial_route_records[HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT];
+    SubSolution postal_records[SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
+    SubSolution survival_records[SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT];
+    SubSolution time_trial_route_records[SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT];
     SubSolution current_result_record;
     SubSolution survival_pending_record;
-} HighScoreBank;
+} SubHighScore;
 
 typedef union RuntimeRateOrLevelArg {
     float base_rate;
@@ -136,7 +136,7 @@ typedef struct SubgameRuntime {
     uint8_t unknown_3bdec4[0x3be0c0 - 0x3bdec4];
     float nuke_rate_progress;
     uint8_t unknown_3be0c4[0x68b4c8 - 0x3be0c4];
-    HighScoreBank high_score_bank;
+    SubHighScore sub_high_score;
     SubSolution current_high_score_record;
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
