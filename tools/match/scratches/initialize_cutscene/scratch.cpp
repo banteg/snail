@@ -12,7 +12,7 @@ void Snail::initialize_cutscene()
     if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
         return;
 
-    snail_skin_transition.update_snail_skin_transition();
+    snail_skin.update_snail_skin_transition();
 
     TransformMatrix scratch_matrix;
     TransformMatrix source_matrix;

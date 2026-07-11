@@ -2544,16 +2544,18 @@
     },
     {
       "address": "0x445f60",
-      "name": "initialize_snail_skin"
+      "name": "initialize_snail_skin",
+      "description": "Exact Windows `SnailSkin::initialize_snail_skin`, authored as `cRSnailSkin::Init`: clears the 0x20-byte child state and stores its borrowed `Snail*` parent backlink. iOS v1.9 exposes that parent explicitly as `cRSnailSkin::Init(cRSnail*)`; Android retains the no-argument member."
     },
     {
       "address": "0x445f80",
       "name": "update_snail_skin_transition",
-      "description": "Applies the currently selected snail-skin object to the shared player render owner and, when a timed skin change is armed, advances the transition progress until the swap completes."
+      "description": "Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its visual material dirty, applies the selected material index, and advances the timed reset state."
     },
     {
       "address": "0x445fd0",
-      "name": "change_snail_skin"
+      "name": "change_snail_skin",
+      "description": "Exact Windows `SnailSkin::change_snail_skin`, authored as `cRSnailSkin::Change(int, float)`: selects a material slot and either applies it immediately or derives the 60 Hz transition step from the requested duration."
     },
     {
       "address": "0x446020",

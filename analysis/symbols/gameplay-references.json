@@ -780,7 +780,7 @@
       "aliases": [
         "loc_434038"
       ],
-      "description": "Relocatable snail-skin transition controller offset used by damage and invincible-shell helpers."
+      "description": "Stable relocatable reference to the exact 0x20-byte authored cRSnailSkin child at `Snail + 0x1938` (`Player + 0x42bc`), used by damage and invincible-shell helpers."
     },
     {
       "address": "0x4340c0",

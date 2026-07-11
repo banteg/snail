@@ -6,7 +6,11 @@
 #include "vector3.h"
 
 struct PresentationAnimationVisualRoot {
-    char unknown_000[0xbc];
+    char unknown_000[0x10];
+    unsigned int flags; // +0x10, |= 8 marks the selected material dirty
+    char unknown_014[0x18 - 0x14];
+    int material_index; // +0x18, selected by cRSnailSkin::AI
+    char unknown_01c[0xbc - 0x1c];
     ObjectAnimation* active_animation; // +0xbc
 };
 

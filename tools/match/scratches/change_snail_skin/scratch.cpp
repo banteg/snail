@@ -1,7 +1,7 @@
 // change_snail_skin @ 0x445fd0 (thiscall, ret 0x8)
 #include "snail_skin.h"
 
-void SnailSkinTransition::change_snail_skin(int slot_id, float duration_seconds)
+void SnailSkin::change_snail_skin(int slot_id, float duration_seconds)
 {
     active = 1;
     progress = 0.0f;

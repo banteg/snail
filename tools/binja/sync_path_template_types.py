@@ -27,6 +27,7 @@ PRESENTATION_SYMBOL_UPDATES = (
 SNAIL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
     ("0x1894", "invincible_shell", "Invincible"),
+    ("0x1938", "snail_skin", "SnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
 )
 
@@ -58,6 +59,15 @@ CUT_SCENE_FIELD_UPDATES = (
     ("0x54", "progress_step", "float"),
     ("0x58", "force_camera_update", "uint8_t"),
 )
+
+SNAIL_SKIN_FIELD_UPDATES = (
+    ("0x00", "selected_slot", "int32_t"),
+    ("0x04", "slot_ids", "int32_t[0x3]"),
+    ("0x10", "owner_snail", "Snail*"),
+    ("0x14", "active", "int32_t"),
+    ("0x18", "progress", "float"),
+    ("0x1c", "progress_step", "float"),
+)
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "Game",
@@ -77,6 +87,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Cameraman",
     "Squidge",
     "Invincible",
+    "SnailSkin",
     "Snail",
     "CutScene",
     "Player",
@@ -202,6 +213,8 @@ GAME_FIELD_UPDATES = (
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
+    ("0x10", "flags", "uint32_t"),
+    ("0x18", "material_index", "int32_t"),
     ("0x80", "follow_lateral_response", "float"),
     ("0x84", "squidge_primary", "float"),
     ("0x88", "squidge_secondary", "float"),
@@ -378,11 +391,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_snail_skin",
-        "void __thiscall initialize_snail_skin(SnailSkinTransitionState* state)",
+        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
     ),
     (
         "update_snail_skin_transition",
-        "void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state)",
+        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
+    ),
+    (
+        "change_snail_skin",
+        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
     ),
     (
         "update_snail_skin",
@@ -682,6 +699,14 @@ def main() -> int:
             target=args.target,
             struct_name="CutScene",
             updates=CUT_SCENE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="SnailSkin",
+            updates=SNAIL_SKIN_FIELD_UPDATES,
         )
     )
     operations.extend(

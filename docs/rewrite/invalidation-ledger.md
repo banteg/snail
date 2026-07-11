@@ -252,6 +252,7 @@ Template:
 
 ## 2026-03-27 - Presentation tail boundary
 
-- invalidated claim: `Snail` has a standalone `weapon_release_active` byte at `+0x1938`, with `snail_skin_transition` starting at `+0x193c` and `cutscene` at `+0x195c`
+- invalidated claim: `Snail` has a standalone `weapon_release_active` byte at `+0x1938`, with its skin child starting at `+0x193c` and `cutscene` at `+0x195c`
 - replacement evidence: raw Windows callsites show `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and later passes `presentation + 0x1958` directly to `update_cutscene` (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled boundary, not a real standalone field
-- port consequence: keep `snail_skin_transition` starting at `+0x1938` and the exact 0x5c-byte `cutscene` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field ahead of the transition state in BN/IDA headers or docs
+- replacement ownership: Android exports the exact Windows method family as `cRSnailSkin::Init`, `AI`, and `Change`, while iOS v1.9 exposes `cRSnailSkin::Init(cRSnail*)`; the child is an exact 0x20 bytes with a borrowed `Snail*` backlink at `+0x10`, not a generic render-owner view
+- port consequence: keep native `snail_skin` starting at `+0x1938` and the exact 0x5c-byte `cutscene` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field or generic render-owner struct ahead of the CutScene in BN/IDA headers or docs

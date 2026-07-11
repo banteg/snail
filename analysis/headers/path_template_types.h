@@ -540,7 +540,9 @@ typedef struct JetpackGaugeController {
 typedef struct SnailVisual {
     uint8_t _pad_00[0x10];
     uint32_t flags;
-    uint8_t _pad_14[0x6c];
+    uint8_t _pad_14[0x4];
+    int32_t material_index;
+    uint8_t _pad_1c[0x64];
     float follow_lateral_response;
     float squidge_primary;
     float squidge_secondary;
@@ -588,14 +590,15 @@ typedef struct PresentationAnimationChannel {
     Vec3 release_step;
 } PresentationAnimationChannel;
 
-typedef struct SnailSkinTransitionState {
+/* Authored cRSnailSkin, exact 0x20-byte material-selection owner. */
+typedef struct SnailSkin {
     int32_t selected_slot;
     int32_t slot_ids[3];
-    void* owner_render_state;
+    Snail* owner_snail;
     int32_t active;
     float progress;
     float progress_step;
-} SnailSkinTransitionState;
+} SnailSkin;
 
 typedef struct PresentationWobbleController {
     float roll_phase;
@@ -648,7 +651,7 @@ typedef struct Snail {
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
-    SnailSkinTransitionState snail_skin_transition;
+    SnailSkin snail_skin;
     CutScene cutscene;
 } Snail;
 
@@ -1041,12 +1044,13 @@ void __thiscall update_squidge(Squidge* squidge);
 void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
-void __thiscall initialize_snail_skin(SnailSkinTransitionState* state);
+void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall update_snail_skin(Snail* snail);
 void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
 void __thiscall update_anim_manager(AnimationDispatchState* manager);
 int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
-void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);
+void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
+void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
 TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button);

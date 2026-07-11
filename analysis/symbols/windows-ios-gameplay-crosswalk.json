@@ -1157,6 +1157,31 @@
       "notes": "The exact Windows member allocates and initializes the Time's Up widget, then seeds state, progress, and progress step on the same owner."
     },
     {
+      "address": "0x445f60",
+      "windows_name": "initialize_snail_skin",
+      "ios_symbol": "cRSnailSkin::Init(cRSnail*)",
+      "android_symbol": "cRSnailSkin::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows and Android initializers clear selected_slot and active on the same 0x20-byte owner and store the borrowed cRSnail backlink at +0x10. iOS v1.9 exposes that parent explicitly as the Init argument."
+    },
+    {
+      "address": "0x445f80",
+      "windows_name": "update_snail_skin_transition",
+      "android_symbol": "cRSnailSkin::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows and Android bodies follow the cRSnail backlink, dirty the snail visual, select its material from slot_ids, and advance the same active/progress/progress_step lanes."
+    },
+    {
+      "address": "0x445fd0",
+      "windows_name": "change_snail_skin",
+      "android_symbol": "cRSnailSkin::Change(int, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows and Android members arm the same skin slot and either apply it immediately or derive progress_step from the requested duration at 60 Hz."
+    },
+    {
       "address": "0x446130",
       "windows_name": "initialize_cutscene_ai",
       "ios_symbol": "cRCutScene::Init(cRSubGoldy*)",

@@ -20,7 +20,6 @@ typedef struct PathManager {
 } PathManager;
 
 struct Player;
-struct SnailVisual;
 struct Path;
 struct TrackRowCell;
 struct TrackAttachmentRuntimeRow;
@@ -76,6 +75,17 @@ typedef struct Vec4 {
     float z;
     float w;
 } Vec4;
+
+typedef struct SnailVisual {
+    uint8_t _pad_00[0x10];
+    uint32_t flags;
+    uint8_t _pad_14[0x4];
+    int32_t material_index;
+    uint8_t _pad_1c[0x64];
+    float follow_lateral_response;
+    float squidge_primary;
+    float squidge_secondary;
+} SnailVisual;
 
 typedef struct TransformMatrix {
     Vec4 basis_right;
@@ -323,14 +333,15 @@ typedef struct PresentationAnimationChannel {
     Vec3 release_step;
 } PresentationAnimationChannel;
 
-typedef struct SnailSkinTransitionState {
+/* Authored cRSnailSkin, exact 0x20-byte material-selection owner. */
+typedef struct SnailSkin {
     int32_t selected_slot;
     int32_t slot_ids[3];
-    void* owner_render_state;
+    struct Snail* owner_snail;
     int32_t active;
     float progress;
     float progress_step;
-} SnailSkinTransitionState;
+} SnailSkin;
 
 /* Authored cRDamageGuage, exact 0x2c contact-damage owner. */
 typedef struct DamageGuage {
@@ -503,7 +514,7 @@ typedef struct Snail {
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
-    SnailSkinTransitionState snail_skin_transition;
+    SnailSkin snail_skin;
     CutScene cutscene;
 } Snail;
 

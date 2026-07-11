@@ -220,7 +220,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_snail_skin",
-        "void __thiscall initialize_snail_skin(SnailSkinTransitionState* state);",
+        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin);",
     ),
     (
         "update_snail_skin",
@@ -252,7 +252,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_snail_skin_transition",
-        "void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);",
+        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);",
+    ),
+    (
+        "change_snail_skin",
+        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);",
     ),
     (
         "store_color4f",

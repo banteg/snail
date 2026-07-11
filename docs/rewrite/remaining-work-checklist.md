@@ -237,7 +237,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Jet-particle pool + `SPRITES/JETPACKTHRUST.TGA` / `SPRITES/SMOKE.TGA` loading (presentation polish; the sfx and mesh-swap lanes are already covered)
 - [ ] Recover non-billboarded actor ownership where the original runtime uses real object/model controllers
 - [ ] Tighten combat VFX ownership after the underlying controller is recovered
-- [ ] Hook the snail-skin render-state material index lookup once the snail-presentation render layer is ported — the `SnailSkinTransition` state is ported and matched, but the port has no renderer-side consumer yet
+- [ ] Hook the snail-skin render-state material index lookup once the snail-presentation render layer is ported — native ownership is now recovered as the exact `cRSnailSkin` child, while the Zig port's `SnailSkinTransition` state still has no renderer-side consumer
 - [ ] Tighten remaining frontend widget polish only when ownership is already understood
   - current narrowing: native widget shortcut keys are now ported for pause-menu and post-level high-score flows; the remaining gap is shared widget-controller polish, not basic keyboard activation ownership
 

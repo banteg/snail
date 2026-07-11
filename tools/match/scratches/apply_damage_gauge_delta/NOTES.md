@@ -7,7 +7,7 @@ Semantics complete and they REFINE the harvested hit-flash plan:
 - state 2 blocks unforced positive deltas; unforced negative deltas are
   also blocked while `game[0x42ff60] == 1` (a previously unknown global)
 - retrigger-gated side effects (timer at +0x24 zero, delta > 0):
-  change_snail_skin(slot 1, 0.2s) on the global transition at
+  change_snail_skin(slot 1, 0.2s) on the global `cRSnailSkin` child at
   game+0x430938, voice 0 (damage) mode 1 seeding the timer on success;
   on FAILURE voice 9 (ouch) mode 0 (also seeding on success) and — only
   in this failure branch, gated on game[0x42ffd4] clear — the anim pair
@@ -67,3 +67,8 @@ receiver from `cRDamageGuage::AI()` and `cRSubGoldy::Collision()`, confirming
 both ownership and the force argument omitted by the old decompiler prototype.
 The shared owner now keeps the shipped `Guage` spelling. Focused Wibo remains
 an honest 72.43%, 91/94 instructions, with 18 clean masked operands.
+
+2026-07-11 skin-owner consolidation: the global at game+0x430938 is now typed
+as the exact 0x20-byte `cRSnailSkin` child rather than a local transition API.
+Android's `cRSnailSkin::Change(int, float)` independently confirms this call;
+the shared type substitution is codegen-neutral at the same honest 72.43%.

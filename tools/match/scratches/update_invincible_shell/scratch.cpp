@@ -37,7 +37,7 @@ void Invincible::update_invincible_shell()
         if (fade_progress < 0.0f) {
             fade_progress = 0.0f;
             state = 0;
-            ((SnailSkinTransition*)(g_game_base + 0x434038))->change_snail_skin(0, 0.0f);
+            ((SnailSkin*)(g_game_base + 0x434038))->change_snail_skin(0, 0.0f);
             return;
         }
         if ((*(unsigned int*)(g_game_base + 0x4300b4) & 0x80) != 0)
@@ -49,7 +49,7 @@ void Invincible::update_invincible_shell()
     if (spin_phase > 1.0f)
         spin_phase -= 1.0f;
 
-    ((SnailSkinTransition*)(g_game_base + 0x434038))->change_snail_skin(2, 0.0f);
+    ((SnailSkin*)(g_game_base + 0x434038))->change_snail_skin(2, 0.0f);
     color.set_color_white();
     color.a = fade_progress * 0.80000001f;
 

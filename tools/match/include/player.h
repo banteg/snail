@@ -148,7 +148,7 @@ public:
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
     Invincible invincible_shell;                // +0x1894, authored cRInvincible
-    SnailSkinTransition snail_skin_transition;  // +0x1938
+    SnailSkin snail_skin;                       // +0x1938, authored cRSnailSkin
     CutScene cutscene;                          // +0x1958, authored cRCutScene
 };
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];

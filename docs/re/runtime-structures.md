@@ -171,14 +171,15 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x98/+0x9c`: cutscene roll progress/step
     - `+0xa0`: animation-channel release-step gate
     - `initialize_invincible_shell`, `start_invincible_shell`, and `update_invincible_shell` all operate on this same embedded controller
-  - `+0x1938`: `snail_skin_transition`
+  - `+0x1938`: exact 0x20-byte `snail_skin` (`cRSnailSkin`)
     - `+0x00`: `selected_slot`
     - `+0x04`: `slot_ids[3]`
-    - `+0x10`: `owner_render_state`
+    - `+0x10`: borrowed `Snail* owner_snail` parent backlink
     - `+0x14`: `active`
     - `+0x18`: `progress`
     - `+0x1c`: `progress_step`
-    - `initialize_snail_skin` seeds `owner_render_state` to the shared player render owner and clears the timed skin swap state
+    - `initialize_snail_skin` seeds the parent backlink and clears the timed skin-swap state
+    - `update_snail_skin_transition` follows `owner_snail->visual_root`, raises visual flag `0x8`, writes the selected material index, and advances the timer lanes
     - raw code at `0x4428ef` confirms `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition`; there is no separate `weapon_release_active` byte ahead of this state
   - `+0x1958`: exact 0x5c-byte `cutscene` (`cRCutScene`)
     - `+0x00/+0x04`: presentation and Player backlinks

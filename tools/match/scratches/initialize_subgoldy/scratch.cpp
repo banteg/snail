@@ -123,7 +123,7 @@ int Player::initialize_subgoldy(int player_slot)
         *(int*)(self + 0x3890) = zero;
     }
 
-    ((SnailSkinTransition*)(self + 0x42bc))->initialize_snail_skin();
+    this->presentation.snail_skin.initialize_snail_skin();
     this->presentation.cutscene.initialize_cutscene_ai();
     if (*(unsigned char*)(*(char**)(self + 0x408) + 0xff25d0) == 0)
         *(int*)(self + 0x42e8) = 1;

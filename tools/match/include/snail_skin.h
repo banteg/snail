@@ -1,35 +1,23 @@
-// SnailSkinTransition @ player presentation controller
-// Layouts recovered in analysis/decompile/{binja,ida}/functions/00445f*.c
+// Authored cRSnailSkin, exact 0x20-byte skin/material selection owner.
 #ifndef SNAIL_SKIN_H
 #define SNAIL_SKIN_H
 
-struct PlayerRenderModel {
-    int unknown_00[4];
-    unsigned int flags;      // +0x10, |= 8 marks material dirty
-    int unknown_14;
-    int material_index;      // +0x18
-};
+class Snail;
 
-struct PlayerRenderOwner {
-    int unknown_00[9];
-    PlayerRenderModel* model; // +0x24
-};
-
-class SnailSkinTransition {
+class SnailSkin {
 public:
-    void initialize_snail_skin();                    // @ 0x445f60
-    void update_snail_skin_transition();             // @ 0x445f80
-    void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0
+    void initialize_snail_skin(); // @ 0x445f60, cRSnailSkin::Init
+    void update_snail_skin_transition(); // @ 0x445f80, cRSnailSkin::AI
+    void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, Change
 
     int selected_slot;             // +0x00
     int slot_ids[3];               // +0x04 (0=default, 1=damage-red, 2=invincible)
-    PlayerRenderOwner* owner_render_state; // +0x10
+    Snail* owner_snail;            // +0x10, non-owning parent backlink
     int active;                    // +0x14
     float progress;                // +0x18
     float progress_step;           // +0x1c
 };
 
-typedef char SnailSkinTransition_must_be_0x20[
-    (sizeof(SnailSkinTransition) == 0x20) ? 1 : -1];
+typedef char SnailSkin_must_be_0x20[(sizeof(SnailSkin) == 0x20) ? 1 : -1];
 
 #endif
