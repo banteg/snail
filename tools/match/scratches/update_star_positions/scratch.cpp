@@ -5,52 +5,36 @@
 
 extern char* g_game_base; // data_4df904
 
-void* StarField::update_star_positions(float fade_alpha)
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 {
-    void* result = (void*)count;
+    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
+
+void StarField::update_star_positions(float fade_alpha)
+{
     int i = 0;
     if (count > 0) {
         do {
-            StarFieldEntry* entry = &entries[i];
-            entry->travel_distance = entry->speed + entry->travel_distance;
-            if (entry->travel_distance > 35.0f) {
-                float* travel_distance = &entry->travel_distance;
+            entries[i].travel_distance = entries[i].speed + entries[i].travel_distance;
+            if (entries[i].travel_distance > 35.0f) {
+                float* travel_distance = &entries[i].travel_distance;
                 *travel_distance = 0.0f;
-                entry->sprite->facing_refresh_progress = 0.0f;
+                entries[i].sprite->facing_refresh_progress = 0.0f;
 
                 GameRoot* game = (GameRoot*)g_game_base;
-                Vector3 direction_scaled;
-                Vector3 staged_position;
-                direction_scaled.x = game->overlay_0.transform.basis_forward.x * 50.0f;
-                direction_scaled.y = game->overlay_0.transform.basis_forward.y * 50.0f;
-                direction_scaled.z = game->overlay_0.transform.basis_forward.z * 50.0f;
-                staged_position.x = direction_scaled.x + game->overlay_0.transform.position.x;
-                staged_position.y = direction_scaled.y + game->overlay_0.transform.position.y;
-                staged_position.z = direction_scaled.z + game->overlay_0.transform.position.z;
-                Vector3* sprite_position = &entry->sprite->position;
-                *sprite_position = staged_position;
-
-                Vector3* sprite_velocity = &entry->sprite->velocity;
-                *sprite_velocity = entry->velocity;
-
-                Vector3 velocity_scaled;
-                velocity_scaled.x = entry->velocity.x * 10.0f;
-                velocity_scaled.y = entry->velocity.y * 10.0f;
-                velocity_scaled.z = entry->velocity.z * 10.0f;
-                sprite_position = &entry->sprite->position;
-                sprite_position->x = velocity_scaled.x + sprite_position->x;
-                sprite_position->y = velocity_scaled.y + sprite_position->y;
-                sprite_position->z = velocity_scaled.z + sprite_position->z;
-                entry->travel_distance =
-                    entry->speed * 10.0f + entry->travel_distance;
+                entries[i].sprite->position =
+                    game->overlay_0.transform.basis_forward * 50.0f +
+                    game->overlay_0.transform.position;
+                entries[i].sprite->velocity = entries[i].velocity;
+                entries[i].sprite->position += entries[i].velocity * 10.0f;
+                entries[i].travel_distance =
+                    entries[i].speed * 10.0f + entries[i].travel_distance;
             }
 
-            result = entry->sprite;
-            ++i;
-            entry->sprite->color.a =
-                (entry->travel_distance - 2.0f) * entry->alpha_scale *
+            entries[i].sprite->color.a =
+                (entries[i].travel_distance - 2.0f) * entries[i].alpha_scale *
                 0.0114285713f * fade_alpha;
+            ++i;
         } while (i < count);
     }
-    return result;
 }

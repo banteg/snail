@@ -3,9 +3,9 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_star_positions @ 0x434800 */
 
-00434800        int32_t count = manager->count
 00434807        int32_t i = 0
-0043480b        if (count s> 0)
+0043480b        if (manager->count s<= 0)
+0043480b        return
 00434813        int32_t edx_1 = 0
 00434818        void* eax_1 = manager->entries + edx_1
 00434820        *(eax_1 + 0x24) = fconvert.s(fconvert.t(*(eax_1 + 0x20)) + fconvert.t(*(eax_1 + 0x24)))
@@ -40,7 +40,6 @@
 00434946        void* eax_19 = manager->entries + edx_1
 00434948        i += 1
 00434949        edx_1 += 0x2c
-00434958        count = *(eax_19 + 0x1c)
-00434965        *(count + 0x38) = fconvert.s((fconvert.t(*(eax_19 + 0x24)) - fconvert.t(2f)) * fconvert.t(*(eax_19 + 0x28)) * fconvert.t(0.0114285713f) * fconvert.t(fade_alpha))
+00434965        *(*(eax_19 + 0x1c) + 0x38) = fconvert.s((fconvert.t(*(eax_19 + 0x24)) - fconvert.t(2f)) * fconvert.t(*(eax_19 + 0x28)) * fconvert.t(0.0114285713f) * fconvert.t(fade_alpha))
 0043496b        do while (i s< manager->count)
-00434977        return count
+00434977        return

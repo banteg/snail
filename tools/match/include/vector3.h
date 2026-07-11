@@ -28,6 +28,14 @@ struct Vector3 {
         return *this;
     }
 
+    Vector3& operator+=(const Vector3& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+
     float normalize_vector(); // thiscall callsite view for @ 0x44cca0
     float normalize_vector_from_source(const Vector3* source); // callsite view for @ 0x44cd20
     double dot_vector(const Vector3* rhs); // @ 0x44cb70

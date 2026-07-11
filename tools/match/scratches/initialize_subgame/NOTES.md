@@ -127,3 +127,6 @@ the remaining generic owner list.
   relocations and the second eight, with the same destination sequences as the
   curated bottom-HUD and startup tables. Both aliases are content-bounded by
   their tracked `0x14`/`0x20` sizes.
+- Promoting the paired vector-add operator advances only the compiler-local
+  labels to `$L4693`/`$L4694`; their object offsets and bounded relocation
+  contents remain identical, so this generation is registered as well.

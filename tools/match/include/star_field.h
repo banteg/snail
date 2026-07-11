@@ -29,7 +29,7 @@ public:
     int hide_star_field(); // @ 0x434670
     int unhide_star_field(); // @ 0x4346b0
     void update_star_field(); // @ 0x4346f0
-    void* update_star_positions(float fade); // @ 0x434800
+    void update_star_positions(float fade); // @ 0x434800, cRStarManager::UpdateStars
 
     // +0x00..+0x37 is the constructed BodBase prefix. The virtual callback
     // declaration models its callback-table word, so only the inherited tail

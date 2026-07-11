@@ -135,6 +135,25 @@
       ]
     },
     {
+      "name": "ida_star_manager_update_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00434800-update_star_positions.c",
+      "required_substrings": [
+        "void __thiscall update_star_positions",
+        "travel_distance",
+        "sprite->position",
+        "sprite->velocity",
+        "sprite->color.a"
+      ],
+      "forbidden_substrings": [
+        "void *result",
+        "return result",
+        "_pad_",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_voice_manager_fields_intact",
       "artifact": "analysis/decompile/binja/functions/004492d0-play_voice_manager.c",
       "required_substrings": [

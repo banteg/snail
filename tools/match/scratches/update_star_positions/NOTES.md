@@ -23,17 +23,36 @@ of root-owned star fields. Those addresses are
 and its inherited transform starts at `+0x38`. Using the corrected shared
 owner preserves the focused Wibo result.
 
-Current Wibo result: 32.85%, 101/106 candidate/target instructions, prefix
-1/106, masked operands 11 ok.
+## Source and ABI recovery
 
-Rejected/source-shape probes:
+- The cross-port owner is `cRStarManager`, and `UpdateStars(float)` is a `void`
+  method. Native's final sprite pointer merely remains in `eax` after the alpha
+  store; modeling it as a returned pointer added synthetic result bookkeeping.
+- Direct `entries[i]` ownership gives VC6 the native `ecx = manager`,
+  `edx = entry byte offset`, and `edi = loop count` split without a retained
+  entry pointer.
+- Respawn position is the same by-value vector expression proven in
+  `initialize_star_field`: camera forward times 50 plus camera position.
+- Ten frames of travel are applied as
+  `sprite.position += entry.velocity * 10`. The in-place `Vector3::operator+=`
+  removes the extra result vector and recovers native's exact `0x24` frame.
+
+Current focused result: 98.11%, 106/106 candidate/target instructions, prefix
+44/106, and 11 masked operands clean. The only residuals are two independent
+instruction-scheduling swaps: storing the final camera-position component
+versus advancing the sprite-position pointer, and multiplying alpha by the
+constant versus the borrowed fade argument.
+
+Earlier rejected/source-shape probes:
 
 - Direct per-component sprite writes compiled to 26.46% by eliminating native
   stack staging entirely.
 - A local `Vector3 staged_position` plus `scaled_y/scaled_z` recovered some
   stack traffic but only reached 31.84%; VC6 still kept the entry pointer live
   and introduced an `ebx` zero register.
-- The current array-index spelling with `direction_scaled`, `staged_position`,
-  and `velocity_scaled` is semantically closest to the native stack model, but
-  VC6 allocates a `0x28` frame instead of native `0x24` and still does not keep
-  the loop as native's `edx` byte-offset form.
+- Keeping `direction_scaled`, `staged_position`, and `velocity_scaled` locals
+  allocated a `0x28` frame and lost native's `edx` byte-offset loop; the
+  recovered operators explain those temporaries directly.
+- Returning the incidental final sprite pointer reached 94.88% but emitted
+  three extra result-reload instructions, contradicting the cross-port void
+  method and the native tail.

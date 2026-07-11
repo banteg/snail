@@ -71,3 +71,5 @@ the two local labels once more to `$L1051`/`$L1052`. COFF places the four-entry
 orientation table at object `+0x52c` and the seven-entry edge-selector table at
 `+0x53c`; their relocation sequences are unchanged. Registering these aliases
 restores bounded content auditing without changing the exact source stream.
+The paired vector-add operator advances the current labels to
+`$L1055`/`$L1056` at those same offsets, again with unchanged bounded contents.

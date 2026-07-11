@@ -27,7 +27,7 @@ PROTO_UPDATES = (
     ("update_star_field", "void __thiscall update_star_field(StarManager* manager)"),
     (
         "update_star_positions",
-        "void* __thiscall update_star_positions(StarManager* manager, float fade_alpha)",
+        "void __thiscall update_star_positions(StarManager* manager, float fade_alpha)",
     ),
 )
 
