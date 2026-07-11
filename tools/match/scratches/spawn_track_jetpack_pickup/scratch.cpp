@@ -12,7 +12,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
+void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
@@ -24,7 +24,7 @@ int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* playe
         scan += 103;
         if (slot_index < 1)
             continue;
-        return (int)scan;
+        return;
     }
 
     DWORD* slot_base = game_words + 103 * slot_index;
@@ -89,9 +89,8 @@ int SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* playe
     if ((z_as_int & 1) != 0) {
         *bob_phase = 0.0f;
         slot->jetpack_pickup.bob_phase_step = 0.012820513f;
-        return z_as_int;
+        return;
     }
     *bob_phase = 0.5f;
     slot->jetpack_pickup.bob_phase_step = 0.012820513f;
-    return z_as_int;
 }

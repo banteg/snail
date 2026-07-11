@@ -405,7 +405,7 @@
     {
       "address": "0x4084d0",
       "name": "initialize_track_jetpack_pickup_runtime",
-      "description": "Constructs the single jetpack-pickup runtime record by seeding its shared bod header plus two embedded renderable bodies. `spawn_track_jetpack_pickup` uses the resulting `game->jetpack_pickup` lane at `0x355e64`, whose `0x19c` footprint matches the native `cRJetPack` size ledger."
+      "description": "Exact Windows constructor for the authored `JetPack` (`cRJetPack` cross-port) singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `update_track_jetpack_pickup`. The complete 0x19c extent exactly matches the native `Size of cRJetPack` ledger."
     },
     {
       "address": "0x408510",
@@ -2076,7 +2076,7 @@
     {
       "address": "0x43d890",
       "name": "spawn_track_jetpack_pickup",
-      "description": "Allocates and seeds one live jetpack pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Seeds the owned `JetPack` singleton from the active runtime cell. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values."
     },
     {
       "address": "0x43da80",
@@ -2126,7 +2126,7 @@
     {
       "address": "0x43efb0",
       "name": "update_track_jetpack_pickup",
-      "description": "Updates the single jetpack pickup parent installed by `initialize_track_jetpack_pickup_runtime`: handles state 1/2 list removal, kills the nested sprite on teardown, and advances the sprite bob phase while live. Cross-port iOS symbols name the runtime class `cRJetPack` in `SubGame.o`."
+      "description": "Runs the owned `JetPack` singleton through bobbing and teardown states. The exact Windows constructor table at 0x497318 points directly here, while Android and iOS retain the authored member as `cRJetPack::AI()`."
     },
     {
       "address": "0x43f130",

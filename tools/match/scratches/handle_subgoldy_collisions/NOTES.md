@@ -356,3 +356,11 @@ The singleton collision check now uses the primary `SubSpeedUp` object at
 `SubgameRuntime +0x355db0`. Its full position vector, state, owner backlink,
 and sprite are independently established by the exact constructor and exact
 AI. Focused Wibo remains 52.85%, 659/673, with all 86 operands clean.
+
+## cRJetPack primary owner (2026-07-11)
+
+The adjacent singleton collision check now uses the primary `JetPack` at
+`SubgameRuntime +0x355e64`. Android/iOS retain `cRJetPack`, the exact Windows
+constructor table points to its AI, and its two embedded cRVapour children
+close the full 0x19c allocation. Focused Wibo remains 52.85%, 659/673, with
+all 86 operands clean.

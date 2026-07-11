@@ -12,13 +12,13 @@ extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-void TrackJetpackPickup::update_track_jetpack_pickup()
+void JetPack::update_track_jetpack_pickup()
 {
     int zero = 0;
     unsigned int flags;
     BodList* anchor;
-    TrackJetpackPickup* next;
-    TrackJetpackPickup* prev;
+    JetPack* next;
+    JetPack* prev;
 
     if (owner_game->subgame_pause_gate != zero)
         return;
@@ -43,18 +43,18 @@ state_two:
     if ((flags & 0x200) == 0) goto state_two_not_linked;
     if ((flags & 0x40) != 0) goto state_two_nextbod;
 
-    next = (TrackJetpackPickup*)list_next;
-    if (next != (TrackJetpackPickup*)zero)
+    next = (JetPack*)list_next;
+    if (next != (JetPack*)zero)
         next->list_prev = list_prev;
 
-    prev = (TrackJetpackPickup*)list_prev;
-    if (prev != (TrackJetpackPickup*)zero) {
+    prev = (JetPack*)list_prev;
+    if (prev != (JetPack*)zero) {
         prev->list_next = list_next;
     } else {
         anchor->first = list_next;
     }
 
-    list_next = (TrackJetpackPickup*)anchor->free_top;
+    list_next = (JetPack*)anchor->free_top;
     anchor->free_top = this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
@@ -87,18 +87,18 @@ state_one:
             return;
         }
 
-        next = (TrackJetpackPickup*)list_next;
-        if (next != (TrackJetpackPickup*)zero)
+        next = (JetPack*)list_next;
+        if (next != (JetPack*)zero)
             next->list_prev = list_prev;
 
-        prev = (TrackJetpackPickup*)list_prev;
-        if (prev != (TrackJetpackPickup*)zero) {
+        prev = (JetPack*)list_prev;
+        if (prev != (JetPack*)zero) {
             prev->list_next = list_next;
         } else {
             anchor->first = list_next;
         }
 
-        list_next = (TrackJetpackPickup*)anchor->free_top;
+        list_next = (JetPack*)anchor->free_top;
         anchor->free_top = this;
         list_flags &= ~0x200;
         sprite->kill_sprite();

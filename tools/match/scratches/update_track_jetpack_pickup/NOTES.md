@@ -54,3 +54,8 @@ diagnostic tails, with otherwise clean masked operands.
 2026-07-11 owner-view retirement: `owner_game +0x44` now points directly to
 the containing `SubgameRuntime`; the duplicate pickup-only owner view added no
 ownership information and was removed. Focused code generation is unchanged.
+
+2026-07-11 authored owner: the receiver and intrusive-list neighbors now use
+the primary `JetPack` type. The exact constructor table at `0x497318` points
+directly here, while Android and iOS retain `cRJetPack::AI()`. Focused Wibo
+remains 87.84%, 128/127 instructions, with all 20 masked operands clean.

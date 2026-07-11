@@ -273,8 +273,19 @@
       "address": "0x43d890",
       "windows_name": "spawn_track_jetpack_pickup",
       "ios_symbol": "cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)",
+      "android_symbol": "cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android scans and initializes the same singleton and reaches its epilogue without establishing a result, supporting the side-effect-only method contract."
+    },
+    {
+      "address": "0x43efb0",
+      "windows_name": "update_track_jetpack_pickup",
+      "ios_symbol": "cRJetPack::AI()",
+      "android_symbol": "cRJetPack::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497318 points directly to this callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x43da80",

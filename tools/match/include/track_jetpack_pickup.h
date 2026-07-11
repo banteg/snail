@@ -1,5 +1,4 @@
-// Track jetpack pickup singleton runtime, partial. iOS symbols name this
-// runtime class cRJetPack and the spawning helper cRSubGame::AddJetPack.
+// Authored cRJetPack singleton runtime, partial.
 // Proven by initialize_track_jetpack_pickup_runtime,
 // spawn_track_jetpack_pickup, update_track_jetpack_pickup,
 // remove_subgame_bods, and handle_subgoldy_collisions.
@@ -9,15 +8,16 @@
 #include "bod_list.h"
 #include "bod_types.h"
 #include "sub_loc_fwd.h"
+#include "vapour_trail.h"
 #include "vector3.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
 
-class TrackJetpackPickup : public BodNode {
+class JetPack : public BodNode {
 public:
-    TrackJetpackPickup* initialize_track_jetpack_pickup_runtime(); // @ 0x4084d0
+    JetPack* initialize_track_jetpack_pickup_runtime(); // @ 0x4084d0
     void update_track_jetpack_pickup(); // @ 0x43efb0
 
     Vector3 world_position; // +0x10
@@ -31,13 +31,13 @@ public:
     TrackRowCell* source_cell; // +0x68
     float bob_phase; // +0x6c
     float bob_phase_step; // +0x70
-    RenderableBod body_a; // +0x74
-    char unknown_ec[0x108 - 0xec];
-    RenderableBod body_b; // +0x108
-    char unknown_180[0x19c - 0x180];
+    VapourTrail vapour_a; // +0x74, embedded cRVapour
+    VapourTrail vapour_b; // +0x108, embedded cRVapour
 };
 
-typedef char TrackJetpackPickup_must_be_0x19c[
-    (sizeof(TrackJetpackPickup) == 0x19c) ? 1 : -1];
+typedef JetPack TrackJetpackPickup;
+
+typedef char JetPack_must_be_0x19c[
+    (sizeof(JetPack) == 0x19c) ? 1 : -1];
 
 #endif

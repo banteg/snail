@@ -76,3 +76,8 @@ Rejected probes:
 the primary `SubSpeedUp` owner at `+0x355db0`; its storage remains embedded
 while only inherited BOD-list membership is recycled. The existing 59.98%
 frontier and two speedup/jetpack string-order mismatches remain unchanged.
+
+2026-07-11 JetPack ownership: the second singleton teardown arm is backed by
+the primary `JetPack` owner at `+0x355e64`; only its inherited BOD membership
+and sprite are released, while the parent and two embedded cRVapour objects
+remain owned by `SubgameRuntime`. The 59.98% frontier is unchanged.

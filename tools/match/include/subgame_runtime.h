@@ -63,7 +63,7 @@ public:
     void spawn_track_health_pickup(
         SubLoc* cell, Player* player); // @ 0x43d6c0
     void spawn_track_speedup(SubLoc* cell, Player* player); // @ 0x43d880, no-op in Windows/Android
-    int spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
+    void spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
     unsigned int* spawn_track_garbage_hazard(SubLoc* cell, Player* player); // @ 0x43da80
     int spawn_slug_hazard(SubLoc* cell, Player* player); // @ 0x43dc80
     SubLoc* spawn_track_ring_or_special_effect(
@@ -158,7 +158,7 @@ public:
     int active_level_score; // +0x355d94, copied from the selected bank record
     TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
     SubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
-    TrackJetpackPickup jetpack_pickup; // +0x355e64
+    JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     SubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots

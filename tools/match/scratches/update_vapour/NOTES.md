@@ -16,3 +16,10 @@ Recovered relationships:
 - `VapourTrailOwner` owns the output buffers: `vertex_count +0x2c`, quad
   vertices at `+0x38`, attribute/UV words at `+0x5c`, and final index count
   through `+0xd4`.
+
+2026-07-11 complete owner extent: `VapourTrail` is exactly 0x94 bytes, ending
+after `points +0x90`. The exact JetPack constructor builds two consecutive
+instances at parent `+0x74` and `+0x108`, installs the same cRVapour table at
+`0x49731c`, and closes the parent at `+0x19c`. This replaces two 0x78-byte
+renderable views plus anonymous tail padding with complete embedded cRVapour
+owners; all four existing vapour scratches remain byte-stable.

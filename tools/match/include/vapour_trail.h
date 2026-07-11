@@ -46,4 +46,7 @@ public:
     TransformMatrix* points; // +0x90
 };
 
+typedef char VapourTrail_must_be_0x94[
+    (sizeof(VapourTrail) == 0x94) ? 1 : -1];
+
 #endif

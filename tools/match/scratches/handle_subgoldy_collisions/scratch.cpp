@@ -213,7 +213,7 @@ void Player::handle_subgoldy_collisions()
             }
         }
     }
-    TrackJetpackPickup* jetpack = &game->jetpack_pickup;
+    JetPack* jetpack = &game->jetpack_pickup;
     if (jetpack->state == 1) {
         probe_b.x = jetpack->world_position.x - cached_camera_target_world.x;
         probe_b.y = jetpack->world_position.y - cached_camera_target_world.y;

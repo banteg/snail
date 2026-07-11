@@ -246,3 +246,9 @@ only the compiler-local EH relocation unresolved.
 The `Size of cRSubSpeedUp` entry now comes from `sizeof(SubSpeedUp)`. The
 authored singleton's 0xb4-byte extent closes exactly between the timer/speedup
 boundary and the adjacent `JetPack`. Constructor metrics remain unchanged.
+
+## 2026-07-11 cRJetPack size ledger
+
+The `Size of cRJetPack` entry now comes from `sizeof(JetPack)`. Its prefix plus
+two complete 0x94-byte cRVapour children close exactly to 0x19c, ending at the
+`SubHealth` array. Constructor metrics remain unchanged at 88.89%.

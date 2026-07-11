@@ -4,12 +4,13 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `86.60%`, `147/144` candidate/target instructions, with `9` masked
-  operands ok.
-- The scratch now uses the promoted `TrackJetpackPickup` field names and the
-  shared `BodList`/`BodNode` active-list shape. Prefix improves to `44/144`;
-  the first remaining mismatch is the lane-wall tile compare spelling
-  (`mov cl, 0xe` in native versus the current byte-load/constant compare).
+- `84.72%`, `144/144` candidate/target instructions, with `9` clean masked
+  operands and no unresolved or mismatched references.
+- The scratch now uses the primary `JetPack` field names and the shared
+  `BodList`/`BodNode` active-list shape. The void correction moves the first
+  mismatch to the occupied-singleton epilogue at 7/144; the next independent
+  residual remains the lane-wall tile compare spelling (`mov cl, 0xe` in
+  native versus the current byte-load/constant compare).
 - The sprite output copy is now the same typed `Vector3` assignment accepted in
   the health spawner, reducing the tail residual to the bob-phase store versus
   `world_z` conversion scheduling.
@@ -100,3 +101,16 @@ pointer keeps the source semantic. Lane-wall probes using local
 `unsigned char`, `char`, `int`, nested `if`, constant-left comparisons, and a
 `switch` did not recover native's `mov cl, 0xe` compare schedule; the switch
 form regressed to `83.85%`.
+
+## 2026-07-11 authored owner and void contract
+
+- The singleton is now primarily `JetPack`, matching Android/iOS `cRJetPack`;
+  `TrackJetpackPickup` remains a compatibility alias.
+- Android `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)` initializes the same
+  singleton and reaches its epilogue without establishing a result. Windows
+  callers also ignore EAX, whose occupied and success paths contain
+  incompatible incidental values.
+- Correcting the artificial `int` contract to `void` changes focused matching
+  from 87.29% (147/144) to an honest 84.72% with exact 144/144 instruction
+  count and all nine audited references clean. The fake result is not retained
+  merely for register-allocation score.

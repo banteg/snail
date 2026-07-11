@@ -1741,13 +1741,13 @@
     },
     {
       "address": "0x497318",
-      "name": "g_track_jetpack_pickup_vtable",
+      "name": "g_jet_pack_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497318",
         "data_497318"
       ],
-      "description": "Runtime jetpack pickup vtable installed by initialize_track_jetpack_pickup_runtime."
+      "description": "Authored cRJetPack vtable installed by the exact Windows constructor; its entry points directly to update_track_jetpack_pickup at 0x43efb0."
     },
     {
       "address": "0x49731c",
@@ -1758,7 +1758,7 @@
         "off_49731c",
         "data_49731c"
       ],
-      "description": "Vapour-trail render body vtable whose first callback is `update_vapour`; reused by jetpack pickup child bodies and Golb shot secondary bodies."
+      "description": "Authored cRVapour vtable whose first callback is `update_vapour`; the complete 0x94-byte owner is embedded twice in JetPack and reused by Golb shot secondary bodies."
     },
     {
       "address": "0x497320",

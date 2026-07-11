@@ -70,3 +70,8 @@ runtime to each borrowed `owner_game +0x44` lane while leaving the spawned
 the primary `SubSpeedUp::owner_game +0x8c` lane at runtime `+0x355e3c`.
 Together with the exact constructor and AI table, this closes the complete
 0xb4-byte owner without changing the exact 75/75 reset body.
+
+2026-07-11 cRJetPack ownership: the adjacent singleton backlink store lands on
+the primary `JetPack::owner_game +0x44` lane at runtime `+0x355ea8`. Its two
+embedded cRVapour children occupy the rest of the exact 0x19c extent. Reset
+remains exact at 75/75.
