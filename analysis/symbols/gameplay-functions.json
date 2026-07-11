@@ -2060,7 +2060,7 @@
     {
       "address": "0x43dc80",
       "name": "spawn_slug_hazard",
-      "description": "Allocates and seeds one live slug hazard from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exactly matched allocator for one live slug hazard: scans the owned eight-slot pool, scales `(0, 0, -0.2)` by the subgame rate, links the body before the embedded Player tail in the root BOD list, and arms the spaced engagement-voice gate. Cross-port Android and iOS symbols identify `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43df10",

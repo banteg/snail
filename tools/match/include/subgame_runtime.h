@@ -211,7 +211,8 @@ public:
     GalaxyRoute galaxy; // +0x1260020, embedded route controller
     char unknown_1270fc4[0x1270fc8 - 0x1270fc4];
     int subgame_rebuild_selector; // +0x1270fc8
-    char unknown_1270fcc[0x1270fd4 - 0x1270fcc];
+    float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
+    float slug_voice_trigger_spacing_z; // +0x1270fd0
     ContactTargetRegistry contact_targets; // +0x1270fd4, embedded 256-entry frame registry
     RowEventDisplayController row_event_display; // +0x12727d8, embedded HUD controller
     TimesUpController times_up; // +0x1272828, embedded completion controller

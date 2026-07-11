@@ -31,7 +31,7 @@ Three source-shaped changes were retained:
   destination references keeps the x87 flash-step store before the HP/flag
   writes and fixes the HP/flag scheduling residual.
 
-Current residual: the velocity staging still differs. Native keeps
+At that frontier, the velocity staging still differed. Native keeps
 `game+0x38` live on x87, loads a float zero, stores that zero through the local
 vector x/y lanes, then multiplies the z lane by `-0.2f`; the candidate still
 pre-multiplies z and writes x/y with integer zero stores.
@@ -78,3 +78,28 @@ Rejected probes:
   `SubgameRuntime`, sharing the recovered slug spawn declaration and projection
   call surface without changing the raw slot layout. Focused Wibo remains
   `92.79%`, `159/160`, with `16` clean masked operands.
+
+## 2026-07-11 exact vector-scale recovery
+
+The bundled Android `cRSubGame::AddSlug` provides the missing independent
+source evidence: it scales all three components of the direction vector
+`(0, 0, -0.2)` by the subgame rate. That is the source-level vector operation
+the earlier scalar assignments had erased. Recovering `Vector3::operator*`
+with a component-wise result temporary and spelling the velocity as
+`Vector3(0.0f, 0.0f, -0.2f) * subgame_rate` reproduces Windows' retained x87
+zero, its paired X/Y stores, and the delayed Z multiply/store exactly.
+
+Focused Wibo is now **100.00%**, `160/160` instructions, full `160/160`
+prefix, and `18 ok / 0 unresolved / 0 mismatch` in the masked audit. This is a
+semantic source recovery backed by the named cross-port function, not a
+register or padding accommodation.
+
+The same pass records the surrounding owners without changing codegen:
+
+- the insertion anchor is `GameRoot::active_bod_list`;
+- its tail sentinel is the embedded `SubgameRuntime::player` object;
+- the hit-flash rate comes from `GameRoot::subgame.subgame_rate`; and
+- `SubgameRuntime::next_slug_voice_trigger_z` starts at `50.0f` and advances by
+  `slug_voice_trigger_spacing_z` (`100.0f`) whenever a spawned slug receives
+  `engagement_voice_gate`. `update_slug_hazard_ai` later consumes that gate at
+  the player's 16-unit approach threshold.

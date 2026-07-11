@@ -166,3 +166,13 @@ the active-list tail.
   Focused Wibo is unchanged at `86.10%`, `560/555`, prefix `244/555`, with
   `105 ok / 0 unresolved / 1` masked mismatch. Moving the `row_alpha`
   declaration closer to its store was also codegen-neutral and was not kept.
+
+## 2026-07-11 slug voice threshold ownership
+
+The two floats immediately before `contact_targets` are now owned fields:
+`next_slug_voice_trigger_z` at `+0x1270fcc` and
+`slug_voice_trigger_spacing_z` at `+0x1270fd0`. This initializer seeds them to
+`50.0f` and `100.0f`; exact-matched `spawn_slug_hazard` advances the former and
+marks the selected slug's `engagement_voice_gate`. The typed stores are
+codegen-neutral here, retaining `86.10%`, `560/555`, prefix `244/555`, and the
+existing `105 ok / 1 mismatch` audit.

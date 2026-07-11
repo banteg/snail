@@ -59,8 +59,8 @@ void SubgameRuntime::build_subgame_level(int level_index)
         break;
     }
 
-    *(float*)(game + 0x1270fcc) = 50.0f;
-    *(float*)(game + 0x1270fd0) = 100.0f;
+    next_slug_voice_trigger_z = 50.0f;
+    slug_voice_trigger_spacing_z = 100.0f;
     ((GolbPathBank*)(game + 0x1270fd4))->initialize_enemy_manager();
     ((DamageGaugeController*)(game + 0x3bbb28))->initialize_damage_gauge();
     ((RuntimeSlot*)(game + 0x3bbb54))->noop_runtime_ai();

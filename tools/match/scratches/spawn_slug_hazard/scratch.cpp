@@ -3,6 +3,7 @@
 // seed its renderable body state, link it into the shared BOD list, and attach
 // the live sprite presentation.
 
+#include "game_root.h"
 #include "player.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
@@ -12,7 +13,7 @@
 
 typedef unsigned int DWORD;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value();
 int report_errorf(char* format, ...);
@@ -49,16 +50,12 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
         live_position,
         (float*)(slot_base + 0x356438));
 
-    float velocity_z = *((float*)this + 14) * -0.2f;
-    Vector3 velocity;
-    velocity.x = 0.0f;
-    velocity.y = 0.0f;
-    velocity.z = velocity_z;
+    Vector3 velocity = Vector3(0.0f, 0.0f, -0.2f) * *((float*)this + 14);
     *(Vector3*)(slot_base + 0x35642c) = velocity;
 
     BodNode* node = (BodNode*)(slot_base + 0x3563a0);
-    BodNode* tail = (BodNode*)((char*)this + 0x3bb764);
-    BodList* anchor = (BodList*)(g_game_base + 0x5a8);
+    BodNode* tail = (BodNode*)&this->player;
+    BodList* anchor = &g_game->active_bod_list;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
     } else {
@@ -99,7 +96,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     *(DWORD*)(slot_base + 0x356470) = 0;
     float* hit_flash_step_ref = (float*)(slot_base + 0x356474);
     *hit_flash_step_ref =
-        *(float*)(g_game_base + 0x74650) * 0.16666667f;
+        g_game->subgame.subgame_rate * 0.16666667f;
     DWORD* hit_points_ref = (DWORD*)(slot_base + 0x356468);
     *hit_points_ref = 7;
 
@@ -112,11 +109,10 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     *(DWORD*)(slot_base + 0x35647c) = 0;
     *(DWORD*)(slot_base + 0x356480) = 0x3d088889;
 
-    if (cell->anchor_position.z > *(float*)((char*)this + 0x1270fcc)) {
-        *(DWORD*)(slot_base + 0x356464) = 1;
-        *(float*)((char*)this + 0x1270fcc) =
-            *(float*)((char*)this + 0x1270fd0)
-            + *(float*)((char*)this + 0x1270fcc);
+    if (cell->anchor_position.z > next_slug_voice_trigger_z) {
+        ((SlugHazardRuntime*)(slot_base + 0x3563a0))->engagement_voice_gate = 1;
+        next_slug_voice_trigger_z =
+            slug_voice_trigger_spacing_z + next_slug_voice_trigger_z;
     }
 
     *(DWORD*)(slot_base + 0x356484) = 0;

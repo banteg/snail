@@ -11,6 +11,15 @@ struct Vector3 {
     Vector3() {}
     Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
 
+    Vector3 operator*(float scale) const
+    {
+        Vector3 result;
+        result.x = x * scale;
+        result.y = y * scale;
+        result.z = z * scale;
+        return result;
+    }
+
     float normalize_vector(); // thiscall callsite view for @ 0x44cca0
     float normalize_vector_from_source(const Vector3* source); // callsite view for @ 0x44cd20
     double dot_vector(const Vector3* rhs); // @ 0x44cb70
