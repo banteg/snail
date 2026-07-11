@@ -315,3 +315,20 @@ The live Binary Ninja type also now agrees with the shared source view at salt
 slot `+0x88`: this is `owner_game`, not the stale `PathTemplate*` label. The
 neighboring `state`, `fade_alpha`, and spawn-time y-velocity lanes were read
 back with the same offsets.
+
+## Firework and vector-expression ownership (2026-07-11)
+
+The first slug-contact path now uses the named cross-port source forms that
+became available when `spawn_slug_hazard` recovered `Vector3::operator*`:
+
+- knockback is `Vector3(0, 0.2, -0.2) * subgame_rate`;
+- the half-distance burst offset is `normalized_delta * (distance * 0.5)`;
+- the burst position is a real `Vector3`, not an anonymous float array; and
+- the burst call is `Player::firework.firework_shoot(...)`, with the embedded
+  `FireworkController` receiver at `Player +0x1d0` proven by both the Windows
+  `lea ecx, [esi+0x1d0]` and Android `cRFireWork::Shoot(player+440, ...)`.
+
+These semantic expressions inline to the existing best collision code. The
+focused result remains `52.85%`, `659/673`, prefix `8/673`, with all `86`
+masked operands clean; the change removes a false free-function ownership
+surface rather than claiming compiler-allocation progress.

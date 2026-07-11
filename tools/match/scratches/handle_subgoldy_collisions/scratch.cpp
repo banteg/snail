@@ -24,7 +24,6 @@ typedef Vector3 Vec3;
 
 float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
-void firework_shoot(float* position, int player_slot, int a3, int a4);
 void noop_runtime_ai();
 int sprintf(char* buffer, const char* format, ...);
 
@@ -38,7 +37,7 @@ void Player::handle_subgoldy_collisions()
     Vec3 hit_velocity; // v70/v71/v72
     Vec3 probe_salt;   // vector (also rings/effects source)
     Vec3 burst_offset;
-    float burst_position[3]; // v76
+    Vec3 burst_position; // v76
     Vec3 probe_rings;  // v77
     Vec3 probe_fx;     // v78
 
@@ -116,9 +115,8 @@ void Player::handle_subgoldy_collisions()
                                 control_override_active = 1;
                                 follow_active = 0;
                                 float rate = hit_game->subgame_rate;
-                                hit_velocity.x = 0.0f;
-                                hit_velocity.y = rate * 0.2f;
-                                hit_velocity.z = rate * -0.2f;
+                                hit_velocity =
+                                    Vector3(0.0f, 0.2f, -0.2f) * rate;
                                 velocity = hit_velocity;
                                 begin_post_follow_carryover();
                                 presentation.cutscene_ai.state = 10;
@@ -127,17 +125,16 @@ void Player::handle_subgoldy_collisions()
                                     34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
                                 float half = distance * 0.5f;
                                 presentation.wobble_lift_phase_step = 0.0f;
-                                burst_offset.x = half * probe_b.x;
-                                burst_offset.y = probe_b.y * half;
-                                burst_offset.z = half * probe_b.z;
+                                burst_offset = probe_b * half;
                                 probe_salt.x = burst_offset.x + cached_camera_target_world.x;
-                                burst_position[0] = probe_salt.x;
+                                burst_position.x = probe_salt.x;
                                 int slot_id = player_slot;
                                 probe_salt.y = burst_offset.y + cached_camera_target_world.y;
-                                burst_position[1] = probe_salt.y;
+                                burst_position.y = probe_salt.y;
                                 probe_salt.z = burst_offset.z + cached_camera_target_world.z;
-                                burst_position[2] = probe_salt.z;
-                                firework_shoot(burst_position, slot_id, 92, 80);
+                                burst_position.z = probe_salt.z;
+                                firework.firework_shoot(
+                                    &burst_position, slot_id, 92, 80);
                             } else {
                                 float rate = game->subgame_rate;
                                 float scaled_rate = rate * rate * 0.0040000002f;

@@ -1,5 +1,6 @@
 // firework_shoot @ 0x441dd0 (stdcall, ret 0x10)
 
+#include "firework.h"
 #include "sprite.h"
 
 extern unsigned char g_render_flags; // byte_4df934
@@ -7,7 +8,8 @@ extern unsigned char g_render_flags; // byte_4df934
 double random_float_below(float upper_bound, int tag);
 int next_math_random_value();
 
-void __stdcall firework_shoot(Vector3* position, int owner, int texture_id, int count)
+void FireworkController::firework_shoot(
+    Vector3* position, int owner, int texture_id, int count)
 {
     if ((g_render_flags & 0x10) == 0 || count <= 0)
         return;

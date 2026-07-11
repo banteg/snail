@@ -2281,7 +2281,8 @@
     },
     {
       "address": "0x441dd0",
-      "name": "firework_shoot"
+      "name": "firework_shoot",
+      "description": "Spawns a randomized firework sprite burst through the empty `cRFireWork` service embedded at `Player +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android symbols name the method `cRFireWork::Shoot`."
     },
     {
       "address": "0x441f60",
@@ -2455,7 +2456,7 @@
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
-      "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the contact-damage gauge side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
+      "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
     },
     {
       "address": "0x445840",

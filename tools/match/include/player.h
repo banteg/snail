@@ -9,6 +9,7 @@
 
 #include "cameraman_state.h"
 #include "damage_gauge.h"
+#include "firework.h"
 #include "invincible_shell.h"
 #include "jetpack_gauge.h"
 #include "nuke_controller.h"
@@ -231,7 +232,8 @@ public:
     char unknown_14d[0x150 - 0x14d];
     NukeController nuke;                  // +0x150
     int movement_sound_variant_sample;      // +0x1cc
-    char unknown_1d0[0x1d4 - 0x1d0];
+    FireworkController firework;            // +0x1d0, embedded receiver with no instance state
+    char unknown_1d1[0x1d4 - 0x1d1];
     float damage_retrigger_timer;           // +0x1d4
     float damage_retrigger_step;            // +0x1d8
     float surface_reaction_timer;           // +0x1dc
