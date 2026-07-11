@@ -505,7 +505,7 @@
     {
       "address": "0x4088c0",
       "name": "initialize_bod",
-      "description": "Constructs one `cRBod` record by clearing its shared list links, installing the body update selector, and incrementing the global Bod-count ledger used by `construct_game_runtime`."
+      "description": "Exact Windows `SubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete SubLoc grid; the stable harness name is historical."
     },
     {
       "address": "0x4088e0",

@@ -1945,13 +1945,13 @@
     },
     {
       "address": "0x497368",
-      "name": "g_bod_vtable",
+      "name": "g_sub_loc_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497368",
         "data_497368"
       ],
-      "description": "Base BOD vtable installed by initialize_bod."
+      "description": "SubLoc-specific vtable installed after the shared cRBod base constructor by the exact cell initializer at 0x4088c0."
     },
     {
       "address": "0x4974fc",
@@ -3184,13 +3184,13 @@
     },
     {
       "address": "0x4dfadc",
-      "name": "g_bod_count",
+      "name": "g_sub_loc_count",
       "kind": "global",
       "aliases": [
         "unk_4dfadc",
         "data_4dfadc"
       ],
-      "description": "BOD constructor counter incremented by initialize_bod."
+      "description": "SubLoc constructor count incremented once per runtime cell and reported by construct_game_runtime as LocCount with memory equal to count * 0x54."
     },
     {
       "address": "0x4dfae0",

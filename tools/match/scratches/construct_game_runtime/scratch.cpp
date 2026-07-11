@@ -13,7 +13,7 @@ int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 extern char* g_game_base; // data_4df904
 extern int g_bod_base_init_count; // data_50331c
-extern int g_bod_count;           // data_4dfadc
+extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
 
 extern void* g_root_runtime_callback_table;     // data_4972d8
@@ -192,7 +192,7 @@ int construct_game_runtime()
 
     g_game_base = (char*)game;
     debug_report_stub("BodCount=%i  Memory=%i\n", g_bod_base_init_count, g_bod_base_init_count * 0x38);
-    debug_report_stub("LocCount=%i Memory=%i\n", g_bod_count, g_bod_count * 0x54);
+    debug_report_stub("LocCount=%i Memory=%i\n", g_sub_loc_count, g_sub_loc_count * sizeof(SubLoc));
     return debug_report_stub("LocMirrorCount=%i Memory=%i\n", g_loc_mirror_count, g_loc_mirror_count * 0x15c);
 }
 

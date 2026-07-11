@@ -283,6 +283,8 @@ enum { ATTACHMENT_PATH_TEMPLATE_PAIR_COUNT = 63 };
 // its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
 // as the exact Windows helper below. The Windows layout is 0x54 bytes.
 struct SubLoc {
+    SubLoc* initialize_bod(); // @ 0x4088c0, historical Windows method name
+
     BodNode bod;                       // +0x00, active/free BOD prefix
 
     void destroy_sub_lazer_projectile(); // @ 0x439bc0, historical harness name

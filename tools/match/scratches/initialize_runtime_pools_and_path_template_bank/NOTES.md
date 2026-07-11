@@ -112,3 +112,14 @@
   renderable body at `+0x04` and attachment body at `+0xb0`.
 - The typed loop remains exact at 227/227 instructions with all 72 masked
   operands clean.
+
+## 2026-07-11 cRSubLoc constructor loop
+
+- The preceding `0x6400`-entry pass is the complete
+  `SubLoc runtime_cells[3200][8]` array, not a generic BOD pool.
+- It advances by `sizeof(SubLoc) == 0x54` and invokes the exact SubLoc-owned
+  wrapper at `0x4088c0`, which installs the cell vtable and increments the
+  global reported as `LocCount`.
+- Replacing the raw `RuntimeSlot` cursor and literal stride with the owned
+  `SubLoc` array remains exact at 227/227 instructions with all 72 operands
+  clean.

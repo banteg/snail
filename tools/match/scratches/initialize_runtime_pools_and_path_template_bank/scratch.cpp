@@ -132,13 +132,13 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     ((Player*)((char*)subgoldy))->presentation.initialize_player_presentation_controller();
     subgoldy->vtable = &g_subgoldy_callback_table;
 
-    RuntimeSlot* bod = SLOT(0x3bfac8);
-    int bod_count = 0x6400;
+    SubLoc* loc = &runtime_cells[0][0];
+    int loc_count = 0x6400;
     do {
-        bod->initialize_bod();
-        bod = (RuntimeSlot*)((char*)bod + 0x54);
-        --bod_count;
-    } while (bod_count);
+        loc->initialize_bod();
+        ++loc;
+        --loc_count;
+    } while (loc_count);
 
     SubRow* row = runtime_rows;
     int row_count = 0xc80;
