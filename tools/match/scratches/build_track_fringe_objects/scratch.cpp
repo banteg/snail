@@ -73,7 +73,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         else
                             edge_b = (is_neighbor_cell_solid(cell, -1, 0) != 1) + 1;
 
-                        FringeObject* object =
+                        Fringe* object =
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_front = object;
@@ -97,7 +97,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         else
                             edge_b = (is_neighbor_cell_solid(cell, 0, 1) != 1) + 1;
 
-                        FringeObject* object =
+                        Fringe* object =
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_right = object;
@@ -121,7 +121,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         else
                             edge_b = (is_neighbor_cell_solid(cell, 0, -1) != 1) + 1;
 
-                        FringeObject* object =
+                        Fringe* object =
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_left = object;
@@ -145,7 +145,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         else
                             edge_b = (is_neighbor_cell_solid(cell, 1, 0) != 1) + 1;
 
-                        FringeObject* object =
+                        Fringe* object =
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_back = object;
@@ -163,7 +163,7 @@ int SubgameRuntime::build_track_fringe_objects()
 
                 row_record = row_record_head;
                 if ((row_record_head->flags & 4) != 0) {
-                    FringeObject* object = cell->fringe_front;
+                    Fringe* object = cell->fringe_front;
                     if (object != 0)
                         object->list_flags &= ~0x20;
                     object = cell->fringe_back;

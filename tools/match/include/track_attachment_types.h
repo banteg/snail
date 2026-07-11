@@ -7,6 +7,7 @@
 #include "attachment_sample.h"
 #include "bod_list.h"
 #include "bod_types.h"
+#include "fringe_fwd.h"
 #include "object_render_types.h"
 #include "sub_loc_fwd.h"
 #include "vector3.h"
@@ -15,7 +16,6 @@
 struct TransformMatrix;
 struct SubSegment;
 class Player;
-class FringeObject;
 
 struct PathTemplateStripMesh {
     char unknown_00[0x10];
@@ -304,10 +304,10 @@ struct SubLoc {
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
     int lane_and_flags;                 // +0x40, low 3 bits are lane; 0x18 warning footprint
-    FringeObject* fringe_front;         // +0x44
-    FringeObject* fringe_right;         // +0x48
-    FringeObject* fringe_left;          // +0x4c
-    FringeObject* fringe_back;          // +0x50
+    Fringe* fringe_front;               // +0x44, borrowed from FringeManager
+    Fringe* fringe_right;               // +0x48
+    Fringe* fringe_left;                // +0x4c
+    Fringe* fringe_back;                // +0x50
 
     int get_track_cell_row_index(); // @ 0x447040, cRSubLoc::Yi
 };

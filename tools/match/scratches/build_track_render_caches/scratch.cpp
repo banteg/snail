@@ -69,8 +69,8 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                 int fringe_offset = cell_offset + 0x3bfb0c;
                 work_value = 4;
                 do {
-                    FringeObject* fringe_object =
-                        *(FringeObject**)((char*)track_render_grid + fringe_offset);
+                    Fringe* fringe_object =
+                        *(Fringe**)((char*)track_render_grid + fringe_offset);
                     if (fringe_object != 0) {
                         append_track_cache_object(
                             row_index,
@@ -87,9 +87,9 @@ int TrackRenderCacheManager::build_track_render_caches(Color4f skirt_color)
                             0);
 
                         ((Object*)slots[cache_row][4].bod.object)->group_texture_refs[0] =
-                            ((Object*)(*(FringeObject**)((char*)track_render_grid +
+                            ((Object*)(*(Fringe**)((char*)track_render_grid +
                                 fringe_offset))->object)->facequads[0].texture_ref;
-                        *(FringeObject**)((char*)track_render_grid + fringe_offset) = 0;
+                        *(Fringe**)((char*)track_render_grid + fringe_offset) = 0;
                     }
                     fringe_offset += 4;
                     --work_value;

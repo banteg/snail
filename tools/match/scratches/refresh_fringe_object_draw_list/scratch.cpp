@@ -8,7 +8,7 @@ int report_errorf(char* format, ...);
 
 extern char* g_game_base; // data_4df904
 
-void FringeObject::refresh_fringe_object_draw_list()
+void Fringe::refresh_fringe_object_draw_list()
 {
     Color4f color;
     Color4f* resolved =

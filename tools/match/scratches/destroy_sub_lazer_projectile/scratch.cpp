@@ -74,9 +74,9 @@ void SubLoc::destroy_sub_lazer_projectile()
     if ((bod.list_flags & 0x200) != 0)
         REMOVE_PRECHECKED_BOD_NODE(&bod, unlink_mask);
 
-    FringeObject** fringe = &fringe_front;
+    Fringe** fringe = &fringe_front;
     for (int i = 0; i < 4; ++i) {
-        FringeObject* object = fringe[i];
+        Fringe* object = fringe[i];
         if (object != 0 && (object->list_flags & 0x200) != 0)
             REMOVE_BOD_NODE(object, unlink_mask);
     }

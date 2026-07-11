@@ -5,7 +5,7 @@
 #ifndef TRACK_ROW_CELL_TILE_VIEWS_H
 #define TRACK_ROW_CELL_TILE_VIEWS_H
 
-class FringeObject;
+#include "fringe_fwd.h"
 
 struct TrackRowCellTileByteView {
     unsigned char tile_id; // TrackRowCell +0x3c
@@ -18,10 +18,10 @@ struct TrackRowCellTileByteView {
 // Field-first view beginning at TrackRowCell +0x44. These are non-owning
 // handles to objects allocated and recycled by the shared FringeManager.
 struct TrackRowCellFringeLinkView {
-    FringeObject* front;
-    FringeObject* right;
-    FringeObject* left;
-    FringeObject* back;
+    Fringe* front;
+    Fringe* right;
+    Fringe* left;
+    Fringe* back;
     char next_cell[0x54 - 0x10];
 };
 

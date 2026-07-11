@@ -1852,13 +1852,13 @@
     },
     {
       "address": "0x497344",
-      "name": "g_fringe_object_vtable",
+      "name": "g_fringe_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497344",
         "data_497344"
       ],
-      "description": "Fringe render object vtable installed by initialize_fringe_object."
+      "description": "Authored cRFringe vtable installed by initialize_fringe_object; its Windows callback entry points to exact refresh_fringe_object_draw_list at 0x439b00."
     },
     {
       "address": "0x497348",

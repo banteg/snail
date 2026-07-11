@@ -123,3 +123,14 @@
 - Replacing the raw `RuntimeSlot` cursor and literal stride with the owned
   `SubLoc` array remains exact at 227/227 instructions with all 72 operands
   clean.
+
+## 2026-07-11 cRFringe constructor array
+
+- The 7000-entry pass at `SubgameRuntime +0x35bbbc` now addresses the owned
+  `FringeManager::objects` array directly, using `sizeof(Fringe)` rather than
+  a raw 0x38-byte runtime-slot cursor.
+- Android independently preserves the owners as `cRFringeManager` and
+  `cRFringe`; the Windows per-object table points to the exact fringe refresh
+  callback.
+- The typed array call remains exact at 227/227 instructions with all 72
+  operands clean.

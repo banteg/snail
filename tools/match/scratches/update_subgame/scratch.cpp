@@ -360,10 +360,10 @@ void SubgameRuntime::update_subgame()
                             ((RuntimeCellView*)&cell_slot->cell)->update_runtime_cell();
                         }
 
-                        FringeObject** fringe = &cell_slot->cell.fringe_front;
+                        Fringe** fringe = &cell_slot->cell.fringe_front;
                         int fringe_count = 4;
                         do {
-                            FringeObject* object = *fringe;
+                            Fringe* object = *fringe;
                             if (object != 0) {
                                 BodNode* node = (BodNode*)object;
                                 BodNode* active_list = &fringe_attachment_list_head;

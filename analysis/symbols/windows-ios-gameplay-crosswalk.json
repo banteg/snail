@@ -1,11 +1,12 @@
 {
-  "name": "Snail Mail Windows/iOS gameplay symbol crosswalk",
+  "name": "Snail Mail Windows/cross-port gameplay symbol crosswalk",
   "source_symbol_file": "analysis/symbols/ios-ipa-gameplay-names.json",
   "windows_manifest": "analysis/symbols/gameplay-functions.json",
   "notes": [
     "Use this as provenance for ownership and original C++ vocabulary, not as an address-based rename map.",
     "The Windows function names remain the stable match harness identifiers.",
-    "source_object is from the v1.5 iPhone STABS-style object markers when available; v1.9-only symbols often lack an object file."
+    "source_object is from the v1.5 iPhone STABS-style object markers when available; v1.9-only symbols often lack an object file.",
+    "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared."
   ],
   "entries": [
     {
@@ -104,10 +105,18 @@
     {
       "address": "0x434b60",
       "windows_name": "is_neighbor_cell_solid",
-      "ios_symbol": "cRSubGame::TestLoc(cRSubLoc*, int, int)",
+      "android_symbol": "cRSubGame::TestLoc(cRSubLoc*, int, int)",
       "source_object": null,
       "confidence": "high",
       "notes": "Android preserves the full body: Yi row recovery, lane and row bounds, identical eight-lane indexing, IsEmpty call, and the same final tile exclusions 35/0/22/28."
+    },
+    {
+      "address": "0x434be0",
+      "windows_name": "build_track_fringe_objects",
+      "ios_symbol": "cRSubGame::FringeEdgeTrack()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the owner and method name; both walk runtime cells and allocate directional cRFringe records from cRFringeManager."
     },
     {
       "address": "0x435df0",
@@ -178,15 +187,23 @@
     {
       "address": "0x439ad0",
       "windows_name": "is_floor_cache_tile_family",
-      "ios_symbol": "cRSubLoc::IsSlide()",
+      "android_symbol": "cRSubLoc::IsSlide()",
       "source_object": null,
       "confidence": "high",
       "notes": "Android body accepts the identical tile set 15/23/24/25/26/16/18/19; the retained Windows cache name is opposite the authored IsFloor helper."
     },
     {
+      "address": "0x439b00",
+      "windows_name": "refresh_fringe_object_draw_list",
+      "android_symbol": "cRFringe::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Windows cRFringe constructor table points directly to this exact callback. Android retains the class and method but its renderer-specific body is a no-op."
+    },
+    {
       "address": "0x439bc0",
       "windows_name": "destroy_sub_lazer_projectile",
-      "ios_symbol": "cRSubLoc::Remove()",
+      "android_symbol": "cRSubLoc::Remove()",
       "source_object": null,
       "confidence": "high",
       "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods."
@@ -318,6 +335,22 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "Both mask the receiver's low three lane bits, recover lane zero, subtract the runtime-cell slab base, divide by the platform cell stride, and divide by eight lanes. iOS uses a 0x44-byte cell; the exact Windows helper uses 0x54."
+    },
+    {
+      "address": "0x447090",
+      "windows_name": "initialize_fringe_manager",
+      "android_symbol": "cRFringeManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both reset the manager allocation cursor before rebuilding track fringe objects."
+    },
+    {
+      "address": "0x4470a0",
+      "windows_name": "allocate_fringe_object",
+      "android_symbol": "cRFringeManager::GetFringe()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both return the next inline cRFringe record and advance the manager cursor; Windows proves a fixed 7000-entry, 0x38-stride pool."
     },
     {
       "address": "0x447300",

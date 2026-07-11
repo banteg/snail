@@ -38,7 +38,7 @@ void SubgameRuntime::initialize_subgame()
     TrackRowCellFringeLinkView* cell = runtime_cell_fringe_links();
     for (int row = 0; row < 3200; ++row) {
         for (int lane = 0; lane < 8; ++lane) {
-            memset(cell, 0, 4 * sizeof(FringeObject*));
+            memset(cell, 0, 4 * sizeof(Fringe*));
             ++cell;
         }
     }

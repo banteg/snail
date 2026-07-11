@@ -117,7 +117,10 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (ring_count);
 
     initialize_array_with_constructor(
-        SLOT(0x35bbbc), 0x38, 0x1b58, &RuntimeSlot::initialize_fringe_object);
+        (RuntimeSlot*)fringe_manager.objects,
+        sizeof(Fringe),
+        7000,
+        &RuntimeSlot::initialize_fringe_object);
 
     RuntimeSlot* subgoldy = SLOT(0x3bb764);
     subgoldy->initialize_renderable_bod();

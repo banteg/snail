@@ -19,6 +19,11 @@ The counter at `0x4dfadc` is now named `g_sub_loc_count`, following the native
 The exact constructor wrapper at `0x4088c0` increments it once for every cell;
 it is not the shared cRBod constructor count printed on the preceding line.
 
+The `Size of cRFringeManager` ledger entry now comes from
+`sizeof(FringeManager)`. Its `7000 * sizeof(Fringe) + count` layout closes to
+the native `0x5fb44` total, and the constructor remains at its pinned 88.89%
+with the single compiler-local EH relocation unresolved.
+
 Current focused result after splitting the two adjacent helpers into their own
 manifest functions:
 

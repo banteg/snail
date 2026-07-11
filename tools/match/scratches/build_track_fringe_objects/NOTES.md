@@ -138,3 +138,14 @@ honest register scheduling: native keeps the receiver in `ebp`, family in
 `edi`, edge-a in `ebx`, and temporarily reuses `ebp` for edge-b, while the
 candidate keeps receiver/family in `edi`/`ebp` and spills edge-b. Do not force
 that swap with volatile locals, register tricks, or raw-offset aliases.
+
+## 2026-07-11 cRFringe ownership
+
+- Android preserves the builder owner as `cRSubGame::FringeEdgeTrack()`, the
+  pool as `cRFringeManager`, and each 0x38-byte object as `cRFringe`.
+- The shared Windows type is now `Fringe`; `FringeObject` is retained only as
+  a compatibility alias. Each `SubLoc::fringe_*` field is a borrowed `Fringe*`
+  into the manager's inline 7000-object array.
+- The constructor loop now addresses `fringe_manager.objects` with
+  `sizeof(Fringe)` and 7000 explicitly while staying exact at 227/227. This
+  builder remains at its pinned 60.39%, 492/495, with 48 clean operands.

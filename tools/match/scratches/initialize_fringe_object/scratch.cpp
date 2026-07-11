@@ -2,11 +2,11 @@
 
 #include "fringe_object.h"
 
-extern void* g_fringe_object_vtable; // off_497344 / data_497344
+extern void* g_fringe_vtable; // off_497344 / data_497344
 
-FringeObject* FringeObject::initialize_fringe_object()
+Fringe* Fringe::initialize_fringe_object()
 {
     initialize_bod_base();
-    vtable = &g_fringe_object_vtable;
+    vtable = &g_fringe_vtable;
     return this;
 }
