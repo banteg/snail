@@ -3,6 +3,7 @@
 #include "audio_system.h"
 #include "completion_screen.h"
 #include "font_system.h"
+#include "game_root.h"
 #include "player.h"
 #include "voice_manager.h"
 
@@ -154,9 +155,9 @@ void CutsceneAI::update_cutscene()
         int delivered_count = player->parcels_collected;
         CompletionResultScreen* completion_screen =
             (CompletionResultScreen*)(g_game_base + 0x12e6df0);
-        CompletionGameView* game = (CompletionGameView*)g_game_base;
-        if (game->selected_subgame_mode != 0) {
-            if (game->selected_subgame_mode == 1)
+        GameRoot* game = (GameRoot*)g_game_base;
+        if (game->subgame.level_mode != 0) {
+            if (game->subgame.level_mode == 1)
                 completion_screen->initialize_completion_screen(delivered_count, 1);
         } else {
             completion_screen->initialize_completion_screen(

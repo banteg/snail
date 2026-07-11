@@ -1,7 +1,6 @@
 // update_subgame @ 0x438b90 (thiscall, ret)
 
 #include "bod_list.h"
-#include "completion_screen.h"
 #include "fringe_object.h"
 #include "high_score_record.h"
 #include "new_game_menu.h"
@@ -142,7 +141,7 @@ void SubgameRuntime::update_subgame()
         int result;
         switch (level_mode) {
         case 0:
-            result = ((CompletionGalaxyRoute*)(game + 0x1260020))->update_galaxy();
+            result = galaxy.update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 3;
                 g_landscape_backdrop_variant_selector = level_mode_arg;
@@ -162,7 +161,7 @@ void SubgameRuntime::update_subgame()
             return;
 
         case 4:
-            result = ((CompletionGalaxyRoute*)(game + 0x1260020))->update_galaxy();
+            result = galaxy.update_galaxy();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 g_landscape_backdrop_variant_selector = level_mode_arg;

@@ -4,25 +4,7 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
-#include "high_score_screen.h"
-#include "main_menu.h"
-#include "new_game_menu.h"
-#include "options_menu.h"
 #include "sprite.h"
-#include "star_field.h"
-
-class SubgameController {
-public:
-    void initialize_subgame(); // @ 0x4374b0
-    void complete_subgame(unsigned char completed); // @ 0x438700
-    void destroy_subgame(); // @ 0x438850
-};
-
-class CompletionGalaxyRoute {
-public:
-    void destroy_galaxy(); // @ 0x408c10
-    int update_galaxy(); // @ 0x4092f0
-};
 
 class PauseMenu {
 public:
@@ -50,49 +32,8 @@ public:
     FrontendWidget* no_button; // +0x18
 };
 
-class CompletionGameView {
-public:
-    char unknown_000000[0x38];
-    int frontend_quit_mode; // +0x38
-    char unknown_00003c[0x1b8 - 0x3c];
-    int frontend_next_state; // +0x1b8
-    char unknown_0001bc[0x30c - 0x1bc];
-    unsigned char frontend_state_dirty; // +0x30c
-    unsigned char high_score_entry_pending; // +0x30d
-    char unknown_00030e[0x568 - 0x30e];
-    unsigned char frontend_link_latch; // +0x568
-    char unknown_000569[0x56c - 0x569];
-    int render_skip_countdown; // +0x56c
-    char unknown_000570[0x4f2dc - 0x570];
-    NewGameMenu new_game_menu; // +0x4f2dc
-    MainMenu main_menu; // +0x4f324
-    StarField star_field; // +0x4f33c
-    OptionsMenu options_menu; // +0x4f388
-    CompletionPrompt exit_prompt; // +0x4f3ac
-    char unknown_04f3c8[0x74618 - 0x4f3c8];
-    SubgameController subgame; // +0x74618
-    char unknown_074619[0x74620 - 0x74619];
-    unsigned char subgame_resume_requested; // +0x74620
-    unsigned char pause_gate; // +0x74621
-    char unknown_074622[0x7462c - 0x74622];
-    PauseMenu pause_menu; // +0x7462c
-    char unknown_074638[0x74654 - 0x74638];
-    int subgame_resume_state; // +0x74654, set by pause-menu Resume
-    int selected_subgame_mode; // +0x74658
-    char unknown_07465c[0x430060 - 0x7465c];
-    int completion_base_score; // +0x430060
-    char unknown_430064[0x1066be8 - 0x430064];
-    unsigned char replay_launch_active; // +0x1066be8
-    unsigned char replay_launch_from_frontend; // +0x1066be9
-    char unknown_1066bea[0x1066bf0 - 0x1066bea];
-    int replay_launch_return_state; // +0x1066bf0
-    char unknown_1066bf4[0x12d4638 - 0x1066bf4];
-    CompletionGalaxyRoute galaxy; // +0x12d4638
-    char unknown_12d4639[0x12e55e0 - 0x12d4639];
-    int ordinary_rebuild_selector; // +0x12e55e0
-    char unknown_12e55e4[0x12e6e50 - 0x12e55e4];
-    HighScoreScreen high_score_screen; // +0x12e6e50
-};
+typedef char CompletionPrompt_must_be_0x1c[
+    (sizeof(CompletionPrompt) == 0x1c) ? 1 : -1];
 
 class CompletionResultScreen {
 public:

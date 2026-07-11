@@ -4,36 +4,15 @@
 
 #include "bod_list.h"
 #include "border_manager.h"
+#include "completion_screen.h"
+#include "main_menu.h"
+#include "new_game_menu.h"
+#include "options_menu.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
+#include "star_field.h"
 #include "subgame_runtime.h"
 #include "vector3.h"
-
-class GameRootNewGameMenu {
-public:
-    int replay_attract_controller; // +0x00
-
-    void initialize_new_game_menu();
-    void update_new_game_menu();
-};
-
-class GameRootMainMenu {
-public:
-    void initialize_main_menu();
-    void update_main_menu();
-};
-
-class GameRootOptionsMenu {
-public:
-    void initialize_options_menu();
-    void update_options_menu();
-};
-
-class GameRootCompletionScreen {
-public:
-    void initialize_exit_prompt();
-    void update_completion_screen();
-};
 
 class GameRootIntroScreen {
 public:
@@ -90,12 +69,20 @@ public:
     float fog_density; // +0x10, D3DRS_FOGDENSITY
     Color4f fog_color; // +0x14, packed for D3DRS_FOGCOLOR
     char unknown_000024[0x38 - 0x24];
-    int frontend_quit_requested; // +0x38
+    union {
+        int frontend_quit_requested; // +0x38, nonzero run-loop exit request
+        int frontend_quit_mode; // completion prompt writes modes 1 and 3
+    };
     int fixed_update_count;      // +0x3c
     char unknown_000040[0x124 - 0x40];
     GamePlayer players[2]; // +0x124, owned cRPlayer array
-    char unknown_000514[0x56c - 0x514];
-    int render_skip_count; // +0x56c, decremented before an otherwise skipped frame
+    char unknown_000514[0x568 - 0x514];
+    unsigned char frontend_link_latch; // +0x568, cleared when a linked screen exits
+    char unknown_000569[0x56c - 0x569];
+    union {
+        int render_skip_count; // +0x56c, decremented before an otherwise skipped frame
+        int render_skip_countdown; // front-end initialization spelling
+    };
     char unknown_000570[0x5ac - 0x570];
     BodNode* active_render_bod_head; // +0x5ac, borrowed intrusive-list head
     char unknown_0005b0[0x5b4 - 0x5b0];
@@ -107,14 +94,14 @@ public:
     char unknown_0006f0[0xb4c - 0x6f0];
     BorderManager border_manager; // +0xb4c, owned frontend border pool
     char unknown_0440e8[0x4f2dc - 0x440e8];
-    GameRootNewGameMenu new_game_menu; // +0x4f2dc
-    char unknown_04f2e0[0x4f324 - 0x4f2e0];
-    GameRootMainMenu main_menu; // +0x4f324
-    char unknown_04f325[0x4f388 - 0x4f325];
-    GameRootOptionsMenu options_menu; // +0x4f388
-    char unknown_04f389[0x4f3ac - 0x4f389];
-    GameRootCompletionScreen completion_screen; // +0x4f3ac
-    char unknown_04f3ad[0x4f400 - 0x4f3ad];
+    // Contiguous front-end owner block. The exact component extents prove
+    // every boundary through the completion prompt without padding.
+    NewGameMenu new_game_menu; // +0x4f2dc
+    MainMenu main_menu; // +0x4f324
+    StarField star_field; // +0x4f33c
+    OptionsMenu options_menu; // +0x4f388
+    CompletionPrompt completion_screen; // +0x4f3ac
+    char unknown_04f3c8[0x4f400 - 0x4f3c8];
     GameRootIntroScreen intro_screen; // +0x4f400
     char unknown_04f401[0x74618 - 0x4f401];
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime

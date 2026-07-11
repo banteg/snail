@@ -1,6 +1,7 @@
 // destroy_completion_screen @ 0x406060 (thiscall, ret)
 
 #include "completion_screen.h"
+#include "game_root.h"
 
 int CompletionPrompt::destroy_completion_screen()
 {
@@ -8,6 +9,6 @@ int CompletionPrompt::destroy_completion_screen()
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(yes_button);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(no_button);
     int result = ((BorderManager*)(g_game_base + 0xb4c))->unhide_all_borders();
-    ((CompletionGameView*)g_game_base)->frontend_next_state = previous_frontend_state;
+    ((GameRoot*)g_game_base)->players[0].frontend_state = previous_frontend_state;
     return result;
 }

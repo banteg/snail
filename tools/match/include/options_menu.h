@@ -22,4 +22,7 @@ public:
     float previous_sample_volume; // +0x20
 };
 
+typedef char OptionsMenu_must_be_0x24[
+    (sizeof(OptionsMenu) == 0x24) ? 1 : -1];
+
 #endif

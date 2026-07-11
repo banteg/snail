@@ -1,7 +1,7 @@
 // update_options_menu @ 0x41af60 (thiscall)
 
 #include "audio_system.h"
-#include "completion_screen.h"
+#include "game_root.h"
 #include "options_menu.h"
 
 extern char* g_game_base; // data_4df904
@@ -44,10 +44,10 @@ void OptionsMenu::update_options_menu()
     if ((flags & 0x20) != 0) {
         back_widget->widget_flags = flags & ~0x20u;
         destroy_options_menu();
-        CompletionGameView* game = (CompletionGameView*)g_game_base;
+        GameRoot* game = (GameRoot*)g_game_base;
         game->frontend_link_latch = 0;
-        game = (CompletionGameView*)g_game_base;
-        game->frontend_next_state = previous_frontend_state;
+        game = (GameRoot*)g_game_base;
+        game->players[0].frontend_state = previous_frontend_state;
     }
 
     apply_audio_config_volumes();

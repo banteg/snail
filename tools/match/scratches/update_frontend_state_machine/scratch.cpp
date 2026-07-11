@@ -60,7 +60,7 @@ int GamePlayer::update_frontend_state_machine()
         case 1:
             frontend_state = 0;
             ((FrontendMouseCaptureView*)((char*)this + 0x16c))->capture_mouse_cursor();
-            g_game->new_game_menu.replay_attract_controller = 0;
+            g_game->new_game_menu.replay_attract_bank_cursor = 0;
         {
             GameRoot* owner = g_game;
             owner->new_game_menu.initialize_new_game_menu();

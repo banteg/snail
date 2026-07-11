@@ -2,7 +2,7 @@
 
 #include "backdrop.h"
 #include "border_runtime.h"
-#include "completion_screen.h"
+#include "game_root.h"
 #include "landscape_script_bank.h"
 
 extern char* g_game_base; // data_4df904
@@ -27,7 +27,7 @@ void NewGameMenu::initialize_new_game_menu()
 {
     Color4f color;
 
-    ((CompletionGameView*)g_game_base)->star_field.hide_star_field();
+    ((GameRoot*)g_game_base)->star_field.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index =
         ((LandscapeScriptBank*)(g_game_base + 0x106c218))
@@ -39,7 +39,7 @@ void NewGameMenu::initialize_new_game_menu()
             0);
     ((BorderRuntime*)(g_game_base + 0xb4c))
         ->set_border_justify_centre(0x41c80000);
-    ((CompletionGameView*)g_game_base)->render_skip_countdown = 2;
+    ((GameRoot*)g_game_base)->render_skip_countdown = 2;
 
     tutorial_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     tutorial_button->initialize_frontend_widget(

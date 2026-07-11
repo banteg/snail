@@ -12,6 +12,8 @@ First scratch for main-menu dispatch. Focused Wibo result:
 - Options raises `OptionsMenu::active`, records the previous state, and switches
   to state `6`.
 - High Scores switches to state `18` and seeds `HighScoreScreen::mode = 0`.
-- This also corrects `CompletionGameView`: `+0x30c` is the front-end dirty byte,
-  while `+0x30d` is the high-score-entry/completion-pending byte checked by the
-  completion prompt after `complete_subgame`.
+- Root `+0x30c` is `GamePlayer::redispatch_requested`, while `+0x30d` is the
+  high-score-entry/completion-pending byte checked after `complete_subgame`.
+- 2026-07-11 owner closure promotes the contiguous root block to
+  `NewGameMenu`, `MainMenu`, `StarField`, `OptionsMenu`, and
+  `CompletionPrompt`; this remains exact 68/68.

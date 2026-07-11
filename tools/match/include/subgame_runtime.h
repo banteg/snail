@@ -173,7 +173,10 @@ public:
             char unknown_player_074[0x200 - 0x074];
             CameramanState cameraman; // Player.cameraman +0x200
             char unknown_player_2d8[0x2e4 - 0x2d8];
-            int source_score; // Player.total_score +0x2e4
+            union {
+                int source_score; // Player.total_score +0x2e4
+                int completion_base_score; // completion result-screen spelling
+            };
             union {
                 ScoreBucketBlock source_stats; // Player timer/stat overlay +0x2e8
                 TimerCounters source_timer;

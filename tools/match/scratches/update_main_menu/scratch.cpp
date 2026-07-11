@@ -1,6 +1,6 @@
 // update_main_menu @ 0x419e00 (thiscall, ret)
 
-#include "completion_screen.h"
+#include "game_root.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -10,8 +10,8 @@ void MainMenu::update_main_menu()
     if ((flags & 0x20) != 0) {
         new_game_widget->widget_flags = flags & ~0x20u;
         destroy_main_menu();
-        ((CompletionGameView*)g_game_base)->frontend_next_state = 2;
-        ((CompletionGameView*)g_game_base)->frontend_state_dirty = 1;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 2;
+        ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
         return;
     }
 
@@ -20,8 +20,8 @@ void MainMenu::update_main_menu()
     if ((flags & 0x20) != 0) {
         credits->widget_flags = flags & ~0x20u;
         destroy_main_menu();
-        ((CompletionGameView*)g_game_base)->frontend_next_state = 14;
-        ((CompletionGameView*)g_game_base)->frontend_state_dirty = 1;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 14;
+        ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
         return;
     }
 
@@ -29,11 +29,12 @@ void MainMenu::update_main_menu()
     flags = exit->widget_flags;
     if ((flags & 0x20) != 0) {
         exit->widget_flags = flags & ~0x20u;
-        CompletionGameView* game = (CompletionGameView*)g_game_base;
-        game->exit_prompt.previous_frontend_state = game->frontend_next_state;
-        ((CompletionGameView*)g_game_base)->exit_prompt.prompt_y = exit_widget->layout_y;
-        ((CompletionGameView*)g_game_base)->exit_prompt.state = 10;
-        ((CompletionGameView*)g_game_base)->frontend_next_state = 8;
+        GameRoot* game = (GameRoot*)g_game_base;
+        game->completion_screen.previous_frontend_state =
+            game->players[0].frontend_state;
+        ((GameRoot*)g_game_base)->completion_screen.prompt_y = exit_widget->layout_y;
+        ((GameRoot*)g_game_base)->completion_screen.state = 10;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
         return;
     }
 
@@ -41,10 +42,11 @@ void MainMenu::update_main_menu()
     flags = options->widget_flags;
     if ((flags & 0x20) != 0) {
         options->widget_flags = flags & ~0x20u;
-        ((CompletionGameView*)g_game_base)->options_menu.active = 1;
-        CompletionGameView* game = (CompletionGameView*)g_game_base;
-        game->options_menu.previous_frontend_state = game->frontend_next_state;
-        ((CompletionGameView*)g_game_base)->frontend_next_state = 6;
+        ((GameRoot*)g_game_base)->options_menu.active = 1;
+        GameRoot* game = (GameRoot*)g_game_base;
+        game->options_menu.previous_frontend_state =
+            game->players[0].frontend_state;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 6;
         return;
     }
 
@@ -53,7 +55,7 @@ void MainMenu::update_main_menu()
     if ((result & 0x20) != 0) {
         high_scores->widget_flags = result & ~0x20u;
         destroy_main_menu();
-        ((CompletionGameView*)g_game_base)->frontend_next_state = 18;
-        ((CompletionGameView*)g_game_base)->high_score_screen.mode = 0;
+        ((GameRoot*)g_game_base)->players[0].frontend_state = 18;
+        ((GameRoot*)g_game_base)->high_score_screen.mode = 0;
     }
 }

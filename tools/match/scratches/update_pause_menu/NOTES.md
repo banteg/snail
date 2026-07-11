@@ -14,10 +14,15 @@ First scratch for the pause-menu button dispatcher.
 - Focused Wibo result: 2026-06-18, 100.00%, 55/55 instructions, masked
   operands 10 ok.
 
-2026-06-18 field promotion:
+2026-06-18 field promotion, superseded by the root closure below:
 
-- Promoted the raw owner slots to `CompletionGameView::options_menu`,
-  `exit_prompt`, `subgame_resume_requested`, `subgame_resume_state`,
-  `replay_launch_from_frontend`, and `ordinary_rebuild_selector`.
+- Promoted the raw owner slots for options, exit-prompt, resume, replay, and
+  rebuild state.
 - The fielded source remains an exact 55/55 match, so these names are not just
   decompiler cosmetics.
+
+2026-07-11 owner closure: those lanes now use their actual owners:
+`GameRoot::options_menu`, `GameRoot::completion_screen`, and
+`GameRoot::subgame.{resume_requested,subgame_state,replay_launch_from_frontend,
+subgame_rebuild_selector}`. The duplicate `CompletionGameView` is gone and the
+function remains exact 55/55.

@@ -21,11 +21,18 @@ Recovered relationships:
 
 - State 2 completes the active subgame and either returns to a dirty frontend
   state or restarts challenge/time-trial style modes.
-- The state 2 and 11 gates check `CompletionGameView::high_score_entry_pending`
-  at `+0x30d`, not the ordinary front-end dirty byte at `+0x30c`.
-- State 3 returns through `game+0x1066bf0`, matching the replay-launch return
-  state recovered from high-score and new-game menu paths.
+- The state 2 and 11 gates check
+  `GameRoot::players[0].high_score_entry_pending` at `+0x30d`, not the
+  player's ordinary redispatch byte at `+0x30c`.
+- State 3 returns through `GameRoot::subgame.replay_launch_return_state` at
+  root `+0x1066bf0`, matching the replay-launch handoff recovered from
+  high-score and new-game menu paths.
 - State 8 launches the outbound `Alpha72.url` resource helper, clears
   `game+0x568`, and returns to frontend state 0.
 - The trailing No button always restores `previous_frontend_state` and clears
   `game+0x568`.
+
+2026-07-11 owner closure: the synthetic cross-root completion view was removed.
+The prompt is `GameRoot::completion_screen`; pause state, galaxy, replay, and
+subgame methods belong to `GameRoot::subgame`; menu objects and the link latch
+belong directly to `GameRoot`. The complete rewrite remains exact at 207/207.

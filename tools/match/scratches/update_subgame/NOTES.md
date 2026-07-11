@@ -166,3 +166,8 @@ and adding an explicit row-window exit were codegen-neutral at `78.22%`.
 Neither is retained. The current scratch is pinned at the exact target
 instruction count with no unresolved or mismatched call/data operand; further
 register or label shaping needs new independent source evidence.
+
+2026-07-11 galaxy ownership: the state-zero route dispatch now uses the
+embedded `SubgameRuntime::galaxy` at `+0x1260020`, retiring the duplicate
+`CompletionGalaxyRoute` view. Focused output remains 78.22%, 1033/1033, with
+the same two jump-table mismatches and 116 clean operands.

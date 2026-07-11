@@ -25,7 +25,8 @@ Kept local for now:
   `11`. The scratch uses a local accessor until another writer/consumer confirms
   the member name.
 - `g_game_base +0x2247f8` is the target-count comparison used for perfect
-  delivery. It needs a second callsite before promotion into `CompletionGameView`.
+  delivery. It still needs a second callsite before promotion into a shared
+  owner.
 
 Focused match:
 
@@ -56,3 +57,7 @@ Focused Wibo remains `46.29%`; the switch table is a real layout mismatch.
 the byte on the intro close-in camera leg; no consumer has been recovered yet, so
 the Player field stays conservatively named `intro_cutscene_latch`. Masked audit
 is now `34 ok / 0 unresolved / 2 mismatch`.
+
+2026-07-11 owner closure: the mode read now comes from
+`GameRoot::subgame.level_mode`; removing `CompletionGameView` is codegen-neutral
+at 46.29%.

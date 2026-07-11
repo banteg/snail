@@ -8,8 +8,8 @@ void CompletionResultScreen::initialize_completion_screen(
     int new_delivered_count,
     unsigned char new_perfect_delivery)
 {
-    CompletionGameView* game = (CompletionGameView*)g_game_base;
-    int mode = game->selected_subgame_mode;
+    GameRoot* game = (GameRoot*)g_game_base;
+    int mode = game->subgame.level_mode;
 
     if (mode == 0) {
         if (new_perfect_delivery != 0)
@@ -49,7 +49,7 @@ void CompletionResultScreen::initialize_completion_screen(
     int bonus = bonus_score;
     delivered_count = new_delivered_count;
     perfect_delivery = new_perfect_delivery;
-    total_score = game->completion_base_score + new_delivered_count * 100 + bonus;
+    total_score = game->subgame.completion_base_score + new_delivered_count * 100 + bonus;
 
     title_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
     Color4f color;
@@ -75,7 +75,7 @@ void CompletionResultScreen::initialize_completion_screen(
     bonus_icon_widget->warning_field = 0;
 
     bonus_summary_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    mode = game->selected_subgame_mode;
+    mode = game->subgame.level_mode;
     if (mode == 0) {
         bonus_summary_widget->initialize_frontend_widget(0x20400002,
             "PERFECT SCORE!>50,000 Bonus Points", 20, 0.0f, 302.0f,
