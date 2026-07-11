@@ -3,11 +3,11 @@
 #include "bod_types.h"
 #include "track_health_pickup.h"
 
-extern void* g_track_health_pickup_vtable; // off_497320 / data_497320
+extern void* g_sub_health_vtable; // off_497320 / data_497320
 
-TrackHealthPickup* TrackHealthPickup::initialize_track_health_pickup_runtime()
+SubHealth* SubHealth::initialize_track_health_pickup_runtime()
 {
     ((BodBase*)this)->initialize_bod_base();
-    ((BodBase*)this)->vtable = &g_track_health_pickup_vtable;
+    ((BodBase*)this)->vtable = &g_sub_health_vtable;
     return this;
 }

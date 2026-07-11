@@ -217,6 +217,15 @@
       "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner."
     },
     {
+      "address": "0x43a010",
+      "windows_name": "health_collect_particles",
+      "ios_symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
+      "android_symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper and Android body both emit an eight-particle collection burst from the borrowed SubHealth sprite; renderer-specific sprite IDs and field offsets differ."
+    },
+    {
       "address": "0x43d5a0",
       "windows_name": "spawn_garbage_smoke_particle",
       "android_symbol": "cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)",
@@ -228,9 +237,19 @@
       "address": "0x43d6c0",
       "windows_name": "spawn_track_health_pickup",
       "ios_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
+      "android_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only signature."
+      "notes": "The iOS signature is v1.9-only. Android scans the fixed health array, initializes one slot, and branches to its epilogue without establishing a return value, supporting the side-effect-only method contract."
+    },
+    {
+      "address": "0x43ecc0",
+      "windows_name": "update_track_health_pickup",
+      "ios_symbol": "cRSubHealth::AI()",
+      "android_symbol": "cRSubHealth::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows constructor table at 0x497320 points directly to this callback; both mobile ports retain the authored class and AI member."
     },
     {
       "address": "0x43d880",

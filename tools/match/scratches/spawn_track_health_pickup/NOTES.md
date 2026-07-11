@@ -4,12 +4,12 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `97.54%`, `122/122` candidate/target instructions, with `7` masked operands
-  ok.
-- The scratch now uses the promoted `TrackHealthPickup` field names for slot
+- `88.43%`, `120/122` candidate/target instructions, with `7` masked operands
+  clean and no unresolved or mismatched references.
+- The scratch now uses the primary `SubHealth` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
   cell position through a normal `Vector3` local, not the older raw-bit
-  `PositionBits` view.
+`PositionBits` view.
 - The sprite output copy is now the normal `Vector3` assignment from the live
   pickup position into `sprite->position`; VC6 emits the same scalar stores
   with the native destination-register ownership.
@@ -157,3 +157,17 @@ candidate). Three source shapes for the reload — direct
 `first` local — all regress to 86.89% by rotating eax/ecx ownership through
 the earlier flags-test block. The `node = *first_ref` reuse is the only shape
 that holds 97.54%. Treat as pinned register-ownership residual.
+
+## 2026-07-11 authored owner and void contract
+
+- The eight 0x74-byte records are now primarily named `SubHealth`, matching
+  Android/iOS `cRSubHealth`; `TrackHealthPickup` is a compatibility alias.
+- Android `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)` scans and initializes
+  the same fixed array, then reaches its epilogue without establishing a
+  result. Windows callers likewise ignore EAX, whose failure and success paths
+  contain incompatible incidental values.
+- The shared declaration is therefore corrected from an artificial `DWORD*`
+  return to `void`. Focused matching honestly moves from 97.54% (122/122) to
+  88.43% (120/122); all seven audited references remain clean. The lost shape
+  is VC6's return/epilogue allocation, not missing behavior, and the fake
+  pointer contract is not retained merely for score.

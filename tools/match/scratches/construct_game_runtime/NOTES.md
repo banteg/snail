@@ -233,3 +233,10 @@ The `Size of cRSlug` entry now comes from `sizeof(Slug) * 8`: eight inline
 0xec-byte authored records close exactly to the native 0x760 total. Constructor
 metrics remain unchanged at 88.89%, with 119 clean operands and only the
 compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRSubHealth size ledger
+
+The `Size of cRSubHealth` entry now comes from `sizeof(SubHealth) * 8`: eight
+inline 0x74-byte authored records close exactly to the native 0x3a0 total.
+Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
+only the compiler-local EH relocation unresolved.

@@ -107,5 +107,11 @@ Rejected source-shape probes:
 Type consolidation:
 
 - `Player::health_collect_particles` now takes the promoted partial
-  `TrackHealthPickup*`. The layout is still partial: `owner_game +0x44`
+  `SubHealth*`. The layout is still partial: `owner_game +0x44`
   and `source_cell +0x68` are intentionally separate fields.
+
+2026-07-11 owner recovery: the exact method now takes the primary `SubHealth*`,
+matching Android and iOS
+`cRSubGoldy::HealthCollect(cRSubHealth*)`. `TrackHealthPickup` remains only a
+compatibility alias. The Windows body stays exact at 104/104 with all 13
+masked operands clean.

@@ -60,7 +60,7 @@ public:
     TimeTrialStringFormatter* time_trial_formatter(); // embedded service view at +0xff25e0
     void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
-    unsigned int* spawn_track_health_pickup(
+    void spawn_track_health_pickup(
         SubLoc* cell, Player* player); // @ 0x43d6c0
     int spawn_track_speedup(SubLoc* cell, Player* player); // @ 0x43d880, receiver unused by body
     int spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
@@ -159,7 +159,7 @@ public:
     TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
     TrackSpeedupRuntime speedup_pickup; // +0x355db0
     TrackJetpackPickup jetpack_pickup; // +0x355e64
-    TrackHealthPickup health_pickups[8]; // +0x356000
+    SubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
     SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots

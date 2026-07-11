@@ -70,11 +70,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     SLOT(0x355db0)->initialize_track_speedup_runtime();
     SLOT(0x355e64)->initialize_track_jetpack_pickup_runtime();
 
-    RuntimeSlot* health_pickup = SLOT(0x356000);
+    SubHealth* health_pickup = health_pickups;
     int health_count = 8;
     do {
         health_pickup->initialize_track_health_pickup_runtime();
-        health_pickup = (RuntimeSlot*)((char*)health_pickup + 0x74);
+        ++health_pickup;
         --health_count;
     } while (health_count);
 

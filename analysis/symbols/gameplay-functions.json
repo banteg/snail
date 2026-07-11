@@ -410,7 +410,7 @@
     {
       "address": "0x408510",
       "name": "initialize_track_health_pickup_runtime",
-      "description": "Constructs one health-pickup runtime slot by seeding the shared bod header and installing the pickup vtable. `spawn_track_health_pickup` allocates from the 8-slot pool at `0x356000`, whose total `0x3a0` footprint matches the native `cRSubHealth` size ledger."
+      "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `SubgameRuntime` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger."
     },
     {
       "address": "0x408530",
@@ -1962,7 +1962,8 @@
     },
     {
       "address": "0x43a010",
-      "name": "health_collect_particles"
+      "name": "health_collect_particles",
+      "description": "Exact `Player` collection burst for one `SubHealth`, emitting eight particles from the pickup sprite. Android and iOS retain the authored member as `cRSubGoldy::HealthCollect(cRSubHealth*)`."
     },
     {
       "address": "0x43a1a0",
@@ -2065,7 +2066,7 @@
     {
       "address": "0x43d6c0",
       "name": "spawn_track_health_pickup",
-      "description": "Allocates and seeds one live health pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Allocates and seeds one live `SubHealth` from the eight-record owned array. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction now keeps the honest void contract instead of exporting incompatible incidental register values."
     },
     {
       "address": "0x43d880",
@@ -2115,7 +2116,7 @@
     {
       "address": "0x43ecc0",
       "name": "update_track_health_pickup",
-      "description": "Runs one live health pickup's per-frame body, visibility, and teardown state. Cross-port iOS symbols name the runtime class `cRSubHealth` in `SubGame.o`."
+      "description": "Runs one live `SubHealth` through bobbing and teardown states. The exact Windows constructor table at 0x497320 points directly here, while Android and iOS retain the authored member as `cRSubHealth::AI()`."
     },
     {
       "address": "0x43ee50",

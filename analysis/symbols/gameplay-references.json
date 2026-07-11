@@ -1762,13 +1762,13 @@
     },
     {
       "address": "0x497320",
-      "name": "g_track_health_pickup_vtable",
+      "name": "g_sub_health_vtable",
       "kind": "vtable",
       "aliases": [
         "off_497320",
         "data_497320"
       ],
-      "description": "Runtime health pickup vtable installed by initialize_track_health_pickup_runtime."
+      "description": "Authored cRSubHealth vtable installed by the exact Windows constructor; its entry points directly to update_track_health_pickup at 0x43ecc0."
     },
     {
       "address": "0x497324",

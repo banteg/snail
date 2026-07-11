@@ -9,7 +9,7 @@
 float sine(float radians);
 float cosine(float radians);
 
-void Player::health_collect_particles(TrackHealthPickup* pickup)
+void Player::health_collect_particles(SubHealth* pickup)
 {
     char render_flags = (char)g_runtime_config.render_flags;
     if ((render_flags & 0x10) != 0) {

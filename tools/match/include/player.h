@@ -31,7 +31,7 @@ class Player;
 class ClickStartController;
 class Sprite;
 class SubgameRuntime;
-class TrackHealthPickup;
+class SubHealth;
 
 struct PlayerLiveMatrixRows {
     float basis_right_x;   // +0x00
@@ -193,7 +193,7 @@ public:
     int clear_subgoldy_score_buckets();    // @ 0x4403a0
     int display_score_stats();             // @ 0x4403c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
-    void health_collect_particles(TrackHealthPickup* pickup); // @ 0x43a010
+    void health_collect_particles(SubHealth* pickup); // @ 0x43a010
     int initialize_subgoldy(int player_slot); // @ 0x43a9c0
     int initialize_subgoldy_ghost(int owner); // @ 0x43d230
     int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0

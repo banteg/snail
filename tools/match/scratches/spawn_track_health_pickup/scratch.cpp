@@ -12,7 +12,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
+void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
@@ -24,7 +24,7 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
         scan += 29;
         if (slot_index < 8)
             continue;
-        return (DWORD*)scan;
+        return;
     }
 
     DWORD* slot_base = game_words + 29 * slot_index;
@@ -84,5 +84,4 @@ DWORD* SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* pla
     int step_index = slot_index + 30156;
     int result = 7 * step_index;
     game_words[step_index + (result << 2)] = 0x3c520d21;
-    return (DWORD*)result;
 }

@@ -10,13 +10,13 @@ extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-void TrackHealthPickup::update_track_health_pickup()
+void SubHealth::update_track_health_pickup()
 {
     int zero = 0;
     unsigned int flags;
     BodList* head;
-    TrackHealthPickup* next;
-    TrackHealthPickup* prev;
+    SubHealth* next;
+    SubHealth* prev;
 
     if (owner_game->subgame_pause_gate != zero) {
         return;
@@ -42,19 +42,19 @@ state_two:
     if ((flags & 0x200) == 0) goto state_two_not_linked;
     if ((flags & 0x40) != 0) goto state_two_nextbod;
 
-    next = (TrackHealthPickup*)list_next;
-    if (next != (TrackHealthPickup*)zero) {
+    next = (SubHealth*)list_next;
+    if (next != (SubHealth*)zero) {
         next->list_prev = list_prev;
     }
 
-    prev = (TrackHealthPickup*)list_prev;
-    if (prev != (TrackHealthPickup*)zero) {
+    prev = (SubHealth*)list_prev;
+    if (prev != (SubHealth*)zero) {
         prev->list_next = list_next;
     } else {
         head->first = (BodNode*)list_next;
     }
 
-    list_next = (TrackHealthPickup*)head->free_top;
+    list_next = (SubHealth*)head->free_top;
     head->free_top = (BodNode*)this;
     list_flags &= ~0x200;
     sprite->kill_sprite();
@@ -87,19 +87,19 @@ state_one:
             return;
         }
 
-        next = (TrackHealthPickup*)list_next;
-        if (next != (TrackHealthPickup*)zero) {
+        next = (SubHealth*)list_next;
+        if (next != (SubHealth*)zero) {
             next->list_prev = list_prev;
         }
 
-        prev = (TrackHealthPickup*)list_prev;
-        if (prev != (TrackHealthPickup*)zero) {
+        prev = (SubHealth*)list_prev;
+        if (prev != (SubHealth*)zero) {
             prev->list_next = list_next;
         } else {
             head->first = (BodNode*)list_next;
         }
 
-        list_next = (TrackHealthPickup*)head->free_top;
+        list_next = (SubHealth*)head->free_top;
         head->free_top = (BodNode*)this;
         list_flags &= ~0x200;
         sprite->kill_sprite();

@@ -120,3 +120,10 @@ direct state-one `sprite->kill_sprite()` diagnostics in both health and jetpack
 folds the duplicated teardown blocks (`58.47%` here, `58.12%` in jetpack), so
 the remaining extra snapshot load is a shared pickup-family source-shape debt,
 not a health-only semantic gap.
+
+## 2026-07-11 cRSubHealth ownership
+
+The receiver and intrusive-list neighbors now use the primary `SubHealth`
+type. The exact Windows constructor table at `0x497320` points directly to this
+helper; Android and iOS retain `cRSubHealth::AI()`. Focused Wibo remains the
+honest 87.94%, 129/128 instructions, with all 21 masked operands clean.

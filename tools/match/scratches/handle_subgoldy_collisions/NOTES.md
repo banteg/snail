@@ -341,3 +341,11 @@ same class as `cRSlug`, while the Windows constructor table points to its AI
 method. The byte-strided collision loop is preserved because it is the closest
 native allocation shape. Focused Wibo remains 52.85%, 659/673, with all 86
 masked operands clean.
+
+## cRSubHealth primary owner (2026-07-11)
+
+The eight-record health sweep now consumes `SubHealth` and passes that exact
+borrowed object to the exact `Player::health_collect_particles` method.
+Android/iOS preserve the pair as `cRSubHealth` and
+`cRSubGoldy::HealthCollect(cRSubHealth*)`. The native byte-strided loop shape
+is unchanged; focused Wibo remains 52.85%, 659/673, with 86 clean operands.

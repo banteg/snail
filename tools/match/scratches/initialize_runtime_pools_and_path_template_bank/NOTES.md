@@ -181,3 +181,13 @@
 - Each exact constructor installs table `0x497324`, whose entry is
   `cRSlug::AI()`. The typed loop leaves this function exact at 227/227 with all
   72 masked operands clean.
+
+## 2026-07-11 cRSubHealth constructor array
+
+- The eight-record pass at `SubgameRuntime +0x356000` now walks the owned
+  `SubHealth health_pickups[8]` array directly with `sizeof(SubHealth) == 0x74`.
+- Its exact 0x3a0 extent ends at `SlugPool +0x3563a0` and matches the native
+  `Size of cRSubHealth` ledger with no gap.
+- Each exact constructor installs table `0x497320`, whose entry is
+  `cRSubHealth::AI()`. The typed loop remains exact at 227/227 with all 72
+  masked operands clean.

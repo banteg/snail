@@ -173,8 +173,7 @@ void Player::handle_subgoldy_collisions()
         }
     }
     for (int ii = 0; ii < 928; ii += 116) {
-        TrackHealthPickup* pickup =
-            (TrackHealthPickup*)((char*)game->health_pickups + ii);
+        SubHealth* pickup = (SubHealth*)((char*)game->health_pickups + ii);
         if (pickup->state == 1) {
             probe_b.x = pickup->world_position.x - cached_camera_target_world.x;
             probe_b.y = pickup->world_position.y - cached_camera_target_world.y;

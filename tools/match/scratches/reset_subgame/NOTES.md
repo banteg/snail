@@ -60,3 +60,8 @@ Important source-shape correction:
 - A broad BN header import preview still disturbed existing shared structs, so
   the sync script field-sets the recovered names on the existing
   `SubgameRuntime` without reimporting `Sprite`, `TrackRowCell`, or `Player`.
+
+2026-07-11 cRSubHealth ownership: the exact eight-record backlink loop now
+lands on the primary `SubHealth` array at `+0x356000`. It writes the containing
+runtime to each borrowed `owner_game +0x44` lane while leaving the spawned
+`source_cell +0x68` distinct. The function remains exact at 75/75.
