@@ -29,3 +29,9 @@
   the jump-table target offset, and proves the scratch.
 - A shared `result` local still remains rejected: it introduces an `edi` result
   register, shifts the stack color locals, and drops to `92.20%`.
+- 2026-07-11 local-label collision audit: the current compiler generation calls
+  this table `$L1075`, a spelling also used by an unrelated backdrop table.
+  The matcher now retains both the alias-bounded and relocation-bounded entry
+  sequences, so the ten prompt destinations are proved by content without
+  assigning a globally false label alias. The exact 441/441 body remains at
+  109 clean masked operands.

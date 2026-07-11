@@ -205,6 +205,7 @@ class MaskedReference:
     explained: bool
     alternate_keys: tuple[str, ...] = ()
     jump_table_entries: tuple[int, ...] | None = None
+    alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
     audited_bytes: bytes | None = None
     local_data_bytes: bytes | None = None
 
@@ -1101,6 +1102,7 @@ def disassemble_normalized_function(
         kind: str,
     ) -> MaskedReference:
         jump_table_entries = None
+        alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
         audited_bytes = None
         local_data_bytes = None
         reference_symbol = None
@@ -1132,6 +1134,18 @@ def disassemble_normalized_function(
                 relocation_by_offset,
                 byte_count=local_jump_table_size,
             )
+            unbounded_jump_table_entries = _read_object_jump_table_entries(
+                data,
+                local_offset,
+                relocation_by_offset,
+            )
+            if jump_table_entries is None:
+                jump_table_entries = unbounded_jump_table_entries
+            elif (
+                unbounded_jump_table_entries is not None
+                and unbounded_jump_table_entries != jump_table_entries
+            ):
+                alternate_jump_table_entries = (unbounded_jump_table_entries,)
             if 0 <= local_offset < len(data):
                 local_data_bytes = data[local_offset:]
         if reference is not None:
@@ -1164,6 +1178,7 @@ def disassemble_normalized_function(
             key=reference.key,
             explained=reference.explained,
             jump_table_entries=jump_table_entries,
+            alternate_jump_table_entries=alternate_jump_table_entries,
             audited_bytes=audited_bytes,
             local_data_bytes=local_data_bytes,
         )
@@ -1193,6 +1208,7 @@ def disassemble_normalized_function(
             explained=resolved.explained,
             alternate_keys=resolved.alternate_keys,
             jump_table_entries=resolved.jump_table_entries,
+            alternate_jump_table_entries=resolved.alternate_jump_table_entries,
             audited_bytes=resolved.audited_bytes,
             local_data_bytes=resolved.local_data_bytes,
         )
@@ -1360,12 +1376,17 @@ def _reference_status(
     def jump_table_entries_match(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
-        return (
-            is_local_jump_table(target, candidate)
-            and target.jump_table_entries is not None
-            and candidate.jump_table_entries is not None
-            and target.jump_table_entries == candidate.jump_table_entries
+        if not is_local_jump_table(target, candidate):
+            return False
+        target_options = (
+            *((target.jump_table_entries,) if target.jump_table_entries is not None else ()),
+            *target.alternate_jump_table_entries,
         )
+        candidate_options = (
+            *((candidate.jump_table_entries,) if candidate.jump_table_entries is not None else ()),
+            *candidate.alternate_jump_table_entries,
+        )
+        return bool(set(target_options) & set(candidate_options))
 
     def audited_bytes_match(
         target: MaskedReference, candidate: MaskedReference

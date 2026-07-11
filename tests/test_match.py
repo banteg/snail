@@ -780,6 +780,67 @@ def test_masked_operand_audit_bounds_adjacent_local_jump_table_alias() -> None:
     assert entry.candidate_references[0].jump_table_entries == (0, 7)
 
 
+def test_masked_operand_audit_accepts_unbounded_table_when_local_alias_bound_collides() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<IIII", mapped, 0x2000, 0x401000, 0x401007, 0x401000, 0x401007)
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("ff248500000000c3") + (b"\x00" * 16),
+        relocation_offsets=frozenset({3, 8, 12, 16, 20}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=3,
+                symbol_name="$Lreused",
+                text="sym:$Lreused",
+                key="name:$Lreused",
+                explained=True,
+                addend=0,
+                symbol_offset=8,
+            ),
+            *tuple(
+                ObjectRelocationReference(
+                    offset=8 + index * 4,
+                    symbol_name=f"$Lcase{index}",
+                    text=f"sym:$Lcase{index}",
+                    key=f"name:$Lcase{index}",
+                    explained=True,
+                    addend=0,
+                    symbol_offset=(0, 7, 0, 7)[index],
+                )
+                for index in range(4)
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("ff248500204000c3"),
+        candidate,
+        image=LoadedImage(mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="four_entry_jump_table",
+                    kind="jump_table",
+                    size=0x10,
+                ),
+                ReferenceSymbol(
+                    address=0x402100,
+                    name="unrelated_two_entry_jump_table",
+                    kind="jump_table",
+                    aliases=("$Lreused",),
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+    assert result.masked_operand_audit.ok_count == 1
+    reference = result.masked_operand_audit.entries[0].candidate_references[0]
+    assert reference.jump_table_entries == (0, 7)
+    assert reference.alternate_jump_table_entries == ((0, 7, 0, 7),)
+
+
 def test_masked_operand_audit_rejects_permuted_local_jump_table_contents() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
