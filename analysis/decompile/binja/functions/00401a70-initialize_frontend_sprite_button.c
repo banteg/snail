@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_frontend_sprite_button @ 0x401a70 */
 
-00401a78        struct FrontendWidget* eax = g_game_base + 0xb4c
+00401a78        struct FrontendWidget* eax = &g_game_base[0xb4c]
 00401a8b        if ((arg1->list_flags & 0x200) == 0)
 00401a9c        arg1->list_prev = eax
 00401aa2        arg1->list_next = eax->list_next
@@ -17,7 +17,7 @@
 00401ab5        arg1->_pad_10[0x39] = 0
 00401ab5        arg1->_pad_10[0x3a] = 0
 00401ab5        arg1->_pad_10[0x3b] = 0
-00401abc        arg1->state_5c = 0
+00401abc        arg1->texture_hit_test_enabled = 0
 00401abf        arg1->tooltip.state = 0
 00401ac5        arg1->tooltip.owner_widget = arg1
 00401acb        arg1->tooltip.tooltip_widget = nullptr
@@ -92,21 +92,14 @@
 00401ca2        arg1->layout_left = arg4
 00401ca8        arg1->layout_top = arg5
 00401cae        arg1->anchor_x = fconvert.s(x87_r7_1)
-00401cbe        arg1->layout_width = fconvert.s(float.t(g_sprite_texture_table[arg3]->_pad_04[0].d))
-00401ccb        float layout_width = arg1->layout_width
-00401cd1        long double x87_r7_3 = float.t(g_sprite_texture_table[arg3]->_pad_04[4].d)
-00401cd4        arg1->_pad_250[0] = layout_width.b
-00401cd4        arg1->_pad_250[1] = layout_width:1.b
-00401cd4        arg1->_pad_250[2] = layout_width:2.b
-00401cd4        arg1->_pad_250[3] = layout_width:3.b
+00401cbe        arg1->layout_width = fconvert.s(float.t(g_sprite_texture_table[arg3]->loaded_width))
+00401cd1        long double x87_r7_3 = float.t(g_sprite_texture_table[arg3]->loaded_height)
+00401cd4        arg1->texture_hit_width = arg1->layout_width
 00401cde        arg1->texture_id_270 = arg3
 00401ce8        arg1->layout_height = fconvert.s(x87_r7_3)
 00401cee        float layout_height = arg1->layout_height
 00401cf4        arg1->layout_anchor_x = arg4
-00401cfa        arg1->_pad_250[4] = layout_height.b
-00401cfa        arg1->_pad_250[5] = layout_height:1.b
-00401cfa        arg1->_pad_250[6] = layout_height:2.b
-00401cfa        arg1->_pad_250[7] = layout_height:3.b
+00401cfa        arg1->texture_hit_height = layout_height
 00401d06        arg1->layout_anchor_y = arg5
 00401d0c        arg1->_pad_274[0] = arg8[0]
 00401d0c        arg1->_pad_274[1] = arg8[1]

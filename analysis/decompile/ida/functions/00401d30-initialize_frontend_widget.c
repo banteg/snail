@@ -16,14 +16,14 @@ int32_t __thiscall initialize_frontend_widget(
 {
   FrontendWidget *v10; // eax
   FrontendWidget *list_next; // eax
-  float *p_g; // edi
+  Color4f *p_hot_text_color; // edi
   Color4f *v13; // eax
   Color4f *v14; // eax
   Color4f *v15; // eax
   Color4f *v16; // eax
   Color4f *v17; // eax
   char v18; // al
-  double hot_padding; // st7
+  double idle_padding; // st7
   uint32_t v20; // eax
   double v21; // st7
   Color4f *v22; // eax
@@ -52,11 +52,11 @@ int32_t __thiscall initialize_frontend_widget(
 
   widget->widget_type = widget_type;
   *(_DWORD *)&widget->_pad_10[56] = 5;
-  widget->state_5c = 0;
+  widget->texture_hit_test_enabled = 0;
   widget->render_inset_delta = 0.0;
-  *(_DWORD *)&widget->render_inset_base = 1101004800;
-  LOBYTE(widget->render_inset_dynamic) = 0;
-  v10 = (FrontendWidget *)((char *)MEMORY[0x4DF904] + 2892);
+  widget->render_inset_base = 20.0;
+  widget->render_inset_dynamic = 0;
+  v10 = (FrontendWidget *)((char *)g_game_base + 2892);
   if ( (widget->list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
@@ -71,83 +71,83 @@ int32_t __thiscall initialize_frontend_widget(
       list_next->list_prev = widget;
     widget->list_flags |= 0x200u;
   }
-  p_g = &widget->?.g;
-  widget->?.mode_flags = 0;
-  LODWORD(widget->?.delay_progress) = widget;
-  *(_DWORD *)widget->?._pad_1c = 0;
-  *(_DWORD *)widget->?._pad_3c = widget;
+  p_hot_text_color = &widget->hot_text_color;
+  widget->tooltip.state = 0;
+  widget->tooltip.owner_widget = widget;
+  widget->tooltip.tooltip_widget = nullptr;
+  widget->tooltip.owner_widget_38 = widget;
   widget->widget_flags = widget_flags | 0x40001;
-  set_color_white(&widget->?.g);
-  set_color_white(&widget->?.g);
+  set_color_white(&widget->hot_text_color);
+  set_color_white(&widget->hot_fill_color);
   switch ( widget_type )
   {
     case 20:
-      widget->font_id = 0.0;
+      widget->font_id = 0;
       widget->font_scale = 1.3;
       widget->idle_padding = 9.0;
       widget->hot_padding = 13.0;
-      widget->stack_gap = 1104150528;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v38, 1.0, 0.52156866, 0.0, 0.69999999);
+      widget->stack_gap = 26.0;
+      widget->idle_text_color = *set_color_rgba(&v38, 1.0, 0.52156866, 0.0, 0.69999999);
       v13 = set_color_rgba(&v45, 1.0, 1.0, 1.0, 1.0);
-      *p_g = v13->r;
-      widget->?.b = v13->g;
-      widget->?.a = v13->b;
-      widget->? = v13->a;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v42, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
+      p_hot_text_color->r = v13->r;
+      widget->hot_text_color.g = v13->g;
+      widget->hot_text_color.b = v13->b;
+      widget->hot_text_color.a = v13->a;
+      widget->idle_fill_color = *set_color_rgba(&v42, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
       v14 = set_color_rgba(&v34, 0.60784316, 0.30980393, 0.69411767, 1.0);
       goto LABEL_11;
     case 21:
-      widget->font_id = 0.0;
+      widget->font_id = 0;
       widget->font_scale = 1.0;
       widget->idle_padding = 9.0;
       widget->hot_padding = 13.0;
-      widget->stack_gap = 1104150528;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v39, 1.0, 0.52156866, 0.0, 0.69999999);
+      widget->stack_gap = 26.0;
+      widget->idle_text_color = *set_color_rgba(&v39, 1.0, 0.52156866, 0.0, 0.69999999);
       v17 = set_color_rgba(&v41, 1.0, 1.0, 1.0, 1.0);
-      *p_g = v17->r;
-      widget->?.b = v17->g;
-      widget->?.a = v17->b;
-      widget->? = v17->a;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v43, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
+      p_hot_text_color->r = v17->r;
+      widget->hot_text_color.g = v17->g;
+      widget->hot_text_color.b = v17->b;
+      widget->hot_text_color.a = v17->a;
+      widget->idle_fill_color = *set_color_rgba(&v43, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
       v14 = set_color_rgba(&v30, 0.60784316, 0.30980393, 0.69411767, 1.0);
       goto LABEL_11;
     case 22:
-      *(_DWORD *)&widget->render_inset_base = 1101004800;
-      widget->font_id = 0.0;
+      widget->render_inset_base = 20.0;
+      widget->font_id = 0;
       widget->font_scale = 0.64999998;
       widget->idle_padding = 1.0;
       widget->hot_padding = 3.0;
-      widget->stack_gap = 0x40000000;
-      LOBYTE(widget->render_inset_dynamic) = 1;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v40, 1.0, 0.52156866, 0.0, 0.69999999);
+      widget->stack_gap = 2.0;
+      widget->render_inset_dynamic = 1;
+      widget->idle_text_color = *set_color_rgba(&v40, 1.0, 0.52156866, 0.0, 0.69999999);
       v15 = set_color_rgba(&v36, 1.0, 1.0, 1.0, 1.0);
-      *p_g = v15->r;
-      widget->?.b = v15->g;
-      widget->?.a = v15->b;
-      widget->? = v15->a;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v44, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
+      p_hot_text_color->r = v15->r;
+      widget->hot_text_color.g = v15->g;
+      widget->hot_text_color.b = v15->b;
+      widget->hot_text_color.a = v15->a;
+      widget->idle_fill_color = *set_color_rgba(&v44, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
       v14 = set_color_rgba(&v31, 0.60784316, 0.30980393, 0.69411767, 1.0);
       goto LABEL_11;
     case 23:
-      widget->font_id = 0.0;
+      widget->font_id = 0;
       widget->font_scale = 1.14;
       widget->idle_padding = 6.0;
       widget->hot_padding = 7.0;
-      widget->stack_gap = 0x40000000;
-      *(_DWORD *)&widget->render_inset_base = 1101004800;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v32, 1.0, 0.52156866, 0.0, 0.69999999);
+      widget->stack_gap = 2.0;
+      widget->render_inset_base = 20.0;
+      widget->idle_text_color = *set_color_rgba(&v32, 1.0, 0.52156866, 0.0, 0.69999999);
       v16 = set_color_rgba(&v33, 1.0, 1.0, 1.0, 1.0);
-      *p_g = v16->r;
-      widget->?.b = v16->g;
-      widget->?.a = v16->b;
-      widget->? = v16->a;
-      *(Color4f *)&widget->?.g = *set_color_rgba(&v35, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
+      p_hot_text_color->r = v16->r;
+      widget->hot_text_color.g = v16->g;
+      widget->hot_text_color.b = v16->b;
+      widget->hot_text_color.a = v16->a;
+      widget->idle_fill_color = *set_color_rgba(&v35, 0.32941177, 0.22352941, 0.50196081, 0.69999999);
       v14 = set_color_rgba(&v37, 0.60784316, 0.30980393, 0.69411767, 1.0);
 LABEL_11:
-      widget->?.g = v14->r;
-      widget->?.b = v14->g;
-      widget->?.a = v14->b;
-      widget->?.r = v14->a;
+      widget->hot_fill_color.r = v14->r;
+      widget->hot_fill_color.g = v14->g;
+      widget->hot_fill_color.b = v14->b;
+      widget->hot_fill_color.a = v14->a;
       break;
     default:
       report_errorf(aUnknownBorderS);
@@ -157,8 +157,8 @@ LABEL_11:
   widget->slider_position_current = 0.5;
   *(_DWORD *)&widget->_pad_10[40] = 1;
   unhide_border_init(widget);
-  rstrcpy_checked_ascii((char *)&widget->?.raw[4], text);
-  *(float *)widget->layout_anchor_y = y;
+  rstrcpy_checked_ascii((char *)&widget->text_buffer, text);
+  widget->layout_anchor_y = y;
   v18 = widget->widget_flags;
   widget->layout_anchor_x = x;
   widget->hover_blend_target = 1.0;
@@ -166,24 +166,24 @@ LABEL_11:
     highlight_border(widget);
   else
     unhighlight_border(widget);
-  hot_padding = widget->idle_padding;
+  idle_padding = widget->idle_padding;
   widget->hover_blend_current = widget->hover_blend_target;
-  widget->target_padding = hot_padding;
-  widget->current_padding = hot_padding;
+  widget->target_padding = idle_padding;
+  widget->current_padding = idle_padding;
   widget->text_effect_target = 0.0;
   widget->text_effect_current = 0.0;
-  LODWORD(widget->text_alignment) = text_alignment;
+  widget->text_alignment = text_alignment;
   widget->anchor_x = anchor_x;
   v20 = widget->widget_flags;
-  v21 = anchor_x + *((float *)MEMORY[0x4DF904] + 69695);
-  LODWORD(widget->mouse_settle_frames) = 1;
+  v21 = anchor_x + *((float *)g_game_base + 69695);
+  widget->mouse_settle_frames = 1;
   widget->anchor_x = v21;
   if ( (v20 & 0x100000) != 0 )
   {
     *(float *)&ArgList = y + 40.0;
-    widget->slider_more_widget = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+    widget->slider_more_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
     v22 = set_color_rgba(&v30, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v26 = *((float *)MEMORY[0x4DF904] + 69695) + 458.0;
+    *(float *)&v26 = *((float *)g_game_base + 69695) + 458.0;
     initialize_frontend_sprite_button(
       (int)widget->slider_more_widget,
       (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
@@ -194,9 +194,9 @@ LABEL_11:
       0.0,
       4);
     border_sprite_extend((int)widget->slider_more_widget, 44, 43, 45, 1);
-    widget->slider_less_widget = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+    widget->slider_less_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
     v23 = set_color_rgba(&v30, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v27 = *((float *)MEMORY[0x4DF904] + 69695) + 118.0;
+    *(float *)&v27 = *((float *)g_game_base + 69695) + 118.0;
     initialize_frontend_sprite_button(
       (int)widget->slider_less_widget,
       (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
@@ -207,9 +207,9 @@ LABEL_11:
       0.0,
       4);
     border_sprite_extend((int)widget->slider_less_widget, 40, 39, 41, 0);
-    widget->slider_value_widget = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+    widget->slider_value_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
     v24 = set_color_rgba(&v30, 1.0, 1.0, 1.0, 1.0);
-    v28 = *(float *)widget->layout_anchor_y + 40.0;
+    v28 = widget->layout_anchor_y + 40.0;
     initialize_frontend_widget(widget->slider_value_widget, 0x400000u, ::text, 21, 0.0, v28, v24, 2, 0.0);
   }
   return layout_frontend_widget(widget);

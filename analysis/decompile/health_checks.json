@@ -76,11 +76,13 @@
         "arg1->list_flags",
         "arg1->list_prev",
         "arg1->list_next",
-        "arg1->state_5c",
+        "arg1->texture_hit_test_enabled",
         "arg1->tooltip.state",
         "arg1->render_inset_delta",
         "arg1->font_id",
-        "arg1->font_scale"
+        "arg1->font_scale",
+        "arg1->texture_hit_width",
+        "arg1->texture_hit_height"
       ],
       "forbidden_substrings": [
         "__asm",
@@ -149,6 +151,46 @@
         "return result",
         "_pad_",
         "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_border_mouse_test_owner",
+      "artifact": "analysis/decompile/binja/functions/00404580-border_mouse_test.c",
+      "required_substrings": [
+        "widget->texture_hit_test_enabled",
+        "widget->texture_hit_test_sprite",
+        "widget->texture_hit_x",
+        "widget->texture_hit_y",
+        "widget->texture_hit_width",
+        "widget->texture_hit_height",
+        "widget->target_padding"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x5c",
+        "arg1 + 0x240",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_border_mouse_test_owner",
+      "artifact": "analysis/decompile/ida/functions/00404580-border_mouse_test.c",
+      "required_substrings": [
+        "border_mouse_test(FrontendWidget *widget)",
+        "widget->texture_hit_test_enabled",
+        "widget->texture_hit_test_sprite",
+        "widget->texture_hit_x",
+        "widget->texture_hit_y",
+        "widget->texture_hit_width",
+        "widget->texture_hit_height",
+        "widget->target_padding"
+      ],
+      "forbidden_substrings": [
+        "this + 92",
+        "this + 576",
+        "sub_404580",
         "__asm",
         "_ET1"
       ]

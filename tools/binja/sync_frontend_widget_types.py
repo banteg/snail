@@ -24,8 +24,9 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x50", "authored_top", "float"),
     ("0x54", "authored_width", "float"),
     ("0x58", "authored_height", "float"),
-    ("0x5c", "state_5c", "uint8_t"),
+    ("0x5c", "texture_hit_test_enabled", "uint8_t"),
     ("0x60", "background_texture_id", "int32_t"),
+    ("0x64", "texture_hit_test_sprite", "int32_t"),
     ("0x7c", "widget_type", "int32_t"),
     ("0x17c", "slider_position_target", "float"),
     ("0x180", "slider_position_current", "float"),
@@ -55,11 +56,12 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x234", "render_inset_dynamic", "uint8_t"),
     ("0x238", "layout_left", "float"),
     ("0x23c", "layout_top", "float"),
-    ("0x240", "clamped_left", "float"),
-    ("0x244", "clamped_top", "float"),
+    ("0x240", "texture_hit_x", "float"),
+    ("0x244", "texture_hit_y", "float"),
     ("0x248", "layout_width", "float"),
     ("0x24c", "layout_height", "float"),
-    ("0x250", "_pad_250", "uint8_t[0x8]"),
+    ("0x250", "texture_hit_width", "float"),
+    ("0x254", "texture_hit_height", "float"),
     ("0x258", "border_edge", "float"),
     ("0x25c", "text_alignment", "int32_t"),
     ("0x260", "anchor_x", "float"),
@@ -94,6 +96,10 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
 )
 
 PROTO_UPDATES = (
+    (
+        "border_mouse_test",
+        "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
+    ),
     ("initialize_frontend_widget", "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)"),
     ("layout_frontend_widget", "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget)"),
     ("0x402790", "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)"),

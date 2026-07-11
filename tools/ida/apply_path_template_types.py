@@ -13,6 +13,7 @@ import idc
 
 
 TRUSTED_NAMES = [
+    (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
@@ -21,6 +22,10 @@ TRUSTED_NAMES = [
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "border_mouse_test",
+        "uint8_t __thiscall border_mouse_test(FrontendWidget* widget);",
+    ),
     (
         "initialize_player_presentation_controller",
         "PlayerPresentationController* __thiscall initialize_player_presentation_controller(PlayerPresentationController* presentation);",

@@ -43,10 +43,11 @@ typedef struct FrontendWidget {
     float authored_top;
     float authored_width;
     float authored_height;
-    uint8_t state_5c;
+    uint8_t texture_hit_test_enabled;
     uint8_t _pad_5d[0x3];
     int32_t background_texture_id;
-    uint8_t _pad_64[0x18];
+    int32_t texture_hit_test_sprite;
+    uint8_t _pad_68[0x14];
     int32_t widget_type;
     uint8_t _pad_80[0xfc];
     float slider_position_target;
@@ -80,11 +81,12 @@ typedef struct FrontendWidget {
     uint8_t _pad_235[0x3];
     float layout_left;
     float layout_top;
-    float clamped_left;
-    float clamped_top;
+    float texture_hit_x;
+    float texture_hit_y;
     float layout_width;
     float layout_height;
-    uint8_t _pad_24c[0x8];
+    float texture_hit_width;
+    float texture_hit_height;
     float border_edge;
     int32_t text_alignment;
     float anchor_x;
@@ -92,7 +94,7 @@ typedef struct FrontendWidget {
     float aux_step;
     float stack_gap;
     int32_t texture_id_270;
-    uint8_t _pad_270[0x4];
+    uint8_t _pad_274[0x4];
     int32_t mouse_settle_frames;
     float previous_mouse_x;
     float previous_mouse_y;
@@ -103,7 +105,7 @@ typedef struct FrontendWidget {
     float font_scale;
     float layout_anchor_x;
     float layout_anchor_y;
-    uint8_t _pad_6f8[0x20];
+    uint8_t _pad_6fc[0x1c];
     FrontendWidget* slider_less_widget;
     FrontendWidget* slider_more_widget;
     FrontendWidget* slider_value_widget;

@@ -8,11 +8,11 @@
 00401d45        widget->_pad_10[0x39] = 0
 00401d45        widget->_pad_10[0x3a] = 0
 00401d45        widget->_pad_10[0x3b] = 0
-00401d4c        widget->state_5c = 0
+00401d4c        widget->texture_hit_test_enabled = 0
 00401d4f        widget->render_inset_delta = 0f
 00401d55        widget->render_inset_base = 20f
 00401d5f        widget->render_inset_dynamic = 0
-00401d6e        struct FrontendWidget* eax = data_4df904 + 0xb4c
+00401d6e        struct FrontendWidget* eax = &g_game_base[0xb4c]
 00401d7b        if ((0x200 & widget->list_flags) == 0)
 00401d8c        widget->list_prev = eax
 00401d92        widget->list_next = eax->list_next
@@ -198,11 +198,10 @@
 0040222d        unhide_border_init(widget)
 00402241        rstrcpy_checked_ascii(&widget->text_buffer, text)
 00402254        widget->layout_anchor_y = y
-0040225a        float eax_26
-0040225a        eax_26.b = widget->widget_flags.b
+0040225a        char eax_27 = widget->widget_flags.b
 00402263        widget->layout_anchor_x = x
 0040226b        widget->hover_blend_target = 1f
-00402277        if ((eax_26.b & 2) == 0)
+00402277        if ((eax_27 & 2) == 0)
 00402280        unhighlight_border(widget)
 00402279        highlight_border(widget)
 00402285        long double x87_r5 = fconvert.t(widget->idle_padding)
@@ -214,26 +213,26 @@
 004022c4        widget->text_alignment = text_alignment
 004022ca        widget->anchor_x = anchor_x
 004022dc        bool cond:0 = (widget->widget_flags & 0x100000) == 0
-004022e1        long double x87_r5_2 = fconvert.t(anchor_x) + fconvert.t(*(data_4df904 + 0x440fc))
+004022e1        long double x87_r5_2 = fconvert.t(anchor_x) + fconvert.t(*(g_game_base + 0x440fc))
 004022e7        widget->mouse_settle_frames = 1
 004022ed        widget->anchor_x = fconvert.s(x87_r5_2)
 004022f3        if (not(cond:0))
 0040232e        float var_104_1 = fconvert.s(fconvert.t(y) + fconvert.t(40f))
-00402336        widget->slider_more_widget = allocate_border(data_4df904 + 0xb4c)
-0040233c        struct Color4f* eax_30
+00402336        widget->slider_more_widget = allocate_border(&g_game_base[0xb4c])
+0040233c        struct Color4f* eax_31
 0040233c        int32_t ecx_43
-0040233c        eax_30, ecx_43 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
+0040233c        eax_31, ecx_43 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 0040234c        int32_t var_128_1 = ecx_43
-00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & 0x800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(*(data_4df904 + 0x440fc)) + fconvert.t(458f)), var_104_1, eax_30, 0f, 4)
+00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(*(g_game_base + 0x440fc)) + fconvert.t(458f)), var_104_1, eax_31, 0f, 4)
 00402389        border_sprite_extend(widget->slider_more_widget, 0x2c, 0x2b, 0x2d, 1)
-004023ba        widget->slider_less_widget = allocate_border(data_4df904 + 0xb4c)
-004023c0        char* eax_33
+004023ba        widget->slider_less_widget = allocate_border(&g_game_base[0xb4c])
+004023c0        char* eax_34
 004023c0        int32_t ecx_51
-004023c0        eax_33, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
+004023c0        eax_34, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 004023cc        int32_t var_128_3 = ecx_51
-004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & 0x800000) | 0x20400814, 0x26, fconvert.s(fconvert.t(*(data_4df904 + 0x440fc)) + fconvert.t(118f)), var_104_1, eax_33, 0f, 4)
+004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x26, fconvert.s(fconvert.t(*(g_game_base + 0x440fc)) + fconvert.t(118f)), var_104_1, eax_34, 0f, 4)
 00402409        border_sprite_extend(widget->slider_less_widget, 0x28, 0x27, 0x29, 0)
-0040243a        widget->slider_value_widget = allocate_border(data_4df904 + 0xb4c)
+0040243a        widget->slider_value_widget = allocate_border(&g_game_base[0xb4c])
 00402440        struct Color4f* color_14
 00402440        int32_t ecx_59
 00402440        color_14, ecx_59 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)

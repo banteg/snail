@@ -2,9 +2,9 @@
 /* function: border_mouse_test @ 0x404580 */
 /* selector: border_mouse_test */
 
-char __thiscall sub_404580(int this)
+uint8_t __thiscall border_mouse_test(FrontendWidget *widget)
 {
-  int v1; // ebp
+  int sprite_texture_ref; // ebp
   int v2; // esi
   int v3; // edi
   int v4; // ebx
@@ -12,19 +12,19 @@ char __thiscall sub_404580(int this)
   float v7; // [esp+4h] [ebp-8h]
   float v8; // [esp+8h] [ebp-4h]
 
-  if ( *(_BYTE *)(this + 92) )
+  if ( widget->texture_hit_test_enabled )
   {
-    if ( *((float *)MEMORY[0x4DF904] + 167) >= (double)*(float *)(this + 576)
-      && *(float *)(this + 592) + *(float *)(this + 576) > *((float *)MEMORY[0x4DF904] + 167)
-      && *((float *)MEMORY[0x4DF904] + 168) >= (double)*(float *)(this + 580)
-      && *(float *)(this + 596) + *(float *)(this + 580) > *((float *)MEMORY[0x4DF904] + 168) )
+    if ( *((float *)g_game_base + 167) >= (double)widget->texture_hit_x
+      && widget->texture_hit_width + widget->texture_hit_x > *((float *)g_game_base + 167)
+      && *((float *)g_game_base + 168) >= (double)widget->texture_hit_y
+      && widget->texture_hit_height + widget->texture_hit_y > *((float *)g_game_base + 168) )
     {
-      v7 = (*((float *)MEMORY[0x4DF904] + 167) - *(float *)(this + 576)) / *(float *)(this + 592);
-      v8 = (*((float *)MEMORY[0x4DF904] + 168) - *(float *)(this + 580)) / *(float *)(this + 596);
-      v1 = get_sprite_texture_ref(*(_DWORD *)(this + 100));
-      v2 = *(unsigned __int16 *)(v1 + 12);
+      v7 = (*((float *)g_game_base + 167) - widget->texture_hit_x) / widget->texture_hit_width;
+      v8 = (*((float *)g_game_base + 168) - widget->texture_hit_y) / widget->texture_hit_height;
+      sprite_texture_ref = get_sprite_texture_ref(widget->texture_hit_test_sprite);
+      v2 = *(unsigned __int16 *)(sprite_texture_ref + 12);
       v3 = (__int64)((double)(unsigned __int16)v2 * v7);
-      v4 = *(unsigned __int16 *)(v1 + 14);
+      v4 = *(unsigned __int16 *)(sprite_texture_ref + 14);
       v5 = (__int64)((double)(unsigned __int16)v4 * v8);
       if ( v3 >= 0 )
       {
@@ -44,14 +44,14 @@ char __thiscall sub_404580(int this)
       {
         LODWORD(v5) = 0;
       }
-      if ( !*(_BYTE *)(v5 * v2 + v3 + 6 + v1 + 2 * (v5 * v2 + v3 + 6)) )
+      if ( !*(_BYTE *)(v5 * v2 + v3 + 6 + sprite_texture_ref + 2 * (v5 * v2 + v3 + 6)) )
         return 1;
     }
   }
-  else if ( *(float *)(this + 568) - *(float *)(this + 540) < *((float *)MEMORY[0x4DF904] + 167)
-         && *(float *)(this + 584) + *(float *)(this + 540) + *(float *)(this + 568) > *((float *)MEMORY[0x4DF904] + 167)
-         && *(float *)(this + 572) - *(float *)(this + 540) < *((float *)MEMORY[0x4DF904] + 168)
-         && *(float *)(this + 588) + *(float *)(this + 572) + *(float *)(this + 540) > *((float *)MEMORY[0x4DF904] + 168) )
+  else if ( widget->layout_left - widget->target_padding < *((float *)g_game_base + 167)
+         && widget->layout_width + widget->target_padding + widget->layout_left > *((float *)g_game_base + 167)
+         && widget->layout_top - widget->target_padding < *((float *)g_game_base + 168)
+         && widget->layout_height + widget->layout_top + widget->target_padding > *((float *)g_game_base + 168) )
   {
     return 1;
   }

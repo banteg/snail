@@ -1,7 +1,7 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
   "bn_exported": 678,
@@ -15,15 +15,23 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "run_frame_update",
-      "address": "0x40a2a0"
+      "name": "initialize_frontend_sprite_button",
+      "address": "0x401a70"
     },
     {
-      "name": "render_game_frame",
-      "address": "0x40a490"
+      "name": "initialize_frontend_widget",
+      "address": "0x401d30"
+    },
+    {
+      "name": "layout_frontend_widget",
+      "address": "0x4024a0"
+    },
+    {
+      "name": "border_mouse_test",
+      "address": "0x404580"
     }
   ],
-  "health_check_count": 31,
+  "health_check_count": 33,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

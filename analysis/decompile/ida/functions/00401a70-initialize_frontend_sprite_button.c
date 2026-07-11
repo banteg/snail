@@ -23,7 +23,7 @@ float *__thiscall initialize_frontend_sprite_button(
   int v16; // edx
   Color4f color; // [esp+8h] [ebp-10h] BYREF
 
-  v8 = (char *)MEMORY[0x4DF904] + 2892;
+  v8 = (char *)g_game_base + 2892;
   if ( (*(_DWORD *)(this + 4) & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
@@ -90,7 +90,7 @@ float *__thiscall initialize_frontend_sprite_button(
   *(_DWORD *)(this + 552) = 0;
   *(_DWORD *)(this + 604) = 0;
   *(float *)(this + 608) = a7;
-  v14 = a7 + *((float *)MEMORY[0x4DF904] + 69695);
+  v14 = a7 + *((float *)g_game_base + 69695);
   *(_DWORD *)(this + 568) = a4;
   *(_DWORD *)(this + 572) = a5;
   *(float *)(this + 608) = v14;
