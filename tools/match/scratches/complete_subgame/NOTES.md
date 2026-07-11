@@ -7,7 +7,7 @@ complete_subgame @ 0x438700 = cRSubGame::Complete(bool). Semantics:
 - marks the per-run completion bit (|= 8) in the 6-byte-stride run table
   at game+0xFD2A04-ish indexed by the run counter at game+0xFF25DC,
   increments both counters
-- unless global byte_4B2F40 & 1: snapshots the run into the result bank
+- unless `g_cheat_state.flags & 1`: snapshots the run into the result bank
   at game+0xFD29F0.. (score, the 0x18-byte stat block, level ids, mode,
   timers from game+0x126...), sets the result-active dword = 1
 - the (mode != 1 || flag) && !replay-suppress && completed gate then
@@ -27,7 +27,7 @@ Promoted to a matcher scratch on 2026-06-13. Current result: 75.28%,
 - 6-byte run-record completion bit at `game+0xfd2b84 + cursor*6`, now
   modeled as bit 3 (`0x08`, completed) in the first byte of the record
 - completion counter and replay cursor increments
-- global `byte_4b2f40 & 1` snapshot suppression
+- global `CheatState::flags & 1` snapshot suppression
 - result-record snapshot at `game+0xfd2b10`, including the six-dword stat
   copy and timer tails at `game+0xff25c0`/`game+0xff25c4`
 - high-score dispatch gates for arcade, survival, and time-trial modes
@@ -102,11 +102,10 @@ Rejected experiments:
   the native direct-memory `or byte [..], 0x8` in isolation. Naming the selected
   run record as `RunRecord* run_record` in the full scratch still emitted the
   same contextual load/or/store sequence and was reverted as neutral churn.
-- 2026-06-15 reference-audit pass: the new curated reference manifest names
-  `byte_4b2f40` as `g_completion_snapshot_flags` and the high-score bank offset
-  as `g_high_score_bank`, clearing the masked operand audit without changing the
-  normalized score. The remaining residual is still the byte-OR and snapshot
-  scheduling shape below.
+- 2026-06-15 reference-audit pass: the curated reference manifest named
+  `byte_4b2f40` and the high-score bank offset, clearing the masked operand audit
+  without changing the normalized score. The remaining residual is still the
+  byte-OR and snapshot scheduling shape below.
 - 2026-06-16 score-view split was a temporary sparse-layout interpretation.
   The later complete-extent proof below supersedes it: the apparent overlap is
   the single embedded `Player`, not a separate `RunScoreStats` object plus
@@ -164,3 +163,17 @@ Removing `RunScoreStats` and the sparse runtime overlay preserves the honest
 for `player.score_tail` was codegen-neutral and was not retained. The two known
 residual clusters remain the contextual replay-byte OR and snapshot scheduling;
 ownership no longer depends on either mismatch.
+
+## 2026-07-11 CheatState owner closure
+
+The address previously described by its low-byte consumers is the complete
+`0x10`-byte global `CheatState`: `flags` at `+0x00`, an unused dword at `+0x04`,
+and the eight-byte recent-text buffer at `+0x08`. The next curated global starts
+exactly at `0x4b2f50`, independently bounding that extent. Bit 0 suppresses the
+completion snapshot here, while bit 1 relaxes the subgoldy environment gate;
+initialization and per-frame cheat parsing operate on the same owner.
+
+Promoting `g_cheat_state` through all four consumers preserves the focused
+scores and operand audits for `complete_subgame`, `update_subgoldy`,
+`run_frame_update`, and `initialize_game_assets_and_world`. The three CheatState
+methods remain exact, and the shared extern lint is now clean.

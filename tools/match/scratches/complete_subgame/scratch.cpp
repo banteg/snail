@@ -1,9 +1,8 @@
 // complete_subgame @ 0x438700 (thiscall, ret 0x4)
 // cRSubGame::Complete(bool): snapshot the finished run and route high-score writes.
 
+#include "cheat_state.h"
 #include "subgame_runtime.h"
-
-extern unsigned char g_completion_snapshot_flags; // byte_4b2f40
 
 void SubgameRuntime::complete_subgame(unsigned char completed)
 {
@@ -13,7 +12,7 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
     ++current_high_score_record.replay_sample_count;
     ++replay_update_cursor;
 
-    if ((g_completion_snapshot_flags & 1) == 0) {
+    if ((g_cheat_state.flags & 1) == 0) {
         HighScoreRecord* record = &current_high_score_record;
 
         current_high_score_record.score = player.total_score;

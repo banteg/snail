@@ -20,7 +20,6 @@
 
 extern char* g_game_base; // data_4df904
 extern int unk_4DF9BC; // data copied into SubgameRuntime::level_mode_arg
-extern CheatState g_completion_snapshot_flags; // byte_4b2f40
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
 extern BuiltinSegmentDefinition* g_builtin_segment_definitions[]; // 0x4a63d0
@@ -226,7 +225,7 @@ char GameRoot::initialize_game_assets_and_world()
     frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
 
-    g_completion_snapshot_flags.initialize_cheat();
+    g_cheat_state.initialize_cheat();
     *(unsigned char*)(game + 0x4f2e0) = 0;
     subgame.initialize_blink_random();
     subgame.set_subgame_rate(1.1f);

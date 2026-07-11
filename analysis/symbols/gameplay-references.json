@@ -2458,13 +2458,15 @@
     },
     {
       "address": "0x4b2f40",
-      "name": "g_completion_snapshot_flags",
+      "name": "g_cheat_state",
       "kind": "global",
       "aliases": [
+        "g_completion_snapshot_flags",
         "g_environment_flags",
         "byte_4b2f40"
       ],
-      "description": "Shared gameplay environment/completion flag byte read by complete_subgame and update_subgoldy."
+      "size": "0x10",
+      "description": "Global CheatState object: flag bits at +0x00 gate completion snapshots and environment behavior, while +0x08..+0x0f retain the recent cheat-text buffer."
     },
     {
       "address": "0x4b2f50",

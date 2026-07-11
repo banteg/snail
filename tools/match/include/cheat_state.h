@@ -13,6 +13,11 @@ public:
     int recent_text_4; // +0x0c
 };
 
+typedef char CheatState_must_be_0x10[
+    (sizeof(CheatState) == 0x10) ? 1 : -1];
+
+extern CheatState g_cheat_state; // data_4b2f40
+
 char read_pressed_text_input_key_code(); // @ 0x432440
 
 #endif

@@ -23,13 +23,11 @@ int queue_axis_aligned_textured_quad(
     Color4f* tint,
     int layer);
 
-extern CheatState g_completion_snapshot_flags; // byte_4b2f40
-
 int GameRoot::run_frame_update()
 {
     fade.update_frontend_transition_overlay();
     g_audio_backend.noop_runtime_ai();
-    g_completion_snapshot_flags.update_cheat();
+    g_cheat_state.update_cheat();
     g_voice_manager.update_voice_manager();
 
     float next_frame_accum = fixed_update_accumulator + 1.0f;

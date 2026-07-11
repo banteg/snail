@@ -12,6 +12,7 @@
 #include "app_shell.h"
 #include "audio_system.h"
 #include "backdrop.h"
+#include "cheat_state.h"
 #include "high_score_record.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
@@ -26,7 +27,6 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
-extern unsigned char g_environment_flags; // byte_4B2F40
 extern float g_steering_sensitivity[];    // flt_4DF950
 
 struct RowEventDisplay {
@@ -714,7 +714,7 @@ steering_stored:
                 SubgoldyGameView* probe_game = game;
                 if (probe_game->level_mode == 3)
                     probe_game->get_track_grid_cell_at_world_position(p_position);
-                if (((game->runtime_flags & 0x400) == 0 || (g_environment_flags & 2) != 0)
+                if (((game->runtime_flags & 0x400) == 0 || (g_cheat_state.flags & 2) != 0)
                     && live_matrix.position.y < 0.49000001f) {
                     squidge.start_squidge_y(velocity.y);
                     trampoline_bounce_active = 0;
