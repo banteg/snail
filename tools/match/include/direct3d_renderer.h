@@ -3,6 +3,7 @@
 #define DIRECT3D_RENDERER_H
 
 #include "direct3d_device8_view.h"
+#include "render_buffer_factories.h"
 
 struct Direct3D8;
 
@@ -24,13 +25,18 @@ struct D3DPresentParameters {
 
 class Direct3DRenderer {
 public:
+    ObjectRenderBuffers* create_vertex_buffer(
+        int vertex_count, int fvf); // @ 0x4114b0
     int direct3d_renderer_set_cull_mode(char cull_front); // @ 0x411700
     int initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
     void reset_direct3d_render_state(); // @ 0x4118b0
     int direct3d_renderer_set_fullscreen_mode(int enabled);
     int query_direct3d_device_caps(); // @ 0x414600
 
-    char unknown_0000[0xbb8c];
+    int vertex_buffer_count; // +0x0000
+    ObjectRenderBuffers vertex_buffers[0xbb8]; // +0x0004, 3000 entries
+    IndexBufferFactory index_buffer_factory; // +0x8ca4, 3000 entries
+    RendererState* renderer_state; // +0xbb88
     unsigned char device_initialized; // +0xbb8c
     char unknown_bb8d[0xbb90 - 0xbb8d];
     Direct3D8* d3d;                  // +0xbb90
@@ -50,5 +56,7 @@ typedef char D3DPresentParameters_must_be_0x34[
     (sizeof(D3DPresentParameters) == 0x34) ? 1 : -1];
 typedef char Direct3DRenderer_must_be_0xbcc0[
     (sizeof(Direct3DRenderer) == 0xbcc0) ? 1 : -1];
+
+extern Direct3DRenderer g_direct3d_renderer; // data_4f7458
 
 #endif

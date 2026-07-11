@@ -29,9 +29,10 @@ Recovered relationships:
   indices by reusing indices 0 and 2 plus the fourth corner.
 - Toon/secondary index buffer allocation is gated by `flags & 0x4000`
   (`test ah, 0x40`), not by `flags & 0x40`.
-- The vertex-buffer factory is the existing `g_direct3d_renderer` object at
-  `0x4f7458` under a scratch-local factory view. The index-buffer factory is
-  the neighboring object at `0x5000fc`.
+- The vertex-buffer pool is the first `0x8ca4` bytes of
+  `g_direct3d_renderer` at `0x4f7458`: one count followed by 3000 0xc-byte
+  wrappers. Its 3000-entry index-buffer factory is the embedded subobject at
+  renderer `+0x8ca4` (`0x5000fc`), not an unrelated neighboring global.
 - The `flags & 4` warm-up scan is an `else if` chain. For each source
   vertex/face pair, native appends only the first matching corner, matching the
   IDA control flow rather than four independent corner tests.
@@ -79,3 +80,10 @@ prototype from a synthetic `ObjectIndexBuffer*(int32_t)` return and makes the
 five retained products at `+0xc0/+0xc8/+0xcc/+0xd0/+0xd4` visible as fields.
 The exact caller/callee contract remains unchanged by the later source-shape
 recovery.
+
+2026-07-11 renderer-owner closure: the builder now reaches both buffer pools
+through `Direct3DRenderer`. The index receiver compiles as
+`g_direct3d_renderer+0x8ca4`; giving the manifest the proven `0xbcc0` renderer
+extent resolves that interior relocation against the existing `0x5000fc`
+reference without an alias or operand waiver. Focused matching remains exact at
+373/373 with all 29 operands clean.

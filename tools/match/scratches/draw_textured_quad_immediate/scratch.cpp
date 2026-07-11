@@ -1,6 +1,7 @@
 // draw_textured_quad_immediate @ 0x413030 (cdecl)
 
 #include "direct3d_device8_view.h"
+#include "direct3d_renderer.h"
 #include "sprite.h"
 #include "vertex_buffer_view.h"
 
@@ -14,7 +15,6 @@ struct ImmediateVertex {
 };
 
 extern Direct3DDevice8* g_d3d_device;      // data_502fec
-extern RendererState* g_renderer_state;    // data_502fe0
 extern int g_render_triangle_count;        // data_4f7450
 extern int g_render_successful_primitive_count; // data_4f7454
 extern int g_draw_primitive_call_count;    // data_503170
@@ -55,8 +55,9 @@ void draw_textured_quad_immediate(
     packed.pack_color_rgba_u8(color);
 
     ImmediateVertex* vertices;
-    g_renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_renderer_state->sprite_vertex_buffer, 0, sizeof(ImmediateVertex) * 4,
+    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Lock(
+        g_direct3d_renderer.renderer_state->sprite_vertex_buffer, 0,
+        sizeof(ImmediateVertex) * 4,
         (void**)&vertices, 0);
 
     if (rotation == 0.0f) {
@@ -158,9 +159,11 @@ void draw_textured_quad_immediate(
         vertices[3].color = *(unsigned int*)&packed;
     }
 
-    g_renderer_state->sprite_vertex_buffer->vtbl->Unlock(g_renderer_state->sprite_vertex_buffer);
+    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Unlock(
+        g_direct3d_renderer.renderer_state->sprite_vertex_buffer);
     g_d3d_device->vtbl->SetStreamSource(
-        g_d3d_device, 0, g_renderer_state->sprite_vertex_buffer, sizeof(ImmediateVertex));
+        g_d3d_device, 0, g_direct3d_renderer.renderer_state->sprite_vertex_buffer,
+        sizeof(ImmediateVertex));
     g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
     int result = g_d3d_device->vtbl->DrawPrimitive(g_d3d_device, 6, 0, 2);
     g_render_triangle_count += 2;

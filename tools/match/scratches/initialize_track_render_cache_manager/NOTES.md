@@ -75,8 +75,8 @@ Status:
   `[edi+edx]` residual. Tested forms included
   `slot_index = slot_base; slot_index += i`, byte-offset locals, split scaled
   terms, volatile reads of either addend, and separate row-base pointers.
-  Volatile forms regressed by disturbing the prologue; non-volatile forms
-  compile back to the same SIB base/index choice.
+Volatile forms regressed by disturbing the prologue; non-volatile forms
+compile back to the same SIB base/index choice.
 
 2026-07-10 owner closure: three independent callers establish this manager as
 the embedded `SubgameRuntime::track_render_cache` at `+0x5c`. The exact
@@ -84,3 +84,9 @@ the embedded `SubgameRuntime::track_render_cache` at `+0x5c`. The exact
 borrowed backlink, the `143 x 5` BOD grid is manager-owned, and the five shared
 vertex/index buffers are tracked allocations owned for the manager lifetime.
 The exact initializer remains 99.18%, 122/122, with 18 clean operands.
+
+2026-07-11 renderer-pool closure: cache objects now allocate both retained D3D
+wrappers through the one `Direct3DRenderer` owner. Vertex wrappers come from
+the renderer prefix; index wrappers come from its `+0x8ca4` embedded factory.
+The interior relocation is manifest-resolved through the renderer's proven
+`0xbcc0` extent. The 99.18%, 122/122 stream and 18 clean operands are unchanged.

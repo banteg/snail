@@ -63,3 +63,9 @@ to 96.83% for the same reason. Reversing the radius expression to
 98.34%, so it is not retained. The remaining body gap is still the native
 half-height `fst [esp+0x3c]`/reload and one rotated vertex zero-store/load
 scheduling swap, not evidence for a different vertex layout.
+
+2026-07-11 renderer-state owner closure: the shared immediate vertex buffer is
+now reached through the renderer's `+0xbb88` state pointer rather than a false
+standalone global owner. The proven `Direct3DRenderer` extent resolves all
+three interior relocations. Focused output remains 98.34%, 331/332, with all 26
+operands clean and the same x87/scheduling residual.

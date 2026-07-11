@@ -32,3 +32,10 @@ rewriting the tail state stores through a raw `char* screen` are all
 codegen-neutral at 83.00%. These forms keep the same inverted register split:
 candidate `edi=this` / `ebx=archive_base`, native `ebx=this` /
 `edi=archive_base`.
+
+2026-07-11 renderer-owner closure: both loading-screen vertex resources now
+use the recovered `Direct3DRenderer::create_vertex_buffer` owner directly. The
+renderer prefix contains the 3000-entry vertex-wrapper pool, while the
+renderer-state and device globals used by adjacent draw paths are proven
+interior fields at `+0xbb88/+0xbb94`. Focused output remains 83.00%, 253/253,
+with 47 clean operands and the same register-allocation residual.

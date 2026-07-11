@@ -17,7 +17,7 @@ Recovered behavior:
 - debug texture fallback after a failed D3DX texture creation call;
 - texture binding and stage-state setup;
 - background and progress-fill vertex-buffer creation through
-  `g_direct3d_renderer`;
+  the prefix-owned 3000-entry pool in `g_direct3d_renderer`;
 - background quad vertex seed for the 640x480 overlay;
 - final `begin_overlay_render_state()` call and `LoadingScreen` reset.
 

@@ -1,8 +1,8 @@
 // build_object_texture_group_buffers @ 0x413d50 (cdecl)
 
+#include "direct3d_renderer.h"
 #include "sprite.h"
 #include "object_render_types.h"
-#include "render_buffer_factories.h"
 #include "vector3.h"
 
 void* allocate_tracked_memory(int size, char* name);
@@ -139,7 +139,8 @@ void build_object_texture_group_buffers(Object* object)
     object->grouped_vertex_count = g_object_grouped_vertex_cursor;
     object->render_buffers =
         g_direct3d_renderer.create_vertex_buffer(g_object_grouped_vertex_cursor, 0x142);
-    object->index_buffer = g_object_index_buffer_factory.create_index_buffer(index_count);
+    object->index_buffer =
+        g_direct3d_renderer.index_buffer_factory.create_index_buffer(index_count);
 
     ObjectRenderVertex* locked_vertices;
     object->render_buffers->vertex_buffer->vtbl->Lock(
@@ -163,6 +164,7 @@ void build_object_texture_group_buffers(Object* object)
     object->index_buffer->buffer->vtbl->Unlock(object->index_buffer->buffer);
 
     if ((object->flags & 0x4000) != 0) {
-        object->toon_index_buffer = g_object_index_buffer_factory.create_index_buffer(index_count);
+        object->toon_index_buffer =
+            g_direct3d_renderer.index_buffer_factory.create_index_buffer(index_count);
     }
 }

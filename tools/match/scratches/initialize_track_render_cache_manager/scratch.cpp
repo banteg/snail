@@ -1,7 +1,7 @@
 // initialize_track_render_cache_manager @ 0x433060 (thiscall, ret)
 
+#include "direct3d_renderer.h"
 #include "object_render_types.h"
-#include "render_buffer_factories.h"
 #include "track_render_cache.h"
 
 void* allocate_tracked_memory(int size, char* name);
@@ -44,8 +44,8 @@ void* TrackRenderCacheManager::initialize_track_render_cache_manager()
             ((Object*)slot->bod.object)->texture_group_count = 1;
             ((Object*)slot->bod.object)->render_buffers =
                 g_direct3d_renderer.create_vertex_buffer(max_vertex_counts[i], 0x142);
-            ((Object*)slot->bod.object)->index_buffer =
-                g_object_index_buffer_factory.create_index_buffer(max_index_counts[i]);
+            ((Object*)slot->bod.object)->index_buffer = g_direct3d_renderer
+                .index_buffer_factory.create_index_buffer(max_index_counts[i]);
             ((Object*)slot->bod.object)->group_index_starts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroups");
             ((Object*)slot->bod.object)->group_index_starts[0] = 0;

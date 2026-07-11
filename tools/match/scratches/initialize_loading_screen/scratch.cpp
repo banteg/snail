@@ -1,10 +1,10 @@
 // initialize_loading_screen @ 0x418b50 (thiscall, ret)
 
 #include "direct3d_device8_view.h"
+#include "direct3d_renderer.h"
 #include "loading_screen.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
-#include "render_buffer_factories.h"
 
 extern int g_last_loading_budget; // data_4df9c4
 extern Direct3DDevice8* g_d3d_device; // data_502fec

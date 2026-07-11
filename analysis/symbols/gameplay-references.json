@@ -3283,7 +3283,8 @@
       "aliases": [
         "data_4f7458"
       ],
-      "description": "Global renderer wrapper object; its +0xbb94 device pointer backs the cull-mode wrapper and Direct3D setup helpers."
+      "size": "0xbcc0",
+      "description": "Global renderer wrapper object. It owns the 3000-entry vertex-buffer pool at +0x0000, the 3000-entry index-buffer factory at +0x8ca4, the shared renderer-state pointer at +0xbb88, and the Direct3D device pointer at +0xbb94."
     },
     {
       "address": "0x5000fc",
@@ -3292,7 +3293,7 @@
       "aliases": [
         "data_5000fc"
       ],
-      "description": "Renderer-side factory object used by build_object_texture_group_buffers to allocate the primary and optional toon object index-buffer wrappers."
+      "description": "Direct3DRenderer +0x8ca4 embedded 3000-entry index-buffer factory used by object and track-cache buffer construction."
     },
     {
       "address": "0x502fe0",
@@ -3301,7 +3302,7 @@
       "aliases": [
         "data_502fe0"
       ],
-      "description": "Global renderer state pointer; offset +0x08 is the transient vertex buffer locked by sprite and immediate textured-quad draw paths."
+      "description": "Direct3DRenderer +0xbb88 renderer-state pointer; pointee offset +0x08 is the transient vertex buffer locked by sprite and immediate textured-quad draw paths."
     },
     {
       "address": "0x502fec",
@@ -3310,7 +3311,7 @@
       "aliases": [
         "data_502fec"
       ],
-      "description": "Global IDirect3DDevice8 pointer used by render helpers to program render state and submit primitives."
+      "description": "Direct3DRenderer +0xbb94 IDirect3DDevice8 pointer used by render helpers to program render state and submit primitives."
     },
     {
       "address": "0x503170",

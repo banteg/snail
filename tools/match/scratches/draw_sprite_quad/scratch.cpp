@@ -2,6 +2,7 @@
 
 #include "sprite.h"
 #include "direct3d_device8_view.h"
+#include "direct3d_renderer.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 #include "vertex_buffer_view.h"
@@ -18,7 +19,6 @@ struct SpriteVertex {
 };
 
 extern Direct3DDevice8* g_d3d_device;      // data_502fec
-extern RendererState* g_renderer_state;    // data_502fe0
 extern int g_render_triangle_count;        // data_4f7450
 extern int g_draw_primitive_call_count;    // data_503170
 
@@ -72,8 +72,9 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     packed.a = (unsigned char)(int)(alpha * 255.0f);
 
     SpriteVertex* vertices;
-    g_renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_renderer_state->sprite_vertex_buffer, 0, sizeof(SpriteVertex) * 4,
+    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Lock(
+        g_direct3d_renderer.renderer_state->sprite_vertex_buffer, 0,
+        sizeof(SpriteVertex) * 4,
         (void**)&vertices, 0);
 
     if (sprite->facing_angle == 0.0f) {
@@ -137,9 +138,11 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     vertices[3].v = 1.0f;
     vertices[3].color = *(unsigned int*)&packed;
 
-    g_renderer_state->sprite_vertex_buffer->vtbl->Unlock(g_renderer_state->sprite_vertex_buffer);
+    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Unlock(
+        g_direct3d_renderer.renderer_state->sprite_vertex_buffer);
     g_d3d_device->vtbl->SetStreamSource(
-        g_d3d_device, 0, g_renderer_state->sprite_vertex_buffer, sizeof(SpriteVertex));
+        g_d3d_device, 0, g_direct3d_renderer.renderer_state->sprite_vertex_buffer,
+        sizeof(SpriteVertex));
     g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
     int result = g_d3d_device->vtbl->DrawPrimitive(g_d3d_device, 6, 0, 2);
     g_render_triangle_count += 2;
