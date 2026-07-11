@@ -134,8 +134,12 @@ public:
     // authored segment slots and all parsed level metadata through parcel_quota.
     LevelDefinitionLoader level_definition; // +0xa874, ends at +0x1b01ec
     char unknown_1b01ec[0x355bd4 - 0x1b01ec];
-    char sub_lazer_list_head[0x10]; // +0x355bd4, node-shaped live-list anchor
-    char unknown_355be4[0x355d94 - 0x355be4];
+    // Constructed BodBase sentinels own the live intrusive lists used by the
+    // corresponding fixed pools below. Spawn paths only consume the inherited
+    // BodNode links, but startup proves the complete 0x38-byte objects.
+    BodBase sub_lazer_list_head; // +0x355bd4
+    BodBase salt_hazard_list_head; // +0x355c0c
+    char unknown_355c44[0x355d94 - 0x355c44];
     int active_level_score; // +0x355d94, copied from the selected bank record
     TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
     TrackSpeedupRuntime speedup_pickup; // +0x355db0

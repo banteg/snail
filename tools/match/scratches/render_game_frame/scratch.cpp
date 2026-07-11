@@ -132,7 +132,7 @@ int GameRoot::render_game_frame()
 
             int post_sprite_count = 0;
             if ((slot->flags & 2) == 0) {
-                RenderBodView* bod = (RenderBodView*)active_render_bod_head;
+                RenderBodView* bod = (RenderBodView*)active_bod_list.first;
                 RenderBodView** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
                     unsigned int bod_flags = bod->list_flags;

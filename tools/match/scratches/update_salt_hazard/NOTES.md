@@ -61,3 +61,9 @@ Clearing state before both reports and forcing a positive live branch regressed.
 root free-list anchor is kept as a narrow `RootBodListView` at `g_game +0x5a8`
 instead of another ambiguous local `Game` shell. Focused Wibo remains exact at
 `100.00%`, `83/83` instructions, with `12` clean masked operands.
+
+2026-07-11 root-list ownership closure: renderer traversal and salt teardown
+are the two sides of the same `GameRoot +0x5a8` `BodList`: `first +0x04` is
+the active head and `free_top +0x08` receives unlinked nodes. The synthetic
+`RootBodListView` is retired in favor of `GameRoot::active_bod_list`. Focused
+Wibo remains exact at `100.00%`, `83/83`, with `12` clean masked operands.

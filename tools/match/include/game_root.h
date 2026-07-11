@@ -83,9 +83,8 @@ public:
         int render_skip_count; // +0x56c, decremented before an otherwise skipped frame
         int render_skip_countdown; // front-end initialization spelling
     };
-    char unknown_000570[0x5ac - 0x570];
-    BodNode* active_render_bod_head; // +0x5ac, borrowed intrusive-list head
-    char unknown_0005b0[0x5b4 - 0x5b0];
+    char unknown_000570[0x5a8 - 0x570];
+    BodList active_bod_list; // +0x5a8, root-owned active/free intrusive BOD anchor
     RenderCameraSlot render_camera_slots[5]; // +0x5b4, owned fixed viewport array
     char unknown_00067c[0x6d4 - 0x67c];
     Vector3 star_spawn_direction; // +0x6d4

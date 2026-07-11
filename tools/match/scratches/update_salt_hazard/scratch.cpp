@@ -1,16 +1,11 @@
 // update_salt_hazard @ 0x441c10 (thiscall, ret)
 
+#include "game_root.h"
 #include "salt_hazard_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-class RootBodListView {
-public:
-    char unknown_00[0x5a8];
-    SaltListAnchor salt_free_anchor; // +0x5a8
-};
-
-extern RootBodListView* g_game; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void SaltHazardSlot::update_salt_hazard()
@@ -20,8 +15,8 @@ void SaltHazardSlot::update_salt_hazard()
 
     switch (state) {
     case 2: {
-        RootBodListView* game = g_game;
-        SaltListAnchor* anchor = &game->salt_free_anchor;
+        GameRoot* game = g_game;
+        SaltListAnchor* anchor = &game->active_bod_list;
         int flags = list_flags;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");

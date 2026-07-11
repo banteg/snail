@@ -75,3 +75,10 @@ The enclosing owner is now closed as well: those two camera sources are the
 owned `camera +0xa0` subobjects of consecutive `GamePlayer`/`cRPlayer` records
 at root `+0x124/+0x31c`. Viewports borrow the adjusted subobject pointers; the
 players and ultimately `GameRoot` retain lifetime ownership.
+
+2026-07-11 root BOD-list closure: `GameRoot +0x5a8` is now the complete owned
+`BodList`, not padding followed by a borrowed head pointer. This renderer walks
+its `first +0x04` member at root `+0x5ac`; `update_salt_hazard` independently
+proves the same object's active/free-list behavior. The relationship-only
+change is codegen-neutral: focused Wibo remains `35.31%`, `422/439`, with `21`
+clean masked operands.

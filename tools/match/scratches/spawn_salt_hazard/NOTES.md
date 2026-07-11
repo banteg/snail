@@ -70,3 +70,10 @@ is now named `collision_armed`. `spawn_salt_hazard` sets it to `1`, and
 that byte and clears it after damage. The accessor preserves the proven
 `velocity.z` storage overlay and this scratch remains exact at `100.00%`,
 `67/67`, with `10` clean masked operands.
+
+2026-07-11 salt-list ownership closure: startup constructs a complete
+`BodBase` at `SubgameRuntime +0x355c0c`, and this spawner uses its inherited
+`BodNode` links as the salt live-list sentinel. The raw `char* g_game` address
+arithmetic is therefore replaced by `GameRoot::subgame.salt_hazard_list_head`;
+the rate read also resolves through the same owned subgame. Focused Wibo
+remains exact at `100.00%`, `67/67`, with `10` clean masked operands.

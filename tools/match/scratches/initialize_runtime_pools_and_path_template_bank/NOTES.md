@@ -17,3 +17,11 @@
   `SubgameRuntime +0xff7bc4`.
 - Despite its retained historical name, `initialize_path_template_record_pair`
   initializes one record's leading `BodBase` and fringe `BodBase` at `+0x60`.
+
+## 2026-07-11 live-list sentinels
+
+- The consecutive constructor calls at `SubgameRuntime +0x355bd4` and
+  `+0x355c0c` build complete 0x38-byte `BodBase` objects.
+- Exact spawn paths identify their inherited node prefixes as the sub-lazer and
+  salt live-list heads respectively; these are embedded owners, not borrowed
+  pointers or 0x10-byte synthetic anchor views.
