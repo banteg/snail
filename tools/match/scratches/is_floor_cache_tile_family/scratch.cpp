@@ -2,9 +2,9 @@
 
 #include "track_attachment.h"
 
-unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell)
+unsigned char SubLoc::is_floor_cache_tile_family()
 {
-    unsigned char tile_id = cell->tile_id;
+    unsigned char tile_id = this->tile_id;
     unsigned char result;
     if (tile_id == 15
         || tile_id == 23

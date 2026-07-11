@@ -1828,7 +1828,8 @@
     },
     {
       "address": "0x434b60",
-      "name": "is_neighbor_cell_solid"
+      "name": "is_neighbor_cell_solid",
+      "description": "Exact Windows implementation of `cRSubGame::TestLoc(cRSubLoc*, int, int)`: derives the source row with SubLoc::Yi, applies lane and row offsets with bounds checks, probes the eight-lane runtime grid, rejects SubLoc::IsEmpty, then excludes tile ids 35, 0, 22, and 28. Android preserves the same method body and constants."
     },
     {
       "address": "0x434be0",
@@ -1926,19 +1927,23 @@
     },
     {
       "address": "0x439a40",
-      "name": "is_slide_cache_tile_family"
+      "name": "is_slide_cache_tile_family",
+      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsFloor()`: accepts tile ids 1, 20, 21, 33, 34, and 27. The retained Windows harness name describes its render-cache use."
     },
     {
       "address": "0x439a70",
-      "name": "is_ramp_cache_tile_family"
+      "name": "is_ramp_cache_tile_family",
+      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13."
     },
     {
       "address": "0x439ab0",
-      "name": "is_open_neighbor_tile_family"
+      "name": "is_open_neighbor_tile_family",
+      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29. The retained Windows name describes its neighbor-test use."
     },
     {
       "address": "0x439ad0",
-      "name": "is_floor_cache_tile_family"
+      "name": "is_floor_cache_tile_family",
+      "description": "Exact SubLoc predicate matching Android `cRSubLoc::IsSlide()`: accepts tile ids 15, 23, 24, 25, 26, 16, 18, and 19. The historical Windows cache-family name is opposite the authored IsFloor helper at 0x439a40."
     },
     {
       "address": "0x439b00",
@@ -1948,7 +1953,7 @@
     {
       "address": "0x439bc0",
       "name": "destroy_sub_lazer_projectile",
-      "description": "Tears down one live runtime `TrackRowCell`/`cRSubLoc`: removes its own BOD, clears the attachment-row body for skirt tiles when required, and unlinks its four borrowed fringe BODs. The stable Windows harness name is historical; the receiver is not a `SubLazerSlot`."
+      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing the attachment-row model for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the stable Windows harness name is historical."
     },
     {
       "address": "0x439d50",

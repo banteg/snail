@@ -102,6 +102,14 @@
       "confidence": "high"
     },
     {
+      "address": "0x434b60",
+      "windows_name": "is_neighbor_cell_solid",
+      "ios_symbol": "cRSubGame::TestLoc(cRSubLoc*, int, int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the full body: Yi row recovery, lane and row bounds, identical eight-lane indexing, IsEmpty call, and the same final tile exclusions 35/0/22/28."
+    },
+    {
       "address": "0x435df0",
       "windows_name": "set_subgame_features",
       "ios_symbol": "cRSubGame::SetFeatures()",
@@ -144,12 +152,52 @@
       "confidence": "high"
     },
     {
+      "address": "0x439a40",
+      "windows_name": "is_slide_cache_tile_family",
+      "ios_symbol": "cRSubLoc::IsFloor()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android body accepts the identical tile set 1/20/21/33/34/27; the Windows harness name reflects cache use rather than the authored method."
+    },
+    {
+      "address": "0x439a70",
+      "windows_name": "is_ramp_cache_tile_family",
+      "ios_symbol": "cRSubLoc::IsRamp()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android body accepts the identical authored ramp family 2 through 13."
+    },
+    {
+      "address": "0x439ab0",
+      "windows_name": "is_open_neighbor_tile_family",
+      "ios_symbol": "cRSubLoc::IsEmpty()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android body accepts the identical tile set 0/28/35/14/29."
+    },
+    {
+      "address": "0x439ad0",
+      "windows_name": "is_floor_cache_tile_family",
+      "ios_symbol": "cRSubLoc::IsSlide()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android body accepts the identical tile set 15/23/24/25/26/16/18/19; the retained Windows cache name is opposite the authored IsFloor helper."
+    },
+    {
+      "address": "0x439bc0",
+      "windows_name": "destroy_sub_lazer_projectile",
+      "ios_symbol": "cRSubLoc::Remove()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods."
+    },
+    {
       "address": "0x439d50",
       "windows_name": "wall2_emitter_maybe_fire_sub_lazer",
       "ios_symbol": "cRSubLoc::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows receiver is the shared TrackRowCell runtime-grid object; its tile dispatch, attachment-template backlink, and row-index teardown sibling match the cRSubLoc owner."
+      "notes": "The Windows SubLoc constructor table points directly to this helper; its tile dispatch, attachment-template backlink, and Yi/Remove siblings independently agree with the cross-port owner."
     },
     {
       "address": "0x43d6c0",

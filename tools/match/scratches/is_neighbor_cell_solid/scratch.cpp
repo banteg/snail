@@ -3,9 +3,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell);
-
-bool SubgameRuntime::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
+bool SubgameRuntime::is_neighbor_cell_solid(SubLoc* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
     int lane = cell->lane_and_flags & 7;
@@ -16,10 +14,10 @@ bool SubgameRuntime::is_neighbor_cell_solid(TrackRowCell* cell, int dx, int dz)
             int cell_index = 21 * (dx + lane + 8 * neighbor_row);
             char* cell_base = (char*)this + (cell_index << 2);
             unsigned char tile_id = *(unsigned char*)(cell_base + 0x3bfb04);
-            TrackRowCell* neighbor = (TrackRowCell*)cell_base;
+            SubLoc* neighbor = (SubLoc*)cell_base;
             int tile = tile_id;
-            neighbor = (TrackRowCell*)((char*)neighbor + 0x3bfac8);
-            if (!is_open_neighbor_tile_family(neighbor)
+            neighbor = (SubLoc*)((char*)neighbor + 0x3bfac8);
+            if (!neighbor->is_open_neighbor_tile_family()
                 && tile != 0
                 && tile != 35
                 && tile != 28

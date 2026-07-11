@@ -32,3 +32,12 @@ Rejected source-shape probes:
 `SubgameRuntime` owner for `runtime_row_count` while keeping the proven raw
 runtime-cell byte-offset idiom. Focused Wibo remains exact at `100.00%`,
 `47/47` instructions, with `2` clean masked operands.
+
+## Cross-port owner proof
+
+Android preserves this method as `cRSubGame::TestLoc(cRSubLoc*, int, int)`.
+Its body calls `cRSubLoc::Yi()`, performs the same lane and row bounds checks,
+indexes the same eight-lane cell grid, calls `cRSubLoc::IsEmpty()`, and applies
+the same final exclusions for tile ids `35`, `0`, `22`, and `28`. The Windows
+scratch now calls the shared `SubLoc` predicate method directly and remains
+exact at 47/47 with two clean operands.

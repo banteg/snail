@@ -3,6 +3,12 @@
 First relationship scratch for `SubLoc::destroy_sub_lazer_projectile()`
 at `0x439bc0`.
 
+Android preserves the authored operation as `cRSubLoc::Remove()`: it begins
+with `Yi()`, handles the attachment-row body for entry tiles, removes the
+cell's own active BOD, and is called by both `cRSubLoc::AI()` and
+`cRSubGame::RemoveBods()`. This closes the Windows receiver and lifecycle
+contract; the stable harness name remains historical.
+
 Current match: 91.19% (`130/131` candidate/target instructions), 87-instruction
 exact prefix, `14` masked operands ok, no unresolved and `3` known global-base
 mismatches.

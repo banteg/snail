@@ -7,9 +7,6 @@
 
 extern char* g_game_base; // data_4df904
 
-unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell);
-unsigned char __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
-
 #define IS_STRAIGHT_TRACK_FAMILY(tile) \
     ((tile) == 1 || (tile) == 0x14 || (tile) == 0x15 || (tile) == 0x1b \
         || (tile) == 0x21 || (tile) == 0x22)
@@ -33,22 +30,26 @@ void SubgameRuntime::select_track_tile_edge_variants()
                 if (skip_tile != 0 && skip_tile != 0x23 && skip_tile != 0x1c
                     && skip_tile != 0x1d && skip_tile != 0x1e && skip_tile != 0x0e) {
                     if (lane == 0
-                        || is_open_neighbor_tile_family((TrackRowCell*)((char*)cell - 0x90))
+                        || ((SubLoc*)((char*)cell - 0x90))
+                                ->is_open_neighbor_tile_family()
                             != 0) {
                         cell->tile_flags_3d |= 8;
                     }
                     if (lane == 7
-                        || is_open_neighbor_tile_family((TrackRowCell*)((char*)cell + 0x18))
+                        || ((SubLoc*)((char*)cell + 0x18))
+                                ->is_open_neighbor_tile_family()
                             != 0) {
                         cell->tile_flags_3d |= 4;
                     }
                     if (row == 0
-                        || is_open_neighbor_tile_family((TrackRowCell*)((char*)cell - 0x2dc))
+                        || ((SubLoc*)((char*)cell - 0x2dc))
+                                ->is_open_neighbor_tile_family()
                             != 0) {
                         cell->tile_flags_3d |= 1;
                     }
                     if (row >= runtime_row_count - 1
-                        || is_open_neighbor_tile_family((TrackRowCell*)((char*)cell + 0x264))
+                        || ((SubLoc*)((char*)cell + 0x264))
+                                ->is_open_neighbor_tile_family()
                             != 0) {
                         cell->tile_flags_3d |= 2;
                     }
@@ -62,8 +63,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x4423c));
                             } else if (tile != 0x16 && tile != 0x0e
-                                && is_ramp_cache_tile_family(
-                                       (TrackRowCell*)((char*)cell - 0x3c))
+                                && ((SubLoc*)((char*)cell - 0x3c))
+                                        ->is_ramp_cache_tile_family()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x443fc));
@@ -79,8 +80,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x44274));
                             } else if (tile != 0x16 && tile != 0x0e
-                                && is_ramp_cache_tile_family(
-                                       (TrackRowCell*)((char*)cell - 0x3c))
+                                && ((SubLoc*)((char*)cell - 0x3c))
+                                        ->is_ramp_cache_tile_family()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x44434));
@@ -96,8 +97,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x442ac));
                             } else if (tile != 0x16 && tile != 0x0e
-                                && is_ramp_cache_tile_family(
-                                       (TrackRowCell*)((char*)cell - 0x3c))
+                                && ((SubLoc*)((char*)cell - 0x3c))
+                                        ->is_ramp_cache_tile_family()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x4446c));
@@ -113,8 +114,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x442e4));
                             } else if (tile != 0x16 && tile != 0x0e
-                                && is_ramp_cache_tile_family(
-                                       (TrackRowCell*)((char*)cell - 0x3c))
+                                && ((SubLoc*)((char*)cell - 0x3c))
+                                        ->is_ramp_cache_tile_family()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(*(void**)(g_game_base + 0x444a4));

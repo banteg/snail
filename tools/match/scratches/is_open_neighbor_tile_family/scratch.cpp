@@ -2,9 +2,9 @@
 
 #include "track_attachment.h"
 
-unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell)
+unsigned char SubLoc::is_open_neighbor_tile_family()
 {
-    unsigned char tile_id = cell->tile_id;
+    unsigned char tile_id = this->tile_id;
     unsigned char result;
     if (tile_id == 0
         || tile_id == 28

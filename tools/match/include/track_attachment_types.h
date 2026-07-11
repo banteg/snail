@@ -287,8 +287,12 @@ struct SubLoc {
 
     BodNode bod;                       // +0x00, active/free BOD prefix
 
-    void destroy_sub_lazer_projectile(); // @ 0x439bc0, historical harness name
+    void destroy_sub_lazer_projectile(); // @ 0x439bc0, cRSubLoc::Remove
     void wall2_emitter_maybe_fire_sub_lazer(); // @ 0x439d50, cRSubLoc::AI
+    unsigned char is_slide_cache_tile_family(); // @ 0x439a40, cRSubLoc::IsFloor
+    unsigned char is_ramp_cache_tile_family(); // @ 0x439a70, cRSubLoc::IsRamp
+    unsigned char is_open_neighbor_tile_family(); // @ 0x439ab0, cRSubLoc::IsEmpty
+    unsigned char is_floor_cache_tile_family(); // @ 0x439ad0, cRSubLoc::IsSlide
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     float render_arg_1c;                // +0x1c, inline BodBase texture-u argument

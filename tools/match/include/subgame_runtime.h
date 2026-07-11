@@ -93,7 +93,7 @@ public:
     void merge_track_tile_runs();
     void mark_track_warning_zones();
     int build_track_fringe_objects();
-    bool is_neighbor_cell_solid(SubLoc* cell, int dx, int dz);
+    bool is_neighbor_cell_solid(SubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
 
     unsigned char scan_reset; // +0x00, row scanner start-window reset
